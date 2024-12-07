@@ -1,101 +1,138 @@
-import Image from "next/image";
+'use client';
+
+import { useState } from 'react';
+import { motion } from 'framer-motion';
+import dynamic from 'next/dynamic';
+import Popup from './components/ui/Popup';
+
+// Dynamically import the HumanViewer component with no SSR
+const HumanViewer = dynamic(() => import('./components/3d/HumanViewer'), {
+  ssr: false,
+  loading: () => (
+    <div className="w-screen h-screen flex items-center justify-center bg-black">
+      <div className="text-white text-xl">Loading Human Model...</div>
+    </div>
+  ),
+});
+
+const models = [
+  {
+    id: 'male',
+    label: 'MALE MODEL',
+    subLabel: 'ELLER TRYKK FRITT',
+    description: 'Explore male musculoskeletal anatomy',
+    bgClass: 'bg-gradient-to-br from-gray-900 to-gray-800'
+  },
+  {
+    id: 'female',
+    label: 'FEMALE MODEL',
+    subLabel: 'ELLER TRYKK FRITT',
+    description: 'Explore female musculoskeletal anatomy',
+    bgClass: 'bg-gradient-to-br from-gray-900 to-gray-800'
+  }
+];
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [gender, setGender] = useState<'male' | 'female' | null>(null);
+  const [selectedPart, setSelectedPart] = useState<string | null>(null);
+  const [popupPosition, setPopupPosition] = useState({ x: 0, y: 0 });
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+  const handlePartSelect = (partName: string, event: { clientX: number; clientY: number }) => {
+    setSelectedPart(partName);
+    setPopupPosition({
+      x: event.clientX,
+      y: event.clientY,
+    });
+  };
+
+  const handleClosePopup = () => {
+    setSelectedPart(null);
+  };
+
+  if (!gender) {
+    return (
+      <div className="min-h-screen bg-black text-white">
+        {/* Header */}
+        <header className="w-full py-6 px-8 flex justify-between items-center">
+          <h1 className="text-2xl font-bold">MUSCO</h1>
+          <nav className="hidden md:flex space-x-8">
+            <button className="text-gray-400 hover:text-white transition-colors">About</button>
+            <button className="text-gray-400 hover:text-white transition-colors">Contact</button>
+          </nav>
+        </header>
+
+        {/* Main Content */}
+        <div className="max-w-7xl mx-auto px-4 py-12">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="space-y-16"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+            <div className="text-center space-y-4">
+              <h2 className="text-6xl font-bold tracking-tight">
+                VELKOMMEN TIL MUSCO
+              </h2>
+              <p className="text-xl text-gray-400 mt-6">
+                Select a model to start exploring the musculoskeletal system
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-8">
+              {models.map((model) => (
+                <motion.div
+                  key={model.id}
+                  className="relative group cursor-pointer"
+                  onClick={() => setGender(model.id as 'male' | 'female')}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <div className={`relative h-[500px] rounded-lg overflow-hidden ${model.bgClass}`}>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent opacity-90 z-10" />
+                    
+                    <div className="absolute inset-0 flex flex-col justify-end p-8 z-20">
+                      <p className="text-sm font-medium text-gray-400 mb-2">{model.subLabel}</p>
+                      <h3 className="text-3xl font-bold tracking-wider mb-4">{model.label}</h3>
+                      <p className="text-gray-400 max-w-md">{model.description}</p>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+
+            <div className="grid grid-cols-3 gap-8 mt-16">
+              <div className="text-center">
+                <h4 className="text-xl font-bold mb-2">Interactive</h4>
+                <p className="text-gray-400">Zoom, rotate, and explore the model in 3D</p>
+              </div>
+              <div className="text-center">
+                <h4 className="text-xl font-bold mb-2">Educational</h4>
+                <p className="text-gray-400">Learn about each muscle and bone in detail</p>
+              </div>
+              <div className="text-center">
+                <h4 className="text-xl font-bold mb-2">Comprehensive</h4>
+                <p className="text-gray-400">Complete musculoskeletal system coverage</p>
+              </div>
+            </div>
+          </motion.div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </div>
+    );
+  }
+
+  return (
+    <div className="w-screen h-screen overflow-hidden bg-black">
+      <HumanViewer 
+        gender={gender}
+        onPartSelect={handlePartSelect}
+      />
+      {selectedPart && (
+        <Popup
+          isOpen={true}
+          onClose={handleClosePopup}
+          selectedPart={selectedPart}
+          position={popupPosition}
+        />
+      )}
     </div>
   );
 }
