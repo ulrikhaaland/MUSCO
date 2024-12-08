@@ -45,7 +45,11 @@ export async function createThread(): Promise<AssistantResponse> {
 export async function sendMessage(
   threadId: string,
   payload: ChatPayload,
-  onStream?: (content: string, payload?: ChatPayload) => void
+  onStream?: (
+    content: string,
+    isCollectingJson: boolean,
+    payload?: ChatPayload
+  ) => void
 ): Promise<MessagesResponse> {
   const transformedPayload = {
     ...payload,
@@ -94,8 +98,12 @@ export async function sendMessage(
             if (data === '[DONE]') break;
             try {
               const parsed = JSON.parse(data);
-              if (parsed.content || parsed.payload) {
-                onStream(parsed.content || '', parsed.payload);
+              if (parsed.content || parsed.payload || parsed.isCollectingJson) {
+                onStream(
+                  parsed.content || '',
+                  parsed.isCollectingJson,
+                  parsed.payload
+                );
               }
             } catch (e) {
               console.error('Error parsing stream data:', e);

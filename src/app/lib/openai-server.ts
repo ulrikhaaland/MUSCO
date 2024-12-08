@@ -95,7 +95,7 @@ export async function addMessage(threadId: string, payload: ChatPayload) {
 export async function streamRunResponse(
   threadId: string,
   assistantId: string,
-  onMessage: (content: string, payload?: ChatPayload) => void
+  onMessage: (content: string, isCollectingJson: boolean, payload?: ChatPayload) => void
 ) {
   try {
     let accumulatedText = '';
@@ -121,25 +121,25 @@ export async function streamRunResponse(
               // Send only the text before the JSON
               const textContent = delta.value.slice(0, jsonStartIndex);
               if (textContent) {
-                onMessage(textContent);
+                onMessage(textContent, false);
               }
 
               // Start collecting JSON
               isCollectingJson = true;
+              onMessage('', true);
               accumulatedText = delta.value.slice(jsonStartIndex);
             } else {
               // No JSON found, send the content normally
-              onMessage(delta.value);
+              onMessage(delta.value, false);
             }
           }
 
           // Try to extract JSON if we're collecting it
           if (isCollectingJson) {
-            console.log('isCollectingJson', accumulatedText);
+            onMessage('', true);
             const { payload } = extractJsonFromText(accumulatedText);
             if (payload) {
-              console.log('Extracted payload:', payload);
-              onMessage('', payload);
+              onMessage('', true, payload);
               // Reset for next message
               accumulatedText = '';
               isCollectingJson = false;

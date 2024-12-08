@@ -7,48 +7,110 @@ interface ChatMessagesProps {
   messages: ChatMessage[];
   messagesRef: RefObject<HTMLDivElement | null>;
   isLoading?: boolean;
+  isCollectingJson?: boolean;
   followUpQuestions?: Question[];
   onQuestionClick?: (question: Question) => void;
   onScroll?: (event: React.UIEvent<HTMLDivElement>) => void;
+  onUserScroll?: (hasScrolled: boolean) => void;
+  part?: { name: string } | null;
 }
 
-export function ChatMessages({ 
-  messages, 
-  messagesRef, 
+export function ChatMessages({
+  messages,
+  messagesRef,
   isLoading,
+  isCollectingJson = false,
   followUpQuestions = [],
   onQuestionClick,
-  onScroll
+  onScroll,
+  onUserScroll,
+  part,
 }: ChatMessagesProps) {
+  const [userHasScrolled, setUserHasScrolled] = useState(false);
   const [showScrollButton, setShowScrollButton] = useState(false);
+  const [hasStartedCollecting, setHasStartedCollecting] = useState(false);
+  const lastScrollTop = useRef(0);
   const lastMessage = messages[messages.length - 1];
-  const showLoading = isLoading && (!lastMessage || lastMessage.role === 'user');
+  const showLoading =
+    isLoading && (!lastMessage || lastMessage.role === 'user');
   const showFollowUps = !isLoading && followUpQuestions.length > 0;
+
+  // Track when collection starts
+  useEffect(() => {
+    if (isCollectingJson) {
+      setHasStartedCollecting(true);
+    }
+  }, [isCollectingJson]);
 
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const container = e.currentTarget;
     const { scrollTop, scrollHeight, clientHeight } = container;
     const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
-    setShowScrollButton(distanceFromBottom > 20);
+
+    // Only consider it a user scroll if they're moving up AND not at the bottom
+    if (scrollTop < lastScrollTop.current && distanceFromBottom > 20) {
+      setUserHasScrolled(true);
+      onUserScroll?.(true);
+    }
+
+    // If user has scrolled to bottom, reset scroll state
+    if (distanceFromBottom < 20) {
+      setUserHasScrolled(false);
+      onUserScroll?.(false);
+    }
+
+    setShowScrollButton(userHasScrolled && distanceFromBottom > 20);
+    lastScrollTop.current = scrollTop;
     onScroll?.(e);
   };
+
+  // Auto-scroll effect
+  useEffect(() => {
+    const container = messagesRef.current;
+    if (!container || userHasScrolled) return;
+
+    // Use requestAnimationFrame for smooth scrolling during streaming
+    requestAnimationFrame(() => {
+      container.scrollTop = container.scrollHeight;
+    });
+  }, [messages, isLoading, followUpQuestions, userHasScrolled]);
 
   const scrollToBottom = () => {
     if (messagesRef.current) {
       messagesRef.current.scrollTo({
         top: messagesRef.current.scrollHeight,
-        behavior: 'smooth'
+        behavior: 'smooth',
       });
     }
   };
 
+  const QuestionShimmerItem = () => (
+    <button className="w-full text-left p-3 rounded-lg bg-gray-800 cursor-default">
+      <div className="animate-pulse space-y-2">
+        <div className="h-4 bg-gray-700 rounded w-3/4"></div>
+        <div className="h-3 bg-gray-700/50 rounded w-1/2"></div>
+      </div>
+    </button>
+  );
+
   return (
     <div className="flex-1 flex flex-col overflow-hidden relative">
-      <div 
-        ref={messagesRef} 
+      <div
+        ref={messagesRef}
         onScroll={handleScroll}
         className="flex-1 overflow-y-auto scroll-smooth"
       >
+        {messages.length === 0 && !part && (
+          <div className="h-full flex items-center justify-center text-gray-400">
+            <div className="text-center">
+              <p className="text-lg mb-2">
+                Welcome to the Musculoskeletal Assistant
+              </p>
+              <p className="text-sm">Select a body part to start exploring</p>
+            </div>
+          </div>
+        )}
+
         <div className="space-y-4">
           {messages.map((msg) => (
             <div
@@ -59,7 +121,14 @@ export function ChatMessages({
             >
               {msg.role === 'assistant' ? (
                 <div className="prose prose-invert max-w-none prose-p:my-2 prose-pre:my-0 prose-pre:p-0 prose-pre:leading-none prose-strong:text-white prose-strong:font-semibold">
-                  <ReactMarkdown className="text-base leading-relaxed">
+                  <ReactMarkdown
+                    className="text-base leading-relaxed"
+                    components={{
+                      ul: ({ ...props }) => (
+                        <ul className=" list-none" {...props} />
+                      ),
+                    }}
+                  >
                     {msg.content}
                   </ReactMarkdown>
                 </div>
@@ -69,21 +138,31 @@ export function ChatMessages({
             </div>
           ))}
           {showLoading && <LoadingMessage />}
-          
-          {showFollowUps && (
+
+          {(showFollowUps || isCollectingJson) && (
             <div className="space-y-2 mt-4">
-              <h4 className="text-sm font-medium text-gray-400 ml-2">Suggested questions:</h4>
+              <h4 className="text-sm font-medium text-gray-400 ml-2">
+                Suggested questions:
+              </h4>
               <div className="space-y-2">
-                {followUpQuestions.map((question) => (
-                  <button
-                    key={question.title}
-                    onClick={() => onQuestionClick?.(question)}
-                    className="w-full text-left p-3 rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors"
-                  >
-                    <div className="font-medium">{question.title}</div>
-                    <div className="text-sm text-gray-400">{question.description}</div>
-                  </button>
-                ))}
+                {!showFollowUps
+                  ? Array(3)
+                      .fill(null)
+                      .map((_, index) => (
+                        <QuestionShimmerItem key={`shimmer-${index}`} />
+                      ))
+                  : followUpQuestions.map((question) => (
+                      <button
+                        key={question.title}
+                        onClick={() => onQuestionClick?.(question)}
+                        className="w-full text-left p-3 rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors"
+                      >
+                        <div className="font-medium">{question.title}</div>
+                        <div className="text-sm text-gray-400">
+                          {question.description}
+                        </div>
+                      </button>
+                    ))}
               </div>
             </div>
           )}
@@ -115,4 +194,4 @@ export function ChatMessages({
       )}
     </div>
   );
-} 
+}

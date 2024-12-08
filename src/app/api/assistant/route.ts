@@ -42,12 +42,20 @@ export async function POST(request: Request) {
           const customReadable = new ReadableStream({
             async start(controller) {
               try {
-                await streamRunResponse(threadId, assistant.id, (content, streamPayload) => {
-                  const chunk = encoder.encode(
-                    `data: ${JSON.stringify({ content, payload: streamPayload })}\n\n`
-                  );
-                  controller.enqueue(chunk);
-                });
+                await streamRunResponse(
+                  threadId,
+                  assistant.id,
+                  (content, isCollectingJson, streamPayload) => {
+                    const chunk = encoder.encode(
+                      `data: ${JSON.stringify({
+                        content,
+                        isCollectingJson,
+                        payload: streamPayload,
+                      })}\n\n`
+                    );
+                    controller.enqueue(chunk);
+                  }
+                );
                 controller.enqueue(encoder.encode('data: [DONE]\n\n'));
                 controller.close();
               } catch (error) {

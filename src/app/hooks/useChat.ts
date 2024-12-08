@@ -13,7 +13,7 @@ export function useChat() {
     UserPreferences | undefined
   >();
   const [followUpQuestions, setFollowUpQuestions] = useState<Question[]>([]);
-
+  const [isCollectingJson, setIsCollectingJson] = useState(false);
   const threadIdRef = useRef<string | null>(null);
   const assistantIdRef = useRef<string | null>(null);
 
@@ -42,6 +42,7 @@ export function useChat() {
     messageContent: string,
     chatPayload: Omit<ChatPayload, 'message'>
   ) => {
+    setIsCollectingJson(false);
     if (isLoading) return;
 
     setIsLoading(true);
@@ -65,9 +66,10 @@ export function useChat() {
       await sendMessage(
         threadIdRef.current ?? '',
         payload,
-        (content, payload) => {
+        (content, isCollectingJson, payload) => {
           if (content) {
             setMessages((prev) => {
+              console.log('isCollectingJson', isCollectingJson);
               const lastMessage = prev[prev.length - 1];
               if (lastMessage?.role === 'assistant') {
                 return [
@@ -90,9 +92,12 @@ export function useChat() {
               ];
             });
           }
+          if (isCollectingJson) setIsCollectingJson(isCollectingJson);
+
           if (payload) {
             setUserPreferences(payload.userPreferences);
             setFollowUpQuestions(payload.followUpQuestions ?? []);
+            console.log('payload.followUpQuestions', isCollectingJson);
           }
         }
       );
@@ -110,6 +115,7 @@ export function useChat() {
     followUpQuestions,
     resetChat,
     sendChatMessage,
+    isCollectingJson,
     setFollowUpQuestions,
   };
 }

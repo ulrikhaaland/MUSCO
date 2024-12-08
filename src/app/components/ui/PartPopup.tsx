@@ -64,8 +64,11 @@ export default function PartPopup({ part, onClose }: PartPopupProps) {
     followUpQuestions: chatFollowUpQuestions,
     resetChat, 
     sendChatMessage,
+    isCollectingJson,
     setFollowUpQuestions: setChatFollowUpQuestions 
   } = useChat();
+
+  const [userHasScrolled, setUserHasScrolled] = useState(false);
 
   // Update the questions when part changes
   useEffect(() => {
@@ -130,6 +133,10 @@ export default function PartPopup({ part, onClose }: PartPopupProps) {
     console.log('Scroll event in PartPopup');
   };
 
+  const handleUserScroll = (hasScrolled: boolean) => {
+    setUserHasScrolled(hasScrolled);
+  };
+
   return (
     <div className="h-full bg-gray-900 text-white p-6 flex flex-col">
       <div className="flex justify-between items-start mb-6 flex-shrink-0">
@@ -158,7 +165,7 @@ export default function PartPopup({ part, onClose }: PartPopupProps) {
       </div>
 
       <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
-        {messages.length === 0 ? (
+        {messages.length === 0 && part ? (
           <div className="space-y-3">
             {followUpQuestions.map((question) => (
               <button
@@ -176,9 +183,12 @@ export default function PartPopup({ part, onClose }: PartPopupProps) {
             messages={messages} 
             messagesRef={messagesContainerRef}
             isLoading={isLoading}
+            isCollectingJson={isCollectingJson}
             followUpQuestions={followUpQuestions}
             onQuestionClick={handleOptionClick}
             onScroll={handleScroll}
+            onUserScroll={handleUserScroll}
+            part={part}
           />
         )}
       </div>
