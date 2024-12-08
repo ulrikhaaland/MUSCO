@@ -1,9 +1,8 @@
 import { NextResponse } from 'next/server';
-import { 
-  getOrCreateAssistant, 
-  createThread, 
-  addMessage, 
-  runAssistant,
+import {
+  getOrCreateAssistant,
+  createThread,
+  addMessage,
   streamRunResponse,
   getMessages,
 } from '@/app/lib/openai-server';
@@ -11,25 +10,31 @@ import { OpenAIMessage } from '@/app/types';
 
 export async function POST(request: Request) {
   try {
-    const { action, threadId, message, bodyPart, stream } = await request.json();
+    const { action, threadId, payload, stream } = await request.json();
 
     switch (action) {
       case 'initialize': {
         const assistant = await getOrCreateAssistant();
         const thread = await createThread();
-        return NextResponse.json({ assistantId: assistant.id, threadId: thread.id });
+        return NextResponse.json({
+          assistantId: assistant.id,
+          threadId: thread.id,
+        });
       }
 
       case 'send_message': {
         if (!threadId) {
-          return NextResponse.json({ error: 'Thread ID is required' }, { status: 400 });
+          return NextResponse.json(
+            { error: 'Thread ID is required' },
+            { status: 400 }
+          );
         }
 
         // Get the assistant ID
         const assistant = await getOrCreateAssistant();
-        
+
         // Add the message to the thread
-        await addMessage(threadId, message, bodyPart);
+        await addMessage(threadId, payload);
 
         if (stream) {
           // Set up streaming response
@@ -38,7 +43,9 @@ export async function POST(request: Request) {
             async start(controller) {
               try {
                 await streamRunResponse(threadId, assistant.id, (content) => {
-                  const chunk = encoder.encode(`data: ${JSON.stringify({ content })}\n\n`);
+                  const chunk = encoder.encode(
+                    `data: ${JSON.stringify({ content })}\n\n`
+                  );
                   controller.enqueue(chunk);
                 });
                 controller.enqueue(encoder.encode('data: [DONE]\n\n'));
@@ -53,20 +60,21 @@ export async function POST(request: Request) {
             headers: {
               'Content-Type': 'text/event-stream',
               'Cache-Control': 'no-cache',
-              'Connection': 'keep-alive',
+              Connection: 'keep-alive',
             },
           });
         }
-        
-        // Non-streaming response
-        const run = await runAssistant(threadId, assistant.id);
+
         const messages = await getMessages(threadId);
         return NextResponse.json({ messages: messages as OpenAIMessage[] });
       }
 
       case 'get_messages': {
         if (!threadId) {
-          return NextResponse.json({ error: 'Thread ID is required' }, { status: 400 });
+          return NextResponse.json(
+            { error: 'Thread ID is required' },
+            { status: 400 }
+          );
         }
 
         const messages = await getMessages(threadId);
@@ -78,6 +86,9 @@ export async function POST(request: Request) {
     }
   } catch (error) {
     console.error('Error in assistant API:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
   }
-} 
+}

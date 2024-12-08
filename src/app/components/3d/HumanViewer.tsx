@@ -20,18 +20,24 @@ export default function HumanViewer({ gender }: HumanViewerProps) {
   const humanRef = useRef<any>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const controls = useRef<any>(null);
-  const selectedPartsRef = useRef<SelectedPartInfo[]>([]);
-  const [selectedParts, setSelectedParts] = useState<SelectedPartInfo[]>([]);
-  const [selectedPart, setSelectedPart] = useState<SelectedPartInfo | null>(
-    null
-  );
+  const selectedPartsRef = useRef<AnatomyPart[]>([]);
+  const [selectedParts, setSelectedParts] = useState<AnatomyPart[]>([]);
+  const [selectedPart, setSelectedPart] = useState<AnatomyPart | null>(null);
   const [popupPosition, setPopupPosition] = useState({ x: 0, y: 0 });
   const lastSelectedIdRef = useRef<string | null>(null);
   const deselectionTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const [chatWidth, setChatWidth] = useState(384); // 384px = w-96 default
+  const minChatWidth = 300;
+  const maxChatWidth = 800;
+  const [chatWidth, setChatWidth] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return Math.min(
+        Math.max(minChatWidth, window.innerWidth / 2),
+        maxChatWidth
+      );
+    }
+    return 384;
+  });
   const [isDragging, setIsDragging] = useState(false);
-  const minChatWidth = 300; // Minimum width for chat
-  const maxChatWidth = 800; // Maximum width for chat
   const lastWidthRef = useRef(chatWidth);
   const rafRef = useRef<number | null>(null);
 
@@ -52,10 +58,7 @@ export default function HumanViewer({ gender }: HumanViewerProps) {
   };
 
   const handlePartSelect = useCallback(
-    (
-      part: SelectedPartInfo,
-      position: { clientX: number; clientY: number }
-    ) => {
+    (part: AnatomyPart, position: { clientX: number; clientY: number }) => {
       console.log('handlePartSelect called with:', { part, position });
       setSelectedPart(part);
       setPopupPosition({
@@ -172,19 +175,13 @@ export default function HumanViewer({ gender }: HumanViewerProps) {
                   );
 
                   if (selectedPart) {
-                    const partInfo = {
-                      id: selectedPart.objectId,
-                      name: selectedPart.name,
-                      description: selectedPart.description,
-                    };
-
                     // Update state with only the new selected part
-                    setSelectedParts([partInfo]);
+                    setSelectedParts([selectedPart]);
 
                     const mouseEvent = window.event as MouseEvent;
                     console.log(
                       'Showing popup for part:',
-                      partInfo,
+                      selectedPart,
                       'at position:',
                       {
                         x: mouseEvent.clientX,
@@ -192,7 +189,7 @@ export default function HumanViewer({ gender }: HumanViewerProps) {
                       }
                     );
 
-                    handlePartSelect(partInfo, {
+                    handlePartSelect(selectedPart, {
                       clientX: mouseEvent.clientX,
                       clientY: mouseEvent.clientY,
                     });
@@ -303,6 +300,17 @@ export default function HumanViewer({ gender }: HumanViewerProps) {
     document.addEventListener('mouseup', stopDragging);
   }, []);
 
+  useEffect(() => {
+    const handleResize = () => {
+      setChatWidth(
+        Math.min(Math.max(minChatWidth, window.innerWidth / 2), maxChatWidth)
+      );
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   return (
     <div
       className="relative flex"
@@ -314,7 +322,10 @@ export default function HumanViewer({ gender }: HumanViewerProps) {
       )}
 
       {/* Left side - Human Model */}
-      <div className="flex-1 relative">
+      <div
+        className="flex-1 relative"
+        style={{ minWidth: `${minChatWidth}px` }}
+      >
         <iframe
           id="myViewer"
           ref={iframeRef}

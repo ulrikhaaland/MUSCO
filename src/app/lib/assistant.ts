@@ -1,4 +1,4 @@
-import { ChatMessage, OpenAIMessage } from '../types';
+import { OpenAIMessage, ChatPayload } from '../types';
 
 interface AssistantResponse {
   assistantId: string;
@@ -7,6 +7,7 @@ interface AssistantResponse {
 
 interface MessagesResponse {
   messages: OpenAIMessage[];
+  payload?: ChatPayload;
 }
 
 export async function getOrCreateAssistant(): Promise<AssistantResponse> {
@@ -42,23 +43,24 @@ export async function createThread(): Promise<AssistantResponse> {
 }
 
 export async function sendMessage(
-  threadId: string, 
-  message: string, 
-  bodyPart?: string,
-  onStream?: (chunk: string) => void
+  threadId: string,
+  payload: ChatPayload,
+  onStream?: (content: string, payload?: ChatPayload) => void
 ): Promise<MessagesResponse> {
+  const body = JSON.stringify({
+    action: 'send_message',
+    threadId,
+    payload,
+    stream: !!onStream,
+  });
+
+  console.log('Sending message:', body);
   const response = await fetch('/api/assistant', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({
-      action: 'send_message',
-      threadId,
-      message,
-      bodyPart,
-      stream: !!onStream,
-    }),
+    body: body,
   });
 
   if (!response.ok) {
@@ -79,8 +81,8 @@ export async function sendMessage(
         if (done) break;
 
         const chunk = decoder.decode(value);
-        const lines = chunk.split('\n').filter(line => line.trim() !== '');
-        
+        const lines = chunk.split('\n').filter((line) => line.trim() !== '');
+
         for (const line of lines) {
           if (line.startsWith('data: ')) {
             const data = line.slice(6);
@@ -89,6 +91,9 @@ export async function sendMessage(
               const parsed = JSON.parse(data);
               if (parsed.content) {
                 onStream(parsed.content);
+              }
+              if (parsed.payload) {
+                onStream('', parsed.payload);
               }
             } catch (e) {
               console.error('Error parsing stream data:', e);
@@ -139,4 +144,4 @@ export async function getMessages(threadId: string): Promise<MessagesResponse> {
   }
 
   return response.json();
-} 
+}

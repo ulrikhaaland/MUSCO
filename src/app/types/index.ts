@@ -62,7 +62,6 @@ export interface UserPreferences {
   fitnessLevel?: 'beginner' | 'intermediate' | 'advanced';
   exerciseFrequency?: number;
   bodyParts?: AnatomyPart[];
-
 }
 
 export interface AssistantThread {
@@ -74,7 +73,6 @@ export interface AssistantThread {
 }
 
 export interface ChatPayload {
-  threadId: string;
   message: string;
   userPreferences?: UserPreferences;
   part?: AnatomyPart;

@@ -4,35 +4,13 @@ import {
   createThread,
   sendMessage,
 } from '../../lib/assistant';
-import { ChatMessage, OpenAIMessage } from '../../types';
+import { ChatMessage, ChatPayload, UserPreferences } from '../../types';
 import ReactMarkdown from 'react-markdown';
+import { AnatomyPart } from '@/app/types/anatomy';
 
 interface PartPopupProps {
-  part: {
-    id: string;
-    name: string;
-    description: string;
-  } | null;
+  part: AnatomyPart | null;
   onClose: () => void;
-}
-
-function extractMessageContent(content: OpenAIMessage['content']): string {
-  if (typeof content === 'string') {
-    return content;
-  }
-  if (Array.isArray(content) && content.length > 0 && content[0].text) {
-    return content[0].text.value;
-  }
-  return 'Unable to display message content';
-}
-
-function convertOpenAIMessageToChatMessage(msg: OpenAIMessage): ChatMessage {
-  return {
-    id: msg.id,
-    content: extractMessageContent(msg.content),
-    role: msg.role,
-    timestamp: new Date(msg.created_at * 1000),
-  };
 }
 
 export default function PartPopup({ part, onClose }: PartPopupProps) {
@@ -40,11 +18,15 @@ export default function PartPopup({ part, onClose }: PartPopupProps) {
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [followUpQuestions, setFollowUpQuestions] = useState<string[]>([]);
+  const [userPreferences, setUserPreferences] = useState<
+    UserPreferences | undefined
+  >();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const threadIdRef = useRef<string | null>(null);
   const assistantIdRef = useRef<string | null>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
-  const [streamingContent, setStreamingContent] = useState<string>('');
+
 
   // Initialize assistant and thread
   useEffect(() => {
@@ -65,7 +47,6 @@ export default function PartPopup({ part, onClose }: PartPopupProps) {
   useEffect(() => {
     if (messagesContainerRef.current) {
       const scrollContainer = messagesContainerRef.current;
-      // Use requestAnimationFrame to ensure DOM has updated
       requestAnimationFrame(() => {
         scrollContainer.scrollTo({
           top: scrollContainer.scrollHeight,
@@ -79,6 +60,7 @@ export default function PartPopup({ part, onClose }: PartPopupProps) {
     setSelectedOption(null);
     setMessage('');
     setMessages([]);
+    setFollowUpQuestions([]);
     // Create a new thread
     createThread().then(({ threadId }) => {
       threadIdRef.current = threadId;
@@ -88,11 +70,10 @@ export default function PartPopup({ part, onClose }: PartPopupProps) {
   const handleTextareaChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setMessage(e.target.value);
 
-    // Auto-grow logic
     const textarea = textareaRef.current;
     if (textarea) {
       textarea.style.height = 'auto';
-      const newHeight = Math.min(textarea.scrollHeight, 480); // 480px = 20 lines * 24px per line
+      const newHeight = Math.min(textarea.scrollHeight, 480);
       textarea.style.height = `${newHeight}px`;
     }
   };
@@ -115,115 +96,122 @@ export default function PartPopup({ part, onClose }: PartPopupProps) {
 
     setSelectedOption(option.id);
     setIsLoading(true);
-    setStreamingContent('');
+    setFollowUpQuestions([]);
 
-    try {
-      // Add system message about the selected option
-      const optionMessage = `User selected "${option.label}" for ${part.name}. ${option.description}`;
+    const optionMessage = `User selected "${option.label}" for ${part.name}. ${option.description}`;
 
-      // Create a temporary message for the user's selection
-      const tempUserMessage: ChatMessage = {
-        id: `temp-${Date.now()}`,
-        content: optionMessage,
-        role: 'user',
-        timestamp: new Date(),
-      };
-
-      // Create a temporary message for the assistant's response
-      const tempAssistantMessage: ChatMessage = {
-        id: `temp-assistant-${Date.now()}`,
-        content: '',
-        role: 'assistant',
-        timestamp: new Date(),
-      };
-
-      // Add both messages to the chat
-      setMessages(prev => [tempAssistantMessage, tempUserMessage, ...prev]);
-
-      // Send the message and handle streaming
-      await sendMessage(
-        threadIdRef.current,
-        optionMessage,
-        part.name,
-        (content) => {
-          setStreamingContent(prev => prev + content);
-          // Update the temporary assistant message with the streamed content
-          setMessages(prev => {
-            const updated = [...prev];
-            const assistantMessageIndex = updated.findIndex(msg => msg.id === tempAssistantMessage.id);
-            if (assistantMessageIndex !== -1) {
-              updated[assistantMessageIndex] = {
-                ...updated[assistantMessageIndex],
-                content: prev[assistantMessageIndex].content + content,
-              };
-            }
-            return updated;
-          });
-        }
-      );
-    } catch (error) {
-      console.error('Error handling option click:', error);
-    } finally {
-      setIsLoading(false);
-      setStreamingContent('');
-    }
+    handleSendMessage(optionMessage);
   };
 
-  const handleSendMessage = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!message.trim() || !threadIdRef.current) return;
+  const handleSendMessage = async (content: string) => {
+    if (!content.trim()) return;
 
-    const userMessage = message;
-    setMessage('');
     setIsLoading(true);
-    setStreamingContent('');
+    setMessage('');
 
-    // Create temporary messages
-    const tempUserMessage: ChatMessage = {
-      id: `temp-${Date.now()}`,
-      content: userMessage,
+    const newMessage: ChatMessage = {
+      id: `msg-${Date.now()}`,
+      content,
       role: 'user',
       timestamp: new Date(),
     };
 
-    const tempAssistantMessage: ChatMessage = {
-      id: `temp-assistant-${Date.now()}`,
-      content: '',
-      role: 'assistant',
-      timestamp: new Date(),
-    };
-
-    // Add both messages to the chat
-    setMessages(prev => [tempAssistantMessage, tempUserMessage, ...prev]);
-
     try {
-      // Send the message and handle streaming
-      await sendMessage(
-        threadIdRef.current,
-        userMessage,
-        part?.name,
-        (content) => {
-          setStreamingContent(prev => prev + content);
-          // Update the temporary assistant message with the streamed content
-          setMessages(prev => {
-            const updated = [...prev];
-            const assistantMessageIndex = updated.findIndex(msg => msg.id === tempAssistantMessage.id);
-            if (assistantMessageIndex !== -1) {
-              updated[assistantMessageIndex] = {
-                ...updated[assistantMessageIndex],
-                content: prev[assistantMessageIndex].content + content,
-              };
+      let response;
+      const chatPayload: ChatPayload = {
+        message: content,
+        userPreferences,
+        part: part || undefined,
+        followUpQuestions: [],
+      };
+
+      if (!threadIdRef.current) {
+        response = await sendMessage(
+          '',
+          chatPayload,
+          (content: string, payload?: ChatPayload) => {
+            if (content) {
+              setMessages((prev) => {
+                const lastMessage = prev[prev.length - 1];
+                if (lastMessage?.role === 'assistant') {
+                  return [
+                    ...prev.slice(0, -1),
+                    {
+                      ...lastMessage,
+                      content: lastMessage.content + content,
+                      timestamp: new Date(),
+                    },
+                  ];
+                }
+                return [
+                  ...prev,
+                  {
+                    id: `assistant-${Date.now()}`,
+                    role: 'assistant',
+                    content,
+                    timestamp: new Date(),
+                  },
+                ];
+              });
             }
-            return updated;
-          });
+            if (payload) {
+              setFollowUpQuestions(payload.followUpQuestions || []);
+              setUserPreferences(payload.userPreferences);
+            }
+          }
+        );
+        if (response && typeof response === 'object' && 'assistantId' in response && 'threadId' in response) {
+          threadIdRef.current = String(response.threadId);
+          assistantIdRef.current = String(response.assistantId);
         }
-      );
+      } else {
+        response = await sendMessage(
+          threadIdRef.current,
+          chatPayload,
+          (content: string, payload?: ChatPayload) => {
+            if (content) {
+              setMessages((prev) => {
+                const lastMessage = prev[prev.length - 1];
+                if (lastMessage?.role === 'assistant') {
+                  return [
+                    ...prev.slice(0, -1),
+                    {
+                      ...lastMessage,
+                      content: lastMessage.content + content,
+                      timestamp: new Date(),
+                    },
+                  ];
+                }
+                return [
+                  ...prev,
+                  {
+                    id: `assistant-${Date.now()}`,
+                    role: 'assistant',
+                    content,
+                    timestamp: new Date(),
+                  },
+                ];
+              });
+            }
+            if (payload) {
+              setFollowUpQuestions(payload.followUpQuestions || []);
+              setUserPreferences(payload.userPreferences);
+            }
+          }
+        );
+      }
+
+      setMessages((prev) => [...prev, newMessage]);
     } catch (error) {
       console.error('Error sending message:', error);
     } finally {
       setIsLoading(false);
-      setStreamingContent('');
     }
+  };
+
+  const handleFollowUpClick = (question: string) => {
+    setMessage(question);
+    textareaRef.current?.focus();
   };
 
   const options = part
@@ -253,41 +241,43 @@ export default function PartPopup({ part, onClose }: PartPopupProps) {
 
   return (
     <div className="h-full bg-gray-900 text-white p-6 flex flex-col">
-      {part ? (
-        <>
-          <div className="flex justify-between items-start mb-6">
-            <div>
-              <h2 className="text-sm text-gray-400 mb-1">
-                Musculoskeletal Assistant
-              </h2>
-              <h3 className="text-xl font-bold">{part.name}</h3>
-            </div>
-            <div className="group relative">
-              <button
-                onClick={handleResetChat}
-                className="text-gray-400 hover:text-white p-1 rounded-full hover:bg-gray-800 transition-colors"
-                aria-label="Reset Chat"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </button>
-              <div className="absolute right-0 top-full mt-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 whitespace-nowrap">
-                Reset Chat
-              </div>
-            </div>
+      <div className="flex justify-between items-start mb-6">
+        <div>
+          <h2 className="text-sm text-gray-400 mb-1">
+            Musculoskeletal Assistant
+          </h2>
+          <h3 className="text-xl font-bold">
+            {part ? part.name : 'Select a body part to get started'}
+          </h3>
+        </div>
+        <div className="group relative">
+          <button
+            onClick={handleResetChat}
+            className="text-gray-400 hover:text-white p-1 rounded-full hover:bg-gray-800 transition-colors"
+            aria-label="Reset Chat"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fillRule="evenodd"
+                d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
+                clipRule="evenodd"
+              />
+            </svg>
+          </button>
+          <div className="absolute right-0 top-full mt-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 whitespace-nowrap">
+            Reset Chat
           </div>
+        </div>
+      </div>
 
-          <div className="flex-grow overflow-y-auto space-y-4">
+      <div className="flex-grow overflow-y-auto space-y-4">
+        {part ? (
+          <>
             <div className="space-y-3">
               {options.map((option) => (
                 <button
@@ -316,7 +306,7 @@ export default function PartPopup({ part, onClose }: PartPopupProps) {
                   {[...messages].reverse().map((msg) => (
                     <div
                       key={msg.id}
-                      className={`p-3 rounded-lg ${
+                      className={`p-4 rounded-lg ${
                         msg.role === 'user'
                           ? 'bg-indigo-600 ml-8'
                           : 'bg-gray-800 mr-8'
@@ -328,11 +318,17 @@ export default function PartPopup({ part, onClose }: PartPopupProps) {
                             className="text-base leading-relaxed"
                             components={{
                               ul: ({ ...props }) => (
-                                <ul className=" list-none" {...props} />
+                                <ul
+                                  className="my-2 space-y-2 list-none"
+                                  {...props}
+                                />
                               ),
-                              //   li: ({...props}) => (
-                              //     <li className="relative pl-6 before:absolute before:left-2 before:content-['•'] before:text-gray-400" {...props} />
-                              //   ),
+                              li: ({ ...props }) => (
+                                <li
+                                  className="relative pl-6 before:absolute before:left-2 before:content-['•'] before:text-gray-400"
+                                  {...props}
+                                />
+                              ),
                             }}
                           >
                             {msg.content}
@@ -346,73 +342,38 @@ export default function PartPopup({ part, onClose }: PartPopupProps) {
                 </div>
               </div>
             )}
-          </div>
-        </>
-      ) : (
-        <div className="flex-grow flex flex-col">
-          <div className="flex-grow flex flex-col items-center justify-center">
-            <h2 className="text-sm text-gray-400 mb-1">
-              Musculoskeletal Assistant
-            </h2>
-            <h3 className="text-xl font-bold mb-6">
-              Select a body part to get started
-            </h3>
-            <div className="text-gray-400 text-center">
-              Click on any part of the body or start a chat to learn more about
-              it or get help with specific issues.
-            </div>
-          </div>
 
-          {messages.length > 0 && (
-            <div
-              ref={messagesContainerRef}
-              className="space-y-4 mt-6 overflow-y-auto flex flex-col"
-            >
-              <div className="space-y-4">
-                {[...messages].reverse().map((msg) => (
-                  <div
-                    key={msg.id}
-                    className={`p-3 rounded-lg ${
-                      msg.role === 'user'
-                        ? 'bg-indigo-600 ml-8'
-                        : 'bg-gray-800 mr-8'
-                    }`}
-                  >
-                    {msg.role === 'assistant' ? (
-                      <div className="prose prose-invert max-w-none prose-p:my-2 prose-strong:text-white prose-strong:font-semibold">
-                        <ReactMarkdown
-                          className="text-base leading-relaxed"
-                          components={{
-                            ul: ({ ...props }) => (
-                              <ul
-                                className="my-2 space-y-2 list-none"
-                                {...props}
-                              />
-                            ),
-                            li: ({ ...props }) => (
-                              <li
-                                className="relative pl-6 before:absolute before:left-2 before:content-['•'] before:text-gray-400"
-                                {...props}
-                              />
-                            ),
-                          }}
-                        >
-                          {msg.content}
-                        </ReactMarkdown>
-                      </div>
-                    ) : (
-                      <div className="text-base">{msg.content}</div>
-                    )}
-                  </div>
-                ))}
+            {followUpQuestions.length > 0 && (
+              <div className="mt-4 space-y-2">
+                <h4 className="text-sm text-gray-400">
+                  You might want to ask:
+                </h4>
+                <div className="flex flex-wrap gap-2">
+                  {followUpQuestions.map((question, index) => (
+                    <button
+                      key={index}
+                      onClick={() => handleFollowUpClick(question)}
+                      className="px-3 py-1.5 bg-gray-800 hover:bg-gray-700 rounded-full text-sm text-gray-300 hover:text-white transition-colors"
+                    >
+                      {question}
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
-          )}
-        </div>
-      )}
-
+            )}
+          </>
+        ) : (
+          <div className="text-gray-400 text-center py-8">
+            Click on any part of the body or start a chat to learn more about it
+            or get help with specific issues.
+          </div>
+        )}
+      </div>
       <div className="mt-4 border-t border-gray-700 pt-4">
-        <form onSubmit={handleSendMessage} className="relative">
+        <form onSubmit={(e) => {
+          e.preventDefault();
+          handleSendMessage(message);
+        }} className="relative">
           <textarea
             ref={textareaRef}
             value={message}
