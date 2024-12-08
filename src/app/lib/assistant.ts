@@ -41,7 +41,12 @@ export async function createThread(): Promise<AssistantResponse> {
   return response.json();
 }
 
-export async function sendMessage(threadId: string, message: string, bodyPart?: string): Promise<MessagesResponse> {
+export async function sendMessage(
+  threadId: string, 
+  message: string, 
+  bodyPart?: string,
+  onStream?: (chunk: string) => void
+): Promise<MessagesResponse> {
   const response = await fetch('/api/assistant', {
     method: 'POST',
     headers: {
@@ -52,11 +57,66 @@ export async function sendMessage(threadId: string, message: string, bodyPart?: 
       threadId,
       message,
       bodyPart,
+      stream: !!onStream,
     }),
   });
 
   if (!response.ok) {
     throw new Error('Failed to send message');
+  }
+
+  if (onStream) {
+    const reader = response.body?.getReader();
+    const decoder = new TextDecoder();
+
+    if (!reader) {
+      throw new Error('Failed to get response reader');
+    }
+
+    try {
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const chunk = decoder.decode(value);
+        const lines = chunk.split('\n').filter(line => line.trim() !== '');
+        
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            const data = line.slice(6);
+            if (data === '[DONE]') break;
+            try {
+              const parsed = JSON.parse(data);
+              if (parsed.content) {
+                onStream(parsed.content);
+              }
+            } catch (e) {
+              console.error('Error parsing stream data:', e);
+            }
+          }
+        }
+      }
+    } finally {
+      reader.releaseLock();
+    }
+
+    // Get final messages after streaming is complete
+    const finalResponse = await fetch('/api/assistant', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        action: 'get_messages',
+        threadId,
+      }),
+    });
+
+    if (!finalResponse.ok) {
+      throw new Error('Failed to get final messages');
+    }
+
+    return finalResponse.json();
   }
 
   return response.json();

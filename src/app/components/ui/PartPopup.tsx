@@ -44,6 +44,7 @@ export default function PartPopup({ part, onClose }: PartPopupProps) {
   const threadIdRef = useRef<string | null>(null);
   const assistantIdRef = useRef<string | null>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
+  const [streamingContent, setStreamingContent] = useState<string>('');
 
   // Initialize assistant and thread
   useEffect(() => {
@@ -114,25 +115,57 @@ export default function PartPopup({ part, onClose }: PartPopupProps) {
 
     setSelectedOption(option.id);
     setIsLoading(true);
+    setStreamingContent('');
 
     try {
       // Add system message about the selected option
       const optionMessage = `User selected "${option.label}" for ${part.name}. ${option.description}`;
 
-      // Send the message and get the response
-      const { messages: newMessages } = await sendMessage(
+      // Create a temporary message for the user's selection
+      const tempUserMessage: ChatMessage = {
+        id: `temp-${Date.now()}`,
+        content: optionMessage,
+        role: 'user',
+        timestamp: new Date(),
+      };
+
+      // Create a temporary message for the assistant's response
+      const tempAssistantMessage: ChatMessage = {
+        id: `temp-assistant-${Date.now()}`,
+        content: '',
+        role: 'assistant',
+        timestamp: new Date(),
+      };
+
+      // Add both messages to the chat
+      setMessages(prev => [tempAssistantMessage, tempUserMessage, ...prev]);
+
+      // Send the message and handle streaming
+      await sendMessage(
         threadIdRef.current,
         optionMessage,
-        part.name
+        part.name,
+        (content) => {
+          setStreamingContent(prev => prev + content);
+          // Update the temporary assistant message with the streamed content
+          setMessages(prev => {
+            const updated = [...prev];
+            const assistantMessageIndex = updated.findIndex(msg => msg.id === tempAssistantMessage.id);
+            if (assistantMessageIndex !== -1) {
+              updated[assistantMessageIndex] = {
+                ...updated[assistantMessageIndex],
+                content: prev[assistantMessageIndex].content + content,
+              };
+            }
+            return updated;
+          });
+        }
       );
-
-      // Convert OpenAI messages to chat messages
-      const chatMessages = newMessages.map(convertOpenAIMessageToChatMessage);
-      setMessages(chatMessages);
     } catch (error) {
       console.error('Error handling option click:', error);
     } finally {
       setIsLoading(false);
+      setStreamingContent('');
     }
   };
 
@@ -143,31 +176,53 @@ export default function PartPopup({ part, onClose }: PartPopupProps) {
     const userMessage = message;
     setMessage('');
     setIsLoading(true);
+    setStreamingContent('');
 
-    // Immediately add user message to the chat at the beginning of the array
+    // Create temporary messages
     const tempUserMessage: ChatMessage = {
       id: `temp-${Date.now()}`,
       content: userMessage,
       role: 'user',
       timestamp: new Date(),
     };
-    setMessages((prev) => [tempUserMessage, ...prev]);
+
+    const tempAssistantMessage: ChatMessage = {
+      id: `temp-assistant-${Date.now()}`,
+      content: '',
+      role: 'assistant',
+      timestamp: new Date(),
+    };
+
+    // Add both messages to the chat
+    setMessages(prev => [tempAssistantMessage, tempUserMessage, ...prev]);
 
     try {
-      // Send the message and get the response
-      const { messages: newMessages } = await sendMessage(
+      // Send the message and handle streaming
+      await sendMessage(
         threadIdRef.current,
         userMessage,
-        part?.name
+        part?.name,
+        (content) => {
+          setStreamingContent(prev => prev + content);
+          // Update the temporary assistant message with the streamed content
+          setMessages(prev => {
+            const updated = [...prev];
+            const assistantMessageIndex = updated.findIndex(msg => msg.id === tempAssistantMessage.id);
+            if (assistantMessageIndex !== -1) {
+              updated[assistantMessageIndex] = {
+                ...updated[assistantMessageIndex],
+                content: prev[assistantMessageIndex].content + content,
+              };
+            }
+            return updated;
+          });
+        }
       );
-
-      // Convert OpenAI messages to chat messages and update state
-      const chatMessages = newMessages.map(convertOpenAIMessageToChatMessage);
-      setMessages(chatMessages);
     } catch (error) {
       console.error('Error sending message:', error);
     } finally {
       setIsLoading(false);
+      setStreamingContent('');
     }
   };
 

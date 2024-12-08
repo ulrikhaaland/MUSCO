@@ -3,15 +3,15 @@ import {
   getOrCreateAssistant, 
   createThread, 
   addMessage, 
-  runAssistant, 
-  waitForRunCompletion, 
-  getMessages 
+  runAssistant,
+  streamRunResponse,
+  getMessages,
 } from '@/app/lib/openai-server';
 import { OpenAIMessage } from '@/app/types';
 
 export async function POST(request: Request) {
   try {
-    const { action, threadId, message, bodyPart } = await request.json();
+    const { action, threadId, message, bodyPart, stream } = await request.json();
 
     switch (action) {
       case 'initialize': {
@@ -25,21 +25,42 @@ export async function POST(request: Request) {
           return NextResponse.json({ error: 'Thread ID is required' }, { status: 400 });
         }
 
-        // Get the assistant ID (you might want to store this in an environment variable)
+        // Get the assistant ID
         const assistant = await getOrCreateAssistant();
         
         // Add the message to the thread
         await addMessage(threadId, message, bodyPart);
+
+        if (stream) {
+          // Set up streaming response
+          const encoder = new TextEncoder();
+          const customReadable = new ReadableStream({
+            async start(controller) {
+              try {
+                await streamRunResponse(threadId, assistant.id, (content) => {
+                  const chunk = encoder.encode(`data: ${JSON.stringify({ content })}\n\n`);
+                  controller.enqueue(chunk);
+                });
+                controller.enqueue(encoder.encode('data: [DONE]\n\n'));
+                controller.close();
+              } catch (error) {
+                controller.error(error);
+              }
+            },
+          });
+
+          return new Response(customReadable, {
+            headers: {
+              'Content-Type': 'text/event-stream',
+              'Cache-Control': 'no-cache',
+              'Connection': 'keep-alive',
+            },
+          });
+        }
         
-        // Run the assistant
+        // Non-streaming response
         const run = await runAssistant(threadId, assistant.id);
-        
-        // Wait for completion
-        await waitForRunCompletion(threadId, run.id);
-        
-        // Get the messages
         const messages = await getMessages(threadId);
-        
         return NextResponse.json({ messages: messages as OpenAIMessage[] });
       }
 
