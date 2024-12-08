@@ -50,7 +50,7 @@ export async function sendMessage(
   const transformedPayload = {
     ...payload,
     previousFollowUpQuestions: payload.followUpQuestions,
-    followUpQuestions: undefined
+    followUpQuestions: undefined,
   };
 
   const body = JSON.stringify({
@@ -60,7 +60,6 @@ export async function sendMessage(
     stream: !!onStream,
   });
 
-  console.log('Sending message:', body);
   const response = await fetch('/api/assistant', {
     method: 'POST',
     headers: {

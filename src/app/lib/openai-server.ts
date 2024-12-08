@@ -135,6 +135,7 @@ export async function streamRunResponse(
 
           // Try to extract JSON if we're collecting it
           if (isCollectingJson) {
+            console.log('isCollectingJson', accumulatedText);
             const { payload } = extractJsonFromText(accumulatedText);
             if (payload) {
               console.log('Extracted payload:', payload);
