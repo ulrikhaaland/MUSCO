@@ -76,5 +76,11 @@ export interface ChatPayload {
   message: string;
   userPreferences?: UserPreferences;
   part?: AnatomyPart;
-  followUpQuestions?: string[];
+  followUpQuestions?: Question[];
+}
+
+export interface Question {
+  title: string;
+  description: string;
+  question: string;
 }

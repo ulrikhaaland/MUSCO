@@ -42,9 +42,9 @@ export async function POST(request: Request) {
           const customReadable = new ReadableStream({
             async start(controller) {
               try {
-                await streamRunResponse(threadId, assistant.id, (content) => {
+                await streamRunResponse(threadId, assistant.id, (content, streamPayload) => {
                   const chunk = encoder.encode(
-                    `data: ${JSON.stringify({ content })}\n\n`
+                    `data: ${JSON.stringify({ content, payload: streamPayload })}\n\n`
                   );
                   controller.enqueue(chunk);
                 });

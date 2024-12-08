@@ -4,7 +4,12 @@ import {
   createThread,
   sendMessage,
 } from '../../lib/assistant';
-import { ChatMessage, ChatPayload, UserPreferences } from '../../types';
+import {
+  ChatMessage,
+  ChatPayload,
+  Question,
+  UserPreferences,
+} from '../../types';
 import ReactMarkdown from 'react-markdown';
 import { AnatomyPart } from '@/app/types/anatomy';
 
@@ -13,12 +18,50 @@ interface PartPopupProps {
   onClose: () => void;
 }
 
+const initialQuestions: Question[] = [
+  {
+    title: 'Learn more',
+    description: `I want to learn more about the $part`,
+    question: `I want to learn more about the $part`,
+  },
+  {
+    title: 'I have an issue',
+    description: `I need help with a problem related to the $part`,
+    question: `I need help with a problem related to the $part`,
+  },
+  {
+    title: 'Placeholder 1',
+    description: 'Lorem ipsum...',
+    question: 'Lorem ipsum...',
+  },
+  {
+    title: 'Placeholder 2',
+    description: 'Lorem ipsum...',
+    question: 'Lorem ipsum...',
+  },
+];
+
 export default function PartPopup({ part, onClose }: PartPopupProps) {
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [followUpQuestions, setFollowUpQuestions] = useState<string[]>([]);
+  const [followUpQuestions, setFollowUpQuestions] = useState<Question[]>(() => {
+    if (!part && messages.length === 0) return [];
+
+    // Keep existing questions if we have messages but no part
+    if (!part && messages.length > 0) {
+      // Use an empty array as fallback to avoid circular reference
+      return [];
+    }
+
+    // Replace $part with the actual part name in the initial questions
+    return initialQuestions.map((q) => ({
+      ...q,
+      description: q.description.replace('$part', part?.name || ''),
+      question: q.question.replace('$part', part?.name || ''),
+    }));
+  });
   const [userPreferences, setUserPreferences] = useState<
     UserPreferences | undefined
   >();
@@ -26,7 +69,6 @@ export default function PartPopup({ part, onClose }: PartPopupProps) {
   const threadIdRef = useRef<string | null>(null);
   const assistantIdRef = useRef<string | null>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
-
 
   // Initialize assistant and thread
   useEffect(() => {
@@ -56,6 +98,24 @@ export default function PartPopup({ part, onClose }: PartPopupProps) {
     }
   }, [messages, isLoading]);
 
+  // Move the persistence logic to useEffect
+  useEffect(() => {
+    if (!part && messages.length === 0) {
+      setFollowUpQuestions([]);
+    } else if (!part && messages.length > 0) {
+      // Do nothing to maintain existing questions
+      return;
+    } else if (part) {
+      setFollowUpQuestions(
+        initialQuestions.map((q) => ({
+          ...q,
+          description: q.description.replace('$part', part.name),
+          question: q.question.replace('$part', part.name),
+        }))
+      );
+    }
+  }, [part, messages.length]);
+
   const handleResetChat = () => {
     setSelectedOption(null);
     setMessage('');
@@ -83,125 +143,76 @@ export default function PartPopup({ part, onClose }: PartPopupProps) {
   ) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      handleSendMessage(e as any);
+      handleSendMessage(message);
     }
   };
 
-  const handleOptionClick = async (option: {
-    id: string;
-    label: string;
-    description: string;
-  }) => {
-    if (!threadIdRef.current || !part) return;
-
-    setSelectedOption(option.id);
-    setIsLoading(true);
-    setFollowUpQuestions([]);
-
-    const optionMessage = `User selected "${option.label}" for ${part.name}. ${option.description}`;
-
-    handleSendMessage(optionMessage);
+  const handleOptionClick = (question: Question) => {
+    console.log('Option clicked:', question);
+    handleSendMessage(question.question);
   };
 
-  const handleSendMessage = async (content: string) => {
-    if (!content.trim()) return;
+  const handleSendMessage = async (messageContent: string) => {
+    if (isLoading) return;
 
     setIsLoading(true);
-    setMessage('');
-
-    const newMessage: ChatMessage = {
-      id: `msg-${Date.now()}`,
-      content,
-      role: 'user',
-      timestamp: new Date(),
-    };
+    setMessage(''); // Clear the input field
+    setFollowUpQuestions([]);
 
     try {
-      let response;
       const chatPayload: ChatPayload = {
-        message: content,
-        userPreferences,
+        userPreferences: userPreferences,
         part: part || undefined,
-        followUpQuestions: [],
+        message: messageContent,
+        followUpQuestions: followUpQuestions,
       };
 
-      if (!threadIdRef.current) {
-        response = await sendMessage(
-          '',
-          chatPayload,
-          (content: string, payload?: ChatPayload) => {
-            if (content) {
-              setMessages((prev) => {
-                const lastMessage = prev[prev.length - 1];
-                if (lastMessage?.role === 'assistant') {
-                  return [
-                    ...prev.slice(0, -1),
-                    {
-                      ...lastMessage,
-                      content: lastMessage.content + content,
-                      timestamp: new Date(),
-                    },
-                  ];
-                }
-                return [
-                  ...prev,
-                  {
-                    id: `assistant-${Date.now()}`,
-                    role: 'assistant',
-                    content,
-                    timestamp: new Date(),
-                  },
-                ];
-              });
-            }
-            if (payload) {
-              setFollowUpQuestions(payload.followUpQuestions || []);
-              setUserPreferences(payload.userPreferences);
-            }
-          }
-        );
-        if (response && typeof response === 'object' && 'assistantId' in response && 'threadId' in response) {
-          threadIdRef.current = String(response.threadId);
-          assistantIdRef.current = String(response.assistantId);
-        }
-      } else {
-        response = await sendMessage(
-          threadIdRef.current,
-          chatPayload,
-          (content: string, payload?: ChatPayload) => {
-            if (content) {
-              setMessages((prev) => {
-                const lastMessage = prev[prev.length - 1];
-                if (lastMessage?.role === 'assistant') {
-                  return [
-                    ...prev.slice(0, -1),
-                    {
-                      ...lastMessage,
-                      content: lastMessage.content + content,
-                      timestamp: new Date(),
-                    },
-                  ];
-                }
-                return [
-                  ...prev,
-                  {
-                    id: `assistant-${Date.now()}`,
-                    role: 'assistant',
-                    content,
-                    timestamp: new Date(),
-                  },
-                ];
-              });
-            }
-            if (payload) {
-              setFollowUpQuestions(payload.followUpQuestions || []);
-              setUserPreferences(payload.userPreferences);
-            }
-          }
-        );
-      }
+      // Add the user's message immediately
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: `user-${Date.now()}`,
+          role: 'user',
+          content: messageContent,
+          timestamp: new Date(),
+        },
+      ]);
 
-      setMessages((prev) => [...prev, newMessage]);
+      // Send the message and handle the response
+      await sendMessage(
+        threadIdRef.current ?? '',
+        chatPayload,
+        (content, payload) => {
+          if (content) {
+            setMessages((prev) => {
+              const lastMessage = prev[prev.length - 1];
+              if (lastMessage?.role === 'assistant') {
+                return [
+                  ...prev.slice(0, -1),
+                  {
+                    ...lastMessage,
+                    content: lastMessage.content + content,
+                    timestamp: new Date(),
+                  },
+                ];
+              }
+              return [
+                ...prev,
+                {
+                  id: `assistant-${Date.now()}`,
+                  role: 'assistant',
+                  content,
+                  timestamp: new Date(),
+                },
+              ];
+            });
+          }
+          if (payload) {
+            setFollowUpQuestions(payload.followUpQuestions || []);
+            setUserPreferences(payload.userPreferences);
+          }
+        }
+      );
     } catch (error) {
       console.error('Error sending message:', error);
     } finally {
@@ -209,35 +220,10 @@ export default function PartPopup({ part, onClose }: PartPopupProps) {
     }
   };
 
-  const handleFollowUpClick = (question: string) => {
-    setMessage(question);
+  const handleFollowUpClick = (question: Question) => {
+    setMessage(question.title);
     textareaRef.current?.focus();
   };
-
-  const options = part
-    ? [
-        {
-          id: 'learn',
-          label: 'Learn more',
-          description: `Learn more about ${part.name}`,
-        },
-        {
-          id: 'issue',
-          label: 'I have an issue',
-          description: `Get help with ${part.name} issues`,
-        },
-        {
-          id: 'placeholder1',
-          label: 'Placeholder 1',
-          description: 'Lorem ipsum...',
-        },
-        {
-          id: 'placeholder2',
-          label: 'Placeholder 2',
-          description: 'Lorem ipsum...',
-        },
-      ]
-    : [];
 
   return (
     <div className="h-full bg-gray-900 text-white p-6 flex flex-col">
@@ -247,7 +233,11 @@ export default function PartPopup({ part, onClose }: PartPopupProps) {
             Musculoskeletal Assistant
           </h2>
           <h3 className="text-xl font-bold">
-            {part ? part.name : 'Select a body part to get started'}
+            {part
+              ? part.name
+              : messages.length > 0
+              ? 'No body part selected'
+              : 'Select a body part to get started'}
           </h3>
         </div>
         <div className="group relative">
@@ -276,34 +266,37 @@ export default function PartPopup({ part, onClose }: PartPopupProps) {
       </div>
 
       <div className="flex-grow overflow-y-auto space-y-4">
-        {part ? (
-          <>
-            <div className="space-y-3">
-              {options.map((option) => (
+        <div className="space-y-3">
+          {messages.length === 0 && (
+            <>
+              {followUpQuestions.map((question) => (
                 <button
-                  key={option.id}
-                  onClick={() => handleOptionClick(option)}
+                  key={question.title}
+                  onClick={() => handleOptionClick(question)}
                   className={`w-full text-left p-3 rounded-lg transition-colors ${
-                    selectedOption === option.id
+                    selectedOption === question.title
                       ? 'bg-indigo-600 text-white'
                       : 'bg-gray-800 hover:bg-gray-700'
                   }`}
                 >
-                  <div className="font-medium">{option.label}</div>
+                  <div className="font-medium">{question.title}</div>
                   <div className="text-sm text-gray-400">
-                    {option.description}
+                    {question.description}
                   </div>
                 </button>
               ))}
-            </div>
-
+            </>
+          )}
+        </div>
+        {messages.length > 0 ? (
+          <>
             {messages.length > 0 && (
               <div
                 ref={messagesContainerRef}
                 className="space-y-4 mt-6 overflow-y-auto flex flex-col"
               >
                 <div className="space-y-4">
-                  {[...messages].reverse().map((msg) => (
+                  {messages.map((msg) => (
                     <div
                       key={msg.id}
                       className={`p-4 rounded-lg ${
@@ -343,37 +336,44 @@ export default function PartPopup({ part, onClose }: PartPopupProps) {
               </div>
             )}
 
-            {followUpQuestions.length > 0 && (
-              <div className="mt-4 space-y-2">
-                <h4 className="text-sm text-gray-400">
-                  You might want to ask:
-                </h4>
-                <div className="flex flex-wrap gap-2">
-                  {followUpQuestions.map((question, index) => (
+            {followUpQuestions.length > 0 && messages.length !== 0 && (
+              <div className="space-y-3">
+                <>
+                  {followUpQuestions.map((question) => (
                     <button
-                      key={index}
-                      onClick={() => handleFollowUpClick(question)}
-                      className="px-3 py-1.5 bg-gray-800 hover:bg-gray-700 rounded-full text-sm text-gray-300 hover:text-white transition-colors"
+                      key={question.title}
+                      onClick={() => handleOptionClick(question)}
+                      className={`w-full text-left p-3 rounded-lg transition-colors ${
+                        selectedOption === question.title
+                          ? 'bg-indigo-600 text-white'
+                          : 'bg-gray-800 hover:bg-gray-700'
+                      }`}
                     >
-                      {question}
+                      <div className="font-medium">{question.title}</div>
+                      <div className="text-sm text-gray-400">
+                        {question.description}
+                      </div>
                     </button>
                   ))}
-                </div>
+                </>
               </div>
             )}
           </>
-        ) : (
+        ) : !part ? (
           <div className="text-gray-400 text-center py-8">
             Click on any part of the body or start a chat to learn more about it
             or get help with specific issues.
           </div>
-        )}
+        ) : null}
       </div>
       <div className="mt-4 border-t border-gray-700 pt-4">
-        <form onSubmit={(e) => {
-          e.preventDefault();
-          handleSendMessage(message);
-        }} className="relative">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleSendMessage(message);
+          }}
+          className="relative"
+        >
           <textarea
             ref={textareaRef}
             value={message}

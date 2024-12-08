@@ -47,10 +47,16 @@ export async function sendMessage(
   payload: ChatPayload,
   onStream?: (content: string, payload?: ChatPayload) => void
 ): Promise<MessagesResponse> {
+  const transformedPayload = {
+    ...payload,
+    previousFollowUpQuestions: payload.followUpQuestions,
+    followUpQuestions: undefined
+  };
+
   const body = JSON.stringify({
     action: 'send_message',
     threadId,
-    payload,
+    payload: transformedPayload,
     stream: !!onStream,
   });
 
@@ -89,11 +95,8 @@ export async function sendMessage(
             if (data === '[DONE]') break;
             try {
               const parsed = JSON.parse(data);
-              if (parsed.content) {
-                onStream(parsed.content);
-              }
-              if (parsed.payload) {
-                onStream('', parsed.payload);
+              if (parsed.content || parsed.payload) {
+                onStream(parsed.content || '', parsed.payload);
               }
             } catch (e) {
               console.error('Error parsing stream data:', e);

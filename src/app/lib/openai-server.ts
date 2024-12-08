@@ -13,23 +13,42 @@ function extractJsonFromText(text: string): {
 } {
   try {
     const jsonStartIndex = text.indexOf('{');
-    if (jsonStartIndex === -1) return { payload: null, cleanText: text };
+    if (jsonStartIndex === -1) {
+      return { payload: null, cleanText: text };
+    }
 
     const jsonSubstring = text.slice(jsonStartIndex);
-    const jsonEndIndex = jsonSubstring.lastIndexOf('}') + 1;
-    if (jsonEndIndex === 0) return { payload: null, cleanText: text };
+
+    // Find the last matching closing brace
+    let braceCount = 0;
+    let jsonEndIndex = -1;
+
+    for (let i = 0; i < jsonSubstring.length; i++) {
+      if (jsonSubstring[i] === '{') braceCount++;
+      if (jsonSubstring[i] === '}') {
+        braceCount--;
+        if (braceCount === 0) {
+          jsonEndIndex = i + 1;
+          break;
+        }
+      }
+    }
+
+    if (jsonEndIndex === -1) {
+      return { payload: null, cleanText: text };
+    }
 
     const jsonStr = jsonSubstring.slice(0, jsonEndIndex);
+
     const cleanText = text.slice(0, jsonStartIndex).trim();
 
     try {
       const payload = JSON.parse(jsonStr) as ChatPayload;
       return { payload, cleanText };
-    } catch (_) {
+    } catch (error) {
       return { payload: null, cleanText: text };
     }
-  } catch (_) {
-    console.error('Error extracting JSON from text');
+  } catch (error) {
     return { payload: null, cleanText: text };
   }
 }
@@ -58,10 +77,13 @@ export async function createThread() {
 // Add a message to a thread
 export async function addMessage(threadId: string, payload: ChatPayload) {
   try {
+    const content = JSON.stringify(payload);
+
+    console.log('Adding message to thread:', content);
     // If we have a payload, append it as a system message
     return await openai.beta.threads.messages.create(threadId, {
       role: 'user',
-      content: JSON.stringify(payload),
+      content,
     });
   } catch (error) {
     console.error('Error adding message:', error);
@@ -77,6 +99,7 @@ export async function streamRunResponse(
 ) {
   try {
     let accumulatedText = '';
+    let isCollectingJson = false;
     const stream = await openai.beta.threads.runs.stream(threadId, {
       assistant_id: assistantId,
     });
@@ -87,17 +110,39 @@ export async function streamRunResponse(
       })
       .on('textDelta', (delta) => {
         if (delta.value) {
-          accumulatedText += delta.value;
+          if (isCollectingJson) {
+            // If we're collecting JSON, just accumulate without sending to UI
+            accumulatedText += delta.value;
+          } else {
+            // Check if this delta contains the start of a JSON object
+            const jsonStartIndex = delta.value.indexOf('{');
 
-          // Extract JSON and clean text
-          const { payload, cleanText } = extractJsonFromText(accumulatedText);
+            if (jsonStartIndex !== -1) {
+              // Send only the text before the JSON
+              const textContent = delta.value.slice(0, jsonStartIndex);
+              if (textContent) {
+                onMessage(textContent);
+              }
 
-          // Send the delta value as content
-          onMessage(delta.value);
+              // Start collecting JSON
+              isCollectingJson = true;
+              accumulatedText = delta.value.slice(jsonStartIndex);
+            } else {
+              // No JSON found, send the content normally
+              onMessage(delta.value);
+            }
+          }
 
-          // If we found a payload, send it separately
-          if (payload) {
-            onMessage('', payload);
+          // Try to extract JSON if we're collecting it
+          if (isCollectingJson) {
+            const { payload } = extractJsonFromText(accumulatedText);
+            if (payload) {
+              console.log('Extracted payload:', payload);
+              onMessage('', payload);
+              // Reset for next message
+              accumulatedText = '';
+              isCollectingJson = false;
+            }
           }
         }
       })
