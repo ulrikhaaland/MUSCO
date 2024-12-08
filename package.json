@@ -9,16 +9,13 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@react-three/drei": "^9.120.1",
-    "@react-three/fiber": "^8.17.10",
     "@types/three": "^0.170.0",
     "framer-motion": "^11.13.1",
     "next": "15.0.4",
     "openai": "^4.76.0",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "react-markdown": "^9.0.1",
-    "three": "^0.171.0"
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-markdown": "^9.0.1"
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.15",
