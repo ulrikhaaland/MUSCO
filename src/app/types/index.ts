@@ -1,3 +1,5 @@
+import { AnatomyPart } from './anatomy';
+
 export type Gender = 'male' | 'female';
 
 export interface PopupOption {
@@ -59,6 +61,8 @@ export interface UserPreferences {
   age?: number;
   fitnessLevel?: 'beginner' | 'intermediate' | 'advanced';
   exerciseFrequency?: number;
+  bodyParts?: AnatomyPart[];
+
 }
 
 export interface AssistantThread {
@@ -67,4 +71,12 @@ export interface AssistantThread {
   status: 'active' | 'completed' | 'failed';
   createdAt: Date;
   updatedAt: Date;
-} 
+}
+
+export interface ChatPayload {
+  threadId: string;
+  message: string;
+  userPreferences?: UserPreferences;
+  part?: AnatomyPart;
+  followUpQuestions?: string[];
+}

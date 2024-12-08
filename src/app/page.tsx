@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import dynamic from 'next/dynamic';
-import Popup from './components/ui/Popup';
 
 // Dynamically import the HumanViewer component with no SSR
 const HumanViewer = dynamic(() => import('./components/3d/HumanViewer'), {

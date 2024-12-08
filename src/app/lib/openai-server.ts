@@ -2,7 +2,7 @@ import OpenAI from 'openai';
 
 // Initialize OpenAI client
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY, // Note: Not using NEXT_PUBLIC_ prefix for server-side
+  apiKey: process.env.OPENAI_API_KEY, 
 });
 
 // Create or load the assistant
