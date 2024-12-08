@@ -2,9 +2,9 @@
 
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { Gender } from '../../types';
-import { AnatomyPart, SelectedPartInfo } from '../../types/anatomy';
+import { AnatomyPart } from '../../types/anatomy';
 import PartPopup from '../ui/PartPopup';
-import { HumanAPI, HumanAPIConstructor } from '@/app/types/human';
+import { HumanAPIConstructor } from '@/app/types/human';
 
 declare global {
   interface Window {
