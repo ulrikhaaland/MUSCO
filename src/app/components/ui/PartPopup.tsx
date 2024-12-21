@@ -17,6 +17,7 @@ import { ChatMessages } from './ChatMessages';
 
 interface PartPopupProps {
   part: AnatomyPart | null;
+  selectedParts: AnatomyPart[];
   onClose: () => void;
 }
 
@@ -38,8 +39,10 @@ const initialQuestions: Question[] = [
   },
 ];
 
-function getInitialQuestions(part: AnatomyPart | null): Question[] {
+function getInitialQuestions(part: AnatomyPart | null, selectedParts: AnatomyPart[]): Question[] {
   if (!part) return [];
+  
+  // Always use the full part name
   return initialQuestions.map((q) => ({
     ...q,
     description: q.description.replace('$part', part.name.toLowerCase()),
@@ -47,11 +50,11 @@ function getInitialQuestions(part: AnatomyPart | null): Question[] {
   }));
 }
 
-export default function PartPopup({ part, onClose }: PartPopupProps) {
+export default function PartPopup({ part, selectedParts, onClose }: PartPopupProps) {
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [message, setMessage] = useState('');
   const [followUpQuestions, setFollowUpQuestions] = useState<Question[]>(() => 
-    getInitialQuestions(part)
+    getInitialQuestions(part, selectedParts)
   );
   
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -70,14 +73,14 @@ export default function PartPopup({ part, onClose }: PartPopupProps) {
 
   const [userHasScrolled, setUserHasScrolled] = useState(false);
 
-  // Update the questions when part changes
+  // Update the questions when part or selectedParts changes
   useEffect(() => {
     if (part) {
-      setFollowUpQuestions(getInitialQuestions(part));
+      setFollowUpQuestions(getInitialQuestions(part, selectedParts));
     } else if (messages.length === 0) {
       setFollowUpQuestions([]);
     }
-  }, [part, messages.length]);
+  }, [part, selectedParts, messages.length]);
 
   // Update local follow-up questions when chat questions change
   useEffect(() => {
@@ -128,13 +131,20 @@ export default function PartPopup({ part, onClose }: PartPopupProps) {
     });
   };
 
-  // Simplified scroll handler - just for debugging if needed
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     console.log('Scroll event in PartPopup');
   };
 
   const handleUserScroll = (hasScrolled: boolean) => {
     setUserHasScrolled(hasScrolled);
+  };
+
+  // Get display name for the header
+  const getDisplayName = () => {
+    if (!part) return messages.length > 0 ? 'No body part selected' : 'Select a body part';
+    
+    // Always use the full part name
+    return part.name;
   };
 
   return (
@@ -145,7 +155,7 @@ export default function PartPopup({ part, onClose }: PartPopupProps) {
             Musculoskeletal Assistant
           </h2>
           <h3 className="text-xl font-bold">
-            {part ? part.name : messages.length > 0 ? 'No body part selected' : 'Select a body part'}
+            {getDisplayName()}
           </h3>
         </div>
         <button onClick={handleResetChat} className="text-gray-400 hover:text-white p-1 rounded-full hover:bg-gray-800 transition-colors" aria-label="Reset Chat">

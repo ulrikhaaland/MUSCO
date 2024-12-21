@@ -11,7 +11,7 @@ The app's purpose is to make it easy and accessible for people to learn how to f
 - Users can zoom, pan, and click on different parts of the model.
 - Clicking on a specific part of the musculoskeletal model zooms in on that part and reveals a pop-up box.
 
-#### Pop-Up Box
+#### Chat
 - Contains several options related to the selected body part (same for all body parts):
   1. **Learn more** (about this part)
   2. **I have an issue** (with this part)
