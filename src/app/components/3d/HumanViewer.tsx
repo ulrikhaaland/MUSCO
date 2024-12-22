@@ -37,6 +37,7 @@ export default function HumanViewer({ gender }: HumanViewerProps) {
   const [isRotating, setIsRotating] = useState(false);
   const [currentRotation, setCurrentRotation] = useState(0);
   const rotationAnimationRef = useRef<number | null>(null);
+  const [isResetting, setIsResetting] = useState(false);
 
   const MODEL_IDS = {
     male: '5rlY',
@@ -179,10 +180,80 @@ export default function HumanViewer({ gender }: HumanViewerProps) {
     }
   }, [handlePartSelect]);
 
-  const { humanRef, handleReset } = useHumanAPI({
+  const { humanRef, handleReset: hookHandleReset, currentGender, needsReset, isReady } = useHumanAPI({
     elementId: 'myViewer',
-    onObjectSelected: handleObjectSelected
+    onObjectSelected: handleObjectSelected,
+    initialGender: gender
   });
+
+  // Create viewer URL
+  const getViewerUrl = useCallback((modelGender: Gender) => {
+    const viewerUrl = new URL('https://human.biodigital.com/viewer/');
+    viewerUrl.searchParams.set('id', MODEL_IDS[modelGender]);
+    viewerUrl.searchParams.set('ui-anatomy-descriptions', 'false');
+    viewerUrl.searchParams.set('ui-anatomy-pronunciations', 'false');
+    viewerUrl.searchParams.set('ui-anatomy-labels', 'false');
+    viewerUrl.searchParams.set('ui-audio', 'false');
+    viewerUrl.searchParams.set('ui-chapter-list', 'false');
+    viewerUrl.searchParams.set('ui-fullscreen', 'false');
+    viewerUrl.searchParams.set('ui-help', 'false');
+    viewerUrl.searchParams.set('ui-info', 'false');
+    viewerUrl.searchParams.set('ui-label-list', 'false');
+    viewerUrl.searchParams.set('ui-layers', 'false');
+    viewerUrl.searchParams.set('ui-loader', 'circle');
+    viewerUrl.searchParams.set('ui-media-controls', 'false');
+    viewerUrl.searchParams.set('ui-menu', 'false');
+    viewerUrl.searchParams.set('ui-nav', 'false');
+    viewerUrl.searchParams.set('ui-search', 'false');
+    viewerUrl.searchParams.set('ui-tools', 'false');
+    viewerUrl.searchParams.set('ui-tutorial', 'false');
+    viewerUrl.searchParams.set('ui-undo', 'false');
+    viewerUrl.searchParams.set('ui-whiteboard', 'false');
+    viewerUrl.searchParams.set('ui-zoom', 'false');
+    viewerUrl.searchParams.set('initial.none', 'true');
+    viewerUrl.searchParams.set('disable-scroll', 'false');
+    viewerUrl.searchParams.set('uaid', 'LzCgB');
+    viewerUrl.searchParams.set('paid', 'o_26b5a0fa');
+    viewerUrl.searchParams.set('be-annotations', 'false');
+    viewerUrl.searchParams.set('ui-annotations', 'false');
+    viewerUrl.searchParams.set('ui-navigation', 'false');
+    viewerUrl.searchParams.set('ui-controls', 'false');
+    return viewerUrl.toString();
+  }, []);
+
+  const [viewerUrl, setViewerUrl] = useState(() => getViewerUrl(gender));
+  const [isChangingModel, setIsChangingModel] = useState(false);
+
+  const handleSwitchModel = useCallback(() => {
+    setIsChangingModel(true);
+    const newGender: Gender = currentGender === 'male' ? 'female' : 'male';
+    setViewerUrl(getViewerUrl(newGender));
+    
+    // Reset states
+    setSelectedPart(null);
+    setSelectedParts([]);
+    setCurrentRotation(0);
+    
+    // Update URL without page reload
+    const url = new URL(window.location.href);
+    url.searchParams.set('gender', newGender);
+    window.history.pushState({}, '', url.toString());
+  }, [currentGender, getViewerUrl]);
+
+  const handleReset = useCallback(() => {
+    if (isResetting) return;
+
+    setIsResetting(true);
+    hookHandleReset();
+
+    // Reset rotation state
+    setCurrentRotation(0);
+    
+    // Clear reset state after animation
+    setTimeout(() => {
+      setIsResetting(false);
+    }, 200);
+  }, [isResetting, hookHandleReset]);
 
   const startDragging = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
@@ -223,33 +294,40 @@ export default function HumanViewer({ gender }: HumanViewerProps) {
 
   const handleRotate = useCallback(() => {
     const human = humanRef.current;
-    if (!human || isRotating) return;
+    if (!human || isRotating || isResetting) return;
 
     setIsRotating(true);
     const startRotation = currentRotation % 360;  // Normalize to 0-360
-    const targetRotation = startRotation === 0 ? 180 : 0;
+    const targetRotation = startRotation === 0 ? 180 : 360;  // Always rotate forward to 180 or 360
+    
+    let currentAngle = 0;
+    const rotationStep = 2; // Rotate 2 degrees per frame
 
-    // Set up the callback first
-    const onComplete = () => {
-      setCurrentRotation(targetRotation);
-      setIsRotating(false);
-      console.log('Camera rotation complete');
+    const animate = () => {
+      if (currentAngle < 180) {  // Always rotate 180 degrees
+        human.send('camera.orbit', {
+          yaw: rotationStep  // Always positive for clockwise rotation
+        });
+        currentAngle += rotationStep;
+        rotationAnimationRef.current = requestAnimationFrame(animate);
+      } else {
+        // If we've completed a full 360, reset to 0
+        setCurrentRotation(targetRotation === 360 ? 0 : targetRotation);
+        setIsRotating(false);
+        rotationAnimationRef.current = null;
+      }
     };
 
-    // Then send the camera command
-    human.send('camera.set', {
-      position: targetRotation === 180 ? 
-        { x: 0, y: 0, z: 25 } :  // Back view
-        { x: 0, y: 0, z: -25 },  // Front view
-      target: { x: 0, y: 0, z: 0 },  // Always look at center
-      up: { x: 0, y: 1, z: 0 },      // Keep "up" direction
-      animate: true,
-      animationDuration: 1.0
-    });
+    rotationAnimationRef.current = requestAnimationFrame(animate);
 
-    // Update state after animation duration
-    setTimeout(onComplete, 1000);
-  }, [isRotating, currentRotation]);
+    // Cleanup function
+    return () => {
+      if (rotationAnimationRef.current) {
+        cancelAnimationFrame(rotationAnimationRef.current);
+        rotationAnimationRef.current = null;
+      }
+    };
+  }, [isRotating, currentRotation, isResetting]);
 
   // Clean up animation on unmount
   useEffect(() => {
@@ -259,37 +337,6 @@ export default function HumanViewer({ gender }: HumanViewerProps) {
       }
     };
   }, []);
-
-  const viewerUrl = new URL('https://human.biodigital.com/viewer/');
-  viewerUrl.searchParams.set('id', MODEL_IDS[gender]);
-  viewerUrl.searchParams.set('ui-anatomy-descriptions', 'false');
-  viewerUrl.searchParams.set('ui-anatomy-pronunciations', 'false');
-  viewerUrl.searchParams.set('ui-anatomy-labels', 'false');
-  viewerUrl.searchParams.set('ui-audio', 'false');
-  viewerUrl.searchParams.set('ui-chapter-list', 'false');
-  viewerUrl.searchParams.set('ui-fullscreen', 'false');
-  viewerUrl.searchParams.set('ui-help', 'false');
-  viewerUrl.searchParams.set('ui-info', 'false');
-  viewerUrl.searchParams.set('ui-label-list', 'false');
-  viewerUrl.searchParams.set('ui-layers', 'false');
-  viewerUrl.searchParams.set('ui-loader', 'circle');
-  viewerUrl.searchParams.set('ui-media-controls', 'false');
-  viewerUrl.searchParams.set('ui-menu', 'false');
-  viewerUrl.searchParams.set('ui-nav', 'false');
-  viewerUrl.searchParams.set('ui-search', 'false');
-  viewerUrl.searchParams.set('ui-tools', 'false');
-  viewerUrl.searchParams.set('ui-tutorial', 'false');
-  viewerUrl.searchParams.set('ui-undo', 'false');
-  viewerUrl.searchParams.set('ui-whiteboard', 'false');
-  viewerUrl.searchParams.set('ui-zoom', 'false');
-  viewerUrl.searchParams.set('initial.none', 'true');
-  viewerUrl.searchParams.set('disable-scroll', 'false');
-  viewerUrl.searchParams.set('uaid', 'LzCgB');
-  viewerUrl.searchParams.set('paid', 'o_26b5a0fa');
-  viewerUrl.searchParams.set('be-annotations', 'false');
-  viewerUrl.searchParams.set('ui-annotations', 'false');
-  viewerUrl.searchParams.set('ui-navigation', 'false');
-  viewerUrl.searchParams.set('ui-controls', 'false');
 
   return (
     <div
@@ -306,10 +353,15 @@ export default function HumanViewer({ gender }: HumanViewerProps) {
         className="flex-1 relative"
         style={{ minWidth: `${minChatWidth}px` }}
       >
+        {isChangingModel && (
+          <div className="absolute inset-0 z-50 bg-black flex items-center justify-center">
+            <div className="text-white text-xl">Loading {currentGender === 'male' ? 'Female' : 'Male'} Model...</div>
+          </div>
+        )}
         <iframe
           id="myViewer"
           ref={iframeRef}
-          src={viewerUrl.toString()}
+          src={viewerUrl}
           style={{
             width: '100%',
             height: '100%',
@@ -318,13 +370,14 @@ export default function HumanViewer({ gender }: HumanViewerProps) {
           }}
           allow="fullscreen"
           allowFullScreen
+          onLoad={() => setIsChangingModel(false)}
         />
         <div className="absolute bottom-6 right-6 flex space-x-4" style={{ zIndex: 1000 }}>
           <button
             onClick={handleRotate}
-            disabled={isRotating}
-            className={`bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-lg shadow-lg transition-colors duration-200 flex items-center space-x-2 ${
-              isRotating ? 'opacity-75 cursor-not-allowed' : ''
+            disabled={isRotating || isResetting || !isReady}
+            className={`bg-indigo-600/80 hover:bg-indigo-500/80 text-white px-4 py-2 rounded-lg shadow-lg transition-colors duration-200 flex items-center space-x-2 ${
+              (isRotating || isResetting || !isReady) ? 'opacity-50 cursor-not-allowed' : ''
             }`}
           >
             <svg
@@ -343,11 +396,14 @@ export default function HumanViewer({ gender }: HumanViewerProps) {
           </button>
           <button
             onClick={handleReset}
-            className="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-lg shadow-lg transition-colors duration-200 flex items-center space-x-2"
+            disabled={isResetting || !needsReset}
+            className={`bg-indigo-600/80 hover:bg-indigo-500/80 text-white px-4 py-2 rounded-lg shadow-lg transition-colors duration-200 flex items-center space-x-2 ${
+              (isResetting || !needsReset) ? 'opacity-50 cursor-not-allowed' : ''
+            }`}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
+              className={`h-5 w-5 ${isResetting ? 'animate-spin' : ''}`}
               viewBox="0 0 20 20"
               fill="currentColor"
             >
@@ -357,7 +413,28 @@ export default function HumanViewer({ gender }: HumanViewerProps) {
                 clipRule="evenodd"
               />
             </svg>
-            <span>Reset View</span>
+            <span>{isResetting ? 'Resetting...' : 'Reset View'}</span>
+          </button>
+          <button
+            onClick={handleSwitchModel}
+            disabled={isChangingModel}
+            className={`bg-indigo-600/80 hover:bg-indigo-500/80 text-white px-4 py-2 rounded-lg shadow-lg transition-colors duration-200 flex items-center space-x-2 ${
+              isChangingModel ? 'opacity-50 cursor-not-allowed' : ''
+            }`}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className={`h-5 w-5 ${isChangingModel ? 'animate-spin' : ''}`}
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fillRule="evenodd"
+                d="M15.312 11.424a5.5 5.5 0 01-9.201 2.466l-.312-.311h2.433a.75.75 0 000-1.5H3.989a.75.75 0 00-.75.75v4.242a.75.75 0 001.5 0v-2.43l.31.31a7 7 0 0011.712-3.138.75.75 0 00-1.449-.39zm1.23-3.723a.75.75 0 00.219-.53V2.929a.75.75 0 00-1.5 0V5.36l-.31-.31A7 7 0 003.239 8.188a.75.75 0 101.448.389A5.5 5.5 0 0113.89 6.11l.311.31h-2.432a.75.75 0 000 1.5h4.243a.75.75 0 00.53-.219z"
+                clipRule="evenodd"
+              />
+            </svg>
+            <span>{isChangingModel ? 'Loading...' : `Switch to ${currentGender === 'male' ? 'Female' : 'Male'}`}</span>
           </button>
         </div>
       </div>

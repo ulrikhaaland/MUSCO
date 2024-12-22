@@ -17,24 +17,50 @@ export function getPartGroup(part: AnatomyPart, bodyPartGroups: { [key: string]:
   const description = part.description?.toLowerCase() || '';
   const neutralId = getNeutralId(part.objectId);
 
-  // First check if the part's ID matches any group's ids (ignoring gender)
-  for (const [_, group] of Object.entries(bodyPartGroups)) {
+  console.log('Trying to match part:', {
+    objectId: part.objectId,
+    neutralId,
+    name,
+    description
+  });
+
+  // First check if the part's ID exactly matches any group's ids (ignoring gender)
+  for (const [groupKey, group] of Object.entries(bodyPartGroups)) {
     if (group.ids.some(id => getNeutralId(id) === neutralId)) {
+      console.log(`Found exact ID match in group: ${groupKey}`);
       return group;
     }
   }
 
-  // Then check keywords
-  for (const [_, group] of Object.entries(bodyPartGroups)) {
-    if (group.keywords.some(keyword => 
-      name.includes(keyword.toLowerCase()) || 
-      description.includes(keyword.toLowerCase())
-    )) {
-      return group;
+  // If no exact ID match, check if the part's name contains any group's keywords
+  // but make sure to match the most specific group first
+  let bestMatch: { group: BodyPartGroup; matchCount: number; groupKey: string } | null = null;
+
+  for (const [groupKey, group] of Object.entries(bodyPartGroups)) {
+    const matchCount = group.keywords.reduce((count, keyword) => {
+      const keywordLower = keyword.toLowerCase();
+      if (name.includes(keywordLower) || description.includes(keywordLower)) {
+        console.log(`Keyword match in group ${groupKey}: ${keywordLower}`);
+        count++;
+      }
+      return count;
+    }, 0);
+
+    // If this group has more keyword matches than our current best match,
+    // or if it's the first match we've found, use it
+    if (matchCount > 0 && (!bestMatch || matchCount > bestMatch.matchCount)) {
+      console.log(`New best match: ${groupKey} with ${matchCount} matches`);
+      bestMatch = { group, matchCount, groupKey };
     }
   }
 
-  return null;
+  if (bestMatch) {
+    console.log(`Final match: ${bestMatch.groupKey}`);
+  } else {
+    console.log('No match found');
+  }
+
+  return bestMatch ? bestMatch.group : null;
 }
 
 // Helper function to get all parts in a group
