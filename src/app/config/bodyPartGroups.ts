@@ -407,7 +407,7 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
       'muscular_system-left_flexor_pollicis_brevis_ID',
       'muscular_system-left_adductor_pollicis_ID',
       'muscular_system-left_opponens_digiti_minimi_ID',
-      'muscular_system-left_abductor_digiti_minimi_ID',
+      'muscular_system-left_abductor_digiti_minimi_brevis_of_hand_ID',
       'muscular_system-left_flexor_digiti_minimi_brevis_of_hand_ID',
 
       // Lumbricals
@@ -692,6 +692,50 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
       'connective_tissue-carpometacarpal_joint_capsule_of_left_middle_finger_ID',
       'connective_tissue-carpometacarpal_joint_capsule_of_left_ring_finger_ID',
       'connective_tissue-carpometacarpal_joint_capsule_of_left_little_finger_ID',
+
+      // Articular Cartilage and Joint Capsules
+      'connective_tissue-articular_cartilage_of_left_talus_ID',
+      'connective_tissue-articular_cartilage_of_left_calcaneus_ID',
+      'connective_tissue-articular_cartilage_of_left_medial_malleolus_ID',
+      'connective_tissue-left_ankle_joint_capsule_ID',
+      'connective_tissue-left_subtalar_joint_capsule_ID',
+      'connective_tissue-left_talonavicular_joint_capsule_ID',
+      'connective_tissue-metatarsophalangeal_joint_capsule_of_left_big_toe_ID',
+      'connective_tissue-metatarsophalangeal_joint_capsule_of_left_second_toe_ID',
+      'connective_tissue-metatarsophalangeal_joint_capsule_of_left_third_toe_ID',
+      'connective_tissue-metatarsophalangeal_joint_capsule_of_left_fourth_toe_ID',
+      'connective_tissue-metatarsophalangeal_joint_capsule_of_left_fifth_toe_ID',
+      'connective_tissue-interphalangeal_joint_capsule_of_left_big_toe_ID',
+      'connective_tissue-interphalangeal_proximal_joint_capsule_of_left_second_toe_ID',
+      'connective_tissue-interphalangeal_proximal_joint_capsule_of_left_third_toe_ID',
+      'connective_tissue-interphalangeal_proximal_joint_capsule_of_left_fourth_toe_ID',
+      'connective_tissue-interphalangeal_proximal_joint_capsule_of_left_fifth_toe_ID',
+
+      // Blood Vessels
+      'cardiovascular_system-left_dorsalis_pedis_artery_ID',
+      'cardiovascular_system-left_medial_plantar_artery_ID',
+      'cardiovascular_system-left_lateral_plantar_artery_ID',
+      'cardiovascular_system-left_deep_plantar_artery_ID',
+      'cardiovascular_system-deep_branch_of_left_medial_plantar_artery_ID',
+      'cardiovascular_system-superficial_branch_of_left_medial_plantar_artery_ID',
+      'cardiovascular_system-left_dorsal_venous_arch_of_foot_ID',
+      'cardiovascular_system-left_dorsal_venous_nework_of_foot_ID',
+
+      // Nerves
+      'nervous_system-left_medial_plantar_nerve_ID',
+      'nervous_system-left_lateral_plantar_nerve_ID',
+      'nervous_system-left_deep_branch_of_lateral_plantar_nerve_ID',
+      'nervous_system-left_medial_plantar_nerve_and_branches_ID',
+      'nervous_system-left_lateral_plantar_nerve_and_branches_ID',
+      'nervous_system-left_proper_plantar_digital_branches_of_medial_plantar_nerve_ID',
+      'nervous_system-left_common_plantar_digital_branches_of_medial_plantar_nerve_ID',
+      'nervous_system-left_proper_plantar_digital_branches_of_lateral_plantar_nerve_ID',
+      'nervous_system-left_common_plantar_digital_branches_of_lateral_plantar_nerve_ID',
+      'nervous_system-left_medial_dorsal_cutaneous_nerve_of_foot_ID',
+      'nervous_system-left_intermediate_dorsal_cutaneous_nerve_of_foot_ID',
+      'nervous_system-left_dorsal_digital_branches_of_superficial_fibular_nerve_ID',
+      'nervous_system-left_proper_dorsal_digital_nerves_ID',
+      'nervous_system-left_saphenous_nerve_ID',
     ],
     keywords: [
       'left forearm',
@@ -741,7 +785,7 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
       'muscular_system-right_flexor_pollicis_brevis_ID',
       'muscular_system-right_adductor_pollicis_ID',
       'muscular_system-right_opponens_digiti_minimi_ID',
-      'muscular_system-right_abductor_digiti_minimi_ID',
+      'muscular_system-right_abductor_digiti_minimi_brevis_of_hand_ID',
       'muscular_system-right_flexor_digiti_minimi_brevis_of_hand_ID',
 
       // Lumbricals
@@ -1757,109 +1801,394 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
   rightKnee: {
     name: 'Right Knee',
     ids: [
+      // Bones and Cartilage
       'skeletal_system-right_patella_ID',
       'skeletal_system-right_tibial_plateau_ID',
       'skeletal_system-right_femoral_condyles_ID',
+      'connective_tissue-articular_cartilage_of_right_patella_ID',
+      'connective_tissue-articular_cartilage_of_right_femoral_condyles_ID',
+      'connective_tissue-articular_cartilage_of_right_tibial_plateau_ID',
+
+      // Major Ligaments
+      'connective_tissue-right_patellar_ligament_ID',
       'connective_tissue-right_anterior_cruciate_ligament_ID',
       'connective_tissue-right_posterior_cruciate_ligament_ID',
       'connective_tissue-right_medial_collateral_ligament_ID',
       'connective_tissue-right_lateral_collateral_ligament_ID',
+      'connective_tissue-right_oblique_popliteal_ligament_ID',
+      'connective_tissue-right_arcuate_popliteal_ligament_ID',
+      'connective_tissue-right_transverse_ligament_of_knee_ID',
+      'connective_tissue-right_posterior_meniscofemoral_ligament_ID',
+
+      // Menisci
       'connective_tissue-right_meniscus_medial_ID',
       'connective_tissue-right_meniscus_lateral_ID',
-      'connective_tissue-right_joint_capsule_ID',
+      'connective_tissue-right_anterior_horn_of_medial_meniscus_ID',
+      'connective_tissue-right_posterior_horn_of_medial_meniscus_ID',
+      'connective_tissue-right_anterior_horn_of_lateral_meniscus_ID',
+      'connective_tissue-right_posterior_horn_of_lateral_meniscus_ID',
+
+      // Joint Capsule and Synovial Membrane
+      'connective_tissue-right_knee_joint_capsule_ID',
+      'connective_tissue-fibrous_joint_capsule_of_right_knee_ID',
+      'connective_tissue-synovial_membrane_of_right_knee_joint_ID',
+      'connective_tissue-suprapatellar_synovial_fold_of_right_knee_ID',
+      'connective_tissue-infrapatellar_synovial_fold_of_right_knee_ID',
+      'connective_tissue-alar_folds_of_right_knee_ID',
+
+      // Bursae
       'connective_tissue-right_prepatellar_bursa_ID',
       'connective_tissue-right_infrapatellar_bursa_ID',
-      'connective_tissue-right_suprapatellar_bursa_ID',
-      'connective_tissue-right_patellar_ligament_ID',
       'connective_tissue-right_subcutaneous_prepatellar_bursa_ID',
-      'connective_tissue-fibrous_joint_capsule_of_right_knee_ID',
       'connective_tissue-right_subcutaneous_infrapatellar_bursa_ID',
+      'connective_tissue-right_deep_infrapatellar_bursa_ID',
+      'connective_tissue-right_suprapatellar_bursa_ID',
       'connective_tissue-right_iliotibial_tract_bursa_ID',
-      'connective_tissue-right_oblique_popliteal_ligament_ID',
       'connective_tissue-right_anserine_bursa_ID',
+      'connective_tissue-right_gastrocnemius_bursa_ID',
+      'connective_tissue-right_semimembranosus_bursa_ID',
+
+      // Fat Pads
+      'connective_tissue-infrapatellar_fat_pad_of_right_knee_ID',
+      'connective_tissue-posterior_fat_pad_of_right_knee_ID',
+
+      // Retinacula
+      'connective_tissue-right_medial_patellar_retinaculum_ID',
+      'connective_tissue-right_lateral_patellar_retinaculum_ID',
+      'connective_tissue-right_patellar_retinaculum_ID',
+
+      // Blood Vessels
+      'cardiovascular_system-right_popliteal_artery_ID',
+      'cardiovascular_system-right_superior_lateral_genicular_artery_ID',
+      'cardiovascular_system-right_superior_medial_genicular_artery_ID',
+      'cardiovascular_system-right_inferior_lateral_genicular_artery_ID',
+      'cardiovascular_system-right_inferior_medial_genicular_artery_ID',
+      'cardiovascular_system-right_middle_genicular_artery_ID',
+
+      // Nerves
+      'nervous_system-right_common_fibular_nerve_ID',
+      'nervous_system-right_tibial_nerve_ID',
+      'nervous_system-right_genicular_branch_of_obturator_nerve_ID',
+      'nervous_system-right_saphenous_nerve_ID',
     ],
-    keywords: ['right knee', 'right patella'],
+    keywords: [
+      'right knee',
+      'right patella',
+      'right meniscus',
+      'right cruciate',
+      'right tibial',
+      'right popliteal',
+      'right genicular',
+    ],
   },
   leftLowerLeg: {
     name: 'Left Lower Leg',
     ids: [
-      'muscular_system-lateral_head_of_left_gastrocnemius_ID',
-      'muscular_system-medial_head_of_left_gastrocnemius_ID',
-      'skeletal_system-left_tibia_ID',
-      'skeletal_system-left_fibula_ID',
+      // Anterior Compartment Muscles
       'muscular_system-left_tibialis_anterior_ID',
       'muscular_system-left_extensor_digitorum_longus_ID',
       'muscular_system-left_extensor_hallucis_longus_ID',
+      'muscular_system-left_fibularis_tertius_ID',
+
+      // Lateral Compartment Muscles
       'muscular_system-left_fibularis_longus_ID',
       'muscular_system-left_fibularis_brevis_ID',
+
+      // Posterior Compartment Muscles - Superficial
       'muscular_system-left_gastrocnemius_ID',
+      'muscular_system-left_medial_head_of_gastrocnemius_ID',
+      'muscular_system-left_lateral_head_of_gastrocnemius_ID',
       'muscular_system-left_soleus_ID',
       'muscular_system-left_plantaris_ID',
+
+      // Posterior Compartment Muscles - Deep
       'muscular_system-left_tibialis_posterior_ID',
       'muscular_system-left_flexor_digitorum_longus_ID',
       'muscular_system-left_flexor_hallucis_longus_ID',
       'muscular_system-left_popliteus_ID',
-      'connective_tissue-left_crural_fascia_ID',
-      'connective_tissue-left_interosseous_membrane_ID',
+
+      // Bones and Cartilage
+      'skeletal_system-left_tibia_ID',
+      'skeletal_system-left_fibula_ID',
+      'connective_tissue-articular_cartilage_of_left_tibia_ID',
+      'connective_tissue-articular_cartilage_of_left_fibula_ID',
+      'connective_tissue-interosseous_membrane_of_left_leg_ID',
+
+      // Tendons and Retinacula
+      'connective_tissue-left_calcaneal_tendon_ID',
+      'connective_tissue-left_superior_extensor_retinaculum_ID',
+      'connective_tissue-left_inferior_extensor_retinaculum_ID',
+      'connective_tissue-left_superior_fibular_retinaculum_ID',
+      'connective_tissue-left_inferior_fibular_retinaculum_ID',
+      'connective_tissue-left_flexor_retinaculum_ID',
+
+      // Blood Vessels
+      'cardiovascular_system-left_anterior_tibial_artery_ID',
+      'cardiovascular_system-left_posterior_tibial_artery_ID',
+      'cardiovascular_system-left_fibular_artery_ID',
+      'cardiovascular_system-left_great_saphenous_vein_ID',
+      'cardiovascular_system-left_small_saphenous_vein_ID',
+
+      // Nerves
+      'nervous_system-left_deep_fibular_nerve_ID',
+      'nervous_system-left_superficial_fibular_nerve_ID',
+      'nervous_system-left_tibial_nerve_ID',
+      'nervous_system-left_sural_nerve_ID',
+      'nervous_system-left_saphenous_nerve_ID',
+
+      // Fascia and Compartments
+      'connective_tissue-anterior_compartment_of_left_leg_ID',
+      'connective_tissue-lateral_compartment_of_left_leg_ID',
+      'connective_tissue-posterior_compartment_of_left_leg_ID',
+      'connective_tissue-crural_fascia_of_left_leg_ID',
     ],
-    keywords: ['left tibia', 'left fibula', 'left calf'],
+    keywords: [
+      'left lower leg',
+      'left calf',
+      'left shin',
+      'left tibia',
+      'left fibula',
+      'left gastrocnemius',
+      'left soleus',
+      'left tibialis',
+    ],
   },
   rightLowerLeg: {
     name: 'Right Lower Leg',
     ids: [
-      'muscular_system-lateral_head_of_right_gastrocnemius_ID',
-      'muscular_system-medial_head_of_right_gastrocnemius_ID',
-      'skeletal_system-right_tibia_ID',
-      'skeletal_system-right_fibula_ID',
+      // Anterior Compartment Muscles
       'muscular_system-right_tibialis_anterior_ID',
       'muscular_system-right_extensor_digitorum_longus_ID',
       'muscular_system-right_extensor_hallucis_longus_ID',
+      'muscular_system-right_fibularis_tertius_ID',
+
+      // Lateral Compartment Muscles
       'muscular_system-right_fibularis_longus_ID',
       'muscular_system-right_fibularis_brevis_ID',
+
+      // Posterior Compartment Muscles - Superficial
       'muscular_system-right_gastrocnemius_ID',
+      'muscular_system-right_medial_head_of_gastrocnemius_ID',
+      'muscular_system-right_lateral_head_of_gastrocnemius_ID',
       'muscular_system-right_soleus_ID',
       'muscular_system-right_plantaris_ID',
+
+      // Posterior Compartment Muscles - Deep
       'muscular_system-right_tibialis_posterior_ID',
       'muscular_system-right_flexor_digitorum_longus_ID',
       'muscular_system-right_flexor_hallucis_longus_ID',
       'muscular_system-right_popliteus_ID',
-      'connective_tissue-right_crural_fascia_ID',
-      'connective_tissue-right_interosseous_membrane_ID',
+
+      // Bones and Cartilage
+      'skeletal_system-right_tibia_ID',
+      'skeletal_system-right_fibula_ID',
+      'connective_tissue-articular_cartilage_of_right_tibia_ID',
+      'connective_tissue-articular_cartilage_of_right_fibula_ID',
+      'connective_tissue-interosseous_membrane_of_right_leg_ID',
+
+      // Tendons and Retinacula
+      'connective_tissue-right_calcaneal_tendon_ID',
+      'connective_tissue-right_superior_extensor_retinaculum_ID',
+      'connective_tissue-right_inferior_extensor_retinaculum_ID',
+      'connective_tissue-right_superior_fibular_retinaculum_ID',
+      'connective_tissue-right_inferior_fibular_retinaculum_ID',
+      'connective_tissue-right_flexor_retinaculum_ID',
+
+      // Blood Vessels
+      'cardiovascular_system-right_anterior_tibial_artery_ID',
+      'cardiovascular_system-right_posterior_tibial_artery_ID',
+      'cardiovascular_system-right_fibular_artery_ID',
+      'cardiovascular_system-right_great_saphenous_vein_ID',
+      'cardiovascular_system-right_small_saphenous_vein_ID',
+
+      // Nerves
+      'nervous_system-right_deep_fibular_nerve_ID',
+      'nervous_system-right_superficial_fibular_nerve_ID',
+      'nervous_system-right_tibial_nerve_ID',
+      'nervous_system-right_sural_nerve_ID',
+      'nervous_system-right_saphenous_nerve_ID',
+
+      // Fascia and Compartments
+      'connective_tissue-anterior_compartment_of_right_leg_ID',
+      'connective_tissue-lateral_compartment_of_right_leg_ID',
+      'connective_tissue-posterior_compartment_of_right_leg_ID',
+      'connective_tissue-crural_fascia_of_right_leg_ID',
     ],
-    keywords: ['right tibia', 'right fibula', 'right calf'],
+    keywords: [
+      'right lower leg',
+      'right calf',
+      'right shin',
+      'right tibia',
+      'right fibula',
+      'right gastrocnemius',
+      'right soleus',
+      'right tibialis',
+    ],
   },
   leftFoot: {
     name: 'Left Foot',
     ids: [
-      'muscular_system-left_calcaneal_tendon_ID',
-      'skeletal_system-left_calcaneus_ID',
+      // Dorsal Muscles
+      'muscular_system-left_extensor_digitorum_brevis_ID',
+      'muscular_system-left_extensor_hallucis_brevis_ID',
+      'muscular_system-left_dorsal_interossei_of_foot_ID',
+      'muscular_system-first_dorsal_interosseus_muscle_of_left_foot_ID',
+      'muscular_system-second_dorsal_interosseus_muscle_of_left_foot_ID',
+      'muscular_system-third_dorsal_interosseus_muscle_of_left_foot_ID',
+      'muscular_system-fourth_dorsal_interosseus_muscle_of_left_foot_ID',
+
+      // Plantar Muscles - First Layer
+      'muscular_system-left_abductor_hallucis_ID',
+      'muscular_system-left_flexor_digitorum_brevis_ID',
+      'muscular_system-abductor_digiti_minimi_of_left_foot_ID',
+
+      // Plantar Muscles - Second Layer
+      'muscular_system-left_quadratus_plantae_ID',
+      'muscular_system-left_lumbricals_of_foot_ID',
+      'muscular_system-first_lumbrical_muscle_of_left_foot_ID',
+      'muscular_system-second_lumbrical_muscle_of_left_foot_ID',
+      'muscular_system-third_lumbrical_muscle_of_left_foot_ID',
+      'muscular_system-fourth_lumbrical_muscle_of_left_foot_ID',
+
+      // Plantar Muscles - Third Layer
+      'muscular_system-left_flexor_hallucis_brevis_ID',
+      'muscular_system-left_adductor_hallucis_ID',
+      'muscular_system-left_adductor_hallucis_oblique_head_ID',
+      'muscular_system-left_adductor_hallucis_transverse_head_ID',
+      'muscular_system-left_flexor_digiti_minimi_brevis_of_foot_ID',
+      'muscular_system-left_plantar_interossei_ID',
+      'muscular_system-first_plantar_interosseous_muscle_of_left_foot_ID',
+      'muscular_system-second_plantar_interosseous_muscle_of_left_foot_ID',
+      'muscular_system-third_plantar_interosseous_muscle_of_left_foot_ID',
+
+      // Tarsal Bones
       'skeletal_system-left_talus_ID',
-      'skeletal_system-left_cuboid_ID',
+      'skeletal_system-left_calcaneus_ID',
       'skeletal_system-left_navicular_ID',
+      'skeletal_system-left_cuboid_ID',
       'skeletal_system-left_medial_cuneiform_ID',
       'skeletal_system-left_intermediate_cuneiform_ID',
       'skeletal_system-left_lateral_cuneiform_ID',
-      'skeletal_system-left_metatarsals_1-5_ID',
-      'skeletal_system-left_phalanges_proximal_ID',
-      'skeletal_system-left_phalanges_middle_ID',
-      'skeletal_system-left_phalanges_distal_ID',
-      'muscular_system-left_abductor_hallucis_ID',
-      'muscular_system-left_flexor_digitorum_brevis_ID',
-      'muscular_system-left_abductor_digiti_minimi_ID',
-      'muscular_system-left_quadratus_plantae_ID',
-      'muscular_system-left_lumbricals_of_foot_ID',
-      'muscular_system-left_flexor_hallucis_brevis_ID',
-      'muscular_system-left_adductor_hallucis_ID',
-      'muscular_system-left_flexor_digiti_minimi_brevis_ID',
-      'muscular_system-left_dorsal_interossei_ID',
-      'muscular_system-left_plantar_interossei_ID',
-      'connective_tissue-left_plantar_fascia_ID',
-      'connective_tissue-left_achilles_tendon_insertion_ID',
-      'connective_tissue-left_spring_ligament_ID',
+
+      // Metatarsal Bones
+      'skeletal_system-left_first_metatarsal_ID',
+      'skeletal_system-left_second_metatarsal_ID',
+      'skeletal_system-left_third_metatarsal_ID',
+      'skeletal_system-left_fourth_metatarsal_ID',
+      'skeletal_system-left_fifth_metatarsal_ID',
+
+      // Phalanges
+      'skeletal_system-proximal_phalanx_of_left_big_toe_ID',
+      'skeletal_system-distal_phalanx_of_left_big_toe_ID',
+      'skeletal_system-proximal_phalanx_of_left_second_toe_ID',
+      'skeletal_system-middle_phalanx_of_left_second_toe_ID',
+      'skeletal_system-distal_phalanx_of_left_second_toe_ID',
+      'skeletal_system-proximal_phalanx_of_left_third_toe_ID',
+      'skeletal_system-middle_phalanx_of_left_third_toe_ID',
+      'skeletal_system-distal_phalanx_of_left_third_toe_ID',
+      'skeletal_system-proximal_phalanx_of_left_fourth_toe_ID',
+      'skeletal_system-middle_phalanx_of_left_fourth_toe_ID',
+      'skeletal_system-distal_phalanx_of_left_fourth_toe_ID',
+      'skeletal_system-proximal_phalanx_of_left_fifth_toe_ID',
+      'skeletal_system-middle_phalanx_of_left_fifth_toe_ID',
+      'skeletal_system-distal_phalanx_of_left_fifth_toe_ID',
+
+      // Ligaments and Retinacula
+      'connective_tissue-left_plantar_calcaneonavicular_ligament_ID',
       'connective_tissue-left_long_plantar_ligament_ID',
-      'connective_tissue-left_short_plantar_ligament_ID',
+      'connective_tissue-left_plantar_calcaneocuboid_ligament_ID',
+      'connective_tissue-left_superior_extensor_retinaculum_of_foot_ID',
+      'connective_tissue-left_inferior_extensor_retinaculum_of_foot_ID',
+      'connective_tissue-left_flexor_retinaculum_of_ankle_ID',
+      'connective_tissue-left_plantar_aponeurosis_ID',
+      'connective_tissue-left_plantar_aponeurosis_ligament_ID',
+      'connective_tissue-left_deep_transverse_metatarsal_ligament_ID',
+      'connective_tissue-left_superficial_transverse_metatarsal_ligament_ID',
+      'connective_tissue-left_dorsal_ligament_of_navicular_and_intermediate_cuneiform_ID',
+      'connective_tissue-left_dorsal_tarsometatarsal_ligament_of_left_third_toe_ID',
+      'connective_tissue-left_dorsal_tarsometatarsal_ligament_of_left_second_toe_ID',
+      'connective_tissue-left_dorsal_tarsometatarsal_ligament_of_left_fourth_toe_ID',
+      'connective_tissue-left_dorsal_tarsometatarsal_ligament_of_left_fifth_toe_ID',
+      'connective_tissue-left_dorsal_tarsometatarsal_ligament_of_left_first_toe_ID',
+      'connective_tissue-left_dorsal_tarsometatarsal_ligament_of_left_big_toe_ID',
+      'connective_tissue-left_dorsal_ligament_of_navicular_and_medial_cuneiform_ID',
+      'connective_tissue-left_dorsal_ligament_of_navicular_and_lateral_cuneiform_ID',
+      'connective_tissue-left_dorsal_ligament_of_cuboid_and_lateral_cuneiform_ID',
+      'connective_tissue-left_dorsal_ligament_of_intermediate_and_lateral_cuneiform_ID',
+      'connective_tissue-left_dorsal_ligament_of_medial_and_intermediate_cuneiform_ID',
+      'connective_tissue-dorsal_ligament_of_first_and_second_left_metatarsals_ID',
+      'connective_tissue-dorsal_ligament_of_second_and_third_left_metatarsals_ID',
+      'connective_tissue-dorsal_ligament_of_third_and_fourth_left_metatarsals_ID',
+      'connective_tissue-dorsal_ligament_of_fourth_and_fifth_left_metatarsals_ID',
+      'connective_tissue-left_cuneometatarsal_interosseous_ligaments_ID',
+      'connective_tissue-left_dorsal_ligament_of_medial_cuneiform_and_intermediate_cuneiform_ID',
+      'connective_tissue-left_posterior_talocalcaneal_ligament_ID',
+      'connective_tissue-left_deltoid_ligament_ID',
+
+      // Tendons
+      'connective_tissue-left_calcaneal_tendon_ID',
+      'muscular_system-left_calcaneal_tendon_ID',
+      'connective_tissue-left_tibialis_anterior_tendon_ID',
+      'connective_tissue-left_tibialis_posterior_tendon_ID',
+      'connective_tissue-left_fibularis_longus_tendon_ID',
+      'connective_tissue-left_fibularis_brevis_tendon_ID',
+      'connective_tissue-left_common_sheath_of_extensor_digitorum_longus_and_fibularis_tertius_ID',
+      'connective_tissue-left_extensor_hallucis_longus_tendon_sheath_ID',
+
+      // Articular Cartilage and Joint Capsules
+      'connective_tissue-articular_cartilage_of_left_talus_ID',
+      'connective_tissue-articular_cartilage_of_left_calcaneus_ID',
+      'connective_tissue-articular_cartilage_of_left_medial_malleolus_ID',
+      'connective_tissue-left_ankle_joint_capsule_ID',
+      'connective_tissue-left_subtalar_joint_capsule_ID',
+      'connective_tissue-left_talonavicular_joint_capsule_ID',
+      'connective_tissue-metatarsophalangeal_joint_capsule_of_left_big_toe_ID',
+      'connective_tissue-metatarsophalangeal_joint_capsule_of_left_second_toe_ID',
+      'connective_tissue-metatarsophalangeal_joint_capsule_of_left_third_toe_ID',
+      'connective_tissue-metatarsophalangeal_joint_capsule_of_left_fourth_toe_ID',
+      'connective_tissue-metatarsophalangeal_joint_capsule_of_left_fifth_toe_ID',
+      'connective_tissue-interphalangeal_joint_capsule_of_left_big_toe_ID',
+      'connective_tissue-interphalangeal_proximal_joint_capsule_of_left_second_toe_ID',
+      'connective_tissue-interphalangeal_proximal_joint_capsule_of_left_third_toe_ID',
+      'connective_tissue-interphalangeal_proximal_joint_capsule_of_left_fourth_toe_ID',
+      'connective_tissue-interphalangeal_proximal_joint_capsule_of_left_fifth_toe_ID',
+
+      // Blood Vessels
+      'cardiovascular_system-left_dorsalis_pedis_artery_ID',
+      'cardiovascular_system-left_medial_plantar_artery_ID',
+      'cardiovascular_system-left_lateral_plantar_artery_ID',
+      'cardiovascular_system-left_deep_plantar_artery_ID',
+      'cardiovascular_system-deep_branch_of_left_medial_plantar_artery_ID',
+      'cardiovascular_system-superficial_branch_of_left_medial_plantar_artery_ID',
+      'cardiovascular_system-left_dorsal_venous_arch_of_foot_ID',
+      'cardiovascular_system-left_dorsal_venous_nework_of_foot_ID',
+
+      // Nerves
+      'nervous_system-left_medial_plantar_nerve_ID',
+      'nervous_system-left_lateral_plantar_nerve_ID',
+      'nervous_system-left_deep_branch_of_lateral_plantar_nerve_ID',
+      'nervous_system-left_medial_plantar_nerve_and_branches_ID',
+      'nervous_system-left_lateral_plantar_nerve_and_branches_ID',
+      'nervous_system-left_proper_plantar_digital_branches_of_medial_plantar_nerve_ID',
+      'nervous_system-left_common_plantar_digital_branches_of_medial_plantar_nerve_ID',
+      'nervous_system-left_proper_plantar_digital_branches_of_lateral_plantar_nerve_ID',
+      'nervous_system-left_common_plantar_digital_branches_of_lateral_plantar_nerve_ID',
+      'nervous_system-left_medial_dorsal_cutaneous_nerve_of_foot_ID',
+      'nervous_system-left_intermediate_dorsal_cutaneous_nerve_of_foot_ID',
+      'nervous_system-left_dorsal_digital_branches_of_superficial_fibular_nerve_ID',
+      'nervous_system-left_proper_dorsal_digital_nerves_ID',
+      'nervous_system-left_saphenous_nerve_ID',
     ],
-    keywords: ['left foot', 'left ankle', 'left calcaneal', 'left achilles'],
+    keywords: [
+      'left foot',
+      'left ankle',
+      'left tarsus',
+      'left metatarsus',
+      'left toe',
+      'left plantar',
+      'left calcaneus',
+      'left talus',
+    ],
   },
   rightFoot: {
     name: 'Right Foot',
