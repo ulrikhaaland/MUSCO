@@ -12,6 +12,16 @@ interface HumanViewerProps {
   gender: Gender;
 }
 
+interface AnatomyObject {
+  objectId: string;
+  name: string;
+  children?: string[];
+  description?: string;
+  available?: boolean;
+  shown?: boolean;
+  parent?: string;
+}
+
 export default function HumanViewer({ gender }: HumanViewerProps) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const selectedPartsRef = useRef<AnatomyPart[]>([]);
@@ -338,6 +348,79 @@ export default function HumanViewer({ gender }: HumanViewerProps) {
     };
   }, []);
 
+  const getBodyPartIds = useCallback((partKeyword: string) => {
+    const human = humanRef.current;
+    if (!human) return;
+
+    human.send('scene.info', (response: any) => {
+      if (!response.objects) return;
+
+      const objects = Object.values(response.objects) as AnatomyObject[];
+      const allFoundIds: string[] = [];
+
+      // Helper function to get all descendant IDs of a node
+      const getAllDescendantIds = (parentId: string): string[] => {
+        const obj = objects.find(o => o.objectId === parentId);
+        if (!obj) return [];
+
+        let ids = [obj.objectId];
+        if (obj.children) {
+          obj.children.forEach(childId => {
+            ids = [...ids, ...getAllDescendantIds(childId)];
+          });
+        }
+        return ids;
+      };
+
+      // System IDs mapping
+      const systemIds = {
+        'muscular': 'human_19_male_muscular_system-muscular_system_ID',
+        'connective': 'human_19_male_connective_tissue-appendicular_connective_tissue_ID',
+        'skeletal': 'human_19_male_skeletal_system-skeletal_system_ID'
+      };
+
+      // Search through each system
+      Object.values(systemIds).forEach(systemId => {
+        const systemObject = objects.find(obj => obj.objectId === systemId);
+        if (!systemObject) return;
+
+        // Breadth-first search through the system
+        const searchQueue = [systemObject.objectId];
+        const searched = new Set<string>();
+
+        while (searchQueue.length > 0) {
+          const currentId = searchQueue.shift()!;
+          if (searched.has(currentId)) continue;
+          searched.add(currentId);
+
+          const currentObj = objects.find(o => o.objectId === currentId);
+          if (!currentObj) continue;
+
+          // If we find a matching part, get all its descendant IDs
+          if (currentObj.name.toLowerCase().includes(partKeyword.toLowerCase())) {
+            const descendantIds = getAllDescendantIds(currentObj.objectId);
+            allFoundIds.push(...descendantIds);
+          }
+
+          // Add children to search queue
+          if (currentObj.children) {
+            searchQueue.push(...currentObj.children);
+          }
+        }
+      });
+
+      // Format and print unique IDs
+      const uniqueIds = [...new Set(allFoundIds)]
+        .map(id => {
+          // Remove the 'human_19_male_' prefix and wrap in quotes
+          const formattedId = `'${id.replace('human_19_male_', '')}'`;
+          return formattedId;
+        });
+      
+      console.log(uniqueIds.join(',\n'));
+    });
+  }, []);
+
   return (
     <div
       className="relative flex"
@@ -436,6 +519,12 @@ export default function HumanViewer({ gender }: HumanViewerProps) {
             </svg>
             <span>{isChangingModel ? 'Loading...' : `Switch to ${currentGender === 'male' ? 'Female' : 'Male'}`}</span>
           </button>
+          {/* <button
+            onClick={() => getBodyPartIds('abdomen')}
+            className="bg-indigo-600/80 hover:bg-indigo-500/80 text-white px-4 py-2 rounded-lg shadow-lg transition-colors duration-200 flex items-center space-x-2"
+          >
+            <span>Get Part IDs</span>
+          </button> */}
         </div>
       </div>
 

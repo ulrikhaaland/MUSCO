@@ -13,79 +13,51 @@ export function idsMatch(id1: string, id2: string): boolean {
 
 // Helper function to check if a part belongs to a group
 export function getPartGroup(part: AnatomyPart, bodyPartGroups: { [key: string]: BodyPartGroup }): BodyPartGroup | null {
-  const name = part.name?.toLowerCase() || '';
-  const description = part.description?.toLowerCase() || '';
   const neutralId = getNeutralId(part.objectId);
 
-  console.log('Trying to match part:', {
-    objectId: part.objectId,
-    neutralId,
-    name,
-    description
-  });
-
-  // First check if the part's ID exactly matches any group's ids (ignoring gender)
+  // First check if the part's ID matches any group's ids (ignoring gender)
   for (const [groupKey, group] of Object.entries(bodyPartGroups)) {
-    if (group.ids.some(id => getNeutralId(id) === neutralId)) {
-      console.log(`Found exact ID match in group: ${groupKey}`);
+    // Check both regular ids and selectIds
+    const allGroupIds = [...(group.ids || []), ...(group.selectIds || [])];
+    if (allGroupIds.some(id => getNeutralId(id) === neutralId)) {
+      console.log(`Found part in group: ${groupKey}`);
       return group;
     }
   }
 
-  // If no exact ID match, check if the part's name contains any group's keywords
-  // but make sure to match the most specific group first
-  let bestMatch: { group: BodyPartGroup; matchCount: number; groupKey: string } | null = null;
+  return null;
+}
 
-  for (const [groupKey, group] of Object.entries(bodyPartGroups)) {
-    const matchCount = group.keywords.reduce((count, keyword) => {
-      const keywordLower = keyword.toLowerCase();
-      if (name.includes(keywordLower) || description.includes(keywordLower)) {
-        console.log(`Keyword match in group ${groupKey}: ${keywordLower}`);
-        count++;
-      }
-      return count;
-    }, 0);
-
-    // If this group has more keyword matches than our current best match,
-    // or if it's the first match we've found, use it
-    if (matchCount > 0 && (!bestMatch || matchCount > bestMatch.matchCount)) {
-      console.log(`New best match: ${groupKey} with ${matchCount} matches`);
-      bestMatch = { group, matchCount, groupKey };
-    }
+// Helper function to get the selection IDs for a group
+export function getGroupSelectionIds(group: BodyPartGroup): string[] {
+  // If selectIds are specified, use those
+  if (group.selectIds && group.selectIds.length > 0) {
+    return group.selectIds;
   }
-
-  if (bestMatch) {
-    console.log(`Final match: ${bestMatch.groupKey}`);
-  } else {
-    console.log('No match found');
-  }
-
-  return bestMatch ? bestMatch.group : null;
+  // Otherwise fall back to regular ids
+  return group.ids;
 }
 
 // Helper function to get all parts in a group
 export function getGroupParts(group: BodyPartGroup, objects: AnatomyPart[]): string[] {
-  // If we have explicit IDs for this group, find matching parts (accounting for gender)
-  if (group.ids.length > 0) {
+  // Always use selectIds if available
+  if (group.selectIds && group.selectIds.length > 0) {
     return objects
       .filter(obj => 
-        group.ids.some(id => 
+        group.selectIds!.some(id => 
           getNeutralId(id) === getNeutralId(obj.objectId)
         )
       )
       .map(obj => obj.objectId);
   }
 
-  // Otherwise fall back to keyword matching
+  // Fall back to regular ids if no selectIds
   return objects
-    .filter(obj => {
-      const name = obj.name?.toLowerCase() || '';
-      const description = obj.description?.toLowerCase() || '';
-      return group.keywords.some(keyword => 
-        name.includes(keyword.toLowerCase()) || 
-        description.includes(keyword.toLowerCase())
-      );
-    })
+    .filter(obj => 
+      group.ids.some(id => 
+        getNeutralId(id) === getNeutralId(obj.objectId)
+      )
+    )
     .map(obj => obj.objectId);
 }
 
