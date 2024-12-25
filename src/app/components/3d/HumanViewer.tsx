@@ -32,15 +32,7 @@ export default function HumanViewer({ gender }: HumanViewerProps) {
   const deselectionTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const minChatWidth = 300;
   const maxChatWidth = 800;
-  const [chatWidth, setChatWidth] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return Math.min(
-        Math.max(minChatWidth, window.innerWidth / 2),
-        maxChatWidth
-      );
-    }
-    return 384;
-  });
+  const [chatWidth, setChatWidth] = useState(384);
   const [isDragging, setIsDragging] = useState(false);
   const lastWidthRef = useRef(chatWidth);
   const rafRef = useRef<number | null>(null);
@@ -50,7 +42,7 @@ export default function HumanViewer({ gender }: HumanViewerProps) {
   const [isResetting, setIsResetting] = useState(false);
 
   const MODEL_IDS = {
-    male: '5rlY',
+    male: '5tOV',
     female: '5rlW',
   };
 
@@ -375,7 +367,7 @@ export default function HumanViewer({ gender }: HumanViewerProps) {
       // System IDs mapping
       const systemIds = {
         'muscular': 'human_19_male_muscular_system-muscular_system_ID',
-        'connective': 'human_19_male_connective_tissue-appendicular_connective_tissue_ID',
+        'connective': 'human_19_male_connective_tissue-connective_tissue_ID',
         'skeletal': 'human_19_male_skeletal_system-skeletal_system_ID'
       };
 
@@ -420,6 +412,17 @@ export default function HumanViewer({ gender }: HumanViewerProps) {
       console.log(uniqueIds.join(',\n'));
     });
   }, []);
+
+  // Move window-dependent calculation to useEffect
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const initialWidth = Math.min(
+        Math.max(minChatWidth, window.innerWidth / 2),
+        maxChatWidth
+      );
+      setChatWidth(initialWidth);
+    }
+  }, []); // Empty dependency array means this runs once after mount
 
   return (
     <div
@@ -519,12 +522,12 @@ export default function HumanViewer({ gender }: HumanViewerProps) {
             </svg>
             <span>{isChangingModel ? 'Loading...' : `Switch to ${currentGender === 'male' ? 'Female' : 'Male'}`}</span>
           </button>
-          {/* <button
-            onClick={() => getBodyPartIds('abdomen')}
+          <button
+            onClick={() => getBodyPartIds('right finger')}
             className="bg-indigo-600/80 hover:bg-indigo-500/80 text-white px-4 py-2 rounded-lg shadow-lg transition-colors duration-200 flex items-center space-x-2"
           >
             <span>Get Part IDs</span>
-          </button> */}
+          </button>
         </div>
       </div>
 
