@@ -44,6 +44,7 @@ export function useHumanAPI({
   handleReset: () => void;
   currentGender: Gender;
   needsReset: boolean;
+  setNeedsReset: (value: boolean) => void;
   isReady: boolean;
 } {
   const humanRef = useRef<HumanAPI | null>(null);
@@ -98,6 +99,13 @@ export function useHumanAPI({
 
         humanRef.current = human;
 
+        // Remove any existing event listeners first
+        human.send('human.ready', null);
+        human.send('camera.updated', null);
+        if (onObjectSelected) {
+          human.send('scene.objectsSelected', null);
+        }
+
         human.on('human.ready', () => {
           console.log('Human API is ready');
 
@@ -115,6 +123,14 @@ export function useHumanAPI({
 
           // Listen for camera changes
           human.on('camera.updated', checkCameraPosition);
+
+          // Listen for object selection and enable xray mode
+          human.on('scene.objectsSelected', (event) => {
+            // Only enable xray if something is selected
+            if (Object.values(event).some(isSelected => isSelected)) {
+              human.send('scene.enableXray');
+            }
+          });
 
           setIsReady(true);
           onReady?.();
@@ -136,8 +152,11 @@ export function useHumanAPI({
       }
       // Remove event listeners
       if (humanRef.current) {
+        humanRef.current.send('human.ready', null);
         humanRef.current.send('camera.updated', null);
-        humanRef.current.send('scene.objectsSelected', null);
+        if (onObjectSelected) {
+          humanRef.current.send('scene.objectsSelected', null);
+        }
       }
       setIsReady(false);
     };
@@ -161,5 +180,5 @@ export function useHumanAPI({
     setCurrentGender(initialGender);
   }, [initialGender]);
 
-  return { humanRef, handleReset, currentGender, needsReset, isReady };
+  return { humanRef, handleReset, currentGender, needsReset, setNeedsReset, isReady };
 }

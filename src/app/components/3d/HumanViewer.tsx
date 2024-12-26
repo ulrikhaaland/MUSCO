@@ -44,6 +44,8 @@ export default function HumanViewer({ gender }: HumanViewerProps) {
   const [currentRotation, setCurrentRotation] = useState(0);
   const rotationAnimationRef = useRef<number | null>(null);
   const [isResetting, setIsResetting] = useState(false);
+  const isSelectingGroupRef = useRef(false);
+  const [isIsolated, setIsIsolated] = useState(false);
 
   const MODEL_IDS = {
     male: '5tOV',
@@ -65,6 +67,13 @@ export default function HumanViewer({ gender }: HumanViewerProps) {
   const handleObjectSelected = useCallback(
     (event: any) => {
       console.log('scene.objectsSelected', event);
+      // humanRef.current?.send('scene.enableXray', () => {});
+
+      // If this event was triggered by our group selection, ignore it
+      if (isSelectingGroupRef.current) {
+        isSelectingGroupRef.current = false;
+        return;
+      }
 
       const selectedId = Object.keys(event)[0];
       const isSelected = event[selectedId];
@@ -75,14 +84,12 @@ export default function HumanViewer({ gender }: HumanViewerProps) {
         deselectionTimeoutRef.current = null;
       }
 
-      // If this is a deselection and we're not in the middle of a selection sequence
-      if (!isSelected && selectedId === lastSelectedIdRef.current) {
-        deselectionTimeoutRef.current = setTimeout(() => {
-          // Just clear the selection state without resetting the model
-          setSelectedPart(null);
-          setSelectedParts([]);
-          lastSelectedIdRef.current = null;
-        }, 50);
+      // If this is a deselection
+      if (!isSelected) {
+        // Immediately clear selection state
+        setSelectedPart(null);
+        setSelectedParts([]);
+        lastSelectedIdRef.current = null;
         return;
       }
 
@@ -132,8 +139,13 @@ export default function HumanViewer({ gender }: HumanViewerProps) {
                 // Create selection map
                 const selectionMap = createSelectionMap(groupSelection);
 
+                // Set flag before selecting group
+                isSelectingGroupRef.current = true;
                 // Select all parts in the group
-                human.send('scene.selectObjects', selectionMap);
+                human.send('scene.selectObjects', {
+                  ...selectionMap,
+                  replace: true,
+                });
 
                 // Create a group part object
                 const groupPart: AnatomyPart = {
@@ -168,7 +180,16 @@ export default function HumanViewer({ gender }: HumanViewerProps) {
                   [selectedId]: true,
                 };
 
+                human.on('scene.objectsSelected', (response: any) => {
+                  // set xray
+                  human.send('scene.enableXray', () => {});
+                });
                 human.send('scene.selectObjects', selectionMap);
+                const seleasdctionMap = {
+                  [selectedId]: false,
+                };
+
+                humanRef.current?.send('scene.selectObjects', seleasdctionMap);
                 setSelectedPart(selectedPart);
                 setSelectedParts([selectedPart]);
 
@@ -196,6 +217,7 @@ export default function HumanViewer({ gender }: HumanViewerProps) {
     handleReset: hookHandleReset,
     currentGender,
     needsReset,
+    setNeedsReset,
     isReady,
   } = useHumanAPI({
     elementId: 'myViewer',
@@ -261,16 +283,29 @@ export default function HumanViewer({ gender }: HumanViewerProps) {
     if (isResetting) return;
 
     setIsResetting(true);
-    hookHandleReset();
 
-    // Reset rotation state
-    setCurrentRotation(0);
+    // Use scene.reset to reset everything to initial state
+    if (humanRef.current) {
+      humanRef.current.send('scene.reset', () => {
+        // Reset all our state after the scene has been reset
+        setCurrentRotation(0);
+        setSelectedPart(null);
+        setSelectedParts([]);
+        lastSelectedIdRef.current = null;
+        setNeedsReset(false);
 
-    // Clear reset state after animation
-    setTimeout(() => {
-      setIsResetting(false);
-    }, 200);
-  }, [isResetting, hookHandleReset]);
+        // Clear reset state after a short delay to allow for animation
+        setTimeout(() => {
+          setIsResetting(false);
+        }, 200);
+      });
+    }
+  }, [isResetting, setNeedsReset]);
+
+  // Update reset button state when parts are selected
+  useEffect(() => {
+    setNeedsReset(selectedParts.length > 0 || needsReset);
+  }, [selectedParts, needsReset]);
 
   const startDragging = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
@@ -356,86 +391,6 @@ export default function HumanViewer({ gender }: HumanViewerProps) {
     };
   }, []);
 
-  const getBodyPartIds = useCallback((partKeyword: string) => {
-    const human = humanRef.current;
-    if (!human) return;
-
-    human.send('scene.info', (response: any) => {
-      if (!response.objects) return;
-
-      const objects = Object.values(response.objects) as AnatomyObject[];
-      const allFoundIds: string[] = [];
-      const searched = new Set<string>();
-
-      // Helper function to get all descendant IDs of a node
-      const getAllDescendantIds = (parentId: string): string[] => {
-        const obj = objects.find((o) => o.objectId === parentId);
-        if (!obj) return [];
-
-        let ids = [obj.objectId];
-        if (obj.children) {
-          obj.children.forEach((childId) => {
-            ids = [...ids, ...getAllDescendantIds(childId)];
-          });
-        }
-        return ids;
-      };
-
-      // Helper function for deep search
-      const deepSearch = (
-        objectId: string,
-        searchTerm: string,
-        path: string[] = []
-      ) => {
-        if (searched.has(objectId)) return;
-        searched.add(objectId);
-
-        const obj = objects.find((o) => o.objectId === objectId);
-        if (!obj) return;
-
-        // Add current object's name to path
-        const currentPath = [...path, obj.name];
-
-        // Log the current path for debugging
-
-        // Check if current object's name matches search term
-        if (obj.name.toLowerCase().includes(searchTerm.toLowerCase())) {
-          const descendantIds = getAllDescendantIds(obj.objectId);
-          allFoundIds.push(...descendantIds);
-        }
-
-        // Recursively search children
-        if (obj.children) {
-          obj.children.forEach((childId) => {
-            deepSearch(childId, searchTerm, currentPath);
-          });
-        }
-      };
-
-      // Start search from each system root
-      const systemIds = {
-        muscular: 'human_19_male_muscular_system-muscular_system_ID',
-        connective: 'human_19_male_connective_tissue-connective_tissue_ID',
-        skeletal: 'human_19_male_skeletal_system-skeletal_system_ID',
-      };
-
-      Object.values(systemIds).forEach((systemId) => {
-        deepSearch(systemId, partKeyword);
-      });
-
-      // Format and print unique IDs
-      const uniqueIds = [...new Set(allFoundIds)].map((id) => {
-        const formattedId = `'${id.replace('human_19_male_', '')}'`;
-        return formattedId;
-      });
-
-      console.log('Found IDs:');
-      for (const id of uniqueIds) {
-        console.log(id + ',');
-      }
-    });
-  }, []);
-
   // Move window-dependent calculation to useEffect
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -512,9 +467,13 @@ export default function HumanViewer({ gender }: HumanViewerProps) {
           </button>
           <button
             onClick={handleReset}
-            disabled={isResetting || !needsReset}
+            disabled={
+              isResetting || (!needsReset && selectedParts.length === 0)
+            }
             className={`bg-indigo-600/80 hover:bg-indigo-500/80 text-white px-4 py-2 rounded-lg shadow-lg transition-colors duration-200 flex items-center space-x-2 ${
-              isResetting || !needsReset ? 'opacity-50 cursor-not-allowed' : ''
+              isResetting || (!needsReset && selectedParts.length === 0)
+                ? 'opacity-50 cursor-not-allowed'
+                : ''
             }`}
           >
             <svg
@@ -555,12 +514,6 @@ export default function HumanViewer({ gender }: HumanViewerProps) {
                 ? 'Loading...'
                 : `Switch to ${currentGender === 'male' ? 'Female' : 'Male'}`}
             </span>
-          </button>
-          <button
-            onClick={() => getBodyPartIds('left ankle')}
-            className="bg-indigo-600/80 hover:bg-indigo-500/80 text-white px-4 py-2 rounded-lg shadow-lg transition-colors duration-200 flex items-center space-x-2"
-          >
-            <span>Get Part IDs</span>
           </button>
         </div>
       </div>
