@@ -6,7 +6,11 @@ import { AnatomyPart } from '../../types/anatomy';
 import PartPopup from '../ui/PartPopup';
 import { useHumanAPI } from '@/app/hooks/useHumanAPI';
 import { bodyPartGroups } from '@/app/config/bodyPartGroups';
-import { getPartGroup, getGroupParts, createSelectionMap } from '@/app/utils/anatomyHelpers';
+import {
+  getPartGroup,
+  getGroupParts,
+  createSelectionMap,
+} from '@/app/utils/anatomyHelpers';
 
 interface HumanViewerProps {
   gender: Gender;
@@ -58,134 +62,145 @@ export default function HumanViewer({ gender }: HumanViewerProps) {
     []
   );
 
-  const handleObjectSelected = useCallback((event: any) => {
-    console.log('scene.objectsSelected', event);
+  const handleObjectSelected = useCallback(
+    (event: any) => {
+      console.log('scene.objectsSelected', event);
 
-    const selectedId = Object.keys(event)[0];
-    const isSelected = event[selectedId];
+      const selectedId = Object.keys(event)[0];
+      const isSelected = event[selectedId];
 
-    // Clear any pending deselection timeout
-    if (deselectionTimeoutRef.current) {
-      clearTimeout(deselectionTimeoutRef.current);
-      deselectionTimeoutRef.current = null;
-    }
-
-    // If this is a deselection and we're not in the middle of a selection sequence
-    if (!isSelected && selectedId === lastSelectedIdRef.current) {
-      deselectionTimeoutRef.current = setTimeout(() => {
-        // Just clear the selection state without resetting the model
-        setSelectedPart(null);
-        setSelectedParts([]);
-        lastSelectedIdRef.current = null;
-      }, 50);
-      return;
-    }
-
-    // If this is a new selection, update the last selected ID
-    if (isSelected && selectedId) {
-      lastSelectedIdRef.current = selectedId;
-      const human = humanRef.current;
-
-      if (human) {
-        // First, get info about all objects in the scene
-        human.send('scene.info', (response: any) => {
-          try {
-            console.log('Scene info:', response);
-
-            const objects = response.objects;
-            if (!objects) {
-              console.error('No objects found in scene.info response');
-              return;
-            }
-
-            const objectsArray: AnatomyPart[] = Array.isArray(objects)
-              ? objects
-              : Object.values(objects);
-
-            const selectedPart = objectsArray.find(
-              (obj: AnatomyPart) => obj.objectId === selectedId
-            );
-
-            if (!selectedPart) return;
-
-            // Log detailed information about the selected part
-            console.log('Selected part:', {
-              id: selectedPart.objectId,
-              name: selectedPart.name,
-              description: selectedPart.description
-            });
-
-            const group = getPartGroup(selectedPart, bodyPartGroups);
-
-            if (group) {
-              // Log group information
-              console.log(`Part belongs to group: ${group.name}`);
-              // Get all parts in the group
-              const groupSelection = getGroupParts(group, objectsArray);
-              console.log(`${group.name} parts found:`, groupSelection);
-
-              // Create selection map
-              const selectionMap = createSelectionMap(groupSelection);
-
-              // Select all parts in the group
-              human.send('scene.selectObjects', selectionMap);
-
-              // Create a group part object
-              const groupPart: AnatomyPart = {
-                objectId: selectedId,
-                name: group.name,
-                description: `${group.name} area`,
-                available: true,
-                shown: true,
-                selected: true,
-                parent: '',
-                children: []
-              };
-
-              setSelectedPart(groupPart);
-              setSelectedParts(objectsArray.filter(obj => 
-                groupSelection.includes(obj.objectId)
-              ));
-
-              // Update the UI with the group part instead of the selected part
-              const mouseEvent = window.event as MouseEvent;
-              if (mouseEvent) {
-                handlePartSelect(groupPart, {
-                  clientX: mouseEvent.clientX,
-                  clientY: mouseEvent.clientY,
-                });
-              }
-            } else {
-              // If it's not part of a group, just select the individual part
-              const selectionMap = {
-                [selectedId]: true
-              };
-              
-              human.send('scene.selectObjects', selectionMap);
-              setSelectedPart(selectedPart);
-              setSelectedParts([selectedPart]);
-
-              // Update the UI with the individual part
-              const mouseEvent = window.event as MouseEvent;
-              if (mouseEvent) {
-                handlePartSelect(selectedPart, {
-                  clientX: mouseEvent.clientX,
-                  clientY: mouseEvent.clientY,
-                });
-              }
-            }
-          } catch (error) {
-            console.error('Error handling selection:', error);
-          }
-        });
+      // Clear any pending deselection timeout
+      if (deselectionTimeoutRef.current) {
+        clearTimeout(deselectionTimeoutRef.current);
+        deselectionTimeoutRef.current = null;
       }
-    }
-  }, [handlePartSelect]);
 
-  const { humanRef, handleReset: hookHandleReset, currentGender, needsReset, isReady } = useHumanAPI({
+      // If this is a deselection and we're not in the middle of a selection sequence
+      if (!isSelected && selectedId === lastSelectedIdRef.current) {
+        deselectionTimeoutRef.current = setTimeout(() => {
+          // Just clear the selection state without resetting the model
+          setSelectedPart(null);
+          setSelectedParts([]);
+          lastSelectedIdRef.current = null;
+        }, 50);
+        return;
+      }
+
+      // If this is a new selection, update the last selected ID
+      if (isSelected && selectedId) {
+        lastSelectedIdRef.current = selectedId;
+        const human = humanRef.current;
+
+        if (human) {
+          // First, get info about all objects in the scene
+          human.send('scene.info', (response: any) => {
+            try {
+              console.log('Scene info:', response);
+
+              const objects = response.objects;
+              if (!objects) {
+                console.error('No objects found in scene.info response');
+                return;
+              }
+
+              const objectsArray: AnatomyPart[] = Array.isArray(objects)
+                ? objects
+                : Object.values(objects);
+
+              const selectedPart = objectsArray.find(
+                (obj: AnatomyPart) => obj.objectId === selectedId
+              );
+
+              if (!selectedPart) return;
+
+              // Log detailed information about the selected part
+              console.log('Selected part:', {
+                id: selectedPart.objectId,
+                name: selectedPart.name,
+                description: selectedPart.description,
+              });
+
+              const group = getPartGroup(selectedPart, bodyPartGroups);
+
+              if (group) {
+                // Log group information
+                console.log(`Part belongs to group: ${group.name}`);
+                // Get all parts in the group
+                const groupSelection = getGroupParts(group, objectsArray);
+                console.log(`${group.name} parts found:`, groupSelection);
+
+                // Create selection map
+                const selectionMap = createSelectionMap(groupSelection);
+
+                // Select all parts in the group
+                human.send('scene.selectObjects', selectionMap);
+
+                // Create a group part object
+                const groupPart: AnatomyPart = {
+                  objectId: selectedId,
+                  name: group.name,
+                  description: `${group.name} area`,
+                  available: true,
+                  shown: true,
+                  selected: true,
+                  parent: '',
+                  children: [],
+                };
+
+                setSelectedPart(groupPart);
+                setSelectedParts(
+                  objectsArray.filter((obj) =>
+                    groupSelection.includes(obj.objectId)
+                  )
+                );
+
+                // Update the UI with the group part instead of the selected part
+                const mouseEvent = window.event as MouseEvent;
+                if (mouseEvent) {
+                  handlePartSelect(groupPart, {
+                    clientX: mouseEvent.clientX,
+                    clientY: mouseEvent.clientY,
+                  });
+                }
+              } else {
+                // If it's not part of a group, just select the individual part
+                const selectionMap = {
+                  [selectedId]: true,
+                };
+
+                human.send('scene.selectObjects', selectionMap);
+                setSelectedPart(selectedPart);
+                setSelectedParts([selectedPart]);
+
+                // Update the UI with the individual part
+                const mouseEvent = window.event as MouseEvent;
+                if (mouseEvent) {
+                  handlePartSelect(selectedPart, {
+                    clientX: mouseEvent.clientX,
+                    clientY: mouseEvent.clientY,
+                  });
+                }
+              }
+            } catch (error) {
+              console.error('Error handling selection:', error);
+            }
+          });
+        }
+      }
+    },
+    [handlePartSelect]
+  );
+
+  const {
+    humanRef,
+    handleReset: hookHandleReset,
+    currentGender,
+    needsReset,
+    isReady,
+  } = useHumanAPI({
     elementId: 'myViewer',
     onObjectSelected: handleObjectSelected,
-    initialGender: gender
+    initialGender: gender,
   });
 
   // Create viewer URL
@@ -230,12 +245,12 @@ export default function HumanViewer({ gender }: HumanViewerProps) {
     setIsChangingModel(true);
     const newGender: Gender = currentGender === 'male' ? 'female' : 'male';
     setViewerUrl(getViewerUrl(newGender));
-    
+
     // Reset states
     setSelectedPart(null);
     setSelectedParts([]);
     setCurrentRotation(0);
-    
+
     // Update URL without page reload
     const url = new URL(window.location.href);
     url.searchParams.set('gender', newGender);
@@ -250,7 +265,7 @@ export default function HumanViewer({ gender }: HumanViewerProps) {
 
     // Reset rotation state
     setCurrentRotation(0);
-    
+
     // Clear reset state after animation
     setTimeout(() => {
       setIsResetting(false);
@@ -299,16 +314,17 @@ export default function HumanViewer({ gender }: HumanViewerProps) {
     if (!human || isRotating || isResetting) return;
 
     setIsRotating(true);
-    const startRotation = currentRotation % 360;  // Normalize to 0-360
-    const targetRotation = startRotation === 0 ? 180 : 360;  // Always rotate forward to 180 or 360
-    
+    const startRotation = currentRotation % 360; // Normalize to 0-360
+    const targetRotation = startRotation === 0 ? 180 : 360; // Always rotate forward to 180 or 360
+
     let currentAngle = 0;
     const rotationStep = 2; // Rotate 2 degrees per frame
 
     const animate = () => {
-      if (currentAngle < 180) {  // Always rotate 180 degrees
+      if (currentAngle < 180) {
+        // Always rotate 180 degrees
         human.send('camera.orbit', {
-          yaw: rotationStep  // Always positive for clockwise rotation
+          yaw: rotationStep, // Always positive for clockwise rotation
         });
         currentAngle += rotationStep;
         rotationAnimationRef.current = requestAnimationFrame(animate);
@@ -349,67 +365,74 @@ export default function HumanViewer({ gender }: HumanViewerProps) {
 
       const objects = Object.values(response.objects) as AnatomyObject[];
       const allFoundIds: string[] = [];
+      const searched = new Set<string>();
 
       // Helper function to get all descendant IDs of a node
       const getAllDescendantIds = (parentId: string): string[] => {
-        const obj = objects.find(o => o.objectId === parentId);
+        const obj = objects.find((o) => o.objectId === parentId);
         if (!obj) return [];
 
         let ids = [obj.objectId];
         if (obj.children) {
-          obj.children.forEach(childId => {
+          obj.children.forEach((childId) => {
             ids = [...ids, ...getAllDescendantIds(childId)];
           });
         }
         return ids;
       };
 
-      // System IDs mapping
-      const systemIds = {
-        'muscular': 'human_19_male_muscular_system-muscular_system_ID',
-        'connective': 'human_19_male_connective_tissue-connective_tissue_ID',
-        'skeletal': 'human_19_male_skeletal_system-skeletal_system_ID'
+      // Helper function for deep search
+      const deepSearch = (
+        objectId: string,
+        searchTerm: string,
+        path: string[] = []
+      ) => {
+        if (searched.has(objectId)) return;
+        searched.add(objectId);
+
+        const obj = objects.find((o) => o.objectId === objectId);
+        if (!obj) return;
+
+        // Add current object's name to path
+        const currentPath = [...path, obj.name];
+
+        // Log the current path for debugging
+
+        // Check if current object's name matches search term
+        if (obj.name.toLowerCase().includes(searchTerm.toLowerCase())) {
+          const descendantIds = getAllDescendantIds(obj.objectId);
+          allFoundIds.push(...descendantIds);
+        }
+
+        // Recursively search children
+        if (obj.children) {
+          obj.children.forEach((childId) => {
+            deepSearch(childId, searchTerm, currentPath);
+          });
+        }
       };
 
-      // Search through each system
-      Object.values(systemIds).forEach(systemId => {
-        const systemObject = objects.find(obj => obj.objectId === systemId);
-        if (!systemObject) return;
+      // Start search from each system root
+      const systemIds = {
+        muscular: 'human_19_male_muscular_system-muscular_system_ID',
+        connective: 'human_19_male_connective_tissue-connective_tissue_ID',
+        skeletal: 'human_19_male_skeletal_system-skeletal_system_ID',
+      };
 
-        // Breadth-first search through the system
-        const searchQueue = [systemObject.objectId];
-        const searched = new Set<string>();
-
-        while (searchQueue.length > 0) {
-          const currentId = searchQueue.shift()!;
-          if (searched.has(currentId)) continue;
-          searched.add(currentId);
-
-          const currentObj = objects.find(o => o.objectId === currentId);
-          if (!currentObj) continue;
-
-          // If we find a matching part, get all its descendant IDs
-          if (currentObj.name.toLowerCase().includes(partKeyword.toLowerCase())) {
-            const descendantIds = getAllDescendantIds(currentObj.objectId);
-            allFoundIds.push(...descendantIds);
-          }
-
-          // Add children to search queue
-          if (currentObj.children) {
-            searchQueue.push(...currentObj.children);
-          }
-        }
+      Object.values(systemIds).forEach((systemId) => {
+        deepSearch(systemId, partKeyword);
       });
 
       // Format and print unique IDs
-      const uniqueIds = [...new Set(allFoundIds)]
-        .map(id => {
-          // Remove the 'human_19_male_' prefix and wrap in quotes
-          const formattedId = `'${id.replace('human_19_male_', '')}'`;
-          return formattedId;
-        });
-      
-      console.log(uniqueIds.join(',\n'));
+      const uniqueIds = [...new Set(allFoundIds)].map((id) => {
+        const formattedId = `'${id.replace('human_19_male_', '')}'`;
+        return formattedId;
+      });
+
+      console.log('Found IDs:');
+      for (const id of uniqueIds) {
+        console.log(id + ',');
+      }
     });
   }, []);
 
@@ -441,7 +464,9 @@ export default function HumanViewer({ gender }: HumanViewerProps) {
       >
         {isChangingModel && (
           <div className="absolute inset-0 z-50 bg-black flex items-center justify-center">
-            <div className="text-white text-xl">Loading {currentGender === 'male' ? 'Female' : 'Male'} Model...</div>
+            <div className="text-white text-xl">
+              Loading {currentGender === 'male' ? 'Female' : 'Male'} Model...
+            </div>
           </div>
         )}
         <iframe
@@ -458,12 +483,17 @@ export default function HumanViewer({ gender }: HumanViewerProps) {
           allowFullScreen
           onLoad={() => setIsChangingModel(false)}
         />
-        <div className="absolute bottom-6 right-6 flex space-x-4" style={{ zIndex: 1000 }}>
+        <div
+          className="absolute bottom-6 right-6 flex space-x-4"
+          style={{ zIndex: 1000 }}
+        >
           <button
             onClick={handleRotate}
             disabled={isRotating || isResetting || !isReady}
             className={`bg-indigo-600/80 hover:bg-indigo-500/80 text-white px-4 py-2 rounded-lg shadow-lg transition-colors duration-200 flex items-center space-x-2 ${
-              (isRotating || isResetting || !isReady) ? 'opacity-50 cursor-not-allowed' : ''
+              isRotating || isResetting || !isReady
+                ? 'opacity-50 cursor-not-allowed'
+                : ''
             }`}
           >
             <svg
@@ -484,7 +514,7 @@ export default function HumanViewer({ gender }: HumanViewerProps) {
             onClick={handleReset}
             disabled={isResetting || !needsReset}
             className={`bg-indigo-600/80 hover:bg-indigo-500/80 text-white px-4 py-2 rounded-lg shadow-lg transition-colors duration-200 flex items-center space-x-2 ${
-              (isResetting || !needsReset) ? 'opacity-50 cursor-not-allowed' : ''
+              isResetting || !needsReset ? 'opacity-50 cursor-not-allowed' : ''
             }`}
           >
             <svg
@@ -520,10 +550,14 @@ export default function HumanViewer({ gender }: HumanViewerProps) {
                 clipRule="evenodd"
               />
             </svg>
-            <span>{isChangingModel ? 'Loading...' : `Switch to ${currentGender === 'male' ? 'Female' : 'Male'}`}</span>
+            <span>
+              {isChangingModel
+                ? 'Loading...'
+                : `Switch to ${currentGender === 'male' ? 'Female' : 'Male'}`}
+            </span>
           </button>
           <button
-            onClick={() => getBodyPartIds('right finger')}
+            onClick={() => getBodyPartIds('left ankle')}
             className="bg-indigo-600/80 hover:bg-indigo-500/80 text-white px-4 py-2 rounded-lg shadow-lg transition-colors duration-200 flex items-center space-x-2"
           >
             <span>Get Part IDs</span>
