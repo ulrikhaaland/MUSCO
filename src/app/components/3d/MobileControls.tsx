@@ -42,6 +42,7 @@ export default function MobileControls({
   onSwitchModel,
 }: MobileControlsProps) {
   const [isMobile, setIsMobile] = useState(false);
+  const [isOpen, setIsOpen] = useState(true);
   const {
     messages,
     isLoading,
@@ -63,11 +64,33 @@ export default function MobileControls({
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
+  const handleRotateWithCollapse = () => {
+    onRotate();
+    setIsOpen(false);
+    // Re-open after a short delay
+    setTimeout(() => setIsOpen(true), 100);
+  };
+
+  const handleResetWithCollapse = () => {
+    onReset();
+    setIsOpen(false);
+    // Re-open after a short delay
+    setTimeout(() => setIsOpen(true), 100);
+  };
+
+  const handleSwitchModelWithCollapse = () => {
+    onSwitchModel();
+    setIsOpen(false);
+    // Re-open after a short delay
+    setTimeout(() => setIsOpen(true), 100);
+  };
+
   if (!isMobile) return null;
 
   return (
     <Sheet
-      open
+      open={isOpen}
+      onDismiss={() => setIsOpen(false)}
       blocking={false}
       skipInitialTransition
       defaultSnap={({ maxHeight }) => Math.min(maxHeight * 0.15, 72)}
@@ -88,7 +111,7 @@ export default function MobileControls({
         {/* Basic Controls */}
         <div className="flex justify-around items-center flex-shrink-0">
           <button
-            onClick={onRotate}
+            onClick={handleRotateWithCollapse}
             disabled={isRotating || isResetting || !isReady}
             className={`p-3 rounded-full bg-indigo-600/80 ${
               isRotating || isResetting || !isReady ? 'opacity-50' : 'active:bg-indigo-700'
@@ -98,7 +121,7 @@ export default function MobileControls({
           </button>
 
           <button
-            onClick={onReset}
+            onClick={handleResetWithCollapse}
             disabled={isResetting || (!needsReset && selectedParts.length === 0)}
             className={`p-3 rounded-full bg-indigo-600/80 ${
               isResetting || (!needsReset && selectedParts.length === 0)
@@ -110,7 +133,7 @@ export default function MobileControls({
           </button>
 
           <button
-            onClick={onSwitchModel}
+            onClick={handleSwitchModelWithCollapse}
             disabled={isChangingModel}
             className={`p-3 rounded-full bg-indigo-600/80 ${
               isChangingModel ? 'opacity-50' : 'active:bg-indigo-700'
