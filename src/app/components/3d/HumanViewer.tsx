@@ -10,13 +10,15 @@ import {
   getPartGroup,
   getGroupParts,
   createSelectionMap,
+  getGenderedId,
 } from '@/app/utils/anatomyHelpers';
 
 interface HumanViewerProps {
   gender: Gender;
+  onGenderChange?: (gender: Gender) => void;
 }
 
-export default function HumanViewer({ gender }: HumanViewerProps) {
+export default function HumanViewer({ gender, onGenderChange }: HumanViewerProps) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [selectedParts, setSelectedParts] = useState<AnatomyPart[]>([]);
   const [selectedPart, setSelectedPart] = useState<AnatomyPart | null>(null);
@@ -34,7 +36,6 @@ export default function HumanViewer({ gender }: HumanViewerProps) {
   const rotationAnimationRef = useRef<number | null>(null);
   const [isResetting, setIsResetting] = useState(false);
   const isSelectingGroupRef = useRef(false);
-  const [xRayEnabled, setXRayEnabled] = useState(false);
 
   const MODEL_IDS = {
     male: '5tOV',
@@ -55,15 +56,6 @@ export default function HumanViewer({ gender }: HumanViewerProps) {
 
   const handleObjectSelected = useCallback(
     (event: any) => {
-      console.log('=== handleObjectSelected START ===');
-      console.log('Event received:', event);
-      console.log('Current selectedParts:', selectedParts);
-      console.log('Current selectedPart:', selectedPart);
-      console.log('Stack trace:', new Error().stack);
-
-      const selectedId = Object.keys(event)[0];
-      console.log('Selected ID:', selectedId);
-
       // Update UI position for the popup
       const mouseEvent = window.event as MouseEvent;
       if (mouseEvent && selectedPart) {
@@ -78,21 +70,15 @@ export default function HumanViewer({ gender }: HumanViewerProps) {
     [handlePartSelect, selectedPart]
   );
 
-  const {
-    humanRef,
-    handleReset: hookHandleReset,
-    currentGender,
-    needsReset,
-    setNeedsReset,
-    isReady,
-  } = useHumanAPI({
-    elementId: 'myViewer',
-    onObjectSelected: handleObjectSelected,
-    initialGender: gender,
-    selectedParts,
-    setSelectedParts,
-    setSelectedPart,
-  });
+  const { humanRef, currentGender, needsReset, setNeedsReset, isReady } =
+    useHumanAPI({
+      elementId: 'myViewer',
+      onObjectSelected: handleObjectSelected,
+      initialGender: gender,
+      selectedParts,
+      setSelectedParts,
+      setSelectedPart,
+    });
 
   // Create viewer URL
   const getViewerUrl = useCallback((modelGender: Gender) => {
@@ -132,23 +118,6 @@ export default function HumanViewer({ gender }: HumanViewerProps) {
   const [viewerUrl, setViewerUrl] = useState(() => getViewerUrl(gender));
   const [isChangingModel, setIsChangingModel] = useState(false);
 
-  // Effect to handle xRay mode
-  useEffect(() => {
-    if (xRayEnabled) {
-      humanRef.current?.send('scene.enableXray', () => {});
-    } else {
-      humanRef.current?.send('scene.disableXray', () => {});
-    }
-  }, [xRayEnabled]);
-
-  // Monitor state changes
-  useEffect(() => {
-    console.log('=== HumanViewer State Change ===');
-    console.log('selectedParts:', selectedParts);
-    console.log('selectedPart:', selectedPart);
-    console.log('Stack trace:', new Error().stack);
-  }, [selectedParts, selectedPart]);
-
   const handleSwitchModel = useCallback(() => {
     setIsChangingModel(true);
     const newGender: Gender = currentGender === 'male' ? 'female' : 'male';
@@ -159,37 +128,60 @@ export default function HumanViewer({ gender }: HumanViewerProps) {
     setSelectedParts([]);
     setCurrentRotation(0);
 
+    // Call the parent's gender change handler
+    onGenderChange?.(newGender);
+
     // Update URL without page reload
     const url = new URL(window.location.href);
     url.searchParams.set('gender', newGender);
     window.history.pushState({}, '', url.toString());
-  }, [currentGender, getViewerUrl]);
+  }, [currentGender, getViewerUrl, onGenderChange]);
 
   const handleReset = useCallback(() => {
     if (isResetting) return;
 
     setIsResetting(true);
+    console.log('=== handleReset START ===');
+    console.log('humanRef.current:', humanRef.current);
+    console.log('isReady:', isReady);
 
     // Use scene.reset to reset everything to initial state
     if (humanRef.current) {
-      if (xRayEnabled) {
-        setXRayEnabled(false);
+      if (!isReady) {
+        console.log('Human API not ready, waiting...');
+        setIsResetting(false);
+        return;
       }
-      humanRef.current.send('scene.reset', () => {
-        // Reset all our state after the scene has been reset
-        setCurrentRotation(0);
-        setSelectedPart(null);
-        setSelectedParts([]);
-        lastSelectedIdRef.current = null;
-        setNeedsReset(false);
 
-        // Clear reset state after a short delay to allow for animation
-        setTimeout(() => {
-          setIsResetting(false);
-        }, 200);
+      console.log('Human API ready, sending commands...');
+      // First deselect all parts with an empty selection map
+      humanRef.current.send('scene.selectObjects', {
+        replace: true
       });
+
+      // Then reset the scene
+      setTimeout(() => {
+        console.log('Sending scene.reset command...');
+        humanRef.current?.send('scene.reset', () => {
+          console.log('Scene reset callback executed');
+          // Reset all our state after the scene has been reset
+          setCurrentRotation(0);
+          setSelectedPart(null);
+          setSelectedParts([]);
+          lastSelectedIdRef.current = null;
+          setNeedsReset(false);
+
+          // Clear reset state after a short delay to allow for animation
+          setTimeout(() => {
+            setIsResetting(false);
+          }, 200);
+        });
+      }, 100);
+    } else {
+      console.log('humanRef.current is null!');
+      setIsResetting(false);
     }
-  }, [isResetting, setNeedsReset, xRayEnabled]);
+  }, [isResetting, setNeedsReset, isReady]);
 
   // Update reset button state when parts are selected
   useEffect(() => {
@@ -292,20 +284,14 @@ export default function HumanViewer({ gender }: HumanViewerProps) {
   }, []); // Empty dependency array means this runs once after mount
 
   return (
-    <div
-      className="relative flex"
-      style={{ width: '100vw', height: '100vh', overflow: 'hidden' }}
-    >
+    <div className="flex flex-col md:flex-row relative h-screen w-screen overflow-hidden">
       {/* Fullscreen overlay when dragging */}
       {isDragging && (
         <div className="fixed inset-0 z-50" style={{ cursor: 'ew-resize' }} />
       )}
 
-      {/* Left side - Human Model */}
-      <div
-        className="flex-1 relative"
-        style={{ minWidth: `${minChatWidth}px` }}
-      >
+      {/* Model Viewer Container */}
+      <div className="flex-1 relative" style={{ minWidth: `${minChatWidth}px` }}>
         {isChangingModel && (
           <div className="absolute inset-0 z-50 bg-black flex items-center justify-center">
             <div className="text-white text-xl">
@@ -317,20 +303,18 @@ export default function HumanViewer({ gender }: HumanViewerProps) {
           id="myViewer"
           ref={iframeRef}
           src={viewerUrl}
-          style={{
-            width: '100%',
-            height: '100%',
-            border: 'none',
-            display: 'block',
-          }}
+          className="w-full h-full border-none"
           allow="fullscreen"
           allowFullScreen
-          onLoad={() => setIsChangingModel(false)}
+          onLoad={() => {
+            console.log('=== iframe loaded ===');
+            console.log('viewerUrl:', viewerUrl);
+            setIsChangingModel(false);
+          }}
         />
-        <div
-          className="absolute bottom-6 right-6 flex space-x-4"
-          style={{ zIndex: 1000 }}
-        >
+
+        {/* Controls - Desktop */}
+        <div className="absolute bottom-6 right-6 md:flex space-x-4 hidden" style={{ zIndex: 1000 }}>
           <button
             onClick={handleRotate}
             disabled={isRotating || isResetting || !isReady}
@@ -356,9 +340,7 @@ export default function HumanViewer({ gender }: HumanViewerProps) {
           </button>
           <button
             onClick={handleReset}
-            disabled={
-              isResetting || (!needsReset && selectedParts.length === 0)
-            }
+            disabled={isResetting || (!needsReset && selectedParts.length === 0)}
             className={`bg-indigo-600/80 hover:bg-indigo-500/80 text-white px-4 py-2 rounded-lg shadow-lg transition-colors duration-200 flex items-center space-x-2 ${
               isResetting || (!needsReset && selectedParts.length === 0)
                 ? 'opacity-50 cursor-not-allowed'
@@ -405,18 +387,86 @@ export default function HumanViewer({ gender }: HumanViewerProps) {
             </span>
           </button>
         </div>
+
+        {/* Controls - Mobile */}
+        <div className="md:hidden fixed bottom-0 left-0 right-0 bg-gray-900 p-4 flex justify-around items-center">
+          <button
+            onClick={handleRotate}
+            disabled={isRotating || isResetting || !isReady}
+            className={`p-3 rounded-full bg-indigo-600/80 ${
+              isRotating || isResetting || !isReady ? 'opacity-50' : 'active:bg-indigo-700'
+            }`}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className={`h-6 w-6 text-white ${isRotating ? 'animate-spin' : ''}`}
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fillRule="evenodd"
+                d="M15.24 5.148a7 7 0 1 1-9.092 9.092.75.75 0 0 1 1.06-1.06 5.5 5.5 0 1 0 7.122-7.123.75.75 0 1 1 1.06-1.06 7 7 0 0 1-.15.15ZM3.75 10a.75.75 0 0 1 .75-.75h1.5a.75.75 0 0 1 0 1.5h-1.5a.75.75 0 0 1-.75-.75Zm4.5-4.5a.75.75 0 0 1 .75-.75h1.5a.75.75 0 0 1 0 1.5h-1.5a.75.75 0 0 1-.75-.75Z"
+                clipRule="evenodd"
+              />
+            </svg>
+          </button>
+
+          <button
+            onClick={handleReset}
+            disabled={isResetting || (!needsReset && selectedParts.length === 0)}
+            className={`p-3 rounded-full bg-indigo-600/80 ${
+              isResetting || (!needsReset && selectedParts.length === 0)
+                ? 'opacity-50'
+                : 'active:bg-indigo-700'
+            }`}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className={`h-6 w-6 text-white ${isResetting ? 'animate-spin' : ''}`}
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fillRule="evenodd"
+                d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
+                clipRule="evenodd"
+              />
+            </svg>
+          </button>
+
+          <button
+            onClick={handleSwitchModel}
+            disabled={isChangingModel}
+            className={`p-3 rounded-full bg-indigo-600/80 ${
+              isChangingModel ? 'opacity-50' : 'active:bg-indigo-700'
+            }`}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className={`h-6 w-6 text-white ${isChangingModel ? 'animate-spin' : ''}`}
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fillRule="evenodd"
+                d="M15.312 11.424a5.5 5.5 0 01-9.201 2.466l-.312-.311h2.433a.75.75 0 000-1.5H3.989a.75.75 0 00-.75.75v4.242a.75.75 0 001.5 0v-2.43l.31.31a7 7 0 0011.712-3.138.75.75 0 00-1.449-.39zm1.23-3.723a.75.75 0 00.219-.53V2.929a.75.75 0 00-1.5 0V5.36l-.31-.31A7 7 0 003.239 8.188a.75.75 0 101.448.389A5.5 5.5 0 0113.89 6.11l.311.31h-2.432a.75.75 0 000 1.5h4.243a.75.75 0 00.53-.219z"
+                clipRule="evenodd"
+              />
+            </svg>
+          </button>
+        </div>
       </div>
 
-      {/* Drag Handle */}
+      {/* Drag Handle - Desktop Only */}
       <div
         onMouseDown={startDragging}
-        className="w-1 hover:w-2 bg-gray-800 hover:bg-indigo-600 cursor-ew-resize transition-all duration-150 active:bg-indigo-500 flex-shrink-0 z-40"
+        className="hidden md:block w-1 hover:w-2 bg-gray-800 hover:bg-indigo-600 cursor-ew-resize transition-all duration-150 active:bg-indigo-500 flex-shrink-0 z-40"
         style={{ touchAction: 'none' }}
       />
 
-      {/* Right side - Popup with animation */}
+      {/* Right side - Popup with animation - Desktop Only */}
       <div
-        className={`flex-shrink-0 transform ${
+        className={`hidden md:block flex-shrink-0 transform ${
           isDragging ? '' : 'transition-all duration-300 ease-in-out'
         } ${'translate-x-0 opacity-100'}`}
         style={{

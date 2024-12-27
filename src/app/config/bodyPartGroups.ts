@@ -2,7 +2,7 @@ export interface BodyPartGroup {
   name: string;
   ids: string[];
   keywords: string[];
-  selectIds?: string[];
+  selectIds: string[];
 }
 
 export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
@@ -10,7 +10,7 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
     name: 'Neck',
     selectIds: [
       'muscular_system-muscles_of_neck_ID',
-      'connective_tissue-ligamentum_nuchae_ID',
+      'muscular_system-platysma_ID',
     ],
     ids: [
       'muscular_system-muscles_of_head_and_neck_ID',

@@ -6,14 +6,21 @@ export function getNeutralId(id: string): string {
   return id.replace(/human_19_(male|female)_/, '');
 }
 
+// Helper function to add gender prefix to an ID
+export function getGenderedId(id: string, gender: 'male' | 'female'): string {
+  // If ID already has a gender prefix, remove it first
+  const neutralId = getNeutralId(id);
+  return `human_19_${gender}_${neutralId}`;
+}
+
 // Helper function to check if two IDs match, ignoring gender
 export function idsMatch(id1: string, id2: string): boolean {
   return getNeutralId(id1) === getNeutralId(id2);
 }
 
 // Helper function to check if a part belongs to a group
-export function getPartGroup(part: AnatomyPart, bodyPartGroups: { [key: string]: BodyPartGroup }): BodyPartGroup | null {
-  const neutralId = getNeutralId(part.objectId);
+export function getPartGroup(id: string, bodyPartGroups: { [key: string]: BodyPartGroup }): BodyPartGroup | null {
+  const neutralId = getNeutralId(id);
 
   // First check if the part's ID matches any group's ids (ignoring gender)
   for (const [groupKey, group] of Object.entries(bodyPartGroups)) {
@@ -62,9 +69,9 @@ export function getGroupParts(group: BodyPartGroup, objects: AnatomyPart[]): str
 }
 
 // Helper function to create a selection map for the BioDigital API
-export function createSelectionMap(ids: string[]): { [key: string]: boolean } {
+export function createSelectionMap(ids: string[], gender: 'male' | 'female'): { [key: string]: boolean } {
   return ids.reduce((map: { [key: string]: boolean }, id) => {
-    map[id] = true;
+    map[getGenderedId(id, gender)] = true;
     return map;
   }, {});
 } 

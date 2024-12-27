@@ -55,7 +55,6 @@ export function useHumanAPI({
   setSelectedPart,
 }: UseHumanAPIProps): {
   humanRef: MutableRefObject<HumanAPI | null>;
-  handleReset: () => void;
   currentGender: Gender;
   needsReset: boolean;
   setNeedsReset: (value: boolean) => void;
@@ -103,9 +102,11 @@ export function useHumanAPI({
 
   useEffect(() => {
     let script: HTMLScriptElement | null = null;
+    let isInitialized = false;
 
     const initializeViewer = () => {
       if (!window.HumanAPI) {
+        console.log('Loading HumanAPI script...');
         script = document.createElement('script');
         script.src =
           'https://developer.biodigital.com/builds/api/human-api-3.0.0.min.js';
@@ -113,30 +114,43 @@ export function useHumanAPI({
         script.onload = setupHumanAPI;
         document.body.appendChild(script);
       } else {
+        console.log('HumanAPI already loaded, setting up...');
         setupHumanAPI();
       }
     };
 
     const setupHumanAPI = () => {
       try {
+        console.log('=== Setting up HumanAPI ===');
+
+        // Clean up existing instance if it exists
+        if (humanRef.current) {
+          console.log('Cleaning up existing HumanAPI instance');
+          humanRef.current.send('human.ready', null);
+          humanRef.current.send('camera.updated', null);
+          humanRef.current.send('scene.objectsSelected', null);
+          humanRef.current = null;
+          setIsReady(false);
+        }
+
         const human = new window.HumanAPI(elementId, {
           camera: {
             position: { z: -25 },
           },
         });
-        human.send('scene.enableXray', () => {});
+        console.log('Created HumanAPI instance:', human);
 
+        // Set the ref immediately
         humanRef.current = human;
+        console.log('Set humanRef.current:', humanRef.current);
 
-        // Remove any existing event listeners first
-        human.send('human.ready', null);
-        human.send('camera.updated', null);
-        if (onObjectSelected) {
-          human.send('scene.objectsSelected', null);
-        }
-
+        // Set up event listeners
         human.on('human.ready', () => {
           console.log('Human API is ready');
+
+          // Enable features
+          human.send('scene.enableXray', () => {});
+          human.send('scene.disableHighlight', () => {});
 
           // Store initial camera position
           human.send('camera.info', (camera: CameraPosition) => {
@@ -155,215 +169,114 @@ export function useHumanAPI({
 
           // Listen for object selection and enable xray mode
           human.on('scene.objectsSelected', (event) => {
-            console.log('=== scene.objectsSelected START ===');
-            console.log('Event received:', event);
-            console.log(
-              'Current selectedParts from ref:',
-              currentSelectionRef.current
-            );
-            console.log(
-              'Current selectionEventRef:',
-              selectionEventRef.current
-            );
-            console.log(
-              'Current selectedPartGroup:',
-              selectedPartGroupRef.current
-            );
+            console.log('=== scene.objectsSelected event received ===');
+            console.log('Event:', event);
+            if (Object.values(event).every((value) => value === false)) {
+              console.log('All objects deselected');
+              setSelectedPart(null);
+              setSelectedParts([]);
+              selectedPartGroupRef.current = null;
+              currentSelectionRef.current = [];
+              selectionEventRef.current = null;
+              return;
+            }
+
+            if (Object.keys(event).length > 1) {
+              return;
+            }
 
             const selectedId = Object.keys(event)[0];
-            console.log('Selected ID:', selectedId);
+            const storedEvent = event;
+            const storedId = Object.keys(storedEvent)[0];
 
-            // Create a deselection map for the selected objects
-            const deselectionMap = Object.keys(event).reduce((acc, key) => {
-              if (event[key] === true) {
-                acc[key] = false;
-              }
-              return acc;
-            }, {} as Record<string, boolean>);
+            // Check if part belongs to a group
+            const group = getPartGroup(selectedId, bodyPartGroups);
 
-            // Deselect the specific objects
-            if (Object.keys(deselectionMap).length === 1) {
-              const neutralSelectedId = getNeutralId(selectedId);
-              // Check if the selected part is already part of the current group
-              const isPartOfCurrentGroup =
-                selectedPartGroupRef.current &&
-                (selectedPartGroupRef.current.ids.includes(neutralSelectedId) ||
-                  selectedPartGroupRef.current.selectIds?.includes(
-                    neutralSelectedId
-                  ));
+            if (group) {
+              // Store the group in ref
+              selectedPartGroupRef.current = group;
 
-              if (isPartOfCurrentGroup) {
-                // If it's part of current group, clear everything
-                setSelectedPart(null);
-                setSelectedParts([]);
-                selectedPartGroupRef.current = null;
-                currentSelectionRef.current = [];
-                human.send('scene.selectObjects', { replace: true });
-                selectionEventRef.current = null;
-                return;
-              }
+              // Get the current gender value directly from state
+              const gender = initialGender;
+              console.log('Creating selection map for gender:', gender);
 
-              // Store the selection event before deselecting
-              selectionEventRef.current = event;
-              human.send('scene.selectObjects', deselectionMap);
-            } else if (
-              Object.keys(deselectionMap).length === 0 &&
-              selectionEventRef.current
-            ) {
-              // We have a stored event and got a deselection, now process the selection
-              const storedEvent = selectionEventRef.current;
-              const storedId = Object.keys(storedEvent)[0];
+              // Create selection map with current gender
+              const selectionMap = createSelectionMap(
+                group.selectIds || group.ids,
+                gender
+              );
+              console.log('Selection map:', selectionMap);
 
-              // Get scene info to find the selected part
-              human.send('scene.info', (response: any) => {
-                try {
-                  const objects = response.objects;
-                  if (!objects) {
-                    console.error('No objects found in scene.info response');
-                    return;
-                  }
+              // Create a group part object
+              const groupPart: AnatomyPart = {
+                objectId: storedId,
+                name: group.name,
+                description: `${group.name} area`,
+                available: true,
+                shown: true,
+                selected: true,
+                parent: '',
+                children: [],
+              };
 
-                  const objectsArray: AnatomyPart[] = Array.isArray(objects)
-                    ? objects
-                    : Object.values(objects);
+              // Set the selected part and parts
+              setSelectedPart(groupPart);
+              setSelectedParts([groupPart]);
 
-                  const selectedPart = objectsArray.find(
-                    (obj: AnatomyPart) => obj.objectId === storedId
-                  );
-
-                  if (!selectedPart) {
-                    console.error('Selected part not found');
-                    return;
-                  }
-
-                  // Check if part belongs to a group
-                  const group = getPartGroup(selectedPart, bodyPartGroups);
-
-                  if (group) {
-                    console.log('Found group:', group.name);
-                    const groupSelection = getGroupParts(group, objectsArray);
-                    console.log('Group parts:', groupSelection);
-
-                    // Store the group in ref
-                    selectedPartGroupRef.current = group;
-
-                    // Create selection map
-                    const selectionMap = createSelectionMap(groupSelection);
-
-                    // Create a group part object
-                    const groupPart: AnatomyPart = {
-                      objectId: storedId,
-                      name: group.name,
-                      description: `${group.name} area`,
-                      available: true,
-                      shown: true,
-                      selected: true,
-                      parent: '',
-                      children: [],
-                    };
-
-                    // Set the selected part and parts
-                    setSelectedPart(groupPart);
-                    const filteredParts = objectsArray.filter((obj) =>
-                      groupSelection.includes(obj.objectId)
-                    );
-                    console.log(
-                      'Setting selectedParts to (group):',
-                      filteredParts
-                    );
-                    setSelectedParts(filteredParts);
-                    console.log('selectionMap:', selectionMap);
-                    // Select all parts in the group
-                    human.send('scene.selectObjects', {
-                      ...selectionMap,
-                      replace: true,
-                    });
-                  } else {
-                    // If no group, clear the group ref
-                    selectedPartGroupRef.current = null;
-                    // If no group, just select the individual part
-                    setSelectedPart(selectedPart);
-                    console.log('Setting selectedParts to (single):', [
-                      selectedPart,
-                    ]);
-                    setSelectedParts([selectedPart]);
-
-                    human.send('scene.selectObjects', {
-                      [storedId]: true,
-                      replace: true,
-                    });
-                  }
-
-                  // Now call the original onObjectSelected with the stored event
-                  if (onObjectSelected) {
-                    onObjectSelected(storedEvent);
-                  }
-                } catch (error) {
-                  console.error('Error processing selection:', error);
-                }
+              human.send('scene.selectObjects', {
+                ...selectionMap,
+                replace: false,
               });
-
-              // Clear the stored event
-              selectionEventRef.current = null;
             }
-            console.log('=== scene.objectsSelected END ===');
+
+            // Now call the original onObjectSelected with the stored event
+            if (onObjectSelected) {
+              onObjectSelected(storedEvent);
+            }
+
+            // Clear the stored event
+            selectionEventRef.current = null;
           });
 
+          // Mark as ready and call onReady callback
+          isInitialized = true;
           setIsReady(true);
           onReady?.();
         });
       } catch (error) {
         console.error('Error initializing HumanAPI:', error);
+        setIsReady(false);
       }
     };
 
+    console.log('Starting HumanAPI initialization...');
     initializeViewer();
 
     return () => {
-      if (script) {
-        document.body.removeChild(script);
-      }
-      // Remove event listeners
-      if (humanRef.current) {
-        humanRef.current.send('human.ready', null);
-        humanRef.current.send('camera.updated', null);
-        if (onObjectSelected) {
-          humanRef.current.send('scene.objectsSelected', null);
+      if (!isInitialized) {
+        console.log('Cleaning up uninitialized HumanAPI...');
+        if (script) {
+          document.body.removeChild(script);
         }
+        setIsReady(false);
+        humanRef.current = null;
       }
-      setIsReady(false);
     };
-  }, [
-    elementId,
-    onReady,
-    onObjectSelected,
-    checkCameraPosition,
-    selectedParts,
-    setSelectedPart,
-    setSelectedParts,
-  ]);
-
-  const handleReset = useCallback(() => {
-    if (!humanRef.current || !initialCameraRef.current) return;
-
-    humanRef.current.send('camera.set', {
-      ...initialCameraRef.current,
-      animate: true,
-      animationDuration: 0.002,
-    });
-
-    // Reset the needs reset flag
-    setNeedsReset(false);
-  }, []);
+  }, [elementId, initialGender]); // Add initialGender to dependencies
 
   // Update currentGender when initialGender changes
   useEffect(() => {
+    console.log('initialGender changed:', initialGender);
     setCurrentGender(initialGender);
   }, [initialGender]);
 
+  // Add effect to log gender changes
+  useEffect(() => {
+    console.log('currentGender updated:', currentGender);
+  }, [currentGender]);
+
   return {
     humanRef,
-    handleReset,
     currentGender,
     needsReset,
     setNeedsReset,
