@@ -49,6 +49,7 @@ export function useHumanAPI({
 } {
   const humanRef = useRef<HumanAPI | null>(null);
   const initialCameraRef = useRef<CameraPosition | null>(null);
+  const selectionEventRef = useRef<any>(null);
   const [currentGender, setCurrentGender] = useState<Gender>(initialGender);
   const [needsReset, setNeedsReset] = useState(false);
   const [isReady, setIsReady] = useState(false);
@@ -126,18 +127,26 @@ export function useHumanAPI({
 
           // Listen for object selection and enable xray mode
           human.on('scene.objectsSelected', (event) => {
-            // Only enable xray if something is selected
-            if (Object.values(event).some(isSelected => isSelected)) {
-              human.send('scene.enableXray');
+            // Create a deselection map for the selected objects
+            const deselectionMap = Object.keys(event).reduce((acc, key) => {
+              if (event[key] === true) {
+                acc[key] = false;
+              }
+              return acc;
+            }, {} as Record<string, boolean>);
+
+            // Deselect the specific objects
+            if (Object.keys(deselectionMap).length === 1) {
+              human.send('scene.selectObjects', deselectionMap);
+              selectionEventRef.current = event;
+            } else if (Object.keys(deselectionMap).length === 0 && selectionEventRef.current) {
+              onObjectSelected!(selectionEventRef.current);
+              selectionEventRef.current = null;
             }
           });
 
           setIsReady(true);
           onReady?.();
-
-          if (onObjectSelected) {
-            human.on('scene.objectsSelected', onObjectSelected);
-          }
         });
       } catch (error) {
         console.error('Error initializing HumanAPI:', error);
@@ -180,5 +189,12 @@ export function useHumanAPI({
     setCurrentGender(initialGender);
   }, [initialGender]);
 
-  return { humanRef, handleReset, currentGender, needsReset, setNeedsReset, isReady };
+  return {
+    humanRef,
+    handleReset,
+    currentGender,
+    needsReset,
+    setNeedsReset,
+    isReady,
+  };
 }
