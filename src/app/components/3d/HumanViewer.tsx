@@ -12,6 +12,11 @@ import {
   createSelectionMap,
   getGenderedId,
 } from '@/app/utils/anatomyHelpers';
+import RestartAltIcon from '@mui/icons-material/RestartAlt';
+import CropRotateIcon from '@mui/icons-material/CropRotate';
+import MaleIcon from '@mui/icons-material/Male';
+import FemaleIcon from '@mui/icons-material/Female';
+import MobileControls from './MobileControls';
 
 interface HumanViewerProps {
   gender: Gender;
@@ -36,6 +41,7 @@ export default function HumanViewer({ gender, onGenderChange }: HumanViewerProps
   const rotationAnimationRef = useRef<number | null>(null);
   const [isResetting, setIsResetting] = useState(false);
   const isSelectingGroupRef = useRef(false);
+  const [isBottomSheetExpanded, setIsBottomSheetExpanded] = useState(false);
 
   const MODEL_IDS = {
     male: '5tOV',
@@ -291,7 +297,7 @@ export default function HumanViewer({ gender, onGenderChange }: HumanViewerProps
       )}
 
       {/* Model Viewer Container */}
-      <div className="flex-1 relative" style={{ minWidth: `${minChatWidth}px` }}>
+      <div className="flex-1 relative bg-black flex flex-col" style={{ minWidth: `${minChatWidth}px` }}>
         {isChangingModel && (
           <div className="absolute inset-0 z-50 bg-black flex items-center justify-center">
             <div className="text-white text-xl">
@@ -299,19 +305,22 @@ export default function HumanViewer({ gender, onGenderChange }: HumanViewerProps
             </div>
           </div>
         )}
-        <iframe
-          id="myViewer"
-          ref={iframeRef}
-          src={viewerUrl}
-          className="w-full h-full border-none"
-          allow="fullscreen"
-          allowFullScreen
-          onLoad={() => {
-            console.log('=== iframe loaded ===');
-            console.log('viewerUrl:', viewerUrl);
-            setIsChangingModel(false);
-          }}
-        />
+        {/* Mobile: subtract 72px for controls, Desktop: full height */}
+        <div className="md:h-screen h-[calc(100vh-72px)] w-full relative">
+          <iframe
+            id="myViewer"
+            ref={iframeRef}
+            src={viewerUrl}
+            className="absolute inset-0 w-full h-full border-0 bg-black"
+            allow="fullscreen"
+            allowFullScreen
+            onLoad={() => {
+              console.log('=== iframe loaded ===');
+              console.log('viewerUrl:', viewerUrl);
+              setIsChangingModel(false);
+            }}
+          />
+        </div>
 
         {/* Controls - Desktop */}
         <div className="absolute bottom-6 right-6 md:flex space-x-4 hidden" style={{ zIndex: 1000 }}>
@@ -324,18 +333,7 @@ export default function HumanViewer({ gender, onGenderChange }: HumanViewerProps
                 : ''
             }`}
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className={`h-5 w-5 ${isRotating ? 'animate-spin' : ''}`}
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path
-                fillRule="evenodd"
-                d="M15.24 5.148a7 7 0 1 1-9.092 9.092.75.75 0 0 1 1.06-1.06 5.5 5.5 0 1 0 7.122-7.123.75.75 0 1 1 1.06-1.06 7 7 0 0 1-.15.15ZM3.75 10a.75.75 0 0 1 .75-.75h1.5a.75.75 0 0 1 0 1.5h-1.5a.75.75 0 0 1-.75-.75Zm4.5-4.5a.75.75 0 0 1 .75-.75h1.5a.75.75 0 0 1 0 1.5h-1.5a.75.75 0 0 1-.75-.75Z"
-                clipRule="evenodd"
-              />
-            </svg>
+            <CropRotateIcon className={`h-5 w-5 ${isRotating ? 'animate-spin' : ''}`} />
             <span>{isRotating ? 'Rotating...' : 'Rotate Model'}</span>
           </button>
           <button
@@ -347,18 +345,7 @@ export default function HumanViewer({ gender, onGenderChange }: HumanViewerProps
                 : ''
             }`}
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className={`h-5 w-5 ${isResetting ? 'animate-spin' : ''}`}
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path
-                fillRule="evenodd"
-                d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
-                clipRule="evenodd"
-              />
-            </svg>
+            <RestartAltIcon className={`h-5 w-5 ${isResetting ? 'animate-spin' : ''}`} />
             <span>{isResetting ? 'Resetting...' : 'Reset View'}</span>
           </button>
           <button
@@ -368,18 +355,11 @@ export default function HumanViewer({ gender, onGenderChange }: HumanViewerProps
               isChangingModel ? 'opacity-50 cursor-not-allowed' : ''
             }`}
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className={`h-5 w-5 ${isChangingModel ? 'animate-spin' : ''}`}
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path
-                fillRule="evenodd"
-                d="M15.312 11.424a5.5 5.5 0 01-9.201 2.466l-.312-.311h2.433a.75.75 0 000-1.5H3.989a.75.75 0 00-.75.75v4.242a.75.75 0 001.5 0v-2.43l.31.31a7 7 0 0011.712-3.138.75.75 0 00-1.449-.39zm1.23-3.723a.75.75 0 00.219-.53V2.929a.75.75 0 00-1.5 0V5.36l-.31-.31A7 7 0 003.239 8.188a.75.75 0 101.448.389A5.5 5.5 0 0113.89 6.11l.311.31h-2.432a.75.75 0 000 1.5h4.243a.75.75 0 00.53-.219z"
-                clipRule="evenodd"
-              />
-            </svg>
+            {currentGender === 'male' ? (
+              <MaleIcon className={`h-5 w-5 ${isChangingModel ? 'animate-spin' : ''}`} />
+            ) : (
+              <FemaleIcon className={`h-5 w-5 ${isChangingModel ? 'animate-spin' : ''}`} />
+            )}
             <span>
               {isChangingModel
                 ? 'Loading...'
@@ -388,73 +368,20 @@ export default function HumanViewer({ gender, onGenderChange }: HumanViewerProps
           </button>
         </div>
 
-        {/* Controls - Mobile */}
-        <div className="md:hidden fixed bottom-0 left-0 right-0 bg-gray-900 p-4 flex justify-around items-center">
-          <button
-            onClick={handleRotate}
-            disabled={isRotating || isResetting || !isReady}
-            className={`p-3 rounded-full bg-indigo-600/80 ${
-              isRotating || isResetting || !isReady ? 'opacity-50' : 'active:bg-indigo-700'
-            }`}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className={`h-6 w-6 text-white ${isRotating ? 'animate-spin' : ''}`}
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path
-                fillRule="evenodd"
-                d="M15.24 5.148a7 7 0 1 1-9.092 9.092.75.75 0 0 1 1.06-1.06 5.5 5.5 0 1 0 7.122-7.123.75.75 0 1 1 1.06-1.06 7 7 0 0 1-.15.15ZM3.75 10a.75.75 0 0 1 .75-.75h1.5a.75.75 0 0 1 0 1.5h-1.5a.75.75 0 0 1-.75-.75Zm4.5-4.5a.75.75 0 0 1 .75-.75h1.5a.75.75 0 0 1 0 1.5h-1.5a.75.75 0 0 1-.75-.75Z"
-                clipRule="evenodd"
-              />
-            </svg>
-          </button>
-
-          <button
-            onClick={handleReset}
-            disabled={isResetting || (!needsReset && selectedParts.length === 0)}
-            className={`p-3 rounded-full bg-indigo-600/80 ${
-              isResetting || (!needsReset && selectedParts.length === 0)
-                ? 'opacity-50'
-                : 'active:bg-indigo-700'
-            }`}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className={`h-6 w-6 text-white ${isResetting ? 'animate-spin' : ''}`}
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path
-                fillRule="evenodd"
-                d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
-                clipRule="evenodd"
-              />
-            </svg>
-          </button>
-
-          <button
-            onClick={handleSwitchModel}
-            disabled={isChangingModel}
-            className={`p-3 rounded-full bg-indigo-600/80 ${
-              isChangingModel ? 'opacity-50' : 'active:bg-indigo-700'
-            }`}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className={`h-6 w-6 text-white ${isChangingModel ? 'animate-spin' : ''}`}
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path
-                fillRule="evenodd"
-                d="M15.312 11.424a5.5 5.5 0 01-9.201 2.466l-.312-.311h2.433a.75.75 0 000-1.5H3.989a.75.75 0 00-.75.75v4.242a.75.75 0 001.5 0v-2.43l.31.31a7 7 0 0011.712-3.138.75.75 0 00-1.449-.39zm1.23-3.723a.75.75 0 00.219-.53V2.929a.75.75 0 00-1.5 0V5.36l-.31-.31A7 7 0 003.239 8.188a.75.75 0 101.448.389A5.5 5.5 0 0113.89 6.11l.311.31h-2.432a.75.75 0 000 1.5h4.243a.75.75 0 00.53-.219z"
-                clipRule="evenodd"
-              />
-            </svg>
-          </button>
-        </div>
+        {/* Mobile Controls */}
+        <MobileControls
+          isRotating={isRotating}
+          isResetting={isResetting}
+          isReady={isReady}
+          needsReset={needsReset}
+          selectedParts={selectedParts}
+          isChangingModel={isChangingModel}
+          currentGender={currentGender}
+          selectedPart={selectedPart}
+          onRotate={handleRotate}
+          onReset={handleReset}
+          onSwitchModel={handleSwitchModel}
+        />
       </div>
 
       {/* Drag Handle - Desktop Only */}
@@ -478,7 +405,6 @@ export default function HumanViewer({ gender, onGenderChange }: HumanViewerProps
         <div className="h-full border-l border-gray-800">
           <PartPopup
             part={selectedPart}
-            selectedParts={selectedParts}
             onClose={() => {
               console.log('Closing popup');
               setSelectedPart(null);

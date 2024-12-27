@@ -1,98 +1,31 @@
-import { useState, useRef, ChangeEvent, useEffect } from 'react';
-import {
-  getOrCreateAssistant,
-  createThread,
-  sendMessage,
-} from '../../lib/assistant';
-import {
-  ChatMessage,
-  ChatPayload,
-  Question,
-  UserPreferences,
-} from '../../types';
-import ReactMarkdown from 'react-markdown';
+import { useState, useRef, ChangeEvent } from 'react';
 import { AnatomyPart } from '@/app/types/anatomy';
-import { useChat } from '@/app/hooks/useChat';
 import { ChatMessages } from './ChatMessages';
+import { usePartChat } from '@/app/hooks/usePartChat';
 
 interface PartPopupProps {
   part: AnatomyPart | null;
-  selectedParts: AnatomyPart[];
   onClose: () => void;
 }
 
-const initialQuestions: Question[] = [
-  {
-    title: 'Learn more',
-    description: `I want to learn more about the $part`,
-    question: `I want to learn more about the $part`,
-  },
-  {
-    title: 'I have an issue',
-    description: `I need help with a problem related to the $part`,
-    question: `I need help with a problem related to the $part`,
-  },
-  {
-    title: 'Explore exercises',
-    description: 'Show me exercises that can strengthen or improve the $part',
-    question: 'What exercises can strengthen or improve the $part?',
-  },
-];
-
-function getInitialQuestions(part: AnatomyPart | null, selectedParts: AnatomyPart[]): Question[] {
-  if (!part) return [];
-  
-  // Always use the full part name
-  return initialQuestions.map((q) => ({
-    ...q,
-    description: q.description.replace('$part', part.name.toLowerCase()),
-    question: q.question.replace('$part', part.name.toLowerCase()),
-  }));
-}
-
-export default function PartPopup({ part, selectedParts, onClose }: PartPopupProps) {
-  const [selectedOption, setSelectedOption] = useState<string | null>(null);
+export default function PartPopup({ part, onClose }: PartPopupProps) {
   const [message, setMessage] = useState('');
-  const [followUpQuestions, setFollowUpQuestions] = useState<Question[]>(() => 
-    getInitialQuestions(part, selectedParts)
-  );
-  
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const messagesContainerRef = useRef<HTMLDivElement>(null);
-  
-  const { 
-    messages, 
-    isLoading, 
-    userPreferences, 
-    followUpQuestions: chatFollowUpQuestions,
-    resetChat, 
-    sendChatMessage,
+  const {
+    messages,
+    isLoading,
     isCollectingJson,
-    setFollowUpQuestions: setChatFollowUpQuestions 
-  } = useChat();
+    followUpQuestions,
+    messagesRef,
+    resetChat,
+    handleOptionClick,
+    getDisplayName,
+  } = usePartChat({ selectedPart: part });
 
   const [userHasScrolled, setUserHasScrolled] = useState(false);
 
-  // Update the questions when part or selectedParts changes
-  useEffect(() => {
-    if (part) {
-      setFollowUpQuestions(getInitialQuestions(part, selectedParts));
-    } else if (messages.length === 0) {
-      setFollowUpQuestions([]);
-    }
-  }, [part, selectedParts, messages.length]);
-
-  // Update local follow-up questions when chat questions change
-  useEffect(() => {
-    if (chatFollowUpQuestions?.length > 0) {
-      setFollowUpQuestions(chatFollowUpQuestions);
-    }
-  }, [chatFollowUpQuestions]);
-
   const handleResetChat = () => {
-    setSelectedOption(null);
     setMessage('');
-    setFollowUpQuestions([]);
     resetChat();
   };
 
@@ -116,18 +49,13 @@ export default function PartPopup({ part, selectedParts, onClose }: PartPopupPro
     }
   };
 
-  const handleOptionClick = (question: Question) => {
-    console.log('Option clicked:', question);
-    handleSendMessage(question.question);
-  };
-
   const handleSendMessage = async (messageContent: string) => {
+    if (!messageContent.trim()) return;
     setMessage('');
-
-    await sendChatMessage(messageContent, {
-      userPreferences,
-      part: part || undefined,
-      followUpQuestions,
+    handleOptionClick({
+      title: '',
+      description: '',
+      question: messageContent,
     });
   };
 
@@ -137,14 +65,6 @@ export default function PartPopup({ part, selectedParts, onClose }: PartPopupPro
 
   const handleUserScroll = (hasScrolled: boolean) => {
     setUserHasScrolled(hasScrolled);
-  };
-
-  // Get display name for the header
-  const getDisplayName = () => {
-    if (!part) return messages.length > 0 ? 'No body part selected' : 'Select a body part';
-    
-    // Always use the full part name
-    return part.name;
   };
 
   return (
@@ -158,20 +78,44 @@ export default function PartPopup({ part, selectedParts, onClose }: PartPopupPro
             {getDisplayName()}
           </h3>
         </div>
-        <button onClick={handleResetChat} className="text-gray-400 hover:text-white p-1 rounded-full hover:bg-gray-800 transition-colors" aria-label="Reset Chat">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5"
-            viewBox="0 0 20 20"
-            fill="currentColor"
+        <div className="flex gap-2">
+          <button 
+            onClick={handleResetChat} 
+            className="text-gray-400 hover:text-white p-1 rounded-full hover:bg-gray-800 transition-colors"
+            aria-label="Reset Chat"
           >
-            <path
-              fillRule="evenodd"
-              d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
-              clipRule="evenodd"
-            />
-          </svg>
-        </button>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fillRule="evenodd"
+                d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
+                clipRule="evenodd"
+              />
+            </svg>
+          </button>
+          <button 
+            onClick={onClose}
+            className="text-gray-400 hover:text-white p-1 rounded-full hover:bg-gray-800 transition-colors"
+            aria-label="Close"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fillRule="evenodd"
+                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                clipRule="evenodd"
+              />
+            </svg>
+          </button>
+        </div>
       </div>
 
       <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
@@ -191,7 +135,7 @@ export default function PartPopup({ part, selectedParts, onClose }: PartPopupPro
         ) : (
           <ChatMessages 
             messages={messages} 
-            messagesRef={messagesContainerRef}
+            messagesRef={messagesRef}
             isLoading={isLoading}
             isCollectingJson={isCollectingJson}
             followUpQuestions={followUpQuestions}

@@ -133,9 +133,17 @@ export function useHumanAPI({
           setIsReady(false);
         }
 
+        // Determine if we're on mobile
+        const isMobile = window.innerWidth < 768;
+        const cameraPosition = isMobile 
+          ? { x: 0, y: 0, z: -50 } // More zoomed out for mobile
+          : { x: 0, y: 0, z: -25 };
+        
+        console.log(`Setting initial camera position (${isMobile ? 'mobile' : 'desktop'}):`, cameraPosition);
+
         const human = new window.HumanAPI(elementId, {
           camera: {
-            position: { z: -25 },
+            position: cameraPosition,
           },
         });
         console.log('Created HumanAPI instance:', human);
@@ -274,6 +282,27 @@ export function useHumanAPI({
   useEffect(() => {
     console.log('currentGender updated:', currentGender);
   }, [currentGender]);
+
+  // Add resize handler
+  useEffect(() => {
+    const handleResize = () => {
+      if (!humanRef.current) return;
+      
+      const isMobile = window.innerWidth < 768;
+      const cameraPosition = isMobile 
+        ? { x: 0, y: 0, z: -50 }
+        : { x: 0, y: 0, z: -25 };
+
+      console.log('Window resized, updating camera position:', cameraPosition);
+      humanRef.current.send('camera.set', {
+        position: cameraPosition,
+        animate: true
+      });
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   return {
     humanRef,
