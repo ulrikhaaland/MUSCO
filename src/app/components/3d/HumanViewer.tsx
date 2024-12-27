@@ -34,6 +34,7 @@ export default function HumanViewer({ gender }: HumanViewerProps) {
   const rotationAnimationRef = useRef<number | null>(null);
   const [isResetting, setIsResetting] = useState(false);
   const isSelectingGroupRef = useRef(false);
+  const [xRayEnabled, setXRayEnabled] = useState(false);
 
   const MODEL_IDS = {
     male: '5tOV',
@@ -54,143 +55,27 @@ export default function HumanViewer({ gender }: HumanViewerProps) {
 
   const handleObjectSelected = useCallback(
     (event: any) => {
-      console.log('scene.objectsSelected', event);
-
-      // If this event was triggered by our group selection, ignore it
-      // if (isSelectingGroupRef.current) {
-      //   isSelectingGroupRef.current = false;
-      //   return;
-      // }
+      console.log('=== handleObjectSelected START ===');
+      console.log('Event received:', event);
+      console.log('Current selectedParts:', selectedParts);
+      console.log('Current selectedPart:', selectedPart);
+      console.log('Stack trace:', new Error().stack);
 
       const selectedId = Object.keys(event)[0];
-      const isSelected = selectedParts.some(
-        (part) => part.objectId === selectedId
-      );
+      console.log('Selected ID:', selectedId);
 
-      console.log('selectedId', selectedId);
-
-      // Clear any pending deselection timeout
-      if (deselectionTimeoutRef.current) {
-        clearTimeout(deselectionTimeoutRef.current);
-        deselectionTimeoutRef.current = null;
-      }
-
-      // If this is a deselection
-      if (selectedParts.length > 0) {
-        // Immediately clear selection state
-        setSelectedPart(null);
-        setSelectedParts([]);
-        lastSelectedIdRef.current = null;
-        return;
-      }
-
-      // If this is a new selection, update the last selected ID
-      lastSelectedIdRef.current = selectedId;
-      const human = humanRef.current;
-
-      if (human) {
-        // First, get info about all objects in the scene
-        human.send('scene.info', (response: any) => {
-          try {
-            console.log('Scene info:', response);
-
-            const objects = response.objects;
-            if (!objects) {
-              console.error('No objects found in scene.info response');
-              return;
-            }
-
-            const objectsArray: AnatomyPart[] = Array.isArray(objects)
-              ? objects
-              : Object.values(objects);
-
-            const selectedPart = objectsArray.find(
-              (obj: AnatomyPart) => obj.objectId === selectedId
-            );
-
-            if (!selectedPart) return;
-
-            // Log detailed information about the selected part
-            console.log('Selected part:', {
-              id: selectedPart.objectId,
-              name: selectedPart.name,
-              description: selectedPart.description,
-            });
-
-            const group = getPartGroup(selectedPart, bodyPartGroups);
-
-            if (group) {
-              // Log group information
-              console.log(`Part belongs to group: ${group.name}`);
-              // Get all parts in the group
-              const groupSelection = getGroupParts(group, objectsArray);
-              console.log(`${group.name} parts found:`, groupSelection);
-
-              // Create selection map
-              const selectionMap = createSelectionMap(groupSelection);
-
-              // Set flag before selecting group
-              isSelectingGroupRef.current = true;
-              // Select all parts in the group
-              human.send('scene.selectObjects', {
-                ...selectionMap,
-                replace: true,
-              });
-
-              // Create a group part object
-              const groupPart: AnatomyPart = {
-                objectId: selectedId,
-                name: group.name,
-                description: `${group.name} area`,
-                available: true,
-                shown: true,
-                selected: true,
-                parent: '',
-                children: [],
-              };
-
-              setSelectedPart(groupPart);
-              setSelectedParts(
-                objectsArray.filter((obj) =>
-                  groupSelection.includes(obj.objectId)
-                )
-              );
-
-              // Update the UI with the group part instead of the selected part
-              const mouseEvent = window.event as MouseEvent;
-              if (mouseEvent) {
-                handlePartSelect(groupPart, {
-                  clientX: mouseEvent.clientX,
-                  clientY: mouseEvent.clientY,
-                });
-              }
-            } else {
-              // If it's not part of a group, just select the individual part
-              const selectionMap = {
-                [selectedId]: true,
-              };
-
-              human.send('scene.selectObjects', selectionMap);
-
-              setSelectedPart(selectedPart);
-              setSelectedParts([selectedPart]);
-
-              // Update the UI with the individual part
-              const mouseEvent = window.event as MouseEvent;
-              if (mouseEvent) {
-                handlePartSelect(selectedPart, {
-                  clientX: mouseEvent.clientX,
-                  clientY: mouseEvent.clientY,
-                });
-              }
-            }
-          } catch (error) {
-            console.error('Error handling selection:', error);
-          }
+      // Update UI position for the popup
+      const mouseEvent = window.event as MouseEvent;
+      if (mouseEvent && selectedPart) {
+        handlePartSelect(selectedPart, {
+          clientX: mouseEvent.clientX,
+          clientY: mouseEvent.clientY,
         });
       }
+
+      console.log('=== handleObjectSelected END ===');
     },
-    [handlePartSelect]
+    [handlePartSelect, selectedPart]
   );
 
   const {
@@ -247,6 +132,23 @@ export default function HumanViewer({ gender }: HumanViewerProps) {
   const [viewerUrl, setViewerUrl] = useState(() => getViewerUrl(gender));
   const [isChangingModel, setIsChangingModel] = useState(false);
 
+  // Effect to handle xRay mode
+  useEffect(() => {
+    if (xRayEnabled) {
+      humanRef.current?.send('scene.enableXray', () => {});
+    } else {
+      humanRef.current?.send('scene.disableXray', () => {});
+    }
+  }, [xRayEnabled]);
+
+  // Monitor state changes
+  useEffect(() => {
+    console.log('=== HumanViewer State Change ===');
+    console.log('selectedParts:', selectedParts);
+    console.log('selectedPart:', selectedPart);
+    console.log('Stack trace:', new Error().stack);
+  }, [selectedParts, selectedPart]);
+
   const handleSwitchModel = useCallback(() => {
     setIsChangingModel(true);
     const newGender: Gender = currentGender === 'male' ? 'female' : 'male';
@@ -270,6 +172,9 @@ export default function HumanViewer({ gender }: HumanViewerProps) {
 
     // Use scene.reset to reset everything to initial state
     if (humanRef.current) {
+      if (xRayEnabled) {
+        setXRayEnabled(false);
+      }
       humanRef.current.send('scene.reset', () => {
         // Reset all our state after the scene has been reset
         setCurrentRotation(0);
@@ -284,7 +189,7 @@ export default function HumanViewer({ gender }: HumanViewerProps) {
         }, 200);
       });
     }
-  }, [isResetting, setNeedsReset]);
+  }, [isResetting, setNeedsReset, xRayEnabled]);
 
   // Update reset button state when parts are selected
   useEffect(() => {
