@@ -7,6 +7,7 @@ import {
 } from 'react';
 import { HumanAPI } from '../types/human';
 import { Gender } from '../types';
+import { AnatomyPart } from '../types/anatomy';
 
 interface CameraPosition {
   position: {
@@ -32,6 +33,9 @@ interface UseHumanAPIProps {
   onReady?: () => void;
   onObjectSelected?: (event: any) => void;
   initialGender: Gender;
+  selectedParts: AnatomyPart[];
+  setSelectedParts: (parts: AnatomyPart[]) => void;
+  setSelectedPart: (part: AnatomyPart | null) => void;
 }
 
 export function useHumanAPI({
@@ -39,6 +43,9 @@ export function useHumanAPI({
   onReady,
   onObjectSelected,
   initialGender,
+  selectedParts,
+  setSelectedParts,
+  setSelectedPart,
 }: UseHumanAPIProps): {
   humanRef: MutableRefObject<HumanAPI | null>;
   handleReset: () => void;
@@ -97,6 +104,7 @@ export function useHumanAPI({
             position: { z: -25 },
           },
         });
+        human.send('scene.enableXray', () => {});
 
         humanRef.current = human;
 
@@ -139,7 +147,11 @@ export function useHumanAPI({
             if (Object.keys(deselectionMap).length === 1) {
               human.send('scene.selectObjects', deselectionMap);
               selectionEventRef.current = event;
-            } else if (Object.keys(deselectionMap).length === 0 && selectionEventRef.current) {
+            } else if (
+              Object.keys(deselectionMap).length === 0 &&
+              selectionEventRef.current
+            ) {
+              // Only call onObjectSelected with the stored event when we get the deselection event
               onObjectSelected!(selectionEventRef.current);
               selectionEventRef.current = null;
             }

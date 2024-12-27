@@ -16,16 +16,6 @@ interface HumanViewerProps {
   gender: Gender;
 }
 
-interface AnatomyObject {
-  objectId: string;
-  name: string;
-  children?: string[];
-  description?: string;
-  available?: boolean;
-  shown?: boolean;
-  parent?: string;
-}
-
 export default function HumanViewer({ gender }: HumanViewerProps) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [selectedParts, setSelectedParts] = useState<AnatomyPart[]>([]);
@@ -44,7 +34,6 @@ export default function HumanViewer({ gender }: HumanViewerProps) {
   const rotationAnimationRef = useRef<number | null>(null);
   const [isResetting, setIsResetting] = useState(false);
   const isSelectingGroupRef = useRef(false);
-  const [xRayEnabled, setXRayEnabled] = useState(false);
 
   const MODEL_IDS = {
     male: '5tOV',
@@ -63,20 +52,9 @@ export default function HumanViewer({ gender }: HumanViewerProps) {
     []
   );
 
-  useEffect(() => {
-    if (xRayEnabled) {
-      humanRef.current?.send('scene.enableXray', () => {});
-    } else {
-      humanRef.current?.send('scene.disableXray', () => {});
-    }
-  }, [xRayEnabled]);
-
   const handleObjectSelected = useCallback(
     (event: any) => {
       console.log('scene.objectsSelected', event);
-      if (!xRayEnabled) {
-        setXRayEnabled(true);
-      }
 
       // If this event was triggered by our group selection, ignore it
       // if (isSelectingGroupRef.current) {
@@ -89,6 +67,8 @@ export default function HumanViewer({ gender }: HumanViewerProps) {
         (part) => part.objectId === selectedId
       );
 
+      console.log('selectedId', selectedId);
+
       // Clear any pending deselection timeout
       if (deselectionTimeoutRef.current) {
         clearTimeout(deselectionTimeoutRef.current);
@@ -97,9 +77,6 @@ export default function HumanViewer({ gender }: HumanViewerProps) {
 
       // If this is a deselection
       if (selectedParts.length > 0) {
-        if (xRayEnabled) {
-          setXRayEnabled(false);
-        }
         // Immediately clear selection state
         setSelectedPart(null);
         setSelectedParts([]);
@@ -227,6 +204,9 @@ export default function HumanViewer({ gender }: HumanViewerProps) {
     elementId: 'myViewer',
     onObjectSelected: handleObjectSelected,
     initialGender: gender,
+    selectedParts,
+    setSelectedParts,
+    setSelectedPart,
   });
 
   // Create viewer URL
@@ -290,9 +270,6 @@ export default function HumanViewer({ gender }: HumanViewerProps) {
 
     // Use scene.reset to reset everything to initial state
     if (humanRef.current) {
-      if (xRayEnabled) {
-        setXRayEnabled(false);
-      }
       humanRef.current.send('scene.reset', () => {
         // Reset all our state after the scene has been reset
         setCurrentRotation(0);

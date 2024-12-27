@@ -550,7 +550,10 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
   },
   leftElbow: {
     name: 'Left Elbow',
-    selectIds: ['connective_tissue-connective_tissue_of_left_elbow_ID'],
+    selectIds: [
+      'connective_tissue-connective_tissue_of_left_elbow_ID',
+      'connective_tissue-tendon_sheaths_and_bursae_of_left_elbow_ID',
+    ],
     ids: [
       'connective_tissue-tendon_sheaths_and_bursae_of_left_elbow_ID',
       'connective_tissue-left_bicipitoradial_bursa_ID',
@@ -580,7 +583,10 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
   },
   rightElbow: {
     name: 'Right Elbow',
-    selectIds: ['connective_tissue-connective_tissue_of_right_elbow_ID'],
+    selectIds: [
+      'connective_tissue-connective_tissue_of_right_elbow_ID',
+      'connective_tissue-tendon_sheaths_and_bursae_of_right_elbow_ID',
+    ],
     ids: [
       'connective_tissue-tendon_sheaths_and_bursae_of_right_elbow_ID',
       'connective_tissue-right_bicipitoradial_bursa_ID',
@@ -684,7 +690,7 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
       'muscular_system-right_extensor_digitorum_ID',
       'muscular_system-right_supinator_ID',
       'muscular_system-right_extensor_indicis_ID',
-      'skeletal_system-left_ulna_ID',
+      'skeletal_system-right_ulna_ID',
     ],
     keywords: [
       'right forearm',
@@ -2112,7 +2118,10 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
   },
   leftKnee: {
     name: 'Left Knee',
-    selectIds: ['connective_tissue-connective_tissue_of_left_knee_ID'],
+    selectIds: [
+      'connective_tissue-connective_tissue_of_left_knee_ID',
+      'connective_tissue-tendon_sheaths_and_bursae_of_left_knee_ID',
+    ],
     ids: [
       'connective_tissue-connective_tissue_of_left_knee_ID',
       'connective_tissue-tendon_sheaths_and_bursae_of_left_knee_ID',
@@ -2161,7 +2170,10 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
   },
   rightKnee: {
     name: 'Right Knee',
-    selectIds: ['connective_tissue-connective_tissue_of_right_knee_ID'],
+    selectIds: [
+      'connective_tissue-connective_tissue_of_right_knee_ID',
+      'connective_tissue-tendon_sheaths_and_bursae_of_right_knee_ID',
+    ],
     ids: [
       'connective_tissue-connective_tissue_of_right_knee_ID',
       'connective_tissue-tendon_sheaths_and_bursae_of_right_knee_ID',
@@ -2212,7 +2224,6 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
     name: 'Left Lower Leg',
     selectIds: [
       'muscular_system-muscles_of_left_lower_leg_ID',
-      'skeletal_system-bones_of_left_thigh_and_leg_ID',
       'skeletal_system-left_patella_ID',
       'skeletal_system-left_tibia_ID',
       'skeletal_system-left_fibula_ID',
@@ -2259,7 +2270,6 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
     name: 'Right Lower Leg',
     selectIds: [
       'muscular_system-muscles_of_right_lower_leg_ID',
-      'skeletal_system-bones_of_right_thigh_and_leg_ID',
       'skeletal_system-right_patella_ID',
       'skeletal_system-right_tibia_ID',
       'skeletal_system-right_fibula_ID',
