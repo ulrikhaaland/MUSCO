@@ -88,7 +88,7 @@ export function usePartChat({ selectedPart }: UsePartChatProps) {
   };
 
   const getDisplayName = () => {
-    if (!selectedPart) return messages.length > 0 ? 'No body part selected' : 'Select a body part';
+    if (!selectedPart) return messages.length > 0 ? 'No body part selected' : 'Select a body part to get started';
     return selectedPart.name;
   };
 

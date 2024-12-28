@@ -456,21 +456,23 @@ export default function HumanViewer({
         </div>
 
         {/* Mobile Controls */}
-        <MobileControls
-          isRotating={isRotating}
-          isResetting={isResetting}
-          isReady={isReady}
-          needsReset={needsReset}
-          selectedParts={selectedParts}
-          isChangingModel={isChangingModel}
-          currentGender={currentGender}
-          selectedPart={selectedPart}
-          onRotate={handleRotate}
-          onReset={handleReset}
-          onSwitchModel={handleSwitchModel}
-          onZoom={handleZoom}
-          onHeightChange={handleBottomSheetHeight}
-        />
+        {isMobile && (
+          <MobileControls
+            isRotating={isRotating}
+            isResetting={isResetting}
+            isReady={isReady}
+            needsReset={needsReset}
+            selectedParts={selectedParts}
+            isChangingModel={isChangingModel}
+            currentGender={currentGender}
+            selectedPart={selectedPart}
+            onRotate={handleRotate}
+            onReset={handleReset}
+            onSwitchModel={handleSwitchModel}
+            onZoom={handleZoom}
+            onHeightChange={handleBottomSheetHeight}
+          />
+        )}
       </div>
 
       {/* Drag Handle - Desktop Only */}

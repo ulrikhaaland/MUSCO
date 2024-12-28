@@ -80,7 +80,7 @@ export default function MobileControls({
 
   // Get the actual viewport height accounting for mobile browser UI
   const getViewportHeight = () => {
-    return window.innerHeight;
+    return window.innerHeight * 0.01 * 100; // Convert to dvh equivalent
   };
 
   useEffect(() => {
@@ -338,16 +338,18 @@ export default function MobileControls({
                   )}
                 </button>
               )}
-              <button
-                onClick={handleExpandToggle}
-                className="flex justify-center items-center w-8 h-8 hover:bg-gray-800 rounded-full transition-colors"
-              >
-                <ExpandLessIcon
-                  className={`text-white h-6 w-6 transition-transform ${
-                    isExpanded ? 'rotate-180' : ''
-                  }`}
-                />
-              </button>
+              {(selectedPart || messages.length > 0) && (
+                <button
+                  onClick={handleExpandToggle}
+                  className="flex justify-center items-center w-8 h-8 hover:bg-gray-800 rounded-full transition-colors"
+                >
+                  <ExpandLessIcon
+                    className={`text-white h-6 w-6 transition-transform ${
+                      isExpanded ? 'rotate-180' : ''
+                    }`}
+                  />
+                </button>
+              )}
             </div>
           </div>
         }
