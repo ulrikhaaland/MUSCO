@@ -62,6 +62,7 @@ export default function MobileControls({
   const [userClosedSheet, setUserClosedSheet] = useState(false);
   const sheetRef = useRef<BottomSheetRef>(null);
   const contentRef = useRef<HTMLDivElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
 
   const {
     messages,
@@ -104,7 +105,7 @@ export default function MobileControls({
     return () => resizeObserver.disconnect();
   }, [messages]); // Update when messages change
 
-  // Handle body part selection
+  // Handle body part selection and deselection
   useEffect(() => {
     const hasContent = messages.length > 0 || followUpQuestions.length > 0;
     const loadingComplete = !isLoading && !isCollectingJson;
@@ -116,8 +117,23 @@ export default function MobileControls({
           setIsExpanded(true);
         }, 10);
       }
+    } else if (!selectedPart) {
+      // Part was deselected
+      setIsDragging(true);
+      if (sheetRef.current) {
+        sheetRef.current.snapTo(({ maxHeight }) =>
+          Math.min(maxHeight * 0.15, 72)
+        );
+      }
     }
-  }, [selectedPart, isLoading, isCollectingJson, messages, followUpQuestions, userClosedSheet]);
+  }, [
+    selectedPart,
+    isLoading,
+    isCollectingJson,
+    messages,
+    followUpQuestions,
+    userClosedSheet,
+  ]);
 
   const handleExpandToggle = () => {
     if (sheetRef.current) {
@@ -145,7 +161,10 @@ export default function MobileControls({
     // Track bottom sheet height changes
     const observer = new MutationObserver((mutations) => {
       mutations.forEach((mutation) => {
-        if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+        if (
+          mutation.type === 'attributes' &&
+          mutation.attributeName === 'style'
+        ) {
           const element = mutation.target as HTMLElement;
           const height = element.getBoundingClientRect().height;
           updateModelHeight(height);
@@ -157,14 +176,14 @@ export default function MobileControls({
       const element = sheetRef.current as unknown as HTMLElement;
       observer.observe(element, {
         attributes: true,
-        attributeFilter: ['style']
+        attributeFilter: ['style'],
       });
     }
 
     return () => observer.disconnect();
   }, []);
 
-  // Track height changes continuously
+  // Track height changes only during drag or animation
   useEffect(() => {
     let rafId: number;
     let lastHeight = 0;
@@ -180,14 +199,17 @@ export default function MobileControls({
       rafId = requestAnimationFrame(checkHeight);
     };
 
-    rafId = requestAnimationFrame(checkHeight);
+    // Only run the animation frame loop when dragging or during spring animations
+    if (isDragging) {
+      rafId = requestAnimationFrame(checkHeight);
+    }
 
     return () => {
       if (rafId) {
         cancelAnimationFrame(rafId);
       }
     };
-  }, []);
+  }, [isDragging]);
 
   return (
     <>
@@ -252,7 +274,7 @@ export default function MobileControls({
         snapPoints={({ maxHeight }) => {
           const minHeight = Math.min(maxHeight * 0.15, 72);
           const hasContent = Boolean(selectedPart) || messages.length > 0;
-          
+
           // If no content, only allow minimum height
           if (!hasContent) {
             return [minHeight];
@@ -274,8 +296,15 @@ export default function MobileControls({
           return [minHeight, maxHeight * 0.4, maxHeight * 0.8];
         }}
         expandOnContentDrag={Boolean(selectedPart) || messages.length > 0}
+        onDragStart={() => setIsDragging(true)}
+        onDragEnd={() => setIsDragging(false)}
         onSpringStart={(event) => {
-          console.log('onSpringStart', event.type);
+          if (!isDragging) {
+            setIsDragging(true);
+            setTimeout(() => {
+              setIsDragging(false);
+            }, 100);
+          }
           if (sheetRef.current) {
             const currentHeight = sheetRef.current.height;
             const maxHeight = window.innerHeight;
@@ -289,11 +318,10 @@ export default function MobileControls({
             const maxHeight = window.innerHeight;
             const minHeight = Math.min(maxHeight * 0.15, 72);
             const isNowExpanded = currentHeight > minHeight;
-            
+
             setIsExpanded(isNowExpanded);
             updateModelHeight(currentHeight);
-            
-            // If user dragged to close, set userClosedSheet
+
             if (!isNowExpanded && isExpanded) {
               setUserClosedSheet(true);
             }
@@ -352,7 +380,7 @@ export default function MobileControls({
           ref={contentRef}
           className="px-4 flex flex-col h-full overflow-hidden"
         >
-          {(!selectedPart && messages.length === 0) ? (
+          {!selectedPart && messages.length === 0 ? (
             <div className="h-[72px]" />
           ) : (
             /* Expanded Content */
@@ -375,5 +403,5 @@ export default function MobileControls({
         </div>
       </BottomSheetBase>
     </>
-  );  
+  );
 }
