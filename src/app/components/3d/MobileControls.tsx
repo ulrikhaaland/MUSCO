@@ -120,6 +120,7 @@ export default function MobileControls({
             <CropRotateIcon className={`h-6 w-6 text-white ${isRotating ? 'animate-spin' : ''}`} />
           </button>
 
+
           <button
             onClick={handleResetWithCollapse}
             disabled={isResetting || (!needsReset && selectedParts.length === 0)}
