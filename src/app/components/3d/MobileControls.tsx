@@ -75,6 +75,11 @@ export default function MobileControls({
     getDisplayName,
   } = usePartChat({ selectedPart });
 
+  // Get the actual viewport height accounting for mobile browser UI
+  const getViewportHeight = () => {
+    return window.visualViewport?.height || window.innerHeight;
+  };
+
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768); // md breakpoint
@@ -82,7 +87,11 @@ export default function MobileControls({
 
     checkMobile();
     window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+    window.visualViewport?.addEventListener('resize', checkMobile);
+    return () => {
+      window.removeEventListener('resize', checkMobile);
+      window.visualViewport?.removeEventListener('resize', checkMobile);
+    };
   }, []);
 
   useEffect(() => {
@@ -213,57 +222,6 @@ export default function MobileControls({
 
   return (
     <>
-      {/* Controls - Mobile */}
-      {isMobile && (
-        <div
-          className="md:hidden fixed right-1 bottom-[76px] flex flex-col gap-2 bg-black/50 p-1.5 rounded-lg"
-          style={{ zIndex: 1 }}
-        >
-          <button
-            onClick={onRotate}
-            disabled={isRotating || isResetting || !isReady}
-            className={`text-white p-2 rounded-lg transition-colors duration-200 ${
-              isRotating || isResetting || !isReady
-                ? 'opacity-50'
-                : 'hover:bg-white/10'
-            }`}
-          >
-            <CropRotateIcon
-              className={`h-5 w-5 ${isRotating ? 'animate-spin' : ''}`}
-            />
-          </button>
-          <button
-            onClick={onReset}
-            disabled={isResetting || (!needsReset && selectedParts === null)}
-            className={`text-white p-2 rounded-lg transition-colors duration-200 ${
-              isResetting || (!needsReset && selectedParts === null)
-                ? 'opacity-50'
-                : 'hover:bg-white/10'
-            }`}
-          >
-            <MyLocationIcon
-              className={`h-5 w-5 ${isResetting ? 'animate-spin' : ''}`}
-            />
-          </button>
-          <button
-            onClick={onZoom}
-            className="text-white p-2 rounded-lg hover:bg-white/10 transition-colors duration-200"
-          >
-            <ZoomInIcon className="h-5 w-5" />
-          </button>
-          <button
-            onClick={onSwitchModel}
-            className="text-white p-2 rounded-lg hover:bg-white/10 transition-colors duration-200"
-          >
-            {currentGender === 'male' ? (
-              <FemaleIcon className="h-5 w-5" />
-            ) : (
-              <MaleIcon className="h-5 w-5" />
-            )}
-          </button>
-        </div>
-      )}
-
       {/* Bottom Sheet */}
       <BottomSheetBase
         ref={sheetRef}
@@ -272,28 +230,25 @@ export default function MobileControls({
         skipInitialTransition
         defaultSnap={({ maxHeight }) => Math.min(maxHeight * 0.15, 72)}
         snapPoints={({ maxHeight }) => {
-          const minHeight = Math.min(maxHeight * 0.15, 72);
+          const viewportHeight = getViewportHeight();
+          const minHeight = Math.min(viewportHeight * 0.15, 72);
           const hasContent = Boolean(selectedPart) || messages.length > 0;
-
-          // If no content, only allow minimum height
+          
           if (!hasContent) {
             return [minHeight];
           }
 
-          const contentWithPadding = contentHeight + 96; // Account for header and padding
+          const contentWithPadding = contentHeight + 96;
 
-          // If content is smaller than minHeight, only use minHeight
           if (contentWithPadding <= minHeight) {
             return [minHeight];
           }
 
-          // If content is smaller than 40% of screen, use content height as max
-          if (contentWithPadding < maxHeight * 0.4) {
+          if (contentWithPadding < viewportHeight * 0.4) {
             return [minHeight, contentWithPadding];
           }
 
-          // Otherwise use standard snap points
-          return [minHeight, maxHeight * 0.4, maxHeight * 0.8];
+          return [minHeight, viewportHeight * 0.4, viewportHeight * 0.78];
         }}
         expandOnContentDrag={Boolean(selectedPart) || messages.length > 0}
         onDragStart={() => setIsDragging(true)}
@@ -307,40 +262,31 @@ export default function MobileControls({
           }
           if (sheetRef.current) {
             const currentHeight = sheetRef.current.height;
-            const maxHeight = window.innerHeight;
-            setIsExpanded(currentHeight > Math.min(maxHeight * 0.15, 72));
+            const viewportHeight = getViewportHeight();
+            setIsExpanded(currentHeight > Math.min(viewportHeight * 0.15, 72));
             updateModelHeight(currentHeight);
           }
         }}
         onSpringEnd={(event) => {
           if (sheetRef.current) {
             const currentHeight = sheetRef.current.height;
-            const maxHeight = window.innerHeight;
-            const minHeight = Math.min(maxHeight * 0.15, 72);
+            const viewportHeight = getViewportHeight();
+            const minHeight = Math.min(viewportHeight * 0.15, 72);
             const isNowExpanded = currentHeight > minHeight;
-
+            
             setIsExpanded(isNowExpanded);
             updateModelHeight(currentHeight);
-
+            
             if (!isNowExpanded && isExpanded) {
               setUserClosedSheet(true);
             }
           }
         }}
-        onSpringCancel={(event) => {
-          if (sheetRef.current) {
-            updateModelHeight(sheetRef.current.height);
-          }
-        }}
         header={
           <div className="h-12 w-full flex justify-between items-center">
             <div className="flex flex-col items-start">
-              <h2 className="text-sm text-gray-400">
-                Musculoskeletal Assistant
-              </h2>
-              <h3 className="text-lg font-bold text-white ">
-                {getDisplayName()}
-              </h3>
+              <h2 className="text-sm text-gray-400">Musculoskeletal Assistant</h2>
+              <h3 className="text-lg font-bold text-white ">{getDisplayName()}</h3>
             </div>
             <div className="flex items-center gap-2 ml-4">
               <button
@@ -374,8 +320,59 @@ export default function MobileControls({
             </div>
           </div>
         }
-        className="!bg-gray-900 [&>*]:!bg-gray-900"
+        className="!bg-gray-900 [&>*]:!bg-gray-900 relative"
       >
+        {/* Controls */}
+        {isMobile && (
+          <div
+            className="md:hidden absolute right-1 -top-[200px] flex flex-col gap-2 bg-[#111827] p-1.5 rounded-lg"
+            style={{ zIndex: 2 }}
+          >
+            <button
+              onClick={onRotate}
+              disabled={isRotating || isResetting || !isReady}
+              className={`text-white p-2 rounded-lg transition-colors duration-200 ${
+                isRotating || isResetting || !isReady
+                  ? 'opacity-50'
+                  : 'hover:bg-white/10'
+              }`}
+            >
+              <CropRotateIcon
+                className={`h-5 w-5 ${isRotating ? 'animate-spin' : ''}`}
+              />
+            </button>
+            <button
+              onClick={onReset}
+              disabled={isResetting || (!needsReset && selectedParts === null)}
+              className={`text-white p-2 rounded-lg transition-colors duration-200 ${
+                isResetting || (!needsReset && selectedParts === null)
+                  ? 'opacity-50'
+                  : 'hover:bg-white/10'
+              }`}
+            >
+              <MyLocationIcon
+                className={`h-5 w-5 ${isResetting ? 'animate-spin' : ''}`}
+              />
+            </button>
+            <button
+              onClick={onZoom}
+              className="text-white p-2 rounded-lg hover:bg-white/10 transition-colors duration-200"
+            >
+              <ZoomInIcon className="h-5 w-5" />
+            </button>
+            <button
+              onClick={onSwitchModel}
+              className="text-white p-2 rounded-lg hover:bg-white/10 transition-colors duration-200"
+            >
+              {currentGender === 'male' ? (
+                <FemaleIcon className="h-5 w-5" />
+              ) : (
+                <MaleIcon className="h-5 w-5" />
+              )}
+            </button>
+          </div>
+        )}
+
         <div
           ref={contentRef}
           className="px-4 flex flex-col h-full overflow-hidden"
