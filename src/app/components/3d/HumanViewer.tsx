@@ -381,7 +381,7 @@ export default function HumanViewer({
         {/* Mobile: subtract 72px for controls, Desktop: full height */}
         <div
           className="md:h-screen w-full relative"
-          style={{ height: isMobile ? modelContainerHeight : '100vh' }}
+          style={{ height: '100vh - 140px' }}
         >
           <iframe
             id="myViewer"

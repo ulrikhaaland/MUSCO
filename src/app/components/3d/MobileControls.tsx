@@ -80,13 +80,7 @@ export default function MobileControls({
 
   // Get the actual viewport height accounting for mobile browser UI
   const getViewportHeight = () => {
-    // On mobile browsers, especially Chrome, we need to account for the UI
-    if (isMobile) {
-      // Use visualViewport if available and subtract a safety margin for browser UI
-      const height = window.visualViewport?.height || window.innerHeight;
-      return height - 80; // Account for browser UI elements
-    }
-    return window.innerHeight;
+    return window.visualViewport?.height || window.innerHeight;
   };
 
   useEffect(() => {
@@ -193,28 +187,30 @@ export default function MobileControls({
     }
   };
 
-  // Update height calculations when viewport changes
   useEffect(() => {
-    const handleResize = () => {
-      if (sheetRef.current) {
-        const currentHeight = sheetRef.current.height;
-        const viewportHeight = getViewportHeight();
-        updateModelHeight(currentHeight);
-        
-        // Adjust sheet height if it's too tall for new viewport
-        if (currentHeight > viewportHeight * 0.8) {
-          sheetRef.current.snapTo(() => viewportHeight * 0.8);
+    // Track bottom sheet height changes
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (
+          mutation.type === 'attributes' &&
+          mutation.attributeName === 'style'
+        ) {
+          const element = mutation.target as HTMLElement;
+          const height = element.getBoundingClientRect().height;
+          updateModelHeight(height);
         }
-      }
-    };
+      });
+    });
 
-    window.visualViewport?.addEventListener('resize', handleResize);
-    window.addEventListener('resize', handleResize);
+    if (sheetRef.current) {
+      const element = sheetRef.current as unknown as HTMLElement;
+      observer.observe(element, {
+        attributes: true,
+        attributeFilter: ['style'],
+      });
+    }
 
-    return () => {
-      window.visualViewport?.removeEventListener('resize', handleResize);
-      window.removeEventListener('resize', handleResize);
-    };
+    return () => observer.disconnect();
   }, []);
 
   // Track height changes only during drag or animation
