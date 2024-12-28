@@ -332,13 +332,13 @@ export default function MobileControls({
               className={`h-5 w-5 ${isResetting ? 'animate-spin' : ''}`}
             />
           </button>
-          <button
+          {/* <button
             onClick={onZoom}
             disabled={!isReady}
             className="text-white p-2 rounded-lg hover:bg-white/10 transition-colors duration-200"
           >
             <ZoomInIcon className="h-5 w-5" />
-          </button>
+          </button> */}
           <button
             onClick={onSwitchModel}
             disabled={!isReady}
