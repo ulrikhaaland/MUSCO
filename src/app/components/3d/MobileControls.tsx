@@ -235,6 +235,63 @@ export default function MobileControls({
 
   return (
     <>
+      {/* Mobile Controls - Moved outside bottom sheet */}
+      {isMobile && (
+        <div
+          className="md:hidden fixed right-4 top-4 flex flex-col gap-2 bg-[#111827] p-1.5 rounded-lg shadow-lg"
+          style={{ zIndex: 9999 }}
+        >
+          <button
+            onClick={onRotate}
+            disabled={isRotating || isResetting || !isReady}
+            className={`text-white p-2 rounded-lg transition-colors duration-200 ${
+              isRotating || isResetting || !isReady
+                ? 'opacity-50'
+                : 'hover:bg-white/10'
+            }`}
+          >
+            <CropRotateIcon
+              className={`h-5 w-5 ${isRotating ? 'animate-spin' : ''}`}
+            />
+          </button>
+          <button
+            onClick={onReset}
+            disabled={
+              isResetting ||
+              (!needsReset && selectedParts === null) ||
+              !isReady
+            }
+            className={`text-white p-2 rounded-lg transition-colors duration-200 ${
+              isResetting || (!needsReset && selectedParts === null)
+                ? 'opacity-50'
+                : 'hover:bg-white/10'
+            }`}
+          >
+            <MyLocationIcon
+              className={`h-5 w-5 ${isResetting ? 'animate-spin' : ''}`}
+            />
+          </button>
+          <button
+            onClick={onZoom}
+            disabled={!isReady}
+            className="text-white p-2 rounded-lg hover:bg-white/10 transition-colors duration-200"
+          >
+            <ZoomInIcon className="h-5 w-5" />
+          </button>
+          <button
+            onClick={onSwitchModel}
+            disabled={!isReady}
+            className="text-white p-2 rounded-lg hover:bg-white/10 transition-colors duration-200"
+          >
+            {currentGender === 'male' ? (
+              <FemaleIcon className="h-5 w-5" />
+            ) : (
+              <MaleIcon className="h-5 w-5" />
+            )}
+          </button>
+        </div>
+      )}
+
       {/* Bottom Sheet */}
       <BottomSheetBase
         ref={sheetRef}
@@ -363,63 +420,6 @@ export default function MobileControls({
         }
         className="!bg-gray-900 [&>*]:!bg-gray-900 relative h-[100dvh]"
       >
-        {/* Controls */}
-        {isMobile && (
-          <div
-            className="md:hidden absolute right-1 -top-[200px] flex flex-col gap-2 bg-[#111827] p-1.5 rounded-lg shadow-lg"
-            style={{ zIndex: 5 }}
-          >
-            <button
-              onClick={onRotate}
-              disabled={isRotating || isResetting || !isReady}
-              className={`text-white p-2 rounded-lg transition-colors duration-200 ${
-                isRotating || isResetting || !isReady
-                  ? 'opacity-50'
-                  : 'hover:bg-white/10'
-              }`}
-            >
-              <CropRotateIcon
-                className={`h-5 w-5 ${isRotating ? 'animate-spin' : ''}`}
-              />
-            </button>
-            <button
-              onClick={onReset}
-              disabled={
-                isResetting ||
-                (!needsReset && selectedParts === null) ||
-                !isReady
-              }
-              className={`text-white p-2 rounded-lg transition-colors duration-200 ${
-                isResetting || (!needsReset && selectedParts === null)
-                  ? 'opacity-50'
-                  : 'hover:bg-white/10'
-              }`}
-            >
-              <MyLocationIcon
-                className={`h-5 w-5 ${isResetting ? 'animate-spin' : ''}`}
-              />
-            </button>
-            <button
-              onClick={onZoom}
-              disabled={!isReady}
-              className="text-white p-2 rounded-lg hover:bg-white/10 transition-colors duration-200"
-            >
-              <ZoomInIcon className="h-5 w-5" />
-            </button>
-            <button
-              onClick={onSwitchModel}
-              disabled={!isReady}
-              className="text-white p-2 rounded-lg hover:bg-white/10 transition-colors duration-200"
-            >
-              {currentGender === 'male' ? (
-                <FemaleIcon className="h-5 w-5" />
-              ) : (
-                <MaleIcon className="h-5 w-5" />
-              )}
-            </button>
-          </div>
-        )}
-
         <div
           ref={contentRef}
           className="px-4 flex flex-col h-full overflow-hidden"
