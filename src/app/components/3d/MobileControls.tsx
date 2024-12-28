@@ -80,7 +80,7 @@ export default function MobileControls({
 
   // Get the actual viewport height accounting for mobile browser UI
   const getViewportHeight = () => {
-    return window.visualViewport?.height || window.innerHeight;
+    return window.innerHeight;
   };
 
   useEffect(() => {
@@ -90,11 +90,7 @@ export default function MobileControls({
 
     checkMobile();
     window.addEventListener('resize', checkMobile);
-    window.visualViewport?.addEventListener('resize', checkMobile);
-    return () => {
-      window.removeEventListener('resize', checkMobile);
-      window.visualViewport?.removeEventListener('resize', checkMobile);
-    };
+    return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
   useEffect(() => {
@@ -251,7 +247,7 @@ export default function MobileControls({
         skipInitialTransition
         defaultSnap={({ maxHeight }) => Math.min(maxHeight * 0.15, 72)}
         snapPoints={({ maxHeight }) => {
-          const viewportHeight = getViewportHeight();
+          const viewportHeight = maxHeight;
           const minHeight = Math.min(viewportHeight * 0.15, 72);
           const hasContent = Boolean(selectedPart) || messages.length > 0;
           
@@ -355,7 +351,7 @@ export default function MobileControls({
             </div>
           </div>
         }
-        className="!bg-gray-900 [&>*]:!bg-gray-900 relative"
+        className="!bg-gray-900 [&>*]:!bg-gray-900 relative h-[100dvh]"
       >
         {/* Controls */}
         {isMobile && (
