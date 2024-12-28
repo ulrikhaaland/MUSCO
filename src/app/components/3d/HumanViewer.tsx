@@ -17,6 +17,7 @@ import CropRotateIcon from '@mui/icons-material/CropRotate';
 import MaleIcon from '@mui/icons-material/Male';
 import FemaleIcon from '@mui/icons-material/Female';
 import MobileControls from './MobileControls';
+import { BodyPartGroup } from '@/app/config/bodyPartGroups';
 
 interface HumanViewerProps {
   gender: Gender;
@@ -25,7 +26,7 @@ interface HumanViewerProps {
 
 export default function HumanViewer({ gender, onGenderChange }: HumanViewerProps) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
-  const [selectedParts, setSelectedParts] = useState<AnatomyPart[]>([]);
+  const [selectedParts, setSelectedParts] = useState<BodyPartGroup | null>(null);
   const [selectedPart, setSelectedPart] = useState<AnatomyPart | null>(null);
   const [popupPosition, setPopupPosition] = useState({ x: 0, y: 0 });
   const lastSelectedIdRef = useRef<string | null>(null);
@@ -42,6 +43,7 @@ export default function HumanViewer({ gender, onGenderChange }: HumanViewerProps
   const [isResetting, setIsResetting] = useState(false);
   const isSelectingGroupRef = useRef(false);
   const [isBottomSheetExpanded, setIsBottomSheetExpanded] = useState(false);
+  const [targetGender, setTargetGender] = useState<Gender | null>(null);
 
   const MODEL_IDS = {
     male: '5tOV',
@@ -127,11 +129,12 @@ export default function HumanViewer({ gender, onGenderChange }: HumanViewerProps
   const handleSwitchModel = useCallback(() => {
     setIsChangingModel(true);
     const newGender: Gender = currentGender === 'male' ? 'female' : 'male';
+    setTargetGender(newGender);
     setViewerUrl(getViewerUrl(newGender));
 
     // Reset states
     setSelectedPart(null);
-    setSelectedParts([]);
+    setSelectedParts(null);
     setCurrentRotation(0);
 
     // Call the parent's gender change handler
@@ -142,6 +145,13 @@ export default function HumanViewer({ gender, onGenderChange }: HumanViewerProps
     url.searchParams.set('gender', newGender);
     window.history.pushState({}, '', url.toString());
   }, [currentGender, getViewerUrl, onGenderChange]);
+
+  // Clear target gender when model change is complete
+  useEffect(() => {
+    if (!isChangingModel) {
+      setTargetGender(null);
+    }
+  }, [isChangingModel]);
 
   const handleReset = useCallback(() => {
     if (isResetting) return;
@@ -173,7 +183,7 @@ export default function HumanViewer({ gender, onGenderChange }: HumanViewerProps
           // Reset all our state after the scene has been reset
           setCurrentRotation(0);
           setSelectedPart(null);
-          setSelectedParts([]);
+          setSelectedParts(null);
           lastSelectedIdRef.current = null;
           setNeedsReset(false);
 
@@ -191,7 +201,7 @@ export default function HumanViewer({ gender, onGenderChange }: HumanViewerProps
 
   // Update reset button state when parts are selected
   useEffect(() => {
-    setNeedsReset(selectedParts.length > 0 || needsReset);
+    setNeedsReset(selectedParts !== null || needsReset);
   }, [selectedParts, needsReset]);
 
   const startDragging = useCallback((e: React.MouseEvent) => {
@@ -289,6 +299,40 @@ export default function HumanViewer({ gender, onGenderChange }: HumanViewerProps
     }
   }, []); // Empty dependency array means this runs once after mount
 
+  const handleZoom = useCallback(() => {
+    if (!humanRef.current || !isReady) return;
+
+    // First get current camera info
+    humanRef.current.send('camera.info', (camera) => {
+      if (selectedParts) {
+        // If a part group is selected, focus on those parts while maintaining camera properties
+        humanRef.current.send('camera.set', {
+          objectId: getGenderedId(selectedParts.selectIds[0], currentGender),
+          position: {
+            ...camera.position,
+            z: camera.position.z * 0.7 // Zoom in by reducing z distance by 30%
+          },
+          target: camera.target,
+          up: camera.up,
+          animate: true,
+          animationDuration: 0.5
+        });
+      } else {
+        // If no part group selected, just zoom in while maintaining camera orientation
+        humanRef.current.send('camera.set', {
+          position: {
+            ...camera.position,
+            z: camera.position.z * 0.8 // Zoom in by reducing z distance by 20%
+          },
+          target: camera.target,
+          up: camera.up,
+          animate: true,
+          animationDuration: 0.5
+        });
+      }
+    });
+  }, [selectedParts, isReady]);
+
   return (
     <div className="flex flex-col md:flex-row relative h-screen w-screen overflow-hidden">
       {/* Fullscreen overlay when dragging */}
@@ -301,7 +345,7 @@ export default function HumanViewer({ gender, onGenderChange }: HumanViewerProps
         {isChangingModel && (
           <div className="absolute inset-0 z-50 bg-black flex items-center justify-center">
             <div className="text-white text-xl">
-              Loading {currentGender === 'male' ? 'Female' : 'Male'} Model...
+              Loading {targetGender?.charAt(0).toUpperCase() + targetGender?.slice(1)} Model...
             </div>
           </div>
         )}
@@ -338,9 +382,9 @@ export default function HumanViewer({ gender, onGenderChange }: HumanViewerProps
           </button>
           <button
             onClick={handleReset}
-            disabled={isResetting || (!needsReset && selectedParts.length === 0)}
+            disabled={isResetting || (!needsReset && selectedParts === null)}
             className={`bg-indigo-600/80 hover:bg-indigo-500/80 text-white px-4 py-2 rounded-lg shadow-lg transition-colors duration-200 flex items-center space-x-2 ${
-              isResetting || (!needsReset && selectedParts.length === 0)
+              isResetting || (!needsReset && selectedParts === null)
                 ? 'opacity-50 cursor-not-allowed'
                 : ''
             }`}
@@ -381,6 +425,7 @@ export default function HumanViewer({ gender, onGenderChange }: HumanViewerProps
           onRotate={handleRotate}
           onReset={handleReset}
           onSwitchModel={handleSwitchModel}
+          onZoom={handleZoom}
         />
       </div>
 
@@ -408,7 +453,7 @@ export default function HumanViewer({ gender, onGenderChange }: HumanViewerProps
             onClose={() => {
               console.log('Closing popup');
               setSelectedPart(null);
-              setSelectedParts([]);
+              setSelectedParts(null);
             }}
           />
         </div>

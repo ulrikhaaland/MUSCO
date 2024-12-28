@@ -38,10 +38,10 @@ interface CameraPosition {
 interface UseHumanAPIProps {
   elementId: string;
   onReady?: () => void;
-  onObjectSelected?: (event: any) => void;
+  onObjectSelected: (event: any) => void;
   initialGender: Gender;
-  selectedParts: AnatomyPart[];
-  setSelectedParts: (parts: AnatomyPart[]) => void;
+  selectedParts: BodyPartGroup | null;
+  setSelectedParts: (parts: BodyPartGroup | null) => void;
   setSelectedPart: (part: AnatomyPart | null) => void;
 }
 
@@ -63,16 +63,11 @@ export function useHumanAPI({
   const humanRef = useRef<HumanAPI | null>(null);
   const initialCameraRef = useRef<CameraPosition | null>(null);
   const selectionEventRef = useRef<any>(null);
-  const currentSelectionRef = useRef<AnatomyPart[]>([]);
   const selectedPartGroupRef = useRef<BodyPartGroup | null>(null);
   const [currentGender, setCurrentGender] = useState<Gender>(initialGender);
   const [needsReset, setNeedsReset] = useState(false);
   const [isReady, setIsReady] = useState(false);
 
-  // Update currentSelectionRef when selectedParts changes
-  useEffect(() => {
-    currentSelectionRef.current = selectedParts;
-  }, [selectedParts]);
 
   // Add logging when props change
   useEffect(() => {
@@ -182,9 +177,8 @@ export function useHumanAPI({
             if (Object.values(event).every((value) => value === false)) {
               console.log('All objects deselected');
               setSelectedPart(null);
-              setSelectedParts([]);
+              setSelectedParts(null);
               selectedPartGroupRef.current = null;
-              currentSelectionRef.current = [];
               selectionEventRef.current = null;
               return;
             }
@@ -229,7 +223,7 @@ export function useHumanAPI({
 
               // Set the selected part and parts
               setSelectedPart(groupPart);
-              setSelectedParts([groupPart]);
+              setSelectedParts(group);
 
               human.send('scene.selectObjects', {
                 ...selectionMap,

@@ -27,3 +27,40 @@ iframe {
   height: 100%;
   width: 100%;
 }
+
+/* Bottom sheet custom styles */
+[data-rsbs-overlay] {
+  background: rgb(17, 24, 39) !important; /* bg-gray-900 */
+}
+
+[data-rsbs-backdrop] {
+  background: transparent !important;
+  z-index: 1 !important;
+}
+
+[data-rsbs-root]:after {
+  background: rgb(17, 24, 39) !important; /* bg-gray-900 */
+}
+
+[data-rsbs-has-header='true']:after {
+  background: rgb(17, 24, 39) !important; /* bg-gray-900 */
+}
+
+[data-rsbs-header] {
+  background: rgb(17, 24, 39) !important; /* bg-gray-900 */
+}
+
+[data-rsbs-scroll] {
+  background: rgb(17, 24, 39) !important; /* bg-gray-900 */
+  overflow-y: auto !important;
+}
+
+[data-rsbs-content] {
+  background: rgb(17, 24, 39) !important; /* bg-gray-900 */
+  overflow: hidden !important;
+}
+
+/* Bottom Sheet Styles */
+[data-rsbs-header]:before {
+  background: white !important;
+}

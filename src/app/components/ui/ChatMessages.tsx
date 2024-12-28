@@ -140,10 +140,12 @@ export function ChatMessages({
           {showLoading && <LoadingMessage />}
 
           {(showFollowUps || isCollectingJson) && (
-            <div className="space-y-2 mt-4">
-              <h4 className="text-sm font-medium text-gray-400 ml-2">
+            <div
+              className={`space-y-2 mt-4 ${messages.length > 0 ? 'pb-4' : ''}`}
+            >
+              {/* <h4 className="text-sm font-medium text-gray-400 ml-2">
                 Suggested questions:
-              </h4>
+              </h4> */}
               <div className="space-y-2">
                 {!showFollowUps
                   ? Array(3)
