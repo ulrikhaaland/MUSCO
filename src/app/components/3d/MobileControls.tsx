@@ -366,7 +366,7 @@ export default function MobileControls({
         {/* Controls */}
         {isMobile && (
           <div
-            className="md:hidden fixed right-1 -top-[200px] flex flex-col gap-2 bg-[#111827] p-1.5 rounded-lg shadow-lg"
+            className="md:hidden absolute right-1 -top-[200px] flex flex-col gap-2 bg-[#111827] p-1.5 rounded-lg shadow-lg"
             style={{ zIndex: 1000 }}
           >
             <button
