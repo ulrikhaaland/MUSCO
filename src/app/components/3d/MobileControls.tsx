@@ -366,8 +366,8 @@ export default function MobileControls({
         {/* Controls */}
         {isMobile && (
           <div
-            className="md:hidden absolute right-1 bottom-[calc(100%+1rem)] flex flex-col gap-2 bg-[#111827] p-1.5 rounded-lg"
-            style={{ zIndex: 2 }}
+            className="md:hidden fixed right-1 -top-[200px] flex flex-col gap-2 bg-[#111827] p-1.5 rounded-lg shadow-lg"
+            style={{ zIndex: 1000 }}
           >
             <button
               onClick={onRotate}
