@@ -1437,10 +1437,10 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
   chest: {
     name: 'Chest',
     selectIds: [
-      'muscular_system-muscles_of_left_pectoral_girdle_ID',
-      'muscular_system-muscles_of_right_pectoral_girdle_ID',
       'skeletal_system-rib_cage_ID',
       'skeletal_system-sternum_ID',
+      'muscular_system-muscles_of_left_pectoral_girdle_ID',
+      'muscular_system-muscles_of_right_pectoral_girdle_ID',
       'connective_tissue-connective_tissue_of_rib_cage_ID',
     ],
     ids: [
@@ -1643,8 +1643,8 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
   torso: {
     name: 'Torso',
     selectIds: [
-      'muscular_system-muscles_of_thorax_ID',
       'muscular_system-muscles_of_abdomen_ID',
+      'muscular_system-muscles_of_thorax_ID',
     ],
     ids: [
       'muscular_system-levatores_costarum_ID',
