@@ -13,6 +13,7 @@ interface ChatMessagesProps {
   onScroll?: (event: React.UIEvent<HTMLDivElement>) => void;
   onUserScroll?: (hasScrolled: boolean) => void;
   part?: { name: string } | null;
+  isMobile?: boolean;
 }
 
 export function ChatMessages({
@@ -25,6 +26,7 @@ export function ChatMessages({
   onScroll,
   onUserScroll,
   part,
+  isMobile = false,
 }: ChatMessagesProps) {
   const [userHasScrolled, setUserHasScrolled] = useState(false);
   const [showScrollButton, setShowScrollButton] = useState(false);
@@ -100,7 +102,7 @@ export function ChatMessages({
         onScroll={handleScroll}
         className="flex-1 overflow-y-auto scroll-smooth"
       >
-        {messages.length === 0 && !part && (
+        {messages.length === 0 && !part && !isMobile && (
           <div className="h-full flex items-center justify-center text-gray-400">
             <div className="text-center">
               <p className="text-lg mb-2">

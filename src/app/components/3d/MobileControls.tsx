@@ -1,4 +1,10 @@
-import { useState, useEffect, useRef, RefAttributes, ComponentType } from 'react';
+import {
+  useState,
+  useEffect,
+  useRef,
+  RefAttributes,
+  ComponentType,
+} from 'react';
 import { BottomSheet, BottomSheetRef } from 'react-spring-bottom-sheet';
 import type { BottomSheetProps } from 'react-spring-bottom-sheet';
 import 'react-spring-bottom-sheet/dist/style.css';
@@ -27,10 +33,13 @@ interface MobileControlsProps {
   onReset: () => void;
   onSwitchModel: () => void;
   onZoom: () => void;
+  onHeightChange?: (height: number) => void;
 }
 
 // Use BottomSheet directly
-const BottomSheetBase = BottomSheet as ComponentType<BottomSheetProps & RefAttributes<BottomSheetRef>>;
+const BottomSheetBase = BottomSheet as ComponentType<
+  BottomSheetProps & RefAttributes<BottomSheetRef>
+>;
 
 export default function MobileControls({
   isRotating,
@@ -45,10 +54,12 @@ export default function MobileControls({
   onReset,
   onSwitchModel,
   onZoom,
+  onHeightChange,
 }: MobileControlsProps) {
   const [isMobile, setIsMobile] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [contentHeight, setContentHeight] = useState(0);
+  const [userClosedSheet, setUserClosedSheet] = useState(false);
   const sheetRef = useRef<BottomSheetRef>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
@@ -67,7 +78,7 @@ export default function MobileControls({
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768); // md breakpoint
     };
-    
+
     checkMobile();
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
@@ -93,62 +104,143 @@ export default function MobileControls({
     return () => resizeObserver.disconnect();
   }, [messages]); // Update when messages change
 
+  // Handle body part selection
+  useEffect(() => {
+    const hasContent = messages.length > 0 || followUpQuestions.length > 0;
+    const loadingComplete = !isLoading && !isCollectingJson;
+
+    if (selectedPart && loadingComplete && hasContent && !userClosedSheet) {
+      if (sheetRef.current) {
+        setTimeout(() => {
+          sheetRef.current.snapTo(({ maxHeight }) => maxHeight * 0.4);
+          setIsExpanded(true);
+        }, 10);
+      }
+    }
+  }, [selectedPart, isLoading, isCollectingJson, messages, followUpQuestions, userClosedSheet]);
+
   const handleExpandToggle = () => {
     if (sheetRef.current) {
       if (isExpanded) {
         // Collapse to minimum height
         sheetRef.current.snapTo(({ snapPoints }) => Math.min(...snapPoints));
+        setUserClosedSheet(true);
       } else {
         // Expand to maximum height
         sheetRef.current.snapTo(({ snapPoints }) => Math.max(...snapPoints));
+        setUserClosedSheet(false);
       }
       setIsExpanded(!isExpanded);
     }
   };
 
-  if (!isMobile) return null;
+  // Update model height whenever sheet height changes
+  const updateModelHeight = (sheetHeight: number) => {
+    if (onHeightChange) {
+      onHeightChange(sheetHeight);
+    }
+  };
+
+  useEffect(() => {
+    // Track bottom sheet height changes
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+          const element = mutation.target as HTMLElement;
+          const height = element.getBoundingClientRect().height;
+          updateModelHeight(height);
+        }
+      });
+    });
+
+    if (sheetRef.current) {
+      const element = sheetRef.current as unknown as HTMLElement;
+      observer.observe(element, {
+        attributes: true,
+        attributeFilter: ['style']
+      });
+    }
+
+    return () => observer.disconnect();
+  }, []);
+
+  // Track height changes continuously
+  useEffect(() => {
+    let rafId: number;
+    let lastHeight = 0;
+
+    const checkHeight = () => {
+      if (sheetRef.current) {
+        const currentHeight = sheetRef.current.height;
+        if (currentHeight !== lastHeight) {
+          lastHeight = currentHeight;
+          updateModelHeight(currentHeight);
+        }
+      }
+      rafId = requestAnimationFrame(checkHeight);
+    };
+
+    rafId = requestAnimationFrame(checkHeight);
+
+    return () => {
+      if (rafId) {
+        cancelAnimationFrame(rafId);
+      }
+    };
+  }, []);
 
   return (
     <>
       {/* Controls - Mobile */}
-      <div className="md:hidden fixed right-1 bottom-[76px] flex flex-col gap-2 bg-black/50 p-1.5 rounded-lg" style={{ zIndex: 1 }}>
-        <button
-          onClick={onRotate}
-          disabled={isRotating || isResetting || !isReady}
-          className={`text-white p-2 rounded-lg transition-colors duration-200 ${
-            isRotating || isResetting || !isReady ? 'opacity-50' : 'hover:bg-white/10'
-          }`}
+      {isMobile && (
+        <div
+          className="md:hidden fixed right-1 bottom-[76px] flex flex-col gap-2 bg-black/50 p-1.5 rounded-lg"
+          style={{ zIndex: 1 }}
         >
-          <CropRotateIcon className={`h-5 w-5 ${isRotating ? 'animate-spin' : ''}`} />
-        </button>
-        <button
-          onClick={onReset}
-          disabled={isResetting || (!needsReset && selectedParts === null)}
-          className={`text-white p-2 rounded-lg transition-colors duration-200 ${
-            isResetting || (!needsReset && selectedParts === null)
-              ? 'opacity-50'
-              : 'hover:bg-white/10'
-          }`}
-        >
-          <MyLocationIcon className={`h-5 w-5 ${isResetting ? 'animate-spin' : ''}`} />
-        </button>
-        <button
-          onClick={onZoom}
-          className="text-white p-2 rounded-lg hover:bg-white/10 transition-colors duration-200"
-        >
-          <ZoomInIcon className="h-5 w-5" />
-        </button>
-        <button
-          onClick={onSwitchModel}
-          className="text-white p-2 rounded-lg hover:bg-white/10 transition-colors duration-200"
-        >
-          {currentGender === 'male' ? (
-            <FemaleIcon className="h-5 w-5" />
-          ) : (
-            <MaleIcon className="h-5 w-5" />
-          )}
-        </button>
-      </div>
+          <button
+            onClick={onRotate}
+            disabled={isRotating || isResetting || !isReady}
+            className={`text-white p-2 rounded-lg transition-colors duration-200 ${
+              isRotating || isResetting || !isReady
+                ? 'opacity-50'
+                : 'hover:bg-white/10'
+            }`}
+          >
+            <CropRotateIcon
+              className={`h-5 w-5 ${isRotating ? 'animate-spin' : ''}`}
+            />
+          </button>
+          <button
+            onClick={onReset}
+            disabled={isResetting || (!needsReset && selectedParts === null)}
+            className={`text-white p-2 rounded-lg transition-colors duration-200 ${
+              isResetting || (!needsReset && selectedParts === null)
+                ? 'opacity-50'
+                : 'hover:bg-white/10'
+            }`}
+          >
+            <MyLocationIcon
+              className={`h-5 w-5 ${isResetting ? 'animate-spin' : ''}`}
+            />
+          </button>
+          <button
+            onClick={onZoom}
+            className="text-white p-2 rounded-lg hover:bg-white/10 transition-colors duration-200"
+          >
+            <ZoomInIcon className="h-5 w-5" />
+          </button>
+          <button
+            onClick={onSwitchModel}
+            className="text-white p-2 rounded-lg hover:bg-white/10 transition-colors duration-200"
+          >
+            {currentGender === 'male' ? (
+              <FemaleIcon className="h-5 w-5" />
+            ) : (
+              <MaleIcon className="h-5 w-5" />
+            )}
+          </button>
+        </div>
+      )}
 
       {/* Bottom Sheet */}
       <BottomSheetBase
@@ -159,38 +251,57 @@ export default function MobileControls({
         defaultSnap={({ maxHeight }) => Math.min(maxHeight * 0.15, 72)}
         snapPoints={({ maxHeight }) => {
           const minHeight = Math.min(maxHeight * 0.15, 72);
-          const contentWithPadding = contentHeight + 96; // Account for header and padding
+          const hasContent = Boolean(selectedPart) || messages.length > 0;
           
+          // If no content, only allow minimum height
+          if (!hasContent) {
+            return [minHeight];
+          }
+
+          const contentWithPadding = contentHeight + 96; // Account for header and padding
+
           // If content is smaller than minHeight, only use minHeight
           if (contentWithPadding <= minHeight) {
             return [minHeight];
           }
-          
+
           // If content is smaller than 40% of screen, use content height as max
           if (contentWithPadding < maxHeight * 0.4) {
             return [minHeight, contentWithPadding];
           }
-          
+
           // Otherwise use standard snap points
-          return [
-            minHeight,
-            maxHeight * 0.4,
-            maxHeight * 0.8
-          ];
+          return [minHeight, maxHeight * 0.4, maxHeight * 0.8];
         }}
-        expandOnContentDrag
+        expandOnContentDrag={Boolean(selectedPart) || messages.length > 0}
         onSpringStart={(event) => {
-          if (event.type === 'SNAP' && sheetRef.current) {
+          console.log('onSpringStart', event.type);
+          if (sheetRef.current) {
             const currentHeight = sheetRef.current.height;
             const maxHeight = window.innerHeight;
             setIsExpanded(currentHeight > Math.min(maxHeight * 0.15, 72));
+            updateModelHeight(currentHeight);
           }
         }}
         onSpringEnd={(event) => {
-          if (event.type === 'SNAP' && sheetRef.current) {
+          if (sheetRef.current) {
             const currentHeight = sheetRef.current.height;
             const maxHeight = window.innerHeight;
-            setIsExpanded(currentHeight > Math.min(maxHeight * 0.15, 72));
+            const minHeight = Math.min(maxHeight * 0.15, 72);
+            const isNowExpanded = currentHeight > minHeight;
+            
+            setIsExpanded(isNowExpanded);
+            updateModelHeight(currentHeight);
+            
+            // If user dragged to close, set userClosedSheet
+            if (!isNowExpanded && isExpanded) {
+              setUserClosedSheet(true);
+            }
+          }
+        }}
+        onSpringCancel={(event) => {
+          if (sheetRef.current) {
+            updateModelHeight(sheetRef.current.height);
           }
         }}
         header={
@@ -199,13 +310,13 @@ export default function MobileControls({
               <h2 className="text-sm text-gray-400">
                 Musculoskeletal Assistant
               </h2>
-              <h3 className="text-lg font-bold text-white -mt-1">
+              <h3 className="text-lg font-bold text-white ">
                 {getDisplayName()}
               </h3>
             </div>
             <div className="flex items-center gap-2 ml-4">
-              <button 
-                onClick={resetChat} 
+              <button
+                onClick={resetChat}
                 className="text-gray-400 hover:text-white p-1 rounded-full hover:bg-gray-800 transition-colors"
                 aria-label="Reset Chat"
               >
@@ -222,35 +333,47 @@ export default function MobileControls({
                   />
                 </svg>
               </button>
-              <button 
+              <button
                 onClick={handleExpandToggle}
                 className="flex justify-center items-center w-8 h-8 hover:bg-gray-800 rounded-full transition-colors"
               >
-                <ExpandLessIcon className={`text-white h-6 w-6 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
+                <ExpandLessIcon
+                  className={`text-white h-6 w-6 transition-transform ${
+                    isExpanded ? 'rotate-180' : ''
+                  }`}
+                />
               </button>
             </div>
           </div>
         }
         className="!bg-gray-900 [&>*]:!bg-gray-900"
       >
-        <div ref={contentRef} className="px-4 flex flex-col h-full overflow-hidden">
-          {/* Expanded Content */}
-          <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
-            {/* Chat Messages */}
-            <div className="flex-1 min-h-0 overflow-hidden">
-              <ChatMessages
-                messages={messages}
-                isLoading={isLoading}
-                isCollectingJson={isCollectingJson}
-                followUpQuestions={followUpQuestions}
-                onQuestionClick={handleOptionClick}
-                part={selectedPart}
-                messagesRef={messagesRef}
-              />
+        <div
+          ref={contentRef}
+          className="px-4 flex flex-col h-full overflow-hidden"
+        >
+          {(!selectedPart && messages.length === 0) ? (
+            <div className="h-[72px]" />
+          ) : (
+            /* Expanded Content */
+            <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
+              {/* Chat Messages */}
+              <div className="flex-1 min-h-0 overflow-hidden">
+                <ChatMessages
+                  messages={messages}
+                  isLoading={isLoading}
+                  isCollectingJson={isCollectingJson}
+                  followUpQuestions={followUpQuestions}
+                  onQuestionClick={handleOptionClick}
+                  part={selectedPart}
+                  messagesRef={messagesRef}
+                  isMobile={isMobile}
+                />
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </BottomSheetBase>
     </>
-  );
+  );  
 }

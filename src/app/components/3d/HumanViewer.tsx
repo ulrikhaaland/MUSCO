@@ -24,9 +24,14 @@ interface HumanViewerProps {
   onGenderChange?: (gender: Gender) => void;
 }
 
-export default function HumanViewer({ gender, onGenderChange }: HumanViewerProps) {
+export default function HumanViewer({
+  gender,
+  onGenderChange,
+}: HumanViewerProps) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
-  const [selectedParts, setSelectedParts] = useState<BodyPartGroup | null>(null);
+  const [selectedParts, setSelectedParts] = useState<BodyPartGroup | null>(
+    null
+  );
   const [selectedPart, setSelectedPart] = useState<AnatomyPart | null>(null);
   const [popupPosition, setPopupPosition] = useState({ x: 0, y: 0 });
   const lastSelectedIdRef = useRef<string | null>(null);
@@ -44,6 +49,18 @@ export default function HumanViewer({ gender, onGenderChange }: HumanViewerProps
   const isSelectingGroupRef = useRef(false);
   const [isBottomSheetExpanded, setIsBottomSheetExpanded] = useState(false);
   const [targetGender, setTargetGender] = useState<Gender | null>(null);
+  const [modelContainerHeight, setModelContainerHeight] = useState('100vh');
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768); // md breakpoint
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const MODEL_IDS = {
     male: '5tOV',
@@ -172,7 +189,7 @@ export default function HumanViewer({ gender, onGenderChange }: HumanViewerProps
       console.log('Human API ready, sending commands...');
       // First deselect all parts with an empty selection map
       humanRef.current.send('scene.selectObjects', {
-        replace: true
+        replace: true,
       });
 
       // Then reset the scene
@@ -310,28 +327,35 @@ export default function HumanViewer({ gender, onGenderChange }: HumanViewerProps
           objectId: getGenderedId(selectedParts.selectIds[0], currentGender),
           position: {
             ...camera.position,
-            z: camera.position.z * 0.7 // Zoom in by reducing z distance by 30%
+            z: camera.position.z * 0.7, // Zoom in by reducing z distance by 30%
           },
           target: camera.target,
           up: camera.up,
           animate: true,
-          animationDuration: 0.5
+          animationDuration: 0.5,
         });
       } else {
         // If no part group selected, just zoom in while maintaining camera orientation
         humanRef.current.send('camera.set', {
           position: {
             ...camera.position,
-            z: camera.position.z * 0.8 // Zoom in by reducing z distance by 20%
+            z: camera.position.z * 0.8, // Zoom in by reducing z distance by 20%
           },
           target: camera.target,
           up: camera.up,
           animate: true,
-          animationDuration: 0.5
+          animationDuration: 0.5,
         });
       }
     });
   }, [selectedParts, isReady]);
+
+  const handleBottomSheetHeight = (sheetHeight: number) => {
+    const newHeight = `calc(100vh - ${sheetHeight}px)`;
+    if (newHeight !== modelContainerHeight) {
+      setModelContainerHeight(newHeight);
+    }
+  };
 
   return (
     <div className="flex flex-col md:flex-row relative h-screen w-screen overflow-hidden">
@@ -341,16 +365,24 @@ export default function HumanViewer({ gender, onGenderChange }: HumanViewerProps
       )}
 
       {/* Model Viewer Container */}
-      <div className="flex-1 relative bg-black flex flex-col" style={{ minWidth: `${minChatWidth}px` }}>
+      <div
+        className="flex-1 relative bg-black flex flex-col"
+        style={{ minWidth: `${minChatWidth}px` }}
+      >
         {isChangingModel && (
           <div className="absolute inset-0 z-50 bg-black flex items-center justify-center">
             <div className="text-white text-xl">
-              Loading {targetGender?.charAt(0).toUpperCase() + targetGender?.slice(1)} Model...
+              Loading{' '}
+              {targetGender?.charAt(0).toUpperCase() + targetGender?.slice(1)}{' '}
+              Model...
             </div>
           </div>
         )}
         {/* Mobile: subtract 72px for controls, Desktop: full height */}
-        <div className="md:h-screen h-[calc(100vh-72px)] w-full relative">
+        <div
+          className="md:h-screen w-full relative"
+          style={{ height: isMobile ? modelContainerHeight : '100vh' }}
+        >
           <iframe
             id="myViewer"
             ref={iframeRef}
@@ -367,7 +399,10 @@ export default function HumanViewer({ gender, onGenderChange }: HumanViewerProps
         </div>
 
         {/* Controls - Desktop */}
-        <div className="absolute bottom-6 right-6 md:flex space-x-4 hidden" style={{ zIndex: 1000 }}>
+        <div
+          className="absolute bottom-6 right-6 md:flex space-x-4 hidden"
+          style={{ zIndex: 1000 }}
+        >
           <button
             onClick={handleRotate}
             disabled={isRotating || isResetting || !isReady}
@@ -377,7 +412,9 @@ export default function HumanViewer({ gender, onGenderChange }: HumanViewerProps
                 : ''
             }`}
           >
-            <CropRotateIcon className={`h-5 w-5 ${isRotating ? 'animate-spin' : ''}`} />
+            <CropRotateIcon
+              className={`h-5 w-5 ${isRotating ? 'animate-spin' : ''}`}
+            />
             <span>{isRotating ? 'Rotating...' : 'Rotate Model'}</span>
           </button>
           <button
@@ -389,7 +426,9 @@ export default function HumanViewer({ gender, onGenderChange }: HumanViewerProps
                 : ''
             }`}
           >
-            <RestartAltIcon className={`h-5 w-5 ${isResetting ? 'animate-spin' : ''}`} />
+            <RestartAltIcon
+              className={`h-5 w-5 ${isResetting ? 'animate-spin' : ''}`}
+            />
             <span>{isResetting ? 'Resetting...' : 'Reset View'}</span>
           </button>
           <button
@@ -400,9 +439,13 @@ export default function HumanViewer({ gender, onGenderChange }: HumanViewerProps
             }`}
           >
             {currentGender === 'male' ? (
-              <MaleIcon className={`h-5 w-5 ${isChangingModel ? 'animate-spin' : ''}`} />
+              <MaleIcon
+                className={`h-5 w-5 ${isChangingModel ? 'animate-spin' : ''}`}
+              />
             ) : (
-              <FemaleIcon className={`h-5 w-5 ${isChangingModel ? 'animate-spin' : ''}`} />
+              <FemaleIcon
+                className={`h-5 w-5 ${isChangingModel ? 'animate-spin' : ''}`}
+              />
             )}
             <span>
               {isChangingModel
@@ -426,6 +469,7 @@ export default function HumanViewer({ gender, onGenderChange }: HumanViewerProps
           onReset={handleReset}
           onSwitchModel={handleSwitchModel}
           onZoom={handleZoom}
+          onHeightChange={handleBottomSheetHeight}
         />
       </div>
 
