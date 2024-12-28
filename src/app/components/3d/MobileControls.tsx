@@ -131,16 +131,12 @@ export default function MobileControls({
       // Part was deselected
       setIsDragging(true);
       if (sheetRef.current) {
-        sheetRef.current.snapTo(({ maxHeight }) => Math.min(maxHeight * 0.15, 72));
+        sheetRef.current.snapTo(({ maxHeight }) =>
+          Math.min(maxHeight * 0.15, 72)
+        );
       }
     }
-  }, [
-    selectedPart,
-    isLoading,
-    isCollectingJson,
-    messages,
-    followUpQuestions,
-  ]);
+  }, [selectedPart, isLoading, isCollectingJson, messages, followUpQuestions]);
 
   const handleExpandToggle = () => {
     if (sheetRef.current) {
@@ -151,9 +147,9 @@ export default function MobileControls({
         setIsFullscreen(false); // Reset fullscreen state when collapsing
       } else {
         // Expand to previous height (full if was fullscreen, otherwise 40%)
-        const targetHeight = isFullscreen ? 
-          getViewportHeight() : 
-          getViewportHeight() * 0.4;
+        const targetHeight = isFullscreen
+          ? getViewportHeight()
+          : getViewportHeight() * 0.4;
         sheetRef.current.snapTo(() => targetHeight);
         setUserClosedSheet(false);
       }
@@ -250,7 +246,7 @@ export default function MobileControls({
           const viewportHeight = maxHeight;
           const minHeight = Math.min(viewportHeight * 0.15, 72);
           const hasContent = Boolean(selectedPart) || messages.length > 0;
-          
+
           if (!hasContent) {
             return [minHeight];
           }
@@ -265,7 +261,12 @@ export default function MobileControls({
             return [minHeight, contentWithPadding];
           }
 
-          return [minHeight, viewportHeight * 0.4, viewportHeight * 0.78, viewportHeight];
+          return [
+            minHeight,
+            viewportHeight * 0.4,
+            viewportHeight * 0.78,
+            viewportHeight,
+          ];
         }}
         expandOnContentDrag={Boolean(selectedPart) || messages.length > 0}
         onDragStart={() => setIsDragging(true)}
@@ -290,10 +291,10 @@ export default function MobileControls({
             const viewportHeight = getViewportHeight();
             const minHeight = Math.min(viewportHeight * 0.15, 72);
             const isNowExpanded = currentHeight > minHeight;
-            
+
             setIsExpanded(isNowExpanded);
             updateModelHeight(currentHeight);
-            
+
             if (!isNowExpanded && isExpanded) {
               setUserClosedSheet(true);
             }
@@ -302,42 +303,49 @@ export default function MobileControls({
         header={
           <div className="h-12 w-full flex justify-between items-center">
             <div className="flex flex-col items-start">
-              <h2 className="text-sm text-gray-400">Musculoskeletal Assistant</h2>
-              <h3 className="text-lg font-bold text-white ">{getDisplayName()}</h3>
+              <h2 className="text-sm text-gray-400">
+                Musculoskeletal Assistant
+              </h2>
+              <h3 className="text-lg font-bold text-white ">
+                {getDisplayName()}
+              </h3>
             </div>
             <div className="flex items-center gap-2 ml-4">
-              {messages.length > 0 && messages.some(m => m.role === 'assistant' && m.content) && !isLoading && (
-                <button
-                  onClick={resetChat}
-                  className="text-white hover:text-white p-1 rounded-full hover:bg-gray-800 transition-colors"
-                  aria-label="Reset Chat"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
+              {messages.length > 0 &&
+                messages.some((m) => m.role === 'assistant' && m.content) &&
+                !isLoading && (
+                  <button
+                    onClick={resetChat}
+                    className="text-white hover:text-white p-1 rounded-full hover:bg-gray-800 transition-colors"
+                    aria-label="Reset Chat"
                   >
-                    <path
-                      fillRule="evenodd"
-                      d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </button>
-              )}
-              {messages.length > 0 && contentHeight > getViewportHeight() * 0.78 && (
-                <button
-                  onClick={handleFullscreenToggle}
-                  className="text-white hover:text-white p-1 rounded-full hover:bg-gray-800 transition-colors"
-                >
-                  {isFullscreen ? (
-                    <FullscreenExitIcon className="h-5 w-5" />
-                  ) : (
-                    <FullscreenIcon className="h-5 w-5" />
-                  )}
-                </button>
-              )}
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </button>
+                )}
+              {messages.length > 0 &&
+                contentHeight > getViewportHeight() * 0.78 && (
+                  <button
+                    onClick={handleFullscreenToggle}
+                    className="text-white hover:text-white p-1 rounded-full hover:bg-gray-800 transition-colors"
+                  >
+                    {isFullscreen ? (
+                      <FullscreenExitIcon className="h-5 w-5" />
+                    ) : (
+                      <FullscreenIcon className="h-5 w-5" />
+                    )}
+                  </button>
+                )}
               {(selectedPart || messages.length > 0) && (
                 <button
                   onClick={handleExpandToggle}
@@ -376,7 +384,11 @@ export default function MobileControls({
             </button>
             <button
               onClick={onReset}
-              disabled={isResetting || (!needsReset && selectedParts === null)}
+              disabled={
+                isResetting ||
+                (!needsReset && selectedParts === null) ||
+                !isReady
+              }
               className={`text-white p-2 rounded-lg transition-colors duration-200 ${
                 isResetting || (!needsReset && selectedParts === null)
                   ? 'opacity-50'
@@ -389,12 +401,14 @@ export default function MobileControls({
             </button>
             <button
               onClick={onZoom}
+              disabled={!isReady}
               className="text-white p-2 rounded-lg hover:bg-white/10 transition-colors duration-200"
             >
               <ZoomInIcon className="h-5 w-5" />
             </button>
             <button
               onClick={onSwitchModel}
+              disabled={!isReady}
               className="text-white p-2 rounded-lg hover:bg-white/10 transition-colors duration-200"
             >
               {currentGender === 'male' ? (

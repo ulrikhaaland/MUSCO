@@ -14,6 +14,7 @@ import {
   getGroupParts,
   createSelectionMap,
   getNeutralId,
+  getGenderedId,
 } from '../utils/anatomyHelpers';
 
 interface CameraPosition {
@@ -38,27 +39,29 @@ interface CameraPosition {
 interface UseHumanAPIProps {
   elementId: string;
   onReady?: () => void;
-  onObjectSelected: (event: any) => void;
   initialGender: Gender;
   selectedParts: BodyPartGroup | null;
   setSelectedParts: (parts: BodyPartGroup | null) => void;
   setSelectedPart: (part: AnatomyPart | null) => void;
+
+  onZoom?: () => void;
 }
 
 export function useHumanAPI({
   elementId,
   onReady,
-  onObjectSelected,
   initialGender,
   selectedParts,
   setSelectedParts,
   setSelectedPart,
+  onZoom,
 }: UseHumanAPIProps): {
   humanRef: MutableRefObject<HumanAPI | null>;
   currentGender: Gender;
   needsReset: boolean;
   setNeedsReset: (value: boolean) => void;
   isReady: boolean;
+  initialCameraRef: MutableRefObject<CameraPosition | null>;
 } {
   const humanRef = useRef<HumanAPI | null>(null);
   const initialCameraRef = useRef<CameraPosition | null>(null);
@@ -67,7 +70,6 @@ export function useHumanAPI({
   const [currentGender, setCurrentGender] = useState<Gender>(initialGender);
   const [needsReset, setNeedsReset] = useState(false);
   const [isReady, setIsReady] = useState(false);
-
 
   // Add logging when props change
   useEffect(() => {
@@ -130,11 +132,16 @@ export function useHumanAPI({
 
         // Determine if we're on mobile
         const isMobile = window.innerWidth < 768;
-        const cameraPosition = isMobile 
+        const cameraPosition = isMobile
           ? { x: 0, y: 0, z: -50 } // More zoomed out for mobile
           : { x: 0, y: 0, z: -25 };
-        
-        console.log(`Setting initial camera position (${isMobile ? 'mobile' : 'desktop'}):`, cameraPosition);
+
+        console.log(
+          `Setting initial camera position (${
+            isMobile ? 'mobile' : 'desktop'
+          }):`,
+          cameraPosition
+        );
 
         const human = new window.HumanAPI(elementId, {
           camera: {
@@ -180,6 +187,7 @@ export function useHumanAPI({
               setSelectedParts(null);
               selectedPartGroupRef.current = null;
               selectionEventRef.current = null;
+              onZoom?.();
               return;
             }
 
@@ -229,11 +237,8 @@ export function useHumanAPI({
                 ...selectionMap,
                 replace: false,
               });
-            }
 
-            // Now call the original onObjectSelected with the stored event
-            if (onObjectSelected) {
-              onObjectSelected(storedEvent);
+              onZoom?.();
             }
 
             // Clear the stored event
@@ -281,16 +286,16 @@ export function useHumanAPI({
   useEffect(() => {
     const handleResize = () => {
       if (!humanRef.current) return;
-      
+
       const isMobile = window.innerWidth < 768;
-      const cameraPosition = isMobile 
+      const cameraPosition = isMobile
         ? { x: 0, y: 0, z: -50 }
         : { x: 0, y: 0, z: -25 };
 
       console.log('Window resized, updating camera position:', cameraPosition);
       humanRef.current.send('camera.set', {
         position: cameraPosition,
-        animate: true
+        animate: true,
       });
     };
 
@@ -304,5 +309,6 @@ export function useHumanAPI({
     needsReset,
     setNeedsReset,
     isReady,
+    initialCameraRef,
   };
 }

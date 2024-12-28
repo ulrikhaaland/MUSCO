@@ -33,9 +33,7 @@ export default function HumanViewer({
     null
   );
   const [selectedPart, setSelectedPart] = useState<AnatomyPart | null>(null);
-  const [popupPosition, setPopupPosition] = useState({ x: 0, y: 0 });
   const lastSelectedIdRef = useRef<string | null>(null);
-  const deselectionTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const minChatWidth = 300;
   const maxChatWidth = 800;
   const [chatWidth, setChatWidth] = useState(384);
@@ -46,12 +44,12 @@ export default function HumanViewer({
   const [currentRotation, setCurrentRotation] = useState(0);
   const rotationAnimationRef = useRef<number | null>(null);
   const [isResetting, setIsResetting] = useState(false);
-  const isSelectingGroupRef = useRef(false);
-  const [isBottomSheetExpanded, setIsBottomSheetExpanded] = useState(false);
   const [targetGender, setTargetGender] = useState<Gender | null>(null);
   const [modelContainerHeight, setModelContainerHeight] = useState('100dvh');
-  const [isMobile, setIsMobile] = useState(false);
 
+
+  const [isMobile, setIsMobile] = useState(false);
+  const selectedPartsRef = useRef<BodyPartGroup | null>(null);
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768); // md breakpoint
@@ -67,43 +65,67 @@ export default function HumanViewer({
     female: '5rlW',
   };
 
-  const handlePartSelect = useCallback(
-    (part: AnatomyPart, position: { clientX: number; clientY: number }) => {
-      console.log('handlePartSelect called with:', { part, position });
-      setSelectedPart(part);
-      setPopupPosition({
-        x: position.clientX,
-        y: position.clientY,
-      });
-    },
-    []
-  );
+  const zoomRef = useRef<(() => void) | null>(null);
 
-  const handleObjectSelected = useCallback(
-    (event: any) => {
-      // Update UI position for the popup
-      const mouseEvent = window.event as MouseEvent;
-      if (mouseEvent && selectedPart) {
-        handlePartSelect(selectedPart, {
-          clientX: mouseEvent.clientX,
-          clientY: mouseEvent.clientY,
+  const {
+    humanRef,
+    currentGender,
+    needsReset,
+    setNeedsReset,
+    isReady,
+    initialCameraRef,
+  } = useHumanAPI({
+    elementId: 'myViewer',
+    initialGender: gender,
+    selectedParts,
+    setSelectedParts,
+    setSelectedPart,
+    onZoom: () => zoomRef.current?.(),
+  });
+
+  // Keep selectedPartsRef in sync
+  useEffect(() => {
+    selectedPartsRef.current = selectedParts;
+  }, [selectedParts]);
+
+  const handleZoom = useCallback(() => {
+    if (!humanRef.current || !isReady) return;
+
+    // First get current camera info
+    humanRef.current.send('camera.info', (camera) => {
+      if (selectedPartsRef.current) {
+        // If a part group is selected, focus on those parts while maintaining camera properties
+        humanRef.current.send('camera.set', {
+          objectId: getGenderedId(
+            selectedPartsRef.current.selectIds[0],
+            currentGender
+          ),
+          position: {
+            ...camera.position,
+            z: camera.position.z * 0.7, // Zoom in by reducing z distance by 30%
+          },
+          target: camera.target,
+          up: camera.up,
+          animate: true,
+          animationDuration: 0.5,
         });
+      } else {
+        // If no part group selected, reset to initial camera position
+        if (initialCameraRef.current) {
+          humanRef.current.send('camera.set', {
+            ...initialCameraRef.current,
+            animate: true,
+            animationDuration: 0.5,
+          });
+        }
       }
-
-      console.log('=== handleObjectSelected END ===');
-    },
-    [handlePartSelect, selectedPart]
-  );
-
-  const { humanRef, currentGender, needsReset, setNeedsReset, isReady } =
-    useHumanAPI({
-      elementId: 'myViewer',
-      onObjectSelected: handleObjectSelected,
-      initialGender: gender,
-      selectedParts,
-      setSelectedParts,
-      setSelectedPart,
     });
+  }, [isReady, currentGender, humanRef, initialCameraRef]); // Add initialCameraRef to dependencies
+
+  // Keep zoomRef up to date
+  useEffect(() => {
+    zoomRef.current = handleZoom;
+  }, [handleZoom]);
 
   // Create viewer URL
   const getViewerUrl = useCallback((modelGender: Gender) => {
@@ -315,40 +337,6 @@ export default function HumanViewer({
       setChatWidth(initialWidth);
     }
   }, []); // Empty dependency array means this runs once after mount
-
-  const handleZoom = useCallback(() => {
-    if (!humanRef.current || !isReady) return;
-
-    // First get current camera info
-    humanRef.current.send('camera.info', (camera) => {
-      if (selectedParts) {
-        // If a part group is selected, focus on those parts while maintaining camera properties
-        humanRef.current.send('camera.set', {
-          objectId: getGenderedId(selectedParts.selectIds[0], currentGender),
-          position: {
-            ...camera.position,
-            z: camera.position.z * 0.7, // Zoom in by reducing z distance by 30%
-          },
-          target: camera.target,
-          up: camera.up,
-          animate: true,
-          animationDuration: 0.5,
-        });
-      } else {
-        // If no part group selected, just zoom in while maintaining camera orientation
-        humanRef.current.send('camera.set', {
-          position: {
-            ...camera.position,
-            z: camera.position.z * 0.8, // Zoom in by reducing z distance by 20%
-          },
-          target: camera.target,
-          up: camera.up,
-          animate: true,
-          animationDuration: 0.5,
-        });
-      }
-    });
-  }, [selectedParts, isReady]);
 
   const handleBottomSheetHeight = (sheetHeight: number) => {
     const newHeight = `calc(100dvh - ${sheetHeight}px)`;
