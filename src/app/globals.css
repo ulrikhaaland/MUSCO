@@ -7,7 +7,8 @@
   --background-rgb: 0, 0, 0;
 }
 
-html, body {
+html,
+body {
   background-color: rgb(var(--background-rgb));
   color: rgb(var(--foreground-rgb));
   height: 100%;
@@ -31,11 +32,16 @@ iframe {
 /* Bottom sheet custom styles */
 [data-rsbs-overlay] {
   background: rgb(17, 24, 39) !important; /* bg-gray-900 */
+  z-index: 3 !important;
 }
 
 [data-rsbs-backdrop] {
   background: transparent !important;
-  z-index: 1 !important;
+  z-index: 2 !important;
+}
+
+[data-rsbs-root] {
+  z-index: 3 !important;
 }
 
 [data-rsbs-root]:after {
@@ -48,6 +54,7 @@ iframe {
 
 [data-rsbs-header] {
   background: rgb(17, 24, 39) !important; /* bg-gray-900 */
+  z-index: 4 !important;
 }
 
 [data-rsbs-scroll] {
@@ -57,7 +64,7 @@ iframe {
 
 [data-rsbs-content] {
   background: rgb(17, 24, 39) !important; /* bg-gray-900 */
-  overflow: hidden !important;
+  /* overflow: hidden !important; */
 }
 
 /* Bottom Sheet Styles */
