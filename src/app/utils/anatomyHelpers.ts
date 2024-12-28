@@ -69,9 +69,9 @@ export function getGroupParts(group: BodyPartGroup, objects: AnatomyPart[]): str
 }
 
 // Helper function to create a selection map for the BioDigital API
-export function createSelectionMap(ids: string[], gender: 'male' | 'female'): { [key: string]: boolean } {
+export function createSelectionMap(ids: string[], gender: 'male' | 'female', select: boolean = true): { [key: string]: boolean } {
   return ids.reduce((map: { [key: string]: boolean }, id) => {
-    map[getGenderedId(id, gender)] = true;
+    map[getGenderedId(id, gender)] = select;
     return map;
   }, {});
 } 

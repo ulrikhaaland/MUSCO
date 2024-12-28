@@ -4,6 +4,7 @@ import {
   useRef,
   RefAttributes,
   ComponentType,
+  useCallback,
 } from 'react';
 import { BottomSheet, BottomSheetRef } from 'react-spring-bottom-sheet';
 import type { BottomSheetProps } from 'react-spring-bottom-sheet';
@@ -66,6 +67,7 @@ export default function MobileControls({
   const contentRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [controlsBottom, setControlsBottom] = useState('5rem');
 
   const {
     messages,
@@ -216,30 +218,91 @@ export default function MobileControls({
         if (currentHeight !== lastHeight) {
           lastHeight = currentHeight;
           updateModelHeight(currentHeight);
+          setControlsBottom(`calc(${currentHeight}px + 1rem)`);
         }
       }
       rafId = requestAnimationFrame(checkHeight);
     };
 
-    // Only run the animation frame loop when dragging or during spring animations
-    if (isDragging) {
-      rafId = requestAnimationFrame(checkHeight);
-    }
+    // Run the animation frame loop continuously to track height changes
+    rafId = requestAnimationFrame(checkHeight);
 
     return () => {
       if (rafId) {
         cancelAnimationFrame(rafId);
       }
     };
-  }, [isDragging]);
+  }, []);
+
+  const getSnapPoints = useCallback(() => {
+    const viewportHeight = getViewportHeight();
+    const minHeight = Math.min(viewportHeight * 0.15, 72);
+    const hasContent = Boolean(selectedPart) || messages.length > 0;
+
+    if (!hasContent) {
+      return [minHeight];
+    }
+
+    const contentWithPadding = contentHeight + 96;
+
+    if (contentWithPadding <= minHeight) {
+      return [minHeight];
+    }
+
+    if (contentWithPadding < viewportHeight * 0.4) {
+      return [minHeight, contentWithPadding];
+    }
+
+    return [minHeight, viewportHeight * 0.4, viewportHeight * 0.78, viewportHeight];
+  }, [contentHeight, selectedPart, messages.length]);
+
+  // Track height changes only during drag or animation
+  useEffect(() => {
+    let rafId: number;
+    let lastHeight = 0;
+
+    const checkHeight = () => {
+      if (sheetRef.current) {
+        const currentHeight = sheetRef.current.height;
+        if (currentHeight !== lastHeight) {
+          lastHeight = currentHeight;
+          updateModelHeight(currentHeight);
+          setControlsBottom(`calc(${currentHeight}px + 1rem)`);
+        }
+      }
+      rafId = requestAnimationFrame(checkHeight);
+    };
+
+    // Run the animation frame loop continuously to track height changes
+    rafId = requestAnimationFrame(checkHeight);
+
+    return () => {
+      if (rafId) {
+        cancelAnimationFrame(rafId);
+      }
+    };
+  }, []);
+
+  // Remove the old controls position effect since we're handling it in the RAF loop
+  useEffect(() => {
+    const updateControlsPosition = () => {
+      if (sheetRef.current) {
+        setControlsBottom(`calc(${sheetRef.current.height}px + 1rem)`);
+      }
+    };
+    updateControlsPosition();
+  }, []); // Just set initial position
 
   return (
     <>
-      {/* Mobile Controls - Moved outside bottom sheet */}
+      {/* Mobile Controls - Positioned relative to bottom sheet */}
       {isMobile && (
         <div
-          className="md:hidden fixed right-4 top-4 flex flex-col gap-2 bg-[#111827] p-1.5 rounded-lg shadow-lg"
-          style={{ zIndex: 9999 }}
+          className="md:hidden fixed right-4 flex flex-col gap-2 bg-[#111827] p-1.5 rounded-lg shadow-lg transition-all duration-300"
+          style={{ 
+            zIndex: 0,
+            bottom: controlsBottom
+          }}
         >
           <button
             onClick={onRotate}
@@ -257,9 +320,7 @@ export default function MobileControls({
           <button
             onClick={onReset}
             disabled={
-              isResetting ||
-              (!needsReset && selectedParts === null) ||
-              !isReady
+              isResetting || (!needsReset && selectedParts === null) || !isReady
             }
             className={`text-white p-2 rounded-lg transition-colors duration-200 ${
               isResetting || (!needsReset && selectedParts === null)
@@ -318,12 +379,7 @@ export default function MobileControls({
             return [minHeight, contentWithPadding];
           }
 
-          return [
-            minHeight,
-            viewportHeight * 0.4,
-            viewportHeight * 0.78,
-            viewportHeight,
-          ];
+          return [minHeight, viewportHeight * 0.4, viewportHeight * 0.78, viewportHeight];
         }}
         expandOnContentDrag={Boolean(selectedPart) || messages.length > 0}
         onDragStart={() => setIsDragging(true)}
@@ -390,30 +446,64 @@ export default function MobileControls({
                     </svg>
                   </button>
                 )}
-              {messages.length > 0 &&
-                contentHeight > getViewportHeight() * 0.78 && (
-                  <button
-                    onClick={handleFullscreenToggle}
-                    className="text-white hover:text-white p-1 rounded-full hover:bg-gray-800 transition-colors"
-                  >
-                    {isFullscreen ? (
-                      <FullscreenExitIcon className="h-5 w-5" />
-                    ) : (
-                      <FullscreenIcon className="h-5 w-5" />
-                    )}
-                  </button>
-                )}
               {(selectedPart || messages.length > 0) && (
-                <button
-                  onClick={handleExpandToggle}
-                  className="flex justify-center items-center w-8 h-8 hover:bg-gray-800 rounded-full transition-colors"
-                >
-                  <ExpandLessIcon
-                    className={`text-white h-6 w-6 transition-transform ${
-                      isExpanded ? 'rotate-180' : ''
-                    }`}
-                  />
-                </button>
+                <div className="flex flex-col">
+                  {sheetRef.current && (
+                    <>
+                      <button
+                        onClick={() => {
+                          if (sheetRef.current) {
+                            const currentHeight = sheetRef.current.height;
+                            const snapPoints = getSnapPoints();
+                            
+                            // Find next larger snap point
+                            const nextPoint = snapPoints.find(point => point > (currentHeight + 2));
+                            if (nextPoint) {
+                              sheetRef.current.snapTo(() => nextPoint);
+                              setIsExpanded(true);
+                            }
+                          }
+                        }}
+                        disabled={(() => {
+                          if (!sheetRef.current) return true;
+                          const currentHeight = sheetRef.current.height;
+                          const snapPoints = getSnapPoints();
+                          return !snapPoints.some(point => point > (currentHeight + 2));
+                        })()}
+                        className="flex justify-center items-center w-8 h-8 hover:bg-gray-800 rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent"
+                        aria-label="Expand"
+                      >
+                        <ExpandLessIcon className="text-white h-6 w-6" />
+                      </button>
+                      <button
+                        onClick={() => {
+                          if (sheetRef.current) {
+                            const currentHeight = sheetRef.current.height;
+                            const snapPoints = getSnapPoints();
+                            const minHeight = Math.min(getViewportHeight() * 0.15, 72);
+                            
+                            // Find next smaller snap point
+                            const nextPoint = [...snapPoints].reverse().find(point => point < (currentHeight - 2));
+                            if (nextPoint) {
+                              sheetRef.current.snapTo(() => nextPoint);
+                              setIsExpanded(nextPoint > minHeight);
+                            }
+                          }
+                        }}
+                        disabled={(() => {
+                          if (!sheetRef.current) return true;
+                          const currentHeight = sheetRef.current.height;
+                          const snapPoints = getSnapPoints();
+                          return !snapPoints.some(point => point < (currentHeight -2));
+                        })()}
+                        className="flex justify-center items-center w-8 h-8 hover:bg-gray-800 rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent"
+                        aria-label="Minimize"
+                      >
+                        <ExpandLessIcon className="text-white h-6 w-6 rotate-180" />
+                      </button>
+                    </>
+                  )}
+                </div>
               )}
             </div>
           </div>
