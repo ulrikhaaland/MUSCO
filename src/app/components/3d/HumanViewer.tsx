@@ -49,7 +49,7 @@ export default function HumanViewer({
   const isSelectingGroupRef = useRef(false);
   const [isBottomSheetExpanded, setIsBottomSheetExpanded] = useState(false);
   const [targetGender, setTargetGender] = useState<Gender | null>(null);
-  const [modelContainerHeight, setModelContainerHeight] = useState('100vh');
+  const [modelContainerHeight, setModelContainerHeight] = useState('100dvh');
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -351,7 +351,7 @@ export default function HumanViewer({
   }, [selectedParts, isReady]);
 
   const handleBottomSheetHeight = (sheetHeight: number) => {
-    const newHeight = `calc(100vh - ${sheetHeight}px)`;
+    const newHeight = `calc(100dvh - ${sheetHeight}px)`;
     if (newHeight !== modelContainerHeight) {
       setModelContainerHeight(newHeight);
     }
@@ -381,7 +381,7 @@ export default function HumanViewer({
         {/* Mobile: subtract 72px for controls, Desktop: full height */}
         <div
           className="md:h-screen w-full relative"
-          style={{ height: '100vh - 140px' }}
+          style={{ height: isMobile ? modelContainerHeight : '100dvh' }}
         >
           <iframe
             id="myViewer"
