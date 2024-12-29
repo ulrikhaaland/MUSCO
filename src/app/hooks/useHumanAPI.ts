@@ -236,14 +236,14 @@ export function useHumanAPI({
 
               // Create selection map with current gender
               const selectionMap = createSelectionMap(
-                group.ids.slice(0, 40),
+                group.parts.map((part) => part.objectId),
                 gender
               );
 
               const deselectionMap = {};
               // deselect all parts
               Object.values(bodyPartGroups).forEach((group) => {
-                if (group.ids.includes(selectedId)) {
+                if (group.parts.some((part) => part.objectId === selectedId)) {
                   return;
                 }
                 const toDeselect = createSelectionMap(
@@ -258,8 +258,8 @@ export function useHumanAPI({
               let zoomID;
               if (previousSelectedPartGroupRef.current) {
                 if (
-                  previousSelectedPartGroupRef.current.ids.includes(
-                    getNeutralId(selectedId)
+                  previousSelectedPartGroupRef.current.parts.some(
+                    (part) => part.objectId === getNeutralId(selectedId)
                   )
                 ) {
                   zoomID = selectedId;
@@ -270,6 +270,23 @@ export function useHumanAPI({
               console.log('selectedPart', selectedPartRef.current);
 
               // Set the selected part and parts
+              const part = group.parts.find(
+                (part) => part.objectId === getNeutralId(selectedId)
+              );
+              // Create a group part object
+              const groupPart: AnatomyPart = {
+                objectId: selectedId,
+                name: part.name,
+                description: `${part.name} area`,
+                available: true,
+                shown: true,
+                selected: true,
+                parent: '',
+                children: [],
+              };
+              setSelectedGroup(group);
+              selectedPartRef.current = groupPart;
+              setSelectedPart(groupPart);
 
               human.send('scene.showObjects', {
                 ...selectionMap,
@@ -277,26 +294,6 @@ export function useHumanAPI({
                 replace: true,
               });
 
-              human.send('scene.info', (info) => {
-                const part = info.objects[selectedId];
-                // Create a group part object
-                const groupPart: AnatomyPart = {
-                  objectId: selectedId,
-                  name: part.name,
-                  description: `${part.name} area`,
-                  available: true,
-                  shown: true,
-                  selected: true,
-                  parent: '',
-                  children: [],
-                };
-                setSelectedPart(groupPart);
-                selectedPartRef.current = groupPart;
-              });
-
-              // You must provide a valid object ID and a 3D position to set the label in the scene.
-
-              setSelectedGroup(group);
               // Store the group in ref
               previousSelectedPartGroupRef.current = group;
               onZoom?.(zoomID);

@@ -25,7 +25,7 @@ export function getPartGroup(id: string, bodyPartGroups: { [key: string]: BodyPa
   // First check if the part's ID matches any group's ids (ignoring gender)
   for (const [groupKey, group] of Object.entries(bodyPartGroups)) {
     // Check both regular ids and selectIds
-    const allGroupIds = [...(group.ids || []), ...(group.selectIds || [])];
+    const allGroupIds = [...(group.parts.map((part) => part.objectId) || []), ...(group.selectIds || [])];
     if (allGroupIds.some(id => getNeutralId(id) === neutralId)) {
       console.log(`Found part in group: ${groupKey}`);
       return group;
@@ -42,7 +42,7 @@ export function getGroupSelectionIds(group: BodyPartGroup): string[] {
     return group.selectIds;
   }
   // Otherwise fall back to regular ids
-  return group.ids;
+  return group.parts.map((part) => part.objectId);
 }
 
 // Helper function to get all parts in a group
@@ -61,8 +61,8 @@ export function getGroupParts(group: BodyPartGroup, objects: AnatomyPart[]): str
   // Fall back to regular ids if no selectIds
   return objects
     .filter(obj => 
-      group.ids.some(id => 
-        getNeutralId(id) === getNeutralId(obj.objectId)
+      group.parts.some(part => 
+        getNeutralId(part.objectId) === getNeutralId(obj.objectId)
       )
     )
     .map(obj => obj.objectId);

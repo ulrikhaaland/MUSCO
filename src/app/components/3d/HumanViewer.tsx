@@ -5,13 +5,6 @@ import { Gender } from '../../types';
 import { AnatomyPart } from '../../types/anatomy';
 import PartPopup from '../ui/PartPopup';
 import { useHumanAPI } from '@/app/hooks/useHumanAPI';
-import { bodyPartGroups } from '@/app/config/bodyPartGroups';
-import {
-  getPartGroup,
-  getGroupParts,
-  createSelectionMap,
-  getGenderedId,
-} from '@/app/utils/anatomyHelpers';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import CropRotateIcon from '@mui/icons-material/CropRotate';
 import MaleIcon from '@mui/icons-material/Male';
