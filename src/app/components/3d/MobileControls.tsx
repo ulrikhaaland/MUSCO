@@ -35,7 +35,6 @@ interface MobileControlsProps {
   onRotate: () => void;
   onReset: () => void;
   onSwitchModel: () => void;
-  onZoom: () => void;
   onHeightChange?: (height: number) => void;
 }
 
@@ -56,7 +55,6 @@ export default function MobileControls({
   onRotate,
   onReset,
   onSwitchModel,
-  onZoom,
   onHeightChange,
 }: MobileControlsProps) {
   const [isMobile, setIsMobile] = useState(false);
@@ -358,7 +356,6 @@ export default function MobileControls({
         ref={sheetRef}
         open={true}
         blocking={false}
-        skipInitialTransition
         defaultSnap={({ maxHeight }) => Math.min(maxHeight * 0.15, 72)}
         snapPoints={({ maxHeight }) => {
           const viewportHeight = maxHeight;

@@ -41,10 +41,11 @@ interface UseHumanAPIProps {
   onReady?: () => void;
   initialGender: Gender;
   selectedParts: BodyPartGroup | null;
+  selectedPart: AnatomyPart | null;
   setSelectedParts: (parts: BodyPartGroup | null) => void;
   setSelectedPart: (part: AnatomyPart | null) => void;
 
-  onZoom?: () => void;
+  onZoom?: (objectId?: string) => void;
 }
 
 export function useHumanAPI({
@@ -52,6 +53,7 @@ export function useHumanAPI({
   onReady,
   initialGender,
   selectedParts,
+  selectedPart,
   setSelectedParts,
   setSelectedPart,
   onZoom,
@@ -66,16 +68,11 @@ export function useHumanAPI({
   const humanRef = useRef<HumanAPI | null>(null);
   const initialCameraRef = useRef<CameraPosition | null>(null);
   const selectionEventRef = useRef<any>(null);
-  const selectedPartGroupRef = useRef<BodyPartGroup | null>(null);
+  const previousSelectedPartGroupRef = useRef<BodyPartGroup | null>(null);
+  const selectedPartRef = useRef<AnatomyPart | null>(null);
   const [currentGender, setCurrentGender] = useState<Gender>(initialGender);
   const [needsReset, setNeedsReset] = useState(false);
   const [isReady, setIsReady] = useState(false);
-
-  // Add logging when props change
-  useEffect(() => {
-    console.log('=== useHumanAPI Props Changed ===');
-    console.log('selectedParts:', selectedParts);
-  }, [selectedParts]);
 
   // Function to check if camera has moved
   const checkCameraPosition = useCallback(() => {
@@ -159,7 +156,7 @@ export function useHumanAPI({
           console.log('Human API is ready');
 
           // Enable features
-          human.send('scene.enableXray', () => {});
+          // human.send('scene.enableXray', () => {});
           human.send('scene.disableHighlight', () => {});
 
           // Store initial camera position
@@ -177,17 +174,38 @@ export function useHumanAPI({
           // Listen for camera changes
           human.on('camera.updated', checkCameraPosition);
 
+          human.on('scene.objectsShown', (event) => {
+            console.log('=== scene.objectsShown event received ===');
+            console.log('Event:', event);
+          });
+
           // Listen for object selection and enable xray mode
           human.on('scene.objectsSelected', (event) => {
             console.log('=== scene.objectsSelected event received ===');
             console.log('Event:', event);
-            if (Object.values(event).every((value) => value === false)) {
+
+            const selectedId = Object.keys(event)[0];
+
+            // Check for deselection (all values are false)
+            const isDeselection = Object.values(event).every(
+              (value) => value === false
+            );
+
+            if (isDeselection) {
               console.log('All objects deselected');
               setSelectedPart(null);
               setSelectedParts(null);
-              selectedPartGroupRef.current = null;
+              selectedPartRef.current = null;
               selectionEventRef.current = null;
-              onZoom?.();
+              setTimeout(() => {
+                if (!selectedPartRef.current) {
+                  previousSelectedPartGroupRef.current = null;
+                  onZoom?.(null);
+                  setTimeout(() => {
+                    human.send('scene.disableXray', () => {});
+                  }, 500);
+                }
+              }, 100);
               return;
             }
 
@@ -195,31 +213,37 @@ export function useHumanAPI({
               return;
             }
 
-            const selectedId = Object.keys(event)[0];
-            const storedEvent = event;
-            const storedId = Object.keys(storedEvent)[0];
-
-            // Check if part belongs to a group
+            // If not in current group, proceed with group selection
             const group = getPartGroup(selectedId, bodyPartGroups);
 
             if (group) {
-              // Store the group in ref
-              selectedPartGroupRef.current = group;
-
               // Get the current gender value directly from state
               const gender = initialGender;
-              console.log('Creating selection map for gender:', gender);
 
               // Create selection map with current gender
               const selectionMap = createSelectionMap(
-                group.selectIds || group.ids,
+                group.ids.slice(0, 40),
                 gender
               );
-              console.log('Selection map:', selectionMap);
+
+              const deselectionMap = {};
+              // deselect all parts
+              Object.values(bodyPartGroups).forEach((group) => {
+                if (group.ids.includes(selectedId)) {
+                  return;
+                }
+                const toDeselect = createSelectionMap(
+                  group.selectIds,
+                  gender,
+                  false
+                );
+
+                Object.assign(deselectionMap, toDeselect);
+              });
 
               // Create a group part object
               const groupPart: AnatomyPart = {
-                objectId: storedId,
+                objectId: selectedId,
                 name: group.name,
                 description: `${group.name} area`,
                 available: true,
@@ -229,16 +253,35 @@ export function useHumanAPI({
                 children: [],
               };
 
+              let zoomID;
+              if (previousSelectedPartGroupRef.current) {
+                if (
+                  previousSelectedPartGroupRef.current.ids.includes(
+                    getNeutralId(selectedId)
+                  )
+                ) {
+                  zoomID = selectedId;
+                }
+              } else {
+                zoomID = getGenderedId(group.selectIds[0], gender);
+              }
+              console.log('selectedPart', selectedPartRef.current);
+
               // Set the selected part and parts
               setSelectedPart(groupPart);
+              selectedPartRef.current = groupPart;
               setSelectedParts(group);
-
-              human.send('scene.selectObjects', {
+              human.send('scene.showObjects', {
                 ...selectionMap,
-                replace: false,
+                ...deselectionMap,
+                replace: true,
               });
-
-              onZoom?.();
+              // Store the group in ref
+              previousSelectedPartGroupRef.current = group;
+              onZoom?.(zoomID);
+              setTimeout(() => {
+                human.send('scene.enableXray', () => {});
+              }, 1000);
             }
 
             // Clear the stored event
