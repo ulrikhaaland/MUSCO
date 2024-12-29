@@ -76,7 +76,7 @@ export default function MobileControls({
     resetChat,
     handleOptionClick,
     getDisplayName,
-  } = usePartChat({ selectedPart });
+  } = usePartChat({ selectedPart: selectedPart, selectedGroup: selectedParts });
 
   // Get the actual viewport height accounting for mobile browser UI
   const getViewportHeight = () => {
@@ -251,7 +251,12 @@ export default function MobileControls({
       return [minHeight, contentWithPadding];
     }
 
-    return [minHeight, viewportHeight * 0.4, viewportHeight * 0.78, viewportHeight];
+    return [
+      minHeight,
+      viewportHeight * 0.4,
+      viewportHeight * 0.78,
+      viewportHeight,
+    ];
   }, [contentHeight, selectedPart, messages.length]);
 
   // Track height changes only during drag or animation
@@ -297,9 +302,9 @@ export default function MobileControls({
       {isMobile && (
         <div
           className="md:hidden fixed right-4 flex flex-col gap-2 bg-[#111827] p-1.5 rounded-lg shadow-lg transition-all duration-300"
-          style={{ 
+          style={{
             zIndex: 0,
-            bottom: controlsBottom
+            bottom: controlsBottom,
           }}
         >
           <button
@@ -376,7 +381,12 @@ export default function MobileControls({
             return [minHeight, contentWithPadding];
           }
 
-          return [minHeight, viewportHeight * 0.4, viewportHeight * 0.78, viewportHeight];
+          return [
+            minHeight,
+            viewportHeight * 0.4,
+            viewportHeight * 0.78,
+            viewportHeight,
+          ];
         }}
         expandOnContentDrag={Boolean(selectedPart) || messages.length > 0}
         onDragStart={() => setIsDragging(true)}
@@ -452,9 +462,11 @@ export default function MobileControls({
                           if (sheetRef.current) {
                             const currentHeight = sheetRef.current.height;
                             const snapPoints = getSnapPoints();
-                            
+
                             // Find next larger snap point
-                            const nextPoint = snapPoints.find(point => point > (currentHeight + 2));
+                            const nextPoint = snapPoints.find(
+                              (point) => point > currentHeight + 2
+                            );
                             if (nextPoint) {
                               sheetRef.current.snapTo(() => nextPoint);
                               setIsExpanded(true);
@@ -465,7 +477,9 @@ export default function MobileControls({
                           if (!sheetRef.current) return true;
                           const currentHeight = sheetRef.current.height;
                           const snapPoints = getSnapPoints();
-                          return !snapPoints.some(point => point > (currentHeight + 2));
+                          return !snapPoints.some(
+                            (point) => point > currentHeight + 2
+                          );
                         })()}
                         className="flex justify-center items-center w-8 h-8 hover:bg-gray-800 rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent"
                         aria-label="Expand"
@@ -477,10 +491,15 @@ export default function MobileControls({
                           if (sheetRef.current) {
                             const currentHeight = sheetRef.current.height;
                             const snapPoints = getSnapPoints();
-                            const minHeight = Math.min(getViewportHeight() * 0.15, 72);
-                            
+                            const minHeight = Math.min(
+                              getViewportHeight() * 0.15,
+                              72
+                            );
+
                             // Find next smaller snap point
-                            const nextPoint = [...snapPoints].reverse().find(point => point < (currentHeight - 2));
+                            const nextPoint = [...snapPoints]
+                              .reverse()
+                              .find((point) => point < currentHeight - 2);
                             if (nextPoint) {
                               sheetRef.current.snapTo(() => nextPoint);
                               setIsExpanded(nextPoint > minHeight);
@@ -491,7 +510,9 @@ export default function MobileControls({
                           if (!sheetRef.current) return true;
                           const currentHeight = sheetRef.current.height;
                           const snapPoints = getSnapPoints();
-                          return !snapPoints.some(point => point < (currentHeight -2));
+                          return !snapPoints.some(
+                            (point) => point < currentHeight - 2
+                          );
                         })()}
                         className="flex justify-center items-center w-8 h-8 hover:bg-gray-800 rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent"
                         aria-label="Minimize"

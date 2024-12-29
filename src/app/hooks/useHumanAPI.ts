@@ -155,8 +155,16 @@ export function useHumanAPI({
         human.on('human.ready', () => {
           console.log('Human API is ready');
 
-          // Enable features
-          // human.send('scene.enableXray', () => {});
+          // human.on('scene.picked', function (pick) {
+          //   if (pick.position) {
+          //     human.send('labels.create', {
+          //       objectId: pick.objectId,
+          //       description: pick.objectId,
+          //       title: 'API Label',
+          //       position: [pick.position.x, pick.position.y, pick.position.z],
+          //     });
+          //   }
+          // });
           human.send('scene.disableHighlight', () => {});
 
           // Store initial camera position
@@ -193,14 +201,15 @@ export function useHumanAPI({
 
             if (isDeselection) {
               console.log('All objects deselected');
-              setSelectedPart(null);
-              setSelectedParts(null);
-              selectedPartRef.current = null;
-              selectionEventRef.current = null;
+
               setTimeout(() => {
-                if (!selectedPartRef.current) {
+                if (!selectedPartRef.current || selectedPartRef.current.objectId === selectedId) {
                   previousSelectedPartGroupRef.current = null;
                   onZoom?.(null);
+                  setSelectedPart(null);
+                  setSelectedParts(null);
+                  selectedPartRef.current = null;
+                  selectionEventRef.current = null;
                   setTimeout(() => {
                     human.send('scene.disableXray', () => {});
                   }, 500);
@@ -241,18 +250,6 @@ export function useHumanAPI({
                 Object.assign(deselectionMap, toDeselect);
               });
 
-              // Create a group part object
-              const groupPart: AnatomyPart = {
-                objectId: selectedId,
-                name: group.name,
-                description: `${group.name} area`,
-                available: true,
-                shown: true,
-                selected: true,
-                parent: '',
-                children: [],
-              };
-
               let zoomID;
               if (previousSelectedPartGroupRef.current) {
                 if (
@@ -268,14 +265,33 @@ export function useHumanAPI({
               console.log('selectedPart', selectedPartRef.current);
 
               // Set the selected part and parts
-              setSelectedPart(groupPart);
-              selectedPartRef.current = groupPart;
-              setSelectedParts(group);
+
               human.send('scene.showObjects', {
                 ...selectionMap,
                 ...deselectionMap,
                 replace: true,
               });
+
+              human.send('scene.info', (info) => {
+                const part = info.objects[selectedId];
+                // Create a group part object
+                const groupPart: AnatomyPart = {
+                  objectId: selectedId,
+                  name: part.name,
+                  description: `${part.name} area`,
+                  available: true,
+                  shown: true,
+                  selected: true,
+                  parent: '',
+                  children: [],
+                };
+                setSelectedPart(groupPart);
+                selectedPartRef.current = groupPart;
+              });
+
+              // You must provide a valid object ID and a 3D position to set the label in the scene.
+
+              setSelectedParts(group);
               // Store the group in ref
               previousSelectedPartGroupRef.current = group;
               onZoom?.(zoomID);

@@ -2,6 +2,7 @@ import { useRef, useEffect, useState } from 'react';
 import { useChat } from './useChat';
 import { AnatomyPart } from '../types/anatomy';
 import { Question } from '../types';
+import { BodyPartGroup } from '../config/bodyPartGroups';
 
 const initialQuestions: Question[] = [
   {
@@ -22,8 +23,8 @@ const initialQuestions: Question[] = [
 ];
 
 function getInitialQuestions(part: AnatomyPart | null): Question[] {
-  if (!part) return [];
-  
+  if (!part || !part.name) return [];
+
   // Always use the full part name
   return initialQuestions.map((q) => ({
     ...q,
@@ -34,25 +35,26 @@ function getInitialQuestions(part: AnatomyPart | null): Question[] {
 
 export interface UsePartChatProps {
   selectedPart: AnatomyPart | null;
+  selectedGroup: BodyPartGroup | null;
 }
 
-export function usePartChat({ selectedPart }: UsePartChatProps) {
+export function usePartChat({ selectedPart, selectedGroup }: UsePartChatProps) {
   const messagesRef = useRef<HTMLDivElement>(null);
   const previousPartRef = useRef<string | null>(null);
-  const { 
-    messages, 
-    isLoading, 
-    userPreferences, 
+  const {
+    messages,
+    isLoading,
+    userPreferences,
     followUpQuestions: chatFollowUpQuestions,
-    resetChat, 
+    resetChat,
     sendChatMessage,
     isCollectingJson,
     setFollowUpQuestions,
   } = useChat();
 
-  const [localFollowUpQuestions, setLocalFollowUpQuestions] = useState<Question[]>(() => 
-    getInitialQuestions(selectedPart)
-  );
+  const [localFollowUpQuestions, setLocalFollowUpQuestions] = useState<
+    Question[]
+  >(() => getInitialQuestions(selectedPart));
 
   // Update the questions when part changes
   useEffect(() => {
@@ -88,18 +90,22 @@ export function usePartChat({ selectedPart }: UsePartChatProps) {
   };
 
   const getDisplayName = () => {
-    if (!selectedPart) return messages.length > 0 ? 'No body part selected' : 'Select a body part to get started';
-    return selectedPart.name;
+    if (!selectedPart || !selectedGroup)
+      return messages.length > 0
+        ? 'No body part selected'
+        : 'Select a body part to get started';
+    return selectedGroup.name + ' > ' + selectedPart.name;
   };
 
   return {
     messages,
     isLoading,
     isCollectingJson,
-    followUpQuestions: messages.length === 0 ? localFollowUpQuestions : chatFollowUpQuestions,
+    followUpQuestions:
+      messages.length === 0 ? localFollowUpQuestions : chatFollowUpQuestions,
     messagesRef,
     resetChat,
     handleOptionClick,
     getDisplayName,
   };
-} 
+}
