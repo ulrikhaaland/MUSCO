@@ -203,16 +203,21 @@ export function useHumanAPI({
               console.log('All objects deselected');
 
               setTimeout(() => {
-                if (!selectedPartRef.current || selectedPartRef.current.objectId === selectedId) {
+                if (
+                  !selectedPartRef.current ||
+                  selectedPartRef.current.objectId === selectedId
+                ) {
                   previousSelectedPartGroupRef.current = null;
-                  onZoom?.(null);
+                  setTimeout(() => {
+                    onZoom?.(null);
+                  }, 100);
                   setSelectedPart(null);
                   setSelectedParts(null);
                   selectedPartRef.current = null;
                   selectionEventRef.current = null;
                   setTimeout(() => {
                     human.send('scene.disableXray', () => {});
-                  }, 500);
+                  }, 0);
                 }
               }, 100);
               return;
@@ -295,9 +300,7 @@ export function useHumanAPI({
               // Store the group in ref
               previousSelectedPartGroupRef.current = group;
               onZoom?.(zoomID);
-              setTimeout(() => {
-                human.send('scene.enableXray', () => {});
-              }, 1000);
+              human.send('scene.enableXray', () => {});
             }
 
             // Clear the stored event

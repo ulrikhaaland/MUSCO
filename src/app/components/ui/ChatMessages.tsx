@@ -126,9 +126,7 @@ export function ChatMessages({
                   <ReactMarkdown
                     className="text-base leading-relaxed"
                     components={{
-                      ul: ({ ...props }) => (
-                        <ul className=" list-none" {...props} />
-                      ),
+                      ul: ({ children }) => <ul className="list-none"></ul>,
                     }}
                   >
                     {msg.content}

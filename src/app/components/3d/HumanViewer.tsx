@@ -24,16 +24,6 @@ interface HumanViewerProps {
   onGenderChange?: (gender: Gender) => void;
 }
 
-interface AnatomyObject {
-  objectId: string;
-  name: string;
-  children?: string[];
-  description?: string;
-  available?: boolean;
-  shown?: boolean;
-  parent?: string;
-}
-
 export default function HumanViewer({
   gender,
   onGenderChange,
@@ -125,86 +115,6 @@ export default function HumanViewer({
       }
     });
   };
-
-  const getBodyPartIds = useCallback((partKeyword: string) => {
-    const human = humanRef.current;
-    if (!human) return;
-
-    human.send('scene.info', (response: any) => {
-      if (!response.objects) return;
-
-      const objects = Object.values(response.objects) as AnatomyObject[];
-      const allFoundIds: string[] = [];
-      const searched = new Set<string>();
-
-      // Helper function to get all descendant IDs of a node
-      const getAllDescendantIds = (parentId: string): string[] => {
-        const obj = objects.find((o) => o.objectId === parentId);
-        if (!obj) return [];
-
-        let ids = [obj.objectId];
-        if (obj.children) {
-          obj.children.forEach((childId) => {
-            ids = [...ids, ...getAllDescendantIds(childId)];
-          });
-        }
-        return ids;
-      };
-
-      // Helper function for deep search
-      const deepSearch = (
-        objectId: string,
-        searchTerm: string,
-        path: string[] = []
-      ) => {
-        if (searched.has(objectId)) return;
-        searched.add(objectId);
-
-        const obj = objects.find((o) => o.objectId === objectId);
-        if (!obj) return;
-
-        // Add current object's name to path
-        const currentPath = [...path, obj.name];
-
-        // Log the current path for debugging
-
-        // Check if current object's name matches search term
-        if (obj.name.toLowerCase().includes(searchTerm.toLowerCase())) {
-          const descendantIds = getAllDescendantIds(obj.objectId);
-          allFoundIds.push(...descendantIds);
-        }
-
-        // Recursively search children
-        if (obj.children) {
-          obj.children.forEach((childId) => {
-            deepSearch(childId, searchTerm, currentPath);
-          });
-        }
-      };
-
-      // Start search from each system root
-      const systemIds = {
-        muscular: 'human_19_male_muscular_system-muscular_system_ID',
-        connective: 'human_19_male_connective_tissue-connective_tissue_ID',
-        skeletal: 'human_19_male_skeletal_system-skeletal_system_ID',
-      };
-
-      Object.values(systemIds).forEach((systemId) => {
-        deepSearch(systemId, partKeyword);
-      });
-
-      // Format and print unique IDs
-      const uniqueIds = [...new Set(allFoundIds)].map((id) => {
-        const formattedId = `'${id.replace('human_19_male_', '')}'`;
-        return formattedId;
-      });
-
-      console.log('Found IDs:');
-      for (const id of uniqueIds) {
-        console.log(id + ',');
-      }
-    });
-  }, []);
 
   // Create viewer URL
   const getViewerUrl = useCallback((modelGender: Gender) => {
@@ -515,12 +425,6 @@ export default function HumanViewer({
             </span>
           </button>
         </div>
-        <button
-          onClick={() => getBodyPartIds('bones of head')}
-          className="absolute bottom-6 left-6 z-50 bg-indigo-600/80 hover:bg-indigo-500/80 text-white px-4 py-2 rounded-lg shadow-lg transition-colors duration-200 flex items-center space-x-2"
-        >
-          <span>Get Part IDs</span>
-        </button>
 
         {/* Mobile Controls */}
         {isMobile && (
