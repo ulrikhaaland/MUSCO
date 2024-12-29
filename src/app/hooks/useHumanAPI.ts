@@ -40,9 +40,9 @@ interface UseHumanAPIProps {
   elementId: string;
   onReady?: () => void;
   initialGender: Gender;
-  selectedParts: BodyPartGroup | null;
+  selectedGroup: BodyPartGroup | null;
   selectedPart: AnatomyPart | null;
-  setSelectedParts: (parts: BodyPartGroup | null) => void;
+  setSelectedGroup: (parts: BodyPartGroup | null) => void;
   setSelectedPart: (part: AnatomyPart | null) => void;
 
   onZoom?: (objectId?: string) => void;
@@ -52,9 +52,9 @@ export function useHumanAPI({
   elementId,
   onReady,
   initialGender,
-  selectedParts,
+  selectedGroup,
   selectedPart,
-  setSelectedParts,
+  setSelectedGroup,
   setSelectedPart,
   onZoom,
 }: UseHumanAPIProps): {
@@ -212,7 +212,7 @@ export function useHumanAPI({
                     onZoom?.(null);
                   }, 100);
                   setSelectedPart(null);
-                  setSelectedParts(null);
+                  setSelectedGroup(null);
                   selectedPartRef.current = null;
                   selectionEventRef.current = null;
                   setTimeout(() => {
@@ -296,7 +296,7 @@ export function useHumanAPI({
 
               // You must provide a valid object ID and a 3D position to set the label in the scene.
 
-              setSelectedParts(group);
+              setSelectedGroup(group);
               // Store the group in ref
               previousSelectedPartGroupRef.current = group;
               onZoom?.(zoomID);

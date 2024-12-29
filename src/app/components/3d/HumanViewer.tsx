@@ -29,7 +29,7 @@ export default function HumanViewer({
   onGenderChange,
 }: HumanViewerProps) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
-  const [selectedParts, setSelectedParts] = useState<BodyPartGroup | null>(
+  const [selectedGroup, setSelectedGroup] = useState<BodyPartGroup | null>(
     null
   );
   const [selectedPart, setSelectedPart] = useState<AnatomyPart | null>(null);
@@ -74,17 +74,17 @@ export default function HumanViewer({
   } = useHumanAPI({
     elementId: 'myViewer',
     initialGender: gender,
-    selectedParts,
+    selectedGroup,
     selectedPart,
-    setSelectedParts,
+    setSelectedGroup,
     setSelectedPart,
     onZoom: (objectId?: string) => handleZoom(objectId),
   });
 
   // Keep selectedPartsRef in sync
   useEffect(() => {
-    selectedPartsRef.current = selectedParts;
-  }, [selectedParts]);
+    selectedPartsRef.current = selectedGroup;
+  }, [selectedGroup]);
 
   const handleZoom = (objectId?: string) => {
     // First get current camera info
@@ -162,7 +162,7 @@ export default function HumanViewer({
 
     // Reset states
     setSelectedPart(null);
-    setSelectedParts(null);
+    setSelectedGroup(null);
     setCurrentRotation(0);
 
     // Call the parent's gender change handler
@@ -205,7 +205,7 @@ export default function HumanViewer({
           // Reset all our state after the scene has been reset
           setCurrentRotation(0);
           setSelectedPart(null);
-          setSelectedParts(null);
+          setSelectedGroup(null);
           lastSelectedIdRef.current = null;
           setNeedsReset(false);
 
@@ -223,8 +223,8 @@ export default function HumanViewer({
 
   // Update reset button state when parts are selected
   useEffect(() => {
-    setNeedsReset(selectedParts !== null || needsReset);
-  }, [selectedParts, needsReset]);
+    setNeedsReset(selectedGroup !== null || needsReset);
+  }, [selectedGroup, needsReset]);
 
   const startDragging = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
@@ -390,9 +390,9 @@ export default function HumanViewer({
           </button>
           <button
             onClick={handleReset}
-            disabled={isResetting || (!needsReset && selectedParts === null)}
+            disabled={isResetting || (!needsReset && selectedGroup === null)}
             className={`bg-indigo-600/80 hover:bg-indigo-500/80 text-white px-4 py-2 rounded-lg shadow-lg transition-colors duration-200 flex items-center space-x-2 ${
-              isResetting || (!needsReset && selectedParts === null)
+              isResetting || (!needsReset && selectedGroup === null)
                 ? 'opacity-50 cursor-not-allowed'
                 : ''
             }`}
@@ -433,7 +433,7 @@ export default function HumanViewer({
             isResetting={isResetting}
             isReady={isReady}
             needsReset={needsReset}
-            selectedParts={selectedParts}
+            selectedGroup={selectedGroup}
             isChangingModel={isChangingModel}
             currentGender={currentGender}
             selectedPart={selectedPart}
@@ -466,10 +466,11 @@ export default function HumanViewer({
         <div className="h-full border-l border-gray-800">
           <PartPopup
             part={selectedPart}
+            group={selectedGroup}
             onClose={() => {
               console.log('Closing popup');
               setSelectedPart(null);
-              setSelectedParts(null);
+              setSelectedGroup(null);
             }}
           />
         </div>

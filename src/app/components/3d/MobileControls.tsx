@@ -28,7 +28,7 @@ interface MobileControlsProps {
   isResetting: boolean;
   isReady: boolean;
   needsReset: boolean;
-  selectedParts: BodyPartGroup | null;
+  selectedGroup: BodyPartGroup | null;
   isChangingModel: boolean;
   currentGender: Gender;
   selectedPart: AnatomyPart | null;
@@ -48,7 +48,7 @@ export default function MobileControls({
   isResetting,
   isReady,
   needsReset,
-  selectedParts,
+  selectedGroup,
   isChangingModel,
   currentGender,
   selectedPart,
@@ -76,7 +76,7 @@ export default function MobileControls({
     resetChat,
     handleOptionClick,
     getDisplayName,
-  } = usePartChat({ selectedPart: selectedPart, selectedGroup: selectedParts });
+  } = usePartChat({ selectedPart: selectedPart, selectedGroup: selectedGroup });
 
   // Get the actual viewport height accounting for mobile browser UI
   const getViewportHeight = () => {
@@ -323,10 +323,10 @@ export default function MobileControls({
           <button
             onClick={onReset}
             disabled={
-              isResetting || (!needsReset && selectedParts === null) || !isReady
+              isResetting || (!needsReset && selectedGroup === null) || !isReady
             }
             className={`text-white p-2 rounded-lg transition-colors duration-200 ${
-              isResetting || (!needsReset && selectedParts === null)
+              isResetting || (!needsReset && selectedGroup === null)
                 ? 'opacity-50'
                 : 'hover:bg-white/10'
             }`}

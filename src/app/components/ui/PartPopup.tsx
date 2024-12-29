@@ -2,13 +2,15 @@ import { useState, useRef, ChangeEvent } from 'react';
 import { AnatomyPart } from '@/app/types/anatomy';
 import { ChatMessages } from './ChatMessages';
 import { usePartChat } from '@/app/hooks/usePartChat';
+import { BodyPartGroup } from '@/app/config/bodyPartGroups';
 
 interface PartPopupProps {
   part: AnatomyPart | null;
+  group: BodyPartGroup | null;
   onClose: () => void;
 }
 
-export default function PartPopup({ part, onClose }: PartPopupProps) {
+export default function PartPopup({ part, group, onClose }: PartPopupProps) {
   const [message, setMessage] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const {
@@ -20,7 +22,7 @@ export default function PartPopup({ part, onClose }: PartPopupProps) {
     resetChat,
     handleOptionClick,
     getDisplayName,
-  } = usePartChat({ selectedPart: part });
+  } = usePartChat({ selectedPart: part, selectedGroup: group });
 
   const [userHasScrolled, setUserHasScrolled] = useState(false);
 
@@ -74,13 +76,11 @@ export default function PartPopup({ part, onClose }: PartPopupProps) {
           <h2 className="text-sm text-gray-400 mb-1">
             Musculoskeletal Assistant
           </h2>
-          <h3 className="text-xl font-bold">
-            {getDisplayName()}
-          </h3>
+          <h3 className="text-xl font-bold">{getDisplayName()}</h3>
         </div>
         <div className="flex gap-2">
-          <button 
-            onClick={handleResetChat} 
+          <button
+            onClick={handleResetChat}
             className="text-gray-400 hover:text-white p-1 rounded-full hover:bg-gray-800 transition-colors"
             aria-label="Reset Chat"
           >
@@ -97,7 +97,7 @@ export default function PartPopup({ part, onClose }: PartPopupProps) {
               />
             </svg>
           </button>
-          <button 
+          <button
             onClick={onClose}
             className="text-gray-400 hover:text-white p-1 rounded-full hover:bg-gray-800 transition-colors"
             aria-label="Close"
@@ -128,13 +128,15 @@ export default function PartPopup({ part, onClose }: PartPopupProps) {
                 className="w-full text-left p-3 rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors"
               >
                 <div className="font-medium">{question.title}</div>
-                <div className="text-sm text-gray-400">{question.description}</div>
+                <div className="text-sm text-gray-400">
+                  {question.description}
+                </div>
               </button>
             ))}
           </div>
         ) : (
-          <ChatMessages 
-            messages={messages} 
+          <ChatMessages
+            messages={messages}
             messagesRef={messagesRef}
             isLoading={isLoading}
             isCollectingJson={isCollectingJson}
