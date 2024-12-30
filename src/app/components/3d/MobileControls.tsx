@@ -59,6 +59,7 @@ export default function MobileControls({
   const [userClosedSheet, setUserClosedSheet] = useState(false);
   const sheetRef = useRef<BottomSheetRef>(null);
   const contentRef = useRef<HTMLDivElement>(null);
+  const [headerHeight, setHeaderHeight] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [controlsBottom, setControlsBottom] = useState('5rem');
@@ -95,16 +96,12 @@ export default function MobileControls({
   useEffect(() => {
     const updateContentHeight = () => {
       if (contentRef.current) {
-        // Get the messages container and the input container
-        const messagesContainer = contentRef.current.querySelector('.flex-1.min-h-0.overflow-y-auto');
-        const inputContainer = contentRef.current.querySelector('.mt-4.border-t');
+        // Get the container that holds all content (messages and input)
+        const contentContainer = contentRef.current.querySelector('.flex-col.h-full');
         
-        if (messagesContainer) {
-          let totalHeight = messagesContainer.scrollHeight;
-          if (inputContainer) {
-            totalHeight += inputContainer.getBoundingClientRect().height;
-          }
-          setContentHeight(totalHeight + 96); // Add padding for header
+        if (contentContainer) {
+          const height = contentContainer.scrollHeight + headerHeight;
+          setContentHeight(height);
         }
       }
     };
@@ -119,12 +116,13 @@ export default function MobileControls({
     }
 
     return () => resizeObserver.disconnect();
-  }, [messages, followUpQuestions]); // Update when messages or followUpQuestions change
+  }, [messages, followUpQuestions, headerHeight]);
 
   // Handle body part selection and deselection
   useEffect(() => {
     const hasContent = messages.length > 0 || followUpQuestions.length > 0;
-    const loadingComplete = !isLoading && !isCollectingJson;
+    const loadingComplete =
+      (!isLoading && !isCollectingJson) || messages.length === 0;
 
     if (selectedGroup && loadingComplete && hasContent) {
       // Reset userClosedSheet when a part is selected and content is ready
@@ -413,6 +411,7 @@ export default function MobileControls({
             getSnapPoints={getSnapPoints}
             getViewportHeight={getViewportHeight}
             setIsExpanded={setIsExpanded}
+            onHeightChange={setHeaderHeight}
           />
         }
         className="!bg-gray-900 [&>*]:!bg-gray-900 relative h-[100dvh]"
@@ -465,7 +464,10 @@ export default function MobileControls({
                         const textarea = textareaRef.current;
                         if (textarea) {
                           textarea.style.height = 'auto';
-                          const newHeight = Math.min(textarea.scrollHeight, 480);
+                          const newHeight = Math.min(
+                            textarea.scrollHeight,
+                            480
+                          );
                           textarea.style.height = `${newHeight}px`;
                         }
                       }}

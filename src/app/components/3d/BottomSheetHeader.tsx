@@ -1,6 +1,7 @@
 import { BottomSheetRef } from 'react-spring-bottom-sheet';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import { ChatMessage } from '@/app/types';
+import { useEffect, useRef } from 'react';
 
 interface BottomSheetHeaderProps {
   messages: ChatMessage[];
@@ -13,6 +14,7 @@ interface BottomSheetHeaderProps {
   getSnapPoints: () => number[];
   getViewportHeight: () => number;
   setIsExpanded: (expanded: boolean) => void;
+  onHeightChange?: (height: number) => void;
 }
 
 export function BottomSheetHeader({
@@ -26,9 +28,26 @@ export function BottomSheetHeader({
   getSnapPoints,
   getViewportHeight,
   setIsExpanded,
+  onHeightChange,
 }: BottomSheetHeaderProps) {
+  const headerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (headerRef.current && onHeightChange) {
+      const observer = new ResizeObserver(() => {
+        const height = headerRef.current?.getBoundingClientRect().height;
+        if (height) {
+          onHeightChange(height + 28);
+        }
+      });
+
+      observer.observe(headerRef.current);
+      return () => observer.disconnect();
+    }
+  }, [onHeightChange]);
+
   return (
-    <div className="h-12 w-full flex justify-between items-center">
+    <div ref={headerRef} className="h-12 w-full flex justify-between items-center">
       <div className="flex flex-col items-start">
         <h3 className="text-lg font-bold text-white ">{getGroupDisplayName()}</h3>
         <h2 className="text-sm text-white">{getPartDisplayName()}</h2>
