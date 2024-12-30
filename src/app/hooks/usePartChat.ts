@@ -40,7 +40,6 @@ export interface UsePartChatProps {
 
 export function usePartChat({ selectedPart, selectedGroup }: UsePartChatProps) {
   const messagesRef = useRef<HTMLDivElement>(null);
-  const previousPartRef = useRef<string | null>(null);
   const {
     messages,
     isLoading,
@@ -73,15 +72,6 @@ export function usePartChat({ selectedPart, selectedGroup }: UsePartChatProps) {
       setLocalFollowUpQuestions(chatFollowUpQuestions);
     }
   }, [chatFollowUpQuestions]);
-
-  // Reset chat when part changes
-  useEffect(() => {
-    const currentPartId = selectedPart?.objectId ?? null;
-    if (previousPartRef.current !== currentPartId) {
-      previousPartRef.current = currentPartId;
-      resetChat();
-    }
-  }, [selectedPart?.objectId, resetChat]);
 
   const handleOptionClick = (question: Question) => {
     sendChatMessage(question.question, {

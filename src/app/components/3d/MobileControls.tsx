@@ -62,6 +62,8 @@ export default function MobileControls({
   const [isDragging, setIsDragging] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [controlsBottom, setControlsBottom] = useState('5rem');
+  const [message, setMessage] = useState('');
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const {
     messages,
@@ -93,13 +95,16 @@ export default function MobileControls({
   useEffect(() => {
     const updateContentHeight = () => {
       if (contentRef.current) {
-        // Get the first div inside contentRef that contains all the content
-        const contentContainer = contentRef.current.querySelector(
-          '.flex-1.min-h-0.flex.flex-col'
-        );
-        if (contentContainer) {
-          const height = contentContainer.getBoundingClientRect().height;
-          setContentHeight(height + 96); // Add padding for header
+        // Get the messages container and the input container
+        const messagesContainer = contentRef.current.querySelector('.flex-1.min-h-0.overflow-y-auto');
+        const inputContainer = contentRef.current.querySelector('.mt-4.border-t');
+        
+        if (messagesContainer) {
+          let totalHeight = messagesContainer.scrollHeight;
+          if (inputContainer) {
+            totalHeight += inputContainer.getBoundingClientRect().height;
+          }
+          setContentHeight(totalHeight + 96); // Add padding for header
         }
       }
     };
@@ -130,7 +135,7 @@ export default function MobileControls({
           setIsExpanded(true);
         }, 200);
       }
-    } else if (!selectedGroup) {
+    } else if (!selectedGroup && messages.length === 0) {
       // Part was deselected
       setIsDragging(true);
       if (sheetRef.current) {
@@ -420,9 +425,9 @@ export default function MobileControls({
             <div className="h-[72px]" />
           ) : (
             /* Expanded Content */
-            <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
+            <div className="flex flex-col h-full">
               {/* Chat Messages */}
-              <div className="flex-1 min-h-0 overflow-hidden">
+              <div className="flex-1 min-h-0 overflow-y-auto">
                 <ChatMessages
                   messages={messages}
                   isLoading={isLoading}
@@ -434,6 +439,104 @@ export default function MobileControls({
                   isMobile={isMobile}
                 />
               </div>
+
+              {/* Message Input */}
+              {(selectedGroup || messages.length > 0) && (
+                <div className="mt-4 border-t border-gray-700 pt-2 pb-1 flex-shrink-0 bg-gray-900">
+                  <form
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      if (message.trim()) {
+                        handleOptionClick({
+                          title: '',
+                          description: '',
+                          question: message,
+                        });
+                        setMessage('');
+                      }
+                    }}
+                    className="relative"
+                  >
+                    <textarea
+                      ref={textareaRef}
+                      value={message}
+                      onChange={(e) => {
+                        setMessage(e.target.value);
+                        const textarea = textareaRef.current;
+                        if (textarea) {
+                          textarea.style.height = 'auto';
+                          const newHeight = Math.min(textarea.scrollHeight, 480);
+                          textarea.style.height = `${newHeight}px`;
+                        }
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                          e.preventDefault();
+                          if (message.trim()) {
+                            handleOptionClick({
+                              title: '',
+                              description: '',
+                              question: message,
+                            });
+                            setMessage('');
+                          }
+                        }
+                      }}
+                      rows={1}
+                      placeholder="Type your message..."
+                      className="w-full bg-gray-800 rounded-lg px-4 py-3 pr-12 focus:outline-none focus:ring-2 focus:ring-indigo-600 resize-none"
+                      disabled={isLoading}
+                    />
+                    <button
+                      type="submit"
+                      disabled={isLoading || !message.trim()}
+                      className={`absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-lg transition-colors ${
+                        isLoading || !message.trim()
+                          ? 'text-gray-500 cursor-not-allowed'
+                          : 'text-indigo-600 hover:text-indigo-500 hover:bg-gray-700/50'
+                      }`}
+                    >
+                      {isLoading ? (
+                        <svg
+                          className="animate-spin h-6 w-6"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                          />
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                          />
+                        </svg>
+                      ) : (
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-6 w-6"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
+                          />
+                        </svg>
+                      )}
+                    </button>
+                  </form>
+                </div>
+              )}
             </div>
           )}
         </div>
