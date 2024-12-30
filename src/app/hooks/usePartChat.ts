@@ -22,14 +22,14 @@ const initialQuestions: Question[] = [
   },
 ];
 
-function getInitialQuestions(part: AnatomyPart | null): Question[] {
-  if (!part || !part.name) return [];
+function getInitialQuestions(name?: string): Question[] {
+  if (!name) return [];
 
   // Always use the full part name
   return initialQuestions.map((q) => ({
     ...q,
-    description: q.description.replace('$part', part.name.toLowerCase()),
-    question: q.question.replace('$part', part.name.toLowerCase()),
+    description: q.description.replace('$part', name.toLowerCase()),
+    question: q.question.replace('$part', name.toLowerCase()),
   }));
 }
 
@@ -54,16 +54,18 @@ export function usePartChat({ selectedPart, selectedGroup }: UsePartChatProps) {
 
   const [localFollowUpQuestions, setLocalFollowUpQuestions] = useState<
     Question[]
-  >(() => getInitialQuestions(selectedPart));
+  >(() => getInitialQuestions());
 
   // Update the questions when part changes
   useEffect(() => {
-    if (selectedPart) {
-      setLocalFollowUpQuestions(getInitialQuestions(selectedPart));
+    if (selectedPart || selectedGroup) {
+      setLocalFollowUpQuestions(
+        getInitialQuestions(selectedPart?.name ?? selectedGroup.name)
+      );
     } else if (messages.length === 0) {
       setLocalFollowUpQuestions([]);
     }
-  }, [selectedPart, messages.length]);
+  }, [selectedPart, selectedGroup, messages.length]);
 
   // Update local follow-up questions when chat questions change
   useEffect(() => {
@@ -89,12 +91,25 @@ export function usePartChat({ selectedPart, selectedGroup }: UsePartChatProps) {
     });
   };
 
-  const getDisplayName = () => {
-    if (!selectedPart || !selectedGroup)
+  const getGroupDisplayName = (): string => {
+    if (!selectedGroup) {
       return messages.length > 0
         ? 'No body part selected'
         : 'Select a body part to get started';
-    return selectedGroup.name + ' > ' + selectedPart.name;
+    } else {
+      return selectedGroup.name;
+    }
+  };
+
+  const getPartDisplayName = (): string => {
+    if (!selectedPart) {
+      if (!selectedGroup) {
+        return '';
+      } else {
+        return `Chat about the ${selectedGroup.name} or select a specific part`;
+      }
+    }
+    return selectedPart.name;
   };
 
   return {
@@ -106,6 +121,7 @@ export function usePartChat({ selectedPart, selectedGroup }: UsePartChatProps) {
     messagesRef,
     resetChat,
     handleOptionClick,
-    getDisplayName,
+    getGroupDisplayName,
+    getPartDisplayName,
   };
 }

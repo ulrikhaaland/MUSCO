@@ -13,15 +13,12 @@ import MyLocationIcon from '@mui/icons-material/MyLocation';
 import CropRotateIcon from '@mui/icons-material/CropRotate';
 import MaleIcon from '@mui/icons-material/Male';
 import FemaleIcon from '@mui/icons-material/Female';
-import ZoomInIcon from '@mui/icons-material/ZoomIn';
-import ExpandLessIcon from '@mui/icons-material/ExpandLess';
-import FullscreenIcon from '@mui/icons-material/Fullscreen';
-import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
 import { Gender } from '@/app/types';
 import { AnatomyPart } from '@/app/types/anatomy';
 import { ChatMessages } from '../ui/ChatMessages';
 import { usePartChat } from '@/app/hooks/usePartChat';
 import { BodyPartGroup } from '@/app/config/bodyPartGroups';
+import { BottomSheetHeader } from './BottomSheetHeader';
 
 interface MobileControlsProps {
   isRotating: boolean;
@@ -49,7 +46,6 @@ export default function MobileControls({
   isReady,
   needsReset,
   selectedGroup,
-  isChangingModel,
   currentGender,
   selectedPart,
   onRotate,
@@ -75,7 +71,8 @@ export default function MobileControls({
     messagesRef,
     resetChat,
     handleOptionClick,
-    getDisplayName,
+    getGroupDisplayName,
+    getPartDisplayName,
   } = usePartChat({ selectedPart: selectedPart, selectedGroup: selectedGroup });
 
   // Get the actual viewport height accounting for mobile browser UI
@@ -96,12 +93,18 @@ export default function MobileControls({
   useEffect(() => {
     const updateContentHeight = () => {
       if (contentRef.current) {
-        const height = contentRef.current.scrollHeight;
-        setContentHeight(height);
+        // Get the first div inside contentRef that contains all the content
+        const contentContainer = contentRef.current.querySelector(
+          '.flex-1.min-h-0.flex.flex-col'
+        );
+        if (contentContainer) {
+          const height = contentContainer.getBoundingClientRect().height;
+          setContentHeight(height + 96); // Add padding for header
+        }
       }
     };
 
-    // Update height when messages change
+    // Update height when messages or follow-up questions change
     updateContentHeight();
 
     // Set up a ResizeObserver to watch for content changes
@@ -111,23 +114,23 @@ export default function MobileControls({
     }
 
     return () => resizeObserver.disconnect();
-  }, [messages]); // Update when messages change
+  }, [messages, followUpQuestions]); // Update when messages or followUpQuestions change
 
   // Handle body part selection and deselection
   useEffect(() => {
     const hasContent = messages.length > 0 || followUpQuestions.length > 0;
     const loadingComplete = !isLoading && !isCollectingJson;
 
-    if (selectedPart && loadingComplete && hasContent) {
+    if (selectedGroup && loadingComplete && hasContent) {
       // Reset userClosedSheet when a part is selected and content is ready
       setUserClosedSheet(false);
       if (sheetRef.current) {
         setTimeout(() => {
-          sheetRef.current.snapTo(({ maxHeight }) => maxHeight * 0.4);
+          sheetRef.current.snapTo(({ maxHeight }) => contentHeight);
           setIsExpanded(true);
-        }, 10);
+        }, 200);
       }
-    } else if (!selectedPart) {
+    } else if (!selectedGroup) {
       // Part was deselected
       setIsDragging(true);
       if (sheetRef.current) {
@@ -136,41 +139,14 @@ export default function MobileControls({
         );
       }
     }
-  }, [selectedPart, isLoading, isCollectingJson, messages, followUpQuestions]);
-
-  const handleExpandToggle = () => {
-    if (sheetRef.current) {
-      if (isExpanded) {
-        // Collapse to minimum height
-        sheetRef.current.snapTo(({ snapPoints }) => Math.min(...snapPoints));
-        setUserClosedSheet(true);
-        setIsFullscreen(false); // Reset fullscreen state when collapsing
-      } else {
-        // Expand to previous height (full if was fullscreen, otherwise 40%)
-        const targetHeight = isFullscreen
-          ? getViewportHeight()
-          : getViewportHeight() * 0.4;
-        sheetRef.current.snapTo(() => targetHeight);
-        setUserClosedSheet(false);
-      }
-      setIsExpanded(!isExpanded);
-    }
-  };
-
-  const handleFullscreenToggle = () => {
-    if (sheetRef.current) {
-      if (isFullscreen) {
-        // Return to previous height
-        sheetRef.current.snapTo(({ maxHeight }) => maxHeight * 0.4);
-      } else {
-        // Go full screen
-        sheetRef.current.snapTo(() => getViewportHeight());
-      }
-      setIsFullscreen(!isFullscreen);
-      setIsExpanded(true);
-      setUserClosedSheet(false);
-    }
-  };
+  }, [
+    selectedGroup,
+    isLoading,
+    isCollectingJson,
+    messages,
+    followUpQuestions,
+    contentHeight,
+  ]);
 
   // Update model height whenever sheet height changes
   const updateModelHeight = (sheetHeight: number) => {
@@ -235,13 +211,13 @@ export default function MobileControls({
   const getSnapPoints = useCallback(() => {
     const viewportHeight = getViewportHeight();
     const minHeight = Math.min(viewportHeight * 0.15, 72);
-    const hasContent = Boolean(selectedPart) || messages.length > 0;
+    const hasContent = Boolean(selectedGroup) || messages.length > 0;
 
     if (!hasContent) {
       return [minHeight];
     }
 
-    const contentWithPadding = contentHeight + 96;
+    const contentWithPadding = contentHeight;
 
     if (contentWithPadding <= minHeight) {
       return [minHeight];
@@ -257,7 +233,7 @@ export default function MobileControls({
       viewportHeight * 0.78,
       viewportHeight,
     ];
-  }, [contentHeight, selectedPart, messages.length]);
+  }, [contentHeight, selectedGroup, messages.length]);
 
   // Track height changes only during drag or animation
   useEffect(() => {
@@ -365,13 +341,13 @@ export default function MobileControls({
         snapPoints={({ maxHeight }) => {
           const viewportHeight = maxHeight;
           const minHeight = Math.min(viewportHeight * 0.15, 72);
-          const hasContent = Boolean(selectedPart) || messages.length > 0;
+          const hasContent = Boolean(selectedGroup) || messages.length > 0;
 
           if (!hasContent) {
             return [minHeight];
           }
 
-          const contentWithPadding = contentHeight + 96;
+          const contentWithPadding = contentHeight;
 
           if (contentWithPadding <= minHeight) {
             return [minHeight];
@@ -388,7 +364,7 @@ export default function MobileControls({
             viewportHeight,
           ];
         }}
-        expandOnContentDrag={Boolean(selectedPart) || messages.length > 0}
+        expandOnContentDrag={Boolean(selectedGroup) || messages.length > 0}
         onDragStart={() => setIsDragging(true)}
         onDragEnd={() => setIsDragging(false)}
         onSpringStart={(event) => {
@@ -421,110 +397,18 @@ export default function MobileControls({
           }
         }}
         header={
-          <div className="h-12 w-full flex justify-between items-center">
-            <div className="flex flex-col items-start">
-              <h2 className="text-sm text-gray-400">
-                Musculoskeletal Assistant
-              </h2>
-              <h3 className="text-lg font-bold text-white ">
-                {getDisplayName()}
-              </h3>
-            </div>
-            <div className="flex items-center gap-2 ml-4">
-              {messages.length > 0 &&
-                messages.some((m) => m.role === 'assistant' && m.content) &&
-                !isLoading && (
-                  <button
-                    onClick={resetChat}
-                    className="text-white hover:text-white p-1 rounded-full hover:bg-gray-800 transition-colors"
-                    aria-label="Reset Chat"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-5 w-5"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  </button>
-                )}
-              {(selectedPart || messages.length > 0) && (
-                <div className="flex flex-col">
-                  {sheetRef.current && (
-                    <>
-                      <button
-                        onClick={() => {
-                          if (sheetRef.current) {
-                            const currentHeight = sheetRef.current.height;
-                            const snapPoints = getSnapPoints();
-
-                            // Find next larger snap point
-                            const nextPoint = snapPoints.find(
-                              (point) => point > currentHeight + 2
-                            );
-                            if (nextPoint) {
-                              sheetRef.current.snapTo(() => nextPoint);
-                              setIsExpanded(true);
-                            }
-                          }
-                        }}
-                        disabled={(() => {
-                          if (!sheetRef.current) return true;
-                          const currentHeight = sheetRef.current.height;
-                          const snapPoints = getSnapPoints();
-                          return !snapPoints.some(
-                            (point) => point > currentHeight + 2
-                          );
-                        })()}
-                        className="flex justify-center items-center w-8 h-8 hover:bg-gray-800 rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent"
-                        aria-label="Expand"
-                      >
-                        <ExpandLessIcon className="text-white h-6 w-6" />
-                      </button>
-                      <button
-                        onClick={() => {
-                          if (sheetRef.current) {
-                            const currentHeight = sheetRef.current.height;
-                            const snapPoints = getSnapPoints();
-                            const minHeight = Math.min(
-                              getViewportHeight() * 0.15,
-                              72
-                            );
-
-                            // Find next smaller snap point
-                            const nextPoint = [...snapPoints]
-                              .reverse()
-                              .find((point) => point < currentHeight - 2);
-                            if (nextPoint) {
-                              sheetRef.current.snapTo(() => nextPoint);
-                              setIsExpanded(nextPoint > minHeight);
-                            }
-                          }
-                        }}
-                        disabled={(() => {
-                          if (!sheetRef.current) return true;
-                          const currentHeight = sheetRef.current.height;
-                          const snapPoints = getSnapPoints();
-                          return !snapPoints.some(
-                            (point) => point < currentHeight - 2
-                          );
-                        })()}
-                        className="flex justify-center items-center w-8 h-8 hover:bg-gray-800 rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent"
-                        aria-label="Minimize"
-                      >
-                        <ExpandLessIcon className="text-white h-6 w-6 rotate-180" />
-                      </button>
-                    </>
-                  )}
-                </div>
-              )}
-            </div>
-          </div>
+          <BottomSheetHeader
+            messages={messages}
+            isLoading={isLoading}
+            selectedGroup={Boolean(selectedGroup)}
+            sheetRef={sheetRef}
+            getGroupDisplayName={getGroupDisplayName}
+            getPartDisplayName={getPartDisplayName}
+            resetChat={resetChat}
+            getSnapPoints={getSnapPoints}
+            getViewportHeight={getViewportHeight}
+            setIsExpanded={setIsExpanded}
+          />
         }
         className="!bg-gray-900 [&>*]:!bg-gray-900 relative h-[100dvh]"
       >
@@ -532,7 +416,7 @@ export default function MobileControls({
           ref={contentRef}
           className="px-4 flex flex-col h-full overflow-hidden"
         >
-          {!selectedPart && messages.length === 0 ? (
+          {!selectedGroup && messages.length === 0 ? (
             <div className="h-[72px]" />
           ) : (
             /* Expanded Content */

@@ -21,7 +21,8 @@ export default function PartPopup({ part, group, onClose }: PartPopupProps) {
     messagesRef,
     resetChat,
     handleOptionClick,
-    getDisplayName,
+    getGroupDisplayName,
+    getPartDisplayName,
   } = usePartChat({ selectedPart: part, selectedGroup: group });
 
   const [userHasScrolled, setUserHasScrolled] = useState(false);
@@ -76,7 +77,8 @@ export default function PartPopup({ part, group, onClose }: PartPopupProps) {
           <h2 className="text-sm text-gray-400 mb-1">
             Musculoskeletal Assistant
           </h2>
-          <h3 className="text-xl font-bold">{getDisplayName()}</h3>
+          <h3 className="text-xl font-bold">{getGroupDisplayName()}</h3>
+          <h2 className="text-sm text-gray-400">{getPartDisplayName()}</h2>
         </div>
         <div className="flex gap-2">
           <button

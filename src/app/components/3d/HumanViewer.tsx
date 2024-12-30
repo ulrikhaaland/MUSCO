@@ -88,12 +88,12 @@ export default function HumanViewer({
           objectId: objectId,
           position: {
             ...camera.position,
-            z: camera.position.z * 0.7, // Zoom in by reducing z distance by 30%
+            // z: camera.position.z * 0.7, // Zoom in by reducing z distance by 30%
           },
           target: camera.target,
           up: camera.up,
           animate: true,
-          animationDuration: 0.5,
+          animationDuration: 0.1,
         });
       } else {
         handleReset();
@@ -110,39 +110,42 @@ export default function HumanViewer({
   };
 
   // Create viewer URL
-  const getViewerUrl = useCallback((modelGender: Gender) => {
-    const viewerUrl = new URL('https://human.biodigital.com/viewer/');
-    viewerUrl.searchParams.set('id', MODEL_IDS[modelGender]);
-    viewerUrl.searchParams.set('ui-anatomy-descriptions', 'false');
-    viewerUrl.searchParams.set('ui-anatomy-pronunciations', 'false');
-    viewerUrl.searchParams.set('ui-anatomy-labels', 'false');
-    viewerUrl.searchParams.set('ui-audio', 'false');
-    viewerUrl.searchParams.set('ui-chapter-list', 'false');
-    viewerUrl.searchParams.set('ui-fullscreen', 'false');
-    viewerUrl.searchParams.set('ui-help', 'false');
-    viewerUrl.searchParams.set('ui-info', 'false');
-    viewerUrl.searchParams.set('ui-label-list', 'false');
-    viewerUrl.searchParams.set('ui-layers', 'false');
-    viewerUrl.searchParams.set('ui-loader', 'circle');
-    viewerUrl.searchParams.set('ui-media-controls', 'false');
-    viewerUrl.searchParams.set('ui-menu', 'false');
-    viewerUrl.searchParams.set('ui-nav', 'false');
-    viewerUrl.searchParams.set('ui-search', 'false');
-    viewerUrl.searchParams.set('ui-tools', 'false');
-    viewerUrl.searchParams.set('ui-tutorial', 'false');
-    viewerUrl.searchParams.set('ui-undo', 'false');
-    viewerUrl.searchParams.set('ui-whiteboard', 'false');
-    viewerUrl.searchParams.set('ui-zoom', 'false');
-    viewerUrl.searchParams.set('initial.none', 'false');
-    viewerUrl.searchParams.set('disable-scroll', 'false');
-    viewerUrl.searchParams.set('uaid', 'LzCgB');
-    viewerUrl.searchParams.set('paid', 'o_26b5a0fa');
-    viewerUrl.searchParams.set('be-annotations', 'false');
-    viewerUrl.searchParams.set('ui-annotations', 'false');
-    viewerUrl.searchParams.set('ui-navigation', 'false');
-    viewerUrl.searchParams.set('ui-controls', 'false');
-    return viewerUrl.toString();
-  }, []);
+  const getViewerUrl = useCallback(
+    (modelGender: Gender) => {
+      const viewerUrl = new URL('https://human.biodigital.com/viewer/');
+      viewerUrl.searchParams.set('id', MODEL_IDS[modelGender]);
+      viewerUrl.searchParams.set('ui-anatomy-descriptions', 'false');
+      viewerUrl.searchParams.set('ui-anatomy-pronunciations', 'false');
+      viewerUrl.searchParams.set('ui-anatomy-labels', 'false');
+      viewerUrl.searchParams.set('ui-audio', 'false');
+      viewerUrl.searchParams.set('ui-chapter-list', 'false');
+      viewerUrl.searchParams.set('ui-fullscreen', 'false');
+      viewerUrl.searchParams.set('ui-help', 'false');
+      viewerUrl.searchParams.set('ui-info', 'false');
+      viewerUrl.searchParams.set('ui-label-list', 'false');
+      viewerUrl.searchParams.set('ui-layers', 'false');
+      viewerUrl.searchParams.set('ui-loader', 'circle');
+      viewerUrl.searchParams.set('ui-media-controls', 'false');
+      viewerUrl.searchParams.set('ui-menu', 'false');
+      viewerUrl.searchParams.set('ui-nav', 'false');
+      viewerUrl.searchParams.set('ui-search', 'false');
+      viewerUrl.searchParams.set('ui-tools', 'false');
+      viewerUrl.searchParams.set('ui-tutorial', 'false');
+      viewerUrl.searchParams.set('ui-undo', 'false');
+      viewerUrl.searchParams.set('ui-whiteboard', 'false');
+      viewerUrl.searchParams.set('ui-zoom', 'false');
+      viewerUrl.searchParams.set('initial.none', 'false');
+      viewerUrl.searchParams.set('disable-scroll', 'false');
+      viewerUrl.searchParams.set('uaid', 'LzCgB');
+      viewerUrl.searchParams.set('paid', 'o_26b5a0fa');
+      viewerUrl.searchParams.set('be-annotations', 'false');
+      viewerUrl.searchParams.set('ui-annotations', 'false');
+      viewerUrl.searchParams.set('ui-navigation', 'false');
+      viewerUrl.searchParams.set('ui-controls', 'false');
+      return viewerUrl.toString();
+    },
+    [MODEL_IDS]
+  );
 
   const [viewerUrl, setViewerUrl] = useState(() => getViewerUrl(gender));
   const [isChangingModel, setIsChangingModel] = useState(false);
