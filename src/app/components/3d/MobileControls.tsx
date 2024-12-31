@@ -368,9 +368,14 @@ export default function MobileControls({
               const snapPoints = getSnapPoints();
               return !snapPoints.some((point) => point < currentHeight - 2);
             })()}
-            className={`text-white p1- bg-transparent rounded-lg transition-colors duration-200 ${
-              isRotating || isResetting || !isReady
-                ? 'opacity-50'
+            className={`text-white p-1 bg-transparent rounded-lg transition-colors duration-200 ${
+              (() => {
+                if (!sheetRef.current) return true;
+                const currentHeight = sheetRef.current.height;
+                const snapPoints = getSnapPoints();
+                return !snapPoints.some((point) => point < currentHeight - 2);
+              })()
+                ? 'opacity-50 cursor-not-allowed'
                 : 'hover:bg-white/10'
             }`}
             aria-label="Minimize"
@@ -400,9 +405,14 @@ export default function MobileControls({
               const snapPoints = getSnapPoints();
               return !snapPoints.some((point) => point > currentHeight + 2);
             })()}
-            className={`text-white p-1 rounded-lg transition-colors duration-200 ${
-              isRotating || isResetting || !isReady
-                ? 'opacity-50'
+            className={`text-white p-1 bg-transparent rounded-lg transition-colors duration-200 ${
+              (() => {
+                if (!sheetRef.current) return true;
+                const currentHeight = sheetRef.current.height;
+                const snapPoints = getSnapPoints();
+                return !snapPoints.some((point) => point > currentHeight + 2);
+              })()
+                ? 'opacity-50 cursor-not-allowed'
                 : 'hover:bg-white/10'
             }`}
             aria-label="Expand"

@@ -42,7 +42,7 @@ export function BottomSheetFooter({
   };
 
   return (
-    <div className="border-t border-gray-700 pt-2 pb-1 flex-shrink-0 bg-gray-900 pr-[52px]">
+    <div className="border-t border-gray-700 pt-2 pb-1 flex-shrink-0 bg-gray-900 pr-[60px]">
       <div className="flex items-center gap-2">
         <form
           className="relative flex-1"
