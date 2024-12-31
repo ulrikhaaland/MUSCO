@@ -65,7 +65,7 @@ iframe {
 
 [data-rsbs-scroll] {
   background: rgb(17, 24, 39) !important; /* bg-gray-900 */
-  overflow-y: auto !important;
+  /* overflow-y: auto !important; */
 }
 
 [data-rsbs-content] {

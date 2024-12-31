@@ -96,14 +96,17 @@ export default function MobileControls({
     const updateContentHeight = () => {
       if (contentRef.current) {
         // Get the container that holds all content (messages and input)
-        const contentContainer = contentRef.current.querySelector('#bottom-sheet-content');
-        
+        const contentContainer = contentRef.current.querySelector(
+          '#bottom-sheet-content'
+        );
+
         // Find the footer element in the bottom sheet
         const footer = document.querySelector('[data-rsbs-footer]');
         const footerHeight = footer?.getBoundingClientRect().height ?? 0;
 
         if (contentContainer) {
-          const height = contentContainer.scrollHeight + headerHeight + footerHeight;
+          const localContentHeight = contentContainer.scrollHeight;
+          const height = localContentHeight + headerHeight + footerHeight;
           setContentHeight(height);
         }
       }
@@ -236,7 +239,7 @@ export default function MobileControls({
     // }
 
     let secondSnapPoint = viewportHeight * 0.4;
-    if (contentHeight < secondSnapPoint) {
+    if (messages.length === 0) {
       secondSnapPoint = contentHeight;
     }
 
@@ -446,7 +449,7 @@ export default function MobileControls({
                 <button
                   type="submit"
                   disabled={isLoading || !message.trim()}
-                  className={`absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-lg transition-colors ${
+                  className={`absolute right-6 top-1/2 -translate-y-1/2 p-2 rounded-lg transition-colors ${
                     isLoading || !message.trim()
                       ? 'text-gray-500 cursor-not-allowed'
                       : 'text-indigo-600 hover:text-indigo-500 hover:bg-gray-700/50'
@@ -495,14 +498,17 @@ export default function MobileControls({
           )
         }
       >
-        <div ref={contentRef} className="flex overflow-hidden">
+        <div ref={contentRef} className="flex-1 flex flex-col h-full">
           {!selectedGroup && messages.length === 0 ? (
             <div className="h-[72px]" />
           ) : (
             /* Expanded Content */
-            <div id="bottom-sheet-content" className="flex p-4 flex-col">
+            <div
+              id="bottom-sheet-content"
+              className="flex-1 flex px-4 py-2 flex-col"
+            >
               {/* Chat Messages */}
-              <div className="flex-1 min-h-0 overflow-y-auto">
+              <div className="flex-1 min-h-0">
                 <ChatMessages
                   messages={messages}
                   isLoading={isLoading}

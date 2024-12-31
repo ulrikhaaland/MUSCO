@@ -155,7 +155,7 @@ export function ChatMessages({
                       <button
                         key={question.title}
                         onClick={() => onQuestionClick?.(question)}
-                        className="w-full text-left p-3 rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors"
+                        className="w-full text-left px-2 py-1 rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors"
                       >
                         <div className="font-medium">{question.title}</div>
                         <div className="text-sm text-gray-400">
