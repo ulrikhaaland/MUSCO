@@ -173,20 +173,6 @@ export function useHumanAPI({
             initialCameraRef.current = camera;
           });
 
-          // Enable isolate tool
-          human.send('ui.setDisplay', {
-            isolate: true,
-            tools: true,
-          });
-
-          // Listen for camera changes
-          human.on('camera.updated', checkCameraPosition);
-
-          human.on('scene.objectsShown', (event) => {
-            console.log('=== scene.objectsShown event received ===');
-            console.log('Event:', event);
-          });
-
           // Listen for object selection and enable xray mode
           human.on('scene.objectsSelected', (event) => {
             console.log('=== scene.objectsSelected event received ===');

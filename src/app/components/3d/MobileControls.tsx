@@ -56,12 +56,11 @@ export default function MobileControls({
   const [isMobile, setIsMobile] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [contentHeight, setContentHeight] = useState(0);
-  const [userClosedSheet, setUserClosedSheet] = useState(false);
+  const [userModifiedSheetHeight, setUserModifiedSheetHeight] = useState(false);
   const sheetRef = useRef<BottomSheetRef>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const [headerHeight, setHeaderHeight] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
-  const [isFullscreen, setIsFullscreen] = useState(false);
   const [controlsBottom, setControlsBottom] = useState('5rem');
   const [message, setMessage] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -97,10 +96,14 @@ export default function MobileControls({
     const updateContentHeight = () => {
       if (contentRef.current) {
         // Get the container that holds all content (messages and input)
-        const contentContainer = contentRef.current.querySelector('.flex-col.h-full');
+        const contentContainer = contentRef.current.querySelector('#bottom-sheet-content');
         
+        // Find the footer element in the bottom sheet
+        const footer = document.querySelector('[data-rsbs-footer]');
+        const footerHeight = footer?.getBoundingClientRect().height ?? 0;
+
         if (contentContainer) {
-          const height = contentContainer.scrollHeight + headerHeight;
+          const height = contentContainer.scrollHeight + headerHeight + footerHeight;
           setContentHeight(height);
         }
       }
@@ -115,6 +118,12 @@ export default function MobileControls({
       resizeObserver.observe(contentRef.current);
     }
 
+    // Also observe the footer for height changes
+    const footer = document.querySelector('[data-rsbs-footer]');
+    if (footer) {
+      resizeObserver.observe(footer);
+    }
+
     return () => resizeObserver.disconnect();
   }, [messages, followUpQuestions, headerHeight]);
 
@@ -124,22 +133,23 @@ export default function MobileControls({
     const loadingComplete =
       (!isLoading && !isCollectingJson) || messages.length === 0;
 
-    if (selectedGroup && loadingComplete && hasContent) {
-      // Reset userClosedSheet when a part is selected and content is ready
-      setUserClosedSheet(false);
-      if (sheetRef.current) {
-        setTimeout(() => {
-          sheetRef.current.snapTo(({ maxHeight }) => contentHeight);
-          setIsExpanded(true);
-        }, 200);
-      }
-    } else if (!selectedGroup && messages.length === 0) {
-      // Part was deselected
-      setIsDragging(true);
-      if (sheetRef.current) {
-        sheetRef.current.snapTo(({ maxHeight }) =>
-          Math.min(maxHeight * 0.15, 72)
-        );
+    // Only manipulate sheet height if user hasn't modified it
+    if (!userModifiedSheetHeight) {
+      if (selectedGroup && loadingComplete && hasContent) {
+        if (sheetRef.current) {
+          setTimeout(() => {
+            sheetRef.current.snapTo(({ maxHeight }) => contentHeight);
+            setIsExpanded(true);
+          }, 200);
+        }
+      } else if (!selectedGroup && messages.length === 0) {
+        // Part was deselected
+        setIsDragging(true);
+        if (sheetRef.current) {
+          sheetRef.current.snapTo(({ maxHeight }) =>
+            Math.min(maxHeight * 0.15, 72)
+          );
+        }
       }
     }
   }, [
@@ -149,6 +159,7 @@ export default function MobileControls({
     messages,
     followUpQuestions,
     contentHeight,
+    userModifiedSheetHeight,
   ]);
 
   // Update model height whenever sheet height changes
@@ -211,7 +222,7 @@ export default function MobileControls({
     };
   }, []);
 
-  const getSnapPoints = useCallback(() => {
+  const getSnapPoints = (): number[] => {
     const viewportHeight = getViewportHeight();
     const minHeight = Math.min(viewportHeight * 0.15, 72);
     const hasContent = Boolean(selectedGroup) || messages.length > 0;
@@ -220,23 +231,17 @@ export default function MobileControls({
       return [minHeight];
     }
 
-    const contentWithPadding = contentHeight;
+    // if (contentHeight <= minHeight) {
+    //   return [minHeight];
+    // }
 
-    if (contentWithPadding <= minHeight) {
-      return [minHeight];
+    let secondSnapPoint = viewportHeight * 0.4;
+    if (contentHeight < secondSnapPoint) {
+      secondSnapPoint = contentHeight;
     }
 
-    if (contentWithPadding < viewportHeight * 0.4) {
-      return [minHeight, contentWithPadding];
-    }
-
-    return [
-      minHeight,
-      viewportHeight * 0.4,
-      viewportHeight * 0.78,
-      viewportHeight,
-    ];
-  }, [contentHeight, selectedGroup, messages.length]);
+    return [minHeight, secondSnapPoint, viewportHeight * 0.78, viewportHeight];
+  };
 
   // Track height changes only during drag or animation
   useEffect(() => {
@@ -337,37 +342,13 @@ export default function MobileControls({
 
       {/* Bottom Sheet */}
       <BottomSheetBase
+        className="!bg-gray-900 [&>*]:!bg-gray-900 relative h-[100dvh]"
         ref={sheetRef}
         open={true}
         blocking={false}
         defaultSnap={({ maxHeight }) => Math.min(maxHeight * 0.15, 72)}
-        snapPoints={({ maxHeight }) => {
-          const viewportHeight = maxHeight;
-          const minHeight = Math.min(viewportHeight * 0.15, 72);
-          const hasContent = Boolean(selectedGroup) || messages.length > 0;
-
-          if (!hasContent) {
-            return [minHeight];
-          }
-
-          const contentWithPadding = contentHeight;
-
-          if (contentWithPadding <= minHeight) {
-            return [minHeight];
-          }
-
-          if (contentWithPadding < viewportHeight * 0.4) {
-            return [minHeight, contentWithPadding];
-          }
-
-          return [
-            minHeight,
-            viewportHeight * 0.4,
-            viewportHeight * 0.78,
-            viewportHeight,
-          ];
-        }}
-        expandOnContentDrag={Boolean(selectedGroup) || messages.length > 0}
+        snapPoints={getSnapPoints}
+        expandOnContentDrag={false}
         onDragStart={() => setIsDragging(true)}
         onDragEnd={() => setIsDragging(false)}
         onSpringStart={(event) => {
@@ -395,7 +376,7 @@ export default function MobileControls({
             updateModelHeight(currentHeight);
 
             if (!isNowExpanded && isExpanded) {
-              setUserClosedSheet(true);
+              setUserModifiedSheetHeight(true);
             }
           }
         }}
@@ -412,19 +393,114 @@ export default function MobileControls({
             getViewportHeight={getViewportHeight}
             setIsExpanded={setIsExpanded}
             onHeightChange={setHeaderHeight}
+            onSheetHeightModified={setUserModifiedSheetHeight}
           />
         }
-        className="!bg-gray-900 [&>*]:!bg-gray-900 relative h-[100dvh]"
+        footer={
+          (selectedGroup || messages.length > 0) && (
+            <div className="border-t border-gray-700 pt-2 pb-1 flex-shrink-0 bg-gray-900">
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  if (message.trim()) {
+                    handleOptionClick({
+                      title: '',
+                      description: '',
+                      question: message,
+                    });
+                    setMessage('');
+                  }
+                }}
+                className="relative"
+              >
+                <textarea
+                  ref={textareaRef}
+                  value={message}
+                  onChange={(e) => {
+                    setMessage(e.target.value);
+                    const textarea = textareaRef.current;
+                    if (textarea) {
+                      textarea.style.height = 'auto';
+                      const newHeight = Math.min(textarea.scrollHeight, 480);
+                      textarea.style.height = `${newHeight}px`;
+                    }
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault();
+                      if (message.trim()) {
+                        handleOptionClick({
+                          title: '',
+                          description: '',
+                          question: message,
+                        });
+                        setMessage('');
+                      }
+                    }
+                  }}
+                  rows={1}
+                  placeholder="Type your message..."
+                  className="w-full bg-gray-800 rounded-lg px-4 py-3 pr-12 focus:outline-none focus:ring-2 focus:ring-indigo-600 resize-none"
+                  disabled={isLoading}
+                />
+                <button
+                  type="submit"
+                  disabled={isLoading || !message.trim()}
+                  className={`absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-lg transition-colors ${
+                    isLoading || !message.trim()
+                      ? 'text-gray-500 cursor-not-allowed'
+                      : 'text-indigo-600 hover:text-indigo-500 hover:bg-gray-700/50'
+                  }`}
+                >
+                  {isLoading ? (
+                    <svg
+                      className="animate-spin h-6 w-6"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      />
+                    </svg>
+                  ) : (
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-6 w-6"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
+                      />
+                    </svg>
+                  )}
+                </button>
+              </form>
+            </div>
+          )
+        }
       >
-        <div
-          ref={contentRef}
-          className="px-4 flex flex-col h-full overflow-hidden"
-        >
+        <div ref={contentRef} className="flex overflow-hidden">
           {!selectedGroup && messages.length === 0 ? (
             <div className="h-[72px]" />
           ) : (
             /* Expanded Content */
-            <div className="flex flex-col h-full">
+            <div id="bottom-sheet-content" className="flex p-4 flex-col">
               {/* Chat Messages */}
               <div className="flex-1 min-h-0 overflow-y-auto">
                 <ChatMessages
@@ -438,107 +514,6 @@ export default function MobileControls({
                   isMobile={isMobile}
                 />
               </div>
-
-              {/* Message Input */}
-              {(selectedGroup || messages.length > 0) && (
-                <div className="mt-4 border-t border-gray-700 pt-2 pb-1 flex-shrink-0 bg-gray-900">
-                  <form
-                    onSubmit={(e) => {
-                      e.preventDefault();
-                      if (message.trim()) {
-                        handleOptionClick({
-                          title: '',
-                          description: '',
-                          question: message,
-                        });
-                        setMessage('');
-                      }
-                    }}
-                    className="relative"
-                  >
-                    <textarea
-                      ref={textareaRef}
-                      value={message}
-                      onChange={(e) => {
-                        setMessage(e.target.value);
-                        const textarea = textareaRef.current;
-                        if (textarea) {
-                          textarea.style.height = 'auto';
-                          const newHeight = Math.min(
-                            textarea.scrollHeight,
-                            480
-                          );
-                          textarea.style.height = `${newHeight}px`;
-                        }
-                      }}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' && !e.shiftKey) {
-                          e.preventDefault();
-                          if (message.trim()) {
-                            handleOptionClick({
-                              title: '',
-                              description: '',
-                              question: message,
-                            });
-                            setMessage('');
-                          }
-                        }
-                      }}
-                      rows={1}
-                      placeholder="Type your message..."
-                      className="w-full bg-gray-800 rounded-lg px-4 py-3 pr-12 focus:outline-none focus:ring-2 focus:ring-indigo-600 resize-none"
-                      disabled={isLoading}
-                    />
-                    <button
-                      type="submit"
-                      disabled={isLoading || !message.trim()}
-                      className={`absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-lg transition-colors ${
-                        isLoading || !message.trim()
-                          ? 'text-gray-500 cursor-not-allowed'
-                          : 'text-indigo-600 hover:text-indigo-500 hover:bg-gray-700/50'
-                      }`}
-                    >
-                      {isLoading ? (
-                        <svg
-                          className="animate-spin h-6 w-6"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                        >
-                          <circle
-                            className="opacity-25"
-                            cx="12"
-                            cy="12"
-                            r="10"
-                            stroke="currentColor"
-                            strokeWidth="4"
-                          />
-                          <path
-                            className="opacity-75"
-                            fill="currentColor"
-                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                          />
-                        </svg>
-                      ) : (
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="h-6 w-6"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
-                          />
-                        </svg>
-                      )}
-                    </button>
-                  </form>
-                </div>
-              )}
             </div>
           )}
         </div>

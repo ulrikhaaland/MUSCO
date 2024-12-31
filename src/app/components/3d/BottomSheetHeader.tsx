@@ -15,6 +15,7 @@ interface BottomSheetHeaderProps {
   getViewportHeight: () => number;
   setIsExpanded: (expanded: boolean) => void;
   onHeightChange?: (height: number) => void;
+  onSheetHeightModified?: (modified: boolean) => void;
 }
 
 export function BottomSheetHeader({
@@ -29,6 +30,7 @@ export function BottomSheetHeader({
   getViewportHeight,
   setIsExpanded,
   onHeightChange,
+  onSheetHeightModified,
 }: BottomSheetHeaderProps) {
   const headerRef = useRef<HTMLDivElement>(null);
 
@@ -90,6 +92,7 @@ export function BottomSheetHeader({
                         (point) => point > currentHeight + 2
                       );
                       if (nextPoint) {
+                        onSheetHeightModified?.(true);
                         sheetRef.current.snapTo(() => nextPoint);
                         setIsExpanded(true);
                       }
@@ -118,6 +121,7 @@ export function BottomSheetHeader({
                         .reverse()
                         .find((point) => point < currentHeight - 2);
                       if (nextPoint) {
+                        onSheetHeightModified?.(true);
                         sheetRef.current.snapTo(() => nextPoint);
                         setIsExpanded(nextPoint > minHeight);
                       }

@@ -188,12 +188,11 @@ export default function HumanViewer({
     // Use scene.reset to reset everything to initial state
     if (humanRef.current) {
       console.log('Human API ready, sending commands...');
-      // First deselect all parts with an empty selection map
-      // humanRef.current.send('scene.selectObjects', {
-      //   replace: true,
-      // });
 
-      // Then reset the scene
+      humanRef.current.on('camera.updated', () => {
+        
+      });
+
       setTimeout(() => {
         console.log('Sending scene.reset command...');
         humanRef.current?.send('scene.reset', () => {
@@ -208,14 +207,14 @@ export default function HumanViewer({
           // Clear reset state after a short delay to allow for animation
           setTimeout(() => {
             setIsResetting(false);
-          }, 200);
+          }, 500);
         });
       }, 100);
     } else {
       console.log('humanRef.current is null!');
       setIsResetting(false);
     }
-  }, [isResetting, setNeedsReset, isReady]);
+  }, [isResetting, setNeedsReset, isReady, humanRef]);
 
   // Update reset button state when parts are selected
   useEffect(() => {

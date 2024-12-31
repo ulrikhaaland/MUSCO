@@ -56,9 +56,16 @@ iframe {
   z-index: 4 !important;
 }
 
+[data-rsbs-footer] {
+  background: rgb(17, 24, 39) !important; /* bg-gray-900 */
+  z-index: 4 !important;
+  padding-bottom: 0 !important;
+  padding-top: 0 !important;
+}
+
 [data-rsbs-scroll] {
   background: rgb(17, 24, 39) !important; /* bg-gray-900 */
-  /* overflow-y: auto !important; */
+  overflow-y: auto !important;
 }
 
 [data-rsbs-content] {
