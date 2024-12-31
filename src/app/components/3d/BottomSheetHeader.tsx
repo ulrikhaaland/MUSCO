@@ -5,21 +5,21 @@ import { useEffect, useRef } from 'react';
 interface BottomSheetHeaderProps {
   messages: ChatMessage[];
   isLoading: boolean;
-  selectedGroup: boolean;
   getGroupDisplayName: () => string;
   getPartDisplayName: () => string;
   resetChat: () => void;
   onHeightChange?: (height: number) => void;
+  isMinimized: boolean;
 }
 
 export function BottomSheetHeader({
   messages,
   isLoading,
-  selectedGroup,
   getGroupDisplayName,
   getPartDisplayName,
   resetChat,
   onHeightChange,
+  isMinimized,
 }: BottomSheetHeaderProps) {
   const headerRef = useRef<HTMLDivElement>(null);
 
@@ -46,7 +46,7 @@ export function BottomSheetHeader({
       <div className="flex items-center gap-2 flex-shrink-0 self-center">
         {messages.length > 0 &&
           messages.some((m) => m.role === 'assistant' && m.content) &&
-          !isLoading && (
+          !isLoading && !isMinimized && (
             <button
               onClick={resetChat}
               className="text-white hover:text-white p-1 rounded-full hover:bg-gray-800 transition-colors"

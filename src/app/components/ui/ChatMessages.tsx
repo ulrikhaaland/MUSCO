@@ -138,7 +138,11 @@ export function ChatMessages({
               )}
             </div>
           ))}
-          {showLoading && <LoadingMessage />}
+          {showLoading && (
+            <>
+              <LoadingMessage />
+            </>
+          )}
 
           {showFollowUps && (
             <div className={`space-y-2  ${messages.length > 0 ? 'pb-4' : ''}`}>

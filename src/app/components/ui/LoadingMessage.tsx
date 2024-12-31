@@ -18,6 +18,57 @@ export function LoadingMessage() {
           <div className="w-1/3 h-4 bg-gray-700 rounded animate-pulse" />
         </div>
       </div>
+      <div className="space-y-3 mt-2">
+        {/* First line - longer */}
+        <div className="flex space-x-3">
+          <div className="w-3/4 h-4 bg-gray-700 rounded animate-pulse" />
+          <div className="w-1/4 h-4 bg-gray-700 rounded animate-pulse" />
+        </div>
+        {/* Second line - shorter */}
+        <div className="flex space-x-3">
+          <div className="w-2/3 h-4 bg-gray-700 rounded animate-pulse" />
+          <div className="w-1/6 h-4 bg-gray-700 rounded animate-pulse" />
+        </div>
+        {/* Third line - medium */}
+        <div className="flex space-x-3">
+          <div className="w-1/2 h-4 bg-gray-700 rounded animate-pulse" />
+          <div className="w-1/3 h-4 bg-gray-700 rounded animate-pulse" />
+        </div>
+      </div>
+      <div className="space-y-3 mt-2">
+        {/* First line - longer */}
+        <div className="flex space-x-3">
+          <div className="w-3/4 h-4 bg-gray-700 rounded animate-pulse" />
+          <div className="w-1/4 h-4 bg-gray-700 rounded animate-pulse" />
+        </div>
+        {/* Second line - shorter */}
+        <div className="flex space-x-3">
+          <div className="w-2/3 h-4 bg-gray-700 rounded animate-pulse" />
+          <div className="w-1/6 h-4 bg-gray-700 rounded animate-pulse" />
+        </div>
+        {/* Third line - medium */}
+        <div className="flex space-x-3">
+          <div className="w-1/2 h-4 bg-gray-700 rounded animate-pulse" />
+          <div className="w-1/3 h-4 bg-gray-700 rounded animate-pulse" />
+        </div>
+      </div>
+      <div className="space-y-3 mt-2">
+        {/* First line - longer */}
+        <div className="flex space-x-3">
+          <div className="w-3/4 h-4 bg-gray-700 rounded animate-pulse" />
+          <div className="w-1/4 h-4 bg-gray-700 rounded animate-pulse" />
+        </div>
+        {/* Second line - shorter */}
+        <div className="flex space-x-3">
+          <div className="w-2/3 h-4 bg-gray-700 rounded animate-pulse" />
+          <div className="w-5/6 h-4 bg-gray-700 rounded animate-pulse" />
+        </div>
+        {/* Third line - medium */}
+        <div className="flex space-x-3">
+          <div className="w-4/6 h-4 bg-gray-700 rounded animate-pulse" />
+          <div className="w-6/6 h-4 bg-gray-700 rounded animate-pulse" />
+        </div>
+      </div>
     </div>
   );
-} 
+}

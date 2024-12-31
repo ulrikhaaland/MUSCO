@@ -1,34 +1,21 @@
 import { RefObject } from 'react';
 import { Question } from '@/app/types';
 import { BottomSheetRef } from 'react-spring-bottom-sheet';
-import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 
 interface BottomSheetFooterProps {
   message: string;
   isLoading: boolean;
   textareaRef: RefObject<HTMLTextAreaElement>;
-  messagesRef: RefObject<HTMLDivElement>;
   setMessage: (message: string) => void;
   handleOptionClick: (question: Question) => void;
-  sheetRef: RefObject<BottomSheetRef>;
-  getSnapPoints: () => number[];
-  getViewportHeight: () => number;
-  setIsExpanded: (expanded: boolean) => void;
-  onSheetHeightModified?: (modified: boolean) => void;
 }
 
 export function BottomSheetFooter({
   message,
   isLoading,
   textareaRef,
-  messagesRef,
   setMessage,
   handleOptionClick,
-  sheetRef,
-  getSnapPoints,
-  getViewportHeight,
-  setIsExpanded,
-  onSheetHeightModified,
 }: BottomSheetFooterProps) {
   const handleSendMessage = () => {
     if (message.trim() && !isLoading) {
