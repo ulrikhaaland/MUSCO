@@ -68,19 +68,26 @@ export function ChatMessages({
 
   // Auto-scroll effect
   useEffect(() => {
-    const container = messagesRef.current;
+    const container = isMobile 
+      ? document.querySelector('[data-rsbs-scroll]')
+      : messagesRef.current;
+      
     if (!container || userHasScrolled) return;
 
     // Use requestAnimationFrame for smooth scrolling during streaming
     requestAnimationFrame(() => {
       container.scrollTop = container.scrollHeight;
     });
-  }, [messages, isLoading, followUpQuestions, userHasScrolled]);
+  }, [messages, isLoading, followUpQuestions, userHasScrolled, isMobile]);
 
   const scrollToBottom = () => {
-    if (messagesRef.current) {
-      messagesRef.current.scrollTo({
-        top: messagesRef.current.scrollHeight,
+    const container = isMobile 
+      ? document.querySelector('[data-rsbs-scroll]')
+      : messagesRef.current;
+      
+    if (container) {
+      container.scrollTo({
+        top: container.scrollHeight,
         behavior: 'smooth',
       });
     }
