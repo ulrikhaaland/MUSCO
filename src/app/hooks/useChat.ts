@@ -3,17 +3,15 @@ import {
   getOrCreateAssistant,
   createThread,
   sendMessage,
-} from '../lib/assistant';
+  generateFollowUp,
+} from '../api/assistant/assistant';
 import { ChatMessage, ChatPayload, Question, UserPreferences } from '../types';
 
 export function useChat() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [userPreferences, setUserPreferences] = useState<
-    UserPreferences | undefined
-  >();
+  const [userPreferences, setUserPreferences] = useState<UserPreferences | undefined>();
   const [followUpQuestions, setFollowUpQuestions] = useState<Question[]>([]);
-  const [isCollectingJson, setIsCollectingJson] = useState(false);
   const threadIdRef = useRef<string | null>(null);
   const assistantIdRef = useRef<string | null>(null);
 
@@ -33,6 +31,7 @@ export function useChat() {
 
   const resetChat = () => {
     setMessages([]);
+    setFollowUpQuestions([]);
     createThread().then(({ threadId }) => {
       threadIdRef.current = threadId;
     });
@@ -42,9 +41,7 @@ export function useChat() {
     messageContent: string,
     chatPayload: Omit<ChatPayload, 'message'>
   ) => {
-    setIsCollectingJson(false);
     if (isLoading) return;
-
     setIsLoading(true);
 
     try {
@@ -53,23 +50,41 @@ export function useChat() {
         message: messageContent,
       };
 
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: `user-${Date.now()}`,
-          role: 'user',
-          content: messageContent,
-          timestamp: new Date(),
-        },
-      ]);
+      // Add user message immediately
+      const newMessage: ChatMessage = {
+        id: `user-${Date.now()}`,
+        role: 'user' as const,
+        content: messageContent,
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, newMessage]);
 
+      // Start follow-up questions generation in parallel
+      const followUpPromise = generateFollowUp(
+        [newMessage],
+        chatPayload.selectedBodyPart?.name || '',
+        chatPayload.selectedGroupName || '',
+        chatPayload.bodyPartsInSelectedGroup || [],
+        {
+          questions: chatPayload.followUpQuestions || [],
+          selected: messageContent,
+        }
+      );
+
+      // Handle follow-up questions when they arrive
+      followUpPromise.then(({ followUpQuestions: questions }) => {
+        if (questions) {
+          setFollowUpQuestions(questions);
+        }
+      }).catch(console.error);
+
+      // Send the message and handle streaming response
       await sendMessage(
         threadIdRef.current ?? '',
         payload,
-        (content, isCollectingJson, payload) => {
+        (content) => {
           if (content) {
             setMessages((prev) => {
-              console.log('isCollectingJson', isCollectingJson);
               const lastMessage = prev[prev.length - 1];
               if (lastMessage?.role === 'assistant') {
                 return [
@@ -92,13 +107,6 @@ export function useChat() {
               ];
             });
           }
-          if (isCollectingJson) setIsCollectingJson(isCollectingJson);
-
-          if (payload) {
-            setUserPreferences(payload.userPreferences);
-            setFollowUpQuestions(payload.followUpQuestions ?? []);
-            console.log('payload.followUpQuestions', isCollectingJson);
-          }
         }
       );
     } catch (error) {
@@ -115,7 +123,6 @@ export function useChat() {
     followUpQuestions,
     resetChat,
     sendChatMessage,
-    isCollectingJson,
     setFollowUpQuestions,
   };
 }

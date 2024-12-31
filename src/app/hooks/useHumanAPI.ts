@@ -283,6 +283,7 @@ export function useHumanAPI({
                     selected: true,
                     parent: '',
                     children: [],
+                    group: group.name,
                   };
 
                   selectedPartRef.current = groupPart;

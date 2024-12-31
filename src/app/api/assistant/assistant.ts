@@ -1,4 +1,4 @@
-import { OpenAIMessage, ChatPayload } from '../types';
+import { OpenAIMessage, ChatPayload } from '../../types';
 
 interface AssistantResponse {
   assistantId: string;
@@ -45,11 +45,14 @@ export async function createThread(): Promise<AssistantResponse> {
 export async function sendMessage(
   threadId: string,
   payload: ChatPayload,
-  onStream?: (
-    content: string,
-    isCollectingJson: boolean,
-    payload?: ChatPayload
-  ) => void
+  onStream?: (content: string, payload?: ChatPayload) => void,
+  onFollowUpQuestions?: (questions: {
+    followUpQuestions: {
+      title: string;
+      description: string;
+      question: string;
+    }[];
+  }) => void
 ): Promise<MessagesResponse> {
   const transformedPayload = {
     ...payload,
@@ -57,21 +60,43 @@ export async function sendMessage(
     followUpQuestions: undefined,
   };
 
-  const body = JSON.stringify({
-    action: 'send_message',
-    threadId,
-    payload: transformedPayload,
-    stream: !!onStream,
-  });
-
-  const response = await fetch('/api/assistant', {
+  // Start both requests in parallel
+  const messagePromise = fetch('/api/assistant', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: body,
+    body: JSON.stringify({
+      action: 'send_message',
+      threadId,
+      payload: transformedPayload,
+      stream: !!onStream,
+    }),
   });
 
+  // Start follow-up questions generation in parallel
+  const followUpPromise = fetch('/api/assistant', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      action: 'generate_follow_up',
+      payload: {
+        messages: [{ role: 'user', content: payload.message }],
+        selectedBodyPartName: payload.selectedBodyPart?.name || '',
+        selectedGroupName: payload.selectedGroupName,
+        bodyPartsInSelectedGroup: payload.bodyPartsInSelectedGroup,
+        previousQuestions: {
+          questions: payload.followUpQuestions || [],
+          selected: payload.message,
+        },
+      },
+    }),
+  });
+
+  // Wait for message response
+  const response = await messagePromise;
   if (!response.ok) {
     throw new Error('Failed to send message');
   }
@@ -85,6 +110,16 @@ export async function sendMessage(
     }
 
     try {
+      // Handle follow-up questions in parallel while streaming
+      followUpPromise
+        .then(async (followUpResponse) => {
+          if (followUpResponse.ok) {
+            const questions = await followUpResponse.json();
+            onFollowUpQuestions?.(questions);
+          }
+        })
+        .catch(console.error);
+
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
@@ -98,12 +133,8 @@ export async function sendMessage(
             if (data === '[DONE]') break;
             try {
               const parsed = JSON.parse(data);
-              if (parsed.content || parsed.payload || parsed.isCollectingJson) {
-                onStream(
-                  parsed.content || '',
-                  parsed.isCollectingJson,
-                  parsed.payload
-                );
+              if (parsed.content || parsed.payload) {
+                onStream(parsed.content || '', parsed.payload);
               }
             } catch (e) {
               console.error('Error parsing stream data:', e);
@@ -134,7 +165,17 @@ export async function sendMessage(
     return finalResponse.json();
   }
 
-  return response.json();
+  // For non-streaming responses, wait for both requests
+  const [messageResult, followUpResult] = await Promise.all([
+    response.json(),
+    followUpPromise.then((r) => (r.ok ? r.json() : null)).catch(() => null),
+  ]);
+
+  if (followUpResult) {
+    onFollowUpQuestions?.(followUpResult);
+  }
+
+  return messageResult;
 }
 
 export async function getMessages(threadId: string): Promise<MessagesResponse> {
@@ -151,6 +192,44 @@ export async function getMessages(threadId: string): Promise<MessagesResponse> {
 
   if (!response.ok) {
     throw new Error('Failed to get messages');
+  }
+
+  return response.json();
+}
+
+export async function generateFollowUp(
+  messages: { role: string; content: string }[],
+  selectedBodyPartName: string,
+  selectedGroupName: string,
+  bodyPartsInSelectedGroup: string[],
+  previousQuestions?: {
+    questions: {
+      title: string;
+      description: string;
+      question: string;
+    }[];
+    selected?: string;
+  }
+) {
+  const response = await fetch('/api/assistant', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      action: 'generate_follow_up',
+      payload: {
+        messages,
+        selectedBodyPartName: selectedBodyPartName,
+        selectedGroupName: selectedGroupName,
+        bodyPartsInSelectedGroup: bodyPartsInSelectedGroup,
+        previousQuestions,
+      },
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to generate follow-up questions');
   }
 
   return response.json();

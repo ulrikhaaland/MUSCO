@@ -7,6 +7,7 @@ export interface AnatomyPart {
   selected: boolean;
   parent: string;
   children: AnatomyPart[];
+  group?: string;
 }
 
 // You might also want some helper types

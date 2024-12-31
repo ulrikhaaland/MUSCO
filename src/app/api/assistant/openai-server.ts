@@ -1,63 +1,18 @@
 import OpenAI from 'openai';
-import { ChatPayload } from '../types';
+import { ChatPayload } from '../../types';
 
 // Initialize OpenAI client
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-// Helper function to extract JSON from text
-function extractJsonFromText(text: string): {
-  payload: ChatPayload | null;
-  cleanText: string;
-} {
-  try {
-    const jsonStartIndex = text.indexOf('{');
-    if (jsonStartIndex === -1) {
-      return { payload: null, cleanText: text };
-    }
-
-    const jsonSubstring = text.slice(jsonStartIndex);
-
-    // Find the last matching closing brace
-    let braceCount = 0;
-    let jsonEndIndex = -1;
-
-    for (let i = 0; i < jsonSubstring.length; i++) {
-      if (jsonSubstring[i] === '{') braceCount++;
-      if (jsonSubstring[i] === '}') {
-        braceCount--;
-        if (braceCount === 0) {
-          jsonEndIndex = i + 1;
-          break;
-        }
-      }
-    }
-
-    if (jsonEndIndex === -1) {
-      return { payload: null, cleanText: text };
-    }
-
-    const jsonStr = jsonSubstring.slice(0, jsonEndIndex);
-
-    const cleanText = text.slice(0, jsonStartIndex).trim();
-
-    try {
-      const payload = JSON.parse(jsonStr) as ChatPayload;
-      return { payload, cleanText };
-    } catch (error) {
-      return { payload: null, cleanText: text };
-    }
-  } catch (error) {
-    return { payload: null, cleanText: text };
-  }
-}
-
 // Create or load the assistant
 export async function getOrCreateAssistant() {
   try {
     const ASSISTANT_ID = process.env.OPENAI_ASSISTANT_ID!;
-    return await openai.beta.assistants.retrieve(ASSISTANT_ID);
+    const assistant = await openai.beta.assistants.retrieve(ASSISTANT_ID);
+
+    return assistant;
   } catch (error) {
     console.error('Error in getOrCreateAssistant:', error);
     throw new Error('Failed to initialize assistant');
@@ -78,9 +33,7 @@ export async function createThread() {
 export async function addMessage(threadId: string, payload: ChatPayload) {
   try {
     const content = JSON.stringify(payload);
-
     console.log('Adding message to thread:', content);
-    // If we have a payload, append it as a system message
     return await openai.beta.threads.messages.create(threadId, {
       role: 'user',
       content,
@@ -95,11 +48,9 @@ export async function addMessage(threadId: string, payload: ChatPayload) {
 export async function streamRunResponse(
   threadId: string,
   assistantId: string,
-  onMessage: (content: string, isCollectingJson: boolean, payload?: ChatPayload) => void
+  onMessage: (content: string) => void
 ) {
   try {
-    let accumulatedText = '';
-    let isCollectingJson = false;
     const stream = await openai.beta.threads.runs.stream(threadId, {
       assistant_id: assistantId,
     });
@@ -110,41 +61,7 @@ export async function streamRunResponse(
       })
       .on('textDelta', (delta) => {
         if (delta.value) {
-          if (isCollectingJson) {
-            // If we're collecting JSON, just accumulate without sending to UI
-            accumulatedText += delta.value;
-          } else {
-            // Check if this delta contains the start of a JSON object
-            const jsonStartIndex = delta.value.indexOf('{');
-
-            if (jsonStartIndex !== -1) {
-              // Send only the text before the JSON
-              const textContent = delta.value.slice(0, jsonStartIndex);
-              if (textContent) {
-                onMessage(textContent, false);
-              }
-
-              // Start collecting JSON
-              isCollectingJson = true;
-              onMessage('', true);
-              accumulatedText = delta.value.slice(jsonStartIndex);
-            } else {
-              // No JSON found, send the content normally
-              onMessage(delta.value, false);
-            }
-          }
-
-          // Try to extract JSON if we're collecting it
-          if (isCollectingJson) {
-            onMessage('', true);
-            const { payload } = extractJsonFromText(accumulatedText);
-            if (payload) {
-              onMessage('', true, payload);
-              // Reset for next message
-              accumulatedText = '';
-              isCollectingJson = false;
-            }
-          }
+          onMessage(delta.value);
         }
       })
       .on('error', (error) => {
@@ -187,14 +104,7 @@ export async function runAssistant(threadId: string, assistantId: string) {
 
     // Get the messages after run completion
     const messages = await getMessages(threadId);
-    const lastMessage = messages[0]; // Most recent message
-
-    if (lastMessage && typeof lastMessage.content === 'string') {
-      const payload = extractJsonFromText(lastMessage.content);
-      return { runStatus, payload };
-    }
-
-    return { runStatus, payload: null };
+    return { runStatus, messages };
   } catch (error) {
     console.error('Error running assistant:', error);
     throw new Error('Failed to run assistant');
@@ -209,5 +119,74 @@ export async function getMessages(threadId: string) {
   } catch (error) {
     console.error('Error getting messages:', error);
     throw new Error('Failed to get messages');
+  }
+}
+
+// Generate follow-up questions using chat completions
+export async function generateFollowUpQuestions(context: {
+  messages: { role: string; content: string }[];
+  bodyGroup: string;
+  bodyPart: string;
+  previousQuestions?: {
+    questions: {
+      title: string;
+      description: string;
+      question: string;
+    }[];
+    selected?: string;
+  };
+}) {
+  try {
+    const systemPrompt = `You are a follow-up question generator for a musculoskeletal learning app.
+
+Your task is to generate 3 engaging follow-up questions based on the conversation history and current context.
+
+Guidelines:
+1. Questions should naturally flow from the current conversation
+2. Avoid repeating previously suggested questions
+3. Focus on the current body part being discussed
+4. Each question should explore a different aspect (e.g., anatomy, exercises, injuries)
+5. Make questions specific and actionable
+
+Return exactly 3 questions in the following JSON format:
+{
+  "followUpQuestions": [
+    {
+      "title": "Brief, engaging title",
+      "description": "One-line preview of what will be learned",
+      "question": "The actual question to be asked"
+    }
+  ]
+}`;
+
+    const completion = await openai.chat.completions.create({
+      model: 'gpt-4o',
+      response_format: { type: 'json_object' },
+      messages: [
+        {
+          role: 'system',
+          content: systemPrompt,
+        },
+        {
+          role: 'user',
+          content: JSON.stringify({
+            bodyGroup: context.bodyGroup,
+            bodyPart: context.bodyPart,
+            conversationHistory: context.messages,
+            previousQuestions: context.previousQuestions,
+          }),
+        },
+      ],
+    });
+
+    const response = completion.choices[0].message.content;
+    if (!response) {
+      throw new Error('No response from OpenAI');
+    }
+
+    return JSON.parse(response);
+  } catch (error) {
+    console.error('Error generating follow-up questions:', error);
+    throw new Error('Failed to generate follow-up questions');
   }
 }

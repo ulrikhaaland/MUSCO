@@ -69,7 +69,6 @@ export default function MobileControls({
   const {
     messages,
     isLoading,
-    isCollectingJson,
     followUpQuestions,
     messagesRef,
     resetChat,
@@ -134,8 +133,7 @@ export default function MobileControls({
   // Handle body part selection and deselection
   useEffect(() => {
     const hasContent = messages.length > 0 || followUpQuestions.length > 0;
-    const loadingComplete =
-      (!isLoading && !isCollectingJson) || messages.length === 0;
+    const loadingComplete = !isLoading || messages.length === 0;
 
     // Only manipulate sheet height if user hasn't modified it
     if (!userModifiedSheetHeight) {
@@ -159,7 +157,6 @@ export default function MobileControls({
   }, [
     selectedGroup,
     isLoading,
-    isCollectingJson,
     messages,
     followUpQuestions,
     contentHeight,
@@ -427,7 +424,6 @@ export default function MobileControls({
                 <ChatMessages
                   messages={messages}
                   isLoading={isLoading}
-                  isCollectingJson={isCollectingJson}
                   followUpQuestions={followUpQuestions}
                   onQuestionClick={handleOptionClick}
                   part={selectedPart}

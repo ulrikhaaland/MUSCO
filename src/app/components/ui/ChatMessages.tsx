@@ -7,7 +7,6 @@ interface ChatMessagesProps {
   messages: ChatMessage[];
   messagesRef: RefObject<HTMLDivElement | null>;
   isLoading?: boolean;
-  isCollectingJson?: boolean;
   followUpQuestions?: Question[];
   onQuestionClick?: (question: Question) => void;
   onScroll?: (event: React.UIEvent<HTMLDivElement>) => void;
@@ -20,7 +19,6 @@ export function ChatMessages({
   messages,
   messagesRef,
   isLoading,
-  isCollectingJson = false,
   followUpQuestions = [],
   onQuestionClick,
   onScroll,
@@ -30,19 +28,11 @@ export function ChatMessages({
 }: ChatMessagesProps) {
   const [userHasScrolled, setUserHasScrolled] = useState(false);
   const [showScrollButton, setShowScrollButton] = useState(false);
-  const [hasStartedCollecting, setHasStartedCollecting] = useState(false);
   const lastScrollTop = useRef(0);
   const lastMessage = messages[messages.length - 1];
   const showLoading =
     isLoading && (!lastMessage || lastMessage.role === 'user');
   const showFollowUps = !isLoading && followUpQuestions.length > 0;
-
-  // Track when collection starts
-  useEffect(() => {
-    if (isCollectingJson) {
-      setHasStartedCollecting(true);
-    }
-  }, [isCollectingJson]);
 
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const container = e.currentTarget;
@@ -150,39 +140,29 @@ export function ChatMessages({
           ))}
           {showLoading && <LoadingMessage />}
 
-          {(showFollowUps || isCollectingJson) && (
+          {showFollowUps && (
             <div className={`space-y-2  ${messages.length > 0 ? 'pb-4' : ''}`}>
-              {/* <h4 className="text-sm font-medium text-gray-400 ml-2">
-                Suggested questions:
-              </h4> */}
               <div className="space-y-2">
-                {!showFollowUps
-                  ? Array(3)
-                      .fill(null)
-                      .map((_, index) => (
-                        <QuestionShimmerItem key={`shimmer-${index}`} />
-                      ))
-                  : followUpQuestions.map((question) => (
-                      <button
-                        key={question.title}
-                        onClick={() => onQuestionClick?.(question)}
-                        className={`w-full text-left px-2 rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors ${
-                          isMobile ? 'py-1' : 'py-2'
-                        }`}
-                      >
-                        <div className="font-medium">{question.title}</div>
-                        <div className="text-sm text-gray-400">
-                          {question.description}
-                        </div>
-                      </button>
-                    ))}
+                {followUpQuestions.map((question) => (
+                  <button
+                    key={question.title}
+                    onClick={() => onQuestionClick?.(question)}
+                    className={`w-full text-left px-2 rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors ${
+                      isMobile ? 'py-1' : 'py-2'
+                    }`}
+                  >
+                    <div className="font-medium">{question.title}</div>
+                    <div className="text-sm text-gray-400">
+                      {question.description}
+                    </div>
+                  </button>
+                ))}
               </div>
             </div>
           )}
         </div>
       </div>
 
-      {/* Scroll to bottom button - centered and floating at bottom */}
       {showScrollButton && (
         <div className="absolute left-1/2 bottom-4 -translate-x-1/2 z-1000">
           <button

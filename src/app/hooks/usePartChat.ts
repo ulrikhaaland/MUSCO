@@ -47,7 +47,6 @@ export function usePartChat({ selectedPart, selectedGroup }: UsePartChatProps) {
     followUpQuestions: chatFollowUpQuestions,
     resetChat,
     sendChatMessage,
-    isCollectingJson,
     setFollowUpQuestions,
   } = useChat();
 
@@ -76,8 +75,10 @@ export function usePartChat({ selectedPart, selectedGroup }: UsePartChatProps) {
   const handleOptionClick = (question: Question) => {
     sendChatMessage(question.question, {
       userPreferences,
-      part: selectedPart || undefined,
-      followUpQuestions: localFollowUpQuestions,
+      selectedBodyPart: selectedPart || undefined,
+      selectedGroupName: selectedGroup?.name || '',
+      bodyPartsInSelectedGroup: selectedGroup?.parts.map((part) => part.name) || [],
+      followUpQuestions: chatFollowUpQuestions,
     });
   };
 
@@ -105,7 +106,6 @@ export function usePartChat({ selectedPart, selectedGroup }: UsePartChatProps) {
   return {
     messages,
     isLoading,
-    isCollectingJson,
     followUpQuestions:
       messages.length === 0 ? localFollowUpQuestions : chatFollowUpQuestions,
     messagesRef,

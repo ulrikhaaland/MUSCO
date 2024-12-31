@@ -1,3 +1,4 @@
+import { BodyPartGroup } from '../config/bodyPartGroups';
 import { AnatomyPart } from './anatomy';
 
 export type Gender = 'male' | 'female';
@@ -75,7 +76,9 @@ export interface AssistantThread {
 export interface ChatPayload {
   message: string;
   userPreferences?: UserPreferences;
-  part?: AnatomyPart;
+  selectedBodyPart?: AnatomyPart;
+  selectedGroupName: string;
+  bodyPartsInSelectedGroup: string[];
   followUpQuestions?: Question[];
 }
 

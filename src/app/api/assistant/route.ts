@@ -5,7 +5,8 @@ import {
   addMessage,
   streamRunResponse,
   getMessages,
-} from '@/app/lib/openai-server';
+  generateFollowUpQuestions,
+} from '@/app/api/assistant/openai-server';
 import { OpenAIMessage } from '@/app/types';
 
 export async function POST(request: Request) {
@@ -45,13 +46,9 @@ export async function POST(request: Request) {
                 await streamRunResponse(
                   threadId,
                   assistant.id,
-                  (content, isCollectingJson, streamPayload) => {
+                  (content) => {
                     const chunk = encoder.encode(
-                      `data: ${JSON.stringify({
-                        content,
-                        isCollectingJson,
-                        payload: streamPayload,
-                      })}\n\n`
+                      `data: ${JSON.stringify({ content })}\n\n`
                     );
                     controller.enqueue(chunk);
                   }
@@ -87,6 +84,18 @@ export async function POST(request: Request) {
 
         const messages = await getMessages(threadId);
         return NextResponse.json({ messages: messages as OpenAIMessage[] });
+      }
+
+      case 'generate_follow_up': {
+        if (!payload) {
+          return NextResponse.json(
+            { error: 'Payload is required' },
+            { status: 400 }
+          );
+        }
+
+        const followUpQuestions = await generateFollowUpQuestions(payload);
+        return NextResponse.json(followUpQuestions);
       }
 
       default:
