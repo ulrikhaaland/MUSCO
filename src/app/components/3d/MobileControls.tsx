@@ -20,6 +20,7 @@ import { usePartChat } from '@/app/hooks/usePartChat';
 import { BodyPartGroup } from '@/app/config/bodyPartGroups';
 import { BottomSheetHeader } from './BottomSheetHeader';
 import { BottomSheetFooter } from './BottomSheetFooter';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 
 interface MobileControlsProps {
   isRotating: boolean;
@@ -77,6 +78,12 @@ export default function MobileControls({
     getPartDisplayName,
   } = usePartChat({ selectedPart: selectedPart, selectedGroup: selectedGroup });
 
+  useEffect(() => {
+    if (!selectedGroup && userModifiedSheetHeight) {
+      setUserModifiedSheetHeight(false);
+    }
+  }, [selectedGroup, userModifiedSheetHeight]);
+
   // Get the actual viewport height accounting for mobile browser UI
   const getViewportHeight = () => {
     return window.innerHeight * 0.01 * 100; // Convert to dvh equivalent
@@ -104,7 +111,7 @@ export default function MobileControls({
         const footer = document.querySelector('[data-rsbs-footer]');
         const footerHeight = footer?.getBoundingClientRect().height ?? 0;
 
-        if (contentContainer) { 
+        if (contentContainer) {
           const localContentHeight = contentContainer.scrollHeight;
           const height = localContentHeight + headerHeight + footerHeight;
           setContentHeight(height);
@@ -320,13 +327,6 @@ export default function MobileControls({
               className={`h-5 w-5 ${isResetting ? 'animate-spin' : ''}`}
             />
           </button>
-          {/* <button
-            onClick={onZoom}
-            disabled={!isReady}
-            className="text-white p-2 rounded-lg hover:bg-white/10 transition-colors duration-200"
-          >
-            <ZoomInIcon className="h-5 w-5" />
-          </button> */}
           <button
             onClick={onSwitchModel}
             disabled={!isReady}
@@ -337,6 +337,77 @@ export default function MobileControls({
             ) : (
               <MaleIcon className="h-5 w-5" />
             )}
+          </button>
+        </div>
+      )}
+
+      {/* Expand/Collapse Buttons - Fixed to bottom right */}
+      {isMobile && sheetRef.current && selectedGroup && (
+        <div className="md:hidden fixed right-2 bottom-4 flex bg-transparent rounded-lg z-10">
+          <button
+            onClick={() => {
+              if (sheetRef.current) {
+                const currentHeight = sheetRef.current.height;
+                const snapPoints = getSnapPoints();
+                const minHeight = Math.min(getViewportHeight() * 0.15, 72);
+
+                // Find next smaller snap point
+                const nextPoint = [...snapPoints]
+                  .reverse()
+                  .find((point) => point < currentHeight - 2);
+                if (nextPoint) {
+                  setUserModifiedSheetHeight(true);
+                  sheetRef.current.snapTo(() => nextPoint);
+                  setIsExpanded(nextPoint > minHeight);
+                }
+              }
+            }}
+            disabled={(() => {
+              if (!sheetRef.current) return true;
+              const currentHeight = sheetRef.current.height;
+              const snapPoints = getSnapPoints();
+              return !snapPoints.some((point) => point < currentHeight - 2);
+            })()}
+            className={`text-white p1- bg-transparent rounded-lg transition-colors duration-200 ${
+              isRotating || isResetting || !isReady
+                ? 'opacity-50'
+                : 'hover:bg-white/10'
+            }`}
+            aria-label="Minimize"
+          >
+            <ExpandLessIcon className="h-6 w-6 rotate-180" />
+          </button>
+          <button
+            onClick={() => {
+              if (sheetRef.current) {
+                const currentHeight = sheetRef.current.height;
+                const snapPoints = getSnapPoints();
+
+                // Find next larger snap point
+                const nextPoint = snapPoints.find(
+                  (point) => point > currentHeight + 2
+                );
+                if (nextPoint) {
+                  setUserModifiedSheetHeight(true);
+                  sheetRef.current.snapTo(() => nextPoint);
+                  setIsExpanded(true);
+                }
+              }
+            }}
+            disabled={(() => {
+              if (!sheetRef.current) return true;
+              const currentHeight = sheetRef.current.height;
+              const snapPoints = getSnapPoints();
+              return !snapPoints.some((point) => point > currentHeight + 2);
+            })()}
+            className={`text-white p-1 rounded-lg transition-colors duration-200 ${
+              isRotating || isResetting || !isReady
+                ? 'opacity-50'
+                : 'hover:bg-white/10'
+            }`}
+            aria-label="Expand"
+          >
+            <ExpandLessIcon className="h-6 w-6" />
           </button>
         </div>
       )}
@@ -386,15 +457,10 @@ export default function MobileControls({
             messages={messages}
             isLoading={isLoading}
             selectedGroup={Boolean(selectedGroup)}
-            sheetRef={sheetRef}
             getGroupDisplayName={getGroupDisplayName}
             getPartDisplayName={getPartDisplayName}
             resetChat={resetChat}
-            getSnapPoints={getSnapPoints}
-            getViewportHeight={getViewportHeight}
-            setIsExpanded={setIsExpanded}
             onHeightChange={setHeaderHeight}
-            onSheetHeightModified={setUserModifiedSheetHeight}
           />
         }
         footer={
@@ -406,6 +472,11 @@ export default function MobileControls({
               messagesRef={messagesRef}
               setMessage={setMessage}
               handleOptionClick={handleOptionClick}
+              sheetRef={sheetRef}
+              getSnapPoints={getSnapPoints}
+              getViewportHeight={getViewportHeight}
+              setIsExpanded={setIsExpanded}
+              onSheetHeightModified={setUserModifiedSheetHeight}
             />
           )
         }

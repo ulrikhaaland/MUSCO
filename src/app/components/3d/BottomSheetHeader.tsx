@@ -1,5 +1,4 @@
 import { BottomSheetRef } from 'react-spring-bottom-sheet';
-import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import { ChatMessage } from '@/app/types';
 import { useEffect, useRef } from 'react';
 
@@ -7,30 +6,20 @@ interface BottomSheetHeaderProps {
   messages: ChatMessage[];
   isLoading: boolean;
   selectedGroup: boolean;
-  sheetRef: React.RefObject<BottomSheetRef>;
   getGroupDisplayName: () => string;
   getPartDisplayName: () => string;
   resetChat: () => void;
-  getSnapPoints: () => number[];
-  getViewportHeight: () => number;
-  setIsExpanded: (expanded: boolean) => void;
   onHeightChange?: (height: number) => void;
-  onSheetHeightModified?: (modified: boolean) => void;
 }
 
 export function BottomSheetHeader({
   messages,
   isLoading,
   selectedGroup,
-  sheetRef,
   getGroupDisplayName,
   getPartDisplayName,
   resetChat,
-  getSnapPoints,
-  getViewportHeight,
-  setIsExpanded,
   onHeightChange,
-  onSheetHeightModified,
 }: BottomSheetHeaderProps) {
   const headerRef = useRef<HTMLDivElement>(null);
 
@@ -77,71 +66,6 @@ export function BottomSheetHeader({
               </svg>
             </button>
           )}
-        {(selectedGroup || messages.length > 0) && (
-          <div className="flex flex-col">
-            {sheetRef.current && (
-              <>
-                <button
-                  onClick={() => {
-                    if (sheetRef.current) {
-                      const currentHeight = sheetRef.current.height;
-                      const snapPoints = getSnapPoints();
-
-                      // Find next larger snap point
-                      const nextPoint = snapPoints.find(
-                        (point) => point > currentHeight + 2
-                      );
-                      if (nextPoint) {
-                        onSheetHeightModified?.(true);
-                        sheetRef.current.snapTo(() => nextPoint);
-                        setIsExpanded(true);
-                      }
-                    }
-                  }}
-                  disabled={(() => {
-                    if (!sheetRef.current) return true;
-                    const currentHeight = sheetRef.current.height;
-                    const snapPoints = getSnapPoints();
-                    return !snapPoints.some((point) => point > currentHeight + 2);
-                  })()}
-                  className="flex justify-center items-center w-8 h-8 hover:bg-gray-800 rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent"
-                  aria-label="Expand"
-                >
-                  <ExpandLessIcon className="text-white h-6 w-6" />
-                </button>
-                <button
-                  onClick={() => {
-                    if (sheetRef.current) {
-                      const currentHeight = sheetRef.current.height;
-                      const snapPoints = getSnapPoints();
-                      const minHeight = Math.min(getViewportHeight() * 0.15, 72);
-
-                      // Find next smaller snap point
-                      const nextPoint = [...snapPoints]
-                        .reverse()
-                        .find((point) => point < currentHeight - 2);
-                      if (nextPoint) {
-                        onSheetHeightModified?.(true);
-                        sheetRef.current.snapTo(() => nextPoint);
-                        setIsExpanded(nextPoint > minHeight);
-                      }
-                    }
-                  }}
-                  disabled={(() => {
-                    if (!sheetRef.current) return true;
-                    const currentHeight = sheetRef.current.height;
-                    const snapPoints = getSnapPoints();
-                    return !snapPoints.some((point) => point < currentHeight - 2);
-                  })()}
-                  className="flex justify-center items-center w-8 h-8 hover:bg-gray-800 rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent"
-                  aria-label="Minimize"
-                >
-                  <ExpandLessIcon className="text-white h-6 w-6 rotate-180" />
-                </button>
-              </>
-            )}
-          </div>
-        )}
       </div>
     </div>
   );
