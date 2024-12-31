@@ -68,10 +68,10 @@ export function ChatMessages({
 
   // Auto-scroll effect
   useEffect(() => {
-    const container = isMobile 
+    const container = isMobile
       ? document.querySelector('[data-rsbs-scroll]')
       : messagesRef.current;
-      
+
     if (!container || userHasScrolled) return;
 
     // Use requestAnimationFrame for smooth scrolling during streaming
@@ -81,10 +81,10 @@ export function ChatMessages({
   }, [messages, isLoading, followUpQuestions, userHasScrolled, isMobile]);
 
   const scrollToBottom = () => {
-    const container = isMobile 
+    const container = isMobile
       ? document.querySelector('[data-rsbs-scroll]')
       : messagesRef.current;
-      
+
     if (container) {
       container.scrollTo({
         top: container.scrollHeight,
@@ -133,7 +133,11 @@ export function ChatMessages({
                   <ReactMarkdown
                     className="text-base leading-relaxed"
                     components={{
-                      ul: ({ children }) => <ul className="list-none"></ul>,
+                      ul: ({ children }) => (
+                        <ul className="list-none">
+                          {children as React.ReactNode}
+                        </ul>
+                      ),
                     }}
                   >
                     {msg.content}
@@ -162,7 +166,9 @@ export function ChatMessages({
                       <button
                         key={question.title}
                         onClick={() => onQuestionClick?.(question)}
-                        className="w-full text-left px-2 py-1 rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors"
+                        className={`w-full text-left px-2 rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors ${
+                          isMobile ? 'py-1' : 'py-2'
+                        }`}
                       >
                         <div className="font-medium">{question.title}</div>
                         <div className="text-sm text-gray-400">
@@ -178,7 +184,7 @@ export function ChatMessages({
 
       {/* Scroll to bottom button - centered and floating at bottom */}
       {showScrollButton && (
-        <div className="absolute left-1/2 bottom-4 -translate-x-1/2 z-10">
+        <div className="absolute left-1/2 bottom-4 -translate-x-1/2 z-1000">
           <button
             onClick={scrollToBottom}
             className="p-2 bg-indigo-600 hover:bg-indigo-500 rounded-full shadow-lg transition-all duration-200 transform hover:scale-105"
