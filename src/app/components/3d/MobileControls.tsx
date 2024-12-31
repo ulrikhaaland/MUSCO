@@ -320,7 +320,7 @@ export default function MobileControls({
   return (
     <>
       {/* Mobile Controls - Positioned relative to bottom sheet */}
-      {isMobile && (
+      {isMobile && currentSnapPoint !== SnapPoint.FULL && (
         <div
           className="md:hidden fixed right-4 flex flex-col gap-2 bg-[#111827] p-1.5 rounded-lg shadow-lg transition-all duration-300"
           style={{

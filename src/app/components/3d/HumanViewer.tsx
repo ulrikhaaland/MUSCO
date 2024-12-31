@@ -64,11 +64,10 @@ export default function HumanViewer({
     setNeedsReset,
     isReady,
     initialCameraRef,
+    previousSelectedPartGroupRef,
   } = useHumanAPI({
     elementId: 'myViewer',
     initialGender: gender,
-    selectedGroup,
-    selectedPart,
     setSelectedGroup,
     setSelectedPart,
     onZoom: (objectId?: string) => handleZoom(objectId),
@@ -192,7 +191,7 @@ export default function HumanViewer({
       humanRef.current.on('camera.updated', () => {
         
       });
-
+      previousSelectedPartGroupRef.current = null;
       setTimeout(() => {
         console.log('Sending scene.reset command...');
         humanRef.current?.send('scene.reset', () => {
@@ -261,6 +260,8 @@ export default function HumanViewer({
   const handleRotate = useCallback(() => {
     const human = humanRef.current;
     if (!human || isRotating || isResetting) return;
+
+    setNeedsReset(true);
 
     setIsRotating(true);
     const startRotation = currentRotation % 360; // Normalize to 0-360

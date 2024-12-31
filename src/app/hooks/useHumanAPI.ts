@@ -40,8 +40,6 @@ interface UseHumanAPIProps {
   elementId: string;
   onReady?: () => void;
   initialGender: Gender;
-  selectedGroup: BodyPartGroup | null;
-  selectedPart: AnatomyPart | null;
   setSelectedGroup: (parts: BodyPartGroup | null) => void;
   setSelectedPart: (part: AnatomyPart | null) => void;
 
@@ -52,8 +50,6 @@ export function useHumanAPI({
   elementId,
   onReady,
   initialGender,
-  selectedGroup,
-  selectedPart,
   setSelectedGroup,
   setSelectedPart,
   onZoom,
@@ -64,6 +60,7 @@ export function useHumanAPI({
   setNeedsReset: (value: boolean) => void;
   isReady: boolean;
   initialCameraRef: MutableRefObject<CameraPosition | null>;
+  previousSelectedPartGroupRef: MutableRefObject<BodyPartGroup | null>;
 } {
   const humanRef = useRef<HumanAPI | null>(null);
   const initialCameraRef = useRef<CameraPosition | null>(null);
@@ -385,5 +382,6 @@ export function useHumanAPI({
     setNeedsReset,
     isReady,
     initialCameraRef,
+    previousSelectedPartGroupRef,
   };
 }
