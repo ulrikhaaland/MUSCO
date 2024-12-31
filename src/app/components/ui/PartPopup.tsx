@@ -16,7 +16,6 @@ export default function PartPopup({ part, group, onClose }: PartPopupProps) {
   const {
     messages,
     isLoading,
-    isCollectingJson,
     followUpQuestions,
     messagesRef,
     resetChat,
@@ -141,7 +140,6 @@ export default function PartPopup({ part, group, onClose }: PartPopupProps) {
             messages={messages}
             messagesRef={messagesRef}
             isLoading={isLoading}
-            isCollectingJson={isCollectingJson}
             followUpQuestions={followUpQuestions}
             onQuestionClick={handleOptionClick}
             onScroll={handleScroll}
