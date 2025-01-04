@@ -156,9 +156,7 @@ export default function HumanViewer({
     setViewerUrl(getViewerUrl(newGender));
 
     // Reset states
-    setSelectedPart(null);
-    setSelectedGroup(null);
-    setCurrentRotation(0);
+    resetValues();
 
     // Call the parent's gender change handler
     onGenderChange?.(newGender);
@@ -176,32 +174,28 @@ export default function HumanViewer({
     }
   }, [isChangingModel]);
 
+  const resetValues = () => {
+    previousSelectedPartGroupRef.current = null;
+
+    setCurrentRotation(0);
+    setSelectedPart(null);
+    setSelectedGroup(null);
+    lastSelectedIdRef.current = null;
+    setNeedsReset(false);
+  };
+
   const handleReset = useCallback(() => {
     if (isResetting) return;
 
     setIsResetting(true);
-    console.log('=== handleReset START ===');
-    console.log('humanRef.current:', humanRef.current);
-    console.log('isReady:', isReady);
 
     // Use scene.reset to reset everything to initial state
     if (humanRef.current) {
-      console.log('Human API ready, sending commands...');
-
-      humanRef.current.on('camera.updated', () => {
-        
-      });
-      previousSelectedPartGroupRef.current = null;
+      humanRef.current.on('camera.updated', () => {});
       setTimeout(() => {
-        console.log('Sending scene.reset command...');
         humanRef.current?.send('scene.reset', () => {
-          console.log('Scene reset callback executed');
           // Reset all our state after the scene has been reset
-          setCurrentRotation(0);
-          setSelectedPart(null);
-          setSelectedGroup(null);
-          lastSelectedIdRef.current = null;
-          setNeedsReset(false);
+          resetValues();
 
           // Clear reset state after a short delay to allow for animation
           setTimeout(() => {
@@ -210,7 +204,6 @@ export default function HumanViewer({
         });
       }, 100);
     } else {
-      console.log('humanRef.current is null!');
       setIsResetting(false);
     }
   }, [isResetting, setNeedsReset, isReady, humanRef]);
@@ -268,7 +261,7 @@ export default function HumanViewer({
     const targetRotation = startRotation === 0 ? 180 : 360; // Always rotate forward to 180 or 360
 
     let currentAngle = 0;
-    const rotationStep = 2; // Rotate 2 degrees per frame
+    const rotationStep = 10; // Rotate 2 degrees per frame
 
     const animate = () => {
       if (currentAngle < 180) {
