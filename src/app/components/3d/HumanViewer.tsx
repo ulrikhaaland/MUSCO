@@ -1,20 +1,20 @@
-"use client";
+'use client';
 
-import { useRef, useState, useCallback, useEffect } from "react";
-import { Gender } from "../../types";
-import { AnatomyPart } from "../../types/anatomy";
-import PartPopup from "../ui/PartPopup";
-import { useHumanAPI } from "@/app/hooks/useHumanAPI";
-import RestartAltIcon from "@mui/icons-material/RestartAlt";
-import CropRotateIcon from "@mui/icons-material/CropRotate";
-import MaleIcon from "@mui/icons-material/Male";
-import FemaleIcon from "@mui/icons-material/Female";
-import MobileControls from "./MobileControls";
-import { BodyPartGroup } from "@/app/config/bodyPartGroups";
-import { ExerciseQuestionnaire } from "../ui/ExerciseQuestionnaire";
-import { Question } from "@/app/types";
-import { generateExerciseProgram } from "@/app/api/assistant/assistant";
-import { ExerciseProgramPage } from "../ui/ExerciseProgramPage";
+import { useRef, useState, useCallback, useEffect } from 'react';
+import { Gender } from '../../types';
+import { AnatomyPart } from '../../types/anatomy';
+import PartPopup from '../ui/PartPopup';
+import { useHumanAPI } from '@/app/hooks/useHumanAPI';
+import RestartAltIcon from '@mui/icons-material/RestartAlt';
+import CropRotateIcon from '@mui/icons-material/CropRotate';
+import MaleIcon from '@mui/icons-material/Male';
+import FemaleIcon from '@mui/icons-material/Female';
+import MobileControls from './MobileControls';
+import { BodyPartGroup } from '@/app/config/bodyPartGroups';
+import { ExerciseQuestionnaire } from '../ui/ExerciseQuestionnaire';
+import { Question } from '@/app/types';
+import { generateExerciseProgram } from '@/app/api/assistant/assistant';
+import { ExerciseProgramPage } from '../ui/ExerciseProgramPage';
 
 interface HumanViewerProps {
   gender: Gender;
@@ -42,7 +42,7 @@ export default function HumanViewer({
   const rotationAnimationRef = useRef<number | null>(null);
   const [isResetting, setIsResetting] = useState(false);
   const [targetGender, setTargetGender] = useState<Gender | null>(null);
-  const [modelContainerHeight, setModelContainerHeight] = useState("100dvh");
+  const [modelContainerHeight, setModelContainerHeight] = useState('100dvh');
 
   const [isMobile, setIsMobile] = useState(false);
   const selectedPartsRef = useRef<BodyPartGroup | null>(null);
@@ -52,13 +52,13 @@ export default function HumanViewer({
     };
 
     checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
   const MODEL_IDS = {
-    male: "5tOV",
-    female: "5rlW",
+    male: '5tOV',
+    female: '5rlW',
   };
 
   const {
@@ -70,7 +70,7 @@ export default function HumanViewer({
     initialCameraRef,
     previousSelectedPartGroupRef,
   } = useHumanAPI({
-    elementId: "myViewer",
+    elementId: 'myViewer',
     initialGender: gender,
     setSelectedGroup,
     setSelectedPart,
@@ -84,10 +84,10 @@ export default function HumanViewer({
 
   const handleZoom = (objectId?: string) => {
     // First get current camera info
-    humanRef.current.send("camera.info", (camera) => {
+    humanRef.current.send('camera.info', (camera) => {
       if (objectId) {
         // If a part group is selected, focus on those parts while maintaining camera properties
-        humanRef.current.send("camera.set", {
+        humanRef.current.send('camera.set', {
           objectId: objectId,
           position: {
             ...camera.position,
@@ -115,36 +115,36 @@ export default function HumanViewer({
   // Create viewer URL
   const getViewerUrl = useCallback(
     (modelGender: Gender) => {
-      const viewerUrl = new URL("https://human.biodigital.com/viewer/");
-      viewerUrl.searchParams.set("id", MODEL_IDS[modelGender]);
-      viewerUrl.searchParams.set("ui-anatomy-descriptions", "false");
-      viewerUrl.searchParams.set("ui-anatomy-pronunciations", "false");
-      viewerUrl.searchParams.set("ui-anatomy-labels", "false");
-      viewerUrl.searchParams.set("ui-audio", "false");
-      viewerUrl.searchParams.set("ui-chapter-list", "false");
-      viewerUrl.searchParams.set("ui-fullscreen", "false");
-      viewerUrl.searchParams.set("ui-help", "false");
-      viewerUrl.searchParams.set("ui-info", "false");
-      viewerUrl.searchParams.set("ui-label-list", "false");
-      viewerUrl.searchParams.set("ui-layers", "false");
-      viewerUrl.searchParams.set("ui-loader", "circle");
-      viewerUrl.searchParams.set("ui-media-controls", "false");
-      viewerUrl.searchParams.set("ui-menu", "false");
-      viewerUrl.searchParams.set("ui-nav", "false");
-      viewerUrl.searchParams.set("ui-search", "false");
-      viewerUrl.searchParams.set("ui-tools", "false");
-      viewerUrl.searchParams.set("ui-tutorial", "false");
-      viewerUrl.searchParams.set("ui-undo", "false");
-      viewerUrl.searchParams.set("ui-whiteboard", "false");
-      viewerUrl.searchParams.set("ui-zoom", "false");
-      viewerUrl.searchParams.set("initial.none", "false");
-      viewerUrl.searchParams.set("disable-scroll", "false");
-      viewerUrl.searchParams.set("uaid", "LzCgB");
-      viewerUrl.searchParams.set("paid", "o_26b5a0fa");
-      viewerUrl.searchParams.set("be-annotations", "false");
-      viewerUrl.searchParams.set("ui-annotations", "false");
-      viewerUrl.searchParams.set("ui-navigation", "false");
-      viewerUrl.searchParams.set("ui-controls", "false");
+      const viewerUrl = new URL('https://human.biodigital.com/viewer/');
+      viewerUrl.searchParams.set('id', MODEL_IDS[modelGender]);
+      viewerUrl.searchParams.set('ui-anatomy-descriptions', 'false');
+      viewerUrl.searchParams.set('ui-anatomy-pronunciations', 'false');
+      viewerUrl.searchParams.set('ui-anatomy-labels', 'false');
+      viewerUrl.searchParams.set('ui-audio', 'false');
+      viewerUrl.searchParams.set('ui-chapter-list', 'false');
+      viewerUrl.searchParams.set('ui-fullscreen', 'false');
+      viewerUrl.searchParams.set('ui-help', 'false');
+      viewerUrl.searchParams.set('ui-info', 'false');
+      viewerUrl.searchParams.set('ui-label-list', 'false');
+      viewerUrl.searchParams.set('ui-layers', 'false');
+      viewerUrl.searchParams.set('ui-loader', 'circle');
+      viewerUrl.searchParams.set('ui-media-controls', 'false');
+      viewerUrl.searchParams.set('ui-menu', 'false');
+      viewerUrl.searchParams.set('ui-nav', 'false');
+      viewerUrl.searchParams.set('ui-search', 'false');
+      viewerUrl.searchParams.set('ui-tools', 'false');
+      viewerUrl.searchParams.set('ui-tutorial', 'false');
+      viewerUrl.searchParams.set('ui-undo', 'false');
+      viewerUrl.searchParams.set('ui-whiteboard', 'false');
+      viewerUrl.searchParams.set('ui-zoom', 'false');
+      viewerUrl.searchParams.set('initial.none', 'false');
+      viewerUrl.searchParams.set('disable-scroll', 'false');
+      viewerUrl.searchParams.set('uaid', 'LzCgB');
+      viewerUrl.searchParams.set('paid', 'o_26b5a0fa');
+      viewerUrl.searchParams.set('be-annotations', 'false');
+      viewerUrl.searchParams.set('ui-annotations', 'false');
+      viewerUrl.searchParams.set('ui-navigation', 'false');
+      viewerUrl.searchParams.set('ui-controls', 'false');
       return viewerUrl.toString();
     },
     [MODEL_IDS]
@@ -158,7 +158,7 @@ export default function HumanViewer({
 
   const handleSwitchModel = useCallback(() => {
     setIsChangingModel(true);
-    const newGender: Gender = currentGender === "male" ? "female" : "male";
+    const newGender: Gender = currentGender === 'male' ? 'female' : 'male';
     setTargetGender(newGender);
     setViewerUrl(getViewerUrl(newGender));
 
@@ -170,8 +170,8 @@ export default function HumanViewer({
 
     // Update URL without page reload
     const url = new URL(window.location.href);
-    url.searchParams.set("gender", newGender);
-    window.history.pushState({}, "", url.toString());
+    url.searchParams.set('gender', newGender);
+    window.history.pushState({}, '', url.toString());
   }, [currentGender, getViewerUrl, onGenderChange]);
 
   // Clear target gender when model change is complete
@@ -198,9 +198,9 @@ export default function HumanViewer({
 
     // Use scene.reset to reset everything to initial state
     if (humanRef.current) {
-      humanRef.current.on("camera.updated", () => {});
+      humanRef.current.on('camera.updated', () => {});
       setTimeout(() => {
-        humanRef.current?.send("scene.reset", () => {
+        humanRef.current?.send('scene.reset', () => {
           // Reset all our state after the scene has been reset
           resetValues();
 
@@ -223,8 +223,8 @@ export default function HumanViewer({
   const startDragging = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     setIsDragging(true);
-    document.body.style.cursor = "ew-resize";
-    document.body.style.userSelect = "none";
+    document.body.style.cursor = 'ew-resize';
+    document.body.style.userSelect = 'none';
 
     const handleMouseMove = (e: MouseEvent) => {
       if (rafRef.current !== null) {
@@ -243,18 +243,18 @@ export default function HumanViewer({
 
     const stopDragging = () => {
       setIsDragging(false);
-      document.body.style.cursor = "default";
-      document.body.style.userSelect = "auto";
+      document.body.style.cursor = 'default';
+      document.body.style.userSelect = 'auto';
       if (rafRef.current !== null) {
         cancelAnimationFrame(rafRef.current);
         rafRef.current = null;
       }
-      document.removeEventListener("mousemove", handleMouseMove);
-      document.removeEventListener("mouseup", stopDragging);
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', stopDragging);
     };
 
-    document.addEventListener("mousemove", handleMouseMove);
-    document.addEventListener("mouseup", stopDragging);
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', stopDragging);
   }, []);
 
   const handleRotate = useCallback(() => {
@@ -273,7 +273,7 @@ export default function HumanViewer({
     const animate = () => {
       if (currentAngle < 180) {
         // Always rotate 180 degrees
-        human.send("camera.orbit", {
+        human.send('camera.orbit', {
           yaw: rotationStep, // Always positive for clockwise rotation
         });
         currentAngle += rotationStep;
@@ -308,7 +308,7 @@ export default function HumanViewer({
 
   // Move window-dependent calculation to useEffect
   useEffect(() => {
-    if (typeof window !== "undefined") {
+    if (typeof window !== 'undefined') {
       const initialWidth = Math.min(
         Math.max(minChatWidth, window.innerWidth / 2),
         maxChatWidth
@@ -347,7 +347,7 @@ export default function HumanViewer({
     answers: Record<string, string | number | string[]>
   ) => {
     if (!selectedQuestion?.diagnosis) {
-      console.error("No diagnosis available");
+      console.error('No diagnosis available');
       return;
     }
 
@@ -363,35 +363,43 @@ export default function HumanViewer({
           pastExercise: String(answers.pastExercise),
           plannedExercise: String(answers.plannedExercise),
           painAreas: Array.isArray(answers.painAreas) ? answers.painAreas : [],
-          exercisePain: String(answers.exercisePain).toLowerCase() === "true",
-          painfulAreas: Array.isArray(answers.painfulAreas)
-            ? answers.painfulAreas
-            : [],
+          exercisePain: String(answers.exercisePain).toLowerCase() === 'true',
+          painfulAreas: Array.isArray(answers.painfulAreas) ? answers.painfulAreas : [],
           trainingType: String(answers.trainingType),
           trainingLocation: String(answers.trainingLocation),
         }
       );
-      console.log("=== program ===", program);
+      console.log('=== program ===', program);
       setExerciseProgram(program);
     } catch (error) {
-      console.error("Error generating exercise program:", error);
+      console.error('Error generating exercise program:', error);
     } finally {
       setIsGeneratingProgram(false);
     }
   };
 
   return (
-    <ExerciseQuestionnaire
-      onClose={handleBack}
-      onSubmit={handleQuestionnaireSubmit}
-    />
-  );
-
-  return (
     <div className="flex flex-col md:flex-row relative h-screen w-screen overflow-hidden">
+      {/* Questionnaire Overlay */}
+      {showQuestionnaire && !isGeneratingProgram && !exerciseProgram && (
+        <ExerciseQuestionnaire
+          onClose={handleBack}
+          onSubmit={handleQuestionnaireSubmit}
+        />
+      )}
+
+      {/* Exercise Program Page */}
+      {(isGeneratingProgram || exerciseProgram) && (
+        <ExerciseProgramPage
+          onBack={handleBack}
+          isLoading={isGeneratingProgram}
+          program={exerciseProgram}
+        />
+      )}
+
       {/* Fullscreen overlay when dragging */}
       {isDragging && (
-        <div className="fixed inset-0 z-50" style={{ cursor: "ew-resize" }} />
+        <div className="fixed inset-0 z-50" style={{ cursor: 'ew-resize' }} />
       )}
 
       {/* Model Viewer Container */}
@@ -402,8 +410,8 @@ export default function HumanViewer({
         {isChangingModel && (
           <div className="absolute inset-0 z-50 bg-black flex items-center justify-center">
             <div className="text-white text-xl">
-              Loading{" "}
-              {targetGender?.charAt(0).toUpperCase() + targetGender?.slice(1)}{" "}
+              Loading{' '}
+              {targetGender?.charAt(0).toUpperCase() + targetGender?.slice(1)}{' '}
               Model...
             </div>
           </div>
@@ -411,7 +419,7 @@ export default function HumanViewer({
         {/* Mobile: subtract 72px for controls, Desktop: full height */}
         <div
           className="md:h-screen w-full relative"
-          style={{ height: isMobile ? modelContainerHeight : "100dvh" }}
+          style={{ height: isMobile ? modelContainerHeight : '100dvh' }}
         >
           <iframe
             id="myViewer"
@@ -421,8 +429,8 @@ export default function HumanViewer({
             allow="fullscreen"
             allowFullScreen
             onLoad={() => {
-              console.log("=== iframe loaded ===");
-              console.log("viewerUrl:", viewerUrl);
+              console.log('=== iframe loaded ===');
+              console.log('viewerUrl:', viewerUrl);
               setIsChangingModel(false);
             }}
           />
@@ -438,49 +446,49 @@ export default function HumanViewer({
             disabled={isRotating || isResetting || !isReady}
             className={`bg-indigo-600/80 hover:bg-indigo-500/80 text-white px-4 py-2 rounded-lg shadow-lg transition-colors duration-200 flex items-center space-x-2 ${
               isRotating || isResetting || !isReady
-                ? "opacity-50 cursor-not-allowed"
-                : ""
+                ? 'opacity-50 cursor-not-allowed'
+                : ''
             }`}
           >
             <CropRotateIcon
-              className={`h-5 w-5 ${isRotating ? "animate-spin" : ""}`}
+              className={`h-5 w-5 ${isRotating ? 'animate-spin' : ''}`}
             />
-            <span>{isRotating ? "Rotating..." : "Rotate Model"}</span>
+            <span>{isRotating ? 'Rotating...' : 'Rotate Model'}</span>
           </button>
           <button
             onClick={handleReset}
             disabled={isResetting || (!needsReset && selectedGroup === null)}
             className={`bg-indigo-600/80 hover:bg-indigo-500/80 text-white px-4 py-2 rounded-lg shadow-lg transition-colors duration-200 flex items-center space-x-2 ${
               isResetting || (!needsReset && selectedGroup === null)
-                ? "opacity-50 cursor-not-allowed"
-                : ""
+                ? 'opacity-50 cursor-not-allowed'
+                : ''
             }`}
           >
             <RestartAltIcon
-              className={`h-5 w-5 ${isResetting ? "animate-spin" : ""}`}
+              className={`h-5 w-5 ${isResetting ? 'animate-spin' : ''}`}
             />
-            <span>{isResetting ? "Resetting..." : "Reset View"}</span>
+            <span>{isResetting ? 'Resetting...' : 'Reset View'}</span>
           </button>
           <button
             onClick={handleSwitchModel}
             disabled={isChangingModel}
             className={`bg-indigo-600/80 hover:bg-indigo-500/80 text-white px-4 py-2 rounded-lg shadow-lg transition-colors duration-200 flex items-center space-x-2 ${
-              isChangingModel ? "opacity-50 cursor-not-allowed" : ""
+              isChangingModel ? 'opacity-50 cursor-not-allowed' : ''
             }`}
           >
-            {currentGender === "male" ? (
+            {currentGender === 'male' ? (
               <MaleIcon
-                className={`h-5 w-5 ${isChangingModel ? "animate-spin" : ""}`}
+                className={`h-5 w-5 ${isChangingModel ? 'animate-spin' : ''}`}
               />
             ) : (
               <FemaleIcon
-                className={`h-5 w-5 ${isChangingModel ? "animate-spin" : ""}`}
+                className={`h-5 w-5 ${isChangingModel ? 'animate-spin' : ''}`}
               />
             )}
             <span>
               {isChangingModel
-                ? "Loading..."
-                : `Switch to ${currentGender === "male" ? "Female" : "Male"}`}
+                ? 'Loading...'
+                : `Switch to ${currentGender === 'male' ? 'Female' : 'Male'}`}
             </span>
           </button>
         </div>
@@ -490,14 +498,14 @@ export default function HumanViewer({
       <div
         onMouseDown={startDragging}
         className="hidden md:block w-1 hover:w-2 bg-gray-800 hover:bg-indigo-600 cursor-ew-resize transition-all duration-150 active:bg-indigo-500 flex-shrink-0 z-40"
-        style={{ touchAction: "none" }}
+        style={{ touchAction: 'none' }}
       />
 
       {/* Right side - Popup with animation - Desktop Only */}
       <div
         className={`hidden md:block flex-shrink-0 transform ${
-          isDragging ? "" : "transition-all duration-300 ease-in-out"
-        } ${"translate-x-0 opacity-100"}`}
+          isDragging ? '' : 'transition-all duration-300 ease-in-out'
+        } ${'translate-x-0 opacity-100'}`}
         style={{
           width: `${chatWidth}px`,
           minWidth: `${minChatWidth}px`,
@@ -530,23 +538,6 @@ export default function HumanViewer({
           onSwitchModel={handleSwitchModel}
           onHeightChange={handleBottomSheetHeight}
           onQuestionClick={handleQuestionClick}
-        />
-      )}
-
-      {/* Questionnaire Overlay */}
-      {showQuestionnaire && !isGeneratingProgram && !exerciseProgram && (
-        <ExerciseQuestionnaire
-          onClose={handleBack}
-          onSubmit={handleQuestionnaireSubmit}
-        />
-      )}
-
-      {/* Exercise Program Page */}
-      {(isGeneratingProgram || exerciseProgram) && (
-        <ExerciseProgramPage
-          onBack={handleBack}
-          isLoading={isGeneratingProgram}
-          program={exerciseProgram}
         />
       )}
     </div>
