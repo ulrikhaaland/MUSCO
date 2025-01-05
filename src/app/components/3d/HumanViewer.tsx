@@ -379,7 +379,7 @@ export default function HumanViewer({
   };
 
   return (
-    <div className="flex flex-col md:flex-row relative h-screen w-screen overflow-hidden">
+    <div className="flex flex-col md:flex-row relative h-screen w-screen">
       {/* Fullscreen overlay when dragging */}
       {isDragging && (
         <div className="fixed inset-0 z-50" style={{ cursor: 'ew-resize' }} />

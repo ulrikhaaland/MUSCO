@@ -1,5 +1,5 @@
-import { Question } from '@/app/types';
-import { useState } from 'react';
+import { Question } from "@/app/types";
+import { useState } from "react";
 
 interface ExerciseQuestionnaireProps {
   onClose: () => void;
@@ -7,47 +7,47 @@ interface ExerciseQuestionnaireProps {
 }
 
 const ageRanges = [
-  'Under 20',
-  '20-30',
-  '30-40',
-  '40-50',
-  '50-60',
-  '60-70',
-  '70 or above',
+  "Under 20",
+  "20-30",
+  "30-40",
+  "40-50",
+  "50-60",
+  "60-70",
+  "70 or above",
 ];
 
 const exerciseFrequencyOptions = [
-  '0',
-  '1-2 times per week',
-  '2-3 times per week',
-  '4-5 times per week',
-  'Every day',
+  "0",
+  "1-2 times per week",
+  "2-3 times per week",
+  "4-5 times per week",
+  "Every day",
 ];
 
 const bodyParts = [
-  'neck',
-  'left shoulder',
-  'right shoulder',
-  'left upper arm',
-  'right upper arm',
-  'left elbow',
-  'right elbow',
-  'left forearm',
-  'right forearm',
-  'left hand',
-  'right hand',
-  'chest',
-  'torso',
-  'back',
-  'hip',
-  'right thigh',
-  'left thigh',
-  'left knee',
-  'right knee',
-  'left lower leg',
-  'right lower leg',
-  'left foot',
-  'right foot',
+  "neck",
+  "left shoulder",
+  "right shoulder",
+  "left upper arm",
+  "right upper arm",
+  "left elbow",
+  "right elbow",
+  "left forearm",
+  "right forearm",
+  "left hand",
+  "right hand",
+  "chest",
+  "torso",
+  "back",
+  "hip",
+  "right thigh",
+  "left thigh",
+  "left knee",
+  "right knee",
+  "left lower leg",
+  "right lower leg",
+  "left foot",
+  "right foot",
 ];
 
 export function ExerciseQuestionnaire({
@@ -57,14 +57,14 @@ export function ExerciseQuestionnaire({
   const [answers, setAnswers] = useState<
     Record<string, string | number | string[]>
   >({
-    age: '',
-    pastExercise: '',
-    plannedExercise: '',
+    age: "",
+    pastExercise: "",
+    plannedExercise: "",
     painAreas: [],
-    exercisePain: 'no',
+    exercisePain: "no",
     painfulExerciseAreas: [],
-    trainingType: '',
-    trainingLocation: '',
+    trainingType: "",
+    trainingLocation: "",
   });
 
   const handleInputChange = (
@@ -75,7 +75,7 @@ export function ExerciseQuestionnaire({
       ...prev,
       [field]: value,
       // Reset painful exercise areas if exercise pain is set to 'no'
-      ...(field === 'exercisePain' && value === 'no'
+      ...(field === "exercisePain" && value === "no"
         ? { painfulExerciseAreas: [] }
         : {}),
     }));
@@ -83,21 +83,18 @@ export function ExerciseQuestionnaire({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Create a copy of answers to modify
-    const submissionAnswers = { ...answers };
-    
+
     // Transform 'Both' to ['Strength', 'Cardio']
-    if (submissionAnswers.trainingType === 'Both') {
-      submissionAnswers.trainingType = 'Strength and Cardio';
+    if (answers.trainingType === "Both") {
+      answers.trainingType = "Strength and Cardio";
     }
-    
-    onSubmit(submissionAnswers);
+
+    onSubmit(answers);
   };
 
   return (
-    <div className="fixed top-0 bottom-0 left-0 right-0 flex flex-col bg-gray-900 z-50">
-      <div className="h-16 flex-none p-4 border-b border-gray-800">
+    <div className="fixed inset-0 flex flex-col bg-gray-900 z-50">
+      <div className="flex-none p-4 border-b border-gray-800">
         <button
           onClick={onClose}
           className="flex items-center text-gray-400 hover:text-white"
@@ -118,7 +115,7 @@ export function ExerciseQuestionnaire({
           Back to Model
         </button>
       </div>
-      <div className="max-h-[calc(100%-64px)] overflow-y-auto">
+      <div className="flex-1 overflow-y-auto">
         <div className="max-w-3xl mx-auto p-4 space-y-8">
           <div>
             <h2 className="text-3xl font-bold text-white">
@@ -144,7 +141,7 @@ export function ExerciseQuestionnaire({
                       name="age"
                       value={range}
                       checked={answers.age === range}
-                      onChange={(e) => handleInputChange('age', e.target.value)}
+                      onChange={(e) => handleInputChange("age", e.target.value)}
                       className="text-indigo-600 focus:ring-indigo-600"
                       required
                     />
@@ -168,7 +165,7 @@ export function ExerciseQuestionnaire({
                       value={option}
                       checked={answers.pastExercise === option}
                       onChange={(e) =>
-                        handleInputChange('pastExercise', e.target.value)
+                        handleInputChange("pastExercise", e.target.value)
                       }
                       className="text-indigo-600 focus:ring-indigo-600"
                       required
@@ -193,7 +190,7 @@ export function ExerciseQuestionnaire({
                       value={option}
                       checked={answers.plannedExercise === option}
                       onChange={(e) =>
-                        handleInputChange('plannedExercise', e.target.value)
+                        handleInputChange("plannedExercise", e.target.value)
                       }
                       className="text-indigo-600 focus:ring-indigo-600"
                       required
@@ -222,7 +219,7 @@ export function ExerciseQuestionnaire({
                           : (answers.painAreas as string[]).filter(
                               (p) => p !== part
                             );
-                        handleInputChange('painAreas', newPainAreas);
+                        handleInputChange("painAreas", newPainAreas);
                       }}
                       className="text-indigo-600 focus:ring-indigo-600"
                     />
@@ -238,7 +235,7 @@ export function ExerciseQuestionnaire({
                 Do you experience pain in any of these areas when you exercise?
               </label>
               <div className="space-y-2">
-                {['yes', 'no'].map((option) => (
+                {["yes", "no"].map((option) => (
                   <label key={option} className="flex items-center space-x-3">
                     <input
                       type="radio"
@@ -246,7 +243,7 @@ export function ExerciseQuestionnaire({
                       value={option}
                       checked={answers.exercisePain === option}
                       onChange={(e) =>
-                        handleInputChange('exercisePain', e.target.value)
+                        handleInputChange("exercisePain", e.target.value)
                       }
                       className="text-indigo-600 focus:ring-indigo-600"
                       required
@@ -258,7 +255,7 @@ export function ExerciseQuestionnaire({
             </div>
 
             {/* Painful Exercise Areas */}
-            {answers.exercisePain === 'yes' &&
+            {answers.exercisePain === "yes" &&
               Array.isArray(answers.painAreas) &&
               answers.painAreas.length > 0 && (
                 <div className="space-y-4">
@@ -284,7 +281,7 @@ export function ExerciseQuestionnaire({
                                   answers.painfulExerciseAreas as string[]
                                 ).filter((p) => p !== part);
                             handleInputChange(
-                              'painfulExerciseAreas',
+                              "painfulExerciseAreas",
                               newPainfulAreas
                             );
                           }}
@@ -303,7 +300,7 @@ export function ExerciseQuestionnaire({
                 What type of training do you want to do?
               </label>
               <div className="space-y-2">
-                {['Cardio', 'Strength', 'Both'].map((option) => (
+                {["Cardio", "Strength", "Both"].map((option) => (
                   <label key={option} className="flex items-center space-x-3">
                     <input
                       type="radio"
@@ -311,7 +308,7 @@ export function ExerciseQuestionnaire({
                       value={option}
                       checked={answers.trainingType === option}
                       onChange={(e) =>
-                        handleInputChange('trainingType', e.target.value)
+                        handleInputChange("trainingType", e.target.value)
                       }
                       className="text-indigo-600 focus:ring-indigo-600"
                       required
@@ -329,9 +326,9 @@ export function ExerciseQuestionnaire({
               </label>
               <div className="space-y-2">
                 {[
-                  'At a Gym with Equipment',
-                  'At Home with Dumbbells or Resistance Bands',
-                  'Outdoors (e.g., Running, Bodyweight Exercises)',
+                  "At a Gym with Equipment",
+                  "At Home with Dumbbells or Resistance Bands",
+                  "Outdoors (e.g., Running, Bodyweight Exercises)",
                 ].map((option) => (
                   <label key={option} className="flex items-center space-x-3">
                     <input
@@ -340,7 +337,7 @@ export function ExerciseQuestionnaire({
                       value={option}
                       checked={answers.trainingLocation === option}
                       onChange={(e) =>
-                        handleInputChange('trainingLocation', e.target.value)
+                        handleInputChange("trainingLocation", e.target.value)
                       }
                       className="text-indigo-600 focus:ring-indigo-600"
                       required
