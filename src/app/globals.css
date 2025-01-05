@@ -13,6 +13,7 @@ body {
   color: rgb(var(--foreground-rgb));
   height: 100%;
   overflow: hidden;
+  touch-action: pan-y;
 }
 
 * {
@@ -27,6 +28,7 @@ iframe {
   overflow: hidden;
   height: 100%;
   width: 100%;
+  touch-action: pan-y;
 }
 
 /* Bottom sheet custom styles */
@@ -65,12 +67,12 @@ iframe {
 
 [data-rsbs-scroll] {
   background: rgb(17, 24, 39) !important; /* bg-gray-900 */
-  /* overflow-y: auto !important; */
+  touch-action: pan-y !important;
 }
 
 [data-rsbs-content] {
   background: rgb(17, 24, 39) !important; /* bg-gray-900 */
-  /* overflow: hidden !important; */
+  touch-action: pan-y !important;
 }
 
 /* Bottom Sheet Styles */
