@@ -167,8 +167,12 @@ export default function MobileControls({
         getSnapPointIndex(currentSnapPoint) < 2
       ) {
         if (sheetRef.current) {
+          let snapPoint = getSnapPoints()[1];
+          if (contentHeight < snapPoint) {
+            snapPoint = contentHeight;
+          }
           setTimeout(() => {
-            sheetRef.current.snapTo(({ maxHeight }) => contentHeight);
+            sheetRef.current.snapTo(({ maxHeight }) => snapPoint);
           }, 200);
         }
       } else if (selectedGroup && isLoading && messages.length === 1) {

@@ -23,6 +23,7 @@ export function BottomSheetFooter({
         title: '',
         description: '',
         question: message,
+        asked: true,
       });
       setMessage('');
     }

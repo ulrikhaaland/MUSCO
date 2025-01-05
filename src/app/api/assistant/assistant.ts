@@ -1,4 +1,4 @@
-import { OpenAIMessage, ChatPayload } from '../../types';
+import { OpenAIMessage, ChatPayload, Question } from '../../types';
 
 interface AssistantResponse {
   assistantId: string;
@@ -55,9 +55,12 @@ export async function sendMessage(
   }) => void
 ): Promise<MessagesResponse> {
   const transformedPayload = {
-    ...payload,
-    previousFollowUpQuestions: payload.followUpQuestions,
-    followUpQuestions: undefined,
+    message: payload.message,
+    userPreferences: payload.userPreferences,
+    selectedBodyGroupName: payload.selectedBodyGroupName,
+    selectedBodyPart:
+      payload.selectedBodyPart || 'no body part of body group selected',
+    bodyPartsInSelectedGroup: payload.bodyPartsInSelectedGroup,
   };
 
   // Start both requests in parallel
@@ -85,10 +88,10 @@ export async function sendMessage(
       payload: {
         messages: [{ role: 'user', content: payload.message }],
         selectedBodyPartName: payload.selectedBodyPart?.name || '',
-        selectedGroupName: payload.selectedGroupName,
+        selectedGroupName: payload.selectedBodyGroupName,
         bodyPartsInSelectedGroup: payload.bodyPartsInSelectedGroup,
         previousQuestions: {
-          questions: payload.followUpQuestions || [],
+          questions: payload.previousQuestions || [],
           selected: payload.message,
         },
       },
@@ -202,15 +205,16 @@ export async function generateFollowUp(
   selectedBodyPartName: string,
   selectedGroupName: string,
   bodyPartsInSelectedGroup: string[],
-  previousQuestions?: {
-    questions: {
-      title: string;
-      description: string;
-      question: string;
-    }[];
-    selected?: string;
-  }
+  previousQuestions?: Question[]
 ) {
+  const payload = {
+    messages,
+    selectedBodyPartName: selectedBodyPartName,
+    selectedGroupName: selectedGroupName,
+    bodyPartsInSelectedGroup: bodyPartsInSelectedGroup,
+    previousQuestions: previousQuestions || [],
+  };
+
   const response = await fetch('/api/assistant', {
     method: 'POST',
     headers: {
@@ -218,13 +222,7 @@ export async function generateFollowUp(
     },
     body: JSON.stringify({
       action: 'generate_follow_up',
-      payload: {
-        messages,
-        selectedBodyPartName: selectedBodyPartName,
-        selectedGroupName: selectedGroupName,
-        bodyPartsInSelectedGroup: bodyPartsInSelectedGroup,
-        previousQuestions,
-      },
+      payload: payload,
     }),
   });
 

@@ -122,7 +122,6 @@ export async function getMessages(threadId: string) {
   }
 }
 
-// Generate follow-up questions using chat completions
 export async function generateFollowUpQuestions(context: {
   messages: { role: string; content: string }[];
   bodyGroup: string;
@@ -137,24 +136,37 @@ export async function generateFollowUpQuestions(context: {
   };
 }) {
   try {
-    const systemPrompt = `You are a follow-up question generator for a musculoskeletal learning app.
+    const systemPrompt = `You are a follow-up question generator for a musculoskeletal diagnosis app.
 
-Your task is to generate 3 engaging follow-up questions based on the conversation history and current context.
+Your task is to generate 3 targeted follow-up questions to help the user better identify the cause of their discomfort. The questions should guide the user through simple physical actions or inquiries to gather more information about their condition.
 
-Guidelines:
-1. Questions should naturally flow from the current conversation
-2. Avoid repeating previously suggested questions
-3. Focus on the current body part being discussed
-4. Each question should explore a different aspect (e.g., anatomy, exercises, injuries)
-5. Make questions specific and actionable
+### Guidelines:
+1. Questions should flow naturally from the conversation history and current focus area.
+2. Avoid repeating previously suggested questions.
+3. Focus on the current body group or part being discussed.
+4. Each question should explore different diagnostic angles:
+   - Symptom specifics (e.g., nature, duration, triggers of pain).
+   - Physical tests (e.g., movements to perform, actions that provoke pain).
+   - Possible causes (e.g., strain, posture, recent activities).
+5. Ensure questions are specific, actionable, and formatted as if the user is directly asking the assistant for guidance.
+
+### Question Formatting:
+- The "question" field must be phrased in first-person, where the user is asking the assistant for guidance on what to do next (e.g., "Should I try bending sideways to see if it changes the intensity of my discomfort?").
+- The "title" should be a short, engaging summary.
+
+### Examples:
+- Title: "Specific Movement Test"
+- Question: "Should I try bending sideways to see if it changes the intensity of my discomfort?"
+
+- Title: "Core Muscle Tension Test"
+- Question: "Should I try tightening my abdominal muscles to see if it changes my discomfort?"
 
 Return exactly 3 questions in the following JSON format:
 {
   "followUpQuestions": [
     {
       "title": "Brief, engaging title",
-      "description": "One-line preview of what will be learned",
-      "question": "The actual question to be asked"
+      "question": "The actual question phrased from the user's perspective asking for guidance"
     }
   ]
 }`;

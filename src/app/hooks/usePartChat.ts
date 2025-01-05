@@ -6,19 +6,34 @@ import { BodyPartGroup } from '../config/bodyPartGroups';
 
 const initialQuestions: Question[] = [
   {
-    title: 'Learn more',
-    description: `I want to learn more about the $part`,
-    question: `I want to learn more about the $part`,
+    title: 'Find the source of my pain',
+    description:
+      'Help me figure out what might be causing discomfort in the $part',
+    question:
+      'I’m experiencing discomfort in the $part. Can you help me find out what’s wrong?',
+    asked: false,
   },
   {
-    title: 'I have an issue',
-    description: `I need help with a problem related to the $part`,
-    question: `I need help with a problem related to the $part`,
+    title: 'Test my movement',
+    description:
+      'Guide me through a few quick movements to check for issues with the $part',
+    question:
+      'Can you walk me through some movements to check if there’s an issue with the $part?',
+    asked: false,
+  },
+  {
+    title: 'Learn about common problems',
+    description:
+      'What are some common issues people experience with the $part?',
+    question: 'What are some common issues or injuries related to the $part?',
+    asked: false,
   },
   {
     title: 'Explore exercises',
-    description: 'Show me exercises that can strengthen or improve the $part',
-    question: 'What exercises can strengthen or improve the $part?',
+    description:
+      'Show me exercises to improve the function and strength of the $part',
+    question: 'What exercises can help improve the $part?',
+    asked: false,
   },
 ];
 
@@ -54,6 +69,8 @@ export function usePartChat({ selectedPart, selectedGroup }: UsePartChatProps) {
     Question[]
   >(() => getInitialQuestions());
 
+  const [previousQuestions, setPreviousQuestions] = useState<Question[]>([]);
+
   // Update the questions when part changes
   useEffect(() => {
     if (selectedPart || selectedGroup) {
@@ -62,6 +79,7 @@ export function usePartChat({ selectedPart, selectedGroup }: UsePartChatProps) {
       );
     } else if (messages.length === 0) {
       setLocalFollowUpQuestions([]);
+      setPreviousQuestions([]);
     }
   }, [selectedPart, selectedGroup, messages.length]);
 
@@ -71,14 +89,17 @@ export function usePartChat({ selectedPart, selectedGroup }: UsePartChatProps) {
       setLocalFollowUpQuestions(chatFollowUpQuestions);
     }
   }, [chatFollowUpQuestions]);
-
   const handleOptionClick = (question: Question) => {
+    const prevQuestions = [...previousQuestions, ...localFollowUpQuestions];
+    setPreviousQuestions(prevQuestions);
+
     sendChatMessage(question.question, {
       userPreferences,
       selectedBodyPart: selectedPart || undefined,
-      selectedGroupName: selectedGroup?.name || '',
-      bodyPartsInSelectedGroup: selectedGroup?.parts.map((part) => part.name) || [],
-      followUpQuestions: chatFollowUpQuestions,
+      selectedBodyGroupName: selectedGroup?.name || '',
+      bodyPartsInSelectedGroup:
+        selectedGroup?.parts.map((part) => part.name) || [],
+      previousQuestions: prevQuestions,
     });
   };
 

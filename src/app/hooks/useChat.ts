@@ -5,13 +5,23 @@ import {
   sendMessage,
   generateFollowUp,
 } from '../api/assistant/assistant';
-import { ChatMessage, ChatPayload, Question, UserPreferences } from '../types';
+import {
+  ChatMessage,
+  ChatPayload,
+  Question,
+  UserPreferences,
+  AssistantResponse,
+} from '../types';
 
 export function useChat() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [userPreferences, setUserPreferences] = useState<UserPreferences | undefined>();
+  const [userPreferences, setUserPreferences] = useState<
+    UserPreferences | undefined
+  >();
   const [followUpQuestions, setFollowUpQuestions] = useState<Question[]>([]);
+  const [assistantResponse, setAssistantResponse] =
+    useState<AssistantResponse | null>(null);
   const threadIdRef = useRef<string | null>(null);
   const assistantIdRef = useRef<string | null>(null);
 
@@ -32,6 +42,7 @@ export function useChat() {
   const resetChat = () => {
     setMessages([]);
     setFollowUpQuestions([]);
+    setAssistantResponse(null);
     createThread().then(({ threadId }) => {
       threadIdRef.current = threadId;
     });
@@ -42,6 +53,7 @@ export function useChat() {
     chatPayload: Omit<ChatPayload, 'message'>
   ) => {
     if (isLoading) return;
+    setFollowUpQuestions([]);
     setIsLoading(true);
 
     try {
@@ -59,56 +71,140 @@ export function useChat() {
       };
       setMessages((prev) => [...prev, newMessage]);
 
-      // Start follow-up questions generation in parallel
+      // Start follow-up questions generation in parallel but don't use them yet
       const followUpPromise = generateFollowUp(
         [newMessage],
         chatPayload.selectedBodyPart?.name || '',
-        chatPayload.selectedGroupName || '',
+        chatPayload.selectedBodyGroupName || '',
         chatPayload.bodyPartsInSelectedGroup || [],
-        {
-          questions: chatPayload.followUpQuestions || [],
-          selected: messageContent,
-        }
+        chatPayload.previousQuestions || []
       );
 
-      // Handle follow-up questions when they arrive
-      followUpPromise.then(({ followUpQuestions: questions }) => {
-        if (questions) {
-          setFollowUpQuestions(questions);
-        }
-      }).catch(console.error);
+      let accumulatedContent = '';
+      let jsonDetected = false;
+      let hasAssistantQuestions = false;
+      let partialFollowUps: Question[] = [];
 
       // Send the message and handle streaming response
       await sendMessage(
         threadIdRef.current ?? '',
         payload,
         (content) => {
-          if (content) {
-            setMessages((prev) => {
-              const lastMessage = prev[prev.length - 1];
-              if (lastMessage?.role === 'assistant') {
+          if (content && !jsonDetected) {
+            // Check if this chunk contains any JSON-related content
+            if (content.includes('```') || content.toLowerCase().includes('json {')) {
+              jsonDetected = true;
+              // Split on either ``` or "json {"
+              const parts = content.split(/```|json \{/);
+              const textContent = parts[0].trim();
+              
+              if (textContent) {
+                setMessages((prev) => {
+                  const lastMessage = prev[prev.length - 1];
+                  if (lastMessage?.role === 'assistant') {
+                    return [
+                      ...prev.slice(0, -1),
+                      {
+                        ...lastMessage,
+                        content: lastMessage.content + textContent,
+                        timestamp: new Date(),
+                      },
+                    ];
+                  }
+                  return [
+                    ...prev,
+                    {
+                      id: `assistant-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+                      role: 'assistant',
+                      content: textContent,
+                      timestamp: new Date(),
+                    },
+                  ];
+                });
+              }
+              
+              // Start accumulating JSON content
+              accumulatedContent = content;
+            } else {
+              // Normal text content, update messages
+              setMessages((prev) => {
+                const lastMessage = prev[prev.length - 1];
+                if (lastMessage?.role === 'assistant') {
+                  return [
+                    ...prev.slice(0, -1),
+                    {
+                      ...lastMessage,
+                      content: lastMessage.content + content,
+                      timestamp: new Date(),
+                    },
+                  ];
+                }
                 return [
-                  ...prev.slice(0, -1),
+                  ...prev,
                   {
-                    ...lastMessage,
-                    content: lastMessage.content + content,
+                    id: `assistant-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+                    role: 'assistant',
+                    content,
                     timestamp: new Date(),
                   },
                 ];
+              });
+              accumulatedContent += content;
+            }
+          }
+
+          // Always accumulate content for JSON parsing, even if we're not updating messages
+          if (jsonDetected) {
+            accumulatedContent += content;
+            
+            // Try to find complete follow-up questions in the accumulated content
+            const questionMatches = accumulatedContent.match(/"question":\s*"[^"]*"/g);
+            if (questionMatches) {
+              for (const questionMatch of questionMatches) {
+                // Find the complete object containing this question
+                const questionEndIndex = accumulatedContent.indexOf('}', accumulatedContent.indexOf(questionMatch));
+                if (questionEndIndex !== -1) {
+                  // Look backwards for the start of this object
+                  const questionStartIndex = accumulatedContent.lastIndexOf('{', accumulatedContent.indexOf(questionMatch));
+                  if (questionStartIndex !== -1) {
+                    const questionObject = accumulatedContent.substring(questionStartIndex, questionEndIndex + 1);
+                    try {
+                      const question = JSON.parse(questionObject) as Question;
+                      if (!partialFollowUps.some(q => q.question === question.question)) {
+                        console.log('Found new question:', question);
+                        partialFollowUps = [...partialFollowUps, question];
+                        setFollowUpQuestions(partialFollowUps);
+                        hasAssistantQuestions = true;
+                      }
+                    } catch (e) {
+                      // Skip malformed question
+                    }
+                  }
+                }
               }
-              return [
-                ...prev,
-                {
-                  id: `assistant-${Date.now()}`,
-                  role: 'assistant',
-                  content,
-                  timestamp: new Date(),
-                },
-              ];
-            });
+            }
+            
+            // Still try to parse the complete response when possible
+            try {
+              const jsonMatch = accumulatedContent.match(/\{[\s\S]*\}/)?.[0];
+              if (jsonMatch) {
+                const response = JSON.parse(jsonMatch) as AssistantResponse;
+                setAssistantResponse(response);
+              }
+            } catch (e) {
+              // Complete JSON not available yet
+            }
           }
         }
       );
+
+      // After message is complete, check if we need to use generated follow-ups
+      if (!hasAssistantQuestions) {
+        const { followUpQuestions: generatedQuestions } = await followUpPromise;
+        if (generatedQuestions) {
+          setFollowUpQuestions(generatedQuestions);
+        }
+      }
     } catch (error) {
       console.error('Error sending message:', error);
     } finally {
@@ -121,6 +217,7 @@ export function useChat() {
     isLoading,
     userPreferences,
     followUpQuestions,
+    assistantResponse,
     resetChat,
     sendChatMessage,
     setFollowUpQuestions,

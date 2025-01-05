@@ -77,13 +77,18 @@ export interface ChatPayload {
   message: string;
   userPreferences?: UserPreferences;
   selectedBodyPart?: AnatomyPart;
-  selectedGroupName: string;
+  selectedBodyGroupName: string;
   bodyPartsInSelectedGroup: string[];
-  followUpQuestions?: Question[];
+  previousQuestions?: Question[];
 }
 
 export interface Question {
   title: string;
-  description: string;
   question: string;
+  asked?: boolean;
+}
+
+export interface AssistantResponse {
+  diagnosis: string | null;
+  followUpQuestions: Question[];
 }

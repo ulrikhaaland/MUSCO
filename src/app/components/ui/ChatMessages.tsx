@@ -29,10 +29,8 @@ export function ChatMessages({
   const [userHasScrolled, setUserHasScrolled] = useState(false);
   const [showScrollButton, setShowScrollButton] = useState(false);
   const lastScrollTop = useRef(0);
-  const lastMessage = messages[messages.length - 1];
-  const showLoading =
-    isLoading && (!lastMessage || lastMessage.role === 'user');
-  const showFollowUps = !isLoading && followUpQuestions.length > 0;
+  const showLoading = isLoading && messages.length === 1;
+  const showFollowUps = followUpQuestions.length > 0;
 
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const container = e.currentTarget;
@@ -82,15 +80,6 @@ export function ChatMessages({
       });
     }
   };
-
-  const QuestionShimmerItem = () => (
-    <button className="w-full text-left p-3 rounded-lg bg-gray-800 cursor-default">
-      <div className="animate-pulse space-y-2">
-        <div className="h-4 bg-gray-700 rounded w-3/4"></div>
-        <div className="h-3 bg-gray-700/50 rounded w-1/2"></div>
-      </div>
-    </button>
-  );
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden relative">
@@ -157,7 +146,7 @@ export function ChatMessages({
                   >
                     <div className="font-medium">{question.title}</div>
                     <div className="text-sm text-gray-400">
-                      {question.description}
+                      {question.question}
                     </div>
                   </button>
                 ))}
