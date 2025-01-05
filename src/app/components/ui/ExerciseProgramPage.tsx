@@ -60,8 +60,8 @@ export function ExerciseProgramPage({
   };
 
   return (
-    <div className="fixed top-0 bottom-0 left-0 right-0 flex flex-col bg-gray-900 z-50">
-      <div className="h-16 flex-none p-4 border-b border-gray-800">
+    <div className="fixed top-0 bottom-0 left-0 right-0 grid grid-rows-[64px_1fr] bg-gray-900 z-50">
+      <div className="border-b border-gray-800">
         <button
           onClick={onBack}
           className="flex items-center text-gray-400 hover:text-white"
@@ -82,8 +82,7 @@ export function ExerciseProgramPage({
           Back to Model
         </button>
       </div>
-
-      <div className="max-h-[calc(100%-64px)] overflow-y-auto">
+      <div className="overflow-y-auto">
         {isLoading ? (
           <div className="flex flex-col items-center justify-center h-full space-y-4">
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
