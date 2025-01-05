@@ -96,7 +96,7 @@ export function ExerciseQuestionnaire({
   };
 
   return (
-    <div className="fixed top-0 bottom-0 left-0 right-0 flex flex-col bg-gray-900 z-50">
+    <div className="fixed overflow-y-scroll overflow-x-hidden top-0 bottom-0 left-0 right-0 flex flex-col bg-gray-900 z-50">
       <div className="flex-none p-4 border-b border-gray-800">
         <button
           onClick={onClose}
