@@ -85,7 +85,9 @@ export interface ChatPayload {
 export interface Question {
   title: string;
   question: string;
+  generate?: boolean;
   asked?: boolean;
+  diagnosis?: string;
 }
 
 export interface AssistantResponse {

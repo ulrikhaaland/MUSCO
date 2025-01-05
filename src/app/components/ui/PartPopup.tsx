@@ -3,14 +3,16 @@ import { AnatomyPart } from '@/app/types/anatomy';
 import { ChatMessages } from './ChatMessages';
 import { usePartChat } from '@/app/hooks/usePartChat';
 import { BodyPartGroup } from '@/app/config/bodyPartGroups';
+import { Question } from '@/app/types/question';
 
 interface PartPopupProps {
   part: AnatomyPart | null;
   group: BodyPartGroup | null;
   onClose: () => void;
+  onQuestionClick?: (question: Question) => void;
 }
 
-export default function PartPopup({ part, group, onClose }: PartPopupProps) {
+export default function PartPopup({ part, group, onClose, onQuestionClick }: PartPopupProps) {
   const [message, setMessage] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const {
@@ -69,6 +71,14 @@ export default function PartPopup({ part, group, onClose }: PartPopupProps) {
     setUserHasScrolled(hasScrolled);
   };
 
+  const handleQuestionSelect = (question: Question) => {
+    if (question.generate && onQuestionClick) {
+      onQuestionClick(question);
+    } else {
+      handleOptionClick(question);
+    }
+  };
+
   return (
     <div className="h-full bg-gray-900 text-white p-6 flex flex-col">
       <div className="flex justify-between items-start mb-6 flex-shrink-0">
@@ -125,7 +135,7 @@ export default function PartPopup({ part, group, onClose }: PartPopupProps) {
             {followUpQuestions.map((question) => (
               <button
                 key={question.title}
-                onClick={() => handleOptionClick(question)}
+                onClick={() => handleQuestionSelect(question)}
                 className="w-full text-left p-3 rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors"
               >
                 <div className="font-medium">{question.title}</div>
@@ -141,7 +151,7 @@ export default function PartPopup({ part, group, onClose }: PartPopupProps) {
             messagesRef={messagesRef}
             isLoading={isLoading}
             followUpQuestions={followUpQuestions}
-            onQuestionClick={handleOptionClick}
+            onQuestionClick={handleQuestionSelect}
             onScroll={handleScroll}
             onUserScroll={handleUserScroll}
             part={part}

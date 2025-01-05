@@ -232,3 +232,37 @@ export async function generateFollowUp(
 
   return response.json();
 }
+
+export async function generateExerciseProgram(
+  diagnosis: string,
+  questionnaire: {
+    age: string;
+    pastExercise: string;
+    plannedExercise: string;
+    painAreas: string[];
+    exercisePain: boolean;
+    painfulAreas: string[];
+    trainingType: string;
+    trainingLocation: string;
+  }
+) {
+  const response = await fetch('/api/assistant', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      action: 'generate_exercise_program',
+      payload: {
+        diagnosis,
+        questionnaire,
+      },
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to generate exercise program');
+  }
+
+  return response.json();
+}

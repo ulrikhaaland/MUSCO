@@ -7,10 +7,9 @@ const openai = new OpenAI({
 });
 
 // Create or load the assistant
-export async function getOrCreateAssistant() {
+export async function getOrCreateAssistant(assistantId: string) {
   try {
-    const ASSISTANT_ID = process.env.OPENAI_ASSISTANT_ID!;
-    const assistant = await openai.beta.assistants.retrieve(ASSISTANT_ID);
+    const assistant = await openai.beta.assistants.retrieve(assistantId);
 
     return assistant;
   } catch (error) {
@@ -200,5 +199,67 @@ Return exactly 3 questions in the following JSON format:
   } catch (error) {
     console.error('Error generating follow-up questions:', error);
     throw new Error('Failed to generate follow-up questions');
+  }
+}
+
+interface TextContent {
+  type: 'text';
+  text: {
+    value: string;
+    annotations: any[];
+  };
+}
+
+export async function generateExerciseProgram(context: {
+  diagnosis: string;
+  questionnaire: {
+    age: string;
+    pastExercise: string;
+    plannedExercise: string;
+    painAreas: string[];
+    exercisePain: boolean;
+    painfulAreas: string[];
+    trainingType: string;
+    trainingLocation: string;
+  };
+}) {
+  try {
+    // Get the assistant
+    const assistant = await getOrCreateAssistant("asst_tqUYRDRatboM8tTqgJUV15p9");
+
+    // Create a new thread
+    const thread = await createThread();
+
+    // Transform context into a valid ChatPayload
+    const payload: ChatPayload = {
+      message: JSON.stringify(context),
+      selectedBodyGroupName: '',  // Not needed for exercise program
+      bodyPartsInSelectedGroup: [],  // Not needed for exercise program
+    };
+
+    // Add the message with the context to the thread
+    await addMessage(thread.id, payload);
+
+    // Run the assistant and wait for completion
+    const { messages } = await runAssistant(thread.id, assistant.id);
+    
+    // Get the last message (the assistant's response)
+    const lastMessage = messages[0];
+    if (!lastMessage) {
+      throw new Error('No response from assistant');
+    }
+
+    // Get the message content
+    const messageContent = lastMessage.content[0];
+    if (!messageContent || typeof messageContent !== 'object' || !('text' in messageContent)) {
+      throw new Error('Invalid message content format');
+    }
+
+    // Parse the response as JSON
+    const response = JSON.parse(messageContent.text.value);
+    return response;
+  } catch (error) {
+    console.error('Error generating exercise program:', error);
+    throw new Error('Failed to generate exercise program');
   }
 }

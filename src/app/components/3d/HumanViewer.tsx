@@ -11,6 +11,10 @@ import MaleIcon from '@mui/icons-material/Male';
 import FemaleIcon from '@mui/icons-material/Female';
 import MobileControls from './MobileControls';
 import { BodyPartGroup } from '@/app/config/bodyPartGroups';
+import { ExerciseQuestionnaire } from '../ui/ExerciseQuestionnaire';
+import { Question } from '@/app/types';
+import { generateExerciseProgram } from '@/app/api/assistant/assistant';
+import { ExerciseProgramPage } from '../ui/ExerciseProgramPage';
 
 interface HumanViewerProps {
   gender: Gender;
@@ -148,6 +152,9 @@ export default function HumanViewer({
 
   const [viewerUrl, setViewerUrl] = useState(() => getViewerUrl(gender));
   const [isChangingModel, setIsChangingModel] = useState(false);
+  const [diagnosis, setDiagnosis] = useState<string | null>(null);
+  const [isGeneratingProgram, setIsGeneratingProgram] = useState(false);
+  const [exerciseProgram, setExerciseProgram] = useState<any>(null);
 
   const handleSwitchModel = useCallback(() => {
     setIsChangingModel(true);
@@ -317,6 +324,60 @@ export default function HumanViewer({
     }
   };
 
+  const [showQuestionnaire, setShowQuestionnaire] = useState(false);
+  const [selectedQuestion, setSelectedQuestion] = useState<Question | null>(
+    null
+  );
+
+  const handleQuestionClick = (question: Question) => {
+    if (question.generate) {
+      setDiagnosis(question.diagnosis);
+      setSelectedQuestion(question);
+      setShowQuestionnaire(true);
+    }
+  };
+
+  const handleBack = () => {
+    setShowQuestionnaire(false);
+    setExerciseProgram(null);
+    setIsGeneratingProgram(false);
+  };
+
+  const handleQuestionnaireSubmit = async (
+    answers: Record<string, string | number | string[]>
+  ) => {
+    if (!selectedQuestion?.diagnosis) {
+      console.error('No diagnosis available');
+      return;
+    }
+
+    // Show program page with loading state immediately
+    setShowQuestionnaire(false);
+    setIsGeneratingProgram(true);
+
+    try {
+      const program = await generateExerciseProgram(
+        selectedQuestion.diagnosis,
+        {
+          age: String(answers.age),
+          pastExercise: String(answers.pastExercise),
+          plannedExercise: String(answers.plannedExercise),
+          painAreas: Array.isArray(answers.painAreas) ? answers.painAreas : [],
+          exercisePain: String(answers.exercisePain).toLowerCase() === 'true',
+          painfulAreas: Array.isArray(answers.painfulAreas) ? answers.painfulAreas : [],
+          trainingType: String(answers.trainingType),
+          trainingLocation: String(answers.trainingLocation),
+        }
+      );
+      console.log('=== program ===', program);
+      setExerciseProgram(program);
+    } catch (error) {
+      console.error('Error generating exercise program:', error);
+    } finally {
+      setIsGeneratingProgram(false);
+    }
+  };
+
   return (
     <div className="flex flex-col md:flex-row relative h-screen w-screen overflow-hidden">
       {/* Fullscreen overlay when dragging */}
@@ -414,24 +475,6 @@ export default function HumanViewer({
             </span>
           </button>
         </div>
-
-        {/* Mobile Controls */}
-        {isMobile && (
-          <MobileControls
-            isRotating={isRotating}
-            isResetting={isResetting}
-            isReady={isReady}
-            needsReset={needsReset}
-            selectedGroup={selectedGroup}
-            isChangingModel={isChangingModel}
-            currentGender={currentGender}
-            selectedPart={selectedPart}
-            onRotate={handleRotate}
-            onReset={handleReset}
-            onSwitchModel={handleSwitchModel}
-            onHeightChange={handleBottomSheetHeight}
-          />
-        )}
       </div>
 
       {/* Drag Handle - Desktop Only */}
@@ -456,14 +499,47 @@ export default function HumanViewer({
           <PartPopup
             part={selectedPart}
             group={selectedGroup}
-            onClose={() => {
-              console.log('Closing popup');
-              setSelectedPart(null);
-              setSelectedGroup(null);
-            }}
+            onClose={() => {}}
+            onQuestionClick={handleQuestionClick}
           />
         </div>
       </div>
+
+      {/* Mobile Controls */}
+      {isMobile && (
+        <MobileControls
+          isRotating={isRotating}
+          isResetting={isResetting}
+          isReady={isReady}
+          needsReset={needsReset}
+          selectedGroup={selectedGroup}
+          isChangingModel={isChangingModel}
+          currentGender={currentGender}
+          selectedPart={selectedPart}
+          onRotate={handleRotate}
+          onReset={handleReset}
+          onSwitchModel={handleSwitchModel}
+          onHeightChange={handleBottomSheetHeight}
+          onQuestionClick={handleQuestionClick}
+        />
+      )}
+
+      {/* Questionnaire Overlay */}
+      {showQuestionnaire && !isGeneratingProgram && !exerciseProgram && (
+        <ExerciseQuestionnaire
+          onClose={handleBack}
+          onSubmit={handleQuestionnaireSubmit}
+        />
+      )}
+
+      {/* Exercise Program Page */}
+      {(isGeneratingProgram || exerciseProgram) && (
+        <ExerciseProgramPage
+          onBack={handleBack}
+          isLoading={isGeneratingProgram}
+          program={exerciseProgram}
+        />
+      )}
     </div>
   );
 }

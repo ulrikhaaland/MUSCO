@@ -7,33 +7,27 @@ import { BodyPartGroup } from '../config/bodyPartGroups';
 const initialQuestions: Question[] = [
   {
     title: 'Find the source of my pain',
-    description:
-      'Help me figure out what might be causing discomfort in the $part',
     question:
       'I’m experiencing discomfort in the $part. Can you help me find out what’s wrong?',
     asked: false,
   },
   {
     title: 'Test my movement',
-    description:
-      'Guide me through a few quick movements to check for issues with the $part',
     question:
       'Can you walk me through some movements to check if there’s an issue with the $part?',
     asked: false,
   },
   {
     title: 'Learn about common problems',
-    description:
-      'What are some common issues people experience with the $part?',
     question: 'What are some common issues or injuries related to the $part?',
     asked: false,
   },
   {
     title: 'Explore exercises',
-    description:
-      'Show me exercises to improve the function and strength of the $part',
     question: 'What exercises can help improve the $part?',
     asked: false,
+    generate: true,
+    diagnosis: 'Torso ',
   },
 ];
 
@@ -43,7 +37,6 @@ function getInitialQuestions(name?: string): Question[] {
   // Always use the full part name
   return initialQuestions.map((q) => ({
     ...q,
-    description: q.description.replace('$part', name.toLowerCase()),
     question: q.question.replace('$part', name.toLowerCase()),
   }));
 }
@@ -63,6 +56,7 @@ export function usePartChat({ selectedPart, selectedGroup }: UsePartChatProps) {
     resetChat,
     sendChatMessage,
     setFollowUpQuestions,
+    diagnosis,
   } = useChat();
 
   const [localFollowUpQuestions, setLocalFollowUpQuestions] = useState<
@@ -70,6 +64,16 @@ export function usePartChat({ selectedPart, selectedGroup }: UsePartChatProps) {
   >(() => getInitialQuestions());
 
   const [previousQuestions, setPreviousQuestions] = useState<Question[]>([]);
+
+  useEffect(() => {
+    if (diagnosis) {
+      chatFollowUpQuestions.forEach((q) => {
+        if (q.generate === true) {
+          q.diagnosis = diagnosis;
+        }
+      });
+    }
+  }, [diagnosis]);
 
   // Update the questions when part changes
   useEffect(() => {

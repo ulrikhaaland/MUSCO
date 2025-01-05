@@ -6,6 +6,7 @@ import {
   streamRunResponse,
   getMessages,
   generateFollowUpQuestions,
+  generateExerciseProgram,
 } from '@/app/api/assistant/openai-server';
 import { OpenAIMessage } from '@/app/types';
 
@@ -15,7 +16,9 @@ export async function POST(request: Request) {
 
     switch (action) {
       case 'initialize': {
-        const assistant = await getOrCreateAssistant();
+        const assistant = await getOrCreateAssistant(
+          'asst_e1prLG3Ykh2ZCVspoAFMZPZC'
+        );
         const thread = await createThread();
         return NextResponse.json({
           assistantId: assistant.id,
@@ -32,7 +35,9 @@ export async function POST(request: Request) {
         }
 
         // Get the assistant ID
-        const assistant = await getOrCreateAssistant();
+        const assistant = await getOrCreateAssistant(
+          'asst_e1prLG3Ykh2ZCVspoAFMZPZC'
+        );
 
         // Add the message to the thread
         await addMessage(threadId, payload);
@@ -43,16 +48,12 @@ export async function POST(request: Request) {
           const customReadable = new ReadableStream({
             async start(controller) {
               try {
-                await streamRunResponse(
-                  threadId,
-                  assistant.id,
-                  (content) => {
-                    const chunk = encoder.encode(
-                      `data: ${JSON.stringify({ content })}\n\n`
-                    );
-                    controller.enqueue(chunk);
-                  }
-                );
+                await streamRunResponse(threadId, assistant.id, (content) => {
+                  const chunk = encoder.encode(
+                    `data: ${JSON.stringify({ content })}\n\n`
+                  );
+                  controller.enqueue(chunk);
+                });
                 controller.enqueue(encoder.encode('data: [DONE]\n\n'));
                 controller.close();
               } catch (error) {
@@ -96,6 +97,18 @@ export async function POST(request: Request) {
 
         const followUpQuestions = await generateFollowUpQuestions(payload);
         return NextResponse.json(followUpQuestions);
+      }
+
+      case 'generate_exercise_program': {
+        if (!payload) {
+          return NextResponse.json(
+            { error: 'Payload is required' },
+            { status: 400 }
+          );
+        }
+
+        const program = await generateExerciseProgram(payload);
+        return NextResponse.json(program);
       }
 
       default:

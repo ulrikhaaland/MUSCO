@@ -13,7 +13,7 @@ import MyLocationIcon from '@mui/icons-material/MyLocation';
 import CropRotateIcon from '@mui/icons-material/CropRotate';
 import MaleIcon from '@mui/icons-material/Male';
 import FemaleIcon from '@mui/icons-material/Female';
-import { Gender } from '@/app/types';
+import { Gender, Question } from '@/app/types';
 import { AnatomyPart } from '@/app/types/anatomy';
 import { ChatMessages } from '../ui/ChatMessages';
 import { usePartChat } from '@/app/hooks/usePartChat';
@@ -42,6 +42,7 @@ interface MobileControlsProps {
   onReset: () => void;
   onSwitchModel: () => void;
   onHeightChange?: (height: number) => void;
+  onQuestionClick?: (question: Question) => void;
 }
 
 // Use BottomSheet directly
@@ -55,12 +56,14 @@ export default function MobileControls({
   isReady,
   needsReset,
   selectedGroup,
+  isChangingModel,
   currentGender,
   selectedPart,
   onRotate,
   onReset,
   onSwitchModel,
   onHeightChange,
+  onQuestionClick,
 }: MobileControlsProps) {
   const [isMobile, setIsMobile] = useState(false);
   const [contentHeight, setContentHeight] = useState(0);
@@ -320,6 +323,14 @@ export default function MobileControls({
     };
     updateControlsPosition();
   }, []); // Just set initial position
+
+  const handleQuestionSelect = (question: Question) => {
+    if (question.generate && onQuestionClick) {
+      onQuestionClick(question);
+    } else {
+      handleOptionClick(question);
+    }
+  };
 
   return (
     <>
@@ -582,7 +593,7 @@ export default function MobileControls({
                   messages={messages}
                   isLoading={isLoading}
                   followUpQuestions={followUpQuestions}
-                  onQuestionClick={handleOptionClick}
+                  onQuestionClick={handleQuestionSelect}
                   part={selectedPart}
                   messagesRef={messagesRef}
                   isMobile={isMobile}
