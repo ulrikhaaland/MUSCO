@@ -93,7 +93,7 @@ export function ExerciseQuestionnaire({
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-900">
+    <div className="h-screen w-screen flex flex-col bg-gray-900">
       <div className="flex-none p-4 border-b border-gray-800">
         <button
           onClick={onClose}
