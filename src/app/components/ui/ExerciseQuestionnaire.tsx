@@ -93,7 +93,7 @@ export function ExerciseQuestionnaire({
   };
 
   return (
-    <div className="fixed inset-0 flex flex-col bg-gray-900 z-50">
+    <div className="fixed inset-0 flex flex-col bg-gray-900 z-50 h-[100dvh] overflow-hidden">
       <div className="flex-none p-4 border-b border-gray-800">
         <button
           onClick={onClose}
@@ -115,7 +115,7 @@ export function ExerciseQuestionnaire({
           Back to Model
         </button>
       </div>
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto -mr-2 pr-2">
         <div className="max-w-3xl mx-auto p-4 space-y-8">
           <div>
             <h2 className="text-3xl font-bold text-white">
