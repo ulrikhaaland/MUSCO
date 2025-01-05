@@ -21,7 +21,6 @@ export function BottomSheetFooter({
     if (message.trim() && !isLoading) {
       handleOptionClick({
         title: '',
-        description: '',
         question: message,
         asked: true,
       });
