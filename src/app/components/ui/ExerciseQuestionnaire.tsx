@@ -93,8 +93,8 @@ export function ExerciseQuestionnaire({
   };
 
   return (
-    <div className="fixed inset-0 bg-gray-900 z-50 flex flex-col">
-      <div className="flex-none p-4 border-b border-gray-800 bg-gray-900">
+    <div className="fixed inset-0 bg-gray-900 z-50 flex flex-col pointer-events-none">
+      <div className="flex-none p-4 border-b border-gray-800 bg-gray-900 pointer-events-auto">
         <button
           onClick={onClose}
           className="flex items-center text-gray-400 hover:text-white"
@@ -115,7 +115,7 @@ export function ExerciseQuestionnaire({
           Back to Model
         </button>
       </div>
-      <div className="flex-1 overflow-y-auto min-h-0 overscroll-y-contain -webkit-overflow-scrolling-touch">
+      <div className="flex-1 overflow-y-auto min-h-0 overscroll-y-contain -webkit-overflow-scrolling-touch pointer-events-auto">
         <div className="max-w-3xl mx-auto p-4 space-y-8 pb-safe">
           <div>
             <h2 className="text-3xl font-bold text-white">

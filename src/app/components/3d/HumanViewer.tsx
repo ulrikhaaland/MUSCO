@@ -408,7 +408,9 @@ export default function HumanViewer({
             id="myViewer"
             ref={iframeRef}
             src={viewerUrl}
-            className="absolute inset-0 w-full h-full border-0 bg-black"
+            className={`absolute inset-0 w-full h-full border-0 bg-black ${
+              showQuestionnaire || isGeneratingProgram || exerciseProgram ? 'pointer-events-none' : ''
+            }`}
             allow="fullscreen"
             allowFullScreen
             onLoad={() => {
