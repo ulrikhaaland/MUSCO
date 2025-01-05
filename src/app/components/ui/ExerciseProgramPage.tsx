@@ -54,8 +54,8 @@ export function ExerciseProgramPage({
   };
 
   return (
-    <div className="fixed inset-0 flex flex-col bg-gray-900 z-50 min-h-screen">
-      <div className="flex-none p-4 border-b border-gray-800">
+    <div className="fixed inset-0 bg-gray-900 z-50">
+      <div className="absolute top-0 left-0 right-0 p-4 border-b border-gray-800 bg-gray-900">
         <button
           onClick={onBack}
           className="flex items-center text-gray-400 hover:text-white"
@@ -77,7 +77,7 @@ export function ExerciseProgramPage({
         </button>
       </div>
 
-      <div className="flex-1 overflow-y-auto overscroll-contain webkit-overflow-scrolling-touch">
+      <div className="absolute top-[73px] left-0 right-0 bottom-0 overflow-y-auto">
         {isLoading ? (
           <div className="flex flex-col items-center justify-center h-full space-y-4">
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
