@@ -13,13 +13,15 @@ body {
   color: rgb(var(--foreground-rgb));
   height: 100%;
   overflow: hidden;
-  touch-action: pan-y;
+  touch-action: manipulation;
+  -webkit-overflow-scrolling: touch;
 }
 
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  touch-action: manipulation;
 }
 
 iframe {
@@ -28,13 +30,16 @@ iframe {
   overflow: hidden;
   height: 100%;
   width: 100%;
-  touch-action: pan-y;
+  touch-action: manipulation;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* Bottom sheet custom styles */
 [data-rsbs-overlay] {
   background: rgb(17, 24, 39) !important; /* bg-gray-900 */
   z-index: 3 !important;
+  touch-action: manipulation !important;
+  -webkit-overflow-scrolling: touch !important;
 }
 
 [data-rsbs-backdrop] {
@@ -43,6 +48,7 @@ iframe {
 
 [data-rsbs-root] {
   z-index: 3 !important;
+  touch-action: manipulation !important;
 }
 
 [data-rsbs-root]:after {
@@ -67,12 +73,14 @@ iframe {
 
 [data-rsbs-scroll] {
   background: rgb(17, 24, 39) !important; /* bg-gray-900 */
-  touch-action: pan-y !important;
+  touch-action: manipulation !important;
+  -webkit-overflow-scrolling: touch !important;
 }
 
 [data-rsbs-content] {
   background: rgb(17, 24, 39) !important; /* bg-gray-900 */
-  touch-action: pan-y !important;
+  touch-action: manipulation !important;
+  -webkit-overflow-scrolling: touch !important;
 }
 
 /* Bottom Sheet Styles */
