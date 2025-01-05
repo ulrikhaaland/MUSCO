@@ -27,7 +27,7 @@ const initialQuestions: Question[] = [
     question: 'What exercises can help improve the $part?',
     asked: false,
     generate: true,
-    diagnosis: 'Torso ',
+    diagnosis: '',
   },
 ];
 
