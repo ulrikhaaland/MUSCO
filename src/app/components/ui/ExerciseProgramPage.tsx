@@ -60,7 +60,7 @@ export function ExerciseProgramPage({
   };
 
   return (
-    <div className="fixed inset-0 flex flex-col bg-gray-900 z-50 h-[100dvh]">
+    <div className="fixed top-0 bottom-0 left-0 right-0 flex flex-col bg-gray-900 z-50">
       <div className="flex-none p-4 border-b border-gray-800">
         <button
           onClick={onBack}
@@ -83,7 +83,7 @@ export function ExerciseProgramPage({
         </button>
       </div>
 
-      <div className="flex-1 overflow-y-auto h-[calc(100dvh-64px)]">
+      <div className="flex-1 overflow-y-auto">
         {isLoading ? (
           <div className="flex flex-col items-center justify-center h-full space-y-4">
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>

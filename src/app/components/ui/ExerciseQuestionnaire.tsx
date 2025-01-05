@@ -83,11 +83,20 @@ export function ExerciseQuestionnaire({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(answers);
+    
+    // Create a copy of answers to modify
+    const submissionAnswers = { ...answers };
+    
+    // Transform 'Both' to ['Strength', 'Cardio']
+    if (submissionAnswers.trainingType === 'Both') {
+      submissionAnswers.trainingType = 'Strength and Cardio';
+    }
+    
+    onSubmit(submissionAnswers);
   };
 
   return (
-    <div className="fixed inset-0 flex flex-col bg-gray-900 z-50">
+    <div className="fixed top-0 bottom-0 left-0 right-0 flex flex-col bg-gray-900 z-50">
       <div className="flex-none p-4 border-b border-gray-800">
         <button
           onClick={onClose}

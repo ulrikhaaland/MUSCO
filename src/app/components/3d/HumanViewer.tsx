@@ -526,23 +526,19 @@ export default function HumanViewer({
 
       {/* Questionnaire Overlay */}
       {showQuestionnaire && !isGeneratingProgram && !exerciseProgram && (
-        <div className="fixed inset-0 z-50 bg-white h-[100dvh] flex flex-col">
-          <ExerciseQuestionnaire
-            onClose={handleBack}
-            onSubmit={handleQuestionnaireSubmit}
-          />
-        </div>
+        <ExerciseQuestionnaire
+          onClose={handleBack}
+          onSubmit={handleQuestionnaireSubmit}
+        />
       )}
 
       {/* Exercise Program Page */}
       {(isGeneratingProgram || exerciseProgram) && (
-        <div className="fixed inset-0 z-50 bg-white h-[100dvh] flex flex-col">
-          <ExerciseProgramPage
-            onBack={handleBack}
-            isLoading={isGeneratingProgram}
-            program={exerciseProgram}
-          />
-        </div>
+        <ExerciseProgramPage
+          onBack={handleBack}
+          isLoading={isGeneratingProgram}
+          program={exerciseProgram}
+        />
       )}
     </div>
   );
