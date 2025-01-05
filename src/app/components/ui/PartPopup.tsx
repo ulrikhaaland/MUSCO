@@ -3,7 +3,7 @@ import { AnatomyPart } from '@/app/types/anatomy';
 import { ChatMessages } from './ChatMessages';
 import { usePartChat } from '@/app/hooks/usePartChat';
 import { BodyPartGroup } from '@/app/config/bodyPartGroups';
-import { Question } from '@/app/types/question';
+import { Question } from '@/app/types';
 
 interface PartPopupProps {
   part: AnatomyPart | null;
@@ -58,7 +58,6 @@ export default function PartPopup({ part, group, onClose, onQuestionClick }: Par
     setMessage('');
     handleOptionClick({
       title: '',
-      description: '',
       question: messageContent,
     });
   };
@@ -140,7 +139,7 @@ export default function PartPopup({ part, group, onClose, onQuestionClick }: Par
               >
                 <div className="font-medium">{question.title}</div>
                 <div className="text-sm text-gray-400">
-                  {question.description}
+                  {question.question}
                 </div>
               </button>
             ))}
