@@ -388,8 +388,13 @@ export default function HumanViewer({
 
     // Add the event listener to the iframe when overlay is shown
     const iframe = iframeRef.current;
-    if (iframe && (showQuestionnaire || isGeneratingProgram || exerciseProgram)) {
-      iframe.addEventListener('touchmove', preventTouchMove, { passive: false });
+    if (
+      iframe &&
+      (showQuestionnaire || isGeneratingProgram || exerciseProgram)
+    ) {
+      iframe.addEventListener('touchmove', preventTouchMove, {
+        passive: false,
+      });
     }
 
     // Cleanup
@@ -404,14 +409,14 @@ export default function HumanViewer({
     <div className="flex flex-col md:flex-row relative h-screen w-screen overflow-hidden">
       {/* Fullscreen overlay when dragging */}
       {isDragging && (
-        <div
-          className="fixed inset-0 z-50"
-          style={{ cursor: 'ew-resize' }}
-        />
+        <div className="fixed inset-0 z-50" style={{ cursor: 'ew-resize' }} />
       )}
 
       {/* Model Viewer Container */}
-      <div className="flex-1 relative bg-black flex flex-col" style={{ minWidth: `${minChatWidth}px` }}>
+      <div
+        className="flex-1 relative bg-black flex flex-col"
+        style={{ minWidth: `${minChatWidth}px` }}
+      >
         {isChangingModel && (
           <div className="absolute inset-0 z-50 bg-black flex items-center justify-center">
             <div className="text-white text-xl">
@@ -426,9 +431,18 @@ export default function HumanViewer({
           className="md:h-screen w-full relative"
           style={{ height: isMobile ? modelContainerHeight : '100dvh' }}
         >
-          <div 
-            className={`absolute inset-0 ${(showQuestionnaire || isGeneratingProgram || exerciseProgram) ? 'pointer-events-none' : ''}`}
-            style={{ touchAction: (showQuestionnaire || isGeneratingProgram || exerciseProgram) ? 'none' : 'auto' }}
+          <div
+            className={`absolute inset-0 ${
+              showQuestionnaire || isGeneratingProgram || exerciseProgram
+                ? 'pointer-events-none'
+                : ''
+            }`}
+            style={{
+              touchAction:
+                showQuestionnaire || isGeneratingProgram || exerciseProgram
+                  ? 'none'
+                  : 'auto',
+            }}
           >
             <iframe
               id="myViewer"
@@ -446,15 +460,21 @@ export default function HumanViewer({
                 setIsChangingModel(false);
               }}
               style={{
-                opacity: (showQuestionnaire || isGeneratingProgram || exerciseProgram) ? 0.5 : 1,
-                transition: 'opacity 0.3s ease-in-out'
+                opacity:
+                  showQuestionnaire || isGeneratingProgram || exerciseProgram
+                    ? 0.5
+                    : 1,
+                transition: 'opacity 0.3s ease-in-out',
               }}
             />
           </div>
         </div>
 
         {/* Controls - Desktop */}
-        <div className="absolute bottom-6 right-6 md:flex space-x-4 hidden" style={{ zIndex: 1000 }}>
+        <div
+          className="absolute bottom-6 right-6 md:flex space-x-4 hidden"
+          style={{ zIndex: 1000 }}
+        >
           <button
             onClick={handleRotate}
             disabled={isRotating || isResetting || !isReady}
@@ -471,9 +491,7 @@ export default function HumanViewer({
           </button>
           <button
             onClick={handleReset}
-            disabled={
-              isResetting || (!needsReset && selectedGroup === null)
-            }
+            disabled={isResetting || (!needsReset && selectedGroup === null)}
             className={`bg-indigo-600/80 hover:bg-indigo-500/80 text-white px-4 py-2 rounded-lg shadow-lg transition-colors duration-200 flex items-center space-x-2 ${
               isResetting || (!needsReset && selectedGroup === null)
                 ? 'opacity-50 cursor-not-allowed'
@@ -494,23 +512,17 @@ export default function HumanViewer({
           >
             {currentGender === 'male' ? (
               <MaleIcon
-                className={`h-5 w-5 ${
-                  isChangingModel ? 'animate-spin' : ''
-                }`}
+                className={`h-5 w-5 ${isChangingModel ? 'animate-spin' : ''}`}
               />
             ) : (
               <FemaleIcon
-                className={`h-5 w-5 ${
-                  isChangingModel ? 'animate-spin' : ''
-                }`}
+                className={`h-5 w-5 ${isChangingModel ? 'animate-spin' : ''}`}
               />
             )}
             <span>
               {isChangingModel
                 ? 'Loading...'
-                : `Switch to ${
-                    currentGender === 'male' ? 'Female' : 'Male'
-                  }`}
+                : `Switch to ${currentGender === 'male' ? 'Female' : 'Male'}`}
             </span>
           </button>
         </div>
@@ -565,22 +577,40 @@ export default function HumanViewer({
 
       {/* Questionnaire Overlay */}
       {showQuestionnaire && !isGeneratingProgram && !exerciseProgram && (
-        <div className="ios-fixed bg-gray-900 bg-opacity-95 z-[1001]">
-          <ExerciseQuestionnaire
-            onClose={handleBack}
-            onSubmit={handleQuestionnaireSubmit}
-          />
+        <div 
+          className="fixed inset-0 bg-gray-900 bg-opacity-95 z-[1001] overflow-hidden"
+          style={{ WebkitOverflowScrolling: 'touch' }}
+          onTouchStart={(e) => {
+            // Prevent any touch events from reaching the iframe
+            e.stopPropagation();
+          }}
+        >
+          <div className="absolute inset-0 overflow-auto">
+            <ExerciseQuestionnaire
+              onClose={handleBack}
+              onSubmit={handleQuestionnaireSubmit}
+            />
+          </div>
         </div>
       )}
 
       {/* Exercise Program Overlay */}
       {(isGeneratingProgram || exerciseProgram) && (
-        <div className="ios-fixed bg-gray-900 bg-opacity-95 z-[1001]">
-          <ExerciseProgramPage
-            onBack={handleBack}
-            isLoading={isGeneratingProgram}
-            program={exerciseProgram}
-          />
+        <div 
+          className="fixed inset-0 bg-gray-900 bg-opacity-95 z-[1001] overflow-hidden"
+          style={{ WebkitOverflowScrolling: 'touch' }}
+          onTouchStart={(e) => {
+            // Prevent any touch events from reaching the iframe
+            e.stopPropagation();
+          }}
+        >
+          <div className="absolute inset-0 overflow-auto">
+            <ExerciseProgramPage
+              onBack={handleBack}
+              isLoading={isGeneratingProgram}
+              program={exerciseProgram}
+            />
+          </div>
         </div>
       )}
     </div>
