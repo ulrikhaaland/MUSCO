@@ -404,27 +404,31 @@ export default function HumanViewer({
           className="md:h-screen w-full relative"
           style={{ height: isMobile ? modelContainerHeight : '100dvh' }}
         >
-          <iframe
-            id="myViewer"
-            ref={iframeRef}
-            src={viewerUrl}
-            className="absolute inset-0 w-full h-full border-0 bg-black"
-            allow="fullscreen; accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-            loading="eager"
-            sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
-            referrerPolicy="origin"
-            onLoad={() => {
-              console.log('=== iframe loaded ===');
-              console.log('viewerUrl:', viewerUrl);
-              setIsChangingModel(false);
-            }}
-            style={{
-              pointerEvents: (showQuestionnaire || isGeneratingProgram || exerciseProgram) ? 'none' : 'auto',
-              opacity: (showQuestionnaire || isGeneratingProgram || exerciseProgram) ? 0.5 : 1,
-              transition: 'opacity 0.3s ease-in-out'
-            }}
-          />
+          <div 
+            className={`absolute inset-0 ${(showQuestionnaire || isGeneratingProgram || exerciseProgram) ? 'pointer-events-none' : ''}`}
+            style={{ touchAction: (showQuestionnaire || isGeneratingProgram || exerciseProgram) ? 'none' : 'auto' }}
+          >
+            <iframe
+              id="myViewer"
+              ref={iframeRef}
+              src={viewerUrl}
+              className="w-full h-full border-0 bg-black"
+              allow="fullscreen; accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              loading="eager"
+              sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+              referrerPolicy="origin"
+              onLoad={() => {
+                console.log('=== iframe loaded ===');
+                console.log('viewerUrl:', viewerUrl);
+                setIsChangingModel(false);
+              }}
+              style={{
+                opacity: (showQuestionnaire || isGeneratingProgram || exerciseProgram) ? 0.5 : 1,
+                transition: 'opacity 0.3s ease-in-out'
+              }}
+            />
+          </div>
         </div>
 
         {/* Controls - Desktop */}
@@ -539,7 +543,10 @@ export default function HumanViewer({
 
       {/* Questionnaire Overlay */}
       {showQuestionnaire && !isGeneratingProgram && !exerciseProgram && (
-        <div className="fixed inset-0 bg-gray-900 bg-opacity-95 z-[1001] overflow-y-auto">
+        <div 
+          className="fixed inset-0 bg-gray-900 bg-opacity-95 z-[1001] overflow-y-auto overscroll-none"
+          style={{ touchAction: 'pan-y' }}
+        >
           <div className="min-h-screen">
             <ExerciseQuestionnaire
               onClose={handleBack}
@@ -551,7 +558,10 @@ export default function HumanViewer({
 
       {/* Exercise Program Overlay */}
       {(isGeneratingProgram || exerciseProgram) && (
-        <div className="fixed inset-0 bg-gray-900 bg-opacity-95 z-[1001] overflow-y-auto">
+        <div 
+          className="fixed inset-0 bg-gray-900 bg-opacity-95 z-[1001] overflow-y-auto overscroll-none"
+          style={{ touchAction: 'pan-y' }}
+        >
           <div className="min-h-screen">
             <ExerciseProgramPage
               onBack={handleBack}
