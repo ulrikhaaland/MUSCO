@@ -399,6 +399,10 @@ export default function HumanViewer({
             </div>
           </div>
         )}
+        {/* Iframe interaction blocker when overlays are shown */}
+        {(showQuestionnaire || isGeneratingProgram || exerciseProgram) && (
+          <div className="absolute inset-0 z-[1000]" />
+        )}
         {/* Mobile: subtract 72px for controls, Desktop: full height */}
         <div
           className="md:h-screen w-full relative"
@@ -531,7 +535,7 @@ export default function HumanViewer({
 
       {/* Questionnaire Overlay */}
       {showQuestionnaire && !isGeneratingProgram && !exerciseProgram && (
-        <div className="fixed inset-0 bg-gray-900 bg-opacity-95 z-[1001] overflow-y-auto">
+        <div className="fixed inset-0 bg-gray-900 bg-opacity-95 z-[1001] overflow-y-auto overscroll-none">
           <div className="min-h-screen">
             <ExerciseQuestionnaire
               onClose={handleBack}
@@ -543,7 +547,7 @@ export default function HumanViewer({
 
       {/* Exercise Program Overlay */}
       {(isGeneratingProgram || exerciseProgram) && (
-        <div className="fixed inset-0 bg-gray-900 bg-opacity-95 z-[1001] overflow-y-auto">
+        <div className="fixed inset-0 bg-gray-900 bg-opacity-95 z-[1001] overflow-y-auto overscroll-none">
           <div className="min-h-screen">
             <ExerciseProgramPage
               onBack={handleBack}
