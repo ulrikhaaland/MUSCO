@@ -352,9 +352,10 @@ export default function HumanViewer({
 
     try {
       const program = await generateExerciseProgram(
-        selectedQuestion?.diagnosis ??
-          `Generate a program for body group: ${selectedGroup?.name} and/or body part: ${selectedPart?.name}`,
+        selectedQuestion?.diagnosis ?? '',
         {
+          selectedBodyGroup: selectedGroup?.name,
+          selectedBodyPart: selectedPart?.name,
           age: String(answers.age),
           pastExercise: String(answers.pastExercise),
           plannedExercise: String(answers.plannedExercise),

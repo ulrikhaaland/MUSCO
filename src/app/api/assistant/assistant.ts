@@ -236,6 +236,8 @@ export async function generateFollowUp(
 export async function generateExerciseProgram(
   diagnosis: string,
   questionnaire: {
+    selectedBodyGroup?: string;
+    selectedBodyPart?: string;
     age: string;
     pastExercise: string;
     plannedExercise: string;

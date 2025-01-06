@@ -79,10 +79,10 @@ export function ExerciseProgramPage({
 
       <div className="flex-1 overflow-y-auto">
         {isLoading ? (
-          <div className="flex flex-col items-center justify-center h-full space-y-4">
+          <div className="flex flex-col items-center justify-center h-full space-y-4 px-4 text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
             <div className="text-xl text-white font-medium">Creating Program</div>
-            <div className="text-gray-400">Please wait while we generate your personalized exercise program...</div>
+            <div className="text-gray-400 max-w-sm">Please wait while we generate your personalized exercise program...</div>
           </div>
         ) : program?.program ? (
           <div className="max-w-3xl mx-auto p-4 pb-32 space-y-8">
@@ -167,8 +167,12 @@ export function ExerciseProgramPage({
 
       {/* Video Modal */}
       {videoUrl && (
-        <div className="fixed inset-0 w-full h-full bg-black bg-opacity-75 flex items-center justify-center z-[9999]" style={{ position: 'fixed', top: 0, left: 0 }}>
-          <div className="relative w-full h-auto max-h-[80vh] md:max-w-4xl mx-4">
+        <div 
+          className="fixed inset-0 w-full h-full bg-black bg-opacity-75 flex items-center justify-center z-[9999]" 
+          style={{ position: 'fixed', top: 0, left: 0 }}
+          onClick={closeVideo}
+        >
+          <div className="relative w-full h-auto max-h-[80vh] md:max-w-4xl mx-4" onClick={(e) => e.stopPropagation()}>
             <button
               onClick={closeVideo}
               className="absolute -top-12 right-0 text-white hover:text-gray-300 z-[10000] p-2"
