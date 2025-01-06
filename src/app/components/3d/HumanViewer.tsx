@@ -1,6 +1,7 @@
 'use client';
 
 import { useRef, useState, useCallback, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Gender } from '../../types';
 import { AnatomyPart } from '../../types/anatomy';
 import PartPopup from '../ui/PartPopup';
@@ -378,6 +379,47 @@ export default function HumanViewer({
     }
   };
 
+  // Portal container for overlays
+  const [portalContainer, setPortalContainer] = useState<HTMLElement | null>(null);
+
+  useEffect(() => {
+    // Create portal container on mount
+    const container = document.createElement('div');
+    container.id = 'overlay-portal';
+    document.body.appendChild(container);
+    setPortalContainer(container);
+
+    // Cleanup on unmount
+    return () => {
+      document.body.removeChild(container);
+    };
+  }, []);
+
+  const overlayContent = (
+    <>
+      {/* Questionnaire Overlay */}
+      {showQuestionnaire && !isGeneratingProgram && !exerciseProgram && (
+        <div className="fixed inset-0 bg-gray-900 bg-opacity-95 z-[1001] overflow-auto">
+          <ExerciseQuestionnaire
+            onClose={handleBack}
+            onSubmit={handleQuestionnaireSubmit}
+          />
+        </div>
+      )}
+
+      {/* Exercise Program Overlay */}
+      {(isGeneratingProgram || exerciseProgram) && (
+        <div className="fixed inset-0 bg-gray-900 bg-opacity-95 z-[1001] overflow-auto">
+          <ExerciseProgramPage
+            onBack={handleBack}
+            isLoading={isGeneratingProgram}
+            program={exerciseProgram}
+          />
+        </div>
+      )}
+    </>
+  );
+
   return (
     <div className="flex flex-col md:flex-row relative h-screen w-screen overflow-hidden">
       {/* Fullscreen overlay when dragging */}
@@ -536,26 +578,8 @@ export default function HumanViewer({
         />
       )}
 
-      {/* Questionnaire Overlay */}
-      {showQuestionnaire && !isGeneratingProgram && !exerciseProgram && (
-        <div className="fixed inset-0 bg-gray-900 bg-opacity-95 z-[1001] overflow-auto">
-          <ExerciseQuestionnaire
-            onClose={handleBack}
-            onSubmit={handleQuestionnaireSubmit}
-          />
-        </div>
-      )}
-
-      {/* Exercise Program Overlay */}
-      {(isGeneratingProgram || exerciseProgram) && (
-        <div className="fixed inset-0 bg-gray-900 bg-opacity-95 z-[1001] overflow-auto">
-          <ExerciseProgramPage
-            onBack={handleBack}
-            isLoading={isGeneratingProgram}
-            program={exerciseProgram}
-          />
-        </div>
-      )}
+      {/* Render overlays in portal */}
+      {portalContainer && createPortal(overlayContent, portalContainer)}
     </div>
   );
 }
