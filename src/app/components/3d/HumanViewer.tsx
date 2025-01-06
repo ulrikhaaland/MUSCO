@@ -378,6 +378,28 @@ export default function HumanViewer({
     }
   };
 
+  // Add effect to handle touch events when overlay is shown
+  useEffect(() => {
+    const preventTouchMove = (e: TouchEvent) => {
+      if (showQuestionnaire || isGeneratingProgram || exerciseProgram) {
+        e.preventDefault();
+      }
+    };
+
+    // Add the event listener to the iframe when overlay is shown
+    const iframe = iframeRef.current;
+    if (iframe && (showQuestionnaire || isGeneratingProgram || exerciseProgram)) {
+      iframe.addEventListener('touchmove', preventTouchMove, { passive: false });
+    }
+
+    // Cleanup
+    return () => {
+      if (iframe) {
+        iframe.removeEventListener('touchmove', preventTouchMove);
+      }
+    };
+  }, [showQuestionnaire, isGeneratingProgram, exerciseProgram]);
+
   return (
     <div className="flex flex-col md:flex-row relative h-screen w-screen overflow-hidden">
       {/* Fullscreen overlay when dragging */}
@@ -544,8 +566,8 @@ export default function HumanViewer({
       {/* Questionnaire Overlay */}
       {showQuestionnaire && !isGeneratingProgram && !exerciseProgram && (
         <div 
-          className="fixed inset-0 bg-gray-900 bg-opacity-95 z-[1001] overflow-y-auto overscroll-none"
-          style={{ touchAction: 'pan-y' }}
+          className="fixed inset-0 bg-gray-900 bg-opacity-95 z-[1001] overflow-y-auto"
+          onTouchMove={(e) => e.stopPropagation()}
         >
           <div className="min-h-screen">
             <ExerciseQuestionnaire
@@ -559,8 +581,8 @@ export default function HumanViewer({
       {/* Exercise Program Overlay */}
       {(isGeneratingProgram || exerciseProgram) && (
         <div 
-          className="fixed inset-0 bg-gray-900 bg-opacity-95 z-[1001] overflow-y-auto overscroll-none"
-          style={{ touchAction: 'pan-y' }}
+          className="fixed inset-0 bg-gray-900 bg-opacity-95 z-[1001] overflow-y-auto"
+          onTouchMove={(e) => e.stopPropagation()}
         >
           <div className="min-h-screen">
             <ExerciseProgramPage
