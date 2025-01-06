@@ -77,11 +77,3 @@ iframe {
 [data-rsbs-header]:before {
   background: white !important;
 }
-
-/* iOS scrolling support */
-.overflow-y-auto {
-  -webkit-overflow-scrolling: touch !important;
-  overflow-y: auto !important;
-  height: 100% !important;
-  overscroll-behavior-y: contain !important;
-}

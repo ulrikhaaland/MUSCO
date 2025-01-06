@@ -17,12 +17,11 @@ function HumanViewerWrapper() {
 
   return <HumanViewer gender={gender} onGenderChange={handleGenderChange} />;
 }
+
 export default function Page() {
   return (
-    <div className="overflow-y-auto">
-      <Suspense fallback={<div>Loading...</div>}>
-        <HumanViewerWrapper />
-      </Suspense>
-    </div>
+    <Suspense fallback={<div>Loading...</div>}>
+      <HumanViewerWrapper />
+    </Suspense>
   );
 }
