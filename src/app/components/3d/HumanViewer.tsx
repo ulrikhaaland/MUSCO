@@ -338,6 +338,7 @@ export default function HumanViewer({
   };
 
   const handleBack = () => {
+    resetValues();
     setShowQuestionnaire(false);
     setExerciseProgram(null);
     setIsGeneratingProgram(false);
