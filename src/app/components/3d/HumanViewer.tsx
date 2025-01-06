@@ -566,10 +566,17 @@ export default function HumanViewer({
       {/* Questionnaire Overlay */}
       {showQuestionnaire && !isGeneratingProgram && !exerciseProgram && (
         <div 
-          className="fixed inset-0 bg-gray-900 bg-opacity-95 z-[1001] overflow-y-auto"
+          className="fixed inset-0 bg-gray-900 bg-opacity-95 z-[1001]"
           style={{ 
             WebkitOverflowScrolling: 'touch',
-            height: '100%'
+            overflow: 'auto',
+            overflowY: 'scroll',
+            height: '100%',
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0
           }}
         >
           <div className="min-h-screen">
@@ -584,10 +591,17 @@ export default function HumanViewer({
       {/* Exercise Program Overlay */}
       {(isGeneratingProgram || exerciseProgram) && (
         <div 
-          className="fixed inset-0 bg-gray-900 bg-opacity-95 z-[1001] overflow-y-auto"
+          className="fixed inset-0 bg-gray-900 bg-opacity-95 z-[1001]"
           style={{ 
             WebkitOverflowScrolling: 'touch',
-            height: '100%'
+            overflow: 'auto',
+            overflowY: 'scroll',
+            height: '100%',
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0
           }}
         >
           <div className="min-h-screen">
