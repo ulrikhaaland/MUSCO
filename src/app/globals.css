@@ -82,3 +82,8 @@ iframe {
 .overflow-auto {
   -webkit-overflow-scrolling: touch;
 }
+
+.ios-scroll {
+  -webkit-overflow-scrolling: touch;
+  overflow-y: auto;
+}
