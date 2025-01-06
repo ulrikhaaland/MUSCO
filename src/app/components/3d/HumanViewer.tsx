@@ -415,6 +415,9 @@ export default function HumanViewer({
             className="absolute inset-0 w-full h-full border-0 bg-black"
             allow="fullscreen"
             allowFullScreen
+            style={{
+              pointerEvents: showQuestionnaire || isGeneratingProgram || exerciseProgram ? 'none' : 'auto'
+            }}
             onLoad={() => {
               console.log('=== iframe loaded ===');
               console.log('viewerUrl:', viewerUrl);
@@ -535,40 +538,22 @@ export default function HumanViewer({
 
       {/* Questionnaire Overlay */}
       {showQuestionnaire && !isGeneratingProgram && !exerciseProgram && (
-        <div 
-          className="fixed inset-0 z-[1001]" 
-          style={{ 
-            touchAction: 'pan-y pinch-zoom',
-            WebkitOverflowScrolling: 'touch'
-          }}
-        >
-          <div className="absolute inset-0 bg-gray-900 bg-opacity-95" />
-          <div className="relative h-full overflow-y-auto">
-            <ExerciseQuestionnaire
-              onClose={handleBack}
-              onSubmit={handleQuestionnaireSubmit}
-            />
-          </div>
+        <div className="fixed inset-0 bg-gray-900 bg-opacity-95 z-[1001] overflow-auto">
+          <ExerciseQuestionnaire
+            onClose={handleBack}
+            onSubmit={handleQuestionnaireSubmit}
+          />
         </div>
       )}
 
       {/* Exercise Program Overlay */}
       {(isGeneratingProgram || exerciseProgram) && (
-        <div 
-          className="fixed inset-0 z-[1001]"
-          style={{ 
-            touchAction: 'pan-y pinch-zoom',
-            WebkitOverflowScrolling: 'touch'
-          }}
-        >
-          <div className="absolute inset-0 bg-gray-900 bg-opacity-95" />
-          <div className="relative h-full overflow-y-auto">
-            <ExerciseProgramPage
-              onBack={handleBack}
-              isLoading={isGeneratingProgram}
-              program={exerciseProgram}
-            />
-          </div>
+        <div className="fixed inset-0 bg-gray-900 bg-opacity-95 z-[1001] overflow-auto">
+          <ExerciseProgramPage
+            onBack={handleBack}
+            isLoading={isGeneratingProgram}
+            program={exerciseProgram}
+          />
         </div>
       )}
     </div>
