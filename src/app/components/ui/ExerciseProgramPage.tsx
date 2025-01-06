@@ -167,14 +167,14 @@ export function ExerciseProgramPage({
 
       {/* Video Modal */}
       {videoUrl && (
-        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
-          <div className="relative w-full max-w-4xl mx-4">
+        <div className="fixed inset-0 w-full h-full bg-black bg-opacity-75 flex items-center justify-center z-[9999]" style={{ position: 'fixed', top: 0, left: 0 }}>
+          <div className="relative w-full h-auto max-h-[80vh] md:max-w-4xl mx-4">
             <button
               onClick={closeVideo}
-              className="absolute -top-10 right-0 text-white hover:text-gray-300"
+              className="absolute -top-12 right-0 text-white hover:text-gray-300 z-[10000] p-2"
             >
               <svg
-                className="w-6 h-6"
+                className="w-8 h-8"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -187,13 +187,16 @@ export function ExerciseProgramPage({
                 />
               </svg>
             </button>
-            <div className="relative pt-[56.25%]">
-              <iframe
-                className="absolute inset-0 w-full h-full rounded-lg"
-                src={videoUrl}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              ></iframe>
+            <div className="w-full">
+              <div className="relative pt-[56.25%]">
+                <iframe
+                  className="absolute inset-0 w-full h-full rounded-lg"
+                  src={videoUrl}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  style={{ zIndex: 10000 }}
+                ></iframe>
+              </div>
             </div>
           </div>
         </div>
