@@ -100,12 +100,12 @@ export function ExerciseProgramPage({
                   <div className="space-y-4">
                     {day.exercises.map((exercise, index) => (
                       <div key={index} className="bg-gray-700 rounded-lg p-4">
-                        <div className="flex justify-between items-start">
-                          <h4 className="text-lg font-medium text-white">{exercise.name}</h4>
+                        <div className="flex justify-between items-start gap-4">
+                          <h4 className="text-lg font-medium text-white flex-1">{exercise.name}</h4>
                           {exercise.videoUrl && (
                             <button
                               onClick={() => handleVideoClick(exercise.videoUrl!)}
-                              className="flex items-center space-x-1 bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-1 rounded-md text-sm"
+                              className="flex items-center space-x-1 bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-1 rounded-md text-sm flex-shrink-0"
                             >
                               <svg
                                 className="w-4 h-4"
