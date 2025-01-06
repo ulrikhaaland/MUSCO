@@ -566,8 +566,7 @@ export default function HumanViewer({
       {/* Questionnaire Overlay */}
       {showQuestionnaire && !isGeneratingProgram && !exerciseProgram && (
         <div 
-          className="fixed inset-0 bg-gray-900 bg-opacity-95 z-[1001]"
-          style={{ WebkitOverflowScrolling: 'touch' }}
+          className="fixed inset-0 bg-gray-900 bg-opacity-95 z-[1001] ios-scroll"
         >
           <ExerciseQuestionnaire
             onClose={handleBack}
@@ -579,8 +578,7 @@ export default function HumanViewer({
       {/* Exercise Program Overlay */}
       {(isGeneratingProgram || exerciseProgram) && (
         <div 
-          className="fixed inset-0 bg-gray-900 bg-opacity-95 z-[1001]"
-          style={{ WebkitOverflowScrolling: 'touch' }}
+          className="fixed inset-0 bg-gray-900 bg-opacity-95 z-[1001] ios-scroll"
         >
           <ExerciseProgramPage
             onBack={handleBack}

@@ -77,7 +77,7 @@ export function ExerciseProgramPage({
         </button>
       </div>
 
-      <div className="flex-1 overflow-y-auto -webkit-overflow-scrolling-touch">
+      <div className="flex-1 ios-scroll">
         {isLoading ? (
           <div className="flex flex-col items-center justify-center h-full space-y-4 px-4 text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
