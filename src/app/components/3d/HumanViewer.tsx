@@ -346,25 +346,23 @@ export default function HumanViewer({
   const handleQuestionnaireSubmit = async (
     answers: Record<string, string | number | string[]>
   ) => {
-    if (!selectedQuestion?.diagnosis) {
-      console.error('No diagnosis available');
-      return;
-    }
-
     // Show program page with loading state immediately
     setShowQuestionnaire(false);
     setIsGeneratingProgram(true);
 
     try {
       const program = await generateExerciseProgram(
-        selectedQuestion.diagnosis,
+        selectedQuestion?.diagnosis ??
+          `Generate a program for body group: ${selectedGroup?.name} and/or body part: ${selectedPart?.name}`,
         {
           age: String(answers.age),
           pastExercise: String(answers.pastExercise),
           plannedExercise: String(answers.plannedExercise),
           painAreas: Array.isArray(answers.painAreas) ? answers.painAreas : [],
           exercisePain: String(answers.exercisePain).toLowerCase() === 'true',
-          painfulAreas: Array.isArray(answers.painfulAreas) ? answers.painfulAreas : [],
+          painfulAreas: Array.isArray(answers.painfulAreas)
+            ? answers.painfulAreas
+            : [],
           trainingType: String(answers.trainingType),
           trainingLocation: String(answers.trainingLocation),
         }
@@ -386,7 +384,7 @@ export default function HumanViewer({
           onClose={handleBack}
           onSubmit={handleQuestionnaireSubmit}
         />
-      ) : (isGeneratingProgram || exerciseProgram) ? (
+      ) : isGeneratingProgram || exerciseProgram ? (
         <ExerciseProgramPage
           onBack={handleBack}
           isLoading={isGeneratingProgram}
@@ -396,7 +394,10 @@ export default function HumanViewer({
         <div className="flex flex-col md:flex-row relative h-screen w-screen overflow-hidden">
           {/* Fullscreen overlay when dragging */}
           {isDragging && (
-            <div className="fixed inset-0 z-50" style={{ cursor: 'ew-resize' }} />
+            <div
+              className="fixed inset-0 z-50"
+              style={{ cursor: 'ew-resize' }}
+            />
           )}
 
           {/* Model Viewer Container */}
@@ -408,7 +409,8 @@ export default function HumanViewer({
               <div className="absolute inset-0 z-50 bg-black flex items-center justify-center">
                 <div className="text-white text-xl">
                   Loading{' '}
-                  {targetGender?.charAt(0).toUpperCase() + targetGender?.slice(1)}{' '}
+                  {targetGender?.charAt(0).toUpperCase() +
+                    targetGender?.slice(1)}{' '}
                   Model...
                 </div>
               </div>
@@ -454,7 +456,9 @@ export default function HumanViewer({
               </button>
               <button
                 onClick={handleReset}
-                disabled={isResetting || (!needsReset && selectedGroup === null)}
+                disabled={
+                  isResetting || (!needsReset && selectedGroup === null)
+                }
                 className={`bg-indigo-600/80 hover:bg-indigo-500/80 text-white px-4 py-2 rounded-lg shadow-lg transition-colors duration-200 flex items-center space-x-2 ${
                   isResetting || (!needsReset && selectedGroup === null)
                     ? 'opacity-50 cursor-not-allowed'
@@ -475,17 +479,23 @@ export default function HumanViewer({
               >
                 {currentGender === 'male' ? (
                   <MaleIcon
-                    className={`h-5 w-5 ${isChangingModel ? 'animate-spin' : ''}`}
+                    className={`h-5 w-5 ${
+                      isChangingModel ? 'animate-spin' : ''
+                    }`}
                   />
                 ) : (
                   <FemaleIcon
-                    className={`h-5 w-5 ${isChangingModel ? 'animate-spin' : ''}`}
+                    className={`h-5 w-5 ${
+                      isChangingModel ? 'animate-spin' : ''
+                    }`}
                   />
                 )}
                 <span>
                   {isChangingModel
                     ? 'Loading...'
-                    : `Switch to ${currentGender === 'male' ? 'Female' : 'Male'}`}
+                    : `Switch to ${
+                        currentGender === 'male' ? 'Female' : 'Male'
+                      }`}
                 </span>
               </button>
             </div>
