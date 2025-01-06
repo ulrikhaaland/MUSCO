@@ -565,51 +565,39 @@ export default function HumanViewer({
 
       {/* Questionnaire Overlay */}
       {showQuestionnaire && !isGeneratingProgram && !exerciseProgram && (
-        <div 
-          className="fixed inset-0 bg-gray-900 bg-opacity-95 z-[1001]"
-          style={{ 
-            WebkitOverflowScrolling: 'touch',
-            overflow: 'auto',
-            overflowY: 'scroll',
-            height: '100%',
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0
-          }}
-        >
-          <div className="min-h-screen">
-            <ExerciseQuestionnaire
-              onClose={handleBack}
-              onSubmit={handleQuestionnaireSubmit}
-            />
+        <div className="absolute inset-0 z-[1001] bg-gray-900 bg-opacity-95">
+          <div 
+            className="absolute inset-0 overflow-auto"
+            style={{ 
+              WebkitOverflowScrolling: 'touch'
+            }}
+          >
+            <div className="min-h-full w-full">
+              <ExerciseQuestionnaire
+                onClose={handleBack}
+                onSubmit={handleQuestionnaireSubmit}
+              />
+            </div>
           </div>
         </div>
       )}
 
       {/* Exercise Program Overlay */}
       {(isGeneratingProgram || exerciseProgram) && (
-        <div 
-          className="fixed inset-0 bg-gray-900 bg-opacity-95 z-[1001]"
-          style={{ 
-            WebkitOverflowScrolling: 'touch',
-            overflow: 'auto',
-            overflowY: 'scroll',
-            height: '100%',
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0
-          }}
-        >
-          <div className="min-h-screen">
-            <ExerciseProgramPage
-              onBack={handleBack}
-              isLoading={isGeneratingProgram}
-              program={exerciseProgram}
-            />
+        <div className="absolute inset-0 z-[1001] bg-gray-900 bg-opacity-95">
+          <div 
+            className="absolute inset-0 overflow-auto"
+            style={{ 
+              WebkitOverflowScrolling: 'touch'
+            }}
+          >
+            <div className="min-h-full w-full">
+              <ExerciseProgramPage
+                onBack={handleBack}
+                isLoading={isGeneratingProgram}
+                program={exerciseProgram}
+              />
+            </div>
           </div>
         </div>
       )}
