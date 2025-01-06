@@ -565,40 +565,22 @@ export default function HumanViewer({
 
       {/* Questionnaire Overlay */}
       {showQuestionnaire && !isGeneratingProgram && !exerciseProgram && (
-        <div className="absolute inset-0 z-[1001] bg-gray-900 bg-opacity-95">
-          <div 
-            className="absolute inset-0 overflow-auto"
-            style={{ 
-              WebkitOverflowScrolling: 'touch'
-            }}
-          >
-            <div className="min-h-full w-full">
-              <ExerciseQuestionnaire
-                onClose={handleBack}
-                onSubmit={handleQuestionnaireSubmit}
-              />
-            </div>
-          </div>
+        <div className="fixed inset-0 z-[1001] bg-gray-900 bg-opacity-95 overflow-y-scroll" style={{ WebkitOverflowScrolling: 'touch' }}>
+          <ExerciseQuestionnaire
+            onClose={handleBack}
+            onSubmit={handleQuestionnaireSubmit}
+          />
         </div>
       )}
 
       {/* Exercise Program Overlay */}
       {(isGeneratingProgram || exerciseProgram) && (
-        <div className="absolute inset-0 z-[1001] bg-gray-900 bg-opacity-95">
-          <div 
-            className="absolute inset-0 overflow-auto"
-            style={{ 
-              WebkitOverflowScrolling: 'touch'
-            }}
-          >
-            <div className="min-h-full w-full">
-              <ExerciseProgramPage
-                onBack={handleBack}
-                isLoading={isGeneratingProgram}
-                program={exerciseProgram}
-              />
-            </div>
-          </div>
+        <div className="fixed inset-0 z-[1001] bg-gray-900 bg-opacity-95 overflow-y-scroll" style={{ WebkitOverflowScrolling: 'touch' }}>
+          <ExerciseProgramPage
+            onBack={handleBack}
+            isLoading={isGeneratingProgram}
+            program={exerciseProgram}
+          />
         </div>
       )}
     </div>
