@@ -132,7 +132,7 @@ export function ChatMessages({
               <LoadingMessage />
             </>
           )}
-
+{/* new deployment */}
           {showFollowUps && (
             <div className={`space-y-2  ${messages.length > 0 ? 'pb-4' : ''}`}>
               <div className="space-y-2">
