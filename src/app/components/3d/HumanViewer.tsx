@@ -535,8 +535,15 @@ export default function HumanViewer({
 
       {/* Questionnaire Overlay */}
       {showQuestionnaire && !isGeneratingProgram && !exerciseProgram && (
-        <div className="fixed inset-0 bg-gray-900 bg-opacity-95 z-[1001] overflow-y-auto overscroll-none">
-          <div className="min-h-screen">
+        <div 
+          className="fixed inset-0 z-[1001]" 
+          style={{ 
+            touchAction: 'pan-y pinch-zoom',
+            WebkitOverflowScrolling: 'touch'
+          }}
+        >
+          <div className="absolute inset-0 bg-gray-900 bg-opacity-95" />
+          <div className="relative h-full overflow-y-auto">
             <ExerciseQuestionnaire
               onClose={handleBack}
               onSubmit={handleQuestionnaireSubmit}
@@ -547,8 +554,15 @@ export default function HumanViewer({
 
       {/* Exercise Program Overlay */}
       {(isGeneratingProgram || exerciseProgram) && (
-        <div className="fixed inset-0 bg-gray-900 bg-opacity-95 z-[1001] overflow-y-auto overscroll-none">
-          <div className="min-h-screen">
+        <div 
+          className="fixed inset-0 z-[1001]"
+          style={{ 
+            touchAction: 'pan-y pinch-zoom',
+            WebkitOverflowScrolling: 'touch'
+          }}
+        >
+          <div className="absolute inset-0 bg-gray-900 bg-opacity-95" />
+          <div className="relative h-full overflow-y-auto">
             <ExerciseProgramPage
               onBack={handleBack}
               isLoading={isGeneratingProgram}
