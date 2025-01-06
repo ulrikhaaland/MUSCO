@@ -575,41 +575,23 @@ export default function HumanViewer({
         />
       )}
 
-      {/* Questionnaire Overlay */}
-      {showQuestionnaire && !isGeneratingProgram && !exerciseProgram && (
-        <div 
-          className="fixed inset-0 bg-gray-900 bg-opacity-95 z-[1001] overflow-hidden"
-          style={{ WebkitOverflowScrolling: 'touch' }}
-          onTouchStart={(e) => {
-            // Prevent any touch events from reaching the iframe
-            e.stopPropagation();
-          }}
-        >
-          <div className="absolute inset-0 overflow-auto">
-            <ExerciseQuestionnaire
-              onClose={handleBack}
-              onSubmit={handleQuestionnaireSubmit}
-            />
-          </div>
-        </div>
-      )}
-
-      {/* Exercise Program Overlay */}
-      {(isGeneratingProgram || exerciseProgram) && (
-        <div 
-          className="fixed inset-0 bg-gray-900 bg-opacity-95 z-[1001] overflow-hidden"
-          style={{ WebkitOverflowScrolling: 'touch' }}
-          onTouchStart={(e) => {
-            // Prevent any touch events from reaching the iframe
-            e.stopPropagation();
-          }}
-        >
-          <div className="absolute inset-0 overflow-auto">
-            <ExerciseProgramPage
-              onBack={handleBack}
-              isLoading={isGeneratingProgram}
-              program={exerciseProgram}
-            />
+      {/* Overlay Content */}
+      {(showQuestionnaire || isGeneratingProgram || exerciseProgram) && (
+        <div className="fixed inset-0 bg-gray-900 bg-opacity-95 z-[1001]">
+          <div className="h-full overflow-y-auto -webkit-overflow-scrolling-touch">
+            {showQuestionnaire && !isGeneratingProgram && !exerciseProgram && (
+              <ExerciseQuestionnaire
+                onClose={handleBack}
+                onSubmit={handleQuestionnaireSubmit}
+              />
+            )}
+            {(isGeneratingProgram || exerciseProgram) && (
+              <ExerciseProgramPage
+                onBack={handleBack}
+                isLoading={isGeneratingProgram}
+                program={exerciseProgram}
+              />
+            )}
           </div>
         </div>
       )}

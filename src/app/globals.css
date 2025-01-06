@@ -79,11 +79,9 @@ iframe {
 }
 
 /* iOS scrolling support */
-.overflow-auto {
-  -webkit-overflow-scrolling: touch;
-}
-
-.ios-scroll {
-  -webkit-overflow-scrolling: touch;
-  overflow-y: auto;
+.overflow-y-auto {
+  -webkit-overflow-scrolling: touch !important;
+  overflow-y: auto !important;
+  height: 100% !important;
+  overscroll-behavior-y: contain !important;
 }
