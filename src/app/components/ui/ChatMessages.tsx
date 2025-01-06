@@ -140,11 +140,22 @@ export function ChatMessages({
                   <button
                     key={question.title}
                     onClick={() => onQuestionClick?.(question)}
-                    className={`w-full text-left px-2 rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors ${
+                    className={`w-full text-left px-2 rounded-lg transition-colors ${
+                      question.generate 
+                        ? 'bg-gradient-to-r from-indigo-900 to-indigo-800 hover:from-indigo-800 hover:to-indigo-700'
+                        : 'bg-gray-800 hover:bg-gray-700'
+                    } ${
                       isMobile ? 'py-1' : 'py-2'
                     }`}
                   >
-                    <div className="font-medium">{question.title}</div>
+                    <div className="flex items-center justify-between">
+                      <div className="font-medium">{question.title}</div>
+                      {question.generate && (
+                        <div className="text-xs px-2 py-0.5 bg-indigo-600 rounded-full ml-2">
+                          Generate program
+                        </div>
+                      )}
+                    </div>
                     <div className="text-sm text-gray-400">
                       {question.question}
                     </div>
