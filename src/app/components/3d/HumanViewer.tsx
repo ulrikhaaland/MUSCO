@@ -567,10 +567,7 @@ export default function HumanViewer({
       {showQuestionnaire && !isGeneratingProgram && !exerciseProgram && (
         <div 
           className="fixed inset-0 bg-gray-900 bg-opacity-95 z-[1001] overflow-y-auto"
-          style={{ 
-            WebkitOverflowScrolling: 'touch',
-            height: '100%'
-          }}
+          onTouchMove={(e) => e.stopPropagation()}
         >
           <div className="min-h-screen">
             <ExerciseQuestionnaire
@@ -585,10 +582,7 @@ export default function HumanViewer({
       {(isGeneratingProgram || exerciseProgram) && (
         <div 
           className="fixed inset-0 bg-gray-900 bg-opacity-95 z-[1001] overflow-y-auto"
-          style={{ 
-            WebkitOverflowScrolling: 'touch',
-            height: '100%'
-          }}
+          onTouchMove={(e) => e.stopPropagation()}
         >
           <div className="min-h-screen">
             <ExerciseProgramPage
