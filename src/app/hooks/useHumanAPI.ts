@@ -67,10 +67,10 @@ export function useHumanAPI({
   const selectionEventRef = useRef<any>(null);
   const previousSelectedPartGroupRef = useRef<BodyPartGroup | null>(null);
   const selectedPartRef = useRef<AnatomyPart | null>(null);
+  const isXrayEnabledRef = useRef<boolean>(false);
   const [currentGender, setCurrentGender] = useState<Gender>(initialGender);
   const [needsReset, setNeedsReset] = useState(false);
   const [isReady, setIsReady] = useState(false);
-  const [isXrayEnabled, setIsXrayEnabled] = useState(false);
   // Function to check if camera has moved
   const checkCameraPosition = useCallback(() => {
     if (!humanRef.current || !initialCameraRef.current) return;
@@ -122,6 +122,7 @@ export function useHumanAPI({
           humanRef.current.send('scene.objectsSelected', null);
           humanRef.current = null;
           setIsReady(false);
+          isXrayEnabledRef.current = false;
         }
 
         // Determine if we're on mobile
@@ -201,6 +202,7 @@ export function useHumanAPI({
                   selectedPartRef.current = null;
                   selectionEventRef.current = null;
                   human.send('scene.disableXray', () => {});
+                  isXrayEnabledRef.current = false;
                 }
               }, 0);
               return;
@@ -263,9 +265,9 @@ export function useHumanAPI({
                     [selectedId]: true,
                     replace: false,
                   });
-                  if (!isXrayEnabled) {
+                  if (!isXrayEnabledRef.current) {
                     human.send('scene.enableXray', () => {});
-                    setIsXrayEnabled(true);
+                    isXrayEnabledRef.current = true;
                   }
                   zoomID = selectedId;
 

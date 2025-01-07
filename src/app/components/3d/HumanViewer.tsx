@@ -58,7 +58,7 @@ export default function HumanViewer({
 
   const MODEL_IDS = {
     male: '5tOV',
-    female: '5rlW',
+    female: '5tOR',
   };
 
   const {
@@ -162,10 +162,6 @@ export default function HumanViewer({
     setTargetGender(newGender);
     setViewerUrl(getViewerUrl(newGender));
 
-    humanRef.current.send('human.ready', null);
-    humanRef.current.send('camera.updated', null);
-    humanRef.current.send('scene.objectsSelected', null);
-    humanRef.current = null;
     // Reset states
     resetValues();
 
