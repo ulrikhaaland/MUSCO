@@ -527,34 +527,25 @@ export default function HumanViewer({
           onSwitchModel={handleSwitchModel}
           onHeightChange={handleBottomSheetHeight}
           onQuestionClick={handleQuestionClick}
+          hideBottomSheet={showQuestionnaire || isGeneratingProgram || exerciseProgram}
         />
       )}
-      <div className="fixed inset-0 bg-gray-900 z-[60] overflow-hidden">
-        <div className="h-full w-full overflow-y-auto">
-          <ExerciseQuestionnaire
-            onClose={handleBack}
-            onSubmit={handleQuestionnaireSubmit}
-          />
-        </div>
-      </div>
 
       {/* Combined Overlay Container */}
       {(showQuestionnaire || isGeneratingProgram || exerciseProgram) && (
-        <div className="fixed inset-0 bg-gray-900 z-[60] overflow-hidden">
-          <div className="h-full w-full overflow-y-auto">
-            {showQuestionnaire && !isGeneratingProgram && !exerciseProgram ? (
-              <ExerciseQuestionnaire
-                onClose={handleBack}
-                onSubmit={handleQuestionnaireSubmit}
-              />
-            ) : (
-              <ExerciseProgramPage
-                onBack={handleBack}
-                isLoading={isGeneratingProgram}
-                program={exerciseProgram}
-              />
-            )}
-          </div>
+        <div className="fixed inset-0 bg-gray-900 z-[60] overflow-y-auto">
+          {showQuestionnaire && !isGeneratingProgram && !exerciseProgram ? (
+            <ExerciseQuestionnaire
+              onClose={handleBack}
+              onSubmit={handleQuestionnaireSubmit}
+            />
+          ) : (
+            <ExerciseProgramPage
+              onBack={handleBack}
+              isLoading={isGeneratingProgram}
+              program={exerciseProgram}
+            />
+          )}
         </div>
       )}
     </div>

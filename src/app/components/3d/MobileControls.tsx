@@ -43,6 +43,7 @@ interface MobileControlsProps {
   onSwitchModel: () => void;
   onHeightChange?: (height: number) => void;
   onQuestionClick?: (question: Question) => void;
+  hideBottomSheet?: boolean;
 }
 
 // Use BottomSheet directly
@@ -64,6 +65,7 @@ export default function MobileControls({
   onSwitchModel,
   onHeightChange,
   onQuestionClick,
+  hideBottomSheet,
 }: MobileControlsProps) {
   const [isMobile, setIsMobile] = useState(false);
   const [contentHeight, setContentHeight] = useState(0);
@@ -474,9 +476,9 @@ export default function MobileControls({
 
       {/* Bottom Sheet */}
       <BottomSheetBase
-        className="!bg-gray-900 [&>*]:!bg-gray-900 relative h-[100dvh]"
+        className={`!bg-gray-900 [&>*]:!bg-gray-900 relative h-[100dvh] ${hideBottomSheet ? 'pointer-events-none opacity-0' : ''}`}
         ref={sheetRef}
-        open={true}
+        open={!hideBottomSheet}
         blocking={false}
         defaultSnap={({ maxHeight }) => Math.min(maxHeight * 0.15, 72)}
         snapPoints={getSnapPoints}
