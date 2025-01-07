@@ -73,6 +73,7 @@ export default function MobileControls({
   const [currentSnapPoint, setCurrentSnapPoint] = useState<SnapPoint>(
     SnapPoint.MINIMIZED
   );
+  const previousSnapPointRef = useRef<SnapPoint>(SnapPoint.MINIMIZED);
   const sheetRef = useRef<BottomSheetRef>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const [headerHeight, setHeaderHeight] = useState(0);
@@ -334,6 +335,23 @@ export default function MobileControls({
     }
   };
 
+  // Store previous snap point when hiding
+  useEffect(() => {
+    if (hideBottomSheet) {
+      previousSnapPointRef.current = currentSnapPoint;
+    } else {
+      // Restore previous height when becoming visible again
+      if (sheetRef.current && previousSnapPointRef.current !== currentSnapPoint) {
+        const snapPoints = getSnapPoints();
+        const targetHeight = snapPoints[previousSnapPointRef.current];
+        setTimeout(() => {
+          sheetRef.current?.snapTo(() => targetHeight);
+          setCurrentSnapPoint(previousSnapPointRef.current);
+        }, 0);
+      }
+    }
+  }, [hideBottomSheet]);
+
   return (
     <>
       {/* Mobile Controls - Positioned relative to bottom sheet */}
@@ -476,11 +494,21 @@ export default function MobileControls({
 
       {/* Bottom Sheet */}
       <BottomSheetBase
-        className={`!bg-gray-900 [&>*]:!bg-gray-900 relative h-[100dvh] ${hideBottomSheet ? 'pointer-events-none opacity-0' : ''}`}
+        className={`!bg-gray-900 [&>*]:!bg-gray-900 relative h-[100dvh] ${
+          hideBottomSheet ? 'pointer-events-none opacity-0' : ''
+        }`}
         ref={sheetRef}
         open={!hideBottomSheet}
         blocking={false}
-        defaultSnap={({ maxHeight }) => Math.min(maxHeight * 0.15, 72)}
+        defaultSnap={({ maxHeight }) => {
+          const minHeight = Math.min(maxHeight * 0.15, 72);
+          // Use previous snap point if available, otherwise use minimum height
+          if (previousSnapPointRef.current !== SnapPoint.MINIMIZED) {
+            const snapPoints = getSnapPoints();
+            return snapPoints[previousSnapPointRef.current];
+          }
+          return minHeight;
+        }}
         snapPoints={getSnapPoints}
         expandOnContentDrag={false}
         onDragStart={() => {
