@@ -19,11 +19,13 @@ import { ExerciseProgramPage } from '../ui/ExerciseProgramPage';
 interface HumanViewerProps {
   gender: Gender;
   onGenderChange?: (gender: Gender) => void;
+  onQuestionClick?: (question: Question) => void;
 }
 
 export default function HumanViewer({
   gender,
   onGenderChange,
+  onQuestionClick,
 }: HumanViewerProps) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [selectedGroup, setSelectedGroup] = useState<BodyPartGroup | null>(
@@ -153,8 +155,6 @@ export default function HumanViewer({
   const [viewerUrl, setViewerUrl] = useState(() => getViewerUrl(gender));
   const [isChangingModel, setIsChangingModel] = useState(false);
   const [diagnosis, setDiagnosis] = useState<string | null>(null);
-  const [isGeneratingProgram, setIsGeneratingProgram] = useState(false);
-  const [exerciseProgram, setExerciseProgram] = useState<any>(null);
 
   const handleSwitchModel = useCallback(
     (gender?: Gender) => {
@@ -328,78 +328,14 @@ export default function HumanViewer({
     }
   };
 
-  const [showQuestionnaire, setShowQuestionnaire] = useState(false);
-  const [selectedQuestion, setSelectedQuestion] = useState<Question | null>(
-    null
-  );
-
   const handleQuestionClick = (question: Question) => {
-    if (question.generate) {
-      setDiagnosis(question.diagnosis);
-      setSelectedQuestion(question);
-      setShowQuestionnaire(true);
-    }
-  };
-
-  const handleBack = () => {
-    if (showQuestionnaire) {
-      setShowQuestionnaire(false);
-    } else if (exerciseProgram) {
-      setExerciseProgram(null);
-      setIsGeneratingProgram(false);
-    }
-  };
-
-  const handleQuestionnaireSubmit = async (
-    answers: Record<string, string | number | string[]>
-  ) => {
-    // Show program page with loading state immediately
-    setShowQuestionnaire(false);
-    setIsGeneratingProgram(true);
-
-    try {
-      const program = await generateExerciseProgram(
-        selectedQuestion?.diagnosis ?? '',
-        {
-          selectedBodyGroup: selectedGroup?.name,
-          selectedBodyPart: selectedPart?.name,
-          age: String(answers.age),
-          pastExercise: String(answers.pastExercise),
-          plannedExercise: String(answers.plannedExercise),
-          painAreas: Array.isArray(answers.painAreas) ? answers.painAreas : [],
-          exercisePain: String(answers.exercisePain).toLowerCase() === 'true',
-          painfulAreas: Array.isArray(answers.painfulAreas)
-            ? answers.painfulAreas
-            : [],
-          trainingType: String(answers.trainingType),
-          trainingLocation: String(answers.trainingLocation),
-        }
-      );
-      console.log('=== program ===', program);
-      setExerciseProgram(program);
-    } catch (error) {
-      console.error('Error generating exercise program:', error);
-    } finally {
-      setIsGeneratingProgram(false);
-    }
+    onQuestionClick?.(question);
   };
 
   return (
-    <div
-      className={`h-full w-full ${
-        showQuestionnaire || isGeneratingProgram || exerciseProgram
-          ? ''
-          : 'overflow-hidden'
-      }`}
-    >
+    <div className="flex flex-col md:flex-row relative h-screen w-screen overflow-hidden">
       {/* Main content */}
-      <div
-        className={`absolute inset-0 ${
-          showQuestionnaire || isGeneratingProgram || exerciseProgram
-            ? 'opacity-0 pointer-events-none'
-            : 'opacity-100'
-        } transition-opacity duration-200`}
-      >
+      <div className="absolute inset-0">
         {/* Fullscreen overlay when dragging */}
         {isDragging && (
           <div className="fixed inset-0 z-50" style={{ cursor: 'ew-resize' }} />
@@ -543,31 +479,6 @@ export default function HumanViewer({
             onQuestionClick={handleQuestionClick}
           />
         )}
-      </div>
-
-      {/* Questionnaire and Program Pages */}
-      <div
-        className={`fixed inset-0 bg-gray-900 transition-opacity duration-200 ${
-          showQuestionnaire || isGeneratingProgram || exerciseProgram
-            ? 'opacity-100'
-            : 'opacity-0 pointer-events-none'
-        }`}
-      >
-        <div className="h-full">
-          {showQuestionnaire && !isGeneratingProgram && !exerciseProgram && (
-            <ExerciseQuestionnaire
-              onClose={handleBack}
-              onSubmit={handleQuestionnaireSubmit}
-            />
-          )}
-          {(isGeneratingProgram || exerciseProgram) && (
-            <ExerciseProgramPage
-              onBack={handleBack}
-              isLoading={isGeneratingProgram}
-              program={exerciseProgram}
-            />
-          )}
-        </div>
       </div>
     </div>
   );
