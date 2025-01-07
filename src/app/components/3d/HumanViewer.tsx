@@ -547,18 +547,14 @@ export default function HumanViewer({
 
       {/* Questionnaire and Program Pages */}
       <div
-        className={`fixed inset-0 bg-gray-900 transition-opacity duration-200 ${
-          showQuestionnaire || isGeneratingProgram || exerciseProgram
-            ? 'opacity-100'
-            : 'opacity-0 pointer-events-none'
-        }`}
+        className={`fixed inset-0 bg-gray-900 transition-opacity duration-200`}
       >
         <div className="h-full">
           {/* {showQuestionnaire && !isGeneratingProgram && !exerciseProgram && ( */}
-            <ExerciseQuestionnaire
-              onClose={handleBack}
-              onSubmit={handleQuestionnaireSubmit}
-            />
+          <ExerciseQuestionnaire
+            onClose={handleBack}
+            onSubmit={handleQuestionnaireSubmit}
+          />
           {/* )} */}
           {(isGeneratingProgram || exerciseProgram) && (
             <ExerciseProgramPage
