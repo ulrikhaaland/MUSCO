@@ -544,30 +544,21 @@ export default function HumanViewer({
 
       {/* Combined Overlay Container */}
       {(showQuestionnaire || isGeneratingProgram || exerciseProgram) && (
-        <div className="fixed inset-0 bg-gray-900 z-[60]">
-          <div 
-            className="h-full w-full overflow-y-auto overscroll-y-contain px-4 pb-8"
-            style={{ 
-              WebkitOverflowScrolling: 'touch',
-              WebkitTransform: 'translate3d(0,0,0)',
-              touchAction: 'pan-y',
-              willChange: 'transform',
-              transform: 'translateZ(0)'
-            }}
-          >
+        <div className="fixed inset-0 bg-gray-900 z-[60] overflow-y-auto" style={{ WebkitOverflowScrolling: 'touch' }}>
             {showQuestionnaire && !isGeneratingProgram && !exerciseProgram ? (
               <ExerciseQuestionnaire
                 onClose={handleBack}
                 onSubmit={handleQuestionnaireSubmit}
+                isEmbedded={true}
               />
             ) : (
               <ExerciseProgramPage
                 onBack={handleBack}
                 isLoading={isGeneratingProgram}
                 program={exerciseProgram}
+                isEmbedded={true}
               />
             )}
-          </div>
         </div>
       )}
     </div>

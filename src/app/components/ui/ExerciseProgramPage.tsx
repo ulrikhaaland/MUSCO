@@ -23,6 +23,7 @@ interface ExerciseProgramPageProps {
     programOverview: string;
     program: ProgramDay[];
   };
+  isEmbedded?: boolean;
 }
 
 function getYouTubeEmbedUrl(url: string): string {
@@ -42,6 +43,7 @@ export function ExerciseProgramPage({
   onBack,
   isLoading,
   program,
+  isEmbedded = false,
 }: ExerciseProgramPageProps) {
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
 
@@ -54,7 +56,7 @@ export function ExerciseProgramPage({
   };
 
   return (
-    <div className="h-screen w-screen flex flex-col bg-gray-900">
+    <div className={isEmbedded ? "min-h-screen bg-gray-900" : "h-screen w-screen flex flex-col bg-gray-900"}>
       <div className="flex-none p-4 border-b border-gray-800">
         <button
           onClick={onBack}
@@ -77,7 +79,7 @@ export function ExerciseProgramPage({
         </button>
       </div>
 
-      <div className="flex-1 overflow-y-auto">
+      <div className={isEmbedded ? "p-4" : "flex-1 overflow-y-auto"}>
         {isLoading ? (
           <div className="flex flex-col items-center justify-center h-full space-y-4 px-4 text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
@@ -85,7 +87,7 @@ export function ExerciseProgramPage({
             <div className="text-gray-400 max-w-sm">Please wait while we generate your personalized exercise program...</div>
           </div>
         ) : program?.program ? (
-          <div className="max-w-3xl mx-auto p-4 pb-32 space-y-8">
+          <div className="max-w-3xl mx-auto pb-32 space-y-8">
             <div>
               <h2 className="text-3xl font-bold text-white">Your Exercise Program</h2>
               <p className="mt-4 text-xl text-gray-400">
@@ -168,8 +170,7 @@ export function ExerciseProgramPage({
       {/* Video Modal */}
       {videoUrl && (
         <div 
-          className="fixed inset-0 w-full h-full bg-black bg-opacity-75 flex items-center justify-center z-[9999]" 
-          style={{ position: 'fixed', top: 0, left: 0 }}
+          className="fixed inset-0 bg-black/80 z-[9999] flex items-center justify-center"
           onClick={closeVideo}
         >
           <div className="relative w-full h-auto max-h-[80vh] md:max-w-4xl mx-4" onClick={(e) => e.stopPropagation()}>
