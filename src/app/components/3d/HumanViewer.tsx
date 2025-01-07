@@ -385,11 +385,13 @@ export default function HumanViewer({
   };
 
   return (
-    <div className={`flex flex-col md:flex-row relative h-screen w-screen ${
-      showQuestionnaire || isGeneratingProgram || exerciseProgram 
-        ? '' 
-        : 'overflow-hidden'
-    }`}>
+    <div
+      className={`flex flex-col md:flex-row relative h-screen w-screen ${
+        showQuestionnaire || isGeneratingProgram || exerciseProgram
+          ? ''
+          : 'overflow-hidden'
+      }`}
+    >
       {/* Main content */}
       <div
         className={`absolute inset-0 ${
@@ -418,7 +420,7 @@ export default function HumanViewer({
             </div>
           )}
           {/* Mobile: subtract 72px for controls, Desktop: full height */}
-          <div
+          {/* <div
             className="md:h-screen w-full relative"
             style={{ height: isMobile ? modelContainerHeight : '100dvh' }}
           >
@@ -435,7 +437,7 @@ export default function HumanViewer({
                 setIsChangingModel(false);
               }}
             />
-          </div>
+          </div> */}
 
           {/* Controls - Desktop */}
           <div
@@ -552,12 +554,12 @@ export default function HumanViewer({
         }`}
       >
         <div className="h-full">
-          {showQuestionnaire && !isGeneratingProgram && !exerciseProgram && (
+          {/* {showQuestionnaire && !isGeneratingProgram && !exerciseProgram && ( */}
             <ExerciseQuestionnaire
               onClose={handleBack}
               onSubmit={handleQuestionnaireSubmit}
             />
-          )}
+          {/* )} */}
           {(isGeneratingProgram || exerciseProgram) && (
             <ExerciseProgramPage
               onBack={handleBack}
