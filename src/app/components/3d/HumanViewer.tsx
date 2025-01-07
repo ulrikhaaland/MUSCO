@@ -385,7 +385,11 @@ export default function HumanViewer({
   };
 
   return (
-    <div className="flex flex-col md:flex-row relative h-screen w-screen overflow-hidden">
+    <div className={`flex flex-col md:flex-row relative h-screen w-screen ${
+      showQuestionnaire || isGeneratingProgram || exerciseProgram 
+        ? '' 
+        : 'overflow-hidden'
+    }`}>
       {/* Main content */}
       <div
         className={`absolute inset-0 ${
@@ -541,12 +545,11 @@ export default function HumanViewer({
 
       {/* Questionnaire and Program Pages */}
       <div
-        className={`fixed inset-0 bg-gray-900 h-full overflow-hidden transition-opacity duration-200 ${
+        className={`fixed inset-0 bg-gray-900 transition-opacity duration-200 ${
           showQuestionnaire || isGeneratingProgram || exerciseProgram
             ? 'opacity-100'
             : 'opacity-0 pointer-events-none'
         }`}
-        style={{ height: '100dvh' }}
       >
         <div className="h-full">
           {showQuestionnaire && !isGeneratingProgram && !exerciseProgram && (
