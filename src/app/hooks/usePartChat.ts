@@ -17,11 +17,11 @@ const initialQuestions: Question[] = [
       'Can you walk me through some movements to check if there’s an issue with the $part?',
     asked: false,
   },
-  {
-    title: 'Learn about common problems',
-    question: 'What are some common issues or injuries related to the $part?',
-    asked: false,
-  },
+  // {
+  //   title: 'Learn about common problems',
+  //   question: 'What are some common issues or injuries related to the $part?',
+  //   asked: false,
+  // },
   {
     title: 'Explore exercises',
     question: 'What exercises can help improve the $part?',
