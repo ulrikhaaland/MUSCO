@@ -512,7 +512,7 @@ export default function HumanViewer({
       </div>
 
       {/* Mobile Controls */}
-      {/* {isMobile && (
+      {isMobile && (
         <MobileControls
           isRotating={isRotating}
           isResetting={isResetting}
@@ -528,7 +528,7 @@ export default function HumanViewer({
           onHeightChange={handleBottomSheetHeight}
           onQuestionClick={handleQuestionClick}
         />
-      )} */}
+      )}
       <div className="fixed inset-0 bg-gray-900 z-[60] overflow-hidden">
         <div className="h-full w-full overflow-y-auto">
           <ExerciseQuestionnaire
