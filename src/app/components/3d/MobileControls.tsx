@@ -480,7 +480,7 @@ export default function MobileControls({
         blocking={false}
         defaultSnap={({ maxHeight }) => Math.min(maxHeight * 0.15, 72)}
         snapPoints={getSnapPoints}
-        expandOnContentDrag={false}
+        expandOnContentDrag={true}
         onDragStart={() => {
           console.log('drag start');
           setIsDragging(true);
