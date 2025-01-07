@@ -386,181 +386,181 @@ export default function HumanViewer({
 
   return (
     <div className="flex flex-col md:flex-row relative h-screen w-screen overflow-hidden">
-      {/* Fullscreen overlay when dragging */}
-      {isDragging && (
-        <div
-          className="fixed inset-0 z-50"
-          style={{ cursor: 'ew-resize' }}
-        />
-      )}
-
-      {/* Model Viewer Container */}
-      <div
-        className="flex-1 relative bg-black flex flex-col"
-        style={{ minWidth: `${minChatWidth}px` }}
-      >
-        {isChangingModel && (
-          <div className="absolute inset-0 z-50 bg-black flex items-center justify-center">
-            <div className="text-white text-xl">
-              Loading{' '}
-              {targetGender?.charAt(0).toUpperCase() +
-                targetGender?.slice(1)}{' '}
-              Model...
-            </div>
-          </div>
-        )}
-        {/* Mobile: subtract 72px for controls, Desktop: full height */}
-        <div
-          className="md:h-screen w-full relative"
-          style={{ height: isMobile ? modelContainerHeight : '100dvh' }}
-        >
-          <iframe
-            id="myViewer"
-            ref={iframeRef}
-            src={viewerUrl}
-            className="absolute inset-0 w-full h-full border-0 bg-black"
-            allow="fullscreen"
-            allowFullScreen
-            onLoad={() => {
-              console.log('=== iframe loaded ===');
-              console.log('viewerUrl:', viewerUrl);
-              setIsChangingModel(false);
-            }}
+      {/* Main content */}
+      <div className={`absolute inset-0 ${(showQuestionnaire || isGeneratingProgram || exerciseProgram) ? 'opacity-0 pointer-events-none' : 'opacity-100'} transition-opacity duration-200`}>
+        {/* Fullscreen overlay when dragging */}
+        {isDragging && (
+          <div
+            className="fixed inset-0 z-50"
+            style={{ cursor: 'ew-resize' }}
           />
-        </div>
+        )}
 
-        {/* Controls - Desktop */}
+        {/* Model Viewer Container */}
         <div
-          className="absolute bottom-6 right-6 md:flex space-x-4 hidden"
-          style={{ zIndex: 1000 }}
+          className="flex-1 relative bg-black flex flex-col"
+          style={{ minWidth: `${minChatWidth}px` }}
         >
-          <button
-            onClick={handleRotate}
-            disabled={isRotating || isResetting || !isReady}
-            className={`bg-indigo-600/80 hover:bg-indigo-500/80 text-white px-4 py-2 rounded-lg shadow-lg transition-colors duration-200 flex items-center space-x-2 ${
-              isRotating || isResetting || !isReady
-                ? 'opacity-50 cursor-not-allowed'
-                : ''
-            }`}
+          {isChangingModel && (
+            <div className="absolute inset-0 z-50 bg-black flex items-center justify-center">
+              <div className="text-white text-xl">
+                Loading{' '}
+                {targetGender?.charAt(0).toUpperCase() +
+                  targetGender?.slice(1)}{' '}
+                Model...
+              </div>
+            </div>
+          )}
+          {/* Mobile: subtract 72px for controls, Desktop: full height */}
+          <div
+            className="md:h-screen w-full relative"
+            style={{ height: isMobile ? modelContainerHeight : '100dvh' }}
           >
-            <CropRotateIcon
-              className={`h-5 w-5 ${isRotating ? 'animate-spin' : ''}`}
+            <iframe
+              id="myViewer"
+              ref={iframeRef}
+              src={viewerUrl}
+              className="absolute inset-0 w-full h-full border-0 bg-black"
+              allow="fullscreen"
+              allowFullScreen
+              onLoad={() => {
+                console.log('=== iframe loaded ===');
+                console.log('viewerUrl:', viewerUrl);
+                setIsChangingModel(false);
+              }}
             />
-            <span>{isRotating ? 'Rotating...' : 'Rotate Model'}</span>
-          </button>
-          <button
-            onClick={handleReset}
-            disabled={
-              isResetting || (!needsReset && selectedGroup === null)
-            }
-            className={`bg-indigo-600/80 hover:bg-indigo-500/80 text-white px-4 py-2 rounded-lg shadow-lg transition-colors duration-200 flex items-center space-x-2 ${
-              isResetting || (!needsReset && selectedGroup === null)
-                ? 'opacity-50 cursor-not-allowed'
-                : ''
-            }`}
+          </div>
+
+          {/* Controls - Desktop */}
+          <div
+            className="absolute bottom-6 right-6 md:flex space-x-4 hidden"
+            style={{ zIndex: 1000 }}
           >
-            <RestartAltIcon
-              className={`h-5 w-5 ${isResetting ? 'animate-spin' : ''}`}
-            />
-            <span>{isResetting ? 'Resetting...' : 'Reset View'}</span>
-          </button>
-          <button
-            onClick={() => handleSwitchModel(null)}
-            disabled={isChangingModel}
-            className={`bg-indigo-600/80 hover:bg-indigo-500/80 text-white px-4 py-2 rounded-lg shadow-lg transition-colors duration-200 flex items-center space-x-2 ${
-              isChangingModel ? 'opacity-50 cursor-not-allowed' : ''
-            }`}
-          >
-            {currentGender === 'male' ? (
-              <MaleIcon
-                className={`h-5 w-5 ${
-                  isChangingModel ? 'animate-spin' : ''
-                }`}
+            <button
+              onClick={handleRotate}
+              disabled={isRotating || isResetting || !isReady}
+              className={`bg-indigo-600/80 hover:bg-indigo-500/80 text-white px-4 py-2 rounded-lg shadow-lg transition-colors duration-200 flex items-center space-x-2 ${
+                isRotating || isResetting || !isReady
+                  ? 'opacity-50 cursor-not-allowed'
+                  : ''
+              }`}
+            >
+              <CropRotateIcon
+                className={`h-5 w-5 ${isRotating ? 'animate-spin' : ''}`}
               />
-            ) : (
-              <FemaleIcon
-                className={`h-5 w-5 ${
-                  isChangingModel ? 'animate-spin' : ''
-                }`}
+              <span>{isRotating ? 'Rotating...' : 'Rotate Model'}</span>
+            </button>
+            <button
+              onClick={handleReset}
+              disabled={
+                isResetting || (!needsReset && selectedGroup === null)
+              }
+              className={`bg-indigo-600/80 hover:bg-indigo-500/80 text-white px-4 py-2 rounded-lg shadow-lg transition-colors duration-200 flex items-center space-x-2 ${
+                isResetting || (!needsReset && selectedGroup === null)
+                  ? 'opacity-50 cursor-not-allowed'
+                  : ''
+              }`}
+            >
+              <RestartAltIcon
+                className={`h-5 w-5 ${isResetting ? 'animate-spin' : ''}`}
               />
-            )}
-            <span>
-              {isChangingModel
-                ? 'Loading...'
-                : `Switch to ${
-                    currentGender === 'male' ? 'Female' : 'Male'
+              <span>{isResetting ? 'Resetting...' : 'Reset View'}</span>
+            </button>
+            <button
+              onClick={() => handleSwitchModel(null)}
+              disabled={isChangingModel}
+              className={`bg-indigo-600/80 hover:bg-indigo-500/80 text-white px-4 py-2 rounded-lg shadow-lg transition-colors duration-200 flex items-center space-x-2 ${
+                isChangingModel ? 'opacity-50 cursor-not-allowed' : ''
+              }`}
+            >
+              {currentGender === 'male' ? (
+                <MaleIcon
+                  className={`h-5 w-5 ${
+                    isChangingModel ? 'animate-spin' : ''
                   }`}
-            </span>
-          </button>
+                />
+              ) : (
+                <FemaleIcon
+                  className={`h-5 w-5 ${
+                    isChangingModel ? 'animate-spin' : ''
+                  }`}
+                />
+              )}
+              <span>
+                {isChangingModel
+                  ? 'Loading...'
+                  : `Switch to ${
+                      currentGender === 'male' ? 'Female' : 'Male'
+                    }`}
+              </span>
+            </button>
+          </div>
         </div>
-      </div>
 
-      {/* Drag Handle - Desktop Only */}
-      <div
-        onMouseDown={startDragging}
-        className="hidden md:block w-1 hover:w-2 bg-gray-800 hover:bg-indigo-600 cursor-ew-resize transition-all duration-150 active:bg-indigo-500 flex-shrink-0 z-40"
-        style={{ touchAction: 'none' }}
-      />
+        {/* Drag Handle - Desktop Only */}
+        <div
+          onMouseDown={startDragging}
+          className="hidden md:block w-1 hover:w-2 bg-gray-800 hover:bg-indigo-600 cursor-ew-resize transition-all duration-150 active:bg-indigo-500 flex-shrink-0 z-40"
+          style={{ touchAction: 'none' }}
+        />
 
-      {/* Right side - Popup with animation - Desktop Only */}
-      <div
-        className={`hidden md:block flex-shrink-0 transform ${
-          isDragging ? '' : 'transition-all duration-300 ease-in-out'
-        } ${'translate-x-0 opacity-100'}`}
-        style={{
-          width: `${chatWidth}px`,
-          minWidth: `${minChatWidth}px`,
-          maxWidth: `${maxChatWidth}px`,
-        }}
-      >
-        <div className="h-full border-l border-gray-800">
-          <PartPopup
-            part={selectedPart}
-            group={selectedGroup}
-            onClose={() => {}}
+        {/* Right side - Popup with animation - Desktop Only */}
+        <div
+          className={`hidden md:block flex-shrink-0 transform ${
+            isDragging ? '' : 'transition-all duration-300 ease-in-out'
+          } ${'translate-x-0 opacity-100'}`}
+          style={{
+            width: `${chatWidth}px`,
+            minWidth: `${minChatWidth}px`,
+            maxWidth: `${maxChatWidth}px`,
+          }}
+        >
+          <div className="h-full border-l border-gray-800">
+            <PartPopup
+              part={selectedPart}
+              group={selectedGroup}
+              onClose={() => {}}
+              onQuestionClick={handleQuestionClick}
+            />
+          </div>
+        </div>
+
+        {/* Mobile Controls */}
+        {isMobile && (
+          <MobileControls
+            isRotating={isRotating}
+            isResetting={isResetting}
+            isReady={isReady}
+            needsReset={needsReset}
+            selectedGroup={selectedGroup}
+            isChangingModel={isChangingModel}
+            currentGender={currentGender}
+            selectedPart={selectedPart}
+            onRotate={handleRotate}
+            onReset={handleReset}
+            onSwitchModel={handleSwitchModel}
+            onHeightChange={handleBottomSheetHeight}
             onQuestionClick={handleQuestionClick}
           />
-        </div>
+        )}
       </div>
 
-      {/* Mobile Controls */}
-      {isMobile && (
-        <MobileControls
-          isRotating={isRotating}
-          isResetting={isResetting}
-          isReady={isReady}
-          needsReset={needsReset}
-          selectedGroup={selectedGroup}
-          isChangingModel={isChangingModel}
-          currentGender={currentGender}
-          selectedPart={selectedPart}
-          onRotate={handleRotate}
-          onReset={handleReset}
-          onSwitchModel={handleSwitchModel}
-          onHeightChange={handleBottomSheetHeight}
-          onQuestionClick={handleQuestionClick}
-        />
-      )}
-
-      {/* Combined Overlay Container */}
-      {(showQuestionnaire || isGeneratingProgram || exerciseProgram) && (
-        <div className="fixed inset-0 bg-gray-900 z-[60] overflow-y-auto" style={{ WebkitOverflowScrolling: 'touch' }}>
-            {showQuestionnaire && !isGeneratingProgram && !exerciseProgram ? (
-              <ExerciseQuestionnaire
-                onClose={handleBack}
-                onSubmit={handleQuestionnaireSubmit}
-                isEmbedded={true}
-              />
-            ) : (
-              <ExerciseProgramPage
-                onBack={handleBack}
-                isLoading={isGeneratingProgram}
-                program={exerciseProgram}
-                isEmbedded={true}
-              />
-            )}
-        </div>
-      )}
+      {/* Questionnaire and Program Pages */}
+      <div className={`absolute inset-0 bg-gray-900 transition-opacity duration-200 ${(showQuestionnaire || isGeneratingProgram || exerciseProgram) ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+        {showQuestionnaire && !isGeneratingProgram && !exerciseProgram && (
+          <ExerciseQuestionnaire
+            onClose={handleBack}
+            onSubmit={handleQuestionnaireSubmit}
+          />
+        )}
+        {(isGeneratingProgram || exerciseProgram) && (
+          <ExerciseProgramPage
+            onBack={handleBack}
+            isLoading={isGeneratingProgram}
+            program={exerciseProgram}
+          />
+        )}
+      </div>
     </div>
   );
 }
