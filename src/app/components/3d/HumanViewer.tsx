@@ -156,27 +156,27 @@ export default function HumanViewer({
   const [isGeneratingProgram, setIsGeneratingProgram] = useState(false);
   const [exerciseProgram, setExerciseProgram] = useState<any>(null);
 
-  const handleSwitchModel = useCallback(
-    (gender?: Gender) => {
-      setIsChangingModel(true);
-      const newGender: Gender =
-        gender ?? currentGender === 'male' ? 'female' : 'male';
-      setTargetGender(newGender);
-      setViewerUrl(getViewerUrl(newGender));
+  const handleSwitchModel = useCallback(() => {
+    setIsChangingModel(true);
+    const newGender: Gender = currentGender === 'male' ? 'female' : 'male';
+    setTargetGender(newGender);
+    setViewerUrl(getViewerUrl(newGender));
 
-      // Reset states
-      resetValues();
+    humanRef.current.send('human.ready', null);
+    humanRef.current.send('camera.updated', null);
+    humanRef.current.send('scene.objectsSelected', null);
+    humanRef.current = null;
+    // Reset states
+    resetValues();
 
-      // Call the parent's gender change handler
-      onGenderChange?.(newGender);
+    // Call the parent's gender change handler
+    onGenderChange?.(newGender);
 
-      // Update URL without page reload
-      const url = new URL(window.location.href);
-      url.searchParams.set('gender', newGender);
-      window.history.pushState({}, '', url.toString());
-    },
-    [currentGender, getViewerUrl, onGenderChange]
-  );
+    // Update URL without page reload
+    const url = new URL(window.location.href);
+    url.searchParams.set('gender', newGender);
+    window.history.pushState({}, '', url.toString());
+  }, [currentGender, getViewerUrl, onGenderChange]);
 
   // Clear target gender when model change is complete
   useEffect(() => {
@@ -460,7 +460,7 @@ export default function HumanViewer({
               <span>{isResetting ? 'Resetting...' : 'Reset View'}</span>
             </button>
             <button
-              onClick={() => handleSwitchModel(null)}
+              onClick={() => handleSwitchModel()}
               disabled={isChangingModel}
               className={`bg-indigo-600/80 hover:bg-indigo-500/80 text-white px-4 py-2 rounded-lg shadow-lg transition-colors duration-200 flex items-center space-x-2 ${
                 isChangingModel ? 'opacity-50 cursor-not-allowed' : ''

@@ -172,9 +172,6 @@ export function useHumanAPI({
 
           // Listen for object selection and enable xray mode
           human.on('scene.objectsSelected', (event) => {
-            if (event === true) {
-              return;
-            }
             console.log('=== scene.objectsSelected event received ===');
             console.log('Event:', event);
 
@@ -244,12 +241,14 @@ export function useHumanAPI({
 
                 Object.assign(deselectionMap, toDeselect);
               });
-              Object.assign(deselectionMap, {
-                [getGenderedId('muscular_system-right_cremaster_ID', gender)]:
-                  false,
-                [getGenderedId('muscular_system-left_cremaster_ID', gender)]:
-                  false,
-              });
+              if (gender === 'male') {
+                Object.assign(deselectionMap, {
+                  [getGenderedId('muscular_system-right_cremaster_ID', gender)]:
+                    false,
+                  [getGenderedId('muscular_system-left_cremaster_ID', gender)]:
+                    false,
+                });
+              }
 
               let zoomID;
 
@@ -298,7 +297,9 @@ export function useHumanAPI({
                   ...deselectionMap,
                   replace: true,
                 });
-               
+                human.send('scene.selectObjects', {
+                  [selectedId]: false,
+                });
               }
 
               console.log('selectedPart', selectedPartRef.current);
