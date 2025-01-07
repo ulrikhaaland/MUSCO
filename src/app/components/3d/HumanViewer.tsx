@@ -385,15 +385,25 @@ export default function HumanViewer({
   };
 
   return (
+    <ExerciseQuestionnaire
+      onClose={handleBack}
+      onSubmit={handleQuestionnaireSubmit}
+    />
+  );
+
+  return (
     <div className="flex flex-col md:flex-row relative h-screen w-screen overflow-hidden">
       {/* Main content */}
-      <div className={`absolute inset-0 ${(showQuestionnaire || isGeneratingProgram || exerciseProgram) ? 'opacity-0 pointer-events-none' : 'opacity-100'} transition-opacity duration-200`}>
+      <div
+        className={`absolute inset-0 ${
+          showQuestionnaire || isGeneratingProgram || exerciseProgram
+            ? 'opacity-0 pointer-events-none'
+            : 'opacity-100'
+        } transition-opacity duration-200`}
+      >
         {/* Fullscreen overlay when dragging */}
         {isDragging && (
-          <div
-            className="fixed inset-0 z-50"
-            style={{ cursor: 'ew-resize' }}
-          />
+          <div className="fixed inset-0 z-50" style={{ cursor: 'ew-resize' }} />
         )}
 
         {/* Model Viewer Container */}
@@ -405,8 +415,7 @@ export default function HumanViewer({
             <div className="absolute inset-0 z-50 bg-black flex items-center justify-center">
               <div className="text-white text-xl">
                 Loading{' '}
-                {targetGender?.charAt(0).toUpperCase() +
-                  targetGender?.slice(1)}{' '}
+                {targetGender?.charAt(0).toUpperCase() + targetGender?.slice(1)}{' '}
                 Model...
               </div>
             </div>
@@ -452,9 +461,7 @@ export default function HumanViewer({
             </button>
             <button
               onClick={handleReset}
-              disabled={
-                isResetting || (!needsReset && selectedGroup === null)
-              }
+              disabled={isResetting || (!needsReset && selectedGroup === null)}
               className={`bg-indigo-600/80 hover:bg-indigo-500/80 text-white px-4 py-2 rounded-lg shadow-lg transition-colors duration-200 flex items-center space-x-2 ${
                 isResetting || (!needsReset && selectedGroup === null)
                   ? 'opacity-50 cursor-not-allowed'
@@ -475,23 +482,17 @@ export default function HumanViewer({
             >
               {currentGender === 'male' ? (
                 <MaleIcon
-                  className={`h-5 w-5 ${
-                    isChangingModel ? 'animate-spin' : ''
-                  }`}
+                  className={`h-5 w-5 ${isChangingModel ? 'animate-spin' : ''}`}
                 />
               ) : (
                 <FemaleIcon
-                  className={`h-5 w-5 ${
-                    isChangingModel ? 'animate-spin' : ''
-                  }`}
+                  className={`h-5 w-5 ${isChangingModel ? 'animate-spin' : ''}`}
                 />
               )}
               <span>
                 {isChangingModel
                   ? 'Loading...'
-                  : `Switch to ${
-                      currentGender === 'male' ? 'Female' : 'Male'
-                    }`}
+                  : `Switch to ${currentGender === 'male' ? 'Female' : 'Male'}`}
               </span>
             </button>
           </div>
@@ -546,7 +547,13 @@ export default function HumanViewer({
       </div>
 
       {/* Questionnaire and Program Pages */}
-      <div className={`absolute inset-0 bg-gray-900 transition-opacity duration-200 ${(showQuestionnaire || isGeneratingProgram || exerciseProgram) ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+      <div
+        className={`absolute inset-0 bg-gray-900 transition-opacity duration-200 ${
+          showQuestionnaire || isGeneratingProgram || exerciseProgram
+            ? 'opacity-100'
+            : 'opacity-0 pointer-events-none'
+        }`}
+      >
         {showQuestionnaire && !isGeneratingProgram && !exerciseProgram && (
           <ExerciseQuestionnaire
             onClose={handleBack}
