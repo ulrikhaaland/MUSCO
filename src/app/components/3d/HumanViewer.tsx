@@ -385,13 +385,6 @@ export default function HumanViewer({
   };
 
   return (
-    <ExerciseQuestionnaire
-      onClose={handleBack}
-      onSubmit={handleQuestionnaireSubmit}
-    />
-  );
-
-  return (
     <div className="flex flex-col md:flex-row relative h-screen w-screen overflow-hidden">
       {/* Main content */}
       <div
@@ -548,25 +541,28 @@ export default function HumanViewer({
 
       {/* Questionnaire and Program Pages */}
       <div
-        className={`absolute inset-0 bg-gray-900 transition-opacity duration-200 ${
+        className={`fixed inset-0 bg-gray-900 h-full overflow-hidden transition-opacity duration-200 ${
           showQuestionnaire || isGeneratingProgram || exerciseProgram
             ? 'opacity-100'
             : 'opacity-0 pointer-events-none'
         }`}
+        style={{ height: '100dvh' }}
       >
-        {showQuestionnaire && !isGeneratingProgram && !exerciseProgram && (
-          <ExerciseQuestionnaire
-            onClose={handleBack}
-            onSubmit={handleQuestionnaireSubmit}
-          />
-        )}
-        {(isGeneratingProgram || exerciseProgram) && (
-          <ExerciseProgramPage
-            onBack={handleBack}
-            isLoading={isGeneratingProgram}
-            program={exerciseProgram}
-          />
-        )}
+        <div className="h-full">
+          {showQuestionnaire && !isGeneratingProgram && !exerciseProgram && (
+            <ExerciseQuestionnaire
+              onClose={handleBack}
+              onSubmit={handleQuestionnaireSubmit}
+            />
+          )}
+          {(isGeneratingProgram || exerciseProgram) && (
+            <ExerciseProgramPage
+              onBack={handleBack}
+              isLoading={isGeneratingProgram}
+              program={exerciseProgram}
+            />
+          )}
+        </div>
       </div>
     </div>
   );
