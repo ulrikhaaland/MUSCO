@@ -262,7 +262,7 @@ export function useHumanAPI({
                 });
               }
 
-              let zoomID;
+              // let zoomID;
 
               if (previousSelectedPartGroupRef.current && !isDeselection) {
                 const hasSelectedPartOfSelectedGroup =
@@ -279,7 +279,7 @@ export function useHumanAPI({
                     human.send('scene.enableXray', () => {});
                     isXrayEnabledRef.current = true;
                   }
-                  zoomID = selectedId;
+                  // zoomID = selectedId;
 
                   const part = group.parts.find(
                     (part) => part.objectId === getNeutralId(selectedId)
@@ -301,7 +301,7 @@ export function useHumanAPI({
                   setSelectedPart(groupPart);
                 }
               } else {
-                zoomID = getGenderedId(group.zoomId, gender);
+                // zoomID = getGenderedId(group.zoomId, gender);
                 setSelectedGroup(group);
 
                 human.send('scene.showObjects', {

@@ -7738,7 +7738,7 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
     ],
   },
   leftHand: {
-    zoomId: 'muscular_system-muscles_of_left_hand_ID',
+    zoomId: 'skeletal_system-bones_of_left_hand_and_wrist_ID',
     name: 'Left Hand',
     selectIds: [
       'muscular_system-muscles_of_left_hand_ID',
@@ -11416,7 +11416,7 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
     ],
   },
   rightHand: {
-    zoomId: 'muscular_system-muscles_of_right_hand_ID',
+    zoomId: 'skeletal_system-bones_of_right_hand_and_wrist_ID',
     name: 'Right Hand',
     selectIds: [
       'muscular_system-muscles_of_right_hand_ID',
