@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef, useState, useCallback, useEffect } from 'react';
-import { Gender } from '../../types';
+import { DiagnosisAssistantResponse, Gender } from '../../types';
 import { AnatomyPart } from '../../types/anatomy';
 import PartPopup from '../ui/PartPopup';
 import { useHumanAPI } from '@/app/hooks/useHumanAPI';
@@ -43,7 +43,9 @@ export default function HumanViewer({
   const [isResetting, setIsResetting] = useState(false);
   const [targetGender, setTargetGender] = useState<Gender | null>(null);
   const [modelContainerHeight, setModelContainerHeight] = useState('100dvh');
-
+  const [diagnosis, setDiagnosis] = useState<DiagnosisAssistantResponse | null>(
+    null
+  );
   const [isMobile, setIsMobile] = useState(false);
   const selectedPartsRef = useRef<BodyPartGroup | null>(null);
   useEffect(() => {
@@ -152,7 +154,6 @@ export default function HumanViewer({
 
   const [viewerUrl, setViewerUrl] = useState(() => getViewerUrl(gender));
   const [isChangingModel, setIsChangingModel] = useState(false);
-  const [diagnosis, setDiagnosis] = useState<string | null>(null);
   const [isGeneratingProgram, setIsGeneratingProgram] = useState(false);
   const [exerciseProgram, setExerciseProgram] = useState<any>(null);
 
@@ -331,7 +332,14 @@ export default function HumanViewer({
 
   const handleQuestionClick = (question: Question) => {
     if (question.generate) {
-      setDiagnosis(question.diagnosis);
+      if (diagnosis) {
+        diagnosis.selectedQuestion = question;
+      } else {
+        setDiagnosis({
+          ...diagnosis,
+          selectedQuestion: question,
+        });
+      }
       setSelectedQuestion(question);
       setShowQuestionnaire(true);
     }
@@ -354,23 +362,20 @@ export default function HumanViewer({
     setIsGeneratingProgram(true);
 
     try {
-      const program = await generateExerciseProgram(
-        selectedQuestion?.diagnosis ?? '',
-        {
-          selectedBodyGroup: selectedGroup?.name,
-          selectedBodyPart: selectedPart?.name,
-          age: String(answers.age),
-          pastExercise: String(answers.pastExercise),
-          plannedExercise: String(answers.plannedExercise),
-          painAreas: Array.isArray(answers.painAreas) ? answers.painAreas : [],
-          exercisePain: String(answers.exercisePain).toLowerCase() === 'true',
-          painfulAreas: Array.isArray(answers.painfulAreas)
-            ? answers.painfulAreas
-            : [],
-          trainingType: String(answers.trainingType),
-          trainingLocation: String(answers.trainingLocation),
-        }
-      );
+      const program = await generateExerciseProgram(diagnosis, {
+        selectedBodyGroup: selectedGroup?.name,
+        selectedBodyPart: selectedPart?.name,
+        age: String(answers.age),
+        pastExercise: String(answers.pastExercise),
+        plannedExercise: String(answers.plannedExercise),
+        painAreas: Array.isArray(answers.painAreas) ? answers.painAreas : [],
+        exercisePain: String(answers.exercisePain).toLowerCase() === 'true',
+        painfulAreas: Array.isArray(answers.painfulAreas)
+          ? answers.painfulAreas
+          : [],
+        trainingType: String(answers.trainingType),
+        trainingLocation: String(answers.trainingLocation),
+      });
       console.log('=== program ===', program);
       setExerciseProgram(program);
     } catch (error) {
@@ -528,6 +533,7 @@ export default function HumanViewer({
           hideBottomSheet={
             showQuestionnaire || isGeneratingProgram || exerciseProgram
           }
+          onDiagnosis={setDiagnosis}
         />
       )}
 
@@ -538,6 +544,7 @@ export default function HumanViewer({
             <ExerciseQuestionnaire
               onClose={handleBack}
               onSubmit={handleQuestionnaireSubmit}
+              painAreas={diagnosis?.painfulAreas ?? []}
             />
           ) : (
             <ExerciseProgramPage

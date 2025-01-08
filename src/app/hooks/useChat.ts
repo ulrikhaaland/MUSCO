@@ -10,7 +10,7 @@ import {
   ChatPayload,
   Question,
   UserPreferences,
-  AssistantResponse,
+  DiagnosisAssistantResponse,
 } from '../types';
 
 export function useChat() {
@@ -21,7 +21,7 @@ export function useChat() {
   >();
   const [followUpQuestions, setFollowUpQuestions] = useState<Question[]>([]);
   const [assistantResponse, setAssistantResponse] =
-    useState<AssistantResponse | null>(null);
+    useState<DiagnosisAssistantResponse | null>(null);
   const threadIdRef = useRef<string | null>(null);
   const assistantIdRef = useRef<string | null>(null);
 
@@ -207,10 +207,8 @@ export function useChat() {
           try {
             const jsonMatch = accumulatedContent.match(/\{[\s\S]*\}/)?.[0];
             if (jsonMatch) {
-              const response = JSON.parse(jsonMatch) as AssistantResponse;
+              const response = JSON.parse(jsonMatch) as DiagnosisAssistantResponse;
               setAssistantResponse(response);
-              if (response.diagnosis) {
-              }
             }
           } catch (e) {
             // Complete JSON not available yet
@@ -241,6 +239,5 @@ export function useChat() {
     resetChat,
     sendChatMessage,
     setFollowUpQuestions,
-    diagnosis: assistantResponse?.diagnosis,
   };
 }

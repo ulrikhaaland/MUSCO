@@ -1,9 +1,9 @@
-import { Question } from "@/app/types";
 import { useState } from "react";
 
 interface ExerciseQuestionnaireProps {
   onClose: () => void;
   onSubmit: (answers: Record<string, string | number | string[]>) => void;
+  painAreas: string[];
 }
 
 const ageRanges = [
@@ -53,16 +53,20 @@ const bodyParts = [
 export function ExerciseQuestionnaire({
   onClose,
   onSubmit,
+  painAreas,
 }: ExerciseQuestionnaireProps) {
+  // Normalize the incoming pain areas to lowercase for case-insensitive matching
+  const normalizedPainAreas = painAreas?.map(area => area.toLowerCase()) || [];
+  
   const [answers, setAnswers] = useState<
     Record<string, string | number | string[]>
   >({
     age: "",
     pastExercise: "",
     plannedExercise: "",
-    painAreas: [],
-    exercisePain: "no",
-    painfulExerciseAreas: [],
+    painAreas: normalizedPainAreas,
+    exercisePain: normalizedPainAreas.length > 0 ? "yes" : "no",
+    painfulExerciseAreas: normalizedPainAreas,
     trainingType: "",
     trainingLocation: "",
   });
@@ -71,9 +75,14 @@ export function ExerciseQuestionnaire({
     field: string,
     value: string | number | string[]
   ) => {
+    // For pain areas and painful exercise areas, ensure values are lowercase
+    const normalizedValue = field === 'painAreas' || field === 'painfulExerciseAreas'
+      ? (Array.isArray(value) ? value.map(v => v.toLowerCase()) : value)
+      : value;
+
     setAnswers((prev) => ({
       ...prev,
-      [field]: value,
+      [field]: normalizedValue,
       // Reset painful exercise areas if exercise pain is set to 'no'
       ...(field === "exercisePain" && value === "no"
         ? { painfulExerciseAreas: [] }

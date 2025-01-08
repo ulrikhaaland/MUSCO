@@ -13,7 +13,7 @@ import MyLocationIcon from '@mui/icons-material/MyLocation';
 import CropRotateIcon from '@mui/icons-material/CropRotate';
 import MaleIcon from '@mui/icons-material/Male';
 import FemaleIcon from '@mui/icons-material/Female';
-import { Gender, Question } from '@/app/types';
+import { DiagnosisAssistantResponse, Gender, Question } from '@/app/types';
 import { AnatomyPart } from '@/app/types/anatomy';
 import { ChatMessages } from '../ui/ChatMessages';
 import { usePartChat } from '@/app/hooks/usePartChat';
@@ -43,6 +43,7 @@ interface MobileControlsProps {
   onSwitchModel: () => void;
   onHeightChange?: (height: number) => void;
   onQuestionClick?: (question: Question) => void;
+  onDiagnosis: (response: DiagnosisAssistantResponse) => void;
   hideBottomSheet?: boolean;
 }
 
@@ -65,6 +66,7 @@ export default function MobileControls({
   onSwitchModel,
   onHeightChange,
   onQuestionClick,
+  onDiagnosis,
   hideBottomSheet,
 }: MobileControlsProps) {
   const [isMobile, setIsMobile] = useState(false);
@@ -91,7 +93,14 @@ export default function MobileControls({
     handleOptionClick,
     getGroupDisplayName,
     getPartDisplayName,
+    assistantResponse,
   } = usePartChat({ selectedPart: selectedPart, selectedGroup: selectedGroup });
+
+  useEffect(() => {
+    if (assistantResponse) {
+      onDiagnosis(assistantResponse);
+    }
+  }, [assistantResponse]);
 
   useEffect(() => {
     if (!selectedGroup && userModifiedSheetHeight) {
@@ -341,7 +350,10 @@ export default function MobileControls({
       previousSnapPointRef.current = currentSnapPoint;
     } else {
       // Restore previous height when becoming visible again
-      if (sheetRef.current && previousSnapPointRef.current !== currentSnapPoint) {
+      if (
+        sheetRef.current &&
+        previousSnapPointRef.current !== currentSnapPoint
+      ) {
         const snapPoints = getSnapPoints();
         const targetHeight = snapPoints[previousSnapPointRef.current];
         setTimeout(() => {

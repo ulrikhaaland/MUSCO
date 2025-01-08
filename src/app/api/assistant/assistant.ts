@@ -1,4 +1,9 @@
-import { OpenAIMessage, ChatPayload, Question } from '../../types';
+import {
+  OpenAIMessage,
+  ChatPayload,
+  Question,
+  DiagnosisAssistantResponse,
+} from '../../types';
 
 interface AssistantResponse {
   assistantId: string;
@@ -234,7 +239,7 @@ export async function generateFollowUp(
 }
 
 export async function generateExerciseProgram(
-  diagnosis: string,
+  diagnosis: DiagnosisAssistantResponse,
   questionnaire: {
     selectedBodyGroup?: string;
     selectedBodyPart?: string;

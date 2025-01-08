@@ -90,7 +90,12 @@ export interface Question {
   diagnosis?: string;
 }
 
-export interface AssistantResponse {
+export interface DiagnosisAssistantResponse {
   diagnosis: string | null;
+  painfulAreas: string[];
+  avoidActivities: string[];
+  recoveryGoals: string[];
+  timeFrame: string;
   followUpQuestions: Question[];
+  selectedQuestion?: Question;
 }

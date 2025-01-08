@@ -55,8 +55,7 @@ export function usePartChat({ selectedPart, selectedGroup }: UsePartChatProps) {
     followUpQuestions: chatFollowUpQuestions,
     resetChat,
     sendChatMessage,
-    setFollowUpQuestions,
-    diagnosis,
+    assistantResponse,
   } = useChat();
 
   const [localFollowUpQuestions, setLocalFollowUpQuestions] = useState<
@@ -64,16 +63,6 @@ export function usePartChat({ selectedPart, selectedGroup }: UsePartChatProps) {
   >(() => getInitialQuestions());
 
   const [previousQuestions, setPreviousQuestions] = useState<Question[]>([]);
-
-  useEffect(() => {
-    if (diagnosis) {
-      chatFollowUpQuestions.forEach((q) => {
-        if (q.generate === true) {
-          q.diagnosis = diagnosis;
-        }
-      });
-    }
-  }, [diagnosis]);
 
   // Update the questions when part changes
   useEffect(() => {
@@ -138,5 +127,6 @@ export function usePartChat({ selectedPart, selectedGroup }: UsePartChatProps) {
     handleOptionClick,
     getGroupDisplayName,
     getPartDisplayName,
+    assistantResponse,
   };
 }
