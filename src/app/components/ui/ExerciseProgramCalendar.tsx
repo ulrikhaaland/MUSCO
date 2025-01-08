@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type { ExerciseProgram, ProgramDay } from './ExerciseProgramPage';
+import { TopBar } from './TopBar';
 
 interface ExerciseProgramCalendarProps {
   program: ExerciseProgram;
@@ -192,7 +193,17 @@ export function ExerciseProgramCalendar({ program, onBack, onToggleView, showCal
       <div className="mt-6 space-y-4">
         <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 ring-1 ring-gray-700/50">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-white">Day {dayProgram.day}</h3>
+            <div className="flex items-center">
+              <h3 className="text-lg font-semibold text-white">Day {dayProgram.day}</h3>
+              {dayProgram.duration && (
+                <div className="flex items-center text-gray-400 ml-4">
+                  <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span className="text-sm">{dayProgram.duration}</span>
+                </div>
+              )}
+            </div>
             <span className="text-sm text-gray-400">
               {selectedDate.toLocaleDateString('default', { weekday: 'long', month: 'long', day: 'numeric' })}
             </span>
@@ -266,27 +277,9 @@ export function ExerciseProgramCalendar({ program, onBack, onToggleView, showCal
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800">
-      <div className="fixed top-0 left-0 right-0 z-10 bg-gray-900/80 backdrop-blur-sm border-b border-gray-800/50">
-        <div className="flex items-center justify-between p-6">
-          <button
-            onClick={onBack}
-            className="flex items-center text-gray-400 hover:text-white transition-colors duration-200"
-          >
-            <svg
-              className="w-5 h-5 mr-2"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M10 19l-7-7m0 0l7-7m-7 7h18"
-              />
-            </svg>
-            <span className="text-sm font-medium">Back to chat</span>
-          </button>
+      <TopBar
+        onBack={onBack}
+        rightContent={
           <button
             onClick={onToggleView}
             className="p-2 rounded-full hover:bg-gray-800/80 text-gray-400 hover:text-white transition-colors duration-200"
@@ -305,8 +298,8 @@ export function ExerciseProgramCalendar({ program, onBack, onToggleView, showCal
               />
             </svg>
           </button>
-        </div>
-      </div>
+        }
+      />
 
       <div className="pt-24 max-w-2xl mx-auto px-4 pb-6">
         <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-xl ring-1 ring-gray-700/50">

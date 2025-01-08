@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, ReactNode } from 'react';
 import { ExerciseProgramCalendar } from './ExerciseProgramCalendar';
+import { TopBar } from './TopBar';
 
 export interface Exercise {
   name: string;
@@ -19,6 +20,7 @@ export interface ProgramDay {
   description: string;
   exercises: Exercise[];
   isRestDay: boolean;
+  duration: string;
 }
 
 export interface AfterTimeFrame {
@@ -108,6 +110,7 @@ export function ExerciseProgramPage({
 }: ExerciseProgramPageProps) {
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [showCalendar, setShowCalendar] = useState(false);
+  const [showDetails, setShowDetails] = useState(false);
 
   const handleVideoClick = (url: string) => {
     setVideoUrl(getYouTubeEmbedUrl(url));
@@ -154,27 +157,9 @@ export function ExerciseProgramPage({
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800">
-      <div className="flex-none p-6 border-b border-gray-800/50">
-        <div className="flex items-center justify-between">
-          <button
-            onClick={onBack}
-            className="flex items-center text-gray-400 hover:text-white transition-colors duration-200"
-          >
-            <svg
-              className="w-5 h-5 mr-2"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M10 19l-7-7m0 0l7-7m-7 7h18"
-              />
-            </svg>
-            <span className="text-sm font-medium">Back to chat</span>
-          </button>
+      <TopBar
+        onBack={onBack}
+        rightContent={
           <button
             onClick={() => setShowCalendar(true)}
             className="p-2 rounded-full hover:bg-gray-800/80 text-gray-400 hover:text-white transition-colors duration-200"
@@ -193,10 +178,10 @@ export function ExerciseProgramPage({
               />
             </svg>
           </button>
-        </div>
-      </div>
+        }
+      />
 
-      <div className="max-w-4xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+      <div className="pt-24 max-w-4xl mx-auto px-4 pb-8 sm:px-6 lg:px-8">
         <div className="space-y-8">
           <RevealOnScroll>
             <div className="text-center">
@@ -210,53 +195,82 @@ export function ExerciseProgramPage({
               {program.programOverview && (
                 <p className="text-xl text-gray-300 leading-relaxed">{program.programOverview}</p>
               )}
-              {program.timeFrame && program.timeFrameExplanation && (
-                <div className="border-t border-gray-700/50 pt-6">
-                  <h3 className="flex items-center text-lg font-semibold text-white mb-3">
-                    <svg className="w-5 h-5 mr-2 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    Program Duration: {program.timeFrame}
-                  </h3>
-                  <p className="text-gray-300 leading-relaxed">{program.timeFrameExplanation}</p>
-                </div>
-              )}
-              {program.whatNotToDo && (
-                <div className="border-t border-gray-700/50 pt-6">
-                  <h3 className="flex items-center text-lg font-semibold text-white mb-3">
-                    <svg className="w-5 h-5 mr-2 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                    </svg>
-                    What Not To Do
-                  </h3>
-                  <p className="text-red-400 leading-relaxed">{program.whatNotToDo}</p>
-                </div>
-              )}
-              {(program.afterTimeFrame?.expectedOutcome || program.afterTimeFrame?.nextSteps) && (
-                <div className="border-t border-gray-700/50 pt-6 space-y-6">
-                  {program.afterTimeFrame.expectedOutcome && (
-                    <div>
+              
+              <button
+                onClick={() => setShowDetails(!showDetails)}
+                className="flex items-center justify-center w-full text-gray-400 hover:text-white transition-colors duration-200 mt-4"
+              >
+                <span className="text-sm font-medium mr-2">
+                  {showDetails ? "Show Less" : "Show More Details"}
+                </span>
+                <svg
+                  className={`w-5 h-5 transform transition-transform duration-200 ${
+                    showDetails ? "rotate-180" : ""
+                  }`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </button>
+
+              {showDetails && (
+                <>
+                  {program.timeFrame && program.timeFrameExplanation && (
+                    <div className="border-t border-gray-700/50 pt-6">
                       <h3 className="flex items-center text-lg font-semibold text-white mb-3">
-                        <svg className="w-5 h-5 mr-2 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        <svg className="w-5 h-5 mr-2 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
-                        Expected Outcome
+                        Program Duration: {program.timeFrame}
                       </h3>
-                      <p className="text-gray-300 leading-relaxed">{program.afterTimeFrame.expectedOutcome}</p>
+                      <p className="text-gray-300 leading-relaxed">{program.timeFrameExplanation}</p>
                     </div>
                   )}
-                  {program.afterTimeFrame.nextSteps && (
-                    <div>
+                  {program.whatNotToDo && (
+                    <div className="border-t border-gray-700/50 pt-6">
                       <h3 className="flex items-center text-lg font-semibold text-white mb-3">
-                        <svg className="w-5 h-5 mr-2 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 5l7 7-7 7M5 5l7 7-7 7" />
+                        <svg className="w-5 h-5 mr-2 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                         </svg>
-                        Next Steps
+                        What Not To Do
                       </h3>
-                      <p className="text-gray-300 leading-relaxed">{program.afterTimeFrame.nextSteps}</p>
+                      <p className="text-red-400 leading-relaxed">{program.whatNotToDo}</p>
                     </div>
                   )}
-                </div>
+                  {(program.afterTimeFrame?.expectedOutcome || program.afterTimeFrame?.nextSteps) && (
+                    <div className="border-t border-gray-700/50 pt-6 space-y-6">
+                      {program.afterTimeFrame.expectedOutcome && (
+                        <div>
+                          <h3 className="flex items-center text-lg font-semibold text-white mb-3">
+                            <svg className="w-5 h-5 mr-2 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            Expected Outcome
+                          </h3>
+                          <p className="text-gray-300 leading-relaxed">{program.afterTimeFrame.expectedOutcome}</p>
+                        </div>
+                      )}
+                      {program.afterTimeFrame.nextSteps && (
+                        <div>
+                          <h3 className="flex items-center text-lg font-semibold text-white mb-3">
+                            <svg className="w-5 h-5 mr-2 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 5l7 7-7 7M5 5l7 7-7 7" />
+                            </svg>
+                            Next Steps
+                          </h3>
+                          <p className="text-gray-300 leading-relaxed">{program.afterTimeFrame.nextSteps}</p>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </>
               )}
             </div>
           </RevealOnScroll>
@@ -267,11 +281,21 @@ export function ExerciseProgramPage({
               <RevealOnScroll key={day.day}>
                 <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-8 shadow-xl ring-1 ring-gray-700/50">
                   <div className="mb-8">
-                    <div className="flex items-center mb-4">
-                      <span className="flex items-center justify-center w-8 h-8 rounded-full bg-indigo-500/10 text-indigo-400 font-semibold text-sm mr-3">
-                        {day.day}
-                      </span>
-                      <h3 className="text-xl font-semibold text-white">Day {day.day}</h3>
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center">
+                        <span className="flex items-center justify-center w-8 h-8 rounded-full bg-indigo-500/10 text-indigo-400 font-semibold text-sm mr-3">
+                          {day.day}
+                        </span>
+                        <h3 className="text-xl font-semibold text-white">Day {day.day}</h3>
+                      </div>
+                      {!day.isRestDay && day.duration && (
+                        <div className="flex items-center text-gray-400">
+                          <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                          <span className="text-sm">{day.duration}</span>
+                        </div>
+                      )}
                     </div>
                     <p className="text-gray-300 leading-relaxed">{day.description}</p>
                   </div>
@@ -285,10 +309,10 @@ export function ExerciseProgramPage({
                           {exercise.videoUrl && (
                             <button
                               onClick={() => handleVideoClick(exercise.videoUrl!)}
-                              className="flex items-center space-x-2 bg-indigo-500 hover:bg-indigo-400 text-white px-4 py-2 rounded-lg text-sm transition-colors duration-200"
+                              className="flex items-center space-x-1 bg-indigo-500/90 hover:bg-indigo-400 text-white px-2.5 py-1 rounded-md text-xs transition-colors duration-200"
                             >
                               <svg
-                                className="w-4 h-4"
+                                className="w-3.5 h-3.5"
                                 fill="none"
                                 stroke="currentColor"
                                 viewBox="0 0 24 24"
@@ -306,7 +330,7 @@ export function ExerciseProgramPage({
                                   d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                                 />
                               </svg>
-                              <span>Watch Video</span>
+                              <span>Video</span>
                             </button>
                           )}
                         </div>

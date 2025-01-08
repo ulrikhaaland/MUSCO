@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, ReactNode } from "react";
+import { TopBar } from './TopBar';
 
 export interface ExerciseQuestionnaireAnswers {
   age: string;
@@ -130,9 +131,37 @@ export function ExerciseQuestionnaire({
     exerciseEnvironment: "",
   });
 
+  // Create refs for each question section
+  const ageRef = useRef<HTMLDivElement>(null);
+  const lastYearRef = useRef<HTMLDivElement>(null);
+  const plannedRef = useRef<HTMLDivElement>(null);
+  const painAreasRef = useRef<HTMLDivElement>(null);
+  const exercisePainRef = useRef<HTMLDivElement>(null);
+  const exerciseModalitiesRef = useRef<HTMLDivElement>(null);
+  const exerciseEnvironmentRef = useRef<HTMLDivElement>(null);
+
+  const scrollToNextQuestion = (currentRef: React.RefObject<HTMLDivElement>) => {
+    const refs = [
+      ageRef,
+      lastYearRef,
+      plannedRef,
+      painAreasRef,
+      exercisePainRef,
+      exerciseModalitiesRef,
+      exerciseEnvironmentRef,
+    ];
+
+    const currentIndex = refs.indexOf(currentRef);
+    if (currentIndex < refs.length - 1) {
+      const nextRef = refs[currentIndex + 1];
+      nextRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  };
+
   const handleInputChange = (
     field: keyof ExerciseQuestionnaireAnswers,
-    value: string | number | string[]
+    value: string | number | string[],
+    ref?: React.RefObject<HTMLDivElement>
   ) => {
     // For pain areas and painful exercise areas, ensure values are lowercase
     const normalizedValue = field === 'generallyPainfulAreas' || field === 'painfulExerciseAreas'
@@ -147,6 +176,11 @@ export function ExerciseQuestionnaire({
         ? { painfulExerciseAreas: [] }
         : {}),
     }));
+
+    // Auto-scroll for single-choice questions
+    if (ref && !Array.isArray(value)) {
+      setTimeout(() => scrollToNextQuestion(ref), 300);
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -162,29 +196,9 @@ export function ExerciseQuestionnaire({
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800">
-      <div className="flex-none p-6 border-b border-gray-800/50">
-        <button
-          onClick={onClose}
-          className="flex items-center text-gray-400 hover:text-white transition-colors duration-200"
-        >
-          <svg
-            className="w-5 h-5 mr-2"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M10 19l-7-7m0 0l7-7m-7 7h18"
-            />
-          </svg>
-          <span className="text-sm font-medium">Back to chat</span>
-        </button>
-      </div>
+      <TopBar onBack={onClose} />
 
-      <div className="max-w-4xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+      <div className="pt-24 max-w-4xl mx-auto px-4 pb-8 sm:px-6 lg:px-8">
         <div className="space-y-8">
           <div className="text-center">
             <h2 className="text-4xl font-bold text-white tracking-tight">Exercise Questionnaire</h2>
@@ -194,7 +208,7 @@ export function ExerciseQuestionnaire({
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Age */}
             <RevealOnScroll>
-              <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-8 shadow-xl ring-1 ring-gray-700/50">
+              <div ref={ageRef} className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-8 shadow-xl ring-1 ring-gray-700/50">
                 <h3 className="flex items-center text-lg font-semibold text-white mb-6">
                   <svg className="w-5 h-5 mr-2 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -209,7 +223,7 @@ export function ExerciseQuestionnaire({
                         name="age"
                         value={range}
                         checked={answers.age === range}
-                        onChange={(e) => handleInputChange("age", e.target.value)}
+                        onChange={(e) => handleInputChange("age", e.target.value, ageRef)}
                         className="peer sr-only"
                         required
                       />
@@ -224,7 +238,7 @@ export function ExerciseQuestionnaire({
 
             {/* Past Exercise Frequency */}
             <RevealOnScroll>
-              <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-8 shadow-xl ring-1 ring-gray-700/50">
+              <div ref={lastYearRef} className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-8 shadow-xl ring-1 ring-gray-700/50">
                 <h3 className="flex items-center text-lg font-semibold text-white mb-6">
                   <svg className="w-5 h-5 mr-2 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -239,7 +253,7 @@ export function ExerciseQuestionnaire({
                         name="lastYearsExerciseFrequency"
                         value={option}
                         checked={answers.lastYearsExerciseFrequency === option}
-                        onChange={(e) => handleInputChange("lastYearsExerciseFrequency", e.target.value)}
+                        onChange={(e) => handleInputChange("lastYearsExerciseFrequency", e.target.value, lastYearRef)}
                         className="peer sr-only"
                         required
                       />
@@ -254,7 +268,7 @@ export function ExerciseQuestionnaire({
 
             {/* Planned Exercise Frequency */}
             <RevealOnScroll>
-              <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-8 shadow-xl ring-1 ring-gray-700/50">
+              <div ref={plannedRef} className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-8 shadow-xl ring-1 ring-gray-700/50">
                 <h3 className="flex items-center text-lg font-semibold text-white mb-6">
                   <svg className="w-5 h-5 mr-2 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
@@ -269,7 +283,7 @@ export function ExerciseQuestionnaire({
                         name="thisYearsPlannedExerciseFrequency"
                         value={option}
                         checked={answers.thisYearsPlannedExerciseFrequency === option}
-                        onChange={(e) => handleInputChange("thisYearsPlannedExerciseFrequency", e.target.value)}
+                        onChange={(e) => handleInputChange("thisYearsPlannedExerciseFrequency", e.target.value, plannedRef)}
                         className="peer sr-only"
                         required
                       />
@@ -284,7 +298,7 @@ export function ExerciseQuestionnaire({
 
             {/* Pain Areas */}
             <RevealOnScroll>
-              <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-8 shadow-xl ring-1 ring-gray-700/50">
+              <div ref={painAreasRef} className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-8 shadow-xl ring-1 ring-gray-700/50">
                 <h3 className="flex items-center text-lg font-semibold text-white mb-6">
                   <svg className="w-5 h-5 mr-2 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
@@ -319,7 +333,7 @@ export function ExerciseQuestionnaire({
 
             {/* Exercise Pain */}
             <RevealOnScroll>
-              <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-8 shadow-xl ring-1 ring-gray-700/50">
+              <div ref={exercisePainRef} className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-8 shadow-xl ring-1 ring-gray-700/50">
                 <h3 className="flex items-center text-lg font-semibold text-white mb-6">
                   <svg className="w-5 h-5 mr-2 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
@@ -334,7 +348,7 @@ export function ExerciseQuestionnaire({
                         name="hasExercisePain"
                         value={option}
                         checked={answers.hasExercisePain === option}
-                        onChange={(e) => handleInputChange("hasExercisePain", e.target.value)}
+                        onChange={(e) => handleInputChange("hasExercisePain", e.target.value, exercisePainRef)}
                         className="peer sr-only"
                         required
                       />
@@ -388,7 +402,7 @@ export function ExerciseQuestionnaire({
 
             {/* Training Type */}
             <RevealOnScroll>
-              <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-8 shadow-xl ring-1 ring-gray-700/50">
+              <div ref={exerciseModalitiesRef} className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-8 shadow-xl ring-1 ring-gray-700/50">
                 <h3 className="flex items-center text-lg font-semibold text-white mb-6">
                   <svg className="w-5 h-5 mr-2 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064" />
@@ -403,7 +417,7 @@ export function ExerciseQuestionnaire({
                         name="exerciseModalities"
                         value={option}
                         checked={answers.exerciseModalities === option}
-                        onChange={(e) => handleInputChange("exerciseModalities", e.target.value)}
+                        onChange={(e) => handleInputChange("exerciseModalities", e.target.value, exerciseModalitiesRef)}
                         className="peer sr-only"
                         required
                       />
@@ -418,7 +432,7 @@ export function ExerciseQuestionnaire({
 
             {/* Training Location */}
             <RevealOnScroll>
-              <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-8 shadow-xl ring-1 ring-gray-700/50">
+              <div ref={exerciseEnvironmentRef} className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-8 shadow-xl ring-1 ring-gray-700/50">
                 <h3 className="flex items-center text-lg font-semibold text-white mb-6">
                   <svg className="w-5 h-5 mr-2 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
