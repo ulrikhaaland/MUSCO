@@ -5,20 +5,43 @@ export interface BodyPartGroup {
   parts: AnatomyPart[];
   keywords: string[];
   selectIds: string[];
+  zoomId: string;
 }
 
 export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
   neck: {
     name: 'Neck',
+    zoomId: 'muscular_system-muscles_of_head_and_neck_ID',
     selectIds: [
       'muscular_system-muscles_of_head_and_neck_ID',
       'muscular_system-platysma_ID',
-      'connective_tissue-anterior_longitudinal_ligament_ID',
       'connective_tissue-ligamentum_nuchae_ID',
       'skeletal_system-bones_of_head_ID',
       'connective_tissue-connective_tissue_of_head_and_throat_ID',
+      'muscular_system-left_trapezius_ID',
+      'muscular_system-right_trapezius_ID',
     ],
     parts: [
+      {
+        objectId: 'muscular_system-right_trapezius_ID',
+        name: 'Right trapezius',
+        description: '',
+        available: true,
+        shown: true,
+        selected: false,
+        parent: '',
+        children: [],
+      },
+      {
+        objectId: 'muscular_system-left_trapezius_ID',
+        name: 'Left trapezius',
+        description: '',
+        available: true,
+        shown: true,
+        selected: false,
+        parent: '',
+        children: [],
+      },
       {
         objectId: 'muscular_system-muscles_of_head_and_neck_ID',
         name: 'Muscles of head and neck',
@@ -3115,16 +3138,6 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
         children: [],
       },
       {
-        objectId: 'connective_tissue-anterior_longitudinal_ligament_ID',
-        name: 'Anterior longitudinal ligament',
-        description: '',
-        available: true,
-        shown: true,
-        selected: false,
-        parent: '',
-        children: [],
-      },
-      {
         objectId: 'connective_tissue-ligamentum_nuchae_ID',
         name: 'Ligamentum nuchae',
         description: '',
@@ -5333,6 +5346,7 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
     keywords: ['neck', 'cervical', 'throat', 'laryn', 'pharyn', 'hyoid'],
   },
   leftShoulder: {
+    zoomId: 'muscular_system-muscles_of_left_shoulder_ID',
     name: 'Left Shoulder',
     selectIds: [
       'muscular_system-muscles_of_left_shoulder_ID',
@@ -5341,36 +5355,36 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
       'connective_tissue-connective_tissue_of_left_sternoclavicular_joint_ID',
     ],
     parts: [
-      {
-        objectId: 'muscular_system-muscles_of_left_shoulder_ID',
-        name: 'Muscles of left shoulder',
-        description: '',
-        available: true,
-        shown: true,
-        selected: false,
-        parent: '',
-        children: [],
-      },
-      {
-        objectId: 'muscular_system-superficial_muscles_of_left_shoulder_ID',
-        name: 'Superficial muscles of left shoulder',
-        description: '',
-        available: true,
-        shown: true,
-        selected: false,
-        parent: '',
-        children: [],
-      },
-      {
-        objectId: 'muscular_system-left_trapezius_ID',
-        name: 'Left trapezius',
-        description: '',
-        available: true,
-        shown: true,
-        selected: false,
-        parent: '',
-        children: [],
-      },
+      // {
+      //   objectId: 'muscular_system-muscles_of_left_shoulder_ID',
+      //   name: 'Muscles of left shoulder',
+      //   description: '',
+      //   available: true,
+      //   shown: true,
+      //   selected: false,
+      //   parent: '',
+      //   children: [],
+      // },
+      // {
+      //   objectId: 'muscular_system-superficial_muscles_of_left_shoulder_ID',
+      //   name: 'Superficial muscles of left shoulder',
+      //   description: '',
+      //   available: true,
+      //   shown: true,
+      //   selected: false,
+      //   parent: '',
+      //   children: [],
+      // },
+      // {
+      //   objectId: 'muscular_system-left_trapezius_ID',
+      //   name: 'Left trapezius',
+      //   description: '',
+      //   available: true,
+      //   shown: true,
+      //   selected: false,
+      //   parent: '',
+      //   children: [],
+      // },
       {
         objectId: 'muscular_system-left_deltoid_ID',
         name: 'Left deltoid',
@@ -5381,16 +5395,16 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
         parent: '',
         children: [],
       },
-      {
-        objectId: 'muscular_system-left_latissimus_dorsi_ID',
-        name: 'Left latissimus dorsi',
-        description: '',
-        available: true,
-        shown: true,
-        selected: false,
-        parent: '',
-        children: [],
-      },
+      // {
+      //   objectId: 'muscular_system-left_latissimus_dorsi_ID',
+      //   name: 'Left latissimus dorsi',
+      //   description: '',
+      //   available: true,
+      //   shown: true,
+      //   selected: false,
+      //   parent: '',
+      //   children: [],
+      // },
       {
         objectId: 'muscular_system-muscles_of_left_rotator_cuff_ID',
         name: 'Muscles of left rotator cuff',
@@ -5968,6 +5982,7 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
     ],
   },
   rightShoulder: {
+    zoomId: 'muscular_system-muscles_of_right_shoulder_ID',
     name: 'Right Shoulder',
     selectIds: [
       'muscular_system-muscles_of_right_shoulder_ID',
@@ -5976,36 +5991,36 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
       'connective_tissue-connective_tissue_of_right_sternoclavicular_joint_ID',
     ],
     parts: [
-      {
-        objectId: 'muscular_system-muscles_of_right_shoulder_ID',
-        name: 'Muscles of right shoulder',
-        description: '',
-        available: true,
-        shown: true,
-        selected: false,
-        parent: '',
-        children: [],
-      },
-      {
-        objectId: 'muscular_system-superficial_muscles_of_right_shoulder_ID',
-        name: 'Superficial muscles of right shoulder',
-        description: '',
-        available: true,
-        shown: true,
-        selected: false,
-        parent: '',
-        children: [],
-      },
-      {
-        objectId: 'muscular_system-right_trapezius_ID',
-        name: 'Right trapezius',
-        description: '',
-        available: true,
-        shown: true,
-        selected: false,
-        parent: '',
-        children: [],
-      },
+      // {
+      //   objectId: 'muscular_system-muscles_of_right_shoulder_ID',
+      //   name: 'Muscles of right shoulder',
+      //   description: '',
+      //   available: true,
+      //   shown: true,
+      //   selected: false,
+      //   parent: '',
+      //   children: [],
+      // },
+      // {
+      //   objectId: 'muscular_system-superficial_muscles_of_right_shoulder_ID',
+      //   name: 'Superficial muscles of right shoulder',
+      //   description: '',
+      //   available: true,
+      //   shown: true,
+      //   selected: false,
+      //   parent: '',
+      //   children: [],
+      // },
+      // {
+      //   objectId: 'muscular_system-right_trapezius_ID',
+      //   name: 'Right trapezius',
+      //   description: '',
+      //   available: true,
+      //   shown: true,
+      //   selected: false,
+      //   parent: '',
+      //   children: [],
+      // },
       {
         objectId: 'muscular_system-right_deltoid_ID',
         name: 'Right deltoid',
@@ -6016,16 +6031,16 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
         parent: '',
         children: [],
       },
-      {
-        objectId: 'muscular_system-right_latissimus_dorsi_ID',
-        name: 'Right latissimus dorsi',
-        description: '',
-        available: true,
-        shown: true,
-        selected: false,
-        parent: '',
-        children: [],
-      },
+      // {
+      //   objectId: 'muscular_system-right_latissimus_dorsi_ID',
+      //   name: 'Right latissimus dorsi',
+      //   description: '',
+      //   available: true,
+      //   shown: true,
+      //   selected: false,
+      //   parent: '',
+      //   children: [],
+      // },
       {
         objectId: 'muscular_system-muscles_of_right_rotator_cuff_ID',
         name: 'Muscles of right rotator cuff',
@@ -6604,6 +6619,7 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
     ],
   },
   leftUpperArm: {
+    zoomId: 'muscular_system-muscles_of_left_upper_arm_ID',
     name: 'Left Upper Arm',
     selectIds: [
       'muscular_system-muscles_of_left_upper_arm_ID',
@@ -6691,6 +6707,7 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
     ],
   },
   rightUpperArm: {
+    zoomId: 'muscular_system-muscles_of_right_upper_arm_ID',
     name: 'Right Upper Arm',
     selectIds: [
       'muscular_system-muscles_of_right_upper_arm_ID',
@@ -6778,6 +6795,7 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
     ],
   },
   leftElbow: {
+    zoomId: 'connective_tissue-connective_tissue_of_left_elbow_ID',
     name: 'Left Elbow',
     selectIds: [
       'connective_tissue-connective_tissue_of_left_elbow_ID',
@@ -6971,6 +6989,7 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
     ],
   },
   rightElbow: {
+    zoomId: 'connective_tissue-connective_tissue_of_right_elbow_ID',
     name: 'Right Elbow',
     selectIds: [
       'connective_tissue-connective_tissue_of_right_elbow_ID',
@@ -7165,6 +7184,7 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
     ],
   },
   leftForearm: {
+    zoomId: 'muscular_system-muscles_of_left_forearm_ID',
     name: 'Left Forearm',
     selectIds: [
       'muscular_system-muscles_of_left_forearm_ID',
@@ -7441,6 +7461,7 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
     ],
   },
   rightForearm: {
+    zoomId: 'muscular_system-muscles_of_right_forearm_ID',
     name: 'Right Forearm',
     selectIds: [
       'muscular_system-muscles_of_right_forearm_ID',
@@ -7717,6 +7738,7 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
     ],
   },
   leftHand: {
+    zoomId: 'muscular_system-muscles_of_left_hand_ID',
     name: 'Left Hand',
     selectIds: [
       'muscular_system-muscles_of_left_hand_ID',
@@ -11394,6 +11416,7 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
     ],
   },
   rightHand: {
+    zoomId: 'muscular_system-muscles_of_right_hand_ID',
     name: 'Right Hand',
     selectIds: [
       'muscular_system-muscles_of_right_hand_ID',
@@ -15109,6 +15132,7 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
     ],
   },
   chest: {
+    zoomId: 'muscular_system-muscles_of_upper_limb_ID',
     name: 'Chest',
     selectIds: [
       'skeletal_system-rib_cage_ID',
@@ -16994,6 +17018,7 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
     ],
   },
   torso: {
+    zoomId: 'muscular_system-muscles_of_abdomen_ID',
     name: 'Torso',
     selectIds: [
       'muscular_system-muscles_of_abdomen_ID',
@@ -17425,6 +17450,7 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
     ],
   },
   back: {
+    zoomId: 'muscular_system-muscles_of_back_ID',
     name: 'Back',
     selectIds: [
       'muscular_system-muscles_of_back_ID',
@@ -17432,8 +17458,53 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
       'connective_tissue-connective_tissue_of_vertebral_column_ID',
       'skeletal_system-vertebral_column_ID',
       'connective_tissue-intervertebral_discs_ID',
+      'connective_tissue-anterior_longitudinal_ligament_ID',
+      'muscular_system-right_latissimus_dorsi_ID',
+      'muscular_system-left_latissimus_dorsi_ID',
+      'muscular_system-right_trapezius_ID',
+      'muscular_system-left_trapezius_ID'
     ],
     parts: [
+      {
+        objectId: 'muscular_system-right_trapezius_ID',
+        name: 'Right trapezius',
+        description: '',
+        available: true,
+        shown: true,
+        selected: false,
+        parent: '',
+        children: [],
+      },
+      {
+        objectId: 'muscular_system-left_trapezius_ID',
+        name: 'Left trapezius',
+        description: '',
+        available: true,
+        shown: true,
+        selected: false,
+        parent: '',
+        children: [],
+      },
+      {
+        objectId: 'muscular_system-right_latissimus_dorsi_ID',
+        name: 'Right latissimus dorsi',
+        description: '',
+        available: true,
+        shown: true,
+        selected: false,
+        parent: '',
+        children: [],
+      },
+      {
+        objectId: 'muscular_system-left_latissimus_dorsi_ID',
+        name: 'Left latissimus dorsi',
+        description: '',
+        available: true,
+        shown: true,
+        selected: false,
+        parent: '',
+        children: [],
+      },
       {
         objectId: 'muscular_system-intertransversarii_lumborum_ID',
         name: 'Intertransversarii lumborum',
@@ -24530,6 +24601,7 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
     ],
   },
   pelvisHip: {
+    zoomId: 'connective_tissue-connective_tissue_of_pelvis_ID',
     name: 'Pelvis & Hip Region',
     selectIds: [
       'connective_tissue-connective_tissue_of_pelvis_ID',
@@ -26320,6 +26392,7 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
     ],
   },
   glutes: {
+    zoomId: 'muscular_system-muscles_of_lower_limb_ID',
     name: 'Glutes',
     parts: [
       {
@@ -26456,6 +26529,7 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
     ],
   },
   rightThigh: {
+    zoomId: 'muscular_system-muscles_of_right_thigh_ID',
     name: 'Right Thigh',
     selectIds: [
       'muscular_system-muscles_of_right_thigh_ID',
@@ -26697,6 +26771,7 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
     ],
   },
   leftThigh: {
+    zoomId: 'muscular_system-muscles_of_left_thigh_ID',
     name: 'Left Thigh',
     selectIds: [
       'muscular_system-muscles_of_left_thigh_ID',
@@ -26936,6 +27011,7 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
     ],
   },
   leftKnee: {
+    zoomId: 'connective_tissue-connective_tissue_of_left_knee_ID',
     name: 'Left Knee',
     selectIds: [
       'connective_tissue-connective_tissue_of_left_knee_ID',
@@ -27323,6 +27399,7 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
     ],
   },
   rightKnee: {
+    zoomId: 'connective_tissue-connective_tissue_of_right_knee_ID',
     name: 'Right Knee',
     selectIds: [
       'connective_tissue-connective_tissue_of_right_knee_ID',
@@ -27712,7 +27789,8 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
       'right genicular',
     ],
   },
-  leftLowerLeg: {
+  leftLowerLeg: { 
+    zoomId: 'muscular_system-muscles_of_left_lower_leg_ID',
     name: 'Left Lower Leg',
     selectIds: [
       'muscular_system-muscles_of_left_lower_leg_ID',
@@ -27978,6 +28056,7 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
     ],
   },
   rightLowerLeg: {
+    zoomId: 'muscular_system-muscles_of_right_lower_leg_ID',
     name: 'Right Lower Leg',
     selectIds: [
       'muscular_system-muscles_of_right_lower_leg_ID',
@@ -28243,6 +28322,7 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
     ],
   },
   leftFoot: {
+    zoomId: 'muscular_system-muscles_of_left_foot_ID',
     name: 'Left Foot',
     selectIds: [
       'muscular_system-muscles_of_left_foot_ID',
@@ -33892,6 +33972,7 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
     ],
   },
   rightFoot: {
+    zoomId: 'muscular_system-muscles_of_right_foot_ID',
     name: 'Right Foot',
     selectIds: [
       'muscular_system-muscles_of_right_foot_ID',

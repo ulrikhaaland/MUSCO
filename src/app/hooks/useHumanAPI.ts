@@ -225,18 +225,28 @@ export function useHumanAPI({
               const selectionMap = createSelectionMap(group.selectIds, gender);
 
               const deselectionMap = {};
+
+              let hasFoundGroup = false;
               // deselect all parts
               Object.values(bodyPartGroups).forEach((group) => {
+                // Skip if current group contains the selected ID
+
                 if (
+                  !hasFoundGroup &&
                   group.parts.some(
                     (part) =>
                       getGenderedId(part.objectId, gender) === selectedId
                   )
                 ) {
+                  hasFoundGroup = true;
                   return;
                 }
+
+                // Only deselect IDs that aren't in the selection map
                 const toDeselect = createSelectionMap(
-                  group.selectIds,
+                  group.selectIds.filter(
+                    (id) => !selectionMap[getGenderedId(id, gender)]
+                  ),
                   gender,
                   false
                 );
@@ -291,7 +301,7 @@ export function useHumanAPI({
                   setSelectedPart(groupPart);
                 }
               } else {
-                zoomID = getGenderedId(group.selectIds[0], gender);
+                zoomID = getGenderedId(group.zoomId, gender);
                 setSelectedGroup(group);
 
                 human.send('scene.showObjects', {
@@ -310,7 +320,7 @@ export function useHumanAPI({
 
               // Store the group in ref
               previousSelectedPartGroupRef.current = group;
-              onZoom?.(zoomID);
+              onZoom?.(getGenderedId(group.zoomId, gender));
 
               // setTimeout(() => {
               //   human.send('scene.enableXray', () => {});
@@ -352,11 +362,6 @@ export function useHumanAPI({
     console.log('initialGender changed:', initialGender);
     setCurrentGender(initialGender);
   }, [initialGender]);
-
-  // Add effect to log gender changes
-  useEffect(() => {
-    console.log('currentGender updated:', currentGender);
-  }, [currentGender]);
 
   // Add resize handler
   useEffect(() => {
