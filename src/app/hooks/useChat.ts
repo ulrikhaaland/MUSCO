@@ -1,17 +1,17 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from "react";
 import {
   getOrCreateAssistant,
   createThread,
   sendMessage,
   generateFollowUp,
-} from '../api/assistant/assistant';
+} from "../api/assistant/assistant";
 import {
   ChatMessage,
   ChatPayload,
   Question,
   UserPreferences,
   DiagnosisAssistantResponse,
-} from '../types';
+} from "../types";
 
 export function useChat() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -32,7 +32,7 @@ export function useChat() {
         assistantIdRef.current = assistantId;
         threadIdRef.current = threadId;
       } catch (error) {
-        console.error('Error initializing assistant:', error);
+        console.error("Error initializing assistant:", error);
       }
     }
 
@@ -50,7 +50,7 @@ export function useChat() {
 
   const sendChatMessage = async (
     messageContent: string,
-    chatPayload: Omit<ChatPayload, 'message'>
+    chatPayload: Omit<ChatPayload, "message">
   ) => {
     if (isLoading) return;
     setFollowUpQuestions([]);
@@ -65,33 +65,33 @@ export function useChat() {
       // Add user message immediately
       const newMessage: ChatMessage = {
         id: `user-${Date.now()}`,
-        role: 'user' as const,
+        role: "user" as const,
         content: messageContent,
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, newMessage]);
 
       // Start follow-up questions generation in parallel but don't use them yet
-      const followUpPromise = generateFollowUp(
-        [newMessage],
-        chatPayload.selectedBodyPart?.name || '',
-        chatPayload.selectedBodyGroupName || '',
-        chatPayload.bodyPartsInSelectedGroup || [],
-        chatPayload.previousQuestions || []
-      );
+      // const followUpPromise = generateFollowUp(
+      //   [newMessage],
+      //   chatPayload.selectedBodyPart?.name || '',
+      //   chatPayload.selectedBodyGroupName || '',
+      //   chatPayload.bodyPartsInSelectedGroup || [],
+      //   chatPayload.previousQuestions || []
+      // );
 
-      let accumulatedContent = '';
+      let accumulatedContent = "";
       let jsonDetected = false;
       let hasAssistantQuestions = false;
       let partialFollowUps: Question[] = [];
 
       // Send the message and handle streaming response
-      await sendMessage(threadIdRef.current ?? '', payload, (content) => {
+      await sendMessage(threadIdRef.current ?? "", payload, (content) => {
         if (content && !jsonDetected) {
           // Check if this chunk contains any JSON-related content
           if (
-            content.includes('```') ||
-            content.toLowerCase().includes('json {')
+            content.includes("```") ||
+            content.toLowerCase().includes("json {")
           ) {
             jsonDetected = true;
             // Split on either ``` or "json {"
@@ -101,7 +101,7 @@ export function useChat() {
             if (textContent) {
               setMessages((prev) => {
                 const lastMessage = prev[prev.length - 1];
-                if (lastMessage?.role === 'assistant') {
+                if (lastMessage?.role === "assistant") {
                   return [
                     ...prev.slice(0, -1),
                     {
@@ -117,7 +117,7 @@ export function useChat() {
                     id: `assistant-${Date.now()}-${Math.random()
                       .toString(36)
                       .slice(2, 7)}`,
-                    role: 'assistant',
+                    role: "assistant",
                     content: textContent,
                     timestamp: new Date(),
                   },
@@ -131,7 +131,7 @@ export function useChat() {
             // Normal text content, update messages
             setMessages((prev) => {
               const lastMessage = prev[prev.length - 1];
-              if (lastMessage?.role === 'assistant') {
+              if (lastMessage?.role === "assistant") {
                 return [
                   ...prev.slice(0, -1),
                   {
@@ -147,7 +147,7 @@ export function useChat() {
                   id: `assistant-${Date.now()}-${Math.random()
                     .toString(36)
                     .slice(2, 7)}`,
-                  role: 'assistant',
+                  role: "assistant",
                   content,
                   timestamp: new Date(),
                 },
@@ -169,13 +169,13 @@ export function useChat() {
             for (const questionMatch of questionMatches) {
               // Find the complete object containing this question
               const questionEndIndex = accumulatedContent.indexOf(
-                '}',
+                "}",
                 accumulatedContent.indexOf(questionMatch)
               );
               if (questionEndIndex !== -1) {
                 // Look backwards for the start of this object
                 const questionStartIndex = accumulatedContent.lastIndexOf(
-                  '{',
+                  "{",
                   accumulatedContent.indexOf(questionMatch)
                 );
                 if (questionStartIndex !== -1) {
@@ -190,7 +190,7 @@ export function useChat() {
                         (q) => q.question === question.question
                       )
                     ) {
-                      console.log('Found new question:', question);
+                      console.log("Found new question:", question);
                       partialFollowUps = [...partialFollowUps, question];
                       setFollowUpQuestions(partialFollowUps);
                       hasAssistantQuestions = true;
@@ -207,7 +207,9 @@ export function useChat() {
           try {
             const jsonMatch = accumulatedContent.match(/\{[\s\S]*\}/)?.[0];
             if (jsonMatch) {
-              const response = JSON.parse(jsonMatch) as DiagnosisAssistantResponse;
+              const response = JSON.parse(
+                jsonMatch
+              ) as DiagnosisAssistantResponse;
               setAssistantResponse(response);
             }
           } catch (e) {
@@ -217,14 +219,14 @@ export function useChat() {
       });
 
       // After message is complete, check if we need to use generated follow-ups
-      if (!hasAssistantQuestions) {
-        const { followUpQuestions: generatedQuestions } = await followUpPromise;
-        if (generatedQuestions) {
-          setFollowUpQuestions(generatedQuestions);
-        }
-      }
+      // if (!hasAssistantQuestions) {
+      //   const { followUpQuestions: generatedQuestions } = await followUpPromise;
+      //   if (generatedQuestions) {
+      //     setFollowUpQuestions(generatedQuestions);
+      //   }
+      // }
     } catch (error) {
-      console.error('Error sending message:', error);
+      console.error("Error sending message:", error);
     } finally {
       setIsLoading(false);
     }

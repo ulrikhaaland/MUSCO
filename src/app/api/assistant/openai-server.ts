@@ -69,6 +69,7 @@ export async function streamRunResponse(
       });
 
     await stream.done();
+    console.log('Stream completed successfully');
     return;
   } catch (error) {
     console.error('Error in streamRunResponse:', error);
@@ -220,7 +221,7 @@ export async function generateExerciseProgram(context: {
     exercisePain: boolean;
     painfulAreas: string[];
     trainingType: string;
-    trainingLocation: string;
+    exerciseEnvironment: string;
   };
 }) {
   try {

@@ -130,7 +130,7 @@ You are an intelligent assistant responsible for generating personalized exercis
     "painPoints": ["lower back"],
     "exercisePain": false,
     "trainingType": "Strength",
-    "trainingLocation": "At Home with Dumbbells or Resistance Bands"
+    "exerciseEnvironment": "At Home with Dumbbells or Resistance Bands"
   }
 }
 ```

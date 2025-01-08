@@ -2,6 +2,8 @@ import { ChatMessage, Question } from '@/app/types';
 import ReactMarkdown from 'react-markdown';
 import { RefObject, useEffect, useState, useRef } from 'react';
 import { LoadingMessage } from './LoadingMessage';
+import { AnatomyPart } from '@/app/types/anatomy';
+import { BodyPartGroup } from '@/app/config/bodyPartGroups';
 
 interface ChatMessagesProps {
   messages: ChatMessage[];
@@ -11,7 +13,8 @@ interface ChatMessagesProps {
   onQuestionClick?: (question: Question) => void;
   onScroll?: (event: React.UIEvent<HTMLDivElement>) => void;
   onUserScroll?: (hasScrolled: boolean) => void;
-  part?: { name: string } | null;
+  part?: AnatomyPart ;
+  group?: BodyPartGroup;
   isMobile?: boolean;
 }
 
@@ -24,6 +27,7 @@ export function ChatMessages({
   onScroll,
   onUserScroll,
   part,
+  group,
   isMobile = false,
 }: ChatMessagesProps) {
   const [userHasScrolled, setUserHasScrolled] = useState(false);
@@ -88,7 +92,7 @@ export function ChatMessages({
         onScroll={handleScroll}
         className="flex-1 overflow-y-auto scroll-smooth"
       >
-        {messages.length === 0 && !part && !isMobile && (
+        {messages.length === 0 && !part && !group && !isMobile && (
           <div className="h-full flex items-center justify-center text-gray-400">
             <div className="text-center">
               <p className="text-lg mb-2">

@@ -1,9 +1,9 @@
-import { useState, useRef, ChangeEvent } from 'react';
-import { AnatomyPart } from '@/app/types/anatomy';
-import { ChatMessages } from './ChatMessages';
-import { usePartChat } from '@/app/hooks/usePartChat';
-import { BodyPartGroup } from '@/app/config/bodyPartGroups';
-import { Question } from '@/app/types';
+import { useState, useRef, ChangeEvent } from "react";
+import { AnatomyPart } from "@/app/types/anatomy";
+import { ChatMessages } from "./ChatMessages";
+import { usePartChat } from "@/app/hooks/usePartChat";
+import { BodyPartGroup } from "@/app/config/bodyPartGroups";
+import { Question } from "@/app/types";
 
 interface PartPopupProps {
   part: AnatomyPart | null;
@@ -12,8 +12,13 @@ interface PartPopupProps {
   onQuestionClick?: (question: Question) => void;
 }
 
-export default function PartPopup({ part, group, onClose, onQuestionClick }: PartPopupProps) {
-  const [message, setMessage] = useState('');
+export default function PartPopup({
+  part,
+  group,
+  onClose,
+  onQuestionClick,
+}: PartPopupProps) {
+  const [message, setMessage] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const {
     messages,
@@ -29,7 +34,7 @@ export default function PartPopup({ part, group, onClose, onQuestionClick }: Par
   const [userHasScrolled, setUserHasScrolled] = useState(false);
 
   const handleResetChat = () => {
-    setMessage('');
+    setMessage("");
     resetChat();
   };
 
@@ -38,7 +43,7 @@ export default function PartPopup({ part, group, onClose, onQuestionClick }: Par
 
     const textarea = textareaRef.current;
     if (textarea) {
-      textarea.style.height = 'auto';
+      textarea.style.height = "auto";
       const newHeight = Math.min(textarea.scrollHeight, 480);
       textarea.style.height = `${newHeight}px`;
     }
@@ -47,7 +52,7 @@ export default function PartPopup({ part, group, onClose, onQuestionClick }: Par
   const handleTextareaKeyDown = (
     e: React.KeyboardEvent<HTMLTextAreaElement>
   ) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSendMessage(message);
     }
@@ -55,15 +60,15 @@ export default function PartPopup({ part, group, onClose, onQuestionClick }: Par
 
   const handleSendMessage = async (messageContent: string) => {
     if (!messageContent.trim()) return;
-    setMessage('');
+    setMessage("");
     handleOptionClick({
-      title: '',
+      title: "",
       question: messageContent,
     });
   };
 
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
-    console.log('Scroll event in PartPopup');
+    console.log("Scroll event in PartPopup");
   };
 
   const handleUserScroll = (hasScrolled: boolean) => {
@@ -107,56 +112,20 @@ export default function PartPopup({ part, group, onClose, onQuestionClick }: Par
               />
             </svg>
           </button>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-white p-1 rounded-full hover:bg-gray-800 transition-colors"
-            aria-label="Close"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path
-                fillRule="evenodd"
-                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                clipRule="evenodd"
-              />
-            </svg>
-          </button>
         </div>
       </div>
 
-      <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
-        {messages.length === 0 && part ? (
-          <div className="space-y-3">
-            {followUpQuestions.map((question) => (
-              <button
-                key={question.title}
-                onClick={() => handleQuestionSelect(question)}
-                className="w-full text-left p-3 rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors"
-              >
-                <div className="font-medium">{question.title}</div>
-                <div className="text-sm text-gray-400">
-                  {question.question}
-                </div>
-              </button>
-            ))}
-          </div>
-        ) : (
-          <ChatMessages
-            messages={messages}
-            messagesRef={messagesRef}
-            isLoading={isLoading}
-            followUpQuestions={followUpQuestions}
-            onQuestionClick={handleQuestionSelect}
-            onScroll={handleScroll}
-            onUserScroll={handleUserScroll}
-            part={part}
-          />
-        )}
-      </div>
+      <ChatMessages
+        messages={messages}
+        messagesRef={messagesRef}
+        isLoading={isLoading}
+        followUpQuestions={followUpQuestions}
+        onQuestionClick={handleQuestionSelect}
+        onScroll={handleScroll}
+        onUserScroll={handleUserScroll}
+        part={part}
+        group={group}
+      />
 
       <div className="mt-4 border-t border-gray-700 pt-4 flex-shrink-0">
         <form
@@ -181,8 +150,8 @@ export default function PartPopup({ part, group, onClose, onQuestionClick }: Par
             disabled={isLoading || !message.trim()}
             className={`absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-lg transition-colors ${
               isLoading || !message.trim()
-                ? 'text-gray-500 cursor-not-allowed'
-                : 'text-indigo-600 hover:text-indigo-500 hover:bg-gray-700/50'
+                ? "text-gray-500 cursor-not-allowed"
+                : "text-indigo-600 hover:text-indigo-500 hover:bg-gray-700/50"
             }`}
           >
             {isLoading ? (
