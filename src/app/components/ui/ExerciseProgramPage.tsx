@@ -16,6 +16,7 @@ export interface Exercise {
 
 export interface ProgramDay {
   day: number;
+  /** Day of week, where 1 = Monday and 7 = Sunday */
   dayOfWeek: number;
   description: string;
   exercises: Exercise[];
@@ -103,6 +104,41 @@ function RevealOnScroll({ children, className = "" }: RevealOnScrollProps) {
   );
 }
 
+function calculateDuration(exercises: Exercise[]): string {
+  let totalMinutes = 0;
+
+  exercises.forEach((exercise, index) => {
+    // Parse duration string to get minutes
+    if (exercise.duration) {
+      const durationMatch = exercise.duration.match(/(\d+)/);
+      if (durationMatch) {
+        totalMinutes += parseInt(durationMatch[0]);
+      }
+    } else if (exercise.sets && exercise.repetitions) {
+      // Estimate time for strength exercises if duration is not provided
+      // Assuming 45 seconds per set plus rest time
+      const setTime = (45 * exercise.sets);
+      const restTime = exercise.rest ? 
+        parseInt(exercise.rest.match(/(\d+)/)?.[0] || "0") * (exercise.sets - 1) : 
+        30 * (exercise.sets - 1);
+      totalMinutes += Math.ceil((setTime + restTime) / 60);
+    }
+
+    // Add transition time between exercises (1 minute)
+    if (index < exercises.length - 1) {
+      totalMinutes += 1;
+    }
+  });
+
+  if (totalMinutes < 60) {
+    return `${totalMinutes} min`;
+  } else {
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
+    return minutes > 0 ? `${hours}h ${minutes}m` : `${hours}h`;
+  }
+}
+
 export function ExerciseProgramPage({
   onBack,
   isLoading,
@@ -111,6 +147,17 @@ export function ExerciseProgramPage({
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [showCalendar, setShowCalendar] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
+
+  // Process program to add calculated durations
+  useEffect(() => {
+    if (program) {
+      program.program.forEach(day => {
+        if (!day.isRestDay) {
+          day.duration = calculateDuration(day.exercises);
+        }
+      });
+    }
+  }, [program]);
 
   const handleVideoClick = (url: string) => {
     setVideoUrl(getYouTubeEmbedUrl(url));
@@ -349,35 +396,38 @@ export function ExerciseProgramPage({
                             {exercise.precaution}
                           </p>
                         )}
-                        {(exercise.sets || exercise.repetitions || exercise.duration || exercise.rest) && (
+                        {((exercise.sets && exercise.repetitions) || exercise.duration || exercise.rest) && (
                           <div className="mt-4 flex flex-wrap gap-3">
-                            {exercise.sets && (
-                              <div className="bg-gray-800/80 px-4 py-2 rounded-lg">
-                                <span className="text-gray-300 text-sm">
-                                  {exercise.sets} sets
-                                </span>
-                              </div>
-                            )}
-                            {exercise.repetitions && (
-                              <div className="bg-gray-800/80 px-4 py-2 rounded-lg">
-                                <span className="text-gray-300 text-sm">
-                                  {exercise.repetitions} reps
-                                </span>
-                              </div>
-                            )}
-                            {exercise.duration && (
+                            {exercise.duration ? (
                               <div className="bg-gray-800/80 px-4 py-2 rounded-lg">
                                 <span className="text-gray-300 text-sm">
                                   {exercise.duration}
                                 </span>
                               </div>
-                            )}
-                            {exercise.rest && exercise.rest !== "n/a" && (
-                              <div className="bg-gray-800/80 px-4 py-2 rounded-lg">
-                                <span className="text-gray-300 text-sm">
-                                  {exercise.rest} rest
-                                </span>
-                              </div>
+                            ) : (
+                              <>
+                                {exercise.sets && (
+                                  <div className="bg-gray-800/80 px-4 py-2 rounded-lg">
+                                    <span className="text-gray-300 text-sm">
+                                      {exercise.sets} sets
+                                    </span>
+                                  </div>
+                                )}
+                                {exercise.repetitions && (
+                                  <div className="bg-gray-800/80 px-4 py-2 rounded-lg">
+                                    <span className="text-gray-300 text-sm">
+                                      {exercise.repetitions} reps
+                                    </span>
+                                  </div>
+                                )}
+                                {exercise.rest && exercise.rest !== "n/a" && (
+                                  <div className="bg-gray-800/80 px-4 py-2 rounded-lg">
+                                    <span className="text-gray-300 text-sm">
+                                      {exercise.rest} rest
+                                    </span>
+                                  </div>
+                                )}
+                              </>
                             )}
                           </div>
                         )}

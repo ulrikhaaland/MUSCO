@@ -154,7 +154,7 @@ export function ExerciseQuestionnaire({
     const currentIndex = refs.indexOf(currentRef);
     if (currentIndex < refs.length - 1) {
       const nextRef = refs[currentIndex + 1];
-      nextRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      nextRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   };
 
@@ -179,7 +179,7 @@ export function ExerciseQuestionnaire({
 
     // Auto-scroll for single-choice questions
     if (ref && !Array.isArray(value)) {
-      setTimeout(() => scrollToNextQuestion(ref), 300);
+      setTimeout(() => scrollToNextQuestion(ref), 150);
     }
   };
 

@@ -15,8 +15,8 @@ export function ExerciseProgramCalendar({ program, onBack, onToggleView, showCal
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
 
   const getDayProgram = (date: Date): ProgramDay | undefined => {
-    // Convert Sunday (0) to 6, and Monday-Saturday (1-6) to (0-5)
-    const dayOfWeek = date.getDay() === 0 ? 6 : date.getDay() - 1;
+    // Convert Sunday (0) to 7, and Monday-Saturday (1-6) to (1-6)
+    const dayOfWeek = date.getDay() === 0 ? 7 : date.getDay();
     return program.program.find(day => day.dayOfWeek === dayOfWeek);
   };
 
@@ -243,27 +243,30 @@ export function ExerciseProgramCalendar({ program, onBack, onToggleView, showCal
                   )}
                 </div>
                 <p className="text-sm text-gray-300">{exercise.description}</p>
-                {(exercise.sets || exercise.repetitions || exercise.duration || exercise.rest) && (
+                {((exercise.sets && exercise.repetitions) || exercise.duration || exercise.rest) && (
                   <div className="mt-3 flex flex-wrap gap-2">
-                    {exercise.sets && (
-                      <span className="px-2 py-1 bg-gray-800/80 rounded text-xs text-gray-300">
-                        {exercise.sets} sets
-                      </span>
-                    )}
-                    {exercise.repetitions && (
-                      <span className="px-2 py-1 bg-gray-800/80 rounded text-xs text-gray-300">
-                        {exercise.repetitions} reps
-                      </span>
-                    )}
-                    {exercise.duration && (
+                    {exercise.duration ? (
                       <span className="px-2 py-1 bg-gray-800/80 rounded text-xs text-gray-300">
                         {exercise.duration}
                       </span>
-                    )}
-                    {exercise.rest && exercise.rest !== "n/a" && (
-                      <span className="px-2 py-1 bg-gray-800/80 rounded text-xs text-gray-300">
-                        {exercise.rest} rest
-                      </span>
+                    ) : (
+                      <>
+                        {exercise.sets && (
+                          <span className="px-2 py-1 bg-gray-800/80 rounded text-xs text-gray-300">
+                            {exercise.sets} sets
+                          </span>
+                        )}
+                        {exercise.repetitions && (
+                          <span className="px-2 py-1 bg-gray-800/80 rounded text-xs text-gray-300">
+                            {exercise.repetitions} reps
+                          </span>
+                        )}
+                        {exercise.rest && exercise.rest !== "n/a" && (
+                          <span className="px-2 py-1 bg-gray-800/80 rounded text-xs text-gray-300">
+                            {exercise.rest} rest
+                          </span>
+                        )}
+                      </>
                     )}
                   </div>
                 )}
