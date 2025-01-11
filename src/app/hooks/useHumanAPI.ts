@@ -154,13 +154,25 @@ export function useHumanAPI({
           console.log('Human API is ready');
 
           // human.on('scene.picked', function (pick) {
-          //   if (pick.position) {
-          //     human.send('labels.create', {
-          //       objectId: pick.objectId,
-          //       description: pick.objectId,
-          //       title: 'API Label',
-          //       position: [pick.position.x, pick.position.y, pick.position.z],
-          //     });
+          //   if (pick.objectId) {
+          //     const group = getPartGroup(pick.objectId);
+          //     if (group && group.id === 'back') {
+          //       human.send('labels.create', {
+          //         objectId: pick.objectId,
+          //         title: 'Looking for the lower back?',
+          //         description:
+          //         '<button onclick="window.selectLowerBack()">Select Lower Back</button>',
+          //       position: pick.position,
+          //       theme: 'context',
+          //       pinType: 'plus',
+          //       labelOffset: [-32, 0],
+          //       hideWire: false,
+          //       pinGlow: true,
+          //       occludable: true,
+          //       collapseDescription: false,
+          //       flyTo: false,
+          //       });
+          //     }
           //   }
           // });
           human.send('scene.disableHighlight', () => {});
@@ -215,7 +227,7 @@ export function useHumanAPI({
             }
 
             // If not in current group, proceed with group selection
-            const group = getPartGroup(selectedId, bodyPartGroups);
+            const group = getPartGroup(selectedId);
 
             if (group) {
               // Get the current gender value directly from state
@@ -264,10 +276,21 @@ export function useHumanAPI({
 
               // let zoomID;
 
-              if (previousSelectedPartGroupRef.current && !isDeselection) {
+              const selectedIdNeutral = getNeutralId(selectedId);
+
+              const isPartOfPreviousGroup =
+                previousSelectedPartGroupRef.current?.parts.some(
+                  (part) => part.objectId === selectedIdNeutral
+                );
+
+              if (
+                previousSelectedPartGroupRef.current &&
+                !isDeselection &&
+                isPartOfPreviousGroup
+              ) {
                 const hasSelectedPartOfSelectedGroup =
                   previousSelectedPartGroupRef.current.parts.some(
-                    (part) => part.objectId === getNeutralId(selectedId)
+                    (part) => part.objectId === selectedIdNeutral
                   );
 
                 if (hasSelectedPartOfSelectedGroup) {
@@ -282,7 +305,7 @@ export function useHumanAPI({
                   // zoomID = selectedId;
 
                   const part = group.parts.find(
-                    (part) => part.objectId === getNeutralId(selectedId)
+                    (part) => part.objectId === selectedIdNeutral
                   );
                   // Create a group part object
                   const groupPart: AnatomyPart = {

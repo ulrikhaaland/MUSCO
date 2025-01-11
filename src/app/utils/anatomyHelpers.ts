@@ -1,5 +1,5 @@
 import { AnatomyPart } from '../types/anatomy';
-import { BodyPartGroup } from '../config/bodyPartGroups';
+import { BodyPartGroup, bodyPartGroups } from '../config/bodyPartGroups';
 
 // Helper function to convert an ID to its gender-neutral form
 export function getNeutralId(id: string): string {
@@ -19,7 +19,7 @@ export function idsMatch(id1: string, id2: string): boolean {
 }
 
 // Helper function to check if a part belongs to a group
-export function getPartGroup(id: string, bodyPartGroups: { [key: string]: BodyPartGroup }): BodyPartGroup | null {
+export function getPartGroup(id: string): BodyPartGroup | null {
   const neutralId = getNeutralId(id);
 
   // First check if the part's ID matches any group's ids (ignoring gender)
