@@ -1,3 +1,5 @@
+"use client";
+
 import {
   useState,
   useEffect,
@@ -21,6 +23,7 @@ import { BodyPartGroup } from '@/app/config/bodyPartGroups';
 import { BottomSheetHeader } from './BottomSheetHeader';
 import { BottomSheetFooter } from './BottomSheetFooter';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import MobileControlButtons from './MobileControlButtons';
 
 enum SnapPoint {
   MINIMIZED = 0, // minHeight (15% or 72px)
@@ -83,6 +86,7 @@ export default function MobileControls({
   const [controlsBottom, setControlsBottom] = useState('5rem');
   const [message, setMessage] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const [showButtonText, setShowButtonText] = useState(true);
 
   const {
     messages,
@@ -364,57 +368,28 @@ export default function MobileControls({
     }
   }, [hideBottomSheet]);
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowButtonText(false);
+    }, 5000);
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <>
       {/* Mobile Controls - Positioned relative to bottom sheet */}
       {isMobile && currentSnapPoint !== SnapPoint.FULL && (
-        <div
-          className="md:hidden fixed right-4 flex flex-col gap-2 bg-[#111827] p-1.5 rounded-lg shadow-lg transition-all duration-300"
-          style={{
-            zIndex: 0,
-            bottom: controlsBottom,
-          }}
-        >
-          <button
-            onClick={onRotate}
-            disabled={isRotating || isResetting || !isReady}
-            className={`text-white p-2 rounded-lg transition-colors duration-200 ${
-              isRotating || isResetting || !isReady
-                ? 'opacity-50'
-                : 'hover:bg-white/10'
-            }`}
-          >
-            <CropRotateIcon
-              className={`h-5 w-5 ${isRotating ? 'animate-spin' : ''}`}
-            />
-          </button>
-          <button
-            onClick={onReset}
-            disabled={
-              isResetting || (!needsReset && selectedGroup === null) || !isReady
-            }
-            className={`text-white p-2 rounded-lg transition-colors duration-200 ${
-              isResetting || (!needsReset && selectedGroup === null)
-                ? 'opacity-50'
-                : 'hover:bg-white/10'
-            }`}
-          >
-            <MyLocationIcon
-              className={`h-5 w-5 ${isResetting ? 'animate-spin' : ''}`}
-            />
-          </button>
-          <button
-            onClick={onSwitchModel}
-            disabled={!isReady}
-            className="text-white p-2 rounded-lg hover:bg-white/10 transition-colors duration-200"
-          >
-            {currentGender === 'male' ? (
-              <FemaleIcon className="h-5 w-5" />
-            ) : (
-              <MaleIcon className="h-5 w-5" />
-            )}
-          </button>
-        </div>
+        <MobileControlButtons
+          isRotating={isRotating}
+          isResetting={isResetting}
+          isReady={isReady}
+          needsReset={needsReset}
+          currentGender={currentGender}
+          controlsBottom={controlsBottom}
+          onRotate={onRotate}
+          onReset={onReset}
+          onSwitchModel={onSwitchModel}
+        />
       )}
 
       {/* Expand/Collapse Buttons - Fixed to bottom right */}

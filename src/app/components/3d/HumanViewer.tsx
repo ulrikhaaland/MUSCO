@@ -154,6 +154,7 @@ export default function HumanViewer({
       viewerUrl.searchParams.set('ui-annotations', 'false');
       viewerUrl.searchParams.set('ui-navigation', 'false');
       viewerUrl.searchParams.set('ui-controls', 'false');
+      viewerUrl.searchParams.set('ui-logo', 'false');
       return viewerUrl.toString();
     },
     [MODEL_IDS]
@@ -405,14 +406,24 @@ export default function HumanViewer({
   };
 
   const fadeInKeyframes = `
-  @keyframes fadeIn {
+  @keyframes slideIn {
     from {
       opacity: 0;
-      transform: translate(-50%, -60%);
+      transform: translateX(-20px);
     }
     to {
       opacity: 1;
-      transform: translate(-50%, -50%);
+      transform: translateX(0);
+    }
+  }
+  @keyframes slideOut {
+    from {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    to {
+      opacity: 0;
+      transform: translateX(-20px);
     }
   }
   `;
@@ -423,6 +434,16 @@ export default function HumanViewer({
     style.innerHTML = fadeInKeyframes;
     document.head.appendChild(style);
   }
+
+  useEffect(() => {
+    let timeout: NodeJS.Timeout;
+    if (showLowerBackLabel) {
+      timeout = setTimeout(() => {
+        setShowLowerBackLabel(false);
+      }, 10000);
+    }
+    return () => clearTimeout(timeout);
+  }, [showLowerBackLabel]);
 
   return (
     <div className="flex flex-col md:flex-row relative h-screen w-screen overflow-hidden">
@@ -466,9 +487,9 @@ export default function HumanViewer({
           {/* Custom Lower Back Label */}
           {showLowerBackLabel && (
             <div
-              className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-lg shadow-lg z-50 text-center animate-fade-in flex items-center space-x-3"
+              className="absolute left-6 bottom-6 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-lg shadow-lg z-50 text-center flex items-center space-x-3"
               style={{
-                animation: 'fadeIn 0.5s ease-out',
+                animation: 'slideIn 0.3s ease-out, slideOut 0.3s ease-out 9.7s',
               }}
             >
               <span className="text-sm font-medium text-gray-900">

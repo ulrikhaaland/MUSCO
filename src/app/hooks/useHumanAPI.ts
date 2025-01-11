@@ -197,30 +197,32 @@ export function useHumanAPI({
               (value) => value === false
             );
 
-            if (isDeselection && selectedPartRef.current) {
-              console.log('All objects deselected');
+            console.log('isDeselection', isDeselection);
+            // if (isDeselection && selectedPartRef.current) {
+            //   return;
+            //   console.log('All objects deselected');
 
-              setTimeout(() => {
-                if (
-                  !selectedPartRef.current ||
-                  selectedPartRef.current.objectId === selectedId
-                ) {
-                  previousSelectedPartGroupRef.current = null;
-                  setTimeout(() => {
-                    onZoom?.(null);
-                  }, 500);
-                  setSelectedPart(null);
-                  setSelectedGroup(null);
-                  selectedPartRef.current = null;
-                  selectionEventRef.current = null;
-                  human.send('scene.disableXray', () => {});
-                  isXrayEnabledRef.current = false;
-                }
-              }, 0);
-              return;
-            } else if (selectedPartRef.current?.objectId === selectedId) {
-              return;
-            }
+            //   setTimeout(() => {
+            //     if (
+            //       !selectedPartRef.current ||
+            //       selectedPartRef.current.objectId === selectedId
+            //     ) {
+            //       previousSelectedPartGroupRef.current = null;
+            //       setTimeout(() => {
+            //         onZoom?.(null);
+            //       }, 500);
+            //       setSelectedPart(null);
+            //       setSelectedGroup(null);
+            //       selectedPartRef.current = null;
+            //       selectionEventRef.current = null;
+            //       human.send('scene.disableXray', () => {});
+            //       isXrayEnabledRef.current = false;
+            //     }
+            //   }, 0);
+            //   return;
+            // } else if (selectedPartRef.current?.objectId === selectedId) {
+            //   return;
+            // }
 
             if (objects.length > 1) {
               return;
@@ -325,6 +327,24 @@ export function useHumanAPI({
                 }
               } else {
                 // zoomID = getGenderedId(group.zoomId, gender);
+
+                // set timeout 50ms
+                setTimeout(() => {
+                  if (
+                    isDeselection &&
+                    isXrayEnabledRef.current &&
+                    selectedId === selectedPartRef.current.objectId
+                  ) {
+                    human.send('scene.disableXray', () => {});
+                    isXrayEnabledRef.current = false;
+                    setSelectedPart(null);
+                    selectedPartRef.current = null;
+                    selectionEventRef.current = null;
+                    isXrayEnabledRef.current = false;
+                    return;
+                  }
+                }, 50);
+
                 setSelectedGroup(group);
 
                 human.send('scene.showObjects', {
