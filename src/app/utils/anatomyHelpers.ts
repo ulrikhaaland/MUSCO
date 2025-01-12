@@ -27,7 +27,6 @@ export function getPartGroup(id: string): BodyPartGroup | null {
     // Check both regular ids and selectIds
     const allGroupIds = [...(group.parts.map((part) => part.objectId) || []), ...(group.selectIds || [])];
     if (allGroupIds.some(id => getNeutralId(id) === neutralId)) {
-      console.log(`Found part in group: ${groupKey}`);
       return group;
     }
   }

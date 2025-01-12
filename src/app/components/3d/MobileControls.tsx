@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import {
   useState,
@@ -498,16 +498,7 @@ export default function MobileControls({
         }}
         snapPoints={getSnapPoints}
         expandOnContentDrag={false}
-        onDragStart={() => {
-          console.log('drag start');
-          setIsDragging(true);
-        }}
-        onDragEnd={() => {
-          console.log('drag end');
-          setIsDragging(false);
-        }}
         onSpringStart={(event) => {
-          console.log('spring start', event);
           const source = (event as any).source;
           if (
             source === 'dragging' &&
@@ -544,7 +535,6 @@ export default function MobileControls({
           }
         }}
         onSpringEnd={(event) => {
-          console.log('spring end', event);
           if (sheetRef.current) {
             const currentHeight = sheetRef.current.height;
             const viewportHeight = getViewportHeight();
@@ -567,10 +557,6 @@ export default function MobileControls({
             );
             setCurrentSnapPoint(closestPointIndex as SnapPoint);
           }
-        }}
-        onDrag={(event) => {
-          console.log('drag', event);
-          setIsDragging(true);
         }}
         header={
           <BottomSheetHeader

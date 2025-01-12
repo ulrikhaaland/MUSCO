@@ -396,7 +396,6 @@ export default function HumanViewer({
         exerciseModalities: String(answers.exerciseModalities),
         exerciseEnvironment: String(answers.exerciseEnvironment),
       });
-      console.log('=== program ===', program);
       setExerciseProgram(program);
     } catch (error) {
       console.error('Error generating exercise program:', error);
@@ -479,8 +478,6 @@ export default function HumanViewer({
             allow="fullscreen"
             allowFullScreen
             onLoad={() => {
-              console.log('=== iframe loaded ===');
-              console.log('viewerUrl:', viewerUrl);
               setIsChangingModel(false);
             }}
           />

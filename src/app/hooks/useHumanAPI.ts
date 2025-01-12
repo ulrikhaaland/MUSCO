@@ -67,6 +67,8 @@ export function useHumanAPI({
   const selectionEventRef = useRef<any>(null);
   const previousSelectedPartGroupRef = useRef<BodyPartGroup | null>(null);
   const selectedPartRef = useRef<AnatomyPart | null>(null);
+  const selectedPartIdRef = useRef<string | null>(null);
+
   const isXrayEnabledRef = useRef<boolean>(false);
   const [currentGender, setCurrentGender] = useState<Gender>(initialGender);
   const [needsReset, setNeedsReset] = useState(false);
@@ -97,7 +99,6 @@ export function useHumanAPI({
 
     const initializeViewer = () => {
       if (!window.HumanAPI) {
-        console.log('Loading HumanAPI script...');
         script = document.createElement('script');
         script.src =
           'https://developer.biodigital.com/builds/api/human-api-3.0.0.min.js';
@@ -105,18 +106,14 @@ export function useHumanAPI({
         script.onload = setupHumanAPI;
         document.body.appendChild(script);
       } else {
-        console.log('HumanAPI already loaded, setting up...');
         setupHumanAPI();
       }
     };
 
     const setupHumanAPI = () => {
       try {
-        console.log('=== Setting up HumanAPI ===');
-
         // Clean up existing instance if it exists
         if (humanRef.current) {
-          console.log('Cleaning up existing HumanAPI instance');
           humanRef.current.send('human.ready', null);
           humanRef.current.send('camera.updated', null);
           humanRef.current.send('scene.objectsSelected', null);
@@ -131,73 +128,40 @@ export function useHumanAPI({
           ? { x: 0, y: 0, z: -50 } // More zoomed out for mobile
           : { x: 0, y: 0, z: -25 };
 
-        console.log(
-          `Setting initial camera position (${
-            isMobile ? 'mobile' : 'desktop'
-          }):`,
-          cameraPosition
-        );
-
         const human = new window.HumanAPI(elementId, {
           camera: {
             position: cameraPosition,
           },
         });
-        console.log('Created HumanAPI instance:', human);
 
         // Set the ref immediately
         humanRef.current = human;
-        console.log('Set humanRef.current:', humanRef.current);
 
         // Set up event listeners
         human.on('human.ready', () => {
-          console.log('Human API is ready');
-
-          // human.on('scene.picked', function (pick) {
-          //   if (pick.objectId) {
-          //     const group = getPartGroup(pick.objectId);
-          //     if (group && group.id === 'back') {
-          //       human.send('labels.create', {
-          //         objectId: pick.objectId,
-          //         title: 'Looking for the lower back?',
-          //         description:
-          //         '<button onclick="window.selectLowerBack()">Select Lower Back</button>',
-          //       position: pick.position,
-          //       theme: 'context',
-          //       pinType: 'plus',
-          //       labelOffset: [-32, 0],
-          //       hideWire: false,
-          //       pinGlow: true,
-          //       occludable: true,
-          //       collapseDescription: false,
-          //       flyTo: false,
-          //       });
-          //     }
-          //   }
-          // });
           human.send('scene.disableHighlight', () => {});
 
           // Store initial camera position
           human.send('camera.info', (camera: CameraPosition) => {
-            console.log('Initial camera info:', camera);
             initialCameraRef.current = camera;
           });
 
           // Listen for object selection and enable xray mode
           human.on('scene.objectsSelected', (event) => {
-            console.log('=== scene.objectsSelected event received ===');
-            console.log('Event:', event);
-
+            selectedPartIdRef.current = null;
             const objects = Object.keys(event);
 
             const selectedId = objects[0];
+
+            console.log('selectedId', event);
 
             // Check for deselection (all values are false)
             const isDeselection = Object.values(event).every(
               (value) => value === false
             );
 
-            console.log('isDeselection', isDeselection);
+            if (!isDeselection) selectedPartIdRef.current = selectedId;
+
             // if (isDeselection && selectedPartRef.current) {
             //   return;
             //   console.log('All objects deselected');
@@ -326,6 +290,7 @@ export function useHumanAPI({
                   setSelectedPart(groupPart);
                 }
               } else {
+                // if (previousSelectedPartGroupRef.current) return;
                 // zoomID = getGenderedId(group.zoomId, gender);
 
                 // set timeout 50ms
@@ -333,7 +298,9 @@ export function useHumanAPI({
                   if (
                     isDeselection &&
                     isXrayEnabledRef.current &&
-                    selectedId === selectedPartRef.current.objectId
+                    selectedId === selectedPartRef.current.objectId &&
+                    previousSelectedPartGroupRef.current &&
+                    !selectedPartIdRef.current
                   ) {
                     human.send('scene.disableXray', () => {});
                     isXrayEnabledRef.current = false;
@@ -343,7 +310,7 @@ export function useHumanAPI({
                     isXrayEnabledRef.current = false;
                     return;
                   }
-                }, 50);
+                }, 100);
 
                 setSelectedGroup(group);
 
@@ -356,8 +323,6 @@ export function useHumanAPI({
                   [selectedId]: false,
                 });
               }
-
-              console.log('selectedPart', selectedPartRef.current);
 
               // Set the selected part and parts
 
@@ -385,12 +350,10 @@ export function useHumanAPI({
       }
     };
 
-    console.log('Starting HumanAPI initialization...');
     initializeViewer();
 
     return () => {
       if (!isInitialized) {
-        console.log('Cleaning up uninitialized HumanAPI...');
         if (script) {
           document.body.removeChild(script);
         }
@@ -402,7 +365,6 @@ export function useHumanAPI({
 
   // Update currentGender when initialGender changes
   useEffect(() => {
-    console.log('initialGender changed:', initialGender);
     setCurrentGender(initialGender);
   }, [initialGender]);
 
@@ -416,7 +378,6 @@ export function useHumanAPI({
         ? { x: 0, y: 0, z: -50 }
         : { x: 0, y: 0, z: -25 };
 
-      console.log('Window resized, updating camera position:', cameraPosition);
       humanRef.current.send('camera.set', {
         position: cameraPosition,
         animate: true,
