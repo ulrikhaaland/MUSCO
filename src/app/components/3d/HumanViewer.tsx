@@ -207,7 +207,8 @@ export default function HumanViewer({
 
     // Use scene.reset to reset everything to initial state
     if (humanRef.current) {
-      humanRef.current.on('camera.updated', () => {});
+      humanRef.current.send('scene.disableXray', () => {});
+
       setTimeout(() => {
         humanRef.current?.send('scene.reset', () => {
           // Reset all our state after the scene has been reset

@@ -6,38 +6,8 @@ import MyLocationIcon from '@mui/icons-material/MyLocation';
 import MaleIcon from '@mui/icons-material/Male';
 import FemaleIcon from '@mui/icons-material/Female';
 import { Gender } from '@/app/types';
-
-// Update keyframes to include slide in
-const buttonTextKeyframes = `
-@keyframes slideInRight {
-  from {
-    opacity: 0;
-    transform: translateX(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes slideOutRight {
-  from {
-    opacity: 1;
-    transform: translateX(0);
-  }
-  to {
-    opacity: 0;
-    transform: translateX(10px);
-  }
-}
-`;
-
-// Add the keyframes to the document
-if (typeof document !== 'undefined') {
-  const style = document.createElement('style');
-  style.innerHTML = buttonTextKeyframes;
-  document.head.appendChild(style);
-}
+import { Steps } from 'intro.js-react';
+import 'intro.js/introjs.css';
 
 interface MobileControlButtonsProps {
   isRotating: boolean;
@@ -62,38 +32,76 @@ export default function MobileControlButtons({
   onReset,
   onSwitchModel,
 }: MobileControlButtonsProps) {
-  const [showButtonText, setShowButtonText] = useState(false);
+  const [stepsEnabled, setStepsEnabled] = useState(false);
+  const [initialStep, setInitialStep] = useState(0);
+
+  const steps = [
+    {
+      element: '.rotate-button',
+      intro: 'Rotate the 3D model to view it from different angles',
+      position: 'left',
+    },
+    {
+      element: '.reset-button',
+      intro: 'Reset the view back to its original position',
+      position: 'left',
+    },
+    {
+      element: '.gender-button',
+      intro: 'Switch between male and female anatomical models',
+      position: 'left',
+    },
+  ];
+
+  const onExit = () => {
+    setStepsEnabled(false);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('mobileControlsTourShown', 'true');
+    }
+  };
 
   useEffect(() => {
-    // Show text after 2 seconds
-    const showTimer = setTimeout(() => {
-      setShowButtonText(true);
-    }, 500);
-
-    // Hide text after 7 seconds (2s delay + 5s show time)
-    const hideTimer = setTimeout(() => {
-      setShowButtonText(false);
-    }, 7000);
-
-    return () => {
-      clearTimeout(showTimer);
-      clearTimeout(hideTimer);
-    };
+    if (typeof window !== 'undefined') {
+      const tourShown = localStorage.getItem('mobileControlsTourShown');
+      if (!tourShown) {
+        // Delay the start of the tour to ensure elements are mounted
+        setTimeout(() => {
+          setStepsEnabled(true);
+        }, 1000);
+      }
+    }
   }, []);
 
   return (
-    <div
-      className="md:hidden fixed right-4 flex flex-col gap-2 bg-[#111827] p-1.5 rounded-lg shadow-lg transition-all duration-300"
-      style={{
-        zIndex: 0,
-        bottom: controlsBottom,
-      }}
-    >
-      <div className="flex items-center gap-2">
+    <>
+      <Steps
+        enabled={stepsEnabled}
+        steps={steps}
+        initialStep={initialStep}
+        onExit={onExit}
+        options={{
+          showBullets: false,
+          showProgress: true,
+          hideNext: false,
+          hidePrev: false,
+          nextLabel: 'Next →',
+          prevLabel: '← Back',
+          doneLabel: 'Got it',
+          tooltipClass: 'bg-gray-900 text-white',
+          highlightClass: 'intro-highlight',
+        }}
+      />
+      <div
+        className="md:hidden fixed right-4 flex flex-col gap-2 bg-[#111827] p-1.5 rounded-lg shadow-lg transition-all duration-300"
+        style={{
+          zIndex: stepsEnabled ? 9999999 : 0,
+          bottom: controlsBottom,
+        }}
+      >
         <button
           onClick={onRotate}
           disabled={isRotating || isResetting || !isReady}
-          className={`text-white p-2 rounded-lg transition-colors duration-200 ${
+          className={`rotate-button text-white p-2 rounded-lg transition-colors duration-200 ${
             isRotating || isResetting || !isReady
               ? 'opacity-50'
               : 'hover:bg-white/10'
@@ -103,25 +111,11 @@ export default function MobileControlButtons({
             className={`h-5 w-5 ${isRotating ? 'animate-spin' : ''}`}
           />
         </button>
-        {showButtonText && (
-          <div 
-            className="text-white text-sm whitespace-nowrap bg-[#111827] px-2 py-1 rounded"
-            style={{
-              animation: 'slideInRight 0.3s ease-out'
-            }}
-          >
-            Rotate model
-          </div>
-        )}
-      </div>
 
-      <div className="flex items-center gap-2">
         <button
           onClick={onReset}
-          disabled={
-            isResetting || (!needsReset) || !isReady
-          }
-          className={`text-white p-2 rounded-lg transition-colors duration-200 ${
+          disabled={isResetting || (!needsReset) || !isReady}
+          className={`reset-button text-white p-2 rounded-lg transition-colors duration-200 ${
             isResetting || (!needsReset)
               ? 'opacity-50'
               : 'hover:bg-white/10'
@@ -131,23 +125,13 @@ export default function MobileControlButtons({
             className={`h-5 w-5 ${isResetting ? 'animate-spin' : ''}`}
           />
         </button>
-        {showButtonText && (
-          <div 
-            className="text-white text-sm whitespace-nowrap bg-[#111827] px-2 py-1 rounded"
-            style={{
-              animation: 'slideInRight 0.3s ease-out'
-            }}
-          >
-            Reset view
-          </div>
-        )}
-      </div>
 
-      <div className="flex items-center gap-2">
         <button
           onClick={onSwitchModel}
           disabled={!isReady}
-          className="text-white p-2 rounded-lg hover:bg-white/10 transition-colors duration-200"
+          className={`gender-button text-white p-2 rounded-lg hover:bg-white/10 transition-colors duration-200 ${
+            !isReady ? 'opacity-50' : ''
+          }`}
         >
           {currentGender === 'male' ? (
             <FemaleIcon className="h-5 w-5" />
@@ -155,17 +139,7 @@ export default function MobileControlButtons({
             <MaleIcon className="h-5 w-5" />
           )}
         </button>
-        {showButtonText && (
-          <div 
-            className="text-white text-sm whitespace-nowrap bg-[#111827] px-2 py-1 rounded"
-            style={{
-              animation: 'slideInRight 0.3s ease-out'
-            }}
-          >
-            Switch gender
-          </div>
-        )}
       </div>
-    </div>
+    </>
   );
 } 
