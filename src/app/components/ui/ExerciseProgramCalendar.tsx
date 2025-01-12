@@ -79,7 +79,7 @@ export function ExerciseProgramCalendar({ program, onBack, onToggleView, showCal
   };
 
   const renderWeekDays = () => {
-    const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
     return (
       <div className="grid grid-cols-7 mb-2">
         {weekDays.map(day => (
@@ -95,7 +95,12 @@ export function ExerciseProgramCalendar({ program, onBack, onToggleView, showCal
     const firstDay = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1);
     const lastDay = new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 0);
     const startDate = new Date(firstDay);
-    startDate.setDate(startDate.getDate() - startDate.getDay());
+    // Adjust to start from Monday
+    let dayOfWeek = startDate.getDay();
+    // Convert Sunday (0) to 7 for easier calculation
+    if (dayOfWeek === 0) dayOfWeek = 7;
+    // Move back to the first Monday
+    startDate.setDate(startDate.getDate() - (dayOfWeek - 1));
 
     const weeks = [];
     const today = new Date();
@@ -119,7 +124,7 @@ export function ExerciseProgramCalendar({ program, onBack, onToggleView, showCal
       weeks.push(currentWeek);
       
       // Break if we've gone past the last day of the month and completed the week
-      if (startDate > lastDay && startDate.getDay() === 0) {
+      if (startDate > lastDay && startDate.getDay() === 1) {
         break;
       }
     }
@@ -135,14 +140,17 @@ export function ExerciseProgramCalendar({ program, onBack, onToggleView, showCal
                 className={`
                   relative aspect-square p-1 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-900
                   ${isCurrentMonth ? 'bg-gray-800/50' : 'bg-gray-900/30 text-gray-600'}
-                  ${isSelected ? 'bg-indigo-500/20 ring-2 ring-indigo-500' : ''}
+                  ${isSelected ? 'bg-indigo-500/30 ring-2 ring-indigo-500' : ''}
                   ${isToday ? 'font-bold' : ''}
+                  ${program && !program.isRestDay && isCurrentMonth ? 'bg-indigo-500/20 hover:bg-indigo-500/30 ring-1 ring-indigo-400/50' : 'hover:bg-gray-700/50'}
+                  transition-all duration-200
                 `}
               >
                 <div className="flex flex-col h-full">
                   <span className={`
                     text-sm ${isToday ? 'text-indigo-400' : isCurrentMonth ? 'text-gray-300' : 'text-gray-600'}
-                    ${isSelected ? 'text-indigo-400' : ''}
+                    ${isSelected ? 'text-indigo-300' : ''}
+                    ${program && !program.isRestDay && isCurrentMonth ? 'text-indigo-200 font-medium' : ''}
                   `}>
                     {date.getDate()}
                   </span>
@@ -151,7 +159,10 @@ export function ExerciseProgramCalendar({ program, onBack, onToggleView, showCal
                       {program.isRestDay ? (
                         <div className="text-xs text-gray-500 mt-1">Rest</div>
                       ) : (
-                        <div className="h-1 w-1 mx-auto rounded-full bg-indigo-500"></div>
+                        <div className="flex flex-col items-center gap-0.5">
+                          <div className="text-xs text-indigo-300/90 mt-1">Workout</div>
+                          <div className="h-1 w-8 rounded-full bg-indigo-500/70"></div>
+                        </div>
                       )}
                     </div>
                   )}
@@ -283,10 +294,7 @@ export function ExerciseProgramCalendar({ program, onBack, onToggleView, showCal
       <TopBar
         onBack={onBack}
         rightContent={
-          <button
-            onClick={onToggleView}
-            className="p-2 rounded-full hover:bg-gray-800/80 text-gray-400 hover:text-white transition-colors duration-200"
-          >
+          <>
             <svg
               className="w-5 h-5"
               fill="none"
@@ -300,8 +308,10 @@ export function ExerciseProgramCalendar({ program, onBack, onToggleView, showCal
                 d="M4 6h16M4 10h16M4 14h16M4 18h16"
               />
             </svg>
-          </button>
+            <span className="ml-2">List</span>
+          </>
         }
+        onRightClick={onToggleView}
       />
 
       <div className="pt-24 max-w-2xl mx-auto px-4 pb-6">

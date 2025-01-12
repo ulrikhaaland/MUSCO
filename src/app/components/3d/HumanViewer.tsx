@@ -382,20 +382,16 @@ export default function HumanViewer({
 
     try {
       const program = await generateExerciseProgram(diagnosis, {
-        age: String(answers.age),
-        lastYearsExerciseFrequency: String(answers.lastYearsExerciseFrequency),
-        thisYearsPlannedExerciseFrequency: String(
-          answers.thisYearsPlannedExerciseFrequency
-        ),
-        generallyPainfulAreas: Array.isArray(answers.generallyPainfulAreas)
-          ? answers.generallyPainfulAreas
-          : [],
+        age: answers.age,
+        lastYearsExerciseFrequency: answers.lastYearsExerciseFrequency,
+        thisYearsPlannedExerciseFrequency:
+          answers.thisYearsPlannedExerciseFrequency,
+        generallyPainfulAreas: answers.generallyPainfulAreas,
         hasExercisePain: answers.hasExercisePain === 'yes' ? 'yes' : 'no',
-        painfulExerciseAreas: Array.isArray(answers.painfulExerciseAreas)
-          ? answers.painfulExerciseAreas
-          : [],
-        exerciseModalities: String(answers.exerciseModalities),
-        exerciseEnvironment: String(answers.exerciseEnvironment),
+        painfulExerciseAreas: answers.painfulExerciseAreas,
+        exerciseModalities: answers.exerciseModalities,
+        exerciseEnvironments: answers.exerciseEnvironments,
+        workoutDuration: answers.workoutDuration,
       });
       setExerciseProgram(program);
     } catch (error) {

@@ -24,6 +24,8 @@ import { BottomSheetHeader } from './BottomSheetHeader';
 import { BottomSheetFooter } from './BottomSheetFooter';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import MobileControlButtons from './MobileControlButtons';
+import { Steps } from 'intro.js-react';
+import 'intro.js/introjs.css';
 
 enum SnapPoint {
   MINIMIZED = 0, // minHeight (15% or 72px)
@@ -86,7 +88,7 @@ export default function MobileControls({
   const [controlsBottom, setControlsBottom] = useState('5rem');
   const [message, setMessage] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const [showButtonText, setShowButtonText] = useState(true);
+  const [bottomSheetTourEnabled, setBottomSheetTourEnabled] = useState(false);
 
   const {
     messages,
@@ -100,17 +102,51 @@ export default function MobileControls({
     assistantResponse,
   } = usePartChat({ selectedPart: selectedPart, selectedGroup: selectedGroup });
 
-  useEffect(() => {
-    if (assistantResponse) {
-      onDiagnosis(assistantResponse);
+  const bottomSheetSteps = [
+    {
+      element: '[data-rsbs-header] .flex-col',
+      intro: 'Here you can see the selected body group, and right below it, the selected body part.',
+      position: 'bottom',
+    },
+    {
+      element: '[data-rsbs-header] button',
+      intro: 'Use this button to reset the chat and start over.',
+      position: 'bottom',
+    },
+    {
+      element: '[data-rsbs-scroll]',
+      intro: 'Click on suggested questions to learn more about the selected body part.',
+      position: 'bottom',
+    },
+    {
+      element: '[data-rsbs-footer] textarea',
+      intro: 'Type your questions here to learn more about anatomy, exercises, and treatment options.',
+      position: 'top',
+    },
+    {
+      element: '.mobile-controls-toggle',
+      intro: 'Use these buttons to expand or minimize the chat area.',
+      position: 'left',
+    },
+  ];
+
+  const onBottomSheetTourExit = () => {
+    if (selectedGroup) {
+      setBottomSheetTourEnabled(false);
+      localStorage.setItem('bottomSheetTourShown', 'true');
     }
-  }, [assistantResponse]);
+  };
 
   useEffect(() => {
-    if (!selectedGroup && userModifiedSheetHeight) {
-      setUserModifiedSheetHeight(false);
+    if (selectedGroup) {
+      const tourShown = localStorage.getItem('bottomSheetTourShown');
+      if (!tourShown) {
+        setTimeout(() => {
+          setBottomSheetTourEnabled(true);
+        }, 1000);
+      }
     }
-  }, [selectedGroup, userModifiedSheetHeight]);
+  }, [selectedGroup]);
 
   // Get the actual viewport height accounting for mobile browser UI
   const getViewportHeight = () => {
@@ -369,14 +405,40 @@ export default function MobileControls({
   }, [hideBottomSheet]);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowButtonText(false);
-    }, 5000);
-    return () => clearTimeout(timer);
-  }, []);
+    if (assistantResponse) {
+      onDiagnosis(assistantResponse);
+    }
+  }, [assistantResponse]);
+
+  useEffect(() => {
+    if (!selectedGroup && userModifiedSheetHeight) {
+      setUserModifiedSheetHeight(false);
+    }
+  }, [selectedGroup, userModifiedSheetHeight]);
 
   return (
     <>
+      <Steps
+        enabled={bottomSheetTourEnabled}
+        steps={bottomSheetSteps}
+        initialStep={0}
+        onExit={onBottomSheetTourExit}
+        options={{
+          showBullets: false,
+          showProgress: true,
+          hideNext: false,
+          hidePrev: false,
+          nextLabel: 'Next →',
+          prevLabel: '← Back',
+          doneLabel: 'Got it',
+          tooltipClass: 'bg-gray-900 text-white',
+          highlightClass: 'intro-highlight',
+          exitOnOverlayClick: false,
+          exitOnEsc: true,
+          scrollTo: false,
+        }}
+      />
+
       {/* Mobile Controls - Positioned relative to bottom sheet */}
       {isMobile && currentSnapPoint !== SnapPoint.FULL && (
         <MobileControlButtons
@@ -396,7 +458,7 @@ export default function MobileControls({
       {isMobile &&
         sheetRef.current &&
         (selectedGroup || messages.length > 0) && (
-          <div className="md:hidden fixed right-2 bottom-4 flex bg-transparent rounded-lg z-10">
+          <div className="mobile-controls-toggle md:hidden fixed right-2 bottom-4 flex bg-transparent rounded-lg z-10">
             <button
               onClick={() => {
                 if (sheetRef.current) {
@@ -483,7 +545,7 @@ export default function MobileControls({
       <BottomSheetBase
         className={`!bg-gray-900 [&>*]:!bg-gray-900 relative h-[100dvh] ${
           hideBottomSheet ? 'pointer-events-none opacity-0' : ''
-        }`}
+        } ${bottomSheetTourEnabled ? 'z-[999999]' : ''}`}
         ref={sheetRef}
         open={!hideBottomSheet}
         blocking={false}
