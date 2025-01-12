@@ -140,7 +140,7 @@ export default function MobileControls({
   useEffect(() => {
     if (selectedGroup) {
       const tourShown = localStorage.getItem('bottomSheetTourShown');
-      if (!tourShown) {
+      if (false) {
         setTimeout(() => {
           setBottomSheetTourEnabled(true);
         }, 1000);

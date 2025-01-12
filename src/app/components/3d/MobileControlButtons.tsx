@@ -63,7 +63,7 @@ export default function MobileControlButtons({
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const tourShown = localStorage.getItem('mobileControlsTourShown');
-      if (!tourShown) {
+      if (false) {
         // Delay the start of the tour to ensure elements are mounted
         setTimeout(() => {
           setStepsEnabled(true);
