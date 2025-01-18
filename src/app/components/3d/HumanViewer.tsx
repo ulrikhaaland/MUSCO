@@ -14,6 +14,7 @@ import { BodyPartGroup } from '@/app/config/bodyPartGroups';
 import {
   ExerciseQuestionnaire,
   ExerciseQuestionnaireAnswers,
+  ProgramType,
 } from '../ui/ExerciseQuestionnaire';
 import { Question } from '@/app/types';
 import { generateExerciseProgram } from '@/app/api/assistant/assistant';
@@ -616,7 +617,7 @@ export default function HumanViewer({
               onClose={handleBack}
               onSubmit={handleQuestionnaireSubmit}
               generallyPainfulAreas={diagnosis?.painfulAreas ?? []}
-              programType={diagnosis?.programType}
+              programType={diagnosis?.programType ?? ProgramType.Exercise}
               targetAreas={diagnosis?.targetAreas ?? []}
             />
           ) : (
@@ -624,6 +625,7 @@ export default function HumanViewer({
               onBack={handleBack}
               isLoading={isGeneratingProgram}
               program={exerciseProgram}
+              programType={diagnosis?.programType ?? ProgramType.Exercise}
             />
           )}
         </div>

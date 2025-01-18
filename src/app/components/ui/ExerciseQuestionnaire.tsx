@@ -539,11 +539,13 @@ export function ExerciseQuestionnaire({
           <RevealOnScroll>
             <div className="text-center">
               <h2 className="text-4xl font-bold text-white tracking-tight">
-                Exercise Questionnaire
+                {programType === ProgramType.Exercise ? 'Exercise Program Questionnaire' : 'Recovery Program Questionnaire'}
               </h2>
               <p className="mt-4 text-lg text-gray-400">
-                Help us personalize your exercise program by answering a few
-                questions
+                {programType === ProgramType.Exercise 
+                  ? 'Help us personalize your exercise program by answering a few questions'
+                  : 'Help us create a recovery program tailored to your needs by answering a few questions'
+                }
               </p>
             </div>
           </RevealOnScroll>

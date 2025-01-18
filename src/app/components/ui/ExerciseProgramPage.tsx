@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, ReactNode } from 'react';
 import { ExerciseProgramCalendar } from './ExerciseProgramCalendar';
 import { TopBar } from './TopBar';
+import { ProgramType } from './ExerciseQuestionnaire';
 
 export interface Exercise {
   name: string;
@@ -42,6 +43,7 @@ interface ExerciseProgramPageProps {
   onBack: () => void;
   isLoading: boolean;
   program?: ExerciseProgram;
+  programType: ProgramType;
 }
 
 function getYouTubeEmbedUrl(url: string): string {
@@ -143,6 +145,7 @@ export function ExerciseProgramPage({
   onBack,
   isLoading,
   program,
+  programType,
 }: ExerciseProgramPageProps) {
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [showCalendar, setShowCalendar] = useState(false);
@@ -255,8 +258,15 @@ export function ExerciseProgramPage({
         <div className="space-y-8 mb-8">
           <RevealOnScroll>
             <div className="text-center">
-              <h2 className="text-4xl font-bold text-white tracking-tight">Your Exercise Program</h2>
-              <p className="mt-4 text-lg text-gray-400">Personalized for your recovery and goals</p>
+              <h2 className="text-4xl font-bold text-white tracking-tight">
+                {programType === ProgramType.Exercise ? 'Your Exercise Program' : 'Your Recovery Program'}
+              </h2>
+              <p className="mt-4 text-lg text-gray-400">
+                {programType === ProgramType.Exercise 
+                  ? 'Personalized for your fitness goals'
+                  : 'Personalized for your recovery journey'
+                }
+              </p>
             </div>
           </RevealOnScroll>
 

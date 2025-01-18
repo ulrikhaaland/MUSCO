@@ -62,6 +62,17 @@ export function useChat() {
     messageContent: string,
     chatPayload: Omit<ChatPayload, "message">
   ) => {
+    // Create the message object
+    const newMessage: ChatMessage = {
+      id: `user-${Date.now()}`,
+      role: "user" as const,
+      content: messageContent,
+      timestamp: new Date(),
+    };
+
+    // Always add the message to chat immediately
+    setMessages((prev) => [...prev, newMessage]);
+
     if (isLoading) {
       // Queue the message instead of returning
       messageQueueRef.current.push({
@@ -79,15 +90,6 @@ export function useChat() {
         ...chatPayload,
         message: messageContent,
       };
-
-      // Add user message immediately
-      const newMessage: ChatMessage = {
-        id: `user-${Date.now()}`,
-        role: "user" as const,
-        content: messageContent,
-        timestamp: new Date(),
-      };
-      setMessages((prev) => [...prev, newMessage]);
 
       let accumulatedContent = "";
       let jsonDetected = false;
