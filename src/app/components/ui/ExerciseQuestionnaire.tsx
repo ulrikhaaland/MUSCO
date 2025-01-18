@@ -9,14 +9,21 @@ export interface ExerciseQuestionnaireAnswers {
   hasExercisePain: 'yes' | 'no' | '';
   painfulExerciseAreas: string[];
   exerciseModalities: string;
-  exerciseEnvironments: string[];
+  exerciseEnvironments: string;
   workoutDuration: string;
+}
+
+export enum ProgramType {
+  Exercise = 'exercise',
+  Recovery = 'recovery'
 }
 
 interface ExerciseQuestionnaireProps {
   onClose: () => void;
   onSubmit: (answers: ExerciseQuestionnaireAnswers) => void;
   generallyPainfulAreas: string[];
+  programType: ProgramType;
+  targetAreas: string[];
 }
 
 const ageRanges = [
@@ -34,6 +41,16 @@ const exerciseFrequencyOptions = [
   '1-2 times per week',
   '2-3 times per week',
   '4-5 times per week',
+  'Every day',
+];
+
+const plannedExerciseFrequencyOptions = [
+  '1 day per week',
+  '2 days per week',
+  '3 days per week',
+  '4 days per week',
+  '5 days per week',
+  '6 days per week',
   'Every day',
 ];
 
@@ -63,26 +80,31 @@ const bodyParts = [
   'right foot',
 ];
 
-const exerciseEnvironments = [
+interface ExerciseEnvironment {
+  name: string;
+  description: string;
+}
+
+const exerciseEnvironments: ExerciseEnvironment[] = [
   {
-    category: 'Home',
-    options: [
-      'Bodyweight Only',
-      'Basic Equipment (Dumbbells/Bands)',
-      'Full Home Gym',
-    ],
+    name: 'Large Gym',
+    description: 'Full-service fitness facility with extensive equipment including cardio machines, weight machines, free weights, and specialized training areas',
   },
   {
-    category: 'Gym',
-    options: ['Commercial Gym', 'CrossFit Box', 'Personal Training Studio'],
+    name: 'Small Gym',
+    description: 'Compact public gym with limited equipment',
   },
   {
-    category: 'Outdoors',
-    options: [
-      'Park/Playground Workouts',
-      'Running/Walking Trails',
-      'Outdoor Fitness Equipment',
-    ],
+    name: 'Garage Gym',
+    description: 'Barbells, squat rack, dumbells and more',
+  },
+  {
+    name: 'At Home',
+    description: 'Limited equipment such as dumbells, bands, pull-up bars etc.',
+  },
+  {
+    name: 'Bodyweight Only',
+    description: 'Work out anywhere without gym equipment',
   },
 ];
 
@@ -200,6 +222,7 @@ export function ExerciseQuestionnaire({
   onClose,
   onSubmit,
   generallyPainfulAreas,
+  programType,
 }: ExerciseQuestionnaireProps) {
   // Normalize the incoming pain areas to lowercase for case-insensitive matching
   const normalizedPainAreas =
@@ -213,7 +236,7 @@ export function ExerciseQuestionnaire({
     hasExercisePain: normalizedPainAreas.length > 0 ? 'yes' : '',
     painfulExerciseAreas: normalizedPainAreas,
     exerciseModalities: '',
-    exerciseEnvironments: [],
+    exerciseEnvironments: '',
     workoutDuration: '',
   });
 
@@ -440,6 +463,7 @@ export function ExerciseQuestionnaire({
       'exerciseModalities',
       'workoutDuration',
       'generallyPainfulAreas',
+      'exerciseEnvironments',
     ];
     const isSingleChoice = singleChoiceFields.includes(field);
     return isSingleChoice;
@@ -484,15 +508,19 @@ export function ExerciseQuestionnaire({
       case 'painfulExerciseAreas':
         return !!answers.thisYearsPlannedExerciseFrequency && answers.hasExercisePain === 'yes' && answers.generallyPainfulAreas.length > 0;
       case 'exerciseModalities':
-        return !!answers.thisYearsPlannedExerciseFrequency && (
+        return programType === ProgramType.Exercise && !!answers.thisYearsPlannedExerciseFrequency && (
           (answers.generallyPainfulAreas.length === 0) ||
           (answers.hasExercisePain === 'no') ||
           (answers.hasExercisePain === 'yes' && answers.painfulExerciseAreas.length > 0)
         );
       case 'exerciseEnvironments':
-        return !!answers.exerciseModalities;
+        return programType === ProgramType.Exercise ? !!answers.exerciseModalities : !!answers.thisYearsPlannedExerciseFrequency && (
+          (answers.generallyPainfulAreas.length === 0) ||
+          (answers.hasExercisePain === 'no') ||
+          (answers.hasExercisePain === 'yes' && answers.painfulExerciseAreas.length > 0)
+        );
       case 'workoutDuration':
-        return answers.exerciseEnvironments.length > 0;
+        return !!answers.exerciseEnvironments;
       default:
         return false;
     }
@@ -665,7 +693,7 @@ export function ExerciseQuestionnaire({
                   )
                 ) : (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {exerciseFrequencyOptions.map((option) => (
+                    {plannedExerciseFrequencyOptions.map((option) => (
                       <label key={option} className="relative flex items-center">
                         <input
                           type="radio"
@@ -974,54 +1002,41 @@ export function ExerciseQuestionnaire({
                   </svg>
                   How will you exercise?
                 </h3>
-                <p className="text-gray-400 font-medium text-base mb-4">
-                  Select all that apply
-                </p>
-                {answers.exerciseEnvironments.length > 0 &&
+                {answers.exerciseEnvironments &&
                 editingField !== 'exerciseEnvironments' &&
                 shouldCollapseField('exerciseEnvironments') ? (
                   renderSelectedAnswers(answers.exerciseEnvironments, () =>
                     handleEdit('exerciseEnvironments')
                   )
                 ) : (
-                  <div className="space-y-6">
-                    {exerciseEnvironments.map((category) => (
-                      <div key={category.category} className="space-y-3">
-                        <h4 className="text-indigo-400 font-medium">
-                          {category.category}
-                        </h4>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                          {category.options.map((option) => (
-                            <label
-                              key={option}
-                              className="relative flex items-center"
-                            >
-                              <input
-                                type="checkbox"
-                                value={option}
-                                checked={answers.exerciseEnvironments.includes(
-                                  option
-                                )}
-                                onChange={(e) => {
-                                  const newEnvironments = e.target.checked
-                                    ? [...answers.exerciseEnvironments, option]
-                                    : answers.exerciseEnvironments.filter(
-                                        (env) => env !== option
-                                      );
-                                  handleInputChange(
-                                    'exerciseEnvironments',
-                                    newEnvironments
-                                  );
-                                }}
-                                className="peer sr-only"
-                              />
-                              <div className="w-full p-4 rounded-xl bg-gray-900/50 ring-1 ring-gray-700/30 text-gray-400 peer-checked:text-white peer-checked:bg-indigo-500/10 peer-checked:ring-indigo-500 cursor-pointer transition-all duration-200">
-                                {option}
-                              </div>
-                            </label>
-                          ))}
+                  <div className="space-y-4">
+                    {exerciseEnvironments.map((environment) => (
+                      <label
+                        key={environment.name}
+                        className="relative flex items-center"
+                      >
+                        <input
+                          type="radio"
+                          name="exerciseEnvironments"
+                          value={environment.name}
+                          checked={answers.exerciseEnvironments === environment.name}
+                          onChange={(e) =>
+                            handleInputChange(
+                              'exerciseEnvironments',
+                              e.target.value,
+                              exerciseEnvironmentRef
+                            )
+                          }
+                          className="peer sr-only"
+                          required
+                        />
+                        <div className="w-full p-4 rounded-xl bg-gray-900/50 ring-1 ring-gray-700/30 text-gray-400 peer-checked:text-white peer-checked:bg-indigo-500/10 peer-checked:ring-indigo-500 cursor-pointer transition-all duration-200">
+                          <div className="font-medium">{environment.name}</div>
+                          <div className="text-sm mt-1 text-gray-500 peer-checked:text-gray-300">
+                            {environment.description}
+                          </div>
                         </div>
-                      </div>
+                      </label>
                     ))}
                   </div>
                 )}

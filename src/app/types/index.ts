@@ -1,3 +1,4 @@
+import { ProgramType } from '../components/ui/ExerciseQuestionnaire';
 import { BodyPartGroup } from '../config/bodyPartGroups';
 import { AnatomyPart } from './anatomy';
 
@@ -98,4 +99,6 @@ export interface DiagnosisAssistantResponse {
   timeFrame: string;
   followUpQuestions: Question[];
   selectedQuestion?: Question;
+  programType: ProgramType;
+  targetAreas: string[];
 }

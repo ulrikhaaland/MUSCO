@@ -616,6 +616,8 @@ export default function HumanViewer({
               onClose={handleBack}
               onSubmit={handleQuestionnaireSubmit}
               generallyPainfulAreas={diagnosis?.painfulAreas ?? []}
+              programType={diagnosis?.programType}
+              targetAreas={diagnosis?.targetAreas ?? []}
             />
           ) : (
             <ExerciseProgramPage

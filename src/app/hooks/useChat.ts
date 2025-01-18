@@ -24,6 +24,7 @@ export function useChat() {
     useState<DiagnosisAssistantResponse | null>(null);
   const threadIdRef = useRef<string | null>(null);
   const assistantIdRef = useRef<string | null>(null);
+  const messageQueueRef = useRef<{message: string; payload: Omit<ChatPayload, "message">}[]>([]);
 
   useEffect(() => {
     async function initializeAssistant() {
@@ -43,16 +44,33 @@ export function useChat() {
     setMessages([]);
     setFollowUpQuestions([]);
     setAssistantResponse(null);
+    messageQueueRef.current = []; // Clear the queue on reset
     createThread().then(({ threadId }) => {
       threadIdRef.current = threadId;
     });
+  };
+
+  const processNextMessage = async () => {
+    if (messageQueueRef.current.length > 0 && !isLoading) {
+      const nextMessage = messageQueueRef.current[0];
+      messageQueueRef.current = messageQueueRef.current.slice(1);
+      await sendChatMessage(nextMessage.message, nextMessage.payload);
+    }
   };
 
   const sendChatMessage = async (
     messageContent: string,
     chatPayload: Omit<ChatPayload, "message">
   ) => {
-    if (isLoading) return;
+    if (isLoading) {
+      // Queue the message instead of returning
+      messageQueueRef.current.push({
+        message: messageContent,
+        payload: chatPayload
+      });
+      return;
+    }
+
     setFollowUpQuestions([]);
     setIsLoading(true);
 
@@ -70,15 +88,6 @@ export function useChat() {
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, newMessage]);
-
-      // Start follow-up questions generation in parallel but don't use them yet
-      // const followUpPromise = generateFollowUp(
-      //   [newMessage],
-      //   chatPayload.selectedBodyPart?.name || '',
-      //   chatPayload.selectedBodyGroupName || '',
-      //   chatPayload.bodyPartsInSelectedGroup || [],
-      //   chatPayload.previousQuestions || []
-      // );
 
       let accumulatedContent = "";
       let jsonDetected = false;
@@ -229,6 +238,8 @@ export function useChat() {
       console.error("Error sending message:", error);
     } finally {
       setIsLoading(false);
+      // Process next message in queue if any
+      processNextMessage();
     }
   };
 
