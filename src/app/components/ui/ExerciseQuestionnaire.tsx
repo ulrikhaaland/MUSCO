@@ -345,6 +345,21 @@ export function ExerciseQuestionnaire({
           : value
         : value;
 
+    // For single-choice fields, if the same value is selected again, just minimize the question
+    const singleChoiceFields: (keyof ExerciseQuestionnaireAnswers)[] = [
+      'age',
+      'lastYearsExerciseFrequency',
+      'thisYearsPlannedExerciseFrequency',
+      'hasExercisePain',
+      'exerciseModalities',
+      'workoutDuration',
+    ];
+
+    if (singleChoiceFields.includes(field) && answers[field] === normalizedValue) {
+      setEditingField(null);
+      return;
+    }
+
     // Clear editing state to minimize the question
     setEditingField(null);
 
@@ -365,16 +380,6 @@ export function ExerciseQuestionnaire({
           console.log('No ref provided, skipping scroll');
           return;
         }
-
-        // Only auto-scroll for single-choice questions (not multi-select)
-        const singleChoiceFields: (keyof ExerciseQuestionnaireAnswers)[] = [
-          'age',
-          'lastYearsExerciseFrequency',
-          'thisYearsPlannedExerciseFrequency',
-          'hasExercisePain',
-          'exerciseModalities',
-          'workoutDuration',
-        ];
 
         console.log('Checking if should scroll:', {
           isSingleChoice: singleChoiceFields.includes(field),
@@ -493,7 +498,7 @@ export function ExerciseQuestionnaire({
       <form
         ref={formRef}
         onSubmit={handleSubmit}
-        className="h-screen overflow-y-auto pt-8"
+        className="h-screen overflow-y-auto pt-8 pb-32 sm:pb-8"
       >
         <div className="max-w-4xl mx-auto px-4 py-8 space-y-6 sm:px-6 lg:px-8">
           <RevealOnScroll>
@@ -512,6 +517,7 @@ export function ExerciseQuestionnaire({
           <RevealOnScroll>
             <div
               ref={ageRef}
+              onClick={() => handleEdit('age')}
               className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-8 shadow-xl ring-1 ring-gray-700/50"
             >
               <h3 className="flex items-center text-lg font-semibold text-white mb-6">
@@ -564,6 +570,7 @@ export function ExerciseQuestionnaire({
             <RevealOnScroll>
               <div
                 ref={lastYearRef}
+                onClick={() => handleEdit('lastYearsExerciseFrequency')}
                 className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-8 shadow-xl ring-1 ring-gray-700/50"
               >
                 <h3 className="flex items-center text-lg font-semibold text-white mb-6">
@@ -623,6 +630,7 @@ export function ExerciseQuestionnaire({
             <RevealOnScroll>
               <div
                 ref={plannedRef}
+                onClick={() => handleEdit('thisYearsPlannedExerciseFrequency')}
                 className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-8 shadow-xl ring-1 ring-gray-700/50"
               >
                 <h3 className="flex items-center text-lg font-semibold text-white mb-6">
@@ -685,6 +693,7 @@ export function ExerciseQuestionnaire({
             <RevealOnScroll>
               <div
                 ref={painAreasRef}
+                onClick={() => handleEdit('generallyPainfulAreas')}
                 className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-8 shadow-xl ring-1 ring-gray-700/50"
               >
                 <h3 className="flex items-center text-lg font-semibold text-white mb-6">
@@ -760,6 +769,7 @@ export function ExerciseQuestionnaire({
             <RevealOnScroll>
               <div
                 ref={exercisePainRef}
+                onClick={() => handleEdit('hasExercisePain')}
                 className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-8 shadow-xl ring-1 ring-gray-700/50"
               >
                 <h3 className="flex items-center text-lg font-semibold text-white mb-6">
@@ -878,6 +888,7 @@ export function ExerciseQuestionnaire({
             <RevealOnScroll>
               <div
                 ref={exerciseModalitiesRef}
+                onClick={() => handleEdit('exerciseModalities')}
                 className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-8 shadow-xl ring-1 ring-gray-700/50"
               >
                 <h3 className="flex items-center text-lg font-semibold text-white mb-6">
@@ -937,6 +948,7 @@ export function ExerciseQuestionnaire({
             <RevealOnScroll>
               <div
                 ref={exerciseEnvironmentRef}
+                onClick={() => handleEdit('exerciseEnvironments')}
                 className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-8 shadow-xl ring-1 ring-gray-700/50"
               >
                 <h3 className="flex items-center text-lg font-semibold text-white mb-6">
@@ -1015,6 +1027,7 @@ export function ExerciseQuestionnaire({
             <RevealOnScroll>
               <div
                 ref={workoutDurationRef}
+                onClick={() => handleEdit('workoutDuration')}
                 className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-8 shadow-xl ring-1 ring-gray-700/50"
               >
                 <h3 className="flex items-center text-lg font-semibold text-white mb-6">
