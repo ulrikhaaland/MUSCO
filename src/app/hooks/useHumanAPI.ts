@@ -42,7 +42,6 @@ interface UseHumanAPIProps {
   initialGender: Gender;
   setSelectedGroup: (parts: BodyPartGroup | null) => void;
   setSelectedPart: (part: AnatomyPart | null) => void;
-
   onZoom?: (objectId?: string) => void;
 }
 
@@ -61,6 +60,7 @@ export function useHumanAPI({
   isReady: boolean;
   initialCameraRef: MutableRefObject<CameraPosition | null>;
   previousSelectedPartGroupRef: MutableRefObject<BodyPartGroup | null>;
+  isResettingRef: MutableRefObject<boolean>;
 } {
   const humanRef = useRef<HumanAPI | null>(null);
   const initialCameraRef = useRef<CameraPosition | null>(null);
@@ -68,7 +68,7 @@ export function useHumanAPI({
   const previousSelectedPartGroupRef = useRef<BodyPartGroup | null>(null);
   const selectedPartRef = useRef<AnatomyPart | null>(null);
   const selectedPartIdRef = useRef<string | null>(null);
-
+  const isResettingRef = useRef<boolean>(false);
   const isXrayEnabledRef = useRef<boolean>(false);
   const [currentGender, setCurrentGender] = useState<Gender>(initialGender);
   const [needsReset, setNeedsReset] = useState(false);
@@ -148,6 +148,12 @@ export function useHumanAPI({
 
           // Listen for object selection and enable xray mode
           human.on('scene.objectsSelected', (event) => {
+            if (isResettingRef.current) {
+              if (isXrayEnabledRef.current) {
+                isXrayEnabledRef.current = false;
+              }
+              return;
+            }
             selectedPartIdRef.current = null;
             const objects = Object.keys(event);
 
@@ -288,6 +294,7 @@ export function useHumanAPI({
 
                   selectedPartRef.current = groupPart;
                   setSelectedPart(groupPart);
+                  onZoom?.(selectedId);
                 }
               } else {
                 // if (previousSelectedPartGroupRef.current) return;
@@ -308,6 +315,7 @@ export function useHumanAPI({
                     selectedPartRef.current = null;
                     selectionEventRef.current = null;
                     isXrayEnabledRef.current = false;
+                    onZoom?.(getGenderedId(group.zoomId, gender));
                     return;
                   }
                 }, 100);
@@ -328,7 +336,8 @@ export function useHumanAPI({
 
               // Store the group in ref
               previousSelectedPartGroupRef.current = group;
-              onZoom?.(getGenderedId(group.zoomId, gender));
+              if (!selectedPartRef.current)
+                onZoom?.(getGenderedId(group.zoomId, gender));
 
               // setTimeout(() => {
               //   human.send('scene.enableXray', () => {});
@@ -396,5 +405,6 @@ export function useHumanAPI({
     isReady,
     initialCameraRef,
     previousSelectedPartGroupRef,
+    isResettingRef,
   };
 }

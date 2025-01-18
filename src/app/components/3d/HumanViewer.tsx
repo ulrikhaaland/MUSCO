@@ -44,7 +44,6 @@ export default function HumanViewer({
   const [isRotating, setIsRotating] = useState(false);
   const [currentRotation, setCurrentRotation] = useState(0);
   const rotationAnimationRef = useRef<number | null>(null);
-  const [isResetting, setIsResetting] = useState(false);
   const [targetGender, setTargetGender] = useState<Gender | null>(null);
   const [modelContainerHeight, setModelContainerHeight] = useState('100dvh');
   const [diagnosis, setDiagnosis] = useState<DiagnosisAssistantResponse | null>(
@@ -75,6 +74,7 @@ export default function HumanViewer({
     isReady,
     initialCameraRef,
     previousSelectedPartGroupRef,
+    isResettingRef,
   } = useHumanAPI({
     elementId: 'myViewer',
     initialGender: gender,
@@ -107,16 +107,6 @@ export default function HumanViewer({
           animate: true,
           animationDuration: 0.5,
         });
-      } else {
-        handleReset();
-        // If no part group selected, reset to initial camera position
-        // if (initialCameraRef.current) {
-        //   humanRef.current.send('camera.set', {
-        //     ...initialCameraRef.current,
-        //     animate: true,
-        //     animationDuration: 0.5,
-        //   });
-        // }
       }
     });
   };
@@ -201,9 +191,9 @@ export default function HumanViewer({
   };
 
   const handleReset = useCallback(() => {
-    if (isResetting) return;
+    if (isResettingRef.current) return;
 
-    setIsResetting(true);
+    isResettingRef.current = true;
 
     // Use scene.reset to reset everything to initial state
     if (humanRef.current) {
@@ -216,14 +206,14 @@ export default function HumanViewer({
 
           // Clear reset state after a short delay to allow for animation
           setTimeout(() => {
-            setIsResetting(false);
+            isResettingRef.current = false;
           }, 500);
         });
       }, 100);
     } else {
-      setIsResetting(false);
+      isResettingRef.current = false;
     }
-  }, [isResetting, setNeedsReset, isReady, humanRef]);
+  }, [isResettingRef, setNeedsReset, isReady, humanRef]);
 
   // Update reset button state when parts are selected
   useEffect(() => {
@@ -269,7 +259,7 @@ export default function HumanViewer({
 
   const handleRotate = useCallback(() => {
     const human = humanRef.current;
-    if (!human || isRotating || isResetting) return;
+    if (!human || isRotating || isResettingRef.current) return;
 
     setNeedsReset(true);
 
@@ -305,7 +295,7 @@ export default function HumanViewer({
         rotationAnimationRef.current = null;
       }
     };
-  }, [isRotating, currentRotation, isResetting]);
+  }, [isRotating, currentRotation, isResettingRef]);
 
   // Clean up animation on unmount
   useEffect(() => {
@@ -507,9 +497,9 @@ export default function HumanViewer({
           >
             <button
               onClick={handleRotate}
-              disabled={isRotating || isResetting || !isReady}
+              disabled={isRotating || isResettingRef.current || !isReady}
               className={`bg-indigo-600/80 hover:bg-indigo-500/80 text-white px-4 py-2 rounded-lg shadow-lg transition-colors duration-200 flex items-center space-x-2 ${
-                isRotating || isResetting || !isReady
+                isRotating || isResettingRef.current || !isReady
                   ? 'opacity-50 cursor-not-allowed'
                   : ''
               }`}
@@ -521,17 +511,25 @@ export default function HumanViewer({
             </button>
             <button
               onClick={handleReset}
-              disabled={isResetting || (!needsReset && selectedGroup === null)}
+              disabled={
+                isResettingRef.current ||
+                (!needsReset && selectedGroup === null)
+              }
               className={`bg-indigo-600/80 hover:bg-indigo-500/80 text-white px-4 py-2 rounded-lg shadow-lg transition-colors duration-200 flex items-center space-x-2 ${
-                isResetting || (!needsReset && selectedGroup === null)
+                isResettingRef.current ||
+                (!needsReset && selectedGroup === null)
                   ? 'opacity-50 cursor-not-allowed'
                   : ''
               }`}
             >
               <RestartAltIcon
-                className={`h-5 w-5 ${isResetting ? 'animate-spin' : ''}`}
+                className={`h-5 w-5 ${
+                  isResettingRef.current ? 'animate-spin' : ''
+                }`}
               />
-              <span>{isResetting ? 'Resetting...' : 'Reset View'}</span>
+              <span>
+                {isResettingRef.current ? 'Resetting...' : 'Reset View'}
+              </span>
             </button>
             <button
               onClick={() => handleSwitchModel()}
@@ -591,7 +589,7 @@ export default function HumanViewer({
       {isMobile && (
         <MobileControls
           isRotating={isRotating}
-          isResetting={isResetting}
+          isResetting={isResettingRef.current}
           isReady={isReady}
           needsReset={needsReset}
           selectedGroup={selectedGroup}

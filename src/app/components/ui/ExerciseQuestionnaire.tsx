@@ -316,6 +316,13 @@ export function ExerciseQuestionnaire({
           break;
         }
       }
+    } else if (currentIndex === refs.length - 1 && formRef.current) {
+      // If we're at the last question, scroll to the bottom
+      console.log('At last question, scrolling to bottom');
+      formRef.current.scrollTo({
+        top: formRef.current.scrollHeight,
+        behavior: 'smooth'
+      });
     }
   };
 
