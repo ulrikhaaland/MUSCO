@@ -612,7 +612,7 @@ export default function HumanViewer({
 
       {/* Combined Overlay Container */}
       {(showQuestionnaire || isGeneratingProgram || exerciseProgram) && (
-        <div className="fixed inset-0 bg-gray-900 z-[60] overflow-y-auto">
+        <div className="fixed inset-0 bg-gray-900 z-[60]">
           {showQuestionnaire && !isGeneratingProgram && !exerciseProgram ? (
             <ExerciseQuestionnaire
               onClose={handleBack}

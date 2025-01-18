@@ -230,8 +230,21 @@ export function ExerciseQuestionnaire({
   const formRef = useRef<HTMLFormElement>(null);
 
   const scrollToNextUnansweredQuestion = async (
-    currentRef: React.RefObject<HTMLDivElement>
+    currentRef: React.RefObject<HTMLDivElement>,
+    forceScroll?: boolean
   ) => {
+    console.log('scrollToNextUnansweredQuestion called with:', {
+      currentRef: currentRef === plannedRef ? 'plannedRef' : 
+                 currentRef === ageRef ? 'ageRef' : 
+                 currentRef === lastYearRef ? 'lastYearRef' :
+                 currentRef === painAreasRef ? 'painAreasRef' :
+                 currentRef === exercisePainRef ? 'exercisePainRef' :
+                 currentRef === exerciseModalitiesRef ? 'exerciseModalitiesRef' :
+                 currentRef === exerciseEnvironmentRef ? 'exerciseEnvironmentRef' :
+                 currentRef === workoutDurationRef ? 'workoutDurationRef' : 'unknown',
+      forceScroll
+    });
+
     await new Promise((resolve) => setTimeout(resolve, 100));
     const refs = [
       ageRef,
@@ -256,26 +269,48 @@ export function ExerciseQuestionnaire({
     ];
 
     const currentIndex = refs.indexOf(currentRef);
+    console.log('Current index:', currentIndex);
+
     if (currentIndex < refs.length - 1 && formRef.current) {
-      // Find the next unanswered question
+      // If forceScroll is true, scroll to the next ref immediately
+      if (forceScroll && refs[currentIndex + 1].current) {
+        console.log('Force scrolling to next question');
+        const nextElement = refs[currentIndex + 1].current;
+        const formElement = formRef.current;
+        const formRect = formElement.getBoundingClientRect();
+        const elementRect = nextElement.getBoundingClientRect();
+        const relativeTop = elementRect.top - formRect.top + formElement.scrollTop;
+
+        formElement.scrollTo({
+          top: relativeTop - 60,
+          behavior: 'smooth',
+        });
+        return;
+      }
+
+      // Otherwise, find the next unanswered question
       for (let i = currentIndex + 1; i < refs.length; i++) {
         const field = fields[i];
         const isEmpty = Array.isArray(answers[field])
           ? (answers[field] as any[]).length === 0
           : !answers[field];
 
-        if (isEmpty && refs[i].current) {
+        console.log('Checking field:', {
+          field,
+          isEmpty,
+          shouldShow: shouldShowQuestion(field)
+        });
+
+        if (isEmpty && refs[i].current && shouldShowQuestion(field)) {
+          console.log('Found next question to scroll to:', field);
           const nextElement = refs[i].current;
           const formElement = formRef.current;
           const formRect = formElement.getBoundingClientRect();
           const elementRect = nextElement.getBoundingClientRect();
-
-          // Calculate the relative position of the element within the form
-          const relativeTop =
-            elementRect.top - formRect.top + formElement.scrollTop;
+          const relativeTop = elementRect.top - formRect.top + formElement.scrollTop;
 
           formElement.scrollTo({
-            top: relativeTop - 24,
+            top: relativeTop - 60,
             behavior: 'smooth',
           });
           break;
@@ -289,6 +324,19 @@ export function ExerciseQuestionnaire({
     value: string | number | string[],
     ref?: React.RefObject<HTMLDivElement>
   ) => {
+    console.log('handleInputChange called with:', {
+      field,
+      value,
+      ref: ref === plannedRef ? 'plannedRef' : 
+           ref === ageRef ? 'ageRef' : 
+           ref === lastYearRef ? 'lastYearRef' :
+           ref === painAreasRef ? 'painAreasRef' :
+           ref === exercisePainRef ? 'exercisePainRef' :
+           ref === exerciseModalitiesRef ? 'exerciseModalitiesRef' :
+           ref === exerciseEnvironmentRef ? 'exerciseEnvironmentRef' :
+           ref === workoutDurationRef ? 'workoutDurationRef' : 'unknown'
+    });
+
     // For pain areas and painful exercise areas, ensure values are lowercase
     const normalizedValue =
       field === 'generallyPainfulAreas' || field === 'painfulExerciseAreas'
@@ -297,31 +345,59 @@ export function ExerciseQuestionnaire({
           : value
         : value;
 
-    setAnswers((prev) => ({
-      ...prev,
-      [field]: normalizedValue,
-      // Reset painful exercise areas if exercise pain is set to 'no'
-      ...(field === 'hasExercisePain' && value === 'no'
-        ? { painfulExerciseAreas: [] }
-        : {}),
-    }));
+    // Clear editing state to minimize the question
+    setEditingField(null);
 
-    // Auto-scroll only for single-choice questions (not multi-select)
-    const singleChoiceFields: (keyof ExerciseQuestionnaireAnswers)[] = [
-      'age',
-      'lastYearsExerciseFrequency',
-      'thisYearsPlannedExerciseFrequency',
-      'hasExercisePain',
-      'exerciseModalities',
-      'workoutDuration',
-    ];
+    // Update state and wait for it to be processed
+    setAnswers((prev) => {
+      const newAnswers = {
+        ...prev,
+        [field]: normalizedValue,
+        // Reset painful exercise areas if exercise pain is set to 'no'
+        ...(field === 'hasExercisePain' && value === 'no'
+          ? { painfulExerciseAreas: [] }
+          : {}),
+      };
 
-    if (ref && singleChoiceFields.includes(field)) {
-      // Clear editing state to minimize the question
-      setEditingField(null);
-      // Auto-scroll to next question
-      setTimeout(() => scrollToNextUnansweredQuestion(ref), 150);
-    }
+      // Schedule scrolling after state update
+      setTimeout(() => {
+        if (!ref) {
+          console.log('No ref provided, skipping scroll');
+          return;
+        }
+
+        // Only auto-scroll for single-choice questions (not multi-select)
+        const singleChoiceFields: (keyof ExerciseQuestionnaireAnswers)[] = [
+          'age',
+          'lastYearsExerciseFrequency',
+          'thisYearsPlannedExerciseFrequency',
+          'hasExercisePain',
+          'exerciseModalities',
+          'workoutDuration',
+        ];
+
+        console.log('Checking if should scroll:', {
+          isSingleChoice: singleChoiceFields.includes(field),
+          field
+        });
+
+        // Auto-scroll for single-choice fields
+        if (singleChoiceFields.includes(field)) {
+          scrollToNextUnansweredQuestion(ref, true);
+          return;
+        }
+
+        // Special case: auto-scroll when all painful exercise areas are selected
+        if (field === 'painfulExerciseAreas' && Array.isArray(normalizedValue)) {
+          // If all generally painful areas have been selected as exercise pain areas
+          if (normalizedValue.length === newAnswers.generallyPainfulAreas.length) {
+            scrollToNextUnansweredQuestion(ref, true);
+          }
+        }
+      }, 150);
+
+      return newAnswers;
+    });
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -392,13 +468,15 @@ export function ExerciseQuestionnaire({
       case 'generallyPainfulAreas':
         return !!answers.thisYearsPlannedExerciseFrequency;
       case 'hasExercisePain':
-        return answers.generallyPainfulAreas.length > 0;
+        return !!answers.thisYearsPlannedExerciseFrequency && answers.generallyPainfulAreas.length > 0;
       case 'painfulExerciseAreas':
-        return answers.hasExercisePain === 'yes' && answers.generallyPainfulAreas.length > 0;
+        return !!answers.thisYearsPlannedExerciseFrequency && answers.hasExercisePain === 'yes' && answers.generallyPainfulAreas.length > 0;
       case 'exerciseModalities':
-        return (answers.hasExercisePain === 'no' && answers.generallyPainfulAreas.length > 0) || 
-               (answers.hasExercisePain === 'yes' && answers.painfulExerciseAreas.length > 0) ||
-               (answers.generallyPainfulAreas.length === 0 && !!answers.thisYearsPlannedExerciseFrequency);
+        return !!answers.thisYearsPlannedExerciseFrequency && (
+          (answers.generallyPainfulAreas.length === 0) ||
+          (answers.hasExercisePain === 'no') ||
+          (answers.hasExercisePain === 'yes' && answers.painfulExerciseAreas.length > 0)
+        );
       case 'exerciseEnvironments':
         return !!answers.exerciseModalities;
       case 'workoutDuration':
@@ -779,7 +857,8 @@ export function ExerciseQuestionnaire({
                               ).filter((p) => p !== part);
                           handleInputChange(
                             'painfulExerciseAreas',
-                            newPainfulAreas
+                            newPainfulAreas,
+                            exercisePainRef
                           );
                         }}
                         className="peer sr-only"
