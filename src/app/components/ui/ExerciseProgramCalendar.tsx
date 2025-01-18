@@ -312,17 +312,20 @@ export function ExerciseProgramCalendar({ program, onBack, onToggleView, showCal
           </>
         }
         onRightClick={onToggleView}
+        className="fixed top-0 left-0 right-0 z-50"
       />
 
-      <div className="pt-24 max-w-2xl mx-auto px-4 pb-6">
-        <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-xl ring-1 ring-gray-700/50">
-          {renderHeader()}
-          <div className="p-4">
-            {renderWeekDays()}
-            {renderCalendarDays()}
+      <div className="h-screen overflow-y-auto pt-16">
+        <div className="max-w-2xl mx-auto px-4 py-8">
+          <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-xl ring-1 ring-gray-700/50">
+            {renderHeader()}
+            <div className="p-4">
+              {renderWeekDays()}
+              {renderCalendarDays()}
+            </div>
           </div>
+          {renderSelectedDayProgram()}
         </div>
-        {renderSelectedDayProgram()}
       </div>
 
       {videoUrl && (
