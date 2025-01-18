@@ -147,6 +147,8 @@ export function ExerciseProgramPage({
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [showCalendar, setShowCalendar] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
+  const showDetailsButtonRef = useRef<HTMLButtonElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   // Process program to add calculated durations
   useEffect(() => {
@@ -165,6 +167,25 @@ export function ExerciseProgramPage({
 
   const closeVideo = () => {
     setVideoUrl(null);
+  };
+
+  const handleShowDetails = () => {
+    setShowDetails(!showDetails);
+    if (!showDetails && showDetailsButtonRef.current && containerRef.current) {
+        const button = showDetailsButtonRef.current;
+        const container = containerRef.current;
+        if (button && container) {
+          const buttonRect = button.getBoundingClientRect();
+          const containerRect = container.getBoundingClientRect();
+          const relativeTop = buttonRect.top - containerRect.top + container.scrollTop;
+          const topBarHeight = 50;
+          
+          container.scrollTo({
+            top: relativeTop - topBarHeight,
+            behavior: 'smooth'
+          });
+        }
+    }
   };
 
   if (isLoading) {
@@ -227,8 +248,11 @@ export function ExerciseProgramPage({
         onRightClick={() => setShowCalendar(true)}
       />
 
-      <div className="pt-8 max-w-4xl mx-auto px-4 pb-8 sm:px-6 lg:px-8">
-        <div className="space-y-8">
+      <div 
+        ref={containerRef}
+        className="pt-8 max-w-4xl mx-auto px-4 pb-8 sm:px-6 lg:px-8 h-[calc(100dvh)] overflow-y-auto"
+      >
+        <div className="space-y-8 mb-8">
           <RevealOnScroll>
             <div className="text-center">
               <h2 className="text-4xl font-bold text-white tracking-tight">Your Exercise Program</h2>
@@ -243,7 +267,8 @@ export function ExerciseProgramPage({
               )}
               
               <button
-                onClick={() => setShowDetails(!showDetails)}
+                ref={showDetailsButtonRef}
+                onClick={handleShowDetails}
                 className="flex items-center justify-center w-full text-gray-400 hover:text-white transition-colors duration-200 mt-4"
               >
                 <span className="text-sm font-medium mr-2">
@@ -269,7 +294,7 @@ export function ExerciseProgramPage({
               {showDetails && (
                 <>
                   {program.timeFrame && program.timeFrameExplanation && (
-                    <div className="border-t border-gray-700/50 pt-6">
+                    <div className="border-t border-gray-700/50 pt-6" data-program-duration>
                       <h3 className="flex items-center text-lg font-semibold text-white mb-3">
                         <svg className="w-5 h-5 mr-2 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
