@@ -92,13 +92,26 @@ export interface Question {
 }
 
 export interface DiagnosisAssistantResponse {
+  // The diagnosis of the user, e.g. 'neck strain'
   diagnosis: string | null;
+  // The areas of the body that are painful, e.g. ['neck', 'left shoulder']
   painfulAreas: string[];
+  // The activities the user should avoid, e.g. ['running', 'lifting weights']
   avoidActivities: string[];
+  // The goals of the user, e.g. ['reduce pain', 'improve mobility']
   recoveryGoals: string[];
+  // The time frame of the user's recovery, or exercise program, e.g. '4-6 weeks'
+  // after this time frame, the program will be completed, and the user needs check in and get a new program
   timeFrame: string;
+  // The follow-up questions to ask the user, e.g. ['Do you have any pain in your neck?', 'Do you have any pain in your shoulder?']
   followUpQuestions: Question[];
+  // The selected question from the follow-up questions, e.g. 'Do you have any pain in your neck?'
   selectedQuestion?: Question;
+  // The type of program the user is getting, e.g. 'exercise' or 'recovery'
   programType: ProgramType;
+  // The areas of the body that are targeted by the program, e.g. ['neck', 'left shoulder']
+  // only used for exercise programs, not recovery programs
   targetAreas: string[];
+  // Whether the program is progressive, e.g. true or false
+  progressive?: boolean;
 }

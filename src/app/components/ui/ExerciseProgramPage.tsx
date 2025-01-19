@@ -2,13 +2,14 @@ import { useState, useEffect, useRef, ReactNode } from 'react';
 import { ExerciseProgramCalendar } from './ExerciseProgramCalendar';
 import { TopBar } from './TopBar';
 import { ProgramType } from './ExerciseQuestionnaire';
+import { searchYouTubeVideo } from '@/app/utils/youtube';
 
 export interface Exercise {
   name: string;
   description: string;
   sets?: number;
   repetitions?: number;
-  rest?: string;
+  rest?: number;
   modification?: string;
   videoUrl?: string;
   duration?: string;
@@ -22,7 +23,13 @@ export interface ProgramDay {
   description: string;
   exercises: Exercise[];
   isRestDay: boolean;
-  duration: string;
+  duration?: string;
+}
+
+export interface ProgramWeek {
+  week: number;
+  differenceReason?: string;
+  days: ProgramDay[];
 }
 
 export interface AfterTimeFrame {
@@ -36,7 +43,7 @@ export interface ExerciseProgram {
   timeFrameExplanation: string;
   afterTimeFrame: AfterTimeFrame;
   whatNotToDo: string;
-  program: ProgramDay[];
+  program: ProgramWeek[];
 }
 
 interface ExerciseProgramPageProps {
@@ -46,7 +53,9 @@ interface ExerciseProgramPageProps {
   programType: ProgramType;
 }
 
-function getYouTubeEmbedUrl(url: string): string {
+function getYouTubeEmbedUrl(url: string | undefined | number): string {
+  if (!url || typeof url !== 'string') return '';
+  
   const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
   const match = url.match(regExp);
 
@@ -121,14 +130,14 @@ function calculateDuration(exercises: Exercise[]): string {
       // Assuming 45 seconds per set plus rest time
       const setTime = (45 * exercise.sets);
       const restTime = exercise.rest ? 
-        parseInt(exercise.rest.match(/(\d+)/)?.[0] || "0") * (exercise.sets - 1) : 
+        exercise.rest * (exercise.sets - 1) : 
         30 * (exercise.sets - 1);
       totalMinutes += Math.ceil((setTime + restTime) / 60);
     }
 
     // Add transition time between exercises (1 minute)
     if (index < exercises.length - 1) {
-      totalMinutes += 1;
+      totalMinutes += 2;
     }
   });
 
@@ -152,20 +161,45 @@ export function ExerciseProgramPage({
   const [showDetails, setShowDetails] = useState(false);
   const showDetailsButtonRef = useRef<HTMLButtonElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const [loadingVideoExercise, setLoadingVideoExercise] = useState<string | null>(null);
 
   // Process program to add calculated durations
   useEffect(() => {
     if (program) {
-      program.program.forEach(day => {
-        if (!day.isRestDay) {
-          day.duration = calculateDuration(day.exercises);
-        }
+      program.program.forEach(week => {
+        week.days.forEach(day => {
+          if (!day.isRestDay) {
+            day.duration = calculateDuration(day.exercises);
+          }
+        });
       });
     }
   }, [program]);
 
-  const handleVideoClick = (url: string) => {
-    setVideoUrl(getYouTubeEmbedUrl(url));
+  const handleVideoClick = async (exercise: Exercise) => {
+    if (loadingVideoExercise === exercise.name) return; // Prevent duplicate requests
+    
+    // If we already have a video URL, just display it
+    if (exercise.videoUrl) {
+      setVideoUrl(getYouTubeEmbedUrl(exercise.videoUrl));
+      return;
+    }
+    
+    setLoadingVideoExercise(exercise.name);
+    try {
+      const searchQuery = `${exercise.name} proper form`;
+      const videoUrl = await searchYouTubeVideo(searchQuery);
+      if (videoUrl) {
+        // Update the exercise's videoUrl
+        exercise.videoUrl = videoUrl;
+        // Show the video
+        setVideoUrl(getYouTubeEmbedUrl(videoUrl));
+      }
+    } catch (error) {
+      console.error('Error fetching video:', error);
+    } finally {
+      setLoadingVideoExercise(null);
+    }
   };
 
   const closeVideo = () => {
@@ -357,112 +391,131 @@ export function ExerciseProgramPage({
           </RevealOnScroll>
 
           <div className="space-y-6">
-            
-            {program.program.map((day, index) => (
-              <RevealOnScroll key={day.day}>
+            {program.program.map((week, index) => (
+              <RevealOnScroll key={week.week}>
                 <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-8 shadow-xl ring-1 ring-gray-700/50">
                   <div className="mb-8">
                     <div className="flex items-center justify-between mb-4">
                       <div className="flex items-center">
                         <span className="flex items-center justify-center w-8 h-8 rounded-full bg-indigo-500/10 text-indigo-400 font-semibold text-sm mr-3">
-                          {day.day}
+                          {week.week}
                         </span>
-                        <h3 className="text-xl font-semibold text-white">Day {day.day}</h3>
+                        <h3 className="text-xl font-semibold text-white">Week {week.week}</h3>
                       </div>
-                      {!day.isRestDay && day.duration && (
-                        <div className="flex items-center text-gray-400">
-                          <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                          </svg>
-                          <span className="text-sm">{day.duration}</span>
+                      {week.differenceReason && (
+                        <div className="text-gray-400 text-sm">
+                          {week.differenceReason}
                         </div>
                       )}
                     </div>
-                    <p className="text-gray-300 leading-relaxed">{day.description}</p>
                   </div>
-                  <div className="space-y-4">
-                    {day.exercises.map((exercise, index) => (
-                      <div key={index} className="bg-gray-900/50 rounded-xl p-6 ring-1 ring-gray-700/30">
-                        <div className="flex justify-between items-start gap-4">
-                          <h4 className="text-lg font-medium text-white flex-1">
-                            {exercise.name}
+                  <div className="space-y-6">
+                    {week.days.map((day, dayIndex) => (
+                      <div key={dayIndex} className="bg-gray-900/50 rounded-xl p-6 ring-1 ring-gray-700/30">
+                        <div className="flex justify-between items-start mb-4">
+                          <h4 className="text-lg font-medium text-white">
+                            Day {day.day}
                           </h4>
-                          {exercise.videoUrl && (
-                            <button
-                              onClick={() => handleVideoClick(exercise.videoUrl!)}
-                              className="flex items-center space-x-1 bg-indigo-500/90 hover:bg-indigo-400 text-white px-2.5 py-1 rounded-md text-xs transition-colors duration-200"
-                            >
-                              <svg
-                                className="w-3.5 h-3.5"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
-                                />
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                                />
+                          {!day.isRestDay && day.duration && (
+                            <div className="flex items-center text-gray-400">
+                              <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                               </svg>
-                              <span>Video</span>
-                            </button>
+                              <span className="text-sm">{day.duration}</span>
+                            </div>
                           )}
                         </div>
-                        {exercise.description && (
-                          <p className="text-gray-300 mt-3 leading-relaxed">{exercise.description}</p>
-                        )}
-                        {exercise.modification && (
-                          <p className="text-yellow-300/90 mt-3 text-sm leading-relaxed">
-                            <span className="font-medium">Modification:</span>{" "}
-                            {exercise.modification}
-                          </p>
-                        )}
-                        {exercise.precaution && (
-                          <p className="text-yellow-300/90 mt-2 text-sm leading-relaxed">
-                            <span className="font-medium">Precaution:</span>{" "}
-                            {exercise.precaution}
-                          </p>
-                        )}
-                        {((exercise.sets && exercise.repetitions) || exercise.duration || exercise.rest) && (
-                          <div className="mt-4 flex flex-wrap gap-3">
-                            {exercise.duration ? (
-                              <div className="bg-gray-800/80 px-4 py-2 rounded-lg">
-                                <span className="text-gray-300 text-sm">
-                                  {exercise.duration}
-                                </span>
+                        <p className="text-gray-300 mb-6">{day.description}</p>
+                        {!day.isRestDay && (
+                          <div className="space-y-4">
+                            {day.exercises.map((exercise, exerciseIndex) => (
+                              <div key={exerciseIndex} className="bg-gray-800/50 rounded-lg p-4">
+                                <div className="flex justify-between items-start gap-4">
+                                  <h5 className="text-white font-medium flex-1">{exercise.name}</h5>
+                                  <button
+                                    onClick={() => handleVideoClick(exercise)}
+                                    className="flex items-center space-x-1 bg-indigo-500/90 hover:bg-indigo-400 text-white px-2.5 py-1 rounded-md text-xs transition-colors duration-200"
+                                    disabled={loadingVideoExercise === exercise.name}
+                                  >
+                                    {loadingVideoExercise === exercise.name ? (
+                                      <div className="w-3.5 h-3.5 border-t-2 border-white rounded-full animate-spin" />
+                                    ) : (
+                                      <svg
+                                        className="w-3.5 h-3.5"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                      >
+                                        <path
+                                          strokeLinecap="round"
+                                          strokeLinejoin="round"
+                                          strokeWidth={2}
+                                          d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
+                                        />
+                                        <path
+                                          strokeLinecap="round"
+                                          strokeLinejoin="round"
+                                          strokeWidth={2}
+                                          d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                                        />
+                                      </svg>
+                                    )}
+                                    <span>Video</span>
+                                  </button>
+                                </div>
+                                {exercise.description && (
+                                  <p className="text-gray-300 mt-3 leading-relaxed">{exercise.description}</p>
+                                )}
+                                {exercise.modification && (
+                                  <p className="text-yellow-300/90 mt-3 text-sm leading-relaxed">
+                                    <span className="font-medium">Modification:</span>{" "}
+                                    {exercise.modification}
+                                  </p>
+                                )}
+                                {exercise.precaution && (
+                                  <p className="text-yellow-300/90 mt-2 text-sm leading-relaxed">
+                                    <span className="font-medium">Precaution:</span>{" "}
+                                    {exercise.precaution}
+                                  </p>
+                                )}
+                                
+                                {((exercise.sets && exercise.repetitions) || exercise.duration || exercise.rest) && (
+                                  <div className="mt-4 flex flex-wrap gap-3">
+                                    {exercise.duration ? (
+                                      <div className="bg-gray-800/80 px-4 py-2 rounded-lg">
+                                        <span className="text-gray-300 text-sm">
+                                          {exercise.duration}
+                                        </span>
+                                      </div>
+                                    ) : (
+                                      <>
+                                        {exercise.sets && (
+                                          <div className="bg-gray-800/80 px-4 py-2 rounded-lg">
+                                            <span className="text-gray-300 text-sm">
+                                              {exercise.sets} sets
+                                            </span>
+                                          </div>
+                                        )}
+                                        {exercise.repetitions && (
+                                          <div className="bg-gray-800/80 px-4 py-2 rounded-lg">
+                                            <span className="text-gray-300 text-sm">
+                                              {exercise.repetitions} reps
+                                            </span>
+                                          </div>
+                                        )}
+                                        {exercise.rest && exercise.rest !== 0 && (
+                                          <div className="bg-gray-800/80 px-4 py-2 rounded-lg">
+                                            <span className="text-gray-300 text-sm">
+                                              {exercise.rest} seconds rest
+                                            </span>
+                                          </div>
+                                        )}
+                                      </>
+                                    )}
+                                  </div>
+                                )}
                               </div>
-                            ) : (
-                              <>
-                                {exercise.sets && (
-                                  <div className="bg-gray-800/80 px-4 py-2 rounded-lg">
-                                    <span className="text-gray-300 text-sm">
-                                      {exercise.sets} sets
-                                    </span>
-                                  </div>
-                                )}
-                                {exercise.repetitions && (
-                                  <div className="bg-gray-800/80 px-4 py-2 rounded-lg">
-                                    <span className="text-gray-300 text-sm">
-                                      {exercise.repetitions} reps
-                                    </span>
-                                  </div>
-                                )}
-                                {exercise.rest && exercise.rest !== "n/a" && (
-                                  <div className="bg-gray-800/80 px-4 py-2 rounded-lg">
-                                    <span className="text-gray-300 text-sm">
-                                      {exercise.rest} rest
-                                    </span>
-                                  </div>
-                                )}
-                              </>
-                            )}
+                            ))}
                           </div>
                         )}
                       </div>

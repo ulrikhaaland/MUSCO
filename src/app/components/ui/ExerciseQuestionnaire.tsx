@@ -2,20 +2,29 @@ import { useState, useEffect, useRef, ReactNode } from 'react';
 import { TopBar } from './TopBar';
 
 export interface ExerciseQuestionnaireAnswers {
+  // The Age range of the user, e.g. '20-30'
   age: string;
+  // The frequency of exercise in the past 12 months, e.g. '1-2 times per week'
   lastYearsExerciseFrequency: string;
+  // The frequency of exercise in the coming 12 months, e.g. '2-3 times per week'
   thisYearsPlannedExerciseFrequency: string;
+  // The areas of the body that are generally painful, e.g. ['neck', 'left shoulder']
   generallyPainfulAreas: string[];
+  // Whether the user has exercise pain, e.g. 'yes'
   hasExercisePain: 'yes' | 'no' | '';
-  painfulExerciseAreas: string[];
-  exerciseModalities: string;
+  // The areas of the body that are painful, e.g. ['neck', 'left shoulder']
+  painfulExerciseAreas?: string[];
+  // The modalities of exercise the user prefers, e.g. 'strength'
+  exerciseModalities?: string;
+  // The environment of exercise the user has access to, e.g. 'gym'
   exerciseEnvironments: string;
+  // The duration of the workout the user prefers, e.g. '30-45 minutes'
   workoutDuration: string;
 }
 
 export enum ProgramType {
   Exercise = 'exercise',
-  Recovery = 'recovery'
+  Recovery = 'recovery',
 }
 
 interface ExerciseQuestionnaireProps {
@@ -88,7 +97,8 @@ interface ExerciseEnvironment {
 const exerciseEnvironments: ExerciseEnvironment[] = [
   {
     name: 'Large Gym',
-    description: 'Full-service fitness facility with extensive equipment including cardio machines, weight machines, free weights, and specialized training areas',
+    description:
+      'Full-service fitness facility with extensive equipment including cardio machines, weight machines, free weights, and specialized training areas',
   },
   {
     name: 'Small Gym',
@@ -172,11 +182,11 @@ function RevealOnScroll({ children, className = '' }: RevealOnScrollProps) {
 function renderSelectedAnswers(answers: string | string[], onEdit: () => void) {
   if (!answers || (Array.isArray(answers) && answers.length === 0)) return null;
 
-  const answerArray = Array.isArray(answers) 
-    ? answers 
-    : answers === 'Both' 
-      ? ['Cardio', 'Strength']
-      : [answers];
+  const answerArray = Array.isArray(answers)
+    ? answers
+    : answers === 'Both'
+    ? ['Cardio', 'Strength']
+    : [answers];
 
   return (
     <div onClick={onEdit} className="group cursor-pointer">
@@ -256,18 +266,6 @@ export function ExerciseQuestionnaire({
     currentRef: React.RefObject<HTMLDivElement>,
     forceScroll?: boolean
   ) => {
-    console.log('scrollToNextUnansweredQuestion called with:', {
-      currentRef: currentRef === plannedRef ? 'plannedRef' : 
-                 currentRef === ageRef ? 'ageRef' : 
-                 currentRef === lastYearRef ? 'lastYearRef' :
-                 currentRef === painAreasRef ? 'painAreasRef' :
-                 currentRef === exercisePainRef ? 'exercisePainRef' :
-                 currentRef === exerciseModalitiesRef ? 'exerciseModalitiesRef' :
-                 currentRef === exerciseEnvironmentRef ? 'exerciseEnvironmentRef' :
-                 currentRef === workoutDurationRef ? 'workoutDurationRef' : 'unknown',
-      forceScroll
-    });
-
     await new Promise((resolve) => setTimeout(resolve, 100));
     const refs = [
       ageRef,
@@ -292,17 +290,16 @@ export function ExerciseQuestionnaire({
     ];
 
     const currentIndex = refs.indexOf(currentRef);
-    console.log('Current index:', currentIndex);
 
     if (currentIndex < refs.length - 1 && formRef.current) {
       // If forceScroll is true, scroll to the next ref immediately
       if (forceScroll && refs[currentIndex + 1].current) {
-        console.log('Force scrolling to next question');
         const nextElement = refs[currentIndex + 1].current;
         const formElement = formRef.current;
         const formRect = formElement.getBoundingClientRect();
         const elementRect = nextElement.getBoundingClientRect();
-        const relativeTop = elementRect.top - formRect.top + formElement.scrollTop;
+        const relativeTop =
+          elementRect.top - formRect.top + formElement.scrollTop;
 
         formElement.scrollTo({
           top: relativeTop - 60,
@@ -318,19 +315,13 @@ export function ExerciseQuestionnaire({
           ? (answers[field] as any[]).length === 0
           : !answers[field];
 
-        console.log('Checking field:', {
-          field,
-          isEmpty,
-          shouldShow: shouldShowQuestion(field)
-        });
-
         if (isEmpty && refs[i].current && shouldShowQuestion(field)) {
-          console.log('Found next question to scroll to:', field);
           const nextElement = refs[i].current;
           const formElement = formRef.current;
           const formRect = formElement.getBoundingClientRect();
           const elementRect = nextElement.getBoundingClientRect();
-          const relativeTop = elementRect.top - formRect.top + formElement.scrollTop;
+          const relativeTop =
+            elementRect.top - formRect.top + formElement.scrollTop;
 
           formElement.scrollTo({
             top: relativeTop - 60,
@@ -341,10 +332,9 @@ export function ExerciseQuestionnaire({
       }
     } else if (currentIndex === refs.length - 1 && formRef.current) {
       // If we're at the last question, scroll to the bottom
-      console.log('At last question, scrolling to bottom');
       formRef.current.scrollTo({
         top: formRef.current.scrollHeight,
-        behavior: 'smooth'
+        behavior: 'smooth',
       });
     }
   };
@@ -354,19 +344,6 @@ export function ExerciseQuestionnaire({
     value: string | number | string[],
     ref?: React.RefObject<HTMLDivElement>
   ) => {
-    console.log('handleInputChange called with:', {
-      field,
-      value,
-      ref: ref === plannedRef ? 'plannedRef' : 
-           ref === ageRef ? 'ageRef' : 
-           ref === lastYearRef ? 'lastYearRef' :
-           ref === painAreasRef ? 'painAreasRef' :
-           ref === exercisePainRef ? 'exercisePainRef' :
-           ref === exerciseModalitiesRef ? 'exerciseModalitiesRef' :
-           ref === exerciseEnvironmentRef ? 'exerciseEnvironmentRef' :
-           ref === workoutDurationRef ? 'workoutDurationRef' : 'unknown'
-    });
-
     // For pain areas and painful exercise areas, ensure values are lowercase
     const normalizedValue =
       field === 'generallyPainfulAreas' || field === 'painfulExerciseAreas'
@@ -385,7 +362,10 @@ export function ExerciseQuestionnaire({
       'workoutDuration',
     ];
 
-    if (singleChoiceFields.includes(field) && answers[field] === normalizedValue) {
+    if (
+      singleChoiceFields.includes(field) &&
+      answers[field] === normalizedValue
+    ) {
       setEditingField(null);
       return;
     }
@@ -407,14 +387,8 @@ export function ExerciseQuestionnaire({
       // Schedule scrolling after state update
       setTimeout(() => {
         if (!ref) {
-          console.log('No ref provided, skipping scroll');
           return;
         }
-
-        console.log('Checking if should scroll:', {
-          isSingleChoice: singleChoiceFields.includes(field),
-          field
-        });
 
         // Auto-scroll for single-choice fields
         if (singleChoiceFields.includes(field)) {
@@ -423,9 +397,14 @@ export function ExerciseQuestionnaire({
         }
 
         // Special case: auto-scroll when all painful exercise areas are selected
-        if (field === 'painfulExerciseAreas' && Array.isArray(normalizedValue)) {
+        if (
+          field === 'painfulExerciseAreas' &&
+          Array.isArray(normalizedValue)
+        ) {
           // If all generally painful areas have been selected as exercise pain areas
-          if (normalizedValue.length === newAnswers.generallyPainfulAreas.length) {
+          if (
+            normalizedValue.length === newAnswers.generallyPainfulAreas.length
+          ) {
             scrollToNextUnansweredQuestion(ref, true);
           }
         }
@@ -471,20 +450,23 @@ export function ExerciseQuestionnaire({
 
   const handleNoPainAreas = () => {
     // If "No" is already selected (empty array and hasExercisePain is 'no'), unselect it
-    if (answers.generallyPainfulAreas.length === 0 && answers.hasExercisePain === 'no') {
-      setAnswers(prev => ({
+    if (
+      answers.generallyPainfulAreas.length === 0 &&
+      answers.hasExercisePain === 'no'
+    ) {
+      setAnswers((prev) => ({
         ...prev,
         generallyPainfulAreas: [],
         hasExercisePain: '',
-        painfulExerciseAreas: []
+        painfulExerciseAreas: [],
       }));
     } else {
       // Select "No" by clearing arrays and setting hasExercisePain to 'no'
-      setAnswers(prev => ({
+      setAnswers((prev) => ({
         ...prev,
         generallyPainfulAreas: [],
         hasExercisePain: 'no',
-        painfulExerciseAreas: []
+        painfulExerciseAreas: [],
       }));
       // Clear editing state to minimize the question
       setEditingField(null);
@@ -504,21 +486,33 @@ export function ExerciseQuestionnaire({
       case 'generallyPainfulAreas':
         return !!answers.thisYearsPlannedExerciseFrequency;
       case 'hasExercisePain':
-        return !!answers.thisYearsPlannedExerciseFrequency && answers.generallyPainfulAreas.length > 0;
+        return (
+          !!answers.thisYearsPlannedExerciseFrequency &&
+          answers.generallyPainfulAreas.length > 0
+        );
       case 'painfulExerciseAreas':
-        return !!answers.thisYearsPlannedExerciseFrequency && answers.hasExercisePain === 'yes' && answers.generallyPainfulAreas.length > 0;
+        return (
+          !!answers.thisYearsPlannedExerciseFrequency &&
+          answers.hasExercisePain === 'yes' &&
+          answers.generallyPainfulAreas.length > 0
+        );
       case 'exerciseModalities':
-        return programType === ProgramType.Exercise && !!answers.thisYearsPlannedExerciseFrequency && (
-          (answers.generallyPainfulAreas.length === 0) ||
-          (answers.hasExercisePain === 'no') ||
-          (answers.hasExercisePain === 'yes' && answers.painfulExerciseAreas.length > 0)
+        return (
+          programType === ProgramType.Exercise &&
+          !!answers.thisYearsPlannedExerciseFrequency &&
+          (answers.generallyPainfulAreas.length === 0 ||
+            answers.hasExercisePain === 'no' ||
+            (answers.hasExercisePain === 'yes' &&
+              answers.painfulExerciseAreas.length > 0))
         );
       case 'exerciseEnvironments':
-        return programType === ProgramType.Exercise ? !!answers.exerciseModalities : !!answers.thisYearsPlannedExerciseFrequency && (
-          (answers.generallyPainfulAreas.length === 0) ||
-          (answers.hasExercisePain === 'no') ||
-          (answers.hasExercisePain === 'yes' && answers.painfulExerciseAreas.length > 0)
-        );
+        return programType === ProgramType.Exercise
+          ? !!answers.exerciseModalities
+          : !!answers.thisYearsPlannedExerciseFrequency &&
+              (answers.generallyPainfulAreas.length === 0 ||
+                answers.hasExercisePain === 'no' ||
+                (answers.hasExercisePain === 'yes' &&
+                  answers.painfulExerciseAreas.length > 0));
       case 'workoutDuration':
         return !!answers.exerciseEnvironments;
       default:
@@ -539,13 +533,14 @@ export function ExerciseQuestionnaire({
           <RevealOnScroll>
             <div className="text-center">
               <h2 className="text-4xl font-bold text-white tracking-tight">
-                {programType === ProgramType.Exercise ? 'Exercise Program Questionnaire' : 'Recovery Program Questionnaire'}
+                {programType === ProgramType.Exercise
+                  ? 'Exercise Program Questionnaire'
+                  : 'Recovery Program Questionnaire'}
               </h2>
               <p className="mt-4 text-lg text-gray-400">
-                {programType === ProgramType.Exercise 
+                {programType === ProgramType.Exercise
                   ? 'Help us personalize your exercise program by answering a few questions'
-                  : 'Help us create a recovery program tailored to your needs by answering a few questions'
-                }
+                  : 'Help us create a recovery program tailored to your needs by answering a few questions'}
               </p>
             </div>
           </RevealOnScroll>
@@ -629,18 +624,24 @@ export function ExerciseQuestionnaire({
                 {answers.lastYearsExerciseFrequency &&
                 editingField !== 'lastYearsExerciseFrequency' &&
                 shouldCollapseField('lastYearsExerciseFrequency') ? (
-                  renderSelectedAnswers(answers.lastYearsExerciseFrequency, () =>
-                    handleEdit('lastYearsExerciseFrequency')
+                  renderSelectedAnswers(
+                    answers.lastYearsExerciseFrequency,
+                    () => handleEdit('lastYearsExerciseFrequency')
                   )
                 ) : (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     {exerciseFrequencyOptions.map((option) => (
-                      <label key={option} className="relative flex items-center">
+                      <label
+                        key={option}
+                        className="relative flex items-center"
+                      >
                         <input
                           type="radio"
                           name="lastYearsExerciseFrequency"
                           value={option}
-                          checked={answers.lastYearsExerciseFrequency === option}
+                          checked={
+                            answers.lastYearsExerciseFrequency === option
+                          }
                           onChange={(e) =>
                             handleInputChange(
                               'lastYearsExerciseFrequency',
@@ -696,7 +697,10 @@ export function ExerciseQuestionnaire({
                 ) : (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     {plannedExerciseFrequencyOptions.map((option) => (
-                      <label key={option} className="relative flex items-center">
+                      <label
+                        key={option}
+                        className="relative flex items-center"
+                      >
                         <input
                           type="radio"
                           name="thisYearsPlannedExerciseFrequency"
@@ -749,8 +753,12 @@ export function ExerciseQuestionnaire({
                   </svg>
                   Do you have pain anywhere?
                 </h3>
-                {answers.generallyPainfulAreas.length === 0 && answers.hasExercisePain === 'no' && editingField !== 'generallyPainfulAreas' ? (
-                  renderSelectedAnswers("No, I don't have any pain", () => handleEdit('generallyPainfulAreas'))
+                {answers.generallyPainfulAreas.length === 0 &&
+                answers.hasExercisePain === 'no' &&
+                editingField !== 'generallyPainfulAreas' ? (
+                  renderSelectedAnswers("No, I don't have any pain", () =>
+                    handleEdit('generallyPainfulAreas')
+                  )
                 ) : (
                   <>
                     <div className="mb-6">
@@ -758,7 +766,8 @@ export function ExerciseQuestionnaire({
                         type="button"
                         onClick={handleNoPainAreas}
                         className={`w-full p-4 rounded-xl ${
-                          answers.generallyPainfulAreas.length === 0 && answers.hasExercisePain === 'no'
+                          answers.generallyPainfulAreas.length === 0 &&
+                          answers.hasExercisePain === 'no'
                             ? 'bg-red-500/10 ring-red-500 text-white'
                             : 'bg-gray-900/50 ring-gray-700/30 text-gray-400 hover:bg-gray-900/70'
                         } ring-1 transition-all duration-200 text-left`}
@@ -771,17 +780,22 @@ export function ExerciseQuestionnaire({
                     </p>
                     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
                       {bodyParts.map((part) => (
-                        <label key={part} className="relative flex items-center">
+                        <label
+                          key={part}
+                          className="relative flex items-center"
+                        >
                           <input
                             type="checkbox"
                             value={part}
-                            checked={answers.generallyPainfulAreas.includes(part)}
+                            checked={answers.generallyPainfulAreas.includes(
+                              part
+                            )}
                             onChange={(e) => {
                               const newPainAreas = e.target.checked
                                 ? [...answers.generallyPainfulAreas, part]
                                 : answers.generallyPainfulAreas.filter(
-                                  (p) => p !== part
-                                );
+                                    (p) => p !== part
+                                  );
                               handleInputChange(
                                 'generallyPainfulAreas',
                                 newPainAreas
@@ -823,7 +837,8 @@ export function ExerciseQuestionnaire({
                       d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
                     />
                   </svg>
-                  Do you experience pain in any of these areas when you exercise?
+                  Do you experience pain in any of these areas when you
+                  exercise?
                 </h3>
                 {answers.hasExercisePain &&
                 editingField !== 'hasExercisePain' &&
@@ -834,7 +849,10 @@ export function ExerciseQuestionnaire({
                 ) : (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {['yes', 'no'].map((option) => (
-                      <label key={option} className="relative flex items-center">
+                      <label
+                        key={option}
+                        className="relative flex items-center"
+                      >
                         <input
                           type="radio"
                           name="hasExercisePain"
@@ -899,9 +917,9 @@ export function ExerciseQuestionnaire({
                                 ...(answers.painfulExerciseAreas as string[]),
                                 part,
                               ]
-                            : (
-                                answers.painfulExerciseAreas as string[]
-                              ).filter((p) => p !== part);
+                            : (answers.painfulExerciseAreas as string[]).filter(
+                                (p) => p !== part
+                              );
                           handleInputChange(
                             'painfulExerciseAreas',
                             newPainfulAreas,
@@ -953,7 +971,10 @@ export function ExerciseQuestionnaire({
                 ) : (
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     {['Cardio', 'Strength', 'Both'].map((option) => (
-                      <label key={option} className="relative flex items-center">
+                      <label
+                        key={option}
+                        className="relative flex items-center"
+                      >
                         <input
                           type="radio"
                           name="exerciseModalities"
@@ -1021,7 +1042,9 @@ export function ExerciseQuestionnaire({
                           type="radio"
                           name="exerciseEnvironments"
                           value={environment.name}
-                          checked={answers.exerciseEnvironments === environment.name}
+                          checked={
+                            answers.exerciseEnvironments === environment.name
+                          }
                           onChange={(e) =>
                             handleInputChange(
                               'exerciseEnvironments',

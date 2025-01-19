@@ -344,11 +344,21 @@ export default function HumanViewer({
     if (question.generate) {
       if (diagnosis) {
         diagnosis.selectedQuestion = question;
+        diagnosis.followUpQuestions = [];
       } else {
-        setDiagnosis({
-          ...diagnosis,
+        const newDiagnosis: DiagnosisAssistantResponse = {
+          diagnosis: 'No diagnosis, just an exercise program',
           selectedQuestion: question,
-        });
+          programType: ProgramType.Exercise,
+          targetAreas: [selectedGroup.name],
+          painfulAreas: [],
+          avoidActivities: [],
+          recoveryGoals: [],
+          timeFrame: '4 weeks',
+          followUpQuestions: [],
+          progressive: true,
+        };
+        setDiagnosis(newDiagnosis);
       }
       setSelectedQuestion(question);
       setShowQuestionnaire(true);
@@ -372,18 +382,7 @@ export default function HumanViewer({
     setIsGeneratingProgram(true);
 
     try {
-      const program = await generateExerciseProgram(diagnosis, {
-        age: answers.age,
-        lastYearsExerciseFrequency: answers.lastYearsExerciseFrequency,
-        thisYearsPlannedExerciseFrequency:
-          answers.thisYearsPlannedExerciseFrequency,
-        generallyPainfulAreas: answers.generallyPainfulAreas,
-        hasExercisePain: answers.hasExercisePain === 'yes' ? 'yes' : 'no',
-        painfulExerciseAreas: answers.painfulExerciseAreas,
-        exerciseModalities: answers.exerciseModalities,
-        exerciseEnvironments: answers.exerciseEnvironments,
-        workoutDuration: answers.workoutDuration,
-      });
+      const program = await generateExerciseProgram(diagnosis, answers);
       setExerciseProgram(program);
     } catch (error) {
       console.error('Error generating exercise program:', error);

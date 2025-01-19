@@ -146,8 +146,30 @@ export function useHumanAPI({
             initialCameraRef.current = camera;
           });
 
+          // Add rate limiting for infinite loop detection
+          const callTimestamps: number[] = [];
+          const CALL_WINDOW = 1000; // 3 seconds window (increased from 2)
+          const MAX_CALLS = 5; // Maximum number of calls allowed in the window (increased from 5)
+
           // Listen for object selection and enable xray mode
           human.on('scene.objectsSelected', (event) => {
+            // Add timestamp for this call
+            const now = Date.now();
+            callTimestamps.push(now);
+
+            // Remove timestamps older than our window
+            while (
+              callTimestamps.length > 0 &&
+              callTimestamps[0] < now - CALL_WINDOW
+            ) {
+              callTimestamps.shift();
+            }
+
+            // Check for infinite loop
+            if (callTimestamps.length >= MAX_CALLS) {
+              return;
+            }
+
             if (isResettingRef.current) {
               if (isXrayEnabledRef.current) {
                 isXrayEnabledRef.current = false;
