@@ -73,72 +73,55 @@ interface ExerciseProgramPageProps {
   loadingVideoExercise: string | null;
 }
 
-function useIntersectionObserver(
-  options: IntersectionObserverInit = {}
-): [React.RefObject<HTMLDivElement>, boolean] {
-  const [isVisible, setIsVisible] = useState(false);
-  const elementRef = useRef<HTMLDivElement>(null);
-  const wasIntersectedOnce = useRef(false);
+function calculateDuration(exercises: Exercise[]): string | null {
+  try {
+    let totalMinutes = 0;
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && !wasIntersectedOnce.current) {
-          setIsVisible(true);
-          wasIntersectedOnce.current = true;
+    exercises.forEach((exercise, index) => {
+      try {
+        // Parse duration string to get minutes
+        if (exercise.duration) {
+          const durationMatch = exercise.duration.match(/(\d+)/);
+          if (durationMatch) {
+            const minutes = parseInt(durationMatch[0]);
+            if (!isNaN(minutes)) {
+              totalMinutes += minutes;
+            }
+          }
+        } else if (exercise.sets && exercise.repetitions) {
+          // Estimate time for strength exercises if duration is not provided
+          // Assuming 45 seconds per set plus rest time
+          const setTime = 45 * exercise.sets;
+          const restTime = exercise.rest && !isNaN(exercise.rest)
+            ? exercise.rest * (exercise.sets - 1)
+            : 30 * (exercise.sets - 1);
+          totalMinutes += Math.ceil((setTime + restTime) / 60);
         }
-      },
-      { threshold: 0.1, ...options }
-    );
 
-    const element = elementRef.current;
-    if (element) {
-      observer.observe(element);
-    }
-
-    return () => {
-      if (element) {
-        observer.unobserve(element);
+        // Add transition time between exercises (1 minute)
+        if (index < exercises.length - 1) {
+          totalMinutes += 2;
+        }
+      } catch (exerciseError) {
+        console.error('Error calculating duration for exercise:', exerciseError);
+        // Continue with next exercise
       }
-    };
-  }, []);
+    });
 
-  return [elementRef, isVisible];
-}
-
-function calculateDuration(exercises: Exercise[]): string {
-  let totalMinutes = 0;
-
-  exercises.forEach((exercise, index) => {
-    // Parse duration string to get minutes
-    if (exercise.duration) {
-      
-      const durationMatch = exercise.duration.match(/(\d+)/);
-      if (durationMatch) {
-        totalMinutes += parseInt(durationMatch[0]);
-      }
-    } else if (exercise.sets && exercise.repetitions) {
-      // Estimate time for strength exercises if duration is not provided
-      // Assuming 45 seconds per set plus rest time
-      const setTime = 45 * exercise.sets;
-      const restTime = exercise.rest
-        ? exercise.rest * (exercise.sets - 1)
-        : 30 * (exercise.sets - 1);
-      totalMinutes += Math.ceil((setTime + restTime) / 60);
+    if (isNaN(totalMinutes) || totalMinutes <= 0) {
+      return null;
     }
 
-    // Add transition time between exercises (1 minute)
-    if (index < exercises.length - 1) {
-      totalMinutes += 2;
+    if (totalMinutes < 60) {
+      return `${totalMinutes} min`;
+    } else {
+      const hours = Math.floor(totalMinutes / 60);
+      const minutes = totalMinutes % 60;
+      return minutes > 0 ? `${hours}h ${minutes}m` : `${hours}h`;
     }
-  });
-
-  if (totalMinutes < 60) {
-    return `${totalMinutes} min`;
-  } else {
-    const hours = Math.floor(totalMinutes / 60);
-    const minutes = totalMinutes % 60;
-    return minutes > 0 ? `${hours}h ${minutes}m` : `${hours}h`;
+  } catch (error) {
+    console.error('Error calculating total duration:', error);
+    return null;
   }
 }
 
@@ -174,7 +157,10 @@ export function ExerciseProgramPage({
       program.program.forEach((week) => {
         week.days.forEach((day) => {
           if (!day.isRestDay) {
-            day.duration = calculateDuration(day.exercises);
+            const calculatedDuration = calculateDuration(day.exercises);
+            if (calculatedDuration) {
+              day.duration = calculatedDuration;
+            }
           }
         });
       });
