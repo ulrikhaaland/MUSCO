@@ -112,6 +112,7 @@ function calculateDuration(exercises: Exercise[]): string {
   exercises.forEach((exercise, index) => {
     // Parse duration string to get minutes
     if (exercise.duration) {
+      
       const durationMatch = exercise.duration.match(/(\d+)/);
       if (durationMatch) {
         totalMinutes += parseInt(durationMatch[0]);
