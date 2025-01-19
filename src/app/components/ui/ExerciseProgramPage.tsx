@@ -297,7 +297,7 @@ export function ExerciseProgramPage({
   const selectedWeekData = program.program.find((w) => w.week === selectedWeek);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 flex flex-col h-screen">
+    <div className="min-h-screen from-gray-900 to-gray-800 flex flex-col h-[calc(100dvh)]">
       <TopBar
         onBack={onBack}
         rightContent={

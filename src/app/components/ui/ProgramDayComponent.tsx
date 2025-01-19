@@ -24,7 +24,7 @@ export function ProgramDayComponent({
 }: ProgramDayComponentProps) {
   if (day.isRestDay) {
     return (
-      <div className="bg-gray-800/50 rounded-xl overflow-hidden">
+      <div className="bg-gray-800/50 rounded-xl overflow-hidden ring-1 ring-gray-700/50">
         <div className="px-6 py-4">
           <div className="flex items-center justify-between mb-2">
             <h3 className="text-lg font-semibold text-white">Rest Day</h3>
@@ -39,7 +39,7 @@ export function ProgramDayComponent({
   }
 
   return (
-    <div className="bg-gray-800/50 rounded-xl overflow-hidden">
+    <div className="bg-gray-800/50 rounded-xl overflow-hidden ring-1 ring-gray-700/50">
       <div className="px-6 py-4">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center justify-between w-full">

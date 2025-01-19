@@ -521,7 +521,7 @@ export function ExerciseQuestionnaire({
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800">
+    <div className="min-h-screen from-gray-900 to-gray-800 h-[calc(100dvh)]">
       <TopBar onBack={onClose} className="fixed top-0 left-0 right-0 z-50" />
 
       <form
