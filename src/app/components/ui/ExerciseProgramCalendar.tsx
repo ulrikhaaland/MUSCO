@@ -1,23 +1,55 @@
 import { useState } from 'react';
-import type { ExerciseProgram, ProgramDay } from './ExerciseProgramPage';
+import type { ExerciseProgram, ProgramDay, Exercise } from './ExerciseProgramPage';
 import { TopBar } from './TopBar';
+import { ProgramDayComponent } from './ProgramDayComponent';
 
 interface ExerciseProgramCalendarProps {
   program: ExerciseProgram;
   onBack: () => void;
   onToggleView: () => void;
   showCalendarView: boolean;
+  onVideoClick: (exercise: Exercise) => void;
+  loadingVideoExercise: string | null;
 }
 
-export function ExerciseProgramCalendar({ program, onBack, onToggleView, showCalendarView }: ExerciseProgramCalendarProps) {
+export function ExerciseProgramCalendar({
+  program,
+  onBack,
+  onToggleView,
+  showCalendarView,
+  onVideoClick,
+  loadingVideoExercise,
+}: ExerciseProgramCalendarProps) {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [showYearPicker, setShowYearPicker] = useState(false);
-  const [videoUrl, setVideoUrl] = useState<string | null>(null);
 
   const getDayProgram = (date: Date): ProgramDay | undefined => {
-    // Convert Sunday (0) to 7, and Monday-Saturday (1-6) to (1-6)
+    // Get the day of week (1 = Monday, 7 = Sunday)
     const dayOfWeek = date.getDay() === 0 ? 7 : date.getDay();
-    return program.program.find(day => day.dayOfWeek === dayOfWeek);
+    
+    // Get the first day of the year
+    const startOfYear = new Date(date.getFullYear(), 0, 1);
+    
+    // Calculate days since start of year
+    const daysSinceStart = Math.floor((date.getTime() - startOfYear.getTime()) / (1000 * 60 * 60 * 24));
+    
+    // Calculate week number (0-based)
+    const weekIndex = Math.floor(daysSinceStart / 7) % program.program.length;
+    
+    // Get the program week
+    const programWeek = program.program[weekIndex];
+    if (!programWeek) return undefined;
+    
+    // Find the matching day in the week
+    const day = programWeek.days.find(d => d.day === dayOfWeek);
+    if (!day) return undefined;
+    
+    return {
+      ...day,
+      description: programWeek.differenceReason 
+        ? `${day.description}\n\nWeek ${programWeek.week} changes: ${programWeek.differenceReason}`
+        : day.description
+    };
   };
 
   const handleDateClick = (date: Date) => {
@@ -28,21 +60,6 @@ export function ExerciseProgramCalendar({ program, onBack, onToggleView, showCal
     const newDate = new Date(selectedDate);
     newDate.setMonth(newDate.getMonth() + increment);
     setSelectedDate(newDate);
-  };
-
-  const handleVideoClick = (url: string) => {
-    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
-    const match = url.match(regExp);
-  
-    if (match && match[2].length === 11) {
-      setVideoUrl(`https://www.youtube.com/embed/${match[2]}`);
-    } else {
-      setVideoUrl(url);
-    }
-  };
-
-  const closeVideo = () => {
-    setVideoUrl(null);
   };
 
   const renderHeader = () => {
@@ -186,105 +203,22 @@ export function ExerciseProgramCalendar({ program, onBack, onToggleView, showCal
       );
     }
 
-    if (dayProgram.isRestDay) {
-      return (
-        <div className="mt-6 p-4 bg-gray-800/50 rounded-xl">
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="text-lg font-semibold text-white">Rest Day</h3>
-            <span className="text-sm text-gray-400">
-              {selectedDate.toLocaleDateString('default', { weekday: 'long', month: 'long', day: 'numeric' })}
-            </span>
-          </div>
-          <p className="text-gray-300">{dayProgram.description}</p>
-        </div>
-      );
-    }
+    const formattedDate = selectedDate.toLocaleDateString('default', { 
+      weekday: 'long', 
+      month: 'long', 
+      day: 'numeric' 
+    });
 
     return (
       <div className="mt-6 space-y-4">
-        <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 ring-1 ring-gray-700/50">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center">
-              <h3 className="text-lg font-semibold text-white">Day {dayProgram.day}</h3>
-              {dayProgram.duration && (
-                <div className="flex items-center text-gray-400 ml-4">
-                  <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  <span className="text-sm">{dayProgram.duration}</span>
-                </div>
-              )}
-            </div>
-            <span className="text-sm text-gray-400">
-              {selectedDate.toLocaleDateString('default', { weekday: 'long', month: 'long', day: 'numeric' })}
-            </span>
-          </div>
-          <p className="text-gray-300 mb-4">{dayProgram.description}</p>
-          <div className="space-y-4">
-            {dayProgram.exercises.map((exercise, index) => (
-              <div key={index} className="bg-gray-900/50 rounded-lg p-4 ring-1 ring-gray-700/30">
-                <div className="flex justify-between items-start gap-4">
-                  <h4 className="text-white font-medium mb-2">{exercise.name}</h4>
-                  {exercise.videoUrl && (
-                    <button
-                      onClick={() => handleVideoClick(exercise.videoUrl!)}
-                      className="flex items-center space-x-1 bg-indigo-500/90 hover:bg-indigo-400 text-white px-2.5 py-1 rounded-md text-xs transition-colors duration-200"
-                    >
-                      <svg
-                        className="w-3.5 h-3.5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
-                        />
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                        />
-                      </svg>
-                      <span>Video</span>
-                    </button>
-                  )}
-                </div>
-                <p className="text-sm text-gray-300">{exercise.description}</p>
-                {((exercise.sets && exercise.repetitions) || exercise.duration || exercise.rest) && (
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    {exercise.duration ? (
-                      <span className="px-2 py-1 bg-gray-800/80 rounded text-xs text-gray-300">
-                        {exercise.duration}
-                      </span>
-                    ) : (
-                      <>
-                        {exercise.sets && (
-                          <span className="px-2 py-1 bg-gray-800/80 rounded text-xs text-gray-300">
-                            {exercise.sets} sets
-                          </span>
-                        )}
-                        {exercise.repetitions && (
-                          <span className="px-2 py-1 bg-gray-800/80 rounded text-xs text-gray-300">
-                            {exercise.repetitions} reps
-                          </span>
-                        )}
-                        {exercise.rest && exercise.rest !== "n/a" && (
-                          <span className="px-2 py-1 bg-gray-800/80 rounded text-xs text-gray-300">
-                            {exercise.rest} rest
-                          </span>
-                        )}
-                      </>
-                    )}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
+        <ProgramDayComponent
+          day={dayProgram}
+          dayName={`Day ${dayProgram.day}`}
+          date={formattedDate}
+          onVideoClick={onVideoClick}
+          loadingVideoExercise={loadingVideoExercise}
+          compact={true}
+        />
       </div>
     );
   };
@@ -327,47 +261,6 @@ export function ExerciseProgramCalendar({ program, onBack, onToggleView, showCal
           {renderSelectedDayProgram()}
         </div>
       </div>
-
-      {videoUrl && (
-        <div
-          className="fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center z-[9999]"
-          onClick={closeVideo}
-        >
-          <div
-            className="relative w-full max-w-4xl mx-4"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              onClick={closeVideo}
-              className="absolute -top-12 right-0 text-white/80 hover:text-white p-2 transition-colors duration-200"
-            >
-              <svg
-                className="w-8 h-8"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
-            <div className="w-full rounded-2xl overflow-hidden shadow-2xl">
-              <div className="relative pt-[56.25%]">
-                <iframe
-                  className="absolute inset-0 w-full h-full"
-                  src={videoUrl}
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                ></iframe>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 } 

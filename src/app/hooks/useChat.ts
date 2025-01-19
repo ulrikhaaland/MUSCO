@@ -70,11 +70,10 @@ export function useChat() {
       timestamp: new Date(),
     };
 
-    // Always add the message to chat immediately
-    setMessages((prev) => [...prev, newMessage]);
-
     if (isLoading) {
-      // Queue the message instead of returning
+      // Since we're queueing a new message, we can consider the current response complete
+      setIsLoading(false);
+      // Queue the message for processing after current response is marked complete
       messageQueueRef.current.push({
         message: messageContent,
         payload: chatPayload
@@ -82,6 +81,8 @@ export function useChat() {
       return;
     }
 
+    // Add the message to chat only when we're actually processing it
+    setMessages((prev) => [...prev, newMessage]);
     setFollowUpQuestions([]);
     setIsLoading(true);
 

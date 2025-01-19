@@ -18,7 +18,7 @@ import {
 } from '../ui/ExerciseQuestionnaire';
 import { Question } from '@/app/types';
 import { generateExerciseProgram } from '@/app/api/assistant/assistant';
-import { ExerciseProgramPage } from '../ui/ExerciseProgramPage';
+import { ExerciseProgramContainer } from '../ui/ExerciseProgramContainer';
 import { getGenderedId } from '@/app/utils/anatomyHelpers';
 
 interface HumanViewerProps {
@@ -620,7 +620,7 @@ export default function HumanViewer({
               targetAreas={diagnosis?.targetAreas ?? []}
             />
           ) : (
-            <ExerciseProgramPage
+            <ExerciseProgramContainer
               onBack={handleBack}
               isLoading={isGeneratingProgram}
               program={exerciseProgram}
