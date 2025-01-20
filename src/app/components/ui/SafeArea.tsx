@@ -22,7 +22,16 @@ export function SafeArea({ children }: SafeAreaProps) {
   }, []);
 
   return (
-    <div className={isMobile ? 'pb-[env(safe-area-inset-bottom)]' : ''}>
+    <div 
+      className={`
+        min-h-screen flex flex-col
+        ${isMobile ? 'pb-[calc(env(safe-area-inset-bottom)+4rem)]' : ''}
+      `}
+      style={{ 
+        height: isMobile ? '100dvh' : '100vh',
+        WebkitOverflowScrolling: 'touch'
+      }}
+    >
       {children}
     </div>
   );
