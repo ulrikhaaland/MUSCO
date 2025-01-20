@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ExerciseProgramPage } from './ExerciseProgramPage';
 import { ExerciseProgramCalendar } from './ExerciseProgramCalendar';
 import { ProgramType } from './ExerciseQuestionnaire';
@@ -31,6 +31,51 @@ export function ExerciseProgramContainer({
   const [showCalendar, setShowCalendar] = useState(false);
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [loadingVideoExercise, setLoadingVideoExercise] = useState<string | null>(null);
+  const [processedProgram, setProcessedProgram] = useState<ExerciseProgram | undefined>(program);
+
+  // Function to parse timeframe string and get number of weeks
+  const parseTimeFrame = (timeFrame: string): number => {
+    const match = timeFrame.match(/(\d+)\s*weeks?/i);
+    return match ? parseInt(match[1], 10) : 1;
+  };
+
+  // Process program to duplicate weeks if needed
+  useEffect(() => {
+    if (!program) return;
+
+    const targetWeeks = parseTimeFrame(program.timeFrame || '1 week');
+    const currentWeeks = program.program.length;
+
+    if (currentWeeks < targetWeeks) {
+      let duplicatedWeeks;
+      
+      if (currentWeeks === 1) {
+        // If there's only one week, duplicate it for all weeks
+        const firstWeek = program.program[0];
+        duplicatedWeeks = Array.from({ length: targetWeeks }, (_, index) => ({
+          ...firstWeek,
+          week: index + 1,
+        }));
+      } else {
+        // If there are multiple weeks but we need more, keep existing weeks and duplicate the last week
+        const lastWeek = program.program[currentWeeks - 1];
+        duplicatedWeeks = [
+          ...program.program,
+          ...Array.from({ length: targetWeeks - currentWeeks }, (_, index) => ({
+            ...lastWeek,
+            week: currentWeeks + index + 1,
+          }))
+        ];
+      }
+
+      setProcessedProgram({
+        ...program,
+        program: duplicatedWeeks,
+      });
+    } else {
+      setProcessedProgram(program);
+    }
+  }, [program]);
 
   const handleVideoClick = async (exercise: Exercise) => {
     if (loadingVideoExercise === exercise.name) return;
@@ -132,7 +177,7 @@ export function ExerciseProgramContainer({
     <>
       {showCalendar ? (
         <ExerciseProgramCalendar
-          program={program}
+          program={processedProgram}
           onBack={onBack}
           onToggleView={() => setShowCalendar(false)}
           showCalendarView={showCalendar}
@@ -143,7 +188,7 @@ export function ExerciseProgramContainer({
         <ExerciseProgramPage
           onBack={onBack}
           isLoading={isLoading}
-          program={program}
+          program={processedProgram}
           programType={programType}
           onToggleView={() => setShowCalendar(true)}
           onVideoClick={handleVideoClick}

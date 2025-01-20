@@ -6623,7 +6623,7 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
     ],
   },
   leftUpperArm: {
-    id: "left_upper_arm",
+    id: 'left_upper_arm',
     zoomId: 'muscular_system-muscles_of_left_upper_arm_ID',
     name: 'Left Upper Arm',
     selectIds: [
@@ -28187,6 +28187,7 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
       'connective_tissue-tendon_sheaths_and_bursae_of_left_knee_ID',
       'connective_tissue-left_anterior_ligament_of_head_of_fibula_ID',
       'connective_tissue-left_posterior_ligament_of_head_of_fibula_ID',
+      'skeletal_system-left_patella_ID',
     ],
     parts: [
       {
@@ -28413,6 +28414,16 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
         children: [],
       },
       {
+        objectId: 'skeletal_system-left_patella_ID',
+        name: 'Left patella',
+        description: '',
+        available: true,
+        shown: true,
+        selected: false,
+        parent: '',
+        children: [],
+      },
+      {
         objectId: 'connective_tissue-left_patellar_ligament_ID',
         name: 'Left patellar ligament',
         description: '',
@@ -28576,6 +28587,7 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
       'connective_tissue-tendon_sheaths_and_bursae_of_right_knee_ID',
       'connective_tissue-right_anterior_ligament_of_head_of_fibula_ID',
       'connective_tissue-right_posterior_ligament_of_head_of_fibula_ID',
+      'skeletal_system-right_patella_ID',
     ],
     parts: [
       {
@@ -28815,6 +28827,16 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
         children: [],
       },
       {
+        objectId: 'skeletal_system-right_patella_ID',
+        name: 'Right patella',
+        description: '',
+        available: true,
+        shown: true,
+        selected: false,
+        parent: '',
+        children: [],
+      },
+      {
         objectId: 'connective_tissue-right_medial_collateral_ligament_ID',
         name: 'Right medial collateral ligament',
         description: '',
@@ -28965,7 +28987,6 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
     name: 'Left Lower Leg',
     selectIds: [
       'muscular_system-muscles_of_left_lower_leg_ID',
-      'skeletal_system-left_patella_ID',
       'skeletal_system-left_tibia_ID',
       'skeletal_system-left_fibula_ID',
       'connective_tissue-left_interosseous_membrane_of_leg_ID',
@@ -29175,16 +29196,6 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
         children: [],
       },
       {
-        objectId: 'skeletal_system-left_patella_ID',
-        name: 'Left patella',
-        description: '',
-        available: true,
-        shown: true,
-        selected: false,
-        parent: '',
-        children: [],
-      },
-      {
         objectId: 'skeletal_system-left_tibia_ID',
         name: 'Left tibia',
         description: '',
@@ -29232,7 +29243,6 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
     name: 'Right Lower Leg',
     selectIds: [
       'muscular_system-muscles_of_right_lower_leg_ID',
-      'skeletal_system-right_patella_ID',
       'skeletal_system-right_tibia_ID',
       'skeletal_system-right_fibula_ID',
       'connective_tissue-right_interosseous_membrane_of_leg_ID',
@@ -29434,16 +29444,6 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
       {
         objectId: 'muscular_system-right_fibularis_brevis_ID',
         name: 'Right fibularis brevis',
-        description: '',
-        available: true,
-        shown: true,
-        selected: false,
-        parent: '',
-        children: [],
-      },
-      {
-        objectId: 'skeletal_system-right_patella_ID',
-        name: 'Right patella',
         description: '',
         available: true,
         shown: true,

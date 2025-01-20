@@ -146,6 +146,12 @@ export function useHumanAPI({
             initialCameraRef.current = camera;
           });
 
+          human.on('camera.updated', (event) => {
+            if (!isResettingRef.current) {
+              setNeedsReset(true);
+            }
+          });
+
           // Add rate limiting for infinite loop detection
           const callTimestamps: number[] = [];
           const CALL_WINDOW = 1000; // 3 seconds window (increased from 2)
