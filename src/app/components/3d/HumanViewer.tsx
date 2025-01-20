@@ -52,6 +52,8 @@ export default function HumanViewer({
   );
   const [showLowerBackLabel, setShowLowerBackLabel] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [isResetting, setIsResetting] = useState(false);
+
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768); // md breakpoint
@@ -195,6 +197,7 @@ export default function HumanViewer({
     if (isResettingRef.current) return;
 
     isResettingRef.current = true;
+    setIsResetting(true);
 
     // Use scene.reset to reset everything to initial state
     if (humanRef.current) {
@@ -208,11 +211,13 @@ export default function HumanViewer({
           // Clear reset state after a short delay to allow for animation
           setTimeout(() => {
             isResettingRef.current = false;
+            setIsResetting(false);
           }, 500);
         });
       }, 100);
     } else {
       isResettingRef.current = false;
+      setIsResetting(false);
     }
   }, [isResettingRef, setNeedsReset, isReady, humanRef]);
 
@@ -260,7 +265,7 @@ export default function HumanViewer({
 
   const handleRotate = useCallback(() => {
     const human = humanRef.current;
-    if (!human || isRotating || isResettingRef.current) return;
+    if (!human || isRotating || isResetting) return;
 
     setNeedsReset(true);
 
@@ -296,7 +301,7 @@ export default function HumanViewer({
         rotationAnimationRef.current = null;
       }
     };
-  }, [isRotating, currentRotation, isResettingRef]);
+  }, [isRotating, currentRotation, isResetting]);
 
   // Clean up animation on unmount
   useEffect(() => {
@@ -497,9 +502,9 @@ export default function HumanViewer({
           >
             <button
               onClick={handleRotate}
-              disabled={isRotating || isResettingRef.current || !isReady}
+              disabled={isRotating || isResetting || !isReady}
               className={`bg-indigo-600/80 hover:bg-indigo-500/80 text-white px-4 py-2 rounded-lg shadow-lg transition-colors duration-200 flex items-center space-x-2 ${
-                isRotating || isResettingRef.current || !isReady
+                isRotating || isResetting || !isReady
                   ? 'opacity-50 cursor-not-allowed'
                   : ''
               }`}
@@ -511,25 +516,17 @@ export default function HumanViewer({
             </button>
             <button
               onClick={handleReset}
-              disabled={
-                isResettingRef.current ||
-                (!needsReset && selectedGroup === null)
-              }
+              disabled={isResetting || (!needsReset && selectedGroup === null)}
               className={`bg-indigo-600/80 hover:bg-indigo-500/80 text-white px-4 py-2 rounded-lg shadow-lg transition-colors duration-200 flex items-center space-x-2 ${
-                isResettingRef.current ||
-                (!needsReset && selectedGroup === null)
+                isResetting || (!needsReset && selectedGroup === null)
                   ? 'opacity-50 cursor-not-allowed'
                   : ''
               }`}
             >
               <RestartAltIcon
-                className={`h-5 w-5 ${
-                  isResettingRef.current ? 'animate-spin' : ''
-                }`}
+                className={`h-5 w-5 ${isResetting ? 'animate-spin' : ''}`}
               />
-              <span>
-                {isResettingRef.current ? 'Resetting...' : 'Reset View'}
-              </span>
+              <span>{isResetting ? 'Resetting...' : 'Reset View'}</span>
             </button>
             <button
               onClick={() => handleSwitchModel()}
@@ -589,7 +586,7 @@ export default function HumanViewer({
       {isMobile && (
         <MobileControls
           isRotating={isRotating}
-          isResetting={isResettingRef.current}
+          isResetting={isResetting}
           isReady={isReady}
           needsReset={needsReset}
           selectedGroup={selectedGroup}
