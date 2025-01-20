@@ -1,6 +1,8 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, ReactNode } from 'react';
+import { ExerciseProgramCalendar } from './ExerciseProgramCalendar';
 import { TopBar } from './TopBar';
 import { ProgramType } from './ExerciseQuestionnaire';
+import { searchYouTubeVideo } from '@/app/utils/youtube';
 import { ProgramDayComponent } from './ProgramDayComponent';
 
 // Add styles to hide scrollbars while maintaining scroll functionality
@@ -90,10 +92,9 @@ function calculateDuration(exercises: Exercise[]): string | null {
           // Estimate time for strength exercises if duration is not provided
           // Assuming 45 seconds per set plus rest time
           const setTime = 45 * exercise.sets;
-          const restTime =
-            exercise.rest && !isNaN(exercise.rest)
-              ? exercise.rest * (exercise.sets - 1)
-              : 30 * (exercise.sets - 1);
+          const restTime = exercise.rest && !isNaN(exercise.rest)
+            ? exercise.rest * (exercise.sets - 1)
+            : 30 * (exercise.sets - 1);
           totalMinutes += Math.ceil((setTime + restTime) / 60);
         }
 
@@ -102,10 +103,7 @@ function calculateDuration(exercises: Exercise[]): string | null {
           totalMinutes += 2;
         }
       } catch (exerciseError) {
-        console.error(
-          'Error calculating duration for exercise:',
-          exerciseError
-        );
+        console.error('Error calculating duration for exercise:', exerciseError);
         // Continue with next exercise
       }
     });
@@ -206,13 +204,6 @@ export function ExerciseProgramPage({
           inline: 'center',
         });
       }
-      // Auto scroll to bottom
-      if (containerRef.current) {
-        containerRef.current.scrollTo({
-          top: containerRef.current.scrollHeight,
-          behavior: 'smooth'
-        });
-      }
     }, 0);
   };
 
@@ -233,13 +224,6 @@ export function ExerciseProgramPage({
           behavior: 'smooth',
           block: 'nearest',
           inline: 'center',
-        });
-      }
-      // Auto scroll to bottom
-      if (containerRef.current) {
-        containerRef.current.scrollTo({
-          top: containerRef.current.scrollHeight,
-          behavior: 'smooth'
         });
       }
     }, 0);
@@ -338,7 +322,7 @@ export function ExerciseProgramPage({
       />
 
       <div ref={containerRef} className="flex-1 overflow-y-auto pt-16">
-        <div className="max-w-4xl mx-auto px-4 pb-8">
+        <div className="max-w-4xl mx-auto px-4 pb-32">
           {/* Program Overview */}
           <div className="text-center mb-8">
             <h2 className="text-4xl font-bold text-white tracking-tight">
@@ -563,15 +547,6 @@ export function ExerciseProgramPage({
                           ? prev.filter((id) => id !== exerciseId)
                           : [...prev, exerciseId]
                       );
-                      // Auto scroll to bottom after exercise toggle
-                      setTimeout(() => {
-                        if (containerRef.current) {
-                          containerRef.current.scrollTo({
-                            top: containerRef.current.scrollHeight,
-                            behavior: 'smooth'
-                          });
-                        }
-                      }, 0);
                     }}
                     onVideoClick={(exercise) => onVideoClick(exercise)}
                     loadingVideoExercise={loadingVideoExercise}

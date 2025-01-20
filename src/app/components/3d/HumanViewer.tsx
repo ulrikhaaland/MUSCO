@@ -355,7 +355,6 @@ export default function HumanViewer({
           diagnosis: 'No diagnosis, just an exercise program',
           selectedQuestion: question,
           programType: ProgramType.Exercise,
-          targetAreas: [selectedGroup.name],
           painfulAreas: [],
           avoidActivities: [],
           recoveryGoals: [],
@@ -614,7 +613,7 @@ export default function HumanViewer({
               onSubmit={handleQuestionnaireSubmit}
               generallyPainfulAreas={diagnosis?.painfulAreas ?? []}
               programType={diagnosis?.programType ?? ProgramType.Exercise}
-              targetAreas={diagnosis?.targetAreas ?? []}
+              targetAreas={ []}
             />
           ) : (
             <ExerciseProgramContainer

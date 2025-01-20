@@ -111,7 +111,7 @@ export interface DiagnosisAssistantResponse {
   programType: ProgramType;
   // The areas of the body that are targeted by the program, e.g. ['neck', 'left shoulder']
   // only used for exercise programs, not recovery programs
-  targetAreas: string[];
+  // targetAreas: string[];
   // Whether the program is progressive, e.g. true or false
   progressive?: boolean;
 }
