@@ -554,7 +554,7 @@ export function ExerciseQuestionnaire({
             >
               <h3 className="flex items-center text-lg font-semibold text-white mb-6">
                 <svg
-                  className="w-5 h-5 mr-2 text-indigo-400"
+                  className="w-6 h-6 mr-3 text-indigo-400 flex-shrink-0"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -607,7 +607,7 @@ export function ExerciseQuestionnaire({
               >
                 <h3 className="flex items-center text-lg font-semibold text-white mb-6">
                   <svg
-                    className="w-5 h-5 mr-2 text-indigo-400"
+                    className="w-6 h-6 mr-3 text-indigo-400 flex-shrink-0"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -673,7 +673,7 @@ export function ExerciseQuestionnaire({
               >
                 <h3 className="flex items-center text-lg font-semibold text-white mb-6">
                   <svg
-                    className="w-5 h-5 mr-2 text-indigo-400"
+                    className="w-6 h-6 mr-3 text-indigo-400 flex-shrink-0"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -685,7 +685,11 @@ export function ExerciseQuestionnaire({
                       d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
                     />
                   </svg>
-                  How much do you plan to exercise?
+                  {programType === ProgramType.Exercise ? (
+                    'How many days per week would you like to exercise?'
+                  ) : (
+                    'How many days per week would you like to focus on recovery?'
+                  )}
                 </h3>
                 {answers.thisYearsPlannedExerciseFrequency &&
                 editingField !== 'thisYearsPlannedExerciseFrequency' &&
@@ -739,7 +743,7 @@ export function ExerciseQuestionnaire({
               >
                 <h3 className="flex items-center text-lg font-semibold text-white mb-6">
                   <svg
-                    className="w-5 h-5 mr-2 text-red-400"
+                    className="w-6 h-6 mr-3 text-red-400 flex-shrink-0"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -825,7 +829,7 @@ export function ExerciseQuestionnaire({
               >
                 <h3 className="flex items-center text-lg font-semibold text-white mb-6">
                   <svg
-                    className="w-5 h-5 mr-2 text-yellow-400"
+                    className="w-6 h-6 mr-3 text-yellow-400 flex-shrink-0"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -885,7 +889,7 @@ export function ExerciseQuestionnaire({
               <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-8 shadow-xl ring-1 ring-gray-700/50">
                 <h3 className="flex items-center text-lg font-semibold text-white mb-6">
                   <svg
-                    className="w-5 h-5 mr-2 text-yellow-400"
+                    className="w-6 h-6 mr-3 text-yellow-400 flex-shrink-0"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -948,7 +952,7 @@ export function ExerciseQuestionnaire({
               >
                 <h3 className="flex items-center text-lg font-semibold text-white mb-6">
                   <svg
-                    className="w-5 h-5 mr-2 text-indigo-400"
+                    className="w-6 h-6 mr-3 text-indigo-400 flex-shrink-0"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -1011,7 +1015,7 @@ export function ExerciseQuestionnaire({
               >
                 <h3 className="flex items-center text-lg font-semibold text-white mb-6">
                   <svg
-                    className="w-5 h-5 mr-2 text-indigo-400"
+                    className="w-6 h-6 mr-3 text-indigo-400 flex-shrink-0"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -1023,7 +1027,11 @@ export function ExerciseQuestionnaire({
                       d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
                     />
                   </svg>
-                  How will you exercise?
+                  {programType === ProgramType.Exercise ? (
+                    'Where do you prefer to exercise?'
+                  ) : (
+                    'Where do you prefer to do your recovery sessions?'
+                  )}
                 </h3>
                 {answers.exerciseEnvironments &&
                 editingField !== 'exerciseEnvironments' &&
@@ -1079,7 +1087,7 @@ export function ExerciseQuestionnaire({
               >
                 <h3 className="flex items-center text-lg font-semibold text-white mb-6">
                   <svg
-                    className="w-5 h-5 mr-2 text-indigo-400"
+                    className="w-6 h-6 mr-3 text-indigo-400 flex-shrink-0"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -1091,7 +1099,11 @@ export function ExerciseQuestionnaire({
                       d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
                     />
                   </svg>
-                  How long do you prefer your workouts to be?
+                  {programType === ProgramType.Exercise ? (
+                    'How much time would you like to spend on each workout?'
+                  ) : (
+                    'How much time would you like to spend on each recovery session?'
+                  )}
                 </h3>
                 {answers.workoutDuration &&
                 editingField !== 'workoutDuration' &&
