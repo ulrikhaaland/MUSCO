@@ -5,6 +5,7 @@ import "./globals.css";
 import { useEffect } from "react";
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
+import { SafeArea } from './components/ui/SafeArea';
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -44,10 +45,14 @@ export default function RootLayout({
 
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
+      <head>
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, viewport-fit=cover"
+        />
+      </head>
+      <body className={`${geistSans.variable} ${geistMono.variable} font-sans`}>
+        <SafeArea>{children}</SafeArea>
       </body>
     </html>
   );

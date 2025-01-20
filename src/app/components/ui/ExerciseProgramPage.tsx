@@ -322,7 +322,7 @@ export function ExerciseProgramPage({
       />
 
       <div ref={containerRef} className="flex-1 overflow-y-auto pt-16">
-        <div className="max-w-4xl mx-auto px-4 pb-32">
+        <div className="max-w-4xl mx-auto px-4 pb-8">
           {/* Program Overview */}
           <div className="text-center mb-8">
             <h2 className="text-4xl font-bold text-white tracking-tight">
