@@ -349,7 +349,7 @@ export default function HumanViewer({
         const newDiagnosis: DiagnosisAssistantResponse = {
           diagnosis: 'No diagnosis, just an exercise program',
           selectedQuestion: question,
-          programType: ProgramType.Recovery,
+          programType: ProgramType.Exercise,
           targetAreas: [selectedGroup.name],
           painfulAreas: [],
           avoidActivities: [],
@@ -616,7 +616,7 @@ export default function HumanViewer({
               onClose={handleBack}
               onSubmit={handleQuestionnaireSubmit}
               generallyPainfulAreas={diagnosis?.painfulAreas ?? []}
-              programType={diagnosis?.programType ?? ProgramType.Recovery}
+              programType={diagnosis?.programType ?? ProgramType.Exercise}
               targetAreas={diagnosis?.targetAreas ?? []}
             />
           ) : (
@@ -624,7 +624,7 @@ export default function HumanViewer({
               onBack={handleBack}
               isLoading={isGeneratingProgram}
               program={exerciseProgram}
-              programType={diagnosis?.programType ?? ProgramType.Recovery}
+              programType={diagnosis?.programType ?? ProgramType.Exercise}
             />
           )}
         </div>
