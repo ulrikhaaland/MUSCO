@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   useState,
@@ -6,26 +6,21 @@ import {
   useRef,
   RefAttributes,
   ComponentType,
-  useCallback,
-} from 'react';
-import { BottomSheet, BottomSheetRef } from 'react-spring-bottom-sheet';
-import type { BottomSheetProps } from 'react-spring-bottom-sheet';
-import 'react-spring-bottom-sheet/dist/style.css';
-import MyLocationIcon from '@mui/icons-material/MyLocation';
-import CropRotateIcon from '@mui/icons-material/CropRotate';
-import MaleIcon from '@mui/icons-material/Male';
-import FemaleIcon from '@mui/icons-material/Female';
-import { DiagnosisAssistantResponse, Gender, Question } from '@/app/types';
-import { AnatomyPart } from '@/app/types/anatomy';
-import { ChatMessages } from '../ui/ChatMessages';
-import { usePartChat } from '@/app/hooks/usePartChat';
-import { BodyPartGroup } from '@/app/config/bodyPartGroups';
-import { BottomSheetHeader } from './BottomSheetHeader';
-import { BottomSheetFooter } from './BottomSheetFooter';
-import ExpandLessIcon from '@mui/icons-material/ExpandLess';
-import MobileControlButtons from './MobileControlButtons';
-import { Steps } from 'intro.js-react';
-import 'intro.js/introjs.css';
+} from "react";
+import { BottomSheet, BottomSheetRef } from "react-spring-bottom-sheet";
+import type { BottomSheetProps } from "react-spring-bottom-sheet";
+import "react-spring-bottom-sheet/dist/style.css";
+import { DiagnosisAssistantResponse, Gender, Question } from "@/app/types";
+import { AnatomyPart } from "@/app/types/anatomy";
+import { ChatMessages } from "../ui/ChatMessages";
+import { usePartChat } from "@/app/hooks/usePartChat";
+import { BodyPartGroup } from "@/app/config/bodyPartGroups";
+import { BottomSheetHeader } from "./BottomSheetHeader";
+import { BottomSheetFooter } from "./BottomSheetFooter";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import MobileControlButtons from "./MobileControlButtons";
+import { Steps } from "intro.js-react";
+import "intro.js/introjs.css";
 
 enum SnapPoint {
   MINIMIZED = 0, // minHeight (15% or 72px)
@@ -85,8 +80,8 @@ export default function MobileControls({
   const contentRef = useRef<HTMLDivElement>(null);
   const [headerHeight, setHeaderHeight] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
-  const [controlsBottom, setControlsBottom] = useState('5rem');
-  const [message, setMessage] = useState('');
+  const [controlsBottom, setControlsBottom] = useState("5rem");
+  const [message, setMessage] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [bottomSheetTourEnabled, setBottomSheetTourEnabled] = useState(false);
 
@@ -104,42 +99,45 @@ export default function MobileControls({
 
   const bottomSheetSteps = [
     {
-      element: '[data-rsbs-header] .flex-col',
-      intro: 'Here you can see the selected body group, and right below it, the selected body part.',
-      position: 'bottom',
+      element: "[data-rsbs-header] .flex-col",
+      intro:
+        "Here you can see the selected body group, and right below it, the selected body part.",
+      position: "bottom",
     },
     {
-      element: '[data-rsbs-header] button',
-      intro: 'Use this button to reset the chat and start over.',
-      position: 'bottom',
+      element: "[data-rsbs-header] button",
+      intro: "Use this button to reset the chat and start over.",
+      position: "bottom",
     },
     {
-      element: '[data-rsbs-scroll]',
-      intro: 'Click on suggested questions to learn more about the selected body part.',
-      position: 'bottom',
+      element: "[data-rsbs-scroll]",
+      intro:
+        "Click on suggested questions to learn more about the selected body part.",
+      position: "bottom",
     },
     {
-      element: '[data-rsbs-footer] textarea',
-      intro: 'Type your questions here to learn more about anatomy, exercises, and treatment options.',
-      position: 'top',
+      element: "[data-rsbs-footer] textarea",
+      intro:
+        "Type your questions here to learn more about anatomy, exercises, and treatment options.",
+      position: "top",
     },
     {
-      element: '.mobile-controls-toggle',
-      intro: 'Use these buttons to expand or minimize the chat area.',
-      position: 'left',
+      element: ".mobile-controls-toggle",
+      intro: "Use these buttons to expand or minimize the chat area.",
+      position: "left",
     },
   ];
 
   const onBottomSheetTourExit = () => {
     if (selectedGroup) {
       setBottomSheetTourEnabled(false);
-      localStorage.setItem('bottomSheetTourShown', 'true');
+      localStorage.setItem("bottomSheetTourShown", "true");
     }
   };
 
   useEffect(() => {
     if (selectedGroup) {
-      const tourShown = localStorage.getItem('bottomSheetTourShown');
+      const tourShown = localStorage.getItem("bottomSheetTourShown");
       if (false) {
         setTimeout(() => {
           setBottomSheetTourEnabled(true);
@@ -159,8 +157,8 @@ export default function MobileControls({
     };
 
     checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
   useEffect(() => {
@@ -168,11 +166,11 @@ export default function MobileControls({
       if (contentRef.current) {
         // Get the container that holds all content (messages and input)
         const contentContainer = contentRef.current.querySelector(
-          '#bottom-sheet-content'
+          "#bottom-sheet-content"
         );
 
         // Find the footer element in the bottom sheet
-        const footer = document.querySelector('[data-rsbs-footer]');
+        const footer = document.querySelector("[data-rsbs-footer]");
         const footerHeight = footer?.getBoundingClientRect().height ?? 0;
 
         if (contentContainer) {
@@ -193,7 +191,7 @@ export default function MobileControls({
     }
 
     // Also observe the footer for height changes
-    const footer = document.querySelector('[data-rsbs-footer]');
+    const footer = document.querySelector("[data-rsbs-footer]");
     if (footer) {
       resizeObserver.observe(footer);
     }
@@ -270,8 +268,8 @@ export default function MobileControls({
     const observer = new MutationObserver((mutations) => {
       mutations.forEach((mutation) => {
         if (
-          mutation.type === 'attributes' &&
-          mutation.attributeName === 'style'
+          mutation.type === "attributes" &&
+          mutation.attributeName === "style"
         ) {
           const element = mutation.target as HTMLElement;
           const height = element.getBoundingClientRect().height;
@@ -284,7 +282,7 @@ export default function MobileControls({
       const element = sheetRef.current as unknown as HTMLElement;
       observer.observe(element, {
         attributes: true,
-        attributeFilter: ['style'],
+        attributeFilter: ["style"],
       });
     }
 
@@ -428,11 +426,11 @@ export default function MobileControls({
           showProgress: true,
           hideNext: false,
           hidePrev: false,
-          nextLabel: 'Next →',
-          prevLabel: '← Back',
-          doneLabel: 'Got it',
-          tooltipClass: 'bg-gray-900 text-white',
-          highlightClass: 'intro-highlight',
+          nextLabel: "Next →",
+          prevLabel: "← Back",
+          doneLabel: "Got it",
+          tooltipClass: "bg-gray-900 text-white",
+          highlightClass: "intro-highlight",
           exitOnOverlayClick: false,
           exitOnEsc: true,
           scrollTo: false,
@@ -492,8 +490,8 @@ export default function MobileControls({
                   const snapPoints = getSnapPoints();
                   return !snapPoints.some((point) => point < currentHeight - 2);
                 })()
-                  ? 'opacity-50 cursor-not-allowed'
-                  : 'hover:bg-white/10'
+                  ? "opacity-50 cursor-not-allowed"
+                  : "hover:bg-white/10"
               }`}
               aria-label="Minimize"
             >
@@ -531,8 +529,8 @@ export default function MobileControls({
                   const snapPoints = getSnapPoints();
                   return !snapPoints.some((point) => point > currentHeight + 2);
                 })()
-                  ? 'opacity-50 cursor-not-allowed'
-                  : 'hover:bg-white/10'
+                  ? "opacity-50 cursor-not-allowed"
+                  : "hover:bg-white/10"
               }`}
               aria-label="Expand"
             >
@@ -544,8 +542,8 @@ export default function MobileControls({
       {/* Bottom Sheet */}
       <BottomSheetBase
         className={`!bg-gray-900 [&>*]:!bg-gray-900 relative h-[100dvh] ${
-          hideBottomSheet ? 'pointer-events-none opacity-0' : ''
-        } ${bottomSheetTourEnabled ? 'z-[999999]' : ''}`}
+          hideBottomSheet ? "pointer-events-none opacity-0" : ""
+        } ${bottomSheetTourEnabled ? "z-[999999]" : ""}`}
         ref={sheetRef}
         open={!hideBottomSheet}
         blocking={false}
@@ -563,7 +561,7 @@ export default function MobileControls({
         onSpringStart={(event) => {
           const source = (event as any).source;
           if (
-            source === 'dragging' &&
+            source === "dragging" &&
             currentSnapPoint !== SnapPoint.MINIMIZED
           ) {
             setUserModifiedSheetHeight(true);

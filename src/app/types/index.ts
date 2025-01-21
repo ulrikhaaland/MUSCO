@@ -1,8 +1,7 @@
-import { ProgramType } from '../components/ui/ExerciseQuestionnaire';
-import { BodyPartGroup } from '../config/bodyPartGroups';
-import { AnatomyPart } from './anatomy';
+import { ProgramType } from "../shared/types";
+import { AnatomyPart } from "./anatomy";
 
-export type Gender = 'male' | 'female';
+export type Gender = "male" | "female";
 
 export interface PopupOption {
   id: string;
@@ -25,7 +24,7 @@ export interface BodyPart {
 export interface OpenAIMessage {
   id: string;
   content: string | Array<{ text: { value: string } }>;
-  role: 'user' | 'assistant' | 'system';
+  role: "user" | "assistant" | "system";
   created_at: number;
 }
 
@@ -33,7 +32,7 @@ export interface OpenAIMessage {
 export interface ChatMessage {
   id: string;
   content: string;
-  role: 'user' | 'assistant' | 'system';
+  role: "user" | "assistant" | "system";
   timestamp: Date;
 }
 
@@ -61,7 +60,7 @@ export interface Exercise {
 export interface UserPreferences {
   gender: Gender;
   age?: number;
-  fitnessLevel?: 'beginner' | 'intermediate' | 'advanced';
+  fitnessLevel?: "beginner" | "intermediate" | "advanced";
   exerciseFrequency?: number;
   bodyParts?: AnatomyPart[];
 }
@@ -69,7 +68,7 @@ export interface UserPreferences {
 export interface AssistantThread {
   id: string;
   messages: ChatMessage[];
-  status: 'active' | 'completed' | 'failed';
+  status: "active" | "completed" | "failed";
   createdAt: Date;
   updatedAt: Date;
 }
@@ -105,8 +104,6 @@ export interface DiagnosisAssistantResponse {
   timeFrame: string;
   // The follow-up questions to ask the user, e.g. ['Do you have any pain in your neck?', 'Do you have any pain in your shoulder?']
   followUpQuestions: Question[];
-  // The selected question from the follow-up questions, e.g. 'Do you have any pain in your neck?'
-  selectedQuestion?: Question;
   // The type of program the user is getting, e.g. 'exercise' or 'recovery'
   programType: ProgramType;
   // The areas of the body that are targeted by the program, e.g. ['neck', 'left shoulder']

@@ -1,5 +1,7 @@
-import OpenAI from 'openai';
-import { ChatPayload } from '../../types';
+import OpenAI from "openai";
+import { ChatPayload, DiagnosisAssistantResponse } from "../../types";
+import { ExerciseQuestionnaireAnswers, ProgramType } from "@/app/shared/types";
+
 
 // Initialize OpenAI client
 const openai = new OpenAI({
@@ -13,8 +15,8 @@ export async function getOrCreateAssistant(assistantId: string) {
 
     return assistant;
   } catch (error) {
-    console.error('Error in getOrCreateAssistant:', error);
-    throw new Error('Failed to initialize assistant');
+    console.error("Error in getOrCreateAssistant:", error);
+    throw new Error("Failed to initialize assistant");
   }
 }
 
@@ -23,8 +25,8 @@ export async function createThread() {
   try {
     return await openai.beta.threads.create();
   } catch (error) {
-    console.error('Error creating thread:', error);
-    throw new Error('Failed to create conversation thread');
+    console.error("Error creating thread:", error);
+    throw new Error("Failed to create conversation thread");
   }
 }
 
@@ -32,14 +34,14 @@ export async function createThread() {
 export async function addMessage(threadId: string, payload: ChatPayload) {
   try {
     const content = JSON.stringify(payload);
-    console.log('Adding message to thread:', content);
+    console.log("Adding message to thread:", content);
     return await openai.beta.threads.messages.create(threadId, {
-      role: 'user',
+      role: "user",
       content,
     });
   } catch (error) {
-    console.error('Error adding message:', error);
-    throw new Error('Failed to add message to thread');
+    console.error("Error adding message:", error);
+    throw new Error("Failed to add message to thread");
   }
 }
 
@@ -55,24 +57,24 @@ export async function streamRunResponse(
     });
 
     stream
-      .on('textCreated', () => {
+      .on("textCreated", () => {
         // Optional: Handle when text is created
       })
-      .on('textDelta', (delta) => {
+      .on("textDelta", (delta) => {
         if (delta.value) {
           onMessage(delta.value);
         }
       })
-      .on('error', (error) => {
-        console.error('Stream error:', error);
+      .on("error", (error) => {
+        console.error("Stream error:", error);
         throw error;
       });
 
     await stream.done();
-    console.log('Stream completed successfully');
+    console.log("Stream completed successfully");
     return;
   } catch (error) {
-    console.error('Error in streamRunResponse:', error);
+    console.error("Error in streamRunResponse:", error);
     throw error;
   }
 }
@@ -87,17 +89,17 @@ export async function runAssistant(threadId: string, assistantId: string) {
     // Wait for the run to complete
     let runStatus = await openai.beta.threads.runs.retrieve(threadId, run.id);
     while (
-      runStatus.status === 'in_progress' ||
-      runStatus.status === 'queued'
+      runStatus.status === "in_progress" ||
+      runStatus.status === "queued"
     ) {
       await new Promise((resolve) => setTimeout(resolve, 1000));
       runStatus = await openai.beta.threads.runs.retrieve(threadId, run.id);
     }
 
     if (
-      runStatus.status === 'failed' ||
-      runStatus.status === 'cancelled' ||
-      runStatus.status === 'expired'
+      runStatus.status === "failed" ||
+      runStatus.status === "cancelled" ||
+      runStatus.status === "expired"
     ) {
       throw new Error(`Run ended with status: ${runStatus.status}`);
     }
@@ -106,8 +108,8 @@ export async function runAssistant(threadId: string, assistantId: string) {
     const messages = await getMessages(threadId);
     return { runStatus, messages };
   } catch (error) {
-    console.error('Error running assistant:', error);
-    throw new Error('Failed to run assistant');
+    console.error("Error running assistant:", error);
+    throw new Error("Failed to run assistant");
   }
 }
 
@@ -117,8 +119,8 @@ export async function getMessages(threadId: string) {
     const messages = await openai.beta.threads.messages.list(threadId);
     return messages.data;
   } catch (error) {
-    console.error('Error getting messages:', error);
-    throw new Error('Failed to get messages');
+    console.error("Error getting messages:", error);
+    throw new Error("Failed to get messages");
   }
 }
 
@@ -172,15 +174,15 @@ Return exactly 3 questions in the following JSON format:
 }`;
 
     const completion = await openai.chat.completions.create({
-      model: 'gpt-4o',
-      response_format: { type: 'json_object' },
+      model: "gpt-4o",
+      response_format: { type: "json_object" },
       messages: [
         {
-          role: 'system',
+          role: "system",
           content: systemPrompt,
         },
         {
-          role: 'user',
+          role: "user",
           content: JSON.stringify({
             bodyGroup: context.bodyGroup,
             bodyPart: context.bodyPart,
@@ -193,18 +195,18 @@ Return exactly 3 questions in the following JSON format:
 
     const response = completion.choices[0].message.content;
     if (!response) {
-      throw new Error('No response from OpenAI');
+      throw new Error("No response from OpenAI");
     }
 
     return JSON.parse(response);
   } catch (error) {
-    console.error('Error generating follow-up questions:', error);
-    throw new Error('Failed to generate follow-up questions');
+    console.error("Error generating follow-up questions:", error);
+    throw new Error("Failed to generate follow-up questions");
   }
 }
 
 interface TextContent {
-  type: 'text';
+  type: "text";
   text: {
     value: string;
     annotations: any[];
@@ -212,21 +214,19 @@ interface TextContent {
 }
 
 export async function generateExerciseProgram(context: {
-  diagnosis: string;
-  questionnaire: {
-    age: string;
-    pastExercise: string;
-    plannedExercise: string;
-    painAreas: string[];
-    exercisePain: boolean;
-    painfulAreas: string[];
-    trainingType: string;
-    exerciseEnvironment: string;
-  };
+  diagnosisData: DiagnosisAssistantResponse;
+  userInfo: ExerciseQuestionnaireAnswers;
 }) {
   try {
+    const assistantId =
+      context.diagnosisData.programType === ProgramType.Exercise
+        ? "asst_tqUYRDRatboM8tTqgJUV15p9"
+        : "asst_KqxD6OX9IRFXmOFdS6QtpCP4";
+
+    console.log(context.diagnosisData.programType);
+    console.log(assistantId);
     // Get the assistant
-    const assistant = await getOrCreateAssistant("asst_tqUYRDRatboM8tTqgJUV15p9");
+    const assistant = await getOrCreateAssistant(assistantId);
 
     // Create a new thread
     const thread = await createThread();
@@ -234,8 +234,8 @@ export async function generateExerciseProgram(context: {
     // Transform context into a valid ChatPayload
     const payload: ChatPayload = {
       message: JSON.stringify(context),
-      selectedBodyGroupName: '',  // Not needed for exercise program
-      bodyPartsInSelectedGroup: [],  // Not needed for exercise program
+      selectedBodyGroupName: "", // Not needed for exercise program
+      bodyPartsInSelectedGroup: [], // Not needed for exercise program
     };
 
     // Add the message with the context to the thread
@@ -243,24 +243,28 @@ export async function generateExerciseProgram(context: {
 
     // Run the assistant and wait for completion
     const { messages } = await runAssistant(thread.id, assistant.id);
-    
+
     // Get the last message (the assistant's response)
     const lastMessage = messages[0];
     if (!lastMessage) {
-      throw new Error('No response from assistant');
+      throw new Error("No response from assistant");
     }
 
     // Get the message content
     const messageContent = lastMessage.content[0];
-    if (!messageContent || typeof messageContent !== 'object' || !('text' in messageContent)) {
-      throw new Error('Invalid message content format');
+    if (
+      !messageContent ||
+      typeof messageContent !== "object" ||
+      !("text" in messageContent)
+    ) {
+      throw new Error("Invalid message content format");
     }
 
     // Parse the response as JSON
     const response = JSON.parse(messageContent.text.value);
     return response;
   } catch (error) {
-    console.error('Error generating exercise program:', error);
-    throw new Error('Failed to generate exercise program');
+    console.error("Error generating exercise program:", error);
+    throw new Error("Failed to generate exercise program");
   }
 }

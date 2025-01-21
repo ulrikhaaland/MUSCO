@@ -1,9 +1,7 @@
-import { useState, useEffect, useRef, ReactNode } from 'react';
-import { ExerciseProgramCalendar } from './ExerciseProgramCalendar';
+import { useState, useEffect, useRef } from 'react';
 import { TopBar } from './TopBar';
-import { ProgramType } from './ExerciseQuestionnaire';
-import { searchYouTubeVideo } from '@/app/utils/youtube';
 import { ProgramDayComponent } from './ProgramDayComponent';
+import { ProgramType } from '@/app/shared/types';
 
 // Add styles to hide scrollbars while maintaining scroll functionality
 const scrollbarHideStyles = `
@@ -204,10 +202,22 @@ export function ExerciseProgramPage({
           inline: 'center',
         });
       }
+      
+      // After scrolling the week button into view, scroll to the bottom
+      if (containerRef.current) {
+        setTimeout(() => {
+          containerRef.current?.scrollTo({
+            top: containerRef.current.scrollHeight,
+            behavior: 'smooth',
+          });
+        }, 100);
+      }
     }, 0);
   };
 
   const handleDayClick = (dayNumber: number) => {
+    const isExpanding = !expandedDays.includes(dayNumber);
+    
     setExpandedDays(
       (prev) =>
         prev.includes(dayNumber)
@@ -216,17 +226,30 @@ export function ExerciseProgramPage({
     );
     setExpandedExercises([]);
 
-    // Scroll the selected day button into view with a slight delay to ensure DOM update
-    setTimeout(() => {
-      const dayButton = document.querySelector(`[data-day="${dayNumber}"]`);
-      if (dayButton) {
-        dayButton.scrollIntoView({
-          behavior: 'smooth',
-          block: 'nearest',
-          inline: 'center',
-        });
-      }
-    }, 0);
+    // Only scroll if we're expanding
+    if (isExpanding) {
+      // Scroll the selected day button into view with a slight delay to ensure DOM update
+      setTimeout(() => {
+        const dayButton = document.querySelector(`[data-day="${dayNumber}"]`);
+        if (dayButton) {
+          dayButton.scrollIntoView({
+            behavior: 'smooth',
+            block: 'nearest',
+            inline: 'center',
+          });
+        }
+
+        // After scrolling the day button into view, scroll to the bottom
+        if (containerRef.current) {
+          setTimeout(() => {
+            containerRef.current?.scrollTo({
+              top: containerRef.current.scrollHeight,
+              behavior: 'smooth',
+            });
+          }, 100);
+        }
+      }, 0);
+    }
   };
 
   const handleShowDetails = () => {
@@ -326,6 +349,7 @@ export function ExerciseProgramPage({
           {/* Program Overview */}
           <div className="text-center mb-8">
             <h2 className="text-4xl font-bold text-white tracking-tight">
+
               {programType === ProgramType.Exercise
                 ? 'Your Exercise Program'
                 : 'Your Recovery Program'}
@@ -542,11 +566,23 @@ export function ExerciseProgramPage({
                     dayName={getDayName(dayIndex + 1)}
                     expandedExercises={expandedExercises}
                     onExerciseToggle={(exerciseId) => {
+                      const isExpanding = !expandedExercises.includes(exerciseId);
+                      
                       setExpandedExercises((prev) =>
                         prev.includes(exerciseId)
                           ? prev.filter((id) => id !== exerciseId)
                           : [...prev, exerciseId]
                       );
+                      
+                      // Only scroll if we're expanding
+                      if (isExpanding && containerRef.current) {
+                        setTimeout(() => {
+                          containerRef.current?.scrollTo({
+                            top: containerRef.current.scrollHeight,
+                            behavior: 'smooth',
+                          });
+                        }, 100);
+                      }
                     }}
                     onVideoClick={(exercise) => onVideoClick(exercise)}
                     loadingVideoExercise={loadingVideoExercise}
