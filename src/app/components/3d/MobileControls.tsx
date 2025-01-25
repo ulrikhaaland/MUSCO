@@ -35,7 +35,6 @@ interface MobileControlsProps {
   isReady: boolean;
   needsReset: boolean;
   selectedGroup: BodyPartGroup | null;
-  isChangingModel: boolean;
   currentGender: Gender;
   selectedPart: AnatomyPart | null;
   onRotate: () => void;
@@ -58,7 +57,6 @@ export default function MobileControls({
   isReady,
   needsReset,
   selectedGroup,
-  isChangingModel,
   currentGender,
   selectedPart,
   onRotate,
