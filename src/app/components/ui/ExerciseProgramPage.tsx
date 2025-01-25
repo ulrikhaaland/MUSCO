@@ -32,6 +32,7 @@ export interface Exercise {
   duration?: string;
   precaution?: string;
   warmup?: boolean;
+  instructions?: string;
 }
 
 export interface ProgramDay {

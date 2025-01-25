@@ -526,9 +526,11 @@ _Note: This example structure is based on a single week._
 - For the exercise day, the \`duration\` parameter must be expressed in minutes for each day and must always be a number.
  Sample JSON Object Structure of a 45-60 minutes full body program:
 
+- Please include 1-2 recovery exercises for each rest day. These are optional and should be low intensity, exercisable at home.
+
 \`\`\`json
 {
-  "programOverview": "This program is designed to help you build full-body strength, improve mobilitynpm, and enhance overall fitness while addressing any specific pain points or restrictions you may have.",
+  "programOverview": "This program is designed to help you build full-body strength, improve mobility, and enhance overall fitness while addressing any specific pain points or restrictions you may have.",
   "afterTimeFrame": {
     "expectedOutcome": "You should feel stronger, more mobile, and experience reduced pain or discomfort in your target areas.",
     "nextSteps": "This program is tailored to your goals. Focus on completing it this week and take notes on how each session feels. Your feedback will help refine the next week's routine to be even more effective."
@@ -601,14 +603,28 @@ _Note: This example structure is based on a single week._
               "description": "A full-body stretch to improve flexibility and reduce soreness.",
               "duration": 5
             }
-          ]
-          "duration": 48,
+          ],
+          "duration": 48
         },
         {
           "day": 2,
           "isRestDay": true,
           "description": "Rest Day. Focus on hydration and gentle stretching to aid recovery.",
-          "exercises": []
+          "exercises": [
+            {
+              "name": "Foam Rolling",
+              "description": "A self-myofascial release technique to reduce muscle tightness and improve blood flow.",
+              "duration": 10,
+              "instructions": "Focus on tight areas like the quads, hamstrings, and back."
+            },
+            {
+              "name": "Cat-Cow Stretch",
+              "description": "A gentle yoga pose to improve spinal mobility and relieve tension in the back.",
+              "sets": 2,
+              "repetitions": 10
+            }
+          ],
+          "duration": 9
         },
         {
           "day": 3,
@@ -673,8 +689,28 @@ _Note: This example structure is based on a single week._
               "description": "A series of stretches to relax muscles and improve flexibility.",
               "duration": 5
             }
+          ],
+          "duration": 51
+        },
+        {
+      "day": 4,
+      "isRestDay": true,
+      "description": "Rest Day. Take time to relax and focus on light recovery activities to keep your body feeling fresh.",
+      "exercises": [
+        {
+          "name": "Child's Pose",
+          "description": "A yoga pose to stretch the lower back, hips, and thighs, promoting relaxation.",
+          "duration": 5,
+          "instructions": "Hold the stretch and breathe deeply."
+        },
+        {
+          "name": "Seated Forward Fold",
+          "description": "A stretch to target the hamstrings, lower back, and calves.",
+          "duration": 5,
+          "instructions": "Reach for your toes gently without forcing the stretch."
+        }
           ]
-          "duration": 51,
+          "duration": 10
         }
       ]
     }
