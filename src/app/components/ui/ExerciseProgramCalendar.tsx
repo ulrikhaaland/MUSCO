@@ -1,5 +1,9 @@
 import { useState } from 'react';
-import type { ExerciseProgram, ProgramDay, Exercise } from './ExerciseProgramPage';
+import type {
+  ExerciseProgram,
+  ProgramDay,
+  Exercise,
+} from './ExerciseProgramPage';
 import { TopBar } from './TopBar';
 import { ProgramDayComponent } from './ProgramDayComponent';
 
@@ -10,6 +14,7 @@ interface ExerciseProgramCalendarProps {
   showCalendarView: boolean;
   onVideoClick: (exercise: Exercise) => void;
   loadingVideoExercise: string | null;
+  dayName: (day: number) => string;
 }
 
 export function ExerciseProgramCalendar({
@@ -19,6 +24,7 @@ export function ExerciseProgramCalendar({
   showCalendarView,
   onVideoClick,
   loadingVideoExercise,
+  dayName,
 }: ExerciseProgramCalendarProps) {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [showYearPicker, setShowYearPicker] = useState(false);
@@ -26,29 +32,31 @@ export function ExerciseProgramCalendar({
   const getDayProgram = (date: Date): ProgramDay | undefined => {
     // Get the day of week (1 = Monday, 7 = Sunday)
     const dayOfWeek = date.getDay() === 0 ? 7 : date.getDay();
-    
+
     // Get the first day of the year
     const startOfYear = new Date(date.getFullYear(), 0, 1);
-    
+
     // Calculate days since start of year
-    const daysSinceStart = Math.floor((date.getTime() - startOfYear.getTime()) / (1000 * 60 * 60 * 24));
-    
+    const daysSinceStart = Math.floor(
+      (date.getTime() - startOfYear.getTime()) / (1000 * 60 * 60 * 24)
+    );
+
     // Calculate week number (0-based)
     const weekIndex = Math.floor(daysSinceStart / 7) % program.program.length;
-    
+
     // Get the program week
     const programWeek = program.program[weekIndex];
     if (!programWeek) return undefined;
-    
+
     // Find the matching day in the week
-    const day = programWeek.days.find(d => d.day === dayOfWeek);
+    const day = programWeek.days.find((d) => d.day === dayOfWeek);
     if (!day) return undefined;
-    
+
     return {
       ...day,
-      description: programWeek.differenceReason 
+      description: programWeek.differenceReason
         ? `${day.description}\n\nWeek ${programWeek.week} changes: ${programWeek.differenceReason}`
-        : day.description
+        : day.description,
     };
   };
 
@@ -63,7 +71,10 @@ export function ExerciseProgramCalendar({
   };
 
   const renderHeader = () => {
-    const monthYear = selectedDate.toLocaleString('default', { month: 'long', year: 'numeric' });
+    const monthYear = selectedDate.toLocaleString('default', {
+      month: 'long',
+      year: 'numeric',
+    });
 
     return (
       <div className="flex items-center justify-between px-4 py-2">
@@ -78,16 +89,36 @@ export function ExerciseProgramCalendar({
             onClick={() => handleMonthChange(-1)}
             className="p-2 rounded-full hover:bg-gray-800/80 text-gray-400 hover:text-white transition-colors"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 19l-7-7 7-7"
+              />
             </svg>
           </button>
           <button
             onClick={() => handleMonthChange(1)}
             className="p-2 rounded-full hover:bg-gray-800/80 text-gray-400 hover:text-white transition-colors"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 5l7 7-7 7"
+              />
             </svg>
           </button>
         </div>
@@ -99,7 +130,7 @@ export function ExerciseProgramCalendar({
     const weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
     return (
       <div className="grid grid-cols-7 mb-2">
-        {weekDays.map(day => (
+        {weekDays.map((day) => (
           <div key={day} className="text-center py-2">
             <span className="text-sm font-medium text-gray-400">{day}</span>
           </div>
@@ -109,8 +140,16 @@ export function ExerciseProgramCalendar({
   };
 
   const renderCalendarDays = () => {
-    const firstDay = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1);
-    const lastDay = new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 0);
+    const firstDay = new Date(
+      selectedDate.getFullYear(),
+      selectedDate.getMonth(),
+      1
+    );
+    const lastDay = new Date(
+      selectedDate.getFullYear(),
+      selectedDate.getMonth() + 1,
+      0
+    );
     const startDate = new Date(firstDay);
     // Adjust to start from Monday
     let dayOfWeek = startDate.getDay();
@@ -139,7 +178,7 @@ export function ExerciseProgramCalendar({
         startDate.setDate(startDate.getDate() + 1);
       }
       weeks.push(currentWeek);
-      
+
       // Break if we've gone past the last day of the month and completed the week
       if (startDate > lastDay && startDate.getDay() === 1) {
         break;
@@ -150,42 +189,81 @@ export function ExerciseProgramCalendar({
       <div className="grid gap-px bg-gray-800/30">
         {weeks.map((week, weekIndex) => (
           <div key={weekIndex} className="grid grid-cols-7">
-            {week.map(({ date, program, isCurrentMonth, isToday, isSelected }, dayIndex) => (
-              <button
-                key={dayIndex}
-                onClick={() => handleDateClick(date)}
-                className={`
+            {week.map(
+              (
+                { date, program, isCurrentMonth, isToday, isSelected },
+                dayIndex
+              ) => (
+                <button
+                  key={dayIndex}
+                  onClick={() => handleDateClick(date)}
+                  className={`
                   relative aspect-square p-1 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-900
-                  ${isCurrentMonth ? 'bg-gray-800/50' : 'bg-gray-900/30 text-gray-600'}
+                  ${
+                    isCurrentMonth
+                      ? 'bg-gray-800/50'
+                      : 'bg-gray-900/30 text-gray-600'
+                  }
                   ${isSelected ? 'bg-indigo-500/30 ring-2 ring-indigo-500' : ''}
                   ${isToday ? 'font-bold' : ''}
-                  ${program && !program.isRestDay && isCurrentMonth && !isSelected ? 'hover:bg-gray-700/50' : ''}
+                  ${
+                    program &&
+                    !program.isRestDay &&
+                    isCurrentMonth &&
+                    !isSelected
+                      ? 'hover:bg-gray-700/50'
+                      : ''
+                  }
                   transition-all duration-200
                 `}
-              >
-                <div className="flex flex-col h-full">
-                  <span className={`
-                    text-sm ${isToday ? 'text-indigo-400' : isCurrentMonth ? 'text-gray-300' : 'text-gray-600'}
+                >
+                  <div className="flex flex-col h-full">
+                    <span
+                      className={`
+                    text-sm ${
+                      isToday
+                        ? 'text-indigo-400'
+                        : isCurrentMonth
+                        ? 'text-gray-300'
+                        : 'text-gray-600'
+                    }
                     ${isSelected ? 'text-indigo-300' : ''}
-                    ${program && !program.isRestDay && isCurrentMonth && isSelected ? 'text-indigo-200 font-medium' : ''}
-                  `}>
-                    {date.getDate()}
-                  </span>
-                  {program && isCurrentMonth && (
-                    <div className="mt-auto">
-                      {program.isRestDay ? (
-                        <div className="text-xs text-gray-500 mt-1">Rest</div>
-                      ) : (
-                        <div className="flex flex-col items-center gap-0.5">
-                          <div className="text-xs text-gray-400 mt-1">Workout</div>
-                          <div className={`h-1 w-8 rounded-full ${isSelected ? 'bg-indigo-500' : 'bg-indigo-500/30'}`}></div>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-              </button>
-            ))}
+                    ${
+                      program &&
+                      !program.isRestDay &&
+                      isCurrentMonth &&
+                      isSelected
+                        ? 'text-indigo-200 font-medium'
+                        : ''
+                    }
+                  `}
+                    >
+                      {date.getDate()}
+                    </span>
+                    {program && isCurrentMonth && (
+                      <div className="mt-auto">
+                        {program.isRestDay ? (
+                          <div className="text-xs text-gray-500 mt-1">Rest</div>
+                        ) : (
+                          <div className="flex flex-col items-center gap-0.5">
+                            <div className="text-xs text-gray-400 mt-1">
+                              Workout
+                            </div>
+                            <div
+                              className={`h-1 w-8 rounded-full ${
+                                isSelected
+                                  ? 'bg-indigo-500'
+                                  : 'bg-indigo-500/30'
+                              }`}
+                            ></div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </button>
+              )
+            )}
           </div>
         ))}
       </div>
@@ -203,18 +281,11 @@ export function ExerciseProgramCalendar({
       );
     }
 
-    const formattedDate = selectedDate.toLocaleDateString('default', { 
-      weekday: 'long', 
-      month: 'long', 
-      day: 'numeric' 
-    });
-
     return (
       <div className="mt-6 space-y-4">
         <ProgramDayComponent
           day={dayProgram}
-          dayName={`Day ${dayProgram.day}`}
-          date={formattedDate}
+          dayName={dayName(dayProgram.day)}
           onVideoClick={onVideoClick}
           loadingVideoExercise={loadingVideoExercise}
           compact={true}
@@ -263,4 +334,4 @@ export function ExerciseProgramCalendar({
       </div>
     </div>
   );
-} 
+}

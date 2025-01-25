@@ -30,8 +30,12 @@ export function ExerciseProgramContainer({
 }: ExerciseProgramContainerProps) {
   const [showCalendar, setShowCalendar] = useState(false);
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
-  const [loadingVideoExercise, setLoadingVideoExercise] = useState<string | null>(null);
-  const [processedProgram, setProcessedProgram] = useState<ExerciseProgram | undefined>(program);
+  const [loadingVideoExercise, setLoadingVideoExercise] = useState<
+    string | null
+  >(null);
+  const [processedProgram, setProcessedProgram] = useState<
+    ExerciseProgram | undefined
+  >(program);
 
   // Function to parse timeframe string and get number of weeks
   const parseTimeFrame = (timeFrame: string): number => {
@@ -48,7 +52,7 @@ export function ExerciseProgramContainer({
 
     if (currentWeeks < targetWeeks) {
       let duplicatedWeeks;
-      
+
       if (currentWeeks === 1) {
         // If there's only one week, duplicate it for all weeks
         const firstWeek = program.program[0];
@@ -64,7 +68,7 @@ export function ExerciseProgramContainer({
           ...Array.from({ length: targetWeeks - currentWeeks }, (_, index) => ({
             ...lastWeek,
             week: currentWeeks + index + 1,
-          }))
+          })),
         ];
       }
 
@@ -102,6 +106,19 @@ export function ExerciseProgramContainer({
 
   const closeVideo = () => setVideoUrl(null);
 
+  const getDayName = (dayOfWeek: number): string => {
+    const days = [
+      'Monday',
+      'Tuesday',
+      'Wednesday',
+      'Thursday',
+      'Friday',
+      'Saturday',
+      'Sunday',
+    ];
+
+    return days[dayOfWeek - 1];
+  };
   // Loading and error states
   if (isLoading) {
     return (
@@ -183,6 +200,7 @@ export function ExerciseProgramContainer({
           showCalendarView={showCalendar}
           onVideoClick={handleVideoClick}
           loadingVideoExercise={loadingVideoExercise}
+          dayName={getDayName}
         />
       ) : (
         <ExerciseProgramPage
@@ -193,9 +211,10 @@ export function ExerciseProgramContainer({
           onToggleView={() => setShowCalendar(true)}
           onVideoClick={handleVideoClick}
           loadingVideoExercise={loadingVideoExercise}
+          dayName={getDayName}
         />
       )}
       {renderVideoModal()}
     </>
   );
-} 
+}

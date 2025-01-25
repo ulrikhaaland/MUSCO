@@ -11,7 +11,6 @@ import { BottomSheet, BottomSheetRef } from "react-spring-bottom-sheet";
 import type { BottomSheetProps } from "react-spring-bottom-sheet";
 import "react-spring-bottom-sheet/dist/style.css";
 import { DiagnosisAssistantResponse, Gender, Question } from "@/app/types";
-import { AnatomyPart } from "@/app/types/anatomy";
 import { ChatMessages } from "../ui/ChatMessages";
 import { usePartChat } from "@/app/hooks/usePartChat";
 import { BodyPartGroup } from "@/app/config/bodyPartGroups";
@@ -21,6 +20,7 @@ import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import MobileControlButtons from "./MobileControlButtons";
 import { Steps } from "intro.js-react";
 import "intro.js/introjs.css";
+import { AnatomyPart } from "@/app/types/human";
 
 enum SnapPoint {
   MINIMIZED = 0, // minHeight (15% or 72px)
