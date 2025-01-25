@@ -5,9 +5,8 @@ import {
   useCallback,
   useState,
 } from 'react';
-import { HumanAPI } from '../types/human';
+import { AnatomyPart, HumanAPI } from '../types/human';
 import { Gender } from '../types';
-import { AnatomyPart } from '../types/anatomy';
 import { bodyPartGroups, BodyPartGroup } from '../config/bodyPartGroups';
 import {
   getPartGroup,

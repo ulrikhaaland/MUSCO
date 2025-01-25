@@ -1,5 +1,5 @@
-import { AnatomyPart } from '../types/anatomy';
 import { BodyPartGroup, bodyPartGroups } from '../config/bodyPartGroups';
+import { AnatomyPart } from '../types/human';
 
 // Helper function to convert an ID to its gender-neutral form
 export function getNeutralId(id: string): string {

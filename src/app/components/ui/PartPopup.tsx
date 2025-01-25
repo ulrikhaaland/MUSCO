@@ -1,9 +1,9 @@
 import { useState, useRef, ChangeEvent } from "react";
-import { AnatomyPart } from "@/app/types/anatomy";
 import { ChatMessages } from "./ChatMessages";
 import { usePartChat } from "@/app/hooks/usePartChat";
 import { BodyPartGroup } from "@/app/config/bodyPartGroups";
 import { Question } from "@/app/types";
+import { AnatomyPart } from "@/app/types/human";
 
 interface PartPopupProps {
   part: AnatomyPart | null;

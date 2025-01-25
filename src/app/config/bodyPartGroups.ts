@@ -1,4 +1,4 @@
-import { AnatomyPart } from '../types/anatomy';
+import { AnatomyPart } from "../types/human";
 
 export interface BodyPartGroup {
   id: string;
