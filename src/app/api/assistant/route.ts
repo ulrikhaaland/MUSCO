@@ -7,6 +7,7 @@ import {
   getMessages,
   generateFollowUpQuestions,
   generateExerciseProgram,
+  generateExerciseProgramWithModel,
 } from '@/app/api/assistant/openai-server';
 import { OpenAIMessage } from '@/app/types';
 
@@ -107,7 +108,7 @@ export async function POST(request: Request) {
           );
         }
 
-        const program = await generateExerciseProgram(payload);
+        const program = await generateExerciseProgramWithModel(payload);
         return NextResponse.json(program);
       }
 

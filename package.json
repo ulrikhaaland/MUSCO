@@ -16,6 +16,7 @@
     "@mui/material": "^6.3.0",
     "@reactour/tour": "^3.7.0",
     "@types/three": "^0.170.0",
+    "endent": "^2.1.0",
     "firebase": "^11.2.0",
     "intro.js": "^7.2.0",
     "intro.js-react": "^1.0.0",

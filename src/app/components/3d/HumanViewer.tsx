@@ -2,7 +2,7 @@
 
 import { useRef, useState, useCallback, useEffect } from "react";
 import { DiagnosisAssistantResponse, Gender } from "../../types";
-import { AnatomyPart } from "../../types/anatomy";
+import { AnatomyPart } from "../../types/human";
 import PartPopup from "../ui/PartPopup";
 import { useHumanAPI } from "@/app/hooks/useHumanAPI";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
@@ -379,6 +379,8 @@ export default function HumanViewer({
     // Show program page with loading state immediately
     setShowQuestionnaire(false);
     setIsGeneratingProgram(true);
+
+    diagnosis.timeFrame = "1 week";
 
     try {
       const program = await generateExerciseProgram(diagnosis, answers);

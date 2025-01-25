@@ -159,7 +159,7 @@ export function ExerciseProgramCalendar({
                   ${isCurrentMonth ? 'bg-gray-800/50' : 'bg-gray-900/30 text-gray-600'}
                   ${isSelected ? 'bg-indigo-500/30 ring-2 ring-indigo-500' : ''}
                   ${isToday ? 'font-bold' : ''}
-                  ${program && !program.isRestDay && isCurrentMonth ? 'bg-indigo-500/20 hover:bg-indigo-500/30 ring-1 ring-indigo-400/50' : 'hover:bg-gray-700/50'}
+                  ${program && !program.isRestDay && isCurrentMonth && !isSelected ? 'hover:bg-gray-700/50' : ''}
                   transition-all duration-200
                 `}
               >
@@ -167,7 +167,7 @@ export function ExerciseProgramCalendar({
                   <span className={`
                     text-sm ${isToday ? 'text-indigo-400' : isCurrentMonth ? 'text-gray-300' : 'text-gray-600'}
                     ${isSelected ? 'text-indigo-300' : ''}
-                    ${program && !program.isRestDay && isCurrentMonth ? 'text-indigo-200 font-medium' : ''}
+                    ${program && !program.isRestDay && isCurrentMonth && isSelected ? 'text-indigo-200 font-medium' : ''}
                   `}>
                     {date.getDate()}
                   </span>
@@ -177,8 +177,8 @@ export function ExerciseProgramCalendar({
                         <div className="text-xs text-gray-500 mt-1">Rest</div>
                       ) : (
                         <div className="flex flex-col items-center gap-0.5">
-                          <div className="text-xs text-indigo-300/90 mt-1">Workout</div>
-                          <div className="h-1 w-8 rounded-full bg-indigo-500/70"></div>
+                          <div className="text-xs text-gray-400 mt-1">Workout</div>
+                          <div className={`h-1 w-8 rounded-full ${isSelected ? 'bg-indigo-500' : 'bg-indigo-500/30'}`}></div>
                         </div>
                       )}
                     </div>

@@ -1,6 +1,6 @@
 import { useRef, useEffect, useState } from 'react';
 import { useChat } from './useChat';
-import { AnatomyPart } from '../types/anatomy';
+import { AnatomyPart } from '../types/human';
 import { Question } from '../types';
 import { BodyPartGroup } from '../config/bodyPartGroups';
 

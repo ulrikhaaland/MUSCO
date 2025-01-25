@@ -31,6 +31,7 @@ export interface Exercise {
   videoUrl?: string;
   duration?: string;
   precaution?: string;
+  warmup?: boolean;
 }
 
 export interface ProgramDay {
@@ -71,56 +72,20 @@ interface ExerciseProgramPageProps {
   loadingVideoExercise: string | null;
 }
 
-function calculateDuration(exercises: Exercise[]): string | null {
-  try {
-    let totalMinutes = 0;
+// Helper function to get ISO week number
+function getWeekNumber(date: Date): number {
+  const d = new Date(date);
+  d.setHours(0, 0, 0, 0);
+  d.setDate(d.getDate() + 4 - (d.getDay() || 7));
+  const yearStart = new Date(d.getFullYear(), 0, 1);
+  return Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
+}
 
-    exercises.forEach((exercise, index) => {
-      try {
-        // Parse duration string to get minutes
-        if (exercise.duration) {
-          const durationMatch = exercise.duration.match(/(\d+)/);
-          if (durationMatch) {
-            const minutes = parseInt(durationMatch[0]);
-            if (!isNaN(minutes)) {
-              totalMinutes += minutes;
-            }
-          }
-        } else if (exercise.sets && exercise.repetitions) {
-          // Estimate time for strength exercises if duration is not provided
-          // Assuming 45 seconds per set plus rest time
-          const setTime = 45 * exercise.sets;
-          const restTime = exercise.rest && !isNaN(exercise.rest)
-            ? exercise.rest * (exercise.sets - 1)
-            : 30 * (exercise.sets - 1);
-          totalMinutes += Math.ceil((setTime + restTime) / 60);
-        }
-
-        // Add transition time between exercises (1 minute)
-        if (index < exercises.length - 1) {
-          totalMinutes += 2;
-        }
-      } catch (exerciseError) {
-        console.error('Error calculating duration for exercise:', exerciseError);
-        // Continue with next exercise
-      }
-    });
-
-    if (isNaN(totalMinutes) || totalMinutes <= 0) {
-      return null;
-    }
-
-    if (totalMinutes < 60) {
-      return `${totalMinutes} min`;
-    } else {
-      const hours = Math.floor(totalMinutes / 60);
-      const minutes = totalMinutes % 60;
-      return minutes > 0 ? `${hours}h ${minutes}m` : `${hours}h`;
-    }
-  } catch (error) {
-    console.error('Error calculating total duration:', error);
-    return null;
-  }
+// Add function to get next Sunday's date
+function getNextSunday(d: Date): Date {
+  const result = new Date(d);
+  result.setDate(result.getDate() + (7 - result.getDay()));
+  return result;
 }
 
 export function ExerciseProgramPage({
@@ -132,38 +97,64 @@ export function ExerciseProgramPage({
   onVideoClick,
   loadingVideoExercise,
 }: ExerciseProgramPageProps) {
+  // Get current date info
+  const currentDate = new Date();
+  const currentWeekNumber = getWeekNumber(currentDate);
+  const currentDayOfWeek = currentDate.getDay() || 7; // Convert Sunday (0) to 7
+
   const [showDetails, setShowDetails] = useState(false);
-  const [selectedWeek, setSelectedWeek] = useState(1);
+  const [selectedWeek, setSelectedWeek] = useState<number | null>(null);
   const [expandedDays, setExpandedDays] = useState<number[]>([]);
   const [expandedExercises, setExpandedExercises] = useState<string[]>([]);
   const showDetailsButtonRef = useRef<HTMLButtonElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Set initial day when program loads
+  // Set initial week and day when program loads
   useEffect(() => {
-    if (program && program.program.length > 0) {
-      const firstWeek = program.program[0];
-      if (firstWeek.days.length > 0) {
-        setExpandedDays([firstWeek.days[0].day]);
+    if (!program || !program.program.length) return;
+
+    // Find the program week that corresponds to the current calendar week
+    let weekToSelect = 1;
+    for (let i = 0; i < program.program.length; i++) {
+      const weekDate = new Date(currentDate);
+      weekDate.setDate(currentDate.getDate() - (currentDayOfWeek - 1) + (i * 7));
+      if (getWeekNumber(weekDate) === currentWeekNumber) {
+        weekToSelect = i + 1;
+        break;
       }
     }
-  }, [program]);
 
-  // Process program to add calculated durations
-  useEffect(() => {
-    if (program) {
-      program.program.forEach((week) => {
-        week.days.forEach((day) => {
-          if (!day.isRestDay) {
-            const calculatedDuration = calculateDuration(day.exercises);
-            if (calculatedDuration) {
-              day.duration = calculatedDuration;
-            }
-          }
-        });
-      });
+    // If current week is beyond program weeks, select the last available week
+    if (weekToSelect > program.program.length) {
+      weekToSelect = program.program.length;
     }
-  }, [program]);
+
+    setSelectedWeek(weekToSelect);
+    setExpandedDays([currentDayOfWeek]);
+
+    // Scroll selected week and day into view after state updates
+    setTimeout(() => {
+      // Scroll week into view
+      const weekButton = document.querySelector(`[data-week="${weekToSelect}"]`);
+      if (weekButton) {
+        weekButton.scrollIntoView({
+          behavior: 'smooth',
+          block: 'nearest',
+          inline: 'center',
+        });
+      }
+
+      // Scroll day into view
+      const dayButton = document.querySelector(`[data-day="${currentDayOfWeek}"]`);
+      if (dayButton) {
+        dayButton.scrollIntoView({
+          behavior: 'smooth',
+          block: 'nearest',
+          inline: 'center',
+        });
+      }
+    }, 100); // Small delay to ensure state updates have completed
+  }, [program, currentWeekNumber, currentDayOfWeek]);
 
   const handleWeekChange = (weekNumber: number) => {
     setSelectedWeek(weekNumber);
@@ -291,6 +282,39 @@ export function ExerciseProgramPage({
   const getDayShortName = (dayOfWeek: number): string => {
     const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
     return days[dayOfWeek - 1];
+  };
+
+  const renderNextWeekCard = () => {
+    const nextSunday = getNextSunday(new Date());
+    const formattedDate = nextSunday.toLocaleDateString('en-US', {
+      weekday: 'long',
+      month: 'long',
+      day: 'numeric',
+    });
+
+    return (
+      <div className="bg-gray-800/50 rounded-xl overflow-hidden ring-1 ring-gray-700/50 p-8">
+        <div className="flex flex-col items-center justify-center text-center space-y-4">
+          <svg
+            className="w-12 h-12 text-indigo-400"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+          <h3 className="text-xl font-semibold text-white">Coming Soon</h3>
+          <p className="text-gray-300">
+            Your next week&apos;s program will be available on {formattedDate}
+          </p>
+        </div>
+      </div>
+    );
   };
 
   if (isLoading) {
@@ -500,99 +524,122 @@ export function ExerciseProgramPage({
           {/* Week Tabs */}
           <div className="mb-6 overflow-x-auto scrollbar-hide">
             <div className="flex space-x-2 min-w-max">
-              {program.program.map((week) => (
-                <button
-                  key={week.week}
-                  data-week={week.week}
-                  onClick={() => handleWeekChange(week.week)}
-                  className={`px-6 py-3 rounded-lg font-medium transition-colors duration-200 ${
-                    selectedWeek === week.week
-                      ? 'bg-indigo-600 text-white'
-                      : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white'
-                  }`}
-                >
-                  Week {week.week}
-                </button>
-              ))}
+              {program.program.map((week) => {
+                const weekOffset = week.week - 1;
+                const weekDate = new Date(currentDate);
+                weekDate.setDate(currentDate.getDate() + (weekOffset * 7));
+                const actualWeekNumber = getWeekNumber(weekDate);
+
+                return (
+                  <button
+                    key={week.week}
+                    data-week={week.week}
+                    onClick={() => handleWeekChange(week.week)}
+                    className={`px-6 py-3 rounded-lg font-medium transition-colors duration-200 ${
+                      selectedWeek === week.week
+                        ? 'bg-indigo-600 text-white'
+                        : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white'
+                    }`}
+                  >
+                    Week {actualWeekNumber}
+                  </button>
+                );
+              })}
+              {/* Next Week Button */}
+              <button
+                onClick={() => setSelectedWeek(program.program.length + 1)}
+                className={`px-6 py-3 rounded-lg font-medium transition-colors duration-200 ${
+                  selectedWeek === program.program.length + 1
+                    ? 'bg-indigo-600 text-white'
+                    : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white'
+                }`}
+              >
+                Week {getWeekNumber(new Date(currentDate.getTime() + (program.program.length * 7 * 24 * 60 * 60 * 1000)))}
+              </button>
             </div>
           </div>
 
           {/* Selected Week Content */}
-          {selectedWeekData && (
-            <div className="space-y-4">
-              {/* Day Tabs */}
-              <div className="overflow-x-auto scrollbar-hide mb-6">
-                <div className="flex space-x-2 min-w-max">
-                  {selectedWeekData.days.map((day, index) => (
-                    <button
-                      key={day.day}
-                      data-day={day.day}
-                      onClick={() => handleDayClick(day.day)}
-                      className={`px-6 py-3 rounded-lg font-medium transition-colors duration-200 flex flex-col items-center ${
-                        expandedDays.includes(day.day)
-                          ? 'bg-indigo-600 text-white'
-                          : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white'
-                      }`}
-                    >
-                      <span className="text-sm opacity-80 mb-1">
-                        {getDayShortName(index + 1)}
-                      </span>
-                      {day.isRestDay ? (
-                        <span className="text-xs mt-1 opacity-80">Rest</span>
-                      ) : (
-                        <span className="text-xs mt-1 opacity-80">
-                          Activity
+          {selectedWeek <= program.program.length ? (
+            selectedWeekData && (
+              <div className="space-y-4">
+                {/* Day Tabs */}
+                <div className="overflow-x-auto scrollbar-hide mb-6">
+                  <div className="flex space-x-2 min-w-max">
+                    {selectedWeekData.days.map((day, index) => (
+                      <button
+                        key={day.day}
+                        data-day={day.day}
+                        onClick={() => handleDayClick(day.day)}
+                        className={`px-6 py-3 rounded-lg font-medium transition-colors duration-200 flex flex-col items-center ${
+                          expandedDays.includes(day.day)
+                            ? 'bg-indigo-600 text-white'
+                            : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white'
+                        }`}
+                      >
+                        <span className="text-sm opacity-80 mb-1">
+                          {getDayShortName(index + 1)}
                         </span>
-                      )}
-                    </button>
-                  ))}
+                        {day.isRestDay ? (
+                          <span className="text-xs mt-1 opacity-80">Rest</span>
+                        ) : (
+                          <span className="text-xs mt-1 opacity-80">
+                            Activity
+                          </span>
+                        )}
+                      </button>
+                    ))}
+                  </div>
                 </div>
+
+                {/* Day Content */}
+                {expandedDays.map((dayNumber) => {
+                  const day = selectedWeekData.days.find(
+                    (d) => d.day === dayNumber
+                  );
+                  if (!day) return null;
+
+                  const dayIndex = selectedWeekData.days.findIndex(
+                    (d) => d.day === dayNumber
+                  );
+                  return (
+                    <ProgramDayComponent
+                      key={day.day}
+                      day={day}
+                      dayName={getDayName(dayIndex + 1)}
+                      expandedExercises={expandedExercises}
+                      onExerciseToggle={(exerciseId) => {
+                        const isExpanding = !expandedExercises.includes(exerciseId);
+                        
+                        setExpandedExercises((prev) =>
+                          prev.includes(exerciseId)
+                            ? prev.filter((id) => id !== exerciseId)
+                            : [...prev, exerciseId]
+                        );
+                        
+                        // Only scroll if we're expanding
+                        if (isExpanding && containerRef.current) {
+                          setTimeout(() => {
+                            containerRef.current?.scrollTo({
+                              top: containerRef.current.scrollHeight,
+                              behavior: 'smooth',
+                            });
+                          }, 100);
+                        }
+                      }}
+                      onVideoClick={(exercise) => onVideoClick(exercise)}
+                      loadingVideoExercise={loadingVideoExercise}
+                    />
+                  );
+                })}
               </div>
-
-              {/* Day Content */}
-              {expandedDays.map((dayNumber) => {
-                const day = selectedWeekData.days.find(
-                  (d) => d.day === dayNumber
-                );
-                if (!day) return null;
-
-                const dayIndex = selectedWeekData.days.findIndex(
-                  (d) => d.day === dayNumber
-                );
-                return (
-                  <ProgramDayComponent
-                    key={day.day}
-                    day={day}
-                    dayName={getDayName(dayIndex + 1)}
-                    expandedExercises={expandedExercises}
-                    onExerciseToggle={(exerciseId) => {
-                      const isExpanding = !expandedExercises.includes(exerciseId);
-                      
-                      setExpandedExercises((prev) =>
-                        prev.includes(exerciseId)
-                          ? prev.filter((id) => id !== exerciseId)
-                          : [...prev, exerciseId]
-                      );
-                      
-                      // Only scroll if we're expanding
-                      if (isExpanding && containerRef.current) {
-                        setTimeout(() => {
-                          containerRef.current?.scrollTo({
-                            top: containerRef.current.scrollHeight,
-                            behavior: 'smooth',
-                          });
-                        }, 100);
-                      }
-                    }}
-                    onVideoClick={(exercise) => onVideoClick(exercise)}
-                    loadingVideoExercise={loadingVideoExercise}
-                  />
-                );
-              })}
-            </div>
+            )
+          ) : (
+            renderNextWeekCard()
           )}
         </div>
       </div>
     </div>
   );
 }
+

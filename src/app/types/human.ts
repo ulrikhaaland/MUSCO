@@ -22,4 +22,17 @@ declare global {
   interface Window {
     HumanAPI: HumanAPIConstructor;
   }
-} 
+}
+
+export interface AnatomyPart {
+  objectId: string;
+  name: string;
+  description: string;
+  available: boolean;
+  shown: boolean;
+  selected: boolean;
+  parent: string;
+  children: AnatomyPart[];
+  group?: string;
+}
+

@@ -60,7 +60,7 @@ export function ProgramDayComponent({
                       d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
                     />
                   </svg>
-                  {day.duration}
+                  {day.duration} minutes
                 </div>
               )}
               {date && (
@@ -166,7 +166,7 @@ export function ProgramDayComponent({
                       {exercise.duration ? (
                         <div className="bg-gray-800/80 px-4 py-2 rounded-lg">
                           <span className="text-gray-300 text-sm">
-                            {exercise.duration}
+                            {exercise.duration} minutes
                           </span>
                         </div>
                       ) : (
