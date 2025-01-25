@@ -2,8 +2,8 @@ import { ChatMessage, Question } from '@/app/types';
 import ReactMarkdown from 'react-markdown';
 import { RefObject, useEffect, useState, useRef } from 'react';
 import { LoadingMessage } from './LoadingMessage';
-import { AnatomyPart } from '@/app/types/anatomy';
 import { BodyPartGroup } from '@/app/config/bodyPartGroups';
+import { AnatomyPart } from '@/app/types/human';
 
 interface ChatMessagesProps {
   messages: ChatMessage[];
