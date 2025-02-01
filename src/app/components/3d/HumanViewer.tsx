@@ -17,6 +17,7 @@ import { generateExerciseProgram } from '@/app/api/assistant/assistant';
 import { ExerciseProgramContainer } from '../ui/ExerciseProgramContainer';
 import { getGenderedId } from '@/app/utils/anatomyHelpers';
 import { ExerciseQuestionnaireAnswers, ProgramType } from '@/app/shared/types';
+import { useApp } from '@/app/context/AppContext';
 
 interface HumanViewerProps {
   gender: Gender;
@@ -28,10 +29,7 @@ export default function HumanViewer({
   onGenderChange,
 }: HumanViewerProps) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
-  const [selectedGroup, setSelectedGroup] = useState<BodyPartGroup | null>(
-    null
-  );
-  const [selectedPart, setSelectedPart] = useState<AnatomyPart | null>(null);
+  const { selectedGroups, selectedPart, setSelectedGroup, setSelectedPart, intention, resetSelectionState } = useApp();
   const lastSelectedIdRef = useRef<string | null>(null);
   const minChatWidth = 300;
   const maxChatWidth = 800;
@@ -78,18 +76,16 @@ export default function HumanViewer({
   } = useHumanAPI({
     elementId: 'myViewer',
     initialGender: gender,
-    setSelectedGroup,
-    setSelectedPart,
     onZoom: (objectId?: string) => handleZoom(objectId),
   });
 
   useEffect(() => {
-    if (selectedGroup && selectedGroup.id === 'back') {
+    if (selectedGroups.length > 0 && selectedGroups[0].id === 'back') {
       setShowLowerBackLabel(true);
     } else {
       setShowLowerBackLabel(false);
     }
-  }, [selectedGroup]);
+  }, [selectedGroups]);
 
   const handleZoom = (objectId?: string) => {
     // First get current camera info
@@ -185,7 +181,7 @@ export default function HumanViewer({
 
     setCurrentRotation(0);
     setSelectedPart(null);
-    setSelectedGroup(null);
+    setSelectedGroup(null, false);
     lastSelectedIdRef.current = null;
     setNeedsReset(false);
   };
@@ -195,6 +191,9 @@ export default function HumanViewer({
 
     isResettingRef.current = true;
     setIsResetting(true);
+
+    // Reset the context state
+    resetSelectionState();
 
     // Use scene.reset to reset everything to initial state
     if (humanRef.current) {
@@ -216,12 +215,12 @@ export default function HumanViewer({
       isResettingRef.current = false;
       setIsResetting(false);
     }
-  }, [isResettingRef, setNeedsReset, isReady, humanRef]);
+  }, [isResettingRef, setNeedsReset, isReady, humanRef, resetSelectionState]);
 
   // Update reset button state when parts are selected
   useEffect(() => {
-    setNeedsReset(selectedGroup !== null || needsReset);
-  }, [selectedGroup, needsReset]);
+    setNeedsReset(selectedGroups.length > 0 || needsReset);
+  }, [selectedGroups, needsReset]);
 
   const startDragging = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
@@ -512,9 +511,9 @@ export default function HumanViewer({
             </button>
             <button
               onClick={handleReset}
-              disabled={isResetting || (!needsReset && selectedGroup === null)}
+              disabled={isResetting || (!needsReset && selectedGroups.length === 0)}
               className={`bg-indigo-600/80 hover:bg-indigo-500/80 text-white px-4 py-2 rounded-lg shadow-lg transition-colors duration-200 flex items-center space-x-2 ${
-                isResetting || (!needsReset && selectedGroup === null)
+                isResetting || (!needsReset && selectedGroups.length === 0)
                   ? 'opacity-50 cursor-not-allowed'
                   : ''
               }`}
@@ -571,7 +570,7 @@ export default function HumanViewer({
         <div className="h-full border-l border-gray-800">
           <PartPopup
             part={selectedPart}
-            group={selectedGroup}
+            groups={selectedGroups}
             onClose={() => {}}
             onQuestionClick={handleQuestionClick}
           />
@@ -585,7 +584,7 @@ export default function HumanViewer({
           isResetting={isResetting}
           isReady={isReady}
           needsReset={needsReset}
-          selectedGroup={selectedGroup}
+          selectedGroups={selectedGroups}
           currentGender={currentGender}
           selectedPart={selectedPart}
           onRotate={handleRotate}

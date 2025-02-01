@@ -7,14 +7,14 @@ import { AnatomyPart } from "@/app/types/human";
 
 interface PartPopupProps {
   part: AnatomyPart | null;
-  group: BodyPartGroup | null;
+  groups: BodyPartGroup[];
   onClose: () => void;
   onQuestionClick?: (question: Question) => void;
 }
 
 export default function PartPopup({
   part,
-  group,
+  groups,
   onClose,
   onQuestionClick,
 }: PartPopupProps) {
@@ -29,7 +29,7 @@ export default function PartPopup({
     handleOptionClick,
     getGroupDisplayName,
     getPartDisplayName,
-  } = usePartChat({ selectedPart: part, selectedGroup: group });
+  } = usePartChat({ selectedPart: part, selectedGroups: groups });
 
   const [userHasScrolled, setUserHasScrolled] = useState(false);
 
@@ -124,7 +124,7 @@ export default function PartPopup({
         onScroll={handleScroll}
         onUserScroll={handleUserScroll}
         part={part}
-        group={group}
+        groups={groups}
       />
 
       <div className="mt-4 border-t border-gray-700 pt-4 flex-shrink-0">

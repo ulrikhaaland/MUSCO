@@ -15,6 +15,7 @@ import {
   getNeutralId,
   getGenderedId,
 } from '../utils/anatomyHelpers';
+import { ProgramIntention, useApp } from '../context/AppContext';
 
 interface CameraPosition {
   position: {
@@ -39,8 +40,6 @@ interface UseHumanAPIProps {
   elementId: string;
   onReady?: () => void;
   initialGender: Gender;
-  setSelectedGroup: (parts: BodyPartGroup | null) => void;
-  setSelectedPart: (part: AnatomyPart | null) => void;
   onZoom?: (objectId?: string) => void;
 }
 
@@ -48,8 +47,6 @@ export function useHumanAPI({
   elementId,
   onReady,
   initialGender,
-  setSelectedGroup,
-  setSelectedPart,
   onZoom,
 }: UseHumanAPIProps): {
   humanRef: MutableRefObject<HumanAPI | null>;
@@ -72,6 +69,16 @@ export function useHumanAPI({
   const [currentGender, setCurrentGender] = useState<Gender>(initialGender);
   const [needsReset, setNeedsReset] = useState(false);
   const [isReady, setIsReady] = useState(false);
+  const {
+    setSelectedGroup,
+    setSelectedPart,
+    intentionRef,
+    selectedExerciseGroupsRef,
+    selectedPainfulAreasRef,
+    selectedGroupsRef,
+    isSelectingExerciseRef,
+  } = useApp();
+
   // Function to check if camera has moved
   const checkCameraPosition = useCallback(() => {
     if (!humanRef.current || !initialCameraRef.current) return;
@@ -175,204 +182,11 @@ export function useHumanAPI({
               return;
             }
 
-            if (isResettingRef.current) {
-              if (isXrayEnabledRef.current) {
-                isXrayEnabledRef.current = false;
-              }
-              return;
+            if (intentionRef.current === ProgramIntention.Exercise) {
+              handleOnObjectSelectedExercise(event, human);
+            } else {
+              handleOnObjectSelectedRecovery(event, human);
             }
-            selectedPartIdRef.current = null;
-            const objects = Object.keys(event);
-
-            const selectedId = objects[0];
-
-            console.log('selectedId', event);
-
-            // Check for deselection (all values are false)
-            const isDeselection = Object.values(event).every(
-              (value) => value === false
-            );
-
-            if (!isDeselection) selectedPartIdRef.current = selectedId;
-
-            // if (isDeselection && selectedPartRef.current) {
-            //   return;
-            //   console.log('All objects deselected');
-
-            //   setTimeout(() => {
-            //     if (
-            //       !selectedPartRef.current ||
-            //       selectedPartRef.current.objectId === selectedId
-            //     ) {
-            //       previousSelectedPartGroupRef.current = null;
-            //       setTimeout(() => {
-            //         onZoom?.(null);
-            //       }, 500);
-            //       setSelectedPart(null);
-            //       setSelectedGroup(null);
-            //       selectedPartRef.current = null;
-            //       selectionEventRef.current = null;
-            //       human.send('scene.disableXray', () => {});
-            //       isXrayEnabledRef.current = false;
-            //     }
-            //   }, 0);
-            //   return;
-            // } else if (selectedPartRef.current?.objectId === selectedId) {
-            //   return;
-            // }
-
-            if (objects.length > 1) {
-              return;
-            }
-
-            // If not in current group, proceed with group selection
-            const group = getPartGroup(selectedId);
-
-            if (group) {
-              // Get the current gender value directly from state
-              const gender = initialGender;
-
-              // Create selection map with current gender
-              const selectionMap = createSelectionMap(group.selectIds, gender);
-
-              const deselectionMap = {};
-
-              let hasFoundGroup = false;
-              // deselect all parts
-              Object.values(bodyPartGroups).forEach((group) => {
-                // Skip if current group contains the selected ID
-
-                if (
-                  !hasFoundGroup &&
-                  group.parts.some(
-                    (part) =>
-                      getGenderedId(part.objectId, gender) === selectedId
-                  )
-                ) {
-                  hasFoundGroup = true;
-                  return;
-                }
-
-                // Only deselect IDs that aren't in the selection map
-                const toDeselect = createSelectionMap(
-                  group.selectIds.filter(
-                    (id) => !selectionMap[getGenderedId(id, gender)]
-                  ),
-                  gender,
-                  false
-                );
-
-                Object.assign(deselectionMap, toDeselect);
-              });
-              if (gender === 'male') {
-                Object.assign(deselectionMap, {
-                  [getGenderedId('muscular_system-right_cremaster_ID', gender)]:
-                    false,
-                  [getGenderedId('muscular_system-left_cremaster_ID', gender)]:
-                    false,
-                });
-              }
-
-              // let zoomID;
-
-              const selectedIdNeutral = getNeutralId(selectedId);
-
-              const isPartOfPreviousGroup =
-                previousSelectedPartGroupRef.current?.parts.some(
-                  (part) => part.objectId === selectedIdNeutral
-                );
-
-              if (
-                previousSelectedPartGroupRef.current &&
-                !isDeselection &&
-                isPartOfPreviousGroup
-              ) {
-                const hasSelectedPartOfSelectedGroup =
-                  previousSelectedPartGroupRef.current.parts.some(
-                    (part) => part.objectId === selectedIdNeutral
-                  );
-
-                if (hasSelectedPartOfSelectedGroup) {
-                  human.send('scene.selectObjects', {
-                    [selectedId]: true,
-                    replace: false,
-                  });
-                  if (!isXrayEnabledRef.current) {
-                    human.send('scene.enableXray', () => {});
-                    isXrayEnabledRef.current = true;
-                  }
-                  // zoomID = selectedId;
-
-                  const part = group.parts.find(
-                    (part) => part.objectId === selectedIdNeutral
-                  );
-                  // Create a group part object
-                  const groupPart: AnatomyPart = {
-                    objectId: selectedId,
-                    name: part.name,
-                    description: `${part.name} area`,
-                    available: true,
-                    shown: true,
-                    selected: true,
-                    parent: '',
-                    children: [],
-                    group: group.name,
-                  };
-
-                  selectedPartRef.current = groupPart;
-                  setSelectedPart(groupPart);
-                  onZoom?.(selectedId);
-                }
-              } else {
-                // if (previousSelectedPartGroupRef.current) return;
-                // zoomID = getGenderedId(group.zoomId, gender);
-
-                // set timeout 50ms
-                setTimeout(() => {
-                  if (
-                    isDeselection &&
-                    isXrayEnabledRef.current &&
-                    selectedId === selectedPartRef.current.objectId &&
-                    previousSelectedPartGroupRef.current &&
-                    !selectedPartIdRef.current
-                  ) {
-                    human.send('scene.disableXray', () => {});
-                    isXrayEnabledRef.current = false;
-                    setSelectedPart(null);
-                    selectedPartRef.current = null;
-                    selectionEventRef.current = null;
-                    isXrayEnabledRef.current = false;
-                    onZoom?.(getGenderedId(group.zoomId, gender));
-                    return;
-                  }
-                }, 100);
-
-                setSelectedGroup(group);
-
-                human.send('scene.showObjects', {
-                  ...selectionMap,
-                  ...deselectionMap,
-                  replace: true,
-                });
-                human.send('scene.selectObjects', {
-                  [selectedId]: false,
-                });
-              }
-
-              // Set the selected part and parts
-
-              // Store the group in ref
-              previousSelectedPartGroupRef.current = group;
-              if (!selectedPartRef.current)
-                onZoom?.(getGenderedId(group.zoomId, gender));
-
-              // setTimeout(() => {
-              //   human.send('scene.enableXray', () => {});
-              // }, 500);
-            }
-
-            // Clear the stored event
-            selectionEventRef.current = null;
           });
 
           // Mark as ready and call onReady callback
@@ -423,6 +237,274 @@ export function useHumanAPI({
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+
+  function handleOnObjectSelectedExercise(event: any, human: HumanAPI) {
+    if (isResettingRef.current) {
+      if (isXrayEnabledRef.current) {
+        isXrayEnabledRef.current = false;
+      }
+      return;
+    }
+
+    if (!isXrayEnabledRef.current) {
+      human.send('scene.enableXray', () => {});
+      isXrayEnabledRef.current = true;
+    }
+
+    selectedPartIdRef.current = null;
+    const objects = Object.keys(event);
+
+    const selectedId = objects[0];
+    console.log('selectedId', selectedId);
+
+    // Check for deselection (all values are false)
+    const isDeselection = Object.values(event).every(
+      (value) => value === false
+    );
+
+    if (!isDeselection) selectedPartIdRef.current = selectedId;
+
+    if (objects.length > 1 && !isDeselection) {
+      return;
+    }
+
+    // If not in current group, proceed with group selection
+    const group = getPartGroup(selectedId);
+
+    if (group) {
+      // Get the current gender value directly from state
+      const gender = initialGender;
+
+      // Create selection map with current gender
+      const selectionMap = new Map<string, boolean>();
+
+      Object.assign(selectionMap, createSelectionMap(group.selectIds, gender));
+
+      // Use the appropriate groups based on the selection stage
+      const currentGroups = isSelectingExerciseRef.current
+        ? selectedExerciseGroupsRef.current
+        : selectedPainfulAreasRef.current;
+
+      for (const group of currentGroups) {
+        const map = createSelectionMap(group.selectIds, gender);
+        Object.assign(selectionMap, map);
+      }
+
+      const deselectionMap = {};
+
+      let hasFoundGroup = false;
+      // deselect all parts
+      Object.values(bodyPartGroups).forEach((group) => {
+        // Skip if current group contains the selected ID
+
+        if (
+          !hasFoundGroup &&
+          group.parts.some(
+            (part) => getGenderedId(part.objectId, gender) === selectedId
+          )
+        ) {
+          hasFoundGroup = true;
+          return;
+        }
+
+        // Only deselect IDs that aren't in the selection map
+        const toDeselect = createSelectionMap(
+          group.selectIds.filter(
+            (id) => !selectionMap[getGenderedId(id, gender)]
+          ),
+          gender,
+          false
+        );
+
+        Object.assign(deselectionMap, toDeselect);
+      });
+      if (gender === 'male') {
+        Object.assign(deselectionMap, {
+          [getGenderedId('muscular_system-right_cremaster_ID', gender)]: false,
+          [getGenderedId('muscular_system-left_cremaster_ID', gender)]: false,
+        });
+      }
+
+      setSelectedGroup(group, true);
+
+      human.send('scene.selectObjects', {
+        ...selectionMap,
+        [selectedId]: true,
+        ...deselectionMap,
+        // replace: true,
+      });
+      // human.send('scene.selectObjects', {
+      //   [selectedId]: false,
+      // });
+
+      // Store the group in ref
+      previousSelectedPartGroupRef.current = group;
+    }
+
+    // Clear the stored event
+    selectionEventRef.current = null;
+  }
+
+  function handleOnObjectSelectedRecovery(event: any, human: HumanAPI) {
+    if (isResettingRef.current) {
+      if (isXrayEnabledRef.current) {
+        isXrayEnabledRef.current = false;
+      }
+      return;
+    }
+    selectedPartIdRef.current = null;
+    const objects = Object.keys(event);
+
+    const selectedId = objects[0];
+
+    console.log('selectedId', event);
+
+    // Check for deselection (all values are false)
+    const isDeselection = Object.values(event).every(
+      (value) => value === false
+    );
+
+    if (!isDeselection) selectedPartIdRef.current = selectedId;
+
+    if (objects.length > 1) {
+      return;
+    }
+
+    // If not in current group, proceed with group selection
+    const group = getPartGroup(selectedId);
+
+    if (group) {
+      // Get the current gender value directly from state
+      const gender = initialGender;
+
+      // Create selection map with current gender
+      const selectionMap = createSelectionMap(group.selectIds, gender);
+
+      const deselectionMap = {};
+
+      let hasFoundGroup = false;
+      // deselect all parts
+      Object.values(bodyPartGroups).forEach((group) => {
+        // Skip if current group contains the selected ID
+
+        if (
+          !hasFoundGroup &&
+          group.parts.some(
+            (part) => getGenderedId(part.objectId, gender) === selectedId
+          )
+        ) {
+          hasFoundGroup = true;
+          return;
+        }
+
+        // Only deselect IDs that aren't in the selection map
+        const toDeselect = createSelectionMap(
+          group.selectIds.filter(
+            (id) => !selectionMap[getGenderedId(id, gender)]
+          ),
+          gender,
+          false
+        );
+
+        Object.assign(deselectionMap, toDeselect);
+      });
+      if (gender === 'male') {
+        Object.assign(deselectionMap, {
+          [getGenderedId('muscular_system-right_cremaster_ID', gender)]: false,
+          [getGenderedId('muscular_system-left_cremaster_ID', gender)]: false,
+        });
+      }
+
+      const selectedIdNeutral = getNeutralId(selectedId);
+
+      const isPartOfPreviousGroup =
+        previousSelectedPartGroupRef.current?.parts.some(
+          (part) => part.objectId === selectedIdNeutral
+        );
+
+      if (
+        previousSelectedPartGroupRef.current &&
+        !isDeselection &&
+        isPartOfPreviousGroup
+      ) {
+        const hasSelectedPartOfSelectedGroup =
+          previousSelectedPartGroupRef.current.parts.some(
+            (part) => part.objectId === selectedIdNeutral
+          );
+
+        if (hasSelectedPartOfSelectedGroup) {
+          human.send('scene.selectObjects', {
+            [selectedId]: true,
+            replace: false,
+          });
+          if (!isXrayEnabledRef.current) {
+            human.send('scene.enableXray', () => {});
+            isXrayEnabledRef.current = true;
+          }
+          // zoomID = selectedId;
+
+          const part = group.parts.find(
+            (part) => part.objectId === selectedIdNeutral
+          );
+          // Create a group part object
+          const groupPart: AnatomyPart = {
+            objectId: selectedId,
+            name: part.name,
+            description: `${part.name} area`,
+            available: true,
+            shown: true,
+            selected: true,
+            parent: '',
+            children: [],
+            group: group.name,
+          };
+
+          selectedPartRef.current = groupPart;
+          setSelectedPart(groupPart);
+          onZoom?.(selectedId);
+        }
+      } else {
+        // set timeout 50ms
+        setTimeout(() => {
+          if (
+            isDeselection &&
+            isXrayEnabledRef.current &&
+            selectedId === selectedPartRef.current.objectId &&
+            previousSelectedPartGroupRef.current &&
+            !selectedPartIdRef.current
+          ) {
+            human.send('scene.disableXray', () => {});
+            isXrayEnabledRef.current = false;
+            setSelectedPart(null);
+            selectedPartRef.current = null;
+            selectionEventRef.current = null;
+            isXrayEnabledRef.current = false;
+            onZoom?.(getGenderedId(group.zoomId, gender));
+            return;
+          }
+        }, 100);
+
+        setSelectedGroup(group, true);
+
+        human.send('scene.showObjects', {
+          ...selectionMap,
+          ...deselectionMap,
+          replace: true,
+        });
+        human.send('scene.selectObjects', {
+          [selectedId]: false,
+        });
+      }
+
+      // Store the group in ref
+      previousSelectedPartGroupRef.current = group;
+      if (!selectedPartRef.current)
+        onZoom?.(getGenderedId(group.zoomId, gender));
+    }
+
+    // Clear the stored event
+    selectionEventRef.current = null;
+  }
 
   return {
     humanRef,

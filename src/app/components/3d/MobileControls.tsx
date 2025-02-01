@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import {
   useState,
@@ -6,21 +6,23 @@ import {
   useRef,
   RefAttributes,
   ComponentType,
-} from "react";
-import { BottomSheet, BottomSheetRef } from "react-spring-bottom-sheet";
-import type { BottomSheetProps } from "react-spring-bottom-sheet";
-import "react-spring-bottom-sheet/dist/style.css";
-import { DiagnosisAssistantResponse, Gender, Question } from "@/app/types";
-import { ChatMessages } from "../ui/ChatMessages";
-import { usePartChat } from "@/app/hooks/usePartChat";
-import { BodyPartGroup } from "@/app/config/bodyPartGroups";
-import { BottomSheetHeader } from "./BottomSheetHeader";
-import { BottomSheetFooter } from "./BottomSheetFooter";
-import ExpandLessIcon from "@mui/icons-material/ExpandLess";
-import MobileControlButtons from "./MobileControlButtons";
-import { Steps } from "intro.js-react";
-import "intro.js/introjs.css";
-import { AnatomyPart } from "@/app/types/human";
+} from 'react';
+import { BottomSheet, BottomSheetRef } from 'react-spring-bottom-sheet';
+import type { BottomSheetProps } from 'react-spring-bottom-sheet';
+import 'react-spring-bottom-sheet/dist/style.css';
+import { DiagnosisAssistantResponse, Gender, Question } from '@/app/types';
+import { ChatMessages } from '../ui/ChatMessages';
+import { usePartChat } from '@/app/hooks/usePartChat';
+import { BodyPartGroup } from '@/app/config/bodyPartGroups';
+import { BottomSheetHeader } from './BottomSheetHeader';
+import { BottomSheetFooter } from './BottomSheetFooter';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import MobileControlButtons from './MobileControlButtons';
+import { Steps } from 'intro.js-react';
+import 'intro.js/introjs.css';
+import { AnatomyPart } from '@/app/types/human';
+import { ExerciseSelection } from '../ui/ExerciseSelection';
+import { useApp, ProgramIntention } from '@/app/context/AppContext';
 
 enum SnapPoint {
   MINIMIZED = 0, // minHeight (15% or 72px)
@@ -34,7 +36,7 @@ interface MobileControlsProps {
   isResetting: boolean;
   isReady: boolean;
   needsReset: boolean;
-  selectedGroup: BodyPartGroup | null;
+  selectedGroups: BodyPartGroup[];
   currentGender: Gender;
   selectedPart: AnatomyPart | null;
   onRotate: () => void;
@@ -56,7 +58,7 @@ export default function MobileControls({
   isResetting,
   isReady,
   needsReset,
-  selectedGroup,
+  selectedGroups,
   currentGender,
   selectedPart,
   onRotate,
@@ -78,10 +80,11 @@ export default function MobileControls({
   const contentRef = useRef<HTMLDivElement>(null);
   const [headerHeight, setHeaderHeight] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
-  const [controlsBottom, setControlsBottom] = useState("5rem");
-  const [message, setMessage] = useState("");
+  const [controlsBottom, setControlsBottom] = useState('5rem');
+  const [message, setMessage] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [bottomSheetTourEnabled, setBottomSheetTourEnabled] = useState(false);
+  const { intention } = useApp();
 
   const {
     messages,
@@ -93,56 +96,59 @@ export default function MobileControls({
     getGroupDisplayName,
     getPartDisplayName,
     assistantResponse,
-  } = usePartChat({ selectedPart: selectedPart, selectedGroup: selectedGroup });
+  } = usePartChat({
+    selectedPart: selectedPart,
+    selectedGroups: selectedGroups,
+  });
 
   const bottomSheetSteps = [
     {
-      element: "[data-rsbs-header] .flex-col",
+      element: '[data-rsbs-header] .flex-col',
       intro:
-        "Here you can see the selected body group, and right below it, the selected body part.",
-      position: "bottom",
+        'Here you can see the selected body group, and right below it, the selected body part.',
+      position: 'bottom',
     },
     {
-      element: "[data-rsbs-header] button",
-      intro: "Use this button to reset the chat and start over.",
-      position: "bottom",
+      element: '[data-rsbs-header] button',
+      intro: 'Use this button to reset the chat and start over.',
+      position: 'bottom',
     },
     {
-      element: "[data-rsbs-scroll]",
+      element: '[data-rsbs-scroll]',
       intro:
-        "Click on suggested questions to learn more about the selected body part.",
-      position: "bottom",
+        'Click on suggested questions to learn more about the selected body part.',
+      position: 'bottom',
     },
     {
-      element: "[data-rsbs-footer] textarea",
+      element: '[data-rsbs-footer] textarea',
       intro:
-        "Type your questions here to learn more about anatomy, exercises, and treatment options.",
-      position: "top",
+        'Type your questions here to learn more about anatomy, exercises, and treatment options.',
+      position: 'top',
     },
     {
-      element: ".mobile-controls-toggle",
-      intro: "Use these buttons to expand or minimize the chat area.",
-      position: "left",
+      element: '.mobile-controls-toggle',
+      intro: 'Use these buttons to expand or minimize the chat area.',
+      position: 'left',
     },
   ];
 
   const onBottomSheetTourExit = () => {
-    if (selectedGroup) {
+    if (selectedGroups.length > 0) {
       setBottomSheetTourEnabled(false);
-      localStorage.setItem("bottomSheetTourShown", "true");
+      localStorage.setItem('bottomSheetTourShown', 'true');
     }
   };
 
   useEffect(() => {
-    if (selectedGroup) {
-      const tourShown = localStorage.getItem("bottomSheetTourShown");
+    if (selectedGroups.length > 0) {
+      const tourShown = localStorage.getItem('bottomSheetTourShown');
       if (false) {
         setTimeout(() => {
           setBottomSheetTourEnabled(true);
         }, 1000);
       }
     }
-  }, [selectedGroup]);
+  }, [selectedGroups]);
 
   // Get the actual viewport height accounting for mobile browser UI
   const getViewportHeight = () => {
@@ -155,8 +161,8 @@ export default function MobileControls({
     };
 
     checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
   useEffect(() => {
@@ -164,11 +170,11 @@ export default function MobileControls({
       if (contentRef.current) {
         // Get the container that holds all content (messages and input)
         const contentContainer = contentRef.current.querySelector(
-          "#bottom-sheet-content"
+          '#bottom-sheet-content'
         );
 
         // Find the footer element in the bottom sheet
-        const footer = document.querySelector("[data-rsbs-footer]");
+        const footer = document.querySelector('[data-rsbs-footer]');
         const footerHeight = footer?.getBoundingClientRect().height ?? 0;
 
         if (contentContainer) {
@@ -189,7 +195,7 @@ export default function MobileControls({
     }
 
     // Also observe the footer for height changes
-    const footer = document.querySelector("[data-rsbs-footer]");
+    const footer = document.querySelector('[data-rsbs-footer]');
     if (footer) {
       resizeObserver.observe(footer);
     }
@@ -207,12 +213,12 @@ export default function MobileControls({
 
   // Handle body part selection and deselection
   useEffect(() => {
-    const hasContent = messages.length > 0 || followUpQuestions.length > 0;
+    const hasContent = messages.length > 0 || followUpQuestions.length > 0 ;
     const loadingComplete = !isLoading || messages.length === 0;
     // Only manipulate sheet height if user hasn't modified it
     if (!userModifiedSheetHeight) {
       if (
-        selectedGroup &&
+        selectedGroups.length > 0 &&
         loadingComplete &&
         hasContent &&
         getSnapPointIndex(currentSnapPoint) < 2
@@ -226,7 +232,11 @@ export default function MobileControls({
             sheetRef.current.snapTo(({ maxHeight }) => snapPoint);
           }, 200);
         }
-      } else if (selectedGroup && isLoading && messages.length === 1) {
+      } else if (
+        selectedGroups.length > 0 &&
+        isLoading &&
+        messages.length === 1
+      ) {
         // First message is loading, expand to third snap point
         if (sheetRef.current) {
           const snapPoints = getSnapPoints();
@@ -235,7 +245,7 @@ export default function MobileControls({
             sheetRef.current.snapTo(() => thirdPoint);
           }, 200);
         }
-      } else if (!selectedGroup && messages.length === 0) {
+      } else if (selectedGroups.length === 0 && messages.length === 0) {
         // Part was deselected
         setIsDragging(true);
         if (sheetRef.current) {
@@ -246,7 +256,7 @@ export default function MobileControls({
       }
     }
   }, [
-    selectedGroup,
+    selectedGroups,
     isLoading,
     messages,
     followUpQuestions,
@@ -266,8 +276,8 @@ export default function MobileControls({
     const observer = new MutationObserver((mutations) => {
       mutations.forEach((mutation) => {
         if (
-          mutation.type === "attributes" &&
-          mutation.attributeName === "style"
+          mutation.type === 'attributes' &&
+          mutation.attributeName === 'style'
         ) {
           const element = mutation.target as HTMLElement;
           const height = element.getBoundingClientRect().height;
@@ -280,7 +290,7 @@ export default function MobileControls({
       const element = sheetRef.current as unknown as HTMLElement;
       observer.observe(element, {
         attributes: true,
-        attributeFilter: ["style"],
+        attributeFilter: ['style'],
       });
     }
 
@@ -317,7 +327,7 @@ export default function MobileControls({
   const getSnapPoints = (): number[] => {
     const viewportHeight = getViewportHeight();
     const minHeight = Math.min(viewportHeight * 0.15, 72);
-    const hasContent = Boolean(selectedGroup) || messages.length > 0;
+    const hasContent = Boolean(selectedGroups.length > 0) || messages.length > 0;
 
     if (!hasContent) {
       return [minHeight];
@@ -407,10 +417,10 @@ export default function MobileControls({
   }, [assistantResponse]);
 
   useEffect(() => {
-    if (!selectedGroup && userModifiedSheetHeight) {
+    if (!selectedGroups.length && userModifiedSheetHeight) {
       setUserModifiedSheetHeight(false);
     }
-  }, [selectedGroup, userModifiedSheetHeight]);
+  }, [selectedGroups.length, userModifiedSheetHeight]);
 
   return (
     <>
@@ -424,11 +434,11 @@ export default function MobileControls({
           showProgress: true,
           hideNext: false,
           hidePrev: false,
-          nextLabel: "Next →",
-          prevLabel: "← Back",
-          doneLabel: "Got it",
-          tooltipClass: "bg-gray-900 text-white",
-          highlightClass: "intro-highlight",
+          nextLabel: 'Next →',
+          prevLabel: '← Back',
+          doneLabel: 'Got it',
+          tooltipClass: 'bg-gray-900 text-white',
+          highlightClass: 'intro-highlight',
           exitOnOverlayClick: false,
           exitOnEsc: true,
           scrollTo: false,
@@ -453,7 +463,7 @@ export default function MobileControls({
       {/* Expand/Collapse Buttons - Fixed to bottom right */}
       {isMobile &&
         sheetRef.current &&
-        (selectedGroup || messages.length > 0) && (
+        (selectedGroups.length > 0 || messages.length > 0) && (
           <div className="mobile-controls-toggle md:hidden fixed right-2 bottom-4 flex bg-transparent rounded-lg z-10">
             <button
               onClick={() => {
@@ -488,8 +498,8 @@ export default function MobileControls({
                   const snapPoints = getSnapPoints();
                   return !snapPoints.some((point) => point < currentHeight - 2);
                 })()
-                  ? "opacity-50 cursor-not-allowed"
-                  : "hover:bg-white/10"
+                  ? 'opacity-50 cursor-not-allowed'
+                  : 'hover:bg-white/10'
               }`}
               aria-label="Minimize"
             >
@@ -527,8 +537,8 @@ export default function MobileControls({
                   const snapPoints = getSnapPoints();
                   return !snapPoints.some((point) => point > currentHeight + 2);
                 })()
-                  ? "opacity-50 cursor-not-allowed"
-                  : "hover:bg-white/10"
+                  ? 'opacity-50 cursor-not-allowed'
+                  : 'hover:bg-white/10'
               }`}
               aria-label="Expand"
             >
@@ -540,8 +550,8 @@ export default function MobileControls({
       {/* Bottom Sheet */}
       <BottomSheetBase
         className={`!bg-gray-900 [&>*]:!bg-gray-900 relative h-[100dvh] ${
-          hideBottomSheet ? "pointer-events-none opacity-0" : ""
-        } ${bottomSheetTourEnabled ? "z-[999999]" : ""}`}
+          hideBottomSheet ? 'pointer-events-none opacity-0' : ''
+        } ${bottomSheetTourEnabled ? 'z-[999999]' : ''}`}
         ref={sheetRef}
         open={!hideBottomSheet}
         blocking={false}
@@ -559,7 +569,7 @@ export default function MobileControls({
         onSpringStart={(event) => {
           const source = (event as any).source;
           if (
-            source === "dragging" &&
+            source === 'dragging' &&
             currentSnapPoint !== SnapPoint.MINIMIZED
           ) {
             setUserModifiedSheetHeight(true);
@@ -628,7 +638,7 @@ export default function MobileControls({
           />
         }
         footer={
-          (selectedGroup || messages.length > 0) && (
+          (selectedGroups.length > 0 || messages.length > 0) && (
             <BottomSheetFooter
               message={message}
               isLoading={isLoading}
@@ -640,26 +650,31 @@ export default function MobileControls({
         }
       >
         <div ref={contentRef} className="flex-1 flex flex-col h-full">
-          {!selectedGroup && messages.length === 0 ? (
+          {!selectedGroups.length && messages.length === 0 ? (
             <div className="h-[72px]" />
+            
           ) : (
             /* Expanded Content */
             <div
               id="bottom-sheet-content"
               className="flex-1 flex px-4 py-2 flex-col"
             >
-              {/* Chat Messages */}
-              <div className="flex-1 min-h-0">
-                <ChatMessages
-                  messages={messages}
-                  isLoading={isLoading}
-                  followUpQuestions={followUpQuestions}
-                  onQuestionClick={handleQuestionSelect}
-                  part={selectedPart}
-                  messagesRef={messagesRef}
-                  isMobile={isMobile}
-                />
-              </div>
+              {/* Show either ChatMessages or ExerciseSelection based on intention */}
+              {intention === ProgramIntention.Exercise ? (
+                <ExerciseSelection isMobile={isMobile} />
+              ) : (
+                <div className="flex-1 min-h-0">
+                  <ChatMessages
+                    messages={messages}
+                    isLoading={isLoading}
+                    followUpQuestions={followUpQuestions}
+                    onQuestionClick={handleQuestionSelect}
+                    part={selectedPart}
+                    messagesRef={messagesRef}
+                    isMobile={isMobile}
+                  />
+                </div>
+              )}
             </div>
           )}
         </div>

@@ -1,6 +1,7 @@
 import { BottomSheetRef } from 'react-spring-bottom-sheet';
 import { ChatMessage } from '@/app/types';
 import { useEffect, useRef } from 'react';
+import { useApp, ProgramIntention } from '@/app/context/AppContext';
 
 interface BottomSheetHeaderProps {
   messages: ChatMessage[];
@@ -22,6 +23,15 @@ export function BottomSheetHeader({
   isMinimized,
 }: BottomSheetHeaderProps) {
   const headerRef = useRef<HTMLDivElement>(null);
+  const {
+    intention,
+    isSelectingExerciseBodyParts,
+    isSelectingRecoveryBodyParts,
+    selectedGroups,
+    selectedPart,
+    selectedExerciseGroups,
+    selectedPainfulAreas
+  } = useApp();
 
   useEffect(() => {
     if (headerRef.current && onHeightChange) {
@@ -37,6 +47,56 @@ export function BottomSheetHeader({
     }
   }, [onHeightChange]);
 
+  const getTitle = () => {
+    if (intention === ProgramIntention.None) {
+      return {
+        main: getGroupDisplayName(),
+        sub: getPartDisplayName(),
+      };
+    }
+
+    // For Recovery mode
+    if (intention === ProgramIntention.Recovery) {
+      // If we have a selected group (checking through selectedGroups)
+      if (selectedGroups.length > 0) {
+        return {
+          main: selectedGroups[0].name,
+          sub: selectedPart
+            ? selectedPart.name
+            : `Select a specific area of the ${selectedGroups[0].name.toLowerCase()} (optional)`,
+        };
+      }
+      return {
+        main: 'Select Recovery Area',
+        sub: 'Choose the body part you want to focus on for recovery',
+      };
+    }
+
+    // For Exercise mode
+    if (intention === ProgramIntention.Exercise) {
+      if (isSelectingExerciseBodyParts) {
+        // Initial exercise areas selection
+        return {
+          main: 'Select Exercise Areas',
+          sub: 'Choose the body parts you want to target',
+        };
+      } else {
+        // After clicking Next, show painful areas selection
+        return {
+          main: 'Select Painful Exercise Areas',
+          sub: 'Select the areas that are painful during exercise',
+        };
+      }
+    }
+
+    return {
+      main: getGroupDisplayName(),
+      sub: getPartDisplayName(),
+    };
+  };
+
+  const { main, sub } = getTitle();
+
   return (
     <div
       ref={headerRef}
@@ -44,10 +104,10 @@ export function BottomSheetHeader({
     >
       <div className="flex flex-col items-start text-left flex-1 mr-4 max-h-12 overflow-hidden">
         <h3 className="text-lg font-bold text-white text-left break-words w-full line-clamp-1">
-          {getGroupDisplayName()}
+          {main}
         </h3>
         <h2 className="text-sm text-white text-left break-words w-full line-clamp-1">
-          {getPartDisplayName()}
+          {sub}
         </h2>
       </div>
       <div className="flex items-center gap-2 flex-shrink-0 self-center">
@@ -55,7 +115,9 @@ export function BottomSheetHeader({
           <button
             onClick={resetChat}
             className={`text-white hover:text-white p-1 rounded-full hover:bg-gray-800 transition-colors ${
-              isLoading || messages.length === 0 ? 'opacity-50 cursor-not-allowed hover:bg-transparent' : ''
+              isLoading || messages.length === 0
+                ? 'opacity-50 cursor-not-allowed hover:bg-transparent'
+                : ''
             }`}
             aria-label="Reset Chat"
             disabled={isLoading || messages.length === 0}
