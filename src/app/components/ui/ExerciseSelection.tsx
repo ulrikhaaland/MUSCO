@@ -5,13 +5,54 @@ interface ExerciseSelectionProps {
   isMobile: boolean;
 }
 
+// Function to map anatomical groups to target areas
+function mapAnatomicalGroupToTargetArea(group: BodyPartGroup): string | null {
+  const groupId = group.id.toLowerCase();
+
+  // Map specific anatomical groups to target areas
+  if (groupId.includes('shoulder')) return 'Shoulders';
+  if (groupId.includes('upper_arm')) return 'Upper Arms';
+  if (groupId.includes('forearm')) return 'Forearms';
+  if (groupId.includes('chest')) return 'Chest';
+  if (groupId.includes('torso')) return 'Abdomen';
+  if (groupId.includes('back')) return 'Upper Back';
+  if (groupId.includes('pelvis')) return 'Lower Back';
+  if (groupId.includes('glutes')) return 'Glutes';
+  if (groupId.includes('thigh')) return 'Upper Legs';
+  if (groupId.includes('lower_leg')) return 'Lower Legs';
+  if (groupId.includes('neck')) return 'Neck';
+
+  return null;
+}
+
 export function ExerciseSelection({ isMobile }: ExerciseSelectionProps) {
-  const { 
-    selectedExerciseGroups, 
-    selectedPainfulAreas, 
+  const {
+    selectedExerciseGroups,
+    selectedPainfulAreas,
     isSelectingExerciseBodyParts,
-    completeExerciseSelection 
   } = useApp();
+
+  // Function to get unique target areas from selected groups
+  const getUniqueTargetAreas = (
+    groups: BodyPartGroup[]
+  ): { area: string; groups: BodyPartGroup[] }[] => {
+    const areaMap = new Map<string, BodyPartGroup[]>();
+
+    groups.forEach((group) => {
+      const area = mapAnatomicalGroupToTargetArea(group);
+      if (area) {
+        if (!areaMap.has(area)) {
+          areaMap.set(area, []);
+        }
+        areaMap.get(area)!.push(group);
+      }
+    });
+
+    return Array.from(areaMap.entries()).map(([area, groups]) => ({
+      area,
+      groups,
+    }));
+  };
 
   return (
     <div className="flex flex-col gap-4">
@@ -20,39 +61,21 @@ export function ExerciseSelection({ isMobile }: ExerciseSelectionProps) {
         <h3 className="text-lg font-semibold text-white">Target Areas</h3>
         {selectedExerciseGroups.length > 0 ? (
           <div className="flex flex-wrap gap-2">
-            {selectedExerciseGroups.map((group) => (
-              <div
-                key={group.id}
-                className="bg-gray-800 text-white px-3 py-1 rounded-full text-sm"
-              >
-                {group.name}
-              </div>
-            ))}
+            {getUniqueTargetAreas(selectedExerciseGroups).map(
+              ({ area, groups }) => (
+                <div
+                  key={area}
+                  className="bg-gray-800 text-white px-3 py-1 rounded-full text-sm"
+                >
+                  <span>{area}</span>
+                </div>
+              )
+            )}
           </div>
         ) : (
           <p className="text-gray-400 text-sm">No target areas selected</p>
         )}
       </div>
-
-      {/* Next Button for Target Areas */}
-      {isSelectingExerciseBodyParts && (
-        <div className="flex flex-col gap-2 items-center mt-4">
-          <p className="text-gray-300 text-sm text-center">
-            Select all the body parts you want to target during exercise
-          </p>
-          <button
-            onClick={completeExerciseSelection}
-            disabled={selectedExerciseGroups.length === 0}
-            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-              selectedExerciseGroups.length === 0
-                ? 'bg-gray-700 text-gray-400 cursor-not-allowed'
-                : 'bg-blue-600 text-white hover:bg-blue-700'
-            }`}
-          >
-            Next: Select Painful Areas
-          </button>
-        </div>
-      )}
 
       {/* Painful Areas Section - Only show if we're past target selection */}
       {!isSelectingExerciseBodyParts && (
@@ -65,7 +88,7 @@ export function ExerciseSelection({ isMobile }: ExerciseSelectionProps) {
                   key={group.id}
                   className="bg-red-900/50 text-white px-3 py-1 rounded-full text-sm"
                 >
-                  {group.name}
+                  <span>{group.name}</span>
                 </div>
               ))}
             </div>
@@ -76,4 +99,4 @@ export function ExerciseSelection({ isMobile }: ExerciseSelectionProps) {
       )}
     </div>
   );
-} 
+}

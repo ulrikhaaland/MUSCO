@@ -29,7 +29,16 @@ export default function HumanViewer({
   onGenderChange,
 }: HumanViewerProps) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
-  const { selectedGroups, selectedPart, setSelectedGroup, setSelectedPart, intention, resetSelectionState } = useApp();
+  const {
+    selectedGroups,
+    selectedExerciseGroupsRef,
+    selectedPart,
+    setSelectedGroup,
+    setSelectedPart,
+    intention,
+    selectedPainfulAreasRef,
+    resetSelectionState,
+  } = useApp();
   const lastSelectedIdRef = useRef<string | null>(null);
   const minChatWidth = 300;
   const maxChatWidth = 800;
@@ -186,36 +195,41 @@ export default function HumanViewer({
     setNeedsReset(false);
   };
 
-  const handleReset = useCallback(() => {
-    if (isResettingRef.current) return;
+  const handleReset = useCallback(
+    (shouldResetSelectionState?: boolean) => {
+      if (isResettingRef.current) return;
 
-    isResettingRef.current = true;
-    setIsResetting(true);
+      isResettingRef.current = true;
+      setIsResetting(true);
 
-    // Reset the context state
-    resetSelectionState();
+      // Reset the context state
+      if (shouldResetSelectionState ?? true) {
+        resetSelectionState();
+      }
 
-    // Use scene.reset to reset everything to initial state
-    if (humanRef.current) {
-      humanRef.current.send('scene.disableXray', () => {});
+      // Use scene.reset to reset everything to initial state
+      if (humanRef.current) {
+        humanRef.current.send('scene.disableXray', () => {});
 
-      setTimeout(() => {
-        humanRef.current?.send('scene.reset', () => {
-          // Reset all our state after the scene has been reset
-          resetValues();
+        setTimeout(() => {
+          humanRef.current?.send('scene.reset', () => {
+            // Reset all our state after the scene has been reset
+            resetValues();
 
-          // Clear reset state after a short delay to allow for animation
-          setTimeout(() => {
-            isResettingRef.current = false;
-            setIsResetting(false);
-          }, 500);
-        });
-      }, 100);
-    } else {
-      isResettingRef.current = false;
-      setIsResetting(false);
-    }
-  }, [isResettingRef, setNeedsReset, isReady, humanRef, resetSelectionState]);
+            // Clear reset state after a short delay to allow for animation
+            setTimeout(() => {
+              isResettingRef.current = false;
+              setIsResetting(false);
+            }, 500);
+          });
+        }, 100);
+      } else {
+        isResettingRef.current = false;
+        setIsResetting(false);
+      }
+    },
+    [isResettingRef, setNeedsReset, isReady, humanRef, resetSelectionState]
+  );
 
   // Update reset button state when parts are selected
   useEffect(() => {
@@ -361,6 +375,23 @@ export default function HumanViewer({
       setSelectedQuestion(question);
       setShowQuestionnaire(true);
     }
+  };
+
+  const handleAreasSelected = () => {
+    const newDiagnosis: DiagnosisAssistantResponse = {
+      diagnosis: 'No diagnosis, just an exercise program',
+      programType: ProgramType.Exercise,
+      painfulAreas: [
+        ...selectedPainfulAreasRef.current.map((group) => group.name),
+      ],
+      avoidActivities: [],
+      recoveryGoals: [],
+      timeFrame: '1 week',
+      followUpQuestions: [],
+      progressive: false,
+    };
+    setDiagnosis(newDiagnosis);
+    setShowQuestionnaire(true);
   };
 
   const handleBack = () => {
@@ -510,8 +541,10 @@ export default function HumanViewer({
               <span>{isRotating ? 'Rotating...' : 'Rotate Model'}</span>
             </button>
             <button
-              onClick={handleReset}
-              disabled={isResetting || (!needsReset && selectedGroups.length === 0)}
+              onClick={() => handleReset(true)}
+              disabled={
+                isResetting || (!needsReset && selectedGroups.length === 0)
+              }
               className={`bg-indigo-600/80 hover:bg-indigo-500/80 text-white px-4 py-2 rounded-lg shadow-lg transition-colors duration-200 flex items-center space-x-2 ${
                 isResetting || (!needsReset && selectedGroups.length === 0)
                   ? 'opacity-50 cursor-not-allowed'
@@ -580,11 +613,16 @@ export default function HumanViewer({
       {/* Mobile Controls */}
       {isMobile && (
         <MobileControls
+          onAreasSelected={handleAreasSelected}
           isRotating={isRotating}
           isResetting={isResetting}
           isReady={isReady}
           needsReset={needsReset}
-          selectedGroups={selectedGroups}
+          selectedGroups={
+            selectedGroups.length > 0
+              ? selectedGroups
+              : selectedExerciseGroupsRef.current
+          }
           currentGender={currentGender}
           selectedPart={selectedPart}
           onRotate={handleRotate}
@@ -608,7 +646,7 @@ export default function HumanViewer({
               onSubmit={handleQuestionnaireSubmit}
               generallyPainfulAreas={diagnosis?.painfulAreas ?? []}
               programType={diagnosis?.programType ?? ProgramType.Exercise}
-              targetAreas={[]}
+              targetAreas={selectedExerciseGroupsRef.current}
             />
           ) : (
             <ExerciseProgramContainer

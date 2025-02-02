@@ -58,18 +58,9 @@ export function useHumanAPI({
   previousSelectedPartGroupRef: MutableRefObject<BodyPartGroup | null>;
   isResettingRef: MutableRefObject<boolean>;
 } {
-  const humanRef = useRef<HumanAPI | null>(null);
-  const initialCameraRef = useRef<CameraPosition | null>(null);
-  const selectionEventRef = useRef<any>(null);
-  const previousSelectedPartGroupRef = useRef<BodyPartGroup | null>(null);
-  const selectedPartRef = useRef<AnatomyPart | null>(null);
-  const selectedPartIdRef = useRef<string | null>(null);
-  const isResettingRef = useRef<boolean>(false);
-  const isXrayEnabledRef = useRef<boolean>(false);
-  const [currentGender, setCurrentGender] = useState<Gender>(initialGender);
-  const [needsReset, setNeedsReset] = useState(false);
-  const [isReady, setIsReady] = useState(false);
   const {
+    humanRef,
+    setHumanRef,
     setSelectedGroup,
     setSelectedPart,
     intentionRef,
@@ -78,6 +69,23 @@ export function useHumanAPI({
     selectedGroupsRef,
     isSelectingExerciseRef,
   } = useApp();
+  const initialCameraRef = useRef<CameraPosition | null>(null);
+  const selectionEventRef = useRef<any>(null);
+  const previousSelectedPartGroupRef = useRef<BodyPartGroup | null>(null);
+  const selectedPartRef = useRef<AnatomyPart | null>(null);
+  const selectedPartIdRef = useRef<string | null>(null);
+  const isResettingRef = useRef<boolean>(false);
+  const isXrayEnabledRef = useRef<boolean>(false);
+  const canSelectRef = useRef<boolean>(true);
+
+  const [currentGender, setCurrentGender] = useState<Gender>(initialGender);
+  const [needsReset, setNeedsReset] = useState(false);
+  const [isReady, setIsReady] = useState(false);
+
+  // Add rate limiting for infinite loop detection
+  const callTimestamps: number[] = [];
+  const CALL_WINDOW = 1000; // 3 seconds window (increased from 2)
+  const MAX_CALLS = 5; // Maximum number of calls allowed in the window (increased from 5)
 
   // Function to check if camera has moved
   const checkCameraPosition = useCallback(() => {
@@ -140,8 +148,8 @@ export function useHumanAPI({
           },
         });
 
-        // Set the ref immediately
-        humanRef.current = human;
+        // Set the ref using context's setter
+        setHumanRef(human);
 
         // Set up event listeners
         human.on('human.ready', () => {
@@ -158,36 +166,7 @@ export function useHumanAPI({
             }
           });
 
-          // Add rate limiting for infinite loop detection
-          const callTimestamps: number[] = [];
-          const CALL_WINDOW = 1000; // 3 seconds window (increased from 2)
-          const MAX_CALLS = 5; // Maximum number of calls allowed in the window (increased from 5)
-
-          // Listen for object selection and enable xray mode
-          human.on('scene.objectsSelected', (event) => {
-            // Add timestamp for this call
-            const now = Date.now();
-            callTimestamps.push(now);
-
-            // Remove timestamps older than our window
-            while (
-              callTimestamps.length > 0 &&
-              callTimestamps[0] < now - CALL_WINDOW
-            ) {
-              callTimestamps.shift();
-            }
-
-            // Check for infinite loop
-            if (callTimestamps.length >= MAX_CALLS) {
-              return;
-            }
-
-            if (intentionRef.current === ProgramIntention.Exercise) {
-              handleOnObjectSelectedExercise(event, human);
-            } else {
-              handleOnObjectSelectedRecovery(event, human);
-            }
-          });
+          human.on('scene.objectsSelected', onObjectSelected);
 
           // Mark as ready and call onReady callback
           isInitialized = true;
@@ -238,7 +217,29 @@ export function useHumanAPI({
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  function handleOnObjectSelectedExercise(event: any, human: HumanAPI) {
+  function onObjectSelected(event: any) {
+    // Add timestamp for this call
+    const now = Date.now();
+    callTimestamps.push(now);
+
+    // Remove timestamps older than our window
+    while (callTimestamps.length > 0 && callTimestamps[0] < now - CALL_WINDOW) {
+      callTimestamps.shift();
+    }
+
+    // Check for infinite loop
+    if (callTimestamps.length >= MAX_CALLS) {
+      return;
+    }
+
+    if (intentionRef.current === ProgramIntention.Exercise) {
+      handleOnObjectSelectedExercise(event);
+    } else {
+      handleOnObjectSelectedRecovery(event);
+    }
+  }
+
+  function handleOnObjectSelectedExercise(event: any) {
     if (isResettingRef.current) {
       if (isXrayEnabledRef.current) {
         isXrayEnabledRef.current = false;
@@ -247,14 +248,14 @@ export function useHumanAPI({
     }
 
     if (!isXrayEnabledRef.current) {
-      human.send('scene.enableXray', () => {});
+      humanRef.current?.send('scene.enableXray', () => {});
       isXrayEnabledRef.current = true;
     }
 
     selectedPartIdRef.current = null;
     const objects = Object.keys(event);
 
-    const selectedId = objects[0];
+    const selectedId = objects[objects.length - 1];
     console.log('selectedId', selectedId);
 
     // Check for deselection (all values are false)
@@ -262,11 +263,12 @@ export function useHumanAPI({
       (value) => value === false
     );
 
-    if (!isDeselection) selectedPartIdRef.current = selectedId;
+    // if (isDeselection) {
+    //   canSelectRef.current = true;
+    //   return;
+    // }
 
-    if (objects.length > 1 && !isDeselection) {
-      return;
-    }
+    if (!isDeselection) selectedPartIdRef.current = selectedId;
 
     // If not in current group, proceed with group selection
     const group = getPartGroup(selectedId);
@@ -276,40 +278,25 @@ export function useHumanAPI({
       const gender = initialGender;
 
       // Create selection map with current gender
-      const selectionMap = new Map<string, boolean>();
-
-      Object.assign(selectionMap, createSelectionMap(group.selectIds, gender));
-
-      // Use the appropriate groups based on the selection stage
-      const currentGroups = isSelectingExerciseRef.current
-        ? selectedExerciseGroupsRef.current
-        : selectedPainfulAreasRef.current;
-
-      for (const group of currentGroups) {
-        const map = createSelectionMap(group.selectIds, gender);
-        Object.assign(selectionMap, map);
-      }
+      const selectionMap = getExerciseSelectionMap(group, gender);
 
       const deselectionMap = {};
 
-      let hasFoundGroup = false;
-      // deselect all parts
-      Object.values(bodyPartGroups).forEach((group) => {
+      for (const deSelectGroup of Object.values(bodyPartGroups)) {
         // Skip if current group contains the selected ID
 
         if (
-          !hasFoundGroup &&
-          group.parts.some(
-            (part) => getGenderedId(part.objectId, gender) === selectedId
-          )
+          selectedExerciseGroupsRef.current.find(
+            (g) => g.id === deSelectGroup.id
+          ) ||
+          deSelectGroup.id === group.id
         ) {
-          hasFoundGroup = true;
-          return;
+          continue;
         }
 
         // Only deselect IDs that aren't in the selection map
         const toDeselect = createSelectionMap(
-          group.selectIds.filter(
+          deSelectGroup.selectIds.filter(
             (id) => !selectionMap[getGenderedId(id, gender)]
           ),
           gender,
@@ -317,7 +304,8 @@ export function useHumanAPI({
         );
 
         Object.assign(deselectionMap, toDeselect);
-      });
+      }
+
       if (gender === 'male') {
         Object.assign(deselectionMap, {
           [getGenderedId('muscular_system-right_cremaster_ID', gender)]: false,
@@ -325,14 +313,20 @@ export function useHumanAPI({
         });
       }
 
-      setSelectedGroup(group, true);
-
-      human.send('scene.selectObjects', {
+      const finalSelectMap = {
         ...selectionMap,
-        [selectedId]: true,
         ...deselectionMap,
         // replace: true,
-      });
+      };
+
+      if (!isDeselection) {
+        Object.assign(finalSelectMap, {
+          [selectedId]: true,
+        });
+      }
+
+      humanRef.current?.send('scene.selectObjects', finalSelectMap);
+      // humanRef.current?.send('scene.objectsSelected', onObjectSelected);
       // human.send('scene.selectObjects', {
       //   [selectedId]: false,
       // });
@@ -345,7 +339,80 @@ export function useHumanAPI({
     selectionEventRef.current = null;
   }
 
-  function handleOnObjectSelectedRecovery(event: any, human: HumanAPI) {
+  function getExerciseSelectionMap(
+    group: BodyPartGroup,
+    gender: Gender
+  ): Record<string, boolean> {
+    // Change to use a regular object instead of Map since we're dealing with plain objects
+    const selectionMap: Record<string, boolean> = {};
+
+    // Use the appropriate groups based on the selection stage
+    const currentGroups = [];
+    if (isSelectingExerciseRef.current) {
+      currentGroups.push(...selectedExerciseGroupsRef.current);
+    } else {
+      currentGroups.push(...selectedPainfulAreasRef.current);
+    }
+
+    currentGroups.push(group);
+
+    if (isSelectingExerciseRef.current) {
+      const hasShoulder = currentGroups.find((group) =>
+        group.id.includes('shoulder')
+      );
+      if (hasShoulder) {
+        currentGroups.push(bodyPartGroups.leftShoulder);
+        currentGroups.push(bodyPartGroups.rightShoulder);
+      }
+
+      const hasUpperArm = currentGroups.find((group) =>
+        group.id.includes('upper_arm')
+      );
+      if (hasUpperArm) {
+        currentGroups.push(bodyPartGroups.leftUpperArm);
+        currentGroups.push(bodyPartGroups.rightUpperArm);
+      }
+
+      const hasLowerArm = currentGroups.find((group) =>
+        group.id.includes('forearm')
+      );
+      if (hasLowerArm) {
+        currentGroups.push(bodyPartGroups.leftForearm);
+        currentGroups.push(bodyPartGroups.rightForearm);
+      }
+
+      const hasThigh = currentGroups.find((group) =>
+        group.id.includes('thigh')
+      );
+      if (hasThigh) {
+        currentGroups.push(bodyPartGroups.leftThigh);
+        currentGroups.push(bodyPartGroups.rightThigh);
+      }
+
+      const lowerLeg = currentGroups.find((group) =>
+        group.id.includes('lower_leg')
+      );
+      if (lowerLeg) {
+        currentGroups.push(bodyPartGroups.leftLowerLeg);
+        currentGroups.push(bodyPartGroups.rightLowerLeg);
+      }
+    }
+
+    // remove duplicates
+    const uniqueGroups = [...new Set(currentGroups)];
+
+    for (const group of uniqueGroups) {
+      if (!selectedGroupsRef.current.find((g) => g.id === group.id)) {
+        setSelectedGroup(group, true);
+      }
+      const map = createSelectionMap(group.selectIds, gender);
+      Object.assign(selectionMap, map);
+    }
+
+    return selectionMap;
+  }
+
+  function handleOnObjectSelectedRecovery(event: any) {
     if (isResettingRef.current) {
       if (isXrayEnabledRef.current) {
         isXrayEnabledRef.current = false;
@@ -433,12 +500,12 @@ export function useHumanAPI({
           );
 
         if (hasSelectedPartOfSelectedGroup) {
-          human.send('scene.selectObjects', {
+          humanRef.current?.send('scene.selectObjects', {
             [selectedId]: true,
             replace: false,
           });
           if (!isXrayEnabledRef.current) {
-            human.send('scene.enableXray', () => {});
+            humanRef.current?.send('scene.enableXray', () => {});
             isXrayEnabledRef.current = true;
           }
           // zoomID = selectedId;
@@ -473,7 +540,7 @@ export function useHumanAPI({
             previousSelectedPartGroupRef.current &&
             !selectedPartIdRef.current
           ) {
-            human.send('scene.disableXray', () => {});
+            humanRef.current?.send('scene.disableXray', () => {});
             isXrayEnabledRef.current = false;
             setSelectedPart(null);
             selectedPartRef.current = null;
@@ -486,12 +553,12 @@ export function useHumanAPI({
 
         setSelectedGroup(group, true);
 
-        human.send('scene.showObjects', {
+        humanRef.current?.send('scene.showObjects', {
           ...selectionMap,
           ...deselectionMap,
           replace: true,
         });
-        human.send('scene.selectObjects', {
+        humanRef.current?.send('scene.selectObjects', {
           [selectedId]: false,
         });
       }

@@ -10,8 +10,10 @@ import React, {
   useEffect,
   MutableRefObject,
 } from 'react';
-import { AnatomyPart } from '../types/human';
-import { BodyPartGroup } from '../config/bodyPartGroups';
+import { AnatomyPart, HumanAPI } from '../types/human';
+import { bodyPartGroups, BodyPartGroup } from '../config/bodyPartGroups';
+import { createSelectionMap, getGenderedId } from '../utils/anatomyHelpers';
+import { Gender } from '../types';
 
 export enum ProgramIntention {
   Exercise = 'exercise',
@@ -43,6 +45,9 @@ interface AppContextType {
     isObjectSelection?: boolean
   ) => void;
   setSelectedPart: (part: AnatomyPart | null) => void;
+  humanRef: MutableRefObject<HumanAPI | null>;
+  setHumanRef: (human: HumanAPI) => void;
+  deselectGroup: (group: BodyPartGroup) => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -63,6 +68,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   >([]);
   const [selectedGroups, setSelectedGroups] = useState<BodyPartGroup[]>([]);
   const [selectedPart, setSelectedPart] = useState<AnatomyPart | null>(null);
+  const humanRef = useRef<HumanAPI | null>(null);
 
   // Refs to track state in event handlers
   const intentionRef = useRef(intention);
@@ -265,6 +271,46 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setSelectedPart(part);
   }, []);
 
+  const setHumanRef = (human: HumanAPI) => {
+    humanRef.current = human;
+  };
+
+  const deselectGroup = useCallback((group: BodyPartGroup) => {
+    if (!humanRef.current) return;
+
+    // Get the current gender from the iframe's src attribute
+    const iframe = document.getElementById('myViewer') as HTMLIFrameElement;
+    const gender: Gender = iframe?.src.includes('5tOV') ? 'male' : 'female';
+    if (isSelectingExerciseRef.current) {
+      selectedExerciseGroupsRef.current =
+        selectedExerciseGroupsRef.current.filter((g) => g.id !== group.id);
+    } else {
+      selectedPainfulAreasRef.current = selectedPainfulAreasRef.current.filter(
+        (g) => g.id !== group.id
+      );
+    }
+    // Only deselect IDs that aren't in the selection map
+    const toDeselect = createSelectionMap(
+      group.selectIds.map((id) => getGenderedId(id, gender)),
+      gender,
+      false
+    );
+
+    // Add male-specific deselections
+    if (gender === 'male') {
+      Object.assign(toDeselect, {
+        [getGenderedId('muscular_system-right_cremaster_ID', gender)]: false,
+        [getGenderedId('muscular_system-left_cremaster_ID', gender)]: false,
+      });
+    }
+
+    // Send the deselection command
+    humanRef.current.send('scene.selectObjects', {
+      ...toDeselect,
+      // replace: true,
+    });
+  }, []);
+
   return (
     <AppContext.Provider
       value={{
@@ -288,6 +334,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
         selectedPartRef,
         setSelectedGroup: handleSetSelectedGroup,
         setSelectedPart: handleSetSelectedPart,
+        humanRef,
+        setHumanRef,
+        deselectGroup,
       }}
     >
       {children}

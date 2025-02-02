@@ -3,13 +3,14 @@
 import { useState, useEffect, useRef, ReactNode } from 'react';
 import { TopBar } from './TopBar';
 import { ExerciseQuestionnaireAnswers, ProgramType } from '@/app/shared/types';
+import { BodyPartGroup } from '@/app/config/bodyPartGroups';
 
 interface ExerciseQuestionnaireProps {
   onClose: () => void;
   onSubmit: (answers: ExerciseQuestionnaireAnswers) => void;
   generallyPainfulAreas: string[];
   programType: ProgramType;
-  targetAreas: string[];
+  targetAreas: BodyPartGroup[];
 }
 
 const ageRanges = [
@@ -72,16 +73,18 @@ const bodyRegions = ['Full Body', 'Upper Body', 'Lower Body'] as const;
 const targetBodyParts = [
   'Neck',
   'Shoulders',
+  'Upper Arms',
+  'Forearms',
   'Chest',
-  'Arms',
   'Abdomen',
-  'Back',
+  'Upper Back',
+  'Lower Back',
   'Glutes',
   'Upper Legs',
   'Lower Legs'
 ] as const;
 
-const upperBodyParts = ['Neck', 'Shoulders', 'Chest', 'Arms', 'Abdomen', 'Back'];
+const upperBodyParts = ['Neck', 'Shoulders', 'Upper Arms', 'Forearms', 'Chest', 'Abdomen', 'Upper Back', 'Lower Back'];
 const lowerBodyParts = ['Glutes', 'Upper Legs', 'Lower Legs'];
 
 interface ExerciseEnvironment {
@@ -228,6 +231,7 @@ export function ExerciseQuestionnaire({
   onSubmit,
   generallyPainfulAreas,
   programType,
+  targetAreas,
 }: ExerciseQuestionnaireProps) {
   // Normalize the incoming pain areas to lowercase for case-insensitive matching
   const normalizedPainAreas =
@@ -237,6 +241,27 @@ export function ExerciseQuestionnaire({
   const [editingField, setEditingField] = useState<
     keyof ExerciseQuestionnaireAnswers | null
   >(null);
+
+  const [selectedTargetAreas, setSelectedTargetAreas] = useState<typeof targetBodyParts[number][]>(() => {
+    // Initialize with preselected areas from targetAreas prop
+    const preselectedAreas = targetAreas.map(group => {
+      const groupId = group.id.toLowerCase();
+      // Map to exact string literals from targetBodyParts
+      if (groupId.includes('shoulder')) return 'Shoulders' as const;
+      if (groupId.includes('upper_arm')) return 'Upper Arms' as const;
+      if (groupId.includes('forearm')) return 'Forearms' as const;
+      if (groupId.includes('chest')) return 'Chest' as const;
+      if (groupId.includes('torso')) return 'Abdomen' as const;
+      if (groupId.includes('back')) return 'Upper Back' as const;
+      if (groupId.includes('pelvis')) return 'Lower Back' as const;
+      if (groupId.includes('glutes')) return 'Glutes' as const;
+      if (groupId.includes('thigh')) return 'Upper Legs' as const;
+      if (groupId.includes('lower_leg')) return 'Lower Legs' as const;
+      if (groupId.includes('neck')) return 'Neck' as const;
+      return null;
+    }).filter((area): area is typeof targetBodyParts[number] => area !== null);
+    return [...new Set(preselectedAreas)]; // Remove duplicates
+  });
 
   const [answers, setAnswers] = useState<ExerciseQuestionnaireAnswers>({
     age: '',
@@ -248,8 +273,16 @@ export function ExerciseQuestionnaire({
     exerciseModalities: '',
     exerciseEnvironments: '',
     workoutDuration: '',
-    targetAreas: [],
+    targetAreas: selectedTargetAreas,
   });
+
+  // Update answers when selectedTargetAreas changes
+  useEffect(() => {
+    setAnswers(prev => ({
+      ...prev,
+      targetAreas: selectedTargetAreas
+    }));
+  }, [selectedTargetAreas]);
 
   const handleEdit = (field: keyof ExerciseQuestionnaireAnswers) => {
     // Only set targetAreasReopened if:
@@ -588,7 +621,7 @@ export function ExerciseQuestionnaire({
           (answers.exerciseModalities === 'Strength' || answers.exerciseModalities === 'Both');
       case 'exerciseEnvironments':
         return programType === ProgramType.Exercise
-          ? (answers.exerciseModalities === 'Cardio' ? true : !!answers.targetAreas.length)
+          ? (answers.exerciseModalities === 'Cardio' ? true : !!answers.targetAreas.length && shouldShowQuestion('targetAreas'))
           : !!answers.thisYearsPlannedExerciseFrequency &&
               (answers.generallyPainfulAreas.length === 0 ||
                 answers.hasExercisePain === 'no' ||

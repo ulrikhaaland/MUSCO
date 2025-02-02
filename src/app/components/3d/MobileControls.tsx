@@ -23,6 +23,7 @@ import 'intro.js/introjs.css';
 import { AnatomyPart } from '@/app/types/human';
 import { ExerciseSelection } from '../ui/ExerciseSelection';
 import { useApp, ProgramIntention } from '@/app/context/AppContext';
+import { ExerciseFooter } from './ExerciseFooter';
 
 enum SnapPoint {
   MINIMIZED = 0, // minHeight (15% or 72px)
@@ -40,12 +41,13 @@ interface MobileControlsProps {
   currentGender: Gender;
   selectedPart: AnatomyPart | null;
   onRotate: () => void;
-  onReset: () => void;
+  onReset: (resetSelectionState?: boolean) => void;
   onSwitchModel: () => void;
   onHeightChange?: (height: number) => void;
   onQuestionClick?: (question: Question) => void;
   onDiagnosis: (response: DiagnosisAssistantResponse) => void;
   hideBottomSheet?: boolean;
+  onAreasSelected: () => void;
 }
 
 // Use BottomSheet directly
@@ -68,6 +70,7 @@ export default function MobileControls({
   onQuestionClick,
   onDiagnosis,
   hideBottomSheet,
+  onAreasSelected,
 }: MobileControlsProps) {
   const [isMobile, setIsMobile] = useState(false);
   const [contentHeight, setContentHeight] = useState(0);
@@ -84,7 +87,8 @@ export default function MobileControls({
   const [message, setMessage] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [bottomSheetTourEnabled, setBottomSheetTourEnabled] = useState(false);
-  const { intention } = useApp();
+  const { intention, selectedExerciseGroupsRef, isSelectingExerciseRef } =
+    useApp();
 
   const {
     messages,
@@ -213,12 +217,14 @@ export default function MobileControls({
 
   // Handle body part selection and deselection
   useEffect(() => {
-    const hasContent = messages.length > 0 || followUpQuestions.length > 0 ;
+    const hasContent = messages.length > 0 || followUpQuestions.length;
+
     const loadingComplete = !isLoading || messages.length === 0;
     // Only manipulate sheet height if user hasn't modified it
     if (!userModifiedSheetHeight) {
       if (
-        selectedGroups.length > 0 &&
+        (selectedGroups.length > 0 ||
+          selectedExerciseGroupsRef.current.length > 0) &&
         loadingComplete &&
         hasContent &&
         getSnapPointIndex(currentSnapPoint) < 2
@@ -327,7 +333,8 @@ export default function MobileControls({
   const getSnapPoints = (): number[] => {
     const viewportHeight = getViewportHeight();
     const minHeight = Math.min(viewportHeight * 0.15, 72);
-    const hasContent = Boolean(selectedGroups.length > 0) || messages.length > 0;
+    const hasContent =
+      Boolean(selectedGroups.length > 0) || messages.length > 0;
 
     if (!hasContent) {
       return [minHeight];
@@ -455,13 +462,14 @@ export default function MobileControls({
           currentGender={currentGender}
           controlsBottom={controlsBottom}
           onRotate={onRotate}
-          onReset={onReset}
+          onReset={() => onReset()}
           onSwitchModel={onSwitchModel}
         />
       )}
 
       {/* Expand/Collapse Buttons - Fixed to bottom right */}
       {isMobile &&
+        intention !== ProgramIntention.Exercise &&
         sheetRef.current &&
         (selectedGroups.length > 0 || messages.length > 0) && (
           <div className="mobile-controls-toggle md:hidden fixed right-2 bottom-4 flex bg-transparent rounded-lg z-10">
@@ -638,7 +646,10 @@ export default function MobileControls({
           />
         }
         footer={
-          (selectedGroups.length > 0 || messages.length > 0) && (
+          (selectedGroups.length > 0 || messages.length > 0) &&
+          (intention === ProgramIntention.Exercise ? (
+            <ExerciseFooter onReset={onReset} onAreasSelected={onAreasSelected} />
+          ) : (
             <BottomSheetFooter
               message={message}
               isLoading={isLoading}
@@ -646,13 +657,12 @@ export default function MobileControls({
               setMessage={setMessage}
               handleOptionClick={handleOptionClick}
             />
-          )
+          ))
         }
       >
         <div ref={contentRef} className="flex-1 flex flex-col h-full">
           {!selectedGroups.length && messages.length === 0 ? (
             <div className="h-[72px]" />
-            
           ) : (
             /* Expanded Content */
             <div

@@ -30,7 +30,7 @@ export function BottomSheetHeader({
     selectedGroups,
     selectedPart,
     selectedExerciseGroups,
-    selectedPainfulAreas
+    selectedPainfulAreas,
   } = useApp();
 
   useEffect(() => {
@@ -111,7 +111,7 @@ export function BottomSheetHeader({
         </h2>
       </div>
       <div className="flex items-center gap-2 flex-shrink-0 self-center">
-        {!isMinimized && (
+        {!isMinimized && intention !== ProgramIntention.Exercise && (
           <button
             onClick={resetChat}
             className={`text-white hover:text-white p-1 rounded-full hover:bg-gray-800 transition-colors ${
