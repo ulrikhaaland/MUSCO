@@ -1,17 +1,17 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from 'react';
 import {
   getOrCreateAssistant,
   createThread,
   sendMessage,
   generateFollowUp,
-} from "../api/assistant/assistant";
+} from '../api/assistant/assistant';
 import {
   ChatMessage,
   ChatPayload,
   Question,
   UserPreferences,
   DiagnosisAssistantResponse,
-} from "../types";
+} from '../types';
 
 export function useChat() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -24,7 +24,9 @@ export function useChat() {
     useState<DiagnosisAssistantResponse | null>(null);
   const threadIdRef = useRef<string | null>(null);
   const assistantIdRef = useRef<string | null>(null);
-  const messageQueueRef = useRef<{message: string; payload: Omit<ChatPayload, "message">}[]>([]);
+  const messageQueueRef = useRef<
+    { message: string; payload: Omit<ChatPayload, 'message'> }[]
+  >([]);
 
   useEffect(() => {
     async function initializeAssistant() {
@@ -33,7 +35,7 @@ export function useChat() {
         assistantIdRef.current = assistantId;
         threadIdRef.current = threadId;
       } catch (error) {
-        console.error("Error initializing assistant:", error);
+        console.error('Error initializing assistant:', error);
       }
     }
 
@@ -60,12 +62,12 @@ export function useChat() {
 
   const sendChatMessage = async (
     messageContent: string,
-    chatPayload: Omit<ChatPayload, "message">
+    chatPayload: Omit<ChatPayload, 'message'>
   ) => {
     // Create the message object
     const newMessage: ChatMessage = {
       id: `user-${Date.now()}`,
-      role: "user" as const,
+      role: 'user' as const,
       content: messageContent,
       timestamp: new Date(),
     };
@@ -76,7 +78,7 @@ export function useChat() {
       // Queue the message for processing after current response is marked complete
       messageQueueRef.current.push({
         message: messageContent,
-        payload: chatPayload
+        payload: chatPayload,
       });
       return;
     }
@@ -92,18 +94,18 @@ export function useChat() {
         message: messageContent,
       };
 
-      let accumulatedContent = "";
+      let accumulatedContent = '';
       let jsonDetected = false;
       let hasAssistantQuestions = false;
       let partialFollowUps: Question[] = [];
 
       // Send the message and handle streaming response
-      await sendMessage(threadIdRef.current ?? "", payload, (content) => {
+      await sendMessage(threadIdRef.current ?? '', payload, (content) => {
         if (content && !jsonDetected) {
           // Check if this chunk contains any JSON-related content
           if (
-            content.includes("```") ||
-            content.toLowerCase().includes("json {")
+            content.includes('```') ||
+            content.toLowerCase().includes('json {')
           ) {
             jsonDetected = true;
             // Split on either ``` or "json {"
@@ -113,7 +115,7 @@ export function useChat() {
             if (textContent) {
               setMessages((prev) => {
                 const lastMessage = prev[prev.length - 1];
-                if (lastMessage?.role === "assistant") {
+                if (lastMessage?.role === 'assistant') {
                   return [
                     ...prev.slice(0, -1),
                     {
@@ -129,7 +131,7 @@ export function useChat() {
                     id: `assistant-${Date.now()}-${Math.random()
                       .toString(36)
                       .slice(2, 7)}`,
-                    role: "assistant",
+                    role: 'assistant',
                     content: textContent,
                     timestamp: new Date(),
                   },
@@ -143,7 +145,7 @@ export function useChat() {
             // Normal text content, update messages
             setMessages((prev) => {
               const lastMessage = prev[prev.length - 1];
-              if (lastMessage?.role === "assistant") {
+              if (lastMessage?.role === 'assistant') {
                 return [
                   ...prev.slice(0, -1),
                   {
@@ -159,7 +161,7 @@ export function useChat() {
                   id: `assistant-${Date.now()}-${Math.random()
                     .toString(36)
                     .slice(2, 7)}`,
-                  role: "assistant",
+                  role: 'assistant',
                   content,
                   timestamp: new Date(),
                 },
@@ -181,13 +183,13 @@ export function useChat() {
             for (const questionMatch of questionMatches) {
               // Find the complete object containing this question
               const questionEndIndex = accumulatedContent.indexOf(
-                "}",
+                '}',
                 accumulatedContent.indexOf(questionMatch)
               );
               if (questionEndIndex !== -1) {
                 // Look backwards for the start of this object
                 const questionStartIndex = accumulatedContent.lastIndexOf(
-                  "{",
+                  '{',
                   accumulatedContent.indexOf(questionMatch)
                 );
                 if (questionStartIndex !== -1) {
@@ -202,7 +204,6 @@ export function useChat() {
                         (q) => q.question === question.question
                       )
                     ) {
-                      console.log("Found new question:", question);
                       partialFollowUps = [...partialFollowUps, question];
                       setFollowUpQuestions(partialFollowUps);
                       hasAssistantQuestions = true;
@@ -238,7 +239,7 @@ export function useChat() {
       //   }
       // }
     } catch (error) {
-      console.error("Error sending message:", error);
+      console.error('Error sending message:', error);
     } finally {
       setIsLoading(false);
       // Process next message in queue if any

@@ -11,6 +11,7 @@ interface ExerciseQuestionnaireProps {
   generallyPainfulAreas: string[];
   programType: ProgramType;
   targetAreas: BodyPartGroup[];
+  fullBody: boolean;
 }
 
 const ageRanges = [
@@ -43,30 +44,68 @@ const plannedExerciseFrequencyOptions = [
 
 // Original body parts for pain areas
 const painBodyParts = [
-  'neck',
-  'left shoulder',
-  'right shoulder',
-  'left upper arm',
-  'right upper arm',
-  'left elbow',
-  'right elbow',
-  'left forearm',
-  'right forearm',
-  'left hand',
-  'right hand',
-  'chest',
-  'torso',
-  'back',
-  'hip',
-  'right thigh',
-  'left thigh',
-  'left knee',
-  'right knee',
-  'left lower leg',
-  'right lower leg',
-  'left foot',
-  'right foot',
+  'Neck',
+  'Left Shoulder',
+  'Right Shoulder',
+  'Left Upper Arm',
+  'Right Upper Arm',
+  'Left Elbow',
+  'Right Elbow',
+  'Left Forearm',
+  'Right Forearm',
+  'Left Hand',
+  'Right Hand',
+  'Chest',
+  'Torso',
+  'Upper Back',
+  'Middle Back',
+  'Lower Back',
+  'Pelvis & Hip Region',
+  'Right Thigh',
+  'Left Thigh',
+  'Left Knee',
+  'Right Knee',
+  'Left Lower Leg',
+  'Right Lower Leg',
+  'Left Foot',
+  'Right Foot',
 ];
+
+// Map composite pain areas to their individual parts
+const compositeAreaMapping: { [key: string]: string[] } = {
+  'Upper & Middle Back': ['Upper Back', 'Middle Back'],
+  'Lower Back, Pelvis & Hip Region': ['Lower Back', 'Pelvis & Hip Region'],
+};
+
+// Function to expand composite areas into individual parts
+const expandPainAreas = (areas: string[]): string[] => {
+  const expandedAreas = new Set<string>();
+
+  areas.forEach((area) => {
+    // Convert to lowercase for comparison
+    const lowerArea = area.toLowerCase();
+    const lowerCompositeMapping: { [key: string]: string[] } = {};
+
+    // Create lowercase mapping for comparison
+    Object.entries(compositeAreaMapping).forEach(([key, value]) => {
+      lowerCompositeMapping[key.toLowerCase()] = value;
+    });
+
+    if (lowerArea in lowerCompositeMapping) {
+      lowerCompositeMapping[lowerArea].forEach((part) =>
+        expandedAreas.add(part)
+      );
+    } else {
+      // Find the matching pain body part with correct capitalization
+      const matchingPart = painBodyParts.find(
+        (part) => part.toLowerCase() === lowerArea
+      );
+      expandedAreas.add(matchingPart || area);
+    }
+  });
+
+  return Array.from(expandedAreas);
+};
 
 // Body parts for target areas
 const bodyRegions = ['Full Body', 'Upper Body', 'Lower Body'] as const;
@@ -81,10 +120,19 @@ const targetBodyParts = [
   'Lower Back',
   'Glutes',
   'Upper Legs',
-  'Lower Legs'
+  'Lower Legs',
 ] as const;
 
-const upperBodyParts = ['Neck', 'Shoulders', 'Upper Arms', 'Forearms', 'Chest', 'Abdomen', 'Upper Back', 'Lower Back'];
+const upperBodyParts = [
+  'Neck',
+  'Shoulders',
+  'Upper Arms',
+  'Forearms',
+  'Chest',
+  'Abdomen',
+  'Upper Back',
+  'Lower Back',
+];
 const lowerBodyParts = ['Glutes', 'Upper Legs', 'Lower Legs'];
 
 interface ExerciseEnvironment {
@@ -232,55 +280,64 @@ export function ExerciseQuestionnaire({
   generallyPainfulAreas,
   programType,
   targetAreas,
+  fullBody,
 }: ExerciseQuestionnaireProps) {
-  // Normalize the incoming pain areas to lowercase for case-insensitive matching
-  const normalizedPainAreas =
-    generallyPainfulAreas?.map((area) => area.toLowerCase()) || [];
+  // Normalize and expand the incoming pain areas while preserving proper capitalization
+  const normalizedPainAreas = expandPainAreas(generallyPainfulAreas || []);
 
   const [targetAreasReopened, setTargetAreasReopened] = useState(false);
   const [editingField, setEditingField] = useState<
     keyof ExerciseQuestionnaireAnswers | null
   >(null);
 
-  const [selectedTargetAreas, setSelectedTargetAreas] = useState<typeof targetBodyParts[number][]>(() => {
-    // Initialize with preselected areas from targetAreas prop
-    const preselectedAreas = targetAreas.map(group => {
-      const groupId = group.id.toLowerCase();
-      // Map to exact string literals from targetBodyParts
-      if (groupId.includes('shoulder')) return 'Shoulders' as const;
-      if (groupId.includes('upper_arm')) return 'Upper Arms' as const;
-      if (groupId.includes('forearm')) return 'Forearms' as const;
-      if (groupId.includes('chest')) return 'Chest' as const;
-      if (groupId.includes('torso')) return 'Abdomen' as const;
-      if (groupId.includes('back')) return 'Upper Back' as const;
-      if (groupId.includes('pelvis')) return 'Lower Back' as const;
-      if (groupId.includes('glutes')) return 'Glutes' as const;
-      if (groupId.includes('thigh')) return 'Upper Legs' as const;
-      if (groupId.includes('lower_leg')) return 'Lower Legs' as const;
-      if (groupId.includes('neck')) return 'Neck' as const;
-      return null;
-    }).filter((area): area is typeof targetBodyParts[number] => area !== null);
+  const [selectedTargetAreas, setSelectedTargetAreas] = useState<
+    (typeof targetBodyParts)[number][]
+  >(() => {
+    // If fullBody is true, return all target areas
+    if (fullBody) {
+      return [...targetBodyParts];
+    }
+
+    // Otherwise initialize with preselected areas from targetAreas prop
+    const preselectedAreas = targetAreas
+      .map((group) => {
+        const groupId = group.id.toLowerCase();
+        // Map to exact string literals from targetBodyParts
+        if (groupId.includes('shoulder')) return 'Shoulders' as const;
+        if (groupId.includes('upper_arm')) return 'Upper Arms' as const;
+        if (groupId.includes('forearm')) return 'Forearms' as const;
+        if (groupId.includes('chest')) return 'Chest' as const;
+        if (groupId.includes('torso')) return 'Abdomen' as const;
+        if (groupId.includes('back')) return 'Upper Back' as const;
+        if (groupId.includes('pelvis')) return 'Lower Back' as const;
+        if (groupId.includes('glutes')) return 'Glutes' as const;
+        if (groupId.includes('thigh')) return 'Upper Legs' as const;
+        if (groupId.includes('lower_leg')) return 'Lower Legs' as const;
+        if (groupId.includes('neck')) return 'Neck' as const;
+        return null;
+      })
+      .filter(
+        (area): area is (typeof targetBodyParts)[number] => area !== null
+      );
     return [...new Set(preselectedAreas)]; // Remove duplicates
   });
 
-  const [answers, setAnswers] = useState<ExerciseQuestionnaireAnswers>({
+  const [answers, setAnswers] = useState<ExerciseQuestionnaireAnswers>(() => ({
     age: '',
     lastYearsExerciseFrequency: '',
     thisYearsPlannedExerciseFrequency: '',
     generallyPainfulAreas: normalizedPainAreas,
-    hasExercisePain: normalizedPainAreas.length > 0 ? 'yes' : '',
-    painfulExerciseAreas: normalizedPainAreas,
     exerciseModalities: '',
     exerciseEnvironments: '',
     workoutDuration: '',
     targetAreas: selectedTargetAreas,
-  });
+  }));
 
   // Update answers when selectedTargetAreas changes
   useEffect(() => {
-    setAnswers(prev => ({
+    setAnswers((prev) => ({
       ...prev,
-      targetAreas: selectedTargetAreas
+      targetAreas: selectedTargetAreas,
     }));
   }, [selectedTargetAreas]);
 
@@ -289,18 +346,27 @@ export function ExerciseQuestionnaire({
     // 1. We're editing target areas
     // 2. We're not currently editing target areas
     // 3. We have already answered exercise environments (meaning it was collapsed)
-    if (field === 'targetAreas' && 
-        editingField !== 'targetAreas' && 
-        !!answers.exerciseEnvironments) {
+    if (
+      field === 'targetAreas' &&
+      editingField !== 'targetAreas' &&
+      !!answers.exerciseEnvironments
+    ) {
       setTargetAreasReopened(true);
     }
+
+    if (field === 'generallyPainfulAreas') {
+      if (answers.generallyPainfulAreas.length === 0) {
+        setAnswers((prev) => ({ ...prev, generallyPainfulAreas: [' '] }));
+      }
+    }
+
     setEditingField(field);
   };
 
   const shouldCollapseField = (field: keyof ExerciseQuestionnaireAnswers) => {
     // Special handling for targetAreas
     if (field === 'targetAreas') {
-        return !targetAreasReopened && !!answers.exerciseEnvironments;
+      return !targetAreasReopened && !!answers.exerciseEnvironments;
     }
 
     // For all other fields, keep the existing behavior
@@ -309,8 +375,6 @@ export function ExerciseQuestionnaire({
       'lastYearsExerciseFrequency',
       'thisYearsPlannedExerciseFrequency',
       'generallyPainfulAreas',
-      'hasExercisePain',
-      'painfulExerciseAreas',
       'exerciseModalities',
       'exerciseEnvironments',
       'workoutDuration',
@@ -330,7 +394,6 @@ export function ExerciseQuestionnaire({
   const lastYearRef = useRef<HTMLDivElement>(null);
   const plannedRef = useRef<HTMLDivElement>(null);
   const painAreasRef = useRef<HTMLDivElement>(null);
-  const exercisePainRef = useRef<HTMLDivElement>(null);
   const exerciseModalitiesRef = useRef<HTMLDivElement>(null);
   const exerciseEnvironmentRef = useRef<HTMLDivElement>(null);
   const workoutDurationRef = useRef<HTMLDivElement>(null);
@@ -348,7 +411,6 @@ export function ExerciseQuestionnaire({
       lastYearRef,
       plannedRef,
       painAreasRef,
-      exercisePainRef,
       exerciseModalitiesRef,
       exerciseEnvironmentRef,
       workoutDurationRef,
@@ -360,7 +422,6 @@ export function ExerciseQuestionnaire({
       'lastYearsExerciseFrequency',
       'thisYearsPlannedExerciseFrequency',
       'generallyPainfulAreas',
-      'hasExercisePain',
       'exerciseModalities',
       'exerciseEnvironments',
       'workoutDuration',
@@ -422,11 +483,10 @@ export function ExerciseQuestionnaire({
     value: string | number | string[],
     ref?: React.RefObject<HTMLDivElement>
   ) => {
-    // For pain areas and painful exercise areas, ensure values are lowercase
     const normalizedValue =
-      field === 'generallyPainfulAreas' || field === 'painfulExerciseAreas'
+      field === 'generallyPainfulAreas'
         ? Array.isArray(value)
-          ? value.map((v) => v.toLowerCase())
+          ? value
           : value
         : value;
 
@@ -435,10 +495,30 @@ export function ExerciseQuestionnaire({
       'age',
       'lastYearsExerciseFrequency',
       'thisYearsPlannedExerciseFrequency',
-      'hasExercisePain',
       'exerciseModalities',
       'workoutDuration',
     ];
+
+    // Auto-collapse for "No, I don&apos;t have any pain" selection (when generallyPainfulAreas is set to empty array)
+    if (
+      field === 'generallyPainfulAreas' &&
+      Array.isArray(value) &&
+      value.length === 0
+    ) {
+      setAnswers((prev) => ({
+        ...prev,
+        [field]: value,
+      }));
+      setEditingField(null);
+
+      // Schedule scrolling after state update
+      setTimeout(() => {
+        if (ref) {
+          scrollToNextUnansweredQuestion(ref, true);
+        }
+      }, 150);
+      return;
+    }
 
     if (
       singleChoiceFields.includes(field) &&
@@ -448,103 +528,88 @@ export function ExerciseQuestionnaire({
       return;
     }
 
-    // Clear editing state to minimize the question
-    setEditingField(null);
+    // Update state
+    setAnswers((prev) => ({
+      ...prev,
+      [field]: normalizedValue,
+    }));
 
-    // Update state and wait for it to be processed
-    setAnswers((prev) => {
-      const newAnswers = {
-        ...prev,
-        [field]: normalizedValue,
-        // Reset painful exercise areas if exercise pain is set to 'no'
-        ...(field === 'hasExercisePain' && value === 'no'
-          ? { painfulExerciseAreas: [] }
-          : {}),
-      };
+    // Only clear editing state for non-pain areas or when selecting "No, I don&apos;t have any pain"
+    if (
+      field !== 'generallyPainfulAreas' ||
+      (Array.isArray(normalizedValue) && normalizedValue.length === 0)
+    ) {
+      setEditingField(null);
+    }
 
-      // Schedule scrolling after state update
-      setTimeout(() => {
-        if (!ref) {
-          return;
+    // Schedule scrolling after state update
+    setTimeout(() => {
+      if (!ref) {
+        return;
+      }
+
+      // Check if this is the last question being answered
+      const isLastQuestion = field === 'workoutDuration';
+
+      // If it's the last question and we're setting a value, scroll to bottom
+      if (isLastQuestion && normalizedValue) {
+        if (formRef.current) {
+          formRef.current.scrollTo({
+            top: formRef.current.scrollHeight,
+            behavior: 'smooth',
+          });
         }
+        return;
+      }
 
-        // Check if this is the last question being answered
-        const isLastQuestion = field === 'workoutDuration';
-        
-        // If it's the last question and we're setting a value, scroll to bottom
-        if (isLastQuestion && value) {
-          if (formRef.current) {
-            formRef.current.scrollTo({
-              top: formRef.current.scrollHeight,
-              behavior: 'smooth',
-            });
-          }
-          return;
-        }
+      // Special case for exercise modalities
+      if (field === 'exerciseModalities') {
+        if (normalizedValue === 'Strength' || normalizedValue === 'Both') {
+          // Scroll to target areas
+          if (targetAreasRef.current) {
+            const formElement = formRef.current;
+            if (formElement) {
+              const formRect = formElement.getBoundingClientRect();
+              const elementRect =
+                targetAreasRef.current.getBoundingClientRect();
+              const relativeTop =
+                elementRect.top - formRect.top + formElement.scrollTop;
 
-        // Special case for exercise modalities
-        if (field === 'exerciseModalities') {
-          if (value === 'Strength' || value === 'Both') {
-            // Scroll to target areas
-            if (targetAreasRef.current) {
-              const formElement = formRef.current;
-              if (formElement) {
-                const formRect = formElement.getBoundingClientRect();
-                const elementRect = targetAreasRef.current.getBoundingClientRect();
-                const relativeTop =
-                  elementRect.top - formRect.top + formElement.scrollTop;
-
-                formElement.scrollTo({
-                  top: relativeTop - 60,
-                  behavior: 'smooth',
-                });
-              }
+              formElement.scrollTo({
+                top: relativeTop - 60,
+                behavior: 'smooth',
+              });
             }
-          } else {
-            // For Cardio, scroll to exercise environments
-            scrollToNextUnansweredQuestion(ref, true);
           }
-          return;
-        }
-
-        // Special case for target areas - only auto-scroll if selecting a body region
-        if (field === 'targetAreas' && Array.isArray(value)) {
-          const isFullBody = value.length === targetBodyParts.length;
-          const isUpperBody = 
-            upperBodyParts.every(part => value.includes(part)) && 
-            value.length === upperBodyParts.length;
-          const isLowerBody = 
-            lowerBodyParts.every(part => value.includes(part)) && 
-            value.length === lowerBodyParts.length;
-
-          if (isFullBody || isUpperBody || isLowerBody) {
-            scrollToNextUnansweredQuestion(ref, true);
-          }
-          return;
-        }
-
-        // Auto-scroll for single-choice fields
-        if (singleChoiceFields.includes(field)) {
+        } else {
+          // For Cardio, scroll to exercise environments
           scrollToNextUnansweredQuestion(ref, true);
-          return;
         }
+        return;
+      }
 
-        // Special case: auto-scroll when all painful exercise areas are selected
-        if (
-          field === 'painfulExerciseAreas' &&
-          Array.isArray(normalizedValue)
-        ) {
-          // If all generally painful areas have been selected as exercise pain areas
-          if (
-            normalizedValue.length === newAnswers.generallyPainfulAreas.length
-          ) {
-            scrollToNextUnansweredQuestion(ref, true);
-          }
+      // Special case for target areas - only auto-scroll if selecting a body region
+      if (field === 'targetAreas' && Array.isArray(normalizedValue)) {
+        const isFullBody = normalizedValue.length === targetBodyParts.length;
+        const isUpperBody =
+          upperBodyParts.every((part) => normalizedValue.includes(part)) &&
+          normalizedValue.length === upperBodyParts.length;
+        const isLowerBody =
+          lowerBodyParts.every((part) => normalizedValue.includes(part)) &&
+          normalizedValue.length === lowerBodyParts.length;
+
+        if (isFullBody || isUpperBody || isLowerBody) {
+          scrollToNextUnansweredQuestion(ref, true);
         }
-      }, 150);
+        return;
+      }
 
-      return newAnswers;
-    });
+      // Auto-scroll for single-choice fields
+      if (singleChoiceFields.includes(field)) {
+        scrollToNextUnansweredQuestion(ref, true);
+        return;
+      }
+    }, 150);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -559,74 +624,38 @@ export function ExerciseQuestionnaire({
   };
 
   const handleNoPainAreas = () => {
-    // If "No" is already selected (empty array and hasExercisePain is 'no'), unselect it
-    if (
-      answers.generallyPainfulAreas.length === 0 &&
-      answers.hasExercisePain === 'no'
-    ) {
-      setAnswers((prev) => ({
-        ...prev,
-        generallyPainfulAreas: [],
-        hasExercisePain: '',
-        painfulExerciseAreas: [],
-      }));
-    } else {
-      // Select "No" by clearing arrays and setting hasExercisePain to 'no'
-      setAnswers((prev) => ({
-        ...prev,
-        generallyPainfulAreas: [],
-        hasExercisePain: 'no',
-        painfulExerciseAreas: [],
-      }));
-      // Clear editing state to minimize the question
-      setEditingField(null);
-      // Auto-scroll to next question
-      setTimeout(() => scrollToNextUnansweredQuestion(painAreasRef), 150);
+    setAnswers((prev) => ({ ...prev, generallyPainfulAreas: [] }));
+    setEditingField(null);
+    if (painAreasRef.current) {
+      scrollToNextUnansweredQuestion(painAreasRef, true);
     }
   };
 
   const shouldShowQuestion = (field: keyof ExerciseQuestionnaireAnswers) => {
     switch (field) {
       case 'age':
-        return true; // Always show first question
+        return true;
       case 'lastYearsExerciseFrequency':
         return !!answers.age;
       case 'thisYearsPlannedExerciseFrequency':
         return !!answers.lastYearsExerciseFrequency;
       case 'generallyPainfulAreas':
         return !!answers.thisYearsPlannedExerciseFrequency;
-      case 'hasExercisePain':
-  return (
-          !!answers.thisYearsPlannedExerciseFrequency &&
-          answers.generallyPainfulAreas.length > 0
-        );
-      case 'painfulExerciseAreas':
-        return (
-          !!answers.thisYearsPlannedExerciseFrequency &&
-          answers.hasExercisePain === 'yes' &&
-          answers.generallyPainfulAreas.length > 0
-        );
       case 'exerciseModalities':
         return (
-          programType === ProgramType.Exercise &&
           !!answers.thisYearsPlannedExerciseFrequency &&
-          (answers.generallyPainfulAreas.length === 0 ||
-            answers.hasExercisePain === 'no' ||
-            (answers.hasExercisePain === 'yes' &&
-              answers.painfulExerciseAreas.length > 0))
+          (!!answers.generallyPainfulAreas ||
+            answers.generallyPainfulAreas.length === 0)
         );
       case 'targetAreas':
-        return programType === ProgramType.Exercise && 
-          !!answers.exerciseModalities && 
-          (answers.exerciseModalities === 'Strength' || answers.exerciseModalities === 'Both');
+        return (
+          programType === ProgramType.Exercise &&
+          !!answers.exerciseModalities &&
+          (answers.exerciseModalities === 'Strength' ||
+            answers.exerciseModalities === 'Both')
+        );
       case 'exerciseEnvironments':
-        return programType === ProgramType.Exercise
-          ? (answers.exerciseModalities === 'Cardio' ? true : !!answers.targetAreas.length && shouldShowQuestion('targetAreas'))
-          : !!answers.thisYearsPlannedExerciseFrequency &&
-              (answers.generallyPainfulAreas.length === 0 ||
-                answers.hasExercisePain === 'no' ||
-                (answers.hasExercisePain === 'yes' &&
-                  answers.painfulExerciseAreas.length > 0));
+        return !!answers.exerciseModalities;
       case 'workoutDuration':
         return !!answers.exerciseEnvironments;
       default:
@@ -669,17 +698,17 @@ export function ExerciseQuestionnaire({
               <h3 className="flex items-center text-lg font-semibold text-white mb-6">
                 <svg
                   className="w-6 h-6 mr-3 text-indigo-400 flex-shrink-0"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
                     d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-            />
-          </svg>
+                  />
+                </svg>
                 How old are you?
               </h3>
               {answers.age &&
@@ -688,30 +717,30 @@ export function ExerciseQuestionnaire({
                 renderSelectedAnswers(answers.age, () => handleEdit('age'))
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {ageRanges.map((range) => (
+                  {ageRanges.map((range) => (
                     <label key={range} className="relative flex items-center">
-                    <input
-                      type="radio"
-                      name="age"
-                      value={range}
-                      checked={answers.age === range}
+                      <input
+                        type="radio"
+                        name="age"
+                        value={range}
+                        checked={answers.age === range}
                         onChange={(e) =>
                           handleInputChange('age', e.target.value, ageRef)
                         }
                         className="peer sr-only"
-                      required
-                    />
+                        required
+                      />
                       <div className="w-full p-4 rounded-xl bg-gray-900/50 ring-1 ring-gray-700/30 text-gray-400 peer-checked:text-white peer-checked:bg-indigo-500/10 peer-checked:ring-indigo-500 cursor-pointer transition-all duration-200">
                         {range}
                       </div>
-                  </label>
-                ))}
-              </div>
+                    </label>
+                  ))}
+                </div>
               )}
             </div>
           </RevealOnScroll>
 
-            {/* Past Exercise Frequency */}
+          {/* Past Exercise Frequency */}
           {shouldShowQuestion('lastYearsExerciseFrequency') && (
             <RevealOnScroll>
               <div
@@ -733,7 +762,7 @@ export function ExerciseQuestionnaire({
                       d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
                     />
                   </svg>
-                How often have you exercised in the past year?
+                  How often have you exercised in the past year?
                 </h3>
                 {answers.lastYearsExerciseFrequency &&
                 editingField !== 'lastYearsExerciseFrequency' &&
@@ -744,19 +773,19 @@ export function ExerciseQuestionnaire({
                   )
                 ) : (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {exerciseFrequencyOptions.map((option) => (
+                    {exerciseFrequencyOptions.map((option) => (
                       <label
                         key={option}
                         className="relative flex items-center"
                       >
-                    <input
-                      type="radio"
+                        <input
+                          type="radio"
                           name="lastYearsExerciseFrequency"
-                      value={option}
+                          value={option}
                           checked={
                             answers.lastYearsExerciseFrequency === option
                           }
-                      onChange={(e) =>
+                          onChange={(e) =>
                             handleInputChange(
                               'lastYearsExerciseFrequency',
                               e.target.value,
@@ -764,20 +793,20 @@ export function ExerciseQuestionnaire({
                             )
                           }
                           className="peer sr-only"
-                      required
-                    />
+                          required
+                        />
                         <div className="w-full p-4 rounded-xl bg-gray-900/50 ring-1 ring-gray-700/30 text-gray-400 peer-checked:text-white peer-checked:bg-indigo-500/10 peer-checked:ring-indigo-500 cursor-pointer transition-all duration-200">
                           {option}
                         </div>
-                  </label>
-                ))}
-              </div>
+                      </label>
+                    ))}
+                  </div>
                 )}
-            </div>
+              </div>
             </RevealOnScroll>
           )}
 
-            {/* Planned Exercise Frequency */}
+          {/* Planned Exercise Frequency */}
           {shouldShowQuestion('thisYearsPlannedExerciseFrequency') && (
             <RevealOnScroll>
               <div
@@ -799,11 +828,9 @@ export function ExerciseQuestionnaire({
                       d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
                     />
                   </svg>
-                  {programType === ProgramType.Exercise ? (
-                    'How many days per week would you like to exercise?'
-                  ) : (
-                    'How many days per week would you like to focus on recovery?'
-                  )}
+                  {programType === ProgramType.Exercise
+                    ? 'How many days per week would you like to exercise?'
+                    : 'How many days per week would you like to focus on recovery?'}
                 </h3>
                 {answers.thisYearsPlannedExerciseFrequency &&
                 editingField !== 'thisYearsPlannedExerciseFrequency' &&
@@ -819,14 +846,14 @@ export function ExerciseQuestionnaire({
                         key={option}
                         className="relative flex items-center"
                       >
-                    <input
-                      type="radio"
+                        <input
+                          type="radio"
                           name="thisYearsPlannedExerciseFrequency"
-                      value={option}
+                          value={option}
                           checked={
                             answers.thisYearsPlannedExerciseFrequency === option
                           }
-                      onChange={(e) =>
+                          onChange={(e) =>
                             handleInputChange(
                               'thisYearsPlannedExerciseFrequency',
                               e.target.value,
@@ -834,20 +861,20 @@ export function ExerciseQuestionnaire({
                             )
                           }
                           className="peer sr-only"
-                      required
-                    />
+                          required
+                        />
                         <div className="w-full p-4 rounded-xl bg-gray-900/50 ring-1 ring-gray-700/30 text-gray-400 peer-checked:text-white peer-checked:bg-indigo-500/10 peer-checked:ring-indigo-500 cursor-pointer transition-all duration-200">
                           {option}
                         </div>
-                  </label>
-                ))}
-              </div>
+                      </label>
+                    ))}
+                  </div>
                 )}
-            </div>
+              </div>
             </RevealOnScroll>
           )}
 
-            {/* Pain Areas */}
+          {/* Pain Areas */}
           {shouldShowQuestion('generallyPainfulAreas') && (
             <RevealOnScroll>
               <div
@@ -871,21 +898,23 @@ export function ExerciseQuestionnaire({
                   </svg>
                   Do you have pain anywhere?
                 </h3>
-                {answers.generallyPainfulAreas.length === 0 &&
-                answers.hasExercisePain === 'no' &&
-                editingField !== 'generallyPainfulAreas' ? (
-                  renderSelectedAnswers("No, I don't have any pain", () =>
-                    handleEdit('generallyPainfulAreas')
+
+                {editingField !== 'generallyPainfulAreas' ||
+                answers.generallyPainfulAreas.length === 0 ? (
+                  renderSelectedAnswers(
+                    answers.generallyPainfulAreas.length === 0
+                      ? ["No, I don't have any pain"]
+                      : answers.generallyPainfulAreas,
+                    () => handleEdit('generallyPainfulAreas')
                   )
                 ) : (
                   <>
-                    <div className="mb-6">
+                    <div className="mb-4">
                       <button
                         type="button"
                         onClick={handleNoPainAreas}
                         className={`w-full p-4 rounded-xl ${
-                          answers.generallyPainfulAreas.length === 0 &&
-                          answers.hasExercisePain === 'no'
+                          answers.generallyPainfulAreas.length === 0
                             ? 'bg-red-500/10 ring-red-500 text-white'
                             : 'bg-gray-900/50 ring-gray-700/30 text-gray-400 hover:bg-gray-900/70'
                         } ring-1 transition-all duration-200 text-left`}
@@ -902,154 +931,39 @@ export function ExerciseQuestionnaire({
                           key={part}
                           className="relative flex items-center"
                         >
-                    <input
-                      type="checkbox"
-                      value={part}
-                            checked={answers.generallyPainfulAreas.includes(part)}
-                      onChange={(e) => {
-                        const newPainAreas = e.target.checked
+                          <input
+                            type="checkbox"
+                            value={part}
+                            checked={answers.generallyPainfulAreas.includes(
+                              part
+                            )}
+                            onChange={(e) => {
+                              const newPainAreas = e.target.checked
                                 ? [...answers.generallyPainfulAreas, part]
-                                : answers.generallyPainfulAreas.filter((p) => p !== part);
-                              handleInputChange('generallyPainfulAreas', newPainAreas);
+                                : answers.generallyPainfulAreas.filter(
+                                    (p) => p !== part
+                                  );
+                              handleInputChange(
+                                'generallyPainfulAreas',
+                                newPainAreas,
+                                painAreasRef
+                              );
                             }}
                             className="peer sr-only"
                           />
-                          <div className="w-full p-4 rounded-xl bg-gray-900/50 ring-1 ring-gray-700/30 text-gray-400 peer-checked:text-white peer-checked:bg-red-500/10 peer-checked:ring-red-500 cursor-pointer transition-all duration-200 capitalize">
+                          <div className="w-full p-4 rounded-xl bg-gray-900/50 ring-1 ring-gray-700/30 text-gray-400 peer-checked:text-white peer-checked:bg-red-500/10 peer-checked:ring-red-500 cursor-pointer transition-all duration-200">
                             {part}
                           </div>
-                  </label>
-                ))}
-              </div>
+                        </label>
+                      ))}
+                    </div>
                   </>
                 )}
-            </div>
-            </RevealOnScroll>
-          )}
-
-            {/* Exercise Pain */}
-          {shouldShowQuestion('hasExercisePain') && (
-            <RevealOnScroll>
-              <div
-                ref={exercisePainRef}
-                onClick={() => handleEdit('hasExercisePain')}
-                className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-8 shadow-xl ring-1 ring-gray-700/50"
-              >
-                <h3 className="flex items-center text-lg font-semibold text-white mb-6">
-                  <svg
-                    className="w-6 h-6 mr-3 text-yellow-400 flex-shrink-0"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                    />
-                  </svg>
-                  Do you experience pain in any of these areas when you
-                  exercise?
-                </h3>
-                {answers.hasExercisePain &&
-                editingField !== 'hasExercisePain' &&
-                shouldCollapseField('hasExercisePain') ? (
-                  renderSelectedAnswers(answers.hasExercisePain, () =>
-                    handleEdit('hasExercisePain')
-                  )
-                ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {['yes', 'no'].map((option) => (
-                      <label
-                        key={option}
-                        className="relative flex items-center"
-                      >
-                    <input
-                      type="radio"
-                          name="hasExercisePain"
-                      value={option}
-                          checked={answers.hasExercisePain === option}
-                      onChange={(e) =>
-                            handleInputChange(
-                              'hasExercisePain',
-                              e.target.value,
-                              exercisePainRef
-                            )
-                          }
-                          className="peer sr-only"
-                      required
-                    />
-                        <div className="w-full p-4 rounded-xl bg-gray-900/50 ring-1 ring-gray-700/30 text-gray-400 peer-checked:text-white peer-checked:bg-yellow-500/10 peer-checked:ring-yellow-500 cursor-pointer transition-all duration-200 capitalize">
-                          {option}
-                        </div>
-                  </label>
-                ))}
               </div>
-                )}
-            </div>
             </RevealOnScroll>
           )}
 
-            {/* Painful Exercise Areas */}
-          {shouldShowQuestion('painfulExerciseAreas') && (
-            <RevealOnScroll>
-              <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-8 shadow-xl ring-1 ring-gray-700/50">
-                <h3 className="flex items-center text-lg font-semibold text-white mb-6">
-                  <svg
-                    className="w-6 h-6 mr-3 text-yellow-400 flex-shrink-0"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                    />
-                  </svg>
-                    Which areas are painful when you exercise?
-                </h3>
-                <p className="text-gray-400 font-medium text-base mb-4">
-                  Select all that apply
-                </p>
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-                  {(answers.generallyPainfulAreas as string[]).map((part) => (
-                    <label key={part} className="relative flex items-center">
-                        <input
-                          type="checkbox"
-                          value={part}
-                          checked={(
-                            answers.painfulExerciseAreas as string[]
-                          ).includes(part)}
-                          onChange={(e) => {
-                            const newPainfulAreas = e.target.checked
-                              ? [
-                                  ...(answers.painfulExerciseAreas as string[]),
-                                  part,
-                                ]
-                            : (answers.painfulExerciseAreas as string[]).filter(
-                                (p) => p !== part
-                              );
-                            handleInputChange(
-                            'painfulExerciseAreas',
-                            newPainfulAreas,
-                            exercisePainRef
-                            );
-                          }}
-                        className="peer sr-only"
-                        />
-                      <div className="w-full p-4 rounded-xl bg-gray-900/50 ring-1 ring-gray-700/30 text-gray-400 peer-checked:text-white peer-checked:bg-yellow-500/10 peer-checked:ring-yellow-500 cursor-pointer transition-all duration-200 capitalize">
-                        {part}
-                      </div>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-            </RevealOnScroll>
-              )}
-
-            {/* Training Type */}
+          {/* Training Type */}
           {shouldShowQuestion('exerciseModalities') && (
             <RevealOnScroll>
               <div
@@ -1071,7 +985,7 @@ export function ExerciseQuestionnaire({
                       d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064"
                     />
                   </svg>
-                What type of training do you want to do?
+                  What type of training do you want to do?
                 </h3>
                 {answers.exerciseModalities &&
                 editingField !== 'exerciseModalities' &&
@@ -1086,12 +1000,12 @@ export function ExerciseQuestionnaire({
                         key={option}
                         className="relative flex items-center"
                       >
-                    <input
-                      type="radio"
+                        <input
+                          type="radio"
                           name="exerciseModalities"
-                      value={option}
+                          value={option}
                           checked={answers.exerciseModalities === option}
-                      onChange={(e) =>
+                          onChange={(e) =>
                             handleInputChange(
                               'exerciseModalities',
                               e.target.value,
@@ -1099,16 +1013,16 @@ export function ExerciseQuestionnaire({
                             )
                           }
                           className="peer sr-only"
-                      required
-                    />
+                          required
+                        />
                         <div className="w-full p-4 rounded-xl bg-gray-900/50 ring-1 ring-gray-700/30 text-gray-400 peer-checked:text-white peer-checked:bg-indigo-500/10 peer-checked:ring-indigo-500 cursor-pointer transition-all duration-200">
                           {option}
                         </div>
-                  </label>
-                ))}
-              </div>
+                      </label>
+                    ))}
+                  </div>
                 )}
-            </div>
+              </div>
             </RevealOnScroll>
           )}
 
@@ -1142,10 +1056,14 @@ export function ExerciseQuestionnaire({
                   renderSelectedAnswers(
                     answers.targetAreas.length === targetBodyParts.length
                       ? 'Full Body'
-                      : upperBodyParts.every(part => answers.targetAreas.includes(part)) && 
+                      : upperBodyParts.every((part) =>
+                          answers.targetAreas.includes(part)
+                        ) &&
                         answers.targetAreas.length === upperBodyParts.length
                       ? 'Upper Body'
-                      : lowerBodyParts.every(part => answers.targetAreas.includes(part)) && 
+                      : lowerBodyParts.every((part) =>
+                          answers.targetAreas.includes(part)
+                        ) &&
                         answers.targetAreas.length === lowerBodyParts.length
                       ? 'Lower Body'
                       : answers.targetAreas,
@@ -1156,20 +1074,30 @@ export function ExerciseQuestionnaire({
                     {/* Body Regions */}
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                       {bodyRegions.map((region) => (
-                        <label key={region} className="relative flex items-center">
+                        <label
+                          key={region}
+                          className="relative flex items-center"
+                        >
                           <input
                             type="radio"
                             name="bodyRegion"
                             value={region}
                             checked={
                               region === 'Full Body'
-                                ? answers.targetAreas.length === targetBodyParts.length
+                                ? answers.targetAreas.length ===
+                                  targetBodyParts.length
                                 : region === 'Upper Body'
-                                ? upperBodyParts.every(part => answers.targetAreas.includes(part)) &&
-                                  answers.targetAreas.length === upperBodyParts.length
+                                ? upperBodyParts.every((part) =>
+                                    answers.targetAreas.includes(part)
+                                  ) &&
+                                  answers.targetAreas.length ===
+                                    upperBodyParts.length
                                 : region === 'Lower Body'
-                                ? lowerBodyParts.every(part => answers.targetAreas.includes(part)) &&
-                                  answers.targetAreas.length === lowerBodyParts.length
+                                ? lowerBodyParts.every((part) =>
+                                    answers.targetAreas.includes(part)
+                                  ) &&
+                                  answers.targetAreas.length ===
+                                    lowerBodyParts.length
                                 : false
                             }
                             onChange={(e) => {
@@ -1182,7 +1110,10 @@ export function ExerciseQuestionnaire({
                                 } else if (region === 'Lower Body') {
                                   newTargetAreas = [...lowerBodyParts];
                                 }
-                                handleInputChange('targetAreas', newTargetAreas);
+                                handleInputChange(
+                                  'targetAreas',
+                                  newTargetAreas
+                                );
                               }
                             }}
                             className="peer sr-only"
@@ -1201,7 +1132,10 @@ export function ExerciseQuestionnaire({
                       </p>
                       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
                         {targetBodyParts.map((part) => (
-                          <label key={part} className="relative flex items-center">
+                          <label
+                            key={part}
+                            className="relative flex items-center"
+                          >
                             <input
                               type="checkbox"
                               value={part}
@@ -1209,8 +1143,13 @@ export function ExerciseQuestionnaire({
                               onChange={(e) => {
                                 const newTargetAreas = e.target.checked
                                   ? [...answers.targetAreas, part]
-                                  : answers.targetAreas.filter((p) => p !== part);
-                                handleInputChange('targetAreas', newTargetAreas);
+                                  : answers.targetAreas.filter(
+                                      (p) => p !== part
+                                    );
+                                handleInputChange(
+                                  'targetAreas',
+                                  newTargetAreas
+                                );
                               }}
                               className="peer sr-only"
                             />
@@ -1227,58 +1166,75 @@ export function ExerciseQuestionnaire({
             </RevealOnScroll>
           )}
 
-            {/* Training Location */}
-            {shouldShowQuestion('exerciseEnvironments') && (
-              <RevealOnScroll>
-                <div
-                  ref={exerciseEnvironmentRef}
-                  onClick={() => handleEdit('exerciseEnvironments')}
-                  className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-8 shadow-xl ring-1 ring-gray-700/50"
-                >
-                  <h3 className="flex items-center text-lg font-semibold text-white mb-6">
-                    <svg
-                      className="w-6 h-6 mr-3 text-indigo-400 flex-shrink-0"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-                      />
-                    </svg>
-                    {programType === ProgramType.Exercise ? 'Where do you prefer to exercise?' : 'Where do you prefer to do your recovery sessions?'}
-                  </h3>
-                  {answers.exerciseEnvironments && editingField !== 'exerciseEnvironments' && shouldCollapseField('exerciseEnvironments') ? (
-                    renderSelectedAnswers(answers.exerciseEnvironments, () => handleEdit('exerciseEnvironments'))
-                  ) : (
-            <div className="space-y-4">
-                      {exerciseEnvironments.map((environment) => (
-                        <label key={environment.name} className="relative flex items-center">
-                          <input
-                            type="radio"
-                            name="exerciseEnvironments"
-                            value={environment.name}
-                            checked={answers.exerciseEnvironments === environment.name}
-                            onChange={(e) => handleInputChange('exerciseEnvironments', e.target.value, exerciseEnvironmentRef)}
-                            className="peer sr-only"
-                            required
-                          />
-                          <div className="w-full p-4 rounded-xl bg-gray-900/50 ring-1 ring-gray-700/30 text-gray-400 peer-checked:text-white peer-checked:bg-indigo-500/10 peer-checked:ring-indigo-500 cursor-pointer transition-all duration-200">
-                            <div className="font-medium">{environment.name}</div>
-                            <div className="text-sm mt-1 text-gray-500 peer-checked:text-gray-300">
-                              {environment.description}
-                            </div>
+          {/* Training Location */}
+          {shouldShowQuestion('exerciseEnvironments') && (
+            <RevealOnScroll>
+              <div
+                ref={exerciseEnvironmentRef}
+                onClick={() => handleEdit('exerciseEnvironments')}
+                className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-8 shadow-xl ring-1 ring-gray-700/50"
+              >
+                <h3 className="flex items-center text-lg font-semibold text-white mb-6">
+                  <svg
+                    className="w-6 h-6 mr-3 text-indigo-400 flex-shrink-0"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                    />
+                  </svg>
+                  {programType === ProgramType.Exercise
+                    ? 'Where do you prefer to exercise?'
+                    : 'Where do you prefer to do your recovery sessions?'}
+                </h3>
+                {answers.exerciseEnvironments &&
+                editingField !== 'exerciseEnvironments' &&
+                shouldCollapseField('exerciseEnvironments') ? (
+                  renderSelectedAnswers(answers.exerciseEnvironments, () =>
+                    handleEdit('exerciseEnvironments')
+                  )
+                ) : (
+                  <div className="space-y-4">
+                    {exerciseEnvironments.map((environment) => (
+                      <label
+                        key={environment.name}
+                        className="relative flex items-center"
+                      >
+                        <input
+                          type="radio"
+                          name="exerciseEnvironments"
+                          value={environment.name}
+                          checked={
+                            answers.exerciseEnvironments === environment.name
+                          }
+                          onChange={(e) =>
+                            handleInputChange(
+                              'exerciseEnvironments',
+                              e.target.value,
+                              exerciseEnvironmentRef
+                            )
+                          }
+                          className="peer sr-only"
+                          required
+                        />
+                        <div className="w-full p-4 rounded-xl bg-gray-900/50 ring-1 ring-gray-700/30 text-gray-400 peer-checked:text-white peer-checked:bg-indigo-500/10 peer-checked:ring-indigo-500 cursor-pointer transition-all duration-200">
+                          <div className="font-medium">{environment.name}</div>
+                          <div className="text-sm mt-1 text-gray-500 peer-checked:text-gray-300">
+                            {environment.description}
                           </div>
-              </label>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </RevealOnScroll>
-            )}
+                        </div>
+                      </label>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </RevealOnScroll>
+          )}
 
           {/* Workout Duration */}
           {shouldShowQuestion('workoutDuration') && (
@@ -1302,11 +1258,9 @@ export function ExerciseQuestionnaire({
                       d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
                     />
                   </svg>
-                  {programType === ProgramType.Exercise ? (
-                    'How much time would you like to spend on each workout?'
-                  ) : (
-                    'How much time would you like to spend on each recovery session?'
-                  )}
+                  {programType === ProgramType.Exercise
+                    ? 'How much time would you like to spend on each workout?'
+                    : 'How much time would you like to spend on each recovery session?'}
                 </h3>
                 {answers.workoutDuration &&
                 editingField !== 'workoutDuration' &&
@@ -1321,12 +1275,12 @@ export function ExerciseQuestionnaire({
                         key={duration}
                         className="relative flex items-center"
                       >
-                    <input
-                      type="radio"
+                        <input
+                          type="radio"
                           name="workoutDuration"
                           value={duration}
                           checked={answers.workoutDuration === duration}
-                      onChange={(e) =>
+                          onChange={(e) =>
                             handleInputChange(
                               'workoutDuration',
                               e.target.value,
@@ -1334,16 +1288,16 @@ export function ExerciseQuestionnaire({
                             )
                           }
                           className="peer sr-only"
-                      required
-                    />
+                          required
+                        />
                         <div className="w-full p-4 rounded-xl bg-gray-900/50 ring-1 ring-gray-700/30 text-gray-400 peer-checked:text-white peer-checked:bg-indigo-500/10 peer-checked:ring-indigo-500 cursor-pointer transition-all duration-200">
                           {duration}
                         </div>
-                  </label>
-                ))}
-              </div>
+                      </label>
+                    ))}
+                  </div>
                 )}
-            </div>
+              </div>
             </RevealOnScroll>
           )}
 
@@ -1364,8 +1318,8 @@ export function ExerciseQuestionnaire({
               </button>
             </div>
           </RevealOnScroll>
-            </div>
-          </form>
+        </div>
+      </form>
     </div>
   );
 }

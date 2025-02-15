@@ -5,25 +5,25 @@ interface ExerciseFooterProps {
   onAreasSelected: () => void;
 }
 
-export function ExerciseFooter({ onReset, onAreasSelected }: ExerciseFooterProps) {
-  const { 
-    selectedExerciseGroups, 
+export function ExerciseFooter({
+  onReset,
+  onAreasSelected,
+}: ExerciseFooterProps) {
+  const {
+    selectedExerciseGroups,
     selectedPainfulAreas,
-    completeExerciseSelection, 
-    isSelectingExerciseBodyParts 
+    completeExerciseSelection,
+    isSelectingExerciseBodyParts,
+    fullBodyRef,
   } = useApp();
 
-  const buttonText = isSelectingExerciseBodyParts 
-    ? 'Continue to Painful Areas' 
+  const buttonText = isSelectingExerciseBodyParts
+    ? 'Continue to Painful Areas'
     : 'Create Exercise Program';
-
-  const isDisabled = isSelectingExerciseBodyParts 
-    ? selectedExerciseGroups.length === 0
-    : selectedExerciseGroups.length === 0;
 
   const handleClick = () => {
     if (isSelectingExerciseBodyParts) {
-      onReset(false);
+      onReset();
     } else {
       onAreasSelected();
     }
@@ -34,19 +34,12 @@ export function ExerciseFooter({ onReset, onAreasSelected }: ExerciseFooterProps
     <div className="px-4 py-3 border-t border-gray-800">
       <button
         onClick={handleClick}
-        disabled={isDisabled}
-        className={`
-          w-full px-6 py-3 rounded-xl font-medium text-base
-          shadow-lg transform transition-all duration-200
-          ${
-            isDisabled
-              ? 'bg-gray-700 text-gray-400 cursor-not-allowed opacity-50'
-              : 'bg-gradient-to-r from-blue-600 to-blue-500 text-white hover:from-blue-700 hover:to-blue-600 active:scale-[0.98] hover:shadow-xl'
-          }
-        `}
+        className={
+          'w-full px-6 py-3 rounded-xl font-medium text-base shadow-lg transform transition-all duration-200 bg-gradient-to-r from-blue-600 to-blue-500 text-white hover:from-blue-700 hover:to-blue-600 active:scale-[0.98] hover:shadow-xl'
+        }
       >
         {buttonText}
       </button>
     </div>
   );
-} 
+}

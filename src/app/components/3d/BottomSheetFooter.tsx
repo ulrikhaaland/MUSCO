@@ -25,6 +25,11 @@ export function BottomSheetFooter({
         asked: true,
       });
       setMessage('');
+      
+      // Reset textarea height
+      if (textareaRef.current) {
+        textareaRef.current.style.height = 'auto';
+      }
     }
   };
 

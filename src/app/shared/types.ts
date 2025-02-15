@@ -7,10 +7,6 @@ export interface ExerciseQuestionnaireAnswers {
   thisYearsPlannedExerciseFrequency: string;
   // The areas of the body that are generally painful, e.g. ['neck', 'left shoulder']
   generallyPainfulAreas: string[];
-  // Whether the user has exercise pain, e.g. 'yes'
-  hasExercisePain: 'yes' | 'no' | '';
-  // The areas of the body that are painful, e.g. ['neck', 'left shoulder']
-  painfulExerciseAreas?: string[];
   // The modalities of exercise the user prefers, e.g. 'strength'
   exerciseModalities?: string;
   // The environment of exercise the user has access to, e.g. 'gym'

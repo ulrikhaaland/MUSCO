@@ -34,6 +34,7 @@ interface AppContextType {
   selectedPainfulAreasRef: MutableRefObject<BodyPartGroup[]>;
   selectedGroups: BodyPartGroup[];
   selectedGroupsRef: MutableRefObject<BodyPartGroup[]>;
+  fullBodyRef: MutableRefObject<boolean>;
   completeExerciseSelection: () => void;
   completeRecoverySelection: () => void;
   resetSelectionState: () => void;
@@ -48,6 +49,7 @@ interface AppContextType {
   humanRef: MutableRefObject<HumanAPI | null>;
   setHumanRef: (human: HumanAPI) => void;
   deselectGroup: (group: BodyPartGroup) => void;
+  resetExerciseSelection: () => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -77,6 +79,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const selectedPainfulAreasRef = useRef(selectedPainfulAreas);
   const selectedGroupsRef = useRef(selectedGroups);
   const selectedPartRef = useRef(selectedPart);
+  const fullBodyRef = useRef(false);
 
   // Keep refs in sync with state
   useEffect(() => {
@@ -116,6 +119,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         console.log('Setting exercise selection mode');
         setIsSelectingExerciseBodyParts(true);
         isSelectingExerciseRef.current = true;
+        fullBodyRef.current = true;
+
         break;
       case ProgramIntention.Recovery:
         console.log('Setting recovery selection mode');
@@ -127,7 +132,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const completeExerciseSelection = useCallback(() => {
-    if (selectedExerciseGroups.length > 0) {
+    if (selectedExerciseGroups.length > 0 || fullBodyRef.current) {
       setIsSelectingExerciseBodyParts(false);
       isSelectingExerciseRef.current = false;
       // Clear the current visual selection state since we're moving to painful areas
@@ -139,10 +144,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setIsSelectingRecoveryBodyParts(false);
   }, []);
 
+  useEffect(() => {
+    setIsSelectingExerciseBodyParts(isSelectingExerciseRef.current);
+  }, [isSelectingExerciseRef.current]);
+
   const resetSelectionState = useCallback(() => {
     // Don't reset intention, only reset the current stage
     if (intention === ProgramIntention.Exercise) {
-      if (!isSelectingExerciseBodyParts) {
+      if (!isSelectingExerciseRef.current) {
         // If we're in the painful areas selection stage, only reset painful areas
         setSelectedPainfulAreas([]);
         selectedPainfulAreasRef.current = [];
@@ -151,6 +160,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
         setSelectedPart(null);
         selectedPartRef.current = null;
       } else {
+        // Reset all selections
+        setSelectedPainfulAreas([]);
+        selectedPainfulAreasRef.current = [];
         // If we're in the exercise areas selection stage, reset exercise areas
         setSelectedExerciseGroups([]);
         selectedExerciseGroupsRef.current = [];
@@ -158,6 +170,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         selectedGroupsRef.current = [];
         setSelectedPart(null);
         selectedPartRef.current = null;
+        fullBodyRef.current = true;
       }
     } else if (intention === ProgramIntention.Recovery) {
       // For recovery, just reset the current selection
@@ -181,7 +194,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setSelectedPart(null);
       selectedPartRef.current = null;
     }
-  }, [intention, isSelectingExerciseBodyParts]);
+  }, [intention, isSelectingExerciseRef.current]);
 
   // 3D model selection handlers
   const handleSetSelectedGroup = useCallback(
@@ -195,6 +208,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       if (!group) {
         setSelectedGroups([]);
         setSelectedPart(null);
+        if (isSelectingExerciseRef.current) fullBodyRef.current = true;
         return;
       }
 
@@ -216,6 +230,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
               exists && !isObjectSelection
                 ? prev.filter((g) => g.id !== group.id)
                 : [...prev, group];
+
+            // Set fullBody to false when we have selections
+            fullBodyRef.current = newGroups.length === 0;
 
             // Update selectedGroups to match exercise areas
             setSelectedGroups(newGroups);
@@ -311,6 +328,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
+  function restartExerciseSelection(): void {
+    isSelectingExerciseRef.current = true;
+    resetSelectionState();
+  }
+
   return (
     <AppContext.Provider
       value={{
@@ -326,6 +348,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         selectedPainfulAreasRef,
         selectedGroups,
         selectedGroupsRef,
+        fullBodyRef,
         completeExerciseSelection,
         completeRecoverySelection,
         resetSelectionState,
@@ -337,6 +360,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         humanRef,
         setHumanRef,
         deselectGroup,
+        resetExerciseSelection: restartExerciseSelection,
       }}
     >
       {children}

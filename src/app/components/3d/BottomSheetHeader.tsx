@@ -1,4 +1,3 @@
-import { BottomSheetRef } from 'react-spring-bottom-sheet';
 import { ChatMessage } from '@/app/types';
 import { useEffect, useRef } from 'react';
 import { useApp, ProgramIntention } from '@/app/context/AppContext';
@@ -111,16 +110,19 @@ export function BottomSheetHeader({
         </h2>
       </div>
       <div className="flex items-center gap-2 flex-shrink-0 self-center">
-        {!isMinimized && intention !== ProgramIntention.Exercise && (
+        {!isMinimized && (
           <button
             onClick={resetChat}
             className={`text-white hover:text-white p-1 rounded-full hover:bg-gray-800 transition-colors ${
-              isLoading || messages.length === 0
+              intention !== ProgramIntention.Exercise && (isLoading || messages.length === 0)
                 ? 'opacity-50 cursor-not-allowed hover:bg-transparent'
                 : ''
             }`}
             aria-label="Reset Chat"
-            disabled={isLoading || messages.length === 0}
+            disabled={
+              intention !== ProgramIntention.Exercise &&
+              (isLoading || messages.length === 0)
+            }
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"

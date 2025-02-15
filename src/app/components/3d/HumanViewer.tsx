@@ -38,6 +38,7 @@ export default function HumanViewer({
     intention,
     selectedPainfulAreasRef,
     resetSelectionState,
+    fullBodyRef,
   } = useApp();
   const lastSelectedIdRef = useRef<string | null>(null);
   const minChatWidth = 300;
@@ -203,29 +204,63 @@ export default function HumanViewer({
       setIsResetting(true);
 
       // Reset the context state
-      if (shouldResetSelectionState ?? true) {
+      if (shouldResetSelectionState == true) {
         resetSelectionState();
-      }
 
-      // Use scene.reset to reset everything to initial state
-      if (humanRef.current) {
-        humanRef.current.send('scene.disableXray', () => {});
+        // Use scene.reset to reset everything to initial state
+        if (humanRef.current) {
+          humanRef.current.send('scene.disableXray', () => {});
 
+          setTimeout(() => {
+            humanRef.current?.send('scene.reset', () => {
+              // Reset all our state after the scene has been reset
+
+              resetValues();
+
+              // Clear reset state after a short delay to allow for animation
+              setTimeout(() => {
+                isResettingRef.current = false;
+                setIsResetting(false);
+              }, 500);
+            });
+          }, 100);
+        } else {
+          isResettingRef.current = false;
+          setIsResetting(false);
+        }
+      } else if (shouldResetSelectionState == false) {
+        humanRef.current.send('camera.set', {
+          position: initialCameraRef.current?.position,
+          target: initialCameraRef.current?.target,
+          up: initialCameraRef.current?.up,
+          animate: true,
+        });
         setTimeout(() => {
-          humanRef.current?.send('scene.reset', () => {
-            // Reset all our state after the scene has been reset
-            resetValues();
-
-            // Clear reset state after a short delay to allow for animation
-            setTimeout(() => {
-              isResettingRef.current = false;
-              setIsResetting(false);
-            }, 500);
-          });
-        }, 100);
+          isResettingRef.current = false;
+          setIsResetting(false);
+        }, 500);
       } else {
-        isResettingRef.current = false;
-        setIsResetting(false);
+        // Use scene.reset to reset everything to initial state
+        if (humanRef.current) {
+          humanRef.current.send('scene.disableXray', () => {});
+
+          setTimeout(() => {
+            humanRef.current?.send('scene.reset', () => {
+              // Reset all our state after the scene has been reset
+
+              resetValues();
+
+              // Clear reset state after a short delay to allow for animation
+              setTimeout(() => {
+                isResettingRef.current = false;
+                setIsResetting(false);
+              }, 500);
+            });
+          }, 100);
+        } else {
+          isResettingRef.current = false;
+          setIsResetting(false);
+        }
       }
     },
     [isResettingRef, setNeedsReset, isReady, humanRef, resetSelectionState]
@@ -647,6 +682,7 @@ export default function HumanViewer({
               generallyPainfulAreas={diagnosis?.painfulAreas ?? []}
               programType={diagnosis?.programType ?? ProgramType.Exercise}
               targetAreas={selectedExerciseGroupsRef.current}
+              fullBody={fullBodyRef.current}
             />
           ) : (
             <ExerciseProgramContainer

@@ -30,12 +30,17 @@ export function ExerciseSelection({ isMobile }: ExerciseSelectionProps) {
     selectedExerciseGroups,
     selectedPainfulAreas,
     isSelectingExerciseBodyParts,
+    fullBodyRef,
   } = useApp();
 
   // Function to get unique target areas from selected groups
   const getUniqueTargetAreas = (
     groups: BodyPartGroup[]
   ): { area: string; groups: BodyPartGroup[] }[] => {
+    if (fullBodyRef.current) {
+      return [{ area: 'Full Body', groups: [] }];
+    }
+
     const areaMap = new Map<string, BodyPartGroup[]>();
 
     groups.forEach((group) => {
@@ -59,7 +64,7 @@ export function ExerciseSelection({ isMobile }: ExerciseSelectionProps) {
       {/* Target Areas Section */}
       <div className="flex flex-col gap-2">
         <h3 className="text-lg font-semibold text-white">Target Areas</h3>
-        {selectedExerciseGroups.length > 0 ? (
+        {selectedExerciseGroups.length > 0 || fullBodyRef.current ? (
           <div className="flex flex-wrap gap-2">
             {getUniqueTargetAreas(selectedExerciseGroups).map(
               ({ area, groups }) => (

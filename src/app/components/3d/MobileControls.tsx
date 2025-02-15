@@ -87,8 +87,12 @@ export default function MobileControls({
   const [message, setMessage] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [bottomSheetTourEnabled, setBottomSheetTourEnabled] = useState(false);
-  const { intention, selectedExerciseGroupsRef, isSelectingExerciseRef } =
-    useApp();
+  const {
+    intention,
+    selectedExerciseGroupsRef,
+    isSelectingExerciseRef,
+    fullBodyRef,
+  } = useApp();
 
   const {
     messages,
@@ -217,14 +221,18 @@ export default function MobileControls({
 
   // Handle body part selection and deselection
   useEffect(() => {
-    const hasContent = messages.length > 0 || followUpQuestions.length;
+    const hasContent =
+      messages.length > 0 ||
+      followUpQuestions.length > 0 ||
+      fullBodyRef.current;
 
     const loadingComplete = !isLoading || messages.length === 0;
     // Only manipulate sheet height if user hasn't modified it
     if (!userModifiedSheetHeight) {
       if (
         (selectedGroups.length > 0 ||
-          selectedExerciseGroupsRef.current.length > 0) &&
+          selectedExerciseGroupsRef.current.length > 0 ||
+          fullBodyRef.current) &&
         loadingComplete &&
         hasContent &&
         getSnapPointIndex(currentSnapPoint) < 2
@@ -334,7 +342,9 @@ export default function MobileControls({
     const viewportHeight = getViewportHeight();
     const minHeight = Math.min(viewportHeight * 0.15, 72);
     const hasContent =
-      Boolean(selectedGroups.length > 0) || messages.length > 0;
+      Boolean(selectedGroups.length > 0) ||
+      messages.length > 0 ||
+      fullBodyRef.current;
 
     if (!hasContent) {
       return [minHeight];
@@ -462,7 +472,7 @@ export default function MobileControls({
           currentGender={currentGender}
           controlsBottom={controlsBottom}
           onRotate={onRotate}
-          onReset={() => onReset()}
+          onReset={() => onReset(intention !== ProgramIntention.Exercise)}
           onSwitchModel={onSwitchModel}
         />
       )}
@@ -640,15 +650,27 @@ export default function MobileControls({
             isLoading={isLoading}
             getGroupDisplayName={getGroupDisplayName}
             getPartDisplayName={getPartDisplayName}
-            resetChat={resetChat}
+            resetChat={() => {
+              if (intention === ProgramIntention.Exercise) {
+                isSelectingExerciseRef.current = true;
+                onReset(true);
+              } else {
+                resetChat();
+              }
+            }}
             onHeightChange={setHeaderHeight}
             isMinimized={currentSnapPoint === SnapPoint.MINIMIZED}
           />
         }
         footer={
-          (selectedGroups.length > 0 || messages.length > 0) &&
+          (selectedGroups.length > 0 ||
+            messages.length > 0 ||
+            fullBodyRef.current) &&
           (intention === ProgramIntention.Exercise ? (
-            <ExerciseFooter onReset={onReset} onAreasSelected={onAreasSelected} />
+            <ExerciseFooter
+              onReset={onReset}
+              onAreasSelected={onAreasSelected}
+            />
           ) : (
             <BottomSheetFooter
               message={message}
@@ -661,7 +683,9 @@ export default function MobileControls({
         }
       >
         <div ref={contentRef} className="flex-1 flex flex-col h-full">
-          {!selectedGroups.length && messages.length === 0 ? (
+          {!selectedGroups.length &&
+          messages.length === 0 &&
+          !fullBodyRef.current ? (
             <div className="h-[72px]" />
           ) : (
             /* Expanded Content */
