@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { TopBar } from './TopBar';
 import { ProgramDayComponent } from './ProgramDayComponent';
 import { ProgramType } from '@/app/shared/types';
+import { Exercise, ProgramDay, ProgramWeek, AfterTimeFrame, ExerciseProgram } from '@/app/types/program';
 
 // Add styles to hide scrollbars while maintaining scroll functionality
 const scrollbarHideStyles = `
@@ -19,48 +20,6 @@ if (typeof document !== 'undefined') {
   const style = document.createElement('style');
   style.textContent = scrollbarHideStyles;
   document.head.appendChild(style);
-}
-
-export interface Exercise {
-  name: string;
-  description: string;
-  sets?: number;
-  repetitions?: number;
-  rest?: number;
-  modification?: string;
-  videoUrl?: string;
-  duration?: string;
-  precaution?: string;
-  warmup?: boolean;
-  instructions?: string;
-}
-
-export interface ProgramDay {
-  day: number;
-  description: string;
-  exercises: Exercise[];
-  isRestDay: boolean;
-  duration?: string;
-}
-
-export interface ProgramWeek {
-  week: number;
-  differenceReason?: string;
-  days: ProgramDay[];
-}
-
-export interface AfterTimeFrame {
-  expectedOutcome: string;
-  nextSteps: string;
-}
-
-export interface ExerciseProgram {
-  programOverview: string;
-  timeFrame: string;
-  timeFrameExplanation: string;
-  afterTimeFrame: AfterTimeFrame;
-  whatNotToDo: string;
-  program: ProgramWeek[];
 }
 
 interface ExerciseProgramPageProps {

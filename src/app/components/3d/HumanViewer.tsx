@@ -18,6 +18,9 @@ import { ExerciseProgramContainer } from '../ui/ExerciseProgramContainer';
 import { getGenderedId } from '@/app/utils/anatomyHelpers';
 import { ExerciseQuestionnaireAnswers, ProgramType } from '@/app/shared/types';
 import { useApp } from '@/app/context/AppContext';
+import { useAuth } from '@/app/context/AuthContext';
+import { useUser } from '@/app/context/UserContext';
+import { ExerciseProgram } from '@/app/types/program';
 
 interface HumanViewerProps {
   gender: Gender;
@@ -58,6 +61,8 @@ export default function HumanViewer({
   const [showLowerBackLabel, setShowLowerBackLabel] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [isResetting, setIsResetting] = useState(false);
+  const { user } = useAuth();
+  const { addProgram, programs, setPrograms } = useUser();
 
   useEffect(() => {
     const checkMobile = () => {
@@ -376,19 +381,16 @@ export default function HumanViewer({
   };
 
   const handleSelectLowerBack = () => {
-    setShowLowerBackLabel(false);
     humanRef.current.send('scene.selectObjects', {
       [getGenderedId(
         'connective_tissue-connective_tissue_of_pelvis_ID',
         gender
       )]: true,
     });
+    setShowLowerBackLabel(false);
   };
 
   const [showQuestionnaire, setShowQuestionnaire] = useState(false);
-  const [selectedQuestion, setSelectedQuestion] = useState<Question | null>(
-    null
-  );
 
   const handleQuestionClick = (question: Question) => {
     if (question.generate) {
@@ -407,7 +409,6 @@ export default function HumanViewer({
         };
         setDiagnosis(newDiagnosis);
       }
-      setSelectedQuestion(question);
       setShowQuestionnaire(true);
     }
   };
@@ -448,10 +449,31 @@ export default function HumanViewer({
     diagnosis.timeFrame = '1 week';
 
     try {
-      const program = await generateExerciseProgram(diagnosis, answers);
+      // First, store the answers and diagnosis in the user context
+      await addProgram({
+        diagnosis: { ...diagnosis },
+        answers: { ...answers },
+        createdAt: new Date(),
+      });
+
+      // Then generate the program, passing the user ID if authenticated
+      const program = await generateExerciseProgram(
+        diagnosis, 
+        answers,
+        user?.uid
+      );
+
       setExerciseProgram(program);
+
+      // Only update local state since Firestore was already updated in the backend
+      setPrograms(prev => prev.map(p => {
+        if (p.diagnosis === diagnosis && p.answers === answers) {
+          return { ...p, program };
+        }
+        return p;
+      }));
     } catch (error) {
-      console.error('Error generating exercise program:', error);
+      console.error('Error in questionnaire submission:', error);
     } finally {
       setIsGeneratingProgram(false);
     }
@@ -535,24 +557,28 @@ export default function HumanViewer({
             }}
           />
           {/* Custom Lower Back Label */}
-          {showLowerBackLabel && (
-            <div
-              className="absolute left-6 bottom-6 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-lg shadow-lg z-50 text-center flex items-center space-x-3"
-              style={{
-                animation: 'slideIn 0.3s ease-out, slideOut 0.3s ease-out 9.7s',
-              }}
-            >
-              <span className="text-sm font-medium text-gray-900">
-                Looking for lower back?
-              </span>
-              <button
-                onClick={handleSelectLowerBack}
-                className="bg-indigo-600 hover:bg-indigo-500 text-white text-sm px-3 py-1 rounded shadow-sm transition-colors duration-200"
+          {showLowerBackLabel &&
+            !selectedExerciseGroupsRef.current.find(
+              (group) => group.id === 'pelvis'
+            ) && (
+              <div
+                className="absolute left-6 bottom-6 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-lg shadow-lg z-50 text-center flex items-center space-x-3"
+                style={{
+                  animation:
+                    'slideIn 0.3s ease-out, slideOut 0.3s ease-out 9.7s',
+                }}
               >
-                Select
-              </button>
-            </div>
-          )}
+                <span className="text-sm font-medium text-gray-900">
+                  Looking for lower back?
+                </span>
+                <button
+                  onClick={handleSelectLowerBack}
+                  className="bg-indigo-600 hover:bg-indigo-500 text-white text-sm px-3 py-1 rounded shadow-sm transition-colors duration-200"
+                >
+                  Select
+                </button>
+              </div>
+            )}
         </div>
 
         {/* Controls - Desktop */}

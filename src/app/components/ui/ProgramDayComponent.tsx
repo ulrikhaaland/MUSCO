@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { Exercise, ProgramDay } from './ExerciseProgramPage';
+import { Exercise, ProgramDay } from '@/app/types/program';
 
 // Add instructions to Exercise type
 interface ExerciseWithInstructions extends Exercise {

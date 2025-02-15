@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react';
 import { ExerciseProgramPage } from './ExerciseProgramPage';
 import { ExerciseProgramCalendar } from './ExerciseProgramCalendar';
 import { searchYouTubeVideo } from '@/app/utils/youtube';
-import type { Exercise, ExerciseProgram } from './ExerciseProgramPage';
 import { ProgramType } from '@/app/shared/types';
+import { Exercise, ExerciseProgram } from '@/app/types/program';
 
 interface ExerciseProgramContainerProps {
   onBack: () => void;

@@ -2,6 +2,8 @@ import OpenAI from 'openai';
 import { ChatPayload, DiagnosisAssistantResponse } from '../../types';
 import { ExerciseQuestionnaireAnswers, ProgramType } from '@/app/shared/types';
 import endent from 'endent';
+import { db } from '@/app/firebase/config';
+import { collection, query, where, getDocs, updateDoc, serverTimestamp } from 'firebase/firestore';
 
 // Initialize OpenAI client
 const openai = new OpenAI({
@@ -272,6 +274,7 @@ export async function generateExerciseProgram(context: {
 export async function generateExerciseProgramWithModel(context: {
   diagnosisData: DiagnosisAssistantResponse;
   userInfo: ExerciseQuestionnaireAnswers;
+  userId?: string;
 }) {
   const prompt =
     context.diagnosisData.programType === ProgramType.Exercise
@@ -301,7 +304,37 @@ export async function generateExerciseProgramWithModel(context: {
       throw new Error('No response from OpenAI');
     }
 
-    return JSON.parse(response);
+    const program = JSON.parse(response);
+
+    // If we have a userId, update the program in Firestore
+    if (context.userId) {
+      try {
+        // Query for the program document that matches the diagnosis and answers
+        const programsRef = collection(db, 'programs');
+        const q = query(
+          programsRef,
+          where('userId', '==', context.userId),
+          where('diagnosis', '==', context.diagnosisData),
+          where('answers', '==', context.userInfo)
+        );
+        
+        const querySnapshot = await getDocs(q);
+        
+        // Update the first matching document with the generated program
+        if (!querySnapshot.empty) {
+          const docRef = querySnapshot.docs[0].ref;
+          await updateDoc(docRef, {
+            program,
+            updatedAt: serverTimestamp(),
+          });
+        }
+      } catch (error) {
+        console.error('Error saving program to Firestore:', error);
+        // Continue even if Firestore save fails - we don't want to block the program generation
+      }
+    }
+
+    return program;
   } catch (error) {
     console.error('Error generating exercise program:', error);
     throw new Error('Failed to generate exercise program');
@@ -340,8 +373,8 @@ Behavior Guidelines
 - UserInfo: This data provides additional context about the user's preferences and physical condition, allowing for further personalization. The key fields include:
 
   - Age: The user's age range (e.g., "20-30").
-  - Last Year’s Exercise Frequency: How often the user exercised in the past year (e.g., "1-2 times per week").
-  - This Year’s Planned Exercise Frequency: The user’s intended exercise frequency for the coming year (e.g., "2-3 times per week").
+  - Last Year's Exercise Frequency: How often the user exercised in the past year (e.g., "1-2 times per week").
+  - This Year's Planned Exercise Frequency: The user's intended exercise frequency for the coming year (e.g., "2-3 times per week").
   - Generally Painful Areas: Body areas where the user often experiences pain (e.g., ["neck", "left shoulder"]).
   - Exercise Pain: Whether the user experiences pain during exercise (e.g., "yes").
   - Painful Exercise Areas: Specific body areas that hurt during exercise (e.g., ["neck", "left shoulder"]).
@@ -363,7 +396,7 @@ Behavior Guidelines
   - Include a \`duration\` field instead, specifying the duration in minutes for the exercise.
   - Ensure the total program duration aligns with the user's preferred workout duration.
 
-- Incorporate sufficient exercises to match the user’s selected workout duration:
+- Incorporate sufficient exercises to match the user's selected workout duration:
 
   1. Calculate Total Duration Dynamically:
      - Use estimated times for each exercise type:
@@ -463,7 +496,7 @@ Behavior Guidelines
 
 - Incorporate modifications for users with specific restrictions or limitations.
 
-- Include enough exercises to satisfy the user’s preferred workout duration, considering transitions, warm-ups, and cool-downs.
+- Include enough exercises to satisfy the user's preferred workout duration, considering transitions, warm-ups, and cool-downs.
 
 3. Provide Clear Instructions and Program Overview
 
@@ -475,13 +508,13 @@ Behavior Guidelines
 - 4. Account for Painful Areas and Avoid Activities
 - Use the \`painfulAreas\` field to identify body parts to avoid stressing during exercises.
 - Use the \`avoidActivities\` field to skip exercises that involve potentially harmful movements.
-- Ensure that exercises are appropriate for the user’s condition and do not worsen existing pain.
+- Ensure that exercises are appropriate for the user's condition and do not worsen existing pain.
 
 5. Structure the Program
 
 - Provide a structured one-week program that contains daily workouts or rest sessions.
 - Clearly specify the activities for each day, ensuring a balance between workout intensity and rest.
-- Dynamically adjust the program to align with the user’s preferred workout duration.
+- Dynamically adjust the program to align with the user's preferred workout duration.
 - Ensure the program includes rest days to prevent overtraining and allow recovery.
 
  Example Structure:
@@ -517,13 +550,13 @@ _Note: This example structure is based on a single week._
 
   - "This program is designed for your goals. Focus on completing it this week while noting how each session feels. Your input will ensure that next week's program is even more effective. Let's get started on building a program tailored just for you."
 
-- The \`rest\` parameter must be expressed in seconds for each exercise and must always be a number.
+- The \`rest\` parameter must be expressed in seconds for each exercise and must always be a number.
 
 - Do not include rest, sets, or reps for exercises that don't incorporate these values, e.g., running.
 
-- The \`modification\` value should only be included when the user has an injury that implies a modification to the given exercise.
+- The \`modification\` value should only be included when the user has an injury that implies a modification to the given exercise.
 
-- For the exercise day, the \`duration\` parameter must be expressed in minutes for each day and must always be a number.
+- For the exercise day, the \`duration\` parameter must be expressed in minutes for each day and must always be a number.
  Sample JSON Object Structure of a 45-60 minutes full body program:
 
 - Please include 1-2 recovery exercises for each rest day. These are optional and should be low intensity, exercisable at home.
@@ -784,7 +817,7 @@ Behavior Guidelines
 
 2. Generate a Safe and Effective Program
 
-- Avoid movements or activities that could aggravate the user’s painful areas.
+- Avoid movements or activities that could aggravate the user's painful areas.
 - Incorporate modifications for users with specific restrictions or limitations.
 - Ensure that the program is structured over a suitable time frame (e.g., 4 weeks) to support recovery.
 
@@ -792,13 +825,13 @@ Behavior Guidelines
 
 - Include detailed instructions for each recovery activity to ensure the user knows how to perform them safely and effectively.
 - Provide alternatives or modifications for users who may find certain movements uncomfortable.
-- Provide a description/comment/overview at the start of the program to explain the purpose of the program and how it relates to the user’s diagnosis. This should include key goals (e.g., reducing pain, improving mobility) and any specific precautions the user should take.
+- Provide a description/comment/overview at the start of the program to explain the purpose of the program and how it relates to the user's diagnosis. This should include key goals (e.g., reducing pain, improving mobility) and any specific precautions the user should take.
 
 4. Account for Painful Areas and Avoid Activities
 
 - Use the \`painfulAreas\` field to identify body parts to avoid stressing during recovery routines.
 - Use the \`avoidActivities\` field to skip movements that involve potentially harmful actions.
-- Ensure that activities are appropriate for the user’s condition and do not worsen existing pain.
+- Ensure that activities are appropriate for the user's condition and do not worsen existing pain.
 
 5. Structure the Program Over Time
 
@@ -835,10 +868,10 @@ _Note: This example structure is based on a Monday-to-Sunday schedule._
 
   - Most Importantly
     - A week must always contain 7 days.
-  - If the \`progressive\` parameter equals true:
+  - If the \`progressive\` parameter equals true:
     - The number of weeks must always match the timeframe data.
     - Each week must show incremental progress (e.g., longer sessions or more advanced recovery techniques).
-  - If the \`progressive\` parameter equals false or null, only return a single week. This week will be repeated for the duration of the program.
+  - If the \`progressive\` parameter equals false or null, only return a single week. This week will be repeated for the duration of the program.
   - Days: A list of recovery routines or rest days.
   - DifferenceReason (optional): If a week differs from the previous one, include a string parameter explaining why (e.g., "Increased session duration for better mobility").
 
@@ -850,7 +883,7 @@ _Note: This example structure is based on a Monday-to-Sunday schedule._
 
 - Next Steps: What actions the user should take if their recovery is not progressing as expected (e.g., modify routines, consult a healthcare professional).
 
-- For the exercise day, the \`duration\` parameter must be expressed in minutes for each day and must always be a number.
+- For the exercise day, the \`duration\` parameter must be expressed in minutes for each day and must always be a number.
 
 #Sample JSON Object Structure:
 

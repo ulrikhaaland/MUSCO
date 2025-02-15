@@ -3,7 +3,7 @@ import type {
   ExerciseProgram,
   ProgramDay,
   Exercise,
-} from './ExerciseProgramPage';
+} from '@/app/types/program';
 import { TopBar } from './TopBar';
 import { ProgramDayComponent } from './ProgramDayComponent';
 

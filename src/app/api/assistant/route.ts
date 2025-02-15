@@ -108,8 +108,14 @@ export async function POST(request: Request) {
           );
         }
 
-        const program = await generateExerciseProgramWithModel(payload);
-        return NextResponse.json(program);
+        const program = await generateExerciseProgramWithModel({
+          diagnosisData: payload.diagnosisData,
+          userInfo: payload.userInfo,
+          userId: payload.userId,
+        });
+        return new Response(JSON.stringify(program), {
+          headers: { 'Content-Type': 'application/json' },
+        });
       }
 
       default:
