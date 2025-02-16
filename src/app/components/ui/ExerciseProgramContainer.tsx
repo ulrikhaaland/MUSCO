@@ -73,11 +73,11 @@ export function ExerciseProgramContainer({
 
   // Get current day's program on initial load
   useEffect(() => {
-    if (!program?.program) return;
+    if (!program?.program?.[0]?.days) return;
 
     const currentDate = new Date();
     const currentDayOfWeek = currentDate.getDay() || 7; // Convert Sunday (0) to 7
-    const currentWeek = program.program[0]; // Start with first week
+    const currentWeek = program.program[0]; // Always use first week
 
     if (currentWeek) {
       const currentDay = currentWeek.days.find(d => d.day === currentDayOfWeek);
@@ -89,48 +89,10 @@ export function ExerciseProgramContainer({
     }
   }, [program]);
 
-  // Function to parse timeframe string and get number of weeks
-  const parseTimeFrame = (timeFrame: string): number => {
-    const match = timeFrame.match(/(\d+)\s*weeks?/i);
-    return match ? parseInt(match[1], 10) : 1;
-  };
-
-  // Process program to duplicate weeks if needed
+  // Process program to handle single week
   useEffect(() => {
     if (!program) return;
-
-    const targetWeeks = parseTimeFrame(program.timeFrame || '1 week');
-    const currentWeeks = program.program.length;
-
-    if (currentWeeks < targetWeeks) {
-      let duplicatedWeeks;
-
-      if (currentWeeks === 1) {
-        // If there's only one week, duplicate it for all weeks
-        const firstWeek = program.program[0];
-        duplicatedWeeks = Array.from({ length: targetWeeks }, (_, index) => ({
-          ...firstWeek,
-          week: index + 1,
-        }));
-      } else {
-        // If there are multiple weeks but we need more, keep existing weeks and duplicate the last week
-        const lastWeek = program.program[currentWeeks - 1];
-        duplicatedWeeks = [
-          ...program.program,
-          ...Array.from({ length: targetWeeks - currentWeeks }, (_, index) => ({
-            ...lastWeek,
-            week: currentWeeks + index + 1,
-          })),
-        ];
-      }
-
-      setProcessedProgram({
-        ...program,
-        program: duplicatedWeeks,
-      });
-    } else {
-      setProcessedProgram(program);
-    }
+    setProcessedProgram(program);
   }, [program]);
 
   const handleVideoClick = async (exercise: Exercise) => {

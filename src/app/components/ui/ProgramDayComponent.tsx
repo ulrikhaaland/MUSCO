@@ -15,6 +15,7 @@ interface ProgramDayComponentProps {
   onVideoClick: (exercise: Exercise) => void;
   loadingVideoExercise?: string | null;
   compact?: boolean;
+  onClick?: () => void;
 }
 
 export function ProgramDayComponent({
@@ -26,9 +27,13 @@ export function ProgramDayComponent({
   onVideoClick,
   loadingVideoExercise,
   compact = false,
+  onClick,
 }: ProgramDayComponentProps) {
   return (
-    <div className="space-y-6">
+    <div 
+      className="space-y-6"
+      onClick={onClick}
+    >
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <h3 className="text-2xl font-medium text-white">
