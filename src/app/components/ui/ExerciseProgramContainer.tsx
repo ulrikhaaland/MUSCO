@@ -239,14 +239,12 @@ export function ExerciseProgramContainer({
       {showCalendar ? (
         <ExerciseProgramCalendar
           program={processedProgram}
-          onBack={onBack}
           onToggleView={() => setShowCalendar(false)}
           dayName={getDayName}
           onDaySelect={handleDaySelect}
         />
       ) : (
         <ExerciseProgramPage
-          onBack={onBack}
           isLoading={isLoading}
           program={processedProgram}
           onToggleView={() => setShowCalendar(true)}

@@ -1,22 +1,26 @@
 interface TopBarProps {
-  onBack: () => void;
-  className?: string;
+  onBack?: () => void;
   rightContent?: React.ReactNode;
-  rightText?: string;
   onRightClick?: () => void;
+  className?: string;
 }
 
-export function TopBar({ onBack, className = '', rightContent, rightText = 'Calendar', onRightClick }: TopBarProps) {
+export function TopBar({
+  onBack,
+  rightContent,
+  onRightClick,
+  className = '',
+}: TopBarProps) {
   return (
-    <div className={`fixed top-0 left-0 right-0 z-50 bg-gray-900/90 backdrop-blur-sm ${className}`}>
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="py-4 flex items-center justify-between text-white">
+    <div className={`bg-gray-900/80 backdrop-blur-sm px-4 py-3 ${className}`}>
+      <div className="flex items-center justify-between">
+        {onBack && (
           <button
             onClick={onBack}
-            className="flex items-center hover:opacity-80 transition-opacity duration-200"
+            className="flex items-center text-gray-400 hover:text-white transition-colors duration-200"
           >
             <svg
-              className="w-5 h-5 mr-2"
+              className="w-5 h-5"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -28,15 +32,18 @@ export function TopBar({ onBack, className = '', rightContent, rightText = 'Cale
                 d="M10 19l-7-7m0 0l7-7m-7 7h18"
               />
             </svg>
-            Back
+            <span className="ml-2">Back</span>
           </button>
-          <button 
+        )}
+        {!onBack && <div />}
+        {rightContent && onRightClick && (
+          <button
             onClick={onRightClick}
-            className="flex items-center hover:opacity-80 transition-opacity duration-200"
+            className="flex items-center text-gray-400 hover:text-white transition-colors duration-200"
           >
             {rightContent}
           </button>
-        </div>
+        )}
       </div>
     </div>
   );

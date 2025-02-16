@@ -8,13 +8,12 @@ import { Exercise, ExerciseProgram, ProgramDay } from '@/app/types/program';
 // Updated interface to match the actual program structure
 
 interface ExerciseProgramPageProps {
-  onBack: () => void;
-  isLoading: boolean;
   program: ExerciseProgram;
+  isLoading: boolean;
   onToggleView: () => void;
-  onVideoClick: (exercise: Exercise) => void;
-  loadingVideoExercise: string | null;
   dayName: (day: number) => string;
+  onVideoClick: (exercise: Exercise) => void;
+  loadingVideoExercise?: string | null;
   onDaySelect: (day: ProgramDay, dayName: string) => void;
 }
 
@@ -55,13 +54,12 @@ function getNextMonday(d: Date): Date {
 }
 
 export function ExerciseProgramPage({
-  onBack,
-  isLoading,
   program,
+  isLoading,
   onToggleView,
+  dayName,
   onVideoClick,
   loadingVideoExercise,
-  dayName,
   onDaySelect,
 }: ExerciseProgramPageProps) {
   // Get current date info
@@ -318,7 +316,7 @@ export function ExerciseProgramPage({
     );
   };
 
-  if (isLoading || !program || !Array.isArray(program.program)) {
+  if (program === null || !Array.isArray(program.program)) {
     return (
       <div className="h-screen w-screen flex flex-col bg-gray-900">
         <div className="flex flex-col items-center justify-center h-full space-y-4 px-4 text-center">
@@ -335,9 +333,8 @@ export function ExerciseProgramPage({
   const selectedWeekData = program.program.find((w) => w.week === selectedWeek);
 
   return (
-    <div className="min-h-screen from-gray-900 to-gray-800 flex flex-col h-[calc(100dvh)]">
+    <div className="fixed inset-0 bg-gray-900 to-gray-800">
       <TopBar
-        onBack={onBack}
         rightContent={
           <>
             <svg
@@ -357,6 +354,7 @@ export function ExerciseProgramPage({
           </>
         }
         onRightClick={onToggleView}
+        className="fixed top-0 left-0 right-0 z-50"
       />
 
       {/* Program Overview Modal */}

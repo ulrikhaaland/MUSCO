@@ -174,18 +174,6 @@ Behavior Guidelines
 - Dynamically adjust the program to align with the user's preferred workout duration.
 - Ensure the program includes rest days to prevent overtraining and allow recovery.
 
- Example Structure:
-
-- Day 1: Focus on mobility and light strength exercises.
-- Day 2: Cardio session aligned with the user's cardio preferences.
-- Day 3: Strength exercises targeting the upper body.
-- Day 4: Rest day or light stretching.
-- Day 5: Lower body strength exercises.
-- Day 6: Cardio or full-body session.
-- Day 7: Rest day with optional flexibility exercises.
-
-_Note: This example structure is based on a single week._
-
 6. JSON Response Requirements
 
 - The program JSON object should include the following structure:
@@ -241,7 +229,7 @@ _Note: This example structure is based on a single week._
               "isWarmUp": true,
               "sets": 2,
               "repetitions": 20,
-              "rest": 15
+              "rest": 15,
             },
             {
               "name": "Deadlifts",

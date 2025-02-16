@@ -8,7 +8,6 @@ import { ProgramDaySummaryComponent } from './ProgramDaySummaryComponent';
 
 interface ExerciseProgramCalendarProps {
   program: ExerciseProgram;
-  onBack: () => void;
   onToggleView: () => void;
   dayName: (day: number) => string;
   onDaySelect?: (day: ProgramDay, dayName: string) => void;
@@ -16,7 +15,6 @@ interface ExerciseProgramCalendarProps {
 
 export function ExerciseProgramCalendar({
   program,
-  onBack,
   onToggleView,
   dayName,
   onDaySelect,
@@ -337,9 +335,8 @@ export function ExerciseProgramCalendar({
   };
 
   return (
-    <div className="min-h-screen h-[calc(100dvh)] from-gray-900 to-gray-800">
+    <div className="fixed inset-0 bg-gray-900 to-gray-800">
       <TopBar
-        onBack={onBack}
         rightContent={
           <>
             <svg
