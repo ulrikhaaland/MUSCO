@@ -694,7 +694,7 @@ export default function HumanViewer({
       {/* Combined Overlay Container */}
       {(showQuestionnaire || isGeneratingProgram || exerciseProgram) && (
         <div className="fixed inset-0 bg-gray-900 z-[60]">
-          {showQuestionnaire && !isGeneratingProgram && !exerciseProgram ? (
+          {showQuestionnaire && !isGeneratingProgram && !exerciseProgram?.program ? (
             <ExerciseQuestionnaire
               onClose={handleBack}
               onSubmit={handleQuestionnaireSubmit}
@@ -704,10 +704,11 @@ export default function HumanViewer({
               fullBody={fullBodyRef.current}
             />
           ) : (
+            // asd
             <ExerciseProgramContainer
               onBack={handleBack}
               isLoading={isGeneratingProgram}
-              program={exerciseProgram}
+              program={exerciseProgram?.program}
             />
           )}
         </div>
