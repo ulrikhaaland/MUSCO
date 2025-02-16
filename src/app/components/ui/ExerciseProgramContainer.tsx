@@ -66,14 +66,28 @@ export function ExerciseProgramContainer({
 }: ExerciseProgramContainerProps) {
   const [showCalendar, setShowCalendar] = useState(false);
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
-  const [loadingVideoExercise, setLoadingVideoExercise] = useState<
-    string | null
-  >(null);
-  const [processedProgram, setProcessedProgram] = useState<
-    ExerciseProgram | undefined
-  >(program);
+  const [loadingVideoExercise, setLoadingVideoExercise] = useState<string | null>(null);
+  const [processedProgram, setProcessedProgram] = useState<ExerciseProgram | undefined>(program);
   const [selectedDetailDay, setSelectedDetailDay] = useState<ProgramDay | null>(null);
   const [selectedDetailDayName, setSelectedDetailDayName] = useState<string>('');
+
+  // Get current day's program on initial load
+  useEffect(() => {
+    if (!program?.program) return;
+
+    const currentDate = new Date();
+    const currentDayOfWeek = currentDate.getDay() || 7; // Convert Sunday (0) to 7
+    const currentWeek = program.program[0]; // Start with first week
+
+    if (currentWeek) {
+      const currentDay = currentWeek.days.find(d => d.day === currentDayOfWeek);
+      if (currentDay) {
+        const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+        setSelectedDetailDay(currentDay);
+        setSelectedDetailDayName(days[currentDayOfWeek - 1]);
+      }
+    }
+  }, [program]);
 
   // Function to parse timeframe string and get number of weeks
   const parseTimeFrame = (timeFrame: string): number => {
@@ -236,7 +250,15 @@ export function ExerciseProgramContainer({
 
   return (
     <div className="h-screen w-screen flex flex-col bg-gray-900">
-      {showCalendar ? (
+      {selectedDetailDay ? (
+        <DetailedDayView
+          day={selectedDetailDay}
+          dayName={selectedDetailDayName}
+          onBack={() => setSelectedDetailDay(null)}
+          onVideoClick={handleVideoClick}
+          loadingVideoExercise={loadingVideoExercise}
+        />
+      ) : showCalendar ? (
         <ExerciseProgramCalendar
           program={processedProgram}
           onToggleView={() => setShowCalendar(false)}
@@ -255,15 +277,6 @@ export function ExerciseProgramContainer({
         />
       )}
       {renderVideoModal()}
-      {selectedDetailDay && (
-        <DetailedDayView
-          day={selectedDetailDay}
-          dayName={selectedDetailDayName}
-          onBack={() => setSelectedDetailDay(null)}
-          onVideoClick={handleVideoClick}
-          loadingVideoExercise={loadingVideoExercise}
-        />
-      )}
     </div>
   );
 }

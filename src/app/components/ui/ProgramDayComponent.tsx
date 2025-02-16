@@ -32,11 +32,15 @@ export function ProgramDayComponent({
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <h3 className="text-2xl font-medium text-white">
-            {day.isRestDay ? "Rest Day" : dayName}
+            {dayName}
           </h3>
-          {day.isRestDay && (
+          {day.isRestDay ? (
             <span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-500/20 text-blue-300">
               Recovery
+            </span>
+          ) : (
+            <span className="px-2 py-1 rounded-full text-xs font-medium bg-indigo-500/20 text-indigo-300">
+              Activity
             </span>
           )}
         </div>
