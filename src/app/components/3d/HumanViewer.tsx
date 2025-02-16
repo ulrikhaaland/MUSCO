@@ -64,7 +64,7 @@ export default function HumanViewer({
   const { user } = useAuth();
   const { onQuestionnaireSubmit } = useUser();
   const [isGeneratingProgram, setIsGeneratingProgram] = useState(false);
-  const [exerciseProgram, setExerciseProgram] = useState<any>(null);
+  const [exerciseProgram, setExerciseProgram] = useState<ExerciseProgram | null>(null);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -464,7 +464,7 @@ export default function HumanViewer({
         diagnosisId
       );
 
-      setExerciseProgram(program);
+      setExerciseProgram(program.program);
     } catch (error) {
       console.error('Error in questionnaire submission:', error);
     } finally {
@@ -685,7 +685,7 @@ export default function HumanViewer({
           onHeightChange={handleBottomSheetHeight}
           onQuestionClick={handleQuestionClick}
           hideBottomSheet={
-            showQuestionnaire || isGeneratingProgram || exerciseProgram
+            showQuestionnaire || isGeneratingProgram || exerciseProgram !== null
           }
           onDiagnosis={setDiagnosis}
         />
@@ -694,7 +694,7 @@ export default function HumanViewer({
       {/* Combined Overlay Container */}
       {(showQuestionnaire || isGeneratingProgram || exerciseProgram) && (
         <div className="fixed inset-0 bg-gray-900 z-[60]">
-          {showQuestionnaire && !isGeneratingProgram && !exerciseProgram?.program ? (
+          {showQuestionnaire && !isGeneratingProgram && exerciseProgram === null ? (
             <ExerciseQuestionnaire
               onClose={handleBack}
               onSubmit={handleQuestionnaireSubmit}
@@ -708,7 +708,7 @@ export default function HumanViewer({
             <ExerciseProgramContainer
               onBack={handleBack}
               isLoading={isGeneratingProgram}
-              program={exerciseProgram?.program}
+              program={exerciseProgram}
             />
           )}
         </div>

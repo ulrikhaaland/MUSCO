@@ -315,6 +315,7 @@ export function ExerciseProgramPage({
         : [...prev, exerciseName]
     );
   };
+  
 
   if (program === null || !Array.isArray(program.program)) {
     return (
