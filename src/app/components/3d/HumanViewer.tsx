@@ -704,10 +704,9 @@ export default function HumanViewer({
               fullBody={fullBodyRef.current}
             />
           ) : (
-            // asd
             <ExerciseProgramContainer
               onBack={handleBack}
-              isLoading={isGeneratingProgram}
+              isLoading={exerciseProgram === null}
               program={exerciseProgram}
             />
           )}
