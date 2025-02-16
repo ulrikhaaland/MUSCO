@@ -1,7 +1,7 @@
-import { ProgramType } from "../shared/types";
-import { AnatomyPart } from "./human";
+import { ProgramType } from '../shared/types';
+import { AnatomyPart } from './human';
 
-export type Gender = "male" | "female";
+export type Gender = 'male' | 'female';
 
 export interface PopupOption {
   id: string;
@@ -24,7 +24,7 @@ export interface BodyPart {
 export interface OpenAIMessage {
   id: string;
   content: string | Array<{ text: { value: string } }>;
-  role: "user" | "assistant" | "system";
+  role: 'user' | 'assistant' | 'system';
   created_at: number;
 }
 
@@ -32,35 +32,14 @@ export interface OpenAIMessage {
 export interface ChatMessage {
   id: string;
   content: string;
-  role: "user" | "assistant" | "system";
+  role: 'user' | 'assistant' | 'system';
   timestamp: Date;
-}
-
-export interface ExerciseProgram {
-  id: string;
-  title: string;
-  description: string;
-  targetBodyPart: string;
-  exercises: Exercise[];
-  frequency: number;
-  duration: number;
-}
-
-export interface Exercise {
-  id: string;
-  name: string;
-  description: string;
-  sets: number;
-  reps: number;
-  restTime: number;
-  videoUrl?: string;
-  imageUrl?: string;
 }
 
 export interface UserPreferences {
   gender: Gender;
   age?: number;
-  fitnessLevel?: "beginner" | "intermediate" | "advanced";
+  fitnessLevel?: 'beginner' | 'intermediate' | 'advanced';
   exerciseFrequency?: number;
   bodyParts?: AnatomyPart[];
 }
@@ -68,7 +47,7 @@ export interface UserPreferences {
 export interface AssistantThread {
   id: string;
   messages: ChatMessage[];
-  status: "active" | "completed" | "failed";
+  status: 'active' | 'completed' | 'failed';
   createdAt: Date;
   updatedAt: Date;
 }

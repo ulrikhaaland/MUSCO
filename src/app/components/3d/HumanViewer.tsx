@@ -62,7 +62,9 @@ export default function HumanViewer({
   const [isMobile, setIsMobile] = useState(false);
   const [isResetting, setIsResetting] = useState(false);
   const { user } = useAuth();
-  const { addProgram, programs, setPrograms } = useUser();
+  const { onQuestionnaireSubmit } = useUser();
+  const [isGeneratingProgram, setIsGeneratingProgram] = useState(false);
+  const [exerciseProgram, setExerciseProgram] = useState<any>(null);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -163,8 +165,6 @@ export default function HumanViewer({
 
   const [viewerUrl, setViewerUrl] = useState(() => getViewerUrl(gender));
   const [isChangingModel, setIsChangingModel] = useState(false);
-  const [isGeneratingProgram, setIsGeneratingProgram] = useState(false);
-  const [exerciseProgram, setExerciseProgram] = useState<any>(null);
 
   const handleSwitchModel = useCallback(() => {
     setIsChangingModel(true);
@@ -396,14 +396,18 @@ export default function HumanViewer({
     if (question.generate) {
       if (diagnosis) {
         diagnosis.followUpQuestions = [];
+        diagnosis.programType = ProgramType.Recovery;
       } else {
         const newDiagnosis: DiagnosisAssistantResponse = {
-          diagnosis: 'No diagnosis, just an exercise program',
-          programType: ProgramType.Exercise,
-          painfulAreas: [],
+          diagnosis: 'No diagnosis, just a recovery program',
+          programType: ProgramType.Recovery,
+          painfulAreas: [
+            ...(selectedGroups[0]?.name ? [selectedGroups[0].name] : []),
+            ...(selectedPart?.name ? [selectedPart.name] : []),
+          ],
           avoidActivities: [],
           recoveryGoals: [],
-          timeFrame: '4 weeks',
+          timeFrame: '1 week',
           followUpQuestions: [],
           progressive: true,
         };
@@ -449,29 +453,18 @@ export default function HumanViewer({
     diagnosis.timeFrame = '1 week';
 
     try {
-      // First, store the answers and diagnosis in the user context
-      await addProgram({
-        diagnosis: { ...diagnosis },
-        answers: { ...answers },
-        createdAt: new Date(),
-      });
+      // Store the diagnosis in the subcollection and get the ID
+      const diagnosisId = await onQuestionnaireSubmit(diagnosis, answers);
 
-      // Then generate the program, passing the user ID if authenticated
+      // Then generate the program, passing the user ID and diagnosis ID
       const program = await generateExerciseProgram(
-        diagnosis, 
+        diagnosis,
         answers,
-        user?.uid
+        user?.uid,
+        diagnosisId
       );
 
       setExerciseProgram(program);
-
-      // Only update local state since Firestore was already updated in the backend
-      setPrograms(prev => prev.map(p => {
-        if (p.diagnosis === diagnosis && p.answers === answers) {
-          return { ...p, program };
-        }
-        return p;
-      }));
     } catch (error) {
       console.error('Error in questionnaire submission:', error);
     } finally {
@@ -715,7 +708,6 @@ export default function HumanViewer({
               onBack={handleBack}
               isLoading={isGeneratingProgram}
               program={exerciseProgram}
-              programType={diagnosis?.programType ?? ProgramType.Exercise}
             />
           )}
         </div>

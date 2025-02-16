@@ -10,6 +10,7 @@ import {
   generateExerciseProgramWithModel,
 } from '@/app/api/assistant/openai-server';
 import { OpenAIMessage } from '@/app/types';
+import { ProgramStatus } from '@/app/types/program';
 
 export async function POST(request: Request) {
   try {
@@ -108,14 +109,24 @@ export async function POST(request: Request) {
           );
         }
 
-        const program = await generateExerciseProgramWithModel({
-          diagnosisData: payload.diagnosisData,
-          userInfo: payload.userInfo,
-          userId: payload.userId,
-        });
-        return new Response(JSON.stringify(program), {
-          headers: { 'Content-Type': 'application/json' },
-        });
+        try {
+          const program = await generateExerciseProgramWithModel({
+            diagnosisData: payload.diagnosisData,
+            userInfo: payload.userInfo,
+            userId: payload.userId,
+          });
+
+          return NextResponse.json({
+            program,
+            status: ProgramStatus.Done,
+          });
+        } catch (error) {
+          console.error('Error generating program:', error);
+          return NextResponse.json({
+            error: 'Failed to generate program',
+            status: ProgramStatus.Error,
+          }, { status: 500 });
+        }
       }
 
       default:

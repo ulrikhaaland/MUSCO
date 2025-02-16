@@ -23,8 +23,8 @@ const initialQuestions: Question[] = [
   //   asked: false,
   // },
   {
-    title: 'Explore exercises',
-    question: 'What exercises can help improve the $part?',
+    title: 'Recovery program',
+    question: 'What is the best recovery program for my $part?',
     asked: false,
     generate: true,
     diagnosis: '',

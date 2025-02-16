@@ -1,15 +1,24 @@
 import { useState, useEffect } from 'react';
 import { ExerciseProgramPage } from './ExerciseProgramPage';
 import { ExerciseProgramCalendar } from './ExerciseProgramCalendar';
+import { ProgramDayComponent } from './ProgramDayComponent';
+import { TopBar } from './TopBar';
 import { searchYouTubeVideo } from '@/app/utils/youtube';
 import { ProgramType } from '@/app/shared/types';
-import { Exercise, ExerciseProgram } from '@/app/types/program';
+import { Exercise, ExerciseProgram, ProgramDay } from '@/app/types/program';
 
 interface ExerciseProgramContainerProps {
-  onBack: () => void;
+  onBack?: () => void;
   isLoading: boolean;
-  program?: ExerciseProgram;
-  programType: ProgramType;
+  program: ExerciseProgram;
+}
+
+interface DetailedDayViewProps {
+  day: ProgramDay;
+  dayName: string;
+  onBack: () => void;
+  onVideoClick: (exercise: Exercise) => void;
+  loadingVideoExercise: string | null;
 }
 
 function getYouTubeEmbedUrl(url: string): string {
@@ -22,11 +31,38 @@ function getYouTubeEmbedUrl(url: string): string {
   return url;
 }
 
+function DetailedDayView({ day, dayName, onBack, onVideoClick, loadingVideoExercise }: DetailedDayViewProps) {
+  const [expandedExercises, setExpandedExercises] = useState<string[]>([]);
+
+  const handleExerciseToggle = (exerciseName: string) => {
+    setExpandedExercises(prev => 
+      prev.includes(exerciseName) 
+        ? prev.filter(name => name !== exerciseName)
+        : [...prev, exerciseName]
+    );
+  };
+
+  return (
+    <div className="fixed inset-0 bg-gray-900 z-50">
+      <TopBar onBack={onBack} />
+      <div className="pt-16 px-4 pb-32 max-w-4xl mx-auto">
+        <ProgramDayComponent
+          day={day}
+          dayName={dayName}
+          onVideoClick={onVideoClick}
+          loadingVideoExercise={loadingVideoExercise}
+          expandedExercises={expandedExercises}
+          onExerciseToggle={handleExerciseToggle}
+        />
+      </div>
+    </div>
+  );
+}
+
 export function ExerciseProgramContainer({
   onBack,
   isLoading,
   program,
-  programType,
 }: ExerciseProgramContainerProps) {
   const [showCalendar, setShowCalendar] = useState(false);
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
@@ -36,6 +72,8 @@ export function ExerciseProgramContainer({
   const [processedProgram, setProcessedProgram] = useState<
     ExerciseProgram | undefined
   >(program);
+  const [selectedDetailDay, setSelectedDetailDay] = useState<ProgramDay | null>(null);
+  const [selectedDetailDayName, setSelectedDetailDayName] = useState<string>('');
 
   // Function to parse timeframe string and get number of weeks
   const parseTimeFrame = (timeFrame: string): number => {
@@ -119,6 +157,12 @@ export function ExerciseProgramContainer({
 
     return days[dayOfWeek - 1];
   };
+
+  const handleDaySelect = (day: ProgramDay, dayName: string) => {
+    setSelectedDetailDay(day);
+    setSelectedDetailDayName(dayName);
+  };
+
   // Loading and error states
   if (isLoading) {
     return (
@@ -191,30 +235,37 @@ export function ExerciseProgramContainer({
   };
 
   return (
-    <>
+    <div className="h-screen w-screen flex flex-col bg-gray-900">
       {showCalendar ? (
         <ExerciseProgramCalendar
           program={processedProgram}
           onBack={onBack}
           onToggleView={() => setShowCalendar(false)}
-          showCalendarView={showCalendar}
-          onVideoClick={handleVideoClick}
-          loadingVideoExercise={loadingVideoExercise}
           dayName={getDayName}
+          onDaySelect={handleDaySelect}
         />
       ) : (
         <ExerciseProgramPage
           onBack={onBack}
           isLoading={isLoading}
           program={processedProgram}
-          programType={programType}
           onToggleView={() => setShowCalendar(true)}
           onVideoClick={handleVideoClick}
           loadingVideoExercise={loadingVideoExercise}
           dayName={getDayName}
+          onDaySelect={handleDaySelect}
         />
       )}
       {renderVideoModal()}
-    </>
+      {selectedDetailDay && (
+        <DetailedDayView
+          day={selectedDetailDay}
+          dayName={selectedDetailDayName}
+          onBack={() => setSelectedDetailDay(null)}
+          onVideoClick={handleVideoClick}
+          loadingVideoExercise={loadingVideoExercise}
+        />
+      )}
+    </div>
   );
 }

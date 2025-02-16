@@ -242,7 +242,8 @@ export async function generateFollowUp(
 export async function generateExerciseProgram(
   diagnosisData: DiagnosisAssistantResponse,
   userInfo: ExerciseQuestionnaireAnswers,
-  userId?: string
+  userId?: string,
+  diagnosisId?: string
 ) {
   const response = await fetch("/api/assistant", {
     method: "POST",
@@ -255,6 +256,7 @@ export async function generateExerciseProgram(
         diagnosisData,
         userInfo,
         userId,
+        diagnosisId
       },
     }),
   });

@@ -584,6 +584,9 @@ export default function MobileControls({
         }}
         snapPoints={getSnapPoints}
         expandOnContentDrag={false}
+        maxHeight={
+          intention === ProgramIntention.Exercise ? contentHeight : null
+        }
         onSpringStart={(event) => {
           const source = (event as any).source;
           if (
@@ -600,7 +603,6 @@ export default function MobileControls({
           }
           if (sheetRef.current) {
             const currentHeight = sheetRef.current.height;
-            const viewportHeight = getViewportHeight();
             updateModelHeight(currentHeight);
 
             // Find which snap point we're closest to
@@ -623,9 +625,6 @@ export default function MobileControls({
         onSpringEnd={(event) => {
           if (sheetRef.current) {
             const currentHeight = sheetRef.current.height;
-            const viewportHeight = getViewportHeight();
-            const minHeight = Math.min(viewportHeight * 0.15, 72);
-            const isNowExpanded = currentHeight > minHeight;
 
             updateModelHeight(currentHeight);
 

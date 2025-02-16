@@ -2,29 +2,24 @@ import { useState } from 'react';
 import type {
   ExerciseProgram,
   ProgramDay,
-  Exercise,
 } from '@/app/types/program';
 import { TopBar } from './TopBar';
-import { ProgramDayComponent } from './ProgramDayComponent';
+import { ProgramDaySummaryComponent } from './ProgramDaySummaryComponent';
 
 interface ExerciseProgramCalendarProps {
   program: ExerciseProgram;
   onBack: () => void;
   onToggleView: () => void;
-  showCalendarView: boolean;
-  onVideoClick: (exercise: Exercise) => void;
-  loadingVideoExercise: string | null;
   dayName: (day: number) => string;
+  onDaySelect?: (day: ProgramDay, dayName: string) => void;
 }
 
 export function ExerciseProgramCalendar({
   program,
   onBack,
   onToggleView,
-  showCalendarView,
-  onVideoClick,
-  loadingVideoExercise,
   dayName,
+  onDaySelect,
 }: ExerciseProgramCalendarProps) {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [showYearPicker, setShowYearPicker] = useState(false);
@@ -33,19 +28,36 @@ export function ExerciseProgramCalendar({
     // Get the day of week (1 = Monday, 7 = Sunday)
     const dayOfWeek = date.getDay() === 0 ? 7 : date.getDay();
 
-    // Get the first day of the year
-    const startOfYear = new Date(date.getFullYear(), 0, 1);
+    // Convert createdAt to Date if it's not already
+    const programStartDate = new Date(program.createdAt);
+    
+    // Find the start of the week containing the program start date
+    const programWeekStart = new Date(programStartDate);
+    const programStartDayOfWeek = programStartDate.getDay() === 0 ? 7 : programStartDate.getDay();
+    programWeekStart.setDate(programStartDate.getDate() - (programStartDayOfWeek - 1));
+    programWeekStart.setHours(0, 0, 0, 0);
 
-    // Calculate days since start of year
-    const daysSinceStart = Math.floor(
-      (date.getTime() - startOfYear.getTime()) / (1000 * 60 * 60 * 24)
+    // Reset time part of the check date for accurate comparison
+    const checkDate = new Date(date);
+    checkDate.setHours(0, 0, 0, 0);
+
+    // Find the start of the week for the check date
+    const checkWeekStart = new Date(checkDate);
+    checkWeekStart.setDate(checkDate.getDate() - (dayOfWeek - 1));
+    checkWeekStart.setHours(0, 0, 0, 0);
+
+    // Calculate the difference in weeks from the program start week
+    const weekDiff = Math.floor(
+      (checkWeekStart.getTime() - programWeekStart.getTime()) / (7 * 24 * 60 * 60 * 1000)
     );
 
-    // Calculate week number (0-based)
-    const weekIndex = Math.floor(daysSinceStart / 7) % program.program.length;
+    // If the date is before program start week or after program end, return undefined
+    if (weekDiff < 0 || weekDiff >= program.program.length) {
+      return undefined;
+    }
 
     // Get the program week
-    const programWeek = program.program[weekIndex];
+    const programWeek = program.program[weekDiff];
     if (!programWeek) return undefined;
 
     // Find the matching day in the week
@@ -162,18 +174,39 @@ export function ExerciseProgramCalendar({
     const today = new Date();
     const currentDateString = today.toDateString();
 
+    // Find the start of the week containing the program start date
+    const programStartDate = new Date(program.createdAt);
+    const programStartDayOfWeek = programStartDate.getDay() === 0 ? 7 : programStartDate.getDay();
+    const programWeekStart = new Date(programStartDate);
+    programWeekStart.setDate(programStartDate.getDate() - (programStartDayOfWeek - 1));
+    programWeekStart.setHours(0, 0, 0, 0);
+
+    // Calculate program end date based on the start of the program week
+    const programEndDate = new Date(programWeekStart);
+    programEndDate.setDate(programWeekStart.getDate() + (program.program.length * 7));
+
     // Calculate days for the visible calendar (max 6 weeks)
     for (let week = 0; week < 6; week++) {
       const currentWeek = [];
       for (let day = 0; day < 7; day++) {
         const date = new Date(startDate);
         const program = getDayProgram(date);
+        
+        // Check if the date falls within a program week
+        const dateWeekStart = new Date(date);
+        const dateDayOfWeek = date.getDay() === 0 ? 7 : date.getDay();
+        dateWeekStart.setDate(date.getDate() - (dateDayOfWeek - 1));
+        dateWeekStart.setHours(0, 0, 0, 0);
+        
+        const isProgramDay = dateWeekStart >= programWeekStart && dateWeekStart < programEndDate;
+
         currentWeek.push({
           date,
           program,
           isCurrentMonth: date.getMonth() === selectedDate.getMonth(),
           isToday: date.toDateString() === currentDateString,
           isSelected: date.toDateString() === selectedDate.toDateString(),
+          isProgramDay,
         });
         startDate.setDate(startDate.getDate() + 1);
       }
@@ -190,53 +223,61 @@ export function ExerciseProgramCalendar({
         {weeks.map((week, weekIndex) => (
           <div key={weekIndex} className="grid grid-cols-7">
             {week.map(
-              (
-                { date, program, isCurrentMonth, isToday, isSelected },
-                dayIndex
-              ) => (
+              ({
+                date,
+                program,
+                isCurrentMonth,
+                isToday,
+                isSelected,
+                isProgramDay,
+              }, dayIndex) => (
                 <button
                   key={dayIndex}
                   onClick={() => handleDateClick(date)}
                   className={`
-                  relative aspect-square p-1 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-900
-                  ${
-                    isCurrentMonth
-                      ? 'bg-gray-800/50'
-                      : 'bg-gray-900/30 text-gray-600'
-                  }
-                  ${isSelected ? 'bg-indigo-500/30 ring-2 ring-indigo-500' : ''}
-                  ${isToday ? 'font-bold' : ''}
-                  ${
-                    program &&
-                    !program.isRestDay &&
-                    isCurrentMonth &&
-                    !isSelected
-                      ? 'hover:bg-gray-700/50'
-                      : ''
-                  }
-                  transition-all duration-200
-                `}
-                >
-                  <div className="flex flex-col h-full">
-                    <span
-                      className={`
-                    text-sm ${
-                      isToday
-                        ? 'text-indigo-400'
-                        : isCurrentMonth
-                        ? 'text-gray-300'
-                        : 'text-gray-600'
+                    relative aspect-square p-1 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-900
+                    ${
+                      isCurrentMonth
+                        ? isProgramDay 
+                          ? 'bg-gray-800/50'
+                          : 'bg-gray-900/50'
+                        : 'bg-gray-900/30 text-gray-600'
                     }
-                    ${isSelected ? 'text-indigo-300' : ''}
+                    ${isSelected ? 'bg-indigo-500/30 ring-2 ring-indigo-500' : ''}
+                    ${isToday ? 'font-bold' : ''}
                     ${
                       program &&
                       !program.isRestDay &&
                       isCurrentMonth &&
-                      isSelected
-                        ? 'text-indigo-200 font-medium'
+                      !isSelected
+                        ? 'hover:bg-gray-700/50'
                         : ''
                     }
+                    transition-all duration-200
                   `}
+                >
+                  <div className="flex flex-col h-full">
+                    <span
+                      className={`
+                        text-sm ${
+                          isToday
+                            ? 'text-indigo-400'
+                            : isCurrentMonth
+                            ? isProgramDay
+                              ? 'text-gray-300'
+                              : 'text-gray-500'
+                            : 'text-gray-600'
+                        }
+                        ${isSelected ? 'text-indigo-300' : ''}
+                        ${
+                          program &&
+                          !program.isRestDay &&
+                          isCurrentMonth &&
+                          isSelected
+                            ? 'text-indigo-200 font-medium'
+                            : ''
+                        }
+                      `}
                     >
                       {date.getDate()}
                     </span>
@@ -281,14 +322,15 @@ export function ExerciseProgramCalendar({
       );
     }
 
+    // Get the day of week (1 = Monday, 7 = Sunday)
+    const dayOfWeek = selectedDate.getDay() === 0 ? 7 : selectedDate.getDay();
+
     return (
       <div className="mt-6 space-y-4">
-        <ProgramDayComponent
+        <ProgramDaySummaryComponent
           day={dayProgram}
-          dayName={dayName(dayProgram.day)}
-          onVideoClick={onVideoClick}
-          loadingVideoExercise={loadingVideoExercise}
-          compact={true}
+          dayName={dayName(dayOfWeek)}
+          onClick={onDaySelect ? () => onDaySelect(dayProgram, dayName(dayOfWeek)) : undefined}
         />
       </div>
     );

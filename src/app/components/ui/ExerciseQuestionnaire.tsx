@@ -82,6 +82,7 @@ const expandPainAreas = (areas: string[]): string[] => {
   const expandedAreas = new Set<string>();
 
   areas.forEach((area) => {
+    if (!area) return;
     // Convert to lowercase for comparison
     const lowerArea = area.toLowerCase();
     const lowerCompositeMapping: { [key: string]: string[] } = {};
@@ -632,6 +633,11 @@ export function ExerciseQuestionnaire({
   };
 
   const shouldShowQuestion = (field: keyof ExerciseQuestionnaireAnswers) => {
+    // For recovery programs, don't show exercise modalities question
+    if (programType === ProgramType.Recovery && field === 'exerciseModalities') {
+      return false;
+    }
+
     switch (field) {
       case 'age':
         return true;
@@ -643,6 +649,7 @@ export function ExerciseQuestionnaire({
         return !!answers.thisYearsPlannedExerciseFrequency;
       case 'exerciseModalities':
         return (
+          programType === ProgramType.Exercise &&
           !!answers.thisYearsPlannedExerciseFrequency &&
           (!!answers.generallyPainfulAreas ||
             answers.generallyPainfulAreas.length === 0)
@@ -655,6 +662,11 @@ export function ExerciseQuestionnaire({
             answers.exerciseModalities === 'Both')
         );
       case 'exerciseEnvironments':
+        if (programType === ProgramType.Recovery) {
+          // For recovery, show after having exercise frequency
+          return !!answers.thisYearsPlannedExerciseFrequency;
+        }
+        // For exercise, show after exercise modalities
         return !!answers.exerciseModalities;
       case 'workoutDuration':
         return !!answers.exerciseEnvironments;

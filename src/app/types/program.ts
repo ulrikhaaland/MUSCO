@@ -1,3 +1,11 @@
+import { ProgramType } from "../shared/types";
+
+export enum ProgramStatus {
+  Generating = 'generating',
+  Done = 'done',
+  Error = 'error'
+}
+
 export interface Exercise {
   name: string;
   description: string;
@@ -38,4 +46,7 @@ export interface ExerciseProgram {
   afterTimeFrame: AfterTimeFrame;
   whatNotToDo: string;
   program: ProgramWeek[];
+  type: ProgramType;
+  createdAt: Date;
+  targetAreas: string[];
 } 

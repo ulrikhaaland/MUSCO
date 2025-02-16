@@ -6,13 +6,18 @@ import HumanViewer from './components/3d/HumanViewer';
 import { Gender } from './types';
 import { AppProvider, useApp, ProgramIntention } from './context/AppContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
-import { UserProvider } from './context/UserContext';
+import { UserProvider, useUser } from './context/UserContext';
 import { AuthForm } from './components/auth/AuthForm';
+import { ExerciseProgramContainer } from './components/ui/ExerciseProgramContainer';
 
-function IntentionQuestion({ onSelect }: { onSelect: (intention: ProgramIntention) => void }) {
+function IntentionQuestion({
+  onSelect,
+}: {
+  onSelect: (intention: ProgramIntention) => void;
+}) {
   const { user } = useAuth();
   const [skipAuth, setSkipAuth] = useState(false);
-  
+
   const handleSelect = (intention: ProgramIntention) => {
     onSelect(intention);
   };
@@ -27,8 +32,12 @@ function IntentionQuestion({ onSelect }: { onSelect: (intention: ProgramIntentio
         {user || skipAuth ? (
           <>
             <div className="text-center mb-8">
-              <h1 className="text-3xl font-semibold text-white mb-2">How can we help you today?</h1>
-              <p className="text-gray-400">Choose what you&apos;re looking for:</p>
+              <h1 className="text-3xl font-semibold text-white mb-2">
+                How can we help you today?
+              </h1>
+              <p className="text-gray-400">
+                Choose what you&apos;re looking for:
+              </p>
             </div>
             <div className="space-y-4">
               <button
@@ -85,15 +94,29 @@ function HumanViewerWrapper() {
   const [gender, setGender] = useState<Gender>(initialGender);
   const { intention, setIntention } = useApp();
   const { user } = useAuth();
+  const { program, isLoading, programStatus } = useUser();
   const [skipAuth, setSkipAuth] = useState(false);
 
   const handleGenderChange = useCallback((newGender: Gender) => {
     setGender(newGender);
   }, []);
 
-  const handleIntentionSelect = useCallback((selectedIntention: ProgramIntention) => {
-    setIntention(selectedIntention);
-  }, [setIntention]);
+  const handleIntentionSelect = useCallback(
+    (selectedIntention: ProgramIntention) => {
+      setIntention(selectedIntention);
+    },
+    [setIntention]
+  );
+
+  // If user has a program, show the program container
+  if (user && program && !isLoading) {
+    return (
+      <ExerciseProgramContainer
+        isLoading={false}
+        program={program}
+      />
+    );
+  }
 
   return (
     <>
