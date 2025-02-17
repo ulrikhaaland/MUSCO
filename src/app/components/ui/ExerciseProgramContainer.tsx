@@ -43,17 +43,19 @@ function DetailedDayView({ day, dayName, onBack, onVideoClick, loadingVideoExerc
   };
 
   return (
-    <div className="fixed inset-0 bg-gray-900 z-50">
-      <TopBar onBack={onBack} />
-      <div className="pt-16 px-4 pb-32 max-w-4xl mx-auto">
-        <ProgramDayComponent
-          day={day}
-          dayName={dayName}
-          onVideoClick={onVideoClick}
-          loadingVideoExercise={loadingVideoExercise}
-          expandedExercises={expandedExercises}
-          onExerciseToggle={handleExerciseToggle}
-        />
+    <div className="fixed inset-0 bg-gray-900 z-50 flex flex-col">
+      <TopBar onBack={onBack} className="flex-shrink-0" />
+      <div className="flex-1 overflow-hidden">
+        <div className="h-full overflow-y-auto px-4 pb-32 max-w-4xl mx-auto">
+          <ProgramDayComponent
+            day={day}
+            dayName={dayName}
+            onVideoClick={onVideoClick}
+            loadingVideoExercise={loadingVideoExercise}
+            expandedExercises={expandedExercises}
+            onExerciseToggle={handleExerciseToggle}
+          />
+        </div>
       </div>
     </div>
   );

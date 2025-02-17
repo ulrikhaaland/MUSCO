@@ -2,7 +2,6 @@
 
 import { useRef, useState, useCallback, useEffect } from 'react';
 import { DiagnosisAssistantResponse, Gender } from '../../types';
-import { AnatomyPart } from '../../types/human';
 import PartPopup from '../ui/PartPopup';
 import { useHumanAPI } from '@/app/hooks/useHumanAPI';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
@@ -10,17 +9,12 @@ import CropRotateIcon from '@mui/icons-material/CropRotate';
 import MaleIcon from '@mui/icons-material/Male';
 import FemaleIcon from '@mui/icons-material/Female';
 import MobileControls from './MobileControls';
-import { BodyPartGroup } from '@/app/config/bodyPartGroups';
 import { ExerciseQuestionnaire } from '../ui/ExerciseQuestionnaire';
 import { Question } from '@/app/types';
-import { generateExerciseProgram } from '@/app/api/assistant/assistant';
-import { ExerciseProgramContainer } from '../ui/ExerciseProgramContainer';
-import { getGenderedId } from '@/app/utils/anatomyHelpers';
 import { ExerciseQuestionnaireAnswers, ProgramType } from '@/app/shared/types';
+import { getGenderedId } from '@/app/utils/anatomyHelpers';
 import { useApp } from '@/app/context/AppContext';
-import { useAuth } from '@/app/context/AuthContext';
 import { useUser } from '@/app/context/UserContext';
-import { ExerciseProgram } from '@/app/types/program';
 
 interface HumanViewerProps {
   gender: Gender;
@@ -38,7 +32,6 @@ export default function HumanViewer({
     selectedPart,
     setSelectedGroup,
     setSelectedPart,
-    intention,
     selectedPainfulAreasRef,
     resetSelectionState,
     fullBodyRef,
@@ -61,10 +54,8 @@ export default function HumanViewer({
   const [showLowerBackLabel, setShowLowerBackLabel] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [isResetting, setIsResetting] = useState(false);
-  const { user } = useAuth();
   const { onQuestionnaireSubmit } = useUser();
-  const [isGeneratingProgram, setIsGeneratingProgram] = useState(false);
-  const [exerciseProgram, setExerciseProgram] = useState<ExerciseProgram | null>(null);
+  const [showQuestionnaire, setShowQuestionnaire] = useState(false);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -390,8 +381,6 @@ export default function HumanViewer({
     setShowLowerBackLabel(false);
   };
 
-  const [showQuestionnaire, setShowQuestionnaire] = useState(false);
-
   const handleQuestionClick = (question: Question) => {
     if (question.generate) {
       if (diagnosis) {
@@ -437,38 +426,19 @@ export default function HumanViewer({
   const handleBack = () => {
     if (showQuestionnaire) {
       setShowQuestionnaire(false);
-    } else if (exerciseProgram) {
-      setExerciseProgram(null);
-      setIsGeneratingProgram(false);
     }
   };
 
   const handleQuestionnaireSubmit = async (
     answers: ExerciseQuestionnaireAnswers
   ) => {
-    // Show program page with loading state immediately
-    setShowQuestionnaire(false);
-    setIsGeneratingProgram(true);
-
     diagnosis.timeFrame = '1 week';
 
     try {
       // Store the diagnosis in the subcollection and get the ID
-      const diagnosisId = await onQuestionnaireSubmit(diagnosis, answers);
-
-      // Then generate the program, passing the user ID and diagnosis ID
-      const program = await generateExerciseProgram(
-        diagnosis,
-        answers,
-        user?.uid,
-        diagnosisId
-      );
-
-      setExerciseProgram(program.program);
+      await onQuestionnaireSubmit(diagnosis, answers);
     } catch (error) {
       console.error('Error in questionnaire submission:', error);
-    } finally {
-      setIsGeneratingProgram(false);
     }
   };
 
@@ -575,7 +545,7 @@ export default function HumanViewer({
         </div>
 
         {/* Controls - Desktop */}
-        {!showQuestionnaire && !isGeneratingProgram && !exerciseProgram && (
+        {!showQuestionnaire && (
           <div
             className="absolute bottom-6 right-6 md:flex space-x-4 hidden"
             style={{ zIndex: 1000 }}
@@ -684,32 +654,22 @@ export default function HumanViewer({
           onSwitchModel={handleSwitchModel}
           onHeightChange={handleBottomSheetHeight}
           onQuestionClick={handleQuestionClick}
-          hideBottomSheet={
-            showQuestionnaire || isGeneratingProgram || exerciseProgram !== null
-          }
+          hideBottomSheet={showQuestionnaire}
           onDiagnosis={setDiagnosis}
         />
       )}
 
       {/* Combined Overlay Container */}
-      {(showQuestionnaire || isGeneratingProgram || exerciseProgram) && (
+      {showQuestionnaire && (
         <div className="fixed inset-0 bg-gray-900 z-[60]">
-          {showQuestionnaire && !isGeneratingProgram && exerciseProgram === null ? (
-            <ExerciseQuestionnaire
-              onClose={handleBack}
-              onSubmit={handleQuestionnaireSubmit}
-              generallyPainfulAreas={diagnosis?.painfulAreas ?? []}
-              programType={diagnosis?.programType ?? ProgramType.Exercise}
-              targetAreas={selectedExerciseGroupsRef.current}
-              fullBody={fullBodyRef.current}
-            />
-          ) : (
-            <ExerciseProgramContainer
-              onBack={handleBack}
-              isLoading={exerciseProgram === null}
-              program={exerciseProgram}
-            />
-          )}
+          <ExerciseQuestionnaire
+            onClose={handleBack}
+            onSubmit={handleQuestionnaireSubmit}
+            generallyPainfulAreas={diagnosis?.painfulAreas ?? []}
+            programType={diagnosis?.programType ?? ProgramType.Exercise}
+            targetAreas={selectedExerciseGroupsRef.current}
+            fullBody={fullBodyRef.current}
+          />
         </div>
       )}
     </div>

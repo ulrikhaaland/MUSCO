@@ -171,6 +171,45 @@ export function UserProvider({ children }: { children: ReactNode }) {
           createdAt: new Date().toISOString()
         });
 
+        // Generate the program
+        try {
+          const response = await fetch("/api/assistant", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              action: "generate_exercise_program",
+              payload: {
+                diagnosisData: diagnosis,
+                userInfo: answers,
+                userId: user.uid,
+                diagnosisId: docRef.id
+              },
+            }),
+          });
+
+          if (!response.ok) {
+            throw new Error('Failed to generate program');
+          }
+
+          setProgramStatus(ProgramStatus.Done);
+
+          const program = await response.json();
+          setProgram(program.program);
+
+          // The program generation and status updates are handled by the API endpoint
+          // It will update the user's program status and save the program to Firestore
+
+        } catch (error) {
+          console.error('Error generating program:', error);
+          // Update status to error if generation fails
+          await updateDoc(userRef, {
+            programStatus: ProgramStatus.Error,
+          });
+          throw error;
+        }
+
         return docRef.id;
       } catch (error) {
         console.error('Error saving diagnosis to Firestore:', error);

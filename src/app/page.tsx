@@ -4,6 +4,7 @@ import { Suspense, useState, useCallback, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import HumanViewer from './components/3d/HumanViewer';
 import { Gender } from './types';
+import { ProgramStatus } from './types/program';
 import { AppProvider, useApp, ProgramIntention } from './context/AppContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { UserProvider, useUser } from './context/UserContext';
@@ -108,11 +109,14 @@ function HumanViewerWrapper() {
     [setIntention]
   );
 
-  // If user has a program, show the program container
-  if (user && program && !isLoading) {
+  // Show program container if:
+  // 1. User is logged in and has a program
+  // 2. Program is being generated (show loading state)
+  // 3. Program is ready
+  if (user && (program || programStatus === ProgramStatus.Generating)) {
     return (
       <ExerciseProgramContainer
-        isLoading={false}
+        isLoading={isLoading || programStatus === ProgramStatus.Generating}
         program={program}
       />
     );
