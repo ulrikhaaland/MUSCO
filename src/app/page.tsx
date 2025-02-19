@@ -124,8 +124,13 @@ function IntentionQuestion({
   );
 }
 
-function HumanViewerWrapper() {
-  const initialGender = 'male';
+function SearchParamsWrapper({ children }: { children: (gender: Gender) => React.ReactNode }) {
+  const searchParams = useSearchParams();
+  const initialGender = (searchParams?.get('gender') as Gender) || 'male';
+  return <>{children(initialGender)}</>;
+}
+
+function HumanViewerContent({ gender: initialGender }: { gender: Gender }) {
   const [gender, setGender] = useState<Gender>(initialGender);
   const { intention, setIntention, skipAuth } = useApp();
   const { user, loading: authLoading, error: authError } = useAuth();
@@ -174,8 +179,9 @@ function HumanViewerWrapper() {
   // 1. Auth is loading
   // 2. User data is loading
   // 3. We have a user but program status is undefined (still fetching)
+  const isLoading = authLoading || userLoading || (user && programStatus === null);
 
-  if (authLoading || userLoading) {
+  if (isLoading) {
     return <LoadingSpinner />;
   }
 
@@ -216,12 +222,18 @@ function HumanViewerWrapper() {
   );
 }
 
-function AppContent() {
+function HumanViewerWrapper() {
   return (
     <Suspense fallback={<LoadingSpinner />}>
-      <HumanViewerWrapper />
+      <SearchParamsWrapper>
+        {(gender) => <HumanViewerContent gender={gender} />}
+      </SearchParamsWrapper>
     </Suspense>
   );
+}
+
+function AppContent() {
+  return <HumanViewerWrapper />;
 }
 
 export default function Page() {
