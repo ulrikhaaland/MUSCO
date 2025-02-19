@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useEffect, useState, useRef, Suspense } from 'react';
+import { createContext, useContext, useEffect, useState, useRef } from 'react';
 import {
   User,
   signOut,
@@ -11,7 +11,7 @@ import {
 } from 'firebase/auth';
 import { auth, db } from '../firebase/config';
 import { doc, setDoc } from 'firebase/firestore';
-import { useSearchParams } from 'next/navigation';
+import { useClientUrl } from '../hooks/useClientUrl';
 import { getPendingQuestionnaire, deletePendingQuestionnaire, submitQuestionnaire } from '../services/questionnaire';
 
 interface AuthContextType {
@@ -36,21 +36,8 @@ const actionCodeSettings = {
   handleCodeInApp: true,
 };
 
-function SearchParamsProvider({ children }: { children: (href: string) => React.ReactNode }) {
-  const searchParams = useSearchParams();
-  const [href, setHref] = useState<string>('');
-
-  useEffect(() => {
-    setHref(window.location.href);
-  }, []);
-
-  // Don't render children until we have the href on the client side
-  if (!href) return null;
-
-  return <>{children(href)}</>;
-}
-
-function AuthProviderContent({ href, children }: { href: string; children: React.ReactNode }) {
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const href = useClientUrl();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
@@ -58,9 +45,10 @@ function AuthProviderContent({ href, children }: { href: string; children: React
 
   // Handle email link sign-in first
   useEffect(() => {
+    if (!href) return; // Don't proceed until we have the href
+
     const handleEmailLink = async () => {
       console.log('Checking for email link sign-in...');
-      if (typeof window === 'undefined') return;
       if (handledEmailLink.current) return;
 
       try {
@@ -194,22 +182,15 @@ function AuthProviderContent({ href, children }: { href: string; children: React
     }
   };
 
+  // Don't render until we have the href on the client side
+  if (!href) return null;
+
   return (
     <AuthContext.Provider
       value={{ user, loading, error, sendSignInLink, logOut, createUserDoc }}
     >
       {children}
     </AuthContext.Provider>
-  );
-}
-
-export function AuthProvider({ children }: { children: React.ReactNode }) {
-  return (
-    <Suspense fallback={null}>
-      <SearchParamsProvider>
-        {(href) => <AuthProviderContent href={href}>{children}</AuthProviderContent>}
-      </SearchParamsProvider>
-    </Suspense>
   );
 }
 

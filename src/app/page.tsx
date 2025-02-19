@@ -124,12 +124,6 @@ function IntentionQuestion({
   );
 }
 
-function SearchParamsWrapper({ children }: { children: (gender: Gender) => React.ReactNode }) {
-  const searchParams = useSearchParams();
-  const initialGender = (searchParams?.get('gender') as Gender) || 'male';
-  return <>{children(initialGender)}</>;
-}
-
 function HumanViewerContent({ gender: initialGender }: { gender: Gender }) {
   const [gender, setGender] = useState<Gender>(initialGender);
   const { intention, setIntention, skipAuth } = useApp();
@@ -223,11 +217,12 @@ function HumanViewerContent({ gender: initialGender }: { gender: Gender }) {
 }
 
 function HumanViewerWrapper() {
+  const searchParams = useSearchParams();
+  const initialGender = (searchParams?.get('gender') as Gender) || 'male';
+  
   return (
     <Suspense fallback={<LoadingSpinner />}>
-      <SearchParamsWrapper>
-        {(gender) => <HumanViewerContent gender={gender} />}
-      </SearchParamsWrapper>
+      <HumanViewerContent gender={initialGender} />
     </Suspense>
   );
 }
