@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useEffect, useState, useRef } from 'react';
+import { createContext, useContext, useEffect, useState, useRef, Suspense } from 'react';
 import {
   User,
   signOut,
@@ -11,7 +11,7 @@ import {
 } from 'firebase/auth';
 import { auth, db } from '../firebase/config';
 import { doc, setDoc } from 'firebase/firestore';
-import { usePathname, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { getPendingQuestionnaire, deletePendingQuestionnaire, submitQuestionnaire } from '../services/questionnaire';
 
 interface AuthContextType {
@@ -36,12 +36,24 @@ const actionCodeSettings = {
   handleCodeInApp: true,
 };
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
+function SearchParamsProvider({ children }: { children: (href: string) => React.ReactNode }) {
+  const searchParams = useSearchParams();
+  const [href, setHref] = useState<string>('');
+
+  useEffect(() => {
+    setHref(window.location.href);
+  }, []);
+
+  // Don't render children until we have the href on the client side
+  if (!href) return null;
+
+  return <>{children(href)}</>;
+}
+
+function AuthProviderContent({ href, children }: { href: string; children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
   const handledEmailLink = useRef(false);
 
   // Handle email link sign-in first
@@ -52,7 +64,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (handledEmailLink.current) return;
 
       try {
-        if (isSignInWithEmailLink(auth, window.location.href)) {
+        if (isSignInWithEmailLink(auth, href)) {
           console.log('Valid email link detected');
           handledEmailLink.current = true;
           setLoading(true);
@@ -66,11 +78,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           if (email) {
             console.log('Attempting to sign in with email link...');
             try {
-              const result = await signInWithEmailLink(
-                auth,
-                email,
-                window.location.href
-              );
+              const result = await signInWithEmailLink(auth, email, href);
 
               if (result.user !== null) {
                 console.log('Sign in successful, creating user document...');
@@ -85,9 +93,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 });
 
                 // Check if there's a pending questionnaire
-                const hasPendingQuestionnaire = window.localStorage.getItem(
-                  'hasPendingQuestionnaire'
-                );
+                const hasPendingQuestionnaire = window.localStorage.getItem('hasPendingQuestionnaire');
                 if (hasPendingQuestionnaire) {
                   console.log('Processing pending questionnaire...');
                   try {
@@ -130,7 +136,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
 
     handleEmailLink();
-  }, [pathname, searchParams]);
+  }, [href]);
 
   // Set up auth state listener after handling email link
   useEffect(() => {
@@ -194,6 +200,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     >
       {children}
     </AuthContext.Provider>
+  );
+}
+
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  return (
+    <Suspense fallback={null}>
+      <SearchParamsProvider>
+        {(href) => <AuthProviderContent href={href}>{children}</AuthProviderContent>}
+      </SearchParamsProvider>
+    </Suspense>
   );
 }
 
