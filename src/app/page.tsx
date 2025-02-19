@@ -125,7 +125,6 @@ function IntentionQuestion({
 }
 
 function HumanViewerWrapper() {
-  console.log('HumanViewerWrapper rendering');
   const initialGender = 'male';
   const [gender, setGender] = useState<Gender>(initialGender);
   const { intention, setIntention, skipAuth } = useApp();
@@ -170,6 +169,11 @@ function HumanViewerWrapper() {
     userLoading,
     authError,
   });
+
+  // Keep loading state true while:
+  // 1. Auth is loading
+  // 2. User data is loading
+  // 3. We have a user but program status is undefined (still fetching)
 
   if (authLoading || userLoading) {
     return <LoadingSpinner />;

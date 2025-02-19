@@ -60,7 +60,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
     null
   );
   const [program, setProgram] = useState<ExerciseProgram | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [pendingQuestionnaire, setPendingQuestionnaire] = useState<{
     diagnosis: DiagnosisAssistantResponse;
     answers: ExerciseQuestionnaireAnswers;
@@ -114,7 +114,6 @@ export function UserProvider({ children }: { children: ReactNode }) {
       isMounted.current = true;
       return;
     }
-
     // Don't start loading until auth is done
     if (authLoading) return;
 
@@ -129,7 +128,6 @@ export function UserProvider({ children }: { children: ReactNode }) {
         return;
       }
 
-      setIsLoading(true);
 
       try {
         // Fetch the most recent program document
