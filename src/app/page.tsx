@@ -33,7 +33,7 @@ function ErrorDisplay({ error }: { error: Error }) {
           {error.message}
         </pre>
         <button
-          onClick={() => window.location.href = '/'}
+          onClick={() => (window.location.href = '/')}
           className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500"
         >
           Reload page
@@ -126,12 +126,16 @@ function IntentionQuestion({
 
 function HumanViewerWrapper() {
   console.log('HumanViewerWrapper rendering');
-  const searchParams = useSearchParams();
-  const initialGender = (searchParams?.get('gender') as Gender) || 'male';
+  const initialGender = 'male';
   const [gender, setGender] = useState<Gender>(initialGender);
   const { intention, setIntention, skipAuth } = useApp();
   const { user, loading: authLoading, error: authError } = useAuth();
-  const { program, isLoading: userLoading, programStatus, pendingQuestionnaire } = useUser();
+  const {
+    program,
+    isLoading: userLoading,
+    programStatus,
+    pendingQuestionnaire,
+  } = useUser();
   const [showAuthForm, setShowAuthForm] = useState(false);
 
   const handleGenderChange = useCallback((newGender: Gender) => {
@@ -164,7 +168,7 @@ function HumanViewerWrapper() {
     skipAuth,
     authLoading,
     userLoading,
-    authError
+    authError,
   });
 
   if (authLoading || userLoading) {
