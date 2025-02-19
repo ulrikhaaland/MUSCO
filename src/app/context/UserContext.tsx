@@ -1,72 +1,110 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect, ReactNode, useRef } from 'react';
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+  useRef,
+} from 'react';
 import { ExerciseQuestionnaireAnswers } from '@/app/shared/types';
 import { DiagnosisAssistantResponse } from '@/app/types';
 import { useAuth } from './AuthContext';
 import { db } from '@/app/firebase/config';
-import { 
-  doc, 
-  addDoc, 
-  updateDoc, 
-  collection, 
-  getDoc, 
-  getDocs, 
-  query, 
-  orderBy, 
+import {
+  doc,
+  addDoc,
+  updateDoc,
+  collection,
+  getDoc,
+  getDocs,
+  query,
+  orderBy,
   limit,
   onSnapshot,
-  setDoc
+  setDoc,
 } from 'firebase/firestore';
 import { ProgramStatus, ExerciseProgram } from '@/app/types/program';
+import { submitQuestionnaire } from '@/app/services/questionnaire';
 
 interface UserContextType {
-  onQuestionnaireSubmit: (diagnosis: DiagnosisAssistantResponse, answers: ExerciseQuestionnaireAnswers) => Promise<string>;
+  onQuestionnaireSubmit: (
+    diagnosis: DiagnosisAssistantResponse,
+    answers: ExerciseQuestionnaireAnswers
+  ) => Promise<{ requiresAuth?: boolean; programId?: string }>;
   answers: ExerciseQuestionnaireAnswers | null;
   programStatus: ProgramStatus | null;
   program: ExerciseProgram | null;
   isLoading: boolean;
+  pendingQuestionnaire: {
+    diagnosis: DiagnosisAssistantResponse;
+    answers: ExerciseQuestionnaireAnswers;
+  } | null;
+  setPendingQuestionnaire: (
+    data: {
+      diagnosis: DiagnosisAssistantResponse;
+      answers: ExerciseQuestionnaireAnswers;
+    } | null
+  ) => void;
 }
 
 const UserContext = createContext<UserContextType>({} as UserContextType);
 
 export function UserProvider({ children }: { children: ReactNode }) {
-  const { user } = useAuth();
-  const [answers, setAnswers] = useState<ExerciseQuestionnaireAnswers | null>(null);
-  const [programStatus, setProgramStatus] = useState<ProgramStatus | null>(null);
+  const { user, loading: authLoading } = useAuth();
+  const [answers, setAnswers] = useState<ExerciseQuestionnaireAnswers | null>(
+    null
+  );
+  const [programStatus, setProgramStatus] = useState<ProgramStatus | null>(
+    null
+  );
   const [program, setProgram] = useState<ExerciseProgram | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [pendingQuestionnaire, setPendingQuestionnaire] = useState<{
+    diagnosis: DiagnosisAssistantResponse;
+    answers: ExerciseQuestionnaireAnswers;
+  } | null>(null);
   const isMounted = useRef(false);
 
-  // Set up real-time listener for program status changes
+  // Set up real-time listener for program status changes and latest program
   useEffect(() => {
     if (!user) return;
 
     // Only set up the listener if we're in generating state
     if (programStatus !== ProgramStatus.Generating) return;
 
-    const userRef = doc(db, `users/${user.uid}`);
-    const unsubscribeStatus = onSnapshot(userRef, (doc) => {
-      if (doc.exists()) {
-        const userData = doc.data();
-        const newStatus = userData.programStatus;
-        setProgramStatus(newStatus);
+    // Listen to the most recent program document
+    const programsRef = collection(db, `users/${user.uid}/programs`);
+    const q = query(programsRef, orderBy('createdAt', 'desc'), limit(1));
 
-        // If status changes to Done, fetch the latest program
-        if (newStatus === ProgramStatus.Done) {
-          const programsRef = collection(db, `users/${user.uid}/programs`);
-          const programsQuery = query(programsRef, orderBy('createdAt', 'desc'), limit(1));
-          getDocs(programsQuery).then((snapshot) => {
-            if (!snapshot.empty) {
-              const latestProgram = snapshot.docs[0].data();
-              setProgram(latestProgram.program || null);
-            }
-          });
+    const unsubscribe = onSnapshot(q, async (snapshot) => {
+      if (!snapshot.empty) {
+        const programDoc = snapshot.docs[0];
+        const programData = programDoc.data();
+        setProgramStatus(programData.status);
+
+        // If status is Done, fetch the latest program from the programs subcollection
+        if (programData.status === ProgramStatus.Done) {
+          const programsCollectionRef = collection(
+            db,
+            `users/${user.uid}/programs/${programDoc.id}/programs`
+          );
+          const latestProgramQ = query(
+            programsCollectionRef,
+            orderBy('createdAt', 'desc'),
+            limit(1)
+          );
+          const latestProgramSnapshot = await getDocs(latestProgramQ);
+
+          if (!latestProgramSnapshot.empty) {
+            setProgram(latestProgramSnapshot.docs[0].data() as ExerciseProgram);
+          }
         }
       }
     });
 
-    return () => unsubscribeStatus();
+    return () => unsubscribe();
   }, [user, programStatus]);
 
   // Fetch initial user data when user logs in
@@ -76,6 +114,9 @@ export function UserProvider({ children }: { children: ReactNode }) {
       isMounted.current = true;
       return;
     }
+
+    // Don't start loading until auth is done
+    if (authLoading) return;
 
     let isSubscribed = true;
 
@@ -88,26 +129,46 @@ export function UserProvider({ children }: { children: ReactNode }) {
         return;
       }
 
-      try {
-        // Fetch user document
-        const userRef = doc(db, `users/${user.uid}`);
-        const userDoc = await getDoc(userRef);
-        
-        if (userDoc.exists() && isSubscribed) {
-          const userData = userDoc.data();
-          setAnswers(userData.answers || null);
-          setProgramStatus(userData.programStatus || null);
-        }
+      setIsLoading(true);
 
-        // Fetch latest program from programs subcollection
+      try {
+        // Fetch the most recent program document
         const programsRef = collection(db, `users/${user.uid}/programs`);
-        const programsQuery = query(programsRef, orderBy('createdAt', 'desc'), limit(1));
-        const programsSnapshot = await getDocs(programsQuery);
-        
+        const q = query(programsRef, orderBy('createdAt', 'desc'), limit(1));
+        const programsSnapshot = await getDocs(q);
+
         if (!programsSnapshot.empty && isSubscribed) {
-          const latestProgram = programsSnapshot.docs[0].data();
-          setProgram(latestProgram as ExerciseProgram);
+          const programDoc = programsSnapshot.docs[0];
+          const programData = programDoc.data();
+          setAnswers(programData.questionnaire);
+          setProgramStatus(programData.status);
+
+          // Only fetch the program if status is Done
+          if (programData.status === ProgramStatus.Done) {
+            const programsCollectionRef = collection(
+              db,
+              `users/${user.uid}/programs/${programDoc.id}/programs`
+            );
+            const latestProgramQ = query(
+              programsCollectionRef,
+              orderBy('createdAt', 'desc'),
+              limit(1)
+            );
+            const latestProgramSnapshot = await getDocs(latestProgramQ);
+
+            if (!latestProgramSnapshot.empty) {
+              const program =
+                latestProgramSnapshot.docs[0].data() as ExerciseProgram;
+              setProgram(program);
+            } else {
+              setProgram(null);
+            }
+          } else {
+            setProgram(null);
+          }
         } else if (isSubscribed) {
+          setAnswers(null);
+          setProgramStatus(null);
           setProgram(null);
         }
       } catch (error) {
@@ -119,117 +180,70 @@ export function UserProvider({ children }: { children: ReactNode }) {
       }
     }
 
-    setIsLoading(true);
     fetchUserData();
 
     // Cleanup function
     return () => {
       isSubscribed = false;
     };
-  }, [user]);
+  }, [user, authLoading]);
 
   const onQuestionnaireSubmit = async (
     diagnosis: DiagnosisAssistantResponse,
     answers: ExerciseQuestionnaireAnswers
-  ): Promise<string> => {
-    // If user is authenticated, save to Firestore
-    if (user) {
-      try {
-        // Get reference to user document
-        const userRef = doc(db, `users/${user.uid}`);
-        
-        // Check if user document exists
-        const userDoc = await getDoc(userRef);
-        
-        // If user document doesn't exist, create it
-        if (!userDoc.exists()) {
-          await setDoc(userRef, {
-            email: user.email,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString()
-          });
-        }
-
-        // Update user document with answers and program status
-        const newData = {
-          answers,
-          programStatus: ProgramStatus.Generating,
-          updatedAt: new Date().toISOString()
-        };
-        
-        await updateDoc(userRef, newData);
-        
-        // Update local state
-        setAnswers(answers);
-        setProgramStatus(ProgramStatus.Generating);
-        setProgram(null); // Clear existing program as we're generating a new one
-
-        // Save diagnosis to subcollection with auto-generated ID
-        const diagnosisRef = collection(db, `users/${user.uid}/diagnosis`);
-        const docRef = await addDoc(diagnosisRef, {
-          diagnosis,
-          createdAt: new Date().toISOString()
-        });
-
-        // Generate the program
-        try {
-          const response = await fetch("/api/assistant", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              action: "generate_exercise_program",
-              payload: {
-                diagnosisData: diagnosis,
-                userInfo: answers,
-                userId: user.uid,
-                diagnosisId: docRef.id
-              },
-            }),
-          });
-
-          if (!response.ok) {
-            throw new Error('Failed to generate program');
-          }
-
-          setProgramStatus(ProgramStatus.Done);
-
-          const program = await response.json();
-          setProgram(program.program);
-
-          // The program generation and status updates are handled by the API endpoint
-          // It will update the user's program status and save the program to Firestore
-
-        } catch (error) {
-          console.error('Error generating program:', error);
-          // Update status to error if generation fails
-          await updateDoc(userRef, {
-            programStatus: ProgramStatus.Error,
-          });
-          throw error;
-        }
-
-        return docRef.id;
-      } catch (error) {
-        console.error('Error saving diagnosis to Firestore:', error);
-        throw error;
-      }
+  ): Promise<{ requiresAuth?: boolean; programId?: string }> => {
+    // If user is not authenticated, store the data and return requiresAuth flag
+    if (!user) {
+      setPendingQuestionnaire({ diagnosis, answers });
+      return { requiresAuth: true };
     }
-    return '';
+
+    try {
+      setProgramStatus(ProgramStatus.Generating);
+
+      // Update local state
+      setAnswers(answers);
+      setProgram(null); // Clear existing program as we're generating a new one
+
+      // Submit questionnaire and generate program
+      const programId = await submitQuestionnaire(user.uid, diagnosis, answers);
+
+      return { programId };
+    } catch (error) {
+      console.error('Error submitting questionnaire:', error);
+      setProgramStatus(ProgramStatus.Error);
+      throw error;
+    }
   };
 
+  // Effect to handle successful login with pending questionnaire
+  useEffect(() => {
+    if (user && pendingQuestionnaire) {
+      // Submit the pending questionnaire
+      onQuestionnaireSubmit(
+        pendingQuestionnaire.diagnosis,
+        pendingQuestionnaire.answers
+      ).catch(console.error);
+      // Clear the pending questionnaire
+      setPendingQuestionnaire(null);
+    }
+  }, [user, pendingQuestionnaire]);
+
   return (
-    <UserContext.Provider value={{ 
-      onQuestionnaireSubmit,
-      answers,
-      programStatus,
-      program,
-      isLoading
-    }}>
+    <UserContext.Provider
+      value={{
+        onQuestionnaireSubmit,
+        answers,
+        programStatus,
+        program,
+        isLoading,
+        pendingQuestionnaire,
+        setPendingQuestionnaire,
+      }}
+    >
       {children}
     </UserContext.Provider>
   );
 }
 
-export const useUser = () => useContext(UserContext); 
+export const useUser = () => useContext(UserContext);

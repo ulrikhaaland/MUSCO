@@ -13,7 +13,7 @@ import { ExerciseQuestionnaire } from '../ui/ExerciseQuestionnaire';
 import { Question } from '@/app/types';
 import { ExerciseQuestionnaireAnswers, ProgramType } from '@/app/shared/types';
 import { getGenderedId } from '@/app/utils/anatomyHelpers';
-import { useApp } from '@/app/context/AppContext';
+import { useApp, ProgramIntention } from '@/app/context/AppContext';
 import { useUser } from '@/app/context/UserContext';
 
 interface HumanViewerProps {
@@ -55,6 +55,7 @@ export default function HumanViewer({
   const [isMobile, setIsMobile] = useState(false);
   const [isResetting, setIsResetting] = useState(false);
   const { onQuestionnaireSubmit } = useUser();
+  const { setIntention } = useApp();
   const [showQuestionnaire, setShowQuestionnaire] = useState(false);
 
   useEffect(() => {
@@ -435,10 +436,16 @@ export default function HumanViewer({
     diagnosis.timeFrame = '1 week';
 
     try {
-      // Store the diagnosis in the subcollection and get the ID
-      await onQuestionnaireSubmit(diagnosis, answers);
+      const result = await onQuestionnaireSubmit(diagnosis, answers);
+
+      if (result.requiresAuth) {
+        // Keep the questionnaire open, the auth form will be shown by the parent component
+        return;
+      }
     } catch (error) {
       console.error('Error in questionnaire submission:', error);
+      // Handle other errors appropriately
+      // You might want to show an error message to the user here
     }
   };
 

@@ -114,6 +114,7 @@ export async function POST(request: Request) {
             diagnosisData: payload.diagnosisData,
             userInfo: payload.userInfo,
             userId: payload.userId,
+            programId: payload.programId
           });
 
           return NextResponse.json({

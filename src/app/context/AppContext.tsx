@@ -38,6 +38,8 @@ interface AppContextType {
   completeExerciseSelection: () => void;
   completeRecoverySelection: () => void;
   resetSelectionState: () => void;
+  skipAuth: boolean;
+  setSkipAuth: (skip: boolean) => void;
   // 3D model selection state
   selectedPart: AnatomyPart | null;
   selectedPartRef: MutableRefObject<AnatomyPart | null>;
@@ -70,6 +72,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   >([]);
   const [selectedGroups, setSelectedGroups] = useState<BodyPartGroup[]>([]);
   const [selectedPart, setSelectedPart] = useState<AnatomyPart | null>(null);
+  const [skipAuth, setSkipAuth] = useState(false);
   const humanRef = useRef<HumanAPI | null>(null);
 
   // Refs to track state in event handlers
@@ -352,6 +355,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         completeExerciseSelection,
         completeRecoverySelection,
         resetSelectionState,
+        skipAuth,
+        setSkipAuth,
         // 3D model selection values
         selectedPart,
         selectedPartRef,

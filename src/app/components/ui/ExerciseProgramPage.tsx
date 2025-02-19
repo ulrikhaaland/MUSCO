@@ -78,10 +78,10 @@ export function ExerciseProgramPage({
   // Check if overview has been seen before
   useEffect(() => {
     if (!program?.program) return;
-    
+
     const programId = `program-${program.createdAt}`;
     const hasSeenOverview = localStorage.getItem(programId);
-    
+
     if (hasSeenOverview) {
       setShowOverview(false);
     } else {
@@ -299,7 +299,7 @@ export function ExerciseProgramPage({
               d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
             />
           </svg>
-          <h3 className="text-xl font-semibold text-white">Next Week Coming Soon</h3>
+          <h3 className="text-xl font-semibold text-white">Coming Soon</h3>
           <p className="text-gray-300">
             Your next week&apos;s program will be available on {formattedDate}
           </p>
@@ -307,15 +307,6 @@ export function ExerciseProgramPage({
       </div>
     );
   };
-
-  const handleExerciseToggle = (exerciseName: string) => {
-    setExpandedExercises(prev => 
-      prev.includes(exerciseName) 
-        ? prev.filter(name => name !== exerciseName)
-        : [...prev, exerciseName]
-    );
-  };
-  
 
   if (program === null || !Array.isArray(program.program)) {
     return (
@@ -544,7 +535,13 @@ export function ExerciseProgramPage({
                       : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white'
                   }`}
                 >
-                  Week {getWeekNumber(new Date(currentDate.getTime() + (week.week - 1) * 7 * 24 * 60 * 60 * 1000))}
+                  Week{' '}
+                  {getWeekNumber(
+                    new Date(
+                      currentDate.getTime() +
+                        (week.week - 1) * 7 * 24 * 60 * 60 * 1000
+                    )
+                  )}
                 </button>
               ))}
               <button
@@ -583,7 +580,9 @@ export function ExerciseProgramPage({
                       {day.isRestDay ? (
                         <span className="text-xs mt-1 opacity-80">Rest</span>
                       ) : (
-                        <span className="text-xs mt-1 opacity-80">Activity</span>
+                        <span className="text-xs mt-1 opacity-80">
+                          Activity
+                        </span>
                       )}
                     </button>
                   ))}
@@ -600,13 +599,15 @@ export function ExerciseProgramPage({
                 const dayIndex = selectedWeekData.days.findIndex(
                   (d) => d.day === dayNumber
                 );
-                
+
                 return (
                   <ProgramDaySummaryComponent
                     key={day.day}
                     day={day}
                     dayName={dayName(dayIndex + 1)}
-                    onClick={() => handleDayDetailClick(day, dayName(dayIndex + 1))}
+                    onClick={() =>
+                      handleDayDetailClick(day, dayName(dayIndex + 1))
+                    }
                   />
                 );
               })}

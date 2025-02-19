@@ -276,11 +276,6 @@ Behavior Guidelines
               "rest": 60,
               "modification": "Perform the plank on knees if full plank is too challenging."
             },
-            {
-              "name": "Cool-Down Stretch",
-              "description": "A full-body stretch to improve flexibility and reduce soreness.",
-              "duration": 5
-            }
           ],
           "duration": 48
         },
@@ -362,11 +357,7 @@ Behavior Guidelines
               "repetitions": 12,
               "rest": 45
             },
-            {
-              "name": "Cool-Down Stretch",
-              "description": "A series of stretches to relax muscles and improve flexibility.",
-              "duration": 5
-            }
+         
           ],
           "duration": 51
         },

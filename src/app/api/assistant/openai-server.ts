@@ -6,6 +6,7 @@ import { adminDb } from '@/app/firebase/admin';
 import { ExerciseProgram, ProgramStatus } from '@/app/types/program';
 import { recoverySystemPrompt } from '../prompts/recovery';
 import { programSystemPrompt } from '../prompts/exercise';
+import { collection, addDoc } from 'firebase/firestore';
 
 // Initialize OpenAI client
 const openai = new OpenAI({
@@ -277,21 +278,29 @@ export async function generateExerciseProgramWithModel(context: {
   diagnosisData: DiagnosisAssistantResponse;
   userInfo: ExerciseQuestionnaireAnswers;
   userId?: string;
+  programId?: string;
 }) {
+  console.log('Generating exercise program with model');
   const prompt =
     context.diagnosisData.programType === ProgramType.Exercise
       ? programSystemPrompt
       : recoverySystemPrompt;
 
-  // If we have a userId, update the user's program status
-  if (context.userId) {
+  // If we have a userId and programId, update the program status
+  if (context.userId && context.programId) {
     try {
-      const userRef = adminDb.collection('users').doc(context.userId);
-      await userRef.update({
-        programStatus: ProgramStatus.Generating,
+      const programRef = adminDb
+        .collection('users')
+        .doc(context.userId)
+        .collection('programs')
+        .doc(context.programId);
+
+      await programRef.update({
+        status: ProgramStatus.Generating,
+        updatedAt: new Date().toISOString(),
       });
     } catch (error) {
-      console.error('Error updating user program status:', error);
+      console.error('Error updating program status:', error);
       // Continue even if status update fails
     }
   }
@@ -323,59 +332,74 @@ export async function generateExerciseProgramWithModel(context: {
     const program = JSON.parse(response) as ExerciseProgram;
     program.type = context.diagnosisData.programType;
     program.targetAreas = context.userInfo.targetAreas;
-    // If we have a userId, save the program and update status
-    if (context.userId) {
+
+    // If we have a userId and programId, update the program document
+    if (context.userId && context.programId) {
       try {
-        // Save the program to the subcollection using addDoc
-        const programsRef = adminDb
+        const programRef = adminDb
           .collection('users')
           .doc(context.userId)
-          .collection('programs');
-        await programsRef.add({
-          ...program,
-          createdAt: new Date().toISOString(),
-        });
+          .collection('programs')
+          .doc(context.programId);
 
-        // Update the user's program status
-        const userRef = adminDb.collection('users').doc(context.userId);
-        await userRef.update({
-          programStatus: ProgramStatus.Done,
+        // Create a new document in the programs subcollection
+        await adminDb
+          .collection('users')
+          .doc(context.userId)
+          .collection('programs')
+          .doc(context.programId)
+          .collection('programs')
+          .add({
+            ...program,
+            createdAt: new Date().toISOString(),
+          });
+
+        // Update the main program document status
+        await programRef.update({
+          status: ProgramStatus.Done,
+          updatedAt: new Date().toISOString(),
         });
       } catch (error) {
-        console.error('Error saving program to Firestore:', error);
+        console.error('Error updating program document:', error);
         // Update status to error if save fails
         try {
-          const userRef = adminDb.collection('users').doc(context.userId);
-          await userRef.update({
-            programStatus: ProgramStatus.Error,
-          });
+          if (context.userId && context.programId) {
+            const programRef = adminDb
+              .collection('users')
+              .doc(context.userId)
+              .collection('programs')
+              .doc(context.programId);
+
+            await programRef.update({
+              status: ProgramStatus.Error,
+              updatedAt: new Date().toISOString(),
+            });
+          }
         } catch (statusError) {
-          console.error(
-            'Error updating user program status to error:',
-            statusError
-          );
+          console.error('Error updating program status to error:', statusError);
         }
-        // Continue even if Firestore save fails - we don't want to block the program generation
+        throw error;
       }
-    } else {
-      console.log('No userId provided, skipping Firestore save');
     }
 
     return program;
   } catch (error) {
     console.error('Error generating exercise program:', error);
-    // If we have a userId, update the status to error
-    if (context.userId) {
+    // If we have a userId and programId, update the status to error
+    if (context.userId && context.programId) {
       try {
-        const userRef = adminDb.collection('users').doc(context.userId);
-        await userRef.update({
-          programStatus: ProgramStatus.Error,
+        const programRef = adminDb
+          .collection('users')
+          .doc(context.userId)
+          .collection('programs')
+          .doc(context.programId);
+
+        await programRef.update({
+          status: ProgramStatus.Error,
+          updatedAt: new Date().toISOString(),
         });
       } catch (statusError) {
-        console.error(
-          'Error updating user program status to error:',
-          statusError
-        );
+        console.error('Error updating program status to error:', statusError);
       }
     }
     throw new Error('Failed to generate exercise program');

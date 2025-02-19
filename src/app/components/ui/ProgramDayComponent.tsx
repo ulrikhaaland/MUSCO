@@ -30,17 +30,12 @@ export function ProgramDayComponent({
   onClick,
 }: ProgramDayComponentProps) {
   return (
-    <div 
-      className="h-full space-y-6 mb-32"
-      onClick={onClick}
-    >
+    <div className="h-full space-y-6" onClick={onClick}>
       {/* Header section */}
       <div className="bg-gray-900/95 backdrop-blur-sm py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <h3 className="text-2xl font-medium text-white">
-              {dayName}
-            </h3>
+            <h3 className="text-2xl font-medium text-white">{dayName}</h3>
             {day.isRestDay ? (
               <span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-500/20 text-blue-300">
                 Recovery
@@ -82,34 +77,39 @@ export function ProgramDayComponent({
         {/* Optional exercises message for rest days */}
         {day.isRestDay && day.exercises && day.exercises.length > 0 && (
           <div>
-            <h4 className="text-indigo-400 font-medium">Optional Recovery Activities</h4>
+            <h4 className="text-indigo-400 font-medium">
+              Optional Recovery Activities
+            </h4>
             <p className="text-gray-400 text-sm mt-1">
-              These gentle exercises can be performed at home to aid recovery. Listen to your body and only do what feels comfortable.
+              These gentle exercises can be performed at home to aid recovery.
+              Listen to your body and only do what feels comfortable.
             </p>
           </div>
         )}
 
         {/* Exercise list - same for both rest days and workout days */}
         {day.exercises && day.exercises.length > 0 && (
-          <div className="space-y-4">
+          <div className="space-y-4 pb-32">
             {day.exercises.map((exercise) => (
               <div
                 key={exercise.name}
                 onClick={() => onExerciseToggle?.(exercise.name)}
                 className={`bg-gray-800/50 rounded-lg overflow-hidden hover:bg-gray-700/50 transition-colors duration-200 ${
-                  onExerciseToggle ? "cursor-pointer" : ""
+                  onExerciseToggle ? 'cursor-pointer' : ''
                 }`}
               >
                 {/* Exercise Header - Always visible */}
                 <div className="w-full px-4 py-3 flex flex-col gap-2">
                   <div className="flex items-center justify-between">
-                    <span className="text-white font-medium">{exercise.name}</span>
+                    <span className="text-white font-medium">
+                      {exercise.name}
+                    </span>
                     {onExerciseToggle && (
                       <svg
                         className={`w-5 h-5 text-gray-400 transform transition-transform duration-200 ${
                           expandedExercises.includes(exercise.name)
-                            ? "rotate-180"
-                            : ""
+                            ? 'rotate-180'
+                            : ''
                         }`}
                         fill="none"
                         stroke="currentColor"
@@ -206,18 +206,18 @@ export function ProgramDayComponent({
                         onVideoClick(exercise);
                       }}
                       className={`inline-flex items-center space-x-1 bg-indigo-500/90 hover:bg-indigo-400 text-white px-3 py-1.5 rounded-md ${
-                        compact ? "text-xs" : "text-sm"
+                        compact ? 'text-xs' : 'text-sm'
                       } transition-colors duration-200 cursor-pointer`}
                     >
                       {loadingVideoExercise === exercise.name ? (
                         <div
                           className={`${
-                            compact ? "w-3.5 h-3.5" : "w-4 h-4"
+                            compact ? 'w-3.5 h-3.5' : 'w-4 h-4'
                           } border-t-2 border-white rounded-full animate-spin`}
                         />
                       ) : (
                         <svg
-                          className={`${compact ? "w-3.5 h-3.5" : "w-4 h-4"}`}
+                          className={`${compact ? 'w-3.5 h-3.5' : 'w-4 h-4'}`}
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
@@ -240,19 +240,19 @@ export function ProgramDayComponent({
                     </div>
                     {exercise.modification && (
                       <p className="text-yellow-300/90 text-sm leading-relaxed">
-                        <span className="font-medium">Modification:</span>{" "}
+                        <span className="font-medium">Modification:</span>{' '}
                         {exercise.modification}
                       </p>
                     )}
                     {exercise.precaution && (
                       <p className="text-yellow-300/90 text-sm leading-relaxed">
-                        <span className="font-medium">Precaution:</span>{" "}
+                        <span className="font-medium">Precaution:</span>{' '}
                         {exercise.precaution}
                       </p>
                     )}
                     {exercise.instructions && (
                       <p className="text-gray-400 text-sm leading-relaxed">
-                        <span className="font-medium">Instructions:</span>{" "}
+                        <span className="font-medium">Instructions:</span>{' '}
                         {exercise.instructions}
                       </p>
                     )}

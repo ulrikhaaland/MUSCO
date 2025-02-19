@@ -9,15 +9,49 @@ import { AppProvider, useApp, ProgramIntention } from './context/AppContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { UserProvider, useUser } from './context/UserContext';
 import { AuthForm } from './components/auth/AuthForm';
+import { QuestionnaireAuthForm } from './components/auth/QuestionnaireAuthForm';
 import { ExerciseProgramContainer } from './components/ui/ExerciseProgramContainer';
+import { ErrorBoundary } from './components/ErrorBoundary';
+
+function LoadingSpinner() {
+  return (
+    <div className="fixed inset-0 bg-gray-900/95 backdrop-blur-sm z-50 flex items-center justify-center">
+      <div className="flex flex-col items-center space-y-4">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
+        <p className="text-white text-lg">Loading...</p>
+      </div>
+    </div>
+  );
+}
+
+function ErrorDisplay({ error }: { error: Error }) {
+  return (
+    <div className="fixed inset-0 bg-gray-900/95 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <div className="max-w-md w-full space-y-4 text-center">
+        <h2 className="text-2xl font-bold text-white">Something went wrong</h2>
+        <pre className="text-red-400 text-sm overflow-auto p-4 bg-gray-800 rounded-lg">
+          {error.message}
+        </pre>
+        <button
+          onClick={() => window.location.href = '/'}
+          className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500"
+        >
+          Reload page
+        </button>
+      </div>
+    </div>
+  );
+}
 
 function IntentionQuestion({
   onSelect,
+  onSkip,
 }: {
   onSelect: (intention: ProgramIntention) => void;
+  onSkip: () => void;
 }) {
   const { user } = useAuth();
-  const [skipAuth, setSkipAuth] = useState(false);
+  const { skipAuth, setSkipAuth } = useApp();
 
   const handleSelect = (intention: ProgramIntention) => {
     onSelect(intention);
@@ -25,6 +59,7 @@ function IntentionQuestion({
 
   const handleSkipAuth = () => {
     setSkipAuth(true);
+    onSkip();
   };
 
   return (
@@ -90,13 +125,14 @@ function IntentionQuestion({
 }
 
 function HumanViewerWrapper() {
+  console.log('HumanViewerWrapper rendering');
   const searchParams = useSearchParams();
   const initialGender = (searchParams?.get('gender') as Gender) || 'male';
   const [gender, setGender] = useState<Gender>(initialGender);
-  const { intention, setIntention } = useApp();
-  const { user } = useAuth();
-  const { program, isLoading, programStatus } = useUser();
-  const [skipAuth, setSkipAuth] = useState(false);
+  const { intention, setIntention, skipAuth } = useApp();
+  const { user, loading: authLoading, error: authError } = useAuth();
+  const { program, isLoading: userLoading, programStatus, pendingQuestionnaire } = useUser();
+  const [showAuthForm, setShowAuthForm] = useState(false);
 
   const handleGenderChange = useCallback((newGender: Gender) => {
     setGender(newGender);
@@ -109,6 +145,36 @@ function HumanViewerWrapper() {
     [setIntention]
   );
 
+  // Show auth form if we have pending questionnaire data
+  useEffect(() => {
+    console.log('Effect running with:', { pendingQuestionnaire, user });
+    if (pendingQuestionnaire && !user) {
+      setShowAuthForm(true);
+    } else {
+      setShowAuthForm(false);
+    }
+  }, [pendingQuestionnaire, user]);
+
+  console.log('Rendering with:', {
+    user,
+    program,
+    programStatus,
+    showAuthForm,
+    intention,
+    skipAuth,
+    authLoading,
+    userLoading,
+    authError
+  });
+
+  if (authLoading || userLoading) {
+    return <LoadingSpinner />;
+  }
+
+  if (authError) {
+    return <ErrorDisplay error={authError} />;
+  }
+
   // Show program container if:
   // 1. User is logged in and has a program
   // 2. Program is being generated (show loading state)
@@ -116,9 +182,19 @@ function HumanViewerWrapper() {
   if (user && (program || programStatus === ProgramStatus.Generating)) {
     return (
       <ExerciseProgramContainer
-        isLoading={isLoading || programStatus === ProgramStatus.Generating}
+        isLoading={programStatus === ProgramStatus.Generating}
         program={program}
       />
+    );
+  }
+
+  if (showAuthForm) {
+    return (
+      <div className="fixed inset-0 bg-gray-900/95 backdrop-blur-sm z-50 flex items-center justify-center">
+        <div className="max-w-lg w-full mx-4">
+          <QuestionnaireAuthForm />
+        </div>
+      </div>
     );
   }
 
@@ -126,7 +202,7 @@ function HumanViewerWrapper() {
     <>
       <HumanViewer gender={gender} onGenderChange={handleGenderChange} />
       {(intention === ProgramIntention.None || (!user && !skipAuth)) && (
-        <IntentionQuestion onSelect={handleIntentionSelect} />
+        <IntentionQuestion onSelect={handleIntentionSelect} onSkip={() => {}} />
       )}
     </>
   );
@@ -134,7 +210,7 @@ function HumanViewerWrapper() {
 
 function AppContent() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<LoadingSpinner />}>
       <HumanViewerWrapper />
     </Suspense>
   );
@@ -142,12 +218,14 @@ function AppContent() {
 
 export default function Page() {
   return (
-    <AuthProvider>
-      <UserProvider>
-        <AppProvider>
-          <AppContent />
-        </AppProvider>
-      </UserProvider>
-    </AuthProvider>
+    <ErrorBoundary>
+      <AuthProvider>
+        <UserProvider>
+          <AppProvider>
+            <AppContent />
+          </AppProvider>
+        </UserProvider>
+      </AuthProvider>
+    </ErrorBoundary>
   );
 }
