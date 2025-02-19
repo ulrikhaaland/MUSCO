@@ -12,6 +12,7 @@ import { AuthForm } from './components/auth/AuthForm';
 import { QuestionnaireAuthForm } from './components/auth/QuestionnaireAuthForm';
 import { ExerciseProgramContainer } from './components/ui/ExerciseProgramContainer';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import { useClientUrl } from './hooks/useClientUrl';
 
 function LoadingSpinner() {
   return (
@@ -217,8 +218,8 @@ function HumanViewerContent({ gender: initialGender }: { gender: Gender }) {
 }
 
 function HumanViewerWrapper() {
-  const searchParams = useSearchParams();
-  const initialGender = (searchParams?.get('gender') as Gender) || 'male';
+  const { getParam } = useClientUrl();
+  const initialGender = (getParam('gender') as Gender) || 'male';
   
   return (
     <Suspense fallback={<LoadingSpinner />}>

@@ -8,8 +8,14 @@ export function useClientUrl() {
   const [href, setHref] = useState<string>('');
 
   useEffect(() => {
-    setHref(window.location.href);
+    if (typeof window !== 'undefined') {
+      setHref(window.location.href);
+    }
   }, [searchParams]);
 
-  return href;
+  return {
+    href,
+    searchParams,
+    getParam: (key: string) => searchParams?.get(key) ?? null
+  };
 } 

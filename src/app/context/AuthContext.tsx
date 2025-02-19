@@ -37,7 +37,7 @@ const actionCodeSettings = {
 };
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const href = useClientUrl();
+  const { href } = useClientUrl();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
@@ -45,10 +45,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Handle email link sign-in first
   useEffect(() => {
-    if (!href) return; // Don't proceed until we have the href
+    if (!href) {
+      // Don't attempt email link sign-in until we have the href
+      return;
+    }
 
     const handleEmailLink = async () => {
-      console.log('Checking for email link sign-in...');
       if (handledEmailLink.current) return;
 
       try {
@@ -89,7 +91,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                     const data = await getPendingQuestionnaire(email);
 
                     if (data) {
-                      setLoading(false);
                       // Submit the questionnaire
                       await submitQuestionnaire(result.user.uid, data.diagnosis, data.answers);
                       // Delete the pending questionnaire
@@ -128,7 +129,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Set up auth state listener after handling email link
   useEffect(() => {
-    if (handledEmailLink.current) return;
+    if (!href || handledEmailLink.current) return;
 
     console.log('Setting up auth state listener...');
     const unsubscribe = onAuthStateChanged(
@@ -147,7 +148,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     );
 
     return () => unsubscribe();
-  }, []);
+  }, [href]);
 
   const createUserDoc = async () => {
     if (!user) return;
@@ -182,8 +183,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  // Don't render until we have the href on the client side
-  if (!href) return null;
+  // Show loading state while waiting for href
+  if (!href) {
+    return <>{children}</>;
+  }
 
   return (
     <AuthContext.Provider
