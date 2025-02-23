@@ -33,7 +33,7 @@ function ErrorDisplay({ error }: { error: Error }) {
           {error.message}
         </pre>
         <button
-          // onClick={() => (window.location.href = '/')}
+          onClick={() => (window.location.href = '/')}
           className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500"
         >
           Reload page
@@ -124,8 +124,19 @@ function IntentionQuestion({
   );
 }
 
-function HumanViewerContent({ gender: initialGender }: { gender: Gender }) {
-  const [gender, setGender] = useState<Gender>(initialGender);
+function GenderFromParams({ onGender }: { onGender: (gender: Gender) => void }) {
+  const searchParams = useSearchParams();
+  const gender = (searchParams?.get('gender') as Gender) || 'male';
+  
+  useEffect(() => {
+    onGender(gender);
+  }, [gender, onGender]);
+  
+  return null;
+}
+
+function HumanViewerContent() {
+  const [gender, setGender] = useState<Gender>('male');
   const { intention, setIntention, skipAuth } = useApp();
   const { user, loading: authLoading, error: authError } = useAuth();
   const {
@@ -149,7 +160,6 @@ function HumanViewerContent({ gender: initialGender }: { gender: Gender }) {
 
   // Show auth form if we have pending questionnaire data
   useEffect(() => {
-    console.log('Effect running with:', { pendingQuestionnaire, user });
     if (pendingQuestionnaire && !user) {
       setShowAuthForm(true);
     } else {
@@ -157,22 +167,6 @@ function HumanViewerContent({ gender: initialGender }: { gender: Gender }) {
     }
   }, [pendingQuestionnaire, user]);
 
-  console.log('Rendering with:', {
-    user,
-    program,
-    programStatus,
-    showAuthForm,
-    intention,
-    skipAuth,
-    authLoading,
-    userLoading,
-    authError,
-  });
-
-  // Keep loading state true while:
-  // 1. Auth is loading
-  // 2. User data is loading
-  // 3. We have a user but program status is undefined (still fetching)
   const isLoading = authLoading || userLoading || (user && programStatus === null);
 
   if (isLoading) {
@@ -183,10 +177,6 @@ function HumanViewerContent({ gender: initialGender }: { gender: Gender }) {
     return <ErrorDisplay error={authError} />;
   }
 
-  // Show program container if:
-  // 1. User is logged in and has a program
-  // 2. Program is being generated (show loading state)
-  // 3. Program is ready
   if (user && (program || programStatus === ProgramStatus.Generating)) {
     return (
       <ExerciseProgramContainer
@@ -216,18 +206,16 @@ function HumanViewerContent({ gender: initialGender }: { gender: Gender }) {
   );
 }
 
-function SearchParamsHandler({ children }: { children: (gender: Gender) => React.ReactNode }) {
-  const searchParams = useSearchParams();
-  const initialGender = (searchParams?.get('gender') as Gender) || 'male';
-  return <>{children(initialGender)}</>;
-}
-
 function HumanViewerWrapper() {
   return (
     <Suspense fallback={<LoadingSpinner />}>
-      <SearchParamsHandler>
-        {(gender) => <HumanViewerContent gender={gender} />}
-      </SearchParamsHandler>
+      <HumanViewerContent />
+      <GenderFromParams onGender={(gender) => {
+        const viewer = document.getElementById('myViewer') as HTMLIFrameElement;
+        if (viewer) {
+          viewer.src = gender === 'female' ? '/female.html' : '/male.html';
+        }
+      }} />
     </Suspense>
   );
 }
