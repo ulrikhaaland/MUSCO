@@ -18,6 +18,7 @@ export function ProgramDaySummaryComponent({
   const warmupExercises = day.exercises.filter(ex => ex.warmup).length;
 
   return (
+    <div className="pb-32">
     <div 
       className={`bg-gray-800/50 rounded-xl overflow-hidden ring-1 ring-gray-700/50 transition-colors duration-200 ${onClick ? 'hover:bg-gray-700/50 cursor-pointer' : ''}`}
       onClick={onClick}
@@ -129,6 +130,7 @@ export function ProgramDaySummaryComponent({
           )}
         </div>
       </div>
+    </div>
     </div>
   );
 } 

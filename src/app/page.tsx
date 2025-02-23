@@ -11,7 +11,7 @@ import { AuthForm } from './components/auth/AuthForm';
 import { QuestionnaireAuthForm } from './components/auth/QuestionnaireAuthForm';
 import { ExerciseProgramContainer } from './components/ui/ExerciseProgramContainer';
 import { ErrorBoundary } from './components/ErrorBoundary';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 
 function LoadingSpinner() {
   return (
@@ -126,11 +126,18 @@ function IntentionQuestion({
 
 function GenderFromParams({ onGender }: { onGender: (gender: Gender) => void }) {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const gender = (searchParams?.get('gender') as Gender) || 'male';
   
   useEffect(() => {
     onGender(gender);
   }, [gender, onGender]);
+
+  const updateGender = useCallback((newGender: Gender) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('gender', newGender);
+    router.push(`/?${params.toString()}`, { scroll: false });
+  }, [router, searchParams]);
   
   return null;
 }
@@ -167,7 +174,7 @@ function HumanViewerContent() {
     }
   }, [pendingQuestionnaire, user]);
 
-  const isLoading = authLoading || userLoading || (user && programStatus === null);
+  const isLoading = authLoading || userLoading;
 
   if (isLoading) {
     return <LoadingSpinner />;

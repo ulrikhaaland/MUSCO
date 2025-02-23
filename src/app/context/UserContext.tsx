@@ -128,7 +128,6 @@ export function UserProvider({ children }: { children: ReactNode }) {
         return;
       }
 
-
       try {
         // Fetch the most recent program document
         const programsRef = collection(db, `users/${user.uid}/programs`);
@@ -172,9 +171,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
       } catch (error) {
         console.error('Error fetching user data:', error);
       } finally {
-        if (isSubscribed) {
-          setIsLoading(false);
-        }
+        setIsLoading(false);
       }
     }
 

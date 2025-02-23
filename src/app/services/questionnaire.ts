@@ -36,7 +36,8 @@ async function generateProgram(userId: string, programId: string, diagnosis: Dia
 export async function submitQuestionnaire(
   userId: string,
   diagnosis: DiagnosisAssistantResponse,
-  answers: ExerciseQuestionnaireAnswers
+  answers: ExerciseQuestionnaireAnswers,
+  onProgramDocAdded?: () => void
 ) {
   // Create a new document in the programs collection
   const programsRef = collection(db, `users/${userId}/programs`);
@@ -46,6 +47,10 @@ export async function submitQuestionnaire(
     createdAt: new Date().toISOString(),
     status: ProgramStatus.Generating,
   });
+  
+  if (onProgramDocAdded) {
+    onProgramDocAdded();
+  }
 
   // Start program generation
   try {

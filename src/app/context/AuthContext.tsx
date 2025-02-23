@@ -12,7 +12,11 @@ import {
 import { auth, db } from '../firebase/config';
 import { doc, setDoc } from 'firebase/firestore';
 import { useClientUrl } from '../hooks/useClientUrl';
-import { getPendingQuestionnaire, deletePendingQuestionnaire, submitQuestionnaire } from '../services/questionnaire';
+import {
+  getPendingQuestionnaire,
+  deletePendingQuestionnaire,
+  submitQuestionnaire,
+} from '../services/questionnaire';
 
 interface AuthContextType {
   user: User | null;
@@ -72,7 +76,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               if (result.user !== null) {
                 console.log('Sign in successful, creating user document...');
                 setUser(result.user);
-                
+
                 // Create user document if it doesn't exist
                 const userRef = doc(db, `users/${result.user.uid}`);
                 await setDoc(userRef, {
@@ -82,7 +86,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 });
 
                 // Check if there's a pending questionnaire
-                const hasPendingQuestionnaire = window.localStorage.getItem('hasPendingQuestionnaire');
+                const hasPendingQuestionnaire = window.localStorage.getItem(
+                  'hasPendingQuestionnaire'
+                );
                 if (hasPendingQuestionnaire) {
                   console.log('Processing pending questionnaire...');
                   try {
@@ -91,15 +97,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
                     if (data) {
                       // Submit the questionnaire
-                      await submitQuestionnaire(result.user.uid, data.diagnosis, data.answers);
+                      await submitQuestionnaire(
+                        result.user.uid,
+                        data.diagnosis,
+                        data.answers,
+                        () => {
+                          setLoading(false);
+                        }
+                      );
+
                       // Delete the pending questionnaire
                       await deletePendingQuestionnaire(email);
                       console.log('Questionnaire processed successfully');
                     }
                   } catch (error) {
-                    console.error('Error processing pending questionnaire:', error);
-                    setError(error instanceof Error ? error : new Error('Failed to process questionnaire'));
+                    console.error(
+                      'Error processing pending questionnaire:',
+                      error
+                    );
+                    setError(
+                      error instanceof Error
+                        ? error
+                        : new Error('Failed to process questionnaire')
+                    );
                   }
+                } else {
+                  setLoading(false);
                 }
               }
 
@@ -111,13 +134,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               window.history.replaceState(null, '', window.location.pathname);
             } catch (error) {
               console.error('Error signing in with email link:', error);
-              setError(error instanceof Error ? error : new Error('Failed to sign in with email link'));
+              setError(
+                error instanceof Error
+                  ? error
+                  : new Error('Failed to sign in with email link')
+              );
             }
           }
         }
       } catch (error) {
         console.error('Error in handleEmailLink:', error);
-        setError(error instanceof Error ? error : new Error('Failed to handle email link'));
+        setError(
+          error instanceof Error
+            ? error
+            : new Error('Failed to handle email link')
+        );
       } finally {
         setLoading(false);
       }

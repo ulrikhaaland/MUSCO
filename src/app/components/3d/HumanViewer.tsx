@@ -15,6 +15,7 @@ import { ExerciseQuestionnaireAnswers, ProgramType } from '@/app/shared/types';
 import { getGenderedId } from '@/app/utils/anatomyHelpers';
 import { useApp, ProgramIntention } from '@/app/context/AppContext';
 import { useUser } from '@/app/context/UserContext';
+import { useRouter } from 'next/navigation';
 
 interface HumanViewerProps {
   gender: Gender;
@@ -57,6 +58,7 @@ export default function HumanViewer({
   const { onQuestionnaireSubmit } = useUser();
   const { setIntention } = useApp();
   const [showQuestionnaire, setShowQuestionnaire] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     const checkMobile = () => {
@@ -158,6 +160,15 @@ export default function HumanViewer({
   const [viewerUrl, setViewerUrl] = useState(() => getViewerUrl(gender));
   const [isChangingModel, setIsChangingModel] = useState(false);
 
+  const resetValues = useCallback(() => {
+    previousSelectedPartGroupRef.current = null;
+    setCurrentRotation(0);
+    setSelectedPart(null);
+    setSelectedGroup(null, false);
+    lastSelectedIdRef.current = null;
+    setNeedsReset(false);
+  }, [setSelectedGroup, setSelectedPart, setNeedsReset]);
+
   const handleSwitchModel = useCallback(() => {
     setIsChangingModel(true);
     const newGender: Gender = currentGender === 'male' ? 'female' : 'male';
@@ -169,12 +180,7 @@ export default function HumanViewer({
 
     // Call the parent's gender change handler
     onGenderChange?.(newGender);
-
-    // Update URL without page reload
-    const url = new URL(window.location.href);
-    url.searchParams.set('gender', newGender);
-    window.history.pushState({}, '', url.toString());
-  }, [currentGender, getViewerUrl, onGenderChange]);
+  }, [currentGender, getViewerUrl, onGenderChange, resetValues]);
 
   // Clear target gender when model change is complete
   useEffect(() => {
@@ -182,16 +188,6 @@ export default function HumanViewer({
       setTargetGender(null);
     }
   }, [isChangingModel]);
-
-  const resetValues = () => {
-    previousSelectedPartGroupRef.current = null;
-
-    setCurrentRotation(0);
-    setSelectedPart(null);
-    setSelectedGroup(null, false);
-    lastSelectedIdRef.current = null;
-    setNeedsReset(false);
-  };
 
   const handleReset = useCallback(
     (shouldResetSelectionState?: boolean) => {
