@@ -37,7 +37,7 @@ const actionCodeSettings = {
 };
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const { href } = useClientUrl();
+  const { href, isReady } = useClientUrl();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
@@ -45,8 +45,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Handle email link sign-in first
   useEffect(() => {
-    if (!href) {
-      // Don't attempt email link sign-in until we have the href
+    if (!isReady) {
       return;
     }
 
@@ -125,11 +124,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
 
     handleEmailLink();
-  }, [href]);
+  }, [href, isReady]);
 
   // Set up auth state listener after handling email link
   useEffect(() => {
-    if (!href || handledEmailLink.current) return;
+    if (!isReady || handledEmailLink.current) return;
 
     console.log('Setting up auth state listener...');
     const unsubscribe = onAuthStateChanged(
@@ -148,7 +147,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     );
 
     return () => unsubscribe();
-  }, [href]);
+  }, [isReady]);
 
   const createUserDoc = async () => {
     if (!user) return;
@@ -183,8 +182,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  // Show loading state while waiting for href
-  if (!href) {
+  // Show loading state while waiting for initialization
+  if (!isReady) {
     return <>{children}</>;
   }
 

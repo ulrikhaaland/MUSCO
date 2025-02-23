@@ -1,7 +1,6 @@
 'use client';
 
 import { Suspense, useState, useCallback, useEffect } from 'react';
-import { useSearchParams } from 'next/navigation';
 import HumanViewer from './components/3d/HumanViewer';
 import { Gender } from './types';
 import { ProgramStatus } from './types/program';
