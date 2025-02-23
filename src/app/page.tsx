@@ -11,7 +11,6 @@ import { AuthForm } from './components/auth/AuthForm';
 import { QuestionnaireAuthForm } from './components/auth/QuestionnaireAuthForm';
 import { ExerciseProgramContainer } from './components/ui/ExerciseProgramContainer';
 import { ErrorBoundary } from './components/ErrorBoundary';
-import { useClientUrl } from './hooks/useClientUrl';
 import { useSearchParams } from 'next/navigation';
 
 function LoadingSpinner() {
@@ -34,7 +33,7 @@ function ErrorDisplay({ error }: { error: Error }) {
           {error.message}
         </pre>
         <button
-          onClick={() => (window.location.href = '/')}
+          // onClick={() => (window.location.href = '/')}
           className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500"
         >
           Reload page
