@@ -1,4 +1,5 @@
-import { ProgramType } from "../shared/types";
+import { ProgramType, ExerciseQuestionnaireAnswers } from "../shared/types";
+import { DiagnosisAssistantResponse } from "../types";
 
 export enum ProgramStatus {
   Generating = 'generating',
@@ -49,4 +50,14 @@ export interface ExerciseProgram {
   type: ProgramType;
   createdAt: Date;
   targetAreas: string[];
+}
+
+export interface UserProgram {
+  programs: ExerciseProgram[];
+  diagnosis: DiagnosisAssistantResponse;
+  questionnaire: ExerciseQuestionnaireAnswers;
+  active: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+  type: ProgramType;
 } 

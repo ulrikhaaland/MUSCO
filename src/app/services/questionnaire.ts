@@ -46,6 +46,8 @@ export async function submitQuestionnaire(
     questionnaire: answers,
     createdAt: new Date().toISOString(),
     status: ProgramStatus.Generating,
+    type: diagnosis.programType,
+    active: true,
   });
   
   if (onProgramDocAdded) {

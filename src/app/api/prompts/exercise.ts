@@ -28,6 +28,7 @@ Behavior Guidelines
     - Full Body, Upper Body, Lower Body
     - Neck, Shoulders, Chest, Arms, Abdomen, Back, Glutes, Upper Legs, Lower Legs
   - Cardio Preferences: This parameter is included only if the "Exercise Modalities" include cardio. It specifies the user's preferred type of cardio exercises and should guide the inclusion of suitable cardio activities in the program.
+  - Current Day: A number from 1-7 representing the current day of the week (1 = Monday, 7 = Sunday). The program MUST ensure that this day contains an exercise session, not a rest day, as this is when the user will start their program.
 
 - UserInfo: This data provides additional context about the user's preferences and physical condition, allowing for further personalization. The key fields include:
 

@@ -13,19 +13,15 @@ import { DiagnosisAssistantResponse } from '@/app/types';
 import { useAuth } from './AuthContext';
 import { db } from '@/app/firebase/config';
 import {
-  doc,
-  addDoc,
-  updateDoc,
   collection,
-  getDoc,
   getDocs,
   query,
   orderBy,
   limit,
   onSnapshot,
-  setDoc,
+  where,
 } from 'firebase/firestore';
-import { ProgramStatus, ExerciseProgram } from '@/app/types/program';
+import { ProgramStatus, ExerciseProgram, UserProgram } from '@/app/types/program';
 import { submitQuestionnaire } from '@/app/services/questionnaire';
 
 interface UserContextType {
@@ -36,6 +32,8 @@ interface UserContextType {
   answers: ExerciseQuestionnaireAnswers | null;
   programStatus: ProgramStatus | null;
   program: ExerciseProgram | null;
+  userPrograms: UserProgram[];
+  activeProgram: UserProgram | null;
   isLoading: boolean;
   pendingQuestionnaire: {
     diagnosis: DiagnosisAssistantResponse;
@@ -53,13 +51,11 @@ const UserContext = createContext<UserContextType>({} as UserContextType);
 
 export function UserProvider({ children }: { children: ReactNode }) {
   const { user, loading: authLoading } = useAuth();
-  const [answers, setAnswers] = useState<ExerciseQuestionnaireAnswers | null>(
-    null
-  );
-  const [programStatus, setProgramStatus] = useState<ProgramStatus | null>(
-    null
-  );
+  const [answers, setAnswers] = useState<ExerciseQuestionnaireAnswers | null>(null);
+  const [programStatus, setProgramStatus] = useState<ProgramStatus | null>(null);
   const [program, setProgram] = useState<ExerciseProgram | null>(null);
+  const [userPrograms, setUserPrograms] = useState<UserProgram[]>([]);
+  const [activeProgram, setActiveProgram] = useState<UserProgram | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [pendingQuestionnaire, setPendingQuestionnaire] = useState<{
     diagnosis: DiagnosisAssistantResponse;
@@ -71,41 +67,59 @@ export function UserProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!user) return;
 
-    // Only set up the listener if we're in generating state
-    if (programStatus !== ProgramStatus.Generating) return;
-
-    // Listen to the most recent program document
+    // Listen to all user programs
     const programsRef = collection(db, `users/${user.uid}/programs`);
-    const q = query(programsRef, orderBy('createdAt', 'desc'), limit(1));
+    const q = query(programsRef, orderBy('createdAt', 'desc'));
 
     const unsubscribe = onSnapshot(q, async (snapshot) => {
-      if (!snapshot.empty) {
-        const programDoc = snapshot.docs[0];
-        const programData = programDoc.data();
-        setProgramStatus(programData.status);
+      const programs: UserProgram[] = [];
+      let active: UserProgram | null = null;
 
-        // If status is Done, fetch the latest program from the programs subcollection
-        if (programData.status === ProgramStatus.Done) {
+      for (const doc of snapshot.docs) {
+        const data = doc.data();
+        if (data.status === ProgramStatus.Done) {
           const programsCollectionRef = collection(
             db,
-            `users/${user.uid}/programs/${programDoc.id}/programs`
+            `users/${user.uid}/programs/${doc.id}/programs`
           );
-          const latestProgramQ = query(
-            programsCollectionRef,
-            orderBy('createdAt', 'desc'),
-            limit(1)
-          );
-          const latestProgramSnapshot = await getDocs(latestProgramQ);
+          const programQ = query(programsCollectionRef, orderBy('createdAt', 'desc'));
+          const programSnapshot = await getDocs(programQ);
 
-          if (!latestProgramSnapshot.empty) {
-            setProgram(latestProgramSnapshot.docs[0].data() as ExerciseProgram);
+          if (!programSnapshot.empty) {
+            const exercisePrograms = programSnapshot.docs.map(doc => 
+              doc.data() as ExerciseProgram
+            );
+            
+            const userProgram: UserProgram = {
+              programs: exercisePrograms,
+              diagnosis: data.diagnosis,
+              questionnaire: data.questionnaire,
+              active: data.active || false,
+              createdAt: new Date(data.createdAt),
+              updatedAt: new Date(data.updatedAt || data.createdAt),
+              type: data.type
+            };
+            programs.push(userProgram);
+
+            if (userProgram.active) {
+              active = userProgram;
+              // Set the most recent program as the current one
+              setProgram(exercisePrograms[0]);
+              setAnswers(data.questionnaire);
+              setProgramStatus(ProgramStatus.Done);
+            }
           }
+        } else {
+          setProgramStatus(data.status);
         }
       }
+
+      setUserPrograms(programs);
+      setActiveProgram(active);
     });
 
     return () => unsubscribe();
-  }, [user, programStatus]);
+  }, [user]);
 
   // Fetch initial user data when user logs in
   useEffect(() => {
@@ -231,6 +245,8 @@ export function UserProvider({ children }: { children: ReactNode }) {
         answers,
         programStatus,
         program,
+        userPrograms,
+        activeProgram,
         isLoading,
         pendingQuestionnaire,
         setPendingQuestionnaire,

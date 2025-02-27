@@ -150,7 +150,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             : new Error('Failed to handle email link')
         );
       } finally {
-        setLoading(false);
+        if (user) {
+          setLoading(false);
+        }
       }
     };
 

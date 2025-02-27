@@ -319,6 +319,7 @@ export async function generateExerciseProgramWithModel(context: {
           content: JSON.stringify({
             diagnosisData: context.diagnosisData,
             userInfo: context.userInfo,
+            currentDay: new Date().getDay(),
           }),
         },
       ],
