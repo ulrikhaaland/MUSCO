@@ -385,6 +385,8 @@ export async function generateExerciseProgramWithModel(context: {
     // Set program bodyParts to the unique set of body parts from all exercises
     program.bodyParts = Array.from(allBodyParts);
 
+    console.log('Program bodyParts:', program.bodyParts);
+
     // If we have a userId and programId, update the program document
     if (context.userId && context.programId) {
       try {

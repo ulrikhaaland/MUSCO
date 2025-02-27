@@ -23,6 +23,7 @@ import {
 } from 'firebase/firestore';
 import { ProgramStatus, ExerciseProgram, UserProgram } from '@/app/types/program';
 import { submitQuestionnaire } from '@/app/services/questionnaire';
+import { useRouter } from 'next/navigation';
 
 interface UserContextType {
   onQuestionnaireSubmit: (
@@ -51,6 +52,7 @@ const UserContext = createContext<UserContextType>({} as UserContextType);
 
 export function UserProvider({ children }: { children: ReactNode }) {
   const { user, loading: authLoading } = useAuth();
+  const router = useRouter();
   const [answers, setAnswers] = useState<ExerciseQuestionnaireAnswers | null>(null);
   const [programStatus, setProgramStatus] = useState<ProgramStatus | null>(null);
   const [program, setProgram] = useState<ExerciseProgram | null>(null);
@@ -73,10 +75,19 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
     const unsubscribe = onSnapshot(q, async (snapshot) => {
       const programs: UserProgram[] = [];
-      let active: UserProgram | null = null;
+      let mostRecentStatus: ProgramStatus | null = null;
+      let mostRecentProgram: UserProgram | null = null;
+      let mostRecentDate: Date | null = null;
 
+      // First pass: collect all programs
       for (const doc of snapshot.docs) {
         const data = doc.data();
+        
+        // Track the most recent status for any program
+        if (!mostRecentStatus && data.status) {
+          mostRecentStatus = data.status;
+        }
+        
         if (data.status === ProgramStatus.Done) {
           const programsCollectionRef = collection(
             db,
@@ -90,32 +101,40 @@ export function UserProvider({ children }: { children: ReactNode }) {
               doc.data() as ExerciseProgram
             );
             
+            const updatedAt = data.updatedAt ? new Date(data.updatedAt) : new Date(data.createdAt);
             const userProgram: UserProgram = {
               programs: exercisePrograms,
               diagnosis: data.diagnosis,
               questionnaire: data.questionnaire,
-              active: data.active || false,
+              active: true, // Consider all programs as active
               createdAt: new Date(data.createdAt),
-              updatedAt: new Date(data.updatedAt || data.createdAt),
+              updatedAt: updatedAt,
               type: data.type
             };
             programs.push(userProgram);
 
-            if (userProgram.active) {
-              active = userProgram;
-              // Set the most recent program as the current one
-              setProgram(exercisePrograms[0]);
-              setAnswers(data.questionnaire);
-              setProgramStatus(ProgramStatus.Done);
+            // Check if this is the most recent program we've seen
+            if (!mostRecentDate || updatedAt > mostRecentDate) {
+              mostRecentDate = updatedAt;
+              mostRecentProgram = userProgram;
             }
           }
-        } else {
-          setProgramStatus(data.status);
         }
       }
 
+      // Now set all state at once to prevent flickering
       setUserPrograms(programs);
-      setActiveProgram(active);
+      
+      if (mostRecentProgram) {
+        // Set the most recent program as the active one
+        setActiveProgram(mostRecentProgram);
+        setProgram(mostRecentProgram.programs[0]);
+        setAnswers(mostRecentProgram.questionnaire);
+        setProgramStatus(ProgramStatus.Done);
+      } else if (mostRecentStatus) {
+        // Only set status if no program was found
+        setProgramStatus(mostRecentStatus);
+      }
     });
 
     return () => unsubscribe();
@@ -209,10 +228,13 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
     try {
       setProgramStatus(ProgramStatus.Generating);
-
+      
       // Update local state
       setAnswers(answers);
       setProgram(null); // Clear existing program as we're generating a new one
+
+      // Directly navigate to the program page
+      router.push('/program');
 
       // Submit questionnaire and generate program
       const programId = await submitQuestionnaire(user.uid, diagnosis, answers);

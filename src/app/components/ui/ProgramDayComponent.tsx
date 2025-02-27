@@ -29,6 +29,41 @@ export function ProgramDayComponent({
   compact = false,
   onClick,
 }: ProgramDayComponentProps) {
+  // State to track removed body parts
+  const [removedBodyParts, setRemovedBodyParts] = useState<string[]>([]);
+  
+  // Get all unique body parts from exercises
+  const allBodyParts = Array.from(
+    new Set(
+      day.exercises?.flatMap(exercise => exercise.bodyParts || []) || []
+    )
+  ).sort();
+  
+  // Filter exercises based on removed body parts
+  const filteredExercises = day.exercises?.filter(exercise => {
+    // If exercise has no body parts or all its body parts are removed, filter it out
+    if (!exercise.bodyParts || exercise.bodyParts.length === 0) return true;
+    
+    // Check if ALL exercise body parts are in the removed list
+    // Only filter out if ALL body parts are removed
+    const bodyPartsRemoved = exercise.bodyParts.every(part => 
+      removedBodyParts.includes(part)
+    );
+    
+    return !bodyPartsRemoved;
+  });
+  
+  // Toggle body part filter
+  const toggleBodyPart = (bodyPart: string) => {
+    setRemovedBodyParts(prev => {
+      if (prev.includes(bodyPart)) {
+        return prev.filter(part => part !== bodyPart);
+      } else {
+        return [...prev, bodyPart];
+      }
+    });
+  };
+
   return (
     <div className="h-full space-y-6" onClick={onClick}>
       {/* Header section */}
@@ -71,10 +106,43 @@ export function ProgramDayComponent({
         <p className="text-gray-300 mt-4">{day.description}</p>
       </div>
 
+      {/* Body Parts Filter Section */}
+      {allBodyParts.length > 0 && (
+        <div className="pt-2">
+          <h4 className="text-gray-300 font-medium mb-2">Target Body Parts:</h4>
+          <div className="flex flex-wrap gap-2">
+            {allBodyParts.map(bodyPart => (
+              <button
+                key={bodyPart}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleBodyPart(bodyPart);
+                }}
+                className={`px-3 py-1 rounded-full text-xs font-medium transition-colors duration-200 flex items-center gap-1
+                  ${removedBodyParts.includes(bodyPart) 
+                    ? 'bg-gray-700 text-gray-400' 
+                    : 'bg-indigo-500/20 text-indigo-300 hover:bg-indigo-500/30'}`}
+              >
+                {bodyPart}
+                {removedBodyParts.includes(bodyPart) ? (
+                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                  </svg>
+                ) : (
+                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                )}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Content section */}
       <div className="space-y-6">
         {/* Optional exercises message for rest days */}
-        {day.isRestDay && day.exercises && day.exercises.length > 0 && (
+        {day.isRestDay && filteredExercises && filteredExercises.length > 0 && (
           <div>
             <h4 className="text-indigo-400 font-medium">
               Optional Recovery Activities
@@ -87,9 +155,9 @@ export function ProgramDayComponent({
         )}
 
         {/* Exercise list - same for both rest days and workout days */}
-        {day.exercises && day.exercises.length > 0 && (
+        {filteredExercises && filteredExercises.length > 0 ? (
           <div className="space-y-4 pb-32">
-            {day.exercises.map((exercise) => (
+            {filteredExercises.map((exercise) => (
               <div
                 key={exercise.name}
                 onClick={() => onExerciseToggle?.(exercise.name)}
@@ -124,7 +192,7 @@ export function ProgramDayComponent({
                     )}
                   </div>
                   {!expandedExercises.includes(exercise.name) && (
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
                       {exercise.duration ? (
                         <span className="px-2 py-1 rounded-md text-xs font-medium bg-gray-900/80 text-gray-300">
                           {exercise.duration} min
@@ -147,6 +215,18 @@ export function ProgramDayComponent({
                             </span>
                           )}
                         </>
+                      )}
+                      {exercise.bodyParts && exercise.bodyParts.length > 0 && (
+                        <div className="flex flex-wrap gap-1 ml-1">
+                          {exercise.bodyParts.map(part => (
+                            <span 
+                              key={part} 
+                              className="px-2 py-0.5 rounded-full text-xs font-medium bg-indigo-500/20 text-indigo-300"
+                            >
+                              {part}
+                            </span>
+                          ))}
+                        </div>
                       )}
                     </div>
                   )}
@@ -197,6 +277,19 @@ export function ProgramDayComponent({
                             )}
                           </>
                         )}
+                      </div>
+                    )}
+                    {/* Body Parts in expanded view */}
+                    {exercise.bodyParts && exercise.bodyParts.length > 0 && (
+                      <div className="flex flex-wrap gap-1.5">
+                        {exercise.bodyParts.map(part => (
+                          <span 
+                            key={part} 
+                            className="px-3 py-1 rounded-full text-xs font-medium bg-indigo-500/20 text-indigo-300"
+                          >
+                            {part}
+                          </span>
+                        ))}
                       </div>
                     )}
                     <div
@@ -259,6 +352,23 @@ export function ProgramDayComponent({
                 )}
               </div>
             ))}
+          </div>
+        ) : (
+          <div className="py-6 text-center">
+            <p className="text-gray-400">
+              No exercises available with the current filter. 
+              {removedBodyParts.length > 0 && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setRemovedBodyParts([]);
+                  }}
+                  className="text-indigo-400 hover:text-indigo-300 ml-2 underline"
+                >
+                  Reset filters
+                </button>
+              )}
+            </p>
           </div>
         )}
       </div>
