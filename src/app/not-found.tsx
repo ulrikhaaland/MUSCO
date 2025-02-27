@@ -9,7 +9,7 @@ export default function NotFound() {
         <div className="mb-8">
           <h1 className="text-app-title text-white mb-4">Page Not Found</h1>
           <div className="text-gray-400 mb-8">
-            The page you are looking for doesn't exist or has been moved.
+            The page you are looking for doesn&apos;t exist or has been moved.
           </div>
           <Link 
             href="/"
