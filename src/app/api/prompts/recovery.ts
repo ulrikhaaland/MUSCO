@@ -74,6 +74,12 @@ Behavior Guidelines
 - If \`progressive == true\`, the number of weeks must always match the timeframe data.
 - Each day represents a recovery session or rest day.
 
+- Include a title field that provides a concise, descriptive name for the program. The title should:
+  - Be 3-6 words long
+  - Reference the program type (Recovery)
+  - Reference the diagnosis or painful areas where appropriate
+  - Examples: "Neck Strain Recovery Plan", "Lower Back Pain Relief", "Shoulder Mobility Restoration"
+
 - For exercises:
   - If strength-based, include \`sets\`, \`repetitions\`, and \`rest\` time.
   - If duration-based, use \`duration\` (in minutes).
@@ -83,6 +89,7 @@ Behavior Guidelines
 #### Sample JSON Object
 \`\`\`json
 {
+  "title": "Neck Strain Recovery Program",
   "programOverview": "This program is designed to help you recover from a neck strain by improving mobility, reducing pain, and promoting relaxation.",
   "timeFrame": "4 weeks",
   "timeFrameExplanation": "This 4-week time frame allows gradual recovery and pain reduction.",

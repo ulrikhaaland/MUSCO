@@ -5,7 +5,11 @@ import "./globals.css";
 import { useEffect } from "react";
 import { getAnalytics } from "firebase/analytics";
 import { SafeArea } from './components/ui/SafeArea';
+import { NavigationMenu } from './components/ui/NavigationMenu';
 import { app } from './firebase/config';
+import { AuthProvider } from './context/AuthContext';
+import { UserProvider } from './context/UserContext';
+import { AppProvider } from './context/AppContext';
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -39,7 +43,18 @@ export default function RootLayout({
         />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} font-sans h-full overflow-hidden`}>
-        <SafeArea>{children}</SafeArea>
+        <AuthProvider>
+          <UserProvider>
+            <AppProvider>
+              <SafeArea>
+                <div className="h-full pb-16">
+                  {children}
+                </div>
+                <NavigationMenu />
+              </SafeArea>
+            </AppProvider>
+          </UserProvider>
+        </AuthProvider>
       </body>
     </html>
   );

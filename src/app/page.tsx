@@ -1,17 +1,16 @@
 'use client';
 
-import { Suspense, useState, useCallback, useEffect } from 'react';
+import { Suspense, useState, useCallback, useEffect, useRef } from 'react';
 import HumanViewer from './components/3d/HumanViewer';
 import { Gender } from './types';
 import { ProgramStatus } from './types/program';
-import { AppProvider, useApp, ProgramIntention } from './context/AppContext';
-import { AuthProvider, useAuth } from './context/AuthContext';
-import { UserProvider, useUser } from './context/UserContext';
-import { AuthForm } from './components/auth/AuthForm';
+import { useApp, ProgramIntention } from './context/AppContext';
+import { useAuth } from './context/AuthContext';
+import { useUser } from './context/UserContext';
 import { QuestionnaireAuthForm } from './components/auth/QuestionnaireAuthForm';
-import { ExerciseProgramContainer } from './components/ui/ExerciseProgramContainer';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { useSearchParams, useRouter } from 'next/navigation';
+import { IntentionQuestion } from './components/ui/IntentionQuestion';
 
 function LoadingSpinner() {
   return (
@@ -43,108 +42,14 @@ function ErrorDisplay({ error }: { error: Error }) {
   );
 }
 
-function IntentionQuestion({
-  onSelect,
-  onSkip,
-}: {
-  onSelect: (intention: ProgramIntention) => void;
-  onSkip: () => void;
-}) {
-  const { user } = useAuth();
-  const { skipAuth, setSkipAuth } = useApp();
-
-  const handleSelect = (intention: ProgramIntention) => {
-    onSelect(intention);
-  };
-
-  const handleSkipAuth = () => {
-    setSkipAuth(true);
-    onSkip();
-  };
-
-  return (
-    <div className="fixed inset-0 bg-gray-900/95 backdrop-blur-sm z-50 flex items-center justify-center">
-      <div className="max-w-lg w-full mx-4">
-        {user || skipAuth ? (
-          <>
-            <div className="text-center mb-8">
-              <h1 className="text-3xl font-semibold text-white mb-2">
-                How can we help you today?
-              </h1>
-              <p className="text-gray-400">
-                Choose what you&apos;re looking for:
-              </p>
-            </div>
-            <div className="space-y-4">
-              <button
-                onClick={() => handleSelect(ProgramIntention.Exercise)}
-                className="w-full bg-indigo-600/90 hover:bg-indigo-500/90 text-white p-4 rounded-xl transition-colors duration-200 flex items-center justify-between group"
-              >
-                <span className="text-lg">Exercise Program</span>
-                <svg
-                  className="w-6 h-6 transform group-hover:translate-x-1 transition-transform duration-200"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 5l7 7-7 7"
-                  />
-                </svg>
-              </button>
-              <button
-                onClick={() => handleSelect(ProgramIntention.Recovery)}
-                className="w-full bg-indigo-600/90 hover:bg-indigo-500/90 text-white p-4 rounded-xl transition-colors duration-200 flex items-center justify-between group"
-              >
-                <span className="text-lg">Recovery Program</span>
-                <svg
-                  className="w-6 h-6 transform group-hover:translate-x-1 transition-transform duration-200"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 5l7 7-7 7"
-                  />
-                </svg>
-              </button>
-            </div>
-          </>
-        ) : (
-          <AuthForm onSkip={handleSkipAuth} />
-        )}
-      </div>
-    </div>
-  );
-}
-
-function GenderFromParams({ onGender }: { onGender: (gender: Gender) => void }) {
-  const searchParams = useSearchParams();
-  const router = useRouter();
-  const gender = (searchParams?.get('gender') as Gender) || 'male';
-  
-  useEffect(() => {
-    onGender(gender);
-  }, [gender, onGender]);
-
-  const updateGender = useCallback((newGender: Gender) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set('gender', newGender);
-    router.push(`/?${params.toString()}`, { scroll: false });
-  }, [router, searchParams]);
-  
-  return null;
-}
-
-function HumanViewerContent() {
-  const [gender, setGender] = useState<Gender>('male');
-  const { intention, setIntention, skipAuth } = useApp();
+export default function Home() {
+  const {
+    intention,
+    setIntention,
+    skipAuth,
+    shouldNavigateToProgram,
+    setShouldNavigateToProgram,
+  } = useApp();
   const { user, loading: authLoading, error: authError } = useAuth();
   const {
     program,
@@ -153,10 +58,32 @@ function HumanViewerContent() {
     pendingQuestionnaire,
   } = useUser();
   const [showAuthForm, setShowAuthForm] = useState(false);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const genderParam = searchParams?.get('gender') as Gender;
+  const [gender, setGender] = useState<Gender>(genderParam || 'male');
+
+  // Set page title
+  useEffect(() => {
+    if (typeof document !== 'undefined') {
+      document.title = 'MUSCO - Create Your Program';
+    }
+  }, []);
+
+  // Update gender when URL param changes
+  useEffect(() => {
+    if (genderParam && (genderParam === 'male' || genderParam === 'female')) {
+      setGender(genderParam);
+    }
+  }, [genderParam]);
 
   const handleGenderChange = useCallback((newGender: Gender) => {
     setGender(newGender);
-  }, []);
+    // Update URL without reloading the page
+    const params = new URLSearchParams(searchParams?.toString() || '');
+    params.set('gender', newGender);
+    router.push(`/?${params.toString()}`, { scroll: false });
+  }, [router, searchParams]);
 
   const handleIntentionSelect = useCallback(
     (selectedIntention: ProgramIntention) => {
@@ -174,6 +101,26 @@ function HumanViewerContent() {
     }
   }, [pendingQuestionnaire, user]);
 
+  // Redirect to program page if user has a program and shouldNavigateToProgram is true
+  useEffect(() => {
+    if (
+      user &&
+      (program || programStatus === ProgramStatus.Generating) &&
+      shouldNavigateToProgram
+    ) {
+      // Set the flag to false before redirecting to prevent future redirects
+      setShouldNavigateToProgram(false);
+      router.push('/program');
+    }
+  }, [
+    user,
+    program,
+    programStatus,
+    router,
+    shouldNavigateToProgram,
+    setShouldNavigateToProgram,
+  ]);
+
   const isLoading = authLoading || userLoading;
 
   if (isLoading) {
@@ -182,15 +129,6 @@ function HumanViewerContent() {
 
   if (authError) {
     return <ErrorDisplay error={authError} />;
-  }
-
-  if (user && (program || programStatus === ProgramStatus.Generating)) {
-    return (
-      <ExerciseProgramContainer
-        isLoading={programStatus === ProgramStatus.Generating}
-        program={program}
-      />
-    );
   }
 
   if (showAuthForm) {
@@ -204,43 +142,16 @@ function HumanViewerContent() {
   }
 
   return (
-    <>
-      <HumanViewer gender={gender} onGenderChange={handleGenderChange} />
-      {(intention === ProgramIntention.None || (!user && !skipAuth)) && (
-        <IntentionQuestion onSelect={handleIntentionSelect} onSkip={() => {}} />
-      )}
-    </>
-  );
-}
-
-function HumanViewerWrapper() {
-  return (
-    <Suspense fallback={<LoadingSpinner />}>
-      <HumanViewerContent />
-      <GenderFromParams onGender={(gender) => {
-        const viewer = document.getElementById('myViewer') as HTMLIFrameElement;
-        if (viewer) {
-          viewer.src = gender === 'female' ? '/female.html' : '/male.html';
-        }
-      }} />
-    </Suspense>
-  );
-}
-
-function AppContent() {
-  return <HumanViewerWrapper />;
-}
-
-export default function Page() {
-  return (
     <ErrorBoundary>
-      <AuthProvider>
-        <UserProvider>
-          <AppProvider>
-            <AppContent />
-          </AppProvider>
-        </UserProvider>
-      </AuthProvider>
+      <div className="h-full">
+        <HumanViewer gender={gender} onGenderChange={handleGenderChange} />
+        {(intention === ProgramIntention.None || (!user && !skipAuth)) && (
+          <IntentionQuestion
+            onSelect={handleIntentionSelect}
+            onSkip={() => {}}
+          />
+        )}
+      </div>
     </ErrorBoundary>
   );
 }

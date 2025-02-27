@@ -184,6 +184,12 @@ Behavior Guidelines
   - Days: A list of daily workouts or rest schedules.
   - Preferred Workout Duration: Ensure the program includes enough exercises to meet the user's preferred workout duration. This parameter is part of the UserInfo data and should guide the exercise count and session structure.
 
+- Include a title field that provides a concise, descriptive name for the program. The title should:
+  - Be 3-6 words long
+  - Reference the program type (Exercise)
+  - Reference the target areas or the diagnosis where appropriate
+  - Examples: "Upper Body Strength Builder", "Neck & Shoulder Recovery Plan", "Full Body Mobility Program"
+
 - Provide a description/comment/overview at the start of the program.
 
 - Include an afterTimeFrame parameter that outlines what the user should expect at the end of the program and provides guidance on what to do if their goals are not met.
@@ -209,6 +215,7 @@ Behavior Guidelines
 
 \`\`\`json
 {
+  "title": "Full Body Strength Program",
   "programOverview": "This program is designed to help you build full-body strength, improve mobility, and enhance overall fitness while addressing any specific pain points or restrictions you may have.",
   "afterTimeFrame": {
     "expectedOutcome": "You should feel stronger, more mobile, and experience reduced pain or discomfort in your target areas.",

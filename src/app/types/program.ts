@@ -42,6 +42,7 @@ export interface AfterTimeFrame {
 
 export interface ExerciseProgram {
   programOverview: string;
+  title: string;
   timeFrame: string;
   timeFrameExplanation: string;
   afterTimeFrame: AfterTimeFrame;

@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react';
-import { TopBar } from './TopBar';
 import { ProgramDayComponent } from './ProgramDayComponent';
 import { ProgramDaySummaryComponent } from './ProgramDaySummaryComponent';
 import { ProgramType } from '@/app/shared/types';
@@ -325,298 +324,307 @@ export function ExerciseProgramPage({
   const selectedWeekData = program.program.find((w) => w.week === selectedWeek);
 
   return (
-    <div className="fixed inset-0 bg-gray-900 to-gray-800">
-      <TopBar
-        rightContent={
-          <>
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-              />
-            </svg>
-            <span className="ml-2">Calendar</span>
-          </>
-        }
-        onRightClick={onToggleView}
-        className="fixed top-0 left-0 right-0 z-50"
-      />
-
-      {/* Program Overview Modal */}
-      {showOverview && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/95">
-          <div className="max-w-2xl w-full bg-gray-800/90 backdrop-blur-sm rounded-2xl shadow-xl ring-1 ring-gray-700/50 flex flex-col max-h-[90vh]">
-            {/* Fixed Header */}
-            <div className="p-8 pb-0">
-              <div className="text-center">
-                <h2 className="text-3xl font-bold text-white tracking-tight">
-                  {program.type === ProgramType.Exercise
-                    ? 'Your Exercise Program'
-                    : 'Your Recovery Program'}
-                </h2>
-                <p className="mt-4 text-lg text-gray-400">
-                  {program.type === ProgramType.Exercise
-                    ? 'Personalized for your fitness goals'
-                    : 'Personalized for your recovery journey'}
-                </p>
-              </div>
-            </div>
-
-            {/* Scrollable Content */}
-            <div className="flex-1 overflow-y-auto p-8 space-y-6">
-              <p className="text-xl text-gray-300 leading-relaxed">
-                {program.programOverview}
-              </p>
-
-              {program.timeFrame && program.timeFrameExplanation && (
-                <div className="border-t border-gray-700/50 pt-6">
-                  <h3 className="flex items-center text-lg font-semibold text-white mb-3">
-                    <svg
-                      className="w-5 h-5 mr-2 text-indigo-400"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                      />
-                    </svg>
-                    Program Duration: {program.timeFrame}
-                  </h3>
-                  <p className="text-gray-300 leading-relaxed">
-                    {program.timeFrameExplanation}
-                  </p>
-                </div>
-              )}
-
-              {program.whatNotToDo && (
-                <div className="border-t border-gray-700/50 pt-6">
-                  <h3 className="flex items-center text-lg font-semibold text-white mb-3">
-                    <svg
-                      className="w-5 h-5 mr-2 text-red-400"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                      />
-                    </svg>
-                    What Not To Do
-                  </h3>
-                  <p className="text-red-400 leading-relaxed">
-                    {program.whatNotToDo}
-                  </p>
-                </div>
-              )}
-
-              {program.afterTimeFrame && (
-                <div className="border-t border-gray-700/50 pt-6">
-                  {program.afterTimeFrame.expectedOutcome && (
-                    <div className="mb-6">
-                      <h3 className="flex items-center text-lg font-semibold text-white mb-3">
-                        <svg
-                          className="w-5 h-5 mr-2 text-green-400"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                          />
-                        </svg>
-                        Expected Outcome
-                      </h3>
-                      <p className="text-gray-300 leading-relaxed">
-                        {program.afterTimeFrame.expectedOutcome}
-                      </p>
-                    </div>
-                  )}
-
-                  {program.afterTimeFrame.nextSteps && (
-                    <div>
-                      <h3 className="flex items-center text-lg font-semibold text-white mb-3">
-                        <svg
-                          className="w-5 h-5 mr-2 text-blue-400"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M13 5l7 7-7 7M5 5l7 7-7 7"
-                          />
-                        </svg>
-                        Next Steps
-                      </h3>
-                      <p className="text-gray-300 leading-relaxed">
-                        {program.afterTimeFrame.nextSteps}
-                      </p>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-
-            {/* Fixed Footer */}
-            <div className="p-8 pt-4 border-t border-gray-700/50">
-              <div className="flex justify-center">
-                <button
-                  onClick={handleCloseOverview}
-                  className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition-colors duration-200"
-                >
-                  Get Started
-                </button>
-              </div>
+    <div
+      className={`bg-gray-900 flex flex-col h-screen text-white ${
+        isLoading ? 'items-center justify-center' : ''
+      }`}
+    >
+      {isLoading ? (
+        <div className="h-screen w-screen flex flex-col bg-gray-900">
+          <div className="flex flex-col items-center justify-center h-full space-y-4 px-4 text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
+            <div className="text-xl text-white font-medium">Creating Program</div>
+            <div className="text-gray-400 max-w-sm">
+              Please wait while we generate your personalized exercise program...
             </div>
           </div>
         </div>
-      )}
-
-      <div ref={containerRef} className="h-screen overflow-y-auto pt-16">
-        <div className="max-w-4xl mx-auto px-4">
-          {/* Program Title and Overview Button */}
-          <div className="text-center mb-8 space-y-4">
-            <h2 className="text-4xl font-bold text-white tracking-tight">
-              {program.type === ProgramType.Exercise
-                ? 'Your Exercise Program'
-                : 'Your Recovery Program'}
-            </h2>
-            <button
-              onClick={() => setShowOverview(true)}
-              className="px-4 py-2 text-sm bg-gray-800 text-gray-300 rounded-lg hover:bg-gray-700 hover:text-white transition-colors duration-200 inline-flex items-center gap-2"
-            >
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-              View Program Overview
-            </button>
+      ) : (
+        <>
+          <style>{scrollbarHideStyles}</style>
+          
+          {/* Custom header with title only */}
+          <div className="py-3 px-4 flex items-center justify-between">
+            {/* Empty spacer with same width as menu button to balance the title */}
+            <div className="w-10"></div>
+            <h1 className="text-xl font-bold text-center">
+              {program.title ||
+                (program.type === ProgramType.Recovery
+                  ? 'Recovery Program'
+                  : 'Exercise Program')}
+            </h1>
+            {/* Space for menu button */}
+            <div className="w-10"></div>
           </div>
 
-          {/* Week Tabs */}
-          <div className="mb-6 overflow-x-auto scrollbar-hide">
-            <div className="flex space-x-2 min-w-max">
-              {program.program.map((week) => (
-                <button
-                  key={week.week}
-                  data-week={week.week}
-                  onClick={() => handleWeekChange(week.week)}
-                  className={`px-6 py-3 rounded-lg font-medium transition-colors duration-200 ${
-                    selectedWeek === week.week
-                      ? 'bg-indigo-600 text-white'
-                      : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white'
-                  }`}
-                >
-                  Week{' '}
-                  {getWeekNumber(
-                    new Date(
-                      currentDate.getTime() +
-                        (week.week - 1) * 7 * 24 * 60 * 60 * 1000
-                    )
+          {/* Program Overview Modal */}
+          {showOverview && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/95">
+              <div className="max-w-2xl w-full bg-gray-800/90 backdrop-blur-sm rounded-2xl shadow-xl ring-1 ring-gray-700/50 flex flex-col max-h-[90vh]">
+                {/* Fixed Header */}
+                <div className="p-8 pb-0">
+                  <div className="text-center">
+                    <h2 className="text-3xl font-bold text-white tracking-tight">
+                      {program.title ||
+                        (program.type === ProgramType.Exercise
+                          ? 'Your Exercise Program'
+                          : 'Your Recovery Program')}
+                    </h2>
+                    <p className="mt-4 text-lg text-gray-400">
+                      {program.type === ProgramType.Exercise
+                        ? 'Personalized for your fitness goals'
+                        : 'Personalized for your recovery journey'}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Scrollable Content */}
+                <div className="flex-1 overflow-y-auto p-8 space-y-6">
+                  <p className="text-xl text-gray-300 leading-relaxed">
+                    {program.programOverview}
+                  </p>
+
+                  {program.timeFrame && program.timeFrameExplanation && (
+                    <div className="border-t border-gray-700/50 pt-6">
+                      <h3 className="flex items-center text-lg font-semibold text-white mb-3">
+                        <svg
+                          className="w-5 h-5 mr-2 text-indigo-400"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                          />
+                        </svg>
+                        Program Duration: {program.timeFrame}
+                      </h3>
+                      <p className="text-gray-300 leading-relaxed">
+                        {program.timeFrameExplanation}
+                      </p>
+                    </div>
                   )}
-                </button>
-              ))}
-              <button
-                className={`px-6 py-3 rounded-lg font-medium transition-colors duration-200 ${
-                  selectedWeek === program.program.length + 1
-                    ? 'bg-indigo-600 text-white'
-                    : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white'
-                }`}
-                onClick={() => handleWeekChange(program.program.length + 1)}
-              >
-                Next Week
-              </button>
-            </div>
-          </div>
 
-          {/* Selected Week Content */}
-          {selectedWeek <= program.program.length && selectedWeekData ? (
-            <div className="space-y-4">
-              {/* Day Tabs */}
-              <div className="overflow-x-auto scrollbar-hide mb-6">
-                <div className="flex space-x-2 min-w-max">
-                  {selectedWeekData.days.map((day, index) => (
+                  {program.whatNotToDo && (
+                    <div className="border-t border-gray-700/50 pt-6">
+                      <h3 className="flex items-center text-lg font-semibold text-white mb-3">
+                        <svg
+                          className="w-5 h-5 mr-2 text-red-400"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                          />
+                        </svg>
+                        What Not To Do
+                      </h3>
+                      <p className="text-red-400 leading-relaxed">
+                        {program.whatNotToDo}
+                      </p>
+                    </div>
+                  )}
+
+                  {program.afterTimeFrame && (
+                    <div className="border-t border-gray-700/50 pt-6">
+                      {program.afterTimeFrame.expectedOutcome && (
+                        <div className="mb-6">
+                          <h3 className="flex items-center text-lg font-semibold text-white mb-3">
+                            <svg
+                              className="w-5 h-5 mr-2 text-green-400"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                              />
+                            </svg>
+                            Expected Outcome
+                          </h3>
+                          <p className="text-gray-300 leading-relaxed">
+                            {program.afterTimeFrame.expectedOutcome}
+                          </p>
+                        </div>
+                      )}
+
+                      {program.afterTimeFrame.nextSteps && (
+                        <div>
+                          <h3 className="flex items-center text-lg font-semibold text-white mb-3">
+                            <svg
+                              className="w-5 h-5 mr-2 text-blue-400"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M13 5l7 7-7 7M5 5l7 7-7 7"
+                              />
+                            </svg>
+                            Next Steps
+                          </h3>
+                          <p className="text-gray-300 leading-relaxed">
+                            {program.afterTimeFrame.nextSteps}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                {/* Fixed Footer */}
+                <div className="p-8 pt-4 border-t border-gray-700/50">
+                  <div className="flex justify-center">
                     <button
-                      key={day.day}
-                      data-day={day.day}
-                      onClick={() => handleDayClick(day.day)}
-                      className={`px-6 py-3 rounded-lg font-medium transition-colors duration-200 flex flex-col items-center ${
-                        expandedDays.includes(day.day)
+                      onClick={handleCloseOverview}
+                      className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition-colors duration-200"
+                    >
+                      Get Started
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <div ref={containerRef} className="h-screen overflow-y-auto pt-16">
+            <div className="max-w-4xl mx-auto px-4">
+              {/* Replace redundant title with program summary/stats section */}
+              <div className="text-center mb-4 space-y-2">
+                <div className="flex justify-center mb-2">
+                  <button
+                    onClick={() => setShowOverview(true)}
+                    className="px-4 py-2 text-sm bg-gray-800 text-gray-300 rounded-lg hover:bg-gray-700 hover:text-white transition-colors duration-200 inline-flex items-center gap-2"
+                  >
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                    View Program Overview
+                  </button>
+                </div>
+              </div>
+
+              {/* Week Tabs */}
+              <div className="mb-6 overflow-x-auto scrollbar-hide">
+                <div className="flex space-x-2 min-w-max">
+                  {program.program.map((week) => (
+                    <button
+                      key={week.week}
+                      data-week={week.week}
+                      onClick={() => handleWeekChange(week.week)}
+                      className={`px-6 py-3 rounded-lg font-medium transition-colors duration-200 ${
+                        selectedWeek === week.week
                           ? 'bg-indigo-600 text-white'
                           : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white'
                       }`}
                     >
-                      <span className="text-sm opacity-80 mb-1">
-                        {getDayShortName(index + 1)}
-                      </span>
-                      {day.isRestDay ? (
-                        <span className="text-xs mt-1 opacity-80">Rest</span>
-                      ) : (
-                        <span className="text-xs mt-1 opacity-80">
-                          Activity
-                        </span>
+                      Week{' '}
+                      {getWeekNumber(
+                        new Date(
+                          currentDate.getTime() +
+                            (week.week - 1) * 7 * 24 * 60 * 60 * 1000
+                        )
                       )}
                     </button>
                   ))}
+                  <button
+                    className={`px-6 py-3 rounded-lg font-medium transition-colors duration-200 ${
+                      selectedWeek === program.program.length + 1
+                        ? 'bg-indigo-600 text-white'
+                        : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white'
+                    }`}
+                    onClick={() => handleWeekChange(program.program.length + 1)}
+                  >
+                    Next Week
+                  </button>
                 </div>
               </div>
 
-              {/* Day Content */}
-              {expandedDays.map((dayNumber) => {
-                const day = selectedWeekData.days.find(
-                  (d) => d.day === dayNumber
-                );
-                if (!day) return null;
+              {/* Selected Week Content */}
+              {selectedWeek <= program.program.length && selectedWeekData ? (
+                <div className="space-y-4">
+                  {/* Day Tabs */}
+                  <div className="overflow-x-auto scrollbar-hide mb-6">
+                    <div className="flex space-x-2 min-w-max">
+                      {selectedWeekData.days.map((day, index) => (
+                        <button
+                          key={day.day}
+                          data-day={day.day}
+                          onClick={() => handleDayClick(day.day)}
+                          className={`px-6 py-3 rounded-lg font-medium transition-colors duration-200 flex flex-col items-center ${
+                            expandedDays.includes(day.day)
+                              ? 'bg-indigo-600 text-white'
+                              : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white'
+                          }`}
+                        >
+                          <span className="text-sm opacity-80 mb-1">
+                            {getDayShortName(index + 1)}
+                          </span>
+                          {day.isRestDay ? (
+                            <span className="text-xs mt-1 opacity-80">Rest</span>
+                          ) : (
+                            <span className="text-xs mt-1 opacity-80">
+                              Activity
+                            </span>
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
 
-                const dayIndex = selectedWeekData.days.findIndex(
-                  (d) => d.day === dayNumber
-                );
+                  {/* Day Content */}
+                  {expandedDays.map((dayNumber) => {
+                    const day = selectedWeekData.days.find(
+                      (d) => d.day === dayNumber
+                    );
+                    if (!day) return null;
 
-                return (
-                  <ProgramDaySummaryComponent
-                    key={day.day}
-                    day={day}
-                    dayName={dayName(dayIndex + 1)}
-                    onClick={() =>
-                      handleDayDetailClick(day, dayName(dayIndex + 1))
-                    }
-                  />
-                );
-              })}
+                    const dayIndex = selectedWeekData.days.findIndex(
+                      (d) => d.day === dayNumber
+                    );
+
+                    return (
+                      <ProgramDaySummaryComponent
+                        key={day.day}
+                        day={day}
+                        dayName={dayName(dayIndex + 1)}
+                        onClick={() =>
+                          handleDayDetailClick(day, dayName(dayIndex + 1))
+                        }
+                      />
+                    );
+                  })}
+                </div>
+              ) : (
+                renderNextWeekCard()
+              )}
             </div>
-          ) : (
-            renderNextWeekCard()
-          )}
-        </div>
-      </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }

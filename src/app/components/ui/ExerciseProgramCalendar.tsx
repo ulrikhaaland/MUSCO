@@ -1,9 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type {
   ExerciseProgram,
   ProgramDay,
 } from '@/app/types/program';
-import { TopBar } from './TopBar';
 import { ProgramDaySummaryComponent } from './ProgramDaySummaryComponent';
 
 interface ExerciseProgramCalendarProps {
@@ -335,29 +334,16 @@ export function ExerciseProgramCalendar({
   };
 
   return (
-    <div className="fixed inset-0 bg-gray-900 to-gray-800">
-      <TopBar
-        rightContent={
-          <>
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M4 6h16M4 10h16M4 14h16M4 18h16"
-              />
-            </svg>
-            <span className="ml-2">List</span>
-          </>
-        }
-        onRightClick={onToggleView}
-        className="fixed top-0 left-0 right-0 z-50"
-      />
+    <div className="fixed inset-0 bg-gray-900 to-gray-800 flex flex-col">
+      <div className="py-3 px-4 flex items-center justify-between">
+        {/* Empty spacer with same width as menu button to balance the title */}
+        <div className="w-10"></div>
+        <h1 className="text-xl font-bold text-center">
+          {program.title ? `${program.title} - Calendar` : "Calendar View"}
+        </h1>
+        {/* Space for menu button */}
+        <div className="w-10"></div>
+      </div>
 
       <div className="h-screen overflow-y-auto pt-16">
         <div className="max-w-2xl mx-auto px-4 py-8">
