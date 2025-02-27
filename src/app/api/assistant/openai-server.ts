@@ -334,6 +334,57 @@ export async function generateExerciseProgramWithModel(context: {
     program.type = context.diagnosisData.programType;
     program.targetAreas = context.userInfo.targetAreas;
 
+    // Define valid body parts
+    const validBodyParts = [
+      'Neck',
+      'Shoulders',
+      'Upper Arms',
+      'Forearms',
+      'Chest',
+      'Abdomen',
+      'Upper Back',
+      'Lower Back',
+      'Glutes',
+      'Upper Legs',
+      'Lower Legs',
+    ];
+
+    // Collect all unique body parts from exercises
+    const allBodyParts = new Set<string>();
+    program.program.forEach(week => {
+      week.days.forEach(day => {
+        day.exercises.forEach(exercise => {
+          if (exercise.bodyParts && Array.isArray(exercise.bodyParts)) {
+            // Normalize body parts to ensure they match valid options
+            exercise.bodyParts = exercise.bodyParts
+              .filter(part => {
+                // Case-insensitive check for valid body parts
+                const normalizedPart = validBodyParts.find(
+                  valid => valid.toLowerCase() === part.toLowerCase()
+                );
+                if (normalizedPart) {
+                  allBodyParts.add(normalizedPart);
+                  return true;
+                }
+                return false;
+              })
+              .map(part => {
+                // Return the properly cased version
+                return validBodyParts.find(
+                  valid => valid.toLowerCase() === part.toLowerCase()
+                ) || part;
+              });
+          } else {
+            // Ensure each exercise has a bodyParts array even if not provided by LLM
+            exercise.bodyParts = [];
+          }
+        });
+      });
+    });
+
+    // Set program bodyParts to the unique set of body parts from all exercises
+    program.bodyParts = Array.from(allBodyParts);
+
     // If we have a userId and programId, update the program document
     if (context.userId && context.programId) {
       try {

@@ -19,6 +19,7 @@ export interface Exercise {
   precaution?: string;
   warmup?: boolean;
   instructions?: string;
+  bodyParts: string[];
 }
 
 export interface ProgramDay {
@@ -51,6 +52,7 @@ export interface ExerciseProgram {
   type: ProgramType;
   createdAt: Date;
   targetAreas: string[];
+  bodyParts: string[];
 }
 
 export interface UserProgram {

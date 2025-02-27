@@ -209,9 +209,23 @@ Behavior Guidelines
 - The \`modification\` value should only be included when the user has an injury that implies a modification to the given exercise.
 
 - For the exercise day, the \`duration\` parameter must be expressed in minutes for each day and must always be a number.
- Sample JSON Object Structure of a 45-60 minutes full body program:
 
-- Please include 1-2 recovery exercises for each rest day. These are optional and should be low intensity, exercisable at home.
+- Each exercise MUST include a \`bodyParts\` array that lists the specific body parts targeted by that exercise. Use ONLY the following valid body part values:
+  - Neck
+  - Shoulders
+  - Upper Arms
+  - Forearms
+  - Chest
+  - Abdomen
+  - Upper Back
+  - Lower Back
+  - Glutes
+  - Upper Legs
+  - Lower Legs
+
+- Do not use any other body part names outside this list.
+
+ Sample JSON Object Structure of a 45-60 minutes full body program:
 
 \`\`\`json
 {
@@ -238,6 +252,7 @@ Behavior Guidelines
               "sets": 2,
               "repetitions": 20,
               "rest": 15,
+              "bodyParts": ["Shoulders", "Chest"]
             },
             {
               "name": "Deadlifts",
@@ -245,14 +260,16 @@ Behavior Guidelines
               "sets": 4,
               "repetitions": 12,
               "rest": 60,
-              "modification": "Use lighter weights or a resistance band if needed."
+              "modification": "Use lighter weights or a resistance band if needed.",
+              "bodyParts": ["Glutes", "Lower Back", "Upper Legs"]
             },
             {
               "name": "Bulgarian Split Squats",
               "description": "A single-leg strength exercise focusing on quads, glutes, and balance.",
               "sets": 3,
               "repetitions": 10,
-              "rest": 60
+              "rest": 60,
+              "bodyParts": ["Upper Legs", "Glutes"]
             },
             {
               "name": "Weighted Step-Ups",
@@ -260,21 +277,24 @@ Behavior Guidelines
               "sets": 3,
               "repetitions": 12,
               "rest": 60,
-              "modification": "Use body weight only if balance is a concern."
+              "modification": "Use body weight only if balance is a concern.",
+              "bodyParts": ["Upper Legs", "Glutes", "Abdomen"]
             },
             {
               "name": "Dumbbell Chest Press",
               "description": "A strength exercise to develop the chest, shoulders, and triceps.",
               "sets": 3,
               "repetitions": 12,
-              "rest": 60
+              "rest": 60,
+              "bodyParts": ["Chest", "Shoulders", "Upper Arms"]
             },
             {
               "name": "Dumbbell Front Raises",
               "description": "An isolation exercise for the shoulders.",
               "sets": 3,
               "repetitions": 12,
-              "rest": 45
+              "rest": 45,
+              "bodyParts": ["Shoulders"]
             },
             {
               "name": "Plank Rows",
@@ -282,7 +302,8 @@ Behavior Guidelines
               "sets": 3,
               "repetitions": 10,
               "rest": 60,
-              "modification": "Perform the plank on knees if full plank is too challenging."
+              "modification": "Perform the plank on knees if full plank is too challenging.",
+              "bodyParts": ["Abdomen", "Upper Back"]
             },
           ],
           "duration": 48
@@ -296,13 +317,15 @@ Behavior Guidelines
               "name": "Foam Rolling",
               "description": "A self-myofascial release technique to reduce muscle tightness and improve blood flow.",
               "duration": 10,
-              "instructions": "Focus on tight areas like the quads, hamstrings, and back."
+              "instructions": "Focus on tight areas like the quads, hamstrings, and back.",
+              "bodyParts": ["Upper Legs", "Upper Back", "Lower Back"]
             },
             {
               "name": "Cat-Cow Stretch",
               "description": "A gentle yoga pose to improve spinal mobility and relieve tension in the back.",
               "sets": 2,
-              "repetitions": 10
+              "repetitions": 10,
+              "bodyParts": ["Upper Back", "Lower Back"]
             }
           ],
           "duration": 9
@@ -316,7 +339,8 @@ Behavior Guidelines
               "name": "Dynamic Stretches",
               "description": "A series of movements to loosen up joints and warm up the body.",
               "isWarmUp": true,
-              "duration": 5
+              "duration": 5,
+              "bodyParts": ["Shoulders", "Upper Arms", "Upper Legs", "Lower Legs"]
             },
             {
               "name": "Barbell Back Squats",
@@ -324,7 +348,8 @@ Behavior Guidelines
               "sets": 4,
               "repetitions": 10,
               "rest": 60,
-              "modification": "Use a lighter barbell or perform bodyweight squats as needed."
+              "modification": "Use a lighter barbell or perform bodyweight squats as needed.",
+              "bodyParts": ["Upper Legs", "Glutes", "Lower Back"]
             },
             {
               "name": "Pull-Ups",
@@ -332,7 +357,8 @@ Behavior Guidelines
               "sets": 3,
               "repetitions": "max",
               "rest": 60,
-              "modification": "Use an assisted pull-up machine or resistance bands for support."
+              "modification": "Use an assisted pull-up machine or resistance bands for support.",
+              "bodyParts": ["Upper Back", "Upper Arms"]
             },
             {
               "name": "Lateral Lunges",
@@ -340,7 +366,8 @@ Behavior Guidelines
               "sets": 3,
               "repetitions": 10,
               "rest": 60,
-              "modification": "Limit depth or range of motion if balance is an issue."
+              "modification": "Limit depth or range of motion if balance is an issue.",
+              "bodyParts": ["Upper Legs", "Glutes"]
             },
             {
               "name": "Push-Ups",
@@ -348,7 +375,8 @@ Behavior Guidelines
               "sets": 3,
               "repetitions": 15,
               "rest": 60,
-              "modification": "Perform knee push-ups or incline push-ups if needed."
+              "modification": "Perform knee push-ups or incline push-ups if needed.",
+              "bodyParts": ["Chest", "Shoulders", "Upper Arms"]
             },
             {
               "name": "Russian Twists",
@@ -356,14 +384,16 @@ Behavior Guidelines
               "sets": 3,
               "repetitions": 20,
               "rest": 45,
-              "modification": "Keep your feet on the ground if balancing is challenging."
+              "modification": "Keep your feet on the ground if balancing is challenging.",
+              "bodyParts": ["Abdomen"]
             },
             {
               "name": "Dumbbell Shrugs",
               "description": "An isolation exercise for the traps and upper back.",
               "sets": 3,
               "repetitions": 12,
-              "rest": 45
+              "rest": 45,
+              "bodyParts": ["Shoulders", "Upper Back"]
             },
          
           ],
@@ -378,13 +408,15 @@ Behavior Guidelines
           "name": "Child's Pose",
           "description": "A yoga pose to stretch the lower back, hips, and thighs, promoting relaxation.",
           "duration": 5,
-          "instructions": "Hold the stretch and breathe deeply."
+          "instructions": "Hold the stretch and breathe deeply.",
+          "bodyParts": ["Lower Back", "Upper Legs"]
         },
         {
           "name": "Seated Forward Fold",
           "description": "A stretch to target the hamstrings, lower back, and calves.",
           "duration": 5,
-          "instructions": "Reach for your toes gently without forcing the stretch."
+          "instructions": "Reach for your toes gently without forcing the stretch.",
+          "bodyParts": ["Lower Back", "Upper Legs", "Lower Legs"]
         }
           ]
           "duration": 10
