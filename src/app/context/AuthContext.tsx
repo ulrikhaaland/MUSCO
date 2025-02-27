@@ -140,6 +140,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                   : new Error('Failed to sign in with email link')
               );
             }
+          } else {
+            setLoading(false);
           }
         }
       } catch (error) {
