@@ -42,7 +42,8 @@ function ErrorDisplay({ error }: { error: Error }) {
   );
 }
 
-export default function Home() {
+// Create a separate component for search params functionality
+function HomeContent() {
   const {
     intention,
     setIntention,
@@ -142,16 +143,25 @@ export default function Home() {
   }
 
   return (
+    <div className="h-full">
+      <HumanViewer gender={gender} onGenderChange={handleGenderChange} />
+      {(intention === ProgramIntention.None || (!user && !skipAuth)) && (
+        <IntentionQuestion
+          onSelect={handleIntentionSelect}
+          onSkip={() => {}}
+        />
+      )}
+    </div>
+  );
+}
+
+// Main component that wraps the HomeContent with suspense
+export default function Home() {
+  return (
     <ErrorBoundary>
-      <div className="h-full">
-        <HumanViewer gender={gender} onGenderChange={handleGenderChange} />
-        {(intention === ProgramIntention.None || (!user && !skipAuth)) && (
-          <IntentionQuestion
-            onSelect={handleIntentionSelect}
-            onSkip={() => {}}
-          />
-        )}
-      </div>
+      <Suspense fallback={<LoadingSpinner />}>
+        <HomeContent />
+      </Suspense>
     </ErrorBoundary>
   );
 }

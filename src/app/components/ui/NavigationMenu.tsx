@@ -3,9 +3,10 @@
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/app/context/AuthContext';
 import { useUser } from '@/app/context/UserContext';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, Suspense } from 'react';
 
-export function NavigationMenu() {
+// Create a separate component that uses the search params
+function NavigationMenuContent() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -213,5 +214,33 @@ export function NavigationMenu() {
         </div>
       </div>
     </>
+  );
+}
+
+// Loading fallback for the Suspense boundary
+function MenuLoadingFallback() {
+  return (
+    <button
+      className="fixed top-4 right-4 z-[70] p-2 rounded-lg bg-gray-800 text-white"
+      aria-label="Menu Loading"
+    >
+      <svg className="w-6 h-6 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M4 6h16M4 12h16M4 18h16"
+        />
+      </svg>
+    </button>
+  );
+}
+
+// Wrapper component with Suspense
+export function NavigationMenu() {
+  return (
+    <Suspense fallback={<MenuLoadingFallback />}>
+      <NavigationMenuContent />
+    </Suspense>
   );
 } 
