@@ -69,7 +69,7 @@ export default function ProfilePage() {
 
       <div className="h-screen overflow-y-auto pt-16">
         <div className="max-w-md mx-auto px-4 py-8">
-          <h1 className="text-2xl font-bold text-white mb-6">Profile</h1>
+          <h1 className="text-app-title text-white mb-6">Profile</h1>
           <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-xl ring-1 ring-gray-700/50 p-6 mb-6">
             <div className="flex items-center space-x-4 mb-6">
               <div className="w-16 h-16 rounded-full bg-indigo-600 flex items-center justify-center text-white text-2xl">

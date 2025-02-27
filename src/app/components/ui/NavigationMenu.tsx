@@ -125,7 +125,7 @@ export function NavigationMenu() {
       {/* Hamburger button */}
       <button
         onClick={() => setDrawerOpen(!drawerOpen)}
-        className="fixed top-4 right-4 z-50 p-2 rounded-lg bg-gray-800 text-white hover:bg-gray-700 transition-colors"
+        className="fixed top-4 right-4 z-[70] p-2 rounded-lg bg-gray-800 text-white hover:bg-gray-700 transition-colors"
         aria-label="Menu"
       >
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -133,20 +133,20 @@ export function NavigationMenu() {
             strokeLinecap="round"
             strokeLinejoin="round"
             strokeWidth={2}
-            d={drawerOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"}
+            d="M4 6h16M4 12h16M4 18h16"
           />
         </svg>
       </button>
 
       {/* Drawer overlay */}
       {drawerOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-40 transition-opacity" />
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-[60] transition-opacity" />
       )}
 
       {/* Drawer */}
       <div
         ref={drawerRef}
-        className={`fixed top-0 right-0 h-full w-64 bg-gray-900 shadow-lg z-50 transform transition-transform duration-300 ease-in-out ${
+        className={`fixed top-0 right-0 h-full w-64 bg-gray-900 shadow-lg z-[70] transform transition-transform duration-300 ease-in-out ${
           drawerOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
@@ -166,7 +166,7 @@ export function NavigationMenu() {
             </div>
           ) : (
             <div className="p-4 border-b border-gray-800">
-              <h2 className="text-xl font-bold text-white">MUSCO</h2>
+              <h2 className="text-app-title text-white">MUSCO</h2>
             </div>
           )}
 

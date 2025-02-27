@@ -27,7 +27,7 @@ export function ProgramDaySummaryComponent({
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center justify-between w-full">
             <div className="flex items-center gap-3">
-              <h3 className="text-xl font-medium text-white">
+              <h3 className="text-app-title text-white">
                 {day.isRestDay ? "Rest Day" : dayName}
               </h3>
               {day.isRestDay ? (

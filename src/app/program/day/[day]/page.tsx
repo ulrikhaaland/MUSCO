@@ -201,7 +201,7 @@ export default function DayDetailPage() {
   return (
     <div className="fixed inset-0 bg-gray-900 z-50 flex flex-col">
       <div className="py-3 px-4 flex items-center justify-center">
-        <h1 className="text-xl font-bold text-center">{dayName}</h1>
+        <h1 className="text-app-title text-center">{dayName}</h1>
       </div>
       <div className="flex-1 overflow-hidden">
         <div className="h-full overflow-y-auto px-4 pb-32 max-w-4xl mx-auto">

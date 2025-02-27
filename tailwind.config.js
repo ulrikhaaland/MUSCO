@@ -7,6 +7,9 @@ module.exports = {
   ],
   theme: {
     extend: {
+      fontSize: {
+        'app-title': ['1.5rem', { lineHeight: '2rem', fontWeight: '500' }],
+      },
       typography: {
         DEFAULT: {
           css: {

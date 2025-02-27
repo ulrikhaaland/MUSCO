@@ -298,7 +298,7 @@ export function ExerciseProgramPage({
               d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
             />
           </svg>
-          <h3 className="text-xl font-semibold text-white">Coming Soon</h3>
+          <h3 className="text-app-title text-white">Coming Soon</h3>
           <p className="text-gray-300">
             Your next week&apos;s program will be available on {formattedDate}
           </p>
@@ -311,8 +311,10 @@ export function ExerciseProgramPage({
     return (
       <div className="h-screen w-screen flex flex-col bg-gray-900">
         <div className="flex flex-col items-center justify-center h-full space-y-4 px-4 text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
-          <div className="text-xl text-white font-medium">Creating Program</div>
+          <div className="animate-bounce w-8 h-8 mt-12 mx-auto">
+            <div className="w-8 h-8 rounded-full border-t-2 border-b-2 border-indigo-500 animate-spin"></div>
+          </div>
+          <div className="text-app-title text-white">Creating Program</div>
           <div className="text-gray-400 max-w-sm">
             Please wait while we generate your personalized exercise program...
           </div>
@@ -332,8 +334,10 @@ export function ExerciseProgramPage({
       {isLoading ? (
         <div className="h-screen w-screen flex flex-col bg-gray-900">
           <div className="flex flex-col items-center justify-center h-full space-y-4 px-4 text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
-            <div className="text-xl text-white font-medium">Creating Program</div>
+            <div className="animate-bounce w-8 h-8 mt-12 mx-auto">
+              <div className="w-8 h-8 rounded-full border-t-2 border-b-2 border-indigo-500 animate-spin"></div>
+            </div>
+            <div className="text-app-title text-white">Creating Program</div>
             <div className="text-gray-400 max-w-sm">
               Please wait while we generate your personalized exercise program...
             </div>
@@ -347,7 +351,7 @@ export function ExerciseProgramPage({
           <div className="py-3 px-4 flex items-center justify-between">
             {/* Empty spacer with same width as menu button to balance the title */}
             <div className="w-10"></div>
-            <h1 className="text-xl font-bold text-center">
+            <h1 className="text-app-title text-center">
               {program.title ||
                 (program.type === ProgramType.Recovery
                   ? 'Recovery Program'

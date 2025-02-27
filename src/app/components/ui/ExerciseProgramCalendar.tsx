@@ -338,8 +338,8 @@ export function ExerciseProgramCalendar({
       <div className="py-3 px-4 flex items-center justify-between">
         {/* Empty spacer with same width as menu button to balance the title */}
         <div className="w-10"></div>
-        <h1 className="text-xl font-bold text-center">
-          {program.title ? `${program.title} - Calendar` : "Calendar View"}
+        <h1 className="text-app-title text-center">
+          Calendar
         </h1>
         {/* Space for menu button */}
         <div className="w-10"></div>

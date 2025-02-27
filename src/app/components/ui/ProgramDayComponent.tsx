@@ -35,7 +35,6 @@ export function ProgramDayComponent({
       <div className="bg-gray-900/95 backdrop-blur-sm py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <h3 className="text-2xl font-medium text-white">{dayName}</h3>
             {day.isRestDay ? (
               <span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-500/20 text-blue-300">
                 Recovery

@@ -36,7 +36,7 @@ export function ExerciseProgramContainer({
     <div className="h-screen w-screen flex flex-col bg-gray-900">
       <div className="flex flex-col items-center justify-center h-full space-y-4 px-4 text-center">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
-        <div className="text-xl text-white font-medium">Loading Program</div>
+        <div className="text-app-title text-white">Loading Program</div>
         <div className="text-gray-400 max-w-sm">
           Please wait while we load your program...
         </div>
