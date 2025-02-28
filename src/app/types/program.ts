@@ -7,6 +7,65 @@ export enum ProgramStatus {
   Error = 'error'
 }
 
+// Body part groupings
+export const TARGET_BODY_PARTS = [
+  'Neck',
+  'Shoulders',
+  'Upper Arms',
+  'Forearms',
+  'Chest',
+  'Abdomen',
+  'Upper Back',
+  'Lower Back',
+  'Glutes',
+  'Upper Legs',
+  'Lower Legs',
+] as const;
+
+export const UPPER_BODY_PARTS = [
+  'Neck',
+  'Shoulders',
+  'Upper Arms',
+  'Forearms',
+  'Chest',
+  'Abdomen',
+  'Upper Back',
+  'Lower Back',
+] as const;
+
+export const LOWER_BODY_PARTS = [
+  'Glutes',
+  'Upper Legs',
+  'Lower Legs',
+] as const;
+
+export type BodyRegion = 'Full Body' | 'Upper Body' | 'Lower Body' | 'Custom';
+
+// Utility function to determine the body region from a list of body parts
+export function getBodyRegionFromParts(bodyParts: string[]): BodyRegion {
+  if (!bodyParts || bodyParts.length === 0) return 'Custom';
+  
+  // Check if it's a full body workout (all body parts are included)
+  if (TARGET_BODY_PARTS.every(part => bodyParts.includes(part)) && 
+      bodyParts.length === TARGET_BODY_PARTS.length) {
+    return 'Full Body';
+  }
+  
+  // Check if it's an upper body workout
+  if (UPPER_BODY_PARTS.every(part => bodyParts.includes(part)) && 
+      bodyParts.length === UPPER_BODY_PARTS.length) {
+    return 'Upper Body';
+  }
+  
+  // Check if it's a lower body workout
+  if (LOWER_BODY_PARTS.every(part => bodyParts.includes(part)) && 
+      bodyParts.length === LOWER_BODY_PARTS.length) {
+    return 'Lower Body';
+  }
+  
+  return 'Custom';
+}
+
 export interface Exercise {
   name: string;
   description: string;
@@ -15,11 +74,11 @@ export interface Exercise {
   rest?: number;
   modification?: string;
   videoUrl?: string;
-  duration?: string;
+  duration?: number;
   precaution?: string;
   warmup?: boolean;
   instructions?: string;
-  bodyParts: string[];
+  bodyPart: string;
 }
 
 export interface ProgramDay {
@@ -27,7 +86,7 @@ export interface ProgramDay {
   description: string;
   exercises: Exercise[];
   isRestDay: boolean;
-  duration?: string;
+  duration?: number;
 }
 
 export interface ProgramWeek {

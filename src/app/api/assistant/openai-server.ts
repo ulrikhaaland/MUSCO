@@ -354,29 +354,22 @@ export async function generateExerciseProgramWithModel(context: {
     program.program.forEach(week => {
       week.days.forEach(day => {
         day.exercises.forEach(exercise => {
-          if (exercise.bodyParts && Array.isArray(exercise.bodyParts)) {
-            // Normalize body parts to ensure they match valid options
-            exercise.bodyParts = exercise.bodyParts
-              .filter(part => {
-                // Case-insensitive check for valid body parts
-                const normalizedPart = validBodyParts.find(
-                  valid => valid.toLowerCase() === part.toLowerCase()
-                );
-                if (normalizedPart) {
-                  allBodyParts.add(normalizedPart);
-                  return true;
-                }
-                return false;
-              })
-              .map(part => {
-                // Return the properly cased version
-                return validBodyParts.find(
-                  valid => valid.toLowerCase() === part.toLowerCase()
-                ) || part;
-              });
+          if (exercise.bodyPart) {
+            // Normalize body part to ensure it matches valid options
+            const normalizedPart = validBodyParts.find(
+              valid => valid.toLowerCase() === exercise.bodyPart.toLowerCase()
+            );
+            
+            if (normalizedPart) {
+              exercise.bodyPart = normalizedPart;
+              allBodyParts.add(normalizedPart);
+            } else {
+              // If invalid body part, set to empty string or first valid part
+              exercise.bodyPart = validBodyParts[0] || '';
+            }
           } else {
-            // Ensure each exercise has a bodyParts array even if not provided by LLM
-            exercise.bodyParts = [];
+            // Ensure each exercise has a bodyPart even if not provided by LLM
+            exercise.bodyPart = validBodyParts[0] || '';
           }
         });
       });
@@ -396,6 +389,29 @@ export async function generateExerciseProgramWithModel(context: {
           .collection('programs')
           .doc(context.programId);
 
+        // Set all other programs of the same type to inactive
+        const programType = context.diagnosisData.programType;
+        const userProgramsRef = adminDb
+          .collection('users')
+          .doc(context.userId)
+          .collection('programs');
+        
+        // Query all programs with the same type
+        const sameTypeProgramsSnapshot = await userProgramsRef
+          .where('type', '==', programType)
+          .where('active', '==', true)
+          .get();
+        
+        // Batch update to set all of them to inactive
+        if (!sameTypeProgramsSnapshot.empty) {
+          const batch = adminDb.batch();
+          sameTypeProgramsSnapshot.docs.forEach(doc => {
+            batch.update(doc.ref, { active: false });
+          });
+          await batch.commit();
+          console.log(`Set ${sameTypeProgramsSnapshot.size} ${programType} programs to inactive`);
+        }
+
         // Create a new document in the programs subcollection
         await adminDb
           .collection('users')
@@ -408,10 +424,11 @@ export async function generateExerciseProgramWithModel(context: {
             createdAt: new Date().toISOString(),
           });
 
-        // Update the main program document status
+        // Update the main program document status and set it as active
         await programRef.update({
           status: ProgramStatus.Done,
           updatedAt: new Date().toISOString(),
+          active: true // Set the new program as active
         });
       } catch (error) {
         console.error('Error updating program document:', error);

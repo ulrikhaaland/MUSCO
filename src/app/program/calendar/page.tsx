@@ -6,44 +6,19 @@ import { ExerciseProgramCalendar } from '@/app/components/ui/ExerciseProgramCale
 import { useUser } from '@/app/context/UserContext';
 import { useAuth } from '@/app/context/AuthContext';
 import { ProgramStatus, ProgramDay } from '@/app/types/program';
-
-function LoadingSpinner() {
-  return (
-    <div className="fixed inset-0 bg-gray-900/95 backdrop-blur-sm z-50 flex items-center justify-center">
-      <div className="flex flex-col items-center space-y-4">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
-        <p className="text-white text-lg">Loading...</p>
-      </div>
-    </div>
-  );
-}
-
-function ErrorDisplay({ error }: { error: Error }) {
-  return (
-    <div className="fixed inset-0 bg-gray-900/95 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="max-w-md w-full space-y-4 text-center">
-        <h2 className="text-2xl font-bold text-white">Something went wrong</h2>
-        <pre className="text-red-400 text-sm overflow-auto p-4 bg-gray-800 rounded-lg">
-          {error.message}
-        </pre>
-        <button
-          onClick={() => (window.location.href = '/')}
-          className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500"
-        >
-          Go back
-        </button>
-      </div>
-    </div>
-  );
-}
+import { LoadingSpinner } from '@/app/components/ui/LoadingSpinner';
+import { ErrorDisplay } from '@/app/components/ui/ErrorDisplay';
 
 export default function CalendarPage() {
   const router = useRouter();
   const { user, loading: authLoading, error: authError } = useAuth();
-  const { program, isLoading: userLoading, programStatus } = useUser();
+  const { program, activeProgram, isLoading: userLoading, programStatus, userPrograms } = useUser();
   const [error, setError] = useState<Error | null>(null);
 
   const isLoading = authLoading || userLoading;
+  
+  // Determine if this is the active program of its type
+  const isActiveProgram = program && activeProgram?.programs.some(p => p.createdAt === program.createdAt);
 
   // Update page title
   useEffect(() => {
@@ -82,8 +57,19 @@ export default function CalendarPage() {
     router.push('/program');
   };
 
-  const handleDaySelect = (day: ProgramDay, dayName: string) => {
-    router.push(`/program/day/${day.day}`);
+  const handleDaySelect = (day: ProgramDay, dayName: string, programId: string) => {
+    // Find the selected program by its createdAt value
+    const selectedProgram = userPrograms
+      .flatMap(up => up.programs)
+      .find(p => p.createdAt.toString() === programId);
+      
+    if (selectedProgram) {
+      // Navigate to the specific program day
+      router.push(`/program/day/${day.day}?programId=${encodeURIComponent(programId)}`);
+    } else {
+      // Fallback to default behavior if program not found
+      router.push(`/program/day/${day.day}`);
+    }
   };
 
   if (isLoading) {

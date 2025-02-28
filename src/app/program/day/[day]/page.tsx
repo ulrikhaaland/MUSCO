@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import { ProgramStatus, Exercise, ProgramDay } from '@/app/types/program';
+import { ProgramStatus, Exercise, ProgramDay, ExerciseProgram } from '@/app/types/program';
 import { ProgramDayComponent } from '@/app/components/ui/ProgramDayComponent';
 import { searchYouTubeVideo } from '@/app/utils/youtube';
 import { useAuth } from '@/app/context/AuthContext';
@@ -55,21 +55,45 @@ export default function DayDetailPage() {
   const dayNumber = parseInt(dayParam);
   
   const { user, loading: authLoading, error: authError } = useAuth();
-  const { program, isLoading: userLoading, programStatus } = useUser();
+  const { program, isLoading: userLoading, programStatus, userPrograms } = useUser();
   const [error, setError] = useState<Error | null>(null);
   const [dayData, setDayData] = useState<ProgramDay | null>(null);
   const [dayName, setDayName] = useState('');
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [loadingVideoExercise, setLoadingVideoExercise] = useState<string | null>(null);
   const [expandedExercises, setExpandedExercises] = useState<string[]>([]);
+  const [selectedProgram, setSelectedProgram] = useState<ExerciseProgram | null>(null);
 
   const isLoading = authLoading || userLoading;
 
+  // Extract programId from query parameters
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const queryParams = new URLSearchParams(window.location.search);
+      const programId = queryParams.get('programId');
+      
+      if (programId && userPrograms) {
+        // Find the specific program by its createdAt value
+        const foundProgram = userPrograms
+          .flatMap(up => up.programs)
+          .find(p => p.createdAt.toString() === programId);
+          
+        if (foundProgram) {
+          setSelectedProgram(foundProgram);
+        } else {
+          setSelectedProgram(program); // Fallback to the default program
+        }
+      } else {
+        setSelectedProgram(program); // Fallback to the default program
+      }
+    }
+  }, [program, userPrograms]);
+
   // Find the day data based on the day number
   useEffect(() => {
-    if (program?.program && !isNaN(dayNumber)) {
+    if (selectedProgram?.program && !isNaN(dayNumber)) {
       // Attempt to find the day in the current week
-      const currentWeek = program.program[0]; // Start with first week
+      const currentWeek = selectedProgram.program[0]; // Start with first week
       if (currentWeek) {
         const day = currentWeek.days.find(d => d.day === dayNumber);
         if (day) {
@@ -81,7 +105,7 @@ export default function DayDetailPage() {
         }
       }
     }
-  }, [program, dayNumber]);
+  }, [selectedProgram, dayNumber]);
 
   // Update page title
   useEffect(() => {
@@ -135,6 +159,25 @@ export default function DayDetailPage() {
   };
 
   const closeVideo = () => setVideoUrl(null);
+
+  // Handle title click to navigate back to program page
+  const handleTitleClick = () => {
+    if (selectedProgram) {
+      // Check if we have a programId in the URL
+      const queryParams = new URLSearchParams(window.location.search);
+      const programId = queryParams.get('programId');
+      
+      if (programId) {
+        // Navigate to the specific program with its ID
+        router.push(`/program?programId=${encodeURIComponent(programId)}`);
+      } else {
+        // Default navigation to the program page
+        router.push('/program');
+      }
+    } else {
+      router.push('/program');
+    }
+  };
 
   // Render video modal
   const renderVideoModal = () => {
@@ -194,7 +237,11 @@ export default function DayDetailPage() {
     return <ErrorDisplay error={error} />;
   }
 
-  if (!program || !dayData) {
+  if (!program && programStatus !== ProgramStatus.Generating) {
+    return <LoadingSpinner />;
+  }
+
+  if (!selectedProgram || !dayData) {
     return <LoadingSpinner />;
   }
 
@@ -212,6 +259,8 @@ export default function DayDetailPage() {
             loadingVideoExercise={loadingVideoExercise}
             expandedExercises={expandedExercises}
             onExerciseToggle={handleExerciseToggle}
+            programTitle={selectedProgram?.title || 'Exercise Program'}
+            onTitleClick={handleTitleClick}
           />
         </div>
       </div>

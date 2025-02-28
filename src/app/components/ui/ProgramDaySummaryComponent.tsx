@@ -5,6 +5,8 @@ interface ProgramDaySummaryComponentProps {
   dayName: string;
   date?: string;
   onClick?: () => void;
+  programTitle?: string;
+  isCalendarView?: boolean;
 }
 
 export function ProgramDaySummaryComponent({
@@ -12,13 +14,15 @@ export function ProgramDaySummaryComponent({
   dayName,
   date,
   onClick,
+  programTitle,
+  isCalendarView = false,
 }: ProgramDaySummaryComponentProps) {
   // Calculate exercise statistics
   const totalExercises = day.exercises.length;
   const warmupExercises = day.exercises.filter(ex => ex.warmup).length;
 
   return (
-    <div className="pb-32">
+    <div>
     <div 
       className={`bg-gray-800/50 rounded-xl overflow-hidden ring-1 ring-gray-700/50 transition-colors duration-200 ${onClick ? 'hover:bg-gray-700/50 cursor-pointer' : ''}`}
       onClick={onClick}
@@ -56,13 +60,19 @@ export function ProgramDaySummaryComponent({
                       d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
                     />
                   </svg>
-                  {day.duration} minutes
+                  {day.duration === 0 ? 'No duration' : `${day.duration} minutes`}
                 </div>
               )}
               {date && <span className="text-sm text-gray-400">{date}</span>}
             </div>
           </div>
         </div>
+
+        {isCalendarView && programTitle && (
+          <div className="mb-2 text-sm font-medium text-indigo-300">
+            {programTitle}
+          </div>
+        )}
 
         <p className="text-gray-300 text-sm mb-4">{day.description}</p>
 

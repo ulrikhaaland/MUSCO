@@ -5,78 +5,78 @@ import { useRouter } from 'next/navigation';
 import { ExerciseProgramPage } from '@/app/components/ui/ExerciseProgramPage';
 import { useUser } from '@/app/context/UserContext';
 import { useAuth } from '@/app/context/AuthContext';
-import { ProgramStatus, Exercise, ProgramDay } from '@/app/types/program';
+import { ProgramStatus, Exercise, ProgramDay, ExerciseProgram } from '@/app/types/program';
 import { searchYouTubeVideo } from '@/app/utils/youtube';
-
-function LoadingSpinner() {
-  return (
-    <div className="fixed inset-0 bg-gray-900/95 backdrop-blur-sm z-50 flex items-center justify-center">
-      <div className="flex flex-col items-center space-y-4">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
-        <p className="text-white text-lg">Loading...</p>
-      </div>
-    </div>
-  );
-}
-
-function ErrorDisplay({ error }: { error: Error }) {
-  return (
-    <div className="fixed inset-0 bg-gray-900/95 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="max-w-md w-full space-y-4 text-center">
-        <h2 className="text-2xl font-bold text-white">Something went wrong</h2>
-        <pre className="text-red-400 text-sm overflow-auto p-4 bg-gray-800 rounded-lg">
-          {error.message}
-        </pre>
-        <button
-          onClick={() => (window.location.href = '/')}
-          className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500"
-        >
-          Go back
-        </button>
-      </div>
-    </div>
-  );
-}
-
-function getYouTubeEmbedUrl(url: string): string {
-  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
-  const match = url.match(regExp);
-
-  if (match && match[2].length === 11) {
-    return `https://www.youtube.com/embed/${match[2]}`;
-  }
-  return url;
-}
+import { LoadingSpinner } from '@/app/components/ui/LoadingSpinner';
+import { ErrorDisplay } from '@/app/components/ui/ErrorDisplay';
 
 export default function ProgramPage() {
   const router = useRouter();
   const { user, loading: authLoading, error: authError } = useAuth();
-  const { program, isLoading: userLoading, programStatus } = useUser();
+  const { program, activeProgram, isLoading: userLoading, programStatus, userPrograms } = useUser();
   const [error, setError] = useState<Error | null>(null);
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [loadingVideoExercise, setLoadingVideoExercise] = useState<string | null>(null);
+  const [selectedProgram, setSelectedProgram] = useState<ExerciseProgram | null>(null);
 
   const isLoading = authLoading || userLoading;
+  
+  // Check for a programId in the URL and set the selected program
+  useEffect(() => {
+    if (typeof window !== 'undefined' && program && userPrograms) {
+      const queryParams = new URLSearchParams(window.location.search);
+      const programId = queryParams.get('programId');
+      
+      if (programId) {
+        // Find the specific program by its createdAt value
+        const foundProgram = userPrograms
+          .flatMap(up => up.programs)
+          .find(p => p.createdAt.toString() === programId);
+          
+        if (foundProgram) {
+          setSelectedProgram(foundProgram);
+        } else {
+          setSelectedProgram(program); // Fallback to the default program
+        }
+      } else {
+        setSelectedProgram(program); // Fallback to the default program
+      }
+    } else if (program) {
+      setSelectedProgram(program);
+    }
+  }, [program, userPrograms]);
+  
+  // Determine if this is the active program of its type
+  const isActiveProgram = selectedProgram && activeProgram?.programs.some(p => p.createdAt === selectedProgram.createdAt);
 
   // Update page title when program loads
   useEffect(() => {
-    if (program?.title && typeof document !== 'undefined') {
-      document.title = `${program.title} | MUSCO`;
+    if (selectedProgram?.title && typeof document !== 'undefined') {
+      document.title = `${selectedProgram.title} | MUSCO`;
     } else if (typeof document !== 'undefined') {
       document.title = 'Exercise Program | MUSCO';
     }
-  }, [program]);
+  }, [selectedProgram]);
 
   // Redirect to home if no user or program
   useEffect(() => {
     if (!authLoading && !userLoading) {
       if (!user) {
         router.push('/');
-      } else if (!program && programStatus !== ProgramStatus.Generating) {
+      } else if (!userPrograms.length && !program && programStatus !== ProgramStatus.Generating) {
         router.push('/');
       }
     }
-  }, [user, program, programStatus, authLoading, userLoading, router]);
+  }, [user, userPrograms, program, programStatus, authLoading, userLoading, router]);
+
+  // Update page title with program title
+  useEffect(() => {
+    if (selectedProgram?.title) {
+      document.title = `${selectedProgram.title} | Musco`;
+    } else {
+      document.title = 'Program | Musco';
+    }
+  }, [selectedProgram?.title]);
 
   const getDayName = (dayOfWeek: number): string => {
     const days = [
@@ -96,56 +96,59 @@ export default function ProgramPage() {
   };
 
   const handleDaySelect = (day: ProgramDay, dayName: string) => {
-    router.push(`/program/day/${day.day}`);
+    if (selectedProgram) {
+      router.push(`/program/day/${day.day}?programId=${encodeURIComponent(selectedProgram.createdAt.toString())}`);
+    } else {
+      router.push(`/program/day/${day.day}`);
+    }
   };
 
-  const handleVideoClick = async (exercise: Exercise) => {
-    if (loadingVideoExercise === exercise.name) return;
-
-    if (exercise.videoUrl) {
-      setVideoUrl(getYouTubeEmbedUrl(exercise.videoUrl));
-      return;
-    }
-
-    setLoadingVideoExercise(exercise.name);
+  const handleExerciseVideoClick = async (exercise: Exercise) => {
     try {
-      const searchQuery = `${exercise.name} proper form`;
-      const videoUrl = await searchYouTubeVideo(searchQuery);
-      if (videoUrl) {
-        exercise.videoUrl = videoUrl;
-        setVideoUrl(getYouTubeEmbedUrl(videoUrl));
+      setLoadingVideoExercise(exercise.name);
+      // Construct a search query with the exercise name
+      const searchQuery = `${exercise.name} exercise tutorial`;
+      
+      // Search for videos
+      const videoId = await searchYouTubeVideo(searchQuery);
+      
+      if (videoId) {
+        // Create a YouTube embed URL
+        setVideoUrl(`https://www.youtube.com/embed/${videoId}?autoplay=1`);
+      } else {
+        console.error('No video found for', exercise.name);
       }
     } catch (error) {
-      console.error('Error fetching video:', error);
+      console.error('Error loading video:', error);
     } finally {
       setLoadingVideoExercise(null);
     }
   };
 
-  const closeVideo = () => setVideoUrl(null);
-
-  // Render video modal
   const renderVideoModal = () => {
     if (!videoUrl) return null;
-
+    
     return (
-      <div
-        className="fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center z-[9999]"
-        onClick={closeVideo}
-      >
-        <div
-          className="relative w-full max-w-4xl mx-4"
-          onClick={(e) => e.stopPropagation()}
-        >
+      <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
+        <div className="relative w-full max-w-4xl aspect-video bg-black rounded-xl overflow-hidden">
+          <iframe
+            src={videoUrl}
+            className="w-full h-full"
+            title="Exercise Video"
+            frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          ></iframe>
           <button
-            onClick={closeVideo}
-            className="absolute -top-12 right-0 text-white/80 hover:text-white p-2 transition-colors duration-200"
+            onClick={() => setVideoUrl(null)}
+            className="absolute top-4 right-4 bg-white/10 hover:bg-white/20 text-white p-2 rounded-full"
           >
             <svg
-              className="w-8 h-8"
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6"
               fill="none"
-              stroke="currentColor"
               viewBox="0 0 24 24"
+              stroke="currentColor"
             >
               <path
                 strokeLinecap="round"
@@ -155,23 +158,13 @@ export default function ProgramPage() {
               />
             </svg>
           </button>
-          <div className="w-full rounded-2xl overflow-hidden shadow-2xl">
-            <div className="relative pt-[56.25%]">
-              <iframe
-                className="absolute inset-0 w-full h-full"
-                src={videoUrl}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              ></iframe>
-            </div>
-          </div>
         </div>
       </div>
     );
   };
 
   if (isLoading) {
-    return <LoadingSpinner />;
+    return <LoadingSpinner fullScreen={true} message="Loading program..." />;
   }
 
   if (authError) {
@@ -182,20 +175,32 @@ export default function ProgramPage() {
     return <ErrorDisplay error={error} />;
   }
 
-  if (!program && programStatus !== ProgramStatus.Generating) {
-    return <LoadingSpinner />;
+  if (!selectedProgram && programStatus !== ProgramStatus.Generating) {
+    return <LoadingSpinner message="Loading program data..." fullScreen={true} />;
+  }
+
+  if (programStatus === ProgramStatus.Generating) {
+    return (
+      <div className="h-screen flex flex-col items-center justify-center bg-gray-900 p-8">
+        <LoadingSpinner message="Creating Your Program" fullScreen={true} />
+        <p className="text-center text-gray-300 mt-4 max-w-md">
+          Please wait while we create your personalized program. This may take a minute...
+        </p>
+      </div>
+    );
   }
 
   return (
     <>
       <ExerciseProgramPage
-        isLoading={programStatus === ProgramStatus.Generating}
-        program={program}
+        program={selectedProgram}
+        isLoading={isLoading}
         onToggleView={handleToggleView}
-        onVideoClick={handleVideoClick}
-        loadingVideoExercise={loadingVideoExercise}
         dayName={getDayName}
+        onVideoClick={handleExerciseVideoClick}
+        loadingVideoExercise={loadingVideoExercise}
         onDaySelect={handleDaySelect}
+        isActive={isActiveProgram}
       />
       {renderVideoModal()}
     </>

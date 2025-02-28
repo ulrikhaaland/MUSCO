@@ -1,6 +1,7 @@
 'use client';
 
 import { Component, ReactNode } from 'react';
+import { ErrorDisplay } from '@/app/components/ui/ErrorDisplay';
 
 interface Props {
   children: ReactNode;
@@ -25,24 +26,17 @@ export class ErrorBoundary extends Component<Props, State> {
     console.error('ErrorBoundary caught an error:', error, errorInfo);
   }
 
+  handleReset = () => {
+    window.location.reload();
+  };
+
   render() {
-    if (this.state.hasError) {
-      return (
-        <div className="fixed inset-0 bg-gray-900/95 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="max-w-md w-full space-y-4 text-center">
-            <h2 className="text-app-title text-white">Something went wrong</h2>
-            <pre className="text-red-400 text-sm overflow-auto p-4 bg-gray-800 rounded-lg">
-              {this.state.error?.toString()}
-            </pre>
-            <button
-              onClick={() => window.location.reload()}
-              className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500"
-            >
-              Reload page
-            </button>
-          </div>
-        </div>
-      );
+    if (this.state.hasError && this.state.error) {
+      return <ErrorDisplay 
+        error={this.state.error} 
+        resetAction={this.handleReset}
+        customMessage="Something went wrong with the application"
+      />;
     }
 
     return this.props.children;

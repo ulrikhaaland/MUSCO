@@ -16,6 +16,8 @@ interface ProgramDayComponentProps {
   loadingVideoExercise?: string | null;
   compact?: boolean;
   onClick?: () => void;
+  programTitle?: string;
+  onTitleClick?: () => void;
 }
 
 export function ProgramDayComponent({
@@ -28,6 +30,8 @@ export function ProgramDayComponent({
   loadingVideoExercise,
   compact = false,
   onClick,
+  programTitle,
+  onTitleClick,
 }: ProgramDayComponentProps) {
   // State to track removed body parts
   const [removedBodyParts, setRemovedBodyParts] = useState<string[]>([]);
@@ -35,22 +39,17 @@ export function ProgramDayComponent({
   // Get all unique body parts from exercises
   const allBodyParts = Array.from(
     new Set(
-      day.exercises?.flatMap(exercise => exercise.bodyParts || []) || []
+      day.exercises?.map(exercise => exercise.bodyPart).filter(Boolean) || []
     )
   ).sort();
   
   // Filter exercises based on removed body parts
   const filteredExercises = day.exercises?.filter(exercise => {
-    // If exercise has no body parts or all its body parts are removed, filter it out
-    if (!exercise.bodyParts || exercise.bodyParts.length === 0) return true;
+    // If exercise has no body part, show it
+    if (!exercise.bodyPart) return true;
     
-    // Check if ALL exercise body parts are in the removed list
-    // Only filter out if ALL body parts are removed
-    const bodyPartsRemoved = exercise.bodyParts.every(part => 
-      removedBodyParts.includes(part)
-    );
-    
-    return !bodyPartsRemoved;
+    // Only filter out if the exercise's body part is in the removed list
+    return !removedBodyParts.includes(exercise.bodyPart);
   });
   
   // Toggle body part filter
@@ -68,6 +67,24 @@ export function ProgramDayComponent({
     <div className="h-full space-y-6" onClick={onClick}>
       {/* Header section */}
       <div className="bg-gray-900/95 backdrop-blur-sm py-4">
+        {programTitle && (
+          <div className="mb-3">
+            <button 
+              className="text-lg font-medium text-indigo-300 hover:text-indigo-200 transition-colors flex items-center"
+              onClick={(e) => {
+                e.stopPropagation();
+                if (onTitleClick) onTitleClick();
+              }}
+            >
+              {programTitle}
+              {onTitleClick && (
+                <svg className="w-4 h-4 ml-1" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                </svg>
+              )}
+            </button>
+          </div>
+        )}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             {day.isRestDay ? (
@@ -216,16 +233,14 @@ export function ProgramDayComponent({
                           )}
                         </>
                       )}
-                      {exercise.bodyParts && exercise.bodyParts.length > 0 && (
+                      {exercise.bodyPart && (
                         <div className="flex flex-wrap gap-1 ml-1">
-                          {exercise.bodyParts.map(part => (
-                            <span 
-                              key={part} 
-                              className="px-2 py-0.5 rounded-full text-xs font-medium bg-indigo-500/20 text-indigo-300"
-                            >
-                              {part}
-                            </span>
-                          ))}
+                          <span 
+                            key={exercise.bodyPart} 
+                            className="px-2 py-0.5 rounded-full text-xs font-medium bg-indigo-500/20 text-indigo-300"
+                          >
+                            {exercise.bodyPart}
+                          </span>
                         </div>
                       )}
                     </div>
@@ -280,16 +295,14 @@ export function ProgramDayComponent({
                       </div>
                     )}
                     {/* Body Parts in expanded view */}
-                    {exercise.bodyParts && exercise.bodyParts.length > 0 && (
-                      <div className="flex flex-wrap gap-1.5">
-                        {exercise.bodyParts.map(part => (
-                          <span 
-                            key={part} 
-                            className="px-3 py-1 rounded-full text-xs font-medium bg-indigo-500/20 text-indigo-300"
-                          >
-                            {part}
-                          </span>
-                        ))}
+                    {exercise.bodyPart && (
+                      <div className="flex flex-wrap gap-1 ml-1">
+                        <span 
+                          key={exercise.bodyPart} 
+                          className="px-2 py-0.5 rounded-full text-xs font-medium bg-indigo-500/20 text-indigo-300"
+                        >
+                          {exercise.bodyPart}
+                        </span>
                       </div>
                     )}
                     <div

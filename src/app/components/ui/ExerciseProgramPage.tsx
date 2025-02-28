@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react';
-import { ProgramDayComponent } from './ProgramDayComponent';
 import { ProgramDaySummaryComponent } from './ProgramDaySummaryComponent';
 import { ProgramType } from '@/app/shared/types';
 import { Exercise, ExerciseProgram, ProgramDay } from '@/app/types/program';
@@ -14,6 +13,7 @@ interface ExerciseProgramPageProps {
   onVideoClick: (exercise: Exercise) => void;
   loadingVideoExercise?: string | null;
   onDaySelect: (day: ProgramDay, dayName: string) => void;
+  isActive?: boolean;
 }
 
 // Add styles to hide scrollbars while maintaining scroll functionality
@@ -52,26 +52,38 @@ function getNextMonday(d: Date): Date {
   return result;
 }
 
+// Create a reusable loading component
+function ProgramLoadingUI() {
+  return (
+    <div className="h-screen w-screen flex flex-col bg-gray-900">
+      <div className="flex flex-col items-center justify-center h-full space-y-4 px-4 text-center">
+        <div className="animate-bounce w-8 h-8 mt-12 mx-auto">
+          <div className="w-8 h-8 rounded-full border-t-2 border-b-2 border-indigo-500 animate-spin"></div>
+        </div>
+        <div className="text-app-title text-white">Creating Program</div>
+        <div className="text-gray-400 max-w-sm">
+          Please wait while we generate your personalized exercise program...
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function ExerciseProgramPage({
   program,
   isLoading,
-  onToggleView,
   dayName,
-  onVideoClick,
-  loadingVideoExercise,
   onDaySelect,
+  isActive = false,
 }: ExerciseProgramPageProps) {
   // Get current date info
   const currentDate = new Date();
   const currentWeekNumber = getWeekNumber(currentDate);
   const currentDayOfWeek = currentDate.getDay() || 7; // Convert Sunday (0) to 7
 
-  const [showDetails, setShowDetails] = useState(true);
   const [selectedWeek, setSelectedWeek] = useState<number>(1);
   const [expandedDays, setExpandedDays] = useState<number[]>([]);
-  const [expandedExercises, setExpandedExercises] = useState<string[]>([]);
   const [showOverview, setShowOverview] = useState(true);
-  const showDetailsButtonRef = useRef<HTMLButtonElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Check if overview has been seen before
@@ -151,7 +163,6 @@ export function ExerciseProgramPage({
     // If it's the next week (beyond program length), clear expanded days
     if (weekNumber > program.program.length) {
       setExpandedDays([]);
-      setExpandedExercises([]);
       return;
     }
 
@@ -180,8 +191,6 @@ export function ExerciseProgramPage({
       // If no day was expanded, expand the current day of the week
       setExpandedDays([currentDayOfWeek]);
     }
-
-    setExpandedExercises([]);
 
     // Scroll the selected week button into view with a slight delay to ensure DOM update
     setTimeout(() => {
@@ -215,7 +224,6 @@ export function ExerciseProgramPage({
           ? [] // If clicking the currently expanded day, collapse it
           : [dayNumber] // Otherwise, show only the clicked day
     );
-    setExpandedExercises([]);
 
     // Only scroll if we're expanding
     if (isExpanding) {
@@ -245,28 +253,6 @@ export function ExerciseProgramPage({
 
   const handleDayDetailClick = (day: ProgramDay, dayName: string) => {
     onDaySelect(day, dayName);
-  };
-
-  const handleShowDetails = () => {
-    setShowDetails(!showDetails);
-    if (!showDetails && showDetailsButtonRef.current && containerRef.current) {
-      const button = showDetailsButtonRef.current;
-      const container = containerRef.current;
-      if (button && container) {
-        const buttonRect = button.getBoundingClientRect();
-        const containerRect = container.getBoundingClientRect();
-        const relativeTop =
-          buttonRect.top - containerRect.top + container.scrollTop;
-        const topBarHeight = 70;
-
-        setTimeout(() => {
-          container.scrollTo({
-            top: relativeTop - topBarHeight,
-            behavior: 'smooth',
-          });
-        }, 100);
-      }
-    }
   };
 
   const getDayShortName = (dayOfWeek: number): string => {
@@ -307,20 +293,8 @@ export function ExerciseProgramPage({
     );
   };
 
-  if (program === null || !Array.isArray(program.program)) {
-    return (
-      <div className="h-screen w-screen flex flex-col bg-gray-900">
-        <div className="flex flex-col items-center justify-center h-full space-y-4 px-4 text-center">
-          <div className="animate-bounce w-8 h-8 mt-12 mx-auto">
-            <div className="w-8 h-8 rounded-full border-t-2 border-b-2 border-indigo-500 animate-spin"></div>
-          </div>
-          <div className="text-app-title text-white">Creating Program</div>
-          <div className="text-gray-400 max-w-sm">
-            Please wait while we generate your personalized exercise program...
-          </div>
-        </div>
-      </div>
-    );
+  if (isLoading || program === null || !Array.isArray(program.program)) {
+    return <ProgramLoadingUI />;
   }
 
   const selectedWeekData = program.program.find((w) => w.week === selectedWeek);
@@ -332,31 +306,29 @@ export function ExerciseProgramPage({
       }`}
     >
       {isLoading ? (
-        <div className="h-screen w-screen flex flex-col bg-gray-900">
-          <div className="flex flex-col items-center justify-center h-full space-y-4 px-4 text-center">
-            <div className="animate-bounce w-8 h-8 mt-12 mx-auto">
-              <div className="w-8 h-8 rounded-full border-t-2 border-b-2 border-indigo-500 animate-spin"></div>
-            </div>
-            <div className="text-app-title text-white">Creating Program</div>
-            <div className="text-gray-400 max-w-sm">
-              Please wait while we generate your personalized exercise program...
-            </div>
-          </div>
-        </div>
+        <ProgramLoadingUI />
       ) : (
         <>
           <style>{scrollbarHideStyles}</style>
-          
+
           {/* Custom header with title only */}
           <div className="py-3 px-4 flex items-center justify-between">
             {/* Empty spacer with same width as menu button to balance the title */}
             <div className="w-10"></div>
-            <h1 className="text-app-title text-center">
-              {program.title ||
-                (program.type === ProgramType.Recovery
-                  ? 'Recovery Program'
-                  : 'Exercise Program')}
-            </h1>
+            <div className="flex flex-col items-center">
+              <h1 className="text-app-title text-center">
+                {program.title ||
+                  (program.type === ProgramType.Recovery
+                    ? 'Recovery Program'
+                    : 'Exercise Program')}
+              </h1>
+              {isActive && (
+                <div className="mt-1 px-2 py-0.5 bg-green-500/20 text-green-300 text-xs rounded-full flex items-center">
+                  <span className="w-2 h-2 rounded-full bg-green-400 mr-1"></span>
+                  Active Program
+                </div>
+              )}
+            </div>
             {/* Space for menu button */}
             <div className="w-10"></div>
           </div>
@@ -588,7 +560,9 @@ export function ExerciseProgramPage({
                             {getDayShortName(index + 1)}
                           </span>
                           {day.isRestDay ? (
-                            <span className="text-xs mt-1 opacity-80">Rest</span>
+                            <span className="text-xs mt-1 opacity-80">
+                              Rest
+                            </span>
                           ) : (
                             <span className="text-xs mt-1 opacity-80">
                               Activity

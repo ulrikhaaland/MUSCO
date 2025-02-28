@@ -188,7 +188,8 @@ Behavior Guidelines
   - Be 3-6 words long
   - Reference the program type (Exercise)
   - Reference the target areas or the diagnosis where appropriate
-  - Examples: "Upper Body Strength Builder", "Neck & Shoulder Recovery Plan", "Full Body Mobility Program"
+  - DO NOT include the word "Program" in the title
+  - Examples: "Upper Body Strength Builder", "Neck & Shoulder Recovery Plan", "Full Body Mobility Routine", "Core Strength Foundation", "Lower Body Power Circuit"
 
 - Provide a description/comment/overview at the start of the program.
 
@@ -210,7 +211,7 @@ Behavior Guidelines
 
 - For the exercise day, the \`duration\` parameter must be expressed in minutes for each day and must always be a number.
 
-- Each exercise MUST include a \`bodyParts\` array that lists the specific body parts targeted by that exercise. Use ONLY the following valid body part values:
+- Each exercise MUST include a \`bodyPart\` field that specifies the primary body part targeted by that exercise. Use ONLY one of the following valid body part values:
   - Neck
   - Shoulders
   - Upper Arms
@@ -229,7 +230,7 @@ Behavior Guidelines
 
 \`\`\`json
 {
-  "title": "Full Body Strength Program",
+  "title": "Full Body Strength",
   "programOverview": "This program is designed to help you build full-body strength, improve mobility, and enhance overall fitness while addressing any specific pain points or restrictions you may have.",
   "afterTimeFrame": {
     "expectedOutcome": "You should feel stronger, more mobile, and experience reduced pain or discomfort in your target areas.",
@@ -252,7 +253,7 @@ Behavior Guidelines
               "sets": 2,
               "repetitions": 20,
               "rest": 15,
-              "bodyParts": ["Shoulders", "Chest"]
+              "bodyPart": "Shoulders"
             },
             {
               "name": "Deadlifts",
@@ -261,7 +262,7 @@ Behavior Guidelines
               "repetitions": 12,
               "rest": 60,
               "modification": "Use lighter weights or a resistance band if needed.",
-              "bodyParts": ["Glutes", "Lower Back", "Upper Legs"]
+              "bodyPart": "Glutes"
             },
             {
               "name": "Bulgarian Split Squats",
@@ -269,7 +270,7 @@ Behavior Guidelines
               "sets": 3,
               "repetitions": 10,
               "rest": 60,
-              "bodyParts": ["Upper Legs", "Glutes"]
+              "bodyPart": "Upper Legs"
             },
             {
               "name": "Weighted Step-Ups",
@@ -278,7 +279,7 @@ Behavior Guidelines
               "repetitions": 12,
               "rest": 60,
               "modification": "Use body weight only if balance is a concern.",
-              "bodyParts": ["Upper Legs", "Glutes", "Abdomen"]
+              "bodyPart": "Upper Legs"
             },
             {
               "name": "Dumbbell Chest Press",
@@ -286,7 +287,7 @@ Behavior Guidelines
               "sets": 3,
               "repetitions": 12,
               "rest": 60,
-              "bodyParts": ["Chest", "Shoulders", "Upper Arms"]
+              "bodyPart": "Chest"
             },
             {
               "name": "Dumbbell Front Raises",
@@ -294,7 +295,7 @@ Behavior Guidelines
               "sets": 3,
               "repetitions": 12,
               "rest": 45,
-              "bodyParts": ["Shoulders"]
+              "bodyPart": "Shoulders"
             },
             {
               "name": "Plank Rows",
@@ -303,7 +304,7 @@ Behavior Guidelines
               "repetitions": 10,
               "rest": 60,
               "modification": "Perform the plank on knees if full plank is too challenging.",
-              "bodyParts": ["Abdomen", "Upper Back"]
+              "bodyPart": "Abdomen"
             },
           ],
           "duration": 48
@@ -318,14 +319,14 @@ Behavior Guidelines
               "description": "A self-myofascial release technique to reduce muscle tightness and improve blood flow.",
               "duration": 10,
               "instructions": "Focus on tight areas like the quads, hamstrings, and back.",
-              "bodyParts": ["Upper Legs", "Upper Back", "Lower Back"]
+              "bodyPart": "Upper Legs"
             },
             {
               "name": "Cat-Cow Stretch",
               "description": "A gentle yoga pose to improve spinal mobility and relieve tension in the back.",
               "sets": 2,
               "repetitions": 10,
-              "bodyParts": ["Upper Back", "Lower Back"]
+              "bodyPart": "Upper Back"
             }
           ],
           "duration": 9
@@ -340,7 +341,7 @@ Behavior Guidelines
               "description": "A series of movements to loosen up joints and warm up the body.",
               "isWarmUp": true,
               "duration": 5,
-              "bodyParts": ["Shoulders", "Upper Arms", "Upper Legs", "Lower Legs"]
+              "bodyPart": "Shoulders"
             },
             {
               "name": "Barbell Back Squats",
@@ -349,7 +350,7 @@ Behavior Guidelines
               "repetitions": 10,
               "rest": 60,
               "modification": "Use a lighter barbell or perform bodyweight squats as needed.",
-              "bodyParts": ["Upper Legs", "Glutes", "Lower Back"]
+              "bodyPart": "Upper Legs"
             },
             {
               "name": "Pull-Ups",
@@ -358,7 +359,7 @@ Behavior Guidelines
               "repetitions": "max",
               "rest": 60,
               "modification": "Use an assisted pull-up machine or resistance bands for support.",
-              "bodyParts": ["Upper Back", "Upper Arms"]
+              "bodyPart": "Upper Back"
             },
             {
               "name": "Lateral Lunges",
@@ -367,7 +368,7 @@ Behavior Guidelines
               "repetitions": 10,
               "rest": 60,
               "modification": "Limit depth or range of motion if balance is an issue.",
-              "bodyParts": ["Upper Legs", "Glutes"]
+              "bodyPart": "Upper Legs"
             },
             {
               "name": "Push-Ups",
@@ -376,7 +377,7 @@ Behavior Guidelines
               "repetitions": 15,
               "rest": 60,
               "modification": "Perform knee push-ups or incline push-ups if needed.",
-              "bodyParts": ["Chest", "Shoulders", "Upper Arms"]
+              "bodyPart": "Chest"
             },
             {
               "name": "Russian Twists",
@@ -385,7 +386,7 @@ Behavior Guidelines
               "repetitions": 20,
               "rest": 45,
               "modification": "Keep your feet on the ground if balancing is challenging.",
-              "bodyParts": ["Abdomen"]
+              "bodyPart": "Abdomen"
             },
             {
               "name": "Dumbbell Shrugs",
@@ -393,7 +394,7 @@ Behavior Guidelines
               "sets": 3,
               "repetitions": 12,
               "rest": 45,
-              "bodyParts": ["Shoulders", "Upper Back"]
+              "bodyPart": "Shoulders"
             },
          
           ],
@@ -409,14 +410,14 @@ Behavior Guidelines
           "description": "A yoga pose to stretch the lower back, hips, and thighs, promoting relaxation.",
           "duration": 5,
           "instructions": "Hold the stretch and breathe deeply.",
-          "bodyParts": ["Lower Back", "Upper Legs"]
+          "bodyPart": "Lower Back"
         },
         {
           "name": "Seated Forward Fold",
           "description": "A stretch to target the hamstrings, lower back, and calves.",
           "duration": 5,
           "instructions": "Reach for your toes gently without forcing the stretch.",
-          "bodyParts": ["Lower Back", "Upper Legs", "Lower Legs"]
+          "bodyPart": "Lower Back"
         }
           ]
           "duration": 10
@@ -425,7 +426,7 @@ Behavior Guidelines
     }
   ]
 }
-\`\`\`
+\`
 
 7. Ensure Clarity and Safety
 
@@ -452,6 +453,5 @@ Technical Notes
 2. Error Handling
 
 - If any data is missing or unclear, request clarification before generating the program.
-
 - If the diagnosis is outside your scope (e.g., a severe medical condition), recommend consulting a healthcare professional.
 `;

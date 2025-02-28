@@ -23,7 +23,13 @@ import {
 } from 'firebase/firestore';
 import { ProgramStatus, ExerciseProgram, UserProgram } from '@/app/types/program';
 import { submitQuestionnaire } from '@/app/services/questionnaire';
+import { updateActiveProgramStatus } from '@/app/services/program';
 import { useRouter } from 'next/navigation';
+
+// Update UserProgram interface to include the document ID
+interface UserProgramWithId extends UserProgram {
+  docId: string;
+}
 
 interface UserContextType {
   onQuestionnaireSubmit: (
@@ -33,8 +39,8 @@ interface UserContextType {
   answers: ExerciseQuestionnaireAnswers | null;
   programStatus: ProgramStatus | null;
   program: ExerciseProgram | null;
-  userPrograms: UserProgram[];
-  activeProgram: UserProgram | null;
+  userPrograms: UserProgramWithId[];  // Updated to use the extended interface
+  activeProgram: UserProgramWithId | null;  // Updated to use the extended interface
   isLoading: boolean;
   pendingQuestionnaire: {
     diagnosis: DiagnosisAssistantResponse;
@@ -46,6 +52,8 @@ interface UserContextType {
       answers: ExerciseQuestionnaireAnswers;
     } | null
   ) => void;
+  selectProgram: (programIndex: number) => void;
+  toggleActiveProgram: (programIndex: number) => void;
 }
 
 const UserContext = createContext<UserContextType>({} as UserContextType);
@@ -56,8 +64,8 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const [answers, setAnswers] = useState<ExerciseQuestionnaireAnswers | null>(null);
   const [programStatus, setProgramStatus] = useState<ProgramStatus | null>(null);
   const [program, setProgram] = useState<ExerciseProgram | null>(null);
-  const [userPrograms, setUserPrograms] = useState<UserProgram[]>([]);
-  const [activeProgram, setActiveProgram] = useState<UserProgram | null>(null);
+  const [userPrograms, setUserPrograms] = useState<UserProgramWithId[]>([]);
+  const [activeProgram, setActiveProgram] = useState<UserProgramWithId | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [pendingQuestionnaire, setPendingQuestionnaire] = useState<{
     diagnosis: DiagnosisAssistantResponse;
@@ -74,9 +82,9 @@ export function UserProvider({ children }: { children: ReactNode }) {
     const q = query(programsRef, orderBy('createdAt', 'desc'));
 
     const unsubscribe = onSnapshot(q, async (snapshot) => {
-      const programs: UserProgram[] = [];
+      const programs: UserProgramWithId[] = [];
       let mostRecentStatus: ProgramStatus | null = null;
-      let mostRecentProgram: UserProgram | null = null;
+      let mostRecentProgram: UserProgramWithId | null = null;
       let mostRecentDate: Date | null = null;
 
       // First pass: collect all programs
@@ -102,14 +110,15 @@ export function UserProvider({ children }: { children: ReactNode }) {
             );
             
             const updatedAt = data.updatedAt ? new Date(data.updatedAt) : new Date(data.createdAt);
-            const userProgram: UserProgram = {
+            const userProgram: UserProgramWithId = {
               programs: exercisePrograms,
               diagnosis: data.diagnosis,
               questionnaire: data.questionnaire,
-              active: true, // Consider all programs as active
+              active: data.active ?? true, // Use active status from Firebase or default to true
               createdAt: new Date(data.createdAt),
               updatedAt: updatedAt,
-              type: data.type
+              type: data.type,
+              docId: doc.id // Store the document ID
             };
             programs.push(userProgram);
 
@@ -130,9 +139,13 @@ export function UserProvider({ children }: { children: ReactNode }) {
         setActiveProgram(mostRecentProgram);
         setProgram(mostRecentProgram.programs[0]);
         setAnswers(mostRecentProgram.questionnaire);
-        setProgramStatus(ProgramStatus.Done);
-      } else if (mostRecentStatus) {
-        // Only set status if no program was found
+        
+        // Only update the status to Done if we're not currently generating a new program
+        if (programStatus !== ProgramStatus.Generating) {
+          setProgramStatus(ProgramStatus.Done);
+        }
+      } else if (mostRecentStatus && programStatus !== ProgramStatus.Generating) {
+        // Only set status if no program was found AND we're not generating
         setProgramStatus(mostRecentStatus);
       }
     });
@@ -227,14 +240,21 @@ export function UserProvider({ children }: { children: ReactNode }) {
     }
 
     try {
-      setProgramStatus(ProgramStatus.Generating);
+      // Clear existing program state before navigation
+      setProgram(null);
+      setActiveProgram(null);
       
       // Update local state
       setAnswers(answers);
-      setProgram(null); // Clear existing program as we're generating a new one
-
-      // Directly navigate to the program page
-      router.push('/program');
+      
+      // Set program status to generating after clearing program state
+      setProgramStatus(ProgramStatus.Generating);
+      
+      // Delay navigation slightly to ensure state updates are processed
+      setTimeout(() => {
+        // Directly navigate to the program page
+        router.push('/program');
+      }, 10);
 
       // Submit questionnaire and generate program
       const programId = await submitQuestionnaire(user.uid, diagnosis, answers);
@@ -260,6 +280,72 @@ export function UserProvider({ children }: { children: ReactNode }) {
     }
   }, [user, pendingQuestionnaire]);
 
+  // Function to select a specific program from the userPrograms array
+  const selectProgram = (programIndex: number) => {
+    if (programIndex >= 0 && programIndex < userPrograms.length) {
+      const selectedProgram = userPrograms[programIndex];
+      setActiveProgram(selectedProgram);
+      setProgram(selectedProgram.programs[0]);
+      setAnswers(selectedProgram.questionnaire);
+      setProgramStatus(ProgramStatus.Done);
+    }
+  };
+
+  // Function to toggle the active status of a program
+  const toggleActiveProgram = (programIndex: number) => {
+    if (!user) {
+      console.error('User must be logged in to toggle program status');
+      return;
+    }
+    
+    if (programIndex >= 0 && programIndex < userPrograms.length) {
+      const selectedProgram = userPrograms[programIndex];
+      const programType = selectedProgram.type;
+      const newActiveStatus = !selectedProgram.active;
+      
+      // Create a new array with updated active status locally
+      const updatedPrograms = userPrograms.map((program, index) => {
+        // If program is of the same type as the selected program
+        if (program.type === programType) {
+          // Set active based on whether this is the selected program
+          return {
+            ...program,
+            active: index === programIndex ? newActiveStatus : false,
+          };
+        }
+        // Leave programs of other types unchanged
+        return program;
+      });
+      
+      // Update local state first for immediate feedback
+      setUserPrograms(updatedPrograms);
+      
+      // If we're setting the program to active, update the active program state
+      if (newActiveStatus) {
+        const updatedSelectedProgram = {
+          ...selectedProgram,
+          active: true
+        };
+        setActiveProgram(updatedSelectedProgram);
+        setProgram(updatedSelectedProgram.programs[0]);
+        setAnswers(updatedSelectedProgram.questionnaire);
+        setProgramStatus(ProgramStatus.Done);
+      }
+      
+      // Update in Firebase
+      updateActiveProgramStatus(
+        user.uid, 
+        selectedProgram.docId, 
+        programType, 
+        newActiveStatus
+      ).catch(error => {
+        console.error('Error updating program active status:', error);
+        // Revert to the previous state if there was an error
+        setUserPrograms(userPrograms);
+      });
+    }
+  };
+
   return (
     <UserContext.Provider
       value={{
@@ -272,6 +358,8 @@ export function UserProvider({ children }: { children: ReactNode }) {
         isLoading,
         pendingQuestionnaire,
         setPendingQuestionnaire,
+        selectProgram,
+        toggleActiveProgram,
       }}
     >
       {children}

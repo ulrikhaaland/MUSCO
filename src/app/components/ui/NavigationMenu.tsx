@@ -4,6 +4,7 @@ import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/app/context/AuthContext';
 import { useUser } from '@/app/context/UserContext';
 import { useState, useEffect, useRef, Suspense } from 'react';
+import { LoadingSpinner } from './LoadingSpinner';
 
 // Create a separate component that uses the search params
 function NavigationMenuContent() {
@@ -62,6 +63,21 @@ function NavigationMenuContent() {
       disabled: !program,
     },
     {
+      name: 'Programs',
+      path: '/programs',
+      icon: (
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+          />
+        </svg>
+      ),
+      disabled: !user,
+    },
+    {
       name: 'Calendar',
       path: '/program/calendar',
       icon: (
@@ -103,6 +119,9 @@ function NavigationMenuContent() {
     if (path === '/program') {
       // Match program and program day paths, but not calendar
       return pathname === '/program' || pathname.startsWith('/program/day/');
+    }
+    if (path === '/programs') {
+      return pathname === '/programs';
     }
     return pathname.startsWith(path);
   };
@@ -220,19 +239,9 @@ function NavigationMenuContent() {
 // Loading fallback for the Suspense boundary
 function MenuLoadingFallback() {
   return (
-    <button
-      className="fixed top-4 right-4 z-[70] p-2 rounded-lg bg-gray-800 text-white"
-      aria-label="Menu Loading"
-    >
-      <svg className="w-6 h-6 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M4 6h16M4 12h16M4 18h16"
-        />
-      </svg>
-    </button>
+    <div className="fixed top-4 right-4 z-[70]">
+      <LoadingSpinner size="small" message="" />
+    </div>
   );
 }
 

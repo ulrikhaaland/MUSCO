@@ -11,36 +11,8 @@ import { QuestionnaireAuthForm } from './components/auth/QuestionnaireAuthForm';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { IntentionQuestion } from './components/ui/IntentionQuestion';
-
-function LoadingSpinner() {
-  return (
-    <div className="fixed inset-0 bg-gray-900/95 backdrop-blur-sm z-50 flex items-center justify-center">
-      <div className="flex flex-col items-center space-y-4">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
-        <p className="text-white text-lg">Loading...</p>
-      </div>
-    </div>
-  );
-}
-
-function ErrorDisplay({ error }: { error: Error }) {
-  return (
-    <div className="fixed inset-0 bg-gray-900/95 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="max-w-md w-full space-y-4 text-center">
-        <h2 className="text-2xl font-bold text-white">Something went wrong</h2>
-        <pre className="text-red-400 text-sm overflow-auto p-4 bg-gray-800 rounded-lg">
-          {error.message}
-        </pre>
-        <button
-          onClick={() => (window.location.href = '/')}
-          className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500"
-        >
-          Reload page
-        </button>
-      </div>
-    </div>
-  );
-}
+import { LoadingSpinner } from './components/ui/LoadingSpinner';
+import { ErrorDisplay } from './components/ui/ErrorDisplay';
 
 // Create a separate component for search params functionality
 function HomeContent() {
@@ -70,6 +42,12 @@ function HomeContent() {
       document.title = 'MUSCO - Create Your Program';
     }
   }, []);
+
+  // Reset intention whenever user navigates to home page
+  useEffect(() => {
+    // Reset the intention to ensure user always has to choose when arriving at home page
+    setIntention(ProgramIntention.None);
+  }, [setIntention]);
 
   // Update gender when URL param changes
   useEffect(() => {
@@ -125,7 +103,7 @@ function HomeContent() {
   const isLoading = authLoading || userLoading;
 
   if (isLoading) {
-    return <LoadingSpinner />;
+    return <LoadingSpinner fullScreen message="Loading..." />;
   }
 
   if (authError) {
@@ -159,7 +137,7 @@ function HomeContent() {
 export default function Home() {
   return (
     <ErrorBoundary>
-      <Suspense fallback={<LoadingSpinner />}>
+      <Suspense fallback={<LoadingSpinner fullScreen />}>
         <HomeContent />
       </Suspense>
     </ErrorBoundary>

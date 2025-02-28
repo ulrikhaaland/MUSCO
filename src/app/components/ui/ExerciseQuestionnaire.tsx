@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, ReactNode } from 'react';
 import { TopBar } from './TopBar';
 import { ExerciseQuestionnaireAnswers, ProgramType } from '@/app/shared/types';
 import { BodyPartGroup } from '@/app/config/bodyPartGroups';
+import { TARGET_BODY_PARTS, UPPER_BODY_PARTS, LOWER_BODY_PARTS } from '@/app/types/program';
 
 interface ExerciseQuestionnaireProps {
   onClose: () => void;
@@ -110,31 +111,7 @@ const expandPainAreas = (areas: string[]): string[] => {
 
 // Body parts for target areas
 const bodyRegions = ['Full Body', 'Upper Body', 'Lower Body'] as const;
-const targetBodyParts = [
-  'Neck',
-  'Shoulders',
-  'Upper Arms',
-  'Forearms',
-  'Chest',
-  'Abdomen',
-  'Upper Back',
-  'Lower Back',
-  'Glutes',
-  'Upper Legs',
-  'Lower Legs',
-] as const;
-
-const upperBodyParts = [
-  'Neck',
-  'Shoulders',
-  'Upper Arms',
-  'Forearms',
-  'Chest',
-  'Abdomen',
-  'Upper Back',
-  'Lower Back',
-];
-const lowerBodyParts = ['Glutes', 'Upper Legs', 'Lower Legs'];
+// Target body parts now imported from program.ts
 
 interface ExerciseEnvironment {
   name: string;
@@ -292,18 +269,18 @@ export function ExerciseQuestionnaire({
   >(null);
 
   const [selectedTargetAreas, setSelectedTargetAreas] = useState<
-    (typeof targetBodyParts)[number][]
+    (typeof TARGET_BODY_PARTS)[number][]
   >(() => {
     // If fullBody is true, return all target areas
     if (fullBody) {
-      return [...targetBodyParts];
+      return [...TARGET_BODY_PARTS];
     }
 
     // Otherwise initialize with preselected areas from targetAreas prop
     const preselectedAreas = targetAreas
       .map((group) => {
         const groupId = group.id.toLowerCase();
-        // Map to exact string literals from targetBodyParts
+        // Map to exact string literals from TARGET_BODY_PARTS
         if (groupId.includes('shoulder')) return 'Shoulders' as const;
         if (groupId.includes('upper_arm')) return 'Upper Arms' as const;
         if (groupId.includes('forearm')) return 'Forearms' as const;
@@ -318,7 +295,7 @@ export function ExerciseQuestionnaire({
         return null;
       })
       .filter(
-        (area): area is (typeof targetBodyParts)[number] => area !== null
+        (area): area is (typeof TARGET_BODY_PARTS)[number] => area !== null
       );
     return [...new Set(preselectedAreas)]; // Remove duplicates
   });
@@ -591,13 +568,13 @@ export function ExerciseQuestionnaire({
 
       // Special case for target areas - only auto-scroll if selecting a body region
       if (field === 'targetAreas' && Array.isArray(normalizedValue)) {
-        const isFullBody = normalizedValue.length === targetBodyParts.length;
+        const isFullBody = normalizedValue.length === TARGET_BODY_PARTS.length;
         const isUpperBody =
-          upperBodyParts.every((part) => normalizedValue.includes(part)) &&
-          normalizedValue.length === upperBodyParts.length;
+          UPPER_BODY_PARTS.every((part) => normalizedValue.includes(part)) &&
+          normalizedValue.length === UPPER_BODY_PARTS.length;
         const isLowerBody =
-          lowerBodyParts.every((part) => normalizedValue.includes(part)) &&
-          normalizedValue.length === lowerBodyParts.length;
+          LOWER_BODY_PARTS.every((part) => normalizedValue.includes(part)) &&
+          normalizedValue.length === LOWER_BODY_PARTS.length;
 
         if (isFullBody || isUpperBody || isLowerBody) {
           scrollToNextUnansweredQuestion(ref, true);
@@ -1066,17 +1043,17 @@ export function ExerciseQuestionnaire({
                 editingField !== 'targetAreas' &&
                 shouldCollapseField('targetAreas') ? (
                   renderSelectedAnswers(
-                    answers.targetAreas.length === targetBodyParts.length
+                    answers.targetAreas.length === TARGET_BODY_PARTS.length
                       ? 'Full Body'
-                      : upperBodyParts.every((part) =>
+                      : UPPER_BODY_PARTS.every((part) =>
                           answers.targetAreas.includes(part)
                         ) &&
-                        answers.targetAreas.length === upperBodyParts.length
+                        answers.targetAreas.length === UPPER_BODY_PARTS.length
                       ? 'Upper Body'
-                      : lowerBodyParts.every((part) =>
+                      : LOWER_BODY_PARTS.every((part) =>
                           answers.targetAreas.includes(part)
                         ) &&
-                        answers.targetAreas.length === lowerBodyParts.length
+                        answers.targetAreas.length === LOWER_BODY_PARTS.length
                       ? 'Lower Body'
                       : answers.targetAreas,
                     () => handleEdit('targetAreas')
@@ -1097,30 +1074,30 @@ export function ExerciseQuestionnaire({
                             checked={
                               region === 'Full Body'
                                 ? answers.targetAreas.length ===
-                                  targetBodyParts.length
+                                  TARGET_BODY_PARTS.length
                                 : region === 'Upper Body'
-                                ? upperBodyParts.every((part) =>
+                                ? UPPER_BODY_PARTS.every((part) =>
                                     answers.targetAreas.includes(part)
                                   ) &&
                                   answers.targetAreas.length ===
-                                    upperBodyParts.length
+                                    UPPER_BODY_PARTS.length
                                 : region === 'Lower Body'
-                                ? lowerBodyParts.every((part) =>
+                                ? LOWER_BODY_PARTS.every((part) =>
                                     answers.targetAreas.includes(part)
                                   ) &&
                                   answers.targetAreas.length ===
-                                    lowerBodyParts.length
+                                    LOWER_BODY_PARTS.length
                                 : false
                             }
                             onChange={(e) => {
                               if (e.target.checked) {
                                 let newTargetAreas: string[] = [];
                                 if (region === 'Full Body') {
-                                  newTargetAreas = [...targetBodyParts];
+                                  newTargetAreas = [...TARGET_BODY_PARTS];
                                 } else if (region === 'Upper Body') {
-                                  newTargetAreas = [...upperBodyParts];
+                                  newTargetAreas = [...UPPER_BODY_PARTS];
                                 } else if (region === 'Lower Body') {
-                                  newTargetAreas = [...lowerBodyParts];
+                                  newTargetAreas = [...LOWER_BODY_PARTS];
                                 }
                                 handleInputChange(
                                   'targetAreas',
@@ -1143,7 +1120,7 @@ export function ExerciseQuestionnaire({
                         Or select specific areas:
                       </p>
                       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-                        {targetBodyParts.map((part) => (
+                        {TARGET_BODY_PARTS.map((part) => (
                           <label
                             key={part}
                             className="relative flex items-center"

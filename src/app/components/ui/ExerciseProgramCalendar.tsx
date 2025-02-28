@@ -4,12 +4,20 @@ import type {
   ProgramDay,
 } from '@/app/types/program';
 import { ProgramDaySummaryComponent } from './ProgramDaySummaryComponent';
+import { useUser } from '@/app/context/UserContext';
+import { format } from 'date-fns';
 
 interface ExerciseProgramCalendarProps {
-  program: ExerciseProgram;
+  program: ExerciseProgram;  // This will still be the initially selected program
   onToggleView: () => void;
   dayName: (day: number) => string;
-  onDaySelect?: (day: ProgramDay, dayName: string) => void;
+  onDaySelect?: (day: ProgramDay, dayName: string, programId: string) => void;
+}
+
+interface ProgramDayWithSource {
+  day: ProgramDay;
+  program: ExerciseProgram;
+  dayOfWeek: number;
 }
 
 export function ExerciseProgramCalendar({
@@ -20,53 +28,79 @@ export function ExerciseProgramCalendar({
 }: ExerciseProgramCalendarProps) {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [showYearPicker, setShowYearPicker] = useState(false);
+  const { userPrograms } = useUser();
+  
+  // Get all active programs from userPrograms
+  const activePrograms = userPrograms
+    .filter(up => up.active)
+    .flatMap(up => up.programs);
 
-  const getDayProgram = (date: Date): ProgramDay | undefined => {
-    // Get the day of week (1 = Monday, 7 = Sunday)
-    const dayOfWeek = date.getDay() === 0 ? 7 : date.getDay();
+  // Add the current program if it's not already in activePrograms
+  if (!activePrograms.some(p => p.createdAt === program.createdAt)) {
+    activePrograms.push(program);
+  }
 
-    // Convert createdAt to Date if it's not already
-    const programStartDate = new Date(program.createdAt);
+  const getDayProgram = (date: Date): ProgramDayWithSource[] => {
+    const result: ProgramDayWithSource[] = [];
     
-    // Find the start of the week containing the program start date
-    const programWeekStart = new Date(programStartDate);
-    const programStartDayOfWeek = programStartDate.getDay() === 0 ? 7 : programStartDate.getDay();
-    programWeekStart.setDate(programStartDate.getDate() - (programStartDayOfWeek - 1));
-    programWeekStart.setHours(0, 0, 0, 0);
+    for (const activeProgram of activePrograms) {
+      // Get the day of week (1 = Monday, 7 = Sunday)
+      const dayOfWeek = date.getDay() === 0 ? 7 : date.getDay();
 
-    // Reset time part of the check date for accurate comparison
-    const checkDate = new Date(date);
-    checkDate.setHours(0, 0, 0, 0);
+      // Convert createdAt to Date if it's not already
+      const programStartDate = new Date(activeProgram.createdAt);
+      
+      // Find the start of the week containing the program start date
+      const programWeekStart = new Date(programStartDate);
+      const programStartDayOfWeek = programStartDate.getDay() === 0 ? 7 : programStartDate.getDay();
+      programWeekStart.setDate(programStartDate.getDate() - (programStartDayOfWeek - 1));
+      programWeekStart.setHours(0, 0, 0, 0);
 
-    // Find the start of the week for the check date
-    const checkWeekStart = new Date(checkDate);
-    checkWeekStart.setDate(checkDate.getDate() - (dayOfWeek - 1));
-    checkWeekStart.setHours(0, 0, 0, 0);
+      // Reset time part of the check date for accurate comparison
+      const checkDate = new Date(date);
+      checkDate.setHours(0, 0, 0, 0);
 
-    // Calculate the difference in weeks from the program start week
-    const weekDiff = Math.floor(
-      (checkWeekStart.getTime() - programWeekStart.getTime()) / (7 * 24 * 60 * 60 * 1000)
-    );
+      // Find the start of the week for the check date
+      const checkWeekStart = new Date(checkDate);
+      checkWeekStart.setDate(checkDate.getDate() - (dayOfWeek - 1));
+      checkWeekStart.setHours(0, 0, 0, 0);
 
-    // If the date is before program start week or after program end, return undefined
-    if (weekDiff < 0 || weekDiff >= program.program.length) {
-      return undefined;
+      // Calculate the difference in weeks from the program start week
+      const weekDiff = Math.floor(
+        (checkWeekStart.getTime() - programWeekStart.getTime()) / (7 * 24 * 60 * 60 * 1000)
+      );
+
+      // If the date is before program start week or after program end, skip this program
+      if (weekDiff < 0 || weekDiff >= activeProgram.program.length) {
+        continue;
+      }
+
+      // Get the program week
+      const programWeek = activeProgram.program[weekDiff];
+      if (!programWeek) continue;
+
+      // Find the matching day in the week
+      const day = programWeek.days.find((d) => d.day === dayOfWeek);
+      if (!day) continue;
+
+      // Add this program day to the result
+      result.push({
+        day: {
+          ...day,
+          description: programWeek.differenceReason
+            ? `${day.description}\n\nWeek ${programWeek.week} changes: ${programWeek.differenceReason}`
+            : day.description,
+        },
+        program: activeProgram,
+        dayOfWeek
+      });
     }
 
-    // Get the program week
-    const programWeek = program.program[weekDiff];
-    if (!programWeek) return undefined;
+    return result;
+  };
 
-    // Find the matching day in the week
-    const day = programWeek.days.find((d) => d.day === dayOfWeek);
-    if (!day) return undefined;
-
-    return {
-      ...day,
-      description: programWeek.differenceReason
-        ? `${day.description}\n\nWeek ${programWeek.week} changes: ${programWeek.differenceReason}`
-        : day.description,
-    };
+  const isProgramDayForDate = (date: Date): boolean => {
+    return getDayProgram(date).length > 0;
   };
 
   const handleDateClick = (date: Date) => {
@@ -86,7 +120,7 @@ export function ExerciseProgramCalendar({
     });
 
     return (
-      <div className="flex items-center justify-between px-4 py-2">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-gray-700/50">
         <button
           onClick={() => setShowYearPicker(!showYearPicker)}
           className="text-xl font-semibold text-white hover:text-indigo-400 transition-colors"
@@ -171,35 +205,17 @@ export function ExerciseProgramCalendar({
     const today = new Date();
     const currentDateString = today.toDateString();
 
-    // Find the start of the week containing the program start date
-    const programStartDate = new Date(program.createdAt);
-    const programStartDayOfWeek = programStartDate.getDay() === 0 ? 7 : programStartDate.getDay();
-    const programWeekStart = new Date(programStartDate);
-    programWeekStart.setDate(programStartDate.getDate() - (programStartDayOfWeek - 1));
-    programWeekStart.setHours(0, 0, 0, 0);
-
-    // Calculate program end date based on the start of the program week
-    const programEndDate = new Date(programWeekStart);
-    programEndDate.setDate(programWeekStart.getDate() + (program.program.length * 7));
-
     // Calculate days for the visible calendar (max 6 weeks)
     for (let week = 0; week < 6; week++) {
       const currentWeek = [];
       for (let day = 0; day < 7; day++) {
         const date = new Date(startDate);
-        const program = getDayProgram(date);
+        const programDays = getDayProgram(date);
+        const isProgramDay = programDays.length > 0;
         
-        // Check if the date falls within a program week
-        const dateWeekStart = new Date(date);
-        const dateDayOfWeek = date.getDay() === 0 ? 7 : date.getDay();
-        dateWeekStart.setDate(date.getDate() - (dateDayOfWeek - 1));
-        dateWeekStart.setHours(0, 0, 0, 0);
-        
-        const isProgramDay = dateWeekStart >= programWeekStart && dateWeekStart < programEndDate;
-
         currentWeek.push({
           date,
-          program,
+          programDays,
           isCurrentMonth: date.getMonth() === selectedDate.getMonth(),
           isToday: date.toDateString() === currentDateString,
           isSelected: date.toDateString() === selectedDate.toDateString(),
@@ -222,85 +238,79 @@ export function ExerciseProgramCalendar({
             {week.map(
               ({
                 date,
-                program,
+                programDays,
                 isCurrentMonth,
                 isToday,
                 isSelected,
                 isProgramDay,
-              }, dayIndex) => (
-                <button
-                  key={dayIndex}
-                  onClick={() => handleDateClick(date)}
-                  className={`
-                    relative aspect-square p-1 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-900
-                    ${
-                      isCurrentMonth
-                        ? isProgramDay 
-                          ? 'bg-gray-800/50'
-                          : 'bg-gray-900/50'
-                        : 'bg-gray-900/30 text-gray-600'
-                    }
-                    ${isSelected ? 'bg-indigo-500/30 ring-2 ring-indigo-500' : ''}
-                    ${isToday ? 'font-bold' : ''}
-                    ${
-                      program &&
-                      !program.isRestDay &&
-                      isCurrentMonth &&
-                      !isSelected
-                        ? 'hover:bg-gray-700/50'
-                        : ''
-                    }
-                    transition-all duration-200
-                  `}
-                >
-                  <div className="flex flex-col h-full">
-                    <span
-                      className={`
-                        text-sm ${
-                          isToday
-                            ? 'text-indigo-400'
-                            : isCurrentMonth
-                            ? isProgramDay
-                              ? 'text-gray-300'
-                              : 'text-gray-500'
-                            : 'text-gray-600'
-                        }
-                        ${isSelected ? 'text-indigo-300' : ''}
-                        ${
-                          program &&
-                          !program.isRestDay &&
-                          isCurrentMonth &&
-                          isSelected
-                            ? 'text-indigo-200 font-medium'
-                            : ''
-                        }
-                      `}
-                    >
-                      {date.getDate()}
-                    </span>
-                    {program && isCurrentMonth && (
-                      <div className="mt-auto">
-                        {program.isRestDay ? (
-                          <div className="text-xs text-gray-500 mt-1">Rest</div>
-                        ) : (
-                          <div className="flex flex-col items-center gap-0.5">
-                            <div className="text-xs text-gray-400 mt-1">
+              }, dayIndex) => {
+                // Check if there are any workout days (non-rest days)
+                const hasWorkout = programDays.some(p => !p.day.isRestDay);
+                // Only show "Rest" if there are no workout days and at least one rest day
+                const isRestOnly = !hasWorkout && programDays.some(p => p.day.isRestDay);
+
+                return (
+                  <button
+                    key={dayIndex}
+                    onClick={() => handleDateClick(date)}
+                    className={`
+                      relative aspect-square p-1 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-900
+                      ${
+                        isCurrentMonth
+                          ? isProgramDay 
+                            ? 'bg-gray-800/50'
+                            : 'bg-gray-900/50'
+                          : 'bg-gray-900/30 text-gray-600'
+                      }
+                      ${isSelected ? 'bg-indigo-500/30 ring-1 ring-indigo-400' : ''}
+                      ${isToday ? 'font-bold' : ''}
+                      ${
+                        isProgramDay && isCurrentMonth && !isSelected
+                          ? 'hover:bg-gray-700/50'
+                          : ''
+                      }
+                      transition-all duration-200
+                    `}
+                  >
+                    <div className="flex flex-col h-full">
+                      <div className={`
+                        flex justify-center items-center mb-1
+                        ${isToday ? 'relative' : ''}
+                      `}>
+                        <span
+                          className={`
+                            text-sm relative z-10 ${
+                              isToday
+                                ? 'text-indigo-300'
+                                : isCurrentMonth
+                                ? isProgramDay
+                                  ? 'text-gray-300'
+                                  : 'text-gray-500'
+                                : 'text-gray-600'
+                            }
+                            ${isSelected ? 'text-white' : ''}
+                          `}
+                        >
+                          {date.getDate()}
+                        </span>
+                      </div>
+                      {isProgramDay && isCurrentMonth && (
+                        <div className="mt-auto">
+                          {hasWorkout ? (
+                            <div className="text-xs text-white mt-1 flex items-center justify-center">
                               Workout
                             </div>
-                            <div
-                              className={`h-1 w-8 rounded-full ${
-                                isSelected
-                                  ? 'bg-indigo-500'
-                                  : 'bg-indigo-500/30'
-                              }`}
-                            ></div>
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                </button>
-              )
+                          ) : isRestOnly ? (
+                            <div className="text-xs text-white mt-1 flex items-center justify-center">
+                              Rest
+                            </div>
+                          ) : null}
+                        </div>
+                      )}
+                    </div>
+                  </button>
+                );
+              }
             )}
           </div>
         ))}
@@ -309,9 +319,9 @@ export function ExerciseProgramCalendar({
   };
 
   const renderSelectedDayProgram = () => {
-    const dayProgram = getDayProgram(selectedDate);
+    const programDays = getDayProgram(selectedDate);
 
-    if (!dayProgram) {
+    if (programDays.length === 0) {
       return (
         <div className="mt-6 p-4 bg-gray-800/50 rounded-xl">
           <p className="text-gray-400 text-center">No program for this day</p>
@@ -319,16 +329,29 @@ export function ExerciseProgramCalendar({
       );
     }
 
-    // Get the day of week (1 = Monday, 7 = Sunday)
-    const dayOfWeek = selectedDate.getDay() === 0 ? 7 : selectedDate.getDay();
+    // Format the date for display
+    const formattedDate = format(selectedDate, 'MMMM d, yyyy');
 
     return (
-      <div className="mt-6 space-y-4">
-        <ProgramDaySummaryComponent
-          day={dayProgram}
-          dayName={dayName(dayOfWeek)}
-          onClick={onDaySelect ? () => onDaySelect(dayProgram, dayName(dayOfWeek)) : undefined}
-        />
+      <div className="mt-6 space-y-8">
+        {programDays.map((programDay, index) => (
+          <div 
+            key={index} 
+            className={`space-y-2 ${index === programDays.length - 1 ? 'pb-32' : 'pb-0'}`}
+          >
+            <ProgramDaySummaryComponent
+              day={programDay.day}
+              dayName={dayName(programDay.dayOfWeek)}
+              onClick={onDaySelect ? () => onDaySelect(
+                programDay.day, 
+                dayName(programDay.dayOfWeek),
+                programDay.program.createdAt.toString()
+              ) : undefined}
+              programTitle={programDay.program.title || 'Program'}
+              isCalendarView={true}
+            />
+          </div>
+        ))}
       </div>
     );
   };
@@ -338,9 +361,11 @@ export function ExerciseProgramCalendar({
       <div className="py-3 px-4 flex items-center justify-between">
         {/* Empty spacer with same width as menu button to balance the title */}
         <div className="w-10"></div>
-        <h1 className="text-app-title text-center">
-          Calendar
-        </h1>
+        <div className="flex flex-col items-center">
+          <h1 className="text-app-title text-center">
+            Calendar
+          </h1>
+        </div>
         {/* Space for menu button */}
         <div className="w-10"></div>
       </div>
