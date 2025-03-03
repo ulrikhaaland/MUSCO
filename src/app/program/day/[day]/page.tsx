@@ -7,17 +7,7 @@ import { ProgramDayComponent } from '@/app/components/ui/ProgramDayComponent';
 import { searchYouTubeVideo } from '@/app/utils/youtube';
 import { useAuth } from '@/app/context/AuthContext';
 import { useUser } from '@/app/context/UserContext';
-
-function LoadingSpinner() {
-  return (
-    <div className="fixed inset-0 bg-gray-900/95 backdrop-blur-sm z-50 flex items-center justify-center">
-      <div className="flex flex-col items-center space-y-4">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
-        <p className="text-white text-lg">Loading...</p>
-      </div>
-    </div>
-  );
-}
+import { LoadingSpinner } from '@/app/components/ui/LoadingSpinner';
 
 function ErrorDisplay({ error }: { error: Error }) {
   return (

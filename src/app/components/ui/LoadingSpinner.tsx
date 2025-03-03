@@ -1,17 +1,21 @@
 'use client';
 
+import { ReactNode } from 'react';
+
 interface LoadingSpinnerProps {
   fullScreen?: boolean;
   size?: 'small' | 'medium' | 'large';
   withOverlay?: boolean;
   message?: string;
+  submessage?: string | ReactNode;
 }
 
 export function LoadingSpinner({
   fullScreen = false,
   size = 'medium',
   withOverlay = false,
-  message = 'Loading...'
+  message = 'Loading...',
+  submessage
 }: LoadingSpinnerProps) {
   const sizeClasses = {
     small: 'h-6 w-6 border-t-1 border-b-1',
@@ -30,7 +34,12 @@ export function LoadingSpinner({
     <div className={containerClasses}>
       <div className="flex flex-col items-center space-y-4">
         <div className={`animate-spin rounded-full ${sizeClasses[size]} border-indigo-500`}></div>
-        {message && <p className={fullScreen ? 'text-white text-lg' : 'text-white text-sm'}>{message}</p>}
+        {message && <p className={`${fullScreen ? 'text-white text-lg' : 'text-white text-sm'} font-medium`}>{message}</p>}
+        {submessage && (
+          <div className={`text-center max-w-md ${fullScreen ? 'text-gray-300 text-base' : 'text-gray-400 text-xs'} mt-2`}>
+            {typeof submessage === 'string' ? <p>{submessage}</p> : submessage}
+          </div>
+        )}
       </div>
     </div>
   );

@@ -54,19 +54,18 @@ function NavigationMenuContent() {
       ),
     },
     {
-      name: 'Program',
-      path: '/program',
+      name: user && program ? 'Create New Program' : 'Create Program',
+      path: '/?new=true',
       icon: (
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
             strokeWidth={2}
-            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+            d="M12 6v6m0 0v6m0-6h6m-6 0H6"
           />
         </svg>
       ),
-      disabled: !program,
     },
     {
       name: 'Programs',
@@ -77,7 +76,7 @@ function NavigationMenuContent() {
             strokeLinecap="round"
             strokeLinejoin="round"
             strokeWidth={2}
-            d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+            d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2M7 7h10"
           />
         </svg>
       ),
@@ -115,17 +114,25 @@ function NavigationMenuContent() {
     },
   ];
 
-  const isActive = (path: string) => {
-    if (path === '/') {
+  const isActive = (path: string, name: string) => {
+    // Special case for Create Program to not highlight when on home page
+    if (path === '/' && (name === 'Create Program' || name === 'Create New Program')) {
+      return false;
+    }
+    
+    // Special case for Home to highlight when on program page if user has a program
+    if (path === '/' && name === 'Home') {
+      // If user has a program, home redirects to /program, so highlight Home tab when on program page
+      if (program && (pathname === '/program' || pathname.startsWith('/program/day/'))) {
+        return true;
+      }
       return pathname === '/';
     }
+    
     if (path === '/program/calendar') {
       return pathname === '/program/calendar';
     }
-    if (path === '/program') {
-      // Match program and program day paths, but not calendar
-      return pathname === '/program' || pathname.startsWith('/program/day/');
-    }
+    
     if (path === '/programs') {
       return pathname === '/programs';
     }
@@ -203,7 +210,7 @@ function NavigationMenuContent() {
                 key={item.name}
                 onClick={() => handleNavigation(item.path, item.disabled)}
                 className={`flex items-center w-full px-4 py-3 rounded-lg transition-colors duration-200 ${
-                  isActive(item.path)
+                  isActive(item.path, item.name)
                     ? 'text-white bg-indigo-900/70 font-medium'
                     : item.disabled
                     ? 'text-gray-600 cursor-not-allowed'

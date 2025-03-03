@@ -214,11 +214,11 @@ export default function ProgramPage() {
   if (programStatus === ProgramStatus.Generating) {
     return (
       <div className="h-screen flex flex-col items-center justify-center bg-gray-900 p-8">
-        <LoadingSpinner message="Creating Your Program" fullScreen={false} />
-        <p className="text-center text-gray-300 mt-4 max-w-md">
-          Please wait while we create your personalized program. This may take a
-          minute...
-        </p>
+        <LoadingSpinner 
+          message="Creating Your Program" 
+          submessage="Please wait while we create your personalized program. This may take a minute..."
+          fullScreen={true} 
+        />
       </div>
     );
   }

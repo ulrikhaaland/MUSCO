@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { ProgramDaySummaryComponent } from './ProgramDaySummaryComponent';
 import { ProgramType } from '@/app/shared/types';
 import { Exercise, ExerciseProgram, ProgramDay } from '@/app/types/program';
+import { LoadingSpinner } from './LoadingSpinner';
 
 // Updated interface to match the actual program structure
 
@@ -55,16 +56,13 @@ function getNextMonday(d: Date): Date {
 // Create a reusable loading component
 function ProgramLoadingUI() {
   return (
-    <div className="h-screen w-screen flex flex-col bg-gray-900">
-      <div className="flex flex-col items-center justify-center h-full space-y-4 px-4 text-center">
-        <div className="animate-bounce w-8 h-8 mt-12 mx-auto">
-          <div className="w-8 h-8 rounded-full border-t-2 border-b-2 border-indigo-500 animate-spin"></div>
-        </div>
-        <div className="text-app-title text-white">Creating Program</div>
-        <div className="text-gray-400 max-w-sm">
-          Please wait while we generate your personalized exercise program...
-        </div>
-      </div>
+    <div className="h-screen w-screen flex items-center justify-center bg-gray-900">
+      <LoadingSpinner 
+        message="Creating Program" 
+        submessage="Please wait while we generate your personalized exercise program..."
+        fullScreen={true}
+        size="large"
+      />
     </div>
   );
 }
@@ -476,7 +474,7 @@ export function ExerciseProgramPage({
             </div>
           )}
 
-          <div ref={containerRef} className="h-screen overflow-y-auto pt-4">
+          <div ref={containerRef} className="h-screen overflow-y-auto pb-20">
             <div className="max-w-4xl mx-auto px-4">
               {/* Replace redundant title with program summary/stats section */}
               <div className="text-center mb-4 space-y-2">

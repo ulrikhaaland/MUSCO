@@ -49,6 +49,20 @@ function HomeContent() {
     setIntention(ProgramIntention.None);
   }, [setIntention]);
 
+  // Redirect to program page if user is logged in and has a program
+  useEffect(() => {
+    // Only redirect after loading is complete
+    if (!authLoading && !userLoading) {
+      // Get the 'new' query parameter
+      const newParam = searchParams?.get('new');
+      
+      // If user is logged in AND has a program AND NOT explicitly trying to create a new program
+      if (user && (program || programStatus === ProgramStatus.Generating) && newParam !== 'true') {
+        router.push('/program');
+      }
+    }
+  }, [user, program, programStatus, authLoading, userLoading, router, searchParams]);
+
   // Update gender when URL param changes
   useEffect(() => {
     if (genderParam && (genderParam === 'male' || genderParam === 'female')) {
@@ -79,26 +93,6 @@ function HomeContent() {
       setShowAuthForm(false);
     }
   }, [pendingQuestionnaire, user]);
-
-  // Redirect to program page if user has a program and shouldNavigateToProgram is true
-  useEffect(() => {
-    if (
-      user &&
-      (program || programStatus === ProgramStatus.Generating) &&
-      shouldNavigateToProgram
-    ) {
-      // Set the flag to false before redirecting to prevent future redirects
-      setShouldNavigateToProgram(false);
-      router.push('/program');
-    }
-  }, [
-    user,
-    program,
-    programStatus,
-    router,
-    shouldNavigateToProgram,
-    setShouldNavigateToProgram,
-  ]);
 
   const isLoading = authLoading || userLoading;
 

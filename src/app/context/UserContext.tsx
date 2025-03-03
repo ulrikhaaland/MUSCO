@@ -21,7 +21,11 @@ import {
   onSnapshot,
   where,
 } from 'firebase/firestore';
-import { ProgramStatus, ExerciseProgram, UserProgram } from '@/app/types/program';
+import {
+  ProgramStatus,
+  ExerciseProgram,
+  UserProgram,
+} from '@/app/types/program';
 import { submitQuestionnaire } from '@/app/services/questionnaire';
 import { updateActiveProgramStatus } from '@/app/services/program';
 import { useRouter } from 'next/navigation';
@@ -39,8 +43,8 @@ interface UserContextType {
   answers: ExerciseQuestionnaireAnswers | null;
   programStatus: ProgramStatus | null;
   program: ExerciseProgram | null;
-  userPrograms: UserProgramWithId[];  // Updated to use the extended interface
-  activeProgram: UserProgramWithId | null;  // Updated to use the extended interface
+  userPrograms: UserProgramWithId[]; // Updated to use the extended interface
+  activeProgram: UserProgramWithId | null; // Updated to use the extended interface
   isLoading: boolean;
   pendingQuestionnaire: {
     diagnosis: DiagnosisAssistantResponse;
@@ -61,11 +65,17 @@ const UserContext = createContext<UserContextType>({} as UserContextType);
 export function UserProvider({ children }: { children: ReactNode }) {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
-  const [answers, setAnswers] = useState<ExerciseQuestionnaireAnswers | null>(null);
-  const [programStatus, setProgramStatus] = useState<ProgramStatus | null>(null);
+  const [answers, setAnswers] = useState<ExerciseQuestionnaireAnswers | null>(
+    null
+  );
+  const [programStatus, setProgramStatus] = useState<ProgramStatus | null>(
+    null
+  );
   const [program, setProgram] = useState<ExerciseProgram | null>(null);
   const [userPrograms, setUserPrograms] = useState<UserProgramWithId[]>([]);
-  const [activeProgram, setActiveProgram] = useState<UserProgramWithId | null>(null);
+  const [activeProgram, setActiveProgram] = useState<UserProgramWithId | null>(
+    null
+  );
   const [isLoading, setIsLoading] = useState(true);
   const [pendingQuestionnaire, setPendingQuestionnaire] = useState<{
     diagnosis: DiagnosisAssistantResponse;
@@ -87,29 +97,51 @@ export function UserProvider({ children }: { children: ReactNode }) {
       let mostRecentProgram: UserProgramWithId | null = null;
       let mostRecentDate: Date | null = null;
 
+      // Check if any program is currently being generated
+      const hasGeneratingProgram = snapshot.docs.some(
+        (doc) => doc.data().status === ProgramStatus.Generating
+      );
+
+      // If a program is being generated, set status and redirect to program page
+      if (hasGeneratingProgram) {
+        setProgramStatus(ProgramStatus.Generating);
+        // Only navigate to program page if we're not already there
+        if (
+          typeof window !== 'undefined' &&
+          !window.location.pathname.includes('/program')
+        ) {
+          router.push('/program');
+        }
+      }
+
       // First pass: collect all programs
       for (const doc of snapshot.docs) {
         const data = doc.data();
-        
+
         // Track the most recent status for any program
         if (!mostRecentStatus && data.status) {
           mostRecentStatus = data.status;
         }
-        
+
         if (data.status === ProgramStatus.Done) {
           const programsCollectionRef = collection(
             db,
             `users/${user.uid}/programs/${doc.id}/programs`
           );
-          const programQ = query(programsCollectionRef, orderBy('createdAt', 'desc'));
+          const programQ = query(
+            programsCollectionRef,
+            orderBy('createdAt', 'desc')
+          );
           const programSnapshot = await getDocs(programQ);
 
           if (!programSnapshot.empty) {
-            const exercisePrograms = programSnapshot.docs.map(doc => 
-              doc.data() as ExerciseProgram
+            const exercisePrograms = programSnapshot.docs.map(
+              (doc) => doc.data() as ExerciseProgram
             );
-            
-            const updatedAt = data.updatedAt ? new Date(data.updatedAt) : new Date(data.createdAt);
+
+            const updatedAt = data.updatedAt
+              ? new Date(data.updatedAt)
+              : new Date(data.createdAt);
             const userProgram: UserProgramWithId = {
               programs: exercisePrograms,
               diagnosis: data.diagnosis,
@@ -118,7 +150,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
               createdAt: new Date(data.createdAt),
               updatedAt: updatedAt,
               type: data.type,
-              docId: doc.id // Store the document ID
+              docId: doc.id, // Store the document ID
             };
             programs.push(userProgram);
 
@@ -133,18 +165,24 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
       // Now set all state at once to prevent flickering
       setUserPrograms(programs);
-      
-      if (mostRecentProgram && mostRecentStatus !== ProgramStatus.Generating ) {
+
+      if (mostRecentProgram && mostRecentStatus !== ProgramStatus.Generating) {
         // Set the most recent program as the active one
         setActiveProgram(mostRecentProgram);
         setProgram(mostRecentProgram.programs[0]);
         setAnswers(mostRecentProgram.questionnaire);
-        
+
         // Only update the status to Done if we're not currently generating a new program
-        if (programStatus !== ProgramStatus.Generating ) {
+        if (
+          programStatus !== ProgramStatus.Generating &&
+          !hasGeneratingProgram
+        ) {
           setProgramStatus(ProgramStatus.Done);
         }
-      } else if (mostRecentStatus && programStatus !== ProgramStatus.Generating) {
+      } else if (
+        mostRecentStatus &&
+        programStatus !== ProgramStatus.Generating
+      ) {
         // Only set status if no program was found AND we're not generating
         setProgramStatus(mostRecentStatus);
       }
@@ -175,6 +213,31 @@ export function UserProvider({ children }: { children: ReactNode }) {
       }
 
       try {
+        // Check if any program is currently generating
+        const generatingProgramsRef = collection(
+          db,
+          `users/${user.uid}/programs`
+        );
+        const generatingQ = query(
+          generatingProgramsRef,
+          where('status', '==', ProgramStatus.Generating)
+        );
+        const generatingSnapshot = await getDocs(generatingQ);
+
+        if (!generatingSnapshot.empty && isSubscribed) {
+          setProgramStatus(ProgramStatus.Generating);
+          // Only navigate to program page if we're not already there
+          if (
+            typeof window !== 'undefined' &&
+            !window.location.pathname.includes('/program')
+          ) {
+            router.push('/program');
+          }
+          // Early return as we're now handling the generating state
+          setIsLoading(false);
+          return;
+        }
+
         // Fetch the most recent program document
         const programsRef = collection(db, `users/${user.uid}/programs`);
         const q = query(programsRef, orderBy('createdAt', 'desc'), limit(1));
@@ -243,13 +306,13 @@ export function UserProvider({ children }: { children: ReactNode }) {
       // Clear existing program state before navigation
       setProgram(null);
       setActiveProgram(null);
-      
+
       // Update local state
       setAnswers(answers);
-      
+
       // Set program status to generating after clearing program state
       setProgramStatus(ProgramStatus.Generating);
-      
+
       // Delay navigation slightly to ensure state updates are processed
       setTimeout(() => {
         // Directly navigate to the program page
@@ -297,12 +360,12 @@ export function UserProvider({ children }: { children: ReactNode }) {
       console.error('User must be logged in to toggle program status');
       return;
     }
-    
+
     if (programIndex >= 0 && programIndex < userPrograms.length) {
       const selectedProgram = userPrograms[programIndex];
       const programType = selectedProgram.type;
       const newActiveStatus = !selectedProgram.active;
-      
+
       // Create a new array with updated active status locally
       const updatedPrograms = userPrograms.map((program, index) => {
         // If program is of the same type as the selected program
@@ -316,29 +379,29 @@ export function UserProvider({ children }: { children: ReactNode }) {
         // Leave programs of other types unchanged
         return program;
       });
-      
+
       // Update local state first for immediate feedback
       setUserPrograms(updatedPrograms);
-      
+
       // If we're setting the program to active, update the active program state
       if (newActiveStatus) {
         const updatedSelectedProgram = {
           ...selectedProgram,
-          active: true
+          active: true,
         };
         setActiveProgram(updatedSelectedProgram);
         setProgram(updatedSelectedProgram.programs[0]);
         setAnswers(updatedSelectedProgram.questionnaire);
         setProgramStatus(ProgramStatus.Done);
       }
-      
+
       // Update in Firebase
       updateActiveProgramStatus(
-        user.uid, 
-        selectedProgram.docId, 
-        programType, 
+        user.uid,
+        selectedProgram.docId,
+        programType,
         newActiveStatus
-      ).catch(error => {
+      ).catch((error) => {
         console.error('Error updating program active status:', error);
         // Revert to the previous state if there was an error
         setUserPrograms(userPrograms);
