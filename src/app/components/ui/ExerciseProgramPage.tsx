@@ -476,7 +476,7 @@ export function ExerciseProgramPage({
             </div>
           )}
 
-          <div ref={containerRef} className="h-screen overflow-y-auto pt-16">
+          <div ref={containerRef} className="h-screen overflow-y-auto pt-4">
             <div className="max-w-4xl mx-auto px-4">
               {/* Replace redundant title with program summary/stats section */}
               <div className="text-center mb-4 space-y-2">

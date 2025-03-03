@@ -5,6 +5,7 @@ import { useAuth } from '@/app/context/AuthContext';
 import { useUser } from '@/app/context/UserContext';
 import { useState, useEffect, useRef, Suspense } from 'react';
 import { LoadingSpinner } from './LoadingSpinner';
+import { ProgramStatus } from '@/app/types/program';
 
 // Create a separate component that uses the search params
 function NavigationMenuContent() {
@@ -20,7 +21,7 @@ function NavigationMenuContent() {
   // Close drawer when clicking outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (drawerRef.current && !drawerRef.current.contains(event.target as Node) && drawerOpen) {
+      if (drawerRef.current && !drawerRef.current.contains(event.target as Node)) {
         setDrawerOpen(false);
       }
     }
@@ -29,7 +30,12 @@ function NavigationMenuContent() {
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [drawerOpen]);
+  }, []);
+
+  // Close drawer when route changes
+  useEffect(() => {
+    setDrawerOpen(false);
+  }, [pathname, searchParams]);
 
   // Navigation items
   const navItems = [
@@ -141,7 +147,7 @@ function NavigationMenuContent() {
   };
 
   return (
-    <>
+    <div className="fixed bottom-0 left-0 z-50 w-full border-t border-gray-800 bg-gray-900">
       {/* Hamburger button */}
       <button
         onClick={() => setDrawerOpen(!drawerOpen)}
@@ -232,21 +238,28 @@ function NavigationMenuContent() {
           )}
         </div>
       </div>
-    </>
+    </div>
   );
 }
 
 // Loading fallback for the Suspense boundary
 function MenuLoadingFallback() {
   return (
-    <div className="fixed top-4 right-4 z-[70]">
-      <LoadingSpinner size="small" message="" />
+    <div className="fixed bottom-0 left-0 z-50 w-full h-16 border-t border-gray-800 bg-gray-900 flex items-center justify-center">
+      <LoadingSpinner />
     </div>
   );
 }
 
-// Wrapper component with Suspense
 export function NavigationMenu() {
+  // Check programStatus here instead of in the NavigationMenuContent
+  const { programStatus } = useUser();
+  
+  // Don't render the navigation menu when generating a program
+  if (programStatus === ProgramStatus.Generating) {
+    return null;
+  }
+  
   return (
     <Suspense fallback={<MenuLoadingFallback />}>
       <NavigationMenuContent />

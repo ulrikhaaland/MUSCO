@@ -134,14 +134,14 @@ export function UserProvider({ children }: { children: ReactNode }) {
       // Now set all state at once to prevent flickering
       setUserPrograms(programs);
       
-      if (mostRecentProgram) {
+      if (mostRecentProgram && mostRecentStatus !== ProgramStatus.Generating ) {
         // Set the most recent program as the active one
         setActiveProgram(mostRecentProgram);
         setProgram(mostRecentProgram.programs[0]);
         setAnswers(mostRecentProgram.questionnaire);
         
         // Only update the status to Done if we're not currently generating a new program
-        if (programStatus !== ProgramStatus.Generating) {
+        if (programStatus !== ProgramStatus.Generating ) {
           setProgramStatus(ProgramStatus.Done);
         }
       } else if (mostRecentStatus && programStatus !== ProgramStatus.Generating) {

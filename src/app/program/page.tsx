@@ -5,7 +5,12 @@ import { useRouter } from 'next/navigation';
 import { ExerciseProgramPage } from '@/app/components/ui/ExerciseProgramPage';
 import { useUser } from '@/app/context/UserContext';
 import { useAuth } from '@/app/context/AuthContext';
-import { ProgramStatus, Exercise, ProgramDay, ExerciseProgram } from '@/app/types/program';
+import {
+  ProgramStatus,
+  Exercise,
+  ProgramDay,
+  ExerciseProgram,
+} from '@/app/types/program';
 import { searchYouTubeVideo } from '@/app/utils/youtube';
 import { LoadingSpinner } from '@/app/components/ui/LoadingSpinner';
 import { ErrorDisplay } from '@/app/components/ui/ErrorDisplay';
@@ -13,26 +18,35 @@ import { ErrorDisplay } from '@/app/components/ui/ErrorDisplay';
 export default function ProgramPage() {
   const router = useRouter();
   const { user, loading: authLoading, error: authError } = useAuth();
-  const { program, activeProgram, isLoading: userLoading, programStatus, userPrograms } = useUser();
+  const {
+    program,
+    activeProgram,
+    isLoading: userLoading,
+    programStatus,
+    userPrograms,
+  } = useUser();
   const [error, setError] = useState<Error | null>(null);
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
-  const [loadingVideoExercise, setLoadingVideoExercise] = useState<string | null>(null);
-  const [selectedProgram, setSelectedProgram] = useState<ExerciseProgram | null>(null);
+  const [loadingVideoExercise, setLoadingVideoExercise] = useState<
+    string | null
+  >(null);
+  const [selectedProgram, setSelectedProgram] =
+    useState<ExerciseProgram | null>(null);
 
   const isLoading = authLoading || userLoading;
-  
+
   // Check for a programId in the URL and set the selected program
   useEffect(() => {
     if (typeof window !== 'undefined' && program && userPrograms) {
       const queryParams = new URLSearchParams(window.location.search);
       const programId = queryParams.get('programId');
-      
+
       if (programId) {
         // Find the specific program by its createdAt value
         const foundProgram = userPrograms
-          .flatMap(up => up.programs)
-          .find(p => p.createdAt.toString() === programId);
-          
+          .flatMap((up) => up.programs)
+          .find((p) => p.createdAt.toString() === programId);
+
         if (foundProgram) {
           setSelectedProgram(foundProgram);
         } else {
@@ -45,9 +59,13 @@ export default function ProgramPage() {
       setSelectedProgram(program);
     }
   }, [program, userPrograms]);
-  
+
   // Determine if this is the active program of its type
-  const isActiveProgram = selectedProgram && activeProgram?.programs.some(p => p.createdAt === selectedProgram.createdAt);
+  const isActiveProgram =
+    selectedProgram &&
+    activeProgram?.programs.some(
+      (p) => p.createdAt === selectedProgram.createdAt
+    );
 
   // Update page title when program loads
   useEffect(() => {
@@ -63,11 +81,23 @@ export default function ProgramPage() {
     if (!authLoading && !userLoading) {
       if (!user) {
         router.push('/');
-      } else if (!userPrograms.length && !program && programStatus !== ProgramStatus.Generating) {
+      } else if (
+        !userPrograms.length &&
+        !program &&
+        programStatus !== ProgramStatus.Generating
+      ) {
         router.push('/');
       }
     }
-  }, [user, userPrograms, program, programStatus, authLoading, userLoading, router]);
+  }, [
+    user,
+    userPrograms,
+    program,
+    programStatus,
+    authLoading,
+    userLoading,
+    router,
+  ]);
 
   // Update page title with program title
   useEffect(() => {
@@ -97,7 +127,11 @@ export default function ProgramPage() {
 
   const handleDaySelect = (day: ProgramDay, dayName: string) => {
     if (selectedProgram) {
-      router.push(`/program/day/${day.day}?programId=${encodeURIComponent(selectedProgram.createdAt.toString())}`);
+      router.push(
+        `/program/day/${day.day}?programId=${encodeURIComponent(
+          selectedProgram.createdAt.toString()
+        )}`
+      );
     } else {
       router.push(`/program/day/${day.day}`);
     }
@@ -108,10 +142,10 @@ export default function ProgramPage() {
       setLoadingVideoExercise(exercise.name);
       // Construct a search query with the exercise name
       const searchQuery = `${exercise.name} exercise tutorial`;
-      
+
       // Search for videos
       const videoId = await searchYouTubeVideo(searchQuery);
-      
+
       if (videoId) {
         // Create a YouTube embed URL
         setVideoUrl(`https://www.youtube.com/embed/${videoId}?autoplay=1`);
@@ -127,7 +161,7 @@ export default function ProgramPage() {
 
   const renderVideoModal = () => {
     if (!videoUrl) return null;
-    
+
     return (
       <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
         <div className="relative w-full max-w-4xl aspect-video bg-black rounded-xl overflow-hidden">
@@ -167,24 +201,23 @@ export default function ProgramPage() {
     return <LoadingSpinner fullScreen={true} message="Loading program..." />;
   }
 
-  if (authError) {
-    return <ErrorDisplay error={authError} />;
-  }
-
-  if (error) {
-    return <ErrorDisplay error={error} />;
+  if (error || authError) {
+    return <ErrorDisplay error={error || authError} />;
   }
 
   if (!selectedProgram && programStatus !== ProgramStatus.Generating) {
-    return <LoadingSpinner message="Loading program data..." fullScreen={true} />;
+    return (
+      <LoadingSpinner message="Loading program data..." fullScreen={true} />
+    );
   }
 
   if (programStatus === ProgramStatus.Generating) {
     return (
       <div className="h-screen flex flex-col items-center justify-center bg-gray-900 p-8">
-        <LoadingSpinner message="Creating Your Program" fullScreen={true} />
+        <LoadingSpinner message="Creating Your Program" fullScreen={false} />
         <p className="text-center text-gray-300 mt-4 max-w-md">
-          Please wait while we create your personalized program. This may take a minute...
+          Please wait while we create your personalized program. This may take a
+          minute...
         </p>
       </div>
     );
@@ -205,4 +238,4 @@ export default function ProgramPage() {
       {renderVideoModal()}
     </>
   );
-} 
+}
