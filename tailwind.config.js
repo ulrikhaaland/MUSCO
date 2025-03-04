@@ -82,6 +82,9 @@ module.exports = {
           },
         },
       },
+      spacing: {
+        'safe-bottom': 'env(safe-area-inset-bottom, 0px)',
+      },
     },
   },
   plugins: [
