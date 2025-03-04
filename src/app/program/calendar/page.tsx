@@ -91,7 +91,6 @@ export default function CalendarPage() {
   return (
     <ExerciseProgramCalendar
       program={program}
-      onToggleView={handleToggleView}
       dayName={getDayName}
       onDaySelect={handleDaySelect}
     />
