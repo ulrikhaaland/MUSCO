@@ -353,7 +353,7 @@ export function ExerciseProgramPage({
                 </div>
 
                 {/* Scrollable Content */}
-                <div className="flex-1 overflow-y-auto p-8 space-y-6">
+                <div className="flex-1 overflow-y-auto p-8 space-y-6 safe-scroll-container">
                   <p className="text-xl text-gray-300 leading-relaxed">
                     {program.programOverview}
                   </p>
@@ -474,7 +474,7 @@ export function ExerciseProgramPage({
             </div>
           )}
 
-          <div ref={containerRef} className="h-screen overflow-y-auto pb-20">
+          <div ref={containerRef} className="h-screen overflow-y-auto pb-20 safe-scroll-container">
             <div className="max-w-4xl mx-auto px-4">
               {/* Replace redundant title with program summary/stats section */}
               <div className="text-center mb-4 space-y-2">

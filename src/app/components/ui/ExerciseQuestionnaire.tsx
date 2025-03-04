@@ -659,7 +659,7 @@ export function ExerciseQuestionnaire({
       <form
         ref={formRef}
         onSubmit={handleSubmit}
-        className="h-screen overflow-y-auto pt-8 pb-32 sm:pb-8"
+        className="h-screen overflow-y-auto pt-8 pb-32 sm:pb-8 safe-scroll-container"
       >
         <div className="max-w-4xl mx-auto px-4 py-8 space-y-6 sm:px-6 lg:px-8">
           <RevealOnScroll>

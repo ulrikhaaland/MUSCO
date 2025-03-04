@@ -17,16 +17,34 @@ export function SafeArea({ children }: SafeAreaProps) {
       
       setIsMobile(isMobileDevice);
       
-      // If we're on a mobile device, try to measure the viewport discrepancies
+      // Add or remove the mobile class on the html element
       if (isMobileDevice) {
+        document.documentElement.classList.add('is-mobile-device');
+      } else {
+        document.documentElement.classList.remove('is-mobile-device');
+      }
+      
+      // If we're on a mobile device, use a more aggressive approach to detect the safe area
+      if (isMobileDevice) {
+        // Initial value - use a larger default on iOS
+        const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+        const defaultPadding = isIOS ? 120 : 80; // Much larger default padding
+        setSafeAreaBottom(defaultPadding);
+        
         // Check for Visual Viewport API support (newer browsers)
         if (window.visualViewport) {
           const resizeViewport = () => {
             // Calculate the difference between window.innerHeight and visualViewport.height
             // This difference approximates the browser UI height
             const viewportDifference = window.innerHeight - window.visualViewport.height;
-            // Use at least 4rem (64px) for the navigation bar or the calculated difference
-            const bottomPadding = Math.max(viewportDifference, 64);
+            
+            // Add an extra buffer (20px) to account for potential inaccuracies
+            // and use at least our default padding or the calculated difference + buffer
+            const bottomPadding = Math.max(
+              defaultPadding,
+              viewportDifference + 20
+            );
+            
             setSafeAreaBottom(bottomPadding);
           };
           
@@ -69,12 +87,13 @@ export function SafeArea({ children }: SafeAreaProps) {
         ${isMobile ? "pb-safe-area" : ""}
       `}
       style={{
-        height: isMobile ? "calc(100dvh)" : "100vh", // Use dynamic viewport height unit
+        height: isMobile ? "100%" : "100vh", // Use 100% height instead of dvh to avoid height constraints
+        minHeight: isMobile ? "100dvh" : "100vh", // Still ensure it's at least full height
         WebkitOverflowScrolling: "touch",
         // Apply safe-area-inset-bottom from env() when available, 
-        // fallback to our calculated value
+        // fallback to our calculated value with a larger value
         ...(isMobile ? {
-          paddingBottom: `calc(env(safe-area-inset-bottom, 0px) + max(4rem, var(--safe-area-bottom, 4rem)))`
+          paddingBottom: `max(env(safe-area-inset-bottom, 0px) + var(--safe-area-bottom, 80px), 80px)`
         } : {})
       }}
     >
