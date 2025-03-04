@@ -5,6 +5,7 @@
 :root {
   --foreground-rgb: 255, 255, 255;
   --background-rgb: 0, 0, 0;
+  --safe-area-bottom: 4rem; /* Default fallback value */
 }
 
 html,
@@ -142,4 +143,16 @@ iframe {
 .intro-highlight {
   border-radius: 0.5rem !important;
   box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.4) !important;
+}
+
+/* Custom utility class for safe area padding */
+@layer utilities {
+  .pb-safe-area {
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + var(--safe-area-bottom, 4rem)) !important;
+  }
+  
+  /* Bottom-positioned fixed elements need this utility for proper positioning */
+  .bottom-safe {
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 1rem) !important;
+  }
 }

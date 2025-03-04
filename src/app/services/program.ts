@@ -20,10 +20,9 @@ export async function updateActiveProgramStatus(
     // Reference to the program document to be updated
     const programRef = doc(db, `users/${userId}/programs`, programDocId);
     
-    // Update the active status of the program
+    // Update the active status of the program without changing updatedAt
     await updateDoc(programRef, {
-      active,
-      updatedAt: new Date().toISOString()
+      active
     });
 
     // If setting to active, we need to deactivate other programs of the same type
@@ -43,8 +42,7 @@ export async function updateActiveProgramStatus(
         .filter(doc => doc.id !== programDocId)
         .map(doc => 
           updateDoc(doc.ref, {
-            active: false,
-            updatedAt: new Date().toISOString()
+            active: false
           })
         );
       

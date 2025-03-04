@@ -57,7 +57,7 @@ interface UserContextType {
     } | null
   ) => void;
   selectProgram: (programIndex: number) => void;
-  toggleActiveProgram: (programIndex: number) => void;
+  toggleActiveProgram: (programIndex: number) => Promise<void>;
 }
 
 const UserContext = createContext<UserContextType>({} as UserContextType);
@@ -355,58 +355,74 @@ export function UserProvider({ children }: { children: ReactNode }) {
   };
 
   // Function to toggle the active status of a program
-  const toggleActiveProgram = (programIndex: number) => {
+  const toggleActiveProgram = (programIndex: number): Promise<void> => {
     if (!user) {
       console.error('User must be logged in to toggle program status');
-      return;
+      return Promise.reject(new Error('User must be logged in'));
     }
-
+    
     if (programIndex >= 0 && programIndex < userPrograms.length) {
       const selectedProgram = userPrograms[programIndex];
       const programType = selectedProgram.type;
       const newActiveStatus = !selectedProgram.active;
-
-      // Create a new array with updated active status locally
+      
+      // Create a new array with updated active status
       const updatedPrograms = userPrograms.map((program, index) => {
-        // If program is of the same type as the selected program
-        if (program.type === programType) {
-          // Set active based on whether this is the selected program
+        // If we're activating a program and it's of the same type as selected program
+        if (newActiveStatus && program.type === programType) {
+          // Set it active if it's the selected program, inactive otherwise
           return {
             ...program,
-            active: index === programIndex ? newActiveStatus : false,
+            active: index === programIndex
           };
         }
-        // Leave programs of other types unchanged
+        // If we're deactivating and this is the selected program
+        else if (!newActiveStatus && index === programIndex) {
+          return {
+            ...program,
+            active: false
+          };
+        }
+        // Otherwise leave the program unchanged
         return program;
       });
-
-      // Update local state first for immediate feedback
+      
+      // For better responsiveness, update local state IMMEDIATELY
       setUserPrograms(updatedPrograms);
-
+      
       // If we're setting the program to active, update the active program state
       if (newActiveStatus) {
         const updatedSelectedProgram = {
           ...selectedProgram,
-          active: true,
+          active: true
         };
         setActiveProgram(updatedSelectedProgram);
         setProgram(updatedSelectedProgram.programs[0]);
         setAnswers(updatedSelectedProgram.questionnaire);
         setProgramStatus(ProgramStatus.Done);
       }
-
-      // Update in Firebase
-      updateActiveProgramStatus(
-        user.uid,
-        selectedProgram.docId,
-        programType,
+      
+      // Update Firebase in the background (don't block the UI)
+      return updateActiveProgramStatus(
+        user.uid, 
+        selectedProgram.docId, 
+        programType, 
         newActiveStatus
-      ).catch((error) => {
+      ).then(() => {
+        // Return void to satisfy the Promise<void> return type
+        return;
+      }).catch(error => {
         console.error('Error updating program active status:', error);
-        // Revert to the previous state if there was an error
-        setUserPrograms(userPrograms);
+        
+        // If Firebase update fails, revert the local state
+        const revertedPrograms = [...userPrograms]; // Use the original state
+        setUserPrograms(revertedPrograms);
+        
+        throw error; // Re-throw the error so it can be caught by the caller
       });
     }
+    
+    return Promise.reject(new Error('Invalid program index'));
   };
 
   return (

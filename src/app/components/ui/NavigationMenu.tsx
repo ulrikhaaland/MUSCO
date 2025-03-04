@@ -115,18 +115,26 @@ function NavigationMenuContent() {
   ];
 
   const isActive = (path: string, name: string) => {
-    // Special case for Create Program to not highlight when on home page
-    if (path === '/' && (name === 'Create Program' || name === 'Create New Program')) {
-      return false;
+    // Get the base path and any query parameters
+    const currentBasePath = pathname;
+    const currentParams = searchParams?.toString() || '';
+    const pathWithoutQuery = path.split('?')[0];
+    const pathQuery = path.split('?')[1] || '';
+    
+    // Special case for Create Program to highlight when on home page with new=true
+    if (pathWithoutQuery === '/' && (name === 'Create Program' || name === 'Create New Program')) {
+      return currentBasePath === '/' && currentParams.includes('new=true');
     }
     
-    // Special case for Home to highlight when on program page if user has a program
-    if (path === '/' && name === 'Home') {
-      // If user has a program, home redirects to /program, so highlight Home tab when on program page
+    // Special case for Home to highlight when on program page if user has a program,
+    // but NOT when we're on the home page with new=true query
+    if (pathWithoutQuery === '/' && name === 'Home') {
+      // Highlight Home tab when on program page if user has a program
       if (program && (pathname === '/program' || pathname.startsWith('/program/day/'))) {
         return true;
       }
-      return pathname === '/';
+      // Only highlight Home when on root path without new=true query
+      return pathname === '/' && !currentParams.includes('new=true');
     }
     
     if (path === '/program/calendar') {
@@ -136,7 +144,7 @@ function NavigationMenuContent() {
     if (path === '/programs') {
       return pathname === '/programs';
     }
-    return pathname.startsWith(path);
+    return pathname.startsWith(pathWithoutQuery);
   };
 
   const handleNavigation = (path: string, disabled: boolean = false) => {
@@ -154,7 +162,7 @@ function NavigationMenuContent() {
   };
 
   return (
-    <div className="fixed bottom-0 left-0 z-50 w-full border-t border-gray-800 bg-gray-900">
+    <div className="fixed bottom-0 left-0 z-50 w-full border-t border-gray-800 bg-gray-900 pb-safe-area">
       {/* Hamburger button */}
       <button
         onClick={() => setDrawerOpen(!drawerOpen)}
@@ -252,7 +260,7 @@ function NavigationMenuContent() {
 // Loading fallback for the Suspense boundary
 function MenuLoadingFallback() {
   return (
-    <div className="fixed bottom-0 left-0 z-50 w-full h-16 border-t border-gray-800 bg-gray-900 flex items-center justify-center">
+    <div className="fixed bottom-0 left-0 z-50 w-full h-16 border-t border-gray-800 bg-gray-900 flex items-center justify-center pb-safe-area">
       <LoadingSpinner />
     </div>
   );

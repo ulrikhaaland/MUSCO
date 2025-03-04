@@ -12,6 +12,8 @@ function ProgramsContent() {
   const router = useRouter();
   const [sortBy, setSortBy] = useState<'newest' | 'oldest'>('newest');
   const [filterType, setFilterType] = useState<'all' | 'exercise' | 'recovery'>('all');
+  // Track which program is being toggled to avoid flickering
+  const [pendingToggles, setPendingToggles] = useState<Record<string, boolean>>({});
 
   // Sort programs by date
   const filteredAndSortedPrograms = [...userPrograms]
@@ -50,10 +52,64 @@ function ProgramsContent() {
     router.push('/program');
   };
 
-  // Handle toggling active status
+  // Handle toggling active status with improved responsiveness
   const handleToggleActive = (e: React.MouseEvent, programIndex: number) => {
-    e.stopPropagation(); // Prevent card click
-    toggleActiveProgram(programIndex);
+    // Stop propagation to prevent card click
+    e.stopPropagation();
+    // Prevent default browser behavior (like scrolling to the top)
+    e.preventDefault();
+
+    // Get the program details
+    const program = userPrograms[programIndex];
+    if (!program) return;
+
+    // Track this program as being toggled (store the target state)
+    const newToggleState = !program.active;
+    
+    // IMMEDIATELY update the pendingToggles state for instant UI feedback
+    setPendingToggles(prev => ({
+      ...prev,
+      [program.docId]: newToggleState
+    }));
+
+    // If activating a program, find other programs of the same type to mark as pending inactive
+    if (newToggleState) {
+      const otherActivePrograms = userPrograms.filter(p => 
+        p.docId !== program.docId && p.type === program.type && p.active
+      );
+      
+      if (otherActivePrograms.length > 0) {
+        // Create a new pending state for all programs of the same type
+        const updatedPending = {...pendingToggles};
+        otherActivePrograms.forEach(p => {
+          updatedPending[p.docId] = false; // Mark as pending inactive
+        });
+        setPendingToggles(updatedPending);
+      }
+    }
+    
+    // Toggle the program active state in the background
+    // We don't wait for this to complete to make the UI feel more responsive
+    toggleActiveProgram(programIndex)
+      .catch(error => {
+        console.error('Error toggling program:', error);
+        // If there was an error, revert the toggle state
+        setPendingToggles(prev => {
+          const updated = {...prev};
+          delete updated[program.docId];
+          
+          // Also revert any other programs we might have toggled
+          if (newToggleState) {
+            userPrograms.forEach(p => {
+              if (p.docId !== program.docId && p.type === program.type) {
+                delete updated[p.docId];
+              }
+            });
+          }
+          
+          return updated;
+        });
+      });
   };
 
   // Navigate to home page to create a new program
@@ -261,62 +317,112 @@ function ProgramsContent() {
                 onClick={() => handleProgramClick(originalIndex)}
                 className="relative bg-gray-800/50 rounded-xl overflow-hidden ring-1 ring-gray-700/50 transition-colors duration-200 hover:bg-gray-700/50 cursor-pointer group"
               >
-                {/* Active program indicator */}
-                {program.active && (
-                  <div className="absolute top-3 right-3 z-10 w-3 h-3 rounded-full bg-green-500">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                  </div>
-                )}
-                
-                {/* Toggle active status button - only shown on hover */}
-                <button
-                  onClick={(e) => handleToggleActive(e, originalIndex)}
-                  className="absolute top-3 right-3 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-200 px-2 py-1 rounded-md bg-gray-700 text-xs text-white hover:bg-gray-600"
-                >
-                  {program.active ? 'Deactivate' : 'Activate'}
-                </button>
-                
                 <div className="p-5">
-                  <div className="flex justify-between items-start mb-4">
-                    <h2 className="text-xl font-medium text-white">{exerciseProgram.title || 'Workout Program'}</h2>
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs px-2 py-1 bg-indigo-500/20 text-indigo-300 rounded-full">
-                        {program.type ? 
-                          program.type.charAt(0).toUpperCase() + program.type.slice(1) : 
-                          'Custom'}
-                      </span>
+                  {/* Program title and type */}
+                  <div className="flex justify-between items-start mb-3">
+                    <h2 className="text-xl font-medium text-white truncate pr-2">
+                      {exerciseProgram.title || 'Workout Program'}
+                    </h2>
+                    <span className="flex-shrink-0 text-xs px-2 py-1 bg-indigo-500/20 text-indigo-300 rounded-full">
+                      {program.type ? 
+                        program.type.charAt(0).toUpperCase() + program.type.slice(1) : 
+                        'Custom'}
+                    </span>
+                  </div>
+                  
+                  {/* Divider */}
+                  <div className="border-t border-gray-700/50 my-3"></div>
+                  
+                  {/* Key Program Statistics */}
+                  <div className="flex justify-between items-center mb-4">
+                    <div className="text-center">
+                      <p className="text-xl font-semibold text-white">
+                        {exerciseProgram.program?.length || 0}
+                      </p>
+                      <p className="text-xs text-gray-400">Weeks</p>
+                    </div>
+                    
+                    <div className="text-center">
+                      <p className="text-xl font-semibold text-white">
+                        {exerciseProgram.program?.reduce((total, week) => {
+                          return total + week.days.reduce((dayTotal, day) => {
+                            return dayTotal + (day.isRestDay ? 0 : 1); // Count workout days
+                          }, 0);
+                        }, 0) || 0}
+                      </p>
+                      <p className="text-xs text-gray-400">Exercise Days</p>
+                    </div>
+                    
+                    <div className="text-center">
+                      <p className="text-xl font-semibold text-white">
+                        {exerciseProgram.program?.reduce((total, week) => {
+                          return total + week.days.reduce((dayTotal, day) => {
+                            return dayTotal + (day.isRestDay ? 1 : 0); // Count rest days
+                          }, 0);
+                        }, 0) || 0}
+                      </p>
+                      <p className="text-xs text-gray-400">Rest Days</p>
                     </div>
                   </div>
                   
-                  <div className="mb-4">
-                    <p className="text-sm text-gray-300 mb-2">
-                      <span className="font-medium">Weeks:</span> {exerciseProgram.program?.length || 0}
-                    </p>
-                    <p className="text-sm text-gray-300 mb-2">
-                      <span className="font-medium">Target:</span> {
-                        exerciseProgram.targetAreas && exerciseProgram.targetAreas.length > 0 
-                          ? getBodyRegionFromParts(exerciseProgram.targetAreas)
-                          : 'General'
-                      }
-                    </p>
-                    {exerciseProgram.bodyParts && exerciseProgram.bodyParts.length > 0 && (
-                      <p className="text-sm text-gray-300">
-                        <span className="font-medium">Focus:</span> {
-                          getBodyRegionFromParts(exerciseProgram.bodyParts) === 'Custom'
-                            ? exerciseProgram.bodyParts.length > 3 
-                              ? `${exerciseProgram.bodyParts.slice(0, 3).join(', ')}...` 
-                              : exerciseProgram.bodyParts.join(', ')
-                            : getBodyRegionFromParts(exerciseProgram.bodyParts)
-                        }
-                      </p>
-                    )}
-                  </div>
+                  {/* Target areas - only show if there are target areas */}
+                  {exerciseProgram.targetAreas && exerciseProgram.targetAreas.length > 0 && (
+                    <div className="mb-3">
+                      <p className="text-xs text-gray-400 mb-1">Target Areas</p>
+                      <div className="flex flex-wrap gap-1">
+                        {exerciseProgram.targetAreas.slice(0, 3).map((area, i) => (
+                          <span key={i} className="text-xs px-2 py-1 bg-gray-700/50 text-gray-300 rounded-full">
+                            {area}
+                          </span>
+                        ))}
+                        {exerciseProgram.targetAreas.length > 3 && (
+                          <span className="text-xs px-2 py-1 bg-gray-700/50 text-gray-300 rounded-full">
+                            +{exerciseProgram.targetAreas.length - 3} more
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  )}
                   
-                  <div className="text-xs text-gray-400 mt-4 flex justify-between items-center">
+                  {/* Creation date and toggle switch */}
+                  <div className="text-xs text-gray-400 pt-3 flex justify-between items-center">
                     <span>Created: {format(program.createdAt, 'MMM d, yyyy')}</span>
-                    {program.updatedAt && (
-                      <span>Updated: {format(program.updatedAt, 'MMM d, yyyy')}</span>
-                    )}
+                    
+                    {/* Toggle switch */}
+                    <div className="flex items-center">
+                      <span className="text-xs mr-2">
+                        {pendingToggles[program.docId] !== undefined 
+                          ? (pendingToggles[program.docId] ? 'Active' : 'Inactive') 
+                          : (program.active ? 'Active' : 'Inactive')}
+                      </span>
+                      <button
+                        type="button" 
+                        onClick={(e) => {
+                          e.stopPropagation(); // Prevent card click
+                          e.preventDefault(); // Prevent any default behavior
+                          handleToggleActive(e, originalIndex);
+                        }}
+                        className="relative inline-flex items-center cursor-pointer"
+                        aria-pressed={pendingToggles[program.docId] !== undefined 
+                          ? pendingToggles[program.docId] 
+                          : program.active}
+                        aria-label={program.active ? "Deactivate program" : "Activate program"}
+                      >
+                        <div className={`w-10 h-5 rounded-full relative ${
+                          pendingToggles[program.docId] !== undefined 
+                            ? (pendingToggles[program.docId] ? 'bg-green-600' : 'bg-gray-600 dark:bg-gray-700')
+                            : (program.active ? 'bg-green-600' : 'bg-gray-600 dark:bg-gray-700')
+                        }`}>
+                          <span 
+                            className={`absolute top-[2px] left-[2px] bg-white border border-gray-300 rounded-full h-4 w-4 transition-all ${
+                              pendingToggles[program.docId] !== undefined 
+                                ? (pendingToggles[program.docId] ? 'translate-x-5 bg-white border-white' : '')
+                                : (program.active ? 'translate-x-5 bg-white border-white' : '')
+                            }`}
+                          ></span>
+                        </div>
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -328,7 +434,7 @@ function ProgramsContent() {
       {/* Floating Action Button */}
       <button
         onClick={handleCreateNewProgram}
-        className="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-indigo-600 text-white shadow-lg flex items-center justify-center hover:bg-indigo-500 transition-colors duration-200 z-50"
+        className="fixed bottom-safe right-6 w-14 h-14 rounded-full bg-indigo-600 text-white shadow-lg flex items-center justify-center hover:bg-indigo-500 transition-colors duration-200 z-50"
         aria-label="Create new program"
       >
         <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
