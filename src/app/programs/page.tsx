@@ -300,7 +300,7 @@ function ProgramsContent() {
       </div>
 
       {/* Scrollable program list */}
-      <div className="flex-1 overflow-y-auto px-4 py-6 scrollable-content">
+      <div className="flex-1 overflow-y-auto px-4 py-6">
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 pb-8">
           {filteredAndSortedPrograms.map((program, index) => {
             // Find the original index in userPrograms
@@ -434,7 +434,7 @@ function ProgramsContent() {
       {/* Floating Action Button */}
       <button
         onClick={handleCreateNewProgram}
-        className="fixed bottom-safe right-6 w-14 h-14 rounded-full bg-indigo-600 text-white shadow-lg flex items-center justify-center hover:bg-indigo-500 transition-colors duration-200 z-50"
+        className="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-indigo-600 text-white shadow-lg flex items-center justify-center hover:bg-indigo-500 transition-colors duration-200 z-50"
         aria-label="Create new program"
       >
         <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">

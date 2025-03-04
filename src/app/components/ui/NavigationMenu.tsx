@@ -162,7 +162,7 @@ function NavigationMenuContent() {
   };
 
   return (
-    <div className="fixed bottom-0 left-0 z-50 w-full border-t border-gray-800 bg-gray-900 pb-safe-area">
+    <div className="fixed bottom-0 left-0 z-50 w-full border-t border-gray-800 bg-gray-900">
       {/* Hamburger button */}
       <button
         onClick={() => setDrawerOpen(!drawerOpen)}
@@ -260,7 +260,7 @@ function NavigationMenuContent() {
 // Loading fallback for the Suspense boundary
 function MenuLoadingFallback() {
   return (
-    <div className="fixed bottom-0 left-0 z-50 w-full h-16 border-t border-gray-800 bg-gray-900 flex items-center justify-center pb-safe-area">
+    <div className="fixed bottom-0 left-0 z-50 w-full h-16 border-t border-gray-800 bg-gray-900 flex items-center justify-center">
       <LoadingSpinner />
     </div>
   );
