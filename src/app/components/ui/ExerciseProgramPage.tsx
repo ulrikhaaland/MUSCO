@@ -320,10 +320,15 @@ export function ExerciseProgramPage({
                     ? 'Recovery Program'
                     : 'Exercise Program')}
               </h1>
-              {isActive && (
+              {isActive ? (
                 <div className="mt-1 px-2 py-0.5 bg-green-500/20 text-green-300 text-xs rounded-full flex items-center">
                   <span className="w-2 h-2 rounded-full bg-green-400 mr-1"></span>
                   Active Program
+                </div>
+              ) : (
+                <div className="mt-1 px-2 py-0.5 bg-gray-500/20 text-gray-300 text-xs rounded-full flex items-center">
+                  <span className="w-2 h-2 rounded-full bg-gray-400 mr-1"></span>
+                  Inactive Program
                 </div>
               )}
             </div>

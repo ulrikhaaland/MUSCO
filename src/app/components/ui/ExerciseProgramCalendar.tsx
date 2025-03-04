@@ -1,15 +1,10 @@
-import { useState, useEffect } from 'react';
-import type {
-  ExerciseProgram,
-  ProgramDay,
-} from '@/app/types/program';
+import { useState } from 'react';
+import type { ExerciseProgram, ProgramDay } from '@/app/types/program';
 import { ProgramDaySummaryComponent } from './ProgramDaySummaryComponent';
 import { useUser } from '@/app/context/UserContext';
-import { format } from 'date-fns';
 
 interface ExerciseProgramCalendarProps {
-  program: ExerciseProgram;  // This will still be the initially selected program
-  onToggleView: () => void;
+  program: ExerciseProgram; // This will still be the initially selected program
   dayName: (day: number) => string;
   onDaySelect?: (day: ProgramDay, dayName: string, programId: string) => void;
 }
@@ -22,38 +17,40 @@ interface ProgramDayWithSource {
 
 export function ExerciseProgramCalendar({
   program,
-  onToggleView,
   dayName,
   onDaySelect,
 }: ExerciseProgramCalendarProps) {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [showYearPicker, setShowYearPicker] = useState(false);
   const { userPrograms } = useUser();
-  
+
   // Get all active programs from userPrograms
   const activePrograms = userPrograms
-    .filter(up => up.active)
-    .flatMap(up => up.programs);
+    .filter((up) => up.active)
+    .flatMap((up) => up.programs);
 
   // Add the current program if it's not already in activePrograms
-  if (!activePrograms.some(p => p.createdAt === program.createdAt)) {
+  if (!activePrograms.some((p) => p.createdAt === program.createdAt)) {
     activePrograms.push(program);
   }
 
   const getDayProgram = (date: Date): ProgramDayWithSource[] => {
     const result: ProgramDayWithSource[] = [];
-    
+
     for (const activeProgram of activePrograms) {
       // Get the day of week (1 = Monday, 7 = Sunday)
       const dayOfWeek = date.getDay() === 0 ? 7 : date.getDay();
 
       // Convert createdAt to Date if it's not already
       const programStartDate = new Date(activeProgram.createdAt);
-      
+
       // Find the start of the week containing the program start date
       const programWeekStart = new Date(programStartDate);
-      const programStartDayOfWeek = programStartDate.getDay() === 0 ? 7 : programStartDate.getDay();
-      programWeekStart.setDate(programStartDate.getDate() - (programStartDayOfWeek - 1));
+      const programStartDayOfWeek =
+        programStartDate.getDay() === 0 ? 7 : programStartDate.getDay();
+      programWeekStart.setDate(
+        programStartDate.getDate() - (programStartDayOfWeek - 1)
+      );
       programWeekStart.setHours(0, 0, 0, 0);
 
       // Reset time part of the check date for accurate comparison
@@ -67,7 +64,8 @@ export function ExerciseProgramCalendar({
 
       // Calculate the difference in weeks from the program start week
       const weekDiff = Math.floor(
-        (checkWeekStart.getTime() - programWeekStart.getTime()) / (7 * 24 * 60 * 60 * 1000)
+        (checkWeekStart.getTime() - programWeekStart.getTime()) /
+          (7 * 24 * 60 * 60 * 1000)
       );
 
       // If the date is before program start week or after program end, skip this program
@@ -92,15 +90,11 @@ export function ExerciseProgramCalendar({
             : day.description,
         },
         program: activeProgram,
-        dayOfWeek
+        dayOfWeek,
       });
     }
 
     return result;
-  };
-
-  const isProgramDayForDate = (date: Date): boolean => {
-    return getDayProgram(date).length > 0;
   };
 
   const handleDateClick = (date: Date) => {
@@ -212,7 +206,7 @@ export function ExerciseProgramCalendar({
         const date = new Date(startDate);
         const programDays = getDayProgram(date);
         const isProgramDay = programDays.length > 0;
-        
+
         currentWeek.push({
           date,
           programDays,
@@ -236,18 +230,22 @@ export function ExerciseProgramCalendar({
         {weeks.map((week, weekIndex) => (
           <div key={weekIndex} className="grid grid-cols-7">
             {week.map(
-              ({
-                date,
-                programDays,
-                isCurrentMonth,
-                isToday,
-                isSelected,
-                isProgramDay,
-              }, dayIndex) => {
+              (
+                {
+                  date,
+                  programDays,
+                  isCurrentMonth,
+                  isToday,
+                  isSelected,
+                  isProgramDay,
+                },
+                dayIndex
+              ) => {
                 // Check if there are any workout days (non-rest days)
-                const hasWorkout = programDays.some(p => !p.day.isRestDay);
+                const hasWorkout = programDays.some((p) => !p.day.isRestDay);
                 // Only show "Rest" if there are no workout days and at least one rest day
-                const isRestOnly = !hasWorkout && programDays.some(p => p.day.isRestDay);
+                const isRestOnly =
+                  !hasWorkout && programDays.some((p) => p.day.isRestDay);
 
                 return (
                   <button
@@ -257,12 +255,16 @@ export function ExerciseProgramCalendar({
                       relative aspect-square p-1 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-900
                       ${
                         isCurrentMonth
-                          ? isProgramDay 
+                          ? isProgramDay
                             ? 'bg-gray-800/50'
                             : 'bg-gray-900/50'
                           : 'bg-gray-900/30 text-gray-600'
                       }
-                      ${isSelected ? 'bg-indigo-500/30 ring-1 ring-indigo-400' : ''}
+                      ${
+                        isSelected
+                          ? 'bg-indigo-500/30 ring-1 ring-indigo-400'
+                          : ''
+                      }
                       ${isToday ? 'font-bold' : ''}
                       ${
                         isProgramDay && isCurrentMonth && !isSelected
@@ -273,10 +275,12 @@ export function ExerciseProgramCalendar({
                     `}
                   >
                     <div className="flex flex-col h-full">
-                      <div className={`
+                      <div
+                        className={`
                         flex justify-center items-center mb-1
                         ${isToday ? 'relative' : ''}
-                      `}>
+                      `}
+                      >
                         <span
                           className={`
                             text-sm relative z-10 ${
@@ -330,23 +334,29 @@ export function ExerciseProgramCalendar({
     }
 
     // Format the date for display
-    const formattedDate = format(selectedDate, 'MMMM d, yyyy');
 
     return (
       <div className="mt-6 space-y-8">
         {programDays.map((programDay, index) => (
-          <div 
-            key={index} 
-            className={`space-y-2 ${index === programDays.length - 1 ? 'pb-32' : 'pb-0'}`}
+          <div
+            key={index}
+            className={`space-y-2 ${
+              index === programDays.length - 1 ? 'pb-32' : 'pb-0'
+            }`}
           >
             <ProgramDaySummaryComponent
               day={programDay.day}
               dayName={dayName(programDay.dayOfWeek)}
-              onClick={onDaySelect ? () => onDaySelect(
-                programDay.day, 
-                dayName(programDay.dayOfWeek),
-                programDay.program.createdAt.toString()
-              ) : undefined}
+              onClick={
+                onDaySelect
+                  ? () =>
+                      onDaySelect(
+                        programDay.day,
+                        dayName(programDay.dayOfWeek),
+                        programDay.program.createdAt.toString()
+                      )
+                  : undefined
+              }
               programTitle={programDay.program.title || 'Program'}
               isCalendarView={true}
             />
@@ -362,15 +372,13 @@ export function ExerciseProgramCalendar({
         {/* Empty spacer with same width as menu button to balance the title */}
         <div className="w-10"></div>
         <div className="flex flex-col items-center">
-          <h1 className="text-app-title text-center">
-            Calendar
-          </h1>
+          <h1 className="text-app-title text-center">Calendar</h1>
         </div>
         {/* Space for menu button */}
         <div className="w-10"></div>
       </div>
 
-      <div className="h-screen overflow-y-auto pt-16">
+      <div className="h-screen overflow-y-auto">
         <div className="max-w-2xl mx-auto px-4 py-8">
           <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-xl ring-1 ring-gray-700/50">
             {renderHeader()}

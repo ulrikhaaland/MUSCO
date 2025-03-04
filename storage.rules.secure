@@ -1,0 +1,27 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Default deny
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+    
+    // Allow authenticated users to read any file
+    match /{allPaths=**} {
+      allow read: if request.auth != null;
+    }
+    
+    // Allow users to write only to their own profile pictures folder
+    match /profile_pictures/{userId}/{allPaths=**} {
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Allow admins to write anywhere
+    // Uncomment and adjust if you have an admin role in your Firestore
+    // match /{allPaths=**} {
+    //   allow write: if request.auth != null && 
+    //     firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.isAdmin == true;
+    // }
+  }
+} 

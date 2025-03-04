@@ -125,7 +125,7 @@ export function ProgramDayComponent({
 
       {/* Body Parts Filter Section */}
       {allBodyParts.length > 0 && (
-        <div className="pt-2">
+        <div className="">
           <h4 className="text-gray-300 font-medium mb-2">Target Body Parts:</h4>
           <div className="flex flex-wrap gap-2">
             {allBodyParts.map(bodyPart => (

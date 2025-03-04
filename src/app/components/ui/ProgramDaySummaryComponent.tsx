@@ -32,11 +32,11 @@ export function ProgramDaySummaryComponent({
           <div className="flex items-center justify-between w-full">
             <div className="flex items-center gap-3">
               <h3 className="text-app-title text-white">
-                {day.isRestDay ? "Rest Day" : dayName}
+                {dayName}
               </h3>
               {day.isRestDay ? (
                 <span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-500/20 text-blue-300">
-                  Recovery
+                  Rest
                 </span>
               ) : (
                 <span className="px-2 py-1 rounded-full text-xs font-medium bg-indigo-500/20 text-indigo-300">

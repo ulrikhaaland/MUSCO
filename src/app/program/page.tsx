@@ -63,8 +63,8 @@ export default function ProgramPage() {
   // Determine if this is the active program of its type
   const isActiveProgram =
     selectedProgram &&
-    activeProgram?.programs.some(
-      (p) => p.createdAt === selectedProgram.createdAt
+    userPrograms.some(up => 
+      up.active && up.programs.some(p => p.createdAt === selectedProgram.createdAt)
     );
 
   // Update page title when program loads
