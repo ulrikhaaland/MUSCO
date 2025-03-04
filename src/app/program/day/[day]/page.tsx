@@ -241,7 +241,7 @@ export default function DayDetailPage() {
         <h1 className="text-app-title text-center">{dayName}</h1>
       </div>
       <div className="flex-1 overflow-hidden">
-        <div className="h-full overflow-y-auto px-4 pb-32 max-w-4xl mx-auto safe-scroll-container">
+        <div className="h-full overflow-y-auto px-4 pb-32 max-w-4xl mx-auto scrollable-content">
           <ProgramDayComponent
             day={dayData}
             dayName={dayName}

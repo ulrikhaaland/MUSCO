@@ -212,21 +212,47 @@ iframe {
   }
 }
 
-/* Custom utility class for safe area padding */
+/* Custom utility class for safe area margin */
 @layer utilities {
   .pb-safe-area {
-    padding-bottom: max(calc(env(safe-area-inset-bottom, 0px) + var(--safe-area-bottom, 80px)), 80px) !important;
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + var(--safe-area-bottom, 1rem)) !important;
+  }
+  
+  /* New margin-based utility */
+  .mb-safe-area {
+    margin-bottom: calc(env(safe-area-inset-bottom, 0px) + var(--safe-area-bottom, 1rem)) !important;
+  }
+  
+  /* Set a max-height for scrollable containers to respect the safe area */
+  .max-h-safe {
+    max-height: calc(100vh - env(safe-area-inset-bottom, 0px) - var(--safe-area-bottom, 1rem)) !important;
   }
   
   /* Bottom-positioned fixed elements need this utility for proper positioning */
   .bottom-safe {
-    bottom: max(calc(env(safe-area-inset-bottom, 0px) + 24px), 36px) !important;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 0.5rem) !important;
   }
+}
 
-  /* Scrollable container that respects safe area */
-  .safe-scroll-container {
-    overflow-y: auto;
-    padding-bottom: max(calc(env(safe-area-inset-bottom, 0px) + 120px), 120px) !important;
-    -webkit-overflow-scrolling: touch;
-  }
+/* Container-level safe area handling */
+.safe-area-container {
+  /* This will ensure the content doesn't get hidden behind the browser UI */
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 1rem);
+  /* Add iOS-specific overscroll behavior */
+  -webkit-overflow-scrolling: touch;
+}
+
+/* iOS-specific handling */
+.is-ios-device .safe-area-container {
+  /* Safari needs more space at the bottom */
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 1.5rem) !important;
+}
+
+/* Make sure scrollable content areas respect the safe area */
+.is-mobile-device .scrollable-content {
+  margin-bottom: calc(env(safe-area-inset-bottom, 0px) + 1rem);
+  /* Ensure scrollable areas don't exceed viewport height minus safe area */
+  max-height: calc(100vh - env(safe-area-inset-bottom, 0px) - 2rem);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
