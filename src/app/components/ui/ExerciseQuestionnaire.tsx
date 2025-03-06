@@ -4,7 +4,19 @@ import { useState, useEffect, useRef, ReactNode } from 'react';
 import { TopBar } from './TopBar';
 import { ExerciseQuestionnaireAnswers, ProgramType } from '@/app/shared/types';
 import { BodyPartGroup } from '@/app/config/bodyPartGroups';
-import { TARGET_BODY_PARTS, UPPER_BODY_PARTS, LOWER_BODY_PARTS } from '@/app/types/program';
+import { 
+  TARGET_BODY_PARTS, 
+  UPPER_BODY_PARTS, 
+  LOWER_BODY_PARTS, 
+  ExerciseEnvironment,
+  EXERCISE_ENVIRONMENTS,
+  WORKOUT_DURATIONS,
+  AGE_RANGES,
+  EXERCISE_FREQUENCY_OPTIONS,
+  PLANNED_EXERCISE_FREQUENCY_OPTIONS,
+  EXERCISE_MODALITIES,
+  PAIN_BODY_PARTS
+} from '@/app/types/program';
 
 interface ExerciseQuestionnaireProps {
   onClose: () => void;
@@ -14,63 +26,6 @@ interface ExerciseQuestionnaireProps {
   targetAreas: BodyPartGroup[];
   fullBody: boolean;
 }
-
-const ageRanges = [
-  'Under 20',
-  '20-30',
-  '30-40',
-  '40-50',
-  '50-60',
-  '60-70',
-  '70 or above',
-];
-
-const exerciseFrequencyOptions = [
-  '0',
-  '1-2 times per week',
-  '2-3 times per week',
-  '4-5 times per week',
-  'Every day',
-];
-
-const plannedExerciseFrequencyOptions = [
-  '1 day per week',
-  '2 days per week',
-  '3 days per week',
-  '4 days per week',
-  '5 days per week',
-  '6 days per week',
-  'Every day',
-];
-
-// Original body parts for pain areas
-const painBodyParts = [
-  'Neck',
-  'Left Shoulder',
-  'Right Shoulder',
-  'Left Upper Arm',
-  'Right Upper Arm',
-  'Left Elbow',
-  'Right Elbow',
-  'Left Forearm',
-  'Right Forearm',
-  'Left Hand',
-  'Right Hand',
-  'Chest',
-  'Torso',
-  'Upper Back',
-  'Middle Back',
-  'Lower Back',
-  'Pelvis & Hip Region',
-  'Right Thigh',
-  'Left Thigh',
-  'Left Knee',
-  'Right Knee',
-  'Left Lower Leg',
-  'Right Lower Leg',
-  'Left Foot',
-  'Right Foot',
-];
 
 // Map composite pain areas to their individual parts
 const compositeAreaMapping: { [key: string]: string[] } = {
@@ -99,7 +54,7 @@ const expandPainAreas = (areas: string[]): string[] => {
       );
     } else {
       // Find the matching pain body part with correct capitalization
-      const matchingPart = painBodyParts.find(
+      const matchingPart = PAIN_BODY_PARTS.find(
         (part) => part.toLowerCase() === lowerArea
       );
       expandedAreas.add(matchingPart || area);
@@ -112,43 +67,6 @@ const expandPainAreas = (areas: string[]): string[] => {
 // Body parts for target areas
 const bodyRegions = ['Full Body', 'Upper Body', 'Lower Body'] as const;
 // Target body parts now imported from program.ts
-
-interface ExerciseEnvironment {
-  name: string;
-  description: string;
-}
-
-const exerciseEnvironments: ExerciseEnvironment[] = [
-  {
-    name: 'Large Gym',
-    description:
-      'Full-service fitness facility with extensive equipment including cardio machines, weight machines, free weights, and specialized training areas',
-  },
-  {
-    name: 'Small Gym',
-    description: 'Compact public gym with limited equipment',
-  },
-  {
-    name: 'Garage Gym',
-    description: 'Barbells, squat rack, dumbells and more',
-  },
-  {
-    name: 'At Home',
-    description: 'Limited equipment such as dumbells, bands, pull-up bars etc.',
-  },
-  {
-    name: 'Bodyweight Only',
-    description: 'Work out anywhere without gym equipment',
-  },
-];
-
-const workoutDurations = [
-  '15-30 minutes',
-  '30-45 minutes',
-  '45-60 minutes',
-  '60-90 minutes',
-  'More than 90 minutes',
-];
 
 function useIntersectionObserver(
   options: IntersectionObserverInit = {}
@@ -706,7 +624,7 @@ export function ExerciseQuestionnaire({
                 renderSelectedAnswers(answers.age, () => handleEdit('age'))
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {ageRanges.map((range) => (
+                  {AGE_RANGES.map((range) => (
                     <label key={range} className="relative flex items-center">
                       <input
                         type="radio"
@@ -762,7 +680,7 @@ export function ExerciseQuestionnaire({
                   )
                 ) : (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {exerciseFrequencyOptions.map((option) => (
+                    {EXERCISE_FREQUENCY_OPTIONS.map((option) => (
                       <label
                         key={option}
                         className="relative flex items-center"
@@ -830,7 +748,7 @@ export function ExerciseQuestionnaire({
                   )
                 ) : (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {plannedExerciseFrequencyOptions.map((option) => (
+                    {PLANNED_EXERCISE_FREQUENCY_OPTIONS.map((option) => (
                       <label
                         key={option}
                         className="relative flex items-center"
@@ -915,7 +833,7 @@ export function ExerciseQuestionnaire({
                       Select all that apply
                     </p>
                     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-                      {painBodyParts.map((part) => (
+                      {PAIN_BODY_PARTS.map((part) => (
                         <label
                           key={part}
                           className="relative flex items-center"
@@ -984,7 +902,7 @@ export function ExerciseQuestionnaire({
                   )
                 ) : (
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    {['Cardio', 'Strength', 'Both'].map((option) => (
+                    {EXERCISE_MODALITIES.map((option) => (
                       <label
                         key={option}
                         className="relative flex items-center"
@@ -1189,7 +1107,7 @@ export function ExerciseQuestionnaire({
                   )
                 ) : (
                   <div className="space-y-4">
-                    {exerciseEnvironments.map((environment) => (
+                    {EXERCISE_ENVIRONMENTS.map((environment) => (
                       <label
                         key={environment.name}
                         className="relative flex items-center"
@@ -1259,7 +1177,7 @@ export function ExerciseQuestionnaire({
                   )
                 ) : (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {workoutDurations.map((duration) => (
+                    {WORKOUT_DURATIONS.map((duration) => (
                       <label
                         key={duration}
                         className="relative flex items-center"

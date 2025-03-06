@@ -10,21 +10,24 @@ import {
   signInWithEmailLink,
 } from 'firebase/auth';
 import { auth, db } from '../firebase/config';
-import { doc, setDoc } from 'firebase/firestore';
+import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { useClientUrl } from '../hooks/useClientUrl';
 import {
   getPendingQuestionnaire,
   deletePendingQuestionnaire,
   submitQuestionnaire,
 } from '../services/questionnaire';
+import { ExtendedUser, UserProfile } from '../types/user';
 
 interface AuthContextType {
-  user: User | null;
+  user: ExtendedUser | null;
   loading: boolean;
   error: Error | null;
   sendSignInLink: (email: string) => Promise<void>;
   logOut: () => Promise<void>;
   createUserDoc: () => Promise<void>;
+  updateUserProfile: (profileData: Partial<UserProfile>) => Promise<void>;
+  getUserProfile: () => Promise<UserProfile | null>;
 }
 
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
@@ -42,7 +45,7 @@ const actionCodeSettings = {
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { href, isReady } = useClientUrl();
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<ExtendedUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const handledEmailLink = useRef(false);
@@ -168,11 +171,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     console.log('Setting up auth state listener...');
     const unsubscribe = onAuthStateChanged(
       auth,
-      (user) => {
-        console.log('Auth state changed:', user ? 'User logged in' : 'No user');
-        setUser(user);
+      async (firebaseUser) => {
+        console.log('Auth state changed:', firebaseUser ? 'User logged in' : 'No user');
+        if (firebaseUser) {
+          try {
+            // Fetch user profile data
+            const profileData = await fetchUserProfile(firebaseUser.uid);
+            // Create extended user with profile data
+            const extendedUser = {
+              ...firebaseUser,
+              profile: profileData || undefined
+            } as ExtendedUser;
+            
+            setUser(extendedUser);
+          } catch (error) {
+            console.error('Error fetching user profile:', error);
+            setUser(firebaseUser as ExtendedUser);
+          }
+        } else {
+          setUser(null);
+        }
+        
         setLoading(false);
-        setError(null);
       },
       (error) => {
         console.error('Auth state change error:', error);
@@ -183,6 +203,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     return () => unsubscribe();
   }, [isReady]);
+
+  // Fetch user profile data from Firestore
+  const fetchUserProfile = async (uid: string): Promise<UserProfile | null> => {
+    try {
+      const userDocRef = doc(db, 'users', uid);
+      const userDoc = await getDoc(userDocRef);
+      
+      if (userDoc.exists()) {
+        return userDoc.data() as UserProfile;
+      }
+      
+      return null;
+    } catch (error) {
+      console.error('Error fetching user profile:', error);
+      return null;
+    }
+  };
 
   const createUserDoc = async () => {
     if (!user) return;
@@ -196,6 +233,51 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } catch (error) {
       console.error('Error creating user document:', error);
       throw error;
+    }
+  };
+
+  const updateUserProfile = async (profileData: Partial<UserProfile>) => {
+    if (!user) throw new Error('No user is logged in');
+    
+    try {
+      const userDocRef = doc(db, 'users', user.uid);
+      
+      // Get current data
+      const userDoc = await getDoc(userDocRef);
+      const currentData = userDoc.exists() ? userDoc.data() as UserProfile : {};
+      
+      // Merge with new data
+      const updatedData = {
+        ...currentData,
+        ...profileData,
+        updatedAt: new Date().toISOString()
+      };
+      
+      // Save to Firestore
+      await setDoc(userDocRef, updatedData);
+      
+      // Update local user state
+      setUser(prevUser => {
+        if (!prevUser) return null;
+        return {
+          ...prevUser,
+          profile: updatedData
+        };
+      });
+    } catch (error) {
+      console.error('Error updating user profile:', error);
+      throw error;
+    }
+  };
+
+  const getUserProfile = async (): Promise<UserProfile | null> => {
+    if (!user) return null;
+    
+    try {
+      return await fetchUserProfile(user.uid);
+    } catch (error) {
+      console.error('Error getting user profile:', error);
+      return null;
     }
   };
 
@@ -229,7 +311,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <AuthContext.Provider
-      value={{ user, loading, error, sendSignInLink, logOut, createUserDoc }}
+      value={{
+        user,
+        loading,
+        error,
+        sendSignInLink,
+        logOut,
+        createUserDoc,
+        updateUserProfile,
+        getUserProfile
+      }}
     >
       {children}
     </AuthContext.Provider>

@@ -39,6 +39,142 @@ export const LOWER_BODY_PARTS = [
   'Lower Legs',
 ] as const;
 
+// Equipment access options
+export const EQUIPMENT_ACCESS = [
+  'Large Gym',
+  'Small Gym',
+  'Garage Gym',
+  'At Home',
+  'Bodyweight Only',
+] as const;
+
+export const EQUIPMENT_DESCRIPTIONS = {
+  'Large Gym': 'Full-service fitness facility with extensive equipment including cardio machines, weight machines, free weights, and specialized training areas',
+  'Small Gym': 'Compact public gym with limited equipment',
+  'Garage Gym': 'Barbells, squat rack, dumbells and more',
+  'At Home': 'Limited equipment such as dumbells, bands, pull-up bars etc.',
+  'Bodyweight Only': 'Work out anywhere without gym equipment',
+} as const;
+
+// Exercise environment type and data
+export interface ExerciseEnvironment {
+  name: string;
+  description: string;
+}
+
+export const EXERCISE_ENVIRONMENTS: ExerciseEnvironment[] = [
+  {
+    name: 'Large Gym',
+    description: 'Full-service fitness facility with extensive equipment including cardio machines, weight machines, free weights, and specialized training areas',
+  },
+  {
+    name: 'Small Gym',
+    description: 'Compact public gym with limited equipment',
+  },
+  {
+    name: 'Garage Gym',
+    description: 'Barbells, squat rack, dumbells and more',
+  },
+  {
+    name: 'At Home',
+    description: 'Limited equipment such as dumbells, bands, pull-up bars etc.',
+  },
+  {
+    name: 'Bodyweight Only',
+    description: 'Work out anywhere without gym equipment',
+  },
+] as const;
+
+export type ExerciseEnvironmentName = typeof EXERCISE_ENVIRONMENTS[number]['name'];
+
+// Workout duration options
+export const WORKOUT_DURATIONS = [
+  '15-30 minutes',
+  '30-45 minutes',
+  '45-60 minutes',
+  '60-90 minutes',
+  'More than 90 minutes',
+] as const;
+
+export type WorkoutDuration = typeof WORKOUT_DURATIONS[number];
+
+// Age range options
+export const AGE_RANGES = [
+  'Under 20',
+  '20-30',
+  '30-40',
+  '40-50',
+  '50-60',
+  '60-70',
+  '70 or above',
+] as const;
+
+export type AgeRange = typeof AGE_RANGES[number];
+
+// Exercise frequency options
+export const EXERCISE_FREQUENCY_OPTIONS = [
+  '0',
+  '1-2 times per week',
+  '2-3 times per week',
+  '4-5 times per week',
+  'Every day',
+] as const;
+
+export type ExerciseFrequency = typeof EXERCISE_FREQUENCY_OPTIONS[number];
+
+// Planned exercise frequency options
+export const PLANNED_EXERCISE_FREQUENCY_OPTIONS = [
+  '1 day per week',
+  '2 days per week',
+  '3 days per week',
+  '4 days per week',
+  '5 days per week',
+  '6 days per week',
+  'Every day',
+] as const;
+
+export type PlannedExerciseFrequency = typeof PLANNED_EXERCISE_FREQUENCY_OPTIONS[number];
+
+// Exercise modality options
+export const EXERCISE_MODALITIES = [
+  'Cardio',
+  'Strength',
+  'Both',
+] as const;
+
+export type ExerciseModality = typeof EXERCISE_MODALITIES[number];
+
+// Pain body parts options (for detailed assessment)
+export const PAIN_BODY_PARTS = [
+  'Neck',
+  'Left Shoulder',
+  'Right Shoulder',
+  'Left Upper Arm',
+  'Right Upper Arm',
+  'Left Elbow',
+  'Right Elbow',
+  'Left Forearm',
+  'Right Forearm',
+  'Left Hand',
+  'Right Hand',
+  'Chest',
+  'Torso',
+  'Upper Back',
+  'Middle Back',
+  'Lower Back',
+  'Pelvis & Hip Region',
+  'Right Thigh',
+  'Left Thigh',
+  'Left Knee',
+  'Right Knee',
+  'Left Lower Leg',
+  'Right Lower Leg',
+  'Left Foot',
+  'Right Foot',
+] as const;
+
+export type PainBodyPart = typeof PAIN_BODY_PARTS[number];
+
 export type BodyRegion = 'Full Body' | 'Upper Body' | 'Lower Body' | 'Custom';
 
 // Utility function to determine the body region from a list of body parts
