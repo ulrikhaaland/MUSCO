@@ -5,23 +5,18 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/app/context/AuthContext';
 import { useUser } from '@/app/context/UserContext';
 import { getAuth, updateProfile } from 'firebase/auth';
-import { doc, updateDoc, getDoc, setDoc } from 'firebase/firestore';
+import { doc, getDoc } from 'firebase/firestore';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { db, storage } from '@/app/firebase/config';
-import PhoneInput, { isValidPhoneNumber } from 'react-phone-number-input';
+import PhoneInput from 'react-phone-number-input';
 import 'react-phone-number-input/style.css';
 import {
   TARGET_BODY_PARTS,
   UPPER_BODY_PARTS,
   LOWER_BODY_PARTS,
-  EQUIPMENT_ACCESS,
-  EQUIPMENT_DESCRIPTIONS,
-  ExerciseEnvironment,
   EXERCISE_ENVIRONMENTS,
   WORKOUT_DURATIONS,
   PAIN_BODY_PARTS,
-  PainBodyPart,
-  EXERCISE_FREQUENCY_OPTIONS,
   PLANNED_EXERCISE_FREQUENCY_OPTIONS,
 } from '@/app/types/program';
 import { UserProfile } from '@/app/types/user';
@@ -119,6 +114,39 @@ const DIETARY_PREFERENCES_OPTIONS = [
   'Intermittent fasting',
 ];
 
+// Reusable icon components for section headers
+const ExpandedIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <polyline points="18 15 12 9 6 15"></polyline>
+  </svg>
+);
+
+const CollapsedIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <polyline points="6 9 12 15 18 9"></polyline>
+  </svg>
+);
+
 export default function ProfilePage() {
   const { user, loading: authLoading, logOut, updateUserProfile } = useAuth();
   const {
@@ -128,6 +156,22 @@ export default function ProfilePage() {
   } = useUser();
   const router = useRouter();
   const { width, height } = useWindowDimensions();
+
+  // CSS styles for smooth section transitions
+  const sectionContentStyle = {
+    transition: 'max-height 0.3s ease, opacity 0.3s ease, padding 0.3s ease',
+    overflow: 'hidden',
+    opacity: 1,
+    animation: 'fadeIn 0.3s ease-in-out'
+  };
+
+  // Define a fade-in animation
+  const fadeInAnimation = `
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  `;
 
   // UI states
   const [isEditing, setIsEditing] = useState(false);
@@ -153,7 +197,6 @@ export default function ProfilePage() {
   const [phoneError, setPhoneError] = useState('');
 
   // Refs
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const topRef = useRef<HTMLDivElement>(null);
 
   // Health basics
@@ -204,17 +247,6 @@ export default function ProfilePage() {
       return () => clearTimeout(timer);
     }
   }, [message]);
-
-  // Auto-expand sections when entering edit mode
-  useEffect(() => {
-    if (isEditing) {
-      setGeneralExpanded(true);
-      setHealthBasicsExpanded(true);
-      setMedicalBackgroundExpanded(true);
-      setFitnessProfileExpanded(true);
-      setGoalsPreferencesExpanded(true);
-    }
-  }, [isEditing]);
 
   // Load user profile data function - moved outside useEffect to reuse
   const loadUserProfile = async () => {
@@ -284,13 +316,15 @@ export default function ProfilePage() {
       if (profile.exerciseModalities) {
         if (Array.isArray(profile.exerciseModalities)) {
           // Normalize array values to lowercase for consistent comparison
-          setExerciseModalities(profile.exerciseModalities.map(m => m.toLowerCase()));
+          setExerciseModalities(
+            profile.exerciseModalities.map((m) => m.toLowerCase())
+          );
         } else if (typeof profile.exerciseModalities === 'string') {
           // Split comma-separated string, trim each value, and normalize to lowercase
           setExerciseModalities(
             profile.exerciseModalities
               .split(',')
-              .map(item => item.trim().toLowerCase())
+              .map((item) => item.trim().toLowerCase())
               .filter(Boolean)
           );
         }
@@ -342,13 +376,15 @@ export default function ProfilePage() {
           if (userData.exerciseModalities) {
             if (Array.isArray(userData.exerciseModalities)) {
               // Normalize array values to lowercase for consistent comparison
-              setExerciseModalities(userData.exerciseModalities.map(m => m.toLowerCase()));
+              setExerciseModalities(
+                userData.exerciseModalities.map((m) => m.toLowerCase())
+              );
             } else if (typeof userData.exerciseModalities === 'string') {
               // Split comma-separated string, trim each value, and normalize to lowercase
               setExerciseModalities(
                 userData.exerciseModalities
                   .split(',')
-                  .map(item => item.trim().toLowerCase())
+                  .map((item) => item.trim().toLowerCase())
                   .filter(Boolean)
               );
             }
@@ -549,31 +585,39 @@ export default function ProfilePage() {
 
       // Combine painful areas from both active programs
       const updatedPainfulAreas = [...painfulAreas];
-      
+
       // Add areas from active exercise program if available
       if (activeExerciseProgram?.questionnaire?.generallyPainfulAreas) {
-        activeExerciseProgram.questionnaire.generallyPainfulAreas.forEach(area => {
-          if (!updatedPainfulAreas.includes(area)) {
-            updatedPainfulAreas.push(area);
+        activeExerciseProgram.questionnaire.generallyPainfulAreas.forEach(
+          (area) => {
+            if (!updatedPainfulAreas.includes(area)) {
+              updatedPainfulAreas.push(area);
+            }
           }
-        });
+        );
       }
-      
+
       // Add areas from active recovery program if available
       if (activeRecoveryProgram?.questionnaire?.generallyPainfulAreas) {
-        activeRecoveryProgram.questionnaire.generallyPainfulAreas.forEach(area => {
-          if (!updatedPainfulAreas.includes(area)) {
-            updatedPainfulAreas.push(area);
+        activeRecoveryProgram.questionnaire.generallyPainfulAreas.forEach(
+          (area) => {
+            if (!updatedPainfulAreas.includes(area)) {
+              updatedPainfulAreas.push(area);
+            }
           }
-        });
+        );
       }
-      
+
       // Prioritize exercise environments from active exercise program
       let updatedExerciseEnvironment = exerciseEnvironments;
-      
+
       // Check active exercise program first
-      if (activeExerciseProgram?.questionnaire?.exerciseEnvironments && !updatedExerciseEnvironment) {
-        const exerciseEnvs = activeExerciseProgram.questionnaire.exerciseEnvironments;
+      if (
+        activeExerciseProgram?.questionnaire?.exerciseEnvironments &&
+        !updatedExerciseEnvironment
+      ) {
+        const exerciseEnvs =
+          activeExerciseProgram.questionnaire.exerciseEnvironments;
         if (Array.isArray(exerciseEnvs) && exerciseEnvs.length > 0) {
           updatedExerciseEnvironment = exerciseEnvs[0];
         } else if (typeof exerciseEnvs === 'string') {
@@ -581,8 +625,12 @@ export default function ProfilePage() {
         }
       }
       // Then check active recovery program if no exercise program
-      else if (activeRecoveryProgram?.questionnaire?.exerciseEnvironments && !updatedExerciseEnvironment) {
-        const recoveryEnvs = activeRecoveryProgram.questionnaire.exerciseEnvironments;
+      else if (
+        activeRecoveryProgram?.questionnaire?.exerciseEnvironments &&
+        !updatedExerciseEnvironment
+      ) {
+        const recoveryEnvs =
+          activeRecoveryProgram.questionnaire.exerciseEnvironments;
         if (Array.isArray(recoveryEnvs) && recoveryEnvs.length > 0) {
           updatedExerciseEnvironment = recoveryEnvs[0];
         } else if (typeof recoveryEnvs === 'string') {
@@ -630,21 +678,24 @@ export default function ProfilePage() {
         sleepPattern,
         exerciseFrequency,
         // Store exercise modalities in lowercase for consistency
-        exerciseModalities: updatedExerciseModalities.map(m => m.toLowerCase()).join(','),
+        exerciseModalities: updatedExerciseModalities
+          .map((m) => m.toLowerCase())
+          .join(','),
         timeAvailability,
         dietaryPreferences,
         painfulAreas: updatedPainfulAreas,
         healthGoals,
         targetAreas,
       };
-      
+
       // Add exercise environments with priority logic
       if (exerciseEnvironments) {
         // Use user's selected value if available
         profileData.exerciseEnvironments = exerciseEnvironments;
       } else if (activeExerciseProgram?.questionnaire?.exerciseEnvironments) {
         // Prioritize exercise program environments
-        const exerciseEnvs = activeExerciseProgram.questionnaire.exerciseEnvironments;
+        const exerciseEnvs =
+          activeExerciseProgram.questionnaire.exerciseEnvironments;
         if (Array.isArray(exerciseEnvs) && exerciseEnvs.length > 0) {
           profileData.exerciseEnvironments = exerciseEnvs[0];
         } else if (typeof exerciseEnvs === 'string') {
@@ -652,14 +703,15 @@ export default function ProfilePage() {
         }
       } else if (activeRecoveryProgram?.questionnaire?.exerciseEnvironments) {
         // Fall back to recovery program environments
-        const recoveryEnvs = activeRecoveryProgram.questionnaire.exerciseEnvironments;
+        const recoveryEnvs =
+          activeRecoveryProgram.questionnaire.exerciseEnvironments;
         if (Array.isArray(recoveryEnvs) && recoveryEnvs.length > 0) {
           profileData.exerciseEnvironments = recoveryEnvs[0];
         } else if (typeof recoveryEnvs === 'string') {
           profileData.exerciseEnvironments = recoveryEnvs;
         }
       }
-      
+
       // Add workout duration
       if (workoutDuration) {
         profileData.workoutDuration = workoutDuration;
@@ -672,18 +724,9 @@ export default function ProfilePage() {
       setIsLoading(false);
       setEditingField(null);
       setIsEditing(false);
-      
-      // Collapse all sections except General
-      setGeneralExpanded(true); // Keep general section expanded
-      setHealthBasicsExpanded(false);
-      setMedicalBackgroundExpanded(false);
-      setFitnessProfileExpanded(false);
-      setGoalsPreferencesExpanded(false);
 
-      // Scroll to the top using the ref
-      if (topRef.current) {
-        topRef.current.scrollIntoView({ behavior: 'smooth' });
-      }
+      // Reset view and collapse sections
+      resetViewAndCollapseSections();
 
       // Show success message
       setMessage({
@@ -805,19 +848,26 @@ export default function ProfilePage() {
       }
 
       // Exercise modalities
-      if (exerciseModalities.length === 0 && !user?.profile?.exerciseModalities) {
+      if (
+        exerciseModalities.length === 0 &&
+        !user?.profile?.exerciseModalities
+      ) {
         for (const questionnaireData of questionnaires) {
           if (questionnaireData.exerciseModalities) {
             if (Array.isArray(questionnaireData.exerciseModalities)) {
               // Normalize array values to lowercase for consistent comparison
-              setExerciseModalities(questionnaireData.exerciseModalities.map(m => m.toLowerCase()));
+              setExerciseModalities(
+                questionnaireData.exerciseModalities.map((m) => m.toLowerCase())
+              );
               break;
-            } else if (typeof questionnaireData.exerciseModalities === 'string') {
+            } else if (
+              typeof questionnaireData.exerciseModalities === 'string'
+            ) {
               // Split comma-separated string, trim each value, and normalize to lowercase
               setExerciseModalities(
                 questionnaireData.exerciseModalities
                   .split(',')
-                  .map(item => item.trim().toLowerCase())
+                  .map((item) => item.trim().toLowerCase())
                   .filter(Boolean)
               );
               break;
@@ -827,7 +877,11 @@ export default function ProfilePage() {
       }
 
       // Ensure recovery is included in exerciseModalities if there's an active recovery program
-      if (activeRecoveryProgram && !exerciseModalities.includes('recovery')) {
+      if (
+        activeRecoveryProgram &&
+        !exerciseModalities.includes('recovery') &&
+        !user?.profile?.exerciseModalities?.includes('recovery')
+      ) {
         setExerciseModalities((prev) => [...prev, 'recovery']);
       }
 
@@ -847,10 +901,11 @@ export default function ProfilePage() {
       // Exercise environments - prioritize exercise program over recovery
       if (!exerciseEnvironments && !user?.profile?.exerciseEnvironments) {
         let environmentValue = null;
-        
+
         // First check active exercise program
         if (activeExerciseProgram?.questionnaire?.exerciseEnvironments) {
-          const exerciseEnvs = activeExerciseProgram.questionnaire.exerciseEnvironments;
+          const exerciseEnvs =
+            activeExerciseProgram.questionnaire.exerciseEnvironments;
           if (Array.isArray(exerciseEnvs) && exerciseEnvs.length > 0) {
             environmentValue = exerciseEnvs[0];
           } else if (typeof exerciseEnvs === 'string') {
@@ -859,7 +914,8 @@ export default function ProfilePage() {
         }
         // Then check active recovery program if no exercise program
         else if (activeRecoveryProgram?.questionnaire?.exerciseEnvironments) {
-          const recoveryEnvs = activeRecoveryProgram.questionnaire.exerciseEnvironments;
+          const recoveryEnvs =
+            activeRecoveryProgram.questionnaire.exerciseEnvironments;
           if (Array.isArray(recoveryEnvs) && recoveryEnvs.length > 0) {
             environmentValue = recoveryEnvs[0];
           } else if (typeof recoveryEnvs === 'string') {
@@ -870,18 +926,22 @@ export default function ProfilePage() {
         else {
           for (const questionnaireData of questionnaires) {
             if (questionnaireData.exerciseEnvironments) {
-              if (Array.isArray(questionnaireData.exerciseEnvironments) && 
-                  questionnaireData.exerciseEnvironments.length > 0) {
+              if (
+                Array.isArray(questionnaireData.exerciseEnvironments) &&
+                questionnaireData.exerciseEnvironments.length > 0
+              ) {
                 environmentValue = questionnaireData.exerciseEnvironments[0];
                 break;
-              } else if (typeof questionnaireData.exerciseEnvironments === 'string') {
+              } else if (
+                typeof questionnaireData.exerciseEnvironments === 'string'
+              ) {
                 environmentValue = questionnaireData.exerciseEnvironments;
                 break;
               }
             }
           }
         }
-        
+
         // Set the exercise environment if a value was found
         if (environmentValue) {
           setExerciseEnvironments(environmentValue);
@@ -952,23 +1012,33 @@ export default function ProfilePage() {
   const handleEdit = (field: string) => {
     setEditingField(field);
     setIsEditing(true); // Show the Save/Cancel buttons
-    
+
     // Log exercise modalities if editing that field
     if (field === 'exerciseModalities') {
       console.log('Current exercise modalities:', exerciseModalities);
     }
 
+    // For profile photo, just enter edit mode without scrolling or expanding sections
+    if (field === 'profilePhoto') {
+      // Just enter edit mode, no scrolling needed
+      return;
+    }
+
     // Expand the appropriate section based on the field being edited
-    if (['displayName', 'phone', 'dateOfBirth', 'profilePhoto'].includes(field)) {
+    if (['displayName', 'phone', 'dateOfBirth'].includes(field)) {
       setGeneralExpanded(true);
       // Add delay to allow state to update before scrolling
       setTimeout(() => {
-        document.querySelector('[data-section="general"]')?.scrollIntoView({ behavior: 'smooth' });
+        document
+          .querySelector('[data-section="general"]')
+          ?.scrollIntoView({ behavior: 'smooth' });
       }, 100);
     } else if (['userHeight', 'weight', 'gender'].includes(field)) {
       setHealthBasicsExpanded(true);
       setTimeout(() => {
-        document.querySelector('[data-section="healthBasics"]')?.scrollIntoView({ behavior: 'smooth' });
+        document
+          .querySelector('[data-section="healthBasics"]')
+          ?.scrollIntoView({ behavior: 'smooth' });
       }, 100);
     } else if (
       [
@@ -980,7 +1050,9 @@ export default function ProfilePage() {
     ) {
       setMedicalBackgroundExpanded(true);
       setTimeout(() => {
-        document.querySelector('[data-section="medicalBackground"]')?.scrollIntoView({ behavior: 'smooth' });
+        document
+          .querySelector('[data-section="medicalBackground"]')
+          ?.scrollIntoView({ behavior: 'smooth' });
       }, 100);
     } else if (
       [
@@ -995,7 +1067,9 @@ export default function ProfilePage() {
     ) {
       setFitnessProfileExpanded(true);
       setTimeout(() => {
-        document.querySelector('[data-section="fitnessProfile"]')?.scrollIntoView({ behavior: 'smooth' });
+        document
+          .querySelector('[data-section="fitnessProfile"]')
+          ?.scrollIntoView({ behavior: 'smooth' });
       }, 100);
     } else if (
       [
@@ -1007,30 +1081,43 @@ export default function ProfilePage() {
     ) {
       setGoalsPreferencesExpanded(true);
       setTimeout(() => {
-        document.querySelector('[data-section="goalsPreferences"]')?.scrollIntoView({ behavior: 'smooth' });
+        document
+          .querySelector('[data-section="goalsPreferences"]')
+          ?.scrollIntoView({ behavior: 'smooth' });
       }, 100);
     }
 
     markAsDirty();
   };
 
-  // Function to handle canceling edits
-  const handleCancelEdit = () => {
-    setEditingField(null);
-    setIsEditing(false);
-    
+  // Function to reset view and collapse all sections except General
+  const resetViewAndCollapseSections = () => {
     // Collapse all sections except General
     setGeneralExpanded(true); // Keep general section expanded
     setHealthBasicsExpanded(false);
     setMedicalBackgroundExpanded(false);
     setFitnessProfileExpanded(false);
     setGoalsPreferencesExpanded(false);
-    
-    // Scroll to the top using the ref
-    if (topRef.current) {
-      topRef.current.scrollIntoView({ behavior: 'smooth' });
-    }
-    
+
+    // Wait for state updates to be applied, then scroll
+    setTimeout(() => {
+      if (topRef.current) {
+        topRef.current.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start',
+        });
+      }
+    }, 50);
+  };
+
+  // Function to handle canceling edits
+  const handleCancelEdit = () => {
+    setEditingField(null);
+    setIsEditing(false);
+
+    // Reset view and collapse sections
+    resetViewAndCollapseSections();
+
     // Reset any unsaved changes by reloading user profile data
     loadUserProfile();
     setDirty(false);
@@ -1074,70 +1161,214 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="fixed inset-0 bg-gray-900 flex flex-col">
-      <div ref={topRef} className="py-3 px-4 flex items-center justify-between">
-        {/* Empty spacer to balance the title */}
-        <div className="w-10"></div>
-        <div className="flex flex-col items-center">
-          <h1 className="text-app-title text-center">Profile</h1>
-        </div>
-        {/* Empty spacer to balance the title */}
-        <div className="w-10"></div>
-      </div>
+    <>
+      <style jsx global>{`
+        .phone-input-container .PhoneInput {
+          display: flex;
+          align-items: stretch;
+          border-radius: 0.5rem;
+          overflow: hidden;
+          background-color: #2d3748;
+          border: ${!phoneValid ? '1px solid #EF4444' : '1px solid #4a5568'};
+          height: 42px;
+        }
 
-      {/* Message display */}
-      {message && (
-        <div
-          className={`mx-4 p-3 rounded-lg mb-2 ${
-            message.type === 'success'
-              ? 'bg-green-900/50 text-green-200'
-              : 'bg-red-900/50 text-red-200'
-          }`}
-        >
-          {message.text}
-          <button
-            className="float-right text-sm opacity-70 hover:opacity-100"
-            onClick={() => setMessage(null)}
+        .phone-input-container .PhoneInputCountry {
+          display: flex;
+          align-items: center;
+          padding: 0 0.5rem 0 0.75rem;
+          background-color: #2d3748;
+          border-right: 1px solid #4a5568;
+          min-width: 80px;
+          position: relative;
+        }
+
+        .phone-input-container .PhoneInputCountryIcon {
+          margin-right: 0.5rem;
+        }
+
+        .phone-input-container .PhoneInputCountrySelectArrow {
+          border-style: solid;
+          border-width: 0.35em 0.35em 0 0.35em;
+          border-color: #a0aec0 transparent transparent transparent;
+          margin-left: 0.5rem;
+          transform: rotate(0deg); /* Ensure arrow points downward */
+        }
+
+        /* Add rotation for when the dropdown is open */
+        .phone-input-container .PhoneInputCountrySelect[aria-expanded='true'] + .PhoneInputCountrySelectArrow {
+          transform: rotate(180deg);
+        }
+
+        .phone-input-container .PhoneInputInput {
+          flex: 1;
+          min-width: 0;
+          background-color: #2d3748;
+          color: white;
+          border: none;
+          padding: 0.5rem 0.75rem;
+          font-size: 1rem;
+          outline: none;
+        }
+
+        .phone-input-container .PhoneInputInput:focus {
+          outline: none;
+        }
+
+        /* Make sure dropdown appears above other elements */
+        body .PhoneInputCountrySelect-menuOpen {
+          background-color: #1a202c !important;
+          border: 1px solid #4a5568 !important;
+          border-radius: 0.375rem !important;
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3) !important;
+          margin-top: 4px !important;
+          z-index: 9999 !important;
+          position: absolute !important;
+          max-height: 300px !important;
+          overflow-y: auto !important;
+        }
+
+        .PhoneInputCountrySelect__option {
+          padding: 0.5rem 1rem !important;
+          color: #e2e8f0 !important;
+        }
+
+        .PhoneInputCountrySelect__option:hover,
+        .PhoneInputCountrySelect__option--focused {
+          background-color: #2d3748 !important;
+        }
+
+        .PhoneInputCountrySelect__option--selected {
+          background-color: #4f46e5 !important;
+          color: white !important;
+        }
+      `}</style>
+      <style jsx global>{fadeInAnimation}</style>
+      <div className="fixed inset-0 bg-gray-900 flex flex-col">
+        <div className="py-3 px-4 flex items-center justify-between">
+          {/* Empty spacer to balance the title */}
+          <div className="w-10"></div>
+          <div className="flex flex-col items-center">
+            <h1 className="text-app-title text-center">Profile</h1>
+          </div>
+          {/* Empty spacer to balance the title */}
+          <div className="w-10"></div>
+        </div>
+
+        {/* Message display */}
+        {message && (
+          <div
+            className={`fixed top-16 left-0 right-0 mx-auto max-w-md z-50 p-3 rounded-lg shadow-lg ${
+              message.type === 'success'
+                ? 'bg-green-900/50 text-green-200 backdrop-blur-sm'
+                : 'bg-red-900/50 text-red-200 backdrop-blur-sm'
+            }`}
           >
-            ✕
-          </button>
-        </div>
-      )}
+            {message.text}
+            <button
+              className="float-right text-sm opacity-70 hover:opacity-100"
+              onClick={() => setMessage(null)}
+            >
+              ✕
+            </button>
+          </div>
+        )}
 
-      <div className="h-screen overflow-y-auto">
-        <div
-          className={`max-w-md mx-auto px-4 py-6 ${isEditing ? 'pb-24' : ''}`}
-        >
-          <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-xl ring-1 ring-gray-700/50 p-6 mb-6">
-            <div className="flex flex-col items-center mb-6">
-              {/* Profile Image Section START */}
-              <div className="relative mx-auto w-32 h-32 mb-4">
-                {isEditing ? (
-                  <>
-                    <input
-                      type="file"
-                      id="profile-upload"
-                      onChange={handleFileChange}
-                      accept="image/*"
-                      className="hidden"
-                    />
-                    <label
-                      htmlFor="profile-upload"
-                      className="cursor-pointer block relative w-full h-full rounded-full overflow-hidden border-2 border-indigo-600"
+        <div className="h-screen overflow-y-auto">
+          <div
+            ref={topRef}
+            className={`max-w-md mx-auto px-4 py-6 ${isEditing ? 'pb-24' : ''}`}
+          >
+            <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-xl ring-1 ring-gray-700/50 p-6 mb-6">
+              <div className="flex flex-col items-center mb-6 relative">
+                {/* Edit button - only visible when not in edit mode */}
+                {!isEditing && (
+                  <button 
+                    onClick={() => setIsEditing(true)}
+                    className="absolute top-0 right-0 bg-indigo-600 text-white p-2 rounded-full hover:bg-indigo-500 transition-colors"
+                    aria-label="Edit profile"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
                     >
-                      {previewURL ? (
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                      />
+                    </svg>
+                  </button>
+                )}
+                
+                {/* Profile Image Section START */}
+                <div className="relative mx-auto w-32 h-32 mb-4">
+                  {isEditing ? (
+                    <>
+                      <input
+                        type="file"
+                        id="profile-upload"
+                        onChange={handleFileChange}
+                        accept="image/*"
+                        className="hidden"
+                      />
+                      <label
+                        htmlFor="profile-upload"
+                        className="cursor-pointer block relative w-full h-full rounded-full overflow-hidden border-2 border-indigo-600"
+                      >
+                        {previewURL ? (
+                          <img
+                            src={previewURL}
+                            alt="Profile Preview"
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-gray-700 flex items-center justify-center text-white">
+                            <span>Add Photo</span>
+                          </div>
+                        )}
+                        <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center">
+                          <div className="bg-indigo-600 rounded-full p-2">
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="h-6 w-6 text-white"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M12 4v16m8-8H4"
+                              />
+                            </svg>
+                          </div>
+                        </div>
+                      </label>
+                    </>
+                  ) : (
+                    <div
+                      onClick={() => handleEdit('profilePhoto')}
+                      className="cursor-pointer relative w-full h-full rounded-full overflow-hidden"
+                    >
+                      {photoURL ? (
                         <img
-                          src={previewURL}
-                          alt="Profile Preview"
+                          src={photoURL}
+                          alt="Profile"
                           className="w-full h-full object-cover"
                         />
                       ) : (
                         <div className="w-full h-full bg-gray-700 flex items-center justify-center text-white">
-                          <span>Add Photo</span>
+                          <span>No Photo</span>
                         </div>
                       )}
-                      <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center">
-                        <div className="bg-indigo-600 rounded-full p-2">
+                      <div className="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-30 flex items-center justify-center transition-all duration-200">
+                        <div className="bg-indigo-600 rounded-full p-2 opacity-0 hover:opacity-100 transition-opacity duration-200">
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             className="h-6 w-6 text-white"
@@ -1154,943 +1385,423 @@ export default function ProfilePage() {
                           </svg>
                         </div>
                       </div>
-                    </label>
-                  </>
-                ) :
-                  <div
-                    onClick={() => handleEdit('profilePhoto')}
-                    className="cursor-pointer relative w-full h-full rounded-full overflow-hidden"
-                  >
-                    {photoURL ? (
-                      <img
-                        src={photoURL}
-                        alt="Profile"
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <div className="w-full h-full bg-gray-700 flex items-center justify-center text-white">
-                        <span>No Photo</span>
-                      </div>
-                    )}
-                    <div className="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-30 flex items-center justify-center transition-all duration-200">
-                      <div className="bg-indigo-600 rounded-full p-2 opacity-0 hover:opacity-100 transition-opacity duration-200">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="h-6 w-6 text-white"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M12 4v16m8-8H4"
-                          />
-                        </svg>
-                      </div>
                     </div>
-                  </div>
-                }
+                  )}
+                </div>
+                <p className="text-center text-gray-400">{user?.email}</p>
               </div>
-              <p className="text-center text-gray-400">{user?.email}</p>
-            </div>
 
-            <div className="w-full text-left">
-              <div className="">
-                {/* General Section START */}
-                <div>
-                  <div
-                    className="flex justify-between items-center cursor-pointer hover:bg-gray-700/30 py-4 rounded-lg transition-colors"
-                    onClick={() => setGeneralExpanded(!generalExpanded)}
-                    data-section="general"
-                  >
-                    <h3 className="text-indigo-400 font-semibold">General</h3>
-                    <div className="text-gray-400 hover:text-white">
-                      {generalExpanded ? (
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="24"
-                          height="24"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        >
-                          <polyline points="6 9 12 15 18 9"></polyline>
-                        </svg>
-                      ) : (
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="24"
-                          height="24"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        >
-                          <polyline points="9 18 15 12 9 6"></polyline>
-                        </svg>
-                      )}
+              <div className="w-full text-left">
+                <div className="">
+                  {/* General Section START */}
+                  <div>
+                    <div
+                      className="flex justify-between items-center cursor-pointer hover:bg-gray-700/30 py-4 rounded-lg transition-colors"
+                      onClick={() => setGeneralExpanded(!generalExpanded)}
+                      data-section="general"
+                    >
+                      <div className="flex items-center">
+                        <div className="mr-3 text-indigo-400">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                          </svg>
+                        </div>
+                        <h3 className="text-white font-semibold flex items-center">
+                          General
+                          {displayName && phone && dateOfBirth && (
+                            <svg className="ml-2 h-4 w-4 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                            </svg>
+                          )}
+                        </h3>
+                      </div>
+                      <div className="text-gray-400 hover:text-white">
+                        {generalExpanded ? <ExpandedIcon /> : <CollapsedIcon />}
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                {/* General section content */}
-                {generalExpanded && (
-                  <div className="space-y-4">
-                    {/* Name */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-400 mb-1 text-left">
-                        Name
-                      </label>
-                      {isEditing ? (
-                        <input
-                          type="text"
-                          value={displayName}
-                          onChange={(e) => setDisplayName(e.target.value)}
-                          className="w-full bg-gray-700 border border-gray-600 rounded-lg py-2 px-3 text-white"
-                        />
-                      ) : (
-                        <p
-                          className="text-white cursor-pointer hover:text-indigo-400 transition-colors text-left"
-                          onClick={() => handleEdit('displayName')}
-                        >
-                          {displayName || 'Not set'}
-                        </p>
-                      )}
-                    </div>
-
-                    {/* Phone */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-400 mb-1 text-left">
-                        Phone
-                      </label>
-                      {isEditing ? (
-                        <div className="phone-input-container">
-                          <style jsx>{`
-                            .phone-input-container :global(.PhoneInput) {
-                              display: flex;
-                              align-items: stretch;
-                              border-radius: 0.5rem;
-                              overflow: hidden;
-                              background-color: #2d3748;
-                              border: ${!phoneValid
-                                ? '1px solid #EF4444'
-                                : '1px solid #4a5568'};
-                              height: 42px;
-                            }
-
-                            .phone-input-container :global(.PhoneInputCountry) {
-                              display: flex;
-                              align-items: center;
-                              padding: 0 0.5rem 0 0.75rem;
-                              background-color: #2d3748;
-                              border-right: 1px solid #4a5568;
-                              min-width: 80px;
-                              position: relative;
-                            }
-
-                            .phone-input-container
-                              :global(.PhoneInputCountryIcon) {
-                              margin-right: 0.5rem;
-                            }
-
-                            .phone-input-container
-                              :global(.PhoneInputCountrySelectArrow) {
-                              border-style: solid;
-                              border-width: 0.35em 0.35em 0 0.35em;
-                              border-color: #a0aec0 transparent transparent
-                                transparent;
-                              margin-left: 0.5rem;
-                              transform: rotate(
-                                0deg
-                              ); /* Ensure arrow points downward */
-                            }
-
-                            /* Add rotation for when the dropdown is open */
-                            .phone-input-container
-                              :global(
-                                .PhoneInputCountrySelect[aria-expanded='true']
-                                  + .PhoneInputCountrySelectArrow
-                              ) {
-                              transform: rotate(180deg);
-                            }
-
-                            .phone-input-container :global(.PhoneInputInput) {
-                              flex: 1;
-                              min-width: 0;
-                              background-color: #2d3748;
-                              color: white;
-                              border: none;
-                              padding: 0.5rem 0.75rem;
-                              font-size: 1rem;
-                              outline: none;
-                            }
-
-                            .phone-input-container
-                              :global(.PhoneInputInput:focus) {
-                              outline: none;
-                            }
-
-                            /* Make sure dropdown appears above other elements */
-                            :global(body .PhoneInputCountrySelect-menuOpen) {
-                              background-color: #1a202c !important;
-                              border: 1px solid #4a5568 !important;
-                              border-radius: 0.375rem !important;
-                              box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3) !important;
-                              margin-top: 4px !important;
-                              z-index: 9999 !important;
-                              position: absolute !important;
-                              max-height: 300px !important;
-                              overflow-y: auto !important;
-                            }
-
-                            :global(.PhoneInputCountrySelect__option) {
-                              padding: 0.5rem 1rem !important;
-                              color: #e2e8f0 !important;
-                            }
-
-                            :global(.PhoneInputCountrySelect__option:hover),
-                            :global(.PhoneInputCountrySelect__option--focused) {
-                              background-color: #2d3748 !important;
-                            }
-
-                            :global(
-                                .PhoneInputCountrySelect__option--selected
-                              ) {
-                              background-color: #4f46e5 !important;
-                              color: white !important;
-                            }
-                          `}</style>
-                          <div>
-                            <PhoneInput
-                              international
-                              defaultCountry="NO"
-                              value={phone}
-                              onChange={handlePhoneChange}
-                              countryCallingCodeEditable={false}
-                              withCountryCallingCode
-                              addInternationalOption={false}
-                              focusInputOnCountrySelection
-                            />
-                          </div>
-                          {!phoneValid && (
-                            <p className="text-red-400 text-sm mt-1">
-                              {phoneError}
-                            </p>
-                          )}
-                        </div>
-                      ) : (
-                        <p
-                          className="text-white cursor-pointer hover:text-indigo-400 transition-colors text-left"
-                          onClick={() => setIsEditing(true)}
-                        >
-                          {phone || 'Not set'}
-                        </p>
-                      )}
-                    </div>
-
-                    {/* Date of Birth */}
-                    <div className="pb-4">
-                      <label className="block text-sm font-medium text-gray-400 mb-1 text-left">
-                        Date of Birth
-                      </label>
-                      {editingField === 'dateOfBirth' ? (
-                        <div>
+                  {/* General section content */}
+                  {generalExpanded && (
+                    <div className="space-y-4" style={sectionContentStyle}>
+                      {/* Name */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-400 mb-1 text-left">
+                          Name
+                        </label>
+                        {isEditing ? (
                           <input
-                            type="date"
-                            value={dateOfBirth}
-                            onChange={(e) => {
-                              setDateOfBirth(e.target.value);
-                              markAsDirty();
-                              // No auto-save, just mark as dirty and wait for Save button
-                            }}
-                            className="w-full bg-gray-700 border border-gray-600 rounded-lg py-2 px-3 text-white [color-scheme:dark]"
-                            max={new Date().toISOString().split('T')[0]}
-                            style={{ colorScheme: 'dark' }}
-                            onBlur={() => setEditingField(null)}
+                            type="text"
+                            value={displayName}
+                            onChange={(e) => setDisplayName(e.target.value)}
+                            className="w-full bg-gray-700 border border-gray-600 rounded-lg py-2 px-3 text-white"
                           />
-                        </div>
-                      ) : (
-                        <p
-                          className="text-white cursor-pointer hover:text-indigo-400 transition-colors text-left"
-                          onClick={() => handleEdit('dateOfBirth')}
-                        >
-                          {dateOfBirth
-                            ? new Date(dateOfBirth).toLocaleDateString()
-                            : 'Not set'}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                )}
-                {/* General Section END */}
+                        ) : (
+                          <p
+                            className="text-white cursor-pointer hover:text-indigo-400 transition-colors text-left"
+                            onClick={() => handleEdit('displayName')}
+                          >
+                            {displayName || 'Not set'}
+                          </p>
+                        )}
+                      </div>
 
-                {/* Health Basics Section START */}
-                <div className="border-t border-gray-700 my-6 pt-2">
-                  <div
-                    className="flex justify-between items-center mb-4 cursor-pointer hover:bg-gray-700/30 p-2 rounded-lg transition-colors"
-                    onClick={() =>
-                      setHealthBasicsExpanded(!healthBasicsExpanded)
-                    }
-                    data-section="healthBasics"
-                  >
-                    <h3 className="text-indigo-400 font-semibold">
-                      Health Basics
-                    </h3>
-                    <div className="text-gray-400 hover:text-white">
-                      {healthBasicsExpanded ? (
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="24"
-                          height="24"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        >
-                          <polyline points="6 9 12 15 18 9"></polyline>
-                        </svg>
-                      ) : (
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="24"
-                          height="24"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        >
-                          <polyline points="9 18 15 12 9 6"></polyline>
-                        </svg>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Health Basics content */}
-                {healthBasicsExpanded && (
-                  <div className="space-y-4">
-                    {/* Height */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-400 mb-1 text-left">
-                        Height
-                      </label>
-                      {isEditing ? (
-                        <input
-                          type="number"
-                          value={userHeight}
-                          onChange={(e) => setUserHeight(e.target.value)}
-                          className="w-full bg-gray-700 border border-gray-600 rounded-lg py-2 px-3 text-white"
-                          min="50"
-                          max="250"
-                        />
-                      ) : (
-                        <p
-                          className="text-white cursor-pointer hover:text-indigo-400 transition-colors text-left"
-                          onClick={() => handleEdit('userHeight')}
-                        >
-                          {userHeight || 'Not set'}
-                        </p>
-                      )}
-                    </div>
-
-                    {/* Weight */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-400 mb-1 text-left">
-                        Weight
-                      </label>
-                      {isEditing ? (
-                        <input
-                          type="number"
-                          value={weight}
-                          onChange={(e) => setWeight(e.target.value)}
-                          className="w-full bg-gray-700 border border-gray-600 rounded-lg py-2 px-3 text-white"
-                          min="20"
-                          max="300"
-                          step="0.1"
-                        />
-                      ) : (
-                        <p
-                          className="text-white cursor-pointer hover:text-indigo-400 transition-colors text-left"
-                          onClick={() => handleEdit('weight')}
-                        >
-                          {weight || 'Not set'}
-                        </p>
-                      )}
-                    </div>
-
-                    {/* Gender */}
-                    <div className="pb-4">
-                      <label className="block text-sm font-medium text-gray-400 mb-1 text-left">
-                        Gender
-                      </label>
-                      {isEditing ? (
-                        <select
-                          value={gender}
-                          onChange={(e) => setGender(e.target.value)}
-                          className="w-full bg-gray-700 border border-gray-600 rounded-lg py-2 px-3 text-white"
-                        >
-                          <option value="">Select Gender</option>
-                          <option value="male">Male</option>
-                          <option value="female">Female</option>
-                          <option value="non-binary">Non-binary</option>
-                          <option value="prefer-not-to-say">
-                            Prefer not to say
-                          </option>
-                        </select>
-                      ) : (
-                        <p
-                          className="text-white cursor-pointer hover:text-indigo-400 transition-colors text-left capitalize"
-                          onClick={() => handleEdit('gender')}
-                        >
-                          {gender || 'Not set'}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                )}
-                {/* Health Basics Section END */}
-
-                {/* Medical Background Section START */}
-                <div className="border-t border-gray-700 my-6 pt-2">
-                  <div
-                    className="flex justify-between items-center mb-4 cursor-pointer hover:bg-gray-700/30 p-2 rounded-lg transition-colors"
-                    onClick={() =>
-                      setMedicalBackgroundExpanded(!medicalBackgroundExpanded)
-                    }
-                    data-section="medicalBackground"
-                  >
-                    <h3 className="text-indigo-400 font-semibold">
-                      Medical Background
-                    </h3>
-                    <div className="text-gray-400 hover:text-white">
-                      {medicalBackgroundExpanded ? (
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="24"
-                          height="24"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        >
-                          <polyline points="6 9 12 15 18 9"></polyline>
-                        </svg>
-                      ) : (
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="24"
-                          height="24"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        >
-                          <polyline points="9 18 15 12 9 6"></polyline>
-                        </svg>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Medical Background content */}
-                {medicalBackgroundExpanded && (
-                  <div className="space-y-4">
-                    {/* Medical Conditions */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-400 mb-1 text-left">
-                        Medical Conditions
-                      </label>
-                      {isEditing ? (
-                        <textarea
-                          value={medicalConditions.join(', ')}
-                          onChange={(e) =>
-                            setMedicalConditions(
-                              e.target.value
-                                .split(',')
-                                .map((item) => item.trim())
-                                .filter(Boolean)
-                            )
-                          }
-                          className="w-full bg-gray-700 border border-gray-600 rounded-lg py-2 px-3 text-white resize-none h-20"
-                          placeholder="Separate with commas (e.g., Diabetes, Hypertension)"
-                        />
-                      ) : (
-                        <p
-                          className="text-white cursor-pointer hover:text-indigo-400 transition-colors text-left"
-                          onClick={() => handleEdit('medicalConditions')}
-                        >
-                          {medicalConditions.length > 0
-                            ? medicalConditions.join(', ')
-                            : 'None'}
-                        </p>
-                      )}
-                    </div>
-
-                    {/* Medications */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-400 mb-1 text-left">
-                        Medications
-                      </label>
-                      {isEditing ? (
-                        <textarea
-                          value={medications.join(', ')}
-                          onChange={(e) =>
-                            setMedications(
-                              e.target.value
-                                .split(',')
-                                .map((item) => item.trim())
-                                .filter(Boolean)
-                            )
-                          }
-                          className="w-full bg-gray-700 border border-gray-600 rounded-lg py-2 px-3 text-white resize-none h-20"
-                          placeholder="Separate with commas (e.g., Aspirin, Metformin)"
-                        />
-                      ) : (
-                        <p
-                          className="text-white cursor-pointer hover:text-indigo-400 transition-colors text-left"
-                          onClick={() => handleEdit('medications')}
-                        >
-                          {medications.length > 0 ? medications.join(', ') : 'None'}
-                        </p>
-                      )}
-                    </div>
-
-                    {/* Previous Injuries */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-400 mb-1 text-left">
-                        Injuries
-                      </label>
-                      {isEditing ? (
-                        <textarea
-                          value={injuries.join(', ')}
-                          onChange={(e) =>
-                            setInjuries(
-                              e.target.value
-                                .split(',')
-                                .map((item) => item.trim())
-                                .filter(Boolean)
-                            )
-                          }
-                          className="w-full bg-gray-700 border border-gray-600 rounded-lg py-2 px-3 text-white resize-none h-20"
-                          placeholder="Separate with commas (e.g., ACL tear 2018, Shoulder surgery 2020)"
-                        />
-                      ) : (
-                        <p
-                          className="text-white cursor-pointer hover:text-indigo-400 transition-colors text-left"
-                          onClick={() => handleEdit('injuries')}
-                        >
-                          {injuries.length > 0 ? injuries.join(', ') : 'None'}
-                        </p>
-                      )}
-                    </div>
-
-                    {/* Painful Areas */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-400 mb-1 text-left">
-                        Painful Areas
-                      </label>
-                      {editingField === 'painfulAreas' ? (
-                        <div className="space-y-4">
-                          <div className="mb-4">
-                            <button
-                              type="button"
-                              onClick={() => setPainfulAreas([])}
-                              className={`w-full p-4 rounded-xl ${
-                                painfulAreas.length === 0
-                                  ? 'bg-green-500/10 ring-green-500 text-white'
-                                  : 'bg-gray-800 ring-gray-700 text-gray-400 hover:bg-gray-700'
-                              } ring-1 transition-all duration-200 text-left`}
-                            >
-                              No pain areas
-                            </button>
-                          </div>
-
-                          {painfulAreas.length > 0 && (
-                            <p className="text-gray-400 font-medium text-base mb-4">
-                              Select all that apply
-                            </p>
-                          )}
-
-                          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                            {PAIN_BODY_PARTS.map((part) => (
-                              <label
-                                key={part}
-                                className="relative flex items-center"
-                              >
-                                <input
-                                  type="checkbox"
-                                  value={part}
-                                  checked={painfulAreas.includes(part)}
-                                  onChange={(e) => {
-                                    const newPainfulAreas = e.target.checked
-                                      ? [...painfulAreas, part]
-                                      : painfulAreas.filter((p) => p !== part);
-                                    setPainfulAreas(newPainfulAreas);
-                                  }}
-                                  className="peer sr-only"
-                                />
-                                <div className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 text-gray-400 peer-checked:text-white peer-checked:bg-indigo-500/20 peer-checked:border-indigo-500 cursor-pointer transition-all duration-200">
-                                  <div className="font-medium">{part}</div>
-                                </div>
-                              </label>
-                            ))}
-                          </div>
-
-                          {/* Done button */}
-                          <div className="flex justify-end">
-                            <button
-                              onClick={() => setEditingField(null)}
-                              className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition-colors text-sm"
-                            >
-                              Done
-                            </button>
-                          </div>
-                        </div>
-                      ) : (
-                        <p
-                          className="text-white cursor-pointer hover:text-indigo-400 transition-colors text-left"
-                          onClick={() => handleEdit('painfulAreas')}
-                        >
-                          {painfulAreas.length > 0
-                            ? painfulAreas.join(', ')
-                            : 'No pain areas'}
-                        </p>
-                      )}
-                    </div>
-
-                    {/* Family Medical History */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-400 mb-1 text-left">
-                        Family Medical History
-                      </label>
-                      {isEditing ? (
-                        <textarea
-                          value={familyHistory.join(', ')}
-                          onChange={(e) =>
-                            setFamilyHistory(
-                              e.target.value
-                                .split(',')
-                                .map((item) => item.trim())
-                                .filter(Boolean)
-                            )
-                          }
-                          className="w-full bg-gray-700 border border-gray-600 rounded-lg py-2 px-3 text-white resize-none h-20"
-                          placeholder="Separate with commas (e.g., Heart disease, Diabetes)"
-                        />
-                      ) : (
-                        <p
-                          className="text-white cursor-pointer hover:text-indigo-400 transition-colors text-left"
-                          onClick={() => handleEdit('familyHistory')}
-                        >
-                          {familyHistory.length > 0
-                            ? familyHistory.join(', ')
-                            : 'Not set'}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                )}
-                {/* Medical Background Section END */}
-
-                {/* Fitness Profile Section START */}
-                <div className="border-t border-gray-700 my-6 pt-2">
-                  <div
-                    className="flex justify-between items-center mb-4 cursor-pointer hover:bg-gray-700/30 p-2 rounded-lg transition-colors"
-                    onClick={() =>
-                      setFitnessProfileExpanded(!fitnessProfileExpanded)
-                    }
-                    data-section="fitnessProfile"
-                  >
-                    <h3 className="text-indigo-400 font-semibold">
-                      Fitness Profile
-                    </h3>
-                    <div className="text-gray-400 hover:text-white">
-                      {fitnessProfileExpanded ? (
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="24"
-                          height="24"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        >
-                          <polyline points="6 9 12 15 18 9"></polyline>
-                        </svg>
-                      ) : (
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="24"
-                          height="24"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        >
-                          <polyline points="9 18 15 12 9 6"></polyline>
-                        </svg>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Fitness Profile content */}
-                {fitnessProfileExpanded && (
-                  <div className="space-y-4">
-                    {/* Fitness Level */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-400 mb-1 text-left">
-                        Fitness Level
-                      </label>
-                      {editingField === 'fitnessLevel' ? (
-                        <div className="space-y-4">
-                          <div className="grid grid-cols-1 gap-3">
-                            {FITNESS_LEVELS.map((level) => (
-                              <label
-                                key={level.name}
-                                className="relative flex items-center"
-                              >
-                                <input
-                                  type="radio"
-                                  name="fitnessLevel"
-                                  value={level.name}
-                                  checked={fitnessLevel === level.name}
-                                  onChange={(e) => {
-                                    setFitnessLevel(e.target.value);
-                                  }}
-                                  className="peer sr-only"
-                                />
-                                <div className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 text-gray-400 peer-checked:text-white peer-checked:bg-indigo-500/20 peer-checked:border-indigo-500 cursor-pointer transition-all duration-200">
-                                  <div className="font-medium capitalize">
-                                    {level.name}
-                                  </div>
-                                  <div className="text-sm mt-1 text-gray-500 peer-checked:text-gray-300">
-                                    {level.description}
-                                  </div>
-                                </div>
-                              </label>
-                            ))}
-                          </div>
-
-                          {/* Done button */}
-                          <div className="flex justify-end">
-                            <button
-                              onClick={() => setEditingField(null)}
-                              className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition-colors text-sm"
-                            >
-                              Done
-                            </button>
-                          </div>
-                        </div>
-                      ) : (
-                        <p
-                          className="text-white cursor-pointer hover:text-indigo-400 transition-colors text-left capitalize"
-                          onClick={() => handleEdit('fitnessLevel')}
-                        >
-                          {fitnessLevel || 'Not set'}
-                        </p>
-                      )}
-                    </div>
-
-                    {/* Exercise Frequency */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-400 mb-1 text-left">
-                        Exercise Frequency
-                      </label>
-                      {isEditing ? (
-                        <select
-                          value={exerciseFrequency}
-                          onChange={(e) => setExerciseFrequency(e.target.value)}
-                          className="w-full bg-gray-700 border border-gray-600 rounded-lg py-2 px-3 text-white"
-                        >
-                          <option value="">Select Frequency</option>
-                          {PLANNED_EXERCISE_FREQUENCY_OPTIONS.map(
-                            (frequency) => (
-                              <option key={frequency} value={frequency}>
-                                {frequency}
-                              </option>
-                            )
-                          )}
-                        </select>
-                      ) : (
-                        <p
-                          className="text-white cursor-pointer hover:text-indigo-400 transition-colors text-left"
-                          onClick={() => handleEdit('exerciseFrequency')}
-                        >
-                          {exerciseFrequency || 'Not set'}
-                        </p>
-                      )}
-                    </div>
-
-                    {/* Exercise Modalities */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-400 mb-1 text-left">
-                        Exercise Modalities
-                      </label>
-                      {editingField === 'exerciseModalities' ? (
-                        <div className="space-y-4">
-                          <div className="grid grid-cols-1 gap-3">
-                            {EXERCISE_MODALITIES.map((modality) => (
-                              <label
-                                key={modality.name}
-                                className="relative flex items-center"
-                              >
-                                <input
-                                  type="checkbox"
-                                  name="exerciseModalities"
-                                  value={modality.name}
-                                  checked={exerciseModalities.some(m => 
-                                    m.toLowerCase() === modality.name.toLowerCase()
-                                  )}
-                                  onChange={(e) => {
-                                    if (e.target.checked) {
-                                      setExerciseModalities([
-                                        ...exerciseModalities,
-                                        modality.name,
-                                      ]);
-                                    } else {
-                                      setExerciseModalities(
-                                        exerciseModalities.filter(
-                                          (m) => m.toLowerCase() !== modality.name.toLowerCase()
-                                        )
-                                      );
-                                    }
-                                  }}
-                                  className="peer sr-only"
-                                />
-                                <div className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 text-gray-400 peer-checked:text-white peer-checked:bg-indigo-500/20 peer-checked:border-indigo-500 cursor-pointer transition-all duration-200">
-                                  <div className="font-medium capitalize">
-                                    {modality.name}
-                                  </div>
-                                  <div className="text-sm mt-1 text-gray-500 peer-checked:text-gray-300">
-                                    {modality.description}
-                                  </div>
-                                </div>
-                              </label>
-                            ))}
-                          </div>
-
-                          {/* Done button */}
-                          <div className="flex justify-end">
-                            <button
-                              onClick={() => setEditingField(null)}
-                              className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition-colors text-sm"
-                            >
-                              Done
-                            </button>
-                          </div>
-                        </div>
-                      ) : (
-                        <p
-                          className="text-white cursor-pointer hover:text-indigo-400 transition-colors text-left capitalize"
-                          onClick={() => handleEdit('exerciseModalities')}
-                        >
-                          {exerciseModalities.length > 0
-                            ? exerciseModalities
-                                .map(
-                                  (m) => m.charAt(0).toUpperCase() + m.slice(1)
-                                )
-                                .join(', ')
-                            : 'Not set'}
-                        </p>
-                      )}
-                    </div>
-
-                    {/* Target Areas */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-400 mb-1 text-left">
-                        Target Body Areas
-                      </label>
-                      {editingField === 'targetAreas' ? (
-                        <div className="space-y-4">
-                          {/* Body Regions */}
-                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                            {['Full Body', 'Upper Body', 'Lower Body'].map(
-                              (region) => (
-                                <label
-                                  key={region}
-                                  className="relative flex items-center"
-                                >
-                                  <input
-                                    type="radio"
-                                    name="bodyRegion"
-                                    value={region}
-                                    checked={
-                                      region === 'Full Body'
-                                        ? targetAreas.length ===
-                                            TARGET_BODY_PARTS.length &&
-                                          TARGET_BODY_PARTS.every((part) =>
-                                            targetAreas.includes(part)
-                                          )
-                                        : region === 'Upper Body'
-                                        ? UPPER_BODY_PARTS.every((part) =>
-                                            targetAreas.includes(part)
-                                          ) &&
-                                          targetAreas.length ===
-                                            UPPER_BODY_PARTS.length
-                                        : region === 'Lower Body'
-                                        ? LOWER_BODY_PARTS.every((part) =>
-                                            targetAreas.includes(part)
-                                          ) &&
-                                          targetAreas.length ===
-                                            LOWER_BODY_PARTS.length
-                                        : false
-                                    }
-                                    onChange={(e) => {
-                                      if (e.target.checked) {
-                                        let newTargetAreas: string[] = [];
-                                        if (region === 'Full Body') {
-                                          newTargetAreas = [
-                                            ...TARGET_BODY_PARTS,
-                                          ];
-                                        } else if (region === 'Upper Body') {
-                                          newTargetAreas = [
-                                            ...UPPER_BODY_PARTS,
-                                          ];
-                                        } else if (region === 'Lower Body') {
-                                          newTargetAreas = [
-                                            ...LOWER_BODY_PARTS,
-                                          ];
-                                        }
-                                        setTargetAreas(newTargetAreas);
-                                      }
-                                    }}
-                                    className="peer sr-only"
-                                  />
-                                  <div className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 text-gray-400 peer-checked:text-white peer-checked:bg-indigo-500/20 peer-checked:border-indigo-500 cursor-pointer transition-all duration-200">
-                                    {region}
-                                  </div>
-                                </label>
-                              )
+                      {/* Phone */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-400 mb-1 text-left">
+                          Phone
+                        </label>
+                        {isEditing ? (
+                          <div className="phone-input-container">
+                            <div>
+                              <PhoneInput
+                                international
+                                defaultCountry="NO"
+                                value={phone}
+                                onChange={handlePhoneChange}
+                                countryCallingCodeEditable={false}
+                                withCountryCallingCode
+                                addInternationalOption={false}
+                                focusInputOnCountrySelection
+                              />
+                            </div>
+                            {!phoneValid && (
+                              <p className="text-red-400 text-sm mt-1">
+                                {phoneError}
+                              </p>
                             )}
                           </div>
+                        ) : (
+                          <p
+                            className="text-white cursor-pointer hover:text-indigo-400 transition-colors text-left"
+                            onClick={() => setIsEditing(true)}
+                          >
+                            {phone || 'Not set'}
+                          </p>
+                        )}
+                      </div>
 
-                          {/* Individual Body Parts */}
+                      {/* Date of Birth */}
+                      <div className="pb-4">
+                        <label className="block text-sm font-medium text-gray-400 mb-1 text-left">
+                          Date of Birth
+                        </label>
+                        {editingField === 'dateOfBirth' ? (
                           <div>
-                            <p className="text-gray-400 text-sm mb-3">
-                              Or select specific areas:
-                            </p>
+                            <input
+                              type="date"
+                              value={dateOfBirth}
+                              onChange={(e) => {
+                                setDateOfBirth(e.target.value);
+                                markAsDirty();
+                                // No auto-save, just mark as dirty and wait for Save button
+                              }}
+                              className="w-full bg-gray-700 border border-gray-600 rounded-lg py-2 px-3 text-white [color-scheme:dark]"
+                              max={new Date().toISOString().split('T')[0]}
+                              style={{ colorScheme: 'dark' }}
+                              onBlur={() => setEditingField(null)}
+                            />
+                          </div>
+                        ) : (
+                          <p
+                            className="text-white cursor-pointer hover:text-indigo-400 transition-colors text-left"
+                            onClick={() => handleEdit('dateOfBirth')}
+                          >
+                            {dateOfBirth
+                              ? new Date(dateOfBirth).toLocaleDateString()
+                              : 'Not set'}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                  {/* General Section END */}
+
+                  {/* Health Basics Section START */}
+                  <div className="border-t border-gray-700">
+                    <div
+                      className="flex justify-between items-center cursor-pointer hover:bg-gray-700/30 py-4 rounded-lg transition-colors"
+                      onClick={() =>
+                        setHealthBasicsExpanded(!healthBasicsExpanded)
+                      }
+                      data-section="healthBasics"
+                    >
+                      <div className="flex items-center">
+                        <div className="mr-3 text-indigo-400">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M10 3a1 1 0 00-.707.293l-4 4a1 1 0 01-1.414-1.414l4-4A3 3 0 0110 1a3 3 0 012.12.879l4 4a1 1 0 01-1.414 1.414l-4-4A1 1 0 0010 3zm0 9a1 1 0 01.707.293l4 4a1 1 0 01-1.414 1.414l-4-4a1 1 0 01-.707-.293 1 1 0 010-1.414l4-4a1 1 0 111.414 1.414l-4 4A1 1 0 0110 12z" clipRule="evenodd" />
+                          </svg>
+                        </div>
+                        <h3 className="text-white font-semibold flex items-center">
+                          Health Basics
+                          {userHeight && weight && gender && (
+                            <svg className="ml-2 h-4 w-4 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                            </svg>
+                          )}
+                        </h3>
+                      </div>
+                      <div className="text-gray-400 hover:text-white">
+                        {healthBasicsExpanded ? (
+                          <ExpandedIcon />
+                        ) : (
+                          <CollapsedIcon />
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Health Basics content */}
+                  {healthBasicsExpanded && (
+                    <div className="space-y-4" style={sectionContentStyle}>
+                      {/* Height */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-400 mb-1 text-left">
+                          Height (cm)
+                        </label>
+                        {isEditing ? (
+                          <div className="relative">
+                            <input
+                              type="number"
+                              value={userHeight}
+                              onChange={(e) => setUserHeight(e.target.value)}
+                              className="w-full bg-gray-700 border border-gray-600 rounded-lg py-2 px-3 pr-10 text-white"
+                              min="50"
+                              max="250"
+                            />
+                            <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-400">
+                              cm
+                            </div>
+                          </div>
+                        ) : (
+                          <p
+                            className="text-white cursor-pointer hover:text-indigo-400 transition-colors text-left"
+                            onClick={() => handleEdit('userHeight')}
+                          >
+                            {userHeight ? `${userHeight} cm` : 'Not set'}
+                          </p>
+                        )}
+                      </div>
+
+                      {/* Weight */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-400 mb-1 text-left">
+                          Weight (kg)
+                        </label>
+                        {isEditing ? (
+                          <div className="relative">
+                            <input
+                              type="number"
+                              value={weight}
+                              onChange={(e) => setWeight(e.target.value)}
+                              className="w-full bg-gray-700 border border-gray-600 rounded-lg py-2 px-3 pr-10 text-white"
+                              min="20"
+                              max="300"
+                              step="0.1"
+                            />
+                            <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-400">
+                              kg
+                            </div>
+                          </div>
+                        ) : (
+                          <p
+                            className="text-white cursor-pointer hover:text-indigo-400 transition-colors text-left"
+                            onClick={() => handleEdit('weight')}
+                          >
+                            {weight ? `${weight} kg` : 'Not set'}
+                          </p>
+                        )}
+                      </div>
+
+                      {/* Gender */}
+                      <div className="pb-4">
+                        <label className="block text-sm font-medium text-gray-400 mb-1 text-left">
+                          Gender
+                        </label>
+                        {isEditing ? (
+                          <select
+                            value={gender}
+                            onChange={(e) => setGender(e.target.value)}
+                            className="w-full bg-gray-700 border border-gray-600 rounded-lg py-2 px-3 text-white"
+                          >
+                            <option value="">Select Gender</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                            <option value="non-binary">Non-binary</option>
+                            <option value="prefer-not-to-say">
+                              Prefer not to say
+                            </option>
+                          </select>
+                        ) : (
+                          <p
+                            className="text-white cursor-pointer hover:text-indigo-400 transition-colors text-left capitalize"
+                            onClick={() => handleEdit('gender')}
+                          >
+                            {gender || 'Not set'}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                  {/* Health Basics Section END */}
+
+                  {/* Medical Background Section START */}
+                  <div className="border-t border-gray-700">
+                    <div
+                      className="flex justify-between items-center cursor-pointer hover:bg-gray-700/30 py-4 rounded-lg transition-colors"
+                      onClick={() =>
+                        setMedicalBackgroundExpanded(!medicalBackgroundExpanded)
+                      }
+                      data-section="medicalBackground"
+                    >
+                      <div className="flex items-center">
+                        <div className="mr-3 text-indigo-400">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M3 5a2 2 0 012-2h10a2 2 0 012 2v8a2 2 0 01-2 2h-2.22l.123.489.804.804A1 1 0 0113 18H7a1 1 0 01-.707-1.707l.804-.804L7.22 15H5a2 2 0 01-2-2V5zm5.771 7H5V5h10v7H8.771z" clipRule="evenodd" />
+                          </svg>
+                        </div>
+                        <h3 className="text-white font-semibold flex items-center">
+                          Medical Background
+                          {medicalConditions.length > 0 && medications.length > 0 && injuries.length > 0 && familyHistory.length > 0 && (
+                            <svg className="ml-2 h-4 w-4 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                            </svg>
+                          )}
+                        </h3>
+                      </div>
+                      <div className="text-gray-400 hover:text-white">
+                        {medicalBackgroundExpanded ? (
+                          <ExpandedIcon />
+                        ) : (
+                          <CollapsedIcon />
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Medical Background content */}
+                  {medicalBackgroundExpanded && (
+                    <div className="space-y-4" style={sectionContentStyle}>
+                      {/* Medical Conditions */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-400 mb-1 text-left">
+                          Medical Conditions
+                        </label>
+                        {isEditing ? (
+                          <textarea
+                            value={medicalConditions.join(', ')}
+                            onChange={(e) =>
+                              setMedicalConditions(
+                                e.target.value
+                                  .split(',')
+                                  .map((item) => item.trim())
+                                  .filter(Boolean)
+                              )
+                            }
+                            className="w-full bg-gray-700 border border-gray-600 rounded-lg py-2 px-3 text-white resize-none h-20"
+                            placeholder="Separate with commas (e.g., Diabetes, Hypertension)"
+                          />
+                        ) : (
+                          <p
+                            className="text-white cursor-pointer hover:text-indigo-400 transition-colors text-left"
+                            onClick={() => handleEdit('medicalConditions')}
+                          >
+                            {medicalConditions.length > 0
+                              ? medicalConditions.join(', ')
+                              : 'None'}
+                          </p>
+                        )}
+                      </div>
+
+                      {/* Medications */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-400 mb-1 text-left">
+                          Medications
+                        </label>
+                        {isEditing ? (
+                          <textarea
+                            value={medications.join(', ')}
+                            onChange={(e) =>
+                              setMedications(
+                                e.target.value
+                                  .split(',')
+                                  .map((item) => item.trim())
+                                  .filter(Boolean)
+                              )
+                            }
+                            className="w-full bg-gray-700 border border-gray-600 rounded-lg py-2 px-3 text-white resize-none h-20"
+                            placeholder="Separate with commas (e.g., Aspirin, Metformin)"
+                          />
+                        ) : (
+                          <p
+                            className="text-white cursor-pointer hover:text-indigo-400 transition-colors text-left"
+                            onClick={() => handleEdit('medications')}
+                          >
+                            {medications.length > 0
+                              ? medications.join(', ')
+                              : 'None'}
+                          </p>
+                        )}
+                      </div>
+
+                      {/* Previous Injuries */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-400 mb-1 text-left">
+                          Injuries
+                        </label>
+                        {isEditing ? (
+                          <textarea
+                            value={injuries.join(', ')}
+                            onChange={(e) =>
+                              setInjuries(
+                                e.target.value
+                                  .split(',')
+                                  .map((item) => item.trim())
+                                  .filter(Boolean)
+                              )
+                            }
+                            className="w-full bg-gray-700 border border-gray-600 rounded-lg py-2 px-3 text-white resize-none h-20"
+                            placeholder="Separate with commas (e.g., ACL tear 2018, Shoulder surgery 2020)"
+                          />
+                        ) : (
+                          <p
+                            className="text-white cursor-pointer hover:text-indigo-400 transition-colors text-left"
+                            onClick={() => handleEdit('injuries')}
+                          >
+                            {injuries.length > 0 ? injuries.join(', ') : 'None'}
+                          </p>
+                        )}
+                      </div>
+
+                      {/* Painful Areas */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-400 mb-1 text-left">
+                          Painful Areas
+                        </label>
+                        {editingField === 'painfulAreas' ? (
+                          <div className="space-y-4">
+                            <div className="mb-4">
+                              <button
+                                type="button"
+                                onClick={() => setPainfulAreas([])}
+                                className={`w-full p-4 rounded-xl ${
+                                  painfulAreas.length === 0
+                                    ? 'bg-green-500/10 ring-green-500 text-white'
+                                    : 'bg-gray-800 ring-gray-700 text-gray-400 hover:bg-gray-700'
+                                } ring-1 transition-all duration-200 text-left`}
+                              >
+                                No pain areas
+                              </button>
+                            </div>
+
+                            {painfulAreas.length > 0 && (
+                              <p className="text-gray-400 font-medium text-base mb-4">
+                                Select all that apply
+                              </p>
+                            )}
+
                             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                              {TARGET_BODY_PARTS.map((part) => (
+                              {PAIN_BODY_PARTS.map((part) => (
                                 <label
                                   key={part}
                                   className="relative flex items-center"
@@ -2098,646 +1809,938 @@ export default function ProfilePage() {
                                   <input
                                     type="checkbox"
                                     value={part}
-                                    checked={targetAreas.includes(part)}
+                                    checked={painfulAreas.includes(part)}
                                     onChange={(e) => {
-                                      const newTargetAreas = e.target.checked
-                                        ? [...targetAreas, part]
-                                        : targetAreas.filter((p) => p !== part);
-                                      setTargetAreas(newTargetAreas);
+                                      const newPainfulAreas = e.target.checked
+                                        ? [...painfulAreas, part]
+                                        : painfulAreas.filter((p) => p !== part);
+                                      setPainfulAreas(newPainfulAreas);
                                     }}
                                     className="peer sr-only"
                                   />
                                   <div className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 text-gray-400 peer-checked:text-white peer-checked:bg-indigo-500/20 peer-checked:border-indigo-500 cursor-pointer transition-all duration-200">
-                                    {part}
+                                    <div className="font-medium">{part}</div>
                                   </div>
                                 </label>
                               ))}
                             </div>
-                          </div>
 
-                          {/* Done button */}
-                          <div className="flex justify-end">
-                            <button
-                              onClick={() => setEditingField(null)}
-                              className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition-colors text-sm"
-                            >
-                              Done
-                            </button>
-                          </div>
-                        </div>
-                      ) : (
-                        <p
-                          className="text-white cursor-pointer hover:text-indigo-400 transition-colors text-left"
-                          onClick={() => handleEdit('targetAreas')}
-                        >
-                          {targetAreas.length === TARGET_BODY_PARTS.length
-                            ? 'Full Body'
-                            : UPPER_BODY_PARTS.every((part) =>
-                                targetAreas.includes(part)
-                              ) &&
-                              targetAreas.length === UPPER_BODY_PARTS.length
-                            ? 'Upper Body'
-                            : LOWER_BODY_PARTS.every((part) =>
-                                targetAreas.includes(part)
-                              ) &&
-                              targetAreas.length === LOWER_BODY_PARTS.length
-                            ? 'Lower Body'
-                            : targetAreas.length > 0
-                            ? targetAreas.join(', ')
-                            : 'Not set'}
-                        </p>
-                      )}
-                    </div>
-
-                    {/* Sleep Patterns */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-400 mb-1 text-left">
-                        Sleep Pattern
-                      </label>
-                      {isEditing ? (
-                        <select
-                          value={sleepPattern}
-                          onChange={(e) => setSleepPattern(e.target.value)}
-                          className="w-full bg-gray-700 border border-gray-600 rounded-lg py-2 px-3 text-white"
-                        >
-                          <option value="">Select Sleep Pattern</option>
-                          <option value="less-than-6">Less than 6 hours</option>
-                          <option value="6-7">6-7 hours</option>
-                          <option value="7-8">7-8 hours</option>
-                          <option value="more-than-8">More than 8 hours</option>
-                        </select>
-                      ) : (
-                        <p
-                          className="text-white cursor-pointer hover:text-indigo-400 transition-colors text-left"
-                          onClick={() => handleEdit('sleepPattern')}
-                        >
-                          {sleepPattern
-                            ? sleepPattern === 'less-than-6'
-                              ? 'Less than 6 hours'
-                              : sleepPattern === 'more-than-8'
-                              ? 'More than 8 hours'
-                              : `${sleepPattern} hours`
-                            : 'Not set'}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                )}
-                {/* Fitness Profile Section END */}
-
-                {/* Goals and Preferences Section START */}
-                <div className="border-t border-gray-700 my-6 pt-2">
-                  <div
-                    className="flex justify-between items-center mb-4 cursor-pointer hover:bg-gray-700/30 p-2 rounded-lg transition-colors"
-                    onClick={() =>
-                      setGoalsPreferencesExpanded(!goalsPreferencesExpanded)
-                    }
-                    data-section="goalsPreferences"
-                  >
-                    <h3 className="text-indigo-400 font-semibold">
-                      Goals & Preferences
-                    </h3>
-                    <div className="text-gray-400 hover:text-white">
-                      {goalsPreferencesExpanded ? (
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="24"
-                          height="24"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        >
-                          <polyline points="6 9 12 15 18 9"></polyline>
-                        </svg>
-                      ) : (
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="24"
-                          height="24"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        >
-                          <polyline points="9 18 15 12 9 6"></polyline>
-                        </svg>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Goals and Preferences content */}
-                {goalsPreferencesExpanded && (
-                  <div className="space-y-4">
-                    {/* Health Goals */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-400 mb-1 text-left">
-                        Health Goals
-                      </label>
-                      {editingField === 'healthGoals' ? (
-                        <div className="space-y-4">
-                          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                            {HEALTH_GOALS_OPTIONS.map((goal) => (
-                              <label
-                                key={goal}
-                                className="relative flex items-center"
-                              >
-                                <input
-                                  type="checkbox"
-                                  value={goal}
-                                  checked={healthGoals.includes(goal)}
-                                  onChange={(e) => {
-                                    const newHealthGoals = e.target.checked
-                                      ? [...healthGoals, goal]
-                                      : healthGoals.filter((g) => g !== goal);
-                                    setHealthGoals(newHealthGoals);
-                                  }}
-                                  className="peer sr-only"
-                                />
-                                <div className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 text-gray-400 peer-checked:text-white peer-checked:bg-indigo-500/20 peer-checked:border-indigo-500 cursor-pointer transition-all duration-200">
-                                  {goal}
-                                </div>
-                              </label>
-                            ))}
-                          </div>
-
-                          {/* Custom goal input */}
-                          <div>
-                            <p className="text-gray-400 text-sm mb-2">
-                              Add custom goal:
-                            </p>
-                            <div className="flex gap-2">
-                              <input
-                                type="text"
-                                id="custom-goal"
-                                placeholder="Enter custom goal"
-                                className="flex-1 bg-gray-700 border border-gray-600 rounded-lg py-2 px-3 text-white"
-                                onKeyDown={(e) => {
-                                  if (
-                                    e.key === 'Enter' &&
-                                    e.currentTarget.value.trim()
-                                  ) {
-                                    const customGoal =
-                                      e.currentTarget.value.trim();
-                                    if (!healthGoals.includes(customGoal)) {
-                                      setHealthGoals([
-                                        ...healthGoals,
-                                        customGoal,
-                                      ]);
-                                      e.currentTarget.value = '';
-                                    }
-                                  }
-                                }}
-                              />
+                            {/* Done button */}
+                            <div className="flex justify-end">
                               <button
-                                onClick={() => {
-                                  const customGoalInput =
-                                    document.getElementById(
-                                      'custom-goal'
-                                    ) as HTMLInputElement;
-                                  if (
-                                    customGoalInput &&
-                                    customGoalInput.value.trim()
-                                  ) {
-                                    const customGoal =
-                                      customGoalInput.value.trim();
-                                    if (!healthGoals.includes(customGoal)) {
-                                      setHealthGoals([
-                                        ...healthGoals,
-                                        customGoal,
-                                      ]);
-                                      customGoalInput.value = '';
-                                    }
-                                  }
-                                }}
-                                className="px-3 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition-colors text-sm"
+                                onClick={() => setEditingField(null)}
+                                className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition-colors text-sm"
                               >
-                                Add
+                                Done
                               </button>
                             </div>
                           </div>
+                        ) : (
+                          <p
+                            className="text-white cursor-pointer hover:text-indigo-400 transition-colors text-left"
+                            onClick={() => handleEdit('painfulAreas')}
+                          >
+                            {painfulAreas.length > 0
+                              ? painfulAreas.join(', ')
+                              : 'No pain areas'}
+                          </p>
+                        )}
+                      </div>
 
-                          {/* Done button */}
-                          <div className="flex justify-end">
-                            <button
-                              onClick={() => setEditingField(null)}
-                              className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition-colors text-sm"
-                            >
-                              Done
-                            </button>
-                          </div>
-                        </div>
-                      ) : (
-                        <p
-                          className="text-white cursor-pointer hover:text-indigo-400 transition-colors text-left"
-                          onClick={() => handleEdit('healthGoals')}
-                        >
-                          {healthGoals.length > 0
-                            ? healthGoals.join(', ')
-                            : 'Not set'}
-                        </p>
-                      )}
+                      {/* Family Medical History */}
+                      <div className="pb-4">
+                        <label className="block text-sm font-medium text-gray-400 mb-1 text-left">
+                          Family Medical History
+                        </label>
+                        {isEditing ? (
+                          <textarea
+                            value={familyHistory.join(', ')}
+                            onChange={(e) =>
+                              setFamilyHistory(
+                                e.target.value
+                                  .split(',')
+                                  .map((item) => item.trim())
+                                  .filter(Boolean)
+                              )
+                            }
+                            className="w-full bg-gray-700 border border-gray-600 rounded-lg py-2 px-3 text-white resize-none h-20"
+                            placeholder="Separate with commas (e.g., Heart disease, Diabetes)"
+                          />
+                        ) : (
+                          <p
+                            className="text-white cursor-pointer hover:text-indigo-400 transition-colors text-left"
+                            onClick={() => handleEdit('familyHistory')}
+                          >
+                            {familyHistory.length > 0
+                              ? familyHistory.join(', ')
+                              : 'Not set'}
+                          </p>
+                        )}
+                      </div>
                     </div>
+                  )}
+                  {/* Medical Background Section END */}
 
-                    {/* Exercise Environment */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-400 mb-1 text-left">
-                        Exercise Environment
-                      </label>
-                      {editingField === 'exerciseEnvironments' ? (
-                        <div className="space-y-4">
-                          <div className="grid grid-cols-1 gap-3">
-                            {EXERCISE_ENVIRONMENTS.map((environment) => (
-                              <label
-                                key={environment.name}
-                                className="relative flex items-center"
-                              >
-                                <input
-                                  type="radio"
-                                  name="exerciseEnvironments"
-                                  value={environment.name}
-                                  checked={
-                                    exerciseEnvironments === environment.name
-                                  }
-                                  onChange={(e) => {
-                                    setExerciseEnvironments(e.target.value);
-                                  }}
-                                  className="peer sr-only"
-                                />
-                                <div className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 text-gray-400 peer-checked:text-white peer-checked:bg-indigo-500/20 peer-checked:border-indigo-500 cursor-pointer transition-all duration-200">
-                                  <div className="font-medium">
-                                    {environment.name}
+                  {/* Fitness Profile Section START */}
+                  <div className="border-t border-gray-700">
+                    <div
+                      className="flex justify-between items-center cursor-pointer hover:bg-gray-700/30 py-4 rounded-lg transition-colors"
+                      onClick={() =>
+                        setFitnessProfileExpanded(!fitnessProfileExpanded)
+                      }
+                      data-section="fitnessProfile"
+                    >
+                      <div className="flex items-center">
+                        <div className="mr-3 text-indigo-400">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clipRule="evenodd" />
+                          </svg>
+                        </div>
+                        <h3 className="text-white font-semibold flex items-center">
+                          Fitness Profile
+                          {fitnessLevel && sleepPattern && exerciseFrequency && exerciseModalities.length > 0  && targetAreas.length > 0 && (
+                            <svg className="ml-2 h-4 w-4 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                            </svg>
+                          )}
+                        </h3>
+                      </div>
+                      <div className="text-gray-400 hover:text-white">
+                        {fitnessProfileExpanded ? (
+                          <ExpandedIcon />
+                        ) : (
+                          <CollapsedIcon />
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Fitness Profile content */}
+                  {fitnessProfileExpanded && (
+                    <div className="space-y-4" style={sectionContentStyle}>
+                      {/* Fitness Level */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-400 mb-1 text-left">
+                          Fitness Level
+                        </label>
+                        {editingField === 'fitnessLevel' ? (
+                          <div className="space-y-4">
+                            <div className="grid grid-cols-1 gap-3">
+                              {FITNESS_LEVELS.map((level) => (
+                                <label
+                                  key={level.name}
+                                  className="relative flex items-center"
+                                >
+                                  <input
+                                    type="radio"
+                                    name="fitnessLevel"
+                                    value={level.name}
+                                    checked={fitnessLevel === level.name}
+                                    onChange={(e) => {
+                                      setFitnessLevel(e.target.value);
+                                    }}
+                                    className="peer sr-only"
+                                  />
+                                  <div className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 text-gray-400 peer-checked:text-white peer-checked:bg-indigo-500/20 peer-checked:border-indigo-500 cursor-pointer transition-all duration-200">
+                                    <div className="font-medium capitalize">
+                                      {level.name}
+                                    </div>
+                                    <div className="text-sm mt-1 text-gray-500 peer-checked:text-gray-300">
+                                      {level.description}
+                                    </div>
                                   </div>
-                                  <div className="text-sm mt-1 text-gray-500 peer-checked:text-gray-300">
-                                    {environment.description}
-                                  </div>
-                                </div>
-                              </label>
-                            ))}
-                          </div>
+                                </label>
+                              ))}
+                            </div>
 
-                          {/* Done button */}
-                          <div className="flex justify-end">
-                            <button
-                              onClick={() => setEditingField(null)}
-                              className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition-colors text-sm"
-                            >
-                              Done
-                            </button>
-                          </div>
-                        </div>
-                      ) : (
-                        <p
-                          className="text-white cursor-pointer hover:text-indigo-400 transition-colors text-left"
-                          onClick={() => handleEdit('exerciseEnvironments')}
-                        >
-                          {exerciseEnvironments || 'Not set'}
-                        </p>
-                      )}
-                    </div>
-
-                    {/* Workout Duration */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-400 mb-1 text-left">
-                        Workout Duration
-                      </label>
-                      {editingField === 'workoutDuration' ? (
-                        <div className="space-y-4">
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            {WORKOUT_DURATIONS.map((duration) => (
-                              <label
-                                key={duration}
-                                className="relative flex items-center"
-                              >
-                                <input
-                                  type="radio"
-                                  name="workoutDuration"
-                                  value={duration}
-                                  checked={workoutDuration === duration}
-                                  onChange={(e) => {
-                                    setWorkoutDuration(e.target.value);
-                                  }}
-                                  className="peer sr-only"
-                                />
-                                <div className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 text-gray-400 peer-checked:text-white peer-checked:bg-indigo-500/20 peer-checked:border-indigo-500 cursor-pointer transition-all duration-200">
-                                  {duration}
-                                </div>
-                              </label>
-                            ))}
-                          </div>
-
-                          {/* Done button */}
-                          <div className="flex justify-end">
-                            <button
-                              onClick={() => setEditingField(null)}
-                              className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition-colors text-sm"
-                            >
-                              Done
-                            </button>
-                          </div>
-                        </div>
-                      ) : (
-                        <p
-                          className="text-white cursor-pointer hover:text-indigo-400 transition-colors text-left"
-                          onClick={() => handleEdit('workoutDuration')}
-                        >
-                          {workoutDuration || 'Not set'}
-                        </p>
-                      )}
-                    </div>
-
-                    {/* Dietary Preferences */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-400 mb-1 text-left">
-                        Dietary Preferences
-                      </label>
-                      {editingField === 'dietaryPreferences' ? (
-                        <div className="space-y-4">
-                          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                            {DIETARY_PREFERENCES_OPTIONS.map((diet) => (
-                              <label
-                                key={diet}
-                                className="relative flex items-center"
-                              >
-                                <input
-                                  type="checkbox"
-                                  name="dietaryPreference"
-                                  value={diet}
-                                  checked={dietaryPreferences.includes(diet)}
-                                  onChange={(e) => {
-                                    if (e.target.checked) {
-                                      // Add to selection
-                                      setDietaryPreferences([
-                                        ...dietaryPreferences,
-                                        diet,
-                                      ]);
-                                    } else {
-                                      // Remove from selection
-                                      setDietaryPreferences(
-                                        dietaryPreferences.filter(
-                                          (item) => item !== diet
-                                        )
-                                      );
-                                    }
-                                    markAsDirty();
-                                  }}
-                                  className="peer sr-only"
-                                />
-                                <div className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 text-gray-400 peer-checked:text-white peer-checked:bg-indigo-500/20 peer-checked:border-indigo-500 cursor-pointer transition-all duration-200">
-                                  {diet}
-                                </div>
-                              </label>
-                            ))}
-                          </div>
-
-                          {/* Custom diet input */}
-                          <div>
-                            <p className="text-gray-400 text-sm mb-2">
-                              Add custom diet:
-                            </p>
-                            <div className="flex gap-2">
-                              <input
-                                type="text"
-                                id="custom-diet"
-                                placeholder="Enter custom diet"
-                                className="flex-1 bg-gray-700 border border-gray-600 rounded-lg py-2 px-3 text-white"
-                                onKeyDown={(e) => {
-                                  if (
-                                    e.key === 'Enter' &&
-                                    e.currentTarget.value.trim()
-                                  ) {
-                                    const customDiet =
-                                      e.currentTarget.value.trim();
-                                    if (
-                                      !dietaryPreferences.includes(customDiet)
-                                    ) {
-                                      setDietaryPreferences([
-                                        ...dietaryPreferences,
-                                        customDiet,
-                                      ]);
-                                      markAsDirty();
-                                    }
-                                    e.currentTarget.value = '';
-                                  }
-                                }}
-                              />
+                            {/* Done button */}
+                            <div className="flex justify-end">
                               <button
-                                onClick={() => {
-                                  const customDietInput =
-                                    document.getElementById(
-                                      'custom-diet'
-                                    ) as HTMLInputElement;
-                                  if (
-                                    customDietInput &&
-                                    customDietInput.value.trim()
-                                  ) {
-                                    const customDiet =
-                                      customDietInput.value.trim();
-                                    if (
-                                      !dietaryPreferences.includes(customDiet)
-                                    ) {
-                                      setDietaryPreferences([
-                                        ...dietaryPreferences,
-                                        customDiet,
-                                      ]);
-                                      markAsDirty();
-                                    }
-                                    customDietInput.value = '';
-                                  }
-                                }}
-                                className="px-3 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition-colors text-sm"
+                                onClick={() => setEditingField(null)}
+                                className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition-colors text-sm"
                               >
-                                Add
+                                Done
                               </button>
                             </div>
                           </div>
+                        ) : (
+                          <p
+                            className="text-white cursor-pointer hover:text-indigo-400 transition-colors text-left capitalize"
+                            onClick={() => handleEdit('fitnessLevel')}
+                          >
+                            {fitnessLevel || 'Not set'}
+                          </p>
+                        )}
+                      </div>
 
-                          {/* Selected diets list with remove option */}
-                          {dietaryPreferences.length > 0 && (
-                            <div>
-                              <p className="text-gray-400 text-sm mb-2">
-                                Selected diets:
-                              </p>
-                              <div className="flex flex-wrap gap-2">
-                                {dietaryPreferences.map((diet, index) => (
-                                  <div
-                                    key={index}
-                                    className="flex items-center bg-indigo-500/20 border border-indigo-500 rounded-lg px-3 py-1"
-                                  >
-                                    <span className="text-white">{diet}</span>
-                                    <button
-                                      onClick={() => {
-                                        setDietaryPreferences(
-                                          dietaryPreferences.filter(
-                                            (_, i) => i !== index
+                      {/* Exercise Frequency */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-400 mb-1 text-left">
+                          Exercise Frequency
+                        </label>
+                        {isEditing ? (
+                          <select
+                            value={exerciseFrequency}
+                            onChange={(e) => setExerciseFrequency(e.target.value)}
+                            className="w-full bg-gray-700 border border-gray-600 rounded-lg py-2 px-3 text-white"
+                          >
+                            <option value="">Select Frequency</option>
+                            {PLANNED_EXERCISE_FREQUENCY_OPTIONS.map(
+                              (frequency) => (
+                                <option key={frequency} value={frequency}>
+                                  {frequency}
+                                </option>
+                              )
+                            )}
+                          </select>
+                        ) : (
+                          <p
+                            className="text-white cursor-pointer hover:text-indigo-400 transition-colors text-left"
+                            onClick={() => handleEdit('exerciseFrequency')}
+                          >
+                            {exerciseFrequency || 'Not set'}
+                          </p>
+                        )}
+                      </div>
+
+                      {/* Exercise Modalities */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-400 mb-1 text-left">
+                          Exercise Modalities
+                        </label>
+                        {editingField === 'exerciseModalities' ? (
+                          <div className="space-y-4">
+                            <div className="grid grid-cols-1 gap-3">
+                              {EXERCISE_MODALITIES.map((modality) => (
+                                <label
+                                  key={modality.name}
+                                  className="relative flex items-center"
+                                >
+                                  <input
+                                    type="checkbox"
+                                    name="exerciseModalities"
+                                    value={modality.name}
+                                    checked={exerciseModalities.some(
+                                      (m) =>
+                                        m.toLowerCase() ===
+                                        modality.name.toLowerCase()
+                                    )}
+                                    onChange={(e) => {
+                                      if (e.target.checked) {
+                                        setExerciseModalities([
+                                          ...exerciseModalities,
+                                          modality.name,
+                                        ]);
+                                      } else {
+                                        setExerciseModalities(
+                                          exerciseModalities.filter(
+                                            (m) =>
+                                              m.toLowerCase() !==
+                                              modality.name.toLowerCase()
                                           )
                                         );
-                                        markAsDirty();
-                                      }}
-                                      className="ml-2 text-gray-300 hover:text-white"
-                                    >
-                                      ✕
-                                    </button>
+                                      }
+                                    }}
+                                    className="peer sr-only"
+                                  />
+                                  <div className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 text-gray-400 peer-checked:text-white peer-checked:bg-indigo-500/20 peer-checked:border-indigo-500 cursor-pointer transition-all duration-200">
+                                    <div className="font-medium capitalize">
+                                      {modality.name}
+                                    </div>
+                                    <div className="text-sm mt-1 text-gray-500 peer-checked:text-gray-300">
+                                      {modality.description}
+                                    </div>
                                   </div>
+                                </label>
+                              ))}
+                            </div>
+
+                            {/* Done button */}
+                            <div className="flex justify-end">
+                              <button
+                                onClick={() => setEditingField(null)}
+                                className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition-colors text-sm"
+                              >
+                                Done
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
+                          <p
+                            className="text-white cursor-pointer hover:text-indigo-400 transition-colors text-left capitalize"
+                            onClick={() => handleEdit('exerciseModalities')}
+                          >
+                            {exerciseModalities.length > 0
+                              ? exerciseModalities
+                                  .map(
+                                    (m) => m.charAt(0).toUpperCase() + m.slice(1)
+                                  )
+                                  .join(', ')
+                              : 'Not set'}
+                          </p>
+                        )}
+                      </div>
+
+                      {/* Target Areas */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-400 mb-1 text-left">
+                          Target Body Areas
+                        </label>
+                        {editingField === 'targetAreas' ? (
+                          <div className="space-y-4">
+                            {/* Body Regions */}
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                              {['Full Body', 'Upper Body', 'Lower Body'].map(
+                                (region) => (
+                                  <label
+                                    key={region}
+                                    className="relative flex items-center"
+                                  >
+                                    <input
+                                      type="radio"
+                                      name="bodyRegion"
+                                      value={region}
+                                      checked={
+                                        region === 'Full Body'
+                                          ? targetAreas.length ===
+                                              TARGET_BODY_PARTS.length &&
+                                            TARGET_BODY_PARTS.every((part) =>
+                                              targetAreas.includes(part)
+                                            )
+                                          : region === 'Upper Body'
+                                          ? UPPER_BODY_PARTS.every((part) =>
+                                              targetAreas.includes(part)
+                                            ) &&
+                                            targetAreas.length ===
+                                              UPPER_BODY_PARTS.length
+                                          : region === 'Lower Body'
+                                          ? LOWER_BODY_PARTS.every((part) =>
+                                              targetAreas.includes(part)
+                                            ) &&
+                                            targetAreas.length ===
+                                              LOWER_BODY_PARTS.length
+                                          : false
+                                      }
+                                      onChange={(e) => {
+                                        if (e.target.checked) {
+                                          let newTargetAreas: string[] = [];
+                                          if (region === 'Full Body') {
+                                            newTargetAreas = [
+                                              ...TARGET_BODY_PARTS,
+                                            ];
+                                          } else if (region === 'Upper Body') {
+                                            newTargetAreas = [
+                                              ...UPPER_BODY_PARTS,
+                                            ];
+                                          } else if (region === 'Lower Body') {
+                                            newTargetAreas = [
+                                              ...LOWER_BODY_PARTS,
+                                            ];
+                                          }
+                                          setTargetAreas(newTargetAreas);
+                                        }
+                                      }}
+                                      className="peer sr-only"
+                                    />
+                                    <div className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 text-gray-400 peer-checked:text-white peer-checked:bg-indigo-500/20 peer-checked:border-indigo-500 cursor-pointer transition-all duration-200">
+                                      {region}
+                                    </div>
+                                  </label>
+                                )
+                              )}
+                            </div>
+
+                            {/* Individual Body Parts */}
+                            <div>
+                              <p className="text-gray-400 text-sm mb-3">
+                                Or select specific areas:
+                              </p>
+                              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                                {TARGET_BODY_PARTS.map((part) => (
+                                  <label
+                                    key={part}
+                                    className="relative flex items-center"
+                                  >
+                                    <input
+                                      type="checkbox"
+                                      value={part}
+                                      checked={targetAreas.includes(part)}
+                                      onChange={(e) => {
+                                        const newTargetAreas = e.target.checked
+                                          ? [...targetAreas, part]
+                                          : targetAreas.filter((p) => p !== part);
+                                        setTargetAreas(newTargetAreas);
+                                      }}
+                                      className="peer sr-only"
+                                    />
+                                    <div className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 text-gray-400 peer-checked:text-white peer-checked:bg-indigo-500/20 peer-checked:border-indigo-500 cursor-pointer transition-all duration-200">
+                                      {part}
+                                    </div>
+                                  </label>
                                 ))}
                               </div>
                             </div>
-                          )}
 
-                          {/* Done button */}
-                          <div className="flex justify-end">
-                            <button
-                              onClick={() => setEditingField(null)}
-                              className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition-colors text-sm"
-                            >
-                              Done
-                            </button>
+                            {/* Done button */}
+                            <div className="flex justify-end">
+                              <button
+                                onClick={() => setEditingField(null)}
+                                className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition-colors text-sm"
+                              >
+                                Done
+                              </button>
+                            </div>
                           </div>
+                        ) : (
+                          <p
+                            className="text-white cursor-pointer hover:text-indigo-400 transition-colors text-left"
+                            onClick={() => handleEdit('targetAreas')}
+                          >
+                            {targetAreas.length === TARGET_BODY_PARTS.length
+                              ? 'Full Body'
+                              : UPPER_BODY_PARTS.every((part) =>
+                                  targetAreas.includes(part)
+                                ) &&
+                                targetAreas.length === UPPER_BODY_PARTS.length
+                              ? 'Upper Body'
+                              : LOWER_BODY_PARTS.every((part) =>
+                                  targetAreas.includes(part)
+                                ) &&
+                                targetAreas.length === LOWER_BODY_PARTS.length
+                              ? 'Lower Body'
+                              : targetAreas.length > 0
+                              ? targetAreas.join(', ')
+                              : 'Not set'}
+                          </p>
+                        )}
+                      </div>
+
+                      {/* Sleep Patterns */}
+                      <div className="pb-4">
+                        <label className="block text-sm font-medium text-gray-400 mb-1 text-left">
+                          Sleep Pattern
+                        </label>
+                        {isEditing ? (
+                          <select
+                            value={sleepPattern}
+                            onChange={(e) => setSleepPattern(e.target.value)}
+                            className="w-full bg-gray-700 border border-gray-600 rounded-lg py-2 px-3 text-white"
+                          >
+                            <option value="">Select Sleep Pattern</option>
+                            <option value="less-than-6">Less than 6 hours</option>
+                            <option value="6-7">6-7 hours</option>
+                            <option value="7-8">7-8 hours</option>
+                            <option value="more-than-8">More than 8 hours</option>
+                          </select>
+                        ) : (
+                          <p
+                            className="text-white cursor-pointer hover:text-indigo-400 transition-colors text-left"
+                            onClick={() => handleEdit('sleepPattern')}
+                          >
+                            {sleepPattern
+                              ? sleepPattern === 'less-than-6'
+                                ? 'Less than 6 hours'
+                                : sleepPattern === 'more-than-8'
+                                ? 'More than 8 hours'
+                                : `${sleepPattern} hours`
+                              : 'Not set'}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                  {/* Fitness Profile Section END */}
+
+                  {/* Goals and Preferences Section START */}
+                  <div className="border-t border-gray-700">
+                    <div
+                      className="flex justify-between items-center cursor-pointer hover:bg-gray-700/30 py-4 rounded-lg transition-colors"
+                      onClick={() =>
+                        setGoalsPreferencesExpanded(!goalsPreferencesExpanded)
+                      }
+                      data-section="goalsPreferences"
+                    >
+                      <div className="flex items-center">
+                        <div className="mr-3 text-indigo-400">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M5 4a1 1 0 00-2 0v7.268a2 2 0 000 3.464V16a1 1 0 102 0v-1.268a2 2 0 000-3.464V4zM11 4a1 1 0 10-2 0v1.268a2 2 0 000 3.464V16a1 1 0 102 0V8.732a2 2 0 000-3.464V4zM16 3a1 1 0 011 1v7.268a2 2 0 010 3.464V16a1 1 0 11-2 0v-1.268a2 2 0 010-3.464V4a1 1 0 011-1z" />
+                          </svg>
                         </div>
-                      ) : (
-                        <p
-                          className="text-white cursor-pointer hover:text-indigo-400 transition-colors text-left"
-                          onClick={() => handleEdit('dietaryPreferences')}
-                        >
-                          {dietaryPreferences.length > 0
-                            ? dietaryPreferences.join(', ')
-                            : 'Not set'}
-                        </p>
-                      )}
+                        <h3 className="text-white font-semibold flex items-center">
+                          Goals & Preferences
+                          {healthGoals.length > 0 && workoutDuration && exerciseEnvironments && timeAvailability && dietaryPreferences.length > 0 && (
+                            <svg className="ml-2 h-4 w-4 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                            </svg>
+                          )}
+                        </h3>
+                      </div>
+                      <div className="text-gray-400 hover:text-white">
+                        {goalsPreferencesExpanded ? (
+                          <ExpandedIcon />
+                        ) : (
+                          <CollapsedIcon />
+                        )}
+                      </div>
                     </div>
                   </div>
-                )}
-                {/* Goals and Preferences Section END */}
+
+                  {/* Goals and Preferences content */}
+                  {goalsPreferencesExpanded && (
+                    <div className="space-y-4" style={sectionContentStyle}>
+                      {/* Health Goals */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-400 mb-1 text-left">
+                          Health Goals
+                        </label>
+                        {editingField === 'healthGoals' ? (
+                          <div className="space-y-4">
+                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                              {HEALTH_GOALS_OPTIONS.map((goal) => (
+                                <label
+                                  key={goal}
+                                  className="relative flex items-center"
+                                >
+                                  <input
+                                    type="checkbox"
+                                    value={goal}
+                                    checked={healthGoals.includes(goal)}
+                                    onChange={(e) => {
+                                      const newHealthGoals = e.target.checked
+                                        ? [...healthGoals, goal]
+                                        : healthGoals.filter((g) => g !== goal);
+                                      setHealthGoals(newHealthGoals);
+                                    }}
+                                    className="peer sr-only"
+                                  />
+                                  <div className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 text-gray-400 peer-checked:text-white peer-checked:bg-indigo-500/20 peer-checked:border-indigo-500 cursor-pointer transition-all duration-200">
+                                    {goal}
+                                  </div>
+                                </label>
+                              ))}
+                            </div>
+
+                            {/* Custom goal input */}
+                            <div>
+                              <p className="text-gray-400 text-sm mb-2">
+                                Add custom goal:
+                              </p>
+                              <div className="flex gap-2">
+                                <input
+                                  type="text"
+                                  id="custom-goal"
+                                  placeholder="Enter custom goal"
+                                  className="flex-1 bg-gray-700 border border-gray-600 rounded-lg py-2 px-3 text-white"
+                                  onKeyDown={(e) => {
+                                    if (
+                                      e.key === 'Enter' &&
+                                      e.currentTarget.value.trim()
+                                    ) {
+                                      const customGoal =
+                                        e.currentTarget.value.trim();
+                                      if (!healthGoals.includes(customGoal)) {
+                                        setHealthGoals([
+                                          ...healthGoals,
+                                          customGoal,
+                                        ]);
+                                        e.currentTarget.value = '';
+                                      }
+                                    }
+                                  }}
+                                />
+                                <button
+                                  onClick={() => {
+                                    const customGoalInput =
+                                      document.getElementById(
+                                        'custom-goal'
+                                      ) as HTMLInputElement;
+                                    if (
+                                      customGoalInput &&
+                                      customGoalInput.value.trim()
+                                    ) {
+                                      const customGoal =
+                                        customGoalInput.value.trim();
+                                      if (!healthGoals.includes(customGoal)) {
+                                        setHealthGoals([
+                                          ...healthGoals,
+                                          customGoal,
+                                        ]);
+                                        customGoalInput.value = '';
+                                      }
+                                    }
+                                  }}
+                                  className="px-3 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition-colors text-sm"
+                                >
+                                  Add
+                                </button>
+                              </div>
+                            </div>
+
+                            {/* Done button */}
+                            <div className="flex justify-end">
+                              <button
+                                onClick={() => setEditingField(null)}
+                                className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition-colors text-sm"
+                              >
+                                Done
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
+                          <p
+                            className="text-white cursor-pointer hover:text-indigo-400 transition-colors text-left"
+                            onClick={() => handleEdit('healthGoals')}
+                          >
+                            {healthGoals.length > 0
+                              ? healthGoals.join(', ')
+                              : 'Not set'}
+                          </p>
+                        )}
+                      </div>
+
+                      {/* Exercise Environment */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-400 mb-1 text-left">
+                          Exercise Environment
+                        </label>
+                        {editingField === 'exerciseEnvironments' ? (
+                          <div className="space-y-4">
+                            <div className="grid grid-cols-1 gap-3">
+                              {EXERCISE_ENVIRONMENTS.map((environment) => (
+                                <label
+                                  key={environment.name}
+                                  className="relative flex items-center"
+                                >
+                                  <input
+                                    type="radio"
+                                    name="exerciseEnvironments"
+                                    value={environment.name}
+                                    checked={
+                                      exerciseEnvironments === environment.name
+                                    }
+                                    onChange={(e) => {
+                                      setExerciseEnvironments(e.target.value);
+                                    }}
+                                    className="peer sr-only"
+                                  />
+                                  <div className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 text-gray-400 peer-checked:text-white peer-checked:bg-indigo-500/20 peer-checked:border-indigo-500 cursor-pointer transition-all duration-200">
+                                    <div className="font-medium">
+                                      {environment.name}
+                                    </div>
+                                    <div className="text-sm mt-1 text-gray-500 peer-checked:text-gray-300">
+                                      {environment.description}
+                                    </div>
+                                  </div>
+                                </label>
+                              ))}
+                            </div>
+
+                            {/* Done button */}
+                            <div className="flex justify-end">
+                              <button
+                                onClick={() => setEditingField(null)}
+                                className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition-colors text-sm"
+                              >
+                                Done
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
+                          <p
+                            className="text-white cursor-pointer hover:text-indigo-400 transition-colors text-left"
+                            onClick={() => handleEdit('exerciseEnvironments')}
+                          >
+                            {exerciseEnvironments || 'Not set'}
+                          </p>
+                        )}
+                      </div>
+
+                      {/* Workout Duration */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-400 mb-1 text-left">
+                          Workout Duration
+                        </label>
+                        {editingField === 'workoutDuration' ? (
+                          <div className="space-y-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                              {WORKOUT_DURATIONS.map((duration) => (
+                                <label
+                                  key={duration}
+                                  className="relative flex items-center"
+                                >
+                                  <input
+                                    type="radio"
+                                    name="workoutDuration"
+                                    value={duration}
+                                    checked={workoutDuration === duration}
+                                    onChange={(e) => {
+                                      setWorkoutDuration(e.target.value);
+                                    }}
+                                    className="peer sr-only"
+                                  />
+                                  <div className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 text-gray-400 peer-checked:text-white peer-checked:bg-indigo-500/20 peer-checked:border-indigo-500 cursor-pointer transition-all duration-200">
+                                    {duration}
+                                  </div>
+                                </label>
+                              ))}
+                            </div>
+
+                            {/* Done button */}
+                            <div className="flex justify-end">
+                              <button
+                                onClick={() => setEditingField(null)}
+                                className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition-colors text-sm"
+                              >
+                                Done
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
+                          <p
+                            className="text-white cursor-pointer hover:text-indigo-400 transition-colors text-left"
+                            onClick={() => handleEdit('workoutDuration')}
+                          >
+                            {workoutDuration || 'Not set'}
+                          </p>
+                        )}
+                      </div>
+
+                      {/* Dietary Preferences */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-400 mb-1 text-left">
+                          Dietary Preferences
+                        </label>
+                        {editingField === 'dietaryPreferences' ? (
+                          <div className="space-y-4">
+                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                              {DIETARY_PREFERENCES_OPTIONS.map((diet) => (
+                                <label
+                                  key={diet}
+                                  className="relative flex items-center"
+                                >
+                                  <input
+                                    type="checkbox"
+                                    name="dietaryPreference"
+                                    value={diet}
+                                    checked={dietaryPreferences.includes(diet)}
+                                    onChange={(e) => {
+                                      if (e.target.checked) {
+                                        // Add to selection
+                                        setDietaryPreferences([
+                                          ...dietaryPreferences,
+                                          diet,
+                                        ]);
+                                      } else {
+                                        // Remove from selection
+                                        setDietaryPreferences(
+                                          dietaryPreferences.filter(
+                                            (item) => item !== diet
+                                          )
+                                        );
+                                      }
+                                      markAsDirty();
+                                    }}
+                                    className="peer sr-only"
+                                  />
+                                  <div className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 text-gray-400 peer-checked:text-white peer-checked:bg-indigo-500/20 peer-checked:border-indigo-500 cursor-pointer transition-all duration-200">
+                                    {diet}
+                                  </div>
+                                </label>
+                              ))}
+                            </div>
+
+                            {/* Custom diet input */}
+                            <div>
+                              <p className="text-gray-400 text-sm mb-2">
+                                Add custom diet:
+                              </p>
+                              <div className="flex gap-2">
+                                <input
+                                  type="text"
+                                  id="custom-diet"
+                                  placeholder="Enter custom diet"
+                                  className="flex-1 bg-gray-700 border border-gray-600 rounded-lg py-2 px-3 text-white"
+                                  onKeyDown={(e) => {
+                                    if (
+                                      e.key === 'Enter' &&
+                                      e.currentTarget.value.trim()
+                                    ) {
+                                      const customDiet =
+                                        e.currentTarget.value.trim();
+                                      if (
+                                        !dietaryPreferences.includes(customDiet)
+                                      ) {
+                                        setDietaryPreferences([
+                                          ...dietaryPreferences,
+                                          customDiet,
+                                        ]);
+                                        markAsDirty();
+                                      }
+                                      e.currentTarget.value = '';
+                                    }
+                                  }}
+                                />
+                                <button
+                                  onClick={() => {
+                                    const customDietInput =
+                                      document.getElementById(
+                                        'custom-diet'
+                                      ) as HTMLInputElement;
+                                    if (
+                                      customDietInput &&
+                                      customDietInput.value.trim()
+                                    ) {
+                                      const customDiet =
+                                        customDietInput.value.trim();
+                                      if (
+                                        !dietaryPreferences.includes(customDiet)
+                                      ) {
+                                        setDietaryPreferences([
+                                          ...dietaryPreferences,
+                                          customDiet,
+                                        ]);
+                                        markAsDirty();
+                                      }
+                                      customDietInput.value = '';
+                                    }
+                                  }}
+                                  className="px-3 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition-colors text-sm"
+                                >
+                                  Add
+                                </button>
+                              </div>
+                            </div>
+
+                            {/* Selected diets list with remove option */}
+                            {dietaryPreferences.length > 0 && (
+                              <div>
+                                <p className="text-gray-400 text-sm mb-2">
+                                  Selected diets:
+                                </p>
+                                <div className="flex flex-wrap gap-2">
+                                  {dietaryPreferences.map((diet, index) => (
+                                    <div
+                                      key={index}
+                                      className="flex items-center bg-indigo-500/20 border border-indigo-500 rounded-lg px-3 py-1"
+                                    >
+                                      <span className="text-white">{diet}</span>
+                                      <button
+                                        onClick={() => {
+                                          setDietaryPreferences(
+                                            dietaryPreferences.filter(
+                                              (_, i) => i !== index
+                                            )
+                                          );
+                                          markAsDirty();
+                                        }}
+                                        className="ml-2 text-gray-300 hover:text-white"
+                                      >
+                                        ✕
+                                      </button>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Done button */}
+                            <div className="flex justify-end">
+                              <button
+                                onClick={() => setEditingField(null)}
+                                className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition-colors text-sm"
+                              >
+                                Done
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
+                          <p
+                            className="text-white cursor-pointer hover:text-indigo-400 transition-colors text-left"
+                            onClick={() => handleEdit('dietaryPreferences')}
+                          >
+                            {dietaryPreferences.length > 0
+                              ? dietaryPreferences.join(', ')
+                              : 'Not set'}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                  {/* Goals and Preferences Section END */}
+                </div>
+                {/* Profile Info Section END */}
               </div>
-              {/* Profile Info Section END */}
+            </div>
+
+            {/* Only show these sections when not in edit mode */}
+            {!isEditing && (
+              <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-xl ring-1 ring-gray-700/50 p-6 mb-6">
+                <h3 className="text-lg font-medium text-white mb-4">
+                  Account
+                </h3>
+                <div className="space-y-4">
+                  <button
+                    onClick={() => router.push('/privacy')}
+                    className="px-4 py-3 bg-gray-700 text-white rounded-lg hover:bg-gray-600 w-full flex items-center justify-between"
+                  >
+                    <span>Privacy & Data Controls</span>
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 5l7 7-7 7"
+                      />
+                    </svg>
+                  </button>
+                  
+                  <button
+                    onClick={handleLogout}
+                    className="px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-500 w-full"
+                  >
+                    Sign Out
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {error && (
+              <div className="mt-4 p-3 bg-red-900/50 text-red-200 rounded-lg">
+                {error}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Fixed save/cancel bar that shows in edit mode */}
+        {isEditing && (
+          <div className="fixed bottom-0 left-0 right-0 bg-gray-900/95 backdrop-blur-md p-4 border-t border-gray-800 flex justify-center z-50">
+            <div className="max-w-md w-full flex space-x-3">
+              <button
+                onClick={handleUpdateProfile}
+                disabled={isLoading || !phoneValid}
+                className={`px-4 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 flex-1 font-medium shadow-lg ${
+                  isLoading || !phoneValid ? 'opacity-50 cursor-not-allowed' : ''
+                }`}
+              >
+                {isLoading ? 'Saving...' : 'Save Changes'}
+              </button>
+              <button
+                onClick={handleCancelEdit}
+                disabled={isLoading}
+                className="px-4 py-3 bg-gray-700 text-white rounded-lg hover:bg-gray-600 flex-1 font-medium shadow-lg"
+              >
+                Cancel
+              </button>
             </div>
           </div>
-
-          {/* Only show these sections when not in edit mode */}
-          {!isEditing && activeProgram && (
-            <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-xl ring-1 ring-gray-700/50 p-6 mb-6">
-              <h3 className="text-lg font-medium text-white mb-4">
-                Your Program
-              </h3>
-              <div className="space-y-3">
-                <div className="flex justify-between">
-                  <span className="text-gray-400">Active Program:</span>
-                  <span className="text-white">
-                    {activeProgram.type === 'exercise'
-                      ? 'Exercise Program'
-                      : 'Recovery Program'}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-400">Created:</span>
-                  <span className="text-white">
-                    {new Date(activeProgram.createdAt).toLocaleDateString()}
-                  </span>
-                </div>
-                <button
-                  onClick={() => router.push('/program')}
-                  className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 w-full mt-3"
-                >
-                  View Program
-                </button>
-              </div>
-            </div>
-          )}
-
-          {!isEditing && (
-            <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-xl ring-1 ring-gray-700/50 p-6 mb-6">
-              <h3 className="text-lg font-medium text-white mb-4">
-                Account Settings
-              </h3>
-              <div className="space-y-4">
-                <button
-                  onClick={() => router.push('/change-password')}
-                  className="px-4 py-3 bg-gray-700 text-white rounded-lg hover:bg-gray-600 w-full flex items-center justify-between"
-                >
-                  <span>Change Password</span>
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 5l7 7-7 7"
-                    />
-                  </svg>
-                </button>
-
-                <button
-                  onClick={() => router.push('/privacy')}
-                  className="px-4 py-3 bg-gray-700 text-white rounded-lg hover:bg-gray-600 w-full flex items-center justify-between"
-                >
-                  <span>Privacy & Data Controls</span>
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 5l7 7-7 7"
-                    />
-                  </svg>
-                </button>
-              </div>
-            </div>
-          )}
-
-          {!isEditing && (
-            <button
-              onClick={handleLogout}
-              className="px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-500 w-full"
-            >
-              Sign Out
-            </button>
-          )}
-
-          {error && (
-            <div className="mt-4 p-3 bg-red-900/50 text-red-200 rounded-lg">
-              {error}
-            </div>
-          )}
-        </div>
+        )}
       </div>
-
-      {/* Fixed save/cancel bar that shows in edit mode */}
-      {isEditing && (
-        <div className="fixed bottom-0 left-0 right-0 bg-gray-900/95 backdrop-blur-md p-4 border-t border-gray-800 flex justify-center z-50">
-          <div className="max-w-md w-full flex space-x-3">
-            <button
-              onClick={handleUpdateProfile}
-              disabled={isLoading || !phoneValid}
-              className={`px-4 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 flex-1 font-medium shadow-lg ${
-                isLoading || !phoneValid ? 'opacity-50 cursor-not-allowed' : ''
-              }`}
-            >
-              {isLoading ? 'Saving...' : 'Save Changes'}
-            </button>
-            <button
-              onClick={handleCancelEdit}
-              disabled={isLoading}
-              className="px-4 py-3 bg-gray-700 text-white rounded-lg hover:bg-gray-600 flex-1 font-medium shadow-lg"
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-      )}
-    </div>
+    </>
   );
 }
