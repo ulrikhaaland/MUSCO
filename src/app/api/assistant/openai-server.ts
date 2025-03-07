@@ -39,7 +39,6 @@ export async function createThread() {
 export async function addMessage(threadId: string, payload: ChatPayload) {
   try {
     const content = JSON.stringify(payload);
-    console.log('Adding message to thread:', content);
     return await openai.beta.threads.messages.create(threadId, {
       role: 'user',
       content,
