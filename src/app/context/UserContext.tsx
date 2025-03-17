@@ -29,6 +29,7 @@ import {
 import { submitQuestionnaire } from '@/app/services/questionnaire';
 import { updateActiveProgramStatus } from '@/app/services/program';
 import { useRouter } from 'next/navigation';
+import { enrichExercisesWithFullData } from '@/app/services/exerciseProgramService';
 
 // Update UserProgram interface to include the document ID
 interface UserProgramWithId extends UserProgram {
@@ -135,9 +136,11 @@ export function UserProvider({ children }: { children: ReactNode }) {
           const programSnapshot = await getDocs(programQ);
 
           if (!programSnapshot.empty) {
-            const exercisePrograms = programSnapshot.docs.map(
-              (doc) => doc.data() as ExerciseProgram
-            );
+            const exercisePrograms = await Promise.all(programSnapshot.docs.map(async (doc) => {
+              const program = doc.data() as ExerciseProgram;
+              await enrichExercisesWithFullData(program);
+              return program;
+            }));
 
             const updatedAt = data.updatedAt
               ? new Date(data.updatedAt)
@@ -265,6 +268,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
             if (!latestProgramSnapshot.empty) {
               const program =
                 latestProgramSnapshot.docs[0].data() as ExerciseProgram;
+              await enrichExercisesWithFullData(program);
               setProgram(program);
             } else {
               setProgram(null);

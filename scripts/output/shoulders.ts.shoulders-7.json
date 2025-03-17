@@ -1,0 +1,48 @@
+{
+      "id": "shoulders-7",
+      "name": "Smith Machine Shoulder Press",
+      "description": "The Smith machine shoulder press is a variation of the barbell shoulder press and is used to strengthen the muscles of the shoulders. Utilizing a Smith machine will ensure the bar path remains in a fixed position, eliminating some of the need to stabilize during the exercise. It"s also a viable option for moving heavy weight without a spotter. The overhead press is a foundational movement for establishing baseline strength and building a completely balanced physique. The exercise can be included in shoulder workouts, push workouts, upper body workouts, and full body workouts.",
+      "targetBodyParts": ["Shoulders"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Machine"],
+      "steps": [
+        "Place an adjustable bench in the Smith machine and adjust the back to a 90-degree angle.",
+        "Adjust the bar to around eye level and load the desired weight on the bar.",
+        "Position your hands around shoulder-width apart and unrack the bar using a pronated grip. This is the starting position for the movement.",
+        "Press the bar overhead by extending the elbows and contracting the deltoids.",
+        "Slowly lower the bar back to the starting position (the arms should be roughly 90 degrees or slightly lower depending on limb lengths).",
+        "Repeat for the desired number of repetitions."
+      ],
+      "tips": [
+        "Don’t allow the head to jut forward excessively.",
+        "Drive the bicep to the ear and exhale as you press.",
+        "If you sense any pressure in your neck or traps during the movement, look to address a lack of thoracic spine extension or shoulder flexion.",
+        "If you can’t lock out the elbows overhead then it may indicate a lack of shoulder mobility due to poor scapular upward rotation."
+      ],
+      "contraindications": [
+        "Shoulders injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Shoulder impingement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": ["Shoulders", "Triceps"],
+      "alternatives": [
+        "shoulders-6",
+        "shoulders-14",
+        "shoulders-20",
+        "shoulders-22",
+        "shoulders-51"
+      ],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Push",
+      "mechanics": "Compound",
+      "videoUrl": "https://player.vimeo.com/video/760008402?badge=0&autopause=0&player_id=0&app_id=58479",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Shoulders.jpg",
+      "viewCount": 3200000,
+      "popularity": "high"
+    }

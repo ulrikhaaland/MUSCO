@@ -1,0 +1,48 @@
+{
+      "id": "shoulders-17",
+      "name": "Single Arm Cable Lateral Raise (Crossbody)",
+      "description": "The single arm cable lateral raise is a variation of the lateral raise and an exercise used to build the muscles of the shoulders. Utilizing the cable pulley machine is useful in that it provides constant tension on the target muscle group as you move the weight through the range of motion. The exercise targets the medial deltoid, which is important to building a complete set of strong shoulders.",
+      "targetBodyParts": ["Shoulders"],
+      "exerciseType": ["strength"],
+      "difficulty": "intermediate",
+      "equipment": ["Cable"],
+      "steps": [
+        "Position a cable at the lowest position possible and attach a single handle.",
+        "Reach across your body and grab the handle with a neutral grip.",
+        "Keep the elbow slightly bent and pull the handle across your body and raise laterally.",
+        "Slowly lower the handle back to the starting position under control.",
+        "Repeat for the desired number of repetitions."
+      ],
+      "tips": [
+        "If you want to keep more tension through the side delts, use a slightly slower eccentric than normal and keep some slack in the cable instead of allowing the weight stack to touch.",
+        "Allow the arms to move freely but don’t lock out the elbows.",
+        "If you encounter pain within the shoulder while performing the movement, consider implement one of the following "tweaks":\n          Tilt your pinkies slightly higher than your thumbs. Imagine you’re pouring out a cup of water.\n          Allow the arm to rotate during the movement so that the thumb is pointing up a peak contraction. This will put the shoulder in a more externally rotated position and potentially open up the shoulder joint to allow for a bit more movement.",
+        "Tilt your pinkies slightly higher than your thumbs. Imagine you’re pouring out a cup of water.",
+        "Allow the arm to rotate during the movement so that the thumb is pointing up a peak contraction. This will put the shoulder in a more externally rotated position and potentially open up the shoulder joint to allow for a bit more movement.",
+        "Keep the abs braced and don’t arch the back at the top of the movement.",
+        "Don’t jut your head forward during the movement - this is about stimulation for a small muscle group. Focus during the movement and don’t rely on momentum.",
+        "Allow the arm to move freely but don’t lock out the elbows."
+      ],
+      "contraindications": [
+        "Shoulders injury",
+        "Joint pain",
+        "Acute pain during movement"
+      ],
+      "muscles": ["Shoulders", "Traps"],
+      "alternatives": [
+        "shoulders-36",
+        "shoulders-125",
+        "shoulders-149",
+        "shoulders-13",
+        "shoulders-16"
+      ],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Pull (Unilateral)",
+      "mechanics": "Isolation",
+      "videoUrl": "https://www.youtube.com/embed/Fv-eAW1uKDI?rel=0",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Shoulders.jpg",
+      "viewCount": 616700,
+      "popularity": "medium"
+    }

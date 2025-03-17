@@ -1,13 +1,8 @@
 import { useState } from 'react';
 import { Exercise, ProgramDay } from '@/app/types/program';
 
-// Add instructions to Exercise type
-interface ExerciseWithInstructions extends Exercise {
-  instructions?: string;
-}
-
 interface ProgramDayComponentProps {
-  day: ProgramDay & { exercises?: ExerciseWithInstructions[] };
+  day: ProgramDay;
   dayName: string;
   date?: string;
   expandedExercises?: string[];
@@ -176,7 +171,7 @@ export function ProgramDayComponent({
           <div className="space-y-4 pb-32">
             {filteredExercises.map((exercise) => (
               <div
-                key={exercise.name}
+                key={exercise.id || exercise.exerciseId || `${exercise.name}-${exercise.bodyPart}`}
                 onClick={() => onExerciseToggle?.(exercise.name)}
                 className={`bg-gray-800/50 rounded-lg overflow-hidden hover:bg-gray-700/50 transition-colors duration-200 ${
                   onExerciseToggle ? 'cursor-pointer' : ''
@@ -355,11 +350,15 @@ export function ProgramDayComponent({
                         {exercise.precaution}
                       </p>
                     )}
-                    {exercise.instructions && (
-                      <p className="text-gray-400 text-sm leading-relaxed">
-                        <span className="font-medium">Instructions:</span>{' '}
-                        {exercise.instructions}
-                      </p>
+                    {exercise.steps && exercise.steps.length > 0 && (
+                      <div className="text-gray-400 text-sm leading-relaxed mt-2">
+                        <span className="font-medium block mb-1">Instructions:</span>
+                        <ol className="list-decimal pl-5 space-y-1">
+                          {exercise.steps.map((step, index) => (
+                            <li key={index}>{step}</li>
+                          ))}
+                        </ol>
+                      </div>
                     )}
                   </div>
                 )}

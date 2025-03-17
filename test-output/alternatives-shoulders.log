@@ -1,0 +1,1502 @@
+Running alternatives generator for category: shoulders
+File path: /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts
+Processing category file: /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts
+File loaded, size: 452166 bytes
+Found variable name: shouldersExercises
+Found body part: Shoulders
+Extracting exercises data...
+File appears to be in TypeScript format
+Using regex-based extraction approach...
+Found 175 exercise IDs in the file
+Processing exercise: shoulders-1
+Extracted 2534 characters for exercise shoulders-1
+Sample of converted JSON for shoulders-1: {
+      "id": "shoulders-1",
+      "name": "Dumbbell Lateral Raise",
+      "description": "The dumbb...
+Error parsing exercise shoulders-1: Expected ',' or '}' after property value in JSON at position 2289
+Wrote problematic JSON for shoulders-1 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-1.json for debugging
+Processing exercise: shoulders-2
+Extracted 3755 characters for exercise shoulders-2
+Sample of converted JSON for shoulders-2: {
+      "id": "shoulders-2",
+      "name": "Military Press (AKA Overhead Press)",
+      "description...
+Error parsing exercise shoulders-2: Expected ',' or '}' after property value in JSON at position 810
+Wrote problematic JSON for shoulders-2 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-2.json for debugging
+Processing exercise: shoulders-3
+Extracted 2814 characters for exercise shoulders-3
+Sample of converted JSON for shoulders-3: {
+      "id": "shoulders-3",
+      "name": "Bent Over Dumbbell Reverse Fly",
+      "description":
+  ...
+Error parsing exercise shoulders-3: Expected ',' or '}' after property value in JSON at position 2597
+Wrote problematic JSON for shoulders-3 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-3.json for debugging
+Processing exercise: shoulders-4
+Extracted 2964 characters for exercise shoulders-4
+Sample of converted JSON for shoulders-4: {
+      "id": "shoulders-4",
+      "name": "Seated Arnold Press",
+      "description":
+        "The ...
+Error parsing exercise shoulders-4: Expected ',' or '}' after property value in JSON at position 2747
+Wrote problematic JSON for shoulders-4 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-4.json for debugging
+Processing exercise: shoulders-5
+Extracted 2945 characters for exercise shoulders-5
+Sample of converted JSON for shoulders-5: {
+      "id": "shoulders-5",
+      "name": "Seated Dumbbell Press",
+      "description":
+        "Th...
+Error parsing exercise shoulders-5: Expected ',' or '}' after property value in JSON at position 2728
+Wrote problematic JSON for shoulders-5 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-5.json for debugging
+Processing exercise: shoulders-6
+Extracted 2841 characters for exercise shoulders-6
+Sample of converted JSON for shoulders-6: {
+      "id": "shoulders-6",
+      "name": "Standing Dumbbell Shoulder Press",
+      "description":
+...
+Error parsing exercise shoulders-6: Expected ',' or '}' after property value in JSON at position 2586
+Wrote problematic JSON for shoulders-6 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-6.json for debugging
+Processing exercise: shoulders-7
+Extracted 2648 characters for exercise shoulders-7
+Sample of converted JSON for shoulders-7: {
+      "id": "shoulders-7",
+      "name": "Smith Machine Shoulder Press",
+      "description": "The...
+Error parsing exercise shoulders-7: Expected ',' or '}' after property value in JSON at position 2394
+Wrote problematic JSON for shoulders-7 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-7.json for debugging
+Processing exercise: shoulders-8
+Extracted 2761 characters for exercise shoulders-8
+Sample of converted JSON for shoulders-8: {
+      "id": "shoulders-8",
+      "name": "Seated Bent Over Dumbbell Reverse Fly",
+      "descripti...
+Error parsing exercise shoulders-8: Expected ',' or '}' after property value in JSON at position 2544
+Wrote problematic JSON for shoulders-8 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-8.json for debugging
+Processing exercise: shoulders-9
+Extracted 2776 characters for exercise shoulders-9
+Sample of converted JSON for shoulders-9: {
+      "id": "shoulders-9",
+      "name": "Seated Barbell Shoulder Press",
+      "description":
+   ...
+Error parsing exercise shoulders-9: Expected ',' or '}' after property value in JSON at position 2559
+Wrote problematic JSON for shoulders-9 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-9.json for debugging
+Processing exercise: shoulders-10
+Extracted 2538 characters for exercise shoulders-10
+Sample of converted JSON for shoulders-10: {
+      "id": "shoulders-10",
+      "name": "Cable Face Pull",
+      "description":
+        "The cab...
+Error parsing exercise shoulders-10: Expected ',' or '}' after property value in JSON at position 2321
+Wrote problematic JSON for shoulders-10 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-10.json for debugging
+Processing exercise: shoulders-11
+Extracted 2048 characters for exercise shoulders-11
+Sample of converted JSON for shoulders-11: {
+      "id": "shoulders-11",
+      "name": "Machine Reverse Fly",
+      "description":
+        "The...
+Error parsing exercise shoulders-11: Expected ',' or '}' after property value in JSON at position 1830
+Wrote problematic JSON for shoulders-11 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-11.json for debugging
+Processing exercise: shoulders-12
+Extracted 2462 characters for exercise shoulders-12
+Sample of converted JSON for shoulders-12: {
+      "id": "shoulders-12",
+      "name": "Seated Dumbbell Lateral Raise",
+      "description":
+  ...
+Error parsing exercise shoulders-12: Expected ',' or '}' after property value in JSON at position 2214
+Wrote problematic JSON for shoulders-12 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-12.json for debugging
+Processing exercise: shoulders-13
+Extracted 2671 characters for exercise shoulders-13
+Sample of converted JSON for shoulders-13: {
+      "id": "shoulders-13",
+      "name": "Standing Cable Reverse Fly",
+      "description":
+     ...
+Error parsing exercise shoulders-13: Expected ',' or '}' after property value in JSON at position 2454
+Wrote problematic JSON for shoulders-13 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-13.json for debugging
+Processing exercise: shoulders-14
+Extracted 2427 characters for exercise shoulders-14
+Sample of converted JSON for shoulders-14: {
+      "id": "shoulders-14",
+      "name": "Machine Shoulder Press",
+      "description":
+        "...
+Error parsing exercise shoulders-14: Expected ',' or '}' after property value in JSON at position 2209
+Wrote problematic JSON for shoulders-14 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-14.json for debugging
+Processing exercise: shoulders-15
+Extracted 1948 characters for exercise shoulders-15
+Sample of converted JSON for shoulders-15: {
+      "id": "shoulders-15",
+      "name": "Standing Dumbbell Front Raise",
+      "description":
+  ...
+Error parsing exercise shoulders-15: Expected ',' or '}' after property value in JSON at position 1692
+Wrote problematic JSON for shoulders-15 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-15.json for debugging
+Processing exercise: shoulders-16
+Extracted 1772 characters for exercise shoulders-16
+Sample of converted JSON for shoulders-16: {
+      "id": "shoulders-16",
+      "name": "Cable Lateral Raise",
+      "description": "No descript...
+Error parsing exercise shoulders-16: Expected ',' or '}' after property value in JSON at position 1517
+Wrote problematic JSON for shoulders-16 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-16.json for debugging
+Processing exercise: shoulders-17
+Extracted 3111 characters for exercise shoulders-17
+Sample of converted JSON for shoulders-17: {
+      "id": "shoulders-17",
+      "name": "Single Arm Cable Lateral Raise (Crossbody)",
+      "des...
+Error parsing exercise shoulders-17: Expected ',' or '}' after property value in JSON at position 2899
+Wrote problematic JSON for shoulders-17 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-17.json for debugging
+Processing exercise: shoulders-18
+Extracted 3036 characters for exercise shoulders-18
+Sample of converted JSON for shoulders-18: {
+      "id": "shoulders-18",
+      "name": "Seated Behind the Neck Shoulder Press",
+      "descript...
+Error parsing exercise shoulders-18: Expected ',' or '}' after property value in JSON at position 2818
+Wrote problematic JSON for shoulders-18 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-18.json for debugging
+Processing exercise: shoulders-19
+Extracted 2765 characters for exercise shoulders-19
+Sample of converted JSON for shoulders-19: {
+      "id": "shoulders-19",
+      "name": "Cable Upright Row",
+      "description":
+        "The c...
+Error parsing exercise shoulders-19: Expected ',' or '}' after property value in JSON at position 2547
+Wrote problematic JSON for shoulders-19 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-19.json for debugging
+Processing exercise: shoulders-20
+Extracted 2085 characters for exercise shoulders-20
+Sample of converted JSON for shoulders-20: {
+      "id": "shoulders-20",
+      "name": "Machine Lateral Raise",
+      "description": "No descri...
+Error parsing exercise shoulders-20: Expected ',' or '}' after property value in JSON at position 1942
+Wrote problematic JSON for shoulders-20 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-20.json for debugging
+Processing exercise: shoulders-21
+Extracted 2047 characters for exercise shoulders-21
+Sample of converted JSON for shoulders-21: {
+      "id": "shoulders-21",
+      "name": "Barbell Front Raise",
+      "description":
+        "The...
+Error parsing exercise shoulders-21: Expected ',' or '}' after property value in JSON at position 1829
+Wrote problematic JSON for shoulders-21 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-21.json for debugging
+Processing exercise: shoulders-22
+Extracted 2413 characters for exercise shoulders-22
+Sample of converted JSON for shoulders-22: {
+      "id": "shoulders-22",
+      "name": "Smith Machine Upright Row",
+      "description":
+      ...
+Error parsing exercise shoulders-22: Expected ',' or '}' after property value in JSON at position 2195
+Wrote problematic JSON for shoulders-22 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-22.json for debugging
+Processing exercise: shoulders-23
+Extracted 2782 characters for exercise shoulders-23
+Sample of converted JSON for shoulders-23: {
+      "id": "shoulders-23",
+      "name": "Bent Over Low Pulley Rear Delt Fly",
+      "description...
+Error parsing exercise shoulders-23: Expected ',' or '}' after property value in JSON at position 2568
+Wrote problematic JSON for shoulders-23 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-23.json for debugging
+Processing exercise: shoulders-24
+Extracted 1732 characters for exercise shoulders-24
+Sample of converted JSON for shoulders-24: {
+      "id": "shoulders-24",
+      "name": "Weight Plate Front Raise",
+      "description": "No des...
+Error parsing exercise shoulders-24: Expected ',' or '}' after property value in JSON at position 1479
+Wrote problematic JSON for shoulders-24 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-24.json for debugging
+Processing exercise: shoulders-25
+Extracted 2623 characters for exercise shoulders-25
+Sample of converted JSON for shoulders-25: {
+      "id": "shoulders-25",
+      "name": "Standing Arnold Press",
+      "description":
+        "T...
+Error parsing exercise shoulders-25: Expected ',' or '}' after property value in JSON at position 2367
+Wrote problematic JSON for shoulders-25 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-25.json for debugging
+Processing exercise: shoulders-26
+Extracted 2138 characters for exercise shoulders-26
+Sample of converted JSON for shoulders-26: {
+      "id": "shoulders-26",
+      "name": "Kettlebell Halo",
+      "description":
+        "The ket...
+Error parsing exercise shoulders-26: Expected ',' or '}' after property value in JSON at position 1924
+Wrote problematic JSON for shoulders-26 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-26.json for debugging
+Processing exercise: shoulders-27
+Extracted 2417 characters for exercise shoulders-27
+Sample of converted JSON for shoulders-27: {
+      "id": "shoulders-27",
+      "name": "Dumbbell Upright Row",
+      "description":
+        "Th...
+Error parsing exercise shoulders-27: Expected ',' or '}' after property value in JSON at position 2199
+Wrote problematic JSON for shoulders-27 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-27.json for debugging
+Processing exercise: shoulders-28
+Extracted 2664 characters for exercise shoulders-28
+Sample of converted JSON for shoulders-28: {
+      "id": "shoulders-28",
+      "name": "One-Arm Dumbbell Lateral Raise",
+      "description":
+ ...
+Error parsing exercise shoulders-28: Expected ',' or '}' after property value in JSON at position 2415
+Wrote problematic JSON for shoulders-28 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-28.json for debugging
+Processing exercise: shoulders-29
+Extracted 2632 characters for exercise shoulders-29
+Sample of converted JSON for shoulders-29: {
+      "id": "shoulders-29",
+      "name": "Half Kneeling Landmine Press",
+      "description":
+   ...
+Error parsing exercise shoulders-29: Expected ',' or '}' after property value in JSON at position 2418
+Wrote problematic JSON for shoulders-29 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-29.json for debugging
+Processing exercise: shoulders-30
+Extracted 2611 characters for exercise shoulders-30
+Sample of converted JSON for shoulders-30: {
+      "id": "shoulders-30",
+      "name": "Band Pull Apart",
+      "description":
+        "The ban...
+Error parsing exercise shoulders-30: Expected ',' or '}' after property value in JSON at position 2399
+Wrote problematic JSON for shoulders-30 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-30.json for debugging
+Processing exercise: shoulders-31
+Extracted 2468 characters for exercise shoulders-31
+Sample of converted JSON for shoulders-31: {
+      "id": "shoulders-31",
+      "name": "Incline Rear Delt Fly",
+      "description":
+        "T...
+Error parsing exercise shoulders-31: Expected ',' or '}' after property value in JSON at position 2216
+Wrote problematic JSON for shoulders-31 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-31.json for debugging
+Processing exercise: shoulders-32
+Extracted 1954 characters for exercise shoulders-32
+Sample of converted JSON for shoulders-32: {
+      "id": "shoulders-32",
+      "name": "Cable External Rotation",
+      "description":
+        ...
+Error parsing exercise shoulders-32: Expected ',' or '}' after property value in JSON at position 1740
+Wrote problematic JSON for shoulders-32 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-32.json for debugging
+Processing exercise: shoulders-33
+Extracted 2243 characters for exercise shoulders-33
+Sample of converted JSON for shoulders-33: {
+      "id": "shoulders-33",
+      "name": "Cable Front Raise (Bilateral)",
+      "description":
+  ...
+Error parsing exercise shoulders-33: Expected ',' or '}' after property value in JSON at position 2025
+Wrote problematic JSON for shoulders-33 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-33.json for debugging
+Processing exercise: shoulders-34
+Extracted 2862 characters for exercise shoulders-34
+Sample of converted JSON for shoulders-34: {
+      "id": "shoulders-34",
+      "name": "Barbell Clean and Press",
+      "description": "No desc...
+Error parsing exercise shoulders-34: Expected ',' or '}' after property value in JSON at position 2606
+Wrote problematic JSON for shoulders-34 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-34.json for debugging
+Processing exercise: shoulders-35
+Extracted 3083 characters for exercise shoulders-35
+Sample of converted JSON for shoulders-35: {
+      "id": "shoulders-35",
+      "name": "Seated Neutral Grip Dumbbell Shoulder Press",
+      "de...
+Error parsing exercise shoulders-35: Expected ',' or '}' after property value in JSON at position 2869
+Wrote problematic JSON for shoulders-35 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-35.json for debugging
+Processing exercise: shoulders-36
+Extracted 2072 characters for exercise shoulders-36
+Sample of converted JSON for shoulders-36: {
+      "id": "shoulders-36",
+      "name": "Landmine Lateral Raise",
+      "description":
+        "...
+Error parsing exercise shoulders-36: Expected ',' or '}' after property value in JSON at position 1858
+Wrote problematic JSON for shoulders-36 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-36.json for debugging
+Processing exercise: shoulders-37
+Extracted 1794 characters for exercise shoulders-37
+Sample of converted JSON for shoulders-37: {
+      "id": "shoulders-37",
+      "name": "Arm Circles",
+      "description":
+        "The arm cir...
+Error parsing exercise shoulders-37: Expected ',' or '}' after property value in JSON at position 1580
+Wrote problematic JSON for shoulders-37 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-37.json for debugging
+Processing exercise: shoulders-38
+Extracted 3007 characters for exercise shoulders-38
+Sample of converted JSON for shoulders-38: {
+      "id": "shoulders-38",
+      "name": "Dumbbell 6 Ways (Raise)",
+      "description":
+        ...
+Error parsing exercise shoulders-38: Expected ',' or '}' after property value in JSON at position 2799
+Wrote problematic JSON for shoulders-38 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-38.json for debugging
+Processing exercise: shoulders-39
+Extracted 1874 characters for exercise shoulders-39
+Sample of converted JSON for shoulders-39: {
+      "id": "shoulders-39",
+      "name": "Banded Lateral Raise",
+      "description":
+        "Th...
+Error parsing exercise shoulders-39: Expected ',' or '}' after property value in JSON at position 1660
+Wrote problematic JSON for shoulders-39 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-39.json for debugging
+Processing exercise: shoulders-40
+Extracted 2069 characters for exercise shoulders-40
+Sample of converted JSON for shoulders-40: {
+      "id": "shoulders-40",
+      "name": "Banded Shoulder Dislocates",
+      "description":
+     ...
+Error parsing exercise shoulders-40: Expected ',' or '}' after property value in JSON at position 1855
+Wrote problematic JSON for shoulders-40 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-40.json for debugging
+Processing exercise: shoulders-41
+Extracted 2778 characters for exercise shoulders-41
+Sample of converted JSON for shoulders-41: {
+      "id": "shoulders-41",
+      "name": "Bent Over Rear Delt Fly (Head on Bench)",
+      "descri...
+Error parsing exercise shoulders-41: Expected ',' or '}' after property value in JSON at position 2564
+Wrote problematic JSON for shoulders-41 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-41.json for debugging
+Processing exercise: shoulders-42
+Extracted 2827 characters for exercise shoulders-42
+Sample of converted JSON for shoulders-42: {
+      "id": "shoulders-42",
+      "name": "Alternate Seated Dumbbell Press",
+      "description":
+...
+Error parsing exercise shoulders-42: Expected ',' or '}' after property value in JSON at position 2609
+Wrote problematic JSON for shoulders-42 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-42.json for debugging
+Processing exercise: shoulders-43
+Extracted 3146 characters for exercise shoulders-43
+Sample of converted JSON for shoulders-43: {
+      "id": "shoulders-43",
+      "name": "Push Press",
+      "description":
+        "The push pre...
+Error parsing exercise shoulders-43: Expected ',' or '}' after property value in JSON at position 2928
+Wrote problematic JSON for shoulders-43 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-43.json for debugging
+Processing exercise: shoulders-44
+Extracted 2024 characters for exercise shoulders-44
+Sample of converted JSON for shoulders-44: {
+      "id": "shoulders-44",
+      "name": "Seated Dumbbell Front Raise",
+      "description":
+    ...
+Error parsing exercise shoulders-44: Expected ',' or '}' after property value in JSON at position 1772
+Wrote problematic JSON for shoulders-44 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-44.json for debugging
+Processing exercise: shoulders-45
+Extracted 2375 characters for exercise shoulders-45
+Sample of converted JSON for shoulders-45: {
+      "id": "shoulders-45",
+      "name": "Standing One Arm Kettlebell Press",
+      "description"...
+Error parsing exercise shoulders-45: Expected ',' or '}' after property value in JSON at position 2162
+Wrote problematic JSON for shoulders-45 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-45.json for debugging
+Processing exercise: shoulders-46
+Extracted 2210 characters for exercise shoulders-46
+Sample of converted JSON for shoulders-46: {
+      "id": "shoulders-46",
+      "name": "Kettlebell Lateral Raise",
+      "description":
+       ...
+Error parsing exercise shoulders-46: Expected ',' or '}' after property value in JSON at position 1996
+Wrote problematic JSON for shoulders-46 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-46.json for debugging
+Processing exercise: shoulders-47
+Extracted 1995 characters for exercise shoulders-47
+Sample of converted JSON for shoulders-47: {
+      "id": "shoulders-47",
+      "name": "One-Arm Bent-Over Cable Reverse Fly",
+      "descriptio...
+Error parsing exercise shoulders-47: Expected ',' or '}' after property value in JSON at position 1743
+Wrote problematic JSON for shoulders-47 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-47.json for debugging
+Processing exercise: shoulders-48
+Extracted 2825 characters for exercise shoulders-48
+Sample of converted JSON for shoulders-48: {
+      "id": "shoulders-48",
+      "name": "Z Press",
+      "description":
+        "The Z press is ...
+Error parsing exercise shoulders-48: Expected ',' or '}' after property value in JSON at position 2607
+Wrote problematic JSON for shoulders-48 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-48.json for debugging
+Processing exercise: shoulders-49
+Extracted 2417 characters for exercise shoulders-49
+Sample of converted JSON for shoulders-49: {
+      "id": "shoulders-49",
+      "name": "Half Kneeling Kettlebell Press",
+      "description":
+ ...
+Error parsing exercise shoulders-49: Expected ',' or '}' after property value in JSON at position 2203
+Wrote problematic JSON for shoulders-49 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-49.json for debugging
+Processing exercise: shoulders-50
+Extracted 2746 characters for exercise shoulders-50
+Sample of converted JSON for shoulders-50: {
+      "id": "shoulders-50",
+      "name": "Banded Standing Shoulder Press",
+      "description":
+ ...
+Error parsing exercise shoulders-50: Expected ',' or '}' after property value in JSON at position 2532
+Wrote problematic JSON for shoulders-50 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-50.json for debugging
+Processing exercise: shoulders-51
+Extracted 1886 characters for exercise shoulders-51
+Sample of converted JSON for shoulders-51: {
+      "id": "shoulders-51",
+      "name": "Smith Machine Behind the Neck Shoulder Press",
+      "d...
+Error parsing exercise shoulders-51: Expected ',' or '}' after property value in JSON at position 1634
+Wrote problematic JSON for shoulders-51 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-51.json for debugging
+Processing exercise: shoulders-52
+Extracted 2486 characters for exercise shoulders-52
+Sample of converted JSON for shoulders-52: {
+      "id": "shoulders-52",
+      "name": "Standing Kettlebell Press",
+      "description":
+      ...
+Error parsing exercise shoulders-52: Expected ',' or '}' after property value in JSON at position 2272
+Wrote problematic JSON for shoulders-52 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-52.json for debugging
+Processing exercise: shoulders-53
+Extracted 2626 characters for exercise shoulders-53
+Sample of converted JSON for shoulders-53: {
+      "id": "shoulders-53",
+      "name": "Banded Upright Row",
+      "description":
+        "The ...
+Error parsing exercise shoulders-53: Expected ',' or '}' after property value in JSON at position 2412
+Wrote problematic JSON for shoulders-53 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-53.json for debugging
+Processing exercise: shoulders-54
+Extracted 1828 characters for exercise shoulders-54
+Sample of converted JSON for shoulders-54: {
+      "id": "shoulders-54",
+      "name": "Overhead Front Raise (with Weight Plate)",
+      "descr...
+Error parsing exercise shoulders-54: Expected ',' or '}' after property value in JSON at position 1580
+Wrote problematic JSON for shoulders-54 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-54.json for debugging
+Processing exercise: shoulders-55
+Extracted 2366 characters for exercise shoulders-55
+Sample of converted JSON for shoulders-55: {
+      "id": "shoulders-55",
+      "name": "Kettlebell Angled Press",
+      "description":
+        ...
+Error parsing exercise shoulders-55: Expected ',' or '}' after property value in JSON at position 2152
+Wrote problematic JSON for shoulders-55 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-55.json for debugging
+Processing exercise: shoulders-56
+Extracted 2697 characters for exercise shoulders-56
+Sample of converted JSON for shoulders-56: {
+      "id": "shoulders-56",
+      "name": "Scapular Wall Slide",
+      "description":
+        "The...
+Error parsing exercise shoulders-56: Expected ',' or '}' after property value in JSON at position 2485
+Wrote problematic JSON for shoulders-56 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-56.json for debugging
+Processing exercise: shoulders-57
+Extracted 2089 characters for exercise shoulders-57
+Sample of converted JSON for shoulders-57: {
+      "id": "shoulders-57",
+      "name": "Dublin Press",
+      "description": "No description ava...
+Error parsing exercise shoulders-57: Expected ',' or '}' after property value in JSON at position 1837
+Wrote problematic JSON for shoulders-57 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-57.json for debugging
+Processing exercise: shoulders-58
+Extracted 3058 characters for exercise shoulders-58
+Sample of converted JSON for shoulders-58: {
+      "id": "shoulders-58",
+      "name": "Back to Wall Shoulder Flexion",
+      "description":
+  ...
+Error parsing exercise shoulders-58: Expected ',' or '}' after property value in JSON at position 2845
+Wrote problematic JSON for shoulders-58 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-58.json for debugging
+Processing exercise: shoulders-59
+Extracted 2756 characters for exercise shoulders-59
+Sample of converted JSON for shoulders-59: {
+      "id": "shoulders-59",
+      "name": "Cable Face Pull with External Rotation",
+      "descrip...
+Error parsing exercise shoulders-59: Expected ',' or '}' after property value in JSON at position 2542
+Wrote problematic JSON for shoulders-59 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-59.json for debugging
+Processing exercise: shoulders-60
+Extracted 2963 characters for exercise shoulders-60
+Sample of converted JSON for shoulders-60: {
+      "id": "shoulders-60",
+      "name": "Seated Cuban Press",
+      "description":
+        "The ...
+Error parsing exercise shoulders-60: Expected ',' or '}' after property value in JSON at position 2750
+Wrote problematic JSON for shoulders-60 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-60.json for debugging
+Processing exercise: shoulders-61
+Extracted 1936 characters for exercise shoulders-61
+Sample of converted JSON for shoulders-61: {
+      "id": "shoulders-61",
+      "name": "Banded Internal Rotation",
+      "description":
+       ...
+Error parsing exercise shoulders-61: Expected ',' or '}' after property value in JSON at position 1723
+Wrote problematic JSON for shoulders-61 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-61.json for debugging
+Processing exercise: shoulders-62
+Extracted 2147 characters for exercise shoulders-62
+Sample of converted JSON for shoulders-62: {
+      "id": "shoulders-62",
+      "name": "Cable Internal Rotation",
+      "description":
+        ...
+Error parsing exercise shoulders-62: Expected ',' or '}' after property value in JSON at position 1933
+Wrote problematic JSON for shoulders-62 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-62.json for debugging
+Processing exercise: shoulders-63
+Extracted 3396 characters for exercise shoulders-63
+Sample of converted JSON for shoulders-63: {
+      "id": "shoulders-63",
+      "name": "Landmine Thruster",
+      "description":
+        "The l...
+Error parsing exercise shoulders-63: Expected ',' or ']' after array element in JSON at position 2016
+Wrote problematic JSON for shoulders-63 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-63.json for debugging
+Processing exercise: shoulders-64
+Extracted 2101 characters for exercise shoulders-64
+Sample of converted JSON for shoulders-64: {
+      "id": "shoulders-64",
+      "name": "Lying Dumbbell Front Raise On Incline Bench",
+      "de...
+Error parsing exercise shoulders-64: Expected ',' or '}' after property value in JSON at position 1887
+Wrote problematic JSON for shoulders-64 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-64.json for debugging
+Processing exercise: shoulders-65
+Extracted 2303 characters for exercise shoulders-65
+Sample of converted JSON for shoulders-65: {
+      "id": "shoulders-65",
+      "name": "Modified Handstand Push Up (Off Box)",
+      "descripti...
+Error parsing exercise shoulders-65: Expected ',' or '}' after property value in JSON at position 2090
+Wrote problematic JSON for shoulders-65 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-65.json for debugging
+Processing exercise: shoulders-66
+Extracted 2239 characters for exercise shoulders-66
+Sample of converted JSON for shoulders-66: {
+      "id": "shoulders-66",
+      "name": "Alternating Dumbbell Front Raise",
+      "description":...
+Error parsing exercise shoulders-66: Expected ',' or '}' after property value in JSON at position 1989
+Wrote problematic JSON for shoulders-66 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-66.json for debugging
+Processing exercise: shoulders-67
+Extracted 2677 characters for exercise shoulders-67
+Sample of converted JSON for shoulders-67: {
+      "id": "shoulders-67",
+      "name": "One-Arm Standing Dumbbell Shoulder Press",
+      "descr...
+Error parsing exercise shoulders-67: Expected ',' or '}' after property value in JSON at position 2425
+Wrote problematic JSON for shoulders-67 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-67.json for debugging
+Processing exercise: shoulders-68
+Extracted 2267 characters for exercise shoulders-68
+Sample of converted JSON for shoulders-68: {
+      "id": "shoulders-68",
+      "name": "2 KB Kettlebell Push Press",
+      "description":
+     ...
+Error parsing exercise shoulders-68: Expected ',' or '}' after property value in JSON at position 2053
+Wrote problematic JSON for shoulders-68 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-68.json for debugging
+Processing exercise: shoulders-69
+Extracted 3214 characters for exercise shoulders-69
+Sample of converted JSON for shoulders-69: {
+      "id": "shoulders-69",
+      "name": "Shoulder Pin Press",
+      "description":
+        "The ...
+Error parsing exercise shoulders-69: Expected ',' or '}' after property value in JSON at position 3000
+Wrote problematic JSON for shoulders-69 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-69.json for debugging
+Processing exercise: shoulders-70
+Extracted 2311 characters for exercise shoulders-70
+Sample of converted JSON for shoulders-70: {
+      "id": "shoulders-70",
+      "name": "Seated Barbell Front Raise",
+      "description":
+     ...
+Error parsing exercise shoulders-70: Expected ',' or '}' after property value in JSON at position 2059
+Wrote problematic JSON for shoulders-70 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-70.json for debugging
+Processing exercise: shoulders-71
+Extracted 1968 characters for exercise shoulders-71
+Sample of converted JSON for shoulders-71: {
+      "id": "shoulders-71",
+      "name": "Bus Drivers",
+      "description":
+        "The bus dri...
+Error parsing exercise shoulders-71: Expected ',' or '}' after property value in JSON at position 1754
+Wrote problematic JSON for shoulders-71 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-71.json for debugging
+Processing exercise: shoulders-72
+Extracted 3522 characters for exercise shoulders-72
+Sample of converted JSON for shoulders-72: {
+      "id": "shoulders-72",
+      "name": "Rotational Medicine Ball Throw",
+      "description":
+ ...
+Error parsing exercise shoulders-72: Expected ',' or '}' after property value in JSON at position 3309
+Wrote problematic JSON for shoulders-72 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-72.json for debugging
+Processing exercise: shoulders-73
+Extracted 2159 characters for exercise shoulders-73
+Sample of converted JSON for shoulders-73: {
+      "id": "shoulders-73",
+      "name": "3-D Band Pull Apart",
+      "description":
+        "The...
+Error parsing exercise shoulders-73: Expected ',' or '}' after property value in JSON at position 1946
+Wrote problematic JSON for shoulders-73 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-73.json for debugging
+Processing exercise: shoulders-74
+Extracted 2250 characters for exercise shoulders-74
+Sample of converted JSON for shoulders-74: {
+      "id": "shoulders-74",
+      "name": "Supinated 90 Degree Band Pull Apart",
+      "descriptio...
+Error parsing exercise shoulders-74: Expected ',' or '}' after property value in JSON at position 2037
+Wrote problematic JSON for shoulders-74 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-74.json for debugging
+Processing exercise: shoulders-75
+Extracted 2577 characters for exercise shoulders-75
+Sample of converted JSON for shoulders-75: {
+      "id": "shoulders-75",
+      "name": "Side Lying Rear Delt Fly",
+      "description":
+       ...
+Error parsing exercise shoulders-75: Expected ',' or '}' after property value in JSON at position 2363
+Wrote problematic JSON for shoulders-75 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-75.json for debugging
+Processing exercise: shoulders-76
+Extracted 2808 characters for exercise shoulders-76
+Sample of converted JSON for shoulders-76: {
+      "id": "shoulders-76",
+      "name": "Single Arm Landmine Push Press",
+      "description":
+ ...
+Error parsing exercise shoulders-76: Expected ',' or '}' after property value in JSON at position 2594
+Wrote problematic JSON for shoulders-76 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-76.json for debugging
+Processing exercise: shoulders-77
+Extracted 2406 characters for exercise shoulders-77
+Sample of converted JSON for shoulders-77: {
+      "id": "shoulders-77",
+      "name": "Lying Shoulder Press",
+      "description":
+        "Th...
+Error parsing exercise shoulders-77: Expected ',' or '}' after property value in JSON at position 2192
+Wrote problematic JSON for shoulders-77 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-77.json for debugging
+Processing exercise: shoulders-78
+Extracted 2196 characters for exercise shoulders-78
+Sample of converted JSON for shoulders-78: {
+      "id": "shoulders-78",
+      "name": "Standing Banded Face Pull",
+      "description":
+      ...
+Error parsing exercise shoulders-78: Expected ',' or '}' after property value in JSON at position 1982
+Wrote problematic JSON for shoulders-78 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-78.json for debugging
+Processing exercise: shoulders-79
+Extracted 1946 characters for exercise shoulders-79
+Sample of converted JSON for shoulders-79: {
+      "id": "shoulders-79",
+      "name": "Knee to Elbow Dumbbell External Rotation",
+      "descr...
+Error parsing exercise shoulders-79: Expected ',' or '}' after property value in JSON at position 1733
+Wrote problematic JSON for shoulders-79 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-79.json for debugging
+Processing exercise: shoulders-80
+Extracted 2733 characters for exercise shoulders-80
+Sample of converted JSON for shoulders-80: {
+      "id": "shoulders-80",
+      "name": "Alternating Standing Dumbbell Shoulder Press",
+      "d...
+Error parsing exercise shoulders-80: Expected ',' or '}' after property value in JSON at position 2481
+Wrote problematic JSON for shoulders-80 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-80.json for debugging
+Processing exercise: shoulders-81
+Extracted 1806 characters for exercise shoulders-81
+Sample of converted JSON for shoulders-81: {
+      "id": "shoulders-81",
+      "name": "Alternating Dumbbell Lateral Raise",
+      "description...
+Error parsing exercise shoulders-81: Expected ',' or '}' after property value in JSON at position 1554
+Wrote problematic JSON for shoulders-81 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-81.json for debugging
+Processing exercise: shoulders-82
+Extracted 3042 characters for exercise shoulders-82
+Sample of converted JSON for shoulders-82: {
+      "id": "shoulders-82",
+      "name": "Exercise Ball Dumbbell Shoulder Press",
+      "descript...
+Error parsing exercise shoulders-82: Expected ',' or '}' after property value in JSON at position 2758
+Wrote problematic JSON for shoulders-82 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-82.json for debugging
+Processing exercise: shoulders-83
+Extracted 2048 characters for exercise shoulders-83
+Sample of converted JSON for shoulders-83: {
+      "id": "shoulders-83",
+      "name": "One-Arm Cable Front Raise",
+      "description": "No de...
+Error parsing exercise shoulders-83: Expected ',' or '}' after property value in JSON at position 1796
+Wrote problematic JSON for shoulders-83 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-83.json for debugging
+Processing exercise: shoulders-84
+Extracted 2663 characters for exercise shoulders-84
+Sample of converted JSON for shoulders-84: {
+      "id": "shoulders-84",
+      "name": "Alternating Seated Bent Over Rear Delt Fly",
+      "des...
+Error parsing exercise shoulders-84: Expected ',' or '}' after property value in JSON at position 2412
+Wrote problematic JSON for shoulders-84 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-84.json for debugging
+Processing exercise: shoulders-85
+Extracted 2283 characters for exercise shoulders-85
+Sample of converted JSON for shoulders-85: {
+      "id": "shoulders-85",
+      "name": "Lying Rear Delt Fly",
+      "description":
+        "The...
+Error parsing exercise shoulders-85: Expected ',' or '}' after property value in JSON at position 2031
+Wrote problematic JSON for shoulders-85 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-85.json for debugging
+Processing exercise: shoulders-86
+Extracted 2654 characters for exercise shoulders-86
+Sample of converted JSON for shoulders-86: {
+      "id": "shoulders-86",
+      "name": "One-Arm Seated Dumbbell Shoulder Press",
+      "descrip...
+Error parsing exercise shoulders-86: Expected ',' or '}' after property value in JSON at position 2402
+Wrote problematic JSON for shoulders-86 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-86.json for debugging
+Processing exercise: shoulders-87
+Extracted 3401 characters for exercise shoulders-87
+Sample of converted JSON for shoulders-87: {
+      "id": "shoulders-87",
+      "name": "Military Press Behind Neck",
+      "description":
+     ...
+Error parsing exercise shoulders-87: Expected ',' or '}' after property value in JSON at position 3188
+Wrote problematic JSON for shoulders-87 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-87.json for debugging
+Processing exercise: shoulders-88
+Extracted 1747 characters for exercise shoulders-88
+Sample of converted JSON for shoulders-88: {
+      "id": "shoulders-88",
+      "name": "Banded Y\"s",
+      "description":
+        "The banded ...
+Error parsing exercise shoulders-88: Expected ',' or '}' after property value in JSON at position 1535
+Wrote problematic JSON for shoulders-88 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-88.json for debugging
+Processing exercise: shoulders-89
+Extracted 1977 characters for exercise shoulders-89
+Sample of converted JSON for shoulders-89: {
+      "id": "shoulders-89",
+      "name": "Standing External Rotation (\"No Money Drill\")",
+     ...
+Error parsing exercise shoulders-89: Expected ',' or '}' after property value in JSON at position 1766
+Wrote problematic JSON for shoulders-89 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-89.json for debugging
+Processing exercise: shoulders-90
+Extracted 3372 characters for exercise shoulders-90
+Sample of converted JSON for shoulders-90: {
+      "id": "shoulders-90",
+      "name": "Standing Bradford Press (Rocky Press)",
+      "descript...
+Error parsing exercise shoulders-90: Expected ',' or '}' after property value in JSON at position 3158
+Wrote problematic JSON for shoulders-90 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-90.json for debugging
+Processing exercise: shoulders-91
+Extracted 2313 characters for exercise shoulders-91
+Sample of converted JSON for shoulders-91: {
+      "id": "shoulders-91",
+      "name": "Serrano Press",
+      "description":
+        "The Serra...
+Error parsing exercise shoulders-91: Expected ',' or '}' after property value in JSON at position 2099
+Wrote problematic JSON for shoulders-91 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-91.json for debugging
+Processing exercise: shoulders-92
+Extracted 2732 characters for exercise shoulders-92
+Sample of converted JSON for shoulders-92: {
+      "id": "shoulders-92",
+      "name": "Seated Alternating Arnold Press",
+      "description":
+...
+Error parsing exercise shoulders-92: Expected ',' or '}' after property value in JSON at position 2476
+Wrote problematic JSON for shoulders-92 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-92.json for debugging
+Processing exercise: shoulders-93
+Extracted 2735 characters for exercise shoulders-93
+Sample of converted JSON for shoulders-93: {
+      "id": "shoulders-93",
+      "name": "Tall Kneeling Battling Ropes",
+      "description":
+   ...
+Error parsing exercise shoulders-93: Expected ',' or ']' after array element in JSON at position 1712
+Wrote problematic JSON for shoulders-93 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-93.json for debugging
+Processing exercise: shoulders-94
+Extracted 1891 characters for exercise shoulders-94
+Sample of converted JSON for shoulders-94: {
+      "id": "shoulders-94",
+      "name": "Single Arm Banded External Rotation",
+      "descriptio...
+Error parsing exercise shoulders-94: Expected ',' or '}' after property value in JSON at position 1678
+Wrote problematic JSON for shoulders-94 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-94.json for debugging
+Processing exercise: shoulders-95
+Extracted 2922 characters for exercise shoulders-95
+Sample of converted JSON for shoulders-95: {
+      "id": "shoulders-95",
+      "name": "Alternating Waves with Kneeling Get Ups Battling Ropes"...
+Error parsing exercise shoulders-95: Expected ',' or '}' after property value in JSON at position 2708
+Wrote problematic JSON for shoulders-95 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-95.json for debugging
+Processing exercise: shoulders-96
+Extracted 2390 characters for exercise shoulders-96
+Sample of converted JSON for shoulders-96: {
+      "id": "shoulders-96",
+      "name": "Power Slam Battling Rope",
+      "description":
+       ...
+Error parsing exercise shoulders-96: Expected ',' or '}' after property value in JSON at position 2177
+Wrote problematic JSON for shoulders-96 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-96.json for debugging
+Processing exercise: shoulders-97
+Extracted 2515 characters for exercise shoulders-97
+Sample of converted JSON for shoulders-97: {
+      "id": "shoulders-97",
+      "name": "Alternating Incline Rear Delt Fly",
+      "description"...
+Error parsing exercise shoulders-97: Expected ',' or '}' after property value in JSON at position 2263
+Wrote problematic JSON for shoulders-97 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-97.json for debugging
+Processing exercise: shoulders-98
+Extracted 3012 characters for exercise shoulders-98
+Sample of converted JSON for shoulders-98: {
+      "id": "shoulders-98",
+      "name": "Seated Alternating Neutral Grip Dumbbell Shoulder Press...
+Error parsing exercise shoulders-98: Expected ',' or '}' after property value in JSON at position 2761
+Wrote problematic JSON for shoulders-98 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-98.json for debugging
+Processing exercise: shoulders-99
+Extracted 2248 characters for exercise shoulders-99
+Sample of converted JSON for shoulders-99: {
+      "id": "shoulders-99",
+      "name": "Pronated 90 Degree Band Pull Apart",
+      "description...
+Error parsing exercise shoulders-99: Expected ',' or '}' after property value in JSON at position 2035
+Wrote problematic JSON for shoulders-99 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-99.json for debugging
+Processing exercise: shoulders-100
+Extracted 2438 characters for exercise shoulders-100
+Sample of converted JSON for shoulders-100: {
+      "id": "shoulders-100",
+      "name": "Anti-Gravity Press",
+      "description":
+        "The...
+Error parsing exercise shoulders-100: Expected ',' or '}' after property value in JSON at position 2214
+Wrote problematic JSON for shoulders-100 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-100.json for debugging
+Processing exercise: shoulders-101
+Extracted 2651 characters for exercise shoulders-101
+Sample of converted JSON for shoulders-101: {
+      "id": "shoulders-101",
+      "name": "Standing Neutral Grip Dumbbell Shoulder Press",
+      ...
+Error parsing exercise shoulders-101: Expected ',' or '}' after property value in JSON at position 2399
+Wrote problematic JSON for shoulders-101 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-101.json for debugging
+Processing exercise: shoulders-102
+Extracted 2208 characters for exercise shoulders-102
+Sample of converted JSON for shoulders-102: {
+      "id": "shoulders-102",
+      "name": "Bench Supported Dumbbell External Rotation",
+      "de...
+Error parsing exercise shoulders-102: Expected ',' or '}' after property value in JSON at position 1995
+Wrote problematic JSON for shoulders-102 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-102.json for debugging
+Processing exercise: shoulders-103
+Extracted 2469 characters for exercise shoulders-103
+Sample of converted JSON for shoulders-103: {
+      "id": "shoulders-103",
+      "name": "One-Arm Lying Rear Delt Fly",
+      "description":
+   ...
+Error parsing exercise shoulders-103: Expected ',' or '}' after property value in JSON at position 2218
+Wrote problematic JSON for shoulders-103 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-103.json for debugging
+Processing exercise: shoulders-104
+Extracted 2679 characters for exercise shoulders-104
+Sample of converted JSON for shoulders-104: {
+      "id": "shoulders-104",
+      "name": "Shoulder To Shoulder Press",
+      "description":
+    ...
+Error parsing exercise shoulders-104: Expected ',' or '}' after property value in JSON at position 2466
+Wrote problematic JSON for shoulders-104 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-104.json for debugging
+Processing exercise: shoulders-105
+Extracted 2802 characters for exercise shoulders-105
+Sample of converted JSON for shoulders-105: {
+      "id": "shoulders-105",
+      "name": "One-Arm Seated Arnold Press",
+      "description":
+   ...
+Error parsing exercise shoulders-105: Expected ',' or '}' after property value in JSON at position 2550
+Wrote problematic JSON for shoulders-105 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-105.json for debugging
+Processing exercise: shoulders-106
+Extracted 3074 characters for exercise shoulders-106
+Sample of converted JSON for shoulders-106: {
+      "id": "shoulders-106",
+      "name": "Seated Bradford Press (AKA Seated Rocky Press)",
+     ...
+Error parsing exercise shoulders-106: Expected ',' or '}' after property value in JSON at position 2860
+Wrote problematic JSON for shoulders-106 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-106.json for debugging
+Processing exercise: shoulders-107
+Extracted 2212 characters for exercise shoulders-107
+Sample of converted JSON for shoulders-107: {
+      "id": "shoulders-107",
+      "name": "One-Arm Seated Dumbbell Front Raise",
+      "descripti...
+Error parsing exercise shoulders-107: Expected ',' or '}' after property value in JSON at position 1961
+Wrote problematic JSON for shoulders-107 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-107.json for debugging
+Processing exercise: shoulders-108
+Extracted 2627 characters for exercise shoulders-108
+Sample of converted JSON for shoulders-108: {
+      "id": "shoulders-108",
+      "name": "Quadruped Push Up Plus",
+      "description":
+        ...
+Error parsing exercise shoulders-108: Expected ',' or '}' after property value in JSON at position 2421
+Wrote problematic JSON for shoulders-108 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-108.json for debugging
+Processing exercise: shoulders-109
+Extracted 2294 characters for exercise shoulders-109
+Sample of converted JSON for shoulders-109: {
+      "id": "shoulders-109",
+      "name": "Half Kneeling Banded Face Pull",
+      "description":
+...
+Error parsing exercise shoulders-109: Expected ',' or '}' after property value in JSON at position 2080
+Wrote problematic JSON for shoulders-109 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-109.json for debugging
+Processing exercise: shoulders-110
+Extracted 2403 characters for exercise shoulders-110
+Sample of converted JSON for shoulders-110: {
+      "id": "shoulders-110",
+      "name": "One Arm Kettlebell Z Press",
+      "description":
+    ...
+Error parsing exercise shoulders-110: Expected ',' or '}' after property value in JSON at position 2189
+Wrote problematic JSON for shoulders-110 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-110.json for debugging
+Processing exercise: shoulders-111
+Extracted 1992 characters for exercise shoulders-111
+Sample of converted JSON for shoulders-111: {
+      "id": "shoulders-111",
+      "name": "Half Kneeling Banded External Rotation",
+      "descri...
+Error parsing exercise shoulders-111: Expected ',' or '}' after property value in JSON at position 1779
+Wrote problematic JSON for shoulders-111 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-111.json for debugging
+Processing exercise: shoulders-112
+Extracted 2808 characters for exercise shoulders-112
+Sample of converted JSON for shoulders-112: {
+      "id": "shoulders-112",
+      "name": "Alternating Standing Arnold Press",
+      "description...
+Error parsing exercise shoulders-112: Expected ',' or '}' after property value in JSON at position 2556
+Wrote problematic JSON for shoulders-112 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-112.json for debugging
+Processing exercise: shoulders-113
+Extracted 3196 characters for exercise shoulders-113
+Sample of converted JSON for shoulders-113: {
+      "id": "shoulders-113",
+      "name": "Band Resistance Single Arm Standing Landmine Press",
+ ...
+Error parsing exercise shoulders-113: Expected ',' or '}' after property value in JSON at position 2983
+Wrote problematic JSON for shoulders-113 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-113.json for debugging
+Processing exercise: shoulders-114
+Extracted 2794 characters for exercise shoulders-114
+Sample of converted JSON for shoulders-114: {
+      "id": "shoulders-114",
+      "name": "One Arm Dumbbell Rear Delt Fly On Incline Bench",
+    ...
+Error parsing exercise shoulders-114: Expected ',' or '}' after property value in JSON at position 2580
+Wrote problematic JSON for shoulders-114 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-114.json for debugging
+Processing exercise: shoulders-115
+Extracted 2870 characters for exercise shoulders-115
+Sample of converted JSON for shoulders-115: {
+      "id": "shoulders-115",
+      "name": "Lateral Raise Partials",
+      "description":
+        ...
+Error parsing exercise shoulders-115: Expected ',' or '}' after property value in JSON at position 2662
+Wrote problematic JSON for shoulders-115 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-115.json for debugging
+Processing exercise: shoulders-116
+Extracted 2537 characters for exercise shoulders-116
+Sample of converted JSON for shoulders-116: {
+      "id": "shoulders-116",
+      "name": "Half Kneeling Dumbbell Press",
+      "description":
+  ...
+Error parsing exercise shoulders-116: Expected ',' or '}' after property value in JSON at position 2324
+Wrote problematic JSON for shoulders-116 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-116.json for debugging
+Processing exercise: shoulders-117
+Extracted 3641 characters for exercise shoulders-117
+Sample of converted JSON for shoulders-117: {
+      "id": "shoulders-117",
+      "name": "Rotational Med Ball Shot Put",
+      "description":
+  ...
+Error parsing exercise shoulders-117: Expected ',' or '}' after property value in JSON at position 3428
+Wrote problematic JSON for shoulders-117 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-117.json for debugging
+Processing exercise: shoulders-118
+Extracted 2697 characters for exercise shoulders-118
+Sample of converted JSON for shoulders-118: {
+      "id": "shoulders-118",
+      "name": "Single Arm Landmine Press",
+      "description":
+     ...
+Error parsing exercise shoulders-118: Expected ',' or '}' after property value in JSON at position 2483
+Wrote problematic JSON for shoulders-118 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-118.json for debugging
+Processing exercise: shoulders-119
+Extracted 2184 characters for exercise shoulders-119
+Sample of converted JSON for shoulders-119: {
+      "id": "shoulders-119",
+      "name": "Standing Dublin Press",
+      "description": "No descr...
+Error parsing exercise shoulders-119: Expected ',' or '}' after property value in JSON at position 1932
+Wrote problematic JSON for shoulders-119 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-119.json for debugging
+Processing exercise: shoulders-120
+Extracted 1708 characters for exercise shoulders-120
+Sample of converted JSON for shoulders-120: {
+      "id": "shoulders-120",
+      "name": "Seated Barbell Overhead Front Raise",
+      "descripti...
+Error parsing exercise shoulders-120: Expected ',' or '}' after property value in JSON at position 1459
+Wrote problematic JSON for shoulders-120 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-120.json for debugging
+Processing exercise: shoulders-121
+Extracted 2606 characters for exercise shoulders-121
+Sample of converted JSON for shoulders-121: {
+      "id": "shoulders-121",
+      "name": "Exercise Ball Lateral Raise",
+      "description":
+   ...
+Error parsing exercise shoulders-121: Expected ',' or '}' after property value in JSON at position 2361
+Wrote problematic JSON for shoulders-121 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-121.json for debugging
+Processing exercise: shoulders-122
+Extracted 3017 characters for exercise shoulders-122
+Sample of converted JSON for shoulders-122: {
+      "id": "shoulders-122",
+      "name": "Face Pulls on Rings",
+      "description":
+        "Th...
+Error parsing exercise shoulders-122: Expected ',' or '}' after property value in JSON at position 2804
+Wrote problematic JSON for shoulders-122 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-122.json for debugging
+Processing exercise: shoulders-123
+Extracted 2203 characters for exercise shoulders-123
+Sample of converted JSON for shoulders-123: {
+      "id": "shoulders-123",
+      "name": "One-Arm Dumbbell Front Raise",
+      "description":
+  ...
+Error parsing exercise shoulders-123: Expected ',' or '}' after property value in JSON at position 1953
+Wrote problematic JSON for shoulders-123 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-123.json for debugging
+Processing exercise: shoulders-124
+Extracted 2913 characters for exercise shoulders-124
+Sample of converted JSON for shoulders-124: {
+      "id": "shoulders-124",
+      "name": "Back to Wall Alternating Shoulder Flexion",
+      "des...
+Error parsing exercise shoulders-124: Expected ',' or '}' after property value in JSON at position 2700
+Wrote problematic JSON for shoulders-124 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-124.json for debugging
+Processing exercise: shoulders-125
+Extracted 2139 characters for exercise shoulders-125
+Sample of converted JSON for shoulders-125: {
+      "id": "shoulders-125",
+      "name": "Lying Cable Front Raise",
+      "description": "No des...
+Error parsing exercise shoulders-125: Expected ',' or '}' after property value in JSON at position 1890
+Wrote problematic JSON for shoulders-125 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-125.json for debugging
+Processing exercise: shoulders-126
+Extracted 3739 characters for exercise shoulders-126
+Sample of converted JSON for shoulders-126: {
+      "id": "shoulders-126",
+      "name": "Rotational Medicine Ball Step Behind Shot Put",
+      ...
+Error parsing exercise shoulders-126: Expected ',' or '}' after property value in JSON at position 3526
+Wrote problematic JSON for shoulders-126 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-126.json for debugging
+Processing exercise: shoulders-127
+Extracted 2687 characters for exercise shoulders-127
+Sample of converted JSON for shoulders-127: {
+      "id": "shoulders-127",
+      "name": "One-Arm Seated Dumbbell Lateral Raise",
+      "descrip...
+Error parsing exercise shoulders-127: Expected ',' or '}' after property value in JSON at position 2443
+Wrote problematic JSON for shoulders-127 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-127.json for debugging
+Processing exercise: shoulders-128
+Extracted 2953 characters for exercise shoulders-128
+Sample of converted JSON for shoulders-128: {
+      "id": "shoulders-128",
+      "name": "Standing Neutral Grip Alternating Dumbbell Shoulder Pr...
+Error parsing exercise shoulders-128: Expected ',' or ']' after array element in JSON at position 1146
+Wrote problematic JSON for shoulders-128 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-128.json for debugging
+Processing exercise: shoulders-129
+Extracted 2903 characters for exercise shoulders-129
+Sample of converted JSON for shoulders-129: {
+      "id": "shoulders-129",
+      "name": "Reverse Flys on Rings",
+      "description":
+        "...
+Error parsing exercise shoulders-129: Expected ',' or '}' after property value in JSON at position 2690
+Wrote problematic JSON for shoulders-129 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-129.json for debugging
+Processing exercise: shoulders-130
+Extracted 2563 characters for exercise shoulders-130
+Sample of converted JSON for shoulders-130: {
+      "id": "shoulders-130",
+      "name": "Jumping Jacks Battling Ropes",
+      "description":
+  ...
+Error parsing exercise shoulders-130: Expected ',' or '}' after property value in JSON at position 2349
+Wrote problematic JSON for shoulders-130 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-130.json for debugging
+Processing exercise: shoulders-131
+Extracted 1882 characters for exercise shoulders-131
+Sample of converted JSON for shoulders-131: {
+      "id": "shoulders-131",
+      "name": "Barbell Overhead Front Raise",
+      "description":
+  ...
+Error parsing exercise shoulders-131: Expected ',' or '}' after property value in JSON at position 1668
+Wrote problematic JSON for shoulders-131 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-131.json for debugging
+Processing exercise: shoulders-132
+Extracted 2728 characters for exercise shoulders-132
+Sample of converted JSON for shoulders-132: {
+      "id": "shoulders-132",
+      "name": "Half Kneeling Battling Rope",
+      "description":
+   ...
+Error parsing exercise shoulders-132: Expected ',' or ']' after array element in JSON at position 1715
+Wrote problematic JSON for shoulders-132 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-132.json for debugging
+Processing exercise: shoulders-133
+Extracted 2836 characters for exercise shoulders-133
+Sample of converted JSON for shoulders-133: {
+      "id": "shoulders-133",
+      "name": "Kettlebell Arm Bar",
+      "description":
+        "The...
+Error parsing exercise shoulders-133: Expected ',' or '}' after property value in JSON at position 2622
+Wrote problematic JSON for shoulders-133 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-133.json for debugging
+Processing exercise: shoulders-134
+Extracted 2549 characters for exercise shoulders-134
+Sample of converted JSON for shoulders-134: {
+      "id": "shoulders-134",
+      "name": "Half Kneeling Bottoms Up Kettlebell Press",
+      "des...
+Error parsing exercise shoulders-134: Expected ',' or '}' after property value in JSON at position 2336
+Wrote problematic JSON for shoulders-134 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-134.json for debugging
+Processing exercise: shoulders-135
+Extracted 2656 characters for exercise shoulders-135
+Sample of converted JSON for shoulders-135: {
+      "id": "shoulders-135",
+      "name": "Lunge Jump with Alternating Waves Battling Ropes",
+   ...
+Error parsing exercise shoulders-135: Expected ',' or '}' after property value in JSON at position 2442
+Wrote problematic JSON for shoulders-135 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-135.json for debugging
+Processing exercise: shoulders-136
+Extracted 2821 characters for exercise shoulders-136
+Sample of converted JSON for shoulders-136: {
+      "id": "shoulders-136",
+      "name": "One-Arm Standing Arnold Press",
+      "description":
+ ...
+Error parsing exercise shoulders-136: Expected ',' or '}' after property value in JSON at position 2569
+Wrote problematic JSON for shoulders-136 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-136.json for debugging
+Processing exercise: shoulders-137
+Extracted 3720 characters for exercise shoulders-137
+Sample of converted JSON for shoulders-137: {
+      "id": "shoulders-137",
+      "name": "No Counter Movement Rotational Medicine Ball Throw",
+ ...
+Error parsing exercise shoulders-137: Expected ',' or '}' after property value in JSON at position 3507
+Wrote problematic JSON for shoulders-137 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-137.json for debugging
+Processing exercise: shoulders-138
+Extracted 2277 characters for exercise shoulders-138
+Sample of converted JSON for shoulders-138: {
+      "id": "shoulders-138",
+      "name": "Banded Bent Over Reverse Fly",
+      "description":
+  ...
+Error parsing exercise shoulders-138: Expected ',' or '}' after property value in JSON at position 2063
+Wrote problematic JSON for shoulders-138 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-138.json for debugging
+Processing exercise: shoulders-139
+Extracted 2704 characters for exercise shoulders-139
+Sample of converted JSON for shoulders-139: {
+      "id": "shoulders-139",
+      "name": "Reverse Lunge with Alternating Waves Battling Ropes",
+...
+Error parsing exercise shoulders-139: Expected ',' or '}' after property value in JSON at position 2490
+Wrote problematic JSON for shoulders-139 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-139.json for debugging
+Processing exercise: shoulders-140
+Extracted 3783 characters for exercise shoulders-140
+Sample of converted JSON for shoulders-140: {
+      "id": "shoulders-140",
+      "name": "Shuffle Into Rotational Medicine Ball Throw",
+      "d...
+Error parsing exercise shoulders-140: Expected ',' or '}' after property value in JSON at position 3570
+Wrote problematic JSON for shoulders-140 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-140.json for debugging
+Processing exercise: shoulders-141
+Extracted 2586 characters for exercise shoulders-141
+Sample of converted JSON for shoulders-141: {
+      "id": "shoulders-141",
+      "name": "One-Arm Seated Rear Delt Fly",
+      "description":
+  ...
+Error parsing exercise shoulders-141: Expected ',' or '}' after property value in JSON at position 2335
+Wrote problematic JSON for shoulders-141 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-141.json for debugging
+Processing exercise: shoulders-142
+Extracted 2420 characters for exercise shoulders-142
+Sample of converted JSON for shoulders-142: {
+      "id": "shoulders-142",
+      "name": "Double Arm Circles Battling Ropes",
+      "description...
+Error parsing exercise shoulders-142: Expected ',' or '}' after property value in JSON at position 2207
+Wrote problematic JSON for shoulders-142 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-142.json for debugging
+Processing exercise: shoulders-143
+Extracted 2771 characters for exercise shoulders-143
+Sample of converted JSON for shoulders-143: {
+      "id": "shoulders-143",
+      "name": "Forearm Wall Slide",
+      "description":
+        "The...
+Error parsing exercise shoulders-143: Expected ',' or '}' after property value in JSON at position 2559
+Wrote problematic JSON for shoulders-143 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-143.json for debugging
+Processing exercise: shoulders-144
+Extracted 3755 characters for exercise shoulders-144
+Sample of converted JSON for shoulders-144: {
+      "id": "shoulders-144",
+      "name": "Step Behind Rotational Medicine Ball Throw",
+      "de...
+Error parsing exercise shoulders-144: Expected ',' or '}' after property value in JSON at position 3542
+Wrote problematic JSON for shoulders-144 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-144.json for debugging
+Processing exercise: shoulders-145
+Extracted 1889 characters for exercise shoulders-145
+Sample of converted JSON for shoulders-145: {
+      "id": "shoulders-145",
+      "name": "Seated Alternating Dumbbell Lateral Raise",
+      "des...
+Error parsing exercise shoulders-145: Expected ',' or '}' after property value in JSON at position 1637
+Wrote problematic JSON for shoulders-145 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-145.json for debugging
+Processing exercise: shoulders-146
+Extracted 3455 characters for exercise shoulders-146
+Sample of converted JSON for shoulders-146: {
+      "id": "shoulders-146",
+      "name": "Behind The Neck Push Press ",
+      "description":
+   ...
+Error parsing exercise shoulders-146: Expected ',' or '}' after property value in JSON at position 3243
+Wrote problematic JSON for shoulders-146 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-146.json for debugging
+Processing exercise: shoulders-147
+Extracted 2368 characters for exercise shoulders-147
+Sample of converted JSON for shoulders-147: {
+      "id": "shoulders-147",
+      "name": "One Arm Seated Kettlebell Press",
+      "description":...
+Error parsing exercise shoulders-147: Expected ',' or '}' after property value in JSON at position 2155
+Wrote problematic JSON for shoulders-147 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-147.json for debugging
+Processing exercise: shoulders-148
+Extracted 2552 characters for exercise shoulders-148
+Sample of converted JSON for shoulders-148: {
+      "id": "shoulders-148",
+      "name": "Alternating Lying Rear Delt Fly",
+      "description":...
+Error parsing exercise shoulders-148: Expected ',' or '}' after property value in JSON at position 2273
+Wrote problematic JSON for shoulders-148 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-148.json for debugging
+Processing exercise: shoulders-149
+Extracted 2219 characters for exercise shoulders-149
+Sample of converted JSON for shoulders-149: {
+      "id": "shoulders-149",
+      "name": "Half Kneeling Cable External Rotation",
+      "descrip...
+Error parsing exercise shoulders-149: Expected ',' or '}' after property value in JSON at position 2006
+Wrote problematic JSON for shoulders-149 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-149.json for debugging
+Processing exercise: shoulders-150
+Extracted 2780 characters for exercise shoulders-150
+Sample of converted JSON for shoulders-150: {
+      "id": "shoulders-150",
+      "name": "Exercise Ball Barbell Shoulder Press",
+      "descript...
+Error parsing exercise shoulders-150: Expected ',' or '}' after property value in JSON at position 2528
+Wrote problematic JSON for shoulders-150 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-150.json for debugging
+Processing exercise: shoulders-151
+Extracted 3539 characters for exercise shoulders-151
+Sample of converted JSON for shoulders-151: {
+      "id": "shoulders-151",
+      "name": "Split Stance Anti-Rotational Medicine Ball Scoop Toss"...
+Error parsing exercise shoulders-151: Expected ',' or '}' after property value in JSON at position 3327
+Wrote problematic JSON for shoulders-151 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-151.json for debugging
+Processing exercise: shoulders-152
+Extracted 2902 characters for exercise shoulders-152
+Sample of converted JSON for shoulders-152: {
+      "id": "shoulders-152",
+      "name": "One-Arm Neutral Grip Dumbbell Shoulder Press",
+      "...
+Error parsing exercise shoulders-152: Expected ',' or '}' after property value in JSON at position 2651
+Wrote problematic JSON for shoulders-152 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-152.json for debugging
+Processing exercise: shoulders-153
+Extracted 2219 characters for exercise shoulders-153
+Sample of converted JSON for shoulders-153: {
+      "id": "shoulders-153",
+      "name": "One-Arm Dumbbell Rear Delt Fly",
+      "description":
+...
+Error parsing exercise shoulders-153: Expected ',' or '}' after property value in JSON at position 1939
+Wrote problematic JSON for shoulders-153 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-153.json for debugging
+Processing exercise: shoulders-154
+Extracted 2708 characters for exercise shoulders-154
+Sample of converted JSON for shoulders-154: {
+      "id": "shoulders-154",
+      "name": "Seated Battling Ropes",
+      "description":
+        "...
+Error parsing exercise shoulders-154: Expected ',' or ']' after array element in JSON at position 1685
+Wrote problematic JSON for shoulders-154 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-154.json for debugging
+Processing exercise: shoulders-155
+Extracted 2859 characters for exercise shoulders-155
+Sample of converted JSON for shoulders-155: {
+      "id": "shoulders-155",
+      "name": "One-Arm Seated Neutral Grip Dumbbell Shoulder Press",
+...
+Error parsing exercise shoulders-155: Expected ',' or '}' after property value in JSON at position 2607
+Wrote problematic JSON for shoulders-155 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-155.json for debugging
+Processing exercise: shoulders-156
+Extracted 2790 characters for exercise shoulders-156
+Sample of converted JSON for shoulders-156: {
+      "id": "shoulders-156",
+      "name": "Lying Single Arm Trap Raise",
+      "description":
+   ...
+Error parsing exercise shoulders-156: Expected ',' or '}' after property value in JSON at position 2577
+Wrote problematic JSON for shoulders-156 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-156.json for debugging
+Processing exercise: shoulders-157
+Extracted 3047 characters for exercise shoulders-157
+Sample of converted JSON for shoulders-157: {
+      "id": "shoulders-157",
+      "name": "Trap Bar Shoulder Press",
+      "description":
+       ...
+Error parsing exercise shoulders-157: Expected ',' or '}' after property value in JSON at position 2834
+Wrote problematic JSON for shoulders-157 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-157.json for debugging
+Processing exercise: shoulders-158
+Extracted 2303 characters for exercise shoulders-158
+Sample of converted JSON for shoulders-158: {
+      "id": "shoulders-158",
+      "name": "Seated Alternating Dumbbell Front Raise",
+      "descr...
+Error parsing exercise shoulders-158: Expected ',' or '}' after property value in JSON at position 2053
+Wrote problematic JSON for shoulders-158 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-158.json for debugging
+Processing exercise: shoulders-159
+Extracted 2913 characters for exercise shoulders-159
+Sample of converted JSON for shoulders-159: {
+      "id": "shoulders-159",
+      "name": "Alternating Rear Delt Fly",
+      "description": "The ...
+Error parsing exercise shoulders-159: Expected ',' or '}' after property value in JSON at position 2662
+Wrote problematic JSON for shoulders-159 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-159.json for debugging
+Processing exercise: shoulders-160
+Extracted 2398 characters for exercise shoulders-160
+Sample of converted JSON for shoulders-160: {
+      "id": "shoulders-160",
+      "name": "Seated Kettlebell Press",
+      "description":
+       ...
+Error parsing exercise shoulders-160: Expected ',' or '}' after property value in JSON at position 2185
+Wrote problematic JSON for shoulders-160 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-160.json for debugging
+Processing exercise: shoulders-161
+Extracted 2663 characters for exercise shoulders-161
+Sample of converted JSON for shoulders-161: {
+      "id": "shoulders-161",
+      "name": "Standing One Arm Bottoms Up Kettlebell Press",
+      "...
+Error parsing exercise shoulders-161: Expected ',' or '}' after property value in JSON at position 2450
+Wrote problematic JSON for shoulders-161 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-161.json for debugging
+Processing exercise: shoulders-162
+Extracted 3284 characters for exercise shoulders-162
+Sample of converted JSON for shoulders-162: {
+      "id": "shoulders-162",
+      "name": "Reverse Fly Sled Drag",
+      "description":
+        "...
+Error parsing exercise shoulders-162: Expected ',' or '}' after property value in JSON at position 3072
+Wrote problematic JSON for shoulders-162 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-162.json for debugging
+Processing exercise: shoulders-163
+Extracted 2254 characters for exercise shoulders-163
+Sample of converted JSON for shoulders-163: {
+      "id": "shoulders-163",
+      "name": "One-Arm Incline Dumbbell Front Raise",
+      "descript...
+Error parsing exercise shoulders-163: Expected ',' or '}' after property value in JSON at position 1975
+Wrote problematic JSON for shoulders-163 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-163.json for debugging
+Processing exercise: shoulders-164
+Extracted 2457 characters for exercise shoulders-164
+Sample of converted JSON for shoulders-164: {
+      "id": "shoulders-164",
+      "name": "Alternating Big Waves Battling Ropes",
+      "descript...
+Error parsing exercise shoulders-164: Expected ',' or '}' after property value in JSON at position 2244
+Wrote problematic JSON for shoulders-164 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-164.json for debugging
+Processing exercise: shoulders-165
+Extracted 3558 characters for exercise shoulders-165
+Sample of converted JSON for shoulders-165: {
+      "id": "shoulders-165",
+      "name": "Rotational Medicine Ball Scoop Toss Facing Wall",
+    ...
+Error parsing exercise shoulders-165: Expected ',' or '}' after property value in JSON at position 3345
+Wrote problematic JSON for shoulders-165 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-165.json for debugging
+Processing exercise: shoulders-166
+Extracted 2466 characters for exercise shoulders-166
+Sample of converted JSON for shoulders-166: {
+      "id": "shoulders-166",
+      "name": "Alternating Small Waves Battling Ropes",
+      "descri...
+Error parsing exercise shoulders-166: Expected ',' or '}' after property value in JSON at position 2253
+Wrote problematic JSON for shoulders-166 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-166.json for debugging
+Processing exercise: shoulders-167
+Extracted 2010 characters for exercise shoulders-167
+Sample of converted JSON for shoulders-167: {
+      "id": "shoulders-167",
+      "name": "Barbell Rear Delt Row To Neck",
+      "description": "...
+Error parsing exercise shoulders-167: Expected ',' or '}' after property value in JSON at position 1760
+Wrote problematic JSON for shoulders-167 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-167.json for debugging
+Processing exercise: shoulders-168
+Extracted 2120 characters for exercise shoulders-168
+Sample of converted JSON for shoulders-168: {
+      "id": "shoulders-168",
+      "name": "Standing Banded Face Pull to Chest",
+      "descriptio...
+Error parsing exercise shoulders-168: Expected ',' or '}' after property value in JSON at position 1907
+Wrote problematic JSON for shoulders-168 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-168.json for debugging
+Processing exercise: shoulders-169
+Extracted 2987 characters for exercise shoulders-169
+Sample of converted JSON for shoulders-169: {
+      "id": "shoulders-169",
+      "name": "Alternating Standing Kettlebell Press",
+      "descrip...
+Error parsing exercise shoulders-169: Expected ',' or '}' after property value in JSON at position 2774
+Wrote problematic JSON for shoulders-169 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-169.json for debugging
+Processing exercise: shoulders-170
+Extracted 2544 characters for exercise shoulders-170
+Sample of converted JSON for shoulders-170: {
+      "id": "shoulders-170",
+      "name": "Tall Kneeling One Arm Kettlebell Press",
+      "descri...
+Error parsing exercise shoulders-170: Expected ',' or '}' after property value in JSON at position 2331
+Wrote problematic JSON for shoulders-170 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-170.json for debugging
+Processing exercise: shoulders-171
+Extracted 1774 characters for exercise shoulders-171
+Sample of converted JSON for shoulders-171: {
+      "id": "shoulders-171",
+      "name": "Lying Rear Delt Barbell Raise",
+      "description": "...
+Error parsing exercise shoulders-171: Expected ',' or '}' after property value in JSON at position 1522
+Wrote problematic JSON for shoulders-171 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-171.json for debugging
+Processing exercise: shoulders-172
+Extracted 2333 characters for exercise shoulders-172
+Sample of converted JSON for shoulders-172: {
+      "id": "shoulders-172",
+      "name": "Double Wave Battling Rope",
+      "description":
+     ...
+Error parsing exercise shoulders-172: Expected ',' or '}' after property value in JSON at position 2120
+Wrote problematic JSON for shoulders-172 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-172.json for debugging
+Processing exercise: shoulders-173
+Extracted 2108 characters for exercise shoulders-173
+Sample of converted JSON for shoulders-173: {
+      "id": "shoulders-173",
+      "name": "Spider Crawls",
+      "description":
+        "Spider c...
+Error parsing exercise shoulders-173: Expected ',' or '}' after property value in JSON at position 1895
+Wrote problematic JSON for shoulders-173 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-173.json for debugging
+Processing exercise: shoulders-174
+Extracted 2615 characters for exercise shoulders-174
+Sample of converted JSON for shoulders-174: {
+      "id": "shoulders-174",
+      "name": "Tall Kneeling One Arm Bottoms Up Kettlebell Press",
+  ...
+Error parsing exercise shoulders-174: Expected ',' or '}' after property value in JSON at position 2402
+Wrote problematic JSON for shoulders-174 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-174.json for debugging
+Processing exercise: shoulders-175
+Extracted 3767 characters for exercise shoulders-175
+Sample of converted JSON for shoulders-175: {
+      "id": "shoulders-175",
+      "name": "Rotational Medicine Ball Shuffle Into Shot Put",
+     ...
+Error parsing exercise shoulders-175: Expected ',' or '}' after property value in JSON at position 3554
+Wrote problematic JSON for shoulders-175 to /Users/ulrikhaland/Documents/musco-new/scripts/output/shoulders.ts.shoulders-175.json for debugging
+Successfully parsed 0 out of 175 exercises
+No exercises could be parsed, aborting
+Alternatives generation complete!

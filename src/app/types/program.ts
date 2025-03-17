@@ -1,10 +1,10 @@
-import { ProgramType, ExerciseQuestionnaireAnswers } from "../shared/types";
-import { DiagnosisAssistantResponse } from "../types";
+import { ProgramType, ExerciseQuestionnaireAnswers } from '../shared/types';
+import { DiagnosisAssistantResponse } from '../types';
 
 export enum ProgramStatus {
   Generating = 'generating',
   Done = 'done',
-  Error = 'error'
+  Error = 'error',
 }
 
 // Body part groupings
@@ -33,11 +33,7 @@ export const UPPER_BODY_PARTS = [
   'Lower Back',
 ] as const;
 
-export const LOWER_BODY_PARTS = [
-  'Glutes',
-  'Upper Legs',
-  'Lower Legs',
-] as const;
+export const LOWER_BODY_PARTS = ['Glutes', 'Upper Legs', 'Lower Legs'] as const;
 
 // Equipment access options
 export const EQUIPMENT_ACCESS = [
@@ -49,7 +45,8 @@ export const EQUIPMENT_ACCESS = [
 ] as const;
 
 export const EQUIPMENT_DESCRIPTIONS = {
-  'Large Gym': 'Full-service fitness facility with extensive equipment including cardio machines, weight machines, free weights, and specialized training areas',
+  'Large Gym':
+    'Full-service fitness facility with extensive equipment including cardio machines, weight machines, free weights, and specialized training areas',
   'Small Gym': 'Compact public gym with limited equipment',
   'Garage Gym': 'Barbells, squat rack, dumbells and more',
   'At Home': 'Limited equipment such as dumbells, bands, pull-up bars etc.',
@@ -65,7 +62,8 @@ export interface ExerciseEnvironment {
 export const EXERCISE_ENVIRONMENTS: ExerciseEnvironment[] = [
   {
     name: 'Large Gym',
-    description: 'Full-service fitness facility with extensive equipment including cardio machines, weight machines, free weights, and specialized training areas',
+    description:
+      'Full-service fitness facility with extensive equipment including cardio machines, weight machines, free weights, and specialized training areas',
   },
   {
     name: 'Small Gym',
@@ -85,7 +83,8 @@ export const EXERCISE_ENVIRONMENTS: ExerciseEnvironment[] = [
   },
 ] as const;
 
-export type ExerciseEnvironmentName = typeof EXERCISE_ENVIRONMENTS[number]['name'];
+export type ExerciseEnvironmentName =
+  (typeof EXERCISE_ENVIRONMENTS)[number]['name'];
 
 // Workout duration options
 export const WORKOUT_DURATIONS = [
@@ -96,7 +95,7 @@ export const WORKOUT_DURATIONS = [
   'More than 90 minutes',
 ] as const;
 
-export type WorkoutDuration = typeof WORKOUT_DURATIONS[number];
+export type WorkoutDuration = (typeof WORKOUT_DURATIONS)[number];
 
 // Age range options
 export const AGE_RANGES = [
@@ -109,7 +108,7 @@ export const AGE_RANGES = [
   '70 or above',
 ] as const;
 
-export type AgeRange = typeof AGE_RANGES[number];
+export type AgeRange = (typeof AGE_RANGES)[number];
 
 // Exercise frequency options
 export const EXERCISE_FREQUENCY_OPTIONS = [
@@ -120,7 +119,7 @@ export const EXERCISE_FREQUENCY_OPTIONS = [
   'Every day',
 ] as const;
 
-export type ExerciseFrequency = typeof EXERCISE_FREQUENCY_OPTIONS[number];
+export type ExerciseFrequency = (typeof EXERCISE_FREQUENCY_OPTIONS)[number];
 
 // Planned exercise frequency options
 export const PLANNED_EXERCISE_FREQUENCY_OPTIONS = [
@@ -133,16 +132,13 @@ export const PLANNED_EXERCISE_FREQUENCY_OPTIONS = [
   'Every day',
 ] as const;
 
-export type PlannedExerciseFrequency = typeof PLANNED_EXERCISE_FREQUENCY_OPTIONS[number];
+export type PlannedExerciseFrequency =
+  (typeof PLANNED_EXERCISE_FREQUENCY_OPTIONS)[number];
 
 // Exercise modality options
-export const EXERCISE_MODALITIES = [
-  'Cardio',
-  'Strength',
-  'Both',
-] as const;
+export const EXERCISE_MODALITIES = ['Cardio', 'Strength', 'Both'] as const;
 
-export type ExerciseModality = typeof EXERCISE_MODALITIES[number];
+export type ExerciseModality = (typeof EXERCISE_MODALITIES)[number];
 
 // Pain body parts options (for detailed assessment)
 export const PAIN_BODY_PARTS = [
@@ -173,32 +169,38 @@ export const PAIN_BODY_PARTS = [
   'Right Foot',
 ] as const;
 
-export type PainBodyPart = typeof PAIN_BODY_PARTS[number];
+export type PainBodyPart = (typeof PAIN_BODY_PARTS)[number];
 
 export type BodyRegion = 'Full Body' | 'Upper Body' | 'Lower Body' | 'Custom';
 
 // Utility function to determine the body region from a list of body parts
 export function getBodyRegionFromParts(bodyParts: string[]): BodyRegion {
   if (!bodyParts || bodyParts.length === 0) return 'Custom';
-  
+
   // Check if it's a full body workout (all body parts are included)
-  if (TARGET_BODY_PARTS.every(part => bodyParts.includes(part)) && 
-      bodyParts.length === TARGET_BODY_PARTS.length) {
+  if (
+    TARGET_BODY_PARTS.every((part) => bodyParts.includes(part)) &&
+    bodyParts.length === TARGET_BODY_PARTS.length
+  ) {
     return 'Full Body';
   }
-  
+
   // Check if it's an upper body workout
-  if (UPPER_BODY_PARTS.every(part => bodyParts.includes(part)) && 
-      bodyParts.length === UPPER_BODY_PARTS.length) {
+  if (
+    UPPER_BODY_PARTS.every((part) => bodyParts.includes(part)) &&
+    bodyParts.length === UPPER_BODY_PARTS.length
+  ) {
     return 'Upper Body';
   }
-  
+
   // Check if it's a lower body workout
-  if (LOWER_BODY_PARTS.every(part => bodyParts.includes(part)) && 
-      bodyParts.length === LOWER_BODY_PARTS.length) {
+  if (
+    LOWER_BODY_PARTS.every((part) => bodyParts.includes(part)) &&
+    bodyParts.length === LOWER_BODY_PARTS.length
+  ) {
     return 'Lower Body';
   }
-  
+
   return 'Custom';
 }
 
@@ -213,9 +215,37 @@ export interface Exercise {
   duration?: number;
   precaution?: string;
   warmup?: boolean;
-  instructions?: string;
-  bodyPart: string;
+  exerciseId?: string;
+  id?: string;
+  imageUrl?: string;
+  steps?: string[];
+  tips?: string[];
+  contraindications?: string[];
+  muscles?: string[];
+  equipment?: string[];
+  difficulty?: string;
+  targetBodyParts?: string[];
+  bodyPart?: string;
+  exerciseType?: string[] | string;
+  alternatives?: string[];
+  viewCount?: number;
+  popularity?: string;
+  forceType?: string;
+  mechanics?: string;
+  restBetweenSets?: number;
 }
+
+// Helper function to get bodyPart from an Exercise
+export function getBodyPart(exercise: Exercise): string | undefined {
+  return exercise.bodyPart || exercise.targetBodyParts?.[0];
+}
+
+export interface ExerciseGroup {
+  bodyPart: TargetBodyPart;
+  exercises: Exercise[];
+}
+
+export type ExercisesTemplate = ExerciseGroup[];
 
 export interface ProgramDay {
   day: number;
@@ -258,4 +288,19 @@ export interface UserProgram {
   createdAt: Date;
   updatedAt: Date;
   type: ProgramType;
-} 
+}
+
+export type TargetBodyPart = (typeof TARGET_BODY_PARTS)[number];
+
+// Define exercise types/categories
+export type ExerciseType =
+  | 'strength'
+  | 'flexibility'
+  | 'mobility'
+  | 'stability'
+  | 'balance'
+  | 'core'
+  | 'posture'
+  | 'endurance'
+  | 'coordination'
+  | 'relaxation';

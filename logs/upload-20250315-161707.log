@@ -1,0 +1,16 @@
+Looking for .env.local at: /Users/ulrikhaland/Documents/musco-new/.env.local
+Environment variables loaded from .env.local
+Firebase Admin SDK initialized successfully using environment variables
+Uploading single file: /Users/ulrikhaland/Documents/musco-new/scripts/output/traps.ts
+Processing file: /Users/ulrikhaland/Documents/musco-new/scripts/output/traps.ts
+Found bodyPart (method 2): Traps
+Trying exercise extraction method 1...
+Method 1 found no matches
+Trying exercise extraction method 2...
+Method 2 found 30 potential exercise matches
+Found 30 exercises for Traps
+Using normalized body part for Firestore: traps
+Committing final batch (30 exercises)...
+Final batch committed successfully
+Successfully uploaded 30 exercises for traps to Firestore
+Upload complete

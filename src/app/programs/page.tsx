@@ -114,7 +114,7 @@ function ProgramsContent() {
 
   // Navigate to home page to create a new program
   const handleCreateNewProgram = () => {
-    router.push('/');
+    router.push('/?new=true');
   };
 
   if (isLoading) {

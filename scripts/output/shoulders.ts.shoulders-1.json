@@ -1,0 +1,44 @@
+{
+      "id": "shoulders-1",
+      "name": "Dumbbell Lateral Raise",
+      "description": "The dumbbell lateral raise is a shoulder exercise used to strengthen the muscles of the shoulder. It"s a good exercise for building width in your upper body which gives you the "V" shape.",
+      "targetBodyParts": ["Shoulders"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Dumbbell"],
+      "steps": [
+        "Select the desired weight from the rack, then take a few steps back into an open area.",
+        "Take a deep breath and raise the dumbbells to shoulder height using a neutral grip (palms facing in) while keeping the elbows slightly bent.",
+        "Slowly lower the dumbbells back to the starting position under control.",
+        "Repeat for the desired number of repetitions."
+      ],
+      "tips": [
+        "Focus on keeping the reps slow and controlled. Because this is an isolation exercise, the focus should be on correctly working the muscle - not moving as much weight as possible.",
+        "Don"t bring your arms up too high - up to shoulder height is far enough.",
+        "If you encounter pain in the shoulder while performing the movement, consider implementing one of the following "tweaks":\n          Tilt your pinkies slightly higher than your thumbs. Imagine you’re pouring out a cup of water.\n          Turn your palms forward so that your thumbs are pointing away from your body. This will put the shoulder in a more externally rotated position and potentially open up the shoulder joint to allow for a bit more movement.",
+        "Tilt your pinkies slightly higher than your thumbs. Imagine you’re pouring out a cup of water.",
+        "Turn your palms forward so that your thumbs are pointing away from your body. This will put the shoulder in a more externally rotated position and potentially open up the shoulder joint to allow for a bit more movement."
+      ],
+      "contraindications": [
+        "Shoulders injury",
+        "Joint pain",
+        "Acute pain during movement"
+      ],
+      "muscles": ["Shoulders"],
+      "alternatives": [
+        "shoulders-12",
+        "shoulders-15",
+        "shoulders-28",
+        "shoulders-31",
+        "shoulders-44"
+      ],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Pull",
+      "mechanics": "Isolation",
+      "videoUrl": "https://player.vimeo.com/video/760008500?badge=0&autopause=0&player_id=0&app_id=58479",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Shoulders.jpg",
+      "viewCount": 9800000,
+      "popularity": "high"
+    }

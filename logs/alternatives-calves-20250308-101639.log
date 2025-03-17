@@ -1,0 +1,332 @@
+Running alternatives generator for category: calves
+File path: /Users/ulrikhaland/Documents/musco-new/scripts/output/calves.ts
+Processing category file: /Users/ulrikhaland/Documents/musco-new/scripts/output/calves.ts
+File loaded, size: 131826 bytes
+Found variable name: calvesExercises
+Extracting exercises data...
+Found 62 exercise IDs in the file
+Processing exercise: calves-1
+Extracted 2258 characters for exercise calves-1
+Successfully parsed exercise calves-1
+Processing exercise: calves-2
+Extracted 1863 characters for exercise calves-2
+Error parsing exercise calves-2: Expected ',' or ']' after array element in JSON at position 917
+Wrote problematic JSON for calves-2 to /Users/ulrikhaland/Documents/musco-new/scripts/output/calves.ts.calves-2.json for debugging
+Attempting to preserve the original exercise calves-2 in the output
+Added basic version of exercise calves-2 to preserve it in output
+Processing exercise: calves-3
+Extracted 2745 characters for exercise calves-3
+Successfully parsed exercise calves-3
+Processing exercise: calves-4
+Extracted 1933 characters for exercise calves-4
+Error parsing exercise calves-4: Expected ',' or ']' after array element in JSON at position 935
+Wrote problematic JSON for calves-4 to /Users/ulrikhaland/Documents/musco-new/scripts/output/calves.ts.calves-4.json for debugging
+Attempting to preserve the original exercise calves-4 in the output
+Added basic version of exercise calves-4 to preserve it in output
+Processing exercise: calves-5
+Extracted 2359 characters for exercise calves-5
+Successfully parsed exercise calves-5
+Processing exercise: calves-6
+Extracted 1991 characters for exercise calves-6
+Error parsing exercise calves-6: Expected ',' or ']' after array element in JSON at position 950
+Wrote problematic JSON for calves-6 to /Users/ulrikhaland/Documents/musco-new/scripts/output/calves.ts.calves-6.json for debugging
+Attempting to preserve the original exercise calves-6 in the output
+Added basic version of exercise calves-6 to preserve it in output
+Processing exercise: calves-7
+Extracted 1880 characters for exercise calves-7
+Successfully parsed exercise calves-7
+Processing exercise: calves-8
+Extracted 1965 characters for exercise calves-8
+Error parsing exercise calves-8: Expected ',' or ']' after array element in JSON at position 1017
+Wrote problematic JSON for calves-8 to /Users/ulrikhaland/Documents/musco-new/scripts/output/calves.ts.calves-8.json for debugging
+Attempting to preserve the original exercise calves-8 in the output
+Added basic version of exercise calves-8 to preserve it in output
+Processing exercise: calves-9
+Extracted 2031 characters for exercise calves-9
+Successfully parsed exercise calves-9
+Processing exercise: calves-10
+Extracted 2367 characters for exercise calves-10
+Error parsing exercise calves-10: Expected ',' or '}' after property value in JSON at position 220
+Wrote problematic JSON for calves-10 to /Users/ulrikhaland/Documents/musco-new/scripts/output/calves.ts.calves-10.json for debugging
+Attempting to preserve the original exercise calves-10 in the output
+Added basic version of exercise calves-10 to preserve it in output
+Processing exercise: calves-11
+Extracted 1988 characters for exercise calves-11
+Error parsing exercise calves-11: Expected ',' or ']' after array element in JSON at position 752
+Wrote problematic JSON for calves-11 to /Users/ulrikhaland/Documents/musco-new/scripts/output/calves.ts.calves-11.json for debugging
+Attempting to preserve the original exercise calves-11 in the output
+Added basic version of exercise calves-11 to preserve it in output
+Processing exercise: calves-12
+Extracted 2057 characters for exercise calves-12
+Error parsing exercise calves-12: Expected ',' or ']' after array element in JSON at position 964
+Wrote problematic JSON for calves-12 to /Users/ulrikhaland/Documents/musco-new/scripts/output/calves.ts.calves-12.json for debugging
+Attempting to preserve the original exercise calves-12 in the output
+Added basic version of exercise calves-12 to preserve it in output
+Processing exercise: calves-13
+Extracted 3390 characters for exercise calves-13
+Error parsing exercise calves-13: Expected ',' or ']' after array element in JSON at position 1102
+Wrote problematic JSON for calves-13 to /Users/ulrikhaland/Documents/musco-new/scripts/output/calves.ts.calves-13.json for debugging
+Attempting to preserve the original exercise calves-13 in the output
+Added basic version of exercise calves-13 to preserve it in output
+Processing exercise: calves-14
+Extracted 2139 characters for exercise calves-14
+Error parsing exercise calves-14: Expected ',' or ']' after array element in JSON at position 1200
+Wrote problematic JSON for calves-14 to /Users/ulrikhaland/Documents/musco-new/scripts/output/calves.ts.calves-14.json for debugging
+Attempting to preserve the original exercise calves-14 in the output
+Added basic version of exercise calves-14 to preserve it in output
+Processing exercise: calves-15
+Extracted 1998 characters for exercise calves-15
+Error parsing exercise calves-15: Expected ',' or ']' after array element in JSON at position 1064
+Wrote problematic JSON for calves-15 to /Users/ulrikhaland/Documents/musco-new/scripts/output/calves.ts.calves-15.json for debugging
+Attempting to preserve the original exercise calves-15 in the output
+Added basic version of exercise calves-15 to preserve it in output
+Processing exercise: calves-16
+Extracted 1945 characters for exercise calves-16
+Successfully parsed exercise calves-16
+Processing exercise: calves-17
+Extracted 1768 characters for exercise calves-17
+Error parsing exercise calves-17: Expected ',' or ']' after array element in JSON at position 382
+Wrote problematic JSON for calves-17 to /Users/ulrikhaland/Documents/musco-new/scripts/output/calves.ts.calves-17.json for debugging
+Attempting to preserve the original exercise calves-17 in the output
+Added basic version of exercise calves-17 to preserve it in output
+Processing exercise: calves-18
+Extracted 3015 characters for exercise calves-18
+Successfully parsed exercise calves-18
+Processing exercise: calves-19
+Extracted 391 characters for exercise calves-19
+Successfully parsed exercise calves-19
+Processing exercise: calves-20
+Extracted 2248 characters for exercise calves-20
+Successfully parsed exercise calves-20
+Processing exercise: calves-21
+Extracted 2462 characters for exercise calves-21
+Successfully parsed exercise calves-21
+Processing exercise: calves-22
+Extracted 2151 characters for exercise calves-22
+Successfully parsed exercise calves-22
+Processing exercise: calves-23
+Extracted 2507 characters for exercise calves-23
+Successfully parsed exercise calves-23
+Processing exercise: calves-24
+Extracted 384 characters for exercise calves-24
+Successfully parsed exercise calves-24
+Processing exercise: calves-25
+Extracted 2293 characters for exercise calves-25
+Error parsing exercise calves-25: Expected ',' or ']' after array element in JSON at position 1511
+Wrote problematic JSON for calves-25 to /Users/ulrikhaland/Documents/musco-new/scripts/output/calves.ts.calves-25.json for debugging
+Attempting to preserve the original exercise calves-25 in the output
+Added basic version of exercise calves-25 to preserve it in output
+Processing exercise: calves-26
+Extracted 3279 characters for exercise calves-26
+Successfully parsed exercise calves-26
+Processing exercise: calves-27
+Extracted 3032 characters for exercise calves-27
+Successfully parsed exercise calves-27
+Processing exercise: calves-28
+Extracted 1940 characters for exercise calves-28
+Error parsing exercise calves-28: Expected ',' or ']' after array element in JSON at position 392
+Wrote problematic JSON for calves-28 to /Users/ulrikhaland/Documents/musco-new/scripts/output/calves.ts.calves-28.json for debugging
+Attempting to preserve the original exercise calves-28 in the output
+Added basic version of exercise calves-28 to preserve it in output
+Processing exercise: calves-29
+Extracted 2016 characters for exercise calves-29
+Successfully parsed exercise calves-29
+Processing exercise: calves-30
+Extracted 387 characters for exercise calves-30
+Successfully parsed exercise calves-30
+Processing exercise: calves-31
+Extracted 3006 characters for exercise calves-31
+Successfully parsed exercise calves-31
+Processing exercise: calves-32
+Extracted 3375 characters for exercise calves-32
+Error parsing exercise calves-32: Expected ',' or ']' after array element in JSON at position 1087
+Wrote problematic JSON for calves-32 to /Users/ulrikhaland/Documents/musco-new/scripts/output/calves.ts.calves-32.json for debugging
+Attempting to preserve the original exercise calves-32 in the output
+Added basic version of exercise calves-32 to preserve it in output
+Processing exercise: calves-33
+Extracted 2177 characters for exercise calves-33
+Error parsing exercise calves-33: Expected ',' or ']' after array element in JSON at position 835
+Wrote problematic JSON for calves-33 to /Users/ulrikhaland/Documents/musco-new/scripts/output/calves.ts.calves-33.json for debugging
+Attempting to preserve the original exercise calves-33 in the output
+Added basic version of exercise calves-33 to preserve it in output
+Processing exercise: calves-34
+Extracted 2273 characters for exercise calves-34
+Successfully parsed exercise calves-34
+Processing exercise: calves-35
+Extracted 3174 characters for exercise calves-35
+Successfully parsed exercise calves-35
+Processing exercise: calves-36
+Extracted 1337 characters for exercise calves-36
+Successfully parsed exercise calves-36
+Processing exercise: calves-37
+Extracted 2048 characters for exercise calves-37
+Error parsing exercise calves-37: Expected ',' or ']' after array element in JSON at position 1105
+Wrote problematic JSON for calves-37 to /Users/ulrikhaland/Documents/musco-new/scripts/output/calves.ts.calves-37.json for debugging
+Attempting to preserve the original exercise calves-37 in the output
+Added basic version of exercise calves-37 to preserve it in output
+Processing exercise: calves-38
+Extracted 2277 characters for exercise calves-38
+Successfully parsed exercise calves-38
+Processing exercise: calves-39
+Extracted 1805 characters for exercise calves-39
+Successfully parsed exercise calves-39
+Processing exercise: calves-40
+Extracted 1824 characters for exercise calves-40
+Error parsing exercise calves-40: Expected ',' or ']' after array element in JSON at position 720
+Wrote problematic JSON for calves-40 to /Users/ulrikhaland/Documents/musco-new/scripts/output/calves.ts.calves-40.json for debugging
+Attempting to preserve the original exercise calves-40 in the output
+Added basic version of exercise calves-40 to preserve it in output
+Processing exercise: calves-41
+Extracted 390 characters for exercise calves-41
+Successfully parsed exercise calves-41
+Processing exercise: calves-42
+Extracted 1989 characters for exercise calves-42
+Successfully parsed exercise calves-42
+Processing exercise: calves-43
+Extracted 3970 characters for exercise calves-43
+Successfully parsed exercise calves-43
+Processing exercise: calves-44
+Extracted 1827 characters for exercise calves-44
+Error parsing exercise calves-44: Expected ',' or ']' after array element in JSON at position 671
+Wrote problematic JSON for calves-44 to /Users/ulrikhaland/Documents/musco-new/scripts/output/calves.ts.calves-44.json for debugging
+Attempting to preserve the original exercise calves-44 in the output
+Added basic version of exercise calves-44 to preserve it in output
+Processing exercise: calves-45
+Extracted 3525 characters for exercise calves-45
+Successfully parsed exercise calves-45
+Processing exercise: calves-46
+Extracted 389 characters for exercise calves-46
+Successfully parsed exercise calves-46
+Processing exercise: calves-47
+Extracted 2303 characters for exercise calves-47
+Error parsing exercise calves-47: Expected ',' or ']' after array element in JSON at position 1521
+Wrote problematic JSON for calves-47 to /Users/ulrikhaland/Documents/musco-new/scripts/output/calves.ts.calves-47.json for debugging
+Attempting to preserve the original exercise calves-47 in the output
+Added basic version of exercise calves-47 to preserve it in output
+Processing exercise: calves-48
+Extracted 3197 characters for exercise calves-48
+Successfully parsed exercise calves-48
+Processing exercise: calves-49
+Extracted 2248 characters for exercise calves-49
+Successfully parsed exercise calves-49
+Processing exercise: calves-50
+Extracted 2120 characters for exercise calves-50
+Error parsing exercise calves-50: Expected ',' or ']' after array element in JSON at position 304
+Wrote problematic JSON for calves-50 to /Users/ulrikhaland/Documents/musco-new/scripts/output/calves.ts.calves-50.json for debugging
+Attempting to preserve the original exercise calves-50 in the output
+Added basic version of exercise calves-50 to preserve it in output
+Processing exercise: calves-51
+Extracted 2105 characters for exercise calves-51
+Successfully parsed exercise calves-51
+Processing exercise: calves-52
+Extracted 390 characters for exercise calves-52
+Successfully parsed exercise calves-52
+Processing exercise: calves-53
+Extracted 3191 characters for exercise calves-53
+Successfully parsed exercise calves-53
+Processing exercise: calves-54
+Extracted 2134 characters for exercise calves-54
+Error parsing exercise calves-54: Expected ',' or ']' after array element in JSON at position 1200
+Wrote problematic JSON for calves-54 to /Users/ulrikhaland/Documents/musco-new/scripts/output/calves.ts.calves-54.json for debugging
+Attempting to preserve the original exercise calves-54 in the output
+Added basic version of exercise calves-54 to preserve it in output
+Processing exercise: calves-55
+Extracted 3242 characters for exercise calves-55
+Successfully parsed exercise calves-55
+Processing exercise: calves-56
+Extracted 2202 characters for exercise calves-56
+Successfully parsed exercise calves-56
+Processing exercise: calves-57
+Extracted 392 characters for exercise calves-57
+Successfully parsed exercise calves-57
+Processing exercise: calves-58
+Extracted 2229 characters for exercise calves-58
+Error parsing exercise calves-58: Expected ',' or ']' after array element in JSON at position 1447
+Wrote problematic JSON for calves-58 to /Users/ulrikhaland/Documents/musco-new/scripts/output/calves.ts.calves-58.json for debugging
+Attempting to preserve the original exercise calves-58 in the output
+Added basic version of exercise calves-58 to preserve it in output
+Processing exercise: calves-59
+Extracted 2775 characters for exercise calves-59
+Successfully parsed exercise calves-59
+Processing exercise: calves-60
+Extracted 2213 characters for exercise calves-60
+Successfully parsed exercise calves-60
+Processing exercise: calves-61
+Extracted 382 characters for exercise calves-61
+Successfully parsed exercise calves-61
+Processing exercise: calves-62
+Extracted 1824 characters for exercise calves-62
+Error parsing exercise calves-62: Expected ',' or ']' after array element in JSON at position 732
+Wrote problematic JSON for calves-62 to /Users/ulrikhaland/Documents/musco-new/scripts/output/calves.ts.calves-62.json for debugging
+Attempting to preserve the original exercise calves-62 in the output
+Could not find the original exercise calves-62 in the file content
+Successfully parsed 61 out of 62 exercises
+Warning: Only 61 out of 62 exercises were successfully parsed
+The following exercises had parsing issues: calves-62
+Determining body part...
+Extracted body part from file name: Calves
+Extracted body part from file content: Calves
+Added 5 alternatives for Seated Calf Raise
+Added 5 alternatives for Seated Dumbbell Calf Raise
+Added 5 alternatives for 45 Degree Leg Press Calf Raise
+Added 5 alternatives for Standing Barbell Calf Raise
+Added 5 alternatives for Standing Machine Calf Raise
+Added 5 alternatives for Bodyweight Standing Calf Raise
+Added 5 alternatives for Standing One-Leg Calf Raise With Dumbbell
+Added 5 alternatives for One-Leg Seated Dumbbell Calf Raise
+Added 5 alternatives for Banded Tibialis Raise
+Added 5 alternatives for Smith Machine Calf Raise
+Added 5 alternatives for Donkey Calf Raise
+Added 5 alternatives for One-Leg Standing Bodyweight Calf Raise
+Added 5 alternatives for Rocking Soleus Emphasis Ankle Mobilization
+Added 5 alternatives for Smith Machine Seated Calf Raise
+Added 5 alternatives for Hack Squat Calf Raise
+Added 5 alternatives for Cable Calf Raise
+Added 5 alternatives for Standing Barbell Calf Raise (On Floor)
+Added 5 alternatives for Side to Side Jump Rope
+Added 5 alternatives for Posterior Calf Lacrosse Ball
+Added 5 alternatives for One-Leg Smith Machine Calf Raise
+Added 5 alternatives for Toes In Standing Machine Calf Raise
+Added 5 alternatives for One-Leg Smith Machine Seated Calf Raise
+Added 5 alternatives for Toes Out Standing Calf Raise
+Added 5 alternatives for Peroneal Foam Rolling
+Added 5 alternatives for 45 Degree Calf Raise (Toes In)
+Added 5 alternatives for Single Leg Jump Rope
+Added 5 alternatives for Double Jump Jump Rope
+Added 5 alternatives for Rocking Standing Calf Raise
+Added 5 alternatives for One-Leg Smith Machine Toe Raise
+Added 5 alternatives for Anterior Calf Tiger Tail
+Added 5 alternatives for Front to Back Jump Rope
+Added 5 alternatives for Rocking Gastrocnemius Emphasis Ankle Mobilization
+Added 5 alternatives for One-Leg Donkey Calf Raise
+Added 5 alternatives for Toes In Seated Calf Raise
+Added 5 alternatives for Reverse Jump Rope
+Added 5 alternatives for Smith Machine Toe Raise
+Added 5 alternatives for Exercise Ball On-The-Wall Calf Raise
+Added 5 alternatives for Toes Out Seated Calf Raise
+Added 5 alternatives for Smith Machine Seated Toe Raise
+Added 5 alternatives for One-Leg Floor Calf Raise
+Added 5 alternatives for Anterior Calf Lacrosse Ball
+Added 5 alternatives for One-Leg Seated Calf Raise
+Added 5 alternatives for Skipping Jump Rope
+Added 5 alternatives for Bodyweight Floor Calf Raise
+Added 5 alternatives for Single Leg Circle Jump Rope
+Added 5 alternatives for Anterior Calf Foam Rolling
+Added 5 alternatives for 45 Degree Calf Raise (Toes Out)
+Added 5 alternatives for Single Leg Front to Back Jump Rope
+Added 5 alternatives for Knee Break Ankle Mobilization
+Added 5 alternatives for Seated Barbell Calf Raise
+Added 5 alternatives for One-Leg Cable Calf Raise
+Added 5 alternatives for Posterior Calf Foam Rolling
+Added 5 alternatives for Single Leg Side to Side Jump Rope
+Added 5 alternatives for One-Leg Hack Squat Calf Raise
+Added 5 alternatives for Alternating Single Leg Jump Rope
+Added 5 alternatives for Smith Machine Calf Raise (Toes In)
+Added 5 alternatives for (Posterior) Calves Tiger Tail
+Added 5 alternatives for One-Leg 45 Degree Calf Raise
+Added 5 alternatives for Jump Rope
+Added 5 alternatives for Smith Machine Calf Raise (Toes Out)
+Added 5 alternatives for Peroneal Tiger Tail
+Created backup at /Users/ulrikhaland/Documents/musco-new/scripts/output/calves.ts.bak
+Successfully updated /Users/ulrikhaland/Documents/musco-new/scripts/output/calves.ts with alternatives
+Alternatives generation complete!

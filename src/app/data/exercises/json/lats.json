@@ -1,0 +1,3328 @@
+{
+  "bodyPart": "lats",
+  "exercises": [
+    {
+      "id": "lats-1",
+      "name": "Lat Pull Down",
+      "description": "The lat pull down is an exercise used to build the muscles of the back. While the exercise will primarily target the lats, you will also notice a fair amount of bicep and middle back activation. The back is a muscle group that requires a fair amount of variation. So, experiment with several different angles and hand positions to maximize your back muscle growth. The lat pull down can be performed during your back workouts, upper body workouts, pull workouts, and full body workouts.",
+      "targetBodyParts": [
+        "Lats"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
+      "difficulty": "beginner",
+      "equipment": [
+        "Cable"
+      ],
+      "steps": [
+        "Attach a wide grip handle to the lat pulldown machine and assume a seated position.",
+        "Grasp the handle with a pronated grip (double overhand) and initiate the movement by depressing the shoulder blade and then flexing the elbow while extending the shoulder.",
+        "Pull the handle towards your body until the elbows are in line with your torso and then slowly lower the handle back to the starting position under control.",
+        "Repeat for the desired number of repetitions."
+      ],
+      "tips": [
+        "Keep some tone through your abdominals as you pull the bar into your body to ensure you don’t arch excessively through the spine.",
+        "Don’t allow momentum to dictate the movement, control the dumbbells throughout the entirety of each rep.",
+        "If you feel your biceps being overused and your back remaining under active, consider utilizing a false grip (i.e. don’t wrap the thumb around the dumbbell).",
+        "Don’t allow the head to jut forward as you pull.",
+        "Similarly, ensure the shoulder blade moves on the rib cage. Don’t lock the shoulder blade down and just move through the glenohumeral joint.",
+        "Allow the shoulder to internally rotate and shrug slightly at the top of the movement. You will obviously reverse the movement and depress the shoulder blade before you pull with the arm."
+      ],
+      "contraindications": [
+        "Lats injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": [
+        "Lats",
+        "Abs",
+        "Biceps",
+        "Shoulders",
+        "Upper Back"
+      ],
+      "alternatives": [
+        "lats-3",
+        "lats-4",
+        "lats-10",
+        "lats-11",
+        "lats-2"
+      ],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Pull (Bilateral)",
+      "mechanics": "Compound",
+      "videoUrl": "https://www.youtube.com/embed/iKrKgWR9wbY?rel=0",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Lats.jpg",
+      "viewCount": 4700000,
+      "popularity": "high"
+    },
+    {
+      "id": "lats-10",
+      "name": "Rope Straight Arm Pull Down",
+      "description": "The rope straight arm lat pull down is a variation of the straight arm lat pull down and an exercise used to build the muscles of back. In particular, the rope straight arm lat pull down is used to work the lats by mimicking a pullover movement pattern. The rope straight arm lat pull down utilizes a rope attachment to provide the trainee a more neutral hand positioning. This can help alleviate joint stress some may develop utilizing other variations.",
+      "targetBodyParts": [
+        "Lats"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
+      "difficulty": "beginner",
+      "equipment": [
+        "Cable"
+      ],
+      "steps": [
+        "Attach a rope to a cable stack and assume a standing position.",
+        "Grasp the rope with a neutral grip (palms facing) and lean forward slightly by hinging at the hips.",
+        "Keep the elbow slightly flexed and initiate the movement by depressing the shoulder blades and extending the shoulders.",
+        "Pull the rope toward your thigh until the lats are fully contracted and then slowly lower under control.",
+        "Repeat for the desired number of repetitions."
+      ],
+      "tips": [
+        "Keep some tone through your abdominals as you pull the weight into your body to ensure you don’t arch excessively through the spine.",
+        "If you feel your biceps being overused and your back remaining under active, consider utilizing a false grip (i.e. don’t wrap the thumb around the dumbbell).",
+        "Don’t allow the head to jut forward as you pull.",
+        "Similarly, ensure the shoulder blade moves on the rib cage. Don’t lock the shoulder blade down and just move through the glenohumeral joint.",
+        "If you can’t seem to feel your lats engaging, try to “screw your shoulders” into their sockets by pointing your elbows behind your body. Another cue that works exceptionally well is to “squeeze oranges in your armpits”."
+      ],
+      "contraindications": [
+        "Lats injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": [
+        "Lats",
+        "Abs",
+        "Biceps",
+        "Shoulders",
+        "Upper Back"
+      ],
+      "alternatives": [
+        "lats-1",
+        "lats-3",
+        "lats-4",
+        "lats-11",
+        "lats-2"
+      ],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Pull (Bilateral)",
+      "mechanics": "Compound",
+      "videoUrl": "https://www.youtube.com/embed/hlxb2zthgUw?rel=0",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Lats.jpg",
+      "viewCount": 117800,
+      "popularity": "medium"
+    },
+    {
+      "id": "lats-11",
+      "name": "V-Bar Pull Down",
+      "description": "The V-bar lat pull down is a variation of the lat pull down and an exercise commonly used to target the muscles of the back. Commonly mistaken for a close grip pull down, the V-bar pull down does utilize a closer grip than the traditional lat pull down. However, the main difference between the two is the neutral hand placement used during the V-bar pull down. This neutral hand placement can aid in alleviating stress placed on the shoulder during the vertical pulling movement pattern.",
+      "targetBodyParts": [
+        "Lats"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
+      "difficulty": "beginner",
+      "equipment": [
+        "Cable"
+      ],
+      "steps": [
+        "Attach a V-bar to the lat pulldown machine and assume a seated position.",
+        "Grasp the handle with a neutral grip and initiate the movement by depressing the shoulder blades and then flexing the elbow while extending the shoulder.",
+        "Pull the handle towards your body until the elbows are in line with your torso and then slowly lower the handle back to the starting position under control.",
+        "Repeat for the desired number of repetitions."
+      ],
+      "tips": [
+        "Keep some tone through your abdominals as you pull the bar into your body to ensure you don’t arch excessively through the spine.",
+        "Don’t allow momentum to dictate the movement, control the dumbbells throughout the entirety of each rep.",
+        "If you feel your biceps being overused and your back remaining under active, consider utilizing a false grip (i.e. don’t wrap the thumb around the dumbbell).",
+        "Don’t allow the head to jut forward as you pull.",
+        "Similarly, ensure the shoulder blade moves on the rib cage. Don’t lock the shoulder blade down and just move through the glenohumeral joint."
+      ],
+      "contraindications": [
+        "Lats injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": [
+        "Lats",
+        "Abs",
+        "Biceps",
+        "Shoulders",
+        "Upper Back"
+      ],
+      "alternatives": [
+        "lats-1",
+        "lats-3",
+        "lats-4",
+        "lats-10",
+        "lats-2"
+      ],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Pull (Bilateral)",
+      "mechanics": "Compound",
+      "videoUrl": "https://www.youtube.com/embed/7wEpfpKAiQ0?rel=0",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Lats.jpg",
+      "viewCount": 101700,
+      "popularity": "medium"
+    },
+    {
+      "id": "lats-12",
+      "name": "Rack Lat Stretch",
+      "description": "The rack lat stretch is a static stretching exercise used to alleviate tension in the lats. Having tight lats can affect a number of movement patterns, especially front squats and overhead presses. By performing this drill prior to days where you might train those movements, you’ll allow yourself to keep better form during the movement.",
+      "targetBodyParts": [
+        "Lats"
+      ],
+      "exerciseType": [
+        "warmup"
+      ],
+      "difficulty": "beginner",
+      "equipment": [
+        "Bodyweight"
+      ],
+      "steps": [
+        "In an upright position, reach forward and grasp a squat rack with one hand. Place your free hand on the ribcage to monitor spinal positioning.",
+        "Sit back into your hips and step back with the ipsilateral leg to increase the stretch on lats.",
+        "Slowly lean back and open your hips to intensify the stretch.",
+        "Hold for time, breaths, or repetitions and repeat on the opposite arm."
+      ],
+      "tips": [
+        "Never stretch to the point of pain or discomfort which causes you to hold your breath. Holding the breath increases global tension and will only work against the effects of the stretch at hand.",
+        "If you’re just feeling a stretch in the front of the shoulder then you’re stretching the anterior capsule and increasing instability within the shoulder - STOP. Work on other movements such as a KB armbar, band dislocates, and soft tissue work with a lacrosse ball.",
+        "Work to control the stretch using your breath - after you rock forward slightly, focus on breathing in that position and increasing the stretch on the pec by inflating the lungs. Focus on completing a set number of breaths and then slowly try to get deeper into the stretch before repeating the process."
+      ],
+      "contraindications": [
+        "Lats injury",
+        "Joint pain",
+        "Acute pain during movement"
+      ],
+      "muscles": [
+        "Lats"
+      ],
+      "alternatives": [
+        "lats-2",
+        "lats-5",
+        "lats-6",
+        "lats-13",
+        "lats-15"
+      ],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Static Stretching",
+      "mechanics": "Isolation",
+      "videoUrl": "https://www.youtube.com/embed/B8DfWCkjsd4",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Lats.jpg",
+      "viewCount": 26700,
+      "popularity": "low"
+    },
+    {
+      "id": "lats-13",
+      "name": "Eccentric Only Pull Up",
+      "description": "The eccentric only pull up is a great starting point for those looking to complete their first bodyweight pull up. By focusing on the only the eccentric portion of the pull up, you can build the pulling muscles required to perform the traditional pull up.",
+      "targetBodyParts": [
+        "Lats"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
+      "difficulty": "beginner",
+      "equipment": [
+        "Bodyweight"
+      ],
+      "steps": [
+        "Using a pronated grip, grasp the pull bar with a slightly wider than shoulder width grip.",
+        "Take a deep breath and hop to get yourself up to the bar. Squeeze your glutes, brace your abs, and descend slowly back to the start position.",
+        "Repeat for the assigned number of repetitions."
+      ],
+      "tips": [
+        "To decrease bicep involvement, use a false (thumbless grip).",
+        "Try to keep a neutral head position (looking straight ahead or slightly up) as hyperextending the neck can lead to compensations throughout the spine.",
+        "If the bar is high enough, keep the legs straight and in front of the body in a hollow body position.",
+        "Avoid falling into overextension of the lumbar spine by squeezing your glutes and bracing your abs.",
+        "Lower to almost full extension of the elbow but avoid locking out completely as this can place excessive strain on the ligamentous structures within the elbow and shoulder.",
+        "If you can’t complete a single bodyweight pull up, start with slow negatives (add weight when these can be accomplished under control) or flexed arm hangs in the top position."
+      ],
+      "contraindications": [
+        "Lats injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": [
+        "Lats",
+        "Abs",
+        "Biceps",
+        "Shoulders",
+        "Upper Back"
+      ],
+      "alternatives": [
+        "lats-2",
+        "lats-5",
+        "lats-6",
+        "lats-17",
+        "lats-23"
+      ],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Pull (Bilateral)",
+      "mechanics": "Compound",
+      "videoUrl": "https://www.youtube.com/embed/aWutvauIG0w?rel=0",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Lats.jpg",
+      "viewCount": 59700,
+      "popularity": "low"
+    },
+    {
+      "id": "lats-14",
+      "name": "Weighted Pull Up",
+      "description": "The weighted pull up is a progression to the traditional bodyweight pull up and targets the lats as well as the rest of the back, biceps, core, and shoulders indirectly. By adding weight to the pull up, you can accomplish progressive overload with the lift and put yourself in position to build bigger muscles. Be sure you have mastered the traditional bodyweight variation of the pull up before progressing to the weighted pull up.",
+      "targetBodyParts": [
+        "Lats"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
+      "difficulty": "intermediate",
+      "equipment": [
+        "Chains"
+      ],
+      "steps": [
+        "Load a weight belt with the desired weight and loop it around your waist.",
+        "Using a pronated grip, grasp the pull up bar with a slightly wider than shoulder width grip.",
+        "Take a deep breath, squeeze your glutes and brace your abs. Depress the shoulder blades and then drive the elbows straight down to the floor while activating the lats.",
+        "Pull your chin towards the bar until the lats are fully contracted, then slowly lower yourself back to the start position and repeat for the assigned number of repetitions."
+      ],
+      "tips": [
+        "To decrease bicep involvement, use a false (thumbless grip).",
+        "Try to keep a neutral head position (looking straight ahead or slightly up) as hyperextending the neck can lead to compensations throughout the spine.",
+        "If the bar is high enough, keep the legs straight and in front of the body in a hollow body position.",
+        "Avoid falling into overextension of the lumbar spine by squeezing your glutes and bracing your abs.",
+        "The pull up is completed when the lats are fully flexed, don’t continue pulling and compensate with the pecs. When this occurs, the elbows will flare up behind the body, the shoulder will round forward, and you’ll begin to feel pressure in the front of your shoulders.",
+        "A lifter’s segment length will determine whether or not they can actually get their chin over the bar, it’s not an absolute for everyone.",
+        "Lower to almost full extension of the elbow but avoid locking out completely as this can place excessive strain on the ligamentous structures within the elbow and shoulder.",
+        "If you can’t complete a single bodyweight pull up, start with slow negatives (add weight when these can be accomplished under control) or flexed arm hangs in the top position.",
+        "Ditch the straps and kips, neither one is necessary or recommended."
+      ],
+      "contraindications": [
+        "Lats injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": [
+        "Lats",
+        "Abs",
+        "Biceps",
+        "Shoulders",
+        "Upper Back"
+      ],
+      "alternatives": [
+        "lats-24",
+        "lats-18",
+        "lats-19",
+        "lats-26",
+        "lats-28"
+      ],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Pull (Bilateral)",
+      "mechanics": "Compound",
+      "videoUrl": "https://www.youtube.com/embed/y90HR4gRvyg?rel=0",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Lats.jpg",
+      "viewCount": 133700,
+      "popularity": "medium"
+    },
+    {
+      "id": "lats-15",
+      "name": "V-Bar Pull Up",
+      "description": "No description available",
+      "targetBodyParts": [
+        "Lats"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
+      "difficulty": "beginner",
+      "equipment": [
+        "Bodyweight"
+      ],
+      "steps": [
+        "Place the V-Bar over the top of the pull up bar and grip the bar with a neutral grip (palms facing each other).",
+        "Let your body hang straight down with your arms extended. This is the starting position.",
+        "Engage your back and arms to pull your chest up towards the bar as close as possible. Keep your elbows close to your body.",
+        "Slowly lower your body back down to the starting position, fully extending your arms. This is one rep.",
+        "Do the desired number of reps with smooth and controlled movements."
+      ],
+      "tips": [
+        "Use a full range of motion on every rep.",
+        "Avoid using momentum by swinging to pull your body up.",
+        "Control your body throughout the movement.",
+        "Weight can be added for extra intensity."
+      ],
+      "contraindications": [
+        "Lats injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": [
+        "Lats",
+        "Biceps",
+        "Middle Back",
+        "Shoulders"
+      ],
+      "alternatives": [
+        "lats-33",
+        "lats-2",
+        "lats-5",
+        "lats-6",
+        "lats-13"
+      ],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Pull",
+      "mechanics": "Compound",
+      "videoUrl": "https://player.vimeo.com/video/877881231?badge=0&autopause=0&player_id=0&app_id=58479",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Lats.jpg",
+      "viewCount": 221900,
+      "popularity": "medium"
+    },
+    {
+      "id": "lats-16",
+      "name": "Resistance Band Assisted Pull Up (From Knee)",
+      "description": "The resistance band assisted pull up (from knee) is a great exercise for beginners to use on their way to progressing to a bodyweight pull up. The resistance band helps remove some of the load allowing the lifter to train the pull up motion. This helps them build the pulling muscles (lats, biceps) so they can eventually progress to performing the traditional bodyweight pull up.",
+      "targetBodyParts": [
+        "Lats"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
+      "difficulty": "beginner",
+      "equipment": [
+        "Bands"
+      ],
+      "steps": [
+        "Attach a band to the bar and loop the end around your knee.",
+        "Using a pronated grip, grasp the pull up bar with a slightly wider than shoulder width grip.",
+        "Take a deep breath, squeeze your glutes and brace your abs. Depress the shoulder blades and then drive the elbows straight down to the floor while activating the lats.",
+        "Pull your chin towards the bar until the lats are fully contracted, then slowly lower yourself back to the start position and repeat for the assigned number of repetitions."
+      ],
+      "tips": [
+        "To decrease bicep involvement, use a false (thumbless grip).",
+        "Try to keep a neutral head position (looking straight ahead or slightly up) as hyperextending the neck can lead to compensations throughout the spine.",
+        "Avoid falling into overextension of the lumbar spine by squeezing your glutes and bracing your abs.",
+        "The pull up is completed when the lats are fully flexed, don’t continue pulling and compensate with the pecs. When this occurs, the elbows will flare up behind the body, the shoulder will round forward, and you’ll begin to feel pressure in the front of your shoulders.",
+        "A lifter’s segment length will determine whether or not they can actually get their chin over the bar, it’s not an absolute for everyone.",
+        "Lower to almost full extension of the elbow but avoid locking out completely as this can place excessive strain on the ligamentous structures within the elbow and shoulder.",
+        "If you can’t complete a single bodyweight pull up, start with slow negatives (add weight when these can be accomplished under control) or flexed arm hangs in the top position.",
+        "Ditch the straps and kips, neither one is necessary or recommended."
+      ],
+      "contraindications": [
+        "Lats injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": [
+        "Lats",
+        "Abs",
+        "Biceps",
+        "Shoulders",
+        "Upper Back"
+      ],
+      "alternatives": [
+        "lats-21",
+        "lats-38",
+        "lats-1",
+        "lats-2",
+        "lats-3"
+      ],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Pull (Bilateral)",
+      "mechanics": "Compound",
+      "videoUrl": "https://www.youtube.com/embed/qZQFqShg3t0?rel=0",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Lats.jpg",
+      "viewCount": 34300,
+      "popularity": "low"
+    },
+    {
+      "id": "lats-17",
+      "name": "Close Grip Pull Up",
+      "description": "The close grip pull up is a pull up variation and an exercise used to build the muscle of the back and arms. Specifically, the close grip pull up is used to build the lats and biceps. The hand positioning of the close grip pull up assists in alleviating unnecessary strain on the shoulder that some experience when performing its wide grip counterpart. However, the closer grip does result in slightly more bicep involvement, which can take away emphasis placed on the lats.",
+      "targetBodyParts": [
+        "Lats"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
+      "difficulty": "beginner",
+      "equipment": [
+        "Bodyweight"
+      ],
+      "steps": [
+        "Using a pronated grip, grasp the pull bar with a shoulder width grip.",
+        "Take a deep breath, squeeze your glutes and brace your abs. Depress the shoulder blades and then drive the elbows straight down to the floor while activating the lats.",
+        "Pull your chin towards the bar until the lats are fully contracted, then slowly lower yourself back to the start position and repeat for the assigned number of repetitions."
+      ],
+      "tips": [
+        "To decrease bicep involvement, use a false (thumbless grip).",
+        "Try to keep a neutral head position (looking straight ahead or slightly up) as hyperextending the neck can lead to compensations throughout the spine.",
+        "If the bar is high enough, keep the legs straight and in front of the body in a hollow body position.",
+        "Avoid falling into overextension of the lumbar spine by squeezing your glutes and bracing your abs.",
+        "The pullup is completed when the lats are fully flexed, don’t continue pulling and compensate with the pecs. When this occurs, the elbows will flare up behind the body, the shoulder will round forward, and you’ll begin to feel pressure in the front of your shoulders.",
+        "A lifter’s segment length will determine whether or not they can actually get their chin over the bar, it’s not an absolute for everyone.",
+        "Lower to almost full extension of the elbow but avoid locking out completely as this can place excessive strain on the ligamentous structures within the elbow and shoulder.",
+        "If you can’t complete a single bodyweight pullup, start with slow negatives (add weight when these can be accomplished under control) or flexed arm hangs in the top position.",
+        "Ditch the straps and kips, neither one is necessary or recommended."
+      ],
+      "contraindications": [
+        "Lats injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": [
+        "Lats",
+        "Abs",
+        "Biceps",
+        "Shoulders",
+        "Upper Back"
+      ],
+      "alternatives": [
+        "lats-2",
+        "lats-5",
+        "lats-6",
+        "lats-13",
+        "lats-23"
+      ],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Pull (Bilateral)",
+      "mechanics": "Compound",
+      "videoUrl": "https://www.youtube.com/embed/tgDl9PlA4-Q?rel=0",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Lats.jpg",
+      "viewCount": 194400,
+      "popularity": "medium"
+    },
+    {
+      "id": "lats-18",
+      "name": "Behind Neck Lat Pull Down",
+      "description": "The behind the neck lat pull down is a variation of the lat pull down and an exercise used to build the muscles of the back. While the exercise will primarily target the lats, you will also notice a fair amount of bicep and middle back activation. Behind the neck exercises are seen as a dated practice as the range of motion can put the shoulder joint in an unfavorable position. Some tension can be alleviated by stopping the rep at the top of the neckline. That said, if you are experiencing pain while performing the exercise, it may be beneficial to experiment with other pull down variations. The behind the neck lat pull down can be performed during your back workouts, upper body workouts, pull workouts, and full body workouts.",
+      "targetBodyParts": [
+        "Lats"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
+      "difficulty": "intermediate",
+      "equipment": [
+        "Machine"
+      ],
+      "steps": [
+        "Attach a wide grip handle to the lat pulldown machine and assume a seated position.",
+        "Grasp the handle with a pronated grip (double overhand) and initiate the movement by depressing the shoulder blades and then flexing the elbow while extending the shoulder.",
+        "Pull the handle behind your neck until it nearly touches at the base of your traps and then slowly lower the handle back to the starting position under control.",
+        "Repeat for the desired number of repetitions."
+      ],
+      "tips": [
+        "Keep some tone through your abdominals as you pull the bar into your body to ensure you don’t arch excessively through the spine.",
+        "Don’t allow momentum to dictate the movement, control the dumbbells throughout the entirety of each rep.",
+        "If you feel your biceps being overused and your back remaining under active, consider utilizing a false grip (i.e. don’t wrap the thumb around the dumbbell).",
+        "Don’t allow the head to jut forward as you pull.",
+        "Similarly, ensure the shoulder blade moves on the rib cage. Don’t lock the shoulder blade down and just move through the glenohumeral joint.",
+        "Allow the shoulder to internally rotate and shrug slightly at the top of the movement. You will obviously reverse the movement and depress the shoulder blade before you pull with the arm."
+      ],
+      "contraindications": [
+        "Lats injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": [
+        "Lats",
+        "Abs",
+        "Biceps",
+        "Shoulders",
+        "Upper Back"
+      ],
+      "alternatives": [
+        "lats-7",
+        "lats-8",
+        "lats-14",
+        "lats-19",
+        "lats-24"
+      ],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Pull (Bilateral)",
+      "mechanics": "Compound",
+      "videoUrl": "https://www.youtube.com/embed/u0NAUhxSt6M?rel=0",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Lats.jpg",
+      "viewCount": 83000,
+      "popularity": "low"
+    },
+    {
+      "id": "lats-19",
+      "name": "Pull Up with Leg Raise",
+      "description": "The pull up with leg raise is a combination exercise that combines the pull up and leg raise. This combo challenges the back to maintain a paused position and the core to execute a leg raise. The slight pause at the top of the pull up increases the time under tension placed on the pulling muscles involved and can be a good way to progressively overload the muscle to elicit muscle growth.",
+      "targetBodyParts": [
+        "Lats"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
+      "difficulty": "intermediate",
+      "equipment": [
+        "Bodyweight"
+      ],
+      "steps": [
+        "Using a pronated grip, grasp the pull up bar with a slightly wider than shoulder width grip.",
+        "Take a deep breath, depress the shoulder blades and drive the elbows straight down to the floor while activating the lats.",
+        "Pull your chin towards the bar until the lats are fully contracted, then squeeze the abs and raise the legs to 90 degrees.",
+        "Lower the legs and then slowly lower yourself back to the start position.",
+        "Repeat for the assigned number of repetitions."
+      ],
+      "tips": [
+        "To decrease bicep involvement, use a false (thumbless grip).",
+        "Try to keep a neutral head position (looking straight ahead or slightly up) as hyperextending the neck can lead to compensations throughout the spine.",
+        "If the bar is high enough, keep the legs straight and in front of the body in a hollow body position.",
+        "Avoid falling into overextension of the lumbar spine by squeezing your glutes and bracing your abs.",
+        "The pull up is completed when the lats are fully flexed, don’t continue pulling and compensate with the pecs. When this occurs, the elbows will flare up behind the body, the shoulder will round forward, and you’ll begin to feel pressure in the front of your shoulders.",
+        "A lifter’s segment length will determine whether or not they can actually get their chin over the bar, it’s not an absolute for everyone.",
+        "Lower to almost full extension of the elbow but avoid locking out completely as this can place excessive strain on the ligamentous structures within the elbow and shoulder.",
+        "If you can’t complete a single bodyweight pull up, start with slow negatives (add weight when these can be accomplished under control) or flexed arm hangs in the top position.",
+        "Ditch the straps and kips, neither one is necessary or recommended."
+      ],
+      "contraindications": [
+        "Lats injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": [
+        "Lats",
+        "Abs",
+        "Biceps",
+        "Shoulders",
+        "Upper Back"
+      ],
+      "alternatives": [
+        "lats-26",
+        "lats-31",
+        "lats-35",
+        "lats-42",
+        "lats-43"
+      ],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Pull (Bilateral)",
+      "mechanics": "Compound",
+      "videoUrl": "https://www.youtube.com/embed/2hwF9rHNMMM?rel=0",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Lats.jpg",
+      "viewCount": 13400,
+      "popularity": "low"
+    },
+    {
+      "id": "lats-2",
+      "name": "Wide Grip Pull Up",
+      "description": "The wide grip pull up is a variation of the pull up and an exercise used to target the upper back muscles such as the latissimus dorsi. Vertical pulling movements, such as the wide grip pull up, are foundational movements that should be included in your workout routines. So, once you’ve found a variation you like and feels comfortable to you, master it as it will benefit you from a strength and aesthetic standpoint. The wide grip pull up can be incorporated into back workouts, pull workouts, upper body workouts, or full body workouts.",
+      "targetBodyParts": [
+        "Lats"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
+      "difficulty": "beginner",
+      "equipment": [
+        "Bodyweight"
+      ],
+      "steps": [
+        "Using a pronated grip, grasp the pull bar with a wider than shoulder width grip.",
+        "Take a deep breath, squeeze your glutes and brace your abs. Depress the shoulder blades and then drive the elbows straight down to the floor while activating the lats.",
+        "Pull your chin towards the bar until the lats are fully contracted, then slowly lower yourself back to the start position and repeat for the assigned number of repetitions."
+      ],
+      "tips": [
+        "To decrease bicep involvement, use a false (thumbless grip).",
+        "Try to keep a neutral head position (looking straight ahead or slightly up) as hyperextending the neck can lead to compensations throughout the spine.",
+        "If the bar is high enough, keep the legs straight and in front of the body in a hollow body position.",
+        "Avoid falling into overextension of the lumbar spine by squeezing your glutes and bracing your abs.",
+        "The pullup is completed when the lats are fully flexed, don’t continue pulling and compensate with the pecs. When this occurs, the elbows will flare up behind the body, the shoulder will round forward, and you’ll begin to feel pressure in the front of your shoulders.",
+        "A lifter’s segment length will determine whether or not they can actually get their chin over the bar, it’s not an absolute for everyone.",
+        "Lower to almost full extension of the elbow but avoid locking out completely as this can place excessive strain on the ligamentous structures within the elbow and shoulder.",
+        "If you can’t complete a single bodyweight pullup, start with slow negatives (add weight when these can be accomplished under control) or flexed arm hangs in the top position.",
+        "Ditch the straps and kips, neither one is necessary or recommended."
+      ],
+      "contraindications": [
+        "Lats injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": [
+        "Lats",
+        "Abs",
+        "Biceps",
+        "Shoulders",
+        "Upper Back"
+      ],
+      "alternatives": [
+        "lats-5",
+        "lats-6",
+        "lats-13",
+        "lats-17",
+        "lats-23"
+      ],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Pull (Bilateral)",
+      "mechanics": "Compound",
+      "videoUrl": "https://www.youtube.com/embed/5oxviYmdHCY?rel=0",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Lats.jpg",
+      "viewCount": 3300000,
+      "popularity": "high"
+    },
+    {
+      "id": "lats-20",
+      "name": "Band Assisted Chin Up (From Foot)",
+      "description": "The band assisted chin up (from foot) is a great beginner variation of the chin up for those who are unable to perform entire sets of regular bodyweight chin ups. The eventual goal when performing band assisted chin ups is to build the pulling muscles (lats and biceps) and eventually be able to perform your chin ups without the band.",
+      "targetBodyParts": [
+        "Lats"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
+      "difficulty": "beginner",
+      "equipment": [
+        "Bands"
+      ],
+      "steps": [
+        "Attach a band to the bar and loop the end around your foot.",
+        "Using a supinated grip, grasp the bar with a shoulder width grip.",
+        "Take a deep breath, squeeze your glutes and brace your abs. Depress the shoulder blades and then drive the elbows straight down to the floor while activating the lats.",
+        "Pull your chin towards the bar until the lats are fully contracted, then slowly lower yourself back to the start position and repeat for the assigned number of repetitions."
+      ],
+      "tips": [
+        "Ensure you keep the leg straight throughout the duration of the movement in order to allow the band to provide assistance.",
+        "To decrease bicep involvement, use a false (thumbless grip).",
+        "Try to keep a neutral head position (looking straight ahead or slightly up) as hyperextending the neck can lead to compensations throughout the spine.",
+        "If the bar is high enough, keep the legs straight and in front of the body.",
+        "Avoid falling into overextension of the lumbar spine by squeezing your glutes and bracing your abs.",
+        "The chin up is completed when the lats are fully flexed, don’t continue pulling and compensate with the pecs.",
+        "Keep your shoulders down and back, if they round forward at the top then you’ve pulled too far.",
+        "A lifter’s segment length will determine whether or not they can actually get their chin over the bar, it’s not an absolute for everyone.",
+        "Lower to almost full extension of the elbow but avoid locking out completely as this can place excessive strain on the ligamentous structures within the elbow and shoulder.",
+        "If you can’t complete a single bodyweight pullup, start with slow negatives or flexed arm hangs at the top position.",
+        "Ditch the straps and kips, neither one is necessary or recommended."
+      ],
+      "contraindications": [
+        "Lats injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": [
+        "Lats",
+        "Abs",
+        "Biceps",
+        "Shoulders",
+        "Upper Back"
+      ],
+      "alternatives": [
+        "lats-16",
+        "lats-21",
+        "lats-38",
+        "lats-1",
+        "lats-2"
+      ],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Press (Bilateral)",
+      "mechanics": "Compound",
+      "videoUrl": "https://www.youtube.com/embed/4VaItNG5JiM?rel=0",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Lats.jpg",
+      "viewCount": 45500,
+      "popularity": "low"
+    },
+    {
+      "id": "lats-21",
+      "name": "Resistance Band Assisted Pull Up (From Foot)",
+      "description": "The resistance band assisted pull up (from foot) is an excellent way for beginners who can’t perform bodyweight pull ups to practice the pull up motion. The band assisted pull up is a progression from eccentric only pull ups, and can be used alongside the eccentric only pull up to build the pulling muscles required to perform bodyweight pull ups. These muscles primarily include the lats and biceps.",
+      "targetBodyParts": [
+        "Lats"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
+      "difficulty": "beginner",
+      "equipment": [
+        "Bands"
+      ],
+      "steps": [
+        "Attach a band to the bar and loop the end around your foot.",
+        "Using a pronated grip, grasp the pull up bar with a slightly wider than shoulder width grip.",
+        "Take a deep breath, squeeze your glutes and brace your abs. Depress the shoulder blades and then drive the elbows straight down to the floor while activating the lats.",
+        "Pull your chin towards the bar until the lats are fully contracted, then slowly lower yourself back to the start position and repeat for the assigned number of repetitions."
+      ],
+      "tips": [
+        "To decrease bicep involvement, use a false (thumbless grip).",
+        "Try to keep a neutral head position (looking straight ahead or slightly up) as hyperextending the neck can lead to compensations throughout the spine.",
+        "If the bar is high enough, keep the legs straight and in front of the body in a hollow body position.",
+        "Avoid falling into overextension of the lumbar spine by squeezing your glutes and bracing your abs.",
+        "The pull up is completed when the lats are fully flexed, don’t continue pulling and compensate with the pecs. When this occurs, the elbows will flare up behind the body, the shoulder will round forward, and you’ll begin to feel pressure in the front of your shoulders.",
+        "A lifter’s segment length will determine whether or not they can actually get their chin over the bar, it’s not an absolute for everyone.",
+        "Lower to almost full extension of the elbow but avoid locking out completely as this can place excessive strain on the ligamentous structures within the elbow and shoulder.",
+        "If you can’t complete a single bodyweight pull up, start with slow negatives (add weight when these can be accomplished under control) or flexed arm hangs in the top position.",
+        "Ditch the straps and kips, neither one is necessary or recommended."
+      ],
+      "contraindications": [
+        "Lats injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": [
+        "Lats",
+        "Abs",
+        "Biceps",
+        "Shoulders",
+        "Upper Back"
+      ],
+      "alternatives": [
+        "lats-16",
+        "lats-38",
+        "lats-1",
+        "lats-2",
+        "lats-3"
+      ],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Pull (Bilateral)",
+      "mechanics": "Compound",
+      "videoUrl": "https://www.youtube.com/embed/JJp7A277PWw?rel=0",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Lats.jpg",
+      "viewCount": 30400,
+      "popularity": "low"
+    },
+    {
+      "id": "lats-22",
+      "name": "Underhand Close Grip Lateral Pulldown",
+      "description": "No description available",
+      "targetBodyParts": [
+        "Lats"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
+      "difficulty": "intermediate",
+      "equipment": [
+        "Cable"
+      ],
+      "steps": [
+        "Set up for the underhand close grip lat pull by attaching a small straight bar to the machine (you can use the wide grip bar if you prefer), setting the weight on the stack, and adjusting the knee pad.",
+        "Grab the bar with an underhand grip, with your hands around 10-12 inches apart.",
+        "Sit down on the machine with your arms fully outstretched. This is the starting position.",
+        "Keeping your back and body straight, slowly pull the weight down to your upper chest.",
+        "Pause, and then slowly lower the weight back to the start position. Do not let the stack drop.",
+        "Repeat for desired reps."
+      ],
+      "tips": [
+        "Keep your elbows tucked in by your side when pulling the weight down.",
+        "Don\"t lean back at any time. Leaning back makes the exercise easier - it\"s cheating!",
+        "Control the weight at all times - don\"t let it drop quickly.",
+        "To add extra intensity pause for a count of 2 at the bottom of the movement squeezing through the lats.",
+        "Focus on squeezing the lats to move the weight. Your forearms should only be responsible for holding the weight."
+      ],
+      "contraindications": [
+        "Lats injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": [
+        "Lats",
+        "Biceps",
+        "Middle Back"
+      ],
+      "alternatives": [
+        "lats-28",
+        "lats-34",
+        "lats-1",
+        "lats-3",
+        "lats-4"
+      ],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Pull",
+      "mechanics": "Compound",
+      "videoUrl": "https://player.vimeo.com/video/756788564?h=13671ead43",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Lats.jpg",
+      "viewCount": 126100,
+      "popularity": "medium"
+    },
+    {
+      "id": "lats-23",
+      "name": "Close Grip Chin Up",
+      "description": "The close grip chin up is a variation of the chin up and an exercise used to target the muscles of the back. In particular, the close grip chin up works the lats, but also indirectly hits the muscles of the upper back, biceps, and core. The close grip chin up will encourage slightly more involvement from the biceps than other chin up variations. Thus, the close grip chin up is best used as an exercise to overload the biceps when attempting to maximize bicep muscle growth.",
+      "targetBodyParts": [
+        "Lats"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
+      "difficulty": "beginner",
+      "equipment": [
+        "Bodyweight"
+      ],
+      "steps": [
+        "Using a supinated grip, grasp the bar with a narrow grip.",
+        "Take a deep breath, squeeze your glutes and brace your abs. Depress the shoulder blades and then drive the elbows straight down to the floor while activating the lats.",
+        "Pull your chin towards the bar until the lats are fully contracted, then slowly lower yourself back to the start position and repeat for the assigned number of repetitions."
+      ],
+      "tips": [
+        "To decrease bicep involvement, use a false (thumbless grip).",
+        "Try to keep a neutral head position (looking straight ahead or slightly up) as hyperextending the neck can lead to compensations throughout the spine.",
+        "If the bar is high enough, keep the legs straight and in front of the body.",
+        "Avoid falling into overextension of the lumbar spine by squeezing your glutes and bracing your abs.",
+        "The chin-up is completed when the lats are fully flexed, don’t continue pulling and compensate with the pecs.",
+        "Imagine you’re trying to drive the elbows down as you pull.",
+        "Keep your shoulders down and back, if they round forward at the top then you’ve pulled too far.",
+        "A lifter’s segment length will determine whether or not they can actually get their chin over the bar, it’s not an absolute for everyone.",
+        "Lower to almost full extension of the elbow but avoid locking out completely as this can place excessive strain on the ligamentous structures within the elbow and shoulder.",
+        "If you can’t complete a single bodyweight chin up, start with slow negatives or flexed arm hangs at the top position."
+      ],
+      "contraindications": [
+        "Lats injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": [
+        "Lats",
+        "Abs",
+        "Biceps",
+        "Shoulders",
+        "Upper Back"
+      ],
+      "alternatives": [
+        "lats-2",
+        "lats-5",
+        "lats-6",
+        "lats-13",
+        "lats-17"
+      ],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Pull (Bilateral)",
+      "mechanics": "Compound",
+      "videoUrl": "https://www.youtube.com/embed/PG0PjOIR_NA?rel=0",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Lats.jpg",
+      "viewCount": 24600,
+      "popularity": "low"
+    },
+    {
+      "id": "lats-24",
+      "name": "Weighted Chin Up",
+      "description": "The weighted chin up is a progression lifters often make from chin ups once they’ve mastered the bodyweight variation of this movement. The addition of weight when perform the weighted chin up provides an easy and trackable way for the lifter to achieve progressive overload when performing the exercise. And of course, progressive overload is a key component of building bigger, stronger muscles.",
+      "targetBodyParts": [
+        "Lats"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
+      "difficulty": "intermediate",
+      "equipment": [
+        "Chains"
+      ],
+      "steps": [
+        "Load a weight belt with the desired weight and loop it around your waist.",
+        "Using a supinated grip, grasp the bar with a shoulder width grip.",
+        "Take a deep breath, squeeze your glutes and brace your abs. Depress the shoulder blades and then drive the elbows straight down to the floor while activating the lats.",
+        "Pull your chin towards the bar until the lats are fully contracted, then slowly lower yourself back to the start position and repeat for the assigned number of repetitions."
+      ],
+      "tips": [
+        "To decrease bicep involvement, use a false (thumbless grip).",
+        "Try to keep a neutral head position (looking straight ahead or slightly up) as hyperextending the neck can lead to compensations throughout the spine.",
+        "If the bar is high enough, keep the legs straight and in front of the body.",
+        "Avoid falling into overextension of the lumbar spine by squeezing your glutes and bracing your abs.",
+        "The chin up is completed when the lats are fully flexed, don’t continue pulling and compensate with the pecs.",
+        "Keep your shoulders down and back, if they round forward at the top then you’ve pulled too far.",
+        "A lifter’s segment length will determine whether or not they can actually get their chin over the bar, it’s not an absolute for everyone.",
+        "Lower to almost full extension of the elbow but avoid locking out completely as this can place excessive strain on the ligamentous structures within the elbow and shoulder.",
+        "If you can’t complete a single bodyweight chin up, start with slow negatives or flexed arm hangs at the top position.",
+        "Ditch the straps and kips, neither one is necessary or recommended."
+      ],
+      "contraindications": [
+        "Lats injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": [
+        "Lats",
+        "Abs",
+        "Biceps",
+        "Shoulders",
+        "Upper Back"
+      ],
+      "alternatives": [
+        "lats-14",
+        "lats-18",
+        "lats-19",
+        "lats-26",
+        "lats-28"
+      ],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Pull (Bilateral)",
+      "mechanics": "Compound",
+      "videoUrl": "https://www.youtube.com/embed/-HV2bwkP6VU?rel=0",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Lats.jpg",
+      "viewCount": 61100,
+      "popularity": "low"
+    },
+    {
+      "id": "lats-25",
+      "name": "Standing Overhead Medicine Ball Slam",
+      "description": "The standing overhead medicine ball slam exercise is a plyometric exercise used to build explosive strength in the core, lats, and shoulders. The standing overhead medicine ball slam will primarily target the muscles of the shoulders and is an excellent exercise for anyone looking to build powerful strength, especially athletes looking to improve their performance in their field of competition.",
+      "targetBodyParts": [
+        "Lats"
+      ],
+      "exerciseType": [
+        "plyometrics"
+      ],
+      "difficulty": "beginner",
+      "equipment": [
+        "Medicine Ball"
+      ],
+      "steps": [
+        "Setup in an athletic base position while holding a medicine ball at your chest with a soft bend in your knees.",
+        "Rise up tall on the toes and extend the arms overhead with the medicine ball.",
+        "Exhale, pull the arms down towards the toes, and aggressively slam the med ball into floor.",
+        "Catch the med ball as it returns from the floor and repeat step #2 for the desired number of repetitions."
+      ],
+      "tips": [
+        "With med ball drills, the goal is speed throughout the movement. There are only a few rare instances where one might want to move slowly through a weighted plyometric drill with a medicine ball.\n          A good rule of thumb - if the weight is so excessive that it affects the technical execution of the movement then it is too much.",
+        "A good rule of thumb - if the weight is so excessive that it affects the technical execution of the movement then it is too much.",
+        "You can use these drills as “fillers” in between your large compound movements or you can implement them within your warm up as a method of potentiating your central nervous system for heavier strength based work in your accompanying training session.",
+        "Keep the torso rigid and ensure some tension through the core to help transmit force out through the extremities.",
+        "Initially you may want to focus on pausing in between reps to ensure proper positioning but over time you can eventually progress to more rhythmic (i.e. back to back) repetitions.",
+        "If you are using a denser medicine ball which will react with “an equal and opposite reaction” then you may want to stand a little ways back from the wall to allow yourself time to react.\n          However, if you’re using a more absorptive ball then you can stand closer and catch the ball as it comes directly off the wall.",
+        "However, if you’re using a more absorptive ball then you can stand closer and catch the ball as it comes directly off the wall."
+      ],
+      "contraindications": [
+        "Lats injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": [
+        "Lats",
+        "Abs",
+        "Triceps",
+        "Upper Back"
+      ],
+      "alternatives": [
+        "lats-29",
+        "lats-30",
+        "lats-53",
+        "lats-1",
+        "lats-2"
+      ],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Pull (Bilateral)",
+      "mechanics": "Compound",
+      "videoUrl": "https://www.youtube.com/embed/N7t9BX-DExI?rel=0",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Lats.jpg",
+      "viewCount": 9500,
+      "popularity": "low"
+    },
+    {
+      "id": "lats-26",
+      "name": "Gironda Sternum Chin Up",
+      "description": "The Gironda sternum chin up is a unique chin up variation named after Vince Gironda and used to target the entire back as opposed to just the lats. By leaning back while performing the Gironda sternum chin up, you get a greater contraction on all of the back muscles of the upper back.",
+      "targetBodyParts": [
+        "Lats"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
+      "difficulty": "intermediate",
+      "equipment": [
+        "Bodyweight"
+      ],
+      "steps": [
+        "Using a supinated grip, grasp the pull bar with a shoulder width grip.",
+        "Take a deep breath, brace your abs and extend your upper back. Imagine you’re trying to point your sternum at the bar. Depress the shoulder blades and then drive the elbows straight down to the floor while activating the lats.",
+        "Pull your sternum towards the bar until the lats are fully contracted, then slowly lower yourself back to the start position.",
+        "Repeat for the assigned number of repetitions."
+      ],
+      "tips": [
+        "To decrease bicep involvement, use a false (thumbless grip).",
+        "Try to keep a neutral head position (looking straight ahead or slightly up) as hyperextending the neck can lead to compensations throughout the spine.",
+        "If the bar is high enough, keep the legs straight and in front of the body.",
+        "Avoid falling into overextension of the lumbar spine by squeezing your glutes and bracing your abs.",
+        "The chin up is completed when the lats are fully flexed, don’t continue pulling and compensate with the pecs.",
+        "Keep your shoulders down and back, if they round forward at the top then you’ve pulled too far.",
+        "A lifter’s segment length will determine whether or not they can actually get their chin over the bar, it’s not an absolute for everyone.",
+        "Lower to almost full extension of the elbow but avoid locking out completely as this can place excessive strain on the ligamentous structures within the elbow and shoulder.",
+        "If you can’t complete a single bodyweight chin up, start with slow negatives or flexed arm hangs at the top position.",
+        "Ditch the straps and kips, neither one is necessary or recommended."
+      ],
+      "contraindications": [
+        "Lats injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": [
+        "Lats",
+        "Abs",
+        "Biceps",
+        "Shoulders",
+        "Triceps"
+      ],
+      "alternatives": [
+        "lats-19",
+        "lats-31",
+        "lats-35",
+        "lats-42",
+        "lats-43"
+      ],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Pull (Bilateral)",
+      "mechanics": "Compound",
+      "videoUrl": "https://www.youtube.com/embed/Ik2R8fJP-pA?rel=0",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Lats.jpg",
+      "viewCount": 8300,
+      "popularity": "low"
+    },
+    {
+      "id": "lats-27",
+      "name": "L-Sit Pull Up",
+      "description": "The L-sit pull up is a pull up variation that combines a pull up with an isometric hanging leg raise hold. The pairing is best for those looking to build their lats, while also providing an endurance challenge for the core.",
+      "targetBodyParts": [
+        "Lats"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
+      "difficulty": "advanced",
+      "equipment": [
+        "Bodyweight"
+      ],
+      "steps": [
+        "Using a pronated grip, grasp the pull bar with a slightly wider than shoulder width grip.",
+        "Squeeze the abs and raise the legs to 90 degrees.",
+        "Take a deep breath, depress the shoulder blades and drive the elbows straight down to the floor while activating the lats.",
+        "Pull your chin towards the bar until the lats are fully contracted, then slowly lower yourself back to the start position.",
+        "Keep the legs parallel to the floor and repeat for the assigned number of repetitions."
+      ],
+      "tips": [
+        "To decrease bicep involvement, use a false (thumbless grip).",
+        "Try to keep a neutral head position (looking straight ahead or slightly up) as hyperextending the neck can lead to compensations throughout the spine.",
+        "If the bar is high enough, keep the legs straight and in front of the body in a hollow body position.",
+        "Avoid falling into overextension of the lumbar spine by squeezing your glutes and bracing your abs.",
+        "The pullup is completed when the lats are fully flexed, don’t continue pulling and compensate with the pecs. When this occurs, the elbows will flare up behind the body, the shoulder will round forward, and you’ll begin to feel pressure in the front of your shoulders.",
+        "A lifter’s segment length will determine whether or not they can actually get their chin over the bar, it’s not an absolute for everyone.",
+        "Lower to almost full extension of the elbow but avoid locking out completely as this can place excessive strain on the ligamentous structures within the elbow and shoulder.",
+        "If you can’t complete a single bodyweight pullup, start with slow negatives (add weight when these can be accomplished under control) or flexed arm hangs in the top position.",
+        "Ditch the straps and kips, neither one is necessary or recommended."
+      ],
+      "contraindications": [
+        "Lats injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": [
+        "Lats",
+        "Abs",
+        "Biceps",
+        "Shoulders",
+        "Upper Back"
+      ],
+      "alternatives": [
+        "lats-44",
+        "lats-51",
+        "lats-2",
+        "lats-5",
+        "lats-6"
+      ],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Pull (Bilateral)",
+      "mechanics": "Compound",
+      "videoUrl": "https://www.youtube.com/embed/D_QW34ynrKM?rel=0",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Lats.jpg",
+      "viewCount": 6300,
+      "popularity": "low"
+    },
+    {
+      "id": "lats-28",
+      "name": "Thibaudeau Kayak Row",
+      "description": "The Thibaudeau kayak rows is an exercise used to target the muscles of the back. The exercise was made popular by world-renowned strength coach, Christian Thibaudeau. The Thibaudeau kayak row utilizes a cable pulley machine and mimics the motion one would use to paddle while in a kayak.",
+      "targetBodyParts": [
+        "Lats"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
+      "difficulty": "intermediate",
+      "equipment": [
+        "Cable"
+      ],
+      "steps": [
+        "Attach a medium width handle to a cable stack and assume a standing position.",
+        "Grasp the handle with a pronated grip (double overhand) at roughly shoulder width.",
+        "Keep the elbow slightly flexed and initiate the movement by depressing the shoulder blade, extending the shoulder, and laterally flexing the spine to maximally contract the lat.",
+        "Pull one side of the bar towards your thigh until the lat is fully contracted and then slowly lower under control.",
+        "Repeat for the desired number of repetitions on both sides."
+      ],
+      "tips": [
+        "Keep some tone through your abdominals as you pull the bar into your body to ensure you don’t arch excessively through the spine.",
+        "If you feel your biceps being overused and your back remaining under active, consider utilizing a false grip (i.e. don’t wrap the thumb around the dumbbell).",
+        "Don’t allow the head to jut forward as you pull.",
+        "Similarly, ensure the shoulder blade moves on the rib cage. Don’t lock the shoulder blade down and just move through the glenohumeral joint."
+      ],
+      "contraindications": [
+        "Lats injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": [
+        "Lats",
+        "Abs",
+        "Biceps",
+        "Shoulders",
+        "Upper Back"
+      ],
+      "alternatives": [
+        "lats-1",
+        "lats-3",
+        "lats-4",
+        "lats-10",
+        "lats-11"
+      ],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Pull (Bilateral)",
+      "mechanics": "Compound",
+      "videoUrl": "https://www.youtube.com/embed/1YF81jucQbg?rel=0",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Lats.jpg",
+      "viewCount": 12000,
+      "popularity": "low"
+    },
+    {
+      "id": "lats-29",
+      "name": "Standing Overhead Medicine Ball Throw",
+      "description": "The standing overhead medicine ball throw exercise is a plyometric exercise used to build explosive strength in the core, lats, and shoulders. The standing overhead medicine ball throw will primarily target the muscles of the shoulders and is an excellent exercise for anyone looking to build powerful strength, especially athletes looking to improve their performance in their field of competition.",
+      "targetBodyParts": [
+        "Lats"
+      ],
+      "exerciseType": [
+        "plyometrics"
+      ],
+      "difficulty": "beginner",
+      "equipment": [
+        "Medicine Ball"
+      ],
+      "steps": [
+        "Setup in an athletic base position while holding a medicine ball at your chest with a soft bend in your knees.",
+        "Rise up and extend the arms overhead with the medicine ball.",
+        "Exhale, pull the arms forward towards the wall, and aggressively throw the med ball into wall directly in front of you.",
+        "Catch the med ball as it returns from the wall and repeat step #2 for the desired number of repetitions."
+      ],
+      "tips": [
+        "With med ball drills, the goal is speed throughout the movement. There are only a few rare instances where one might want to move slowly through a weighted plyometric drill with a medicine ball.\n          A good rule of thumb - if the weight is so excessive that it affects the technical execution of the movement then it is too much.",
+        "A good rule of thumb - if the weight is so excessive that it affects the technical execution of the movement then it is too much.",
+        "You can use these drills as “fillers” in between your large compound movements or you can implement them within your warm up as a method of potentiating your central nervous system for heavier strength based work in your accompanying training session.",
+        "Keep the torso rigid and ensure some tension through the core to help transmit force out through the extremities.",
+        "Initially you may want to focus on pausing in between reps to ensure proper positioning but over time you can eventually progress to more rhythmic (i.e. back to back) repetitions.",
+        "If you are using a denser medicine ball which will react with “an equal and opposite reaction” then you may want to stand a little ways back from the wall to allow yourself time to react.\n          However, if you’re using a more absorptive ball then you can stand closer and catch the ball as it comes directly off the wall.",
+        "However, if you’re using a more absorptive ball then you can stand closer and catch the ball as it comes directly off the wall."
+      ],
+      "contraindications": [
+        "Lats injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": [
+        "Lats",
+        "Abs",
+        "Triceps",
+        "Upper Back"
+      ],
+      "alternatives": [
+        "lats-25",
+        "lats-30",
+        "lats-53",
+        "lats-1",
+        "lats-2"
+      ],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Pull (Bilateral)",
+      "mechanics": "Compound",
+      "videoUrl": "https://www.youtube.com/embed/jxh6VAWuBbA?rel=0",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Lats.jpg",
+      "viewCount": 6700,
+      "popularity": "low"
+    },
+    {
+      "id": "lats-3",
+      "name": "Close Grip Lat Pull Down",
+      "description": "The close grip lat pull down is a variation of the lat pull down and an exercise used to build the muscles of the back. While the exercise will primarily target the lats, you will also notice a fair amount of bicep and middle back activation. The back is a muscle group that requires a fair amount of variation. So, experiment with several different angles and hand positions to maximize your back muscle growth. The close grip lat pull down can be performed during your back workouts, upper body workouts, pull workouts, and full body workouts.",
+      "targetBodyParts": [
+        "Lats"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
+      "difficulty": "beginner",
+      "equipment": [
+        "Cable"
+      ],
+      "steps": [
+        "Attach a wide grip handle to the lat pulldown machine and assume a seated position.",
+        "Grasp the handle with a pronated grip (double underhand) at shoulder width.",
+        "Initiate the movement by depressing the shoulder blades and then flexing the elbow while extending the shoulder.",
+        "Pull the handle towards your body until the elbows are in line with your torso and then slowly lower the handle back to the starting position under control.",
+        "Repeat for the desired number of repetitions."
+      ],
+      "tips": [
+        "Keep some tone through your abdominals as you pull the bar into your body to ensure you don’t arch excessively through the spine.",
+        "Don’t allow momentum to dictate the movement, control the weight throughout the entirety of each rep.",
+        "If you feel your biceps being overused and your back remaining under active, consider utilizing a false grip (i.e. don’t wrap the thumb around the dumbbell).",
+        "Don’t allow the head to jut forward as you pull.",
+        "Similarly, ensure the shoulder blade moves on the rib cage. Don’t lock the shoulder blade down and just move through the glenohumeral joint.",
+        "Allow the shoulder to internally rotate and shrug slightly at the top of the movement. You will obviously reverse the movement and depress the shoulder blade before you pull with the arm."
+      ],
+      "contraindications": [
+        "Lats injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": [
+        "Lats",
+        "Abs",
+        "Biceps",
+        "Shoulders",
+        "Upper Back"
+      ],
+      "alternatives": [
+        "lats-1",
+        "lats-4",
+        "lats-10",
+        "lats-11",
+        "lats-2"
+      ],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Pull (Bilateral)",
+      "mechanics": "Compound",
+      "videoUrl": "https://www.youtube.com/embed/uAyrz5GTEHg?rel=0",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Lats.jpg",
+      "viewCount": 2000000,
+      "popularity": "high"
+    },
+    {
+      "id": "lats-30",
+      "name": "Overhead Medicine Ball Figure 8 Slam",
+      "description": "The overhead medicine ball figure 8 slam is a variation of the medicine ball slam and a power style exercise used to increase one’s explosiveness. In particular, the overhead medicine ball figure 8 slam will work the muscles of the core, lats, and legs. The exercise would be predominantly used by athletic populations looking to improve their on-field performance capabilities, but might also be used by other populations looking to build power, or even as a form of conditioning in some gyms.",
+      "targetBodyParts": [
+        "Lats"
+      ],
+      "exerciseType": [
+        "plyometrics"
+      ],
+      "difficulty": "intermediate",
+      "equipment": [
+        "Medicine Ball"
+      ],
+      "steps": [
+        "Setup in an athletic base position while holding a medicine ball at your chest with a soft bend in your knees.",
+        "Rise up tall on the toes and extend the arms overhead with the medicine ball.",
+        "Exhale, pull the arms down towards the toes, and aggressively slam the med ball into floor on one side.",
+        "Rise up tall on the toes again and repeat the process on the opposite side.",
+        "Catch the med ball as it returns from the floor and repeat step #2 for the desired number of repetitions."
+      ],
+      "tips": [
+        "With med ball drills, the goal is speed throughout the movement. There are only a few rare instances where one might want to move slowly through a weighted plyometric drill with a medicine ball.\n          A good rule of thumb - if the weight is so excessive that it affects the technical execution of the movement then it is too much.",
+        "A good rule of thumb - if the weight is so excessive that it affects the technical execution of the movement then it is too much.",
+        "You can use these drills as “fillers” in between your large compound movements or you can implement them within your warm up as a method of potentiating your central nervous system for heavier strength based work in your accompanying training session.",
+        "Keep the torso rigid and ensure some tension through the core to help transmit force out through the extremities.",
+        "Initially you may want to focus on pausing in between reps to ensure proper positioning but over time you can eventually progress to more rhythmic (i.e. back to back) repetitions.",
+        "If you are using a denser medicine ball which will react with “an equal and opposite reaction”, then you may want to stand a little ways back from the wall to allow yourself time to react.\n          However, if you’re using a more absorptive ball then you can stand closer and catch the ball as it comes directly off the wall.",
+        "However, if you’re using a more absorptive ball then you can stand closer and catch the ball as it comes directly off the wall."
+      ],
+      "contraindications": [
+        "Lats injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": [
+        "Lats",
+        "Abs",
+        "Triceps",
+        "Upper Back"
+      ],
+      "alternatives": [
+        "lats-25",
+        "lats-29",
+        "lats-14",
+        "lats-18",
+        "lats-19"
+      ],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Pull (Bilateral)",
+      "mechanics": "Compound",
+      "videoUrl": "https://www.youtube.com/embed/SLWvzfzYQjo?rel=0",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Lats.jpg",
+      "viewCount": 3200,
+      "popularity": "low"
+    },
+    {
+      "id": "lats-31",
+      "name": "Archer Pull Up",
+      "description": "The archer pull up is a more advanced variation of the traditional pull up and is used to target the lat and bicep muscles. The archer pull up incorporates a slight unilateral effect, allowing the lifter to emphasize one lat at a time. This allows the lifter to really focus on the concentric hold of each lat to help develop the mind-muscle connection. The hold and shift also increases the time under tension of the muscle, which can help in building bigger lats.",
+      "targetBodyParts": [
+        "Lats"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
+      "difficulty": "intermediate",
+      "equipment": [
+        "Bodyweight"
+      ],
+      "steps": [
+        "Using a pronated grip, grasp the pull up bar with a slightly wider than shoulder width grip.",
+        "Take a deep breath, squeeze your glutes and brace your abs. Depress the shoulder blades and then drive the elbows straight down to the floor while activating the lats.",
+        "Pull your chin towards one side of the bar until the lats are fully contracted, then slowly shift to the other side of the bar without changing the height of your body. Once the shift is complete, lower yourself back to the start position and repeat for the assigned number of repetitions."
+      ],
+      "tips": [
+        "To decrease bicep involvement, use a false (thumbless grip).",
+        "Try to keep a neutral head position (looking straight ahead or slightly up) as hyperextending the neck can lead to compensations throughout the spine.",
+        "If the bar is high enough, keep the legs straight and in front of the body in a hollow body position.",
+        "Avoid falling into overextension of the lumbar spine by squeezing your glutes and bracing your abs.",
+        "The pull up is completed when the lats are fully flexed, don’t continue pulling and compensate with the pecs. When this occurs, the elbows will flare up behind the body, the shoulder will round forward, and you’ll begin to feel pressure in the front of your shoulders.",
+        "A lifter’s segment length will determine whether or not they can actually get their chin over the bar, it’s not an absolute for everyone.",
+        "Lower to almost full extension of the elbow but avoid locking out completely as this can place excessive strain on the ligamentous structures within the elbow and shoulder.",
+        "If you can’t complete a single bodyweight pull up, start with slow negatives (add weight when these can be accomplished under control) or flexed arm hangs in the top position.",
+        "Ditch the straps and kips, neither one is necessary or recommended."
+      ],
+      "contraindications": [
+        "Lats injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": [
+        "Lats",
+        "Abs",
+        "Biceps",
+        "Shoulders",
+        "Upper Back"
+      ],
+      "alternatives": [
+        "lats-19",
+        "lats-26",
+        "lats-35",
+        "lats-42",
+        "lats-43"
+      ],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Pull (Bilateral)",
+      "mechanics": "Compound",
+      "videoUrl": "https://www.youtube.com/embed/UTqVfGZPhso?rel=0",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Lats.jpg",
+      "viewCount": 8400,
+      "popularity": "low"
+    },
+    {
+      "id": "lats-32",
+      "name": "Eccentric Only Chin Up",
+      "description": "The eccentric only chin up is the perfect place to start for those looking to accomplish their first bodyweight chin up. By performing the eccentric portion of the chin up slowly, you build the muscles required to properly execute the chin up without assistance.",
+      "targetBodyParts": [
+        "Lats"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
+      "difficulty": "beginner",
+      "equipment": [
+        "Bodyweight"
+      ],
+      "steps": [
+        "Using a supinated grip, grasp the bar with a shoulder width grip.",
+        "Take a deep breath and hop to get yourself up to the bar. Squeeze your glutes, brace your abs, and descend slowly back to the start position.",
+        "Repeat for the assigned number of repetitions."
+      ],
+      "tips": [
+        "To decrease bicep involvement, use a false (thumbless grip).",
+        "Try to keep a neutral head position (looking straight ahead or slightly up) as hyperextending the neck can lead to compensations throughout the spine.",
+        "If the bar is high enough, keep the legs straight and in front of the body.",
+        "Avoid falling into overextension of the lumbar spine by squeezing your glutes and bracing your abs.",
+        "The chin up is completed when the lats are fully flexed, don’t continue pulling and compensate with the pecs.",
+        "Keep your shoulders down and back, if they round forward at the top then you’ve pulled too far.",
+        "A lifter’s segment length will determine whether or not they can actually get their chin over the bar, it’s not an absolute for everyone.",
+        "Lower to almost full extension of the elbow but avoid locking out completely as this can place excessive strain on the ligamentous structures within the elbow and shoulder.",
+        "If you can’t complete a single bodyweight pullup, start with slow negatives or flexed arm hangs at the top position.",
+        "Ditch the straps and kips, neither one is necessary or recommended."
+      ],
+      "contraindications": [
+        "Lats injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": [
+        "Lats",
+        "Abs",
+        "Biceps",
+        "Shoulders",
+        "Upper Back"
+      ],
+      "alternatives": [
+        "lats-2",
+        "lats-5",
+        "lats-6",
+        "lats-13",
+        "lats-17"
+      ],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Pull (Bilateral)",
+      "mechanics": "Compound",
+      "videoUrl": "https://www.youtube.com/embed/iPjSiC3soGE?rel=0",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Lats.jpg",
+      "viewCount": 5500,
+      "popularity": "low"
+    },
+    {
+      "id": "lats-33",
+      "name": "Wide Grip Chin Up",
+      "description": "No description available",
+      "targetBodyParts": [
+        "Lats"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
+      "difficulty": "beginner",
+      "equipment": [
+        "Bodyweight"
+      ],
+      "steps": [
+        "Set up for the wide grip chin up by grasping a pull-up bar with a wide underhand grip (palms facing you).",
+        "Take your feet off the floor and hang from the bar. This is the starting position.",
+        "Keeping your body straight and eyes up, slowly pull yourself up until your chin is above the bar.",
+        "Lower yourself back to the starting position.",
+        "Repeat for desired reps."
+      ],
+      "tips": [
+        "Use a full range of motion with every rep to get the most out of this exercise.",
+        "Go slowly and control your body on the way down.",
+        "Keep as still as possible - not allowing your body to swing.",
+        "Weight can be added for extra intensity."
+      ],
+      "contraindications": [
+        "Lats injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": [
+        "Lats",
+        "Biceps",
+        "Middle Back",
+        "Shoulders"
+      ],
+      "alternatives": [
+        "lats-15",
+        "lats-2",
+        "lats-5",
+        "lats-6",
+        "lats-13"
+      ],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Pull",
+      "mechanics": "Compound",
+      "videoUrl": "https://player.vimeo.com/video/756788596?h=98bbd51830",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Lats.jpg",
+      "viewCount": 39100,
+      "popularity": "low"
+    },
+    {
+      "id": "lats-34",
+      "name": "Rope Pull Up",
+      "description": "No description available",
+      "targetBodyParts": [
+        "Lats"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
+      "difficulty": "intermediate",
+      "equipment": [
+        "Bodyweight"
+      ],
+      "steps": [
+        "Set up for the rope pull up by getting a rope extension and hanging it over the top of a pull up bar.",
+        "Standing under the pull up bar, grip the rope extension with a neutral grip - palms facing inwards.",
+        "Holding the rope, take your feet off the floor so that you\"re hanging with arms outstretched. This is the start position.",
+        "Slowly pull yourself up until your hands almost touch your upper chest.",
+        "Pause, and then slowly lower yourself back to the starting position.",
+        "Repeat for desired reps.",
+        "Always use the maximum range of motion on this exercise. This means going up as high as possible and lowering yourself down until your arms are almost fully outstretched.",
+        "Slow the movement down to add extra intensity.",
+        "Weight can be added to this movement for additional intensity."
+      ],
+      "tips": [
+        "Always use the maximum range of motion on this exercise. This means going up as high as possible and lowering yourself down until your arms are almost fully outstretched.",
+        "Slow the movement down to add extra intensity.",
+        "Weight can be added to this movement for additional intensity."
+      ],
+      "contraindications": [
+        "Lats injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": [
+        "Lats",
+        "Biceps",
+        "Middle Back"
+      ],
+      "alternatives": [
+        "lats-15",
+        "lats-19",
+        "lats-22",
+        "lats-26",
+        "lats-31"
+      ],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Pull",
+      "mechanics": "Compound",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Lats.jpg",
+      "viewCount": 40100,
+      "popularity": "low"
+    },
+    {
+      "id": "lats-35",
+      "name": "Chin Up With Leg Raise",
+      "description": "The chin up with leg raise is a combination exercise that combines the chin up with the leg raise. The chin up itself is an excellent lat and bicep building exercise and the leg raise is a highly recommended ab exercise. By adding the leg raise to the end of the exercise, you not only add a great core exercise, but the isometric hold of the chin up increases the time under tension on the lats and biceps which can lead to greater muscle growth.",
+      "targetBodyParts": [
+        "Lats"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
+      "difficulty": "intermediate",
+      "equipment": [
+        "Bodyweight"
+      ],
+      "steps": [
+        "Using a pronated grip, grasp the bar with a shoulder width grip.",
+        "Take a deep breath, depress the shoulder blades and drive the elbows straight down to the floor while activating the lats.",
+        "Pull your chin towards the bar until the lats are fully contracted, then squeeze the abs and raise the legs to 90 degrees.",
+        "Lower the legs and then slowly lower yourself back to the start position.",
+        "Repeat for the assigned number of repetitions."
+      ],
+      "tips": [
+        "To decrease bicep involvement, use a false (thumbless grip).",
+        "Try to keep a neutral head position (looking straight ahead or slightly up) as hyperextending the neck can lead to compensations throughout the spine.",
+        "If the bar is high enough, keep the legs straight and in front of the body.",
+        "Avoid falling into overextension of the lumbar spine by squeezing your glutes and bracing your abs.",
+        "The chin up is completed when the lats are fully flexed, don’t continue pulling and compensate with the pecs.",
+        "Keep your shoulders down and back, if they round forward at the top then you’ve pulled too far.",
+        "A lifter’s segment length will determine whether or not they can actually get their chin over the bar, it’s not an absolute for everyone.",
+        "Lower to almost full extension of the elbow but avoid locking out completely as this can place excessive strain on the ligamentous structures within the elbow and shoulder.",
+        "If you can’t complete a single bodyweight chin up, start with slow negatives or flexed arm hangs at the top position.",
+        "Ditch the straps and kips, neither one is necessary or recommended."
+      ],
+      "contraindications": [
+        "Lats injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": [
+        "Lats",
+        "Abs",
+        "Biceps",
+        "Shoulders",
+        "Upper Back"
+      ],
+      "alternatives": [
+        "lats-19",
+        "lats-26",
+        "lats-31",
+        "lats-42",
+        "lats-43"
+      ],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Pull (Bilateral)",
+      "mechanics": "Compound",
+      "videoUrl": "https://www.youtube.com/embed/rwYGDzJDC5o?rel=0",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Lats.jpg",
+      "viewCount": 6100,
+      "popularity": "low"
+    },
+    {
+      "id": "lats-36",
+      "name": "Lat Foam Rolling",
+      "description": "Foam rolling your lats is a great way to warm up and cool down for your workout, especially if you plan to perform upper body exercises that require the lats to be more mobile. When you foam roll the lats, or any muscle group for that matter, you alleviate some of the tension that is built up during the day and your workouts.",
+      "targetBodyParts": [
+        "Lats"
+      ],
+      "exerciseType": [
+        "smr"
+      ],
+      "difficulty": "beginner",
+      "equipment": [
+        "Foam Roll"
+      ],
+      "steps": [
+        "In a supine position, position the foam roller near your armpit at the base of your lat.",
+        "Raise one arm overhead, pick your hips up off the floor, and roll from the base of your ribcage up into the armpit region.",
+        "Adjust pressure into the roller by raising your hips higher or lower or applying more force through your free hand into the ground.",
+        "Slowly roll up and down the length of the thoracic spine for 20-30 seconds.",
+        "Repeat on the other side."
+      ],
+      "tips": [
+        "The most important thing you can remember with any soft tissue work: KEEP BREATHING. Don’t hold your breath, you want to release tension, not generate it.",
+        "Avoid rolling the lumbar spine (lower back), try to stay centered over your ribcage.",
+        "Do not allow yourself to fall into overextension, keep tension through the abs.",
+        "If you find a tender spot, pause for 5-6 seconds and focus on slow, deep breaths and try to relax.",
+        "Foam rolling may be uncomfortable but that’s not an excuse to avoid it. It hurts because there may be physiological or neurological influences generating a pain response. The more you roll the better it’ll feel provided there’s no serious underlying mechanism.",
+        "If you notice any burning, numbness, or tingling, keep moving past that area. It’s likely a nerve and pausing on it for any length of time would not be a good idea."
+      ],
+      "contraindications": [
+        "Lats injury",
+        "Joint pain",
+        "Acute pain during movement"
+      ],
+      "muscles": [
+        "Lats"
+      ],
+      "alternatives": [
+        "lats-12",
+        "lats-1",
+        "lats-2",
+        "lats-3",
+        "lats-4"
+      ],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Compression",
+      "mechanics": "Isolation",
+      "videoUrl": "https://www.youtube.com/embed/0HoTk7H6Gcs?rel=0",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Lats.jpg",
+      "viewCount": 4800,
+      "popularity": "low"
+    },
+    {
+      "id": "lats-37",
+      "name": "Lateral Pulldown (Rope Extension)",
+      "description": "No description available",
+      "targetBodyParts": [
+        "Lats"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
+      "difficulty": "beginner",
+      "equipment": [
+        "Machine"
+      ],
+      "steps": [
+        "Set up for the exercise by attaching a rope extension to a lat pulldown machine, setting the weight you want to use on the stack, and adjusting the knee pad.",
+        "Grasp the rope with a neutral grip, palms facing inward and thumbs back.",
+        "Sit down on the machine and take the weight off the stack, keeping your arms extended. This is the starting position.",
+        "Keeping your body tight and sitting upright, slowly pull the rope down as far as possible.",
+        "Pause, and then slowly lower the weight back to the starting position without letting it drop to the stack.",
+        "Repeat for desired reps."
+      ],
+      "tips": [
+        "Stay seated upright throughout the set - do not lean back. Leaning back and using your body to swing the weight down is cheating!",
+        "To add more intensity, slow the rep timing down to 1-2-2."
+      ],
+      "contraindications": [
+        "Lats injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": [
+        "Lats",
+        "Biceps",
+        "Middle Back",
+        "Shoulders"
+      ],
+      "alternatives": [
+        "lats-54",
+        "lats-7",
+        "lats-8",
+        "lats-15",
+        "lats-33"
+      ],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Pull",
+      "mechanics": "Compound",
+      "videoUrl": "https://player.vimeo.com/video/756788551?h=228c3e8e4f",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Lats.jpg",
+      "viewCount": 80800,
+      "popularity": "low"
+    },
+    {
+      "id": "lats-38",
+      "name": "Band Assisted Chin Up (From Knee)",
+      "description": "The band assisted chin up (from knee) is a great way for beginners to progress to performing chin ups. It is important to train the chin up movement pattern, because it\"s one of the best ways to train your back and bicep muscles. The eventual goal when performing assisted banded chin ups is to build the pulling muscles (lats and biceps) and eventually be able to perform your chin ups without the band.",
+      "targetBodyParts": [
+        "Lats"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
+      "difficulty": "beginner",
+      "equipment": [
+        "Bands"
+      ],
+      "steps": [
+        "Attach a band to the bar and loop the end around your knee.",
+        "Using a supinated grip, grasp the bar with a shoulder width grip.",
+        "Take a deep breath, squeeze your glutes and brace your abs. Depress the shoulder blades and then drive the elbows straight down to the floor while activating the lats.",
+        "Pull your chin towards the bar until the lats are fully contracted, then slowly lower yourself back to the start position and repeat for the assigned number of repetitions."
+      ],
+      "tips": [
+        "To decrease bicep involvement, use a false (thumbless grip).",
+        "Try to keep a neutral head position (looking straight ahead or slightly up) as hyperextending the neck can lead to compensations throughout the spine.",
+        "If the bar is high enough, keep the legs straight and in front of the body.",
+        "Avoid falling into overextension of the lumbar spine by squeezing your glutes and bracing your abs.",
+        "The chin up is completed when the lats are fully flexed, don’t continue pulling and compensate with the pecs.",
+        "Keep your shoulders down and back, if they round forward at the top then you’ve pulled too far.",
+        "A lifter’s segment length will determine whether or not they can actually get their chin over the bar, it’s not an absolute for everyone.",
+        "Lower to almost full extension of the elbow but avoid locking out completely as this can place excessive strain on the ligamentous structures within the elbow and shoulder.",
+        "If you can’t complete a single bodyweight chin up, start with slow negatives or flexed arm hangs at the top position.",
+        "Ditch the straps and kips, neither one is necessary or recommended."
+      ],
+      "contraindications": [
+        "Lats injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": [
+        "Lats",
+        "Abs",
+        "Biceps",
+        "Shoulders",
+        "Upper Back"
+      ],
+      "alternatives": [
+        "lats-16",
+        "lats-21",
+        "lats-1",
+        "lats-2",
+        "lats-3"
+      ],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Pull (Bilateral)",
+      "mechanics": "Compound",
+      "videoUrl": "https://www.youtube.com/embed/R2Cs2CTERs4?rel=0",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Lats.jpg",
+      "viewCount": 6400,
+      "popularity": "low"
+    },
+    {
+      "id": "lats-39",
+      "name": "Mixed Grip Chin Up",
+      "description": "The mixed grip chin up is another variation of the traditional chin up used to build the pulling muscles of the back and arms. By mixing your grip, you combine a pull up with a chin up and provide a different stimulus to each side of your body at the same time. You should make sure to alternate the mix grips every other set when performing mixed grip chin ups to maintain a balanced and symmetrical physique.",
+      "targetBodyParts": [
+        "Lats"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
+      "difficulty": "beginner",
+      "equipment": [
+        "Bodyweight"
+      ],
+      "steps": [
+        "Using a mixed grip (one over/one under), grasp the bar with a shoulder width grip.",
+        "Take a deep breath, squeeze your glutes and brace your abs. Depress the shoulder blades and then drive the elbows straight down to the floor while activating the lats.",
+        "Pull your chin towards the bar until the lats are fully contracted, then slowly lower yourself back to the start position and repeat for the assigned number of repetitions."
+      ],
+      "tips": [
+        "To decrease bicep involvement, use a false (thumbless grip).",
+        "Try to keep a neutral head position (looking straight ahead or slightly up) as hyperextending the neck can lead to compensations throughout the spine.",
+        "If the bar is high enough, keep the legs straight and in front of the body.",
+        "Avoid falling into overextension of the lumbar spine by squeezing your glutes and bracing your abs.",
+        "The chin-up is completed when the lats are fully flexed, don’t continue pulling and compensate with the pecs.",
+        "Imagine you’re trying to drive the elbows down as you pull.",
+        "Keep your shoulders down and back, if they round forward at the top then you’ve pulled too far.",
+        "A lifter’s segment length will determine whether or not they can actually get their chin over the bar, it’s not an absolute for everyone.",
+        "Lower to almost full extension of the elbow but avoid locking out completely as this can place excessive strain on the ligamentous structures within the elbow and shoulder.",
+        "If you can’t complete a single bodyweight chinup, start with slow negatives or flexed arm hangs at the top position."
+      ],
+      "contraindications": [
+        "Lats injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": [
+        "Lats",
+        "Abs",
+        "Biceps",
+        "Shoulders",
+        "Upper Back"
+      ],
+      "alternatives": [
+        "lats-2",
+        "lats-5",
+        "lats-6",
+        "lats-13",
+        "lats-17"
+      ],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Pull (Bilateral)",
+      "mechanics": "Compound",
+      "videoUrl": "https://www.youtube.com/embed/hlQyIMurQd4?rel=0",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Lats.jpg",
+      "viewCount": 11600,
+      "popularity": "low"
+    },
+    {
+      "id": "lats-4",
+      "name": "Straight Arm Lat Pull Down",
+      "description": "The straight arm lat pull down is a variation of the lat pull down and an exercise used to build the muscles of the back. While the exercise will primarily target the lats, you will also notice a fair amount of bicep and middle back activation. The back is a muscle group that requires a fair amount of variation. So, experiment with several different angles and hand positions to maximize your back muscle growth. The straight arm lat pull down mimics the movement of a dumbbell pullover. The emphasis should be on feeling the entire range of motion, not the amount of weight you use on the exercise. The straight arm lat pull down can be performed during your back workouts, upper body workouts, pull workouts, and full body workouts.",
+      "targetBodyParts": [
+        "Lats"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
+      "difficulty": "beginner",
+      "equipment": [
+        "Cable"
+      ],
+      "steps": [
+        "Attach a wide grip handle to a cable stack and assume a standing position.",
+        "Grasp the handle with a pronated grip (double overhand) at roughly shoulder width and lean forward slightly by hinging at the hips.",
+        "Keep the elbow slightly flexed and initiate the movement by depressing the shoulder blades and extending the shoulders.",
+        "Pull the bar to your thigh until the lats are fully contracted and then slowly lower under control.",
+        "Repeat for the desired number of repetitions."
+      ],
+      "tips": [
+        "Keep some tone through your abdominals as you pull the bar into your body to ensure you don’t arch excessively through the spine.",
+        "If you feel your biceps being overused and your back remaining under active, consider utilizing a false grip (i.e. don’t wrap the thumb around the dumbbell).",
+        "Don’t allow the head to jut forward as you pull.",
+        "Similarly, ensure the shoulder blade moves on the rib cage. Don’t lock the shoulder blade down and just move through the glenohumeral joint.",
+        "If you can’t seem to feel your lats engaging, try to “screw your shoulders” into their sockets by pointing your elbows behind your body. Another cue that works exceptionally well is to “squeeze oranges in your armpits”."
+      ],
+      "contraindications": [
+        "Lats injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": [
+        "Lats",
+        "Abs",
+        "Biceps",
+        "Shoulders",
+        "Upper Back"
+      ],
+      "alternatives": [
+        "lats-1",
+        "lats-3",
+        "lats-10",
+        "lats-11",
+        "lats-2"
+      ],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Pull (Bilateral)",
+      "mechanics": "Compound",
+      "videoUrl": "https://www.youtube.com/embed/gDtXrJWPdlY?rel=0",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Lats.jpg",
+      "viewCount": 1200000,
+      "popularity": "high"
+    },
+    {
+      "id": "lats-40",
+      "name": "Skin the Cat",
+      "description": "The skin the cat exercise is a variation of the pull up and an exercise used to strengthen the muscles of the lats and upper back. This variation can put a lot of tension on the shoulder, especially in inexperienced lifters. Only progress to this variation once you have the prerequisite strength to keep the tension on the targeted muscle groups.",
+      "targetBodyParts": [
+        "Lats"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
+      "difficulty": "intermediate",
+      "equipment": [
+        "Rings"
+      ],
+      "steps": [
+        "Set up a pair of rings well above standing height and jump to get into the starting position.",
+        "Using a pronated grip, grasp the rings with the arms fully overhead.",
+        "Take a deep breath and drive the knees towards your chest as you curl your body up towards the ceiling.",
+        "As you roll over, control the descent and slowly straighten your legs.",
+        "Reverse the movement by curling your legs back to your chest and rolling your torso back through your arms to get back to the starting position.",
+        "Repeat for the desired number of repetitions."
+      ],
+      "tips": [
+        "Given this exercise requires an excessively large range of motion at the shoulders, one may need to utilize progressions in order to get into certain positions. Never force a position if there is pain during or after the movement.",
+        "Tucking the chin can help to generate the “somersault effect” at the torso.",
+        "Ensure that you especially control the eccentric portion of the exercise as this is an area where the shoulder is especially susceptible to injury given that many are lacking sufficient shoulder extension to maintain this position without excessive pressure to the anterior capsule.\n          However, on the opposite end of the spectrum, this can also be an excellent stretch for generating more shoulder extension given it is loaded with your entire bodyweight.",
+        "However, on the opposite end of the spectrum, this can also be an excellent stretch for generating more shoulder extension given it is loaded with your entire bodyweight.",
+        "Remember, you need to use your lats and abs to pull yourself backwards into the tucked position.",
+        "If you can’t complete full pull ups or leg raises then work on those first before trying to jump into this more advanced movement."
+      ],
+      "contraindications": [
+        "Lats injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": [
+        "Lats",
+        "Abs",
+        "Biceps",
+        "Shoulders",
+        "Upper Back"
+      ],
+      "alternatives": [
+        "lats-14",
+        "lats-18",
+        "lats-19",
+        "lats-24",
+        "lats-26"
+      ],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Pull (Bilateral)",
+      "mechanics": "Compound",
+      "videoUrl": "https://www.youtube.com/embed/HcLwg5XZ6qE?rel=0",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Lats.jpg",
+      "viewCount": 5600,
+      "popularity": "low"
+    },
+    {
+      "id": "lats-41",
+      "name": "Band Resisted Chin Up",
+      "description": "The band resisted chin up is a variation of the chin up and an exercise used to target the muscles of the back. In particular, the band resisted chin up works the lats, but also indirectly hits the muscles of the upper back, biceps, and core. One would use the band resisted chin up as a progression from the traditional chin up. The band used in the band resisted chin up provides accommodating resistance, meaning more tension is placed on the target muscle groups the closer you get to a full contraction.",
+      "targetBodyParts": [
+        "Lats"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
+      "difficulty": "intermediate",
+      "equipment": [
+        "Bands"
+      ],
+      "steps": [
+        "Attach a band to a dumbbell on the floor and loop the end around your waist.",
+        "Using a supinated grip, grasp the bar with a shoulder width grip.",
+        "Take a deep breath, squeeze your glutes and brace your abs. Depress the shoulder blades and then drive the elbows straight down to the floor while activating the lats.",
+        "Pull your chin towards the bar until the lats are fully contracted, then slowly lower yourself back to the start position and repeat for the assigned number of repetitions."
+      ],
+      "tips": [
+        "To decrease bicep involvement, use a false (thumbless grip).",
+        "Try to keep a neutral head position (looking straight ahead or slightly up) as hyperextending the neck can lead to compensations throughout the spine.",
+        "If the bar is high enough, keep the legs straight and in front of the body.",
+        "Avoid falling into overextension of the lumbar spine by squeezing your glutes and bracing your abs.",
+        "The chin up is completed when the lats are fully flexed, don’t continue pulling and compensate with the pecs.",
+        "Keep your shoulders down and back, if they round forward at the top then you’ve pulled too far.",
+        "A lifter’s segment length will determine whether or not they can actually get their chin over the bar, it’s not an absolute for everyone.",
+        "Lower to almost full extension of the elbow but avoid locking out completely as this can place excessive strain on the ligamentous structures within the elbow and shoulder.",
+        "If you can’t complete a single bodyweight chin up, start with slow negatives or flexed arm hangs at the top position.",
+        "Ditch the straps and kips, neither one is necessary or recommended."
+      ],
+      "contraindications": [
+        "Lats injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": [
+        "Lats",
+        "Abs",
+        "Biceps",
+        "Shoulders",
+        "Upper Back"
+      ],
+      "alternatives": [
+        "lats-14",
+        "lats-16",
+        "lats-18",
+        "lats-19",
+        "lats-21"
+      ],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Pull (Bilateral)",
+      "mechanics": "Compound",
+      "videoUrl": "https://www.youtube.com/embed/qpYV9m__Ytg?rel=0",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Lats.jpg",
+      "viewCount": 2200,
+      "popularity": "low"
+    },
+    {
+      "id": "lats-42",
+      "name": "Single Pause Chin Up",
+      "description": "The single pause chin up is a chin up variation that utilizes an intensity technique known as the pause rep. By pausing mid rep, as seen at the top of the single pause chin up, you create an isometric contraction on the muscle. This requires more strength to complete each repetition as you will come to a complete dead stop during the rep. Be sure to focus on the contraction during the pause when performing single pause chin ups. The added time under tension created while paused at contraction can help lead to a better pump and greater muscle growth in the long run.",
+      "targetBodyParts": [
+        "Lats"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
+      "difficulty": "intermediate",
+      "equipment": [
+        "Bodyweight"
+      ],
+      "steps": [
+        "Using a supinated grip, grasp the bar with a shoulder width grip.",
+        "Take a deep breath, squeeze your glutes and brace your abs. Depress the shoulder blades and then drive the elbows straight down to the floor while activating the lats.",
+        "Pull your chin towards the bar until the lats are fully contracted, pause, then slowly lower yourself back to the start position and repeat for the assigned number of repetitions."
+      ],
+      "tips": [
+        "To decrease bicep involvement, use a false (thumbless grip).",
+        "Try to keep a neutral head position (looking straight ahead or slightly up) as hyperextending the neck can lead to compensations throughout the spine.",
+        "If the bar is high enough, keep the legs straight and in front of the body.",
+        "Avoid falling into overextension of the lumbar spine by squeezing your glutes and bracing your abs.",
+        "The chin up is completed when the lats are fully flexed, don’t continue pulling and compensate with the pecs.",
+        "Keep your shoulders down and back, if they round forward at the top then you’ve pulled too far.",
+        "A lifter’s segment length will determine whether or not they can actually get their chin over the bar, it’s not an absolute for everyone.",
+        "Lower to almost full extension of the elbow but avoid locking out completely as this can place excessive strain on the ligamentous structures within the elbow and shoulder.",
+        "If you can’t complete a single bodyweight chin up, start with slow negatives or flexed arm hangs at the top position.",
+        "Ditch the straps and kips, neither one is necessary or recommended."
+      ],
+      "contraindications": [
+        "Lats injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": [
+        "Lats",
+        "Abs",
+        "Biceps",
+        "Shoulders",
+        "Upper Back"
+      ],
+      "alternatives": [
+        "lats-19",
+        "lats-26",
+        "lats-31",
+        "lats-35",
+        "lats-43"
+      ],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Pull (Bilateral)",
+      "mechanics": "Compound",
+      "videoUrl": "https://www.youtube.com/embed/LTr572u8aj0?rel=0",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Lats.jpg",
+      "viewCount": 2700,
+      "popularity": "low"
+    },
+    {
+      "id": "lats-43",
+      "name": "Double Pause Pull Up",
+      "description": "The double pause pull up is a more advanced variation of the traditional pull up and involves using an intensity technique known as the pause rep. By pausing twice during the pull up, you increase the total time under tension on the muscle groups being worked. You’re also forced to continue the movement after two complete dead stops, which provides an additional challenge for your lats.",
+      "targetBodyParts": [
+        "Lats"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
+      "difficulty": "intermediate",
+      "equipment": [
+        "Bodyweight"
+      ],
+      "steps": [
+        "Using a pronated grip, grasp the pull up bar with a slightly wider than shoulder width grip.",
+        "Take a deep breath, squeeze your glutes and brace your abs. Depress the shoulder blades and then drive the elbows straight down to the floor while activating the lats.",
+        "Pull your chin towards the bar until the lats are fully contracted, pause, then slowly lower yourself halfway down, pause, then continue to lower yourself back to the start position and repeat for the assigned number of repetitions."
+      ],
+      "tips": [
+        "To decrease bicep involvement, use a false (thumbless grip).",
+        "Try to keep a neutral head position (looking straight ahead or slightly up) as hyperextending the neck can lead to compensations throughout the spine.",
+        "If the bar is high enough, keep the legs straight and in front of the body in a hollow body position.",
+        "Avoid falling into overextension of the lumbar spine by squeezing your glutes and bracing your abs.",
+        "The pull up is completed when the lats are fully flexed, don’t continue pulling and compensate with the pecs. When this occurs, the elbows will flare up behind the body, the shoulder will round forward, and you’ll begin to feel pressure in the front of your shoulders.",
+        "A lifter’s segment length will determine whether or not they can actually get their chin over the bar, it’s not an absolute for everyone.",
+        "Lower to almost full extension of the elbow but avoid locking out completely as this can place excessive strain on the ligamentous structures within the elbow and shoulder.",
+        "If you can’t complete a single bodyweight pull up, start with slow negatives (add weight when these can be accomplished under control) or flexed arm hangs in the top position.",
+        "Ditch the straps and kips, neither one is necessary or recommended."
+      ],
+      "contraindications": [
+        "Lats injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": [
+        "Lats",
+        "Abs",
+        "Biceps",
+        "Shoulders",
+        "Upper Back"
+      ],
+      "alternatives": [
+        "lats-19",
+        "lats-26",
+        "lats-31",
+        "lats-35",
+        "lats-42"
+      ],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Pull (Bilateral)",
+      "mechanics": "Compound",
+      "videoUrl": "https://www.youtube.com/embed/mxZ08G0UuM0?rel=0",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Lats.jpg",
+      "viewCount": 3700,
+      "popularity": "low"
+    },
+    {
+      "id": "lats-44",
+      "name": "Triple Pause Chin Up",
+      "description": "The triple pause chin up is an advanced chin up variation that utilizes an intensity technique known as the pause rep. By pausing throughout each repetition, you create an isometric contraction on the muscle. This requires more strength to complete each repetition as you will come to a complete dead stop several times during the rep. The added time under tension created while paused can help to lead to a better pump and greater muscle growth in the long run.",
+      "targetBodyParts": [
+        "Lats"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
+      "difficulty": "advanced",
+      "equipment": [
+        "Bodyweight"
+      ],
+      "steps": [
+        "Using a supinated grip, grasp the bar with a shoulder width grip.",
+        "Take a deep breath, squeeze your glutes and brace your abs. Depress the shoulder blades and then drive the elbows straight down to the floor while activating the lats.",
+        "Pull your chin towards the bar until the lats are fully contracted, pause, then slowly lower yourself halfway down, pause, then continue to lower yourself back to the start position, pause, and repeat for the assigned number of repetitions."
+      ],
+      "tips": [
+        "To decrease bicep involvement, use a false (thumbless grip).",
+        "Try to keep a neutral head position (looking straight ahead or slightly up) as hyperextending the neck can lead to compensations throughout the spine.",
+        "If the bar is high enough, keep the legs straight and in front of the body.",
+        "Avoid falling into overextension of the lumbar spine by squeezing your glutes and bracing your abs.",
+        "The chin up is completed when the lats are fully flexed, don’t continue pulling and compensate with the pecs.",
+        "Keep your shoulders down and back, if they round forward at the top then you’ve pulled too far.",
+        "A lifter’s segment length will determine whether or not they can actually get their chin over the bar, it’s not an absolute for everyone.",
+        "Lower to almost full extension of the elbow but avoid locking out completely as this can place excessive strain on the ligamentous structures within the elbow and shoulder.",
+        "If you can’t complete a single bodyweight chin up, start with slow negatives or flexed arm hangs at the top position.",
+        "Ditch the straps and kips, neither one is necessary or recommended."
+      ],
+      "contraindications": [
+        "Lats injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": [
+        "Lats",
+        "Abs",
+        "Biceps",
+        "Shoulders",
+        "Upper Back"
+      ],
+      "alternatives": [
+        "lats-27",
+        "lats-51",
+        "lats-2",
+        "lats-5",
+        "lats-6"
+      ],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Pull (Bilateral)",
+      "mechanics": "Compound",
+      "videoUrl": "https://www.youtube.com/embed/3d8UBNTQGXA?rel=0",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Lats.jpg",
+      "viewCount": 3300,
+      "popularity": "low"
+    },
+    {
+      "id": "lats-45",
+      "name": "Weighted Pull Up Hang",
+      "description": "The weighted pull up hang is a great way to strengthen the muscles needed to perform pull ups and weighted pull ups. The weighted pull up hang utilizes an isometric hold on the muscles and is a great method to keep constant tension on the lats, biceps, core, and shoulders.",
+      "targetBodyParts": [
+        "Lats"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
+      "difficulty": "beginner",
+      "equipment": [
+        "Chains"
+      ],
+      "steps": [
+        "Load a weight belt with the desired weight and loop it around your waist.",
+        "Using a pronated grip, grasp the pull up bar with a slightly wider than shoulder width grip.",
+        "Take a deep breath, squeeze your glutes and brace your abs. Depress the shoulder blades and maintain an active shoulder position.",
+        "Hold for the assigned time frame and repeat for as many repetitions as desired."
+      ],
+      "tips": [
+        "To decrease bicep involvement, use a false (thumbless grip).",
+        "Try to keep a neutral head position (looking straight ahead or slightly up) as hyperextending the neck can lead to compensations throughout the spine.",
+        "If the bar is high enough, keep the legs straight and in front of the body in a hollow body position.",
+        "Avoid falling into overextension of the lumbar spine by squeezing your glutes and bracing your abs."
+      ],
+      "contraindications": [
+        "Lats injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": [
+        "Lats",
+        "Abs",
+        "Biceps",
+        "Shoulders",
+        "Upper Back"
+      ],
+      "alternatives": [
+        "lats-55",
+        "lats-1",
+        "lats-2",
+        "lats-3",
+        "lats-4"
+      ],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Isometric",
+      "mechanics": "Compound",
+      "videoUrl": "https://www.youtube.com/embed/QioKpkp6lvI?rel=0",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Lats.jpg",
+      "viewCount": 2900,
+      "popularity": "low"
+    },
+    {
+      "id": "lats-46",
+      "name": "One Arm Chin Up",
+      "description": "The one arm chin up is a variation of the chin up and an exercise used to strengthen the muscles of the back. Unilateral exercises, such as the one arm chin up, allow you to work each side of the body individually to build balanced strength and an aesthetic physique. The one arm chin up is very challenging and shouldn’t be attempted until two arm variations have been mastered.",
+      "targetBodyParts": [
+        "Lats"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
+      "difficulty": "intermediate",
+      "equipment": [
+        "Bodyweight"
+      ],
+      "steps": [
+        "Using a supinated grip, grasp the bar with one hand and allow your other arm to hang freely (or wrap around your wrist if needed).",
+        "Take a deep breath, squeeze your glutes and brace your abs. Depress the shoulder blade and drive the elbow straight down towards the floor while activating the lat.",
+        "Pull your chin towards the bar until the lat is fully contracted, then slowly lower yourself back to the starting position and repeat for the assigned number of repetitions."
+      ],
+      "tips": [
+        "This variation will likely be too tough for a variety of lifters so as a progression, you should wrap your free hand around your wrist for additional support and try to pull primarily with the hand attached to the bar.",
+        "To decrease bicep involvement, use a false (thumbless grip).",
+        "Try to keep a neutral head position (looking straight ahead or slightly up) as hyperextending the neck can lead to compensations throughout the spine.",
+        "If the bar is high enough, keep the legs straight and in front of the body.",
+        "Avoid falling into overextension of the lumbar spine by squeezing your glutes and bracing your abs.",
+        "The chinup is completed when the lats are fully flexed, don’t continue pulling and compensate with the pecs.",
+        "Keep your shoulders down and back, if they round forward at the top then you’ve pulled too far.",
+        "A lifter’s segment length will determine whether or not they can actually get their chin over the bar, it’s not an absolute for everyone.",
+        "Lower to almost full extension of the elbow but avoid locking out completely as this can place excessive strain on the ligamentous structures within the elbow and shoulder."
+      ],
+      "contraindications": [
+        "Lats injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": [
+        "Lats",
+        "Abs",
+        "Biceps",
+        "Shoulders",
+        "Upper Back"
+      ],
+      "alternatives": [
+        "lats-19",
+        "lats-26",
+        "lats-31",
+        "lats-34",
+        "lats-35"
+      ],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Pull (Unilateral)",
+      "mechanics": "Compound",
+      "videoUrl": "https://www.youtube.com/embed/otFRs2HM_ME?rel=0",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Lats.jpg",
+      "viewCount": 3600,
+      "popularity": "low"
+    },
+    {
+      "id": "lats-47",
+      "name": "Single Pause Pull Up",
+      "description": "The single pause pull up is a variation of the traditional pull up that incorparetes an intensity technique known as pause rep. Pause reps, as seen in the single pause pull up, are great for extending the time under tension of the working muscles. It is also an alternative way to progress the pull up without adding weight to the exercise.",
+      "targetBodyParts": [
+        "Lats"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
+      "difficulty": "intermediate",
+      "equipment": [
+        "Bodyweight"
+      ],
+      "steps": [
+        "Using a pronated grip, grasp the pull up bar with a slightly wider than shoulder width grip.",
+        "Take a deep breath, squeeze your glutes and brace your abs. Depress the shoulder blades and then drive the elbows straight down to the floor while activating the lats.",
+        "Pull your chin towards the bar until the lats are fully contracted, pause, then slowly lower yourself back to the start position and repeat for the assigned number of repetitions."
+      ],
+      "tips": [
+        "To decrease bicep involvement, use a false (thumbless grip).",
+        "Try to keep a neutral head position (looking straight ahead or slightly up) as hyperextending the neck can lead to compensations throughout the spine.",
+        "If the bar is high enough, keep the legs straight and in front of the body in a hollow body position.",
+        "Avoid falling into overextension of the lumbar spine by squeezing your glutes and bracing your abs.",
+        "The pullup is completed when the lats are fully flexed, don’t continue pulling and compensate with the pecs. When this occurs, the elbows will flare up behind the body, the shoulder will round forward, and you’ll begin to feel pressure in the front of your shoulders.",
+        "A lifter’s segment length will determine whether or not they can actually get their chin over the bar, it’s not an absolute for everyone.",
+        "Lower to almost full extension of the elbow but avoid locking out completely as this can place excessive strain on the ligamentous structures within the elbow and shoulder.",
+        "If you can’t complete a single bodyweight pull up, start with slow negatives (add weight when these can be accomplished under control) or flexed arm hangs in the top position.",
+        "Ditch the straps and kips, neither one is necessary or recommended."
+      ],
+      "contraindications": [
+        "Lats injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": [
+        "Lats",
+        "Abs",
+        "Biceps",
+        "Shoulders",
+        "Upper Back"
+      ],
+      "alternatives": [
+        "lats-19",
+        "lats-26",
+        "lats-31",
+        "lats-35",
+        "lats-42"
+      ],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Pull (Bilateral)",
+      "mechanics": "Compound",
+      "videoUrl": "https://www.youtube.com/embed/ilc7WxWrKxw?rel=0",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Lats.jpg",
+      "viewCount": 3200,
+      "popularity": "low"
+    },
+    {
+      "id": "lats-48",
+      "name": "Around the Bar Chin Ups",
+      "description": "The around the bar chin up is a more advanced variation of the chin up. The chin up itself is an excellent bicep and lat builder and a highly recommended movement for most lifters. The around the bar chin up takes it up a notch by requiring even more core stabilization to move from one side of the bar to the other. The around the bar chin up also increases the time under tension for all muscles involved, which can result in greater muscle growth.",
+      "targetBodyParts": [
+        "Lats"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
+      "difficulty": "intermediate",
+      "equipment": [
+        "Bodyweight"
+      ],
+      "steps": [
+        "Using a supinated grip, grasp the bar with a shoulder width grip.",
+        "Take a deep breath, squeeze your glutes and brace your abs. Depress the shoulder blades and then drive the elbows straight down to the floor while activating the lats.",
+        "Pull your chin towards one side of the bar until the lats are fully contracted, then slowly shift to the other side of the bar without changing the height of your body. Once the shift is complete, lower yourself back to the start position and repeat for the assigned number of repetitions."
+      ],
+      "tips": [
+        "To decrease bicep involvement, use a false (thumbless grip).",
+        "Try to keep a neutral head position (looking straight ahead or slightly up) as hyperextending the neck can lead to compensations throughout the spine.",
+        "If the bar is high enough, keep the legs straight and in front of the body.",
+        "Avoid falling into overextension of the lumbar spine by squeezing your glutes and bracing your abs.",
+        "The pullup is completed when the lats are fully flexed, don’t continue pulling and compensate with the pecs.",
+        "Keep your shoulders down and back, if they round forward at the top then you’ve pulled too far.",
+        "A lifter’s segment length will determine whether or not they can actually get their chin over the bar, it’s not an absolute for everyone.",
+        "Lower to almost full extension of the elbow but avoid locking out completely as this can place excessive strain on the ligamentous structures within the elbow and shoulder.",
+        "If you can’t complete a single bodyweight pullup, start with slow negatives or flexed arm hangs at the top position.",
+        "Ditch the straps and kips, neither one is necessary or recommended."
+      ],
+      "contraindications": [
+        "Lats injury",
+        "Joint pain",
+        "Acute pain during movement"
+      ],
+      "muscles": [
+        "Lats",
+        "Abs",
+        "Biceps",
+        "Shoulders",
+        "Upper Back"
+      ],
+      "alternatives": [
+        "lats-19",
+        "lats-26",
+        "lats-31",
+        "lats-35",
+        "lats-42"
+      ],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Pull (Bilateral)",
+      "mechanics": "Isolation",
+      "videoUrl": "https://www.youtube.com/embed/BoSOt0nrQgs?rel=0",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Lats.jpg",
+      "viewCount": 3700,
+      "popularity": "low"
+    },
+    {
+      "id": "lats-49",
+      "name": "Grip Ball Pull Ups",
+      "description": "The grip ball pull up is a variation of the pull up and an exercise used to build the lats and upper back. By utilizing grip balls while performing pull ups, you’ll also include an additional grip challenge that will strengthen the muscles of the hands and forearms. Grip ball pull ups can be beneficial if you find your grip tends to limit the amount of weight you are able to hold onto during various exercises.",
+      "targetBodyParts": [
+        "Lats"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
+      "difficulty": "intermediate",
+      "equipment": [
+        "Other"
+      ],
+      "steps": [
+        "Using a pronated grip, grasp grip balls with a slightly wider than shoulder width grip.",
+        "Take a deep breath, squeeze your glutes and brace your abs. Depress the shoulder blades and then drive the elbows straight down to the floor while activating the lats.",
+        "Pull your chin towards the bar until the lats are fully contracted, then slowly lower yourself back to the start position and repeat for the assigned number of repetitions."
+      ],
+      "tips": [
+        "To decrease bicep involvement, use a false (thumbless grip).",
+        "Try to keep a neutral head position (looking straight ahead or slightly up) as hyperextending the neck can lead to compensations throughout the spine.",
+        "If the bar is high enough, keep the legs straight and in front of the body in a hollow body position.",
+        "Avoid falling into overextension of the lumbar spine by squeezing your glutes and bracing your abs.",
+        "The pull up is completed when the lats are fully flexed, don’t continue pulling and compensate with the pecs. When this occurs, the elbows will flare up behind the body, the shoulder will round forward, and you’ll begin to feel pressure in the front of your shoulders.",
+        "A lifter’s segment length will determine whether or not they can actually get their chin over the bar, it’s not an absolute for everyone.",
+        "Lower to almost full extension of the elbow but avoid locking out completely as this can place excessive strain on the ligamentous structures within the elbow and shoulder.",
+        "If you can’t complete a single bodyweight pull up, start with slow negatives (add weight when these can be accomplished under control) or flexed arm hangs in the top position.",
+        "Ditch the kips, neither one is necessary or recommended."
+      ],
+      "contraindications": [
+        "Lats injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": [
+        "Lats",
+        "Abs",
+        "Biceps",
+        "Shoulders",
+        "Upper Back"
+      ],
+      "alternatives": [
+        "lats-14",
+        "lats-18",
+        "lats-19",
+        "lats-24",
+        "lats-26"
+      ],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Pull (Bilateral)",
+      "mechanics": "Compound",
+      "videoUrl": "https://www.youtube.com/embed/bDZFiUdmSi0?rel=0",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Lats.jpg",
+      "viewCount": 2600,
+      "popularity": "low"
+    },
+    {
+      "id": "lats-5",
+      "name": "Chin Up",
+      "description": "The chin up is a variation of the pull up and an exercise used to build the muscles of the back - particularly the lats. The chin up differs from the pull up in that the chin up allows for a greater degree of bicep involvement during the pulling movement. Vertical pull exercises such as the chin up are critical to have in your workout program to build a well balanced and strong physique. This exercise can be included in your back workouts, upper body workouts, pull workouts, or full body workouts.",
+      "targetBodyParts": [
+        "Lats"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
+      "difficulty": "beginner",
+      "equipment": [
+        "Bodyweight"
+      ],
+      "steps": [
+        "Using a supinated grip, grasp the bar with a shoulder width grip.",
+        "Take a deep breath, squeeze your glutes and brace your abs. Depress the shoulder blades and then drive the elbows straight down to the floor while activating the lats.",
+        "Pull your chin towards the bar until the lats are fully contracted, then slowly lower yourself back to the start position and repeat for the assigned number of repetitions."
+      ],
+      "tips": [
+        "To decrease bicep involvement, use a false (thumbless grip).",
+        "Try to keep a neutral head position (looking straight ahead or slightly up) as hyperextending the neck can lead to compensations throughout the spine.",
+        "If the bar is high enough, keep the legs straight and in front of the body.",
+        "Avoid falling into overextension of the lumbar spine by squeezing your glutes and bracing your abs.",
+        "The chin-up is completed when the lats are fully flexed, don’t continue pulling and compensate with the pecs.",
+        "Imagine you’re trying to drive the elbows down as you pull.",
+        "Keep your shoulders down and back, if they round forward at the top then you’ve pulled too far.",
+        "A lifter’s segment length will determine whether or not they can actually get their chin over the bar, it’s not an absolute for everyone.",
+        "Lower to almost full extension of the elbow but avoid locking out completely as this can place excessive strain on the ligamentous structures within the elbow and shoulder.",
+        "If you can’t complete a single bodyweight chinup, start with slow negatives or flexed arm hangs at the top position."
+      ],
+      "contraindications": [
+        "Lats injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": [
+        "Lats",
+        "Abs",
+        "Biceps",
+        "Shoulders",
+        "Upper Back"
+      ],
+      "alternatives": [
+        "lats-2",
+        "lats-6",
+        "lats-13",
+        "lats-17",
+        "lats-23"
+      ],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Pull (Bilateral)",
+      "mechanics": "Compound",
+      "videoUrl": "https://www.youtube.com/embed/1EJ3A3rEtlo?rel=0",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Lats.jpg",
+      "viewCount": 1800000,
+      "popularity": "high"
+    },
+    {
+      "id": "lats-50",
+      "name": "Rope Climb",
+      "description": "The rope climb is a full body exercise used to build functional strength. Rope climbs will primarily target the muscles of the lats, but will also recruit help from the other muscles of the back, arms, and core.",
+      "targetBodyParts": [
+        "Lats"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
+      "difficulty": "intermediate",
+      "equipment": [
+        "Rope"
+      ],
+      "steps": [
+        "Jump and reach up as high as you can to start.",
+        "Pull your knees up to your chest and ensure the rope wraps under one foot and over the other before you squeeze your legs together.",
+        "While pinching your feet together, extend your legs and pull with your arms to scale upwards along the rope.",
+        "Repeat the process until you reach the top of the rope.",
+        "To descend, loosen your grip slightly and allow yourself to slide down the rope in a controlled fashion.",
+        "Once you reach the starting position, repeat for the desired number of repetitions."
+      ],
+      "tips": [
+        "Initially you may need to utilize the feet to help propel yourself upwards, especially if your upper body strength is lagging. However, as you get stronger you should work on using the legs less and even progressing to an entirely upper body pull. If you become extremely advanced, you can hold the legs in an L sit while you make the climb.",
+        "Given your having to support your full bodyweight with one hand during a specific point of the pull, these can be used as a progression to single arm pullups.",
+        "Ensure that you’re using the feet correctly as they will provide much of the force which propels your body upwards.",
+        "If you can’t complete normal bodyweight pullups or chinups then do not attempt to climb a rope on your own.",
+        "Ensure you have a heavy pad of some sort underneath the rope if you’re just learning in case your hands slip.",
+        "Chalk is especially important for rope climbs as your hands get sweaty.",
+        "If your hands get especially torn up from descending the rope and allowing yourself to slide down, you can wear gloves if desired.",
+        "DO NOT jump down from the top of the rope once you’re done climbing. The injury potential from this course of action is exceptionally high."
+      ],
+      "contraindications": [
+        "Lats injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": [
+        "Lats",
+        "Abs",
+        "Biceps",
+        "Shoulders",
+        "Upper Back"
+      ],
+      "alternatives": [
+        "lats-14",
+        "lats-18",
+        "lats-19",
+        "lats-24",
+        "lats-26"
+      ],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Pull (Bilateral)",
+      "mechanics": "Compound",
+      "videoUrl": "https://www.youtube.com/embed/KWyPeqJKQec?rel=0",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Lats.jpg",
+      "viewCount": 1900,
+      "popularity": "low"
+    },
+    {
+      "id": "lats-51",
+      "name": "L-Sit Chin Up",
+      "description": "The L-sit chin up is a chin up variation that combines a chin up with an isometric hanging leg raise hold. The pairing is best for those looking to build their lats and biceps while also providing an endurance challenge for the core.",
+      "targetBodyParts": [
+        "Lats"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
+      "difficulty": "advanced",
+      "equipment": [
+        "Bodyweight"
+      ],
+      "steps": [
+        "Using a supinated grip, grasp the bar with a shoulder width grip.",
+        "Squeeze the abs and raise the legs to 90 degrees.",
+        "Take a deep breath, depress the shoulder blades and drive the elbows straight down to the floor while activating the lats.",
+        "Pull your chin towards the bar until the lats are fully contracted, then slowly lower yourself back to the start position.",
+        "Keep the legs parallel to the floor and repeat for the assigned number of repetitions."
+      ],
+      "tips": [
+        "To decrease bicep involvement, use a false (thumbless grip).",
+        "Try to keep a neutral head position (looking straight ahead or slightly up) as hyperextending the neck can lead to compensations throughout the spine.",
+        "If the bar is high enough, keep the legs straight and in front of the body.",
+        "Avoid falling into overextension of the lumbar spine by squeezing your glutes and bracing your abs.",
+        "The chin up is completed when the lats are fully flexed, don’t continue pulling and compensate with the pecs.",
+        "Keep your shoulders down and back, if they round forward at the top then you’ve pulled too far.",
+        "A lifter’s segment length will determine whether or not they can actually get their chin over the bar, it’s not an absolute for everyone.",
+        "Lower to almost full extension of the elbow but avoid locking out completely as this can place excessive strain on the ligamentous structures within the elbow and shoulder.",
+        "If you can’t complete a single bodyweight chin up, start with slow negatives or flexed arm hangs at the top position.",
+        "Ditch the straps and kips, neither one is necessary or recommended."
+      ],
+      "contraindications": [
+        "Lats injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": [
+        "Lats",
+        "Abs",
+        "Biceps",
+        "Shoulders",
+        "Upper Back"
+      ],
+      "alternatives": [
+        "lats-27",
+        "lats-44",
+        "lats-2",
+        "lats-5",
+        "lats-6"
+      ],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Pull (Bilateral)",
+      "mechanics": "Compound",
+      "videoUrl": "https://www.youtube.com/embed/GjH4xPEC6VI?rel=0",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Lats.jpg",
+      "viewCount": 5200,
+      "popularity": "low"
+    },
+    {
+      "id": "lats-52",
+      "name": "Arms Only Rope Climb",
+      "description": "The arms only rope climb is a variation of the rope climb and an upper body exercise used to build functional strength. Rope climbs will primarily target the muscles of the lats, but will also recruit help from the other muscles of the back, arms, and core.",
+      "targetBodyParts": [
+        "Lats"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
+      "difficulty": "advanced",
+      "equipment": [
+        "Rope"
+      ],
+      "steps": [
+        "Jump and reach up as high as you can to start.",
+        "Support your bodyweight with one arm and pull yourself up with the other.",
+        "Repeat the process until you reach the top of the rope.",
+        "To descend, loosen your grip slightly and allow yourself to slide down the rope in a controlled fashion.",
+        "Once you reach the starting position, repeat for the desired number of repetitions."
+      ],
+      "tips": [
+        "Initially you may need to utilize the feet to help propel yourself upwards, especially if your upper body strength is lagging. However, as you get stronger you should work on using the legs less and even progressing to an entirely upper body pull. If you become extremely advanced, you can hold the legs in an L sit while you make the climb.",
+        "Given your having to support your full bodyweight with one hand during a specific point of the pull, these can be used as a progression to single arm pullups.",
+        "As you slide down you may want to pinch the rope in between your feet to help displace some of the friction from your hands.",
+        "Ensure that you’re using the feet correctly as they will provide much of the force which propels your body upwards.",
+        "If you can’t complete normal bodyweight pullups or chinups then do not attempt to climb a rope on your own.",
+        "Ensure you have a heavy pad of some sort underneath the rope if you’re just learning in case your hands slip.",
+        "Chalk is especially important for rope climbs as your hands get sweaty.",
+        "If your hands get especially torn up from descending the rope and allowing yourself to slide down, you can wear gloves if desired.",
+        "DO NOT jump down from the top of the rope once you’re done climbing. The injury potential from this course of action is exceptionally high."
+      ],
+      "contraindications": [
+        "Lats injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": [
+        "Lats",
+        "Abs",
+        "Biceps",
+        "Shoulders",
+        "Upper Back"
+      ],
+      "alternatives": [
+        "lats-27",
+        "lats-44",
+        "lats-50",
+        "lats-51",
+        "lats-1"
+      ],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Pull (Bilateral)",
+      "mechanics": "Compound",
+      "videoUrl": "https://www.youtube.com/embed/F2OOzI6J2C8?rel=0",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Lats.jpg",
+      "viewCount": 4900,
+      "popularity": "low"
+    },
+    {
+      "id": "lats-53",
+      "name": "Single Leg Overhead Medicine Ball Tap",
+      "description": "The single leg overhead medicine ball wall tap is a variation of the medicine ball overhead throw and an exercise used to build explosive strength in the lats, shoulders, and triceps. Throws and toss exercises performed with medicine balls, such as the single leg overhead medicine ball wall tap, are typically used by athletes to build the explosive strength and/or balance necessary for their specific sport. However, these exercises can be performed by others looking to build their explosive strength or balance.",
+      "targetBodyParts": [
+        "Lats"
+      ],
+      "exerciseType": [
+        "plyometrics"
+      ],
+      "difficulty": "beginner",
+      "equipment": [
+        "Medicine Ball"
+      ],
+      "steps": [
+        "Setup in single leg stance while holding a medicine ball overhead with both hands.",
+        "Exhale, pull the arms forward towards the wall, and tap the medicine ball against the wall.",
+        "Catch the med ball as it returns from the wall and repeat step #2 for the desired number of repetitions."
+      ],
+      "tips": [
+        "Take note, you will only release the med ball for a split second. It’s not a violent throw, it’s a tap which is designed to drive some instability and reinforce strength in a single leg position.",
+        "With med ball drills, the goal is speed throughout the movement. There are only a few rare instances where one might want to move slowly through a weighted plyometric drill with a medicine ball.\n          A good rule of thumb - if the weight is so excessive that it affects the technical execution of the movement then it is too much.",
+        "A good rule of thumb - if the weight is so excessive that it affects the technical execution of the movement then it is too much.",
+        "You can use these drills as “fillers” in between your large compound movements or you can implement them within your warm up as a method of potentiating your central nervous system for heavier strength based work in your accompanying training session.",
+        "Keep the torso rigid and ensure some tension through the core to help transmit force out through the extremities.",
+        "Initially you may want to focus on pausing in between reps to ensure proper positioning but over time you can eventually progress to more rhythmic (i.e. back to back) repetitions.",
+        "If you are using a denser medicine ball which will react with “an equal and opposite reaction” then you may want to stand a little ways back from the wall to allow yourself time to react.\n          However, if you’re using a more absorptive ball then you can stand closer and catch the ball as it comes directly off the wall.",
+        "However, if you’re using a more absorptive ball then you can stand closer and catch the ball as it comes directly off the wall."
+      ],
+      "contraindications": [
+        "Lats injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Shoulder impingement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": [
+        "Lats",
+        "Abs",
+        "Adductors",
+        "Calves",
+        "Glutes",
+        "Hamstrings",
+        "Quads",
+        "Triceps",
+        "Upper Back"
+      ],
+      "alternatives": [
+        "lats-25",
+        "lats-29",
+        "lats-30",
+        "lats-1",
+        "lats-2"
+      ],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Push (Bilateral)",
+      "mechanics": "Compound",
+      "videoUrl": "https://www.youtube.com/embed/5hv_jpeSc50?rel=0",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Lats.jpg",
+      "viewCount": 2800,
+      "popularity": "low"
+    },
+    {
+      "id": "lats-54",
+      "name": "Overhand Close Grip Lateral Pulldown",
+      "description": "No description available",
+      "targetBodyParts": [
+        "Lats"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
+      "difficulty": "beginner",
+      "equipment": [
+        "Machine"
+      ],
+      "steps": [
+        "Set up for the overhand close grip lat pulldown by attaching a small straight bar to the machine (you can use the wide grip bar if you prefer), setting the weight on the stack, and adjusting the knee pad.",
+        "Grasp the bar with an overhand grip, hands around 10-12 inches apart.",
+        "Sit down on the machine with your arms fully outstretched. This is the starting position.",
+        "Keeping your back and body straight, slowly pull the weight down to your upper chest.",
+        "Pause, and then slowly lower the weight back to the start position. Do not let the stack drop.",
+        "Repeat for desired reps."
+      ],
+      "tips": [
+        "Pause for a count of 2 at the bottom of this exercise and squeeze your lats to add intensity.",
+        "Don\"t lean back when you pull the weight down - this is cheating!",
+        "Focus on using the muscles in your back to pull the weight down. The only purpose your forearms will serve in this exercise is to hold the weight."
+      ],
+      "contraindications": [
+        "Lats injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": [
+        "Lats",
+        "Biceps",
+        "Middle Back",
+        "Shoulders"
+      ],
+      "alternatives": [
+        "lats-37",
+        "lats-7",
+        "lats-8",
+        "lats-15",
+        "lats-33"
+      ],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Pull",
+      "mechanics": "Compound",
+      "videoUrl": "https://player.vimeo.com/video/756788575?h=446404163a",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Lats.jpg",
+      "viewCount": 39400,
+      "popularity": "low"
+    },
+    {
+      "id": "lats-55",
+      "name": "Weighted Chin Up Hang",
+      "description": "The weighted chin up hang is an isometric exercise used to build your lats, forearms, core, and biceps. The weighted chin up hang is also an excellent way to strengthen the muscles needed to perform a chin up and/or weighted chin up.",
+      "targetBodyParts": [
+        "Lats"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
+      "difficulty": "beginner",
+      "equipment": [
+        "Chains"
+      ],
+      "steps": [
+        "Load a weight belt with the desired weight and loop it around your waist.",
+        "Using a supinated grip, grasp the bar with a shoulder width grip.",
+        "Take a deep breath, squeeze your glutes and brace your abs. Depress the shoulder blades and maintain an active shoulder position.",
+        "Hold for the assigned time frame and repeat for as many repetitions as desired."
+      ],
+      "tips": [
+        "To decrease bicep involvement, use a false (thumbless grip).",
+        "Try to keep a neutral head position (looking straight ahead or slightly up) as hyperextending the neck can lead to compensations throughout the spine.",
+        "If the bar is high enough, keep the legs straight and in front of the body.",
+        "Avoid falling into overextension of the lumbar spine by squeezing your glutes and bracing your abs.",
+        "The chin up is completed when the lats are fully flexed, don’t continue pulling and compensate with the pecs.",
+        "Keep your shoulders down and back, if they round forward at the top then you’ve pulled too far.",
+        "A lifter’s segment length will determine whether or not they can actually get their chin over the bar, it’s not an absolute for everyone.",
+        "Lower to almost full extension of the elbow but avoid locking out completely as this can place excessive strain on the ligamentous structures within the elbow and shoulder.",
+        "If you can’t complete a single bodyweight chin up, start with slow negatives or flexed arm hangs at the top position.",
+        "Ditch the straps and kips, neither one is necessary or recommended."
+      ],
+      "contraindications": [
+        "Lats injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": [
+        "Lats",
+        "Abs",
+        "Biceps",
+        "Shoulders",
+        "Upper Back"
+      ],
+      "alternatives": [
+        "lats-45",
+        "lats-1",
+        "lats-2",
+        "lats-3",
+        "lats-4"
+      ],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Isometric",
+      "mechanics": "Compound",
+      "videoUrl": "https://www.youtube.com/embed/M_IhfavGIOA?rel=0",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Lats.jpg",
+      "viewCount": 2700,
+      "popularity": "low"
+    },
+    {
+      "id": "lats-6",
+      "name": "Pull Up",
+      "description": "The pull up is a classic exercise and one used to target the upper back muscles such as the latissimus dorsi. Vertical pulling movements, such as the pull up, are foundational movements that should be included in your workout routines. So, once you’ve found a variation you like and feels comfortable to you, master it as it will benefit you from a strength and aesthetic standpoint. The pull up can be incorporated into back workouts, pull workouts, upper body workouts, or full body workouts.",
+      "targetBodyParts": [
+        "Lats"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
+      "difficulty": "beginner",
+      "equipment": [
+        "Bodyweight"
+      ],
+      "steps": [
+        "Using a pronated grip, grasp the pull bar with a slightly wider than shoulder width grip.",
+        "Take a deep breath, squeeze your glutes and brace your abs. Depress the shoulder blades and then drive the elbows straight down to the floor while activating the lats.",
+        "Pull your chin towards the bar until the lats are fully contracted, then slowly lower yourself back to the start position and repeat for the assigned number of repetitions."
+      ],
+      "tips": [
+        "To decrease bicep involvement, use a false (thumbless) grip.",
+        "Try to keep a neutral head position (looking straight ahead or slightly up) as hyperextending the neck can lead to compensations throughout the spine.",
+        "If the bar is high enough, keep the legs straight and in front of the body in a hollow body position.",
+        "Avoid falling into overextension of the lumbar spine by squeezing your glutes and bracing your abs.",
+        "The pullup is completed when the lats are fully flexed, don’t continue pulling and compensate with the pecs. When this occurs, the elbows will flare up behind the body, the shoulder will round forward, and you’ll begin to feel pressure in the front of your shoulders.",
+        "A lifter’s segment length will determine whether or not they can actually get their chin over the bar, it’s not an absolute for everyone.",
+        "Lower to almost full extension of the elbow but avoid locking out completely as this can place excessive strain on the ligamentous structures within the elbow and shoulder.",
+        "If you can’t complete a single bodyweight pullup, start with slow negatives (add weight when these can be accomplished under control) or flexed arm hangs in the top position.",
+        "Ditch the straps and kips, neither one is necessary or recommended."
+      ],
+      "contraindications": [
+        "Lats injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": [
+        "Lats",
+        "Abs",
+        "Biceps",
+        "Shoulders",
+        "Upper Back"
+      ],
+      "alternatives": [
+        "lats-2",
+        "lats-5",
+        "lats-13",
+        "lats-17",
+        "lats-23"
+      ],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Pull (Bilateral)",
+      "mechanics": "Compound",
+      "videoUrl": "https://www.youtube.com/embed/poyr8KenUfc?rel=0",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Lats.jpg",
+      "viewCount": 462800,
+      "popularity": "medium"
+    },
+    {
+      "id": "lats-7",
+      "name": "Wide Grip Lat Pull Down",
+      "description": "The wide grip lat pull down is a variation of the lat pull down and an exercise used to target the muscles of the back. The change in grip used to perform a wide grip lat pull down allows you to put a greater focus on pulling the weight with the lats.",
+      "targetBodyParts": [
+        "Lats"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
+      "difficulty": "beginner",
+      "equipment": [
+        "Machine"
+      ],
+      "steps": [
+        "Attach a wide grip handle to the lat pull down machine and assume a seated position.",
+        "Grasp the handle with a pronated grip (double overhand) as wide as possible.",
+        "Initiate the movement by depressing the shoulder blade and then flexing the elbow while extending the shoulder.",
+        "Pull the handle towards your body until the elbows are in line with your torso and then slowly lower the handle back to the starting position under control.",
+        "Repeat for the desired number of repetitions."
+      ],
+      "tips": [
+        "Keep some tone through your abdominals as you pull the bar into your body to ensure you don’t arch excessively through the spine.",
+        "Don’t allow momentum to dictate the movement, control the dumbbells throughout the entirety of each rep.",
+        "If you feel your biceps being overused and your back remaining under active, consider utilizing a false grip (i.e. don’t wrap the thumb around the dumbbell).",
+        "Don’t allow the head to jut forward as you pull.",
+        "Similarly, ensure the shoulder blade moves on the rib cage. Don’t lock the shoulder blade down and just move through the glenohumeral joint.",
+        "Allow the shoulder to internally rotate and shrug slightly at the top of the movement. You will obviously reverse the movement and depress the shoulder blade before you pull with the arm."
+      ],
+      "contraindications": [
+        "Lats injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": [
+        "Lats",
+        "Abs",
+        "Biceps",
+        "Shoulders",
+        "Upper Back"
+      ],
+      "alternatives": [
+        "lats-8",
+        "lats-1",
+        "lats-2",
+        "lats-3",
+        "lats-4"
+      ],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Pull (Bilateral)",
+      "mechanics": "Compound",
+      "videoUrl": "https://www.youtube.com/embed/Mdp7kuhZD_M?rel=0",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Lats.jpg",
+      "viewCount": 335500,
+      "popularity": "medium"
+    },
+    {
+      "id": "lats-8",
+      "name": "Reverse Grip Lat Pull Down (Underhand)",
+      "description": "The reverse grip lat pull down is a variation of the lat pull down and an exercise used to build the muscles of the back. While the exercise will primarily target the lats, you will also notice a fair amount of bicep and middle back activation. The back is a muscle group that requires a fair amount of variation. So, experiment with several different angles and hand positions to maximize your back muscle growth. The reverse grip hand positioning will naturally make the biceps become more involved in the exercise. The reverse grip lat pull down can be performed during your back workouts, upper body workouts, pull workouts, and full body workouts.",
+      "targetBodyParts": [
+        "Lats"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
+      "difficulty": "beginner",
+      "equipment": [
+        "Machine"
+      ],
+      "steps": [
+        "Attach a wide grip handle to the lat pulldown machine and assume a seated position.",
+        "Grasp the handle with a supinated grip (double underhand) just inside of shoulder width.",
+        "Initiate the movement by depressing the shoulder blades and then flexing the elbow while extending the shoulder.",
+        "Pull the handle towards your body until the elbows are in line with your torso and then slowly lower the handle back to the starting position under control.",
+        "Repeat for the desired number of repetitions."
+      ],
+      "tips": [
+        "Keep some tone through your abdominals as you pull the bar into your body to ensure you don’t arch excessively through the spine.",
+        "Don’t allow momentum to dictate the movement, control the weight throughout the entirety of each rep.",
+        "If you feel your biceps being overused and your back remaining under active, consider utilizing a false grip (i.e. don’t wrap the thumb around the dumbbell).",
+        "Don’t allow the head to jut forward as you pull.",
+        "Similarly, ensure the shoulder blade moves on the rib cage. Don’t lock the shoulder blade down and just move through the glenohumeral joint.",
+        "Allow the shoulder to internally rotate and shrug slightly at the top of the movement. You will obviously reverse the movement and depress the shoulder blade before you pull with the arm."
+      ],
+      "contraindications": [
+        "Lats injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": [
+        "Lats",
+        "Abs",
+        "Biceps",
+        "Shoulders",
+        "Upper Back"
+      ],
+      "alternatives": [
+        "lats-7",
+        "lats-1",
+        "lats-2",
+        "lats-3",
+        "lats-4"
+      ],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Pull (Bilateral)",
+      "mechanics": "Compound",
+      "videoUrl": "https://www.youtube.com/embed/8DAFwftgZHQ?rel=0",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Lats.jpg",
+      "viewCount": 573500,
+      "popularity": "medium"
+    },
+    {
+      "id": "lats-9",
+      "name": "Shotgun Row",
+      "description": "The shotgun row is a variation of the rowing exercise used to target the muscles of the back. The shotgun row allows one to work each side of their back unilaterally to assist in building a balanced physique and strength.",
+      "targetBodyParts": [
+        "Lats"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
+      "difficulty": "beginner",
+      "equipment": [
+        "Cable"
+      ],
+      "steps": [
+        "Attach a single handle to a cable stack and assume a split stance with the ipsilateral elbow on the forward knee.",
+        "Grasp the handle with a neutral grip and lean forward slightly while allowing the shoulder blade to protract.",
+        "Initiate the movement by retracting the shoulder blade and rowing the handle to your chest while extending through your upper back.",
+        "Pull the handle towards your rib cage and drive your elbow behind your body as you flex the lat and upper back.",
+        "Slowly lower back to the starting position and repeat for the desired number of repetitions on both sides."
+      ],
+      "tips": [
+        "Reach through at the start of the movement and allow the thoracic spine to round slightly but extend as you flex the lat to complete the movement.",
+        "Keep some tone through your abdominals as you pull the bar into your body to ensure you don’t arch excessively through the spine.",
+        "If you feel your biceps being overused and your back remaining under active, consider utilizing a false grip (i.e. don’t wrap the thumb around the dumbbell).",
+        "Don’t allow the head to jut forward as you pull.",
+        "Similarly, ensure the shoulder blade moves on the rib cage. Don’t lock the shoulder blade down and just move through the glenohumeral joint.",
+        "If you can’t seem to feel your lats engaging, try to “screw your shoulders” into their sockets by pointing your elbows behind your body. Another cue that works exceptionally well is to “squeeze oranges in your armpits”."
+      ],
+      "contraindications": [
+        "Lats injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": [
+        "Lats",
+        "Abs",
+        "Biceps",
+        "Shoulders",
+        "Traps",
+        "Upper Back"
+      ],
+      "alternatives": [
+        "lats-1",
+        "lats-3",
+        "lats-4",
+        "lats-10",
+        "lats-11"
+      ],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Pull (Unilateral)",
+      "mechanics": "Compound",
+      "videoUrl": "https://www.youtube.com/embed/vGvryEp84qE?rel=0",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Lats.jpg",
+      "viewCount": 139300,
+      "popularity": "medium"
+    }
+  ]
+}

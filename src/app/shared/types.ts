@@ -14,6 +14,12 @@ export interface ExerciseQuestionnaireAnswers {
   // The duration of the workout the user prefers, e.g. '30-45 minutes'
   workoutDuration: string;
   targetAreas: string[];
+  // Available equipment for the user, e.g. ['dumbbells', 'resistance bands']
+  equipment?: string[];
+  // User's experience level, e.g. 'beginner', 'intermediate', 'advanced'
+  experienceLevel?: string;
+  // Weekly frequency of exercise, e.g. '3' (days per week)
+  weeklyFrequency?: string;
 }
 
 export enum ProgramType {

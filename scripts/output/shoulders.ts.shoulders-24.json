@@ -1,0 +1,44 @@
+{
+      "id": "shoulders-24",
+      "name": "Weight Plate Front Raise",
+      "description": "No description available",
+      "targetBodyParts": ["Shoulders"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Other"],
+      "steps": [
+        "Grab a weight plate with your palms facing one another at around the 3 and 9 o"clock positions.",
+        "Stand up with your shoulders back and core engaged, and hold the weight about 5 inches from your body. This is the starting position for the exercise.",
+        "Keeping a slight bend in your elbows, slowly raise the plate until your arms are just above parallel to the floor.",
+        "Pause and slowly lower the plate back to the starting position.",
+        "Repeat for desired reps."
+      ],
+      "tips": [
+        "This is an isolation exercise so you must focus on strict technique to isolate the front deltoids.",
+        "Don"t let the plate touch your body during the set.",
+        "Keep the rep timing slow, and lower the weight slowly.",
+        "Keep your core engaged, don"t swing to assist in moving the weight up."
+      ],
+      "contraindications": [
+        "Shoulders injury",
+        "Joint pain",
+        "Acute pain during movement"
+      ],
+      "muscles": ["Shoulders"],
+      "alternatives": [
+        "shoulders-54",
+        "shoulders-1",
+        "shoulders-12",
+        "shoulders-15",
+        "shoulders-16"
+      ],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Pull",
+      "mechanics": "Isolation",
+      "videoUrl": "https://player.vimeo.com/video/760002019?badge=0&autopause=0&player_id=0&app_id=58479",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Shoulders.jpg",
+      "viewCount": 251100,
+      "popularity": "medium"
+    }

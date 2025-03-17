@@ -1,0 +1,16 @@
+abs.temp.ts(1,31): error TS2307: Cannot find module '../types/exercises' or its corresponding type declarations.
+scripts/abductors.ts(1,31): error TS2307: Cannot find module '../types/exercises' or its corresponding type declarations.
+scripts/abs.ts(1,31): error TS2307: Cannot find module '../types/exercises' or its corresponding type declarations.
+scripts/adductors.ts(1,31): error TS2307: Cannot find module '../types/exercises' or its corresponding type declarations.
+scripts/biceps.ts(1,31): error TS2307: Cannot find module '../types/exercises' or its corresponding type declarations.
+scripts/chest.ts(1,31): error TS2307: Cannot find module '../types/exercises' or its corresponding type declarations.
+scripts/test-single-exercise.ts(7,10): error TS2440: Import declaration conflicts with local declaration of 'formatAsTypeScript'.
+scripts/test-single-exercise.ts(7,30): error TS2440: Import declaration conflicts with local declaration of 'formatTsString'.
+src/app/data/exercises/index.ts(4,36): error TS2307: Cannot find module './upper-arms' or its corresponding type declarations.
+src/app/data/exercises/index.ts(5,35): error TS2307: Cannot find module './forearms' or its corresponding type declarations.
+src/app/data/exercises/index.ts(6,32): error TS2307: Cannot find module './chest' or its corresponding type declarations.
+src/app/data/exercises/index.ts(7,34): error TS2307: Cannot find module './abdomen' or its corresponding type declarations.
+src/app/data/exercises/index.ts(8,36): error TS2307: Cannot find module './upper-back' or its corresponding type declarations.
+src/app/data/exercises/index.ts(10,33): error TS2307: Cannot find module './glutes' or its corresponding type declarations.
+src/app/data/exercises/index.ts(11,36): error TS2307: Cannot find module './upper-legs' or its corresponding type declarations.
+src/app/data/exercises/index.ts(12,36): error TS2307: Cannot find module './lower-legs' or its corresponding type declarations.

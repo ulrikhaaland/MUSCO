@@ -1,0 +1,44 @@
+{
+      "id": "shoulders-84",
+      "name": "Alternating Seated Bent Over Rear Delt Fly",
+      "description": "The alternating seated bent over dumbbell rear delt fly is a variation of the bent over dumbbell reverse fly, also known as the bent over rear delt fly. It"s a great exercise to assist you in building a complete set of shoulders. Many lifters utilize the bent over dumbbell rear delt fly to target the rear delts, an often lagging muscle for many lifters alike. Strengthening the rear delts can lead to improved posture and a greater level of strength on other lifts. Performing unilateral movements can help improve weaknesses, balance your strength and aesthetic physique, and work towards reducing injuries by addressing imbalances in the body.",
+      "targetBodyParts": ["Shoulders"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Dumbbell"],
+      "steps": [
+        "Set up for the exercise by grasping a pair of dumbbells with a neutral grip (palms facing each other) and sitting on a bench with your feet around shoulder-width apart.",
+        "Take a deep breath and raise one dumbbell towards the ceiling in a semi-circular motion, using the rear deltoids, until your arm is parallel to the floor.",
+        "Slowly lower the dumbbell back to the starting position under control.",
+        "Immediately repeat the movement with your opposite arm. This is one rep.",
+        "Repeat for the desired number of repetitions."
+      ],
+      "tips": [
+        "Focus on the rear deltoids, not the scapular retractors.  Keep movement at the shoulder blade limited.",
+        "Keep the core braced and don’t arch the back at the top of the movement.",
+        "If you experience shoulder pain during the movement then it may be beneficial to rotate the dumbbells until the thumbs are pointing away from one another and the palms are facing forward. This is also known as a supinated grip and will externally rotate the shoulder.",
+        "Allow the arms to move freely but don’t lock out the elbows."
+      ],
+      "contraindications": [
+        "Shoulders injury",
+        "Joint pain",
+        "Acute pain during movement"
+      ],
+      "muscles": ["Shoulders"],
+      "alternatives": [
+        "shoulders-1",
+        "shoulders-12",
+        "shoulders-15",
+        "shoulders-28",
+        "shoulders-31"
+      ],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Pull",
+      "mechanics": "Isolation",
+      "videoUrl": "https://player.vimeo.com/video/760007778?badge=0&autopause=0&player_id=0&app_id=58479",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Shoulders.jpg",
+      "viewCount": 21000,
+      "popularity": "low"
+    }

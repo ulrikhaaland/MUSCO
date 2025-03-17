@@ -1,0 +1,43 @@
+{
+      "id": "shoulders-120",
+      "name": "Seated Barbell Overhead Front Raise",
+      "description": "No description available",
+      "targetBodyParts": ["Shoulders"],
+      "exerciseType": ["strength"],
+      "difficulty": "intermediate",
+      "equipment": ["Barbell"],
+      "steps": [
+        "Grasp a barbell or an EZ bar with a pronated grip (palms facing down) and position your hands around shoulder width apart.",
+        "Sit down on the end of a bench and let the barbell rest on your thighs. This is the starting position for the exercise.",
+        "Slowly raise the bar until it is almost straight above your head. You can keep a slight bend in your elbows.",
+        "Pause, and then slowly lower the bar back to the starting position.",
+        "Repeat for desired reps."
+      ],
+      "tips": [
+        "This is an isolation exercise so it"s important to focus on a strict technique to isolate the front deltoids.",
+        "Keep the rep timing slow, and lower the weight slowly.",
+        "Keep your core tight and your back straight. Don"t swing to assist in moving the weight up."
+      ],
+      "contraindications": [
+        "Shoulders injury",
+        "Joint pain",
+        "Acute pain during movement"
+      ],
+      "muscles": ["Shoulders"],
+      "alternatives": [
+        "shoulders-171",
+        "shoulders-70",
+        "shoulders-103",
+        "shoulders-121",
+        "shoulders-125"
+      ],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Pull",
+      "mechanics": "Isolation",
+      "videoUrl": "https://player.vimeo.com/video/760007674?badge=0&autopause=0&player_id=0&app_id=58479",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Shoulders.jpg",
+      "viewCount": 8500,
+      "popularity": "low"
+    }

@@ -1,0 +1,46 @@
+{
+      "id": "shoulders-115",
+      "name": "Lateral Raise Partials",
+      "description": "The lateral raise partials exercise is a variation of the dumbbell lateral raise used to isolate the muscles of the shoulder. Performing partial movements is a strength building technique that can be applied to all movements. Doing so allows you to train a certain portion of the range of motion for any given exercise with a heavier weight than you’d be able to use otherwise for the exercise.",
+      "targetBodyParts": ["Shoulders"],
+      "exerciseType": ["strength"],
+      "difficulty": "intermediate",
+      "equipment": ["Dumbbell"],
+      "steps": [
+        "Select the desired weight from the rack then take a few steps back into an open area.",
+        "Take a deep breath and raise the dumbbells to roughly 45 degrees using a neutral grip (palms facing in).",
+        "Slowly lower the dumbbells back to the starting position under control.",
+        "Repeat for the desired number of repetitions."
+      ],
+      "tips": [
+        "These work especially well when supersetted with full range laterals with lighter weight.",
+        "If you want to keep more tension through the side delts, don’t allow the weights to touch your sides and control the eccentric (lowering) portion of the movement.",
+        "Keep the abs braced and don’t lean back or arch the back at the top of the movement.",
+        "Allow the arms to move freely but don’t lock out the elbows.",
+        "If you encounter pain in the shoulder while performing the movement, consider implement one of the following "tweaks":\n          Tilt your pinkies slightly higher than your thumbs. Imagine you’re pouring out a cup of water.\n          Turn your palms forward so that your thumbs are pointing away from your body. This will put the shoulder in a more externally rotated position and potentially open up the shoulder joint to allow for a bit more movement.",
+        "Tilt your pinkies slightly higher than your thumbs. Imagine you’re pouring out a cup of water.",
+        "Turn your palms forward so that your thumbs are pointing away from your body. This will put the shoulder in a more externally rotated position and potentially open up the shoulder joint to allow for a bit more movement."
+      ],
+      "contraindications": [
+        "Shoulders injury",
+        "Joint pain",
+        "Acute pain during movement"
+      ],
+      "muscles": ["Shoulders", "Traps", "Upper Back"],
+      "alternatives": [
+        "shoulders-38",
+        "shoulders-3",
+        "shoulders-8",
+        "shoulders-41",
+        "shoulders-46"
+      ],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Pull (Bilateral)",
+      "mechanics": "Isolation",
+      "videoUrl": "https://www.youtube.com/embed/vD7esb8Bx14?rel=0",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Shoulders.jpg",
+      "viewCount": 31300,
+      "popularity": "low"
+    }
