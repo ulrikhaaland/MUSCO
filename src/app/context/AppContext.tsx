@@ -61,7 +61,7 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export function AppProvider({ children }: { children: ReactNode }) {
   const [intention, setIntention] = useState<ProgramIntention>(
-    ProgramIntention.None
+    ProgramIntention.Recovery
   );
   const [isSelectingExerciseBodyParts, setIsSelectingExerciseBodyParts] =
     useState(false);

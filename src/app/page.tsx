@@ -43,12 +43,6 @@ function HomeContent() {
     }
   }, []);
 
-  // Reset intention whenever user navigates to home page
-  useEffect(() => {
-    // Reset the intention to ensure user always has to choose when arriving at home page
-    setIntention(ProgramIntention.None);
-  }, [setIntention]);
-
   // Redirect to program page if user is logged in and has a program
   useEffect(() => {
     // Only redirect after loading is complete
@@ -117,12 +111,6 @@ function HomeContent() {
   return (
     <div className="h-full">
       <HumanViewer gender={gender} onGenderChange={handleGenderChange} />
-      {(intention === ProgramIntention.None || (!user && !skipAuth)) && (
-        <IntentionQuestion
-          onSelect={handleIntentionSelect}
-          onSkip={() => {}}
-        />
-      )}
     </div>
   );
 }
