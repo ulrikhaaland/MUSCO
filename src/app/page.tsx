@@ -34,7 +34,9 @@ function HomeContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const genderParam = searchParams?.get('gender') as Gender;
+  const newParam = searchParams?.get('new');
   const [gender, setGender] = useState<Gender>(genderParam || 'male');
+  const [intentionSelected, setIntentionSelected] = useState(false);
 
   // Set page title
   useEffect(() => {
@@ -47,15 +49,12 @@ function HomeContent() {
   useEffect(() => {
     // Only redirect after loading is complete
     if (!authLoading && !userLoading) {
-      // Get the 'new' query parameter
-      const newParam = searchParams?.get('new');
-      
       // If user is logged in AND has a program AND NOT explicitly trying to create a new program
       if (user && (program || programStatus === ProgramStatus.Generating) && newParam !== 'true') {
         router.push('/program');
       }
     }
-  }, [user, program, programStatus, authLoading, userLoading, router, searchParams]);
+  }, [user, program, programStatus, authLoading, userLoading, router, searchParams, newParam]);
 
   // Update gender when URL param changes
   useEffect(() => {
@@ -69,12 +68,19 @@ function HomeContent() {
     // Update URL without reloading the page
     const params = new URLSearchParams(searchParams?.toString() || '');
     params.set('gender', newGender);
+    
+    // Preserve the new=true parameter if it exists
+    if (newParam === 'true' && !params.has('new')) {
+      params.set('new', 'true');
+    }
+    
     router.push(`/?${params.toString()}`, { scroll: false });
-  }, [router, searchParams]);
+  }, [router, searchParams, newParam]);
 
   const handleIntentionSelect = useCallback(
     (selectedIntention: ProgramIntention) => {
       setIntention(selectedIntention);
+      setIntentionSelected(true);
     },
     [setIntention]
   );
@@ -111,6 +117,12 @@ function HomeContent() {
   return (
     <div className="h-full">
       <HumanViewer gender={gender} onGenderChange={handleGenderChange} />
+      {newParam === 'true' && !intentionSelected && (
+        <IntentionQuestion
+          onSelect={handleIntentionSelect}
+          onSkip={() => {}}
+        />
+      )}
     </div>
   );
 }

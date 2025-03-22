@@ -179,28 +179,16 @@ export function ProgramDayComponent({
               >
                 {/* Exercise Header - Always visible */}
                 <div className="w-full px-4 py-3 flex flex-col gap-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-white font-medium">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <span className="text-white font-medium flex-grow">
                       {exercise.name}
                     </span>
-                    {onExerciseToggle && (
-                      <svg
-                        className={`w-5 h-5 text-gray-400 transform transition-transform duration-200 ${
-                          expandedExercises.includes(exercise.name)
-                            ? 'rotate-180'
-                            : ''
-                        }`}
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
+                    {exercise.bodyPart && (
+                      <span 
+                        className="px-2 py-0.5 rounded-full text-xs font-medium bg-indigo-500/20 text-indigo-300 inline-flex flex-shrink-0"
                       >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M19 9l-7 7-7-7"
-                        />
-                      </svg>
+                        {exercise.bodyPart}
+                      </span>
                     )}
                   </div>
                   {!expandedExercises.includes(exercise.name) && (
@@ -227,16 +215,6 @@ export function ProgramDayComponent({
                             </span>
                           )}
                         </>
-                      )}
-                      {exercise.bodyPart && (
-                        <div className="flex flex-wrap gap-1 ml-1">
-                          <span 
-                            key={exercise.bodyPart} 
-                            className="px-2 py-0.5 rounded-full text-xs font-medium bg-indigo-500/20 text-indigo-300"
-                          >
-                            {exercise.bodyPart}
-                          </span>
-                        </div>
                       )}
                     </div>
                   )}
@@ -289,23 +267,12 @@ export function ProgramDayComponent({
                         )}
                       </div>
                     )}
-                    {/* Body Parts in expanded view */}
-                    {exercise.bodyPart && (
-                      <div className="flex flex-wrap gap-1 ml-1">
-                        <span 
-                          key={exercise.bodyPart} 
-                          className="px-2 py-0.5 rounded-full text-xs font-medium bg-indigo-500/20 text-indigo-300"
-                        >
-                          {exercise.bodyPart}
-                        </span>
-                      </div>
-                    )}
                     <div
                       onClick={(e) => {
                         e.stopPropagation();
                         onVideoClick(exercise);
                       }}
-                      className={`inline-flex items-center space-x-1 bg-indigo-500/90 hover:bg-indigo-400 text-white px-3 py-1.5 rounded-md ${
+                      className={`inline-flex items-center space-x-1 bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-1.5 rounded-md ${
                         compact ? 'text-xs' : 'text-sm'
                       } transition-colors duration-200 cursor-pointer`}
                     >

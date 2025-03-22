@@ -18,8 +18,8 @@ export function ProgramDaySummaryComponent({
   isCalendarView = false,
 }: ProgramDaySummaryComponentProps) {
   // Calculate exercise statistics
-  const totalExercises = day.exercises.length;
-  const warmupExercises = day.exercises.filter(ex => ex.warmup).length;
+  const totalExercises = day.exercises?.length || 0;
+  const warmupExercises = day.exercises?.filter(ex => ex.warmup)?.length || 0;
 
   return (
     <div>
@@ -45,7 +45,7 @@ export function ProgramDaySummaryComponent({
               )}
             </div>
             <div className="flex items-center gap-6">
-              {day.duration && (
+              {day.duration !== undefined && day.duration > 0 && (
                 <div className="flex items-center text-gray-400">
                   <svg
                     className="w-4 h-4 mr-1.5"
@@ -63,7 +63,6 @@ export function ProgramDaySummaryComponent({
                   {day.duration === 0 ? 'No duration' : `${day.duration} minutes`}
                 </div>
               )}
-              {date && <span className="text-sm text-gray-400">{date}</span>}
             </div>
           </div>
         </div>
@@ -122,9 +121,9 @@ export function ProgramDaySummaryComponent({
           </div>
 
           {/* List all exercises */}
-          {day.exercises.length > 0 && (
+          {day.exercises?.length > 0 && (
             <div className="mt-3 space-y-1">
-              {day.exercises.map((exercise, index) => (
+              {day.exercises?.map((exercise, index) => (
                 <div key={index} className="flex items-center text-sm text-gray-400">
                   <span className="w-4 h-4 mr-2 flex items-center justify-center">
                     {exercise.warmup ? (

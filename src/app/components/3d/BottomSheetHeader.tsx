@@ -73,19 +73,11 @@ export function BottomSheetHeader({
 
     // For Exercise mode
     if (intention === ProgramIntention.Exercise) {
-      if (isSelectingExerciseBodyParts) {
-        // Initial exercise areas selection
-        return {
-          main: 'Select Exercise Areas',
-          sub: 'Choose the body parts you want to target',
-        };
-      } else {
-        // After clicking Next, show painful areas selection
-        return {
-          main: 'Select Painful Exercise Areas',
-          sub: 'Select the areas that are painful during exercise',
-        };
-      }
+      // For Exercise mode, we only have painful areas selection now
+      return {
+        main: 'Select Painful Exercise Areas',
+        sub: 'Select the areas that are painful during exercise (optional)',
+      };
     }
 
     return {

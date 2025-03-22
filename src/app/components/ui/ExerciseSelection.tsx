@@ -31,32 +31,15 @@ export function ExerciseSelection({ isMobile }: ExerciseSelectionProps) {
     selectedPainfulAreas,
     isSelectingExerciseBodyParts,
     fullBodyRef,
+    intention,
   } = useApp();
 
   // Function to get unique target areas from selected groups
   const getUniqueTargetAreas = (
     groups: BodyPartGroup[]
   ): { area: string; groups: BodyPartGroup[] }[] => {
-    if (fullBodyRef.current) {
-      return [{ area: 'Full Body', groups: [] }];
-    }
-
-    const areaMap = new Map<string, BodyPartGroup[]>();
-
-    groups.forEach((group) => {
-      const area = mapAnatomicalGroupToTargetArea(group);
-      if (area) {
-        if (!areaMap.has(area)) {
-          areaMap.set(area, []);
-        }
-        areaMap.get(area)!.push(group);
-      }
-    });
-
-    return Array.from(areaMap.entries()).map(([area, groups]) => ({
-      area,
-      groups,
-    }));
+    // Always return Full Body for exercise programs
+    return [{ area: 'Full Body', groups: [] }];
   };
 
   return (
@@ -64,44 +47,33 @@ export function ExerciseSelection({ isMobile }: ExerciseSelectionProps) {
       {/* Target Areas Section */}
       <div className="flex flex-col gap-2">
         <h3 className="text-lg font-semibold text-white">Target Areas</h3>
-        {selectedExerciseGroups.length > 0 || fullBodyRef.current ? (
-          <div className="flex flex-wrap gap-2">
-            {getUniqueTargetAreas(selectedExerciseGroups).map(
-              ({ area, groups }) => (
-                <div
-                  key={area}
-                  className="bg-gray-800 text-white px-3 py-1 rounded-full text-sm"
-                >
-                  <span>{area}</span>
-                </div>
-              )
-            )}
+        <div className="flex flex-wrap gap-2">
+          <div
+            className="bg-gray-800 text-white px-3 py-1 rounded-full text-sm"
+          >
+            <span>Full Body</span>
           </div>
-        ) : (
-          <p className="text-gray-400 text-sm">No target areas selected</p>
-        )}
+        </div>
       </div>
 
-      {/* Painful Areas Section - Only show if we're past target selection */}
-      {!isSelectingExerciseBodyParts && (
-        <div className="flex flex-col gap-2">
-          <h3 className="text-lg font-semibold text-white">Painful Areas</h3>
-          {selectedPainfulAreas.length > 0 ? (
-            <div className="flex flex-wrap gap-2">
-              {selectedPainfulAreas.map((group) => (
-                <div
-                  key={group.id}
-                  className="bg-red-900/50 text-white px-3 py-1 rounded-full text-sm"
-                >
-                  <span>{group.name}</span>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="text-gray-400 text-sm">No painful areas selected</p>
-          )}
-        </div>
-      )}
+      {/* Painful Areas Section */}
+      <div className="flex flex-col gap-2">
+        <h3 className="text-lg font-semibold text-white">Painful Areas</h3>
+        {selectedPainfulAreas.length > 0 ? (
+          <div className="flex flex-wrap gap-2">
+            {selectedPainfulAreas.map((group) => (
+              <div
+                key={group.id}
+                className="bg-red-900/50 text-white px-3 py-1 rounded-full text-sm"
+              >
+                <span>{group.name}</span>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-gray-400 text-sm">No painful areas selected</p>
+        )}
+      </div>
     </div>
   );
 }

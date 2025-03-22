@@ -1,16 +1,9 @@
 import OpenAI from 'openai';
 import { ChatPayload, DiagnosisAssistantResponse } from '../../types';
 import { ExerciseQuestionnaireAnswers, ProgramType } from '@/app/shared/types';
-import endent from 'endent';
 import { adminDb } from '@/app/firebase/admin';
 import { ExerciseProgram, ProgramStatus } from '@/app/types/program';
 import { recoverySystemPrompt } from '../prompts/recovery';
-import { programSystemPrompt } from '../prompts/exercise';
-import { collection, addDoc } from 'firebase/firestore';
-import {
-  enhancePromptWithExerciseTemplates,
-  enrichExercisesWithFullData,
-} from '@/app/services/exerciseProgramService';
 
 // Initialize OpenAI client
 const openai = new OpenAI({
@@ -213,14 +206,6 @@ Return exactly 3 questions in the following JSON format:
   }
 }
 
-interface TextContent {
-  type: 'text';
-  text: {
-    value: string;
-    annotations: any[];
-  };
-}
-
 export async function generateExerciseProgram(context: {
   diagnosisData: DiagnosisAssistantResponse;
   userInfo: ExerciseQuestionnaireAnswers;
@@ -250,7 +235,9 @@ export async function generateExerciseProgram(context: {
 
     // Get the assistant
     const assistant = await getOrCreateAssistant(
-      'asst_fna9UiwoPMHC8MQXxNx0npU4'
+      context.diagnosisData.programType === ProgramType.Exercise
+        ? 'asst_fna9UiwoPMHC8MQXxNx0npU4'
+        : 'asst_KqxD6OX9IRFXmOFdS6QtpCP4'
     );
 
     // Create a new thread
@@ -404,9 +391,7 @@ export async function generateExerciseProgramWithModel(context: {
   userId?: string;
   programId?: string;
 }) {
-  if (context.diagnosisData.programType === ProgramType.Exercise) {
-    return generateExerciseProgram(context);
-  }
+  return generateExerciseProgram(context);
 
   // At this point, we know we're dealing with Recovery program type
   const prompt = recoverySystemPrompt;

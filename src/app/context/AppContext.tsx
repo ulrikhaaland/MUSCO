@@ -38,6 +38,7 @@ interface AppContextType {
   completeExerciseSelection: () => void;
   completeRecoverySelection: () => void;
   resetSelectionState: () => void;
+  completeReset: () => void;
   skipAuth: boolean;
   setSkipAuth: (skip: boolean) => void;
   // Navigation state
@@ -124,10 +125,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
     switch (newIntention) {
       case ProgramIntention.Exercise:
         console.log('Setting exercise selection mode');
-        setIsSelectingExerciseBodyParts(true);
-        isSelectingExerciseRef.current = true;
-        fullBodyRef.current = true;
-
+        // Skip the target area selection and go directly to painful areas
+        setIsSelectingExerciseBodyParts(false);
+        isSelectingExerciseRef.current = false;
+        fullBodyRef.current = true; // Always use full body for target areas
         break;
       case ProgramIntention.Recovery:
         console.log('Setting recovery selection mode');
@@ -202,6 +203,34 @@ export function AppProvider({ children }: { children: ReactNode }) {
       selectedPartRef.current = null;
     }
   }, [intention, isSelectingExerciseRef.current]);
+
+  // Add a complete reset function that resets everything unconditionally
+  const completeReset = useCallback(() => {
+    // Reset intention to the default
+    setIntention(ProgramIntention.Recovery);
+    intentionRef.current = ProgramIntention.Recovery;
+    
+    // Reset selection stages
+    setIsSelectingExerciseBodyParts(false);
+    isSelectingExerciseRef.current = false;
+    setIsSelectingRecoveryBodyParts(false);
+    
+    // Clear all selections
+    setSelectedExerciseGroups([]);
+    selectedExerciseGroupsRef.current = [];
+    setSelectedPainfulAreas([]);
+    selectedPainfulAreasRef.current = [];
+    setSelectedGroups([]);
+    selectedGroupsRef.current = [];
+    setSelectedPart(null);
+    selectedPartRef.current = null;
+    
+    // Reset fullBody reference
+    fullBodyRef.current = false;
+    
+    // Reset navigation state
+    setShouldNavigateToProgram(true);
+  }, []);
 
   // 3D model selection handlers
   const handleSetSelectedGroup = useCallback(
@@ -359,6 +388,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         completeExerciseSelection,
         completeRecoverySelection,
         resetSelectionState,
+        completeReset,
         skipAuth,
         setSkipAuth,
         shouldNavigateToProgram,

@@ -64,6 +64,20 @@ const expandPainAreas = (areas: string[]): string[] => {
   return Array.from(expandedAreas);
 };
 
+// Define recovery program duration options
+const RECOVERY_WORKOUT_DURATIONS = [
+  '15 minutes',
+  '30 minutes',
+  '45 minutes',
+] as const;
+
+// Function to get the appropriate workout durations based on program type
+const getWorkoutDurations = (programType: ProgramType) => {
+  return programType === ProgramType.Recovery
+    ? RECOVERY_WORKOUT_DURATIONS
+    : WORKOUT_DURATIONS;
+};
+
 // Body parts for target areas
 const bodyRegions = ['Full Body', 'Upper Body', 'Lower Body'] as const;
 // Target body parts now imported from program.ts
@@ -569,6 +583,9 @@ export function ExerciseQuestionnaire({
         return false;
     }
   };
+
+  // Get the appropriate workout durations based on program type
+  const workoutDurations = getWorkoutDurations(programType);
 
   return (
     <div className="min-h-screen from-gray-900 to-gray-800 h-[calc(100dvh)]">
@@ -1177,7 +1194,7 @@ export function ExerciseQuestionnaire({
                   )
                 ) : (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {WORKOUT_DURATIONS.map((duration) => (
+                    {workoutDurations.map((duration) => (
                       <label
                         key={duration}
                         className="relative flex items-center"
@@ -1219,7 +1236,7 @@ export function ExerciseQuestionnaire({
               </button>
               <button
                 type="submit"
-                className="px-6 py-3 rounded-xl bg-indigo-500 text-white hover:bg-indigo-400 transition-colors duration-200"
+                className="px-6 py-3 rounded-xl bg-indigo-600 text-white hover:bg-indigo-500 transition-colors duration-200"
               >
                 Create Program
               </button>

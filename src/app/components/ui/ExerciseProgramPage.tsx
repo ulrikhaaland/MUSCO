@@ -3,6 +3,10 @@ import { ProgramDaySummaryComponent } from './ProgramDaySummaryComponent';
 import { ProgramType } from '@/app/shared/types';
 import { Exercise, ExerciseProgram, ProgramDay } from '@/app/types/program';
 import { LoadingSpinner } from './LoadingSpinner';
+import { ProgramFeedbackQuestionnaire, ProgramFeedback } from './ProgramFeedbackQuestionnaire';
+import { submitProgramFeedback } from '@/app/services/exerciseProgramService';
+import { useAuth } from '@/app/context/AuthContext';
+import { ExerciseSelectionPage } from './ExerciseSelectionPage';
 
 // Updated interface to match the actual program structure
 
@@ -83,6 +87,21 @@ export function ExerciseProgramPage({
   const [expandedDays, setExpandedDays] = useState<number[]>([]);
   const [showOverview, setShowOverview] = useState(true);
   const containerRef = useRef<HTMLDivElement>(null);
+  const [showFeedbackQuestionnaire, setShowFeedbackQuestionnaire] = useState(false);
+  const [isGeneratingProgram, setIsGeneratingProgram] = useState(false);
+  const { user } = useAuth();
+  const [showExerciseSelectionPage, setShowExerciseSelectionPage] = useState(false);
+  const [selectedExercises, setSelectedExercises] = useState<{
+    effective: string[];
+    ineffective: string[];
+  }>({
+    effective: [],
+    ineffective: []
+  });
+  // Add state to track which selection step to show
+  const [selectionStep, setSelectionStep] = useState<'effective' | 'ineffective'>('effective');
+  // Add state to save feedback form scroll position
+  const [feedbackScrollPosition, setFeedbackScrollPosition] = useState(0);
 
   // Check if overview has been seen before
   useEffect(() => {
@@ -100,8 +119,71 @@ export function ExerciseProgramPage({
     }
   }, [program]);
 
+  // Check if today is the day for feedback (the same date as nextMonday)
+  useEffect(() => {
+    const checkFeedbackDay = () => {
+      const nextMonday = getNextMonday(new Date());
+      const today = new Date();
+      
+      // Check if the dates match (ignoring time)
+      const todayStr = today.toDateString();
+      const nextMondayStr = nextMonday.toDateString();
+      
+      // Set to show feedback questionnaire directly instead of exercise selection
+      setShowFeedbackQuestionnaire(todayStr === nextMondayStr);
+    };
+    
+    checkFeedbackDay();
+  }, []);
+
   const handleCloseOverview = () => {
     setShowOverview(false);
+  };
+
+  // Function to handle exercise selection
+  const handleExerciseSelection = (effectiveExercises: string[], ineffectiveExercises: string[]) => {
+    // Update the selected exercises
+    if (selectionStep === 'effective') {
+      setSelectedExercises(prev => ({
+        ...prev,
+        effective: effectiveExercises
+      }));
+    } else {
+      setSelectedExercises(prev => ({
+        ...prev,
+        ineffective: ineffectiveExercises
+      }));
+    }
+    
+    // Return to the feedback form
+    setShowExerciseSelectionPage(false);
+    setShowFeedbackQuestionnaire(true);
+    
+    // Restore feedback form scroll position
+    setTimeout(() => {
+      if (containerRef.current) {
+        containerRef.current.scrollTo({ top: feedbackScrollPosition, behavior: 'instant' });
+      }
+    }, 0);
+  };
+
+  // Function to handle editing a specific selection step
+  const handleEditSelection = (step: 'effective' | 'ineffective') => {
+    // Save current scroll position before switching to exercise selection
+    if (containerRef.current) {
+      setFeedbackScrollPosition(containerRef.current.scrollTop);
+    }
+    
+    setSelectionStep(step);
+    setShowFeedbackQuestionnaire(false);
+    setShowExerciseSelectionPage(true);
+    
+    // Reset scroll position when switching to exercise selection
+    setTimeout(() => {
+      if (containerRef.current) {
+        containerRef.current.scrollTo({ top: 0, behavior: 'instant' });
+      }
+    }, 0);
   };
 
   // Set initial week and day when program loads
@@ -216,15 +298,10 @@ export function ExerciseProgramPage({
   const handleDayClick = (dayNumber: number) => {
     const isExpanding = !expandedDays.includes(dayNumber);
 
-    setExpandedDays(
-      (prev) =>
-        prev.includes(dayNumber)
-          ? [] // If clicking the currently expanded day, collapse it
-          : [dayNumber] // Otherwise, show only the clicked day
-    );
-
-    // Only scroll if we're expanding
+    // Only change selection if we're selecting a different day
     if (isExpanding) {
+      setExpandedDays([dayNumber]); // Show only the clicked day
+      
       // Scroll the selected day button into view with a slight delay to ensure DOM update
       setTimeout(() => {
         const dayButton = document.querySelector(`[data-day="${dayNumber}"]`);
@@ -247,6 +324,7 @@ export function ExerciseProgramPage({
         }
       }, 0);
     }
+    // If already selected, do nothing (prevent deselection)
   };
 
   const handleDayDetailClick = (day: ProgramDay, dayName: string) => {
@@ -258,14 +336,141 @@ export function ExerciseProgramPage({
     return days[dayOfWeek - 1];
   };
 
+  // Function to handle feedback submission and program generation
+  const handleFeedbackSubmit = async (feedback: ProgramFeedback) => {
+    return;
+    if (!user || !user.uid) {
+      console.error('User must be logged in to submit feedback');
+      return Promise.reject(new Error('User must be logged in'));
+    }
+    
+    try {
+      setIsGeneratingProgram(true);
+      
+      // Merge selected exercises with feedback data
+      const feedbackWithExercises = {
+        ...feedback,
+        mostEffectiveExercises: selectedExercises.effective,
+        leastEffectiveExercises: selectedExercises.ineffective
+      };
+      
+      // Submit feedback and generate new program
+      const newProgramId = await submitProgramFeedback(
+        user.uid,
+        program,
+        feedbackWithExercises
+      );
+      
+      console.log('New program generated with ID:', newProgramId);
+      
+      // Redirect to refresh program view
+      window.location.href = '/program';
+      
+      return Promise.resolve();
+    } catch (error) {
+      console.error('Error generating new program:', error);
+      setIsGeneratingProgram(false);
+      return Promise.reject(error);
+    }
+  };
+  
+  const handleFeedbackCancel = () => {
+    // Always go back to the program page
+    setShowFeedbackQuestionnaire(false);
+    setShowExerciseSelectionPage(false);
+    
+    // Reset scroll position
+    setTimeout(() => {
+      if (containerRef.current) {
+        containerRef.current.scrollTo({ top: 0, behavior: 'instant' });
+      }
+    }, 0);
+  };
+
+  // Extract all unique exercises from the program
+  const getAllProgramExercises = (): Exercise[] => {
+    if (!program?.program) return [];
+    
+    const uniqueExercises = new Map<string, Exercise>();
+    
+    program.program.forEach(week => {
+      week.days.forEach(day => {
+        if (day.exercises) {
+          day.exercises.forEach(exercise => {
+            const exerciseId = exercise.id || exercise.exerciseId || exercise.name;
+            if (exerciseId && !uniqueExercises.has(exerciseId)) {
+              uniqueExercises.set(exerciseId, exercise);
+            }
+          });
+        }
+      });
+    });
+    
+    return Array.from(uniqueExercises.values());
+  };
+
   const renderNextWeekCard = () => {
     const nextMonday = getNextMonday(new Date());
-    const formattedDate = nextMonday.toLocaleDateString('en-US', {
-      weekday: 'long',
-      month: 'long',
-      day: 'numeric',
-    });
-
+    const previousExercises = getAllProgramExercises();
+    
+    // Show the exercise selection page if user clicked on a field
+    if (showExerciseSelectionPage) {
+      // Filter exercises to prevent overlap between effective/ineffective selections
+      const filteredExercises = previousExercises.filter(exercise => {
+        const exerciseId = exercise.id || exercise.exerciseId || exercise.name;
+        // For effective selection, filter out exercises already marked as ineffective
+        if (selectionStep === 'effective') {
+          return !selectedExercises.ineffective.includes(exerciseId);
+        }
+        // For ineffective selection, filter out exercises already marked as effective
+        return !selectedExercises.effective.includes(exerciseId);
+      });
+      
+      return (
+        <ExerciseSelectionPage
+          previousExercises={filteredExercises}
+          onSave={(effective, ineffective) => {
+            if (selectionStep === 'effective') {
+              handleExerciseSelection(effective, selectedExercises.ineffective);
+            } else {
+              handleExerciseSelection(selectedExercises.effective, ineffective);
+            }
+          }}
+          onCancel={() => {
+            setShowExerciseSelectionPage(false);
+            setShowFeedbackQuestionnaire(true);
+            
+            // Restore feedback form scroll position
+            setTimeout(() => {
+              if (containerRef.current) {
+                containerRef.current.scrollTo({ top: feedbackScrollPosition, behavior: 'instant' });
+              }
+            }, 0);
+          }}
+          initialStep={selectionStep}
+          initialEffectiveExercises={selectedExercises.effective}
+          initialIneffectiveExercises={selectedExercises.ineffective}
+        />
+      );
+    }
+    
+    // Show the feedback form directly instead of starting with exercise selection
+    if (showFeedbackQuestionnaire) {
+      return (
+        <ProgramFeedbackQuestionnaire
+          onSubmit={handleFeedbackSubmit}
+          onCancel={handleFeedbackCancel}
+          nextWeekDate={nextMonday}
+          isFeedbackDay={true}
+          previousExercises={previousExercises}
+          mostEffectiveExercises={selectedExercises.effective}
+          leastEffectiveExercises={selectedExercises.ineffective}
+          onEditExercises={handleEditSelection}
+        />
+      );
+    }
+    
+    // Otherwise just show the "Coming Soon" card with a button to start feedback
     return (
       <div className="bg-gray-800/50 rounded-xl overflow-hidden ring-1 ring-gray-700/50 p-8">
         <div className="flex flex-col items-center justify-center text-center space-y-4">
@@ -282,10 +487,16 @@ export function ExerciseProgramPage({
               d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
             />
           </svg>
-          <h3 className="text-app-title text-white">Coming Soon</h3>
+          <h3 className="text-app-title text-white">Ready for Your Next Program?</h3>
           <p className="text-gray-300">
-            Your next week&apos;s program will be available on {formattedDate}
+            Share your feedback on this week&rsquo;s exercises to get your personalized program for next week
           </p>
+          <button
+            onClick={() => setShowFeedbackQuestionnaire(true)}
+            className="mt-4 px-6 py-3 rounded-xl bg-indigo-600 text-white hover:bg-indigo-500 transition-colors duration-200"
+          >
+            Start Feedback Process
+          </button>
         </div>
       </div>
     );
@@ -309,32 +520,36 @@ export function ExerciseProgramPage({
         <>
           <style>{scrollbarHideStyles}</style>
 
-          {/* Custom header with title only */}
-          <div className="py-3 px-4 flex items-center justify-between">
-            {/* Empty spacer with same width as menu button to balance the title */}
-            <div className="w-10"></div>
-            <div className="flex flex-col items-center">
-              <h1 className="text-app-title text-center">
-                {program.title ||
-                  (program.type === ProgramType.Recovery
-                    ? 'Recovery Program'
-                    : 'Exercise Program')}
-              </h1>
-              {isActive ? (
-                <div className="mt-1 px-2 py-0.5 bg-green-500/20 text-green-300 text-xs rounded-full flex items-center">
-                  <span className="w-2 h-2 rounded-full bg-green-400 mr-1"></span>
-                  Active Program
+          {/* Custom header with title only - hide when showing feedback or selection */}
+          {!showFeedbackQuestionnaire && !showExerciseSelectionPage && (
+            <>
+              <div className="py-3 px-4 flex items-center justify-between">
+                {/* Empty spacer with same width as menu button to balance the title */}
+                <div className="w-10"></div>
+                <div className="flex flex-col items-center">
+                  <h1 className="text-app-title text-center">
+                    {program.title ||
+                      (program.type === ProgramType.Recovery
+                        ? 'Recovery Program'
+                        : 'Exercise Program')}
+                  </h1>
+                  {isActive ? (
+                    <div className="mt-1 px-2 py-0.5 bg-green-500/20 text-green-300 text-xs rounded-full flex items-center">
+                      <span className="w-2 h-2 rounded-full bg-green-400 mr-1"></span>
+                      Active Program
+                    </div>
+                  ) : (
+                    <div className="mt-1 px-2 py-0.5 bg-gray-500/20 text-gray-300 text-xs rounded-full flex items-center">
+                      <span className="w-2 h-2 rounded-full bg-gray-400 mr-1"></span>
+                      Inactive Program
+                    </div>
+                  )}
                 </div>
-              ) : (
-                <div className="mt-1 px-2 py-0.5 bg-gray-500/20 text-gray-300 text-xs rounded-full flex items-center">
-                  <span className="w-2 h-2 rounded-full bg-gray-400 mr-1"></span>
-                  Inactive Program
-                </div>
-              )}
-            </div>
-            {/* Space for menu button */}
-            <div className="w-10"></div>
-          </div>
+                {/* Space for menu button */}
+                <div className="w-10"></div>
+              </div>
+            </>
+          )}
 
           {/* Program Overview Modal */}
           {showOverview && (
@@ -481,69 +696,76 @@ export function ExerciseProgramPage({
 
           <div ref={containerRef} className="h-screen overflow-y-auto pb-20">
             <div className="max-w-4xl mx-auto px-4">
-              {/* Replace redundant title with program summary/stats section */}
-              <div className="text-center mb-4 space-y-2">
-                <div className="flex justify-center mb-2">
-                  <button
-                    onClick={() => setShowOverview(true)}
-                    className="px-4 py-2 text-sm bg-gray-800 text-gray-300 rounded-lg hover:bg-gray-700 hover:text-white transition-colors duration-200 inline-flex items-center gap-2"
-                  >
-                    <svg
-                      className="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                      />
-                    </svg>
-                    View Program Overview
-                  </button>
-                </div>
-              </div>
-
-              {/* Week Tabs */}
-              <div className="mb-6 overflow-x-auto scrollbar-hide">
-                <div className="flex space-x-2 min-w-max">
-                  {program.program.map((week) => (
+              {/* Program overview button - hide when showing feedback or selection */}
+              {!showFeedbackQuestionnaire && !showExerciseSelectionPage && (
+                <div className="text-center mb-4 space-y-2">
+                  <div className="flex justify-center mb-2">
                     <button
-                      key={week.week}
-                      data-week={week.week}
-                      onClick={() => handleWeekChange(week.week)}
-                      className={`px-6 py-3 rounded-lg font-medium transition-colors duration-200 ${
-                        selectedWeek === week.week
-                          ? 'bg-indigo-600 text-white'
-                          : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white'
-                      }`}
+                      onClick={() => setShowOverview(true)}
+                      className="px-4 py-2 text-sm bg-gray-800 text-gray-300 rounded-lg hover:bg-gray-700 hover:text-white transition-colors duration-200 inline-flex items-center gap-2"
                     >
-                      Week{' '}
-                      {getWeekNumber(
-                        new Date(
-                          currentDate.getTime() +
-                            (week.week - 1) * 7 * 24 * 60 * 60 * 1000
-                        )
-                      )}
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                      </svg>
+                      View Program Overview
                     </button>
-                  ))}
-                  <button
-                    className={`px-6 py-3 rounded-lg font-medium transition-colors duration-200 ${
-                      selectedWeek === program.program.length + 1
-                        ? 'bg-indigo-600 text-white'
-                        : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white'
-                    }`}
-                    onClick={() => handleWeekChange(program.program.length + 1)}
-                  >
-                    Next Week
-                  </button>
+                  </div>
                 </div>
-              </div>
+              )}
+
+              {/* Only show Week/Day tabs if not showing feedback or exercise selection */}
+              {!showFeedbackQuestionnaire && !showExerciseSelectionPage && (
+                <>
+                  {/* Week Tabs */}
+                  <div className="mb-6 overflow-x-auto scrollbar-hide">
+                    <div className="flex space-x-2 min-w-max">
+                      {program.program.map((week) => (
+                        <button
+                          key={week.week}
+                          data-week={week.week}
+                          onClick={() => handleWeekChange(week.week)}
+                          className={`px-6 py-3 rounded-lg font-medium transition-colors duration-200 ${
+                            selectedWeek === week.week
+                              ? 'bg-indigo-600 text-white'
+                              : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white'
+                          }`}
+                        >
+                          Week{' '}
+                          {getWeekNumber(
+                            new Date(
+                              currentDate.getTime() +
+                                (week.week - 1) * 7 * 24 * 60 * 60 * 1000
+                            )
+                          )}
+                        </button>
+                      ))}
+                      <button
+                        className={`px-6 py-3 rounded-lg font-medium transition-colors duration-200 ${
+                          selectedWeek === program.program.length + 1
+                            ? 'bg-indigo-600 text-white'
+                            : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white'
+                        }`}
+                        onClick={() => handleWeekChange(program.program.length + 1)}
+                      >
+                        Next Week
+                      </button>
+                    </div>
+                  </div>
+                </>
+              )}
 
               {/* Selected Week Content */}
-              {selectedWeek <= program.program.length && selectedWeekData ? (
+              {selectedWeek <= program.program.length && selectedWeekData && !showFeedbackQuestionnaire && !showExerciseSelectionPage ? (
                 <div className="space-y-4">
                   {/* Day Tabs */}
                   <div className="overflow-x-auto scrollbar-hide mb-6">

@@ -69,12 +69,6 @@ Behavior Guidelines
 
 - IMPORTANT: In the JSON response, include an "exerciseId" field for each exercise containing the exact ID from the exercise JSON files.
 
-- CRITICAL - Exercise Variety: To prevent repetitive routines and maintain user engagement:
-  - Vary exercises across different workout days (avoid using the same exercise more than twice per week)
-  - For target areas that need frequent work, use 3-4 different exercises that target the same muscle group rather than repeating the same exercise
-  - Each workout day should contain at least 60% unique exercises compared to other workout days
-  - If focusing on the same body part across multiple days, use different movement patterns, equipment, or angles
-
 - For a balanced program, aim to include exercises from different categories:
   - Strength exercises: Build muscular strength and endurance
   - Flexibility exercises: Improve range of motion and reduce muscle tension
@@ -82,11 +76,6 @@ Behavior Guidelines
   - Stability exercises: Improve balance and body control
   - Core exercises: Strengthen the central muscles that support the spine
   - Posture exercises: Improve alignment and reduce postural strain
-
-- Balance the program by including appropriate proportions of exercise types:
-  - For strength-focused programs: 60-70% strength, 15-20% mobility/flexibility, 15-20% stability/core
-  - For general fitness: 40% strength, 30% mobility/flexibility, 30% stability/core
-  - For rehabilitation-focused programs: 30% strength, 40% mobility/flexibility, 30% stability/core
 
 3. Generate a Safe and Effective Program
 
@@ -99,12 +88,13 @@ Behavior Guidelines
   
   For a 45-60 minute workout, providing only 6 exercises is insufficient. Each exercise takes approximately 5-6 minutes to complete with proper sets, reps, and rest periods. You must ensure the program contains enough exercises to fill the entire workout duration.
 
-- Include warmup exercises when appropriate to prepare the user for the main workout:
-  - Each workout session should include 1-2 warmup exercises at the beginning
+- Warmup exercises:
+  - Include a maximum of ONE warmup exercise ONLY when warranted by the workout intensity or type
   - Warmup exercises should be marked with \`warmup: true\` in the JSON output
   - If an exercise is not a warmup, the \`warmup\` field should be omitted entirely
+  - High-intensity strength workouts generally warrant a warmup, while light mobility sessions may not
   - Select warmups that relate to the target areas for the main workout
-  - Warmups are especially important for strength training and high-intensity workouts
+  - Consider the user's experience level - beginners benefit more from dedicated warmups
 
 - Include enough exercises to satisfy the user's preferred workout duration:
   - 15-30 minutes: 4-6 exercises
@@ -129,8 +119,17 @@ Behavior Guidelines
 - Use \`isRestDay: false\` for active workout days
 - Ensure the user gets approximately 2-3 rest days per week, distributed appropriately
 - Always make sure the current day (provided in the input) is an active workout day (\`isRestDay: false\`)
+- IMPORTANT: DO NOT mention the current day in any descriptions or explanations. Do not include text like "start here if you are on day X" or "Day X is an active workout day".
 - Clearly specify the activities for each day, ensuring a balance between workout intensity and rest
 - For each day, include a \`duration\` field that represents the total expected workout time in minutes for the entire session (not individual exercises)
+- IMPORTANT - Exercise Order: 
+  - Group exercises for the same or related body parts together in the workout sequence
+  - For example, keep all chest exercises together, all leg exercises together, etc.
+  - This creates a more efficient workout flow and allows for focused training on specific muscle groups
+  - You may use "supersets" of opposing muscle groups (e.g., biceps/triceps, chest/back) for more advanced users
+  - Always place ab/core exercises at the END of the workout sequence
+  - Core exercises (exercises with IDs starting with "abs-" or targeting the core) should be the last exercises in each workout
+  - This allows the core muscles to remain fresh for other compound movements earlier in the workout
 - REMINDER: Ensure you include enough exercises based on the workout duration:
   • 45-60 minute workouts REQUIRE 8-10 exercises
   • 30-45 minute workouts need 6-8 exercises
@@ -269,23 +268,23 @@ Behavior Guidelines
               "modification": "Use a lighter barbell or perform bodyweight squats as needed."
             },
             {
-              "exerciseId": "pull-ups-11",
-              "modification": "Use an assisted pull-up machine or resistance bands for support."
-            },
-            {
               "exerciseId": "lateral-lunges-7",
               "modification": "Limit depth or range of motion if balance is an issue."
+            },
+            {
+              "exerciseId": "pull-ups-11",
+              "modification": "Use an assisted pull-up machine or resistance bands for support."
             },
             {
               "exerciseId": "push-ups-5",
               "modification": "Perform knee push-ups or incline push-ups if needed."
             },
             {
-              "exerciseId": "russian-twists-9",
-              "precaution": "Avoid if experiencing lower back pain"
+              "exerciseId": "dumbbell-shrugs-4"
             },
             {
-              "exerciseId": "dumbbell-shrugs-4"
+              "exerciseId": "russian-twists-9",
+              "precaution": "Avoid if experiencing lower back pain"
             }
           ],
           "duration": 51
