@@ -2,7 +2,10 @@ import OpenAI from 'openai';
 import { ChatPayload, DiagnosisAssistantResponse } from '../../types';
 import { ExerciseQuestionnaireAnswers, ProgramType } from '@/app/shared/types';
 import { adminDb } from '@/app/firebase/admin';
-import { ExerciseProgram, ProgramStatus } from '@/app/types/program';
+import {
+  ProgramStatus,
+  ExerciseProgram,
+} from '@/app/types/program';
 import { recoverySystemPrompt } from '../prompts/recoveryPrompt';
 
 // Initialize OpenAI client
@@ -213,6 +216,7 @@ export async function generateExerciseProgram(context: {
   programId?: string;
   assistantId?: string;
   isFollowUp?: boolean;
+  previousProgram?: ExerciseProgram;
 }) {
   try {
     // If we have a userId and programId, update the program status to Generating
@@ -251,6 +255,8 @@ export async function generateExerciseProgram(context: {
         diagnosisData: context.diagnosisData,
         userInfo: context.userInfo,
         currentDay: new Date().getDay(),
+        previousProgram: context.previousProgram,
+        isFollowUp: context.isFollowUp
       }),
       selectedBodyGroupName: '', // Not needed for exercise program
       bodyPartsInSelectedGroup: [], // Not needed for exercise program
@@ -406,6 +412,7 @@ export async function generateExerciseProgramWithModel(context: {
   programId?: string;
   assistantId?: string;
   isFollowUp?: boolean;
+  previousProgram?: ExerciseProgram;
 }) {
   return generateExerciseProgram(context);
 }

@@ -3,8 +3,9 @@
 import { usePathname, useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
 import { useApp } from '../context/AppContext';
+import { Suspense } from 'react';
 
-export function RouteChangeListener() {
+function RouteChangeListenerContent() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { shouldNavigateToProgram, setShouldNavigateToProgram, completeReset } = useApp();
@@ -26,4 +27,12 @@ export function RouteChangeListener() {
 
   // This component doesn't render anything
   return null;
+}
+
+export function RouteChangeListener() {
+  return (
+    <Suspense fallback={null}>
+      <RouteChangeListenerContent />
+    </Suspense>
+  );
 } 

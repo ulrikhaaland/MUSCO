@@ -11,6 +11,7 @@ import {
 } from '@/app/api/assistant/openai-server';
 import { OpenAIMessage } from '@/app/types';
 import { ProgramStatus } from '@/app/types/program';
+import { ExerciseProgram } from '@/app/types/program';
 
 export async function POST(request: Request) {
   try {
@@ -139,6 +140,16 @@ export async function POST(request: Request) {
           );
         }
 
+        // Define a specific type for the payload for this case
+        interface FollowUpProgramPayload {
+          diagnosisData: any;
+          userInfo: any;
+          userId: string;
+          programId: string;
+          assistantId?: string;
+          previousProgram?: any[]
+        }
+        
         try {
           // Use the provided assistantId or fall back to default
           const assistantId = payload.assistantId || 'asst_PjMTzHis7vLSeDZRhbBB1tbe';
@@ -149,7 +160,8 @@ export async function POST(request: Request) {
             userId: payload.userId,
             programId: payload.programId,
             assistantId: assistantId,
-            isFollowUp: true // Flag to indicate this is a follow-up week
+            isFollowUp: true, // Flag to indicate this is a follow-up week
+            previousProgram: payload.previousProgram // Pass the previous program data
           });
 
           return NextResponse.json({

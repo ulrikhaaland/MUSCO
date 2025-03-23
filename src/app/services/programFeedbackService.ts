@@ -29,7 +29,8 @@ interface ProgramWithFeedbackData extends ExerciseProgram {
  * @param assistantId Optional assistant ID for the follow-up program generation
  * @returns The ID of the program document
  */
-export const submitProgramFeedback = async (
+export const 
+submitProgramFeedback = async (
   userId: string,
   currentProgram: ProgramWithFeedbackData,
   feedback: ProgramFeedback,
@@ -170,6 +171,7 @@ export const submitProgramFeedback = async (
             userId: userId,
             programId: programId,
             assistantId: assistantId || 'asst_PjMTzHis7vLSeDZRhbBB1tbe',
+            previousProgram: currentProgram.program || [], // Pass the program data
           },
         }),
       });
