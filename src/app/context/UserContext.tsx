@@ -95,11 +95,10 @@ export function UserProvider({ children }: { children: ReactNode }) {
     const unsubscribe = onSnapshot(q, async (snapshot) => {
       const programs: UserProgramWithId[] = [];
       let mostRecentStatus: ProgramStatus | null = null;
-      let mostRecentProgram: UserProgramWithId | null = null;
-      let mostRecentDate: Date | null = null;
+      let hasGeneratingProgram = false;
 
       // Check if any program is currently being generated
-      const hasGeneratingProgram = snapshot.docs.some(
+      hasGeneratingProgram = snapshot.docs.some(
         (doc) => doc.data().status === ProgramStatus.Generating
       );
 
@@ -115,15 +114,91 @@ export function UserProvider({ children }: { children: ReactNode }) {
         }
       }
 
-      // First pass: collect all programs
+      // Find the most recent program first
+      let mostRecentProgram: UserProgramWithId | null = null;
+      let mostRecentDate: Date | null = null;
+      
+      // First look for the most recent completed program
       for (const doc of snapshot.docs) {
         const data = doc.data();
-
+        
         // Track the most recent status for any program
         if (!mostRecentStatus && data.status) {
           mostRecentStatus = data.status;
         }
-
+        
+        if (data.status === ProgramStatus.Done) {
+          const updatedAt = data.updatedAt
+            ? new Date(data.updatedAt)
+            : new Date(data.createdAt);
+            
+          // If this is the first program we've seen or it's more recent than our current most recent
+          if (!mostRecentDate || updatedAt > mostRecentDate) {
+            mostRecentDate = updatedAt;
+            
+            // Load the program data for this most recent program
+            const programsCollectionRef = collection(
+              db,
+              `users/${user.uid}/programs/${doc.id}/programs`
+            );
+            const programQ = query(
+              programsCollectionRef,
+              orderBy('createdAt', 'desc')
+            );
+            const programSnapshot = await getDocs(programQ);
+            
+            if (!programSnapshot.empty) {
+              const exercisePrograms = await Promise.all(
+                programSnapshot.docs.map(async (doc) => {
+                  const program = doc.data() as ExerciseProgram;
+                  await enrichExercisesWithFullData(program);
+                  return program;
+                })
+              );
+              
+              mostRecentProgram = {
+                programs: exercisePrograms,
+                diagnosis: data.diagnosis,
+                questionnaire: data.questionnaire,
+                active: data.active ?? true,
+                createdAt: new Date(data.createdAt),
+                updatedAt: updatedAt,
+                type: data.type,
+                docId: doc.id,
+              };
+              
+              // Add this program to our collection
+              programs.push(mostRecentProgram);
+              
+              // Set this as the active program immediately
+              setActiveProgram(mostRecentProgram);
+              setProgram(mostRecentProgram.programs[0]);
+              setAnswers(mostRecentProgram.questionnaire);
+              
+              // Only update the status to Done if we're not currently generating a new program
+              if (
+                programStatus !== ProgramStatus.Generating &&
+                !hasGeneratingProgram
+              ) {
+                setProgramStatus(ProgramStatus.Done);
+              }
+            }
+            
+            // Break early after finding the most recent program
+            break;
+          }
+        }
+      }
+      
+      // Now collect all other programs
+      for (const doc of snapshot.docs) {
+        const data = doc.data();
+        
+        // Skip if this program is already processed (the most recent one)
+        if (mostRecentProgram && doc.id === mostRecentProgram.docId) {
+          continue;
+        }
+        
         if (data.status === ProgramStatus.Done) {
           const programsCollectionRef = collection(
             db,
@@ -136,11 +211,13 @@ export function UserProvider({ children }: { children: ReactNode }) {
           const programSnapshot = await getDocs(programQ);
 
           if (!programSnapshot.empty) {
-            const exercisePrograms = await Promise.all(programSnapshot.docs.map(async (doc) => {
-              const program = doc.data() as ExerciseProgram;
-              await enrichExercisesWithFullData(program);
-              return program;
-            }));
+            const exercisePrograms = await Promise.all(
+              programSnapshot.docs.map(async (doc) => {
+                const program = doc.data() as ExerciseProgram;
+                await enrichExercisesWithFullData(program);
+                return program;
+              })
+            );
 
             const updatedAt = data.updatedAt
               ? new Date(data.updatedAt)
@@ -149,41 +226,24 @@ export function UserProvider({ children }: { children: ReactNode }) {
               programs: exercisePrograms,
               diagnosis: data.diagnosis,
               questionnaire: data.questionnaire,
-              active: data.active ?? true, // Use active status from Firebase or default to true
+              active: data.active ?? true,
               createdAt: new Date(data.createdAt),
               updatedAt: updatedAt,
               type: data.type,
-              docId: doc.id, // Store the document ID
+              docId: doc.id,
             };
             programs.push(userProgram);
-
-            // Check if this is the most recent program we've seen
-            if (!mostRecentDate || updatedAt > mostRecentDate) {
-              mostRecentDate = updatedAt;
-              mostRecentProgram = userProgram;
-            }
           }
         }
       }
 
-      // Now set all state at once to prevent flickering
+      // Set all programs state
       setUserPrograms(programs);
-
-      if (mostRecentProgram && mostRecentStatus !== ProgramStatus.Generating) {
-        // Set the most recent program as the active one
-        setActiveProgram(mostRecentProgram);
-        setProgram(mostRecentProgram.programs[0]);
-        setAnswers(mostRecentProgram.questionnaire);
-
-        // Only update the status to Done if we're not currently generating a new program
-        if (
-          programStatus !== ProgramStatus.Generating &&
-          !hasGeneratingProgram
-        ) {
-          setProgramStatus(ProgramStatus.Done);
-        }
-      } else if (
-        mostRecentStatus &&
+      
+      // Handle case where no program was found but we still have a status
+      if (
+        !mostRecentProgram && 
+        mostRecentStatus && 
         programStatus !== ProgramStatus.Generating
       ) {
         // Only set status if no program was found AND we're not generating
@@ -364,12 +424,12 @@ export function UserProvider({ children }: { children: ReactNode }) {
       console.error('User must be logged in to toggle program status');
       return Promise.reject(new Error('User must be logged in'));
     }
-    
+
     if (programIndex >= 0 && programIndex < userPrograms.length) {
       const selectedProgram = userPrograms[programIndex];
       const programType = selectedProgram.type;
       const newActiveStatus = !selectedProgram.active;
-      
+
       // Create a new array with updated active status
       const updatedPrograms = userPrograms.map((program, index) => {
         // If we're activating a program and it's of the same type as selected program
@@ -377,55 +437,57 @@ export function UserProvider({ children }: { children: ReactNode }) {
           // Set it active if it's the selected program, inactive otherwise
           return {
             ...program,
-            active: index === programIndex
+            active: index === programIndex,
           };
         }
         // If we're deactivating and this is the selected program
         else if (!newActiveStatus && index === programIndex) {
           return {
             ...program,
-            active: false
+            active: false,
           };
         }
         // Otherwise leave the program unchanged
         return program;
       });
-      
+
       // For better responsiveness, update local state IMMEDIATELY
       setUserPrograms(updatedPrograms);
-      
+
       // If we're setting the program to active, update the active program state
       if (newActiveStatus) {
         const updatedSelectedProgram = {
           ...selectedProgram,
-          active: true
+          active: true,
         };
         setActiveProgram(updatedSelectedProgram);
         setProgram(updatedSelectedProgram.programs[0]);
         setAnswers(updatedSelectedProgram.questionnaire);
         setProgramStatus(ProgramStatus.Done);
       }
-      
+
       // Update Firebase in the background (don't block the UI)
       return updateActiveProgramStatus(
-        user.uid, 
-        selectedProgram.docId, 
-        programType, 
+        user.uid,
+        selectedProgram.docId,
+        programType,
         newActiveStatus
-      ).then(() => {
-        // Return void to satisfy the Promise<void> return type
-        return;
-      }).catch(error => {
-        console.error('Error updating program active status:', error);
-        
-        // If Firebase update fails, revert the local state
-        const revertedPrograms = [...userPrograms]; // Use the original state
-        setUserPrograms(revertedPrograms);
-        
-        throw error; // Re-throw the error so it can be caught by the caller
-      });
+      )
+        .then(() => {
+          // Return void to satisfy the Promise<void> return type
+          return;
+        })
+        .catch((error) => {
+          console.error('Error updating program active status:', error);
+
+          // If Firebase update fails, revert the local state
+          const revertedPrograms = [...userPrograms]; // Use the original state
+          setUserPrograms(revertedPrograms);
+
+          throw error; // Re-throw the error so it can be caught by the caller
+        });
     }
-    
+
     return Promise.reject(new Error('Invalid program index'));
   };
 

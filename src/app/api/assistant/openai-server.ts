@@ -3,7 +3,7 @@ import { ChatPayload, DiagnosisAssistantResponse } from '../../types';
 import { ExerciseQuestionnaireAnswers, ProgramType } from '@/app/shared/types';
 import { adminDb } from '@/app/firebase/admin';
 import { ExerciseProgram, ProgramStatus } from '@/app/types/program';
-import { recoverySystemPrompt } from '../prompts/recovery';
+import { recoverySystemPrompt } from '../prompts/recoveryPrompt';
 
 // Initialize OpenAI client
 const openai = new OpenAI({
