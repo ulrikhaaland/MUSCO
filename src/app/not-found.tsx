@@ -1,8 +1,11 @@
 'use client';
 
+import { Suspense } from 'react';
 import Link from 'next/link';
+import { LoadingSpinner } from './components/ui/LoadingSpinner';
 
-export default function NotFound() {
+// Create a separate component that doesn't use any client hooks directly
+function NotFoundContent() {
   return (
     <div className="fixed inset-0 bg-gray-900 flex items-center justify-center">
       <div className="max-w-md w-full text-center px-4">
@@ -20,5 +23,14 @@ export default function NotFound() {
         </div>
       </div>
     </div>
+  );
+}
+
+// Main component that wraps content with suspense
+export default function NotFound() {
+  return (
+    <Suspense fallback={<LoadingSpinner fullScreen />}>
+      <NotFoundContent />
+    </Suspense>
   );
 } 

@@ -1,10 +1,11 @@
 'use client';
 
 import { usePathname, useSearchParams } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, Suspense } from 'react';
 import { useApp } from '../context/AppContext';
 
-export function RouteChangeListener() {
+// Create a separate component that uses the searchParams
+function RouteChangeListenerContent() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { shouldNavigateToProgram, setShouldNavigateToProgram, completeReset } = useApp();
@@ -26,4 +27,13 @@ export function RouteChangeListener() {
 
   // This component doesn't render anything
   return null;
+}
+
+// Main component that wraps content with suspense
+export function RouteChangeListener() {
+  return (
+    <Suspense fallback={null}>
+      <RouteChangeListenerContent />
+    </Suspense>
+  );
 } 
