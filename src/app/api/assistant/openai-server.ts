@@ -128,6 +128,8 @@ export async function getMessages(threadId: string) {
   }
 }
 
+
+
 export async function generateFollowUpQuestions(context: {
   messages: { role: string; content: string }[];
   bodyGroup: string;
