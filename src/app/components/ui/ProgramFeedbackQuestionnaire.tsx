@@ -103,7 +103,7 @@ export function ProgramFeedbackQuestionnaire({
           </svg>
           <h3 className="text-app-title text-white">Coming Soon</h3>
           <p className="text-gray-300">
-            Your next week's program will be available on {formattedDate}
+            Your next week&apos;s program will be available on {formattedDate}
           </p>
         </div>
       </div>
@@ -291,7 +291,7 @@ export function ProgramFeedbackQuestionnaire({
         {/* Exercises You Prefer Less */}
         <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-8 shadow-xl ring-1 ring-gray-700/50">
           <div>
-            <h4 className="text-white font-medium mb-4">Select Exercises You'd Prefer Less Of</h4>
+            <h4 className="text-white font-medium mb-4">Select Exercises You&apos;d Prefer Less Of</h4>
             <p className="text-gray-400 text-sm mt-1 mb-4">
               Choose exercises from your previous program that you found less enjoyable or effective
             </p>
@@ -373,7 +373,7 @@ export function ProgramFeedbackQuestionnaire({
 
         {/* Additional Feedback */}
         <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-8 shadow-xl ring-1 ring-gray-700/50">
-          <h4 className="text-white font-medium mb-4">Is there anything else you'd like us to know?</h4>
+          <h4 className="text-white font-medium mb-4">Is there anything else you&apos;d like us to know?</h4>
           <textarea
             placeholder="Any other comments or suggestions to improve your next program"
             value={feedback.additionalFeedback || ''}

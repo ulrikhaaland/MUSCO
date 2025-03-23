@@ -4,9 +4,10 @@ import { ProgramType } from '@/app/shared/types';
 import { Exercise, ExerciseProgram, ProgramDay } from '@/app/types/program';
 import { LoadingSpinner } from './LoadingSpinner';
 import { ProgramFeedbackQuestionnaire, ProgramFeedback } from './ProgramFeedbackQuestionnaire';
-import { submitProgramFeedback } from '@/app/services/exerciseProgramService';
+import { submitProgramFeedback } from '@/app/services/programFeedbackService';
 import { useAuth } from '@/app/context/AuthContext';
 import { ExerciseSelectionPage } from './ExerciseSelectionPage';
+import { useUser } from '@/app/context/UserContext';
 
 // Updated interface to match the actual program structure
 
@@ -102,6 +103,7 @@ export function ExerciseProgramPage({
   const [selectionStep, setSelectionStep] = useState<'effective' | 'ineffective'>('effective');
   // Add state to save feedback form scroll position
   const [feedbackScrollPosition, setFeedbackScrollPosition] = useState(0);
+  const { answers } = useUser();
 
   // Check if overview has been seen before
   useEffect(() => {
@@ -338,7 +340,6 @@ export function ExerciseProgramPage({
 
   // Function to handle feedback submission and program generation
   const handleFeedbackSubmit = async (feedback: ProgramFeedback) => {
-    return;
     if (!user || !user.uid) {
       console.error('User must be logged in to submit feedback');
       return Promise.reject(new Error('User must be logged in'));
@@ -347,6 +348,17 @@ export function ExerciseProgramPage({
     try {
       setIsGeneratingProgram(true);
       
+      // Extract only the latest week from the program for the follow-up
+      const latestWeekNumber = Math.max(...(program?.program?.map(week => week.week) || [0]));
+      const latestWeek = program?.program?.find(week => week.week === latestWeekNumber);
+      
+      // Create a new program object with only the latest week
+      const programWithLatestWeek = {
+        ...program,
+        program: latestWeek ? [latestWeek] : [],
+        questionnaire: answers // Include the original questionnaire answers
+      };
+      
       // Merge selected exercises with feedback data
       const feedbackWithExercises = {
         ...feedback,
@@ -354,11 +366,15 @@ export function ExerciseProgramPage({
         leastEffectiveExercises: selectedExercises.ineffective
       };
       
-      // Submit feedback and generate new program
+      // Use the program follow up assistant ID
+      const programFollowUpAssistantId = 'asst_PjMTzHis7vLSeDZRhbBB1tbe';
+      
+      // Submit feedback and generate new program with the specific assistant
       const newProgramId = await submitProgramFeedback(
         user.uid,
-        program,
-        feedbackWithExercises
+        programWithLatestWeek,
+        feedbackWithExercises,
+        programFollowUpAssistantId
       );
       
       console.log('New program generated with ID:', newProgramId);

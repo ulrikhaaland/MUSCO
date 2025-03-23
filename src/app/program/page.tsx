@@ -35,37 +35,13 @@ export default function ProgramPage() {
 
   const isLoading = authLoading || userLoading;
 
-  // Check for a programId in the URL and set the selected program
+  // Always use the combined program with all weeks
   useEffect(() => {
-    if (typeof window !== 'undefined' && program && userPrograms) {
-      const queryParams = new URLSearchParams(window.location.search);
-      const programId = queryParams.get('programId');
-
-      if (programId) {
-        // Find the specific program by its createdAt value
-        const foundProgram = userPrograms
-          .flatMap((up) => up.programs)
-          .find((p) => p.createdAt.toString() === programId);
-
-        if (foundProgram) {
-          setSelectedProgram(foundProgram);
-        } else {
-          setSelectedProgram(program); // Fallback to the default program
-        }
-      } else {
-        setSelectedProgram(program); // Fallback to the default program
-      }
-    } else if (program) {
+    if (program) {
+      console.log("Setting combined program with all weeks:", program);
       setSelectedProgram(program);
     }
-  }, [program, userPrograms]);
-
-  // Determine if this is the active program of its type
-  const isActiveProgram =
-    selectedProgram &&
-    userPrograms.some(up => 
-      up.active && up.programs.some(p => p.createdAt === selectedProgram.createdAt)
-    );
+  }, [program]);
 
   // Update page title when program loads
   useEffect(() => {
@@ -233,7 +209,12 @@ export default function ProgramPage() {
         onVideoClick={handleExerciseVideoClick}
         loadingVideoExercise={loadingVideoExercise}
         onDaySelect={handleDaySelect}
-        isActive={isActiveProgram}
+        isActive={
+          selectedProgram &&
+          userPrograms.some(up => 
+            up.active && up.programs.some(p => p.createdAt === selectedProgram.createdAt)
+          )
+        }
       />
       {renderVideoModal()}
     </>

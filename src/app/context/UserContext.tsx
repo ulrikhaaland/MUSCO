@@ -95,10 +95,11 @@ export function UserProvider({ children }: { children: ReactNode }) {
     const unsubscribe = onSnapshot(q, async (snapshot) => {
       const programs: UserProgramWithId[] = [];
       let mostRecentStatus: ProgramStatus | null = null;
-      let hasGeneratingProgram = false;
+      let mostRecentProgram: UserProgramWithId | null = null;
+      let mostRecentDate: Date | null = null;
 
       // Check if any program is currently being generated
-      hasGeneratingProgram = snapshot.docs.some(
+      const hasGeneratingProgram = snapshot.docs.some(
         (doc) => doc.data().status === ProgramStatus.Generating
       );
 
@@ -114,91 +115,15 @@ export function UserProvider({ children }: { children: ReactNode }) {
         }
       }
 
-      // Find the most recent program first
-      let mostRecentProgram: UserProgramWithId | null = null;
-      let mostRecentDate: Date | null = null;
-      
-      // First look for the most recent completed program
+      // First pass: collect all programs
       for (const doc of snapshot.docs) {
         const data = doc.data();
-        
+
         // Track the most recent status for any program
         if (!mostRecentStatus && data.status) {
           mostRecentStatus = data.status;
         }
-        
-        if (data.status === ProgramStatus.Done) {
-          const updatedAt = data.updatedAt
-            ? new Date(data.updatedAt)
-            : new Date(data.createdAt);
-            
-          // If this is the first program we've seen or it's more recent than our current most recent
-          if (!mostRecentDate || updatedAt > mostRecentDate) {
-            mostRecentDate = updatedAt;
-            
-            // Load the program data for this most recent program
-            const programsCollectionRef = collection(
-              db,
-              `users/${user.uid}/programs/${doc.id}/programs`
-            );
-            const programQ = query(
-              programsCollectionRef,
-              orderBy('createdAt', 'desc')
-            );
-            const programSnapshot = await getDocs(programQ);
-            
-            if (!programSnapshot.empty) {
-              const exercisePrograms = await Promise.all(
-                programSnapshot.docs.map(async (doc) => {
-                  const program = doc.data() as ExerciseProgram;
-                  await enrichExercisesWithFullData(program);
-                  return program;
-                })
-              );
-              
-              mostRecentProgram = {
-                programs: exercisePrograms,
-                diagnosis: data.diagnosis,
-                questionnaire: data.questionnaire,
-                active: data.active ?? true,
-                createdAt: new Date(data.createdAt),
-                updatedAt: updatedAt,
-                type: data.type,
-                docId: doc.id,
-              };
-              
-              // Add this program to our collection
-              programs.push(mostRecentProgram);
-              
-              // Set this as the active program immediately
-              setActiveProgram(mostRecentProgram);
-              setProgram(mostRecentProgram.programs[0]);
-              setAnswers(mostRecentProgram.questionnaire);
-              
-              // Only update the status to Done if we're not currently generating a new program
-              if (
-                programStatus !== ProgramStatus.Generating &&
-                !hasGeneratingProgram
-              ) {
-                setProgramStatus(ProgramStatus.Done);
-              }
-            }
-            
-            // Break early after finding the most recent program
-            break;
-          }
-        }
-      }
-      
-      // Now collect all other programs
-      for (const doc of snapshot.docs) {
-        const data = doc.data();
-        
-        // Skip if this program is already processed (the most recent one)
-        if (mostRecentProgram && doc.id === mostRecentProgram.docId) {
-          continue;
-        }
-        
+
         if (data.status === ProgramStatus.Done) {
           const programsCollectionRef = collection(
             db,
@@ -211,13 +136,11 @@ export function UserProvider({ children }: { children: ReactNode }) {
           const programSnapshot = await getDocs(programQ);
 
           if (!programSnapshot.empty) {
-            const exercisePrograms = await Promise.all(
-              programSnapshot.docs.map(async (doc) => {
-                const program = doc.data() as ExerciseProgram;
-                await enrichExercisesWithFullData(program);
-                return program;
-              })
-            );
+            const exercisePrograms = await Promise.all(programSnapshot.docs.map(async (programDoc) => {
+              const program = programDoc.data() as ExerciseProgram;
+              await enrichExercisesWithFullData(program);
+              return program;
+            }));
 
             const updatedAt = data.updatedAt
               ? new Date(data.updatedAt)
@@ -226,24 +149,71 @@ export function UserProvider({ children }: { children: ReactNode }) {
               programs: exercisePrograms,
               diagnosis: data.diagnosis,
               questionnaire: data.questionnaire,
-              active: data.active ?? true,
+              active: data.active ?? true, // Use active status from Firebase or default to true
               createdAt: new Date(data.createdAt),
               updatedAt: updatedAt,
               type: data.type,
-              docId: doc.id,
+              docId: doc.id, // Store the document ID
             };
             programs.push(userProgram);
+
+            // Check if this is the most recent program we've seen
+            if (!mostRecentDate || updatedAt > mostRecentDate) {
+              mostRecentDate = updatedAt;
+              mostRecentProgram = userProgram;
+            }
           }
         }
       }
 
-      // Set all programs state
+      // Now set all state at once to prevent flickering
       setUserPrograms(programs);
-      
-      // Handle case where no program was found but we still have a status
-      if (
-        !mostRecentProgram && 
-        mostRecentStatus && 
+
+      if (mostRecentProgram && mostRecentStatus !== ProgramStatus.Generating) {
+        // Set the most recent program as the active one
+        setActiveProgram(mostRecentProgram);
+        
+        // Log program info for debugging
+        console.log('=== DEBUG: mostRecentProgram ===');
+        console.log('Number of programs in collection:', mostRecentProgram.programs.length);
+        mostRecentProgram.programs.forEach((p, i) => {
+          console.log(`Program ${i+1} weeks:`, p.program?.length || 0);
+          if (p.program) {
+            p.program.forEach((w, j) => console.log(`Program ${i+1} Week ${j+1}:`, w.week));
+          }
+        });
+        
+        // Use the first program as the base and combine all program weeks
+        const allWeeks = mostRecentProgram.programs.flatMap(p => p.program || []);
+        const renumberedWeeks = allWeeks.map((weekData, i) => ({
+          ...weekData,
+          week: i + 1 // Renumber weeks sequentially starting from 1
+        }));
+        
+        const combinedProgram = {
+          ...mostRecentProgram.programs[0], // Get basics from first program
+          program: renumberedWeeks,
+          docId: mostRecentProgram.docId
+        };
+        
+        console.log('=== DEBUG: combinedProgram ===');
+        console.log('Total weeks in combined program:', combinedProgram.program?.length || 0);
+        if (combinedProgram.program) {
+          combinedProgram.program.forEach((w, i) => console.log(`Combined Week ${i+1}:`, w.week));
+        }
+        
+        setProgram(combinedProgram);
+        setAnswers(mostRecentProgram.questionnaire);
+
+        // Only update the status to Done if we're not currently generating a new program
+        if (
+          programStatus !== ProgramStatus.Generating &&
+          !hasGeneratingProgram
+        ) {
+          setProgramStatus(ProgramStatus.Done);
+        }
+      } else if (
+        mostRecentStatus &&
         programStatus !== ProgramStatus.Generating
       ) {
         // Only set status if no program was found AND we're not generating
@@ -318,18 +288,37 @@ export function UserProvider({ children }: { children: ReactNode }) {
               db,
               `users/${user.uid}/programs/${programDoc.id}/programs`
             );
-            const latestProgramQ = query(
+            // Get all program documents in the subcollection
+            const allProgramsQuery = query(
               programsCollectionRef,
-              orderBy('createdAt', 'desc'),
-              limit(1)
+              orderBy('createdAt', 'desc')
             );
-            const latestProgramSnapshot = await getDocs(latestProgramQ);
+            const allProgramsSnapshot = await getDocs(allProgramsQuery);
 
-            if (!latestProgramSnapshot.empty) {
-              const program =
-                latestProgramSnapshot.docs[0].data() as ExerciseProgram;
-              await enrichExercisesWithFullData(program);
-              setProgram(program);
+            if (!allProgramsSnapshot.empty) {
+              // Get all program weeks and enrich them
+              const programWeeks = await Promise.all(
+                allProgramsSnapshot.docs.map(async (doc) => {
+                  const program = doc.data() as ExerciseProgram;
+                  await enrichExercisesWithFullData(program);
+                  return program;
+                })
+              );
+              
+              // Use the first program as the base and combine all program weeks
+              const allWeeks = programWeeks.flatMap(p => p.program || []);
+              const renumberedWeeks = allWeeks.map((weekData, i) => ({
+                ...weekData,
+                week: i + 1 // Renumber weeks sequentially starting from 1
+              }));
+              
+              const combinedProgram = {
+                ...programWeeks[0],
+                program: renumberedWeeks,
+                docId: programDoc.id
+              };
+              
+              setProgram(combinedProgram);
             } else {
               setProgram(null);
             }
@@ -408,13 +397,42 @@ export function UserProvider({ children }: { children: ReactNode }) {
   }, [user, pendingQuestionnaire]);
 
   // Function to select a specific program from the userPrograms array
-  const selectProgram = (programIndex: number) => {
-    if (programIndex >= 0 && programIndex < userPrograms.length) {
-      const selectedProgram = userPrograms[programIndex];
-      setActiveProgram(selectedProgram);
-      setProgram(selectedProgram.programs[0]);
-      setAnswers(selectedProgram.questionnaire);
-      setProgramStatus(ProgramStatus.Done);
+  const selectProgram = (index: number) => {
+    console.log(`Selecting program at index ${index}`);
+    // If user has program already, select it
+    if (userPrograms && userPrograms.length > index) {
+      setActiveProgram(userPrograms[index]);
+      
+      // Log program info for debugging
+      console.log('=== DEBUG: Selected userProgram ===');
+      console.log('Number of programs in collection:', userPrograms[index].programs.length);
+      userPrograms[index].programs.forEach((p, i) => {
+        console.log(`Program ${i+1} weeks:`, p.program?.length || 0);
+        if (p.program) {
+          p.program.forEach((w, j) => console.log(`Program ${i+1} Week ${j+1}:`, w.week));
+        }
+      });
+      
+      const allWeeks = userPrograms[index].programs.flatMap(p => p.program || []);
+      const renumberedWeeks = allWeeks.map((weekData, i) => ({
+        ...weekData,
+        week: i + 1 // Renumber weeks sequentially starting from 1
+      }));
+      
+      const combinedProgram = {
+        ...userPrograms[index].programs[0],
+        program: renumberedWeeks,
+        docId: userPrograms[index].docId,
+      };
+      
+      console.log('=== DEBUG: combinedProgram in selectProgram ===');
+      console.log('Total weeks in combined program:', combinedProgram.program?.length || 0);
+      if (combinedProgram.program) {
+        combinedProgram.program.forEach((w, i) => console.log(`Combined Week ${i+1}:`, w.week));
+      }
+      
+      setProgram(combinedProgram);
+      setAnswers(userPrograms[index].questionnaire);
     }
   };
 
@@ -461,7 +479,21 @@ export function UserProvider({ children }: { children: ReactNode }) {
           active: true,
         };
         setActiveProgram(updatedSelectedProgram);
-        setProgram(updatedSelectedProgram.programs[0]);
+        
+        // Combine all program weeks into one program object and renumber them
+        const allWeeks = updatedSelectedProgram.programs.flatMap(p => p.program || []);
+        const renumberedWeeks = allWeeks.map((weekData, i) => ({
+          ...weekData,
+          week: i + 1 // Renumber weeks sequentially starting from 1
+        }));
+        
+        const combinedProgram = {
+          ...updatedSelectedProgram.programs[0],
+          program: renumberedWeeks,
+          docId: updatedSelectedProgram.docId
+        };
+        
+        setProgram(combinedProgram);
         setAnswers(updatedSelectedProgram.questionnaire);
         setProgramStatus(ProgramStatus.Done);
       }

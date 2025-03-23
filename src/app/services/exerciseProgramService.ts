@@ -1,30 +1,7 @@
 import { fetchExercisesForBodyParts } from './exerciseTemplateService';
 import { Exercise, ExerciseProgram } from '@/app/types/program';
 import { ExerciseQuestionnaireAnswers, ProgramType } from '@/app/shared/types';
-import { ProgramFeedback } from '../components/ui/ProgramFeedbackQuestionnaire';
-import { submitQuestionnaire } from './questionnaire';
 import { DiagnosisAssistantResponse } from '@/app/types';
-
-// Extended ExerciseQuestionnaireAnswers to include feedback fields
-interface FeedbackEnhancedQuestionnaire extends ExerciseQuestionnaireAnswers {
-  feedbackDifficulty?: string;
-  feedbackIntensity?: string;
-  feedbackEffectiveExercises?: string;
-  feedbackIneffectiveExercises?: string;
-  feedbackAdditionalNotes?: string;
-}
-
-// Extended ExerciseProgram interface to include feedback-related properties
-interface ProgramWithFeedbackData extends ExerciseProgram {
-  questionnaire?: ExerciseQuestionnaireAnswers;
-  diagnosis?: Partial<DiagnosisAssistantResponse>;
-}
-
-// Extended version of ExerciseProgram that includes feedback-related fields
-interface ExtendedExerciseProgram extends ExerciseProgram {
-  questionnaire?: ExerciseQuestionnaireAnswers;
-  diagnosis?: DiagnosisAssistantResponse;
-}
 
 // Map of body parts to their JSON file paths
 const exerciseFiles: Record<
@@ -273,21 +250,27 @@ export const prepareExercisesForLLM = async (
         const sortedExercises = [...exercisesByType[type]].sort((a, b) => {
           // First sort by popularity
           const popularityOrder = { high: 3, medium: 2, low: 1, unknown: 0 };
-          const popA = popularityOrder[(a.popularity || 'unknown') as keyof typeof popularityOrder];
-          const popB = popularityOrder[(b.popularity || 'unknown') as keyof typeof popularityOrder];
-          
+          const popA =
+            popularityOrder[
+              (a.popularity || 'unknown') as keyof typeof popularityOrder
+            ];
+          const popB =
+            popularityOrder[
+              (b.popularity || 'unknown') as keyof typeof popularityOrder
+            ];
+
           if (popB !== popA) return popB - popA;
-          
+
           // Then by view count
           return (b.viewCount || 0) - (a.viewCount || 0);
         });
 
         sortedExercises.forEach((exercise, index) => {
           // More concise format to reduce token count while preserving essential info
-          const popularityLabel = exercise.popularity 
-            ? `[Popularity: ${exercise.popularity.toUpperCase()}]` 
+          const popularityLabel = exercise.popularity
+            ? `[Popularity: ${exercise.popularity.toUpperCase()}]`
             : '';
-          
+
           exercisePrompt += `${index + 1}. ${exercise.name} (${
             exercise.id || exercise.exerciseId
           }) ${popularityLabel}: ${exercise.description.substring(0, 100)}${
@@ -311,11 +294,17 @@ export const prepareExercisesForLLM = async (
     // Sort detailed exercises by popularity for emphasis
     const sortedDetailedExercises = Array.from(uniqueExercises).sort((a, b) => {
       const popularityOrder = { high: 3, medium: 2, low: 1, unknown: 0 };
-      const popA = popularityOrder[(a.popularity || 'unknown') as keyof typeof popularityOrder];
-      const popB = popularityOrder[(b.popularity || 'unknown') as keyof typeof popularityOrder];
-      
+      const popA =
+        popularityOrder[
+          (a.popularity || 'unknown') as keyof typeof popularityOrder
+        ];
+      const popB =
+        popularityOrder[
+          (b.popularity || 'unknown') as keyof typeof popularityOrder
+        ];
+
       if (popB !== popA) return popB - popA;
-      
+
       return (b.viewCount || 0) - (a.viewCount || 0);
     });
 
@@ -323,18 +312,20 @@ export const prepareExercisesForLLM = async (
     sortedDetailedExercises.forEach((exercise) => {
       const exerciseId = exercise.id || exercise.exerciseId;
       if (!exerciseId) return;
-      
-      const popularityInfo = exercise.popularity 
-        ? `Popularity: ${exercise.popularity.toUpperCase()}` 
+
+      const popularityInfo = exercise.popularity
+        ? `Popularity: ${exercise.popularity.toUpperCase()}`
         : '';
-      const viewCountInfo = exercise.viewCount 
-        ? `Views: ${exercise.viewCount.toLocaleString()}` 
+      const viewCountInfo = exercise.viewCount
+        ? `Views: ${exercise.viewCount.toLocaleString()}`
         : '';
-      
+
       exercisePrompt += `ID: ${exerciseId}\n`;
       exercisePrompt += `Name: ${exercise.name}\n`;
       if (popularityInfo || viewCountInfo) {
-        exercisePrompt += `${popularityInfo}${popularityInfo && viewCountInfo ? ' | ' : ''}${viewCountInfo}\n`;
+        exercisePrompt += `${popularityInfo}${
+          popularityInfo && viewCountInfo ? ' | ' : ''
+        }${viewCountInfo}\n`;
       }
       exercisePrompt += `Description: ${exercise.description.substring(
         0,
@@ -353,7 +344,8 @@ export const prepareExercisesForLLM = async (
     });
 
     // Add a reminder about prioritizing popular exercises
-    exercisePrompt += 'IMPORTANT: When creating the exercise program, prioritize exercises with HIGH and MEDIUM popularity ratings as they are more familiar to users and have better instructional resources available. Only use LOW popularity exercises when they specifically address unique user needs.\n\n';
+    exercisePrompt +=
+      'IMPORTANT: When creating the exercise program, prioritize exercises with HIGH and MEDIUM popularity ratings as they are more familiar to users and have better instructional resources available. Only use LOW popularity exercises when they specifically address unique user needs.\n\n';
 
     return exercisePrompt;
   } catch (error) {
@@ -538,12 +530,8 @@ export const enrichExercisesWithFullData = async (
     }
   }
 
-  console.log('Target areas to load:', Array.from(targetAreas));
-
   // Load all exercises for the target areas
   await loadExercisesFromJson(Array.from(targetAreas));
-
-  console.log('Exercise cache size after loading:', Object.keys(exerciseCache).length);
 
   // Now enrich the exercises using the loaded cache
   for (const week of program.program) {
@@ -553,12 +541,16 @@ export const enrichExercisesWithFullData = async (
           day.exercises.map(async (exercise) => {
             // Check if exercise can be found by either id or exerciseId
             const exerciseId = exercise.id || exercise.exerciseId;
-            
+
             if (exerciseId && exerciseCache[exerciseId]) {
               const fullData = exerciseCache[exerciseId];
               return {
                 ...fullData,
                 ...exercise,
+                // Ensure we preserve the program's sets, reps, and duration rather than using template defaults
+                sets: exercise.sets || fullData.sets,
+                repetitions: exercise.repetitions || fullData.repetitions,
+                duration: exercise.duration || fullData.duration,
                 bodyPart: exercise.bodyPart || fullData.targetBodyParts?.[0],
               };
             }
@@ -574,6 +566,10 @@ export const enrichExercisesWithFullData = async (
                 return {
                   ...matchByName,
                   ...exercise,
+                  // Ensure we preserve the program's sets, reps, and duration rather than using template defaults
+                  sets: exercise.sets || matchByName.sets,
+                  repetitions: exercise.repetitions || matchByName.repetitions,
+                  duration: exercise.duration || matchByName.duration,
                   id: matchByName.id, // Ensure we keep the ID from the cache
                   exerciseId: matchByName.exerciseId, // Also keep exerciseId if available
                   bodyPart:
@@ -592,131 +588,5 @@ export const enrichExercisesWithFullData = async (
         day.exercises = enrichedExercises;
       }
     }
-  }
-};
-
-/**
- * Submits feedback for a completed program and generates a new program for the next week
- * @param userId The user ID for whom to generate the next program
- * @param currentProgram The current program to build upon
- * @param feedback The user's feedback on the current program
- * @returns The ID of the newly generated program
- */
-export const submitProgramFeedback = async (
-  userId: string,
-  currentProgram: ProgramWithFeedbackData,
-  feedback: ProgramFeedback
-): Promise<string> => {
-  try {
-    // Create a modified questionnaire based on the feedback
-    const previousAnswers = currentProgram.questionnaire || {} as ExerciseQuestionnaireAnswers;
-    
-    // Find exercise names from IDs for effective and ineffective exercises
-    const getExerciseNameById = (exerciseId: string): string => {
-      // Search through all weeks and days to find the exercise with this ID
-      for (const week of currentProgram.program || []) {
-        for (const day of week.days) {
-          const exercise = day.exercises?.find(ex => 
-            (ex.id === exerciseId || ex.exerciseId === exerciseId || ex.name === exerciseId)
-          );
-          if (exercise) {
-            return exercise.name || exerciseId;
-          }
-        }
-      }
-      return exerciseId;
-    };
-    
-    // Convert arrays of IDs to comma-separated strings of exercise names
-    const effectiveExerciseNames = feedback.mostEffectiveExercises
-      .map(id => getExerciseNameById(id))
-      .join(', ');
-      
-    const ineffectiveExerciseNames = feedback.leastEffectiveExercises
-      .map(id => getExerciseNameById(id))
-      .join(', ');
-    
-    // Adjust the existing questionnaire answers based on feedback
-    const updatedAnswers: FeedbackEnhancedQuestionnaire = {
-      age: previousAnswers.age || '',
-      lastYearsExerciseFrequency: previousAnswers.lastYearsExerciseFrequency || '',
-      thisYearsPlannedExerciseFrequency: previousAnswers.thisYearsPlannedExerciseFrequency || '',
-      generallyPainfulAreas: feedback.experiencedPain && feedback.painDetails
-        ? [...(previousAnswers.generallyPainfulAreas || []), feedback.painDetails]
-        : previousAnswers.generallyPainfulAreas || [],
-      
-      // Update preferences based on feedback
-      exerciseModalities: feedback.focusForNextWeek === 'More cardio' 
-        ? 'Cardio' 
-        : feedback.focusForNextWeek === 'More strength' 
-          ? 'Strength' 
-          : 'Both',
-      exerciseEnvironments: previousAnswers.exerciseEnvironments || '',
-      workoutDuration: previousAnswers.workoutDuration || '',
-      targetAreas: previousAnswers.targetAreas || [],
-      
-      // Add feedback-specific fields
-      feedbackDifficulty: feedback.difficultyLevel,
-      feedbackIntensity: feedback.intensityPreference,
-      feedbackEffectiveExercises: effectiveExerciseNames,
-      feedbackIneffectiveExercises: ineffectiveExerciseNames,
-      feedbackAdditionalNotes: feedback.additionalFeedback,
-    };
-    
-    // Add any additional fields from the original questionnaire that we want to preserve
-    if (previousAnswers.equipment) {
-      updatedAnswers.equipment = previousAnswers.equipment;
-    }
-    
-    if (previousAnswers.experienceLevel) {
-      updatedAnswers.experienceLevel = previousAnswers.experienceLevel;
-    }
-    
-    if (previousAnswers.weeklyFrequency) {
-      updatedAnswers.weeklyFrequency = previousAnswers.weeklyFrequency;
-    }
-    
-    // Create a modified diagnosis that includes the feedback information
-    const currentDiagnosis = currentProgram.diagnosis || {};
-    const diagnosisWithFeedback = {
-      // Required fields from DiagnosisAssistantResponse
-      diagnosis: currentDiagnosis.diagnosis || 'General fitness',
-      painfulAreas: currentDiagnosis.painfulAreas || [],
-      avoidActivities: currentDiagnosis.avoidActivities || [],
-      recoveryGoals: currentDiagnosis.recoveryGoals || ['improve fitness'],
-      timeFrame: currentDiagnosis.timeFrame || '4 weeks',
-      followUpQuestions: currentDiagnosis.followUpQuestions || [],
-      programType: currentDiagnosis.programType || ProgramType.Exercise,
-      
-      // Add feedback information as custom properties
-      feedbackOverallExperience: feedback.overallExperience,
-      feedbackCompletionRate: feedback.completedAllWorkouts,
-      feedbackImprovements: feedback.noticedImprovements,
-      feedbackWeek: currentProgram.program?.[0]?.week + 1 || 1, // Increment week number with fallback
-      
-      // Store the exercise IDs as separate properties
-      feedbackEffectiveExerciseIds: feedback.mostEffectiveExercises,
-      feedbackIneffectiveExerciseIds: feedback.leastEffectiveExercises,
-    } as DiagnosisAssistantResponse & {
-      feedbackOverallExperience: number;
-      feedbackCompletionRate: string;
-      feedbackImprovements: string;
-      feedbackWeek: number;
-      feedbackEffectiveExerciseIds: string[];
-      feedbackIneffectiveExerciseIds: string[];
-    };
-    
-    // Add progressive property if it exists in the original diagnosis
-    if (currentDiagnosis.progressive !== undefined) {
-      diagnosisWithFeedback.progressive = currentDiagnosis.progressive;
-    }
-    
-    // Submit the updated questionnaire to generate a new program
-    const newProgramId = await submitQuestionnaire(userId, diagnosisWithFeedback, updatedAnswers);
-    
-    return newProgramId;
-  } catch (error) {
-    console.error('Error submitting program feedback:', error);
-    throw error;
   }
 };

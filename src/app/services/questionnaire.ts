@@ -4,7 +4,7 @@ import { DiagnosisAssistantResponse } from '../types';
 import { ExerciseQuestionnaireAnswers } from '../shared/types';
 import { ProgramStatus } from '../types/program';
 
-async function generateProgram(userId: string, programId: string, diagnosis: DiagnosisAssistantResponse, answers: ExerciseQuestionnaireAnswers) {
+async function generateProgram(userId: string, programId: string, diagnosis: DiagnosisAssistantResponse, answers: ExerciseQuestionnaireAnswers, assistantId?: string) {
   try {
     const response = await fetch('/api/assistant', {
       method: 'POST',
@@ -18,6 +18,7 @@ async function generateProgram(userId: string, programId: string, diagnosis: Dia
           userInfo: answers,
           userId: userId,
           programId: programId,
+          assistantId: assistantId,
         },
       }),
     });
@@ -37,7 +38,8 @@ export async function submitQuestionnaire(
   userId: string,
   diagnosis: DiagnosisAssistantResponse,
   answers: ExerciseQuestionnaireAnswers,
-  onProgramDocAdded?: () => void
+  onProgramDocAdded?: () => void,
+  assistantId?: string
 ) {
   // Create a new document in the programs collection
   const programsRef = collection(db, `users/${userId}/programs`);
@@ -56,7 +58,7 @@ export async function submitQuestionnaire(
 
   // Start program generation
   try {
-    await generateProgram(userId, programDoc.id, diagnosis, answers);
+    await generateProgram(userId, programDoc.id, diagnosis, answers, assistantId);
   } catch (error) {
     console.error('Error starting program generation:', error);
     // Update status to error if generation fails to start

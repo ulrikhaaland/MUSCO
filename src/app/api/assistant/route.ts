@@ -114,7 +114,8 @@ export async function POST(request: Request) {
             diagnosisData: payload.diagnosisData,
             userInfo: payload.userInfo,
             userId: payload.userId,
-            programId: payload.programId
+            programId: payload.programId,
+            assistantId: payload.assistantId
           });
 
           return NextResponse.json({
@@ -125,6 +126,40 @@ export async function POST(request: Request) {
           console.error('Error generating program:', error);
           return NextResponse.json({
             error: 'Failed to generate program',
+            status: ProgramStatus.Error,
+          }, { status: 500 });
+        }
+      }
+
+      case 'generate_follow_up_program': {
+        if (!payload) {
+          return NextResponse.json(
+            { error: 'Payload is required' },
+            { status: 400 }
+          );
+        }
+
+        try {
+          // Use the provided assistantId or fall back to default
+          const assistantId = payload.assistantId || 'asst_PjMTzHis7vLSeDZRhbBB1tbe';
+          
+          const program = await generateExerciseProgramWithModel({
+            diagnosisData: payload.diagnosisData,
+            userInfo: payload.userInfo,
+            userId: payload.userId,
+            programId: payload.programId,
+            assistantId: assistantId,
+            isFollowUp: true // Flag to indicate this is a follow-up week
+          });
+
+          return NextResponse.json({
+            program,
+            status: ProgramStatus.Done,
+          });
+        } catch (error) {
+          console.error('Error generating follow-up program:', error);
+          return NextResponse.json({
+            error: 'Failed to generate follow-up program',
             status: ProgramStatus.Error,
           }, { status: 500 });
         }

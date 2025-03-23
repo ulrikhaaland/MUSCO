@@ -211,6 +211,8 @@ export async function generateExerciseProgram(context: {
   userInfo: ExerciseQuestionnaireAnswers;
   userId?: string;
   programId?: string;
+  assistantId?: string;
+  isFollowUp?: boolean;
 }) {
   try {
     // If we have a userId and programId, update the program status to Generating
@@ -293,29 +295,48 @@ export async function generateExerciseProgram(context: {
           .collection('programs')
           .doc(context.programId);
 
-        // Set all other programs of the same type to inactive
-        const programType = context.diagnosisData.programType;
-        const userProgramsRef = adminDb
-          .collection('users')
-          .doc(context.userId)
-          .collection('programs');
+        // For follow-up programs, we don't change the active status of existing programs
+        // Only for new programs do we set others to inactive
+        if (!context.isFollowUp) {
+          // Set all other programs of the same type to inactive
+          const programType = context.diagnosisData.programType;
+          const userProgramsRef = adminDb
+            .collection('users')
+            .doc(context.userId)
+            .collection('programs');
+  
+          // Query all programs with the same type
+          const sameTypeProgramsSnapshot = await userProgramsRef
+            .where('type', '==', programType)
+            .where('active', '==', true)
+            .get();
+  
+          // Batch update to set all of them to inactive
+          if (!sameTypeProgramsSnapshot.empty) {
+            const batch = adminDb.batch();
+            sameTypeProgramsSnapshot.docs.forEach((doc) => {
+              batch.update(doc.ref, { active: false });
+            });
+            await batch.commit();
+            console.log(
+              `Set ${sameTypeProgramsSnapshot.size} ${programType} programs to inactive`
+            );
+          }
+        }
 
-        // Query all programs with the same type
-        const sameTypeProgramsSnapshot = await userProgramsRef
-          .where('type', '==', programType)
-          .where('active', '==', true)
-          .get();
-
-        // Batch update to set all of them to inactive
-        if (!sameTypeProgramsSnapshot.empty) {
-          const batch = adminDb.batch();
-          sameTypeProgramsSnapshot.docs.forEach((doc) => {
-            batch.update(doc.ref, { active: false });
+        // Update the main program document status
+        // For follow-ups, don't modify the active status
+        if (context.isFollowUp) {
+          await programRef.update({
+            status: ProgramStatus.Done,
+            updatedAt: new Date().toISOString(),
           });
-          await batch.commit();
-          console.log(
-            `Set ${sameTypeProgramsSnapshot.size} ${programType} programs to inactive`
-          );
+        } else {
+          await programRef.update({
+            status: ProgramStatus.Done,
+            updatedAt: new Date().toISOString(),
+            active: true, // Set the new program as active
+          });
         }
 
         // Create a new document in the programs subcollection
@@ -329,13 +350,6 @@ export async function generateExerciseProgram(context: {
             ...program,
             createdAt: new Date().toISOString(),
           });
-
-        // Update the main program document status and set it as active
-        await programRef.update({
-          status: ProgramStatus.Done,
-          updatedAt: new Date().toISOString(),
-          active: true, // Set the new program as active
-        });
 
         console.log('Successfully updated program document and set as active');
       } catch (error) {
@@ -390,198 +404,8 @@ export async function generateExerciseProgramWithModel(context: {
   userInfo: ExerciseQuestionnaireAnswers;
   userId?: string;
   programId?: string;
+  assistantId?: string;
+  isFollowUp?: boolean;
 }) {
   return generateExerciseProgram(context);
-
-  // At this point, we know we're dealing with Recovery program type
-  const prompt = recoverySystemPrompt;
-
-  // If we have a userId and programId, update the program status
-  if (context.userId && context.programId) {
-    try {
-      const programRef = adminDb
-        .collection('users')
-        .doc(context.userId)
-        .collection('programs')
-        .doc(context.programId);
-
-      await programRef.update({
-        status: ProgramStatus.Generating,
-        updatedAt: new Date().toISOString(),
-      });
-    } catch (error) {
-      console.error('Error updating program status:', error);
-      // Continue even if status update fails
-    }
-  }
-
-  try {
-    const completion = await openai.chat.completions.create({
-      model: 'o1-2024-12-17',
-      response_format: { type: 'json_object' },
-      messages: [
-        {
-          role: 'system',
-          content: prompt,
-        },
-        {
-          role: 'user',
-          content: JSON.stringify({
-            diagnosisData: context.diagnosisData,
-            userInfo: context.userInfo,
-            currentDay: new Date().getDay(),
-          }),
-        },
-      ],
-    });
-
-    const response = completion.choices[0].message.content;
-    if (!response) {
-      throw new Error('No response from OpenAI');
-    }
-
-    const program = JSON.parse(response) as ExerciseProgram;
-    program.type = context.diagnosisData.programType;
-    program.targetAreas = context.userInfo.targetAreas;
-
-    // Process exercise IDs to enrich them with full exercise data
-    // try {
-    //   await enrichExercisesWithFullData(program);
-    //   console.log('Enriched exercises with full data from database');
-    // } catch (error) {
-    //   console.error('Error enriching exercises with full data:', error);
-    //   // Continue with the program even if enrichment fails
-    // }
-
-    // // Define valid body parts
-    // const validBodyParts =
-
-    // // Collect all unique body parts from exercises
-    // const allBodyParts = new Set<string>();
-    // program.program.forEach(week => {
-    //   week.days.forEach(day => {
-    //     day.exercises.forEach(exercise => {
-    //       if (exercise.bodyPart) {
-    //         //; Normalize body part to ensure it matches valid options
-    //         const normalizedPart = validBodyParts.find(
-    //           valid => valid.toLowerCase() === exercise.bodyPart.toLowerCase()
-    //         );
-
-    //         if (normalizedPart) {
-    //           exercise.bodyPart = normalizedPart;
-    //           allBodyParts.add(normalizedPart);
-    //         } else {
-    //           // If invalid body part, set to empty string or first valid part
-    //           exercise.bodyPart = validBodyParts[0] || '';
-    //         }
-    //       } else {
-    //         // Ensure each exercise has a bodyPart even if not provided by LLM
-    //         exercise.bodyPart = validBodyParts[0] || '';
-    //       }
-    //     });
-    //   });
-    // });
-
-    // // Set program bodyParts to the unique set of body parts from all exercises
-    // program.bodyParts = Array.from(allBodyParts)
-
-    // console.log('Program bodyParts:', program.bodyParts);
-
-    // If we have a userId and programId, update the program document
-    if (context.userId && context.programId) {
-      try {
-        const programRef = adminDb
-          .collection('users')
-          .doc(context.userId)
-          .collection('programs')
-          .doc(context.programId);
-
-        // Set all other programs of the same type to inactive
-        const programType = context.diagnosisData.programType;
-        const userProgramsRef = adminDb
-          .collection('users')
-          .doc(context.userId)
-          .collection('programs');
-
-        // Query all programs with the same type
-        const sameTypeProgramsSnapshot = await userProgramsRef
-          .where('type', '==', programType)
-          .where('active', '==', true)
-          .get();
-
-        // Batch update to set all of them to inactive
-        if (!sameTypeProgramsSnapshot.empty) {
-          const batch = adminDb.batch();
-          sameTypeProgramsSnapshot.docs.forEach((doc) => {
-            batch.update(doc.ref, { active: false });
-          });
-          await batch.commit();
-          console.log(
-            `Set ${sameTypeProgramsSnapshot.size} ${programType} programs to inactive`
-          );
-        }
-
-        // Create a new document in the programs subcollection
-        await adminDb
-          .collection('users')
-          .doc(context.userId)
-          .collection('programs')
-          .doc(context.programId)
-          .collection('programs')
-          .add({
-            ...program,
-            createdAt: new Date().toISOString(),
-          });
-
-        // Update the main program document status and set it as active
-        await programRef.update({
-          status: ProgramStatus.Done,
-          updatedAt: new Date().toISOString(),
-          active: true, // Set the new program as active
-        });
-      } catch (error) {
-        console.error('Error updating program document:', error);
-        // Update status to error if save fails
-        try {
-          if (context.userId && context.programId) {
-            const programRef = adminDb
-              .collection('users')
-              .doc(context.userId)
-              .collection('programs')
-              .doc(context.programId);
-
-            await programRef.update({
-              status: ProgramStatus.Error,
-              updatedAt: new Date().toISOString(),
-            });
-          }
-        } catch (statusError) {
-          console.error('Error updating program status to error:', statusError);
-        }
-        throw error;
-      }
-    }
-
-    return program;
-  } catch (error) {
-    console.error('Error generating exercise program:', error);
-    // If we have a userId and programId, update the status to error
-    if (context.userId && context.programId) {
-      try {
-        const programRef = adminDb
-          .collection('users')
-          .doc(context.userId)
-          .collection('programs')
-          .doc(context.programId);
-
-        await programRef.update({
-          status: ProgramStatus.Error,
-          updatedAt: new Date().toISOString(),
-        });
-      } catch (statusError) {
-        console.error('Error updating program status to error:', statusError);
-      }
-    }
-    throw new Error('Failed to generate exercise program');
-  }
 }

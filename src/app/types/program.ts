@@ -278,6 +278,7 @@ export interface ExerciseProgram {
   createdAt: Date;
   targetAreas: string[];
   bodyParts: string[];
+  docId?: string;
 }
 
 export interface UserProgram {

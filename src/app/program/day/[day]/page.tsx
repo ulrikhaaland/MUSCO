@@ -151,22 +151,8 @@ export default function DayDetailPage() {
   const closeVideo = () => setVideoUrl(null);
 
   // Handle title click to navigate back to program page
-  const handleTitleClick = () => {
-    if (selectedProgram) {
-      // Check if we have a programId in the URL
-      const queryParams = new URLSearchParams(window.location.search);
-      const programId = queryParams.get('programId');
-      
-      if (programId) {
-        // Navigate to the specific program with its ID
-        router.push(`/program?programId=${encodeURIComponent(programId)}`);
-      } else {
-        // Default navigation to the program page
-        router.push('/program');
-      }
-    } else {
-      router.push('/program');
-    }
+  const handleBackClick = () => {
+    router.push(`/program`);
   };
 
   // Render video modal
@@ -250,7 +236,7 @@ export default function DayDetailPage() {
             expandedExercises={expandedExercises}
             onExerciseToggle={handleExerciseToggle}
             programTitle={selectedProgram?.title || 'Exercise Program'}
-            onTitleClick={handleTitleClick}
+            onTitleClick={handleBackClick}
           />
         </div>
       </div>
