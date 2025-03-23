@@ -13,6 +13,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { IntentionQuestion } from './components/ui/IntentionQuestion';
 import { LoadingSpinner } from './components/ui/LoadingSpinner';
 import { ErrorDisplay } from './components/ui/ErrorDisplay';
+import { AuthForm } from './components/auth/AuthForm';
 
 // Create a separate component for search params functionality
 function HomeContent() {
@@ -20,6 +21,7 @@ function HomeContent() {
     intention,
     setIntention,
     skipAuth,
+    setSkipAuth,
     shouldNavigateToProgram,
     setShouldNavigateToProgram,
   } = useApp();
@@ -85,14 +87,14 @@ function HomeContent() {
     [setIntention]
   );
 
-  // Show auth form if we have pending questionnaire data
+  // Show auth form if user is not logged in and not skipping auth
   useEffect(() => {
-    if (pendingQuestionnaire && !user) {
+    if (!user && !authLoading && !skipAuth) {
       setShowAuthForm(true);
     } else {
       setShowAuthForm(false);
     }
-  }, [pendingQuestionnaire, user]);
+  }, [user, authLoading, skipAuth]);
 
   const isLoading = authLoading || userLoading;
 
@@ -108,7 +110,14 @@ function HomeContent() {
     return (
       <div className="fixed inset-0 bg-gray-900/95 backdrop-blur-sm z-50 flex items-center justify-center">
         <div className="max-w-lg w-full mx-4">
-          <QuestionnaireAuthForm />
+          {pendingQuestionnaire ? (
+            <QuestionnaireAuthForm />
+          ) : (
+            <AuthForm onSkip={() => {
+              setSkipAuth(true);
+              setShowAuthForm(false);
+            }} />
+          )}
         </div>
       </div>
     );

@@ -385,8 +385,8 @@ export default function HumanViewer({
         diagnosis.programType = ProgramType.Recovery;
       } else {
         const newDiagnosis: DiagnosisAssistantResponse = {
-          diagnosis: 'No diagnosis, just a recovery program',
-          programType: ProgramType.Recovery,
+          diagnosis: 'No diagnosis, just an exercise program',
+          programType: ProgramType.Exercise,
           painfulAreas: [
             ...(selectedGroups[0]?.name ? [selectedGroups[0].name] : []),
             ...(selectedPart?.name ? [selectedPart.name] : []),

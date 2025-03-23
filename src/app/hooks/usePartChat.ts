@@ -17,14 +17,14 @@ const initialQuestions: Question[] = [
       'Can you walk me through some movements to check if there’s an issue with the $part?',
     asked: false,
   },
-  // {
+  // { 
   //   title: 'Learn about common problems',
   //   question: 'What are some common issues or injuries related to the $part?',
   //   asked: false,
   // },
   {
-    title: 'Recovery program',
-    question: 'What is the best recovery program for my $part?',
+    title: 'Exercise program',
+    question: 'What is the best exercise program for my $part?',
     asked: false,
     generate: true,
     diagnosis: '',

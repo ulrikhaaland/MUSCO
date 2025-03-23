@@ -233,7 +233,7 @@ function NavigationMenuContent() {
           </nav>
 
           {/* User actions */}
-          {user && (
+          {user ? (
             <div className="p-4 border-t border-gray-800">
               <button
                 onClick={handleLogout}
@@ -248,6 +248,23 @@ function NavigationMenuContent() {
                   />
                 </svg>
                 Sign out
+              </button>
+            </div>
+          ) : (
+            <div className="p-4 border-t border-gray-800">
+              <button
+                onClick={() => handleNavigation('/login')}
+                className="flex items-center w-full px-4 py-2 text-sm text-gray-300 hover:bg-gray-800 hover:text-white rounded-lg transition-colors duration-200"
+              >
+                <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"
+                  />
+                </svg>
+                Sign in
               </button>
             </div>
           )}
@@ -267,6 +284,14 @@ function MenuLoadingFallback() {
 }
 
 export function NavigationMenu() {
+  // Check programStatus here instead of in the NavigationMenuContent
+  const { programStatus } = useUser();
+  
+  // Don't render the navigation menu when generating a program
+  if (programStatus === ProgramStatus.Generating) {
+    return null;
+  }
+  
   return (
     <Suspense fallback={<MenuLoadingFallback />}>
       <NavigationMenuContent />
