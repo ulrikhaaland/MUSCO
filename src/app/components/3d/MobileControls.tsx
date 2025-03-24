@@ -243,7 +243,7 @@ export default function MobileControls({
             snapPoint = contentHeight;
           }
           setTimeout(() => {
-            if (sheetRef.current.snapTo) {
+            if (sheetRef.current) {
               sheetRef.current.snapTo(({ maxHeight }) => snapPoint);
             }
           }, intention === ProgramIntention.Exercise ? 1000 : 300);

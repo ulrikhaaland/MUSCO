@@ -391,10 +391,13 @@ export default function HumanViewer({
         const newDiagnosis: DiagnosisAssistantResponse = {
           diagnosis: 'No diagnosis, just an exercise program',
           programType: programType,
-          painfulAreas: programType === ProgramType.Recovery ? [
-            ...(selectedGroups[0]?.name ? [selectedGroups[0].name] : []),
-            ...(selectedPart?.name ? [selectedPart.name] : []),
-          ] : [],
+          painfulAreas:
+            programType === ProgramType.Recovery
+              ? [
+                  ...(selectedGroups[0]?.name ? [selectedGroups[0].name] : []),
+                  ...(selectedPart?.name ? [selectedPart.name] : []),
+                ]
+              : [],
           avoidActivities: [],
           recoveryGoals: [],
           timeFrame: '1 week',
@@ -434,6 +437,9 @@ export default function HumanViewer({
     answers: ExerciseQuestionnaireAnswers
   ) => {
     diagnosis.timeFrame = '1 week';
+
+    //remove neck from answers.targetAreas
+    answers.targetAreas = answers.targetAreas.filter((area) => area !== 'neck');
 
     try {
       const result = await onQuestionnaireSubmit(diagnosis, answers);
