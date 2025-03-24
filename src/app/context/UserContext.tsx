@@ -88,6 +88,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
     answers: ExerciseQuestionnaireAnswers;
   } | null>(null);
   const isMounted = useRef(false);
+  const submissionInProgressRef = useRef(false);
 
   // Set up real-time listener for program status changes and latest program
   useEffect(() => {
@@ -396,6 +397,12 @@ export function UserProvider({ children }: { children: ReactNode }) {
     diagnosis: DiagnosisAssistantResponse,
     answers: ExerciseQuestionnaireAnswers
   ): Promise<{ requiresAuth?: boolean; programId?: string }> => {
+    // Prevent duplicate submissions
+    if (submissionInProgressRef.current) {
+      console.log('Submission already in progress, ignoring duplicate request');
+      return {};
+    }
+
     // If user is not authenticated, store the data and return requiresAuth flag
     if (!user) {
       // Store in local state
@@ -430,6 +437,8 @@ export function UserProvider({ children }: { children: ReactNode }) {
       return { requiresAuth: true };
     }
 
+    submissionInProgressRef.current = true;
+
     try {
       // Clear existing program state before navigation
       setProgram(null);
@@ -441,6 +450,13 @@ export function UserProvider({ children }: { children: ReactNode }) {
       // Set program status to generating after clearing program state
       setProgramStatus(ProgramStatus.Generating);
 
+      // Clear pending questionnaire data to prevent duplicate submissions
+      window.localStorage.removeItem('hasPendingQuestionnaire');
+      window.localStorage.removeItem('pendingQuestionnaireEmail');
+      window.sessionStorage.removeItem('pendingDiagnosis');
+      window.sessionStorage.removeItem('pendingAnswers');
+      setPendingQuestionnaire(null);
+
       // Delay navigation slightly to ensure state updates are processed
       setTimeout(() => {
         // Directly navigate to the program page
@@ -450,10 +466,12 @@ export function UserProvider({ children }: { children: ReactNode }) {
       // Submit questionnaire and generate program
       const programId = await submitQuestionnaire(user.uid, diagnosis, answers);
 
+      submissionInProgressRef.current = false;
       return { programId };
     } catch (error) {
       console.error('Error submitting questionnaire:', error);
       setProgramStatus(ProgramStatus.Error);
+      submissionInProgressRef.current = false;
       throw error;
     }
   };
@@ -465,6 +483,12 @@ export function UserProvider({ children }: { children: ReactNode }) {
       const pendingEmail = window.localStorage.getItem('pendingQuestionnaireEmail') || user.email;
       
       const handlePendingQuestionnaire = async () => {
+        // Don't process if another submission is in progress
+        if (submissionInProgressRef.current) {
+          console.log('Another submission is already in progress, skipping automatic submission');
+          return;
+        }
+
         try {
           // First check for pending questionnaire in state
           if (pendingQuestionnaire && 
@@ -475,7 +499,6 @@ export function UserProvider({ children }: { children: ReactNode }) {
               pendingQuestionnaire.diagnosis,
               pendingQuestionnaire.answers
             );
-            setPendingQuestionnaire(null);
           } 
           // Then try to get it from Firebase using email
           else if (pendingEmail) {
@@ -495,12 +518,6 @@ export function UserProvider({ children }: { children: ReactNode }) {
               console.log('No pending questionnaire found for email:', pendingEmail);
             }
           }
-          
-          // Clear all localStorage and sessionStorage flags
-          window.localStorage.removeItem('hasPendingQuestionnaire');
-          window.localStorage.removeItem('pendingQuestionnaireEmail');
-          window.sessionStorage.removeItem('pendingDiagnosis');
-          window.sessionStorage.removeItem('pendingAnswers');
         } catch (error) {
           console.error('Error processing pending questionnaire:', error);
         }

@@ -58,7 +58,7 @@ export default function HumanViewer({
   const [isMobile, setIsMobile] = useState(false);
   const [isResetting, setIsResetting] = useState(false);
   const { onQuestionnaireSubmit } = useUser();
-  const { setIntention } = useApp();
+  const { setIntention, intention } = useApp();
   const [showQuestionnaire, setShowQuestionnaire] = useState(false);
   const router = useRouter();
 
@@ -387,13 +387,14 @@ export default function HumanViewer({
         diagnosis.followUpQuestions = [];
         diagnosis.programType = question.programType ?? ProgramType.Exercise;
       } else {
+        const programType = question.programType ?? ProgramType.Exercise;
         const newDiagnosis: DiagnosisAssistantResponse = {
           diagnosis: 'No diagnosis, just an exercise program',
-          programType: question.programType ?? ProgramType.Exercise,
-          painfulAreas: [
+          programType: programType,
+          painfulAreas: programType === ProgramType.Recovery ? [
             ...(selectedGroups[0]?.name ? [selectedGroups[0].name] : []),
             ...(selectedPart?.name ? [selectedPart.name] : []),
-          ],
+          ] : [],
           avoidActivities: [],
           recoveryGoals: [],
           timeFrame: '1 week',
