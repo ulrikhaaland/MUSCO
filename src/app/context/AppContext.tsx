@@ -62,7 +62,7 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export function AppProvider({ children }: { children: ReactNode }) {
   const [intention, setIntention] = useState<ProgramIntention>(
-    ProgramIntention.Recovery
+    ProgramIntention.None
   );
   const [isSelectingExerciseBodyParts, setIsSelectingExerciseBodyParts] =
     useState(false);
@@ -167,6 +167,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
         selectedGroupsRef.current = [];
         setSelectedPart(null);
         selectedPartRef.current = null;
+        
+        // Make sure isSelectingExerciseRef is set to false so the selected painful areas get updated properly
+        isSelectingExerciseRef.current = false;
       } else {
         // Reset all selections
         setSelectedPainfulAreas([]);
@@ -182,6 +185,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
       }
     } else if (intention === ProgramIntention.Recovery) {
       // For recovery, just reset the current selection
+      setSelectedGroups([]);
+      selectedGroupsRef.current = [];
+      setSelectedPart(null);
+      selectedPartRef.current = null;
+    } else if (intention === ProgramIntention.None) {
+      // For None intention, reset the single group and part selection
       setSelectedGroups([]);
       selectedGroupsRef.current = [];
       setSelectedPart(null);
@@ -207,8 +216,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
   // Add a complete reset function that resets everything unconditionally
   const completeReset = useCallback(() => {
     // Reset intention to the default
-    setIntention(ProgramIntention.Recovery);
-    intentionRef.current = ProgramIntention.Recovery;
+    setIntention(ProgramIntention.None);
+    intentionRef.current = ProgramIntention.None;
     
     // Reset selection stages
     setIsSelectingExerciseBodyParts(false);
@@ -302,6 +311,24 @@ export function AppProvider({ children }: { children: ReactNode }) {
           if (currentGroup?.id === group.id) {
             // If clicking within the same group, handle part selection
             // The actual part selection will be handled by the useHumanAPI hook
+            return;
+          } else {
+            // If clicking a different group, replace the current selection
+            setSelectedGroups([group]);
+            setSelectedPart(null);
+          }
+        } else {
+          // For direct group selection (e.g., from UI), replace the current selection
+          setSelectedGroups([group]);
+          setSelectedPart(null);
+        }
+      } else if (intentionRef.current === ProgramIntention.None) {
+        console.log('None intention - handling group selection');
+        // In None mode, we only allow one group selection at a time
+        if (isObjectSelection) {
+          const currentGroup = selectedGroups[0];
+          if (currentGroup?.id === group.id) {
+            // If clicking within the same group, let the part selection be handled by useHumanAPI
             return;
           } else {
             // If clicking a different group, replace the current selection

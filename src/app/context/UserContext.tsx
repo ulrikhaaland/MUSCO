@@ -26,7 +26,12 @@ import {
   ExerciseProgram,
   UserProgram,
 } from '@/app/types/program';
-import { submitQuestionnaire } from '@/app/services/questionnaire';
+import {
+  submitQuestionnaire,
+  storePendingQuestionnaire,
+  getPendingQuestionnaire,
+  deletePendingQuestionnaire
+} from '@/app/services/questionnaire';
 import { updateActiveProgramStatus } from '@/app/services/program';
 import { useRouter } from 'next/navigation';
 import { enrichExercisesWithFullData } from '@/app/services/exerciseProgramService';
@@ -86,7 +91,13 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
   // Set up real-time listener for program status changes and latest program
   useEffect(() => {
-    if (!user) return;
+    if (!user) {
+      // Set loading to false if there's no user
+      if (isLoading) {
+        setIsLoading(false);
+      }
+      return;
+    }
 
     // Listen to all user programs
     const programsRef = collection(db, `users/${user.uid}/programs`);
@@ -345,13 +356,77 @@ export function UserProvider({ children }: { children: ReactNode }) {
     };
   }, [user, authLoading]);
 
+  // On initial load, check localStorage for pending questionnaire flag
+  useEffect(() => {
+    const hasPendingQuestionnaireFlag = window.localStorage.getItem('hasPendingQuestionnaire') === 'true';
+    console.log('Checking for pending questionnaire flag:', hasPendingQuestionnaireFlag);
+    
+    if (hasPendingQuestionnaireFlag && !pendingQuestionnaire) {
+      // Extract from session storage if available
+      const pendingDiagnosisJSON = window.sessionStorage.getItem('pendingDiagnosis');
+      const pendingAnswersJSON = window.sessionStorage.getItem('pendingAnswers');
+      
+      if (pendingDiagnosisJSON && pendingAnswersJSON) {
+        try {
+          const diagnosis = JSON.parse(pendingDiagnosisJSON) as DiagnosisAssistantResponse;
+          const answers = JSON.parse(pendingAnswersJSON) as ExerciseQuestionnaireAnswers;
+          
+          // Set the actual data from session storage
+          setPendingQuestionnaire({ diagnosis, answers });
+        } catch (e) {
+          console.error('Error parsing pending questionnaire from session storage:', e);
+          
+          // Set an empty placeholder so the UI shows login requirement
+          setPendingQuestionnaire({
+            diagnosis: {} as DiagnosisAssistantResponse,
+            answers: {} as ExerciseQuestionnaireAnswers
+          });
+        }
+      } else {
+        // Set an empty placeholder so the UI shows login requirement
+        setPendingQuestionnaire({
+          diagnosis: {} as DiagnosisAssistantResponse,
+          answers: {} as ExerciseQuestionnaireAnswers
+        });
+      }
+    }
+  }, []);
+
   const onQuestionnaireSubmit = async (
     diagnosis: DiagnosisAssistantResponse,
     answers: ExerciseQuestionnaireAnswers
   ): Promise<{ requiresAuth?: boolean; programId?: string }> => {
     // If user is not authenticated, store the data and return requiresAuth flag
     if (!user) {
+      // Store in local state
       setPendingQuestionnaire({ diagnosis, answers });
+      
+      // Get email from answers if provided, or from any input field
+      const email = window.localStorage.getItem('userEmail');
+      
+      if (email) {
+        try {
+          // Store in Firebase using the email
+          await storePendingQuestionnaire(email, diagnosis, answers);
+          console.log('Stored pending questionnaire for email:', email);
+          
+          // Set flag in localStorage to indicate pending questionnaire
+          window.localStorage.setItem('hasPendingQuestionnaire', 'true');
+          window.localStorage.setItem('pendingQuestionnaireEmail', email);
+          
+          // Store in session storage as backup
+          window.sessionStorage.setItem('pendingDiagnosis', JSON.stringify(diagnosis));
+          window.sessionStorage.setItem('pendingAnswers', JSON.stringify(answers));
+        } catch (error) {
+          console.error('Error storing pending questionnaire:', error);
+        }
+      } else {
+        // Store in session storage as backup
+        window.sessionStorage.setItem('pendingDiagnosis', JSON.stringify(diagnosis));
+        window.sessionStorage.setItem('pendingAnswers', JSON.stringify(answers));
+        window.localStorage.setItem('hasPendingQuestionnaire', 'true');
+      }
+      
       return { requiresAuth: true };
     }
 
@@ -385,16 +460,58 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
   // Effect to handle successful login with pending questionnaire
   useEffect(() => {
-    if (user && pendingQuestionnaire) {
-      // Submit the pending questionnaire
-      onQuestionnaireSubmit(
-        pendingQuestionnaire.diagnosis,
-        pendingQuestionnaire.answers
-      ).catch(console.error);
-      // Clear the pending questionnaire
-      setPendingQuestionnaire(null);
+    if (user && !authLoading) {
+      const hasPendingQuestionnaireFlag = window.localStorage.getItem('hasPendingQuestionnaire') === 'true';
+      const pendingEmail = window.localStorage.getItem('pendingQuestionnaireEmail') || user.email;
+      
+      const handlePendingQuestionnaire = async () => {
+        try {
+          // First check for pending questionnaire in state
+          if (pendingQuestionnaire && 
+              pendingQuestionnaire.diagnosis && 
+              Object.keys(pendingQuestionnaire.diagnosis).length > 0) {
+            // Submit the questionnaire directly
+            await onQuestionnaireSubmit(
+              pendingQuestionnaire.diagnosis,
+              pendingQuestionnaire.answers
+            );
+            setPendingQuestionnaire(null);
+          } 
+          // Then try to get it from Firebase using email
+          else if (pendingEmail) {
+            console.log('Checking for pending questionnaire for email:', pendingEmail);
+            const storedQuestionnaire = await getPendingQuestionnaire(pendingEmail);
+            
+            if (storedQuestionnaire) {
+              console.log('Found pending questionnaire in Firebase');
+              await onQuestionnaireSubmit(
+                storedQuestionnaire.diagnosis,
+                storedQuestionnaire.answers
+              );
+              
+              // Delete the pending questionnaire after submission
+              await deletePendingQuestionnaire(pendingEmail);
+            } else {
+              console.log('No pending questionnaire found for email:', pendingEmail);
+            }
+          }
+          
+          // Clear all localStorage and sessionStorage flags
+          window.localStorage.removeItem('hasPendingQuestionnaire');
+          window.localStorage.removeItem('pendingQuestionnaireEmail');
+          window.sessionStorage.removeItem('pendingDiagnosis');
+          window.sessionStorage.removeItem('pendingAnswers');
+        } catch (error) {
+          console.error('Error processing pending questionnaire:', error);
+        }
+      };
+      
+      if (hasPendingQuestionnaireFlag || 
+          (pendingQuestionnaire && Object.keys(pendingQuestionnaire).length > 0)) {
+        handlePendingQuestionnaire();
+      }
     }
-  }, [user, pendingQuestionnaire]);
+  }, [user, authLoading, pendingQuestionnaire]);
 
   // Function to select a specific program from the userPrograms array
   const selectProgram = (index: number) => {

@@ -3,6 +3,7 @@
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/app/context/AuthContext';
 import { useUser } from '@/app/context/UserContext';
+import { useApp } from '@/app/context/AppContext';
 import { useState, useEffect, useRef, Suspense } from 'react';
 import { LoadingSpinner } from './LoadingSpinner';
 import { ProgramStatus } from '@/app/types/program';
@@ -14,6 +15,7 @@ function NavigationMenuContent() {
   const searchParams = useSearchParams();
   const { user, logOut } = useAuth();
   const { program } = useUser();
+  const { completeReset } = useApp();
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const drawerRef = useRef<HTMLDivElement>(null);
@@ -149,7 +151,17 @@ function NavigationMenuContent() {
 
   const handleNavigation = (path: string, disabled: boolean = false) => {
     if (!disabled) {
-      router.push(path);
+      // Special case for Create Program button
+      if (path.includes('/?new=true')) {
+        // Reset app state when navigating to create program page
+        completeReset();
+        
+        // Add a timestamp to force a navigation event even if already on the page
+        const timestamp = Date.now();
+        router.push(`/?new=true&ts=${timestamp}`);
+      } else {
+        router.push(path);
+      }
       setDrawerOpen(false);
       setShowUserMenu(false);
     }

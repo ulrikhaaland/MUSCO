@@ -24,6 +24,7 @@ function HomeContent() {
     setSkipAuth,
     shouldNavigateToProgram,
     setShouldNavigateToProgram,
+    completeReset,
   } = useApp();
   const { user, loading: authLoading, error: authError } = useAuth();
   const {
@@ -39,6 +40,7 @@ function HomeContent() {
   const newParam = searchParams?.get('new');
   const [gender, setGender] = useState<Gender>(genderParam || 'male');
   const [intentionSelected, setIntentionSelected] = useState(false);
+  const [shouldResetModel, setShouldResetModel] = useState(false);
 
   // Set page title
   useEffect(() => {
@@ -47,16 +49,45 @@ function HomeContent() {
     }
   }, []);
 
+  // Reset intention to None when navigating to home page if not already None
+  useEffect(() => {
+    // Only reset if we're not explicitly creating a new program
+    if (newParam !== 'true' && intention !== ProgramIntention.None) {
+      completeReset();
+      setShouldResetModel(true);
+      
+      // Reset the flag after a short delay
+      const timer = setTimeout(() => {
+        setShouldResetModel(false);
+      }, 500);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [completeReset, newParam, intention]);
+
   // Redirect to program page if user is logged in and has a program
   useEffect(() => {
     // Only redirect after loading is complete
     if (!authLoading && !userLoading) {
       // If user is logged in AND has a program AND NOT explicitly trying to create a new program
-      if (user && (program || programStatus === ProgramStatus.Generating) && newParam !== 'true') {
+      if (
+        user &&
+        (program || programStatus === ProgramStatus.Generating) &&
+        newParam !== 'true'
+      ) {
         router.push('/program');
       }
     }
-  }, [user, program, programStatus, authLoading, userLoading, router, searchParams, newParam]);
+  }, [
+    user,
+    program,
+    programStatus,
+    authLoading,
+    userLoading,
+    router,
+    searchParams,
+    newParam,
+  ]);
 
   // Update gender when URL param changes
   useEffect(() => {
@@ -65,19 +96,22 @@ function HomeContent() {
     }
   }, [genderParam]);
 
-  const handleGenderChange = useCallback((newGender: Gender) => {
-    setGender(newGender);
-    // Update URL without reloading the page
-    const params = new URLSearchParams(searchParams?.toString() || '');
-    params.set('gender', newGender);
-    
-    // Preserve the new=true parameter if it exists
-    if (newParam === 'true' && !params.has('new')) {
-      params.set('new', 'true');
-    }
-    
-    router.push(`/?${params.toString()}`, { scroll: false });
-  }, [router, searchParams, newParam]);
+  const handleGenderChange = useCallback(
+    (newGender: Gender) => {
+      setGender(newGender);
+      // Update URL without reloading the page
+      const params = new URLSearchParams(searchParams?.toString() || '');
+      params.set('gender', newGender);
+
+      // Preserve the new=true parameter if it exists
+      if (newParam === 'true' && !params.has('new')) {
+        params.set('new', 'true');
+      }
+
+      router.push(`/?${params.toString()}`, { scroll: false });
+    },
+    [router, searchParams, newParam]
+  );
 
   const handleIntentionSelect = useCallback(
     (selectedIntention: ProgramIntention) => {
@@ -88,13 +122,43 @@ function HomeContent() {
   );
 
   // Show auth form if user is not logged in and not skipping auth
+  // OR if we have pending questionnaire data and user is not logged in
   useEffect(() => {
-    if (!user && !authLoading && !skipAuth) {
+    const hasPendingQuestionnaire = Boolean(pendingQuestionnaire);
+    const hasPendingQuestionnaireFlag =
+      typeof window !== 'undefined' &&
+      window.localStorage.getItem('hasPendingQuestionnaire') === 'true';
+
+    if (
+      // Show auth if there's pending questionnaire data (high priority)
+      (hasPendingQuestionnaire && !user) ||
+      // Also show auth if there's a flag in localStorage
+      (hasPendingQuestionnaireFlag && !user) ||
+      // Or show auth if user is not logged in and not explicitly skipping auth
+      (!user && !authLoading && !skipAuth)
+    ) {
       setShowAuthForm(true);
     } else {
       setShowAuthForm(false);
     }
-  }, [user, authLoading, skipAuth]);
+  }, [user, authLoading, skipAuth, pendingQuestionnaire, showAuthForm]);
+
+  // Clear the pendingQuestionnaire flag in localStorage when user logs in
+  useEffect(() => {
+    if (user && typeof window !== 'undefined') {
+      // If user is logged in, we can clear the flag since it's no longer needed
+      window.localStorage.removeItem('hasPendingQuestionnaire');
+    }
+  }, [user]);
+
+  // Reset intentionSelected whenever newParam is 'true' or URL params change
+  useEffect(() => {
+    // Check if we're on the create program page (new=true)
+    if (newParam === 'true') {
+      console.log('Resetting intention selection - new param detected');
+      setIntentionSelected(false);
+    }
+  }, [newParam, searchParams]); // searchParams helps detect any change to the URL params
 
   const isLoading = authLoading || userLoading;
 
@@ -106,30 +170,42 @@ function HomeContent() {
     return <ErrorDisplay error={authError} />;
   }
 
-  if (showAuthForm) {
-    return (
-      <div className="fixed inset-0 bg-gray-900/95 backdrop-blur-sm z-50 flex items-center justify-center">
-        <div className="max-w-lg w-full mx-4">
-          {pendingQuestionnaire ? (
-            <QuestionnaireAuthForm />
-          ) : (
-            <AuthForm onSkip={() => {
-              setSkipAuth(true);
-              setShowAuthForm(false);
-            }} />
-          )}
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="h-full">
-      <HumanViewer gender={gender} onGenderChange={handleGenderChange} />
+      {/* Only render HumanViewer when not showing IntentionQuestion and not showing QuestionnaireAuthForm */}
+      {!(newParam === 'true' && !intentionSelected) && 
+       !(showAuthForm && pendingQuestionnaire) && (
+        <HumanViewer 
+          gender={gender} 
+          onGenderChange={handleGenderChange}
+          shouldResetModel={shouldResetModel} 
+        />
+      )}
+      
+      {/* Conditionally overlay the auth form */}
+      {showAuthForm && (
+        <div className="fixed inset-0 bg-gray-900/95 backdrop-blur-sm z-50 flex items-center justify-center">
+          <div className="max-w-lg w-full mx-4">
+            {pendingQuestionnaire ? (
+              <QuestionnaireAuthForm />
+            ) : (
+              <AuthForm
+                onSkip={() => {
+                  setSkipAuth(true);
+                  setShowAuthForm(false);
+                }}
+              />
+            )}
+          </div>
+        </div>
+      )}
+      
       {newParam === 'true' && !intentionSelected && (
         <IntentionQuestion
-          onSelect={handleIntentionSelect}
-          onSkip={() => {}}
+          onSelect={(selectedIntention) => {
+            console.log('Intention selected:', selectedIntention);
+            handleIntentionSelect(selectedIntention);
+          }}
         />
       )}
     </div>

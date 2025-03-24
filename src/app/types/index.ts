@@ -67,6 +67,7 @@ export interface Question {
   generate?: boolean;
   asked?: boolean;
   diagnosis?: string;
+  programType?: ProgramType;
 }
 
 export interface DiagnosisAssistantResponse {

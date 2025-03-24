@@ -243,8 +243,10 @@ export default function MobileControls({
             snapPoint = contentHeight;
           }
           setTimeout(() => {
-            sheetRef.current.snapTo(({ maxHeight }) => snapPoint);
-          }, 200);
+            if (sheetRef.current.snapTo) {
+              sheetRef.current.snapTo(({ maxHeight }) => snapPoint);
+            }
+          }, intention === ProgramIntention.Exercise ? 1000 : 300);
         }
       } else if (
         selectedGroups.length > 0 &&
@@ -651,8 +653,8 @@ export default function MobileControls({
             getPartDisplayName={getPartDisplayName}
             resetChat={() => {
               if (intention === ProgramIntention.Exercise) {
-                isSelectingExerciseRef.current = true;
                 onReset(true);
+                resetChat();
               } else {
                 resetChat();
               }

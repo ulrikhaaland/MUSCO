@@ -20,11 +20,13 @@ import { useRouter } from 'next/navigation';
 interface HumanViewerProps {
   gender: Gender;
   onGenderChange?: (gender: Gender) => void;
+  shouldResetModel?: boolean;
 }
 
 export default function HumanViewer({
   gender,
   onGenderChange,
+  shouldResetModel = false,
 }: HumanViewerProps) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const {
@@ -84,6 +86,7 @@ export default function HumanViewer({
     initialCameraRef,
     previousSelectedPartGroupRef,
     isResettingRef,
+    resetModel,
   } = useHumanAPI({
     elementId: 'myViewer',
     initialGender: gender,
@@ -382,11 +385,11 @@ export default function HumanViewer({
     if (question.generate) {
       if (diagnosis) {
         diagnosis.followUpQuestions = [];
-        diagnosis.programType = ProgramType.Recovery;
+        diagnosis.programType = question.programType ?? ProgramType.Exercise;
       } else {
         const newDiagnosis: DiagnosisAssistantResponse = {
           diagnosis: 'No diagnosis, just an exercise program',
-          programType: ProgramType.Exercise,
+          programType: question.programType ?? ProgramType.Exercise,
           painfulAreas: [
             ...(selectedGroups[0]?.name ? [selectedGroups[0].name] : []),
             ...(selectedPart?.name ? [selectedPart.name] : []),
@@ -484,6 +487,13 @@ export default function HumanViewer({
     }
     return () => clearTimeout(timeout);
   }, [showLowerBackLabel]);
+
+  // Use effect to reset the model when shouldResetModel prop changes
+  useEffect(() => {
+    if (shouldResetModel && isReady && resetModel) {
+      resetModel();
+    }
+  }, [shouldResetModel, isReady, resetModel]);
 
   return (
     <div className="flex flex-col md:flex-row relative h-screen w-screen overflow-hidden">

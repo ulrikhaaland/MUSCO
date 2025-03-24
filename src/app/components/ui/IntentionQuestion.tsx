@@ -8,12 +8,10 @@ import { AuthForm } from '../auth/AuthForm';
 
 interface IntentionQuestionProps {
   onSelect: (intention: ProgramIntention) => void;
-  onSkip: () => void;
 }
 
 export function IntentionQuestion({
   onSelect,
-  onSkip,
 }: IntentionQuestionProps) {
   const { user } = useAuth();
   const { skipAuth, setSkipAuth } = useApp();
@@ -24,7 +22,6 @@ export function IntentionQuestion({
 
   const handleSkipAuth = () => {
     setSkipAuth(true);
-    onSkip();
   };
 
   return (
