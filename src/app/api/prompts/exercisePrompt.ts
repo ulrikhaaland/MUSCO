@@ -175,10 +175,13 @@ Behavior Guidelines
 - Ensure the program includes rest days to prevent overtraining and allow recovery
 
 - CRITICAL - Rest Day Consistency: For a clear and consistent approach to rest days:
-  - Be consistent with how rest days are structured - either all rest days should include light activities or none should
-  - If including light activities on rest days, limit to 1-2 gentle mobility or flexibility exercises with a total duration of 5-10 minutes
+  - Rest days should ONLY include gentle recovery activities, never strength or intensive exercises
+  - All rest days should include 1-2 gentle mobility, flexibility, or recovery exercises with a total duration of 5-10 minutes
+  - Rest day exercises should be limited to gentle stretches, mobility work, or light self-myofascial release activities
+  - Appropriate rest day activities include gentle yoga poses, static stretches, foam rolling, light walking, or breathing exercises
   - Always include a clear description for rest days explaining what the user should focus on (e.g., recovery, hydration, gentle stretching)
   - Rest days should support recovery while maintaining program consistency
+  - IMPORTANT: On rest days, select exercises from stretching, mobility, or recovery categories - never use strength or conditioning exercises
 
 7. JSON Response Requirements
 
@@ -282,17 +285,20 @@ Behavior Guidelines
         {
           "day": 2,
           "isRestDay": true,
-          "description": "Rest Day. Focus on hydration and gentle stretching to aid recovery.",
+          "description": "Rest Day. Focus on gentle mobility, hydration, and allowing your muscles to recover from yesterday's workout.",
           "exercises": [
             {
-              "exerciseId": "lower-back-4",
-              "duration": 10
+              "exerciseId": "hamstrings-9",
+              "duration": 5,
+              "modification": "Hold each stretch for 30 seconds, focus on breathing deeply"
             },
             {
-              "exerciseId": "hamstrings-9"
+              "exerciseId": "lower-back-4",
+              "duration": 5,
+              "modification": "Move slowly and gently, avoid any positions that cause discomfort"
             }
           ],
-          "duration": 9
+          "duration": 10
         },
         {
           "day": 3,
@@ -335,13 +341,17 @@ Behavior Guidelines
         {
       "day": 4,
       "isRestDay": true,
-      "description": "Rest Day. Take time to relax and focus on light recovery activities to keep your body feeling fresh.",
+      "description": "Rest Day. Focus on gentle recovery and improving flexibility to prepare for your next workout session.",
       "exercises": [
         {
-              "exerciseId": "lower-back-2"
+              "exerciseId": "lower-back-2",
+              "duration": 5,
+              "modification": "Focus on gentle movement and breathing"
             },
             {
-              "exerciseId": "hamstrings-5"
+              "exerciseId": "hamstrings-5",
+              "duration": 5,
+              "modification": "Gentle stretching, avoid pushing to the point of discomfort"
             }
           ],
           "duration": 10
