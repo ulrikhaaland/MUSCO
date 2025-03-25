@@ -389,7 +389,10 @@ export default function HumanViewer({
       } else {
         const programType = question.programType ?? ProgramType.Exercise;
         const newDiagnosis: DiagnosisAssistantResponse = {
-          diagnosis: 'No diagnosis, just an exercise program',
+          diagnosis:
+            question.programType === ProgramType.Exercise
+              ? 'No diagnosis, just an exercise program'
+              : 'No diagnosis, just a recovery program',
           programType: programType,
           painfulAreas:
             programType === ProgramType.Recovery
@@ -412,8 +415,11 @@ export default function HumanViewer({
 
   const handleAreasSelected = () => {
     const newDiagnosis: DiagnosisAssistantResponse = {
-      diagnosis: 'No diagnosis, just an exercise program',
-      programType: ProgramType.Exercise,
+      diagnosis:
+        diagnosis?.programType === ProgramType.Exercise
+          ? 'No diagnosis, just an exercise program'
+          : 'No diagnosis, just a recovery program',
+      programType: diagnosis?.programType ?? ProgramType.Exercise,
       painfulAreas: [
         ...selectedPainfulAreasRef.current.map((group) => group.name),
       ],
