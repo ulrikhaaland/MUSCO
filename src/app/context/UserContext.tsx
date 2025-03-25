@@ -8,7 +8,7 @@ import {
   ReactNode,
   useRef,
 } from 'react';
-import { ExerciseQuestionnaireAnswers } from '@/app/shared/types';
+import { ExerciseQuestionnaireAnswers, ProgramType } from '@/app/shared/types';
 import { DiagnosisAssistantResponse } from '@/app/types';
 import { useAuth } from './AuthContext';
 import { db } from '@/app/firebase/config';
@@ -30,7 +30,7 @@ import {
   submitQuestionnaire,
   storePendingQuestionnaire,
   getPendingQuestionnaire,
-  deletePendingQuestionnaire
+  deletePendingQuestionnaire,
 } from '@/app/services/questionnaire';
 import { updateActiveProgramStatus } from '@/app/services/program';
 import { useRouter } from 'next/navigation';
@@ -93,10 +93,6 @@ export function UserProvider({ children }: { children: ReactNode }) {
   // Set up real-time listener for program status changes and latest program
   useEffect(() => {
     if (!user) {
-      // Set loading to false if there's no user
-      if (isLoading) {
-        setIsLoading(false);
-      }
       return;
     }
 
@@ -148,11 +144,13 @@ export function UserProvider({ children }: { children: ReactNode }) {
           const programSnapshot = await getDocs(programQ);
 
           if (!programSnapshot.empty) {
-            const exercisePrograms = await Promise.all(programSnapshot.docs.map(async (programDoc) => {
-              const program = programDoc.data() as ExerciseProgram;
-              await enrichExercisesWithFullData(program);
-              return program;
-            }));
+            const exercisePrograms = await Promise.all(
+              programSnapshot.docs.map(async (programDoc) => {
+                const program = programDoc.data() as ExerciseProgram;
+                await enrichExercisesWithFullData(program);
+                return program;
+              })
+            );
 
             const updatedAt = data.updatedAt
               ? new Date(data.updatedAt)
@@ -184,36 +182,48 @@ export function UserProvider({ children }: { children: ReactNode }) {
       if (mostRecentProgram && mostRecentStatus !== ProgramStatus.Generating) {
         // Set the most recent program as the active one
         setActiveProgram(mostRecentProgram);
-        
+
         // Log program info for debugging
         console.log('=== DEBUG: mostRecentProgram ===');
-        console.log('Number of programs in collection:', mostRecentProgram.programs.length);
+        console.log(
+          'Number of programs in collection:',
+          mostRecentProgram.programs.length
+        );
         mostRecentProgram.programs.forEach((p, i) => {
-          console.log(`Program ${i+1} weeks:`, p.program?.length || 0);
+          console.log(`Program ${i + 1} weeks:`, p.program?.length || 0);
           if (p.program) {
-            p.program.forEach((w, j) => console.log(`Program ${i+1} Week ${j+1}:`, w.week));
+            p.program.forEach((w, j) =>
+              console.log(`Program ${i + 1} Week ${j + 1}:`, w.week)
+            );
           }
         });
-        
+
         // Use the first program as the base and combine all program weeks
-        const allWeeks = mostRecentProgram.programs.flatMap(p => p.program || []);
+        const allWeeks = mostRecentProgram.programs.flatMap(
+          (p) => p.program || []
+        );
         const renumberedWeeks = allWeeks.map((weekData, i) => ({
           ...weekData,
-          week: i + 1 // Renumber weeks sequentially starting from 1
+          week: i + 1, // Renumber weeks sequentially starting from 1
         }));
-        
+
         const combinedProgram = {
           ...mostRecentProgram.programs[0], // Get basics from first program
           program: renumberedWeeks,
-          docId: mostRecentProgram.docId
+          docId: mostRecentProgram.docId,
         };
-        
+
         console.log('=== DEBUG: combinedProgram ===');
-        console.log('Total weeks in combined program:', combinedProgram.program?.length || 0);
+        console.log(
+          'Total weeks in combined program:',
+          combinedProgram.program?.length || 0
+        );
         if (combinedProgram.program) {
-          combinedProgram.program.forEach((w, i) => console.log(`Combined Week ${i+1}:`, w.week));
+          combinedProgram.program.forEach((w, i) =>
+            console.log(`Combined Week ${i + 1}:`, w.week)
+          );
         }
-        
+
         setProgram(combinedProgram);
         setAnswers(mostRecentProgram.questionnaire);
 
@@ -288,64 +298,72 @@ export function UserProvider({ children }: { children: ReactNode }) {
         const q = query(programsRef, orderBy('createdAt', 'desc'), limit(1));
         const programsSnapshot = await getDocs(q);
 
-        if (!programsSnapshot.empty && isSubscribed) {
-          const programDoc = programsSnapshot.docs[0];
-          const programData = programDoc.data();
-          setAnswers(programData.questionnaire);
-          setProgramStatus(programData.status);
+        // At this point, we've completed the program fetching process, so we can set isLoading to false
+        // but only if we're still subscribed
+        if (isSubscribed) {
+          if (!programsSnapshot.empty) {
+            const programDoc = programsSnapshot.docs[0];
+            const programData = programDoc.data();
+            setAnswers(programData.questionnaire);
+            setProgramStatus(programData.status);
 
-          // Only fetch the program if status is Done
-          if (programData.status === ProgramStatus.Done) {
-            const programsCollectionRef = collection(
-              db,
-              `users/${user.uid}/programs/${programDoc.id}/programs`
-            );
-            // Get all program documents in the subcollection
-            const allProgramsQuery = query(
-              programsCollectionRef,
-              orderBy('createdAt', 'desc')
-            );
-            const allProgramsSnapshot = await getDocs(allProgramsQuery);
-
-            if (!allProgramsSnapshot.empty) {
-              // Get all program weeks and enrich them
-              const programWeeks = await Promise.all(
-                allProgramsSnapshot.docs.map(async (doc) => {
-                  const program = doc.data() as ExerciseProgram;
-                  await enrichExercisesWithFullData(program);
-                  return program;
-                })
+            // Only fetch the program if status is Done
+            if (programData.status === ProgramStatus.Done) {
+              const programsCollectionRef = collection(
+                db,
+                `users/${user.uid}/programs/${programDoc.id}/programs`
               );
-              
-              // Use the first program as the base and combine all program weeks
-              const allWeeks = programWeeks.flatMap(p => p.program || []);
-              const renumberedWeeks = allWeeks.map((weekData, i) => ({
-                ...weekData,
-                week: i + 1 // Renumber weeks sequentially starting from 1
-              }));
-              
-              const combinedProgram = {
-                ...programWeeks[0],
-                program: renumberedWeeks,
-                docId: programDoc.id
-              };
-              
-              setProgram(combinedProgram);
+              // Get all program documents in the subcollection
+              const allProgramsQuery = query(
+                programsCollectionRef,
+                orderBy('createdAt', 'desc')
+              );
+              const allProgramsSnapshot = await getDocs(allProgramsQuery);
+
+              if (!allProgramsSnapshot.empty) {
+                // Get all program weeks and enrich them
+                const programWeeks = await Promise.all(
+                  allProgramsSnapshot.docs.map(async (doc) => {
+                    const program = doc.data() as ExerciseProgram;
+                    await enrichExercisesWithFullData(program);
+                    return program;
+                  })
+                );
+
+                // Use the first program as the base and combine all program weeks
+                const allWeeks = programWeeks.flatMap((p) => p.program || []);
+                const renumberedWeeks = allWeeks.map((weekData, i) => ({
+                  ...weekData,
+                  week: i + 1, // Renumber weeks sequentially starting from 1
+                }));
+
+                const combinedProgram = {
+                  ...programWeeks[0],
+                  program: renumberedWeeks,
+                  docId: programDoc.id,
+                };
+
+                setProgram(combinedProgram);
+              } else {
+                setProgram(null);
+              }
             } else {
               setProgram(null);
             }
           } else {
+            setAnswers(null);
+            setProgramStatus(null);
             setProgram(null);
           }
-        } else if (isSubscribed) {
-          setAnswers(null);
-          setProgramStatus(null);
-          setProgram(null);
+
+          // Only set isLoading to false after we've completed all program fetching
+          setIsLoading(false);
         }
       } catch (error) {
         console.error('Error fetching user data:', error);
-      } finally {
-        setIsLoading(false);
+        if (isSubscribed) {
+          setIsLoading(false);
+        }
       }
     }
 
@@ -359,35 +377,48 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
   // On initial load, check localStorage for pending questionnaire flag
   useEffect(() => {
-    const hasPendingQuestionnaireFlag = window.localStorage.getItem('hasPendingQuestionnaire') === 'true';
-    console.log('Checking for pending questionnaire flag:', hasPendingQuestionnaireFlag);
-    
+    const hasPendingQuestionnaireFlag =
+      window.localStorage.getItem('hasPendingQuestionnaire') === 'true';
+    console.log(
+      'Checking for pending questionnaire flag:',
+      hasPendingQuestionnaireFlag
+    );
+
     if (hasPendingQuestionnaireFlag && !pendingQuestionnaire) {
       // Extract from session storage if available
-      const pendingDiagnosisJSON = window.sessionStorage.getItem('pendingDiagnosis');
-      const pendingAnswersJSON = window.sessionStorage.getItem('pendingAnswers');
-      
+      const pendingDiagnosisJSON =
+        window.sessionStorage.getItem('pendingDiagnosis');
+      const pendingAnswersJSON =
+        window.sessionStorage.getItem('pendingAnswers');
+
       if (pendingDiagnosisJSON && pendingAnswersJSON) {
         try {
-          const diagnosis = JSON.parse(pendingDiagnosisJSON) as DiagnosisAssistantResponse;
-          const answers = JSON.parse(pendingAnswersJSON) as ExerciseQuestionnaireAnswers;
-          
+          const diagnosis = JSON.parse(
+            pendingDiagnosisJSON
+          ) as DiagnosisAssistantResponse;
+          const answers = JSON.parse(
+            pendingAnswersJSON
+          ) as ExerciseQuestionnaireAnswers;
+
           // Set the actual data from session storage
           setPendingQuestionnaire({ diagnosis, answers });
         } catch (e) {
-          console.error('Error parsing pending questionnaire from session storage:', e);
-          
+          console.error(
+            'Error parsing pending questionnaire from session storage:',
+            e
+          );
+
           // Set an empty placeholder so the UI shows login requirement
           setPendingQuestionnaire({
             diagnosis: {} as DiagnosisAssistantResponse,
-            answers: {} as ExerciseQuestionnaireAnswers
+            answers: {} as ExerciseQuestionnaireAnswers,
           });
         }
       } else {
         // Set an empty placeholder so the UI shows login requirement
         setPendingQuestionnaire({
           diagnosis: {} as DiagnosisAssistantResponse,
-          answers: {} as ExerciseQuestionnaireAnswers
+          answers: {} as ExerciseQuestionnaireAnswers,
         });
       }
     }
@@ -407,33 +438,45 @@ export function UserProvider({ children }: { children: ReactNode }) {
     if (!user) {
       // Store in local state
       setPendingQuestionnaire({ diagnosis, answers });
-      
+
       // Get email from answers if provided, or from any input field
       const email = window.localStorage.getItem('userEmail');
-      
+
       if (email) {
         try {
           // Store in Firebase using the email
           await storePendingQuestionnaire(email, diagnosis, answers);
           console.log('Stored pending questionnaire for email:', email);
-          
+
           // Set flag in localStorage to indicate pending questionnaire
           window.localStorage.setItem('hasPendingQuestionnaire', 'true');
           window.localStorage.setItem('pendingQuestionnaireEmail', email);
-          
+
           // Store in session storage as backup
-          window.sessionStorage.setItem('pendingDiagnosis', JSON.stringify(diagnosis));
-          window.sessionStorage.setItem('pendingAnswers', JSON.stringify(answers));
+          window.sessionStorage.setItem(
+            'pendingDiagnosis',
+            JSON.stringify(diagnosis)
+          );
+          window.sessionStorage.setItem(
+            'pendingAnswers',
+            JSON.stringify(answers)
+          );
         } catch (error) {
           console.error('Error storing pending questionnaire:', error);
         }
       } else {
         // Store in session storage as backup
-        window.sessionStorage.setItem('pendingDiagnosis', JSON.stringify(diagnosis));
-        window.sessionStorage.setItem('pendingAnswers', JSON.stringify(answers));
+        window.sessionStorage.setItem(
+          'pendingDiagnosis',
+          JSON.stringify(diagnosis)
+        );
+        window.sessionStorage.setItem(
+          'pendingAnswers',
+          JSON.stringify(answers)
+        );
         window.localStorage.setItem('hasPendingQuestionnaire', 'true');
       }
-      
+
       return { requiresAuth: true };
     }
 
@@ -463,6 +506,13 @@ export function UserProvider({ children }: { children: ReactNode }) {
         router.push('/program');
       }, 10);
 
+      //remove neck from answers.targetAreas
+      if (diagnosis.programType === ProgramType.Exercise) {
+        answers.targetAreas = answers.targetAreas.filter(
+          (area) => area !== 'Neck'
+        );
+      }
+
       // Submit questionnaire and generate program
       const programId = await submitQuestionnaire(user.uid, diagnosis, answers);
 
@@ -479,52 +529,68 @@ export function UserProvider({ children }: { children: ReactNode }) {
   // Effect to handle successful login with pending questionnaire
   useEffect(() => {
     if (user && !authLoading) {
-      const hasPendingQuestionnaireFlag = window.localStorage.getItem('hasPendingQuestionnaire') === 'true';
-      const pendingEmail = window.localStorage.getItem('pendingQuestionnaireEmail') || user.email;
-      
+      const hasPendingQuestionnaireFlag =
+        window.localStorage.getItem('hasPendingQuestionnaire') === 'true';
+      const pendingEmail =
+        window.localStorage.getItem('pendingQuestionnaireEmail') || user.email;
+
       const handlePendingQuestionnaire = async () => {
         // Don't process if another submission is in progress
         if (submissionInProgressRef.current) {
-          console.log('Another submission is already in progress, skipping automatic submission');
+          console.log(
+            'Another submission is already in progress, skipping automatic submission'
+          );
           return;
         }
 
         try {
           // First check for pending questionnaire in state
-          if (pendingQuestionnaire && 
-              pendingQuestionnaire.diagnosis && 
-              Object.keys(pendingQuestionnaire.diagnosis).length > 0) {
+          if (
+            pendingQuestionnaire &&
+            pendingQuestionnaire.diagnosis &&
+            Object.keys(pendingQuestionnaire.diagnosis).length > 0
+          ) {
             // Submit the questionnaire directly
             await onQuestionnaireSubmit(
               pendingQuestionnaire.diagnosis,
               pendingQuestionnaire.answers
             );
-          } 
+          }
           // Then try to get it from Firebase using email
           else if (pendingEmail) {
-            console.log('Checking for pending questionnaire for email:', pendingEmail);
-            const storedQuestionnaire = await getPendingQuestionnaire(pendingEmail);
-            
+            console.log(
+              'Checking for pending questionnaire for email:',
+              pendingEmail
+            );
+            const storedQuestionnaire = await getPendingQuestionnaire(
+              pendingEmail
+            );
+
             if (storedQuestionnaire) {
               console.log('Found pending questionnaire in Firebase');
               await onQuestionnaireSubmit(
                 storedQuestionnaire.diagnosis,
                 storedQuestionnaire.answers
               );
-              
+
               // Delete the pending questionnaire after submission
               await deletePendingQuestionnaire(pendingEmail);
             } else {
-              console.log('No pending questionnaire found for email:', pendingEmail);
+              console.log(
+                'No pending questionnaire found for email:',
+                pendingEmail
+              );
             }
           }
         } catch (error) {
           console.error('Error processing pending questionnaire:', error);
         }
       };
-      
-      if (hasPendingQuestionnaireFlag || 
-          (pendingQuestionnaire && Object.keys(pendingQuestionnaire).length > 0)) {
+
+      if (
+        hasPendingQuestionnaireFlag ||
+        (pendingQuestionnaire && Object.keys(pendingQuestionnaire).length > 0)
+      ) {
         handlePendingQuestionnaire();
       }
     }
@@ -536,35 +602,47 @@ export function UserProvider({ children }: { children: ReactNode }) {
     // If user has program already, select it
     if (userPrograms && userPrograms.length > index) {
       setActiveProgram(userPrograms[index]);
-      
+
       // Log program info for debugging
       console.log('=== DEBUG: Selected userProgram ===');
-      console.log('Number of programs in collection:', userPrograms[index].programs.length);
+      console.log(
+        'Number of programs in collection:',
+        userPrograms[index].programs.length
+      );
       userPrograms[index].programs.forEach((p, i) => {
-        console.log(`Program ${i+1} weeks:`, p.program?.length || 0);
+        console.log(`Program ${i + 1} weeks:`, p.program?.length || 0);
         if (p.program) {
-          p.program.forEach((w, j) => console.log(`Program ${i+1} Week ${j+1}:`, w.week));
+          p.program.forEach((w, j) =>
+            console.log(`Program ${i + 1} Week ${j + 1}:`, w.week)
+          );
         }
       });
-      
-      const allWeeks = userPrograms[index].programs.flatMap(p => p.program || []);
+
+      const allWeeks = userPrograms[index].programs.flatMap(
+        (p) => p.program || []
+      );
       const renumberedWeeks = allWeeks.map((weekData, i) => ({
         ...weekData,
-        week: i + 1 // Renumber weeks sequentially starting from 1
+        week: i + 1, // Renumber weeks sequentially starting from 1
       }));
-      
+
       const combinedProgram = {
         ...userPrograms[index].programs[0],
         program: renumberedWeeks,
         docId: userPrograms[index].docId,
       };
-      
+
       console.log('=== DEBUG: combinedProgram in selectProgram ===');
-      console.log('Total weeks in combined program:', combinedProgram.program?.length || 0);
+      console.log(
+        'Total weeks in combined program:',
+        combinedProgram.program?.length || 0
+      );
       if (combinedProgram.program) {
-        combinedProgram.program.forEach((w, i) => console.log(`Combined Week ${i+1}:`, w.week));
+        combinedProgram.program.forEach((w, i) =>
+          console.log(`Combined Week ${i + 1}:`, w.week)
+        );
       }
-      
+
       setProgram(combinedProgram);
       setAnswers(userPrograms[index].questionnaire);
     }
@@ -613,20 +691,22 @@ export function UserProvider({ children }: { children: ReactNode }) {
           active: true,
         };
         setActiveProgram(updatedSelectedProgram);
-        
+
         // Combine all program weeks into one program object and renumber them
-        const allWeeks = updatedSelectedProgram.programs.flatMap(p => p.program || []);
+        const allWeeks = updatedSelectedProgram.programs.flatMap(
+          (p) => p.program || []
+        );
         const renumberedWeeks = allWeeks.map((weekData, i) => ({
           ...weekData,
-          week: i + 1 // Renumber weeks sequentially starting from 1
+          week: i + 1, // Renumber weeks sequentially starting from 1
         }));
-        
+
         const combinedProgram = {
           ...updatedSelectedProgram.programs[0],
           program: renumberedWeeks,
-          docId: updatedSelectedProgram.docId
+          docId: updatedSelectedProgram.docId,
         };
-        
+
         setProgram(combinedProgram);
         setAnswers(updatedSelectedProgram.questionnaire);
         setProgramStatus(ProgramStatus.Done);

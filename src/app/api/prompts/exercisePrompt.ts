@@ -45,7 +45,36 @@ Behavior Guidelines
 
 - CRITICAL: You MUST select exercises EXCLUSIVELY from the exercise JSON files in your file repository. Do not create your own exercises.
 - For each exercise you include in the program, you MUST include its exercise ID in the format provided in the JSON files.
-- Exercise IDs follow a consistent structure: [bodypart]-[number] (e.g., "abs-1", "biceps-24", "shoulders-8"). Always use the exact ID as found in the files.
+- CRITICAL: Exercise IDs must follow the exact format for each body area. ONLY use these formats:
+  
+  • Back exercises:
+    - "upper-back-[number]" (from upper_back.json)
+    - "lower-back-[number]" (from lower_back.json)
+    - "traps-[number]" (from traps.json)
+    - "lats-[number]" (from lats.json)
+  
+  • Arm exercises:
+    - "biceps-[number]" (from biceps.json)
+    - "triceps-[number]" (from triceps.json)
+    - "forearms-[number]" (from forearms.json)
+  
+  • Core exercises:
+    - "abs-[number]" (from abs.json)
+    - "obliques-[number]" (from obliques.json)
+  
+  • Chest exercises:
+    - "chest-[number]" (from chest.json)
+  
+  • Shoulder exercises:
+    - "shoulders-[number]" (from shoulders.json)
+  
+  • Leg exercises:
+    - "quads-[number]" (from quads.json)
+    - "hamstrings-[number]" (from hamstrings.json)
+    - "glutes-[number]" (from glutes.json)
+    - "calves-[number]" (from calves.json)
+
+- IMPORTANT: DO NOT use generic IDs like "back-1", "arms-1" - these are invalid formats. Always use the specific muscle group as shown above.
 
 - IMPORTANT: Prioritize common and popular exercises over uncommon ones:
   - Whenever possible, select exercises with "high" or "medium" popularity ratings
@@ -115,9 +144,17 @@ Behavior Guidelines
 6. Structure the Program
 
 - Provide a structured one-week program that contains daily workouts or rest sessions
+- IMPORTANT: Use the "This Year's Planned Exercise Frequency" value to determine how many exercise days to include per week:
+  • "1 day per week" = 1 active workout day, 6 rest days
+  • "2 days per week" = 2 active workout days, 5 rest days
+  • "3 days per week" = 3 active workout days, 4 rest days
+  • "4 days per week" = 4 active workout days, 3 rest days
+  • "5 days per week" = 5 active workout days, 2 rest days
+  • "6 days per week" = 6 active workout days, 1 rest day
+  • "Every day" = 7 active workout days, 0 rest days
 - Use \`isRestDay: true\` for recovery days when no exercises should be performed
 - Use \`isRestDay: false\` for active workout days
-- Ensure the user gets approximately 2-3 rest days per week, distributed appropriately
+- Distribute rest days appropriately throughout the week to allow for recovery
 - Always make sure the current day (provided in the input) is an active workout day (\`isRestDay: false\`)
 - IMPORTANT: DO NOT mention the current day in any descriptions or explanations. Do not include text like "start here if you are on day X" or "Day X is an active workout day".
 - Clearly specify the activities for each day, ensuring a balance between workout intensity and rest
@@ -212,29 +249,32 @@ Behavior Guidelines
           "description": "This workout focuses on strength and mobility, targeting the full body with emphasis on controlled movement.",
           "exercises": [
             {
-              "exerciseId": "jumping-jacks-1",
+              "exerciseId": "shoulders-1",
               "warmup": true
             },
             {
-              "exerciseId": "deadlifts-5",
+              "exerciseId": "glutes-5",
               "modification": "Use lighter weights or a resistance band if needed."
             },
             {
-              "exerciseId": "bulgarian-split-squats-3"
+              "exerciseId": "quads-3"
             },
             {
-              "exerciseId": "weighted-step-ups-8",
+              "exerciseId": "hamstrings-8",
               "modification": "Use body weight only if balance is a concern."
             },
             {
-              "exerciseId": "chest-press-12"
+              "exerciseId": "chest-12"
             },
             {
-              "exerciseId": "front-raises-7"
+              "exerciseId": "shoulders-7"
             },
             {
-              "exerciseId": "plank-rows-22",
-              "modification": "Perform the plank on knees if full plank is too challenging."
+              "exerciseId": "upper-back-2",
+              "modification": "Perform on knees if full position is too challenging."
+            },
+            {
+              "exerciseId": "abs-3"
             }
           ],
           "duration": 48
@@ -245,11 +285,11 @@ Behavior Guidelines
           "description": "Rest Day. Focus on hydration and gentle stretching to aid recovery.",
           "exercises": [
             {
-              "exerciseId": "foam-rolling-4",
+              "exerciseId": "lower-back-4",
               "duration": 10
             },
             {
-              "exerciseId": "cat-cow-stretch-9"
+              "exerciseId": "hamstrings-9"
             }
           ],
           "duration": 9
@@ -260,31 +300,34 @@ Behavior Guidelines
           "description": "This workout includes alternative strength and mobility exercises for variety and to target different muscle groups.",
           "exercises": [
             {
-              "exerciseId": "dynamic-stretches-3",
+              "exerciseId": "shoulders-3",
               "warmup": true
             },
             {
-              "exerciseId": "back-squats-2",
+              "exerciseId": "quads-2",
               "modification": "Use a lighter barbell or perform bodyweight squats as needed."
             },
             {
-              "exerciseId": "lateral-lunges-7",
+              "exerciseId": "glutes-7",
               "modification": "Limit depth or range of motion if balance is an issue."
             },
             {
-              "exerciseId": "pull-ups-11",
+              "exerciseId": "lats-11",
               "modification": "Use an assisted pull-up machine or resistance bands for support."
             },
             {
-              "exerciseId": "push-ups-5",
+              "exerciseId": "chest-5",
               "modification": "Perform knee push-ups or incline push-ups if needed."
             },
             {
-              "exerciseId": "dumbbell-shrugs-4"
+              "exerciseId": "traps-4"
             },
             {
-              "exerciseId": "russian-twists-9",
+              "exerciseId": "obliques-9",
               "precaution": "Avoid if experiencing lower back pain"
+            },
+            {
+              "exerciseId": "abs-6"
             }
           ],
           "duration": 51
@@ -295,10 +338,10 @@ Behavior Guidelines
       "description": "Rest Day. Take time to relax and focus on light recovery activities to keep your body feeling fresh.",
       "exercises": [
         {
-              "exerciseId": "childs-pose-2"
+              "exerciseId": "lower-back-2"
             },
             {
-              "exerciseId": "seated-forward-fold-5"
+              "exerciseId": "hamstrings-5"
             }
           ],
           "duration": 10
@@ -323,4 +366,12 @@ Behavior Guidelines
   • For 30-45 minute workouts, confirm you have 6-8 exercises
   • For 15-30 minute workouts, confirm you have 4-6 exercises
   • For 60+ minute workouts, confirm you have 10+ exercises
-  • If any day doesn't meet these requirements, add more appropriate exercises before submitting your response`;
+  • If any day doesn't meet these requirements, add more appropriate exercises before submitting your response
+
+9. NO CITATIONS OR REFERENCES
+
+- CRITICAL: Do NOT include any citations, markdown-style links, or references in any part of your response
+- Do NOT include text like "citeturn0file1" or any other citation markers
+- All descriptions, exercise names, and instructions should be plain text only
+- When referencing exercises, simply use their names without citations or references
+- This applies to all fields, especially the "description" field for workout days`;

@@ -2,10 +2,7 @@ import OpenAI from 'openai';
 import { ChatPayload, DiagnosisAssistantResponse } from '../../types';
 import { ExerciseQuestionnaireAnswers, ProgramType } from '@/app/shared/types';
 import { adminDb } from '@/app/firebase/admin';
-import {
-  ProgramStatus,
-  ExerciseProgram,
-} from '@/app/types/program';
+import { ProgramStatus, ExerciseProgram } from '@/app/types/program';
 import { recoverySystemPrompt } from '../prompts/recoveryPrompt';
 
 // Initialize OpenAI client
@@ -127,8 +124,6 @@ export async function getMessages(threadId: string) {
     throw new Error('Failed to get messages');
   }
 }
-
-
 
 export async function generateFollowUpQuestions(context: {
   messages: { role: string; content: string }[];
@@ -258,7 +253,7 @@ export async function generateExerciseProgram(context: {
         userInfo: context.userInfo,
         currentDay: new Date().getDay(),
         previousProgram: context.previousProgram,
-        isFollowUp: context.isFollowUp
+        isFollowUp: context.isFollowUp,
       }),
       selectedBodyGroupName: '', // Not needed for exercise program
       bodyPartsInSelectedGroup: [], // Not needed for exercise program
@@ -312,13 +307,13 @@ export async function generateExerciseProgram(context: {
             .collection('users')
             .doc(context.userId)
             .collection('programs');
-  
+
           // Query all programs with the same type
           const sameTypeProgramsSnapshot = await userProgramsRef
             .where('type', '==', programType)
             .where('active', '==', true)
             .get();
-  
+
           // Batch update to set all of them to inactive
           if (!sameTypeProgramsSnapshot.empty) {
             const batch = adminDb.batch();
@@ -331,6 +326,18 @@ export async function generateExerciseProgram(context: {
             );
           }
         }
+
+        // Create a new document in the programs subcollection
+        await adminDb
+          .collection('users')
+          .doc(context.userId)
+          .collection('programs')
+          .doc(context.programId)
+          .collection('programs')
+          .add({
+            ...program,
+            createdAt: new Date().toISOString(),
+          });
 
         // Update the main program document status
         // For follow-ups, don't modify the active status
@@ -346,18 +353,6 @@ export async function generateExerciseProgram(context: {
             active: true, // Set the new program as active
           });
         }
-
-        // Create a new document in the programs subcollection
-        await adminDb
-          .collection('users')
-          .doc(context.userId)
-          .collection('programs')
-          .doc(context.programId)
-          .collection('programs')
-          .add({
-            ...program,
-            createdAt: new Date().toISOString(),
-          });
 
         console.log('Successfully updated program document and set as active');
       } catch (error) {

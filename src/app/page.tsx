@@ -77,6 +77,8 @@ function HomeContent() {
       ) {
         router.push('/program');
       }
+      // asd
+      
     }
   }, [
     user,

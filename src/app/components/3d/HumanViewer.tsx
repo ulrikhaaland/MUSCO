@@ -438,9 +438,6 @@ export default function HumanViewer({
   ) => {
     diagnosis.timeFrame = '1 week';
 
-    //remove neck from answers.targetAreas
-    answers.targetAreas = answers.targetAreas.filter((area) => area !== 'neck');
-
     try {
       const result = await onQuestionnaireSubmit(diagnosis, answers);
 

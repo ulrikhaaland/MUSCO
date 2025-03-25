@@ -1,10 +1,23 @@
-import { doc, getDoc, deleteDoc, addDoc, collection, setDoc } from 'firebase/firestore';
+import {
+  doc,
+  getDoc,
+  deleteDoc,
+  addDoc,
+  collection,
+  setDoc,
+} from 'firebase/firestore';
 import { db } from '../firebase/config';
 import { DiagnosisAssistantResponse } from '../types';
 import { ExerciseQuestionnaireAnswers } from '../shared/types';
 import { ProgramStatus } from '../types/program';
 
-async function generateProgram(userId: string, programId: string, diagnosis: DiagnosisAssistantResponse, answers: ExerciseQuestionnaireAnswers, assistantId?: string) {
+async function generateProgram(
+  userId: string,
+  programId: string,
+  diagnosis: DiagnosisAssistantResponse,
+  answers: ExerciseQuestionnaireAnswers,
+  assistantId?: string
+) {
   try {
     const response = await fetch('/api/assistant', {
       method: 'POST',
@@ -51,22 +64,22 @@ export async function submitQuestionnaire(
     type: diagnosis.programType || 'exercise',
     active: true,
   });
-  
+
   if (onProgramDocAdded) {
     onProgramDocAdded();
   }
 
   // Start program generation
   try {
-    await generateProgram(userId, programDoc.id, diagnosis, answers, assistantId);
+    await generateProgram(
+      userId,
+      programDoc.id,
+      diagnosis,
+      answers,
+      assistantId
+    );
   } catch (error) {
     console.error('Error starting program generation:', error);
-    // Update status to error if generation fails to start
-    await setDoc(doc(db, `users/${userId}/programs/${programDoc.id}`), {
-      status: ProgramStatus.Error,
-      updatedAt: new Date().toISOString(),
-    }, { merge: true });
-    throw error;
   }
 
   return programDoc.id;
@@ -75,7 +88,7 @@ export async function submitQuestionnaire(
 export async function getPendingQuestionnaire(email: string) {
   const pendingDocRef = doc(db, 'pendingQuestionnaires', email.toLowerCase());
   const pendingDoc = await getDoc(pendingDocRef);
-  
+
   if (!pendingDoc.exists()) {
     return null;
   }
@@ -100,4 +113,4 @@ export async function storePendingQuestionnaire(
     createdAt: new Date().toISOString(),
     email: email.toLowerCase(),
   });
-} 
+}
