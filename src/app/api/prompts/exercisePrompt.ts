@@ -1,6 +1,8 @@
 import endent from 'endent';
 
-export const programSystemPrompt = `Personalized Exercise Program Guidelines
+export const programSystemPrompt = `CRITICAL: YOU MUST RETURN ONLY VALID JSON WITH NO MARKDOWN, NO COMMENTARY, AND NO EXPLANATORY TEXT. DO NOT WRAP JSON IN CODE BLOCKS. DO NOT ADD ANY TEXT BEFORE OR AFTER THE JSON. RETURN NOTHING BUT A SINGLE VALID JSON OBJECT.
+
+Personalized Exercise Program Guidelines
 
 ---
 
@@ -161,18 +163,11 @@ Behavior Guidelines
 - For each day, include a \`duration\` field that represents the total expected workout time in minutes for the entire session (not individual exercises)
 - IMPORTANT - Exercise Order: 
   - Group exercises for the same or related body parts together in the workout sequence
+  - Within each body part group, compound exercises must ALWAYS be placed FIRST, followed by isolation exercises
+  - Deadlifts (which are compound exercises) should be categorized with leg exercises if the workout includes other leg exercises; otherwise, group deadlifts with back exercises
   - For example, keep all chest exercises together, all leg exercises together, etc.
   - This creates a more efficient workout flow and allows for focused training on specific muscle groups
-  - You may use "supersets" of opposing muscle groups (e.g., biceps/triceps, chest/back) for more advanced users
-  - Always place ab/core exercises at the END of the workout sequence
-  - Core exercises (exercises with IDs starting with "abs-" or targeting the core) should be the last exercises in each workout
-  - This allows the core muscles to remain fresh for other compound movements earlier in the workout
-- REMINDER: Ensure you include enough exercises based on the workout duration:
-  • 45-60 minute workouts REQUIRE 8-10 exercises
-  • 30-45 minute workouts need 6-8 exercises
-  • 15-30 minute workouts need 4-6 exercises
-  • 60+ minute workouts need 10+ exercises
-- Ensure the program includes rest days to prevent overtraining and allow recovery
+  - Core exercises (exercises with IDs starting with "abs-" or "obliques-") should be the last exercises in each workout
 
 - CRITICAL - Rest Day Consistency: For a clear and consistent approach to rest days:
   - Rest days should ONLY include gentle recovery activities, never strength or intensive exercises
@@ -182,6 +177,7 @@ Behavior Guidelines
   - Always include a clear description for rest days explaining what the user should focus on (e.g., recovery, hydration, gentle stretching)
   - Rest days should support recovery while maintaining program consistency
   - IMPORTANT: On rest days, select exercises from stretching, mobility, or recovery categories - never use strength or conditioning exercises
+  - CRITICAL: All rest day exercises must be equipmentless exercises that can be performed at home, regardless of the user's usual workout environment
 
 7. JSON Response Requirements
 
@@ -233,7 +229,6 @@ Behavior Guidelines
 
  Sample JSON Object Structure of a 45-60 minutes full body program:
 
-\`\`\`
 {
   "title": "Full Body Strength",
   "programOverview": "This program is designed to help you build full-body strength, improve mobility, and enhance overall fitness while addressing any specific pain points or restrictions you may have.",
@@ -360,7 +355,6 @@ Behavior Guidelines
     }
   ]
 }
-\`\`\`
 
 8. Ensure Clarity and Safety
 
@@ -384,4 +378,6 @@ Behavior Guidelines
 - Do NOT include text like "citeturn0file1" or any other citation markers
 - All descriptions, exercise names, and instructions should be plain text only
 - When referencing exercises, simply use their names without citations or references
-- This applies to all fields, especially the "description" field for workout days`;
+- This applies to all fields, especially the "description" field for workout days
+
+FINAL REMINDER: YOUR RESPONSE MUST BE NOTHING BUT A PURE JSON OBJECT. DO NOT ADD ANY INTRODUCTION, EXPLANATION, OR CONCLUSION TEXT. DO NOT ENCLOSE THE JSON IN CODE BLOCKS OR BACKTICKS. JUST RETURN THE RAW JSON.`;

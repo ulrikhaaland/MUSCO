@@ -28,13 +28,20 @@ function ErrorDisplay({ error }: { error: Error }) {
   );
 }
 
-function getYouTubeEmbedUrl(url: string): string {
-  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
-  const match = url.match(regExp);
+function isVimeoUrl(url: string): boolean {
+  return url.includes('vimeo.com') || url.includes('player.vimeo.com');
+}
 
-  if (match && match[2].length === 11) {
-    return `https://www.youtube.com/embed/${match[2]}`;
+function getVideoEmbedUrl(url: string): string {
+  // YouTube URL handling
+  const youtubeRegExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+  const youtubeMatch = url.match(youtubeRegExp);
+
+  if (youtubeMatch && youtubeMatch[2].length === 11) {
+    return `https://www.youtube.com/embed/${youtubeMatch[2]}`;
   }
+  
+  // For non-YouTube URLs, return as is
   return url;
 }
 
@@ -128,24 +135,38 @@ export default function DayDetailPage() {
   const handleVideoClick = async (exercise: Exercise) => {
     if (loadingVideoExercise === exercise.name) return;
 
+    // Helper function to search YouTube and update video URL
+    const searchYouTubeAndUpdateUrl = async () => {
+      setLoadingVideoExercise(exercise.name);
+      try {
+        const searchQuery = `${exercise.name} proper form`;
+        const youtubeUrl = await searchYouTubeVideo(searchQuery);
+        if (youtubeUrl) {
+          exercise.videoUrl = youtubeUrl;
+          setVideoUrl(getVideoEmbedUrl(youtubeUrl));
+        }
+      } catch (error) {
+        console.error('Error fetching YouTube video:', error);
+      } finally {
+        setLoadingVideoExercise(null);
+      }
+    };
+
+    // If we already have a video URL
     if (exercise.videoUrl) {
-      setVideoUrl(getYouTubeEmbedUrl(exercise.videoUrl));
+      // Check if it's a Vimeo URL
+      if (isVimeoUrl(exercise.videoUrl)) {
+        // For Vimeo links, search YouTube instead
+        await searchYouTubeAndUpdateUrl();
+      } else {
+        // For YouTube or other URLs, use as normal
+        setVideoUrl(getVideoEmbedUrl(exercise.videoUrl));
+      }
       return;
     }
 
-    setLoadingVideoExercise(exercise.name);
-    try {
-      const searchQuery = `${exercise.name} proper form`;
-      const videoUrl = await searchYouTubeVideo(searchQuery);
-      if (videoUrl) {
-        exercise.videoUrl = videoUrl;
-        setVideoUrl(getYouTubeEmbedUrl(videoUrl));
-      }
-    } catch (error) {
-      console.error('Error fetching video:', error);
-    } finally {
-      setLoadingVideoExercise(null);
-    }
+    // If no video URL exists yet, search YouTube
+    await searchYouTubeAndUpdateUrl();
   };
 
   const closeVideo = () => setVideoUrl(null);

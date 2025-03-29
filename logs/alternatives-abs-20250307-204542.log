@@ -1,8 +1,0 @@
-Running alternatives generator for category: abs
-File path: /Users/ulrikhaland/Documents/musco-new/scripts/output/abs.ts
-Processing category file: /Users/ulrikhaland/Documents/musco-new/scripts/output/abs.ts
-File loaded, size: 254718 bytes
-Found variable name: absExercises
-Could not find exercises data in /Users/ulrikhaland/Documents/musco-new/scripts/output/abs.ts
-Full file content written to /Users/ulrikhaland/Documents/musco-new/scripts/output/abs.ts.content.txt for debugging
-Alternatives generation complete!

@@ -183,21 +183,6 @@ export function UserProvider({ children }: { children: ReactNode }) {
         // Set the most recent program as the active one
         setActiveProgram(mostRecentProgram);
 
-        // Log program info for debugging
-        console.log('=== DEBUG: mostRecentProgram ===');
-        console.log(
-          'Number of programs in collection:',
-          mostRecentProgram.programs.length
-        );
-        mostRecentProgram.programs.forEach((p, i) => {
-          console.log(`Program ${i + 1} weeks:`, p.program?.length || 0);
-          if (p.program) {
-            p.program.forEach((w, j) =>
-              console.log(`Program ${i + 1} Week ${j + 1}:`, w.week)
-            );
-          }
-        });
-
         // Use the first program as the base and combine all program weeks
         const allWeeks = mostRecentProgram.programs.flatMap(
           (p) => p.program || []
@@ -212,17 +197,6 @@ export function UserProvider({ children }: { children: ReactNode }) {
           program: renumberedWeeks,
           docId: mostRecentProgram.docId,
         };
-
-        console.log('=== DEBUG: combinedProgram ===');
-        console.log(
-          'Total weeks in combined program:',
-          combinedProgram.program?.length || 0
-        );
-        if (combinedProgram.program) {
-          combinedProgram.program.forEach((w, i) =>
-            console.log(`Combined Week ${i + 1}:`, w.week)
-          );
-        }
 
         setProgram(combinedProgram);
         setAnswers(mostRecentProgram.questionnaire);

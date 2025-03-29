@@ -448,6 +448,11 @@ export const enrichExercisesWithFullData = async (
   const extractBodyPartFromId = (id: string): string | null => {
     if (!id) return null;
 
+    // Special case for upper-back which contains a hyphen in its prefix
+    if (id.startsWith('upper-back-')) {
+      return 'Upper Back';
+    }
+
     const prefix = id.split('-')[0].toLowerCase();
 
     // Map individual muscle files to their parent body parts in exerciseFiles

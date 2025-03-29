@@ -1,9 +1,9 @@
 'use client';
 
-import localFont from "next/font/local";
-import "./globals.css";
-import { useEffect } from "react";
-import { getAnalytics } from "firebase/analytics";
+import localFont from 'next/font/local';
+import './globals.css';
+import { useEffect } from 'react';
+import { getAnalytics } from 'firebase/analytics';
 import { SafeArea } from './components/ui/SafeArea';
 import { NavigationMenu } from './components/ui/NavigationMenu';
 import { app } from './firebase/config';
@@ -12,16 +12,16 @@ import { UserProvider } from './context/UserContext';
 import { AppProvider } from './context/AppContext';
 import { RouteChangeListener } from './components/RouteChangeListener';
 
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-});
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
-});
+// const geistSans = localFont({
+//   src: "./fonts/GeistVF.woff",
+//   variable: "--font-geist-sans",
+//   weight: "100 900",
+// });
+// const geistMono = localFont({
+//   src: "./fonts/GeistMonoVF.woff",
+//   variable: "--font-geist-mono",
+//   weight: "100 900",
+// });
 
 export default function RootLayout({
   children,
@@ -30,7 +30,10 @@ export default function RootLayout({
 }>) {
   useEffect(() => {
     // Only initialize analytics in production and on the client side
-    if (process.env.NODE_ENV === 'production' && typeof window !== 'undefined') {
+    if (
+      process.env.NODE_ENV === 'production' &&
+      typeof window !== 'undefined'
+    ) {
       getAnalytics(app);
     }
   }, []);
@@ -43,15 +46,13 @@ export default function RootLayout({
           content="width=device-width, initial-scale=1, viewport-fit=cover"
         />
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable} font-sans h-full overflow-hidden`}>
+      <body>
         <AuthProvider>
           <UserProvider>
             <AppProvider>
               <RouteChangeListener />
               <SafeArea>
-                <div className="h-full pb-16">
-                  {children}
-                </div>
+                <div className="h-full pb-16">{children}</div>
                 <NavigationMenu />
               </SafeArea>
             </AppProvider>

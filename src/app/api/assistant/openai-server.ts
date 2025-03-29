@@ -85,6 +85,7 @@ export async function runAssistant(threadId: string, assistantId: string) {
   try {
     const run = await openai.beta.threads.runs.create(threadId, {
       assistant_id: assistantId,
+      response_format: { type: 'json_object' }
     });
 
     // Wait for the run to complete
@@ -282,7 +283,49 @@ export async function generateExerciseProgram(context: {
     }
 
     // Parse the response as JSON
-    const response = JSON.parse(messageContent.text.value);
+    console.log(`Response first 100 chars: "${messageContent.text.value.substring(0, 100)}..."`);
+    console.log(`Response length: ${messageContent.text.value.length} characters`);
+    console.log(`Complete response: ${messageContent.text.value}`);
+    
+    // Helper function to extract JSON from text
+    const extractJsonFromText = (text: string): string => {
+      // Try to find content between JSON code blocks (```json ... ```)
+      const jsonBlockMatch = text.match(/```json\s*([\s\S]*?)\s*```/);
+      if (jsonBlockMatch && jsonBlockMatch[1]) {
+        console.log("Found JSON in code block, extracting...");
+        return jsonBlockMatch[1].trim();
+      }
+      
+      // Try to find content that looks like a JSON object
+      const jsonObjectMatch = text.match(/(\{[\s\S]*\})/);
+      if (jsonObjectMatch && jsonObjectMatch[1]) {
+        console.log("Found JSON object pattern, extracting...");
+        return jsonObjectMatch[1].trim();
+      }
+      
+      // Return the original text if no JSON-like content found
+      return text;
+    };
+    
+    let response;
+    try {
+      response = JSON.parse(messageContent.text.value);
+    } catch (parseError) {
+      console.error('JSON parse error:', parseError);
+      console.error('First 200 characters of raw response:', messageContent.text.value.substring(0, 200));
+      
+      // Try to extract JSON from text and parse again
+      const extractedJson = extractJsonFromText(messageContent.text.value);
+      console.log('Attempting to parse extracted content...');
+      
+      try {
+        response = JSON.parse(extractedJson);
+        console.log('Successfully parsed extracted JSON');
+      } catch (extractError) {
+        console.error('Failed to parse extracted content:', extractError);
+        throw new Error(`Failed to parse response as JSON: ${parseError.message}`);
+      }
+    }
 
     // Add program type and target areas to the response
     const program = response as ExerciseProgram;

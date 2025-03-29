@@ -127,8 +127,8 @@ export function useHumanAPI({
   // Add rate limiting for infinite loop detection
   const callTimestamps: number[] = [];
   const CALL_WINDOW = 1000; // 3 seconds window (increased from 2)
-  const MAX_CALLS = 5; // Maximum number of calls allowed in the window (increased from 5)
-
+  const MAX_CALLS_EXERCISE = 10; // Maximum number of calls allowed in the window (increased from 5)
+  const MAX_CALLS_RECOVERY = 5; // Maximum number of calls allowed in the window (increased from 5)
   // Function to check if camera has moved
   const checkCameraPosition = useCallback(() => {
     if (!humanRef.current || !initialCameraRef.current) return;
@@ -280,8 +280,13 @@ export function useHumanAPI({
       callTimestamps.shift();
     }
 
+    const maxCalls =
+      intentionRef.current === ProgramIntention.Recovery
+        ? MAX_CALLS_RECOVERY
+        : MAX_CALLS_EXERCISE;
+
     // Check for infinite loop
-    if (callTimestamps.length >= MAX_CALLS) {
+    if (callTimestamps.length >= maxCalls) {
       return;
     }
 
@@ -293,7 +298,7 @@ export function useHumanAPI({
         handleOnObjectSelectedRecovery(event);
         break;
       case ProgramIntention.None:
-        handleOnObjectSelectedRecovery(event);
+        handleOnObjectSelectedNone(event);
         break;
     }
   }
@@ -386,6 +391,11 @@ export function useHumanAPI({
           );
 
         if (hasSelectedPartOfSelectedGroup) {
+
+          // humanRef.current?.send('scene.selectObjects', {
+          //   [selectedId]: true,
+          //   replace: true,
+          // });
           // First, disable X-ray if not enabled
           if (!isXrayEnabledRef.current) {
             humanRef.current?.send('scene.enableXray', () => {});
@@ -411,7 +421,12 @@ export function useHumanAPI({
           };
 
           // Send selection and update state with a small delay to prevent race conditions
-          safeSelectObjects({ [selectedId]: true }, { replace: false }, true);
+          safeSelectObjects({ [selectedId]: true }, { replace: true }, true);
+
+          // humanRef.current?.send('scene.selectObjects', {
+          //   [selectedId]: true,
+          //   replace: false,
+          // });
 
           // Use setTimeout to delay state updates slightly after selection commands
           // Update selected part
@@ -419,7 +434,7 @@ export function useHumanAPI({
           setSelectedPart(groupPart);
 
           // Make sure the group is also set in context
-          setSelectedGroup(previousSelectedPartGroupRef.current, true);
+          // setSelectedGroup(previousSelectedPartGroupRef.current, true);
 
           // Zoom to the part
           onZoom?.(selectedId);
@@ -439,10 +454,12 @@ export function useHumanAPI({
             humanRef.current?.send('scene.disableXray', () => {});
             isXrayEnabledRef.current = false;
             setSelectedPart(null);
+            setSelectedGroup(null, false);
             selectedPartRef.current = null;
             selectionEventRef.current = null;
             isXrayEnabledRef.current = false;
             onZoom?.(getGenderedId(group.zoomId, gender));
+            resetModel();
             return;
           } else {
             // humanRef.current?.send('scene.enableXray', () => {});
@@ -453,30 +470,19 @@ export function useHumanAPI({
           setSelectedGroup(group, true);
         }
 
-        // safe select objects
-        // safeSelectObjects(
-        //   {
-        //     ...selectionMap,
-        //     ...deselectionMap,
-        //     replace: true,
-        //   },
-        //   {},
-        //   true
-        // );
+        if (!selectedPartRef.current)
+          safeSelectObjects(
+            {
+              [selectedId]: false,
+            },
+            {},
+            true
+          );
 
-        // if (!selectedPartRef.current) {
-        safeSelectObjects(
-          {
-            [selectedId]: false,
-          },
-          {},
-          true
-        );
-        // }
-        humanRef.current?.send('scene.showObjects', {
+        humanRef.current?.send('scene.selectObjects', {
           ...selectionMap,
-          // ...deselectionMap,
-          // replace: true,
+          ...deselectionMap,
+          replace: true,
         });
 
         if (!isXrayEnabledRef.current) {
@@ -496,19 +502,6 @@ export function useHumanAPI({
   }
 
   function handleOnObjectSelectedExercise(event: any) {
-    // Check if this function is being called too frequently (twice within 100ms)
-    const now = Date.now();
-    const timeSinceLastCall = now - lastSelectionTimestampRef.current;
-
-    if (timeSinceLastCall < 100) {
-      // If function was called less than 100ms ago, skip this execution
-      console.log('Skipping duplicate selection event', timeSinceLastCall);
-      return;
-    }
-
-    // Update the timestamp for this execution
-    lastSelectionTimestampRef.current = now;
-
     if (isResettingRef.current) {
       if (isXrayEnabledRef.current) {
         isXrayEnabledRef.current = false;
@@ -532,10 +525,10 @@ export function useHumanAPI({
       (value) => value === false
     );
 
-    // if (isDeselection) {
-    //   canSelectRef.current = true;
-    //   return;
-    // }
+    if (isDeselection) {
+      canSelectRef.current = true;
+      return;
+    }
 
     if (!isDeselection) selectedPartIdRef.current = selectedId;
 
@@ -584,15 +577,15 @@ export function useHumanAPI({
 
       const finalSelectMap = {
         ...selectionMap,
-        // ...deselectionMap,
-        // replace: true,
+        ...deselectionMap,
+        replace: true,
       };
 
-      if (!isDeselection) {
-        Object.assign(finalSelectMap, {
-          [selectedId]: true,
-        });
-      }
+      // if (!isDeselection) {
+      //   Object.assign(finalSelectMap, {
+      //     [selectedId]: true,
+      //   });
+      // }
 
       humanRef.current?.send('scene.selectObjects', finalSelectMap);
       // humanRef.current?.send('scene.objectsSelected', onObjectSelected);
