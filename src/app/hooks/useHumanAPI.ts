@@ -86,7 +86,7 @@ export function useHumanAPI({
   const [isReady, setIsReady] = useState(false);
 
   // Add a function to reset the model state
-  const resetModel = useCallback(() => {
+  const resetModel = useCallback((resetSelectionState: boolean = false) => {
     if (!humanRef.current || isResettingRef.current) return;
 
     isResettingRef.current = true;
@@ -113,6 +113,11 @@ export function useHumanAPI({
       previousSelectedPartGroupRef.current = null;
       selectedPartIdRef.current = null;
       selectedPartRef.current = null;
+
+      if (resetSelectionState) {
+        setSelectedPart(null);
+        setSelectedGroup(null, false);
+      }
 
       // Reset needs reset flag
       setNeedsReset(false);
@@ -449,17 +454,9 @@ export function useHumanAPI({
             isXrayEnabledRef.current &&
             selectedId === selectedPartRef.current?.objectId &&
             previousSelectedPartGroupRef.current &&
-            !selectedPartIdRef.current
+            selectedPartIdRef.current
           ) {
-            humanRef.current?.send('scene.disableXray', () => {});
-            isXrayEnabledRef.current = false;
-            setSelectedPart(null);
-            setSelectedGroup(null, false);
-            selectedPartRef.current = null;
-            selectionEventRef.current = null;
-            isXrayEnabledRef.current = false;
-            onZoom?.(getGenderedId(group.zoomId, gender));
-            resetModel();
+            resetModel(true);
             return;
           } else {
             // humanRef.current?.send('scene.enableXray', () => {});
