@@ -456,7 +456,11 @@ export function useHumanAPI({
             previousSelectedPartGroupRef.current &&
             selectedPartIdRef.current
           ) {
-            resetModel(true);
+            setSelectedPart(null);
+            selectedPartRef.current = null;
+            selectionEventRef.current = null;
+            isXrayEnabledRef.current = false;
+            onZoom?.(getGenderedId(group.zoomId, gender));
             return;
           } else {
             // humanRef.current?.send('scene.enableXray', () => {});
