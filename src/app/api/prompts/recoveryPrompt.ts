@@ -30,9 +30,14 @@ Behavior Guidelines
 - UserInfo: This data provides additional context about the user's preferences and physical condition, allowing for further personalization. The key fields include:
 
   - Age: The user's age range (e.g., "20-30").
+  - Last Year's Exercise Frequency: How often the user exercised in the past year (e.g., "1-2 times per week").
+  - numberOfActivityDays: The number of days of activity that the user wants in their program (e.g., 3 for 3 days per week).
   - Generally Painful Areas: Body areas where the user often experiences pain (e.g., ["neck", "left shoulder"]).
-  - Exercise Environments: The environments the user has access to for recovery routines (e.g., "home").
-  - Preferred Recovery Duration: The user's preferred session duration (e.g., "15-30 minutes").
+  - Exercise Modalities: The types of exercise the user prefers (e.g., "strength").
+  - Exercise Environment: The environments the user can access (e.g., "gym", "home gym").
+  - Workout Duration: The user's preferred duration for recovery sessions (e.g., "30-45 minutes").
+  - Equipment: The equipment available to the user (e.g., ["dumbbells", "resistance bands"]).
+  - Experience Level: The user's exercise experience level (e.g., "beginner", "intermediate", "advanced").
 
 2. Exercise Selection Guidelines
 

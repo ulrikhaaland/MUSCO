@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { 
   getAuth, 
-  deleteUser, 
   sendSignInLinkToEmail, 
   isSignInWithEmailLink,
   signInWithEmailLink
@@ -13,10 +12,11 @@ import { useAuth } from '../context/AuthContext';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../firebase/config';
 import { UserProfile } from '../types/user';
+import { toast } from '../components/ui/ToastProvider';
 
 export default function PrivacyPage() {
   const router = useRouter();
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, deleteUserAccount } = useAuth();
   const [verificationEmail, setVerificationEmail] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -44,50 +44,25 @@ export default function PrivacyPage() {
           // The auth context will handle the sign-in portion
           setTimeout(async () => {
             try {
-              // Now that the user is re-authenticated (by the auth context), delete the account
-              const currentUser = auth.currentUser;
-              if (!currentUser) {
-                throw new Error('User not found or not authenticated. Please try again.');
-              }
-              
               // Clean up localStorage first
               localStorage.removeItem('emailForSignIn');
               localStorage.removeItem('isDeleteAccountFlow');
               
-              // Show a message that we're deleting the account
-              setError(null);
+              // Now use the centralized account deletion function
+              const success = await deleteUserAccount();
               
-              // Delete the account
-              await deleteUser(currentUser);
-              
-              // Show success message
-              alert('Your account has been successfully deleted.');
-              
-              // Add a slight delay before navigating away to allow cleanup
-              setTimeout(() => {
-                // Navigate to home page after successful deletion
-                window.location.href = '/'; // Use direct navigation instead of router to force a full page reload
-              }, 500);
-            } catch (err: any) {
-              console.error('Error deleting account:', err);
-              
-              // If we got a Firestore permissions error, it likely means the account is already deleted
-              // but we're still trying to access Firestore data. This is actually fine.
-              if (err.message && err.message.includes('permission-denied')) {
-                // This is expected sometimes - the account is deleted but listeners are still active
-                alert('Your account has been successfully deleted.');
-                
-                // Navigate to home with a direct page load
-                window.location.href = '/';
-                return;
-              }
-              
-              if (err.code === 'auth/requires-recent-login') {
-                setError('For security reasons, please try the account deletion process again.');
+              if (success) {
+                // Add a slight delay before navigating away to allow toast to be seen
+                setTimeout(() => {
+                  // Navigate to home page after successful deletion
+                  window.location.href = '/'; // Use direct navigation instead of router to force a full page reload
+                }, 1500);
               } else {
-                setError(err instanceof Error ? err.message : 'An error occurred while deleting your account');
+                setIsLoading(false);
               }
-              
+            } catch (err: any) {
+              console.error('Error in deletion flow:', err);
+              setError(err instanceof Error ? err.message : 'An error occurred during account deletion');
               setIsLoading(false);
             }
           }, 2000); // Give AuthContext time to process the sign-in
@@ -132,8 +107,6 @@ export default function PrivacyPage() {
         return;
       }
       
-      // First, attempt to delete the account directly
-      // This will work if the user has recently signed in
       const auth = getAuth();
       const currentUser = auth.currentUser;
       
@@ -142,29 +115,23 @@ export default function PrivacyPage() {
       }
       
       try {
-        // Try direct deletion first
-        await deleteUser(currentUser);
+        // Try using the centralized deletion function
+        const success = await deleteUserAccount();
         
-        // If successful, show success and redirect
-        alert('Your account has been successfully deleted.');
-        window.location.href = '/'; // Use direct navigation instead of router
-        return;
-      } catch (deleteErr: any) {
-        // Check for Firestore permission errors (can happen right after deletion)
-        if (deleteErr.message && deleteErr.message.includes('permission-denied')) {
-          // Account was likely deleted successfully
-          alert('Your account has been successfully deleted.');
-          window.location.href = '/';
+        if (success) {
+          // Redirect after successful deletion
+          setTimeout(() => {
+            window.location.href = '/'; // Use direct navigation instead of router
+          }, 1500);
           return;
         }
-        
-        // If error is not about authentication, rethrow it
-        if (deleteErr.code !== 'auth/requires-recent-login') {
+      } catch (deleteErr: any) {
+        // If error is about requiring recent authentication, send a sign-in link
+        if (deleteErr.code === 'auth/requires-recent-login') {
+          console.log('Re-authentication required, sending email link...');
+        } else {
           throw deleteErr;
         }
-        
-        // Otherwise proceed to sending a sign-in link
-        console.log('Re-authentication required, sending email link...');
       }
       
       // If we reach here, we need to send a sign-in link for re-authentication
@@ -444,9 +411,9 @@ export default function PrivacyPage() {
               <div className="flex space-x-3">
                 <button
                   type="submit"
-                  disabled={isLoading || !verificationEmail}
+                  disabled={isLoading || verificationEmail !== user?.email}
                   className={`px-4 py-2 bg-red-600 text-white rounded-lg flex-1 ${
-                    isLoading || !verificationEmail ? 'opacity-50 cursor-not-allowed' : 'hover:bg-red-500'
+                    isLoading || verificationEmail !== user?.email ? 'opacity-50 cursor-not-allowed' : 'hover:bg-red-500'
                   }`}
                 >
                   {isLoading ? 'Processing...' : 'Delete My Account'}

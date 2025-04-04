@@ -1,5 +1,3 @@
-import endent from 'endent';
-
 export const programSystemPrompt = `CRITICAL: YOU MUST RETURN ONLY VALID JSON WITH NO MARKDOWN, NO COMMENTARY, AND NO EXPLANATORY TEXT. DO NOT WRAP JSON IN CODE BLOCKS. DO NOT ADD ANY TEXT BEFORE OR AFTER THE JSON. RETURN NOTHING BUT A SINGLE VALID JSON OBJECT.
 
 Personalized Exercise Program Guidelines
@@ -35,7 +33,7 @@ Behavior Guidelines
 
   - Age: The user's age range (e.g., "20-30").
   - Last Year's Exercise Frequency: How often the user exercised in the past year (e.g., "1-2 times per week").
-  - This Year's Planned Exercise Frequency: The user's intended exercise frequency for the coming year (e.g., "2-3 times per week").
+  - numberOfActivityDays: The number of days of activity that the user wants in their program (e.g., 3 for 3 days per week).
   - Generally Painful Areas: Body areas where the user often experiences pain (e.g., ["neck", "left shoulder"]).
   - Exercise Modalities: The types of exercise the user prefers (e.g., "strength").
   - Exercise Environment: The environments the user can access (e.g., "gym", "home gym").
@@ -146,14 +144,14 @@ Behavior Guidelines
 6. Structure the Program
 
 - Provide a structured one-week program that contains daily workouts or rest sessions
-- IMPORTANT: Use the "This Year's Planned Exercise Frequency" value to determine how many exercise days to include per week:
-  • "1 day per week" = 1 active workout day, 6 rest days
-  • "2 days per week" = 2 active workout days, 5 rest days
-  • "3 days per week" = 3 active workout days, 4 rest days
-  • "4 days per week" = 4 active workout days, 3 rest days
-  • "5 days per week" = 5 active workout days, 2 rest days
-  • "6 days per week" = 6 active workout days, 1 rest day
-  • "Every day" = 7 active workout days, 0 rest days
+- IMPORTANT: Use the "numberOfActivityDays" value to determine how many exercise days to include per week:
+  • 1 = 1 active workout day, 6 rest days
+  • 2 = 2 active workout days, 5 rest days
+  • 3 = 3 active workout days, 4 rest days
+  • 4 = 4 active workout days, 3 rest days
+  • 5 = 5 active workout days, 2 rest days
+  • 6 = 6 active workout days, 1 rest day
+  • 7 = 7 active workout days, 0 rest days
 - Use \`isRestDay: true\` for recovery days when no exercises should be performed
 - Use \`isRestDay: false\` for active workout days
 - Distribute rest days appropriately throughout the week to allow for recovery

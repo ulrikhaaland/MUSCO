@@ -69,7 +69,7 @@ submitProgramFeedback = async (
     const updatedAnswers: FeedbackEnhancedQuestionnaire = {
       age: previousAnswers.age || '',
       lastYearsExerciseFrequency: previousAnswers.lastYearsExerciseFrequency || '',
-      thisYearsPlannedExerciseFrequency: previousAnswers.thisYearsPlannedExerciseFrequency || '',
+      numberOfActivityDays: previousAnswers.numberOfActivityDays || '',
       generallyPainfulAreas: feedback.experiencedPain && feedback.painDetails
         ? [...(previousAnswers.generallyPainfulAreas || []), feedback.painDetails]
         : previousAnswers.generallyPainfulAreas || [],

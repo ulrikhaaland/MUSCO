@@ -8,26 +8,32 @@ import {
   sendSignInLinkToEmail,
   isSignInWithEmailLink,
   signInWithEmailLink,
+  deleteUser,
 } from 'firebase/auth';
 import { auth, db } from '../firebase/config';
-import { doc, setDoc, getDoc } from 'firebase/firestore';
+import { doc, setDoc, getDoc, deleteDoc } from 'firebase/firestore';
 import { useClientUrl } from '../hooks/useClientUrl';
+import { useRouter } from 'next/navigation';
 import {
   getPendingQuestionnaire,
   deletePendingQuestionnaire,
   submitQuestionnaire,
 } from '../services/questionnaire';
 import { ExtendedUser, UserProfile } from '../types/user';
+import { toast } from '../components/ui/ToastProvider';
 
 interface AuthContextType {
   user: ExtendedUser | null;
   loading: boolean;
   error: Error | null;
+  errorMessage: string | null;
   sendSignInLink: (email: string) => Promise<void>;
   logOut: () => Promise<void>;
   createUserDoc: () => Promise<void>;
   updateUserProfile: (profileData: Partial<UserProfile>) => Promise<void>;
   getUserProfile: () => Promise<UserProfile | null>;
+  deleteUserDoc: (uid: string) => Promise<void>;
+  deleteUserAccount: () => Promise<boolean>;
 }
 
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
@@ -45,9 +51,11 @@ const actionCodeSettings = {
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { href, isReady } = useClientUrl();
+  const router = useRouter();
   const [user, setUser] = useState<ExtendedUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const handledEmailLink = useRef(false);
 
   // Handle email link sign-in first
@@ -118,11 +126,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                       'Error processing pending questionnaire:',
                       error
                     );
-                    setError(
-                      error instanceof Error
-                        ? error
-                        : new Error('Failed to process questionnaire')
-                    );
+                    handleAuthError(error, 'Failed to process questionnaire', true);
                   }
                 } else {
                   setLoading(false);
@@ -137,11 +141,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               window.history.replaceState(null, '', window.location.pathname);
             } catch (error) {
               console.error('Error signing in with email link:', error);
-              setError(
-                error instanceof Error
-                  ? error
-                  : new Error('Failed to sign in with email link')
-              );
+              handleAuthError(error, 'Failed to sign in with email link', true);
             }
           } else {
             setLoading(false);
@@ -149,11 +149,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
       } catch (error) {
         console.error('Error in handleEmailLink:', error);
-        setError(
-          error instanceof Error
-            ? error
-            : new Error('Failed to handle email link')
-        );
+        handleAuthError(error, 'Failed to handle email link', true);
       } finally {
         if (user) {
           setLoading(false);
@@ -172,7 +168,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const unsubscribe = onAuthStateChanged(
       auth,
       async (firebaseUser) => {
-        console.log('Auth state changed:', firebaseUser ? 'User logged in' : 'No user');
+        console.log(
+          'Auth state changed:',
+          firebaseUser ? 'User logged in' : 'No user'
+        );
         if (firebaseUser) {
           try {
             // Fetch user profile data
@@ -180,9 +179,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             // Create extended user with profile data
             const extendedUser = {
               ...firebaseUser,
-              profile: profileData || undefined
+              profile: profileData || undefined,
             } as ExtendedUser;
-            
+
             setUser(extendedUser);
           } catch (error) {
             console.error('Error fetching user profile:', error);
@@ -191,12 +190,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         } else {
           setUser(null);
         }
-        
+
         setLoading(false);
       },
       (error) => {
         console.error('Auth state change error:', error);
-        setError(error);
+        handleAuthError(error, 'Authentication state error', false);
         setLoading(false);
       }
     );
@@ -209,11 +208,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const userDocRef = doc(db, 'users', uid);
       const userDoc = await getDoc(userDocRef);
-      
+
       if (userDoc.exists()) {
         return userDoc.data() as UserProfile;
       }
-      
+
       return null;
     } catch (error) {
       console.error('Error fetching user profile:', error);
@@ -232,7 +231,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
     } catch (error) {
       console.error('Error creating user document:', error);
-      throw error;
+      return handleAuthError(error, 'Failed to create user document', false);
     }
   };
 
@@ -244,29 +243,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       
       // Get current data
       const userDoc = await getDoc(userDocRef);
-      const currentData = userDoc.exists() ? userDoc.data() as UserProfile : {};
+      const currentData = userDoc.exists()
+        ? (userDoc.data() as UserProfile)
+        : {};
       
       // Merge with new data
       const updatedData = {
         ...currentData,
         ...profileData,
-        updatedAt: new Date().toISOString()
+        updatedAt: new Date().toISOString(),
       };
       
       // Save to Firestore
       await setDoc(userDocRef, updatedData);
       
       // Update local user state
-      setUser(prevUser => {
+      setUser((prevUser) => {
         if (!prevUser) return null;
         return {
           ...prevUser,
-          profile: updatedData
+          profile: updatedData,
         };
       });
     } catch (error) {
       console.error('Error updating user profile:', error);
-      throw error;
+      return handleAuthError(error, 'Failed to update user profile', false);
     }
   };
 
@@ -277,7 +278,111 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return await fetchUserProfile(user.uid);
     } catch (error) {
       console.error('Error getting user profile:', error);
+      handleAuthError(error, 'Failed to get user profile', false);
       return null;
+    }
+  };
+
+  const deleteUserDoc = async (uid: string) => {
+    try {
+      const userDocRef = doc(db, 'users', uid);
+      await deleteDoc(userDocRef);
+      console.log('User document deleted successfully');
+    } catch (error) {
+      console.error('Error deleting user document:', error);
+      return handleAuthError(error, 'Failed to delete user document', false);
+    }
+  };
+
+  const deleteUserAccount = async (): Promise<boolean> => {
+    if (!auth.currentUser) {
+      toast.error('No user is logged in');
+      return false;
+    }
+
+    try {
+      const uid = auth.currentUser.uid;
+      
+      // First delete the user document from Firestore
+      try {
+        await deleteUserDoc(uid);
+      } catch (firestoreError) {
+        console.error('Error deleting user document:', firestoreError);
+        // Continue with account deletion even if document deletion fails
+      }
+      
+      // Then delete the authentication account
+      await deleteUser(auth.currentUser);
+      
+      toast.success('Your account has been successfully deleted');
+      return true;
+    } catch (error: any) {
+      console.error('Error deleting user account:', error);
+      
+      // Handle specific Firebase error codes
+      if (error.code === 'auth/requires-recent-login') {
+        toast.error('For security reasons, please log in again before deleting your account');
+        return false;
+      }
+      
+      handleAuthError(error, 'Failed to delete account', false);
+      return false;
+    }
+  };
+
+  // Helper function to handle auth errors
+  const handleAuthError = (error: any, fallbackMessage: string, shouldRedirect = false) => {
+    // Log the error for debugging
+    console.error('Authentication error:', error);
+    
+    // Set the error state
+    setError(error instanceof Error ? error : new Error(fallbackMessage));
+    
+    // Determine the error message to display
+    let displayMessage = fallbackMessage;
+    
+    // Handle specific Firebase error codes
+    if (error instanceof Error && 'code' in error) {
+      switch (error.code as string) {
+        case 'auth/invalid-action-code':
+          displayMessage = 'The sign-in link has expired or already been used. Please request a new sign-in link.';
+          break;
+        case 'auth/user-disabled':
+          displayMessage = 'Your account has been disabled. Please contact support.';
+          break;
+        case 'auth/user-not-found':
+          displayMessage = 'User not found. Please check your email or sign up.';
+          break;
+        case 'auth/too-many-requests':
+          displayMessage = 'Too many failed attempts. Please try again later.';
+          break;
+        // Add other specific error codes as needed
+      }
+    }
+    
+    // Reset authentication state if needed for certain errors
+    if (
+      error instanceof Error && 
+      'code' in error && 
+      ['auth/invalid-action-code', 'auth/user-disabled'].includes(error.code as string)
+    ) {
+      window.localStorage.removeItem('emailForSignIn');
+      window.localStorage.removeItem('hasPendingQuestionnaire');
+    }
+    
+    // Show toast notification
+    toast.error(displayMessage);
+    
+    // Redirect to the root page if needed
+    if (shouldRedirect) {
+      // Use Next.js router for client-side transition (keeps toast visible)
+      setLoading(false);
+      // router.push('/');
+    }
+    
+    // For non-redirect cases, still need to return a rejected promise
+    if (!shouldRedirect) {
+      return Promise.reject(error);
     }
   };
 
@@ -286,7 +391,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       await sendSignInLinkToEmail(auth, email, actionCodeSettings);
     } catch (error) {
       console.error('Error sending sign-in link:', error);
-      throw error;
+      return handleAuthError(error, 'Failed to send sign-in link', false);
     }
   };
 
@@ -294,13 +399,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       await signOut(auth);
       
-      // Force a full page reload to reset all Firebase listeners and application state
-      if (typeof window !== 'undefined') {
-        window.location.href = '/';
-      }
+      // Use the router for a cleaner transition
+      router.push('/');
     } catch (error) {
       console.error('Error signing out:', error);
-      throw error;
+      return handleAuthError(error, 'Failed to sign out', false);
     }
   };
 
@@ -315,11 +418,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         user,
         loading,
         error,
+        errorMessage,
         sendSignInLink,
         logOut,
         createUserDoc,
         updateUserProfile,
-        getUserProfile
+        getUserProfile,
+        deleteUserDoc,
+        deleteUserAccount,
       }}
     >
       {children}

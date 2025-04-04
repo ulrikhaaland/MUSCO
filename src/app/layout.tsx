@@ -11,6 +11,7 @@ import { AuthProvider } from './context/AuthContext';
 import { UserProvider } from './context/UserContext';
 import { AppProvider } from './context/AppContext';
 import { RouteChangeListener } from './components/RouteChangeListener';
+import { ToastProvider } from './components/ui/ToastProvider';
 
 // const geistSans = localFont({
 //   src: "./fonts/GeistVF.woff",
@@ -50,11 +51,13 @@ export default function RootLayout({
         <AuthProvider>
           <UserProvider>
             <AppProvider>
-              <RouteChangeListener />
-              <SafeArea>
-                <div className="h-full pb-16">{children}</div>
-                <NavigationMenu />
-              </SafeArea>
+              <ToastProvider>
+                <RouteChangeListener />
+                <SafeArea>
+                  <div className="h-full pb-16">{children}</div>
+                  <NavigationMenu />
+                </SafeArea>
+              </ToastProvider>
             </AppProvider>
           </UserProvider>
         </AuthProvider>

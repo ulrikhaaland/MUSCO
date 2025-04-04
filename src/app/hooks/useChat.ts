@@ -96,7 +96,6 @@ export function useChat() {
 
       let accumulatedContent = '';
       let jsonDetected = false;
-      let hasAssistantQuestions = false;
       let partialFollowUps: Question[] = [];
 
       // Send the message and handle streaming response
@@ -206,7 +205,6 @@ export function useChat() {
                     ) {
                       partialFollowUps = [...partialFollowUps, question];
                       setFollowUpQuestions(partialFollowUps);
-                      hasAssistantQuestions = true;
                     }
                   } catch (e) {
                     // Skip malformed question
@@ -230,14 +228,6 @@ export function useChat() {
           }
         }
       });
-
-      // After message is complete, check if we need to use generated follow-ups
-      // if (!hasAssistantQuestions) {
-      //   const { followUpQuestions: generatedQuestions } = await followUpPromise;
-      //   if (generatedQuestions) {
-      //     setFollowUpQuestions(generatedQuestions);
-      //   }
-      // }
     } catch (error) {
       console.error('Error sending message:', error);
     } finally {

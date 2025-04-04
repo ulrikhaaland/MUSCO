@@ -235,7 +235,7 @@ export function ExerciseQuestionnaire({
   const [answers, setAnswers] = useState<ExerciseQuestionnaireAnswers>(() => ({
     age: '',
     lastYearsExerciseFrequency: '',
-    thisYearsPlannedExerciseFrequency: '',
+    numberOfActivityDays: '',
     generallyPainfulAreas: normalizedPainAreas,
     exerciseModalities: '',
     exerciseEnvironments: '',
@@ -283,7 +283,7 @@ export function ExerciseQuestionnaire({
     const fields: (keyof ExerciseQuestionnaireAnswers)[] = [
       'age',
       'lastYearsExerciseFrequency',
-      'thisYearsPlannedExerciseFrequency',
+      'numberOfActivityDays',
       'generallyPainfulAreas',
       'exerciseModalities',
       'exerciseEnvironments',
@@ -330,7 +330,7 @@ export function ExerciseQuestionnaire({
     const fields: (keyof ExerciseQuestionnaireAnswers)[] = [
       'age',
       'lastYearsExerciseFrequency',
-      'thisYearsPlannedExerciseFrequency',
+      'numberOfActivityDays',
       'generallyPainfulAreas',
       'exerciseModalities',
       'exerciseEnvironments',
@@ -404,7 +404,7 @@ export function ExerciseQuestionnaire({
     const singleChoiceFields: (keyof ExerciseQuestionnaireAnswers)[] = [
       'age',
       'lastYearsExerciseFrequency',
-      'thisYearsPlannedExerciseFrequency',
+      'numberOfActivityDays',
       'exerciseModalities',
       'workoutDuration',
     ];
@@ -552,14 +552,14 @@ export function ExerciseQuestionnaire({
         return true;
       case 'lastYearsExerciseFrequency':
         return !!answers.age;
-      case 'thisYearsPlannedExerciseFrequency':
+      case 'numberOfActivityDays':
         return !!answers.lastYearsExerciseFrequency;
       case 'generallyPainfulAreas':
-        return !!answers.thisYearsPlannedExerciseFrequency;
+        return !!answers.numberOfActivityDays;
       case 'exerciseModalities':
         return (
           programType === ProgramType.Exercise &&
-          !!answers.thisYearsPlannedExerciseFrequency &&
+          !!answers.numberOfActivityDays &&
           (!!answers.generallyPainfulAreas ||
             answers.generallyPainfulAreas.length === 0)
         );
@@ -573,7 +573,7 @@ export function ExerciseQuestionnaire({
       case 'exerciseEnvironments':
         if (programType === ProgramType.Recovery) {
           // For recovery, show after having exercise frequency
-          return !!answers.thisYearsPlannedExerciseFrequency;
+          return !!answers.numberOfActivityDays;
         }
         // For exercise, show after exercise modalities
         return !!answers.exerciseModalities;
@@ -731,11 +731,11 @@ export function ExerciseQuestionnaire({
           )}
 
           {/* Planned Exercise Frequency */}
-          {shouldShowQuestion('thisYearsPlannedExerciseFrequency') && (
+          {shouldShowQuestion('numberOfActivityDays') && (
             <RevealOnScroll>
               <div
                 ref={plannedRef}
-                onClick={() => handleEdit('thisYearsPlannedExerciseFrequency')}
+                onClick={() => handleEdit('numberOfActivityDays')}
                 className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-8 shadow-xl ring-1 ring-gray-700/50"
               >
                 <h3 className="flex items-center text-lg font-semibold text-white mb-6">
@@ -756,12 +756,12 @@ export function ExerciseQuestionnaire({
                     ? 'How many days per week would you like to exercise?'
                     : 'How many days per week would you like to focus on recovery?'}
                 </h3>
-                {answers.thisYearsPlannedExerciseFrequency &&
-                editingField !== 'thisYearsPlannedExerciseFrequency' &&
-                shouldCollapseField('thisYearsPlannedExerciseFrequency') ? (
+                {answers.numberOfActivityDays &&
+                editingField !== 'numberOfActivityDays' &&
+                shouldCollapseField('numberOfActivityDays') ? (
                   renderSelectedAnswers(
-                    answers.thisYearsPlannedExerciseFrequency,
-                    () => handleEdit('thisYearsPlannedExerciseFrequency')
+                    answers.numberOfActivityDays,
+                    () => handleEdit('numberOfActivityDays')
                   )
                 ) : (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -772,14 +772,14 @@ export function ExerciseQuestionnaire({
                       >
                         <input
                           type="radio"
-                          name="thisYearsPlannedExerciseFrequency"
+                          name="numberOfActivityDays"
                           value={option}
                           checked={
-                            answers.thisYearsPlannedExerciseFrequency === option
+                            answers.numberOfActivityDays === option
                           }
                           onChange={(e) =>
                             handleInputChange(
-                              'thisYearsPlannedExerciseFrequency',
+                              'numberOfActivityDays',
                               e.target.value,
                               plannedRef
                             )
