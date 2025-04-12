@@ -10,7 +10,7 @@ export interface HumanAPIOptions {
 
 export interface HumanAPI {
   on: (event: string, callback: (event: any) => void) => void;
-  send: (command: string, payload?: any) => void;
+  send: (command: string, payload?: any, callback?: (result: any) => void) => void;
 }
 
 export interface HumanAPIConstructor {

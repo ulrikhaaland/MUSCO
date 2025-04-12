@@ -80,6 +80,8 @@ export function useHumanAPI({
   const canSelectRef = useRef<boolean>(true);
   const lastSelectionTimestampRef = useRef<number>(0);
   const disableSelectionHandlerRef = useRef<boolean>(false);
+  const latClickProcessingRef = useRef<boolean>(false);
+  const hasClickedAnywhereRef = useRef<boolean>(false);
 
   const [currentGender, setCurrentGender] = useState<Gender>(initialGender);
   const [needsReset, setNeedsReset] = useState(false);
@@ -215,6 +217,8 @@ export function useHumanAPI({
 
           human.on('scene.objectsSelected', onObjectSelected);
 
+          human.on('scene.picked', onObjectPicked);
+
           // Mark as ready and call onReady callback
           isInitialized = true;
           setIsReady(true);
@@ -264,15 +268,67 @@ export function useHumanAPI({
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  function onObjectPicked(event: any) {
+    console.log('picked', event);
+    if (!hasClickedAnywhereRef.current || !event.position) return;
+    const pickedId = event.objectId;
+    if (!pickedId) return;
+    const pos = event.position;
+
+    const isLatDorsi =
+      pickedId.includes('latissimus_dorsi') ||
+      pickedId.includes('lat_dorsi') ||
+      pickedId.includes('latissimus');
+
+    if (!isLatDorsi) return;
+
+    if (!pos) {
+      console.warn('No 3D intersection returned from scene.pick');
+      return;
+    }
+
+    const isLikelyLowerBack = pos.y < 108;
+
+    if (isLikelyLowerBack) {
+      const gender = initialGender;
+      const lowerBackId = getGenderedId(
+        'connective_tissue-articular_cartilage_of_right_inferior_articular_facet_of_L3_vertebra_ID',
+        gender
+      );
+
+      humanRef.current?.send('scene.selectObjects', {
+        [lowerBackId]: true,
+        replace: true,
+      });
+
+      // disableSelectionHandlerRef.current = true;
+
+      // const lowerBackGroup = bodyPartGroups.back || bodyPartGroups.pelvis;
+      // if (lowerBackGroup) {
+      //   setSelectedGroup(lowerBackGroup, true);
+      //   onZoom?.(getGenderedId(lowerBackGroup.zoomId, gender));
+      // }
+
+      // setTimeout(() => {
+      //   latClickProcessingRef.current = false;
+      //   disableSelectionHandlerRef.current = false;
+      // }, 300);
+    } else {
+      // fallback: let original latissimus selection logic proceed
+    }
+  }
+
   function onObjectSelected(event: any) {
+    if (event.mode === 'query') {
+      console.log('is event query in onObjectSelected');
+      return;
+    }
+    hasClickedAnywhereRef.current = true;
     // Check if handler is temporarily disabled - only relevant for None intention
     if (
       disableSelectionHandlerRef.current &&
       intentionRef.current === ProgramIntention.None
     ) {
-      console.log(
-        'Selection handler temporarily disabled for None intention, ignoring event'
-      );
       return;
     }
 
@@ -295,6 +351,7 @@ export function useHumanAPI({
       return;
     }
 
+    // Process the event based on intention
     switch (intentionRef.current) {
       case ProgramIntention.Exercise:
         handleOnObjectSelectedExercise(event);
@@ -303,8 +360,85 @@ export function useHumanAPI({
         handleOnObjectSelectedRecovery(event);
         break;
       case ProgramIntention.None:
-        handleOnObjectSelectedNone(event);
+        // Check if this could be a lower back click on latissimus dorsi
+        handlePotentialLowerBackClick(event);
         break;
+    }
+  }
+
+  // New function to intercept latissimus dorsi clicks for lower back
+  function handlePotentialLowerBackClick(event: any) {
+    if (latClickProcessingRef.current || isResettingRef.current) {
+      handleOnObjectSelectedNone(event);
+      return;
+    }
+
+    const objects = Object.keys(event);
+    if (objects.length === 0) {
+      handleOnObjectSelectedNone(event);
+      return;
+    }
+
+    const selectedId = objects[0];
+    const gender = initialGender;
+
+    const isLatDorsi =
+      selectedId.includes('latissimus_dorsi') ||
+      selectedId.includes('lat_dorsi') ||
+      selectedId.includes('latissimus');
+
+    if (isLatDorsi && event[selectedId] === true) {
+      latClickProcessingRef.current = true;
+
+      // Use BioDigital API to get world coordinates from click screen position
+      const screenPosition = { x: 100, y: 100 };
+      humanRef.current?.send(
+        'ui.getWorldPosition',
+        screenPosition,
+        (worldPos: { x: number; y: number; z: number }) => {
+          if (!worldPos) {
+            latClickProcessingRef.current = false;
+            handleOnObjectSelectedNone(event);
+            return;
+          }
+
+          const isLikelyLowerBack = worldPos.y < -0.15; // tweak this threshold as needed
+
+          if (isLikelyLowerBack) {
+            console.log(
+              'Detected lower part of latissimus dorsi – selecting lower back'
+            );
+
+            const lowerBackId = getGenderedId(
+              'connective_tissue-connective_tissue_of_pelvis_ID',
+              gender
+            );
+
+            disableSelectionHandlerRef.current = true;
+
+            humanRef.current?.send('scene.selectObjects', {
+              [lowerBackId]: true,
+              replace: true,
+            });
+
+            const lowerBackGroup = bodyPartGroups.back || bodyPartGroups.pelvis;
+            if (lowerBackGroup) {
+              setSelectedGroup(lowerBackGroup, true);
+              onZoom?.(getGenderedId(lowerBackGroup.zoomId, gender));
+            }
+
+            setTimeout(() => {
+              latClickProcessingRef.current = false;
+              disableSelectionHandlerRef.current = false;
+            }, 300);
+          } else {
+            latClickProcessingRef.current = false;
+            handleOnObjectSelectedNone(event);
+          }
+        }
+      );
+    } else {
+      handleOnObjectSelectedNone(event);
     }
   }
 
@@ -396,7 +530,6 @@ export function useHumanAPI({
           );
 
         if (hasSelectedPartOfSelectedGroup) {
-
           // humanRef.current?.send('scene.selectObjects', {
           //   [selectedId]: true,
           //   replace: true,
