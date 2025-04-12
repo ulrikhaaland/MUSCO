@@ -524,11 +524,7 @@ export function useHumanAPI({
           );
 
         if (hasSelectedPartOfSelectedGroup) {
-          // humanRef.current?.send('scene.selectObjects', {
-          //   [selectedId]: true,
-          //   replace: true,
-          // });
-          // First, disable X-ray if not enabled
+          // First, enable X-ray if not enabled
           if (!isXrayEnabledRef.current) {
             humanRef.current?.send('scene.enableXray', () => {});
             isXrayEnabledRef.current = true;
@@ -555,18 +551,9 @@ export function useHumanAPI({
           // Send selection and update state with a small delay to prevent race conditions
           safeSelectObjects({ [selectedId]: true }, { replace: true }, true);
 
-          // humanRef.current?.send('scene.selectObjects', {
-          //   [selectedId]: true,
-          //   replace: false,
-          // });
-
-          // Use setTimeout to delay state updates slightly after selection commands
           // Update selected part
           selectedPartRef.current = groupPart;
           setSelectedPart(groupPart);
-
-          // Make sure the group is also set in context
-          // setSelectedGroup(previousSelectedPartGroupRef.current, true);
 
           // Zoom to the part
           onZoom?.(selectedId);
@@ -596,6 +583,7 @@ export function useHumanAPI({
         }, 100);
         if (previousSelectedPartGroupRef.current?.id !== group.id) {
           setSelectedGroup(group, true);
+          selectedPartRef.current = null;
         }
 
         if (!selectedPartRef.current)
