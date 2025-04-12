@@ -282,7 +282,7 @@ export function useHumanAPI({
       return;
     }
 
-    const isLikelyLowerBack = pos.y < 108;
+    const isLikelyLowerBack = pos.y < 111;
 
     if (isLikelyLowerBack) {
       const gender = initialGender;
@@ -295,21 +295,6 @@ export function useHumanAPI({
         [lowerBackId]: true,
         replace: true,
       });
-
-      // disableSelectionHandlerRef.current = true;
-
-      // const lowerBackGroup = bodyPartGroups.back || bodyPartGroups.pelvis;
-      // if (lowerBackGroup) {
-      //   setSelectedGroup(lowerBackGroup, true);
-      //   onZoom?.(getGenderedId(lowerBackGroup.zoomId, gender));
-      // }
-
-      // setTimeout(() => {
-      //   latClickProcessingRef.current = false;
-      //   disableSelectionHandlerRef.current = false;
-      // }, 300);
-    } else {
-      // fallback: let original latissimus selection logic proceed
     }
   }
 
@@ -357,82 +342,6 @@ export function useHumanAPI({
       case ProgramIntention.None:
         handleOnObjectSelectedNone(event);
         break;
-    }
-  }
-
-  // New function to intercept latissimus dorsi clicks for lower back
-  function handlePotentialLowerBackClick(event: any) {
-    if (latClickProcessingRef.current || isResettingRef.current) {
-      handleOnObjectSelectedNone(event);
-      return;
-    }
-
-    const objects = Object.keys(event);
-    if (objects.length === 0) {
-      handleOnObjectSelectedNone(event);
-      return;
-    }
-
-    const selectedId = objects[0];
-    const gender = initialGender;
-
-    const isLatDorsi =
-      selectedId.includes('latissimus_dorsi') ||
-      selectedId.includes('lat_dorsi') ||
-      selectedId.includes('latissimus');
-
-    if (isLatDorsi && event[selectedId] === true) {
-      latClickProcessingRef.current = true;
-
-      // Use BioDigital API to get world coordinates from click screen position
-      const screenPosition = { x: 100, y: 100 };
-      humanRef.current?.send(
-        'ui.getWorldPosition',
-        screenPosition,
-        (worldPos: { x: number; y: number; z: number }) => {
-          if (!worldPos) {
-            latClickProcessingRef.current = false;
-            handleOnObjectSelectedNone(event);
-            return;
-          }
-
-          const isLikelyLowerBack = worldPos.y < -0.15; // tweak this threshold as needed
-
-          if (isLikelyLowerBack) {
-            console.log(
-              'Detected lower part of latissimus dorsi – selecting lower back'
-            );
-
-            const lowerBackId = getGenderedId(
-              'connective_tissue-connective_tissue_of_pelvis_ID',
-              gender
-            );
-
-            disableSelectionHandlerRef.current = true;
-
-            humanRef.current?.send('scene.selectObjects', {
-              [lowerBackId]: true,
-              replace: true,
-            });
-
-            const lowerBackGroup = bodyPartGroups.back || bodyPartGroups.pelvis;
-            if (lowerBackGroup) {
-              setSelectedGroup(lowerBackGroup, true);
-              onZoom?.(getGenderedId(lowerBackGroup.zoomId, gender));
-            }
-
-            setTimeout(() => {
-              latClickProcessingRef.current = false;
-              disableSelectionHandlerRef.current = false;
-            }, 300);
-          } else {
-            latClickProcessingRef.current = false;
-            handleOnObjectSelectedNone(event);
-          }
-        }
-      );
-    } else {
-      handleOnObjectSelectedNone(event);
     }
   }
 
