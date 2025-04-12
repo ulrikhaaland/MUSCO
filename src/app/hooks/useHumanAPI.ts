@@ -299,10 +299,8 @@ export function useHumanAPI({
   }
 
   function onObjectSelected(event: any) {
-    if (event.mode === 'query') {
-      console.log('is event query in onObjectSelected');
-      return;
-    }
+    if (event.mode === 'query') return;
+
     hasClickedAnywhereRef.current = true;
     // Check if handler is temporarily disabled - only relevant for None intention
     if (
@@ -543,7 +541,6 @@ export function useHumanAPI({
     const objects = Object.keys(event);
 
     const selectedId = objects[objects.length - 1];
-    console.log('selectedId', selectedId);
 
     // Check for deselection (all values are false)
     const isDeselection = Object.values(event).every(
@@ -637,8 +634,6 @@ export function useHumanAPI({
     const objects = Object.keys(event);
 
     const selectedId = objects[0];
-
-    console.log('selectedId', event);
 
     // Check for deselection (all values are false)
     const isDeselection = Object.values(event).every(
