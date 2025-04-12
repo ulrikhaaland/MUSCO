@@ -269,18 +269,13 @@ export function useHumanAPI({
   }, []);
 
   function onObjectPicked(event: any) {
-    console.log('picked', event);
     if (!hasClickedAnywhereRef.current || !event.position) return;
     const pickedId = event.objectId;
+
     if (!pickedId) return;
     const pos = event.position;
 
-    const isLatDorsi =
-      pickedId.includes('latissimus_dorsi') ||
-      pickedId.includes('lat_dorsi') ||
-      pickedId.includes('latissimus');
-
-    if (!isLatDorsi) return;
+    if (!pickedId.includes('latissimus_dorsi')) return;
 
     if (!pos) {
       console.warn('No 3D intersection returned from scene.pick');
@@ -360,8 +355,7 @@ export function useHumanAPI({
         handleOnObjectSelectedRecovery(event);
         break;
       case ProgramIntention.None:
-        // Check if this could be a lower back click on latissimus dorsi
-        handlePotentialLowerBackClick(event);
+        handleOnObjectSelectedNone(event);
         break;
     }
   }
