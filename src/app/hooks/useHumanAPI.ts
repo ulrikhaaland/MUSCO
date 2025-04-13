@@ -272,15 +272,18 @@ export function useHumanAPI({
     if (!pickedId) return;
     const pos = event.position;
 
-    if (!pickedId.includes('latissimus_dorsi')) return;
+    if (!pickedId.includes('latissimus_dorsi') && !pickedId.includes('gluteus'))
+      return;
 
     if (!pos) {
       console.warn('No 3D intersection returned from scene.pick');
       return;
     }
 
-    const isLikelyLowerBack = pos.y < 115;
+    const isLikelyLowerBack = pos.y < 115 && pos.y > 95;
 
+    console.log('IS LOWER BACK', pos.y);
+    return;
 
     if (isLikelyLowerBack) {
       const gender = initialGender;
@@ -352,7 +355,7 @@ export function useHumanAPI({
 
     const selectedId = objects[0];
 
-    console.log('selectedId', event);
+    // console.log('selectedId', event);
 
     // Check for deselection (all values are false)
     const isDeselection = Object.values(event).every(
