@@ -296,6 +296,15 @@ export function useHumanAPI({
     isLowerBackPickRef.current = isLikelyLowerBack;
     
     if (isLikelyLowerBack) {
+      // Check if pelvis group is already selected - if so, return early
+      if (previousSelectedPartGroupRef.current?.id === 'pelvis') {
+        console.log('Pelvis group already selected, skipping lower back selection');
+        // Still cancel any pending onObjectSelected event
+        pendingObjectSelectedEventRef.current = null;
+        isPendingObjectSelectedRef.current = false;
+        return;
+      }
+      
       const gender = initialGender;
       const lowerBackId = getGenderedId(
         'connective_tissue-articular_cartilage_of_right_inferior_articular_facet_of_L3_vertebra_ID',
