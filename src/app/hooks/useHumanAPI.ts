@@ -353,6 +353,7 @@ export function useHumanAPI({
   }
 
   function handleOnObjectSelectedNone(event: any) {
+    alert(event);
     if (isResettingRef.current) {
       if (isXrayEnabledRef.current) {
         isXrayEnabledRef.current = false;
