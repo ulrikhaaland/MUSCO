@@ -282,6 +282,14 @@ export function useHumanAPI({
 
     const isLikelyLowerBack = pos.y < 115 && pos.y > 95;
 
+    alert(
+      'is likely lower back: ' +
+        isLikelyLowerBack +
+        ' pos.y: ' +
+        pos.y +
+        ' pickedId: ' +
+        pickedId
+    );
     // console.log('IS LOWER BACK', pos.y);
     // return;
 
