@@ -356,7 +356,21 @@ export function useHumanAPI({
       }
     }
     
-    // Otherwise, treat as a regular user-initiated selection
+    // Get the selected object ID
+    const selectedIds = Object.keys(event);
+    if (selectedIds.length > 0) {
+      const selectedId = selectedIds[0];
+      
+      // If the selected object is NOT latissimus_dorsi or gluteus, process immediately
+      // No need to wait for onObjectPicked since it won't handle these objects
+      if (!selectedId.includes('latissimus_dorsi') && !selectedId.includes('gluteus')) {
+        console.log('Processing non-back/gluteus selection immediately');
+        processObjectSelected(event);
+        return;
+      }
+    }
+    
+    // Otherwise, treat as a regular user-initiated selection that might be handled by onObjectPicked
     // Store the event and set the pending flag
     pendingObjectSelectedEventRef.current = event;
     isPendingObjectSelectedRef.current = true;
