@@ -282,7 +282,7 @@ export function useHumanAPI({
       return;
     }
 
-    const isLikelyLowerBack = pos.y < 111;
+    const isLikelyLowerBack = pos.y < 115;
 
     if (isLikelyLowerBack) {
       const gender = initialGender;
