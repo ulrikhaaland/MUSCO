@@ -280,7 +280,7 @@ export function useHumanAPI({
       return;
     }
 
-    const isLikelyLowerBack = pos.y < 115 && pos.y > 95;
+    const isLikelyLowerBack = pos.y < 111 && pos.y > 100;
 
     // alert(
     //   'is likely lower back: ' +
