@@ -304,7 +304,7 @@ export function useHumanAPI({
           [lowerBackId]: true,
           replace: true,
         });
-      }, 50);
+      }, 100);
     }
   }
 
@@ -353,7 +353,17 @@ export function useHumanAPI({
   }
 
   function handleOnObjectSelectedNone(event: any) {
-    alert(event);
+    // Convert event object to readable string with JSON.stringify
+    try {
+      const eventStr = JSON.stringify(event, null, 2);
+      alert(`Event Object:\n${eventStr}`);
+      console.log('Selected Event:', event);
+    } catch (e) {
+      // Handle circular references or other JSON stringification errors
+      alert('Could not stringify event - see console for details');
+      console.log('Selected Event (could not stringify):', event);
+    }
+    
     if (isResettingRef.current) {
       if (isXrayEnabledRef.current) {
         isXrayEnabledRef.current = false;
