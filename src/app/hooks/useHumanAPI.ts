@@ -330,7 +330,7 @@ export function useHumanAPI({
         processObjectSelected(pendingEvent);
         pendingObjectSelectedEventRef.current = null;
         isPendingObjectSelectedRef.current = false;
-      }, 10);
+      }, 50);
     }
     
     // Reset the flag after a timeout to prevent it from affecting future events
