@@ -78,10 +78,7 @@ export function useHumanAPI({
   const isResettingRef = useRef<boolean>(false);
   const isXrayEnabledRef = useRef<boolean>(false);
   const canSelectRef = useRef<boolean>(true);
-  const lastSelectionTimestampRef = useRef<number>(0);
   const disableSelectionHandlerRef = useRef<boolean>(false);
-  const latClickProcessingRef = useRef<boolean>(false);
-  const hasClickedAnywhereRef = useRef<boolean>(false);
 
   const [currentGender, setCurrentGender] = useState<Gender>(initialGender);
   const [needsReset, setNeedsReset] = useState(false);
@@ -269,7 +266,7 @@ export function useHumanAPI({
   }, []);
 
   function onObjectPicked(event: any) {
-    if (!hasClickedAnywhereRef.current || !event.position) return;
+    if (!event.position) return;
     const pickedId = event.objectId;
 
     if (!pickedId) return;
@@ -283,6 +280,7 @@ export function useHumanAPI({
     }
 
     const isLikelyLowerBack = pos.y < 115;
+
 
     if (isLikelyLowerBack) {
       const gender = initialGender;
@@ -301,7 +299,6 @@ export function useHumanAPI({
   function onObjectSelected(event: any) {
     if (event.mode === 'query') return;
 
-    hasClickedAnywhereRef.current = true;
     // Check if handler is temporarily disabled - only relevant for None intention
     if (
       disableSelectionHandlerRef.current &&
@@ -430,7 +427,7 @@ export function useHumanAPI({
           acc[genderedId] = false;
           return acc;
         }, {});
-        
+
         // safeDeselectObjects(delayedDeselectMap, {}, true);
       }
 
@@ -924,7 +921,7 @@ export function useHumanAPI({
           replace: true,
           ...options,
         });
-        
+
         // Re-enable the handler after a short delay
         setTimeout(() => {
           if (withSafeDeselect) {
