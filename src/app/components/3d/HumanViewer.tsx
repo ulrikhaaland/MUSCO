@@ -12,10 +12,8 @@ import MobileControls from './MobileControls';
 import { ExerciseQuestionnaire } from '../ui/ExerciseQuestionnaire';
 import { Question } from '@/app/types';
 import { ExerciseQuestionnaireAnswers, ProgramType } from '@/app/shared/types';
-import { getGenderedId } from '@/app/utils/anatomyHelpers';
-import { useApp, ProgramIntention } from '@/app/context/AppContext';
+import { useApp } from '@/app/context/AppContext';
 import { useUser } from '@/app/context/UserContext';
-import { useRouter } from 'next/navigation';
 
 interface HumanViewerProps {
   gender: Gender;
@@ -54,13 +52,10 @@ export default function HumanViewer({
   const [diagnosis, setDiagnosis] = useState<DiagnosisAssistantResponse | null>(
     null
   );
-  const [showLowerBackLabel, setShowLowerBackLabel] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [isResetting, setIsResetting] = useState(false);
   const { onQuestionnaireSubmit } = useUser();
-  const { setIntention, intention } = useApp();
   const [showQuestionnaire, setShowQuestionnaire] = useState(false);
-  const router = useRouter();
 
   useEffect(() => {
     const checkMobile = () => {
@@ -92,14 +87,6 @@ export default function HumanViewer({
     initialGender: gender,
     onZoom: (objectId?: string) => handleZoom(objectId),
   });
-
-  useEffect(() => {
-    if (selectedGroups.length > 0 && selectedGroups[0].id === 'back') {
-      setShowLowerBackLabel(true);
-    } else {
-      setShowLowerBackLabel(false);
-    }
-  }, [selectedGroups]);
 
   const handleZoom = (objectId?: string) => {
     // First get current camera info
@@ -371,16 +358,6 @@ export default function HumanViewer({
     }
   };
 
-  const handleSelectLowerBack = () => {
-    humanRef.current.send('scene.selectObjects', {
-      [getGenderedId(
-        'connective_tissue-connective_tissue_of_pelvis_ID',
-        gender
-      )]: true,
-    });
-    setShowLowerBackLabel(false);
-  };
-
   const handleQuestionClick = (question: Question) => {
     if (question.generate) {
       if (diagnosis) {
@@ -488,16 +465,6 @@ export default function HumanViewer({
     document.head.appendChild(style);
   }
 
-  useEffect(() => {
-    let timeout: NodeJS.Timeout;
-    if (showLowerBackLabel) {
-      timeout = setTimeout(() => {
-        setShowLowerBackLabel(false);
-      }, 10000);
-    }
-    return () => clearTimeout(timeout);
-  }, [showLowerBackLabel]);
-
   // Use effect to reset the model when shouldResetModel prop changes
   useEffect(() => {
     if (shouldResetModel && isReady && resetModel) {
@@ -542,29 +509,6 @@ export default function HumanViewer({
               setIsChangingModel(false);
             }}
           />
-          {/* Custom Lower Back Label */}
-          {showLowerBackLabel &&
-            !selectedExerciseGroupsRef.current.find(
-              (group) => group.id === 'pelvis'
-            ) && (
-              <div
-                className="absolute left-6 bottom-6 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-lg shadow-lg z-50 text-center flex items-center space-x-3"
-                style={{
-                  animation:
-                    'slideIn 0.3s ease-out, slideOut 0.3s ease-out 9.7s',
-                }}
-              >
-                <span className="text-sm font-medium text-gray-900">
-                  Looking for lower back?
-                </span>
-                <button
-                  onClick={handleSelectLowerBack}
-                  className="bg-indigo-600 hover:bg-indigo-500 text-white text-sm px-3 py-1 rounded shadow-sm transition-colors duration-200"
-                >
-                  Select
-                </button>
-              </div>
-            )}
         </div>
 
         {/* Controls - Desktop */}

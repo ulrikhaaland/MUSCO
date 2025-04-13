@@ -6,6 +6,7 @@ export interface BodyPartGroup {
   parts: AnatomyPart[];
   keywords: string[];
   selectIds: string[];
+  deselectIds: string[];
   zoomId: string;
 }
 
@@ -23,6 +24,7 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
       'muscular_system-left_trapezius_ID',
       'muscular_system-right_trapezius_ID',
     ],
+    deselectIds: [],
     parts: [
       {
         objectId: 'muscular_system-right_trapezius_ID',
@@ -5351,6 +5353,7 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
     id: 'left_shoulder',
     zoomId: 'muscular_system-muscles_of_left_shoulder_ID',
     name: 'Left Shoulder',
+    deselectIds: [],
     selectIds: [
       'muscular_system-left_deltoid_ID',
       'muscular_system-muscles_of_left_rotator_cuff_ID',
@@ -6040,6 +6043,7 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
     id: 'right_shoulder',
     zoomId: 'muscular_system-muscles_of_right_shoulder_ID',
     name: 'Right Shoulder',
+    deselectIds: [],
     selectIds: [
       'muscular_system-right_deltoid_ID',
       'muscular_system-muscles_of_right_rotator_cuff_ID',
@@ -6730,6 +6734,7 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
     id: 'left_upper_arm',
     zoomId: 'muscular_system-muscles_of_left_upper_arm_ID',
     name: 'Left Upper Arm',
+    deselectIds: [],
     selectIds: [
       'muscular_system-muscles_of_left_upper_arm_ID',
       'skeletal_system-bones_of_left_arm_and_forearm_ID',
@@ -6819,6 +6824,7 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
     id: 'right_upper_arm',
     zoomId: 'muscular_system-muscles_of_right_upper_arm_ID',
     name: 'Right Upper Arm',
+    deselectIds: [],
     selectIds: [
       'muscular_system-muscles_of_right_upper_arm_ID',
       'skeletal_system-bones_of_right_arm_and_forearm_ID',
@@ -6908,6 +6914,7 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
     id: 'left_elbow',
     zoomId: 'connective_tissue-connective_tissue_of_left_elbow_ID',
     name: 'Left Elbow',
+    deselectIds: [],
     selectIds: [
       'connective_tissue-connective_tissue_of_left_elbow_ID',
       'connective_tissue-tendon_sheaths_and_bursae_of_left_elbow_ID',
@@ -7103,6 +7110,7 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
     id: 'right_elbow',
     zoomId: 'connective_tissue-connective_tissue_of_right_elbow_ID',
     name: 'Right Elbow',
+    deselectIds: [],
     selectIds: [
       'connective_tissue-connective_tissue_of_right_elbow_ID',
       'connective_tissue-tendon_sheaths_and_bursae_of_right_elbow_ID',
@@ -7299,6 +7307,7 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
     id: 'left_forearm',
     zoomId: 'muscular_system-muscles_of_left_forearm_ID',
     name: 'Left Forearm',
+    deselectIds: [],
     selectIds: [
       'muscular_system-muscles_of_left_forearm_ID',
       'skeletal_system-left_ulna_ID',
@@ -7577,6 +7586,7 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
     id: 'right_forearm',
     zoomId: 'muscular_system-muscles_of_right_forearm_ID',
     name: 'Right Forearm',
+    deselectIds: [],
     selectIds: [
       'muscular_system-muscles_of_right_forearm_ID',
       'skeletal_system-right_ulna_ID',
@@ -7855,6 +7865,7 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
     id: 'left_hand',
     zoomId: 'skeletal_system-bones_of_left_hand_and_wrist_ID',
     name: 'Left Hand',
+    deselectIds: [],
     selectIds: [
       'muscular_system-muscles_of_left_hand_ID',
       'connective_tissue-connective_tissue_of_left_hand_and_wrist_ID',
@@ -11534,6 +11545,7 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
     id: 'rightHand',
     zoomId: 'skeletal_system-bones_of_right_hand_and_wrist_ID',
     name: 'Right Hand',
+    deselectIds: [],
     selectIds: [
       'muscular_system-muscles_of_right_hand_ID',
       'connective_tissue-connective_tissue_of_right_hand_and_wrist_ID',
@@ -15251,6 +15263,7 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
     id: 'chest',
     zoomId: 'muscular_system-muscles_of_upper_limb_ID',
     name: 'Chest',
+    deselectIds: [],
     selectIds: [
       'skeletal_system-rib_cage_ID',
       'skeletal_system-sternum_ID',
@@ -17138,6 +17151,7 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
     id: 'torso',
     zoomId: 'muscular_system-muscles_of_abdomen_ID',
     name: 'Torso',
+    deselectIds: [],
     selectIds: [
       'muscular_system-muscles_of_abdomen_ID',
       'muscular_system-muscles_of_thorax_ID',
@@ -17571,6 +17585,10 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
     id: 'back',
     zoomId: 'muscular_system-muscles_of_back_ID',
     name: 'Upper & Middle Back',
+    deselectIds: [
+      'muscular_system-right_deltoid_ID',
+      'muscular_system-left_deltoid_ID',
+    ],
     selectIds: [
       'muscular_system-muscles_of_back_ID',
       'muscular_system-extrinsic_muscles_of_back_ID',
@@ -24726,6 +24744,7 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
     id: 'pelvis',
     zoomId: 'skeletal_system-bones_of_upper_limb_ID',
     name: 'Lower Back, Pelvis & Hip Region',
+    deselectIds: [],
     selectIds: [
       'connective_tissue-connective_tissue_of_pelvis_ID',
       'muscular_system-muscles_of_pelvic_floor_and_perineum_ID',
@@ -27666,6 +27685,11 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
     id: 'glutes',
     zoomId: 'muscular_system-muscles_of_lower_limb_ID',
     name: 'Glutes',
+    deselectIds: [],
+    selectIds: [
+      'muscular_system-right_gluteal_muscles_ID',
+      'muscular_system-left_gluteal_muscles_ID',
+    ],
     parts: [
       {
         objectId: 'muscular_system-right_gluteal_muscles_ID',
@@ -27795,15 +27819,13 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
       'gluteus medius',
       'gluteus minimus',
     ],
-    selectIds: [
-      'muscular_system-right_gluteal_muscles_ID',
-      'muscular_system-left_gluteal_muscles_ID',
-    ],
+   
   },
   rightThigh: {
     id: 'right_thigh',
     zoomId: 'muscular_system-muscles_of_right_thigh_ID',
     name: 'Right Thigh',
+    deselectIds: [],
     selectIds: [
       'muscular_system-muscles_of_right_thigh_ID',
       'skeletal_system-right_femur_ID',
@@ -28047,6 +28069,7 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
     id: 'left_thigh',
     zoomId: 'muscular_system-muscles_of_left_thigh_ID',
     name: 'Left Thigh',
+    deselectIds: [],
     selectIds: [
       'muscular_system-muscles_of_left_thigh_ID',
       'skeletal_system-left_femur_ID',
@@ -28288,6 +28311,7 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
     id: 'left_knee',
     zoomId: 'connective_tissue-connective_tissue_of_left_knee_ID',
     name: 'Left Knee',
+    deselectIds: [],
     selectIds: [
       'connective_tissue-connective_tissue_of_left_knee_ID',
       'connective_tissue-tendon_sheaths_and_bursae_of_left_knee_ID',
@@ -28688,6 +28712,7 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
     id: 'right_knee',
     zoomId: 'connective_tissue-connective_tissue_of_right_knee_ID',
     name: 'Right Knee',
+    deselectIds: [],
     selectIds: [
       'connective_tissue-connective_tissue_of_right_knee_ID',
       'connective_tissue-tendon_sheaths_and_bursae_of_right_knee_ID',
@@ -29091,6 +29116,7 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
     id: 'left_lower_leg',
     zoomId: 'muscular_system-muscles_of_left_lower_leg_ID',
     name: 'Left Lower Leg',
+    deselectIds: [],
     selectIds: [
       'muscular_system-muscles_of_left_lower_leg_ID',
       'skeletal_system-left_tibia_ID',
@@ -29347,6 +29373,7 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
     id: 'right_lower_leg',
     zoomId: 'muscular_system-muscles_of_right_lower_leg_ID',
     name: 'Right Lower Leg',
+    deselectIds: [],
     selectIds: [
       'muscular_system-muscles_of_right_lower_leg_ID',
       'skeletal_system-right_tibia_ID',
@@ -29603,6 +29630,7 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
     id: 'left_foot',
     zoomId: 'muscular_system-muscles_of_left_foot_ID',
     name: 'Left Foot',
+    deselectIds: [],
     selectIds: [
       'muscular_system-muscles_of_left_foot_ID',
       'connective_tissue-tendon_sheaths_and_bursae_of_left_foot_ID',
@@ -35254,6 +35282,7 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
     id: 'right_foot',
     zoomId: 'muscular_system-muscles_of_right_foot_ID',
     name: 'Right Foot',
+    deselectIds: [],
     selectIds: [
       'muscular_system-muscles_of_right_foot_ID',
       'connective_tissue-tendon_sheaths_and_bursae_of_right_foot_ID',

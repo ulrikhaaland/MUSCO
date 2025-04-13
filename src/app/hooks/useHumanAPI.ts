@@ -413,6 +413,27 @@ export function useHumanAPI({
         });
       }
 
+      // Process regular deselection map
+      Object.assign(
+        deselectionMap,
+        group.deselectIds.reduce((acc, id) => {
+          const genderedId = getGenderedId(id, gender);
+          acc[genderedId] = false;
+          return acc;
+        }, {})
+      );
+
+      // Handle the specific deselectIds with a delay if needed
+      if (group.deselectIds.length > 0) {
+        const delayedDeselectMap = group.deselectIds.reduce((acc, id) => {
+          const genderedId = getGenderedId(id, gender);
+          acc[genderedId] = false;
+          return acc;
+        }, {});
+        
+        // safeDeselectObjects(delayedDeselectMap, {}, true);
+      }
+
       const selectedIdNeutral = getNeutralId(selectedId);
 
       const isPartOfPreviousGroup =
@@ -878,6 +899,38 @@ export function useHumanAPI({
     setTimeout(() => {
       if (withSafeSelect) {
         disableSelectionHandlerRef.current = false;
+      }
+    }, 100);
+  };
+
+  // Create a helper function to safely deselect objects with a delay
+  const safeDeselectObjects = (
+    deselectMap: Record<string, boolean>,
+    options = {},
+    withSafeDeselect = false
+  ) => {
+    if (!humanRef.current) return;
+
+    // Disable the selection handler temporarily
+    if (withSafeDeselect) {
+      disableSelectionHandlerRef.current = true;
+    }
+
+    // Apply the deselection with a delay to ensure it works properly
+    setTimeout(() => {
+      if (humanRef.current) {
+        humanRef.current.send('scene.selectObjects', {
+          ...deselectMap,
+          replace: true,
+          ...options,
+        });
+        
+        // Re-enable the handler after a short delay
+        setTimeout(() => {
+          if (withSafeDeselect) {
+            disableSelectionHandlerRef.current = false;
+          }
+        }, 100);
       }
     }, 100);
   };
