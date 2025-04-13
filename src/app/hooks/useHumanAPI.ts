@@ -268,6 +268,7 @@ export function useHumanAPI({
   function onObjectPicked(event: any) {
     if (!event.position) return;
     const pickedId = event.objectId;
+    alert('onObjectPicked');
 
     if (!pickedId) return;
     const pos = event.position;
@@ -310,6 +311,8 @@ export function useHumanAPI({
 
   function onObjectSelected(event: any) {
     if (event.mode === 'query') return;
+
+    alert('onObjectSelected');
 
     // Check if handler is temporarily disabled - only relevant for None intention
     if (
