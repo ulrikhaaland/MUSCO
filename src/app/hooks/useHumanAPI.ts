@@ -84,6 +84,14 @@ export function useHumanAPI({
   const [needsReset, setNeedsReset] = useState(false);
   const [isReady, setIsReady] = useState(false);
 
+  // Add refs for coordination between event handlers
+  const isLowerBackPickRef = useRef<boolean>(false);
+  const pendingObjectSelectedEventRef = useRef<any>(null);
+  const isPendingObjectSelectedRef = useRef<boolean>(false);
+  const PICK_WAIT_TIMEOUT = 100; // ms to wait for pick to complete
+  const expectingProgrammaticSelectionRef = useRef<boolean>(false);
+  const programmaticSelectionIdRef = useRef<string | null>(null);
+
   // Add a function to reset the model state
   const resetModel = useCallback((resetSelectionState: boolean = false) => {
     if (!humanRef.current || isResettingRef.current) return;
@@ -267,53 +275,104 @@ export function useHumanAPI({
 
   function onObjectPicked(event: any) {
     if (!event.position) return;
+    
     const pickedId = event.objectId;
-    alert('onObjectPicked');
-
+    
     if (!pickedId) return;
     const pos = event.position;
-
+    
     if (!pickedId.includes('latissimus_dorsi') && !pickedId.includes('gluteus'))
       return;
-
+    
     if (!pos) {
       console.warn('No 3D intersection returned from scene.pick');
       return;
     }
-
+    
     const isLikelyLowerBack = pos.y < 111 && pos.y > 100;
-
-    // alert(
-    //   'is likely lower back: ' +
-    //     isLikelyLowerBack +
-    //     ' pos.y: ' +
-    //     pos.y +
-    //     ' pickedId: ' +
-    //     pickedId
-    // );
-    // console.log('IS LOWER BACK', pos.y);
-    // return;
-
+    console.log('onObjectPicked - isLikelyLowerBack:', isLikelyLowerBack, 'pos.y:', pos.y);
+    
+    // Set our flag for onObjectSelected to check
+    isLowerBackPickRef.current = isLikelyLowerBack;
+    
     if (isLikelyLowerBack) {
       const gender = initialGender;
       const lowerBackId = getGenderedId(
         'connective_tissue-articular_cartilage_of_right_inferior_articular_facet_of_L3_vertebra_ID',
         gender
       );
+      
+      // Set flags to indicate we're expecting a programmatic selection
+      expectingProgrammaticSelectionRef.current = true;
+      programmaticSelectionIdRef.current = lowerBackId;
+      
+      humanRef.current?.send('scene.selectObjects', {
+        [lowerBackId]: true,
+        replace: true,
+      });
+      
+      // Clear any pending onObjectSelected event after lower back selection
+      pendingObjectSelectedEventRef.current = null;
+      isPendingObjectSelectedRef.current = false;
+    } else if (isPendingObjectSelectedRef.current && pendingObjectSelectedEventRef.current) {
+      // If not a lower back pick and we have a pending event, process it after a short delay
+      const pendingEvent = pendingObjectSelectedEventRef.current;
       setTimeout(() => {
-        humanRef.current?.send('scene.selectObjects', {
-          [lowerBackId]: true,
-          replace: true,
-        });
-      }, 100);
+        processObjectSelected(pendingEvent);
+        pendingObjectSelectedEventRef.current = null;
+        isPendingObjectSelectedRef.current = false;
+      }, 10);
     }
+    
+    // Reset the flag after a timeout to prevent it from affecting future events
+    setTimeout(() => {
+      isLowerBackPickRef.current = false;
+    }, PICK_WAIT_TIMEOUT);
   }
 
   function onObjectSelected(event: any) {
     if (event.mode === 'query') return;
-
-    alert('onObjectSelected');
-
+    
+    // Check if this is a programmatic selection we were expecting
+    if (expectingProgrammaticSelectionRef.current && programmaticSelectionIdRef.current) {
+      const selectedIds = Object.keys(event);
+      if (selectedIds.includes(programmaticSelectionIdRef.current)) {
+        console.log('Processing programmatic lower back selection');
+        // Process this event immediately
+        processObjectSelected(event);
+        // Reset the flags
+        expectingProgrammaticSelectionRef.current = false;
+        programmaticSelectionIdRef.current = null;
+        return;
+      }
+    }
+    
+    // Otherwise, treat as a regular user-initiated selection
+    // Store the event and set the pending flag
+    pendingObjectSelectedEventRef.current = event;
+    isPendingObjectSelectedRef.current = true;
+    
+    // Wait for onObjectPicked to complete before processing
+    setTimeout(() => {
+      // Skip if this was handled by a lower back pick
+      if (isLowerBackPickRef.current) {
+        console.log('Skipping onObjectSelected due to lower back pick');
+        pendingObjectSelectedEventRef.current = null;
+        isPendingObjectSelectedRef.current = false;
+        return;
+      }
+      
+      // Process the event if still pending
+      if (isPendingObjectSelectedRef.current && pendingObjectSelectedEventRef.current) {
+        processObjectSelected(pendingObjectSelectedEventRef.current);
+        pendingObjectSelectedEventRef.current = null;
+        isPendingObjectSelectedRef.current = false;
+      }
+    }, PICK_WAIT_TIMEOUT);
+  }
+  
+  // Extract the main processing logic to a separate function
+  function processObjectSelected(event: any) {
     // Check if handler is temporarily disabled - only relevant for None intention
     if (
       disableSelectionHandlerRef.current &&
@@ -321,26 +380,26 @@ export function useHumanAPI({
     ) {
       return;
     }
-
+    
     // Add timestamp for this call
     const now = Date.now();
     callTimestamps.push(now);
-
+    
     // Remove timestamps older than our window
     while (callTimestamps.length > 0 && callTimestamps[0] < now - CALL_WINDOW) {
       callTimestamps.shift();
     }
-
+    
     const maxCalls =
       intentionRef.current === ProgramIntention.Recovery
         ? MAX_CALLS_RECOVERY
         : MAX_CALLS_EXERCISE;
-
+    
     // Check for infinite loop
     if (callTimestamps.length >= maxCalls) {
       return;
     }
-
+    
     // Process the event based on intention
     switch (intentionRef.current) {
       case ProgramIntention.Exercise:
