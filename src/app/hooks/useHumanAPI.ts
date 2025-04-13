@@ -299,11 +299,12 @@ export function useHumanAPI({
         'connective_tissue-articular_cartilage_of_right_inferior_articular_facet_of_L3_vertebra_ID',
         gender
       );
-
-      humanRef.current?.send('scene.selectObjects', {
-        [lowerBackId]: true,
-        replace: true,
-      });
+      setTimeout(() => {
+        humanRef.current?.send('scene.selectObjects', {
+          [lowerBackId]: true,
+          replace: true,
+        });
+      }, 500);
     }
   }
 
