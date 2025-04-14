@@ -275,55 +275,65 @@ export function useHumanAPI({
 
   function onObjectPicked(event: any) {
     if (!event.position) return;
-    
+
     const pickedId = event.objectId;
-    
+
     if (!pickedId) return;
     const pos = event.position;
-    
+
     if (!pickedId.includes('latissimus_dorsi') && !pickedId.includes('gluteus'))
       return;
-    
+
     if (!pos) {
       console.warn('No 3D intersection returned from scene.pick');
       return;
     }
-    
+
     const isLikelyLowerBack = pos.y < 111 && pos.y > 100;
-    console.log('onObjectPicked - isLikelyLowerBack:', isLikelyLowerBack, 'pos.y:', pos.y);
-    
+    console.log(
+      'onObjectPicked - isLikelyLowerBack:',
+      isLikelyLowerBack,
+      'pos.y:',
+      pos.y
+    );
+
     // Set our flag for onObjectSelected to check
     isLowerBackPickRef.current = isLikelyLowerBack;
-    
+
     if (isLikelyLowerBack) {
       // Check if pelvis group is already selected - if so, return early
       if (previousSelectedPartGroupRef.current?.id === 'pelvis') {
-        console.log('Pelvis group already selected, skipping lower back selection');
+        console.log(
+          'Pelvis group already selected, skipping lower back selection'
+        );
         // Still cancel any pending onObjectSelected event
         pendingObjectSelectedEventRef.current = null;
         isPendingObjectSelectedRef.current = false;
         return;
       }
-      
+
       const gender = initialGender;
       const lowerBackId = getGenderedId(
         'connective_tissue-articular_cartilage_of_right_inferior_articular_facet_of_L3_vertebra_ID',
         gender
       );
-      
+
       // Set flags to indicate we're expecting a programmatic selection
       expectingProgrammaticSelectionRef.current = true;
       programmaticSelectionIdRef.current = lowerBackId;
-      
+
       humanRef.current?.send('scene.selectObjects', {
         [lowerBackId]: true,
         replace: true,
       });
-      
+
       // Clear any pending onObjectSelected event after lower back selection
       pendingObjectSelectedEventRef.current = null;
       isPendingObjectSelectedRef.current = false;
-    } else if (isPendingObjectSelectedRef.current && pendingObjectSelectedEventRef.current) {
+    } else if (
+      isPendingObjectSelectedRef.current &&
+      pendingObjectSelectedEventRef.current
+    ) {
       // If not a lower back pick and we have a pending event, process it after a short delay
       const pendingEvent = pendingObjectSelectedEventRef.current;
       setTimeout(() => {
@@ -332,7 +342,7 @@ export function useHumanAPI({
         isPendingObjectSelectedRef.current = false;
       }, 50);
     }
-    
+
     // Reset the flag after a timeout to prevent it from affecting future events
     setTimeout(() => {
       isLowerBackPickRef.current = false;
@@ -341,9 +351,12 @@ export function useHumanAPI({
 
   function onObjectSelected(event: any) {
     if (event.mode === 'query') return;
-    
+
     // Check if this is a programmatic selection we were expecting
-    if (expectingProgrammaticSelectionRef.current && programmaticSelectionIdRef.current) {
+    if (
+      expectingProgrammaticSelectionRef.current &&
+      programmaticSelectionIdRef.current
+    ) {
       const selectedIds = Object.keys(event);
       if (selectedIds.includes(programmaticSelectionIdRef.current)) {
         console.log('Processing programmatic lower back selection');
@@ -355,26 +368,30 @@ export function useHumanAPI({
         return;
       }
     }
-    
+
     // Get the selected object ID
     const selectedIds = Object.keys(event);
     if (selectedIds.length > 0) {
       const selectedId = selectedIds[0];
-      
+
       // If the selected object is NOT latissimus_dorsi or gluteus, process immediately
       // No need to wait for onObjectPicked since it won't handle these objects
-      if (!selectedId.includes('latissimus_dorsi') && !selectedId.includes('gluteus')) {
+      if (
+        (!selectedId.includes('latissimus_dorsi') &&
+          !selectedId.includes('gluteus')) ||
+        previousSelectedPartGroupRef.current?.id === 'pelvis'
+      ) {
         console.log('Processing non-back/gluteus selection immediately');
         processObjectSelected(event);
         return;
       }
     }
-    
+
     // Otherwise, treat as a regular user-initiated selection that might be handled by onObjectPicked
     // Store the event and set the pending flag
     pendingObjectSelectedEventRef.current = event;
     isPendingObjectSelectedRef.current = true;
-    
+
     // Wait for onObjectPicked to complete before processing
     setTimeout(() => {
       // Skip if this was handled by a lower back pick
@@ -384,16 +401,19 @@ export function useHumanAPI({
         isPendingObjectSelectedRef.current = false;
         return;
       }
-      
+
       // Process the event if still pending
-      if (isPendingObjectSelectedRef.current && pendingObjectSelectedEventRef.current) {
+      if (
+        isPendingObjectSelectedRef.current &&
+        pendingObjectSelectedEventRef.current
+      ) {
         processObjectSelected(pendingObjectSelectedEventRef.current);
         pendingObjectSelectedEventRef.current = null;
         isPendingObjectSelectedRef.current = false;
       }
     }, PICK_WAIT_TIMEOUT);
   }
-  
+
   // Extract the main processing logic to a separate function
   function processObjectSelected(event: any) {
     // Check if handler is temporarily disabled - only relevant for None intention
@@ -403,26 +423,26 @@ export function useHumanAPI({
     ) {
       return;
     }
-    
+
     // Add timestamp for this call
     const now = Date.now();
     callTimestamps.push(now);
-    
+
     // Remove timestamps older than our window
     while (callTimestamps.length > 0 && callTimestamps[0] < now - CALL_WINDOW) {
       callTimestamps.shift();
     }
-    
+
     const maxCalls =
       intentionRef.current === ProgramIntention.Recovery
         ? MAX_CALLS_RECOVERY
         : MAX_CALLS_EXERCISE;
-    
+
     // Check for infinite loop
     if (callTimestamps.length >= maxCalls) {
       return;
     }
-    
+
     // Process the event based on intention
     switch (intentionRef.current) {
       case ProgramIntention.Exercise:
