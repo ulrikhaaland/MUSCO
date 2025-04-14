@@ -91,6 +91,8 @@ export function useHumanAPI({
   const PICK_WAIT_TIMEOUT = 100; // ms to wait for pick to complete
   const expectingProgrammaticSelectionRef = useRef<boolean>(false);
   const programmaticSelectionIdRef = useRef<string | null>(null);
+  const lastPickTimeRef = useRef<number>(0);
+  const PICK_RATE_LIMIT = 500; // ms between allowed picks
 
   // Add a function to reset the model state
   const resetModel = useCallback((resetSelectionState: boolean = false) => {
@@ -275,20 +277,37 @@ export function useHumanAPI({
 
   function onObjectPicked(event: any) {
     if (!event.position) return;
-
+    
+    // Apply rate limiting - only allow one pick every PICK_RATE_LIMIT ms
+    const now = Date.now();
+    if (now - lastPickTimeRef.current < PICK_RATE_LIMIT) {
+      console.log('Rate limiting onObjectPicked, skipping');
+      // Important: Don't set isLowerBackPickRef when rate limiting
+      // to prevent intercepting onObjectSelected
+      return;
+    }
+    
+    // Update last pick time
+    lastPickTimeRef.current = now;
+    
     const pickedId = event.objectId;
-
+    
     if (!pickedId) return;
     const pos = event.position;
-
-    if (!pickedId.includes('latissimus_dorsi') && !pickedId.includes('gluteus'))
+    
+    if (
+      !pickedId.includes('latissimus_dorsi') &&
+      !pickedId.includes('gluteus')
+    ) {
+      console.log(pendingObjectSelectedEventRef.current);
       return;
-
+    }
+    
     if (!pos) {
       console.warn('No 3D intersection returned from scene.pick');
       return;
     }
-
+    
     const isLikelyLowerBack = pos.y < 111 && pos.y > 100;
     console.log(
       'onObjectPicked - isLikelyLowerBack:',
@@ -296,10 +315,10 @@ export function useHumanAPI({
       'pos.y:',
       pos.y
     );
-
+    
     // Set our flag for onObjectSelected to check
     isLowerBackPickRef.current = isLikelyLowerBack;
-
+    
     if (isLikelyLowerBack) {
       // Check if pelvis group is already selected - if so, return early
       if (previousSelectedPartGroupRef.current?.id === 'pelvis') {
@@ -311,22 +330,22 @@ export function useHumanAPI({
         isPendingObjectSelectedRef.current = false;
         return;
       }
-
+      
       const gender = initialGender;
       const lowerBackId = getGenderedId(
         'connective_tissue-articular_cartilage_of_right_inferior_articular_facet_of_L3_vertebra_ID',
         gender
       );
-
+      
       // Set flags to indicate we're expecting a programmatic selection
       expectingProgrammaticSelectionRef.current = true;
       programmaticSelectionIdRef.current = lowerBackId;
-
+      
       humanRef.current?.send('scene.selectObjects', {
         [lowerBackId]: true,
         replace: true,
       });
-
+      
       // Clear any pending onObjectSelected event after lower back selection
       pendingObjectSelectedEventRef.current = null;
       isPendingObjectSelectedRef.current = false;
