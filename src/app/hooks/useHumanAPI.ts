@@ -93,6 +93,7 @@ export function useHumanAPI({
   const programmaticSelectionIdRef = useRef<string | null>(null);
   const lastPickTimeRef = useRef<number>(0);
   const PICK_RATE_LIMIT = 500; // ms between allowed picks
+  const isPickRateLimitedRef = useRef<boolean>(false);
 
   // Add a function to reset the model state
   const resetModel = useCallback((resetSelectionState: boolean = false) => {
@@ -277,11 +278,22 @@ export function useHumanAPI({
 
   function onObjectPicked(event: any) {
     if (!event.position) return;
+
+    isPickRateLimitedRef.current = true;
+
     
     // Apply rate limiting - only allow one pick every PICK_RATE_LIMIT ms
     const now = Date.now();
     if (now - lastPickTimeRef.current < PICK_RATE_LIMIT) {
       console.log('Rate limiting onObjectPicked, skipping');
+      // Flag that we're currently rate-limited
+      isPickRateLimitedRef.current = true;
+      
+      // Reset the rate limit flag after the timeout expires
+      setTimeout(() => {
+        isPickRateLimitedRef.current = false;
+      }, PICK_RATE_LIMIT - (now - lastPickTimeRef.current));
+      
       // Important: Don't set isLowerBackPickRef when rate limiting
       // to prevent intercepting onObjectSelected
       return;
@@ -289,6 +301,7 @@ export function useHumanAPI({
     
     // Update last pick time
     lastPickTimeRef.current = now;
+    isPickRateLimitedRef.current = false;
     
     const pickedId = event.objectId;
     
@@ -370,6 +383,11 @@ export function useHumanAPI({
 
   function onObjectSelected(event: any) {
     if (event.mode === 'query') return;
+
+    if (isPickRateLimitedRef.current) {
+      processObjectSelected(event);
+      return;
+    }
 
     // Check if this is a programmatic selection we were expecting
     if (
