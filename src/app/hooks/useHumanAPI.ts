@@ -145,24 +145,6 @@ export function useHumanAPI({
   const MAX_CALLS_EXERCISE = 10; // Maximum number of calls allowed in the window (increased from 5)
   const MAX_CALLS_RECOVERY = 5; // Maximum number of calls allowed in the window (increased from 5)
   // Function to check if camera has moved
-  const checkCameraPosition = useCallback(() => {
-    if (!humanRef.current || !initialCameraRef.current) return;
-
-    humanRef.current.send('camera.info', (currentCamera: CameraPosition) => {
-      const initial = initialCameraRef.current!;
-
-      // Check if camera has moved significantly (allowing for small floating point differences)
-      const hasMoved =
-        Math.abs(currentCamera.position.x - initial.position.x) > 0.1 ||
-        Math.abs(currentCamera.position.y - initial.position.y) > 0.1 ||
-        Math.abs(currentCamera.position.z - initial.position.z) > 0.1 ||
-        Math.abs(currentCamera.target.x - initial.target.x) > 0.1 ||
-        Math.abs(currentCamera.target.y - initial.target.y) > 0.1 ||
-        Math.abs(currentCamera.target.z - initial.target.z) > 0.1;
-
-      setNeedsReset(hasMoved);
-    });
-  }, []);
 
   useEffect(() => {
     let script: HTMLScriptElement | null = null;
@@ -278,71 +260,82 @@ export function useHumanAPI({
 
   function onObjectPicked(event: any) {
     if (!event.position) return;
-    
+
     // Apply rate limiting
     const now = Date.now();
     if (now - lastPickTimeRef.current < PICK_RATE_LIMIT) {
       console.log('Rate limiting onObjectPicked, skipping');
       // Flag that we're currently rate-limited
       isPickRateLimitedRef.current = true;
-      
+
       // Reset the rate limit flag after the timeout expires
       setTimeout(() => {
         isPickRateLimitedRef.current = false;
       }, PICK_RATE_LIMIT - (now - lastPickTimeRef.current));
-      
+
       return;
     }
-    
+
     // Update last pick time
     lastPickTimeRef.current = now;
     isPickRateLimitedRef.current = false;
-    
+
     const pickedId = event.objectId;
     if (!pickedId) return;
-    
+
     // Only process latissimus_dorsi and gluteus muscles
-    if (!pickedId.includes('latissimus_dorsi') && !pickedId.includes('gluteus')) {
+    if (
+      !pickedId.includes('latissimus_dorsi') &&
+      !pickedId.includes('gluteus')
+    ) {
       console.log('Not handling in onObjectPicked - not latissimus/gluteus');
       return;
     }
-    
+
     const pos = event.position;
     if (!pos) {
       console.warn('No 3D intersection returned from scene.pick');
       return;
     }
-    
+
     // Check if it's likely a lower back position
     const isLikelyLowerBack = pos.y < 111 && pos.y > 100;
-    console.log('onObjectPicked - isLikelyLowerBack:', isLikelyLowerBack, 'pos.y:', pos.y);
-    
+    console.log(
+      'onObjectPicked - isLikelyLowerBack:',
+      isLikelyLowerBack,
+      'pos.y:',
+      pos.y
+    );
+
     // Set flag for object selected to check
     isLowerBackPickRef.current = isLikelyLowerBack;
-    
+
     // Only apply special handling if it's the lower back and pelvis isn't already selected
-    if (isLikelyLowerBack && previousSelectedPartGroupRef.current?.id !== 'pelvis') {
+    if (
+      isLikelyLowerBack &&
+      previousSelectedPartGroupRef.current?.id !== 'pelvis'
+    ) {
       const gender = initialGender;
       const lowerBackId = getGenderedId(
         'connective_tissue-articular_cartilage_of_right_inferior_articular_facet_of_L3_vertebra_ID',
         gender
       );
-      
+
       // Set flags to indicate we're expecting a programmatic selection
       expectingProgrammaticSelectionRef.current = true;
       programmaticSelectionIdRef.current = lowerBackId;
-      
+
       // Select the lower back
       humanRef.current?.send('scene.selectObjects', {
         [lowerBackId]: true,
         replace: true,
       });
-      
-      // Clear any pending onObjectSelected event 
+
+      // Clear any pending onObjectSelected event
       pendingObjectSelectedEventRef.current = null;
       isPendingObjectSelectedRef.current = false;
     }
-    
+
     // Reset the flag after a timeout
     setTimeout(() => {
       isLowerBackPickRef.current = false;
@@ -351,16 +344,19 @@ export function useHumanAPI({
 
   function onObjectSelected(event: any) {
     if (event.mode === 'query') return;
-    
+
     // If we're rate limited, process immediately
     if (isPickRateLimitedRef.current) {
       console.log('Processing immediately - pick is rate limited');
       processObjectSelected(event);
       return;
     }
-    
+
     // Check if this is a programmatic selection we were expecting
-    if (expectingProgrammaticSelectionRef.current && programmaticSelectionIdRef.current) {
+    if (
+      expectingProgrammaticSelectionRef.current &&
+      programmaticSelectionIdRef.current
+    ) {
       const selectedIds = Object.keys(event);
       if (selectedIds.includes(programmaticSelectionIdRef.current)) {
         console.log('Processing programmatic lower back selection');
@@ -372,32 +368,43 @@ export function useHumanAPI({
         return;
       }
     }
-    
+
     // Get the selected object ID
     const selectedIds = Object.keys(event);
     if (selectedIds.length > 0) {
       const selectedId = selectedIds[0];
-      
+
       // Process immediately if:
       // 1. The ID is NOT latissimus_dorsi or gluteus, OR
       // 2. Pelvis is already selected
-      const notSpecialMuscle = !selectedId.includes('latissimus_dorsi') && !selectedId.includes('gluteus');
-      const isPelvisSelected = previousSelectedPartGroupRef.current?.id === 'pelvis';
-      
-      if (notSpecialMuscle || isPelvisSelected || isPickRateLimitedRef.current) {
-        console.log('Processing selection immediately:', 
-          notSpecialMuscle ? 'not special muscle' : 
-          isPelvisSelected ? 'pelvis already selected' :
-          'pick is rate limited');
+      const notSpecialMuscle =
+        !selectedId.includes('latissimus_dorsi') &&
+        !selectedId.includes('gluteus');
+      const isPelvisSelected =
+        previousSelectedPartGroupRef.current?.id === 'pelvis';
+
+      if (
+        notSpecialMuscle ||
+        isPelvisSelected ||
+        isPickRateLimitedRef.current
+      ) {
+        console.log(
+          'Processing selection immediately:',
+          notSpecialMuscle
+            ? 'not special muscle'
+            : isPelvisSelected
+            ? 'pelvis already selected'
+            : 'pick is rate limited'
+        );
         processObjectSelected(event);
         return;
       }
     }
-    
+
     // Otherwise, store the event and set the pending flag
     pendingObjectSelectedEventRef.current = event;
     isPendingObjectSelectedRef.current = true;
-    
+
     // Wait for onObjectPicked to complete
     setTimeout(() => {
       // Skip if this was handled by a lower back pick
@@ -407,9 +414,12 @@ export function useHumanAPI({
         isPendingObjectSelectedRef.current = false;
         return;
       }
-      
+
       // Process the event if still pending
-      if (isPendingObjectSelectedRef.current && pendingObjectSelectedEventRef.current) {
+      if (
+        isPendingObjectSelectedRef.current &&
+        pendingObjectSelectedEventRef.current
+      ) {
         processObjectSelected(pendingObjectSelectedEventRef.current);
         pendingObjectSelectedEventRef.current = null;
         isPendingObjectSelectedRef.current = false;
@@ -539,17 +549,6 @@ export function useHumanAPI({
           return acc;
         }, {})
       );
-
-      // Handle the specific deselectIds with a delay if needed
-      if (group.deselectIds.length > 0) {
-        const delayedDeselectMap = group.deselectIds.reduce((acc, id) => {
-          const genderedId = getGenderedId(id, gender);
-          acc[genderedId] = false;
-          return acc;
-        }, {});
-
-        // safeDeselectObjects(delayedDeselectMap, {}, true);
-      }
 
       const selectedIdNeutral = getNeutralId(selectedId);
 
@@ -741,17 +740,7 @@ export function useHumanAPI({
         replace: true,
       };
 
-      // if (!isDeselection) {
-      //   Object.assign(finalSelectMap, {
-      //     [selectedId]: true,
-      //   });
-      // }
-
       humanRef.current?.send('scene.selectObjects', finalSelectMap);
-      // humanRef.current?.send('scene.objectsSelected', onObjectSelected);
-      // human.send('scene.selectObjects', {
-      //   [selectedId]: false,
-      // });
 
       // Store the group in ref
       previousSelectedPartGroupRef.current = group;
@@ -992,7 +981,6 @@ export function useHumanAPI({
 
     return selectionMap;
   }
-
   // Create a helper function to safely send scene.selectObjects commands
   const safeSelectObjects = (
     selectionMap: Record<string, boolean>,
@@ -1016,38 +1004,6 @@ export function useHumanAPI({
     setTimeout(() => {
       if (withSafeSelect) {
         disableSelectionHandlerRef.current = false;
-      }
-    }, 100);
-  };
-
-  // Create a helper function to safely deselect objects with a delay
-  const safeDeselectObjects = (
-    deselectMap: Record<string, boolean>,
-    options = {},
-    withSafeDeselect = false
-  ) => {
-    if (!humanRef.current) return;
-
-    // Disable the selection handler temporarily
-    if (withSafeDeselect) {
-      disableSelectionHandlerRef.current = true;
-    }
-
-    // Apply the deselection with a delay to ensure it works properly
-    setTimeout(() => {
-      if (humanRef.current) {
-        humanRef.current.send('scene.selectObjects', {
-          ...deselectMap,
-          replace: true,
-          ...options,
-        });
-
-        // Re-enable the handler after a short delay
-        setTimeout(() => {
-          if (withSafeDeselect) {
-            disableSelectionHandlerRef.current = false;
-          }
-        }, 100);
       }
     }, 100);
   };
