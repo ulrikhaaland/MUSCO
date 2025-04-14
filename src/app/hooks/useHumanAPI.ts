@@ -92,7 +92,7 @@ export function useHumanAPI({
   const expectingProgrammaticSelectionRef = useRef<boolean>(false);
   const programmaticSelectionIdRef = useRef<string | null>(null);
   const lastPickTimeRef = useRef<number>(0);
-  const PICK_RATE_LIMIT = 500; // ms between allowed picks
+  const PICK_RATE_LIMIT = 800; // ms between allowed picks
   const isPickRateLimitedRef = useRef<boolean>(false);
 
   // Add a function to reset the model state
@@ -383,6 +383,8 @@ export function useHumanAPI({
 
   function onObjectSelected(event: any) {
     if (event.mode === 'query') return;
+    console.log(event);
+    console.log('onObjectSelected', isPickRateLimitedRef.current);
 
     if (isPickRateLimitedRef.current) {
       processObjectSelected(event);
