@@ -14,6 +14,8 @@ import { IntentionQuestion } from './components/ui/IntentionQuestion';
 import { LoadingSpinner } from './components/ui/LoadingSpinner';
 import { ErrorDisplay } from './components/ui/ErrorDisplay';
 import { AuthForm } from './components/auth/AuthForm';
+import { useTranslation } from './i18n';
+import LanguageSwitcher from './components/ui/LanguageSwitcher';
 
 // Create a separate component for search params functionality
 function HomeContent() {
@@ -33,6 +35,7 @@ function HomeContent() {
     programStatus,
     pendingQuestionnaire,
   } = useUser();
+  const { t } = useTranslation();
   const [showAuthForm, setShowAuthForm] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -45,9 +48,9 @@ function HomeContent() {
   // Set page title
   useEffect(() => {
     if (typeof document !== 'undefined') {
-      document.title = 'MUSCO - Create Your Program';
+      document.title = t('home.pageTitle');
     }
-  }, []);
+  }, [t]);
 
   // Reset intention to None when navigating to home page if not already None
   useEffect(() => {
@@ -55,12 +58,12 @@ function HomeContent() {
     if (newParam !== 'true' && intention !== ProgramIntention.None) {
       completeReset();
       setShouldResetModel(true);
-      
+
       // Reset the flag after a short delay
       const timer = setTimeout(() => {
         setShouldResetModel(false);
       }, 500);
-      
+
       return () => clearTimeout(timer);
     }
   }, [completeReset, newParam, intention]);
@@ -78,7 +81,6 @@ function HomeContent() {
         router.push('/program');
       }
       // asd
-      
     }
   }, [
     user,
@@ -165,7 +167,7 @@ function HomeContent() {
   const isLoading = authLoading || userLoading;
 
   if (isLoading) {
-    return <LoadingSpinner fullScreen message="Loading..." />;
+    return <LoadingSpinner fullScreen message={t('common.loading')} />;
   }
 
   if (authError) {
@@ -175,15 +177,15 @@ function HomeContent() {
   return (
     <div className="h-full">
       {/* Only render HumanViewer when not showing IntentionQuestion and not showing QuestionnaireAuthForm */}
-      {!(newParam === 'true' && !intentionSelected) && 
-       !(showAuthForm && pendingQuestionnaire) && (
-        <HumanViewer 
-          gender={gender} 
-          onGenderChange={handleGenderChange}
-          shouldResetModel={shouldResetModel} 
-        />
-      )}
-      
+      {!(newParam === 'true' && !intentionSelected) &&
+        !(showAuthForm && pendingQuestionnaire) && (
+          <HumanViewer
+            gender={gender}
+            onGenderChange={handleGenderChange}
+            shouldResetModel={shouldResetModel}
+          />
+        )}
+
       {/* Conditionally overlay the auth form */}
       {showAuthForm && (
         <div className="fixed inset-0 bg-gray-900/95 backdrop-blur-sm z-50 flex items-center justify-center">
@@ -201,7 +203,7 @@ function HomeContent() {
           </div>
         </div>
       )}
-      
+
       {newParam === 'true' && !intentionSelected && (
         <IntentionQuestion
           onSelect={(selectedIntention) => {
@@ -216,6 +218,8 @@ function HomeContent() {
 
 // Main component that wraps the HomeContent with suspense
 export default function Home() {
+  const { t } = useTranslation();
+
   return (
     <ErrorBoundary>
       <Suspense fallback={<LoadingSpinner fullScreen />}>

@@ -24,6 +24,11 @@ body {
   overflow: hidden;
 }
 
+/* Hide navigation menu when video modal is open */
+body.video-modal-open .fixed.bottom-0.left-0.z-50.w-full.border-t.border-gray-800.bg-gray-900 {
+  display: none !important;
+}
+
 * {
   margin: 0;
   padding: 0;

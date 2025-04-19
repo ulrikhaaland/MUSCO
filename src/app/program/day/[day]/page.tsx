@@ -32,6 +32,10 @@ function isVimeoUrl(url: string): boolean {
   return url.includes('vimeo.com') || url.includes('player.vimeo.com');
 }
 
+function isDropboxUrl(url: string): boolean {
+  return url.includes('dropbox.com');
+}
+
 function getVideoEmbedUrl(url: string): string {
   // YouTube URL handling
   const youtubeRegExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
@@ -39,6 +43,19 @@ function getVideoEmbedUrl(url: string): string {
 
   if (youtubeMatch && youtubeMatch[2].length === 11) {
     return `https://www.youtube.com/embed/${youtubeMatch[2]}`;
+  }
+  
+  // Dropbox URL handling
+  if (isDropboxUrl(url)) {
+    // Transform Dropbox URL to make it directly playable
+    // Change dl=0 to dl=1 or add raw=1 if not present
+    let embedUrl = url;
+    if (embedUrl.includes('dl=0')) {
+      embedUrl = embedUrl.replace('dl=0', 'dl=1');
+    } else if (!embedUrl.includes('dl=1')) {
+      embedUrl += embedUrl.includes('?') ? '&dl=1' : '?dl=1';
+    }
+    return embedUrl;
   }
   
   // For non-YouTube URLs, return as is
@@ -158,6 +175,9 @@ export default function DayDetailPage() {
       if (isVimeoUrl(exercise.videoUrl)) {
         // For Vimeo links, search YouTube instead
         await searchYouTubeAndUpdateUrl();
+      } else if (isDropboxUrl(exercise.videoUrl)) {
+        // Handle Dropbox links
+        setVideoUrl(getVideoEmbedUrl(exercise.videoUrl));
       } else {
         // For YouTube or other URLs, use as normal
         setVideoUrl(getVideoEmbedUrl(exercise.videoUrl));
@@ -176,22 +196,35 @@ export default function DayDetailPage() {
     router.push(`/program`);
   };
 
-  // Render video modal
+  // Hide navigation menu when video is open
+  useEffect(() => {
+    if (videoUrl) {
+      // Hide navigation menu by adding a class to the body
+      document.body.classList.add('video-modal-open');
+      
+      return () => {
+        // Remove the class when component unmounts or video closes
+        document.body.classList.remove('video-modal-open');
+      };
+    }
+  }, [videoUrl]);
+
   const renderVideoModal = () => {
     if (!videoUrl) return null;
 
     return (
       <div
-        className="fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center z-[9999]"
+        className="fixed inset-0 bg-black/95 backdrop-blur-sm flex items-center justify-center z-[10000]"
         onClick={closeVideo}
       >
         <div
-          className="relative w-full max-w-4xl mx-4"
+          className="relative w-full h-full flex items-center justify-center"
           onClick={(e) => e.stopPropagation()}
         >
           <button
             onClick={closeVideo}
-            className="absolute -top-12 right-0 text-white/80 hover:text-white p-2 transition-colors duration-200"
+            className="absolute top-16 right-6 bg-black/70 rounded-full p-3 text-white/90 hover:text-white hover:bg-black/90 transition-colors duration-200 z-[10001] shadow-lg"
+            aria-label="Close video"
           >
             <svg
               className="w-8 h-8"
@@ -207,16 +240,28 @@ export default function DayDetailPage() {
               />
             </svg>
           </button>
-          <div className="w-full rounded-2xl overflow-hidden shadow-2xl">
-            <div className="relative pt-[56.25%]">
-              <iframe
-                className="absolute inset-0 w-full h-full"
+          {isDropboxUrl(videoUrl) ? (
+            <div className="w-full h-full flex items-center justify-center">
+              <video
+                className="max-h-full max-w-full h-full object-contain"
                 src={videoUrl}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              ></iframe>
+                controls
+                autoPlay
+                playsInline
+              ></video>
             </div>
-          </div>
+          ) : (
+            <div className="w-full max-w-4xl mx-4 rounded-2xl overflow-hidden shadow-2xl">
+              <div className="relative pt-[56.25%]">
+                <iframe
+                  className="absolute inset-0 w-full h-full"
+                  src={videoUrl}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                ></iframe>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     );

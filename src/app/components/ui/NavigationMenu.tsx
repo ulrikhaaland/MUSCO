@@ -7,6 +7,8 @@ import { useApp } from '@/app/context/AppContext';
 import { useState, useEffect, useRef, Suspense } from 'react';
 import { LoadingSpinner } from './LoadingSpinner';
 import { ProgramStatus } from '@/app/types/program';
+import { useTranslation } from '@/app/i18n';
+import LanguageSwitcher from './LanguageSwitcher';
 
 // Create a separate component that uses the search params
 function NavigationMenuContent() {
@@ -16,6 +18,7 @@ function NavigationMenuContent() {
   const { user, logOut } = useAuth();
   const { program } = useUser();
   const { completeReset } = useApp();
+  const { t } = useTranslation();
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const drawerRef = useRef<HTMLDivElement>(null);
@@ -42,7 +45,7 @@ function NavigationMenuContent() {
   // Navigation items
   const navItems = [
     {
-      name: 'Home',
+      name: t('nav.home'),
       path: '/',
       icon: (
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -56,7 +59,7 @@ function NavigationMenuContent() {
       ),
     },
     {
-      name: user && program ? 'Create New Program' : 'Create Program',
+      name: user && program ? t('nav.createNewProgram') : t('nav.createProgram'),
       path: '/?new=true',
       icon: (
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -70,7 +73,7 @@ function NavigationMenuContent() {
       ),
     },
     {
-      name: 'Programs',
+      name: t('nav.programs'),
       path: '/programs',
       icon: (
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -85,7 +88,7 @@ function NavigationMenuContent() {
       disabled: !user,
     },
     {
-      name: 'Calendar',
+      name: t('nav.calendar'),
       path: '/program/calendar',
       icon: (
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -100,7 +103,7 @@ function NavigationMenuContent() {
       disabled: !program,
     },
     {
-      name: 'Profile',
+      name: t('nav.profile'),
       path: '/profile',
       icon: (
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -113,6 +116,20 @@ function NavigationMenuContent() {
         </svg>
       ),
       disabled: !user,
+    },
+    {
+      name: t('admin.translationManagement'),
+      path: '/admin/translations',
+      icon: (
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"
+          />
+        </svg>
+      ),
     },
   ];
 
@@ -259,8 +276,14 @@ function NavigationMenuContent() {
                     d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
                   />
                 </svg>
-                Sign out
+                {t('auth.signOut')}
               </button>
+              
+              {/* Language Switcher */}
+              <div className="mt-4 px-4">
+                <p className="text-sm text-gray-400 mb-2">{t('common.language')}</p>
+                <LanguageSwitcher showFullNames />
+              </div>
             </div>
           ) : (
             <div className="p-4 border-t border-gray-800">
@@ -276,8 +299,14 @@ function NavigationMenuContent() {
                     d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"
                   />
                 </svg>
-                Sign in
+                {t('auth.signIn')}
               </button>
+              
+              {/* Language Switcher */}
+              <div className="mt-4 px-4">
+                <p className="text-sm text-gray-400 mb-2">{t('common.language')}</p>
+                <LanguageSwitcher showFullNames />
+              </div>
             </div>
           )}
         </div>
