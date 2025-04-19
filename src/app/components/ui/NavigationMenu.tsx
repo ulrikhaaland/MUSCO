@@ -116,21 +116,7 @@ function NavigationMenuContent() {
         </svg>
       ),
       disabled: !user,
-    },
-    {
-      name: t('admin.translationManagement'),
-      path: '/admin/translations',
-      icon: (
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"
-          />
-        </svg>
-      ),
-    },
+    }
   ];
 
   const isActive = (path: string, name: string) => {
@@ -138,32 +124,43 @@ function NavigationMenuContent() {
     const currentBasePath = pathname;
     const currentParams = searchParams?.toString() || '';
     const pathWithoutQuery = path.split('?')[0];
-    const pathQuery = path.split('?')[1] || '';
     
-    // Special case for Create Program to highlight when on home page with new=true
-    if (pathWithoutQuery === '/' && (name === 'Create Program' || name === 'Create New Program')) {
+    // Check for exact matches first (most specific routes)
+    if (path === '/admin/translations' && currentBasePath === '/admin/translations') {
+      return true;
+    }
+    
+    if (path === '/program/calendar' && currentBasePath === '/program/calendar') {
+      return true;
+    }
+    
+    if (path === '/programs' && currentBasePath === '/programs') {
+      return true;
+    }
+    
+    if (path === '/profile' && currentBasePath === '/profile') {
+      return true;
+    }
+    
+    // Special case for Create Program - only active when on home with new=true
+    if (path === '/?new=true') {
       return currentBasePath === '/' && currentParams.includes('new=true');
     }
     
-    // Special case for Home to highlight when on program page if user has a program,
-    // but NOT when we're on the home page with new=true query
-    if (pathWithoutQuery === '/' && name === 'Home') {
-      // Highlight Home tab when on program page if user has a program
-      if (program && (pathname === '/program' || pathname.startsWith('/program/day/'))) {
+    // Home is active in these cases:
+    // 1. On exact home route without new=true
+    // 2. On /program route (when viewing program)
+    if (path === '/') {
+      // For program pages, Home tab should be active
+      if (program && (currentBasePath === '/program' || currentBasePath.startsWith('/program/day/'))) {
         return true;
       }
-      // Only highlight Home when on root path without new=true query
-      return pathname === '/' && !currentParams.includes('new=true');
+      // On home page without new=true parameter
+      return currentBasePath === '/' && !currentParams.includes('new=true');
     }
     
-    if (path === '/program/calendar') {
-      return pathname === '/program/calendar';
-    }
-    
-    if (path === '/programs') {
-      return pathname === '/programs';
-    }
-    return pathname.startsWith(pathWithoutQuery);
+    // If none of the specific cases match, no match
+    return false;
   };
 
   const handleNavigation = (path: string, disabled: boolean = false) => {
