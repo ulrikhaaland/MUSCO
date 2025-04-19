@@ -1,19 +1,19 @@
-import { ExerciseGroup } from '../types/exercises';
-
 // This file was generated automatically by the exercise scraper
 // Source: https://www.muscleandstrength.com/exercises/quads
 // Total exercises: 189
 // Generated on: 2025-03-15T15:29:32.806Z
 
+import { ExerciseGroup } from '@/app/types/program';
+
 export const quadsExercises: ExerciseGroup = {
-  bodyPart: 'Quads',
+  bodyPart: 'Upper Legs',
   exercises: [
     {
       id: 'quads-1',
       name: 'Barbell Back Squat',
       description:
         'The squat is the king of all exercises, working over 256 muscles in one movement! From bodybuilders to powerlifters to competitive athletes, the squat is a staple compound exercise and should be in every workout plan. For powerlifters, it is known as one of the “big three” lifts which includes the squat, deadlift, and bench press. For athletes, having an explosive squat is a good indicator for on field/court performance. And for bodybuilders, the squat is a compound exercise that targets nearly every muscle of your lower body and core. The squat directly targets the muscles of the quads, but also involves the hamstrings, glutes, back, and core as well as muscles of the shoulders and arms to a lesser degree. Not everyone is built to perform the traditional barbell back squat and it can result in some pain for certain individuals. Over the years, several squatting variations have been developed to help everyone be able to train this critical movement pattern safely. Some of the squat variations include: Bodyweight Squat Goblet Squat Landmine Squat Front Squat Dumbbell Squat Machine Hack Squat Smith Machine Squat The emphasis of the squat can be switched from the quads to the hamstrings by your foot placement. Some wear shoes with an elevated heel (or elevate their heels on plates) to focus more on the quads. Others keep a flat foot to put more pressure on the hamstrings. At the end of the day it is important that you pick a squat variation and foot placement that works best for you and that you can perform safely. Want to improve your squat? Try our 12 Week Super Squat Workout.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'intermediate',
       equipment: ['Barbell'],
@@ -41,14 +41,14 @@ export const quadsExercises: ExerciseGroup = {
         'Looking down: As soon as you look down your back rounds, simple as that.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
         'Recent surgery',
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
-      muscles: ['Quads', 'Calves', 'Glutes', 'Hamstrings', 'Lower Back'],
+      muscles: ['Upper Legs', 'Calves', 'Glutes', 'Hamstrings', 'Lower Back'],
       alternatives: [
         'quads-16',
         'quads-24',
@@ -61,9 +61,10 @@ export const quadsExercises: ExerciseGroup = {
       restBetweenSets: 60,
       forceType: 'Push',
       mechanics: 'Compound',
-      videoUrl: 'https://www.youtube.com/embed/R2dMsNhN3DE?rel=0',
+      videoUrl:
+        'https://www.dropbox.com/scl/fi/0o1aqcshjm8aaxnyd55g6/IMG_2999.MOV?rlkey=b16gje0nhjn8s4ljyp06fkjgy&st=g87o057p&dl=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 5100000,
       popularity: 'high',
     },
@@ -71,7 +72,7 @@ export const quadsExercises: ExerciseGroup = {
       id: 'quads-2',
       name: 'Dumbbell Squat',
       description: 'No description available',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'beginner',
       equipment: ['Dumbbell'],
@@ -99,14 +100,14 @@ export const quadsExercises: ExerciseGroup = {
         'Never look down. As soon as you look down your back rounds, simple as that.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
         'Recent surgery',
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
-      muscles: ['Quads', 'Calves', 'Glutes', 'Hamstrings', 'Lower Back'],
+      muscles: ['Upper Legs', 'Calves', 'Glutes', 'Hamstrings', 'Lower Back'],
       alternatives: ['quads-6', 'quads-15', 'quads-25', 'quads-175', 'quads-3'],
       repetitions: 8,
       sets: 3,
@@ -114,7 +115,7 @@ export const quadsExercises: ExerciseGroup = {
       forceType: 'Push',
       mechanics: 'Compound',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 3100000,
       popularity: 'high',
     },
@@ -123,7 +124,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Dumbbell Goblet Squat',
       description:
         'The dumbbell goblet squat is a variation of the squat and an exercise used to build the muscles of the legs. In particular, the dumbbell goblet squat will place a lot of emphasis on the quads. The squat movement pattern is a foundational movement and should be performed by most capable individuals throughout their lives. So, it is important to find a variation that is comfortable for you to perform, and continuously work on it. You can include the dumbbell goblet squat in your leg workouts or full body workouts.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'beginner',
       equipment: ['Dumbbell'],
@@ -145,7 +146,7 @@ export const quadsExercises: ExerciseGroup = {
         'Don’t push the knees out excessively but ensure they track roughly over or slightly outside the 2nd toe.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -153,7 +154,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -169,7 +170,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/5Y3KW5rWMh4?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 2700000,
       popularity: 'high',
     },
@@ -178,7 +179,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Leg Extension',
       description:
         'The seated leg extension is an isolation exercise and one used to target the muscles of the quads. This exercise can be particularly hard on the knees. So, for those with prior knee issues, it may be beneficial to stick with other movements, preferably compound, to target your quads. The leg extension is a great exercise for quad development and may be beneficial to include in your workout routines if your goals are more aesthetics-driven. The leg extension can be utilized in both leg workouts and full body workouts.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'beginner',
       equipment: ['Machine'],
@@ -196,12 +197,12 @@ export const quadsExercises: ExerciseGroup = {
         'Pointing the toes can help to enhance mind muscle connection.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
       ],
-      muscles: ['Quads'],
+      muscles: ['Upper Legs'],
       alternatives: ['quads-5', 'quads-9', 'quads-18', 'quads-27', 'quads-31'],
       repetitions: 12,
       sets: 3,
@@ -210,7 +211,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Isolation',
       videoUrl: 'https://www.youtube.com/embed/0fl1RRgJ83I?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 3000000,
       popularity: 'high',
     },
@@ -219,7 +220,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Leg Press',
       description:
         'The leg press is a variation of the squat and an exercise used to target the muscles of the leg. One can utilize the leg press to target both the quads and the hamstring muscle, depending on which portion of the foot they push through. The leg press is commonly thought of as a machine variation of the barbell back squat. The mechanics are fairly similar, however, the leg press does not completely mimic the movement pattern of the squat. Nor does it work all of the muscle groups that the squat does. The leg press is best used as an accessory movement to the squat, or as a primary movement in gyms which lack the necessary equipment to train the squat movement pattern.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'beginner',
       equipment: ['Machine'],
@@ -242,7 +243,7 @@ export const quadsExercises: ExerciseGroup = {
         'Toe angle is individual and will depend upon each individual’s hip anatomy and ankle mobility - experiment and adjust based upon feel.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -250,7 +251,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -264,9 +265,10 @@ export const quadsExercises: ExerciseGroup = {
       restBetweenSets: 60,
       forceType: 'Push (Bilateral)',
       mechanics: 'Compound',
-      videoUrl: 'https://www.youtube.com/embed/sEM_zo9w2ss?rel=0',
+      videoUrl:
+        'https://www.dropbox.com/scl/fi/0i9e5y1m14g26871u77cs/IMG_2991.MOV?rlkey=110dmmaqtltzdyl9uh7b9y5f4&st=7dpf9wci&dl=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 3100000,
       popularity: 'high',
     },
@@ -275,7 +277,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Dumbbell Lunge',
       description:
         'The dumbbell lunge targets the quadriceps, hamstrings, glutes, and calves while also engaging the core for stability. This exercise is a unilateral movement, meaning it primarily works one leg at a time. By challenging each leg independently, it improves lower body strength, balance, and coordination. It also mimics functional movements, improving flexibility and mobility in the hips and legs. The lunge is a foundational movement pattern that should be incorporated into every workout program and trained fairly frequently. Those looking to add lunges into their own workout programs should follow the single-leg sample progression scheme outlined in the notes below.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'beginner',
       equipment: ['Dumbbell'],
@@ -307,14 +309,14 @@ export const quadsExercises: ExerciseGroup = {
         'Pistol Squat',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
         'Recent surgery',
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
-      muscles: ['Quads', 'Calves', 'Glutes', 'Hamstrings'],
+      muscles: ['Upper Legs', 'Calves', 'Glutes', 'Hamstrings'],
       alternatives: ['quads-2', 'quads-15', 'quads-25', 'quads-175', 'quads-3'],
       repetitions: 8,
       sets: 3,
@@ -324,7 +326,7 @@ export const quadsExercises: ExerciseGroup = {
       videoUrl:
         'https://player.vimeo.com/video/877881961?badge=0&autopause=0&player_id=0&app_id=58479',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 2700000,
       popularity: 'high',
     },
@@ -333,7 +335,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Dumbbell Step Up',
       description:
         'The Dumbbell Step-Up is an effective lower-body exercise that targets the quads, hamstrings, and glutes while engaging the core for stability. Utilizing an elevated platform improves balance and coordination. This unilateral exercise helps correct muscle imbalances between legs and builds functional strength, making it ideal for athletes or anyone looking to enhance leg power and mobility. It"s also low-impact, making it easier on the joints compared to exercises like squats or lunges. Incorporating dumbbell step-ups into your routine can improve both strength and stability, supporting overall lower-body fitness.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'intermediate',
       equipment: ['Dumbbell'],
@@ -353,14 +355,14 @@ export const quadsExercises: ExerciseGroup = {
         'Ensure you fully extend your knee and hip at the top before bringing the other foot onto the step. This maximizes the glute and quad activation.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
         'Recent surgery',
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
-      muscles: ['Quads', 'Calves', 'Glutes', 'Hamstrings'],
+      muscles: ['Upper Legs', 'Calves', 'Glutes', 'Hamstrings'],
       alternatives: [
         'quads-83',
         'quads-90',
@@ -376,7 +378,7 @@ export const quadsExercises: ExerciseGroup = {
       videoUrl:
         'https://player.vimeo.com/video/877882016?badge=0&autopause=0&player_id=0&app_id=58479',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 1900000,
       popularity: 'high',
     },
@@ -385,10 +387,10 @@ export const quadsExercises: ExerciseGroup = {
       name: 'One Leg Dumbbell Squat (AKA Dumbbell Bulgarian Split Squat)',
       description:
         'The dumbbell Bulgarian split squat is an excellent exercise for those looking to build a stronger squat personal record. It can also be used to correct muscle imbalances some might experience over the years from strictly focusing on bilateral leg movements. The dumbbell Bulgarian split squat is a variation of the dumbbell lunge in which you elevate your rear foot. The elevation shifts the emphasis to the grounded foot and allows pressure to be placed directly on the quad. The dumbbell Bulgarian split squat is best considered an accessory movement, however, one can utilize them as a primary quad building exercise depending on their goals.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'intermediate',
-      equipment: ['Dumbbell'],
+      equipment: ['Dumbbell', 'Bodyweight'],
       steps: [
         'Set up in a split stance position while grasping dumbbells by your side with a neutral grip.',
         'Position the back foot on a bench or circular pad to increase the range of motion.',
@@ -405,7 +407,7 @@ export const quadsExercises: ExerciseGroup = {
         'You don’t need to feel like you have to be completely upright as you complete the movement. On the contrary, you should have a slight forward lean and focus on keeping your lumbar spine neutral.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -413,7 +415,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -431,7 +433,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/uqI3GVwfToU?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 1400000,
       popularity: 'high',
     },
@@ -440,7 +442,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Machine Hack Squat',
       description:
         'The machine hack squat is a variation of the squat and an exercise used to build the muscles of the legs. In particular, the hack squat will target the quads, hamstrings, glutes, and calves. Squat variations are extremely important to include in your workout routines, so it is important to find the right variation for you. This exercise is best incorporated into your leg workouts or full body workouts.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'beginner',
       equipment: ['Machine'],
@@ -462,7 +464,7 @@ export const quadsExercises: ExerciseGroup = {
         'Toe angle is individual and will depend upon each individual’s hip anatomy and ankle mobility - experiment and adjust based upon feel.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -470,7 +472,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -486,7 +488,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/63tboDKQksc?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 1500000,
       popularity: 'high',
     },
@@ -495,7 +497,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Dumbbell Walking Lunge',
       description:
         'The dumbbell walking lunge is a variation of the dumbbell lunge. It is a little more advanced than other lunge variations and should be worked up to. The dumbbell walking lunge is a complete leg builder. While it does emphasize growth in the quads, it also works the hamstrings, glutes, and many other muscles of the body due to its complexity. Some lifters opt for the dumbbell walking lunge over the barbell walking lunge, because it brings the weight to the sides of the body and prohibits excessive forward leaning often experienced when performing them with a barbell.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'advanced',
       equipment: ['Dumbbell'],
@@ -528,7 +530,7 @@ export const quadsExercises: ExerciseGroup = {
         'If you want to emphasize the glutes and hamstrings during any sort of lunge or split squat pattern, focus on taking a slightly larger step and drive up through the heel of the foot.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -536,7 +538,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -560,7 +562,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/uRSsOoZG9z8?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 365300,
       popularity: 'medium',
     },
@@ -569,7 +571,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Dumbbell Rear Lunge',
       description:
         'The dumbbell reverse lunge is a dumbbell lunge variation and an exercise used to target the muscles of the quads, as well as the rest of the muscles of the leg. The lunge is a foundational movement pattern that every lifter should strive to master.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'intermediate',
       equipment: ['Dumbbell'],
@@ -600,14 +602,14 @@ export const quadsExercises: ExerciseGroup = {
         'If you want to emphasize the glutes and hamstrings during any sort of lunge or split squat pattern, focus on taking a slightly larger step and drive up through the heel of the foot.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
         'Recent surgery',
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
-      muscles: ['Quads', 'Calves', 'Glutes', 'Hamstrings'],
+      muscles: ['Upper Legs', 'Calves', 'Glutes', 'Hamstrings'],
       alternatives: ['quads-8', 'quads-40', 'quads-94', 'quads-7', 'quads-10'],
       repetitions: 8,
       sets: 3,
@@ -616,7 +618,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/Ix9QZ3Pnneo?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 1000000,
       popularity: 'medium',
     },
@@ -625,7 +627,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Dumbbell Split Squat',
       description:
         'The dumbbell split squat is a dumbbell lunge variation and an exercise used to target the muscles of the quads, as well as the rest of the muscles of the leg. The split squat looks very similar to a lunge. However, the feet stay in one place for the most part during this exercise. Thus, some may refer to the dumbbell split squat as a static lunge.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'beginner',
       equipment: ['Dumbbell'],
@@ -643,14 +645,21 @@ export const quadsExercises: ExerciseGroup = {
         'You don’t need to feel like you have to be completely upright as you complete the movement. On the contrary, you should have a slight forward lean and focus on keeping your lumbar spine neutral.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
         'Recent surgery',
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
-      muscles: ['Quads', 'Abs', 'Adductors', 'Calves', 'Glutes', 'Hamstrings'],
+      muscles: [
+        'Upper Legs',
+        'Abs',
+        'Adductors',
+        'Calves',
+        'Glutes',
+        'Hamstrings',
+      ],
       alternatives: [
         'quads-34',
         'quads-128',
@@ -665,7 +674,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/EByFmf2LfY8?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 601200,
       popularity: 'medium',
     },
@@ -674,7 +683,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Front Squat',
       description:
         'The front squat is a variation of the squat and an exercise used to build the muscles of the legs. In particular, the front squat will place a lot of emphasis on the quads. The squat movement pattern is a foundational movement and should be performed by most capable individuals throughout their lives. So, it is important to find a variation that is comfortable for you to perform, and continuously work on it. You can include the front squat in your leg workouts or full body workouts.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'intermediate',
       equipment: ['Barbell'],
@@ -699,7 +708,7 @@ export const quadsExercises: ExerciseGroup = {
         'Don’t push the knees out excessively but ensure they track roughly over or slightly outside the 2nd toe.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -707,7 +716,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -730,7 +739,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/9xAkoz95IFE?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 1300000,
       popularity: 'high',
     },
@@ -739,7 +748,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Plie Squat',
       description:
         'The dumbbell plie squat is a variation of the goblet squat and an exercise used to strengthen the muscles of the legs. The plie squat will primarily target the quads, but will indirectly work the other muscles of the leg as well. This exercise can be used as a beginner exercise to help you learn the squat movement pattern prior to progressing to heavier and more technically demanding squat movements.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'beginner',
       equipment: ['Dumbbell'],
@@ -758,7 +767,7 @@ export const quadsExercises: ExerciseGroup = {
         'Don’t push the knees out excessively but ensure they track roughly over or slightly outside the 2nd toe.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -766,7 +775,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -782,7 +791,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/MsxLG_ZEoOQ?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 552300,
       popularity: 'medium',
     },
@@ -790,7 +799,7 @@ export const quadsExercises: ExerciseGroup = {
       id: 'quads-15',
       name: 'Frog Squat',
       description: 'No description available',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'beginner',
       equipment: ['Dumbbell'],
@@ -808,14 +817,14 @@ export const quadsExercises: ExerciseGroup = {
         'Move slowly and with control, focusing on proper form to avoid strain.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
         'Recent surgery',
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
-      muscles: ['Quads', 'Abs', 'Calves', 'Glutes', 'Hamstrings'],
+      muscles: ['Upper Legs', 'Abs', 'Calves', 'Glutes', 'Hamstrings'],
       alternatives: ['quads-2', 'quads-6', 'quads-25', 'quads-175', 'quads-3'],
       repetitions: 8,
       sets: 3,
@@ -825,7 +834,7 @@ export const quadsExercises: ExerciseGroup = {
       videoUrl:
         'https://player.vimeo.com/video/877881989?badge=0&autopause=0&player_id=0&app_id=58479',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 762200,
       popularity: 'medium',
     },
@@ -833,7 +842,7 @@ export const quadsExercises: ExerciseGroup = {
       id: 'quads-16',
       name: 'Barbell Lunge',
       description: 'No description available',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'intermediate',
       equipment: ['Barbell'],
@@ -856,14 +865,14 @@ export const quadsExercises: ExerciseGroup = {
         'Keep your head up and back straight throughout the exercise. Never allow your back to round.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
         'Recent surgery',
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
-      muscles: ['Quads', 'Calves', 'Hamstrings', 'Lower Back'],
+      muscles: ['Upper Legs', 'Calves', 'Hamstrings', 'Lower Back'],
       alternatives: ['quads-1', 'quads-24', 'quads-47', 'quads-48', 'quads-57'],
       repetitions: 8,
       sets: 3,
@@ -873,7 +882,7 @@ export const quadsExercises: ExerciseGroup = {
       videoUrl:
         'https://player.vimeo.com/video/877885592?badge=0&autopause=0&player_id=0&app_id=58479',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 538100,
       popularity: 'medium',
     },
@@ -881,7 +890,7 @@ export const quadsExercises: ExerciseGroup = {
       id: 'quads-17',
       name: 'Bodyweight Walking Lunge',
       description: 'No description available',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'beginner',
       equipment: ['Bodyweight'],
@@ -902,14 +911,14 @@ export const quadsExercises: ExerciseGroup = {
         'Keep your head up and back straight throughout the exercise. Never allow your back to round.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
         'Recent surgery',
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
-      muscles: ['Quads', 'Calves', 'Glutes', 'Hamstrings'],
+      muscles: ['Upper Legs', 'Calves', 'Glutes', 'Hamstrings'],
       alternatives: [
         'quads-21',
         'quads-155',
@@ -925,7 +934,7 @@ export const quadsExercises: ExerciseGroup = {
       videoUrl:
         'https://player.vimeo.com/video/877885520?badge=0&autopause=0&player_id=0&app_id=58479',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 468600,
       popularity: 'medium',
     },
@@ -934,7 +943,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Smith Machine Squat',
       description:
         'The Smith machine squat is a variation of the squat and an exercise used to build the muscles of the legs. In particular, the Smith machine squat will place a lot of emphasis on the quads. Utilizing a Smith machine will ensure the bar path remains in a fixed position, eliminating some of the need to stabilize during the exercise. You can include the Smith machine squat in your leg workouts or full body workouts.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'beginner',
       equipment: ['Machine'],
@@ -960,7 +969,7 @@ export const quadsExercises: ExerciseGroup = {
         'Don’t push the knees out excessively but ensure they track roughly over or slightly outside the 2nd toe.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -968,7 +977,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -984,7 +993,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/BtfMX4WqUBo?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 303800,
       popularity: 'medium',
     },
@@ -993,7 +1002,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Prisoner Squat Jump',
       description:
         'The prisoner jump squat is a variation of the squat jump and an exercise used to build the muscles of the legs. In particular, the prisoner jump squat works the fast twitch muscles of the quadriceps. Squat jumps are popular exercises for athletic populations to perform to train power and explosiveness. They are also often used in fat loss protocols as a more intense option to increase calorie expenditure.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['plyometrics'],
       difficulty: 'beginner',
       equipment: ['Bodyweight'],
@@ -1009,7 +1018,7 @@ export const quadsExercises: ExerciseGroup = {
         'Think about trying to push the floor away as you jump and utilize both legs evenly rather than solely relying upon one.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -1017,7 +1026,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Adductors',
         'Calves',
         'Glutes',
@@ -1038,7 +1047,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/b9SY5DwPxMc?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 14600,
       popularity: 'low',
     },
@@ -1047,7 +1056,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Prisoner Squat',
       description:
         'The prisoner squat is a bodyweight variation of the squat that strengthens the muscles of the legs. It is the perfect beginner exercise for those learning how to perform the squat movement pattern and can be used as a stepping stone to any of the many weighted squat variations. It can also be used as a warm up or finisher on your leg days to really pump up the muscles of your leg.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'beginner',
       equipment: ['Bodyweight'],
@@ -1068,7 +1077,7 @@ export const quadsExercises: ExerciseGroup = {
         'Don’t push the knees out excessively but ensure they track roughly over or slightly outside the 2nd toe.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -1076,7 +1085,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -1092,7 +1101,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/0PboqagHAjs?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 358900,
       popularity: 'medium',
     },
@@ -1100,7 +1109,7 @@ export const quadsExercises: ExerciseGroup = {
       id: 'quads-21',
       name: 'Bodyweight Lateral Lunge',
       description: 'No description available',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'beginner',
       equipment: ['Bodyweight'],
@@ -1118,14 +1127,14 @@ export const quadsExercises: ExerciseGroup = {
         'Keep your head up and back straight throughout the exercise. Never allow your back to round.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
         'Recent surgery',
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
-      muscles: ['Quads', 'Glutes', 'Hamstrings'],
+      muscles: ['Upper Legs', 'Glutes', 'Hamstrings'],
       alternatives: [
         'quads-17',
         'quads-155',
@@ -1141,7 +1150,7 @@ export const quadsExercises: ExerciseGroup = {
       videoUrl:
         'https://player.vimeo.com/video/877885800?badge=0&autopause=0&player_id=0&app_id=58479',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 247400,
       popularity: 'medium',
     },
@@ -1149,7 +1158,7 @@ export const quadsExercises: ExerciseGroup = {
       id: 'quads-22',
       name: 'Bodyweight Squat Jump',
       description: 'No description available',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['plyometrics'],
       difficulty: 'beginner',
       equipment: ['Bodyweight'],
@@ -1168,14 +1177,14 @@ export const quadsExercises: ExerciseGroup = {
         'Use caution when performing this exercise if you have had any previous back or knee problems. This is a high impact exercise.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
         'Recent surgery',
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
-      muscles: ['Quads', 'Glutes', 'Hamstrings'],
+      muscles: ['Upper Legs', 'Glutes', 'Hamstrings'],
       alternatives: [
         'quads-17',
         'quads-19',
@@ -1191,7 +1200,7 @@ export const quadsExercises: ExerciseGroup = {
       videoUrl:
         'https://player.vimeo.com/video/877885611?title=0&byline=0&portrait=0&badge=0&autopause=0&player_id=0&app_id=58479',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 578200,
       popularity: 'medium',
     },
@@ -1200,7 +1209,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Barbell Hack Squat',
       description:
         'The barbell hack squat is one of the most underrated and underperformed quad building exercises out there. Often referred to as the reverse deadlift, the behind the back positioning of the bar in the barbell hack squat puts a lot of pressure on the quads to force them to grow. The barbell hack squat also indirectly targets other muscles of the leg as well as the core and low back. Most people choose not to barbell hack squat because of its challenging set up and execution. However, there is a lot to gain from performing this exercise including muscle growth and improved performance.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'intermediate',
       equipment: ['Barbell'],
@@ -1221,7 +1230,7 @@ export const quadsExercises: ExerciseGroup = {
         'Don’t push the knees out excessively but ensure they track roughly over or slightly outside the 2nd toe.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -1229,7 +1238,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -1252,7 +1261,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/cSId0_Q9fdM?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 136400,
       popularity: 'medium',
     },
@@ -1260,7 +1269,7 @@ export const quadsExercises: ExerciseGroup = {
       id: 'quads-24',
       name: 'Barbell Sumo Squat',
       description: 'No description available',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'intermediate',
       equipment: ['Barbell'],
@@ -1290,14 +1299,14 @@ export const quadsExercises: ExerciseGroup = {
         'Never look down! As soon as you look down your back rounds, simple as that.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
         'Recent surgery',
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
-      muscles: ['Quads', 'Calves', 'Glutes', 'Hamstrings', 'Lower Back'],
+      muscles: ['Upper Legs', 'Calves', 'Glutes', 'Hamstrings', 'Lower Back'],
       alternatives: ['quads-1', 'quads-16', 'quads-47', 'quads-48', 'quads-57'],
       repetitions: 8,
       sets: 3,
@@ -1307,7 +1316,7 @@ export const quadsExercises: ExerciseGroup = {
       videoUrl:
         'https://player.vimeo.com/video/877885647?badge=0&autopause=0&player_id=0&app_id=58479',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 91500,
       popularity: 'low',
     },
@@ -1315,7 +1324,7 @@ export const quadsExercises: ExerciseGroup = {
       id: 'quads-25',
       name: 'Dumbbell Lateral Lunge',
       description: 'No description available',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'beginner',
       equipment: ['Dumbbell'],
@@ -1336,14 +1345,14 @@ export const quadsExercises: ExerciseGroup = {
         'This exercise requires a good deal of balance. If you have balance issues, first perfect this movement with little to no weight.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
         'Recent surgery',
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
-      muscles: ['Quads', 'Calves', 'Glutes', 'Hamstrings'],
+      muscles: ['Upper Legs', 'Calves', 'Glutes', 'Hamstrings'],
       alternatives: ['quads-2', 'quads-6', 'quads-15', 'quads-175', 'quads-3'],
       repetitions: 8,
       sets: 3,
@@ -1353,7 +1362,7 @@ export const quadsExercises: ExerciseGroup = {
       videoUrl:
         'https://player.vimeo.com/video/877885900?badge=0&autopause=0&player_id=0&app_id=58479',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 145400,
       popularity: 'medium',
     },
@@ -1362,7 +1371,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Smith Machine Lunge',
       description:
         'The Smith machine lunge is a variation of the lunge and an excellent exercise choice for isolating muscles of the leg. The primary muscle group targeted during the Smith machine lunge is the quads. However, depending on the width of the split stance you take during the Smith machine lunge, you can focus more on the hamstrings and glutes. Smith machine lunges can be used by bodybuilders hoping to isolate a particular muscle in the leg or any other lifter whose goal is to strengthen or build their leg muscles. The Smith machine lunge is a good substitute for other lunge variations for lifters looking to limit added volume to other muscle groups during their leg workouts.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'beginner',
       equipment: ['Machine'],
@@ -1380,14 +1389,21 @@ export const quadsExercises: ExerciseGroup = {
         'You don’t need to feel like you have to be completely upright as you complete the movement. On the contrary, you should have a slight forward lean and focus on keeping your lumbar spine neutral.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
         'Recent surgery',
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
-      muscles: ['Quads', 'Abs', 'Adductors', 'Calves', 'Glutes', 'Hamstrings'],
+      muscles: [
+        'Upper Legs',
+        'Abs',
+        'Adductors',
+        'Calves',
+        'Glutes',
+        'Hamstrings',
+      ],
       alternatives: ['quads-29', 'quads-37', 'quads-5', 'quads-9', 'quads-12'],
       repetitions: 12,
       sets: 3,
@@ -1396,7 +1412,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/y0xcouTthps?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 121300,
       popularity: 'medium',
     },
@@ -1405,7 +1421,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Single Leg Extension',
       description:
         'The single leg seated leg extension is a variation of the leg extension and an exercise used to target the muscles of the quads. This exercise can be particularly hard on the knees. So, for those with prior knee issues, it may be beneficial to stick with other movements, preferably compound, to target your quads. The leg extension is a great exercise for quad development and may be beneficial to include in your workout routines if your goals are more aesthetics-driven. The leg extension can be utilized in both leg workouts and full body workouts.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'beginner',
       equipment: ['Machine'],
@@ -1423,12 +1439,12 @@ export const quadsExercises: ExerciseGroup = {
         'Pointing the toes can help to enhance mind muscle connection.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
       ],
-      muscles: ['Quads'],
+      muscles: ['Upper Legs'],
       alternatives: ['quads-4', 'quads-26', 'quads-29', 'quads-37', 'quads-85'],
       repetitions: 12,
       sets: 3,
@@ -1437,7 +1453,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Isolation',
       videoUrl: 'https://www.youtube.com/embed/ymCvLgI9wlA?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 113100,
       popularity: 'medium',
     },
@@ -1446,7 +1462,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Bodyweight Lunge',
       description:
         'The bodyweight lunge is a lunge variation and an exercise used to strengthen the muscles of the legs including the quads, hamstrings, glutes, and calves. The lunge is a foundational movement pattern that should be incorporated into every workout program and trained fairly frequently. Those looking to add lunges into their own workout programs should follow the single leg sample progression scheme outlined in the notes below.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'beginner',
       equipment: ['Bodyweight'],
@@ -1477,14 +1493,21 @@ export const quadsExercises: ExerciseGroup = {
         'If you want to emphasize the glutes and hamstrings during any sort of lunge or split squat pattern, focus on taking a slightly larger step and drive up through the heel of the foot.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
         'Recent surgery',
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
-      muscles: ['Quads', 'Abs', 'Adductors', 'Calves', 'Glutes', 'Hamstrings'],
+      muscles: [
+        'Upper Legs',
+        'Abs',
+        'Adductors',
+        'Calves',
+        'Glutes',
+        'Hamstrings',
+      ],
       alternatives: [
         'quads-30',
         'quads-43',
@@ -1499,7 +1522,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/4hqtPrp-E8A?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 215800,
       popularity: 'medium',
     },
@@ -1508,7 +1531,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'One Leg 45 Degree Leg Press',
       description:
         'The single leg press exercise is a variation of the leg press and an exercise used to strengthen the muscles of the leg. By using single leg presses in your workouts, you work the legs unilaterally. This can help build equally balanced strength and a more aesthetic physique over time.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'beginner',
       equipment: ['Machine'],
@@ -1531,7 +1554,7 @@ export const quadsExercises: ExerciseGroup = {
         'Toe angle is individual and will depend upon each individual’s hip anatomy and ankle mobility - experiment and adjust based upon feel.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -1539,7 +1562,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -1555,7 +1578,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/6KTTfLmdwE0?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 134100,
       popularity: 'medium',
     },
@@ -1564,7 +1587,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Bodyweight Step Up',
       description:
         'The step up is an exercise used to strengthen the muscle of the leg. In particular, step ups focuses on building the quads, but also indirectly targets the hamstrings, glutes, calves, and core. The bodyweight step up is an excellent beginner move and a good starting point for those looking to build single leg strength. One should master the step up prior to moving on to more advanced one leg exercises such as lunge variations, split squat variations, and/or the pistol squat.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'beginner',
       equipment: ['Bodyweight'],
@@ -1581,14 +1604,21 @@ export const quadsExercises: ExerciseGroup = {
         'Do not rock forward to initiate the movement. Lean forward over the front leg, drive off the forefoot, control the eccentric, step off, and repeat.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
         'Recent surgery',
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
-      muscles: ['Quads', 'Abs', 'Adductors', 'Calves', 'Glutes', 'Hamstrings'],
+      muscles: [
+        'Upper Legs',
+        'Abs',
+        'Adductors',
+        'Calves',
+        'Glutes',
+        'Hamstrings',
+      ],
       alternatives: [
         'quads-28',
         'quads-43',
@@ -1603,7 +1633,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/90-X4kqhY3E?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 105300,
       popularity: 'medium',
     },
@@ -1612,7 +1642,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Smith Machine Front Squat',
       description:
         'The Smith machine front squat is a variation of the front squat and an exercise used to build the muscles of the legs. In particular, the Smith machine front squat will place a lot of emphasis on the quads. Utilizing a Smith machine will ensure the bar path remains in a fixed position, eliminating some of the need to stabilize during the exercise. You can include the Smith machine front squat in your leg workouts or full body workouts.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'beginner',
       equipment: ['Machine'],
@@ -1636,7 +1666,7 @@ export const quadsExercises: ExerciseGroup = {
         'Don’t push the knees out excessively but ensure they track roughly over or slightly outside the 2nd toe.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -1644,7 +1674,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -1660,7 +1690,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/KxncKSqtRZU?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 128700,
       popularity: 'medium',
     },
@@ -1669,7 +1699,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Barbell Reverse Lunge',
       description:
         'The barbell reverse lunge is a leg building exercise used to target the quads. It is a variation of the lunge movement pattern, which is a foundational movement to train. Some lifters experience less knee pressure when performing the barbell reverse lunge than they do when performing the traditional barbell lunge. Utilizing a barbell also allows the lifter to use more weight during the lunge than they would if they were to perform the dumbbell or bodyweight variations.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'intermediate',
       equipment: ['Barbell'],
@@ -1700,7 +1730,7 @@ export const quadsExercises: ExerciseGroup = {
         'If you want to emphasize the glutes and hamstrings during any sort of lunge or split squat pattern, focus on taking a slightly larger step and drive up through the heel of the foot.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -1708,7 +1738,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -1732,7 +1762,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/U1gWfjAIS4Q?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 259700,
       popularity: 'medium',
     },
@@ -1741,7 +1771,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Kettlebell Reverse Lunge',
       description:
         'The kettlebell reverse lunge is a variation of the reverse lunge and an exercise used to target the muscles of the quads, as well as the rest of the muscles of the leg. The lunge is a foundational movement pattern that every lifter should strive to master.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'intermediate',
       equipment: ['Kettle Bells'],
@@ -1760,7 +1790,7 @@ export const quadsExercises: ExerciseGroup = {
         'If you want to emphasize the glutes and hamstrings during any sort of lunge or split squat pattern, focus on taking a slightly larger step and drive up through the heel of the foot.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -1768,7 +1798,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -1791,7 +1821,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/ctAF6Ck6Y4E?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 24700,
       popularity: 'low',
     },
@@ -1800,7 +1830,7 @@ export const quadsExercises: ExerciseGroup = {
       name: '1 Dumbbell Step Up',
       description:
         'The 1 dumbbell step up is a variation of the dumbbell step up and an exercise used to target the muscles of the leg. The 1 dumbbell step up challenges the muscles of the quads unilaterally to build balanced strength.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'beginner',
       equipment: ['Dumbbell'],
@@ -1817,7 +1847,7 @@ export const quadsExercises: ExerciseGroup = {
         'Do not rock forward to initiate the movement. Lean forward over the front leg, drive off the forefoot, control the eccentric, step off, and repeat.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -1825,7 +1855,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -1849,7 +1879,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/bOJIpXR7smU?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 14600,
       popularity: 'low',
     },
@@ -1858,7 +1888,7 @@ export const quadsExercises: ExerciseGroup = {
       name: '1 KB Kettlebell Snatch',
       description:
         'The 1 KB kettlebell snatch is a variation of the snatch and a total body exercise. The snatch is an extremely explosive movement typically performed in Olympic weightlifting and athletic training circles to improve sports performance. Olympic lifts, such as 1 KB kettlebell snatch, are very technically demanding and require a lot of practice prior to performing with any sort of significant weight.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['olympic weightlifting'],
       difficulty: 'intermediate',
       equipment: ['Kettle Bells'],
@@ -1877,7 +1907,7 @@ export const quadsExercises: ExerciseGroup = {
         'Drive through the whole foot - you want 3 points of contact: big toe, little toe, and heel.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -1885,7 +1915,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -1909,7 +1939,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/uz55AERjjgQ?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 37700,
       popularity: 'low',
     },
@@ -1918,7 +1948,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Barbell Walking Lunge',
       description:
         'The barbell walking lunge was a favorite among a lot of the old school bodybuilders who trained during the golden era of bodybuilding. The barbell walking lunge is a complete leg builder which combines cardio conditioning to weightlifting to deliver a serious leg pump. They are an advanced variation of the lunge movement and a progression to the barbell lunge. The barbell walking lunge can be performed for a set number of repetitions or a set distance depending on your training style and individual goals.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'advanced',
       equipment: ['Barbell'],
@@ -1951,7 +1981,7 @@ export const quadsExercises: ExerciseGroup = {
         'If you want to emphasize the glutes and hamstrings during any sort of lunge or split squat pattern, focus on taking a slightly larger step and drive up through the heel of the foot.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -1959,7 +1989,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -1983,7 +2013,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/Kt6pWpaCMGE?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 130000,
       popularity: 'medium',
     },
@@ -1992,7 +2022,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Front Foot Elevated Smith Machine Split Squat',
       description:
         'The front foot elevated smith machine split squat is a variation of the split squat and an exercise used to target the muscles of the leg. Elevating the front foot of the split squat, as seen in the front foot elevated smith machine split squat, increases the range of motion of the exercise and places more of an emphasis on the hamstring than the traditional variation. The smith machine used during front foot elevated smith machine split squats provides a fixed bar path for the exercise. This aids in taking out some of the need to stabilize the body and allows one to better isolate the muscle groups being targeted.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'beginner',
       equipment: ['Machine'],
@@ -2011,14 +2041,21 @@ export const quadsExercises: ExerciseGroup = {
         'You don’t need to feel like you have to be completely upright as you complete the movement. On the contrary, you should have a slight forward lean and focus on keeping your lumbar spine neutral.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
         'Recent surgery',
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
-      muscles: ['Quads', 'Abs', 'Adductors', 'Calves', 'Glutes', 'Hamstrings'],
+      muscles: [
+        'Upper Legs',
+        'Abs',
+        'Adductors',
+        'Calves',
+        'Glutes',
+        'Hamstrings',
+      ],
       alternatives: ['quads-26', 'quads-29', 'quads-5', 'quads-9', 'quads-12'],
       repetitions: 12,
       sets: 3,
@@ -2027,7 +2064,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/elw1R5rIx8I?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 11100,
       popularity: 'low',
     },
@@ -2035,7 +2072,7 @@ export const quadsExercises: ExerciseGroup = {
       id: 'quads-38',
       name: 'Sissy Squat',
       description: 'No description available',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'intermediate',
       equipment: ['Bodyweight'],
@@ -2055,14 +2092,14 @@ export const quadsExercises: ExerciseGroup = {
         'Use dumbbells or a weight plate to make the exercise more challenging.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
         'Recent surgery',
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
-      muscles: ['Quads', 'Calves', 'Glutes', 'Hamstrings'],
+      muscles: ['Upper Legs', 'Calves', 'Glutes', 'Hamstrings'],
       alternatives: [
         'quads-104',
         'quads-123',
@@ -2078,7 +2115,7 @@ export const quadsExercises: ExerciseGroup = {
       videoUrl:
         'https://player.vimeo.com/video/877881940?title=0&byline=0&portrait=0&badge=0&autopause=0&player_id=0&app_id=58479',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 257600,
       popularity: 'medium',
     },
@@ -2087,7 +2124,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Zerchers Squat',
       description:
         'The Zercher squat is a squat variation and an exercise used to target the muscles of the quad. The Zercher squat’s set up is quite unique, as you wedge the barbell in your elbow creases and hold the weight up by bracing your core and arms. The Zercher squat can help those who struggle to maintain an upright torso during the back squat and also promote honest weight selection due to its difficult set up. By mastering the Zercher squat, one can see huge increases in biceps, forearm, and leg size, as well as increases in total squat and deadlift numbers.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'advanced',
       equipment: ['Barbell'],
@@ -2112,7 +2149,7 @@ export const quadsExercises: ExerciseGroup = {
         'Don’t push the knees out excessively but ensure they track roughly over or slightly outside the 2nd toe.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -2120,7 +2157,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Biceps',
@@ -2144,7 +2181,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/4roeIJ-zfwM?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 59100,
       popularity: 'low',
     },
@@ -2153,7 +2190,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Front Foot Elevated Dumbbell Split Squat',
       description:
         'The front foot elevated dumbbell split squat is a variation of the dumbbell split squat and an exercise used to target the muscles of the leg. Elevating the front foot of the split squat, as seen in the front foot elevated split squat, increases the range of motion of the exercise and places more of an emphasis on the hamstring than the traditional variation.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'intermediate',
       equipment: ['Dumbbell'],
@@ -2172,7 +2209,7 @@ export const quadsExercises: ExerciseGroup = {
         'You don’t need to feel like you have to be completely upright as you complete the movement. On the contrary, you should have a slight forward lean and focus on keeping your lumbar spine neutral.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -2180,7 +2217,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -2198,7 +2235,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/9ASBIqbm6Fo?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 32400,
       popularity: 'low',
     },
@@ -2207,7 +2244,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Prone Quad Stretch',
       description:
         'The prone quad stretching drill is a form of static stretching and an exercise used to alleviate tension in the quadriceps muscles. By alleviating tension in overactive muscle groups, you can increase your range of motion on specific exercises that incorporate that muscle group.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['stretching'],
       difficulty: 'beginner',
       equipment: ['Bodyweight'],
@@ -2225,11 +2262,11 @@ export const quadsExercises: ExerciseGroup = {
         'This is the first progression for stretching the quads, if this is easy, move to the half kneeling quad stretch.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
       ],
-      muscles: ['Quads'],
+      muscles: ['Upper Legs'],
       alternatives: [
         'quads-180',
         'quads-4',
@@ -2244,7 +2281,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Isolation',
       videoUrl: 'https://www.youtube.com/embed/AYN48iPmFpw?rel=0&showinfo=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 4500,
       popularity: 'low',
     },
@@ -2253,7 +2290,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Landmine Goblet Squat',
       description:
         'The landmine goblet squat is a variation of the goblet squat and an exercise used to build the muscles of the legs. In particular, the landmine goblet squat will place a lot of emphasis on the quads. The squat movement pattern is a foundational movement and should be performed by most capable individuals throughout their lives. So, it is important to find a variation that is comfortable for you to perform, and continuously work on it. You can include the landmine goblet squat in your leg workouts or full body workouts.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'beginner',
       equipment: ['Landmine'],
@@ -2276,7 +2313,7 @@ export const quadsExercises: ExerciseGroup = {
         'Don’t push the knees out excessively but ensure they track roughly over or slightly outside the 2nd toe.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -2284,7 +2321,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -2300,7 +2337,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/pDDAbElhn-s?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 121400,
       popularity: 'medium',
     },
@@ -2309,7 +2346,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Bodyweight Reverse Lunge',
       description:
         'The bodyweight reverse lunge is a bodyweight lunge variation and an exercise used to target the muscles of the leg. The bodyweight reverse lunge is an excellent stepping stone in the single leg progression scheme. Add it to your leg workouts to increase your leg strength.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'beginner',
       equipment: ['Bodyweight'],
@@ -2340,14 +2377,21 @@ export const quadsExercises: ExerciseGroup = {
         'If you want to emphasize the glutes and hamstrings during any sort of lunge or split squat pattern, focus on taking a slightly larger step and drive up through the heel of the foot.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
         'Recent surgery',
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
-      muscles: ['Quads', 'Abs', 'Adductors', 'Calves', 'Glutes', 'Hamstrings'],
+      muscles: [
+        'Upper Legs',
+        'Abs',
+        'Adductors',
+        'Calves',
+        'Glutes',
+        'Hamstrings',
+      ],
       alternatives: [
         'quads-28',
         'quads-30',
@@ -2362,7 +2406,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/hufyk-2xQ5g?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 135800,
       popularity: 'medium',
     },
@@ -2371,7 +2415,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Kettlebell Goblet Squat',
       description:
         'The kettlebell goblet squat is a goblet squat variation and an exercise used to strengthen the muscles of the legs. The kettlebell goblet squat is both a great rehab and strength building movement. Performing the kettlebell goblet squat allows one to achieve a greater amount of squat depth than they would normally be able to when performing other squat variations. Also, by having the weight in front of the body, the kettlebell goblet squat can help those who experience excessive forward leaning remain upright during the squat movement pattern.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'beginner',
       equipment: ['Kettle Bells'],
@@ -2393,7 +2437,7 @@ export const quadsExercises: ExerciseGroup = {
         'Don’t push the knees out excessively but ensure they track roughly over or slightly outside the 2nd toe.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -2401,7 +2445,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -2417,7 +2461,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/TzU5zkTEkg8?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 70400,
       popularity: 'low',
     },
@@ -2426,7 +2470,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Smith Machine Leg Press',
       description:
         'The Smith machine leg press is a leg press variation and an exercise used to target the muscles of the leg. In particular, the Smith machine leg press will emphasize your quadriceps, but also indirectly targets the glutes, hamstrings, and calves. The Smith machine leg press utilizes a more vertical pressing motion than the traditional 45 degree leg press. This can be a good way to incorporate exercise variance into your workout programs.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'beginner',
       equipment: ['Machine'],
@@ -2443,7 +2487,7 @@ export const quadsExercises: ExerciseGroup = {
         'If you want to generate more tension within the quads, stop just short of lockout and don’t fully extend the knees.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -2451,7 +2495,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -2467,7 +2511,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/RBEVNRumJH4?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 38900,
       popularity: 'low',
     },
@@ -2476,7 +2520,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Wide Stance 45 Degree Leg Press',
       description:
         'The wide stance leg press exercise is a variation of the leg press and an exercise used to build the muscles of the legs. It’ll primarily focus on building the muscles of the quadriceps, but also target the hamstrings, glutes, and calves. The wide stance used during the exercise puts a greater amount of tension on the inner quads, hamstrings, and glutes. This exercise can be incorporated into your leg days or full body days.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'beginner',
       equipment: ['Machine'],
@@ -2499,7 +2543,7 @@ export const quadsExercises: ExerciseGroup = {
         'Toe angle is individual and will depend upon each individual’s hip anatomy and ankle mobility - experiment and adjust based upon feel.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -2507,7 +2551,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Adductors',
         'Calves',
         'Glutes',
@@ -2522,7 +2566,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/V3iccY5syPs?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 97500,
       popularity: 'low',
     },
@@ -2530,7 +2574,7 @@ export const quadsExercises: ExerciseGroup = {
       id: 'quads-47',
       name: 'Barbell Narrow Stance Squat',
       description: 'No description available',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'intermediate',
       equipment: ['Barbell'],
@@ -2556,14 +2600,14 @@ export const quadsExercises: ExerciseGroup = {
         'Refer to the Squats page for additional tips.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
         'Recent surgery',
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
-      muscles: ['Quads', 'Calves', 'Glutes', 'Lower Back'],
+      muscles: ['Upper Legs', 'Calves', 'Glutes', 'Lower Back'],
       alternatives: ['quads-1', 'quads-16', 'quads-24', 'quads-48', 'quads-57'],
       repetitions: 8,
       sets: 3,
@@ -2573,7 +2617,7 @@ export const quadsExercises: ExerciseGroup = {
       videoUrl:
         'https://player.vimeo.com/video/877885666?badge=0&autopause=0&player_id=0&app_id=58479',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 48300,
       popularity: 'low',
     },
@@ -2581,7 +2625,7 @@ export const quadsExercises: ExerciseGroup = {
       id: 'quads-48',
       name: 'Barbell Wide Stance Squat',
       description: 'No description available',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'intermediate',
       equipment: ['Barbell'],
@@ -2615,14 +2659,14 @@ export const quadsExercises: ExerciseGroup = {
         'Looking down. As soon as you look down your back rounds, simple as that.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
         'Recent surgery',
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
-      muscles: ['Quads', 'Glutes'],
+      muscles: ['Upper Legs', 'Glutes'],
       alternatives: ['quads-1', 'quads-16', 'quads-24', 'quads-47', 'quads-57'],
       repetitions: 8,
       sets: 3,
@@ -2632,7 +2676,7 @@ export const quadsExercises: ExerciseGroup = {
       videoUrl:
         'https://player.vimeo.com/video/877885574?title=0&byline=0&portrait=0&badge=0&autopause=0&player_id=0&app_id=58479',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 55000,
       popularity: 'low',
     },
@@ -2641,7 +2685,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Kettlebell Walking Lunge',
       description:
         'The kettlebell walking lunge is a variation of the walking lunge. It is a little more advanced than other lunge variations and should be worked up to. The kettlebell walking lunge is a complete leg builder. While it does emphasize growth in the quads, it also works the hamstrings, glutes, and many other muscles of the body due to its complexity. Some lifters opt for the kettlebell walking lunge over the barbell walking lunge, because it brings the weight to the sides of the body and prohibits excessive forward leaning often experienced when performing them with a barbell.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'advanced',
       equipment: ['Kettle Bells'],
@@ -2661,7 +2705,7 @@ export const quadsExercises: ExerciseGroup = {
         'If you want to emphasize the glutes and hamstrings during any sort of lunge or split squat pattern, focus on taking a slightly larger step and drive up through the heel of the foot.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -2669,7 +2713,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -2693,7 +2737,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/R1KGzxKwXzo?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 11700,
       popularity: 'low',
     },
@@ -2702,7 +2746,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Safety Bar Squat',
       description:
         'The safety bar squat is a variation of the barbell back squat and an exercise used to strengthen the muscles of the legs. The safety bar used in a safety bar squat allows you to have more control on the weight used for the exercise. This control leads to better body positioning throughout the duration of the squat. Safety bars are commonly used by lifters coming off an injury, or those simply looking to remove some of the tension placed on the low back during other barbell squat variations.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'beginner',
       equipment: ['Safety Bar'],
@@ -2726,7 +2770,7 @@ export const quadsExercises: ExerciseGroup = {
         'Don’t push the knees out excessively but ensure they track roughly over or slightly outside the 2nd toe.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -2734,7 +2778,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -2750,7 +2794,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/OuvfDyf28eU?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 21900,
       popularity: 'low',
     },
@@ -2759,7 +2803,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Single Leg Squat From Bench',
       description:
         'The single leg squat from bench is a variation of the step up and an exercise used to strengthen the muscles of the leg. The single leg squat is an excellent exercise to use to help you progress along the single leg exercises progression spectrum. The exercise can help you build unilateral leg strength as well as help improve balance.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'intermediate',
       equipment: ['Bench'],
@@ -2777,14 +2821,21 @@ export const quadsExercises: ExerciseGroup = {
         'You can utilize a variety of different loading strategies with this exercises, everything from dumbbells in a goblet position to a landmine attachment and everything in between. However, initially I would recommend a counterbalanced approach with dumbbells as this will allow you to complete the exercise without much concern for the balance aspect.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
         'Recent surgery',
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
-      muscles: ['Quads', 'Abs', 'Adductors', 'Calves', 'Glutes', 'Hamstrings'],
+      muscles: [
+        'Upper Legs',
+        'Abs',
+        'Adductors',
+        'Calves',
+        'Glutes',
+        'Hamstrings',
+      ],
       alternatives: ['quads-8', 'quads-11', 'quads-32', 'quads-33', 'quads-40'],
       repetitions: 12,
       sets: 3,
@@ -2793,7 +2844,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/19G5r-l1Q_I?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 20900,
       popularity: 'low',
     },
@@ -2802,7 +2853,7 @@ export const quadsExercises: ExerciseGroup = {
       name: '1 Kettlebell Step Up',
       description:
         'The 1 kettlebell step up is a variation of the step up and an exercise used to target the muscles of the leg. The 1 kettlebell step up challenges the muscles of the quads unilaterally to build balanced strength. It also presents a core challenge as the core fights to stabilize the spine throughout the range of motion.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'beginner',
       equipment: ['Kettle Bells'],
@@ -2819,7 +2870,7 @@ export const quadsExercises: ExerciseGroup = {
         'Do not rock forward to initiate the movement. Lean forward over the front leg, drive off the forefoot, control the eccentric, step off, and repeat.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -2827,7 +2878,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -2851,7 +2902,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/B9A_GONMKYI?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 11600,
       popularity: 'low',
     },
@@ -2860,7 +2911,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Landmine Reverse Lunge',
       description:
         'The landmine reverse lunge is a reverse lunge variation and an exercise used to target the muscles of the legs. Specifically, the landmine reverse lunge is used to build your quadriceps, will also hit your hamstrings, glutes, calves, and core. The landmine reverse lunge takes advantage of the landmine implement to provide a fixed plane of motion while also anteriorly loading the movement pattern. This allows one to better remain upright during the exercise while also providing slightly more stability than other variations.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'intermediate',
       equipment: ['Landmine'],
@@ -2892,7 +2943,7 @@ export const quadsExercises: ExerciseGroup = {
         'If you want to emphasize the glutes and hamstrings during any sort of lunge or split squat pattern, focus on taking a slightly larger step and drive up through the heel of the foot.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -2900,7 +2951,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -2918,7 +2969,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/EA157CiV3bo?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 15900,
       popularity: 'low',
     },
@@ -2927,7 +2978,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Double Kettlebell Split Squat',
       description:
         'The double kettlebell split squat is a variation of the split squat and an exercise used to strengthen the muscles of the legs. Split squats are a single leg exercise that overloads the target muscle group unilaterally. Performing unilateral exercises is a great way to increase strength and build a balanced, aesthetic physique.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'beginner',
       equipment: ['Kettle Bells'],
@@ -2945,7 +2996,7 @@ export const quadsExercises: ExerciseGroup = {
         'You don’t need to feel like you have to be completely upright as you complete the movement. On the contrary, you should have a slight forward lean and focus on keeping your lumbar spine neutral.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -2953,7 +3004,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -2977,7 +3028,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/PK6xyhUncsg?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 15300,
       popularity: 'low',
     },
@@ -2986,7 +3037,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Kettlebell Lateral Lunge',
       description:
         'The kettlebell lateral lunge is a lunge variation and an exercise used to target the muscles of the quads. The kettlebell used during the kettlebell lateral lunge places the weight in front of the body to allow for a more equal weight distribution and an upright torso during the exercise. The kettlebell lateral lunge is more of an advanced movement and should not be attempted until other lunge variations have been mastered.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'intermediate',
       equipment: ['Kettle Bells'],
@@ -3017,7 +3068,7 @@ export const quadsExercises: ExerciseGroup = {
         'When first learning the movements, I would recommend you start with your feet already apart and then slowly move into each hip rather than taking a step out as this will take the deceleration component out of the movement.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -3025,7 +3076,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -3049,7 +3100,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/gUOkKepwfZw?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 13200,
       popularity: 'low',
     },
@@ -3058,7 +3109,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Kettlebell Step Up',
       description:
         'The kettlebell step up is a variation of the step up and an exercise used to strengthen the muscle of the leg. In particular, kettlebell step ups focus on building the quads, but also indirectly target the hamstrings, glutes, calves, and core. Step up variations are excellent for beginners and are a good starting point for those looking to build single leg strength. One should master the step up prior to moving on to more advanced one leg exercises such as lunge variations, split squat variations, and/or the pistol squat.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'beginner',
       equipment: ['Kettle Bells'],
@@ -3075,7 +3126,7 @@ export const quadsExercises: ExerciseGroup = {
         'Do not rock forward to initiate the movement. Lean forward over the front leg, drive off the forefoot, control the eccentric, step off, and repeat.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -3083,7 +3134,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -3107,7 +3158,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/aYj5bGBJAt8?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 22500,
       popularity: 'low',
     },
@@ -3115,7 +3166,7 @@ export const quadsExercises: ExerciseGroup = {
       id: 'quads-57',
       name: 'Barbell Deep Squat',
       description: 'No description available',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'intermediate',
       equipment: ['Barbell'],
@@ -3148,14 +3199,14 @@ export const quadsExercises: ExerciseGroup = {
         'Looking down: As soon as you look down your back rounds, simple as that.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
         'Recent surgery',
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
-      muscles: ['Quads', 'Calves', 'Glutes', 'Hamstrings', 'Lower Back'],
+      muscles: ['Upper Legs', 'Calves', 'Glutes', 'Hamstrings', 'Lower Back'],
       alternatives: ['quads-1', 'quads-16', 'quads-24', 'quads-47', 'quads-48'],
       repetitions: 8,
       sets: 3,
@@ -3165,7 +3216,7 @@ export const quadsExercises: ExerciseGroup = {
       videoUrl:
         'https://player.vimeo.com/video/877885542?badge=0&autopause=0&player_id=0&app_id=58479',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 81500,
       popularity: 'low',
     },
@@ -3173,7 +3224,7 @@ export const quadsExercises: ExerciseGroup = {
       id: 'quads-58',
       name: 'Barbell Jumping Squats',
       description: 'No description available',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'intermediate',
       equipment: ['Barbell'],
@@ -3193,14 +3244,14 @@ export const quadsExercises: ExerciseGroup = {
         'Use caution when performing this exercise if you have had any previous back or knee problems. This is a high impact exercise. Begin by using little to no weight.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
         'Recent surgery',
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
-      muscles: ['Quads', 'Calves', 'Glutes', 'Hamstrings'],
+      muscles: ['Upper Legs', 'Calves', 'Glutes', 'Hamstrings'],
       alternatives: ['quads-1', 'quads-16', 'quads-24', 'quads-47', 'quads-48'],
       repetitions: 8,
       sets: 3,
@@ -3208,7 +3259,7 @@ export const quadsExercises: ExerciseGroup = {
       forceType: 'Push',
       mechanics: 'Compound',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 26000,
       popularity: 'low',
     },
@@ -3217,7 +3268,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Double Kettlebell Front Squat',
       description:
         'The double kettlebell front squat is a variation of the front squat and an exercise used to strengthen the muscles of the legs. Front squats, in general, can cause a lot of wrist and elbow discomfort. Utilizing an implement such as the kettlebell can help alleviated some of that tension as it allows you to distribute the weight in a more favorable position. Double kettlebell front squats can also be beneficial in helping you train the front squat movement pattern while being able to maintain an upright squat position, thus alleviating back and hip pain down the road.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'beginner',
       equipment: ['Kettle Bells'],
@@ -3240,7 +3291,7 @@ export const quadsExercises: ExerciseGroup = {
         'Don’t push the knees out excessively but ensure they track roughly over or slightly outside the 2nd toe.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -3248,7 +3299,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -3264,7 +3315,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/yvy32ZRwUhY?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 6900,
       popularity: 'low',
     },
@@ -3273,7 +3324,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Power Snatch',
       description:
         'The power snatch is a variation of the snatch and an exercise typically performed in Olympic style weightlifting facilities. The power snatch is an extremely explosive movement which builds total body explosive strength. Olympic lifts, such as the power snatch, are very technically demanding and require a lot of practice prior to performing with any sort of significant weight.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['olympic weightlifting'],
       difficulty: 'intermediate',
       equipment: ['Barbell'],
@@ -3305,7 +3356,7 @@ export const quadsExercises: ExerciseGroup = {
         'Drive through the whole foot - you want 3 points of contact: big toe, little toe, and heel.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -3313,7 +3364,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Biceps',
@@ -3339,7 +3390,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/sd-inNX-LdU?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 8500,
       popularity: 'low',
     },
@@ -3348,7 +3399,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Box Squat',
       description:
         'The box squat is a variation of the barbell back squat and used to strengthen the muscles of the legs. Primarily, the box squat targets the quadriceps, but will also indirectly work the muscles of the hamstrings, calves, glutes, and core. Box squats serve a couple of purposes. They can be used to help beginners learn the proper form of a back squat by providing an external cue to let lifters know when to reverse the movement. Box squats also serve rehabilitation purposes, especially for those coming off knee injuries or those learning how to eliminate the butt wink during squats. Lastly, box squats are also used by the powerlifting community to train the top portion of the lift with a maximal load.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'beginner',
       equipment: ['Box'],
@@ -3376,7 +3427,7 @@ export const quadsExercises: ExerciseGroup = {
         'Don’t push the knees out excessively but ensure they track roughly over or slightly outside the 2nd toe.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -3384,7 +3435,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -3401,7 +3452,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/ejK25kB7FR8?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 91000,
       popularity: 'low',
     },
@@ -3410,7 +3461,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Dumbbell Goblet Box Squat',
       description:
         'The dumbbell goblet box squat is a variation of the dumbbell goblet squat and an exercise used to strengthen the muscles of the legs. Primarily, the dumbbell goblet box squat targets the quadriceps, but will also indirectly work the muscles of the hamstrings, calves, glutes, and core. Box squat variations serve a couple of purposes. They can be used to help beginners learn the proper form of a back squat by providing an external cue to let lifters know when to reverse the movement. Box squats also serve rehabilitation purposes, especially for those coming off knee injuries or those learning how to eliminate the butt wink during squats. The dumbbell goblet squat can serve a similar purpose. They are also helpful in that they bring the weight in front of the body which can help lifters who struggle to maintain an upright torso during the squat. All in all, the dumbbell goblet box squat is perfect for those rehabilitating from injury or learning the squat movement pattern.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'beginner',
       equipment: ['Dumbbell'],
@@ -3432,7 +3483,7 @@ export const quadsExercises: ExerciseGroup = {
         'Don’t push the knees out excessively but ensure they track roughly over or slightly outside the 2nd toe.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -3440,7 +3491,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -3456,7 +3507,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/zixPVQTuUAA?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 15100,
       popularity: 'low',
     },
@@ -3464,7 +3515,7 @@ export const quadsExercises: ExerciseGroup = {
       id: 'quads-63',
       name: 'Smith Machine One Leg Squat',
       description: 'No description available',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'beginner',
       equipment: ['Machine'],
@@ -3488,14 +3539,14 @@ export const quadsExercises: ExerciseGroup = {
         'Keep your head up and back straight throughout the exercise. Never allow your back to round.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
         'Recent surgery',
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
-      muscles: ['Quads', 'Calves', 'Glutes', 'Hamstrings'],
+      muscles: ['Upper Legs', 'Calves', 'Glutes', 'Hamstrings'],
       alternatives: ['quads-2', 'quads-5', 'quads-6', 'quads-9', 'quads-15'],
       repetitions: 12,
       sets: 3,
@@ -3503,7 +3554,7 @@ export const quadsExercises: ExerciseGroup = {
       forceType: 'Push',
       mechanics: 'Compound',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 16900,
       popularity: 'low',
     },
@@ -3512,7 +3563,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Narrow Stance 45 Degree Leg Press',
       description:
         'The narrow stance leg press exercise is a variation of the leg press and an exercise used to build the muscles of the legs. It’ll primarily focus on building the muscles of the quadriceps, but also target the hamstrings, glutes, and calves. The narrow stance used during the exercise puts a greater amount of tension on the outer quads. This exercise can be incorporated into your leg days or full body days.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'beginner',
       equipment: ['Machine'],
@@ -3535,7 +3586,7 @@ export const quadsExercises: ExerciseGroup = {
         'Toe angle is individual and will depend upon each individual’s hip anatomy and ankle mobility - experiment and adjust based upon feel.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -3543,7 +3594,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -3559,7 +3610,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/7h288S0b_ko?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 34700,
       popularity: 'low',
     },
@@ -3568,7 +3619,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Seated Vertical Jump',
       description:
         'The seated vertical jump is a variation of the vertical jump and an exercise used to increase lower body explosiveness. Plyometric exercises, such as the seated vertical jump, are not only important for athletes – but also the general population as well to maintain elasticity in your tendons as you age.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['plyometrics'],
       difficulty: 'beginner',
       equipment: ['Box'],
@@ -3587,7 +3638,7 @@ export const quadsExercises: ExerciseGroup = {
         'Land softly - use the cue “extend (as in the hips), absorb”.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -3595,7 +3646,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Adductors',
         'Calves',
         'Glutes',
@@ -3616,7 +3667,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/IejG2BraFjE?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 13700,
       popularity: 'low',
     },
@@ -3625,7 +3676,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Sled Push',
       description:
         'The sled push is an exercise used to strengthen the muscle of the quads, glutes and hamstrings. As you push, the sled will put concentric tension on the muscles used – making it a perfect exercise for those rehabbing injury, as you don’t have to worry about the eccentric motion of the lift. Sled pushes can be an extremely beneficial conditioning exercise or they can be used as a strength building exercise depending on how you fit them into your workout routine.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['conditioning'],
       difficulty: 'beginner',
       equipment: ['Sled'],
@@ -3645,7 +3696,7 @@ export const quadsExercises: ExerciseGroup = {
         'Given sled pushes/drags don’t have any eccentric component they can very beneficial to incorporate during rehab, as a method of conditioning which won’t incur excessive soreness or load joints excessively.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -3653,7 +3704,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -3679,7 +3730,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/SWmRa-YgONs?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 13400,
       popularity: 'low',
     },
@@ -3687,7 +3738,7 @@ export const quadsExercises: ExerciseGroup = {
       id: 'quads-67',
       name: 'Barbell Box Squat',
       description: 'No description available',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'intermediate',
       equipment: ['Barbell'],
@@ -3722,14 +3773,14 @@ export const quadsExercises: ExerciseGroup = {
         'Looking down: As soon as you look down your back rounds, simple as that.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
         'Recent surgery',
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
-      muscles: ['Quads', 'Calves', 'Glutes', 'Hamstrings', 'Lower Back'],
+      muscles: ['Upper Legs', 'Calves', 'Glutes', 'Hamstrings', 'Lower Back'],
       alternatives: ['quads-1', 'quads-16', 'quads-24', 'quads-47', 'quads-48'],
       repetitions: 8,
       sets: 3,
@@ -3739,7 +3790,7 @@ export const quadsExercises: ExerciseGroup = {
       videoUrl:
         'https://player.vimeo.com/video/877885718?badge=0&autopause=0&player_id=0&app_id=58479',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 57900,
       popularity: 'low',
     },
@@ -3748,7 +3799,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Narrow Stance High Bar Back Squat',
       description:
         'The narrow stance high bar squat is a variation of the high bar squat used to focus on building bigger and stronger quads. As a member of the squat “family”, the narrow stance high bar squat is an excellent and complete leg builder you can add to your leg workout. The narrow stance high bar squat is a variation generally used to help people maintain a more upright position during the squat movement while emphasizing a push through the quads to complete the movement. The narrow stance and bar positioning used for narrow stance high bar squats isn’t for anyone. Experiment with your squatting technique to find the perfect squat variation for you.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'intermediate',
       equipment: ['Barbell'],
@@ -3776,7 +3827,7 @@ export const quadsExercises: ExerciseGroup = {
         'Don’t push the knees out excessively but ensure they track roughly over or slightly outside the 2nd toe.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -3784,7 +3835,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -3807,7 +3858,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/Ay-cr8FOA5M?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 15300,
       popularity: 'low',
     },
@@ -3816,7 +3867,7 @@ export const quadsExercises: ExerciseGroup = {
       name: '1 KB Kettlebell Clean',
       description:
         'The 1 KB kettlebell clean is a variation of the clean and a full body exercise that is commonly performed in Olympic weight lifting and athletic training facilities. The 1 KB kettlebell clean is an extremely explosive movement that involves nearly every muscle in the body. They can be especially beneficial for those looking to build explosiveness for sports, or those looking to build thicker traps by using explosive exercises.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['olympic weightlifting'],
       difficulty: 'beginner',
       equipment: ['Kettle Bells'],
@@ -3836,7 +3887,7 @@ export const quadsExercises: ExerciseGroup = {
         'Drive through the whole foot - you want 3 points of contact: big toe, little toe, and heel.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -3844,7 +3895,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Biceps',
@@ -3869,7 +3920,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/nbnYk37QVCI?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 12100,
       popularity: 'low',
     },
@@ -3878,7 +3929,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Reverse Sled Drag',
       description:
         'The reverse sled drag is a variation of the sled drag and a total body exercise. As you drag, the sled will put constant tension on the muscles used to pull and drag for the desired length. Sled drags can be an extremely beneficial conditioning exercise or they can be used as a strength building exercise depending on how you fit them into your workout routine.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['conditioning'],
       difficulty: 'beginner',
       equipment: ['Sled'],
@@ -3897,14 +3948,14 @@ export const quadsExercises: ExerciseGroup = {
         'Given sled pushes/drags don’t have any eccentric component they can very beneficial to incorporate during rehab, as a method of conditioning which won’t incur excessive soreness or load joints excessively.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Recent surgery',
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -3930,7 +3981,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/lrJGW6oj56Y?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 14000,
       popularity: 'low',
     },
@@ -3938,7 +3989,7 @@ export const quadsExercises: ExerciseGroup = {
       id: 'quads-71',
       name: 'Barbell Front Box Squat',
       description: 'No description available',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'advanced',
       equipment: ['Barbell'],
@@ -3971,14 +4022,14 @@ export const quadsExercises: ExerciseGroup = {
         'Never look down. As soon as you look down your back rounds, simple as that.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
         'Recent surgery',
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
-      muscles: ['Quads', 'Calves', 'Glutes', 'Hamstrings'],
+      muscles: ['Upper Legs', 'Calves', 'Glutes', 'Hamstrings'],
       alternatives: [
         'quads-137',
         'quads-188',
@@ -3994,7 +4045,7 @@ export const quadsExercises: ExerciseGroup = {
       videoUrl:
         'https://player.vimeo.com/video/877885877?badge=0&autopause=0&player_id=0&app_id=58479',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 14900,
       popularity: 'low',
     },
@@ -4003,7 +4054,7 @@ export const quadsExercises: ExerciseGroup = {
       name: '1 KB Kettlebell Clean & Press',
       description:
         'The 1 KB kettlebell clean & press is a variation of the clean & press and a total body exercise. The kettlebell clean & press is a combination exercise which combines the kettlebell clean with the kettlebell press. The clean portion of the exercise works the lower body, core, upper back, and traps. The press portion of the exercise works the push muscles of the upper and lower body. The 1 KB kettlebell clean & press is an extremely explosive movement that involves nearly every muscle in the body. They can be especially beneficial for those looking to build explosiveness for sports, or those who are looking to build explosiveness in general.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['olympic weightlifting'],
       difficulty: 'beginner',
       equipment: ['Kettle Bells'],
@@ -4024,7 +4075,7 @@ export const quadsExercises: ExerciseGroup = {
         'Drive through the whole foot - you want 3 points of contact: big toe, little toe, and heel.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -4032,7 +4083,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Biceps',
@@ -4059,7 +4110,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/zOxh-4AKpEU?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 7700,
       popularity: 'low',
     },
@@ -4068,7 +4119,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Depth Jump to Broad Jump',
       description:
         'The depth jump to broad jump is a variation of the box jump and an exercise used to increase lower body explosiveness. Plyometric exercises, such as the depth jump to broad jump, are not only important for athletes – but also the general population as well to maintain elasticity in your tendons as you age.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['plyometrics'],
       difficulty: 'advanced',
       equipment: ['Box'],
@@ -4086,7 +4137,7 @@ export const quadsExercises: ExerciseGroup = {
         'Land softly - use the cue “extend (as in the hips), absorb”.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -4094,7 +4145,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -4116,7 +4167,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/LO7HPQUMfi4?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 4300,
       popularity: 'low',
     },
@@ -4125,7 +4176,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Barbell Lateral Lunge',
       description:
         'The barbell lateral lunge is a leg exercise used to build the quads, glutes, and hamstrings. The barbell lateral lunge is a variation of the barbell lunge that people typically perform when they want a little more glute involvement with the movement pattern. The barbell lateral lunge is an exercise that takes place in the frontal plane, unlike the majority of exercises. Therefore, it is a good exercise to use to challenge your muscles in a way they are not used to.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'intermediate',
       equipment: ['Barbell'],
@@ -4155,7 +4206,7 @@ export const quadsExercises: ExerciseGroup = {
         'When first learning the movements, I would recommend you start with your feet already apart and then slowly move into each hip rather than taking a step out as this will take the deceleration component out of the movement.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -4163,7 +4214,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -4185,7 +4236,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/frdrLD_-VAw?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 29200,
       popularity: 'low',
     },
@@ -4194,7 +4245,7 @@ export const quadsExercises: ExerciseGroup = {
       name: '1 KB Kettlebell Push Press',
       description:
         'The 1 KB kettlebell push press is a variation of the push press and an explosive exercise used to strengthen the muscles of the shoulders while indirectly hitting the muscles of the core, traps, and triceps. By utilizing a little extra leg drive, as seen in the push press, you should be able to overhead press slightly more weight than you could in the traditional variation. This is an excellent exercise to train the shoulders to have more power and explosiveness.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['olympic weightlifting'],
       difficulty: 'beginner',
       equipment: ['Kettle Bells'],
@@ -4209,7 +4260,7 @@ export const quadsExercises: ExerciseGroup = {
         'To get the kettlebell into position, one will need to likely swing it in between the legs and then clean it into position.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -4217,7 +4268,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -4242,7 +4293,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/2KX2ekrBFoQ?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 12100,
       popularity: 'low',
     },
@@ -4251,7 +4302,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Wide Hack Squat',
       description:
         'The wide stance machine hack squat is a variation of the machine hack squat and an exercise used to build the muscles of the legs. In particular, the wide stance machine hack squat will target the quads, hamstrings, glutes, and calves. Squat variations are extremely important to include in your workout routines, so it is important to find the right variation for you. The wide stance used in this exercise will create additional tension in the inner quads, hamstrings, and glutes. This exercise is best incorporated into your leg workouts or full body workouts.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'intermediate',
       equipment: ['Machine'],
@@ -4273,7 +4324,7 @@ export const quadsExercises: ExerciseGroup = {
         'Toe angle is individual and will depend upon each individual’s hip anatomy and ankle mobility - experiment and adjust based upon feel.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -4281,7 +4332,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -4303,7 +4354,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/6GQPsZ1-jYk?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 14800,
       popularity: 'low',
     },
@@ -4312,7 +4363,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Sled Sprint',
       description:
         'The sled sprint is a variation of the sled push and an exercise used to strengthen the muscle of the quads, glutes and hamstrings. As you push, the sled will put concentric tension on the muscles used – making it a perfect exercise for those rehabbing injury, as you don’t have to worry about the eccentric motion of the lift. Sled pushes can be an extremely beneficial conditioning exercise or they can be used as a strength building exercise depending on how you fit them into your workout routine.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['conditioning'],
       difficulty: 'beginner',
       equipment: ['Sled'],
@@ -4336,7 +4387,7 @@ export const quadsExercises: ExerciseGroup = {
         'Given sled pushes/drags don’t have any eccentric component they can very beneficial to incorporate during rehab, as a method of conditioning which won’t incur excessive soreness or load joints excessively.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -4344,7 +4395,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -4369,7 +4420,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/TxfI6jVViF8?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 1900,
       popularity: 'low',
     },
@@ -4378,7 +4429,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Split Squat',
       description:
         'The split squat is a variation of the lunge and an exercise used to strengthen the muscles of the leg. Some people may refer to the split squat as the static lunge as it looks very similar to the lunge, but you keep the rear foot back and engaged during your entire set of repetitions. The split squat is an excellent exercise for those looking to build single leg strength, and as a lunge variation can be a foundational exercise to include within your workout program.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'beginner',
       equipment: ['Bodyweight'],
@@ -4396,14 +4447,21 @@ export const quadsExercises: ExerciseGroup = {
         'You don’t need to feel like you have to be completely upright as you complete the movement. On the contrary, you should have a slight forward lean and focus on keeping your lumbar spine neutral.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
         'Recent surgery',
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
-      muscles: ['Quads', 'Abs', 'Adductors', 'Calves', 'Glutes', 'Hamstrings'],
+      muscles: [
+        'Upper Legs',
+        'Abs',
+        'Adductors',
+        'Calves',
+        'Glutes',
+        'Hamstrings',
+      ],
       alternatives: [
         'quads-28',
         'quads-30',
@@ -4418,7 +4476,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/M8SnHDKz010?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 3800,
       popularity: 'low',
     },
@@ -4427,7 +4485,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Hang Clean',
       description:
         'The hang clean is a variation of the clean and a full body exercise that is commonly performed in Olympic weight lifting and athletic training facilities. The hang clean is an extremely explosive movement that combines an initial deadlift like pull as you get into position and finishes up with a front squat like push. The middle portion of the movement will involve a lot of muscles of the upper body, with a primary focus being on the shoulders and traps.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['olympic weightlifting'],
       difficulty: 'intermediate',
       equipment: ['Barbell'],
@@ -4459,7 +4517,7 @@ export const quadsExercises: ExerciseGroup = {
         'Drive through the whole foot - you want 3 points of contact: big toe, little toe, and heel.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -4467,7 +4525,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Biceps',
@@ -4492,7 +4550,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/Pz1q5pceH5E?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 14500,
       popularity: 'low',
     },
@@ -4501,7 +4559,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Box Jump',
       description:
         'The box jump is an exercise used to increase lower body explosiveness. Plyometric exercises, such as the box jump, are not only important for athletes – but also the general population as well to maintain elasticity in your tendons as you age. They can also be used as a form of conditioning to aid in fat loss.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['plyometrics'],
       difficulty: 'beginner',
       equipment: ['Box'],
@@ -4521,7 +4579,7 @@ export const quadsExercises: ExerciseGroup = {
         'Land softly - use the cue “extend (as in the hips), absorb”.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -4529,7 +4587,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -4551,7 +4609,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/MX-NHcqEqQk?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 14500,
       popularity: 'low',
     },
@@ -4560,7 +4618,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Bodyweight Pistol Squat',
       description:
         'The bodyweight pistol squat is a variation of the squat and an exercise used to work the muscles of the leg. The pistol squat requires a lot of balance and mobility to perform and is an advanced one legged exercise variation. The unilateral nature of the pistol squat allows you to build balanced strength, as you can provide equal resistance to each side of the body.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'advanced',
       equipment: ['Bodyweight'],
@@ -4577,14 +4635,21 @@ export const quadsExercises: ExerciseGroup = {
         'Keep the heel down but don’t focus on keeping the knee behind the toes. To get into positions of deep hip flexion coupled with a decent torso position, you must have adequate ankle dorsiflexion.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
         'Recent surgery',
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
-      muscles: ['Quads', 'Abs', 'Adductors', 'Calves', 'Glutes', 'Hamstrings'],
+      muscles: [
+        'Upper Legs',
+        'Abs',
+        'Adductors',
+        'Calves',
+        'Glutes',
+        'Hamstrings',
+      ],
       alternatives: [
         'quads-10',
         'quads-28',
@@ -4592,14 +4657,14 @@ export const quadsExercises: ExerciseGroup = {
         'quads-36',
         'quads-43',
       ],
-      repetitions: 12,
+      repetitions: 8,
       sets: 3,
       restBetweenSets: 60,
       forceType: 'Push (Unilateral)',
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/6U7210EZHoE?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 6200,
       popularity: 'low',
     },
@@ -4608,7 +4673,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Cycled Split Squat Jump',
       description:
         'The cycled split squat jump is a variation of the split squat and an exercise used to strengthen the muscles of the leg. The cycled split squat jump is a plyometric exercise and builds muscle through explosive movements.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['plyometrics'],
       difficulty: 'intermediate',
       equipment: ['Bodyweight'],
@@ -4629,7 +4694,7 @@ export const quadsExercises: ExerciseGroup = {
         'Think about trying to push the floor away as you jump and utilize both legs evenly rather than solely relying upon one.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -4637,7 +4702,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Adductors',
         'Calves',
         'Glutes',
@@ -4652,7 +4717,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/DQ3OA4IRZD8?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 11200,
       popularity: 'low',
     },
@@ -4660,7 +4725,7 @@ export const quadsExercises: ExerciseGroup = {
       id: 'quads-83',
       name: 'Dumbbell Squat Jump',
       description: 'No description available',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'intermediate',
       equipment: ['Dumbbell'],
@@ -4676,14 +4741,14 @@ export const quadsExercises: ExerciseGroup = {
         'Use caution when performing this exercise if you have had any previous back or knee problems. This is a high-impact exercise. Begin by using little to no weight.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
         'Recent surgery',
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
-      muscles: ['Quads', 'Calves', 'Glutes', 'Hamstrings'],
+      muscles: ['Upper Legs', 'Calves', 'Glutes', 'Hamstrings'],
       alternatives: ['quads-7', 'quads-90', 'quads-95', 'quads-146', 'quads-1'],
       repetitions: 8,
       sets: 3,
@@ -4693,7 +4758,7 @@ export const quadsExercises: ExerciseGroup = {
       videoUrl:
         'https://player.vimeo.com/video/877880574?badge=0&autopause=0&player_id=0&app_id=58479',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 95100,
       popularity: 'low',
     },
@@ -4702,7 +4767,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Clean & Jerk',
       description:
         'The clean & jerk is a full body exercise and is typically performed in Olympic style weightlifting facilities. It is a combination exercise which pairs the clean with the jerk. The clean movement is a pulling movement pattern and the jerk is a pushing movement pattern. The combination involves nearly every muscle group in the body. Olympic lifts, such as the clean & jerk, are very technically demanding and require a lot of practice prior to performing with any sort of significant weight.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['olympic weightlifting'],
       difficulty: 'intermediate',
       equipment: ['Barbell'],
@@ -4741,7 +4806,7 @@ export const quadsExercises: ExerciseGroup = {
         'Drive through the whole foot - you want 3 points of contact: big toe, little toe, and heel.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -4749,7 +4814,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Biceps',
@@ -4778,7 +4843,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/3jlUIMXsZs0?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 5600,
       popularity: 'low',
     },
@@ -4787,7 +4852,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Leg Extension (Toes In)',
       description:
         'The seated leg extension (toes in) is a variation of the regular leg extension that targets the vastus lateralis, which builds muscle in the outer thigh. This exercise can be particularly hard on the knees. So, for those with prior knee issues, it may be beneficial to stick with other movements, preferably compound, to target your quads. The leg extension is a great exercise for quad development and may be beneficial to include in your workout routines if your goals are more aesthetics-driven. The leg extension can be utilized in both leg workouts and full body workouts.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'beginner',
       equipment: ['Machine'],
@@ -4806,12 +4871,12 @@ export const quadsExercises: ExerciseGroup = {
         'Avoid locking your knees to maintain tension in your muscles.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
       ],
-      muscles: ['Quads'],
+      muscles: ['Upper Legs'],
       alternatives: ['quads-167', 'quads-4', 'quads-27', 'quads-63', 'quads-2'],
       repetitions: 12,
       sets: 3,
@@ -4821,7 +4886,7 @@ export const quadsExercises: ExerciseGroup = {
       videoUrl:
         'https://player.vimeo.com/video/760008140?badge=0&autopause=0&player_id=0&app_id=58479',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 13800,
       popularity: 'low',
     },
@@ -4830,7 +4895,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Single Leg Hop',
       description:
         'The single leg hop is a variation of the jump squat and an exercise used to build explosive strength within the muscles of the leg. Jumps, such as the single leg hop, fall under a form of training known as plyometrics that works on building reactive strength. The reaction stems from generating power once you’ve come in contact with the ground.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['plyometrics'],
       difficulty: 'beginner',
       equipment: ['Bodyweight'],
@@ -4851,7 +4916,7 @@ export const quadsExercises: ExerciseGroup = {
         'Think about trying to push the floor away as you jump.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -4859,7 +4924,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Adductors',
         'Calves',
         'Glutes',
@@ -4880,7 +4945,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/aHSUMUAl-Ks?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 14700,
       popularity: 'low',
     },
@@ -4889,7 +4954,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Wall Ball',
       description:
         'Wall balls are a variation of the push press and an exercise that works the entire body in an explosive fashion. Wall balls were made popular by Crossfit style WODs, but are also used in athletic populations looking to build explosive strength in an attempt to improve performance on their field of play.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['plyometrics'],
       difficulty: 'beginner',
       equipment: ['Medicine Ball'],
@@ -4907,7 +4972,7 @@ export const quadsExercises: ExerciseGroup = {
         'However, if you’re using a more absorptive ball then you can stand closer and catch the ball as it comes directly off the wall.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -4915,7 +4980,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -4941,7 +5006,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/TS-YN2GkPZw?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 13200,
       popularity: 'low',
     },
@@ -4950,7 +5015,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Contralateral Load Split Squat',
       description:
         'The contralateral loaded split squat is a variation of the dumbbell split squat and an exercise used to target the muscles of the leg. By utilizing a contralateral load, as seen with the contralateral loaded split squat, you challenge your core to stabilize the core and remain upright. This can be a good way to strengthen the core before moving on to more advanced variations of the split squat.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'beginner',
       equipment: ['Dumbbell'],
@@ -4969,7 +5034,7 @@ export const quadsExercises: ExerciseGroup = {
         'You don’t need to feel like you have to be completely upright as you complete the movement. On the contrary, you should have a slight forward lean and focus on keeping your lumbar spine neutral.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -4977,7 +5042,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -4995,7 +5060,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/VMoY-xX3u-k?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 7900,
       popularity: 'low',
     },
@@ -5004,7 +5069,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Split Squat Jump',
       description:
         'The split squat jump is a variation of the jump squat and an exercise used to build explosive strength within the muscles of the leg. Jumps, such as the split squat jump, fall under a form of training known as plyometrics that works on building reactive strength. The reaction stems from generating power once you’ve come in contact with the ground.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['plyometrics'],
       difficulty: 'intermediate',
       equipment: ['Bodyweight'],
@@ -5023,7 +5088,7 @@ export const quadsExercises: ExerciseGroup = {
         'Think about trying to push the floor away as you jump and utilize both legs evenly rather than solely relying upon one.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -5031,7 +5096,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Adductors',
         'Calves',
         'Glutes',
@@ -5046,7 +5111,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/q6_Zw0sLVX8?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 16500,
       popularity: 'low',
     },
@@ -5054,7 +5119,7 @@ export const quadsExercises: ExerciseGroup = {
       id: 'quads-90',
       name: 'Dumbbell Wall Squat',
       description: 'No description available',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'intermediate',
       equipment: ['Dumbbell'],
@@ -5076,14 +5141,14 @@ export const quadsExercises: ExerciseGroup = {
         'To get the full benefit of the squat, drop your buttocks down as low as possible - at least until your thighs are parallel to the floor.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
         'Recent surgery',
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
-      muscles: ['Quads', 'Abs', 'Calves', 'Glutes', 'Hamstrings'],
+      muscles: ['Upper Legs', 'Abs', 'Calves', 'Glutes', 'Hamstrings'],
       alternatives: ['quads-7', 'quads-83', 'quads-95', 'quads-146', 'quads-1'],
       repetitions: 8,
       sets: 3,
@@ -5093,7 +5158,7 @@ export const quadsExercises: ExerciseGroup = {
       videoUrl:
         'https://player.vimeo.com/video/877885691?badge=0&autopause=0&player_id=0&app_id=58479',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 54400,
       popularity: 'low',
     },
@@ -5102,7 +5167,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Overhead Banded Squat',
       description:
         'The overhead banded squat is an overhead squat variation and an exercise used to strengthen the muscles of the legs and shoulders. The overhead squat is typically used in Olympic weight lifting settings and is used as a form of progression to other explosive overhead exercises. The overhead squat is also commonly used by athletes looking to improve their overhead strength. However, anyone can use this squat variation to assist them in building muscle mass.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['olympic weightlifting'],
       difficulty: 'beginner',
       equipment: ['Bands'],
@@ -5124,7 +5189,7 @@ export const quadsExercises: ExerciseGroup = {
         'Don’t push the knees out excessively but ensure they track roughly over or slightly outside the 2nd toe.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -5132,7 +5197,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -5157,7 +5222,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/lW6lV25ydvg?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 5000,
       popularity: 'low',
     },
@@ -5166,7 +5231,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Depth Jump',
       description:
         'The depth jump is a variation of the box jump and an exercise used to increase lower body explosiveness. Plyometric exercises, such as the depth jump, are not only important for athletes – but also the general population as well to maintain elasticity in your tendons as you age.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['plyometrics'],
       difficulty: 'intermediate',
       equipment: ['Box'],
@@ -5183,7 +5248,7 @@ export const quadsExercises: ExerciseGroup = {
         'Land softly - use the cue “extend (as in the hips), absorb”.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -5191,7 +5256,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -5213,7 +5278,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/4b56mCNc8Zg?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 2300,
       popularity: 'low',
     },
@@ -5222,7 +5287,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Lateral Lunge to Drop Lunge',
       description:
         'The lateral lunge to drop lunge is an exercise used to activate the muscles of the leg. It is a combination exercise that pairs a lateral lunge with a drop lunge. The pairing efficiently targets the entire leg in a sagittal plane of motion often neglected by lifters. The lateral lunge to drop lunge can be used as part of a warm up, or as a burn out exercise at the end of your workouts.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['warmup'],
       difficulty: 'beginner',
       equipment: ['Bodyweight'],
@@ -5243,13 +5308,13 @@ export const quadsExercises: ExerciseGroup = {
         'You can cross your arms as shown in the video and pictures above but this is not 100% necessary. However, it may help with your balance to have your arms out in front of the body.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Recent surgery',
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
-      muscles: ['Quads', 'Adductors', 'Calves', 'Glutes'],
+      muscles: ['Upper Legs', 'Adductors', 'Calves', 'Glutes'],
       alternatives: [
         'quads-101',
         'quads-103',
@@ -5264,7 +5329,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/YxMkv0L0TBo?rel=0&showinfo=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 3800,
       popularity: 'low',
     },
@@ -5273,7 +5338,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Ipsilateral Load Dumbbell Rear Lunge',
       description:
         'The ipsilateral load dumbbell rear lunge is a dumbbell lunge variation and an exercise used to target the muscles of the quad as well as the rest of the muscles in the leg. The ipsilateral load used in the ipsilateral load rear lunge provides a stability factor to the exercise and thus challenges the core.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'intermediate',
       equipment: ['Dumbbell'],
@@ -5304,7 +5369,7 @@ export const quadsExercises: ExerciseGroup = {
         'If you want to emphasize the glutes and hamstrings during any sort of lunge or split squat pattern, focus on taking a slightly larger step and drive up through the heel of the foot.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -5312,7 +5377,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -5330,7 +5395,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/-EHKqzT1sU8?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 4400,
       popularity: 'low',
     },
@@ -5338,7 +5403,7 @@ export const quadsExercises: ExerciseGroup = {
       id: 'quads-95',
       name: 'Dumbbell Box Squat',
       description: 'No description available',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'intermediate',
       equipment: ['Dumbbell'],
@@ -5367,14 +5432,14 @@ export const quadsExercises: ExerciseGroup = {
         'Don"t "cheat" by resting in the bench.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
         'Recent surgery',
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
-      muscles: ['Quads', 'Calves', 'Glutes', 'Hamstrings', 'Lower Back'],
+      muscles: ['Upper Legs', 'Calves', 'Glutes', 'Hamstrings', 'Lower Back'],
       alternatives: ['quads-7', 'quads-83', 'quads-90', 'quads-146', 'quads-1'],
       repetitions: 8,
       sets: 3,
@@ -5384,7 +5449,7 @@ export const quadsExercises: ExerciseGroup = {
       videoUrl:
         'https://player.vimeo.com/video/877885860?badge=0&autopause=0&player_id=0&app_id=58479',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 15500,
       popularity: 'low',
     },
@@ -5393,7 +5458,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Power Clean',
       description:
         'The power clean is a variation of the clean and a full body exercise that is commonly performed in Olympic weight lifting and athletic training facilities. The clean is an extremely explosive movement that combines an initial deadlift like pull and finishes up with a front squat like push. The middle portion of the movement will involve a lot of muscles of the upper body, with a primary focus being on the shoulders and traps. The power clean differs in that instead of performing a full front squat, you perform a quarter squat. Performing power cleans can be beneficial by overloading the pull of the movement without having to perform the additional full front squat as seen in a clean.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['olympic weightlifting'],
       difficulty: 'intermediate',
       equipment: ['Barbell'],
@@ -5426,7 +5491,7 @@ export const quadsExercises: ExerciseGroup = {
         'Drive through the whole foot - you want 3 points of contact: big toe, little toe, and heel.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -5434,7 +5499,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Biceps',
@@ -5460,7 +5525,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/rDw2ToBMx0o?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 5200,
       popularity: 'low',
     },
@@ -5469,7 +5534,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Barbell Thruster',
       description:
         'The barbell thruster is a combination exercise that combines the movement patterns of the front squat with the movement of an overhead press. For this reason, the barbell thruster works the muscles of the legs and the muscles of the shoulders. The barbell thruster has been popularized by the sport of Crossfit. The movement has a lot of application in building strength, size, and explosiveness. However, it’s extremely technically demanding and should not be attempted until other exercises and variations have been mastered.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'advanced',
       equipment: ['Barbell'],
@@ -5492,7 +5557,7 @@ export const quadsExercises: ExerciseGroup = {
         'If you find the bar falling forward in the bottom of the front squat, you may need to address a lack of ankle dorsiflexion by putting your feet on plates (or using squat shoes) or perhaps a lack of thoracic extension which you can address with a foam roller.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -5500,7 +5565,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Calves',
         'Glutes',
@@ -5525,7 +5590,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/6KoVuPtlujk?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 15300,
       popularity: 'low',
     },
@@ -5534,7 +5599,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Ipsilateral Load Dumbbell Front Lunge',
       description:
         'The ipsilateral load dumbbell front lunge is a dumbbell lunge variation and an exercise used to target the muscles of the quad as well as the rest of the muscles in the leg. The ipsilateral load used in the ipsilateral load front lunge provides a stability factor to the exercise and thus challenges the core.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'advanced',
       equipment: ['Dumbbell'],
@@ -5565,7 +5630,7 @@ export const quadsExercises: ExerciseGroup = {
         'If you want to emphasize the glutes and hamstrings during any sort of lunge or split squat pattern, focus on taking a slightly larger step and drive up through the heel of the foot.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -5573,7 +5638,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -5597,7 +5662,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/dLa132NLFhY?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 2800,
       popularity: 'low',
     },
@@ -5606,7 +5671,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Pit Shark Belt Squat',
       description:
         'The Pit Shark belt squat is a belt squat variation and an exercise used to target the muscles of the legs. The belt used during the Pit Shark belt squat centralizes the weight used for the exercise and equally distributes across the muscles being targeted. The Pit Shark belt squat can also increase the range of motion of the squat and provides a slightly longer time under tension than its more traditional counterparts.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'beginner',
       equipment: ['Machine'],
@@ -5626,7 +5691,7 @@ export const quadsExercises: ExerciseGroup = {
         'Don’t push the knees out excessively but ensure they track roughly over or slightly outside the 2nd toe.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -5634,7 +5699,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -5650,7 +5715,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/CuN-Z89I-b8?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 18100,
       popularity: 'low',
     },
@@ -5659,7 +5724,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'One-Leg Hack Squat',
       description:
         'A One-Leg Hack Squat is a variation of the traditional hack squat, performed on a hack squat machine using only one leg at a time. It targets the quads, glutes, and hamstrings, while also improving balance and unilateral strength. By isolating one leg, it helps correct muscle imbalances and increases focus on the individual leg’s strength. This exercise involves lowering the body by bending the knee, then driving back up through the heel to return to the starting position.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'intermediate',
       equipment: ['Machine'],
@@ -5677,14 +5742,14 @@ export const quadsExercises: ExerciseGroup = {
         'Keep your movements controlled and focus on your working leg.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
         'Recent surgery',
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
-      muscles: ['Quads', 'Calves', 'Glutes', 'Hamstrings'],
+      muscles: ['Upper Legs', 'Calves', 'Glutes', 'Hamstrings'],
       alternatives: [
         'quads-115',
         'quads-135',
@@ -5700,7 +5765,7 @@ export const quadsExercises: ExerciseGroup = {
       videoUrl:
         'https://player.vimeo.com/video/760008117?badge=0&autopause=0&player_id=0&app_id=58479',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 24500,
       popularity: 'low',
     },
@@ -5709,7 +5774,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Reverse Lunge with Twist',
       description:
         'The reverse lunge with twist is a form of dynamic stretching and activates nearly every muscle group in the body. Dynamic stretching is critical prior to performing your workouts as it allows you to activate your central nervous system and engage the muscle groups you’ll use later in your workout. Incorporating them into your warm up routine will help you get better results and avoid injury.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['warmup'],
       difficulty: 'beginner',
       equipment: ['Bodyweight'],
@@ -5726,13 +5791,19 @@ export const quadsExercises: ExerciseGroup = {
         'Lunge first and then rotate, don’t rotate AS you lunge. The point of the movement is to generate separation between the legs before you add a rotational component as this will help to keep the pelvis neutral.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Recent surgery',
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
-      muscles: ['Quads', 'Glutes', 'Hamstrings', 'Hip Flexors', 'Upper Back'],
+      muscles: [
+        'Upper Legs',
+        'Glutes',
+        'Hamstrings',
+        'Hip Flexors',
+        'Upper Back',
+      ],
       alternatives: [
         'quads-93',
         'quads-103',
@@ -5747,7 +5818,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/sIrH5PWs4Kg?rel=0&showinfo=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 2600,
       popularity: 'low',
     },
@@ -5756,7 +5827,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Split Jerk',
       description:
         'The split jerk is a variation of the jerk and a full body exercise that is commonly performed in Olympic weight lifting and athletic training facilities. The split jerk is an extremely explosive movement that involves nearly every muscle in the body. They can be especially beneficial for those looking to build explosiveness for sports, or those looking to build thicker traps by using explosive exercises.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['olympic weightlifting'],
       difficulty: 'intermediate',
       equipment: ['Barbell'],
@@ -5774,7 +5845,7 @@ export const quadsExercises: ExerciseGroup = {
         'With the jerk, smaller athletes may need to keep the elbows up during the dip prior to the jerk as the bar may have a tendency to slide forward off their shoulders due to the smaller size of the musculature.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -5782,7 +5853,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -5806,7 +5877,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/YqSivv9cpIs?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 1900,
       popularity: 'low',
     },
@@ -5815,7 +5886,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Squat to Stand w/ T-Spine Rotation',
       description:
         'The squat to stand with t-spine rotation drill is a dynamic warm up exercise used to increase mobility in the hips and the t-spine. This exercise is best used as a part of your warm up on lower body and full body workout days.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['warmup'],
       difficulty: 'beginner',
       equipment: ['Bodyweight'],
@@ -5835,14 +5906,14 @@ export const quadsExercises: ExerciseGroup = {
         'Keep the hips low and don’t allow the torso to lean forward as you rotate up.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Recent surgery',
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Chest',
         'Glutes',
         'Hamstrings',
@@ -5863,7 +5934,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/4XAVcZSPx88?rel=0&showinfo=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 3600,
       popularity: 'low',
     },
@@ -5872,7 +5943,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Bodyweight Wall Squat',
       description:
         'A Bodyweight Wall Squat is a static exercise that targets the quads, glutes, and core while improving lower body endurance and stability. The movement involves sliding down the wall into a squat position and holding, with your knees at a 90-degree angle. It"s an effective way to strengthen the legs and enhance muscular endurance without needing equipment.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'intermediate',
       equipment: ['Bodyweight'],
@@ -5891,14 +5962,14 @@ export const quadsExercises: ExerciseGroup = {
         'Press your lower back against the wall to avoid rounding your spine.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
         'Recent surgery',
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
-      muscles: ['Quads', 'Abs', 'Calves', 'Glutes', 'Hamstrings'],
+      muscles: ['Upper Legs', 'Abs', 'Calves', 'Glutes', 'Hamstrings'],
       alternatives: ['quads-38', 'quads-123', 'quads-1', 'quads-7', 'quads-16'],
       repetitions: 12,
       sets: 3,
@@ -5908,7 +5979,7 @@ export const quadsExercises: ExerciseGroup = {
       videoUrl:
         'https://player.vimeo.com/video/760008179?badge=0&autopause=0&player_id=0&app_id=58479',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 38400,
       popularity: 'low',
     },
@@ -5916,7 +5987,7 @@ export const quadsExercises: ExerciseGroup = {
       id: 'quads-105',
       name: 'Exercise Ball Dumbbell Wall Squat',
       description: 'No description available',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'advanced',
       equipment: ['Exercise Ball'],
@@ -5943,14 +6014,14 @@ export const quadsExercises: ExerciseGroup = {
         'To get the most from the exercise, keep your core muscles tight and your abdominals will reap the benefit.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
         'Recent surgery',
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
-      muscles: ['Quads', 'Calves', 'Glutes', 'Hamstrings'],
+      muscles: ['Upper Legs', 'Calves', 'Glutes', 'Hamstrings'],
       alternatives: [
         'quads-71',
         'quads-137',
@@ -5966,7 +6037,7 @@ export const quadsExercises: ExerciseGroup = {
       videoUrl:
         'https://player.vimeo.com/video/877885552?badge=0&autopause=0&player_id=0&app_id=58479',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 15600,
       popularity: 'low',
     },
@@ -5975,7 +6046,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Anderson Squat',
       description:
         'The Anderson squat is a squat variation and an exercise used to target the muscles of the legs. The Anderson squat utilizes pins to limit the range of motion. This allows one to focus on the top portion of the squat and can be especially helpful if you struggle to lock out at the top of the squat. It can also allow you to utilize more weight than you would typically use during a full squat range of motion.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'intermediate',
       equipment: ['Barbell'],
@@ -6001,7 +6072,7 @@ export const quadsExercises: ExerciseGroup = {
         'Don’t push the knees out excessively but ensure they track roughly over or slightly outside the 2nd toe.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -6009,7 +6080,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -6032,7 +6103,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/GkY-ld8oWDs?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 3700,
       popularity: 'low',
     },
@@ -6041,7 +6112,7 @@ export const quadsExercises: ExerciseGroup = {
       name: '2 KB Kettlebell Clean & Press',
       description:
         'The 2 KB kettlebell clean & press is a variation of the clean & press and a total body exercise. The kettlebell clean & press is a combination exercise which combines the kettlebell clean with the kettlebell press. The clean portion of the exercise works the lower body, core, upper back, and traps. The press portion of the exercise works the push muscles of the upper and lower body. The 2 KB kettlebell clean & press is an extremely explosive movement that involves nearly every muscle in the body. They can be especially beneficial for those looking to build explosiveness for sports, or those who are looking to build explosiveness in general.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['olympic weightlifting'],
       difficulty: 'beginner',
       equipment: ['Kettle Bells'],
@@ -6062,7 +6133,7 @@ export const quadsExercises: ExerciseGroup = {
         'Drive through the whole foot - you want 3 points of contact: big toe, little toe, and heel.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -6070,7 +6141,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Biceps',
@@ -6097,7 +6168,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/OA_CzaDEvSM?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 1700,
       popularity: 'low',
     },
@@ -6106,7 +6177,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Quad Tiger Tail',
       description:
         'The tiger tail is an implement used to perform a form of self myo-fascial release. Using the tiger tail on the quads is a great way to warm up and cool down for your workout, especially if you plan to perform lower body exercises that require the quads to be more mobile. When you perform SMR on your quads, or any muscle group for that matter, you alleviate some of the tension that is built up during the day and your workouts.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['smr'],
       difficulty: 'beginner',
       equipment: ['Tiger Tail'],
@@ -6125,11 +6196,11 @@ export const quadsExercises: ExerciseGroup = {
         'HOWEVER, if you notice any burning, numbness, or tingling, keep moving past that area. It’s likely a nerve and pausing on it for any length of time would not be a good idea.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
       ],
-      muscles: ['Quads'],
+      muscles: ['Upper Legs'],
       alternatives: [
         'quads-147',
         'quads-4',
@@ -6144,7 +6215,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Isolation',
       videoUrl: 'https://www.youtube.com/embed/z1zbA0uFnhA?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 2000,
       popularity: 'low',
     },
@@ -6153,7 +6224,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Barbell Step Ups',
       description:
         'The barbell step up is an exercise used to target the muscles of the legs with an emphasis on the quads. The barbell step up is a variation of the lunge movement pattern and a progression to the dumbbell step up and bodyweight step up. People often progress to the barbell step up to utilize more weight than they could holding dumbbells.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'intermediate',
       equipment: ['Barbell'],
@@ -6172,7 +6243,7 @@ export const quadsExercises: ExerciseGroup = {
         'Do not rock forward to initiate the movement. Lean forward over the front leg, drive off the forefoot, control the eccentric, step off, and repeat.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -6180,7 +6251,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -6198,7 +6269,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/_uzlVEERPyM?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 54100,
       popularity: 'low',
     },
@@ -6207,7 +6278,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Counterbalanced Squat',
       description:
         'The counterbalanced squat is a variation of the squat and an exercise used to target the muscle groups of the leg. The counterbalanced squat is an excellent starting point for those looking to perfect their squatting mechanics and master their squat form.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'beginner',
       equipment: ['Other'],
@@ -6227,14 +6298,21 @@ export const quadsExercises: ExerciseGroup = {
         'Don’t push the knees out excessively but ensure they track roughly over or slightly outside the 2nd toe.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
         'Recent surgery',
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
-      muscles: ['Quads', 'Abs', 'Adductors', 'Calves', 'Glutes', 'Hamstrings'],
+      muscles: [
+        'Upper Legs',
+        'Abs',
+        'Adductors',
+        'Calves',
+        'Glutes',
+        'Hamstrings',
+      ],
       alternatives: ['quads-3', 'quads-5', 'quads-9', 'quads-14', 'quads-18'],
       repetitions: 12,
       sets: 3,
@@ -6243,7 +6321,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/cGs5izeOcrc?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 4600,
       popularity: 'low',
     },
@@ -6252,7 +6330,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Bottoms Up 1 Kettlebell Split Squat',
       description:
         'The bottoms up one kettlebell split squat is a variation of the split squat and an exercise used to target the muscles of the leg. By utilizing a unilateral load, as seen with the bottoms up one kettlebell split squat, you challenge your core to stabilize the core and remain upright. This can be a good way to strengthen the core before moving on to more advanced variations of the split squat.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'intermediate',
       equipment: ['Kettle Bells'],
@@ -6272,7 +6350,7 @@ export const quadsExercises: ExerciseGroup = {
         'You don’t need to feel like you have to be completely upright as you complete the movement. On the contrary, you should have a slight forward lean and focus on keeping your lumbar spine neutral.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -6280,7 +6358,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -6298,7 +6376,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/K4n3aObdvW4?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 2600,
       popularity: 'low',
     },
@@ -6307,7 +6385,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Muscle Snatch',
       description:
         'The muscle snatch is a variation of the snatch and a total body exercise. The muscle snatch is an extremely explosive movement typically performed in Olympic weightlifting and athletic training circles to improve sports performance. Olympic lifts, such as the muscle snatch, are very technically demanding and require a lot of practice prior to performing with any sort of significant weight.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['olympic weightlifting'],
       difficulty: 'intermediate',
       equipment: ['Barbell'],
@@ -6338,7 +6416,7 @@ export const quadsExercises: ExerciseGroup = {
         'Drive through the whole foot - you want 3 points of contact: big toe, little toe, and heel.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -6346,7 +6424,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Biceps',
@@ -6374,7 +6452,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/vTPel_ZSJ10?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 3200,
       popularity: 'low',
     },
@@ -6383,7 +6461,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Valslide Reverse Lunges',
       description:
         'The Valslide reverse lunge is a variation of the reverse lunge and an exercise used to target the muscles of the legs. The Valslide used during Valslide reverse lunges helps keep constant tension on the working leg as there isn’t that brief pause in tension created when stepping back. Valslide reverse lunges are an excellent way to progress your reverse lunges once the bodyweight variation has been mastered.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'intermediate',
       equipment: ['Valslide'],
@@ -6415,7 +6493,7 @@ export const quadsExercises: ExerciseGroup = {
         'If you don’t have access to valslides then you can use a slide board, towel, or even paper plates on a slick surface such as a wood floor.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -6423,7 +6501,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -6447,7 +6525,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/bSLyIJUWjH0?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 2900,
       popularity: 'low',
     },
@@ -6456,7 +6534,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Depth Jump to Hurdle Hop',
       description:
         'The depth jump to hurdle hop is a variation of the box jump and an exercise used to increase lower body explosiveness. Plyometric exercises, such as the depth jump to hurdle hop, are not only important for athletes – but also the general population as well to maintain elasticity in your tendons as you age.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['plyometrics'],
       difficulty: 'advanced',
       equipment: ['Box'],
@@ -6473,14 +6551,21 @@ export const quadsExercises: ExerciseGroup = {
         'Land softly - use the cue “extend (as in the hips), absorb”.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
         'Recent surgery',
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
-      muscles: ['Quads', 'Abs', 'Adductors', 'Calves', 'Glutes', 'Hamstrings'],
+      muscles: [
+        'Upper Legs',
+        'Abs',
+        'Adductors',
+        'Calves',
+        'Glutes',
+        'Hamstrings',
+      ],
       alternatives: [
         'quads-73',
         'quads-170',
@@ -6495,7 +6580,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/FGjU0o2IThU?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 2400,
       popularity: 'low',
     },
@@ -6503,7 +6588,7 @@ export const quadsExercises: ExerciseGroup = {
       id: 'quads-115',
       name: 'Smith Machine Squat (Feet Forward)',
       description: 'No description available',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'intermediate',
       equipment: ['Machine'],
@@ -6519,14 +6604,14 @@ export const quadsExercises: ExerciseGroup = {
         'Keep your back straight and your core engaged throughout the movement.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
         'Recent surgery',
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
-      muscles: ['Quads', 'Calves', 'Glutes', 'Hamstrings'],
+      muscles: ['Upper Legs', 'Calves', 'Glutes', 'Hamstrings'],
       alternatives: [
         'quads-100',
         'quads-135',
@@ -6542,7 +6627,7 @@ export const quadsExercises: ExerciseGroup = {
       videoUrl:
         'https://player.vimeo.com/video/877881767?badge=0&autopause=0&player_id=0&app_id=58479',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 29200,
       popularity: 'low',
     },
@@ -6550,7 +6635,7 @@ export const quadsExercises: ExerciseGroup = {
       id: 'quads-116',
       name: 'Dumbbell Split Squat With Jump',
       description: 'No description available',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'intermediate',
       equipment: ['Dumbbell'],
@@ -6575,13 +6660,13 @@ export const quadsExercises: ExerciseGroup = {
         'Use caution when performing this exercise if you have had any previous back or knee problems. This is a high impact exercise.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Recent surgery',
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
-      muscles: ['Quads', 'Calves', 'Glutes', 'Hamstrings'],
+      muscles: ['Upper Legs', 'Calves', 'Glutes', 'Hamstrings'],
       alternatives: ['quads-7', 'quads-8', 'quads-11', 'quads-40', 'quads-83'],
       repetitions: 8,
       sets: 3,
@@ -6591,7 +6676,7 @@ export const quadsExercises: ExerciseGroup = {
       videoUrl:
         'https://player.vimeo.com/video/877885777?badge=0&autopause=0&player_id=0&app_id=58479',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 47900,
       popularity: 'low',
     },
@@ -6600,7 +6685,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Anti-Rotation Forward Sled Walk',
       description:
         'The anti-rotation forward sled walk is a variation of the sled drag and a total body exercise. Primarily, the anti-rotation forward sled walk will target the muscles of the core and quads as you fight to stabilize the spine while dragging the sled the desired distance. Sled drags can be an extremely beneficial conditioning exercise or they can be used as a strength building exercise depending on how you fit them into your workout routine.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['conditioning'],
       difficulty: 'intermediate',
       equipment: ['Sled'],
@@ -6619,14 +6704,14 @@ export const quadsExercises: ExerciseGroup = {
         'Given sled pushes/drags don’t have any eccentric component they can very beneficial to incorporate during rehab, as a method of conditioning which won’t incur excessive soreness or load joints excessively.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Recent surgery',
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -6649,7 +6734,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/aRzauM9qWeo?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 1600,
       popularity: 'low',
     },
@@ -6658,7 +6743,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Valslide Lateral Lunge',
       description:
         'The Valslide lateral lunge is a variation of the lateral lunge and an exercise used to target the muscles of the legs. The Valslide creates slightly more tension in the working leg as you slide through the range of motion when compared to other lateral lunge variations.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'intermediate',
       equipment: ['Valslide'],
@@ -6689,14 +6774,21 @@ export const quadsExercises: ExerciseGroup = {
         'If you don’t have access to valslides then you can use a slide board, towel, or even paper plates on a slick surface such as a wood floor.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
         'Recent surgery',
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
-      muscles: ['Quads', 'Abs', 'Adductors', 'Calves', 'Glutes', 'Hamstrings'],
+      muscles: [
+        'Upper Legs',
+        'Abs',
+        'Adductors',
+        'Calves',
+        'Glutes',
+        'Hamstrings',
+      ],
       alternatives: [
         'quads-113',
         'quads-8',
@@ -6711,7 +6803,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/-bOM7p21i7s?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 2800,
       popularity: 'low',
     },
@@ -6720,7 +6812,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'High Bar Back Squat',
       description:
         'The high bar squat is a variation of the squat and an exercise used to build the muscles of the legs. In particular, the high bar squat will place a lot of emphasis on the quads. The squat movement pattern is a foundational movement and should be performed by most capable individuals throughout their lives. So, it is important to find a variation that is comfortable for you to perform, and continuously work on it. You can include the high bar squat in your leg workouts or full body workouts.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'intermediate',
       equipment: ['Barbell'],
@@ -6747,7 +6839,7 @@ export const quadsExercises: ExerciseGroup = {
         'Don’t push the knees out excessively but ensure they track roughly over or slightly outside your 2nd toe.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -6755,7 +6847,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -6778,7 +6870,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/9OUF5G93rCA?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 3400,
       popularity: 'low',
     },
@@ -6787,7 +6879,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Back Squat to Box Against Chains',
       description:
         'The back squat to box against chains is a variation of the barbell back squat against chains and an exercise used to strengthen the muscles of the legs. The use of chains, as seen in the back squat to box against chains, allows you to overload the top portion of a lift. The use of a box limits the range of motion of the squat and provides an external cue on when to reverse the movement. The back squat to box against chains is a great exercise to use if you’re looking to get stronger on the squat exercise, especially if you struggle while locking out at the top of your reps.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'advanced',
       equipment: ['Chains'],
@@ -6817,7 +6909,7 @@ export const quadsExercises: ExerciseGroup = {
         'Don’t push the knees out excessively but ensure they track roughly over or slightly outside the 2nd toe.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -6825,7 +6917,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -6848,7 +6940,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/Ff0oJfwAXk4?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 1500,
       popularity: 'low',
     },
@@ -6857,7 +6949,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Overhead Step Up',
       description:
         'The overhead step up is a variation of the step up and an exercise used to target the muscles of the leg. Performing overhead step ups provides a challenge for the core and shoulders to stabilize the spine and weight overhead. It is an excellent progression to use for those looking to build single leg strength.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'intermediate',
       equipment: ['Other'],
@@ -6875,7 +6967,7 @@ export const quadsExercises: ExerciseGroup = {
         'Do not rock forward to initiate the movement. Lean forward over the front leg, drive off the forefoot, control the eccentric, step off, and repeat.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -6883,7 +6975,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -6901,7 +6993,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/pENzT6gPMgs?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 4300,
       popularity: 'low',
     },
@@ -6910,7 +7002,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Backward Sled Push',
       description:
         'The backward sled push is a variation of the sled drag and a total body exercise. Primarily, the backward sled push will target the muscles of the quads, hamstrings, glutes, and calves as you fight to push the sled the desired distance. Sled drags can be an extremely beneficial conditioning exercise or they can be used as a strength building exercise depending on how you fit them into your workout routine.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['conditioning'],
       difficulty: 'beginner',
       equipment: ['Sled'],
@@ -6929,7 +7021,7 @@ export const quadsExercises: ExerciseGroup = {
         'Given sled pushes/drags don’t have any eccentric component they can very beneficial to incorporate during rehab, as a method of conditioning which won’t incur excessive soreness or load joints excessively.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -6937,7 +7029,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -6960,7 +7052,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/G3YTjJlFm7c?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 4800,
       popularity: 'low',
     },
@@ -6968,7 +7060,7 @@ export const quadsExercises: ExerciseGroup = {
       id: 'quads-123',
       name: 'Single Leg Wall Squat',
       description: 'No description available',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'intermediate',
       equipment: ['Bodyweight'],
@@ -6992,14 +7084,14 @@ export const quadsExercises: ExerciseGroup = {
         'For extra intensity, pause for a few seconds at the bottom of the movement.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
         'Recent surgery',
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
-      muscles: ['Quads', 'Abs', 'Calves', 'Glutes', 'Hamstrings'],
+      muscles: ['Upper Legs', 'Abs', 'Calves', 'Glutes', 'Hamstrings'],
       alternatives: ['quads-38', 'quads-104', 'quads-1', 'quads-7', 'quads-16'],
       repetitions: 12,
       sets: 3,
@@ -7009,7 +7101,7 @@ export const quadsExercises: ExerciseGroup = {
       videoUrl:
         'https://player.vimeo.com/video/877885921?badge=0&autopause=0&player_id=0&app_id=58479',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 12900,
       popularity: 'low',
     },
@@ -7018,7 +7110,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Dumbbell Thruster',
       description:
         'The dumbbell thruster is a variation of the barbell thruster and a combination exercise that combines the movement patterns of the front squat with the movement of an overhead press. For this reason, the dumbbell thruster works the muscles of the legs and the muscles of the shoulders. Thrusters have been popularized by the sport of Crossfit. The movement has a lot of application in building strength, size, and explosiveness. However, it’s extremely technically demanding and should not be attempted until other exercises and variations have been mastered.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'intermediate',
       equipment: ['Dumbbell'],
@@ -7040,7 +7132,7 @@ export const quadsExercises: ExerciseGroup = {
         'If you find the weight falling forward in the bottom of the front squat, you may need to address a lack of ankle dorsiflexion by putting your feet on plates (or using squat shoes) or perhaps a lack of thoracic extension which you can address with a foam roller.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -7048,7 +7140,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Calves',
         'Glutes',
@@ -7067,7 +7159,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/JQnNas11CQo?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 9700,
       popularity: 'low',
     },
@@ -7076,7 +7168,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Snatch Balance',
       description:
         'The snatch balance is a full body exercise and is typically performed in Olympic style weightlifting facilities. The snatch is a pushing movement pattern that works both the pushing muscles of the lower body (quads) and upper body (shoulders and triceps) Olympic lifts, such as the snatch balance, are very technically demanding and require a lot of practice prior to performing with any sort of significant weight.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['olympic weightlifting'],
       difficulty: 'intermediate',
       equipment: ['Barbell'],
@@ -7094,7 +7186,7 @@ export const quadsExercises: ExerciseGroup = {
         'Remember, it’s a simultaneous press as you drop into the bottom of the squat. You can almost think about pressing yourself underneath the bar by utilizing the actual weight of the bar to drive your body down.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -7102,7 +7194,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -7126,7 +7218,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/iGH2zTQ5IKk?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 1700,
       popularity: 'low',
     },
@@ -7135,7 +7227,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Reverse Lunge Elbow to Instep with Rotation',
       description:
         'The reverse lunge elbow to instep with rotation drill is a form of dynamic stretching and activates nearly every muscle group in the body. Dynamic stretching is critical prior to performing your workouts as it allows you to activate your central nervous system and engage the muscle groups you’ll use later in your workout. Incorporating them into your warm up routine will help you get better results and avoid injury.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['warmup'],
       difficulty: 'beginner',
       equipment: ['Bodyweight'],
@@ -7155,14 +7247,14 @@ export const quadsExercises: ExerciseGroup = {
         'If you can’t get your elbow to your instep on the floor, focus on pushing the knee out with the elbow to increase the stretch on the hip.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Recent surgery',
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Chest',
         'Glutes',
         'Hip Flexors',
@@ -7183,7 +7275,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/iut76FhGMDk',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 2900,
       popularity: 'low',
     },
@@ -7192,7 +7284,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Band Resisted Box Squat',
       description:
         'The band resisted box squat is a variation of the box squat and an exercise used to strengthen the muscles of the legs. Primarily, the band resisted box squat targets the quadriceps, but will also indirectly work the muscles of the hamstrings, calves, glutes, and core. Box squats serve a couple of purposes. They can be used to help beginners learn the proper form of a back squat by providing an external cue to let lifters know when to reverse the movement. Box squats also serve rehabilitation purposes, especially for those coming off knee injuries or those learning how to eliminate the butt wink during squats. However, in this particular exercise, the band resisted box squat would be used by the powerlifting community to train the top portion of the lift with a maximal load. The added band resistance further overloads the top portion of the lift making the band resisted box squat the perfect option for those who have trouble at the top lockout of the back squat.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['powerlifting'],
       difficulty: 'advanced',
       equipment: ['Bands'],
@@ -7220,7 +7312,7 @@ export const quadsExercises: ExerciseGroup = {
         'Don’t push the knees out excessively but ensure they track roughly over or slightly outside the 2nd toe.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -7228,7 +7320,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -7251,7 +7343,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/eAfi0pU_1GU?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 2200,
       popularity: 'low',
     },
@@ -7260,7 +7352,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Dumbbell Goblet Split Squat',
       description:
         'The dumbbell goblet split squat is a dumbbell split squat variation and an exercise used to target the muscles of the quads, as well as the rest of the muscles of the leg. The split squat looks very similar to a lunge. However, the feet stay in one place for the most part during this exercise. Thus, some may refer to the split squat as a static lunge. By holding the dumbbell like a goblet, as seen in the dumbbell goblet split squat, you are better able to keep an upright torso during the movement. This can be helpful for those who experience an excessive forward lean during other variations.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'beginner',
       equipment: ['Dumbbell'],
@@ -7279,7 +7371,7 @@ export const quadsExercises: ExerciseGroup = {
         'You don’t need to feel like you have to be completely upright as you complete the movement. On the contrary, you should have a slight forward lean and focus on keeping your lumbar spine neutral.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -7287,7 +7379,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -7305,7 +7397,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/R_eXhJNF_PI?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 13400,
       popularity: 'low',
     },
@@ -7314,7 +7406,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Offset Single Kettlebell Front Squat',
       description:
         'The offset 1 kettlebell front squat is a variation of the front squat and an exercise used to target the muscles of the leg. The use of a kettlebell during offset 1 kettlebell front squats alleviates some of the tension placed on the wrist that one may experience during traditional front squat variations. The offset nature of the offset 1 kettlebell front squat provides a stabilization challenge for your core as you go through the complete range of motion.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'beginner',
       equipment: ['Kettle Bells'],
@@ -7336,7 +7428,7 @@ export const quadsExercises: ExerciseGroup = {
         'Don’t push the knees out excessively but ensure they track roughly over or slightly outside the 2nd toe.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -7344,7 +7436,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -7360,7 +7452,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/LCaOhp1nuMc?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 3300,
       popularity: 'low',
     },
@@ -7369,7 +7461,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Power Clean from Blocks',
       description:
         'The power clean from blocks is a variation of the power clean and a full body exercise that is commonly performed in Olympic weight lifting and athletic training facilities. The power clean from blocks differs in that you begin with the weight elevated by blocks. Performing power cleans from blocks can be beneficial by overloading the top portion of the movement, which can be especially helpful if you’re slow off the ground when pulling.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['olympic weightlifting'],
       difficulty: 'intermediate',
       equipment: ['Barbell'],
@@ -7395,7 +7487,7 @@ export const quadsExercises: ExerciseGroup = {
         'Drive through the whole foot - you want 3 points of contact: big toe, little toe, and heel.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -7403,7 +7495,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Biceps',
@@ -7429,7 +7521,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/xObDxN1BHcQ?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 3200,
       popularity: 'low',
     },
@@ -7438,7 +7530,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Split Squat with Iso-Hold',
       description:
         'The split squat with iso-hold is a variation of the split squat and an exercise used to strengthen the muscles of the leg. Some people may refer to the split squat as the static lunge as it looks very similar to the lunge, but you keep the rear foot back and engaged during your entire set of repetitions. The split squat with iso-hold incorporates an isometric hold into the split squat exercise. This can be beneficial for someone looking to progress the split squat without having to add weight to the exercise. The split squat is an excellent exercise for those looking to build single leg strength, and as a lunge variation can be a foundational exercise to include within your workout program.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'beginner',
       equipment: ['Bodyweight'],
@@ -7457,13 +7549,20 @@ export const quadsExercises: ExerciseGroup = {
         'You don’t need to feel like you have to be completely upright as you complete the movement. On the contrary, you should have a slight forward lean and focus on keeping your lumbar spine neutral.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Recent surgery',
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
-      muscles: ['Quads', 'Abs', 'Adductors', 'Calves', 'Glutes', 'Hamstrings'],
+      muscles: [
+        'Upper Legs',
+        'Abs',
+        'Adductors',
+        'Calves',
+        'Glutes',
+        'Hamstrings',
+      ],
       alternatives: [
         'quads-17',
         'quads-20',
@@ -7478,7 +7577,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/ROlivpkKJ9g?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 8500,
       popularity: 'low',
     },
@@ -7487,7 +7586,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Snatch',
       description:
         'The snatch is a full body exercise that is commonly performed in Olympic weight lifting and athletic training facilities. The snatch is an extremely explosive movement that involves nearly every muscle in the body to move the barbell in a vertical line from the floor to overhead.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['olympic weightlifting'],
       difficulty: 'intermediate',
       equipment: ['Barbell'],
@@ -7518,7 +7617,7 @@ export const quadsExercises: ExerciseGroup = {
         'Drive through the whole foot - you want 3 points of contact: big toe, little toe, and heel.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -7526,7 +7625,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Biceps',
@@ -7554,7 +7653,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/LPIra6bSv0I?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 2200,
       popularity: 'low',
     },
@@ -7563,7 +7662,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Reverse Lunge with Lateral Flexion',
       description:
         'The reverse lunge with lateral flexion is a form of dynamic stretching and activates nearly every muscle group in the body. Dynamic stretching is critical prior to performing your workouts as it allows you to activate your central nervous system and engage the muscle groups you’ll use later in your workout. Incorporating them into your warm up routine will help you get better results and avoid injury.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['warmup'],
       difficulty: 'beginner',
       equipment: ['Bodyweight'],
@@ -7578,13 +7677,19 @@ export const quadsExercises: ExerciseGroup = {
         'Follow your hand with your eyes as you laterally flex the spine.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Recent surgery',
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
-      muscles: ['Quads', 'Glutes', 'Hamstrings', 'Hip Flexors', 'Shoulders'],
+      muscles: [
+        'Upper Legs',
+        'Glutes',
+        'Hamstrings',
+        'Hip Flexors',
+        'Shoulders',
+      ],
       alternatives: [
         'quads-93',
         'quads-101',
@@ -7599,7 +7704,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/STATF0K6Mcc',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 2300,
       popularity: 'low',
     },
@@ -7608,7 +7713,7 @@ export const quadsExercises: ExerciseGroup = {
       name: '2 KB Kettlebell Snatch',
       description:
         'The 2 KB kettlebell snatch is a variation of the snatch and a total body exercise. The snatch is an extremely explosive movement typically performed in Olympic weightlifting and athletic training circles to improve sports performance. Olympic lifts, such as 2 KB kettlebell snatch, are very technically demanding and require a lot of practice prior to performing with any sort of significant weight.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['olympic weightlifting'],
       difficulty: 'intermediate',
       equipment: ['Kettle Bells'],
@@ -7628,7 +7733,7 @@ export const quadsExercises: ExerciseGroup = {
         'Drive through the whole foot - you want 3 points of contact: big toe, little toe, and heel.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -7636,7 +7741,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -7660,7 +7765,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/iKeasFRWiJw?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 1600,
       popularity: 'low',
     },
@@ -7668,7 +7773,7 @@ export const quadsExercises: ExerciseGroup = {
       id: 'quads-135',
       name: 'Smith Machine Zercher Squat',
       description: 'No description available',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'intermediate',
       equipment: ['Machine'],
@@ -7685,14 +7790,14 @@ export const quadsExercises: ExerciseGroup = {
         'Start with a lightweight as there is a lot of pressure being applied to your arms when lifting the bar.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
         'Recent surgery',
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
-      muscles: ['Quads', 'Calves', 'Glutes', 'Hamstrings'],
+      muscles: ['Upper Legs', 'Calves', 'Glutes', 'Hamstrings'],
       alternatives: [
         'quads-100',
         'quads-115',
@@ -7708,7 +7813,7 @@ export const quadsExercises: ExerciseGroup = {
       videoUrl:
         'https://player.vimeo.com/video/877881723?badge=0&autopause=0&player_id=0&app_id=58479',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 12600,
       popularity: 'low',
     },
@@ -7717,7 +7822,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Power Jerk',
       description:
         'The power jerk is a variation of the jerk balance and an exercise typically performed in Olympic style weightlifting facilities. The power jerk is a pushing movement pattern that works both the pushing muscles of the lower body (quads) and upper body (shoulders and triceps) Olympic lifts, such as the power jerk, are very technically demanding and require a lot of practice prior to performing with any sort of significant weight.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['olympic weightlifting'],
       difficulty: 'intermediate',
       equipment: ['Barbell'],
@@ -7736,7 +7841,7 @@ export const quadsExercises: ExerciseGroup = {
         'With the jerk, smaller athletes may need to keep the elbows up during the dip prior to the jerk as the bar may have a tendency to slide forward off their shoulders due to the smaller size of the musculature.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -7744,7 +7849,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -7768,7 +7873,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/slz3LcUQ0W8?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 5400,
       popularity: 'low',
     },
@@ -7776,7 +7881,7 @@ export const quadsExercises: ExerciseGroup = {
       id: 'quads-137',
       name: 'Barbell Speed Squats',
       description: 'No description available',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'advanced',
       equipment: ['Barbell'],
@@ -7808,14 +7913,14 @@ export const quadsExercises: ExerciseGroup = {
         'Keep your head up. As soon as you look down your back rounds, simple as that.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
         'Recent surgery',
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
-      muscles: ['Quads', 'Calves', 'Glutes', 'Lower Back'],
+      muscles: ['Upper Legs', 'Calves', 'Glutes', 'Lower Back'],
       alternatives: [
         'quads-71',
         'quads-188',
@@ -7831,7 +7936,7 @@ export const quadsExercises: ExerciseGroup = {
       videoUrl:
         'https://player.vimeo.com/video/877885734?badge=0&autopause=0&player_id=0&app_id=58479',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 26900,
       popularity: 'low',
     },
@@ -7840,7 +7945,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Split Squat with Banded Adduction',
       description:
         'The split squat with banded adduction is a variation of the split squat and an exercise used to strengthen the muscles of the leg. Some people may refer to the split squat as the static lunge as it looks very similar to the lunge, but you keep the rear foot back and engaged during your entire set of repetitions. The split squat with banded adduction provides an external cue for your glutes to fire during the movement. This can be especially helpful if you notice your glutes are underactive during leg exercises. The split squat is an excellent exercise for those looking to build single leg strength, and as a lunge variation can be a foundational exercise to include within your workout program. This particular variation can be used as both an accessory exercise and/or a prehab warm up during your leg training days.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'beginner',
       equipment: ['Bands'],
@@ -7860,14 +7965,21 @@ export const quadsExercises: ExerciseGroup = {
         'You don’t need to feel like you have to be completely upright as you complete the movement. On the contrary, you should have a slight forward lean and focus on keeping your lumbar spine neutral.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
         'Recent surgery',
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
-      muscles: ['Quads', 'Abs', 'Adductors', 'Calves', 'Glutes', 'Hamstrings'],
+      muscles: [
+        'Upper Legs',
+        'Abs',
+        'Adductors',
+        'Calves',
+        'Glutes',
+        'Hamstrings',
+      ],
       alternatives: [
         'quads-12',
         'quads-26',
@@ -7882,7 +7994,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/_EDgaU2BW4E?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 5200,
       popularity: 'low',
     },
@@ -7891,7 +8003,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Jerk Balance',
       description:
         'The jerk balance is a full body exercise and is typically performed in Olympic style weightlifting facilities. The jerk is a pushing movement pattern that works both the pushing muscles of the lower body (quads) and upper body (shoulders and triceps) Olympic lifts, such as the jerk balance, are very technically demanding and require a lot of practice prior to performing with any sort of significant weight.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['olympic weightlifting'],
       difficulty: 'intermediate',
       equipment: ['Barbell'],
@@ -7911,7 +8023,7 @@ export const quadsExercises: ExerciseGroup = {
         'Drive the head through at the top to ensure the bar finishes overhead.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -7919,7 +8031,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -7943,7 +8055,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/sINEIuhGTF0?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 2500,
       popularity: 'low',
     },
@@ -7952,7 +8064,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Resistance Band Machine Hack Squat',
       description:
         'The resistance band machine hack squat is a more advanced variation of the machine hack squat. It is used by those looking to build the muscles of the leg, and will involve your core to a lesser extent. The resistance bands are added to the machine hack squat to provide resistance throughout the entire movement, with the greatest resistance occurring at the top of the exercise.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'intermediate',
       equipment: ['Machine'],
@@ -7975,7 +8087,7 @@ export const quadsExercises: ExerciseGroup = {
         'Toe angle is individual and will depend upon each individual’s hip anatomy and ankle mobility - experiment and adjust based upon feel.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -7983,7 +8095,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -7999,7 +8111,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/FiXZ_KgNiMg?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 9600,
       popularity: 'low',
     },
@@ -8008,7 +8120,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Split Clean',
       description:
         'The split clean is a variation of the clean and a full body exercise that is commonly performed in Olympic weight lifting and athletic training facilities. The split clean is an extremely explosive movement that involves nearly every muscle in the body. They can be especially beneficial for those looking to build explosiveness for sports, or those looking to build thicker traps by using explosive exercises.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['olympic weightlifting'],
       difficulty: 'intermediate',
       equipment: ['Barbell'],
@@ -8040,7 +8152,7 @@ export const quadsExercises: ExerciseGroup = {
         'Drive through the whole foot - you want 3 points of contact: big toe, little toe, and heel.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -8048,7 +8160,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Biceps',
@@ -8070,7 +8182,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/OWcfv7uq8Fs?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 2400,
       popularity: 'low',
     },
@@ -8078,7 +8190,7 @@ export const quadsExercises: ExerciseGroup = {
       id: 'quads-142',
       name: 'Decline Bench Barbell Lunge',
       description: 'No description available',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'intermediate',
       equipment: ['Barbell'],
@@ -8097,14 +8209,14 @@ export const quadsExercises: ExerciseGroup = {
         'If you want to emphasize the glutes and hamstrings during any sort of lunge or split squat pattern, focus on taking a slightly larger step and drive up through the heel of the foot.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
         'Recent surgery',
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
-      muscles: ['Quads', 'Glutes', 'Hamstrings'],
+      muscles: ['Upper Legs', 'Glutes', 'Hamstrings'],
       alternatives: ['quads-1', 'quads-16', 'quads-24', 'quads-47', 'quads-48'],
       repetitions: 8,
       sets: 3,
@@ -8114,7 +8226,7 @@ export const quadsExercises: ExerciseGroup = {
       videoUrl:
         'https://player.vimeo.com/video/877882062?badge=0&autopause=0&player_id=0&app_id=58479',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 28100,
       popularity: 'low',
     },
@@ -8123,7 +8235,7 @@ export const quadsExercises: ExerciseGroup = {
       name: '1 KB Kettlebell Split Snatch',
       description:
         'The 1 KB kettlebell split snatch is a variation of the snatch and a total body exercise. The snatch is an extremely explosive movement typically performed in Olympic weightlifting and athletic training circles to improve sports performance. Olympic lifts, such as 1 KB kettlebell split snatch, are very technically demanding and require a lot of practice prior to performing with any sort of significant weight.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['olympic weightlifting'],
       difficulty: 'intermediate',
       equipment: ['Kettle Bells'],
@@ -8144,7 +8256,7 @@ export const quadsExercises: ExerciseGroup = {
         'Drive through the whole foot - you want 3 points of contact: big toe, little toe, and heel.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -8152,7 +8264,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Glutes',
@@ -8174,7 +8286,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/puTITE2CHFM?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 2200,
       popularity: 'low',
     },
@@ -8182,7 +8294,7 @@ export const quadsExercises: ExerciseGroup = {
       id: 'quads-144',
       name: 'Barbell Half Squat',
       description: 'No description available',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'beginner',
       equipment: ['Barbell'],
@@ -8205,14 +8317,14 @@ export const quadsExercises: ExerciseGroup = {
         'The quarter squat is often used as a shock technique to build strength with heavier weights, and for focusing solely on the quads.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
         'Recent surgery',
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
-      muscles: ['Quads', 'Calves', 'Glutes', 'Hamstrings'],
+      muscles: ['Upper Legs', 'Calves', 'Glutes', 'Hamstrings'],
       alternatives: ['quads-151', 'quads-1', 'quads-2', 'quads-6', 'quads-15'],
       repetitions: 8,
       sets: 3,
@@ -8222,7 +8334,7 @@ export const quadsExercises: ExerciseGroup = {
       videoUrl:
         'https://player.vimeo.com/video/877885816?badge=0&autopause=0&player_id=0&app_id=58479',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 33700,
       popularity: 'low',
     },
@@ -8231,7 +8343,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Wide Stance Front Squat',
       description:
         'The wide stance front squat is a front squat variation and an exercise used to build the muscles of the leg. The wide stance front squat primarily works the muscles of the quads, but also indirectly targets the remaining muscles of the leg. The front squat, in general, helps lifters remain upright during the squat movement pattern simply by placing the weight in front of the body as opposed to behind the neck. The wide stance used in the wide stance front squat will help lifters who are trying to target more of the hamstrings and glutes.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'intermediate',
       equipment: ['Barbell'],
@@ -8256,7 +8368,7 @@ export const quadsExercises: ExerciseGroup = {
         'Don’t push the knees out excessively but ensure they track roughly over or slightly outside the 2nd toe.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -8264,7 +8376,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -8287,7 +8399,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/Z_z-Ie_OLGc?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 4800,
       popularity: 'low',
     },
@@ -8295,7 +8407,7 @@ export const quadsExercises: ExerciseGroup = {
       id: 'quads-146',
       name: 'Dumbbell Pistol Squat (On Bench)',
       description: 'No description available',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'intermediate',
       equipment: ['Dumbbell'],
@@ -8312,14 +8424,14 @@ export const quadsExercises: ExerciseGroup = {
         'Do not use the arm holding on for support to aid in lifting your body. Focus on pushing your weight with your quads and hamstrings.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
         'Recent surgery',
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
-      muscles: ['Quads', 'Calves', 'Glutes', 'Hamstrings'],
+      muscles: ['Upper Legs', 'Calves', 'Glutes', 'Hamstrings'],
       alternatives: ['quads-7', 'quads-83', 'quads-90', 'quads-95', 'quads-1'],
       repetitions: 8,
       sets: 3,
@@ -8329,7 +8441,7 @@ export const quadsExercises: ExerciseGroup = {
       videoUrl:
         'https://player.vimeo.com/video/877881699?badge=0&autopause=0&player_id=0&app_id=58479',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 9600,
       popularity: 'low',
     },
@@ -8338,7 +8450,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Quad Foam Rolling',
       description:
         'Foam rolling your quads is a great way to warm up and cool down for your workout, especially if you plan to perform lower body exercises that require the quads to be more mobile. When you foam roll the quads, or any muscle group for that matter, you alleviate some of the tension that is built up during the day and your workouts.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['smr'],
       difficulty: 'beginner',
       equipment: ['Foam Roll'],
@@ -8359,11 +8471,11 @@ export const quadsExercises: ExerciseGroup = {
         'If you find a sensitive spot, pause for a second and take the joint through flexion and extension. This a method of active release known as “tack and floss”.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
       ],
-      muscles: ['Quads'],
+      muscles: ['Upper Legs'],
       alternatives: [
         'quads-108',
         'quads-4',
@@ -8378,7 +8490,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Isolation',
       videoUrl: 'https://www.youtube.com/embed/6UsRjERBpxo?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 3000,
       popularity: 'low',
     },
@@ -8387,7 +8499,7 @@ export const quadsExercises: ExerciseGroup = {
       name: '2 KB Kettlebell Split Snatch',
       description:
         'The 2 KB kettlebell split snatch is a variation of the snatch and a total body exercise. The snatch is an extremely explosive movement typically performed in Olympic weightlifting and athletic training circles to improve sports performance. Olympic lifts, such as 2 KB kettlebell split snatch, are very technically demanding and require a lot of practice prior to performing with any sort of significant weight.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['olympic weightlifting'],
       difficulty: 'intermediate',
       equipment: ['Kettle Bells'],
@@ -8409,7 +8521,7 @@ export const quadsExercises: ExerciseGroup = {
         'Drive through the whole foot - you want 3 points of contact: big toe, little toe, and heel.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -8417,7 +8529,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -8441,7 +8553,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/mDvtXYUUgT4?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 1300,
       popularity: 'low',
     },
@@ -8450,7 +8562,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Narrow Stance Front Squat',
       description:
         'The narrow stance front squat is a variation of the front squat and an exercise used to target the muscles of the leg. By utilizing a narrower stance, as seen in the narrow stance front squat, you will place more tension on the quads as opposed to the other muscle groups in the leg. Some may struggle to perform the narrow stance front squat due to mobility issues in the hips. If that is the case, or if you’re looking to target other muscles of the leg with the by squatting, try one of the many other squat variations.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'intermediate',
       equipment: ['Barbell'],
@@ -8475,7 +8587,7 @@ export const quadsExercises: ExerciseGroup = {
         'Don’t push the knees out excessively but ensure they track roughly over or slightly outside the 2nd toe.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -8483,7 +8595,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -8506,7 +8618,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/FZPanhbGDGI?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 4900,
       popularity: 'low',
     },
@@ -8515,7 +8627,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Reverse Lunge Sled Walk',
       description:
         'The reverse lunge sled walk is a variation of the sled drag and a total body exercise. The reverse lunge sled walk will primarily target the muscles of the legs as you reverse lunge through the desired rep range. Sled drag variations can be an extremely beneficial conditioning exercise or they can be used as a strength building exercise depending on how you fit them into your workout routine.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['conditioning'],
       difficulty: 'beginner',
       equipment: ['Sled'],
@@ -8534,14 +8646,21 @@ export const quadsExercises: ExerciseGroup = {
         'Given sled pushes/drags don’t have any eccentric component they can very beneficial to incorporate during rehab, as a method of conditioning which won’t incur excessive soreness or load joints excessively.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
         'Recent surgery',
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
-      muscles: ['Quads', 'Abs', 'Adductors', 'Calves', 'Glutes', 'Hamstrings'],
+      muscles: [
+        'Upper Legs',
+        'Abs',
+        'Adductors',
+        'Calves',
+        'Glutes',
+        'Hamstrings',
+      ],
       alternatives: [
         'quads-66',
         'quads-70',
@@ -8556,7 +8675,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/QoD85bTFJnQ?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 1700,
       popularity: 'low',
     },
@@ -8564,7 +8683,7 @@ export const quadsExercises: ExerciseGroup = {
       id: 'quads-151',
       name: 'Barbell Quarter Squat',
       description: 'No description available',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'beginner',
       equipment: ['Barbell'],
@@ -8589,14 +8708,14 @@ export const quadsExercises: ExerciseGroup = {
         'Check out the tips on squatting by visiting the Squats page.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
         'Recent surgery',
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
-      muscles: ['Quads', 'Calves', 'Glutes', 'Hamstrings'],
+      muscles: ['Upper Legs', 'Calves', 'Glutes', 'Hamstrings'],
       alternatives: ['quads-144', 'quads-1', 'quads-2', 'quads-6', 'quads-15'],
       repetitions: 8,
       sets: 3,
@@ -8606,7 +8725,7 @@ export const quadsExercises: ExerciseGroup = {
       videoUrl:
         'https://player.vimeo.com/video/877885839?badge=0&autopause=0&player_id=0&app_id=58479',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 43700,
       popularity: 'low',
     },
@@ -8615,7 +8734,7 @@ export const quadsExercises: ExerciseGroup = {
       name: '2 KB Kettlebell Clean',
       description:
         'The 2 KB kettlebell clean is a variation of the clean and a full body exercise that is commonly performed in Olympic weight lifting and athletic training facilities. The 2 KB kettlebell clean is an extremely explosive movement that involves nearly every muscle in the body. They can be especially beneficial for those looking to build explosiveness for sports, or those looking to build thicker traps by using explosive exercises.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['olympic weightlifting'],
       difficulty: 'beginner',
       equipment: ['Kettle Bells'],
@@ -8635,7 +8754,7 @@ export const quadsExercises: ExerciseGroup = {
         'Drive through the whole foot - you want 3 points of contact: big toe, little toe, and heel.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -8643,7 +8762,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Biceps',
@@ -8668,7 +8787,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/mOvtQmu6Ybw?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 1700,
       popularity: 'low',
     },
@@ -8677,7 +8796,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Split Snatch',
       description:
         'The split snatch is a variation of the snatch and a full body exercise that is commonly performed in Olympic weight lifting and athletic training facilities. The split snatch is an extremely explosive movement that involves nearly every muscle in the body. They can be especially beneficial for those looking to build explosiveness for sports, or those looking to build thicker traps by using explosive exercises.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['olympic weightlifting'],
       difficulty: 'intermediate',
       equipment: ['Barbell'],
@@ -8707,7 +8826,7 @@ export const quadsExercises: ExerciseGroup = {
         'Drive through the whole foot - you want 3 points of contact: big toe, little toe, and heel.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -8715,7 +8834,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Biceps',
@@ -8740,7 +8859,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/E1KxzIx8UTM?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 3000,
       popularity: 'low',
     },
@@ -8749,7 +8868,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Reverse Band Back Squats',
       description:
         'The reverse band back squat is a variation of the back squat and an exercise used to strengthen the muscles of the legs. The use of bands when performing reverse band back squats provides assistance while you’re in the hole (at the bottom of the movement). This can be helpful if you’re trying to overload the top portion of the movement without fear of failing at your weaker part of the lift. Reverse band back squats are primarily used by the powerlifting community, but can be used by any training population looking to improve their overall squat personal record.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'advanced',
       equipment: ['Barbell'],
@@ -8778,7 +8897,7 @@ export const quadsExercises: ExerciseGroup = {
         'Don’t push the knees out excessively but ensure they track roughly over or slightly outside the 2nd toe.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -8786,7 +8905,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -8809,7 +8928,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/iuvhlh2Jnu4?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 2500,
       popularity: 'low',
     },
@@ -8818,7 +8937,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Decline Bench Bodyweight Lunge',
       description:
         'The decline bench bodyweight lunge is a progression of the basic bodyweight lunge and an exercise used to strengthen the muscles of the legs including the quads, hamstrings, glutes, and calves. It"s a good idea to master the bodyweight lunge before trying this lunge version.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'beginner',
       equipment: ['Bodyweight'],
@@ -8845,14 +8964,14 @@ export const quadsExercises: ExerciseGroup = {
         'If you want to emphasize the glutes and hamstrings during any sort of lunge or split squat pattern, focus on taking a slightly larger step and drive up through the heel of the foot.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
         'Recent surgery',
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
-      muscles: ['Quads', 'Calves', 'Glutes', 'Hamstrings'],
+      muscles: ['Upper Legs', 'Calves', 'Glutes', 'Hamstrings'],
       alternatives: ['quads-17', 'quads-21', 'quads-186', 'quads-2', 'quads-6'],
       repetitions: 12,
       sets: 3,
@@ -8862,7 +8981,7 @@ export const quadsExercises: ExerciseGroup = {
       videoUrl:
         'https://player.vimeo.com/video/760008043?badge=0&autopause=0&player_id=0&app_id=58479',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 6400,
       popularity: 'low',
     },
@@ -8871,7 +8990,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Kettlebell Thruster',
       description:
         'The kettlebell thruster is a variation of the barbell thruster and a combination exercise that combines the movement patterns of the front squat with the movement of an overhead press. For this reason, the kettlebell thruster works the muscles of the legs and the muscles of the shoulders. Thrusters have been popularized by the sport of Crossfit. The movement has a lot of application in building strength, size, and explosiveness. However, it’s extremely technically demanding and should not be attempted until other exercises and variations have been mastered.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'intermediate',
       equipment: ['Kettle Bells'],
@@ -8893,7 +9012,7 @@ export const quadsExercises: ExerciseGroup = {
         'If you find the bar falling forward in the bottom of the front squat, you may need to address a lack of ankle dorsiflexion by putting your feet on plates (or using squat shoes) or perhaps a lack of thoracic extension which you can address with a foam roller.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -8901,7 +9020,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -8925,7 +9044,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/nyOUYEYd2VQ?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 3100,
       popularity: 'low',
     },
@@ -8934,7 +9053,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Low Bar Back Squat',
       description:
         'The low bar back squat is a barbell back squat variation and an exercise used to target the muscles in the leg. One will usually opt for the low bar back squat if their goal is to recruit the muscles of the posterior chain (glutes and hamstrings) more during the squat. Most people will be able to lift a heavier amount of weight when low bar back squatting simply because the tension is more evenly distributed between the muscles of the leg.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'intermediate',
       equipment: ['Barbell'],
@@ -8962,7 +9081,7 @@ export const quadsExercises: ExerciseGroup = {
         'Don’t push the knees out excessively but ensure they track roughly over or slightly outside the 2nd toe.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -8970,7 +9089,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -8993,7 +9112,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/EFQh3JSYX0A?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 3000,
       popularity: 'low',
     },
@@ -9002,7 +9121,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Belt Squat',
       description:
         'The belt squat is a squat variation and an exercise used to target the muscles of the legs. The belt used during the belt squat centralizes the weight used for the exercise and equally distributes across the muscles being targeted. The belt squat also increases the range of motion of the squat and provides a slightly longer time under tension than its more traditional counterparts.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'intermediate',
       equipment: ['Other'],
@@ -9023,7 +9142,7 @@ export const quadsExercises: ExerciseGroup = {
         'Don’t push the knees out excessively but ensure they track roughly over or slightly outside the 2nd toe.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -9031,7 +9150,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -9047,7 +9166,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/HfwExr3geIk?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 10400,
       popularity: 'low',
     },
@@ -9056,7 +9175,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Overhead Squat',
       description:
         'The overhead squat is a squat variation and an exercise used to strengthen the muscles of the legs and shoulders. The overhead squat is typically used in Olympic weight lifting settings and is used as a form of progression to other explosive overhead exercises. The overhead squat is also commonly used by athletes looking to improve their overhead strength. However, anyone can use this squat variation to assist them in building muscle mass.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['olympic weightlifting'],
       difficulty: 'intermediate',
       equipment: ['Barbell'],
@@ -9077,7 +9196,7 @@ export const quadsExercises: ExerciseGroup = {
         'Don’t push the knees out excessively but ensure they track roughly over or slightly outside the 2nd toe.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -9085,7 +9204,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -9111,7 +9230,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/eJQffNbakL4?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 32900,
       popularity: 'low',
     },
@@ -9120,7 +9239,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Band Resisted Back Squat',
       description:
         'The band resisted back squat is a back squat variation and an exercise used to target the muscles of the legs. The band used to perform band resisted back squats provides accommodating resistance, meaning more tension is placed on the target muscle groups the closer one gets to a full contraction. Band resisted squats are an excellent exercise for those looking to build a bigger squat personal record, but experience sticking points during the concentric portion of the lift.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'advanced',
       equipment: ['Bands'],
@@ -9148,7 +9267,7 @@ export const quadsExercises: ExerciseGroup = {
         'Don’t push the knees out excessively but ensure they track roughly over or slightly outside the 2nd toe.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -9156,7 +9275,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -9178,7 +9297,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/MCmNaQ1d8UM?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 2400,
       popularity: 'low',
     },
@@ -9187,7 +9306,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Walking Quad Stretch to Overhead Lunge',
       description:
         'The walking quad stretch to overhead lunge is a dynamic stretching exercise used to activate the muscles of the legs, shoulders, and upper back. Performing dynamic stretches as part of your warm up routine is important to maximize performance in the gym and prevent injuries.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['warmup'],
       difficulty: 'beginner',
       equipment: ['Bodyweight'],
@@ -9205,13 +9324,13 @@ export const quadsExercises: ExerciseGroup = {
         'This can also be used as a fairly comprehensive diagnostic tool and screening for coaches to observe compensatory patterns within athletes or clients.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Recent surgery',
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
-      muscles: ['Quads', 'Hip Flexors', 'Shoulders', 'Upper Back'],
+      muscles: ['Upper Legs', 'Hip Flexors', 'Shoulders', 'Upper Back'],
       alternatives: [
         'quads-93',
         'quads-101',
@@ -9226,7 +9345,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/9-4YFmeMtQc?rel=0&showinfo=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 2600,
       popularity: 'low',
     },
@@ -9235,7 +9354,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Reverse Band Box Squat',
       description:
         'The reverse band box squat is a variation of the box squat and an exercise used to strengthen the muscles of the legs. The use of bands when performing reverse band box squats provides assistance while you’re at the bottom of the movement. This can be helpful if you’re trying to overload the top portion of the movement without fear of failing at your weaker part of the lift. The box used in the reverse band box squats provides an external cue on when to reverse the movement. This can further limit the range of motion and keep constant tension on the top portion of the exercise. Reverse band box squats are primarily used by the powerlifting community, but can be used by any training population looking to improve their overall squat personal record.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'advanced',
       equipment: ['Barbell'],
@@ -9263,7 +9382,7 @@ export const quadsExercises: ExerciseGroup = {
         'Don’t push the knees out excessively but ensure they track roughly over or slightly outside the 2nd toe.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -9271,7 +9390,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -9294,7 +9413,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/9wHlvAilKAI?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 2100,
       popularity: 'low',
     },
@@ -9303,7 +9422,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Front Barbell Step Up',
       description:
         'The front barbell step up is a barbell step up variation and an exercise used to target the muscles of the legs with an emphasis on the quads. The front barbell step up is a variation of the lunge movement pattern and a progression to the dumbbell step up and bodyweight step up. People often progress to the front barbell step up to utilize more weight than they could holding dumbbells. The front barbell step up is perfect for those who experience excessive forward leaning when performing traditional barbell step ups.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'intermediate',
       equipment: ['Barbell'],
@@ -9323,7 +9442,7 @@ export const quadsExercises: ExerciseGroup = {
         'Do not rock forward to initiate the movement. Lean forward over the front leg, drive off the forefoot, control the eccentric, step off, and repeat.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -9331,7 +9450,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -9349,7 +9468,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/UlFB0kiYWjc?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 2800,
       popularity: 'low',
     },
@@ -9358,7 +9477,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Ipsilateral Load Split Squat',
       description:
         'The ipsilateral loaded split squat is a variation of the dumbbell split squat and an exercise used to target the muscles of the leg. By utilizing an ipsilateral load, as seen with the ipsilateral loaded split squat, you challenge your core to stabilize the core and remain upright. This can be a good way to strengthen the core before moving on to more advanced variations of the split squat.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'beginner',
       equipment: ['Dumbbell'],
@@ -9377,7 +9496,7 @@ export const quadsExercises: ExerciseGroup = {
         'You don’t need to feel like you have to be completely upright as you complete the movement. On the contrary, you should have a slight forward lean and focus on keeping your lumbar spine neutral.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -9385,7 +9504,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -9403,7 +9522,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/pKvXISrmXq0?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 5000,
       popularity: 'low',
     },
@@ -9412,7 +9531,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Clean',
       description:
         'The clean is a full body exercise that is commonly performed in Olympic weight lifting and athletic training facilities. The clean is an extremely explosive movement that combines an initial deadlift like pull and finishes up with a front squat like push. The middle portion of the movement will involve a lot of muscles of the upper body, with a primary focus being on the shoulders and traps.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['olympic weightlifting'],
       difficulty: 'intermediate',
       equipment: ['Barbell'],
@@ -9444,14 +9563,14 @@ export const quadsExercises: ExerciseGroup = {
         'Drive through the whole foot - you want 3 points of contact: big toe, little toe, and heel.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Recent surgery',
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Biceps',
@@ -9479,7 +9598,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/wKSJOLL5NU4?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 3300,
       popularity: 'low',
     },
@@ -9487,7 +9606,7 @@ export const quadsExercises: ExerciseGroup = {
       id: 'quads-166',
       name: 'Barbell Lateral Split Squat',
       description: 'No description available',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'intermediate',
       equipment: ['Barbell'],
@@ -9506,14 +9625,14 @@ export const quadsExercises: ExerciseGroup = {
         'Keep your head up and back straight throughout the exercise. Never allow your back to round.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
         'Recent surgery',
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
-      muscles: ['Quads', 'Calves', 'Glutes', 'Hamstrings', 'Lower Back'],
+      muscles: ['Upper Legs', 'Calves', 'Glutes', 'Hamstrings', 'Lower Back'],
       alternatives: ['quads-1', 'quads-16', 'quads-24', 'quads-47', 'quads-48'],
       repetitions: 8,
       sets: 3,
@@ -9523,7 +9642,7 @@ export const quadsExercises: ExerciseGroup = {
       videoUrl:
         'https://player.vimeo.com/video/877885942?badge=0&autopause=0&player_id=0&app_id=58479',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 14400,
       popularity: 'low',
     },
@@ -9532,7 +9651,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Leg Extension (Toes Out)',
       description:
         'The seated leg extension (toes out) is a variation of the regular leg extension that targets the vastus medialis, which builds muscle in the inner thigh This exercise can be particularly hard on the knees. So, for those with prior knee issues, it may be beneficial to stick with other movements, preferably compound, to target your quads. The leg extension is a great exercise for quad development and may be beneficial to include in your workout routines if your goals are more aesthetics-driven. The leg extension can be utilized in both leg workouts and full-body workouts.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'beginner',
       equipment: ['Machine'],
@@ -9551,12 +9670,12 @@ export const quadsExercises: ExerciseGroup = {
         'Avoid locking your knees to maintain tension in your muscles.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
       ],
-      muscles: ['Quads'],
+      muscles: ['Upper Legs'],
       alternatives: ['quads-85', 'quads-4', 'quads-27', 'quads-63', 'quads-2'],
       repetitions: 12,
       sets: 3,
@@ -9566,7 +9685,7 @@ export const quadsExercises: ExerciseGroup = {
       videoUrl:
         'https://player.vimeo.com/video/760008157?badge=0&autopause=0&player_id=0&app_id=58479',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 21600,
       popularity: 'low',
     },
@@ -9575,7 +9694,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Counterbalanced Skater Squat',
       description:
         'The counterbalanced skater squat is a variation of the lunge and an exercise used to target the muscle groups of the leg. One would likely use the counterbalance skater squat as a progression from the Bulgarian split squat and to the pistol squat.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'advanced',
       equipment: ['Dumbbell'],
@@ -9591,14 +9710,21 @@ export const quadsExercises: ExerciseGroup = {
         'Descend slowly and focus on controlling the movement via the quads rather than relying upon momentum.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
         'Recent surgery',
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
-      muscles: ['Quads', 'Abs', 'Adductors', 'Calves', 'Glutes', 'Hamstrings'],
+      muscles: [
+        'Upper Legs',
+        'Abs',
+        'Adductors',
+        'Calves',
+        'Glutes',
+        'Hamstrings',
+      ],
       alternatives: [
         'quads-10',
         'quads-98',
@@ -9613,7 +9739,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/O22D_lsIDgA?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 5200,
       popularity: 'low',
     },
@@ -9622,7 +9748,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Deep Front Squat',
       description:
         'The deep front squat is a variation of the front squat and an exercise used to target the muscles of the leg, emphasizing the quads. The main difference between a deep front squat and a front squat is when performing a deep front squat you descend past parallel. The front squat is a more optimal choice for those who experience an excessive forward lean during back squat variations.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'advanced',
       equipment: ['Barbell'],
@@ -9647,7 +9773,7 @@ export const quadsExercises: ExerciseGroup = {
         'Don’t push the knees out excessively but ensure they track roughly over or slightly outside the 2nd toe.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -9655,7 +9781,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -9677,7 +9803,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/GlrGvLOrWOs?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 5300,
       popularity: 'low',
     },
@@ -9686,7 +9812,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Depth Jump to Box Jump',
       description:
         'The depth jump to box jump is a variation of the box jump and an exercise used to increase lower body explosiveness. Plyometric exercises, such as the depth jump to box jump, are not only important for athletes – but also the general population as well to maintain elasticity in your tendons as you age.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['plyometrics'],
       difficulty: 'advanced',
       equipment: ['Box'],
@@ -9703,7 +9829,7 @@ export const quadsExercises: ExerciseGroup = {
         'Land softly - use the cue “extend (as in the hips), absorb”.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -9711,7 +9837,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -9733,7 +9859,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/OSf51aM9vO8?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 3800,
       popularity: 'low',
     },
@@ -9741,7 +9867,7 @@ export const quadsExercises: ExerciseGroup = {
       id: 'quads-171',
       name: 'Weighted Sissy Squat',
       description: 'No description available',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'advanced',
       equipment: ['Other'],
@@ -9760,14 +9886,14 @@ export const quadsExercises: ExerciseGroup = {
         'Use a block or step that is 2-4 inches high to position your heels on while keeping your toes on the floor.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
         'Recent surgery',
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
-      muscles: ['Quads', 'Calves', 'Glutes', 'Hamstrings'],
+      muscles: ['Upper Legs', 'Calves', 'Glutes', 'Hamstrings'],
       alternatives: [
         'quads-71',
         'quads-105',
@@ -9783,7 +9909,7 @@ export const quadsExercises: ExerciseGroup = {
       videoUrl:
         'https://player.vimeo.com/video/877882084?badge=0&autopause=0&player_id=0&app_id=58479',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 12500,
       popularity: 'low',
     },
@@ -9792,7 +9918,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Seated Box Jump',
       description:
         'The seated box jump is a variation of the box jump and an exercise used to increase lower body explosiveness. Plyometric exercises, such as the seated box jump, are not only important for athletes – but also the general population as well to maintain elasticity in your tendons as you age.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['plyometrics'],
       difficulty: 'beginner',
       equipment: ['Box'],
@@ -9813,7 +9939,7 @@ export const quadsExercises: ExerciseGroup = {
         'Land softly - use the cue “extend (as in the hips), absorb”.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -9821,7 +9947,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Adductors',
         'Calves',
         'Glutes',
@@ -9842,7 +9968,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/Ohp31XAbuYk?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 3800,
       popularity: 'low',
     },
@@ -9850,7 +9976,7 @@ export const quadsExercises: ExerciseGroup = {
       id: 'quads-173',
       name: 'Narrow Stance Smith Machine Squat',
       description: 'No description available',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'intermediate',
       equipment: ['Machine'],
@@ -9869,14 +9995,14 @@ export const quadsExercises: ExerciseGroup = {
         'Keep your back straight and your core engaged throughout the movement.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
         'Recent surgery',
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
-      muscles: ['Quads', 'Calves', 'Glutes', 'Hamstrings'],
+      muscles: ['Upper Legs', 'Calves', 'Glutes', 'Hamstrings'],
       alternatives: [
         'quads-100',
         'quads-115',
@@ -9892,7 +10018,7 @@ export const quadsExercises: ExerciseGroup = {
       videoUrl:
         'https://player.vimeo.com/video/877881673?badge=0&autopause=0&player_id=0&app_id=58479',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 27500,
       popularity: 'low',
     },
@@ -9901,7 +10027,7 @@ export const quadsExercises: ExerciseGroup = {
       name: '1 KB Kettlebell Jerk',
       description:
         'The 1 KB kettlebell jerk is a variation of the jerk and an explosive movement used to strengthen the push muscles of the quads and shoulders. The 1 KB kettlebell jerk is an exercise that would typically be seen performed in Olympic style weightlifting facilities. It is also a movement athletes would use to build explosive strength to increase their performance on their field of play. Olympic lifts, such as jerk balance, are very technically demanding and require a lot of practice prior to performing with any sort of significant weight.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['olympic weightlifting'],
       difficulty: 'intermediate',
       equipment: ['Kettle Bells'],
@@ -9917,7 +10043,7 @@ export const quadsExercises: ExerciseGroup = {
         'To get the kettlebell into position, one will need to likely swing it in between the legs and then clean it into position.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -9925,7 +10051,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Biceps',
@@ -9952,7 +10078,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/LxMrBuTfJJI?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 1800,
       popularity: 'low',
     },
@@ -9960,7 +10086,7 @@ export const quadsExercises: ExerciseGroup = {
       id: 'quads-175',
       name: 'Decline Bench Dumbbell Lunge',
       description: 'No description available',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'beginner',
       equipment: ['Dumbbell'],
@@ -9977,14 +10103,14 @@ export const quadsExercises: ExerciseGroup = {
         'Breathe out during the exertion phase of the exercise.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
         'Recent surgery',
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
-      muscles: ['Quads', 'Calves', 'Glutes', 'Hamstrings'],
+      muscles: ['Upper Legs', 'Calves', 'Glutes', 'Hamstrings'],
       alternatives: ['quads-2', 'quads-6', 'quads-15', 'quads-25', 'quads-3'],
       repetitions: 8,
       sets: 3,
@@ -9994,7 +10120,7 @@ export const quadsExercises: ExerciseGroup = {
       videoUrl:
         'https://player.vimeo.com/video/760008071?badge=0&autopause=0&player_id=0&app_id=58479',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 10700,
       popularity: 'low',
     },
@@ -10003,7 +10129,7 @@ export const quadsExercises: ExerciseGroup = {
       name: '1 to 2 Box Jump',
       description:
         'The 1 to 2 box jump is a variation of the box jump and an exercise used to increase lower body explosiveness. Plyometric exercises, such as the 1 to 2 box jump, are not only important for athletes – but also the general population as well to maintain elasticity in your tendons as you age.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['plyometrics'],
       difficulty: 'beginner',
       equipment: ['Box'],
@@ -10024,7 +10150,7 @@ export const quadsExercises: ExerciseGroup = {
         'Land softly - use the cue “extend (as in the hips), absorb”.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -10032,7 +10158,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -10054,7 +10180,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/uprN-NmVINU?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 1800,
       popularity: 'low',
     },
@@ -10063,7 +10189,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Muscle Clean',
       description:
         'The muscle clean is a variation of the clean and a full body exercise that is commonly performed in Olympic weight lifting and athletic training facilities. The muscle clean is an extremely explosive movement used to build explosive total body strength to increase sports performance. Because Olympic lifts require a lot of technical skill, they shouldn’t be performed with heavy loads until the movement pattern has been mastered.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['olympic weightlifting'],
       difficulty: 'intermediate',
       equipment: ['Barbell'],
@@ -10096,7 +10222,7 @@ export const quadsExercises: ExerciseGroup = {
         'Drive through the whole foot - you want 3 points of contact: big toe, little toe, and heel.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -10104,7 +10230,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -10131,7 +10257,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/cyEgQtFsAZA?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 4500,
       popularity: 'low',
     },
@@ -10140,7 +10266,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Rack Pin Front Squat',
       description:
         'The rack pin front squat is a variation of the front squat and an exercise used to strengthen the muscles of the leg. By using a rack pin, as seen in the rack pin front squat, one can limit the range of motion and overload that specific portion of the movement. This can be especially helpful when training to overcome sticking points in certain lifts.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'intermediate',
       equipment: ['Barbell'],
@@ -10165,7 +10291,7 @@ export const quadsExercises: ExerciseGroup = {
         'Don’t push the knees out excessively but ensure they track roughly over or slightly outside the 2nd toe.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -10173,7 +10299,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -10196,7 +10322,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/l_ppefwrFaE?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 4600,
       popularity: 'low',
     },
@@ -10204,7 +10330,7 @@ export const quadsExercises: ExerciseGroup = {
       id: 'quads-179',
       name: 'Exercise Ball Wall Squat',
       description: 'No description available',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'beginner',
       equipment: ['Exercise Ball'],
@@ -10221,14 +10347,14 @@ export const quadsExercises: ExerciseGroup = {
         'For extra intensity, pause for a few seconds at the bottom of the movement.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
         'Recent surgery',
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
-      muscles: ['Quads', 'Abs', 'Glutes', 'Hamstrings', 'Lower Back'],
+      muscles: ['Upper Legs', 'Abs', 'Glutes', 'Hamstrings', 'Lower Back'],
       alternatives: ['quads-2', 'quads-6', 'quads-15', 'quads-17', 'quads-21'],
       repetitions: 12,
       sets: 3,
@@ -10238,7 +10364,7 @@ export const quadsExercises: ExerciseGroup = {
       videoUrl:
         'https://player.vimeo.com/video/877880879?badge=0&autopause=0&player_id=0&app_id=58479',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 10600,
       popularity: 'low',
     },
@@ -10247,7 +10373,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Half Kneeling Quad Stretch',
       description:
         'The half kneeling quad stretch is a form of static stretching used to alleviate tension in the quadracep muscle. Static stretching has recently been thought to be most beneficial post-workout, as part of your cool down routine. However, depending on your goals and workout for that day, you can include static stretching into your warm up routine if desired.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['warmup'],
       difficulty: 'beginner',
       equipment: ['Bodyweight'],
@@ -10264,13 +10390,13 @@ export const quadsExercises: ExerciseGroup = {
         'Remember, hips and shoulders rock forward together, you shouldn’t break at the spine.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Recent surgery',
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
-      muscles: ['Quads'],
+      muscles: ['Upper Legs'],
       alternatives: [
         'quads-93',
         'quads-101',
@@ -10285,7 +10411,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/4cRDDa-F35E?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 2900,
       popularity: 'low',
     },
@@ -10294,7 +10420,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Tire Flip',
       description:
         'The tire flip is a strongman exercise and an exercise that challenges the whole body. The beginning of the tire flip mimics a deadlift, working the muscles of the lower body and back. The end of the exercise is a push in which you should generate force through your chest, shoulders, triceps, and legs. The tire flip is primarily used as a cardio/conditioning exercise, but can be used as a strength building exercise as well.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strongman'],
       difficulty: 'intermediate',
       equipment: ['Tire'],
@@ -10313,7 +10439,7 @@ export const quadsExercises: ExerciseGroup = {
         'During the start position, one should have a fairly neutral spine and not allow their upper back to round. If you feel like you can’t get into position without rounding, it might be because you’re trying to squat the weight as opposed to the proper setup (see above).',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -10321,7 +10447,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Biceps',
@@ -10351,7 +10477,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/Kg80f16cWG4?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 3100,
       popularity: 'low',
     },
@@ -10359,7 +10485,7 @@ export const quadsExercises: ExerciseGroup = {
       id: 'quads-182',
       name: 'Smith Machine Box Squat',
       description: 'No description available',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'intermediate',
       equipment: ['Machine'],
@@ -10378,14 +10504,14 @@ export const quadsExercises: ExerciseGroup = {
         'Drive your traps into the bar and try to squeeze your elbows in towards your body as you reverse the movement out of the hole.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
         'Recent surgery',
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
-      muscles: ['Quads', 'Calves', 'Glutes', 'Hamstrings', 'Lower Back'],
+      muscles: ['Upper Legs', 'Calves', 'Glutes', 'Hamstrings', 'Lower Back'],
       alternatives: [
         'quads-100',
         'quads-115',
@@ -10401,7 +10527,7 @@ export const quadsExercises: ExerciseGroup = {
       videoUrl:
         'https://player.vimeo.com/video/877881741?badge=0&autopause=0&player_id=0&app_id=58479',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 11100,
       popularity: 'low',
     },
@@ -10410,7 +10536,7 @@ export const quadsExercises: ExerciseGroup = {
       name: '2 KB Kettlebell Jerk',
       description:
         'The 2 KB kettlebell jerk is a variation of the jerk and an explosive movement used to strengthen the push muscles of the quads and shoulders. The 2 KB kettlebell jerk is an exercise that would typically be seen performed in Olympic style weightlifting facilities. It is also a movement athletes would use to build explosive strength to increase their performance on their field of play. Olympic lifts, such as jerk balance, are very technically demanding and require a lot of practice prior to performing with any sort of significant weight.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['olympic weightlifting'],
       difficulty: 'intermediate',
       equipment: ['Kettle Bells'],
@@ -10426,7 +10552,7 @@ export const quadsExercises: ExerciseGroup = {
         'To get the kettlebells into position, one will need to likely swing it in between the legs and then clean it into position.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -10434,7 +10560,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Biceps',
@@ -10461,7 +10587,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/Riz8y33x4zY?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 1400,
       popularity: 'low',
     },
@@ -10470,7 +10596,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Contralateral Load Dumbbell Front Lunge',
       description:
         'The contralateral load dumbbell front lunge is a dumbbell lunge variation and an exercise used to target the muscles of the quad as well as the rest of the muscles in the leg. The contralateral load used in the contralateral load front lunge provides a stability factor to the exercise and thus challenges the core.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'advanced',
       equipment: ['Dumbbell'],
@@ -10501,14 +10627,21 @@ export const quadsExercises: ExerciseGroup = {
         'If you want to emphasize the glutes and hamstrings during any sort of lunge or split squat pattern, focus on taking a slightly larger step and drive up through the heel of the foot.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
         'Recent surgery',
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
-      muscles: ['Quads', 'Abs', 'Adductors', 'Calves', 'Glutes', 'Hamstrings'],
+      muscles: [
+        'Upper Legs',
+        'Abs',
+        'Adductors',
+        'Calves',
+        'Glutes',
+        'Hamstrings',
+      ],
       alternatives: [
         'quads-10',
         'quads-98',
@@ -10523,7 +10656,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/bwPoCxBsNis?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 5800,
       popularity: 'low',
     },
@@ -10532,7 +10665,7 @@ export const quadsExercises: ExerciseGroup = {
       name: '2 to 1 Box Jump',
       description:
         'The 2 to 1 box jump is a variation of the box jump and an exercise used to increase lower body explosiveness. Plyometric exercises, such as the 2 to 1 box jump, are not only important for athletes – but also the general population as well to maintain elasticity in your tendons as you age.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['plyometrics'],
       difficulty: 'beginner',
       equipment: ['Box'],
@@ -10552,7 +10685,7 @@ export const quadsExercises: ExerciseGroup = {
         'Land softly - use the cue “extend (as in the hips), absorb”.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -10560,7 +10693,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -10582,7 +10715,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/eszrCjMV_CY?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 1900,
       popularity: 'low',
     },
@@ -10590,7 +10723,7 @@ export const quadsExercises: ExerciseGroup = {
       id: 'quads-186',
       name: 'Bodyweight Bulgarian Split Squat',
       description: 'No description available',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'beginner',
       equipment: ['Bodyweight'],
@@ -10607,14 +10740,14 @@ export const quadsExercises: ExerciseGroup = {
         'The same principals apply to the bodyweight squat as apply to the regular squat. Keep your back straight, eyes facing forwards, chest out, and don"t let your knees come forward as you squat down.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
         'Recent surgery',
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
-      muscles: ['Quads', 'Calves', 'Glutes', 'Hamstrings'],
+      muscles: ['Upper Legs', 'Calves', 'Glutes', 'Hamstrings'],
       alternatives: ['quads-17', 'quads-21', 'quads-155', 'quads-2', 'quads-6'],
       repetitions: 12,
       sets: 3,
@@ -10622,9 +10755,9 @@ export const quadsExercises: ExerciseGroup = {
       forceType: 'Push',
       mechanics: 'Compound',
       videoUrl:
-        'https://player.vimeo.com/video/877885756?badge=0&autopause=0&player_id=0&app_id=58479',
+        'https://www.dropbox.com/scl/fi/n0w141dah9q5uz0izzglx/IMG_3002.MOV?rlkey=zni7exxry05vi41l3iwgvd8nd&st=1o0c239n&dl=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 16200,
       popularity: 'low',
     },
@@ -10633,7 +10766,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Narrow Stance Machine Hack Squat',
       description:
         'The narrow stance machine hack squat is a variation of the machine hack squat and an exercise used to build the muscles of the legs. In particular, the narrow stance machine hack squat will target the quads, hamstrings, glutes, and calves. Squat variations are extremely important to include in your workout routines, so it is important to find the right variation for you. The narrow stance used in this exercise will create additional tension in the outer quads. This exercise is best incorporated into your leg workouts or full body workouts.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'intermediate',
       equipment: ['Machine'],
@@ -10655,7 +10788,7 @@ export const quadsExercises: ExerciseGroup = {
         'Toe angle is individual and will depend upon each individual’s hip anatomy and ankle mobility - experiment and adjust based upon feel.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -10663,7 +10796,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Adductors',
         'Calves',
         'Glutes',
@@ -10678,7 +10811,7 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/D5Or1qF6WNY?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 27400,
       popularity: 'low',
     },
@@ -10686,7 +10819,7 @@ export const quadsExercises: ExerciseGroup = {
       id: 'quads-188',
       name: 'Barbell Bulgarian Split Squat',
       description: 'No description available',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'advanced',
       equipment: ['Barbell'],
@@ -10720,14 +10853,14 @@ export const quadsExercises: ExerciseGroup = {
         'Keep your head up and look forward. As soon as you look down your back rounds, simple as that.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
         'Recent surgery',
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
-      muscles: ['Quads', 'Calves', 'Glutes', 'Hamstrings'],
+      muscles: ['Upper Legs', 'Calves', 'Glutes', 'Hamstrings'],
       alternatives: [
         'quads-71',
         'quads-137',
@@ -10743,7 +10876,7 @@ export const quadsExercises: ExerciseGroup = {
       videoUrl:
         'https://player.vimeo.com/video/877885625?badge=0&autopause=0&player_id=0&app_id=58479',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 32500,
       popularity: 'low',
     },
@@ -10752,7 +10885,7 @@ export const quadsExercises: ExerciseGroup = {
       name: 'Back Squat Against Chains',
       description:
         'The back squat against chains is a variation of the barbell back squat and an exercise used to strengthen the muscles of the legs. The use of chains, as seen in the back squat against chains, allows you to overload the top portion of a lift. The back squat against chains is a great exercise to use if you’re looking to get stronger on the squat exercise, especially if you struggle while locking out at the top of your reps.',
-      targetBodyParts: ['Quads'],
+      targetBodyParts: ['Upper Legs'],
       exerciseType: ['strength'],
       difficulty: 'advanced',
       equipment: ['Chains'],
@@ -10782,7 +10915,7 @@ export const quadsExercises: ExerciseGroup = {
         'Don’t push the knees out excessively but ensure they track roughly over or slightly outside the 2nd toe.',
       ],
       contraindications: [
-        'Quads injury',
+        'Upper Legs injury',
         'Joint pain',
         'Acute pain during movement',
         'Shoulder impingement',
@@ -10790,7 +10923,7 @@ export const quadsExercises: ExerciseGroup = {
         'Severe cardiovascular issues (for heavy compound movements)',
       ],
       muscles: [
-        'Quads',
+        'Upper Legs',
         'Abs',
         'Adductors',
         'Calves',
@@ -10813,9 +10946,181 @@ export const quadsExercises: ExerciseGroup = {
       mechanics: 'Compound',
       videoUrl: 'https://www.youtube.com/embed/BsPh3UUJTyA?rel=0',
       imageUrl:
-        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Quads.jpg',
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 1500,
       popularity: 'low',
+    },
+    {
+      id: 'quads-190',
+      name: 'Bodyweight Squat',
+      description:
+        "The bodyweight squat is a fundamental movement pattern that forms the foundation of lower body strength training. This exercise requires no equipment, making it perfect for beginners learning proper squat form and for those working out at home. While less intensive than its weighted counterparts, the bodyweight squat effectively targets the muscles of the lower body while also engaging the core for stability. It's an excellent exercise for developing proper form, building basic strength, improving mobility, and preparing for more advanced squat variations.",
+      targetBodyParts: ['Upper Legs'],
+      exerciseType: ['strength', 'mobility'],
+      difficulty: 'beginner',
+      equipment: ['Bodyweight'],
+      steps: [
+        'Stand with your feet slightly wider than shoulder-width apart, toes pointed slightly outward.',
+        'Keep your chest up, shoulders back, and core engaged.',
+        'For balance, you can hold your arms straight out in front of you or keep them close to your chest.',
+        'Initiate the movement by pushing your hips back, as if sitting into a chair.',
+        'Bend your knees and lower your body, keeping your back straight and chest up.',
+        'Lower yourself until your thighs are parallel to the ground, or as far as you can while maintaining proper form.',
+        'Keep your weight in your heels and ensure your knees track in line with your toes.',
+        'Push through your heels to return to the starting position, squeezing your glutes at the top.',
+        'Repeat for the desired number of repetitions.',
+      ],
+      tips: [
+        'Keep your eyes forward and head neutral throughout the movement.',
+        'Maintain a straight back - avoid rounding your lower back or excessive forward lean.',
+        'Push your knees out slightly as you descend to prevent them from caving inward.',
+        'Breathe in as you lower down and exhale as you push back up.',
+        'Focus on sitting back with your hips rather than pushing your knees forward.',
+        'Keep your weight in your heels - you should be able to wiggle your toes at the bottom of the squat.',
+        'Start with shorter ranges of motion if needed, gradually working toward full depth as mobility improves.',
+      ],
+      contraindications: [
+        'Knee injury or pain',
+        'Hip injury',
+        'Acute lower back pain',
+        'Severe ankle mobility restrictions',
+        'Balance issues',
+      ],
+      muscles: ['Upper Legs', 'Glutes', 'Calves', 'Core'],
+      alternatives: [
+        'quads-17',
+        'quads-19',
+        'quads-21',
+        'quads-86',
+        'quads-22',
+      ],
+      repetitions: 15,
+      sets: 3,
+      restBetweenSets: 45,
+      forceType: 'Push',
+      mechanics: 'Compound',
+      videoUrl:
+        'https://www.dropbox.com/scl/fi/gac5ppt96xkc2s2hl1nlo/IMG_3130.mov?rlkey=nmsf2yswknz4x61ghw0b4x9ob&st=dc434sww&dl=0', // Add video URL if available
+      imageUrl:
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
+      viewCount: 850000,
+      popularity: 'high',
+    },
+    {
+      id: 'quads-191',
+      name: 'Assisted Pistol Squat',
+      description:
+        'The Assisted Pistol Squat is a modified version of the challenging single-leg pistol squat, using external support like TRX straps, resistance bands, or a stable object to aid balance and reduce the load. This makes the movement accessible while developing the necessary strength, mobility, and control to progress towards the unassisted version.',
+      targetBodyParts: ['Upper Legs'],
+      exerciseType: ['strength'],
+      difficulty: 'intermediate',
+      equipment: ['Bodyweight', 'TRX', 'Bands', 'Support Structure'],
+      steps: [
+        'Set up your chosen assistance: Hold TRX handles, secure a band overhead, or stand beside a stable support.',
+        'Assume a single-leg stance, extending the non-working leg straight out in front.',
+        'Holding the assistance lightly, initiate the squat by flexing the knee and hip of the supporting leg.',
+        'Descend slowly, keeping your back straight and core engaged. Use the assistance as needed for balance and control, especially in the bottom position.',
+        'Lower until your hamstring nears your calf, or as deep as mobility allows while maintaining good form.',
+        'Drive through the heel of the supporting foot to ascend. Use minimal assistance from your arms/support to help push back up.',
+        'Return to the starting single-leg stance.',
+        'Complete reps on one side, then switch.',
+      ],
+      tips: [
+        'Use only the minimum amount of assistance necessary to complete the rep with good form.',
+        'Focus on controlling the descent and driving up primarily with your leg.',
+        'To progress, gradually reduce reliance on the assistance (e.g., less pull on TRX/band, lighter touch on support). Aim for 8-12 reps per leg.',
+        'Maintain core tension throughout the movement.',
+        'Keep the heel of the supporting foot firmly on the ground.',
+        'Ensure the knee of the supporting leg tracks in line with your foot.',
+        'Work on ankle and hip mobility alongside this exercise.',
+      ],
+      contraindications: [
+        'Upper Legs injury',
+        'Significant knee or hip pain',
+        'Acute pain during movement',
+        'Severe balance impairments',
+        'Poor ankle/hip mobility (address concurrently)',
+      ],
+      muscles: [
+        'Upper Legs',
+        'Abs',
+        'Adductors',
+        'Calves',
+        'Glutes',
+        'Hamstrings',
+      ],
+      alternatives: [
+        'quads-81',
+        'quads-10',
+        'quads-28',
+        'quads-30',
+        'quads-36',
+      ],
+      repetitions: 8,
+      sets: 3,
+      restBetweenSets: 75,
+      forceType: 'Push (Unilateral)',
+      mechanics: 'Compound',
+      videoUrl:
+        'https://www.dropbox.com/scl/fi/0tvrt2dnrvp9yzmrfh9i5/IMG_3748.MOV?rlkey=vaa5nlj6hi01fz0htya8m0ejw&st=xpomjmte&dl=0',
+      imageUrl:
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
+      viewCount: 0,
+      popularity: 'low',
+    },
+    {
+      id: 'quads-192',
+      name: 'Single-Leg Box Squat (Sit-to-Stand)',
+      description:
+        'A unilateral lower body exercise performed by standing up from a seated position on a box, bench, or chair using only one leg. It builds single-leg strength, balance, and concentric power, serving as a scalable progression towards pistol squats.',
+      targetBodyParts: ['Upper Legs'],
+      exerciseType: ['strength'],
+      difficulty: 'intermediate',
+      equipment: ['Bodyweight', 'Bench', 'Box', 'Chair'],
+      steps: [
+        'Sit on the edge of a box or bench with feet flat on the floor.',
+        'Extend one leg straight out in front, keeping the heel off the ground.',
+        'Plant the foot of the supporting leg firmly on the floor, close to the bench.',
+        'Lean your torso slightly forward, keeping your back straight and core engaged.',
+        'Drive through the heel of the supporting leg to stand up fully, maintaining balance.',
+        'Once standing, slowly and controllably lower yourself back to the seated starting position.',
+        'Ensure the non-working foot remains off the ground throughout the movement.',
+        'Complete reps on one side, then switch.',
+      ],
+      tips: [
+        'Push through the mid-foot/heel of the supporting leg to initiate the upward movement.',
+        'Use momentum from the slight forward lean to help stand up, but control the movement.',
+        'Keep your chest up as you stand.',
+        'Ensure the supporting knee tracks in line with your foot.',
+        'Control the descent back to the box; avoid just dropping.',
+        'Adjust box height to modify difficulty: higher is easier, lower is harder.',
+        'If standing up on one leg is too difficult, practice the eccentric (lowering) phase only, sitting down on one leg and standing up with both.',
+      ],
+      contraindications: [
+        'Upper Legs injury',
+        'Significant knee or hip pain',
+        'Acute pain during movement',
+        'Severe balance impairments',
+      ],
+      muscles: ['Quads', 'Glutes', 'Hamstrings', 'Core'],
+      alternatives: [
+        'quads-81', // Bodyweight Pistol Squat
+        'quads-82', // Assisted Pistol Squat
+        'quads-83', // Skater Squat
+        'quads-28', // Bulgarian Split Squat
+        'quads-47', // Split Squat
+      ],
+      repetitions: 10,
+      sets: 3,
+      restBetweenSets: 60,
+      forceType: 'Push (Unilateral)',
+      mechanics: 'Compound',
+      videoUrl:
+        'https://www.dropbox.com/scl/fi/p63er0mqrt6e6o6rbw2fo/IMG_3750.MOV?rlkey=9efaaao3svvmn8krpdo9gseet&st=f8eb5p9c&dl=0',
+      imageUrl:
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
+      viewCount: 0,
+      popularity: 'medium',
     },
   ],
 };

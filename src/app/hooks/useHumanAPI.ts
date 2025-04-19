@@ -264,7 +264,6 @@ export function useHumanAPI({
     // Apply rate limiting
     const now = Date.now();
     if (now - lastPickTimeRef.current < PICK_RATE_LIMIT) {
-      console.log('Rate limiting onObjectPicked, skipping');
       // Flag that we're currently rate-limited
       isPickRateLimitedRef.current = true;
 
@@ -844,7 +843,6 @@ export function useHumanAPI({
             humanRef.current?.send('scene.enableXray', () => {});
             isXrayEnabledRef.current = true;
           }
-          // zoomID = selectedId;
 
           const part = group.parts.find(
             (part) => part.objectId === selectedIdNeutral

@@ -1,0 +1,65 @@
+{
+  "bodyPart": "Upper Back",
+  "exercises": [
+    {
+      "id": "lats-1",
+      "name": "Lat Pull Down",
+      "targetBodyParts": ["Lats"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Cable"],
+      "contraindications": [
+        "Lats injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": ["Lats", "Abs", "Biceps", "Shoulders", "Upper Back"],
+      "forceType": "Pull (Bilateral)",
+      "mechanics": "Compound",
+      "viewCount": 4700000,
+      "popularity": "high"
+    },
+    {
+      "id": "lats-6",
+      "name": "Pull Up",
+      "targetBodyParts": ["Lats"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Bodyweight"],
+      "contraindications": [
+        "Lats injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": ["Lats", "Abs", "Biceps", "Shoulders", "Upper Back"],
+      "forceType": "Pull (Bilateral)",
+      "mechanics": "Compound",
+      "viewCount": 462800,
+      "popularity": "medium"
+    },
+    {
+      "id": "lats-10",
+      "name": "Rope Straight Arm Pull Down",
+      "targetBodyParts": ["Lats"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Cable"],
+      "contraindications": [
+        "Lats injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": ["Lats", "Abs", "Biceps", "Shoulders", "Upper Back"],
+      "forceType": "Pull (Bilateral)",
+      "mechanics": "Compound",
+      "viewCount": 117800,
+      "popularity": "medium"
+    }
+  ]
+}

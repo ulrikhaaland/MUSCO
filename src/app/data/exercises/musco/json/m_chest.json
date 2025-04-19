@@ -1,0 +1,177 @@
+{
+  "bodyPart": "Chest",
+  "exercises": [
+    {
+      "id": "chest-1",
+      "name": "Dumbbell Bench Press",
+      "targetBodyParts": ["Chest"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Dumbbell"],
+      "contraindications": [
+        "Chest injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Shoulder impingement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": ["Chest", "Shoulders", "Triceps"],
+      "forceType": "Push (Bilateral)",
+      "mechanics": "Compound",
+      "viewCount": 6500000,
+      "popularity": "high"
+    },
+    {
+      "id": "chest-3",
+      "name": "Incline Dumbbell Bench Press",
+      "targetBodyParts": ["Chest"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Dumbbell"],
+      "contraindications": [
+        "Chest injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Shoulder impingement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": ["Chest", "Shoulders", "Triceps"],
+      "forceType": "Push (Bilateral)",
+      "mechanics": "Compound",
+      "viewCount": 5600000,
+      "popularity": "high"
+    },
+    {
+      "id": "chest-7",
+      "name": "Barbell Bench Press",
+      "targetBodyParts": ["Chest"],
+      "exerciseType": ["strength"],
+      "difficulty": "intermediate",
+      "equipment": ["Barbell"],
+      "contraindications": [
+        "Chest injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Shoulder impingement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": ["Chest", "Shoulders", "Triceps"],
+      "popularity": "high"
+    },
+    {
+      "id": "chest-10",
+      "name": "Standing Cable Fly",
+      "targetBodyParts": ["Chest"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Cable"],
+      "contraindications": [
+        "Chest injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Shoulder impingement"
+      ],
+      "muscles": ["Chest", "Shoulders", "Triceps"],
+      "forceType": "Push (Bilateral)",
+      "mechanics": "Isolation",
+      "viewCount": 1700000,
+      "popularity": "high"
+    },
+    {
+      "id": "chest-11",
+      "name": "Hammer Strength Bench Press",
+      "targetBodyParts": ["Chest"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Machine"],
+      "contraindications": [
+        "Chest injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Shoulder impingement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": ["Chest", "Shoulders", "Triceps"],
+      "popularity": "high"
+    },
+    {
+      "id": "chest-14",
+      "name": "Incline Dumbbell Flys",
+      "targetBodyParts": ["Chest"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Dumbbell"],
+      "contraindications": [
+        "Chest injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Shoulder impingement"
+      ],
+      "muscles": ["Chest", "Shoulders", "Triceps"],
+      "popularity": "high"
+    },
+    {
+      "id": "chest-16",
+      "name": "Standing Low to High Cable Fly",
+      "targetBodyParts": ["Chest"],
+      "exerciseType": ["strength"],
+      "difficulty": "intermediate",
+      "equipment": ["Cable"],
+      "contraindications": [
+        "Chest injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Shoulder impingement"
+      ],
+      "muscles": ["Chest", "Shoulders", "Triceps"],
+      "forceType": "Push (Bilateral)",
+      "mechanics": "Isolation",
+      "viewCount": 174300,
+      "popularity": "medium"
+    },
+    {
+      "id": "chest-18",
+      "name": "Push Up",
+      "targetBodyParts": ["Chest"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Bodyweight"],
+      "contraindications": [
+        "Chest injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Shoulder impingement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": ["Chest", "Abs", "Shoulders", "Triceps"],
+      "forceType": "Push (Bilateral)",
+      "mechanics": "Compound",
+      "viewCount": 960000,
+      "popularity": "medium"
+    },
+    {
+      "id": "chest-22",
+      "name": "Standing High to Low Cable Fly",
+      "targetBodyParts": ["Chest"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Cable"],
+      "contraindications": [
+        "Chest injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Shoulder impingement"
+      ],
+      "muscles": ["Chest", "Shoulders", "Triceps"],
+      "forceType": "Push (Bilateral)",
+      "mechanics": "Isolation",
+      "viewCount": 164000,
+      "popularity": "medium"
+    }
+  ]
+}

@@ -1,0 +1,153 @@
+import { ExerciseGroup } from '@/app/types/program';
+
+export const m_glutes: ExerciseGroup = {
+  bodyPart: 'Glutes',
+  exercises: [
+    {
+      id: 'glutes-7',
+      name: 'Bodyweight Glute Bridge',
+      description:
+        'The glute bridge is a variation of the hip thrust and an exercise that is used to build the glute muscles. It will also indirectly target the other muscles of the legs such as the hamstrings, quads, and calves. hip thrust variations are thought to be the optimal exercise for glute specific training. So, if you have goals to build a bigger butt, hip thrusts should be included in your workouts. Building strong glutes will also have a positive carryover into your other exercises including squat variations and deadlift variations. Glute bridges can be included in your leg workouts and full body workouts.',
+      targetBodyParts: ['Glutes'],
+      exerciseType: ['strength'],
+      difficulty: 'beginner',
+      equipment: ['Bodyweight'],
+      steps: [
+        'Start in a supine position on the floor with your arms at a 45 degree angle relative to your torso.',
+        'Bridge your hips up by squeezing your glutes and driving your heels into the floor.',
+        'Lower your hips back to the starting position and repeat for the desired number of repetitions.',
+      ],
+      tips: [
+        'Ensure that the lower back doesn’t arch as you extend the hip, you should focus on squeezing the glutes and slightly posteriorly tilting the pelvis.',
+        'Ideally you should prioritize a straight line from your knees through your shoulders at the peak of contraction.',
+        'Focus on exhaling as you bridge the hips up. You shouldn’t feel the movement through your lower back at all.',
+        'If you can’t seem to feel your glutes activating, palpate the musculature with your hands and focus on pausing the movement at the peak of contraction.',
+        'If you find one glute has less contractility than another, perform the movement unilaterally and then incorporate the bilateral version after you have accumulated sufficient volume on the side with poor contractility.',
+      ],
+      contraindications: [
+        'Glutes injury',
+        'Joint pain',
+        'Acute pain during movement',
+        'Shoulder impingement',
+      ],
+      muscles: ['Glutes', 'Abs', 'Hamstrings'],
+      alternatives: [
+        'glutes-1',
+        'glutes-5',
+        'glutes-10',
+        'glutes-12',
+        'glutes-20',
+      ],
+      repetitions: 12,
+      sets: 3,
+      restBetweenSets: 60,
+      forceType: 'Push (Bilateral)',
+      mechanics: 'Isolation',
+      videoUrl:
+        'https://www.dropbox.com/scl/fi/m7atx8a633wa8nsgpel8m/IMG_3754.MOV?rlkey=v2ojuadx1tidw2hfvwsqbo1yq&st=sj57d944&dl=0',
+      imageUrl:
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Glutes.jpg',
+      viewCount: 319600,
+      popularity: 'medium',
+    },
+    {
+      id: 'glutes-8',
+      name: 'Barbell Glute Bridge',
+      description:
+        'The barbell glute bridge is an exercise used to strengthen the glute muscles. A lot of lifters believe all you need to build a complete and strong set of glutes are exercises such as the squat and deadlift. However, this isn’t completely true. Implementing more isolation focused glute exercises such as the barbell glute bridge is a smart idea for aesthetics, functionality, and strength.',
+      targetBodyParts: ['Glutes'],
+      exerciseType: ['strength'],
+      difficulty: 'intermediate',
+      equipment: ['Barbell'],
+      steps: [
+        'Sit up straight with your legs extended and roll a barbell up to the crease of your hips.',
+        'Lay back into a supine position on the floor with your arms holding onto the bar.',
+        'Bridge your hips up by squeezing your glutes and driving your heels into the floor.',
+        'Lower your hips back to the starting position and repeat for the desired number of repetitions.',
+      ],
+      tips: [
+        'Utilize an airex or squat bar pad on the bar as this will help to reduce the discomfort during the exercise.',
+        'Ensure that the lower back doesn’t arch as you extend the hip, you should focus on squeezing the glutes and slightly posteriorly tilting the pelvis.',
+        'Ideally you should prioritize a straight line from your knees through your shoulders at the peak of contraction.',
+        'Focus on exhaling as you bridge the hips up. You shouldn’t feel the movement through your lower back at all.',
+        'If you can’t seem to feel your glutes activating, palpate the musculature with your hands and focus on pausing the movement at the peak of contraction.',
+      ],
+      contraindications: [
+        'Glutes injury',
+        'Joint pain',
+        'Acute pain during movement',
+        'Shoulder impingement',
+      ],
+      muscles: ['Glutes', 'Abs', 'Hamstrings'],
+      alternatives: [
+        'glutes-2',
+        'glutes-13',
+        'glutes-43',
+        'glutes-3',
+        'glutes-7',
+      ],
+      repetitions: 12,
+      sets: 3,
+      restBetweenSets: 60,
+      forceType: 'Push (Bilateral)',
+      mechanics: 'Isolation',
+      videoUrl:
+        'https://www.dropbox.com/scl/fi/dfw09c7te9rwc18kv72en/IMG_3014.MOV?rlkey=68j7l3b2y6u4iwkrpot6doenp&st=7bixslkp&dl=0',
+      imageUrl:
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Glutes.jpg',
+      viewCount: 129200,
+      popularity: 'medium',
+    },
+    {
+      id: 'glutes-44',
+      name: 'Side Lying Hip Abduction',
+      description:
+        "A targeted isolation exercise that primarily works the gluteus medius and minimus muscles. This exercise is excellent for hip stability, glute activation, and addressing muscle imbalances. It's commonly used in both strength training and rehabilitation settings.",
+      targetBodyParts: ['Glutes'],
+      exerciseType: ['strength'],
+      difficulty: 'beginner',
+      equipment: ['Bodyweight'],
+      steps: [
+        'Lie on your side with your body in a straight line, bottom leg slightly bent for stability.',
+        'Support your head with your bottom arm, or lay it flat on the ground.',
+        'Keep your top leg straight and in line with your body.',
+        'Lift your top leg up towards the ceiling while keeping your hips stacked.',
+        'Pause briefly at the top of the movement.',
+        'Lower your leg back down with control.',
+        'Complete all reps before switching sides.',
+      ],
+      tips: [
+        'Keep your hips stacked throughout the movement - avoid rolling backward.',
+        'Focus on lifting with your hip muscles, not momentum.',
+        'Keep your top leg straight but not locked.',
+        'Maintain a neutral spine position.',
+        'For better isolation, point your toes slightly down toward the floor.',
+      ],
+      contraindications: [
+        'Hip injury',
+        'Joint pain',
+        'Acute pain during movement',
+        'Recent hip surgery',
+      ],
+      muscles: ['Glutes', 'Hip Abductors'],
+      alternatives: [
+        'glutes-11',
+        'glutes-17',
+        'glutes-21',
+        'glutes-26',
+        'glutes-30',
+      ],
+      repetitions: 15,
+      sets: 3,
+      restBetweenSets: 45,
+      forceType: 'Push (Unilateral)',
+      mechanics: 'Isolation',
+      videoUrl:
+        'https://www.dropbox.com/scl/fi/i3o0xioxwlnjlm6mcdzz2/IMG_3757.mov?rlkey=3nz3dsqn52umum1hymw912a61&st=y0i5s7wc&dl=0',
+      imageUrl:
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Glutes.jpg',
+      viewCount: 0,
+      popularity: 'medium',
+    },
+  ],
+};

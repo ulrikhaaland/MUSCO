@@ -1,0 +1,132 @@
+{
+  "bodyPart": "Upper Arms",
+  "exercises": [
+    {
+      "id": "biceps-1",
+      "name": "Standing Hammer Curl",
+      "targetBodyParts": ["Biceps"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Dumbbell"],
+      "contraindications": [
+        "Biceps injury",
+        "Joint pain",
+        "Acute pain during movement"
+      ],
+      "muscles": ["Biceps", "Forearms"],
+      "forceType": "Pull",
+      "mechanics": "Isolation",
+      "viewCount": 3000000,
+      "popularity": "high"
+    },
+    {
+      "id": "biceps-2",
+      "name": "Standing Dumbbell Curl",
+      "targetBodyParts": ["Biceps"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Dumbbell"],
+      "contraindications": [
+        "Biceps injury",
+        "Joint pain",
+        "Acute pain during movement"
+      ],
+      "muscles": ["Biceps"],
+      "forceType": "Pull",
+      "mechanics": "Isolation",
+      "viewCount": 4100000,
+      "popularity": "high"
+    },
+    {
+      "id": "biceps-4",
+      "name": "Standing Barbell Curl",
+      "targetBodyParts": ["Biceps"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Barbell"],
+      "contraindications": [
+        "Biceps injury",
+        "Joint pain",
+        "Acute pain during movement"
+      ],
+      "muscles": ["Biceps"],
+      "forceType": "Pull",
+      "mechanics": "Isolation",
+      "viewCount": 4600000,
+      "popularity": "high"
+    },
+    {
+      "id": "biceps-10",
+      "name": "EZ Bar Curl",
+      "targetBodyParts": ["Biceps"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Barbell"],
+      "contraindications": [
+        "Biceps injury",
+        "Joint pain",
+        "Acute pain during movement"
+      ],
+      "muscles": ["Biceps"],
+      "forceType": "Pull",
+      "mechanics": "Isolation",
+      "viewCount": 836500,
+      "popularity": "medium"
+    },
+    {
+      "id": "biceps-18",
+      "name": "Seated Dumbbell Curl",
+      "targetBodyParts": ["Biceps"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Dumbbell"],
+      "contraindications": [
+        "Biceps injury",
+        "Joint pain",
+        "Acute pain during movement"
+      ],
+      "muscles": ["Biceps"],
+      "forceType": "Pull",
+      "mechanics": "Isolation",
+      "viewCount": 530800,
+      "popularity": "medium"
+    },
+    {
+      "id": "biceps-53",
+      "name": "One-Arm Prone Incline Dumbbell Curl",
+      "targetBodyParts": ["Biceps"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Dumbbell"],
+      "contraindications": [
+        "Biceps injury",
+        "Joint pain",
+        "Acute pain during movement"
+      ],
+      "muscles": ["Biceps"],
+      "forceType": "Pull",
+      "mechanics": "Isolation",
+      "viewCount": 10700,
+      "popularity": "low"
+    },
+    {
+      "id": "biceps-78",
+      "name": "Chest-Supported Incline Dumbbell Curl",
+      "targetBodyParts": ["Biceps"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Dumbbell", "Bench"],
+      "contraindications": [
+        "Biceps injury",
+        "Elbow pain or injury",
+        "Shoulder impingement",
+        "Acute pain during movement"
+      ],
+      "muscles": ["Biceps"],
+      "forceType": "Pull (Bilateral)",
+      "mechanics": "Isolation",
+      "viewCount": 0,
+      "popularity": "medium"
+    }
+  ]
+}

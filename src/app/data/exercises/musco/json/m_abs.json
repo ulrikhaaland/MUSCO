@@ -1,0 +1,157 @@
+{
+  "bodyPart": "abs",
+  "exercises": [
+    {
+      "id": "abs-5",
+      "name": "Hanging Leg Raise",
+      "targetBodyParts": ["Abs"],
+      "exerciseType": ["strength"],
+      "difficulty": "advanced",
+      "equipment": ["Bodyweight"],
+      "contraindications": [
+        "Abs injury",
+        "Joint pain",
+        "Acute pain during movement"
+      ],
+      "muscles": ["Abs", "Forearms"],
+      "forceType": "Pull",
+      "mechanics": "Isolation",
+      "viewCount": 1400000,
+      "popularity": "high"
+    },
+    {
+      "id": "abs-6",
+      "name": "Plank",
+      "targetBodyParts": ["Abs"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Bodyweight"],
+      "contraindications": [
+        "Abs injury",
+        "Joint pain",
+        "Acute pain during movement"
+      ],
+      "muscles": ["Abs", "Lower Back"],
+      "forceType": "Static",
+      "mechanics": "Isolation",
+      "viewCount": 1600000,
+      "popularity": "high"
+    },
+    {
+      "id": "abs-9",
+      "name": "Sit Up",
+      "targetBodyParts": ["Abs"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Bodyweight"],
+      "contraindications": [
+        "Abs injury",
+        "Joint pain",
+        "Acute pain during movement"
+      ],
+      "muscles": ["Abs"],
+      "forceType": "Pull (Bilateral)",
+      "mechanics": "Isolation",
+      "viewCount": 1200000,
+      "popularity": "high"
+    },
+    {
+      "id": "abs-13",
+      "name": "Abdominal Air Bike (AKA Bicycle)",
+      "targetBodyParts": ["Abs"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Bodyweight"],
+      "contraindications": [
+        "Abs injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": ["Abs"],
+      "forceType": "Pull (Bilateral)",
+      "mechanics": "Compound",
+      "viewCount": 675800,
+      "popularity": "medium"
+    },
+    {
+      "id": "abs-20",
+      "name": "Dead Bug",
+      "targetBodyParts": ["Abs"],
+      "exerciseType": ["strength"],
+      "difficulty": "intermediate",
+      "equipment": ["Bodyweight"],
+      "contraindications": [
+        "Abs injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": ["Abs"],
+      "forceType": "Isometric",
+      "mechanics": "Compound",
+      "viewCount": 103500,
+      "popularity": "medium"
+    },
+    {
+      "id": "abs-22",
+      "name": "Lying Leg Raise With Hip Thrust",
+      "targetBodyParts": ["Abs"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Bodyweight"],
+      "contraindications": [
+        "Abs injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": ["Abs"],
+      "forceType": "N/A",
+      "mechanics": "Compound",
+      "viewCount": 65000,
+      "popularity": "low"
+    },
+    {
+      "id": "abs-119",
+      "name": "Hollow Body Crunch with Arm Sweep",
+      "targetBodyParts": ["Abs"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Bodyweight"],
+      "contraindications": [
+        "Abs injury",
+        "Joint pain",
+        "Acute pain during movement"
+      ],
+      "muscles": ["Abs", "Hip Flexors", "Serratus Anterior", "Core"],
+      "forceType": "Pull",
+      "mechanics": "Compound",
+      "viewCount": 0,
+      "popularity": "medium"
+    },
+    {
+      "id": "abs-120",
+      "name": "Plank to Push-Up",
+      "targetBodyParts": ["Abs"],
+      "exerciseType": ["strength"],
+      "difficulty": "intermediate",
+      "equipment": ["Bodyweight"],
+      "contraindications": [
+        "Shoulder injury",
+        "Wrist pain or injury",
+        "Lower back pain",
+        "Core instability",
+        "Elbow issues"
+      ],
+      "muscles": ["Abs", "Shoulders", "Triceps", "Chest", "Core"],
+      "forceType": "Push",
+      "mechanics": "Compound",
+      "viewCount": 0,
+      "popularity": "medium"
+    }
+  ]
+}

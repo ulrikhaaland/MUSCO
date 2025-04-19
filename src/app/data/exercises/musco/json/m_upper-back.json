@@ -1,0 +1,167 @@
+{
+  "bodyPart": "Upper Back",
+  "exercises": [
+    {
+      "id": "upper-back-3",
+      "name": "Bent Over Row",
+      "targetBodyParts": ["Upper Back"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Barbell"],
+      "contraindications": [
+        "Upper Back injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": [
+        "Upper Back",
+        "Abs",
+        "Biceps",
+        "Lats",
+        "Lower Back",
+        "Shoulders"
+      ],
+      "forceType": "Pull (Bilateral)",
+      "mechanics": "Compound",
+      "viewCount": 8000000,
+      "popularity": "high"
+    },
+    {
+      "id": "upper-back-4",
+      "name": "Seated Cable Row",
+      "targetBodyParts": ["Upper Back"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Cable"],
+      "contraindications": [
+        "Upper Back injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": ["Upper Back", "Biceps", "Lats", "Shoulders"],
+      "forceType": "Pull",
+      "mechanics": "Compound",
+      "viewCount": 5200000,
+      "popularity": "high"
+    },
+    {
+      "id": "upper-back-8",
+      "name": "Tripod Dumbbell Row",
+      "targetBodyParts": ["Upper Back"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Dumbbell"],
+      "contraindications": [
+        "Upper Back injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": [
+        "Upper Back",
+        "Abs",
+        "Biceps",
+        "Lats",
+        "Lower Back",
+        "Shoulders"
+      ],
+      "forceType": "Pull (Unilateral)",
+      "mechanics": "Compound",
+      "viewCount": 955700,
+      "popularity": "medium"
+    },
+    {
+      "id": "upper-back-14",
+      "name": "Reverse Grip Bent Over Row",
+      "targetBodyParts": ["Upper Back"],
+      "exerciseType": ["strength"],
+      "difficulty": "intermediate",
+      "equipment": ["Barbell"],
+      "contraindications": [
+        "Upper Back injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": ["Upper Back", "Biceps", "Lats", "Shoulders"],
+      "forceType": "Pull",
+      "mechanics": "Compound",
+      "viewCount": 485600,
+      "popularity": "medium"
+    },
+    {
+      "id": "upper-back-16",
+      "name": "Inverted Row",
+      "targetBodyParts": ["Upper Back"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Bodyweight", "Barbell", "Smith Machine", "TRX", "Rings"],
+      "contraindications": [
+        "Upper Back injury",
+        "Shoulder impingement",
+        "Elbow or wrist pain",
+        "Acute pain during movement",
+        "Inability to maintain core stability"
+      ],
+      "muscles": ["Upper Back", "Biceps", "Lats", "Core"],
+      "forceType": "Pull",
+      "mechanics": "Compound",
+      "viewCount": 431900,
+      "popularity": "medium"
+    },
+    {
+      "id": "upper-back-60",
+      "name": "High Standing Banded Row",
+      "targetBodyParts": ["Upper Back"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Bands"],
+      "contraindications": [
+        "Upper Back injury",
+        "Neck pain or injury",
+        "Shoulder impingement",
+        "Acute pain during movement"
+      ],
+      "muscles": [
+        "Upper Back",
+        "Rear Deltoids",
+        "Rhomboids",
+        "Middle Trapezius",
+        "Biceps"
+      ],
+      "forceType": "Pull",
+      "mechanics": "Compound",
+      "viewCount": 0,
+      "popularity": "medium"
+    },
+    {
+      "id": "upper-back-61",
+      "name": "Seated Floor Single-Arm Cable Lat Pulldown",
+      "targetBodyParts": ["Upper Back"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Cable"],
+      "contraindications": [
+        "Latissimus Dorsi injury",
+        "Shoulder impingement",
+        "Elbow pain",
+        "Acute back pain",
+        "Core instability issues"
+      ],
+      "muscles": [
+        "Lats",
+        "Teres Major",
+        "Biceps",
+        "Lower Trapezius",
+        "Rhomboids",
+        "Core"
+      ]
+    }
+  ]
+}

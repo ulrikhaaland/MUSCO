@@ -547,7 +547,7 @@ export const tricepsExercises: ExerciseGroup = {
       forceType: 'Push',
       mechanics: 'Isolation',
       videoUrl:
-        'https://player.vimeo.com/video/756784267?h=924a444ae5&badge=0&autopause=0&player_id=0&app_id=58479',
+        'https://www.dropbox.com/scl/fi/obsbcpu45qvat8inra5j9/IMG_3110.MOV?rlkey=4xtt7mupyn2a69bqbpr7dl98b&st=m9328g3g&dl=0',
       imageUrl:
         'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Triceps.jpg',
       viewCount: 1500000,
@@ -833,7 +833,7 @@ export const tricepsExercises: ExerciseGroup = {
       forceType: 'Push',
       mechanics: 'Compound',
       videoUrl:
-        'https://player.vimeo.com/video/756783893?h=d0044faa39&badge=0&autopause=0&player_id=0&app_id=58479',
+        'https://www.dropbox.com/scl/fi/hwjgnf83fkvb29kgipjle/IMG_3126.MOV?rlkey=a4bhn36oxsr9kxt8i8y1561iy&st=564bcatk&dl=0',
       imageUrl:
         'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Triceps.jpg',
       viewCount: 1300000,
@@ -1020,7 +1020,7 @@ export const tricepsExercises: ExerciseGroup = {
       forceType: 'Push',
       mechanics: 'Isolation',
       videoUrl:
-        'https://player.vimeo.com/video/756788023?h=3436312f3b&badge=0&autopause=0&player_id=0&app_id=58479',
+        'https://www.dropbox.com/scl/fi/bejfxapc54dq0stvyyi4a/IMG_3123.MOV?rlkey=jzamw9kfg80tq6t71rkhiqwsn&st=wfh3ple8&dl=0',
       imageUrl:
         'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Triceps.jpg',
       viewCount: 352800,
@@ -1116,7 +1116,7 @@ export const tricepsExercises: ExerciseGroup = {
       forceType: 'Push',
       mechanics: 'Isolation',
       videoUrl:
-        'https://player.vimeo.com/video/756787995?h=d5d2846b2b&badge=0&autopause=0&player_id=0&app_id=58479',
+        'https://www.dropbox.com/scl/fi/9ufevm32ffau118t98gyy/IMG_3122.MOV?rlkey=pc9r37eaouih83lzyuhntk93b&st=ip5t8wvd&dl=0',
       imageUrl:
         'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Triceps.jpg',
       viewCount: 239900,
@@ -5161,6 +5161,57 @@ export const tricepsExercises: ExerciseGroup = {
         'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Triceps.jpg',
       viewCount: 4900,
       popularity: 'low',
+    },
+    {
+      id: 'triceps-107',
+      name: 'Dumbbell Tricep Extension',
+      description:
+        'The flat bench dumbbell tricep extension is a fundamental exercise for isolating and developing the triceps muscles. Performed lying flat on a bench, this movement allows for optimal stability and control while targeting all three heads of the triceps. The flat position helps maintain consistent tension throughout the movement and can be particularly effective for developing triceps strength and size.',
+      targetBodyParts: ['Triceps'],
+      exerciseType: ['strength'],
+      difficulty: 'beginner',
+      equipment: ['Dumbbell', 'Bench'],
+      steps: [
+        'Lie flat on a bench with your feet planted firmly on the ground.',
+        'Hold a dumbbell in each hand and press them straight up over your chest with palms facing each other (neutral grip).',
+        'Keeping your upper arms stationary and pointing towards the ceiling, slowly bend your elbows to lower the dumbbells towards your forehead.',
+        'Lower until you feel a good stretch in your triceps, typically when your forearms are just past parallel to the ground.',
+        'Pause briefly at the bottom, then extend your arms back to the starting position by contracting your triceps.',
+        'Maintain control throughout the movement and avoid letting the dumbbells drift forward or backward.',
+      ],
+      tips: [
+        "Keep your elbows pointed straight up throughout the movement, don't let them flare out.",
+        'Maintain a neutral grip (palms facing each other) to reduce stress on the wrists and elbows.',
+        'Focus on moving only at the elbow joint - your upper arms should remain vertical and stable.',
+        'Control the weight especially during the lowering phase to maximize triceps engagement.',
+        "If you're new to the exercise, start with lighter weights to perfect your form.",
+      ],
+      contraindications: [
+        'Triceps injury',
+        'Elbow pain or injury',
+        'Shoulder impingement',
+        'Wrist issues',
+        'Acute pain during movement',
+      ],
+      muscles: ['Triceps'],
+      alternatives: [
+        'triceps-39', // Incline Dumbbell Tricep Extension
+        'triceps-3', // Close Grip Bench Press
+        'triceps-8', // Rope Pushdown
+        'triceps-12', // Overhead Tricep Extension
+        'triceps-36', // Diamond Push-Up
+      ],
+      repetitions: 12,
+      sets: 3,
+      restBetweenSets: 60,
+      forceType: 'Push (Bilateral)',
+      mechanics: 'Isolation',
+      videoUrl:
+        'https://www.dropbox.com/scl/fi/y1ui1ggp3pb0rk8vxk1nc/IMG_3111.MOV?rlkey=ehlez5acrldxm9jhw1yjmqad1&st=l9s4x2sf&dl=0', // Would need actual video URL
+      imageUrl:
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Triceps.jpg',
+      viewCount: 0,
+      popularity: 'medium',
     },
   ],
 };

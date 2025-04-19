@@ -1,0 +1,98 @@
+{
+  "bodyPart": "Upper Legs",
+  "exercises": [
+    {
+      "id": "hamstrings-2",
+      "name": "Conventional Deadlift",
+      "targetBodyParts": ["Hamstrings"],
+      "exerciseType": ["strength"],
+      "difficulty": "intermediate",
+      "equipment": ["Barbell"],
+      "contraindications": [
+        "Hamstrings injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": [
+        "Hamstrings",
+        "Abs",
+        "Adductors",
+        "Calves",
+        "Forearms",
+        "Glutes",
+        "Hamstrings",
+        "Lats",
+        "Lower Back",
+        "Middle Back",
+        "Quads",
+        "Traps",
+        "Upper Back"
+      ],
+      "forceType": "Hinge (Bilateral)",
+      "mechanics": "Compound",
+      "viewCount": 5100000,
+      "popularity": "high"
+    },
+    {
+      "id": "hamstrings-5",
+      "name": "Romanian Deadlift (AKA RDL)",
+      "targetBodyParts": ["Hamstrings"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Barbell"],
+      "contraindications": [
+        "Hamstrings injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": [
+        "Hamstrings",
+        "Abs",
+        "Forearms",
+        "Glutes",
+        "Lats",
+        "Lower Back",
+        "Traps",
+        "Upper Back"
+      ],
+      "forceType": "Hinge (Bilateral)",
+      "mechanics": "Compound",
+      "popularity": "high"
+    },
+    {
+      "id": "hamstrings-34",
+      "name": "Straight Leg Deadlift",
+      "targetBodyParts": ["Hamstrings"],
+      "exerciseType": ["strength"],
+      "difficulty": "intermediate",
+      "equipment": ["Barbell"],
+      "contraindications": [
+        "Hamstrings injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": [
+        "Hamstrings",
+        "Abs",
+        "Adductors",
+        "Calves",
+        "Forearms",
+        "Glutes",
+        "Lats",
+        "Lower Back",
+        "Quads",
+        "Traps",
+        "Upper Back"
+      ],
+      "forceType": "Hinge (Bilateral)",
+      "mechanics": "Compound",
+      "popularity": "low"
+    }
+  ]
+}

@@ -1,0 +1,66 @@
+{
+  "bodyPart": "Lower Legs",
+  "exercises": [
+    {
+      "id": "calves-6",
+      "name": "Bodyweight Standing Calf Raise",
+      "targetBodyParts": ["Calves"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Bodyweight"],
+      "contraindications": [
+        "Calves injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Shoulder impingement"
+      ],
+      "muscles": ["Calves"],
+      "forceType": "Push",
+      "mechanics": "Isolation",
+      "viewCount": 423300,
+      "popularity": "medium"
+    },
+    {
+      "id": "calves-12",
+      "name": "One-Leg Standing Bodyweight Calf Raise",
+      "targetBodyParts": ["Calves"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Bodyweight"],
+      "contraindications": [
+        "Calves injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Shoulder impingement"
+      ],
+      "muscles": ["Calves"],
+      "forceType": "Push",
+      "mechanics": "Isolation",
+      "viewCount": 198500,
+      "popularity": "medium"
+    },
+    {
+      "id": "calves-63",
+      "name": "Unilateral Eccentric Bodyweight Standing Calf Raise",
+      "targetBodyParts": ["Calves"],
+      "exerciseType": ["strength", "eccentric"],
+      "difficulty": "intermediate",
+      "equipment": ["Bodyweight"],
+      "contraindications": [
+        "Calves injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Balance issues",
+        "Ankle instability"
+      ],
+      "muscles": ["Calves"],
+      "repetitions": 10,
+      "sets": 3,
+      "restBetweenSets": 90,
+      "forceType": "Push",
+      "mechanics": "Isolation",
+      "viewCount": 0,
+      "popularity": "low"
+    }
+  ]
+}

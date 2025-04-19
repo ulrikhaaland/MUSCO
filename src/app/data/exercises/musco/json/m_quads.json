@@ -1,0 +1,217 @@
+{
+  "bodyPart": "Upper Legs",
+  "exercises": [
+    {
+      "id": "quads-1",
+      "name": "Barbell Back Squat",
+      "targetBodyParts": ["Upper Legs"],
+      "exerciseType": ["strength"],
+      "difficulty": "intermediate",
+      "equipment": ["Barbell"],
+      "contraindications": [
+        "Upper Legs injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Shoulder impingement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": ["Upper Legs", "Calves", "Glutes", "Hamstrings", "Lower Back"],
+      "forceType": "Push",
+      "mechanics": "Compound",
+      "viewCount": 5100000,
+      "popularity": "high"
+    },
+    {
+      "id": "quads-4",
+      "name": "Leg Extension",
+      "targetBodyParts": ["Upper Legs"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Machine"],
+      "contraindications": [
+        "Upper Legs injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Shoulder impingement"
+      ],
+      "muscles": ["Upper Legs"],
+      "forceType": "Push (Bilateral)",
+      "mechanics": "Isolation",
+      "viewCount": 3000000,
+      "popularity": "high"
+    },
+    {
+      "id": "quads-5",
+      "name": "Leg Press",
+      "targetBodyParts": ["Upper Legs"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Machine"],
+      "contraindications": [
+        "Upper Legs injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Shoulder impingement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": [
+        "Upper Legs",
+        "Abs",
+        "Adductors",
+        "Calves",
+        "Glutes",
+        "Hamstrings",
+        "Lower Back"
+      ],
+      "forceType": "Push (Bilateral)",
+      "mechanics": "Compound",
+      "viewCount": 3100000,
+      "popularity": "high"
+    },
+    {
+      "id": "quads-28",
+      "name": "Bodyweight Lunge",
+      "targetBodyParts": ["Upper Legs"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Bodyweight"],
+      "contraindications": [
+        "Upper Legs injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Shoulder impingement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": [
+        "Upper Legs",
+        "Abs",
+        "Adductors",
+        "Calves",
+        "Glutes",
+        "Hamstrings"
+      ],
+      "forceType": "Push (Unilateral)",
+      "mechanics": "Compound",
+      "viewCount": 215800,
+      "popularity": "medium"
+    },
+    {
+      "id": "quads-51",
+      "name": "Single Leg Squat From Bench",
+      "targetBodyParts": ["Upper Legs"],
+      "exerciseType": ["strength"],
+      "difficulty": "intermediate",
+      "equipment": ["Bench"],
+      "contraindications": [
+        "Upper Legs injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Shoulder impingement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": [
+        "Upper Legs",
+        "Abs",
+        "Adductors",
+        "Calves",
+        "Glutes",
+        "Hamstrings"
+      ],
+      "forceType": "Push (Unilateral)",
+      "mechanics": "Compound",
+      "viewCount": 20900,
+      "popularity": "low"
+    },
+    {
+      "id": "quads-186",
+      "name": "Bodyweight Bulgarian Split Squat",
+      "targetBodyParts": ["Upper Legs"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Bodyweight"],
+      "contraindications": [
+        "Upper Legs injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Shoulder impingement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": ["Upper Legs", "Calves", "Glutes", "Hamstrings"],
+      "forceType": "Push",
+      "mechanics": "Compound",
+      "viewCount": 16200,
+      "popularity": "low"
+    },
+    {
+      "id": "quads-190",
+      "name": "Bodyweight Squat",
+      "targetBodyParts": ["Upper Legs"],
+      "exerciseType": ["strength", "mobility"],
+      "difficulty": "beginner",
+      "equipment": ["Bodyweight"],
+      "contraindications": [
+        "Knee injury or pain",
+        "Hip injury",
+        "Acute lower back pain",
+        "Severe ankle mobility restrictions",
+        "Balance issues"
+      ],
+      "muscles": ["Upper Legs", "Glutes", "Calves", "Core"],
+      "forceType": "Push",
+      "mechanics": "Compound",
+      "viewCount": 850000,
+      "popularity": "high"
+    },
+    {
+      "id": "quads-191",
+      "name": "Assisted Pistol Squat",
+      "targetBodyParts": ["Upper Legs"],
+      "exerciseType": ["strength"],
+      "difficulty": "intermediate",
+      "equipment": ["Bodyweight", "TRX", "Bands", "Support Structure"],
+      "contraindications": [
+        "Upper Legs injury",
+        "Significant knee or hip pain",
+        "Acute pain during movement",
+        "Severe balance impairments",
+        "Poor ankle/hip mobility (address concurrently)"
+      ],
+      "muscles": [
+        "Upper Legs",
+        "Abs",
+        "Adductors",
+        "Calves",
+        "Glutes",
+        "Hamstrings"
+      ],
+      "forceType": "Push (Unilateral)",
+      "mechanics": "Compound",
+      "viewCount": 0,
+      "popularity": "low"
+    },
+    {
+      "id": "quads-192",
+      "name": "Single-Leg Box Squat (Sit-to-Stand)",
+      "targetBodyParts": ["Upper Legs"],
+      "exerciseType": ["strength"],
+      "difficulty": "intermediate",
+      "equipment": ["Bodyweight", "Bench", "Box", "Chair"],
+      "contraindications": [
+        "Upper Legs injury",
+        "Significant knee or hip pain",
+        "Acute pain during movement",
+        "Severe balance impairments"
+      ],
+      "muscles": ["Quads", "Glutes", "Hamstrings", "Core"],
+      "forceType": "Push (Unilateral)",
+      "mechanics": "Compound",
+      "viewCount": 0,
+      "popularity": "medium"
+    }
+  ]
+}

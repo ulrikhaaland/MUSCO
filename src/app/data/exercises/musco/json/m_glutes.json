@@ -1,0 +1,56 @@
+{
+  "bodyPart": "Glutes",
+  "exercises": [
+    {
+      "id": "glutes-7",
+      "name": "Bodyweight Glute Bridge",
+      "targetBodyParts": ["Glutes"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Bodyweight"],
+      "contraindications": [
+        "Glutes injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Shoulder impingement"
+      ],
+      "muscles": ["Glutes", "Abs", "Hamstrings"],
+      "forceType": "Push (Bilateral)",
+      "mechanics": "Isolation",
+      "viewCount": 319600,
+      "popularity": "medium"
+    },
+    {
+      "id": "glutes-8",
+      "name": "Barbell Glute Bridge",
+      "targetBodyParts": ["Glutes"],
+      "exerciseType": ["strength"],
+      "difficulty": "intermediate",
+      "equipment": ["Barbell"],
+      "muscles": ["Glutes", "Abs", "Hamstrings"],
+      "forceType": "Push (Bilateral)",
+      "mechanics": "Isolation",
+      "viewCount": 129200,
+      "popularity": "medium"
+    },
+    {
+      "id": "glutes-44",
+      "name": "Side Lying Hip Abduction",
+      "targetBodyParts": ["Glutes"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Bodyweight"],
+      "contraindications": [
+        "Hip injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent hip surgery"
+      ],
+      "muscles": ["Glutes", "Hip Abductors"],
+      "forceType": "Push (Unilateral)",
+      "mechanics": "Isolation",
+      "viewCount": 0,
+      "popularity": "medium"
+    }
+  ]
+}

@@ -724,6 +724,8 @@ export const upperBackExercises: ExerciseGroup = {
       restBetweenSets: 60,
       forceType: 'Pull',
       mechanics: 'Compound',
+      videoUrl:
+        'https://www.dropbox.com/scl/fi/rlimzrdm8ikg2dkdu3l34/IMG_3125.mov?rlkey=r3c1e21ke72xagzd6ipf65s7a&st=24xznjsu&dl=0',
       imageUrl:
         'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper-Back.jpg',
       viewCount: 485600,
@@ -789,48 +791,55 @@ export const upperBackExercises: ExerciseGroup = {
     {
       id: 'upper-back-16',
       name: 'Inverted Row',
-      description: 'No description available',
+      description:
+        "The Inverted Row is a bodyweight exercise targeting the upper back, performed using various equipment like a Smith machine, barbell in a rack, TRX, or gymnastic rings. It's an excellent horizontal pulling movement for building back strength and thickness, acting as a stepping stone towards pull-ups.",
       targetBodyParts: ['Upper Back'],
       exerciseType: ['strength'],
-      difficulty: 'beginner',
-      equipment: ['Bodyweight'],
+      difficulty: 'beginner', // Can be scaled to intermediate/advanced
+      equipment: ['Bodyweight', 'Barbell', 'Smith Machine', 'TRX', 'Rings'],
       steps: [
-        'Set up for the high inverted row by lowering the bar on the smith machine and positioning yourself under the bar.',
-        'Grasp the bar with arms slightly wider than shoulder width.',
-        'Put your feet out in front of you so that your upper chest is directly under the bar.',
-        'Keep your body straight and pull yourself up as far as possible. The bar should come to around upper chest/neck height.',
-        'Pause, and then slowly lower yourself back to the starting position.',
+        'Set up your chosen equipment (barbell, rings, TRX, etc.) at an appropriate height. The lower the equipment, the harder the exercise.',
+        'Position yourself underneath the bar/handles, lying face up.',
+        'Grasp the bar/handles with an overhand grip, slightly wider than shoulder-width.',
+        'Extend your body into a straight line from head to heels, engaging your core and glutes. Your heels should be on the ground.',
+        'Initiate the movement by pulling your chest towards the bar/handles, retracting your shoulder blades.',
+        'Keep your body straight and rigid throughout the pull.',
+        'Pause briefly at the top when your chest is close to the bar/handles.',
+        'Slowly lower yourself back to the starting position with control.',
       ],
       tips: [
-        'Keep your body straight throughout the exercise.',
-        'Pause at the top of the movement and squeeze your shoulder blades together.',
-        'Lower yourself slowly - don"t allow your body to drop.',
+        'Maintain a straight line from head to heels – avoid sagging hips or arching your back.',
+        'Pull with your back muscles, focusing on squeezing your shoulder blades together.',
+        "Control the lowering (eccentric) phase – don't just drop down.",
+        'Adjust foot position to modify difficulty: feet closer makes it easier, feet further or elevated makes it harder.',
+        'Experiment with grip width and type (overhand/underhand) to slightly alter muscle emphasis.',
       ],
       contraindications: [
         'Upper Back injury',
-        'Joint pain',
+        'Shoulder impingement',
+        'Elbow or wrist pain',
         'Acute pain during movement',
-        'Recent surgery',
-        'Severe cardiovascular issues (for heavy compound movements)',
+        'Inability to maintain core stability',
       ],
-      muscles: ['Upper Back', 'Biceps', 'Lats'],
+      muscles: ['Upper Back', 'Biceps', 'Lats', 'Core'],
       alternatives: [
-        'upper-back-10',
-        'upper-back-4',
-        'upper-back-7',
-        'upper-back-12',
-        'upper-back-19',
+        'upper-back-10', // Band Pull-Apart
+        'upper-back-4', // Seated Cable Row
+        'upper-back-7', // Face Pull
+        'upper-back-12', // Bent Over Row
+        'upper-back-19', // Standing Banded Row
       ],
-      repetitions: 12,
+      repetitions: 12, // Range depends on setup/difficulty
       sets: 3,
       restBetweenSets: 60,
       forceType: 'Pull',
       mechanics: 'Compound',
-      videoUrl: 'https://player.vimeo.com/video/756788811?h=89d69b02a9',
+      videoUrl:
+        'https://www.dropbox.com/scl/fi/sv4wawb2837bfxre1hnto/IMG_3747.MOV?rlkey=xui3mqoii4zwj8x4lup46v9ty&st=z5nxsjdg&dl=0', // Keep existing video, or suggest finding a more general one
       imageUrl:
         'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper-Back.jpg',
-      viewCount: 431900,
-      popularity: 'medium',
+      viewCount: 431900, // Keep existing data
+      popularity: 'medium', // Keep existing data
     },
     {
       id: 'upper-back-17',
@@ -3029,6 +3038,118 @@ export const upperBackExercises: ExerciseGroup = {
       imageUrl:
         'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper-Back.jpg',
       viewCount: 7400,
+      popularity: 'low',
+    },
+    {
+      id: 'upper-back-60',
+      name: 'High Standing Banded Row',
+      description:
+        'A targeted upper back exercise using a resistance band anchored at upper abdominal height. This variation emphasizes the upper back muscles more than traditional rows due to the higher pulling angle. The exercise is particularly effective for improving posture and developing the rhomboids and middle trapezius muscles, while also engaging the rear deltoids.',
+      targetBodyParts: ['Upper Back'],
+      exerciseType: ['strength'],
+      difficulty: 'beginner',
+      equipment: ['Bands'],
+      steps: [
+        'Secure a resistance band to a sturdy anchor point at upper abdominal height (just below chest level).',
+        'Stand facing the anchor point with feet shoulder-width apart, maintaining an athletic stance.',
+        'Grasp the band with both hands, arms extended forward at upper ab height.',
+        'Step back until you feel tension in the band while keeping your chest high.',
+        'Initiate the pull by squeezing your shoulder blades together.',
+        'Pull the band toward your upper abs/lower chest, keeping your elbows slightly higher than in a traditional row.',
+        'Focus on maximally retracting your shoulder blades at the end position.',
+        'Control the return to the starting position, maintaining tension throughout.',
+        'Repeat for the desired number of repetitions.',
+      ],
+      tips: [
+        'Keep your elbows at or slightly above band level throughout the movement.',
+        'Focus on squeezing your shoulder blades together rather than just pulling with your arms.',
+        'Maintain a proud chest posture throughout the exercise.',
+        'Avoid shrugging your shoulders - keep them down and back.',
+        'The higher anchor point helps target the upper back more effectively.',
+        'If you feel it too much in your arms, focus on leading the movement with your elbows.',
+        'Keep your core engaged to prevent swaying or leaning back.',
+      ],
+      contraindications: [
+        'Upper Back injury',
+        'Neck pain or injury',
+        'Shoulder impingement',
+        'Acute pain during movement',
+      ],
+      muscles: [
+        'Upper Back',
+        'Rear Deltoids',
+        'Rhomboids',
+        'Middle Trapezius',
+        'Biceps',
+      ],
+      alternatives: [
+        'upper-back-7',
+        'upper-back-10',
+        'upper-back-24',
+        'upper-back-43',
+        'upper-back-4',
+      ],
+      repetitions: 12,
+      sets: 3,
+      restBetweenSets: 45,
+      forceType: 'Pull',
+      mechanics: 'Compound',
+      videoUrl:
+        'https://www.dropbox.com/scl/fi/z8j29mrzpztwgrdh4nxwk/IMG_3741.MOV?rlkey=nj27lvx6i4f3107tnp0vbht8d&st=hlfzzbu4&dl=0',
+      imageUrl:
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper-Back.jpg',
+      viewCount: 0,
+      popularity: 'medium',
+    },
+    {
+      id: 'upper-back-61',
+      name: 'Seated Floor Single-Arm Cable Lat Pulldown',
+      description:
+        'A single-arm lat exercise performed seated on the floor using a high cable pulley, emphasizing lat isolation and minimizing momentum.',
+      targetBodyParts: ['Upper Back'],
+      exerciseType: ['strength'],
+      difficulty: 'beginner',
+      equipment: ['Cable'],
+      steps: [
+        'Attach a single handle to a high cable pulley and sit on the floor facing it.',
+        'Grasp the handle with one hand, arm extended overhead with tension on the cable.',
+        'Keeping your torso upright, pull the handle down by driving your elbow towards your side.',
+        'Squeeze your lat at the bottom of the movement.',
+        'Slowly control the return to the starting position.',
+        'Complete reps on one side, then switch.',
+      ],
+      tips: [
+        'Keep your elbow tucked close to your side.',
+        'Focus on driving the elbow down and back.',
+        'Avoid leaning back excessively; keep the core braced.',
+        'Control the upward (eccentric) phase.',
+      ],
+      contraindications: [
+        'Latissimus Dorsi injury',
+        'Shoulder impingement',
+        'Elbow pain',
+        'Acute back pain',
+        'Core instability issues',
+      ],
+      muscles: [
+        'Lats',
+        'Teres Major',
+        'Biceps',
+        'Lower Trapezius',
+        'Rhomboids',
+        'Core',
+      ],
+      alternatives: ['lats-1', 'lats-4', 'lats-6', 'lats-9', 'upper-back-43'],
+      repetitions: 12,
+      sets: 3,
+      restBetweenSets: 60,
+      forceType: 'Pull (Unilateral)',
+      mechanics: 'Compound',
+      videoUrl:
+        'https://www.dropbox.com/scl/fi/b4iuh6292b3ajytsqxps1/IMG_3746.MOV?rlkey=nj4ubor8gwvf9i34se7d0fkmy&st=b3jym8lv&dl=0',
+      imageUrl:
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Lats.jpg',
+      viewCount: 0,
       popularity: 'low',
     },
   ],

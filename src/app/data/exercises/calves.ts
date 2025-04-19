@@ -1,4 +1,3 @@
-
 // This file was generated automatically by the exercise scraper
 // Source: https://www.muscleandstrength.com/exercises/calves
 // Total exercises: 62
@@ -290,7 +289,7 @@ export const calvesExercises: ExerciseGroup = {
       forceType: 'Push',
       mechanics: 'Isolation',
       videoUrl:
-        'https://player.vimeo.com/video/756793507?badge=0&autopause=0&quality_selector=1&progress_bar=1&player_id=0&app_id=58479',
+        'https://www.dropbox.com/scl/fi/30amyaed1x6u0ye8s21eq/IMG_3026.MOV?rlkey=jenaipqok87u9mse37vq48r65&st=0gngejd9&dl=0',
       imageUrl:
         'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Calves.jpg',
       viewCount: 423300,
@@ -574,7 +573,7 @@ export const calvesExercises: ExerciseGroup = {
       forceType: 'Push',
       mechanics: 'Isolation',
       videoUrl:
-        'https://player.vimeo.com/video/756793522?badge=0&autopause=0&quality_selector=1&progress_bar=1&player_id=0&app_id=58479',
+        'https://www.dropbox.com/scl/fi/bedoyymqe717tm9nywcz0/IMG_3027.mov?rlkey=udzxho4fu5lchgkheizjzblvk&st=1hcqud4u&dl=0',
       imageUrl:
         'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Calves.jpg',
       viewCount: 198500,
@@ -3024,6 +3023,57 @@ export const calvesExercises: ExerciseGroup = {
       imageUrl:
         'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Calves.jpg',
       viewCount: 24300,
+      popularity: 'low',
+    },
+    {
+      id: 'calves-63',
+      name: 'Unilateral Eccentric Bodyweight Standing Calf Raise',
+      description:
+        'A variation of the standing calf raise where you use both calves to go up and one calf to go down, creating an eccentric overload on the working leg.',
+      targetBodyParts: ['Calves'],
+      exerciseType: ['strength', 'eccentric'],
+      difficulty: 'intermediate',
+      equipment: ['Bodyweight'],
+      steps: [
+        'Stand with the balls of both feet on the edge of the step/block and let your heels drop down as far as possible. This is the starting position.',
+        'Using both calves, slowly raise your heels up as high as possible.',
+        'Pause at the top position for 1-2 seconds.',
+        'Lift your non-working foot off the step, and slowly lower your working heel back to the starting position using only that leg.',
+        'Place both feet back on the step and repeat the movement.',
+        'Complete all reps on one leg before switching to the other leg.',
+      ],
+      tips: [
+        'Focus on controlling the eccentric (lowering) phase completely with the working leg.',
+        'The slower you lower, the more tension you create in the calf muscle.',
+        'Keep your core engaged and maintain good posture throughout the movement.',
+        'If you find it too challenging, you can use a wall or chair for balance.',
+        'Make sure to work both legs equally to maintain symmetry.',
+      ],
+      contraindications: [
+        'Calves injury',
+        'Joint pain',
+        'Acute pain during movement',
+        'Balance issues',
+        'Ankle instability',
+      ],
+      muscles: ['Calves'],
+      alternatives: [
+        'calves-6',
+        'calves-12',
+        'calves-33',
+        'calves-40',
+        'calves-44',
+      ],
+      repetitions: 10,
+      sets: 3,
+      restBetweenSets: 90,
+      forceType: 'Push',
+      mechanics: 'Isolation',
+      videoUrl:
+        'https://www.dropbox.com/scl/fi/yhgzsdxtkhjvqz39lpv2x/IMG_3029.MOV?rlkey=678ajsmt4juwr0kxspj6z3sh1&st=rl0eim2x&dl=0',
+      imageUrl:
+        'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Calves.jpg',
+      viewCount: 0,
       popularity: 'low',
     },
   ],

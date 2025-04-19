@@ -1,0 +1,101 @@
+{
+  "bodyPart": "Abdomen",
+  "exercises": [
+    {
+      "id": "obliques-4",
+      "name": "Side Plank with Hip Dip",
+      "description": "The side plank with hip dip is a variation of the side plank and an exercise used to strengthen the obliques. The side plank with hip dip adds an additional range of motion to provide a slight contraction of the obliques while performing the side plank.",
+      "targetBodyParts": ["Obliques"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Bodyweight"],
+      "steps": [
+        "Assume a side lying position with your forearm resting on the floor.",
+        "Lift your hips and form a straight line from your shoulders through your ankles.",
+        "Slowly allow the hips to dip and get close to touching the floor.",
+        "Return back to the starting position and repeat for the desired number of repetitions on both sides."
+      ],
+      "tips": [
+        "Ensure the upper arm and torso maintain a 90 degree angle.",
+        "As the hips dip, don’t allow them to shoot backwards and take tension off the core.",
+        "Do not allow the lower back to arch at any point during the set. If it does, terminate the set, rest, and then repeat. The goal of any static abdominal work is to learn to maintain tension through the torso with a neutral spinal position. If you continue the set in a poor position then you are merely reinforcing dysfunction and losing the potential benefit. Think quality, not just quantity.",
+        "If you find you can’t maintain a neutral spinal position during the exercise then choose other variations such as wall press heel tap and hip extension which provide more stability and shorten the lever arm.",
+        "Press your elbow into the floor to help engage your serratus anterior. Ensure that you’re not sagging into the shoulder and putting excess stress upon your ligamentous structures.",
+        "Do not hold your breath, you shouldn’t be using respiration to compensate for a lack of stability. Learn how to move while maintaining position without having to rely upon your breath."
+      ],
+      "contraindications": [
+        "Obliques injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": ["Obliques", "Abs"],
+      "alternatives": [
+        "obliques-2",
+        "obliques-5",
+        "obliques-6",
+        "obliques-7",
+        "obliques-9"
+      ],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Isometric",
+      "mechanics": "Compound",
+      "videoUrl": "https://www.dropbox.com/scl/fi/rdecx0vno52fls3hvhaat/IMG_3756.MOV?rlkey=fz1ool1lg2vd92y8rsutungzu&st=kdwr3b1m&dl=0",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Obliques.jpg",
+      "viewCount": 24500,
+      "popularity": "low"
+    },
+    {
+      "id": "obliques-14",
+      "name": "Side Plank with Rotational Reach-Through",
+      "description": "A dynamic core exercise that combines a side plank with a rotational movement pattern. This exercise challenges core stability while improving thoracic mobility and shoulder function. Also known as \"Threading the Needle,\" it creates a comprehensive core challenge through multiple planes of motion.",
+      "targetBodyParts": ["Core", "Shoulders"],
+      "exerciseType": ["strength"],
+      "difficulty": "intermediate",
+      "equipment": ["Bodyweight"],
+      "steps": [
+        "Start in a side plank position with your bottom elbow directly under your shoulder.",
+        "Stack your feet or stagger them for better stability.",
+        "Extend your top arm straight up toward the ceiling, opening your chest.",
+        "Slowly rotate your torso downward, reaching your top arm under your body.",
+        "Thread your arm through the space between your supporting arm and the floor.",
+        "Reverse the movement, returning to the starting position with arm extended up.",
+        "Maintain a strong plank position throughout the movement."
+      ],
+      "tips": [
+        "Keep your hips elevated throughout the entire movement.",
+        "Move slowly and controlled through the rotation.",
+        "Breathe steadily - exhale during the reach-through.",
+        "Maintain core engagement to protect your lower back.",
+        "If balance is challenging, perform from knees instead of feet."
+      ],
+      "contraindications": [
+        "Shoulder injury",
+        "Lower back pain",
+        "Rotator cuff issues",
+        "Wrist problems",
+        "Acute core injury"
+      ],
+      "muscles": ["Obliques", "Core", "Shoulders", "Glutes", "Back"],
+      "alternatives": [
+        "obliques-4",
+        "obliques-2",
+        "obliques-7",
+        "obliques-9",
+        "obliques-11"
+      ],
+      "repetitions": 8,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Push-Pull (Unilateral)",
+      "mechanics": "Compound",
+      "videoUrl": "https://www.dropbox.com/scl/fi/ye5uss53fnbhdyo7l4qq9/IMG_3759.mov?rlkey=agb5q9ruc3xzv71vlvj60i7qp&st=l553wvsr&dl=0",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Core.jpg",
+      "viewCount": 0,
+      "popularity": "medium"
+    }
+  ]
+}

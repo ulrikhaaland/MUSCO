@@ -1,0 +1,347 @@
+{
+  "bodyPart": "Shoulders",
+  "exercises": [
+    {
+      "id": "shoulders-1",
+      "name": "Dumbbell Lateral Raise",
+      "targetBodyParts": ["Shoulders"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Dumbbell"],
+      "contraindications": [
+        "Shoulders injury",
+        "Joint pain",
+        "Acute pain during movement"
+      ],
+      "muscles": ["Shoulders"],
+      "forceType": "Pull",
+      "mechanics": "Isolation",
+      "viewCount": 9800000,
+      "popularity": "high"
+    },
+    {
+      "id": "shoulders-2",
+      "name": "Military Press (AKA Overhead Press)",
+      "targetBodyParts": ["Shoulders"],
+      "exerciseType": ["strength"],
+      "difficulty": "intermediate",
+      "equipment": ["Barbell"],
+      "contraindications": [
+        "Shoulders injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Shoulder impingement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": ["Shoulders", "Abs", "Traps", "Triceps"],
+      "forceType": "Push (Bilateral)",
+      "mechanics": "Compound",
+      "viewCount": 6000000,
+      "popularity": "high"
+    },
+    {
+      "id": "shoulders-4",
+      "name": "Seated Arnold Press",
+      "targetBodyParts": ["Shoulders"],
+      "exerciseType": ["strength"],
+      "difficulty": "intermediate",
+      "equipment": ["Dumbbell"],
+      "contraindications": [
+        "Shoulders injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Shoulder impingement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": ["Shoulders", "Traps", "Triceps"],
+      "forceType": "Push (Bilateral)",
+      "mechanics": "Compound",
+      "viewCount": 2700000,
+      "popularity": "high"
+    },
+    {
+      "id": "shoulders-5",
+      "name": "Seated Dumbbell Press",
+      "targetBodyParts": ["Shoulders"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Dumbbell"],
+      "contraindications": [
+        "Shoulders injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Shoulder impingement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": ["Shoulders", "Traps", "Triceps"],
+      "forceType": "Push (Bilateral)",
+      "mechanics": "Compound",
+      "viewCount": 4100000,
+      "popularity": "high"
+    },
+    {
+      "id": "shoulders-10",
+      "name": "Cable Face Pull",
+      "targetBodyParts": ["Shoulders"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Cable"],
+      "contraindications": [
+        "Shoulders injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": ["Shoulders", "Traps", "Upper Back"],
+      "forceType": "Pull (Bilateral)",
+      "mechanics": "Compound",
+      "viewCount": 1100000,
+      "popularity": "high"
+    },
+    {
+      "id": "shoulders-16",
+      "name": "Cable Lateral Raise",
+      "targetBodyParts": ["Shoulders"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Cable"],
+      "contraindications": [
+        "Shoulders injury",
+        "Joint pain",
+        "Acute pain during movement"
+      ],
+      "muscles": ["Shoulders"],
+      "forceType": "Pull",
+      "mechanics": "Isolation",
+      "viewCount": 952600,
+      "popularity": "medium"
+    },
+    {
+      "id": "shoulders-30",
+      "name": "Band Pull Apart",
+      "targetBodyParts": ["Shoulders"],
+      "exerciseType": ["activation"],
+      "difficulty": "beginner",
+      "equipment": ["Bands"],
+      "contraindications": [
+        "Shoulders injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": ["Shoulders", "Traps", "Upper Back"],
+      "forceType": "Pull (Bilateral)",
+      "mechanics": "Compound",
+      "viewCount": 179500,
+      "popularity": "medium"
+    },
+    {
+      "id": "shoulders-32",
+      "name": "Cable External Rotation",
+      "targetBodyParts": ["Shoulders"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Machine"],
+      "contraindications": [
+        "Shoulders injury",
+        "Joint pain",
+        "Acute pain during movement"
+      ],
+      "muscles": ["Shoulders", "Upper Back"],
+      "forceType": "Pull (Unilateral)",
+      "mechanics": "Isolation",
+      "viewCount": 16100,
+      "popularity": "low"
+    },
+    {
+      "id": "shoulders-39",
+      "name": "Banded Lateral Raise",
+      "targetBodyParts": ["Shoulders"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Bands"],
+      "contraindications": [
+        "Shoulders injury",
+        "Joint pain",
+        "Acute pain during movement"
+      ],
+      "muscles": ["Shoulders", "Traps", "Upper Back"],
+      "forceType": "Pull (Bilateral)",
+      "mechanics": "Isolation",
+      "viewCount": 43600,
+      "popularity": "low"
+    },
+    {
+      "id": "shoulders-62",
+      "name": "Cable Internal Rotation",
+      "targetBodyParts": ["Shoulders"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Cable"],
+      "contraindications": [
+        "Shoulders injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Shoulder impingement"
+      ],
+      "muscles": ["Shoulders", "Upper Back"],
+      "forceType": "Push (Unilateral)",
+      "mechanics": "Isolation",
+      "viewCount": 10100,
+      "popularity": "low"
+    },
+    {
+      "id": "shoulders-78",
+      "name": "Standing Banded Face Pull",
+      "targetBodyParts": ["Shoulders"],
+      "exerciseType": ["strength"],
+      "difficulty": "intermediate",
+      "equipment": ["Bands"],
+      "contraindications": [
+        "Shoulders injury",
+        "Joint pain",
+        "Acute pain during movement"
+      ],
+      "muscles": ["Shoulders", "Abs", "Upper Back"],
+      "forceType": "Pull (Bilateral)",
+      "mechanics": "Isolation",
+      "viewCount": 13000,
+      "popularity": "low"
+    },
+    {
+      "id": "shoulders-94",
+      "name": "Single Arm Banded External Rotation",
+      "targetBodyParts": ["Shoulders"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Bands"],
+      "contraindications": [
+        "Shoulders injury",
+        "Joint pain",
+        "Acute pain during movement"
+      ],
+      "muscles": ["Shoulders", "Upper Back"],
+      "forceType": "Pull (Unilateral)",
+      "mechanics": "Isolation",
+      "viewCount": 4700,
+      "popularity": "low"
+    },
+    {
+      "id": "shoulders-176",
+      "name": "Neutral Grip Dumbbell Front Raise",
+      "targetBodyParts": ["Shoulders"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Dumbbell"],
+      "contraindications": [
+        "Shoulders injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Rotator cuff issues"
+      ],
+      "muscles": ["Shoulders"],
+      "restBetweenSets": 60,
+      "forceType": "Pull",
+      "mechanics": "Isolation",
+      "viewCount": 0,
+      "popularity": "medium"
+    },
+    {
+      "id": "shoulders-177",
+      "name": "Arc Shoulder Raise",
+      "targetBodyParts": ["Shoulders"],
+      "exerciseType": ["strength"],
+      "difficulty": "intermediate",
+      "equipment": ["Dumbbell"],
+      "contraindications": [
+        "Shoulder injury or impingement",
+        "Rotator cuff issues",
+        "Joint pain",
+        "Limited shoulder mobility",
+        "Acute pain during movement"
+      ],
+      "muscles": ["Shoulders", "Upper Chest", "Trapezius"],
+      "forceType": "Pull",
+      "mechanics": "Compound",
+      "viewCount": 0,
+      "popularity": "low"
+    },
+    {
+      "id": "shoulders-178",
+      "name": "Modified Banded Lateral Raise",
+      "targetBodyParts": ["Shoulders"],
+      "exerciseType": ["strength", "rehabilitation"],
+      "difficulty": "beginner",
+      "equipment": ["Bands"],
+      "contraindications": [
+        "Acute shoulder injury",
+        "Recent shoulder surgery (without clearance)",
+        "Active inflammation"
+      ],
+      "muscles": ["Shoulders", "Upper Back"],
+      "forceType": "Pull (Bilateral)",
+      "mechanics": "Isolation",
+      "viewCount": 0,
+      "popularity": "low"
+    },
+    {
+      "id": "shoulders-179",
+      "name": "Banded Shoulder Flexion Raise",
+      "targetBodyParts": ["Shoulders"],
+      "exerciseType": ["mobility", "prehab", "warm-up"],
+      "difficulty": "beginner",
+      "equipment": ["Bands"],
+      "contraindications": [
+        "Acute shoulder injury",
+        "Severe shoulder impingement",
+        "Recent shoulder surgery",
+        "Active rotator cuff tears",
+        "Significant limited shoulder mobility"
+      ],
+      "muscles": [
+        "Shoulders",
+        "Rotator Cuff",
+        "Serratus Anterior",
+        "Trapezius",
+        "Upper Back"
+      ],
+      "forceType": "Push-Pull",
+      "mechanics": "Compound",
+      "viewCount": 0,
+      "popularity": "low"
+    },
+    {
+      "id": "shoulders-90",
+      "name": "Straight-Arm Banded Shoulder Flexion Raise",
+      "targetBodyParts": ["Shoulders"],
+      "exerciseType": ["mobility", "prehab", "warm-up"],
+      "difficulty": "intermediate",
+      "equipment": ["Bands"],
+      "contraindications": [
+        "Shoulder impingement syndrome",
+        "Limited shoulder mobility",
+        "Acute shoulder injury",
+        "Recent shoulder surgery",
+        "Active rotator cuff issues",
+        "Shoulder instability"
+      ],
+      "muscles": [
+        "Shoulders",
+        "Rotator Cuff",
+        "Serratus Anterior",
+        "Trapezius",
+        "Upper Back",
+        "Core Stabilizers"
+      ],
+      "forceType": "Push-Pull",
+      "mechanics": "Compound",
+      "viewCount": 0,
+      "popularity": "low"
+    }
+  ]
+}

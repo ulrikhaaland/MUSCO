@@ -1,0 +1,370 @@
+{
+  "bodyPart": "Upper Back",
+  "exercises": [
+    {
+      "id": "upper-back-3",
+      "name": "Bent Over Row",
+      "description": "The bent over row is a back day staple exercise and is considered one of the best muscle building back building exercises you can do. Sometimes referred to as the barbell row, the bent over row is a staple movement in most muscle building workouts. Those looking to build muscle utilize the bent over row to target their back, bicep and core muscle. Those in powerlifting and strength circles perform bent over rows to increase their strength on the big 3 movements. The bent over row is typically used to build and strengthen the muscles of the upper back (latissimus dorsi, rhomboids, and trapezius). However, it requires assistance from muscles of the low back, core, and arms to perform a bent over row correctly. There are several variations of the bent over row one can and should perform. Bent over row variations include: Dumbbell Bent Over Row One Arm Bent Over Dumbbell Row Reverse Grip Bent Over Row T-Bar Row Smith Machine Row The back is a tricky muscle group to build and strengthen. Sometimes it can help to vary the degree in which you perform the bent over row and well as the hand placement on the bar. Regardless, the bent over row is a great exercise to include in your back workout.",
+      "targetBodyParts": ["Upper Back"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Barbell"],
+      "steps": [
+        "Assume a standing position while holding the bar using a double overhand grip.",
+        "Hinge forward until your torso is roughly parallel with the floor (or slightly above) and then begin the movement by driving the elbows behind the body while retracting the shoulder blades.",
+        "Pull the bar towards your belly button until it touches your body and then slowly lower the bar back to the starting position under control.",
+        "Repeat for the desired number of repetitions."
+      ],
+      "tips": [
+        "Experiment with head position and see which option (looking forward vs. packing the neck) works better for you.",
+        "Keep some tone through your abdominals as you pull the bar into your body to ensure you don’t arch excessively through your spine.",
+        "Don’t allow momentum to dictate the movement, control the bar throughout the entirety of each rep.",
+        "Don’t allow the head to jut forward as you pull.",
+        "Similarly, ensure the shoulder blade moves on the rib cage. Don’t lock the shoulder blade down and just move through the glenohumeral joint."
+      ],
+      "contraindications": [
+        "Upper Back injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": [
+        "Upper Back",
+        "Abs",
+        "Biceps",
+        "Lats",
+        "Lower Back",
+        "Shoulders"
+      ],
+      "alternatives": [
+        "upper-back-6",
+        "upper-back-37",
+        "upper-back-2",
+        "upper-back-5",
+        "upper-back-11"
+      ],
+      "repetitions": 8,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Pull (Bilateral)",
+      "mechanics": "Compound",
+      "videoUrl": "https://www.dropbox.com/scl/fi/j94bj82d4hp9pclfmy88p/IMG_3124.mov?rlkey=39zm40bzlm08d4jb2jqdpjex2&st=psgdu2gw&dl=0",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper-Back.jpg",
+      "viewCount": 8000000,
+      "popularity": "high"
+    },
+    {
+      "id": "upper-back-4",
+      "name": "Seated Cable Row",
+      "description": "No description available",
+      "targetBodyParts": ["Upper Back"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Cable"],
+      "steps": [
+        "Set the appropriate weight on the weight stack and attach a close-grip bar or V-bar to the seated row machine.",
+        "Grasp the bar with a neutral grip (palms facing in).",
+        "Keeping your legs slightly bent and your back straight, pull the weight up slightly off the stack. You should be sitting straight upright with your shoulders back. This is the starting position.",
+        "Keeping your body in position, pull the handle into your stomach.",
+        "Pull your shoulder blades back, squeeze, pause, and then slowly lower the weight back to the starting position.",
+        "Repeat for desired reps."
+      ],
+      "tips": [
+        "Your back must remain straight at all times. Your torso should be kept still throughout the entire set.",
+        "Don\"t let your shoulders hunch over when your arms are extended.",
+        "Use the back muscles to move the weight - do not lean forward and use momentum to swing the weight back.",
+        "Pausing and squeezing at the top of the movement for a 1-2 count will increase intensity and results."
+      ],
+      "contraindications": [
+        "Upper Back injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": ["Upper Back", "Biceps", "Lats", "Shoulders"],
+      "alternatives": [
+        "upper-back-19",
+        "upper-back-24",
+        "upper-back-43",
+        "upper-back-7",
+        "upper-back-10"
+      ],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Pull",
+      "mechanics": "Compound",
+      "videoUrl": "https://www.dropbox.com/scl/fi/rawtt83alyprfnebr0dvd/IMG_3016.MOV?rlkey=thd2jxocdx65bnig13znkoz1f&st=tmiqfvbw&dl=0",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper-Back.jpg",
+      "viewCount": 5200000,
+      "popularity": "high"
+    },
+    {
+      "id": "upper-back-8",
+      "name": "Tripod Dumbbell Row",
+      "description": "The tripod dumbbell row is a variation of the dumbbell bent over row and an exercise one would typically use when trying to target the muscles of the back. The tripod dumbbell row requires more core stability than other, more supported dumbbell row variations. The tripod dumbbell row also allows one to work the muscles of the back unilaterally, which can lead to a more symmetrical physique and balanced strength.",
+      "targetBodyParts": ["Upper Back"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Dumbbell"],
+      "steps": [
+        "Assume a kneeling position on the bench with your ipsilateral (i.e. same side) hand braced against the bench.",
+        "Hold a dumbbell in the opposite hand with a neutral grip.",
+        "Begin the movement by driving the elbow behind the body while retracting the shoulder blade.",
+        "Pull the dumbbell towards your body until the elbow is at (or just past) the midline and then slowly lower the dumbbells back to the starting position under control.",
+        "Repeat for the desired number of repetitions on both sides."
+      ],
+      "tips": [
+        "Experiment with head position and see which option (looking forward vs. packing the neck) works better for you.",
+        "Keep some tone through your abdominals as you pull the bar into your body to ensure you don’t arch excessively through your spine.",
+        "Don’t allow momentum to dictate the movement, control the dumbbells throughout the entirety of each rep.",
+        "If you feel your biceps being overused and your back remaining under active, consider utilizing a false grip (i.e. don’t wrap the thumb around the dumbbell).",
+        "Don’t allow the head to jut forward as you pull.",
+        "Similarly, ensure the shoulder blade moves on the rib cage. Don’t lock the shoulder blade down and just move through the glenohumeral joint."
+      ],
+      "contraindications": [
+        "Upper Back injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": [
+        "Upper Back",
+        "Abs",
+        "Biceps",
+        "Lats",
+        "Lower Back",
+        "Shoulders"
+      ],
+      "alternatives": [
+        "upper-back-1",
+        "upper-back-2",
+        "upper-back-5",
+        "upper-back-11",
+        "upper-back-20"
+      ],
+      "repetitions": 8,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Pull (Unilateral)",
+      "mechanics": "Compound",
+      "videoUrl": "https://www.dropbox.com/scl/fi/ccempdq73kqq35p0i6tb2/IMG_3003.MOV?rlkey=hl3s0nz3e6zxg8zvsv2b1j211&st=4nyb0t4d&dl=0",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper-Back.jpg",
+      "viewCount": 955700,
+      "popularity": "medium"
+    },
+    {
+      "id": "upper-back-14",
+      "name": "Reverse Grip Bent Over Row",
+      "description": "No description available",
+      "targetBodyParts": ["Upper Back"],
+      "exerciseType": ["strength"],
+      "difficulty": "intermediate",
+      "equipment": ["Barbell"],
+      "steps": [
+        "Grab a barbell, load some weight on, and place the barbell down in front of you.",
+        "Stand with your feet at around shoulder width, bend at the knees, squat down to grip the bar with a reverse grip (thumbs at the top of the bar) and your hands wider than shoulder width apart.",
+        "Keeping your back straight, stand straight up so you\"re holding the bar in front of you against your waist. T",
+        "o get into the starting position bend you knees slightly, and while keeping your back straight let the barbell slide down your thighs until it drops just below knee level. This is the stance that should not change throughout the set.",
+        "Now pull the bar up to just below your chest.",
+        "Squeeze your shoulder blades together at the top of the movement.",
+        "Then slowly lower the bar back to the starting position. Repeat for desired reps.",
+        "Pause at the top of the exercise and squeeze your shoulder blades together.",
+        "Don\"t let the weight drop down quickly - keep it slow.",
+        "Keep your back straight throughout the entire set.",
+        "Keep your head up and your eyes looking forward throughout the whole movement.",
+        "The bent over row can cause back injuries, so make sure your technique is perfected before loading on the weight."
+      ],
+      "tips": [
+        "Pause at the top of the exercise and squeeze your shoulder blades together.",
+        "Don\"t let the weight drop down quickly - keep it slow.",
+        "Keep your back straight throughout the entire set.",
+        "Keep your head up and your eyes looking forward throughout the whole movement.",
+        "The bent over row can cause back injuries, so make sure your technique is perfected before loading on the weight."
+      ],
+      "contraindications": [
+        "Upper Back injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": ["Upper Back", "Biceps", "Lats", "Shoulders"],
+      "alternatives": [
+        "upper-back-21",
+        "upper-back-36",
+        "upper-back-9",
+        "upper-back-17",
+        "upper-back-26"
+      ],
+      "repetitions": 8,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Pull",
+      "mechanics": "Compound",
+      "videoUrl": "https://www.dropbox.com/scl/fi/rlimzrdm8ikg2dkdu3l34/IMG_3125.mov?rlkey=r3c1e21ke72xagzd6ipf65s7a&st=24xznjsu&dl=0",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper-Back.jpg",
+      "viewCount": 485600,
+      "popularity": "medium"
+    },
+    {
+      "id": "upper-back-16",
+      "name": "Inverted Row",
+      "description": "The Inverted Row is a bodyweight exercise targeting the upper back, performed using various equipment like a Smith machine, barbell in a rack, TRX, or gymnastic rings. It's an excellent horizontal pulling movement for building back strength and thickness, acting as a stepping stone towards pull-ups.",
+      "targetBodyParts": ["Upper Back"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Bodyweight", "Barbell", "Smith Machine", "TRX", "Rings"],
+      "steps": [
+        "Set up your chosen equipment (barbell, rings, TRX, etc.) at an appropriate height. The lower the equipment, the harder the exercise.",
+        "Position yourself underneath the bar/handles, lying face up.",
+        "Grasp the bar/handles with an overhand grip, slightly wider than shoulder-width.",
+        "Extend your body into a straight line from head to heels, engaging your core and glutes. Your heels should be on the ground.",
+        "Initiate the movement by pulling your chest towards the bar/handles, retracting your shoulder blades.",
+        "Keep your body straight and rigid throughout the pull.",
+        "Pause briefly at the top when your chest is close to the bar/handles.",
+        "Slowly lower yourself back to the starting position with control."
+      ],
+      "tips": [
+        "Maintain a straight line from head to heels – avoid sagging hips or arching your back.",
+        "Pull with your back muscles, focusing on squeezing your shoulder blades together.",
+        "Control the lowering (eccentric) phase – don't just drop down.",
+        "Adjust foot position to modify difficulty: feet closer makes it easier, feet further or elevated makes it harder.",
+        "Experiment with grip width and type (overhand/underhand) to slightly alter muscle emphasis."
+      ],
+      "contraindications": [
+        "Upper Back injury",
+        "Shoulder impingement",
+        "Elbow or wrist pain",
+        "Acute pain during movement",
+        "Inability to maintain core stability"
+      ],
+      "muscles": ["Upper Back", "Biceps", "Lats", "Core"],
+      "alternatives": [
+        "upper-back-10",
+        "upper-back-4",
+        "upper-back-7",
+        "upper-back-12",
+        "upper-back-19"
+      ],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Pull",
+      "mechanics": "Compound",
+      "videoUrl": "https://www.dropbox.com/scl/fi/sv4wawb2837bfxre1hnto/IMG_3747.MOV?rlkey=xui3mqoii4zwj8x4lup46v9ty&st=z5nxsjdg&dl=0",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper-Back.jpg",
+      "viewCount": 431900,
+      "popularity": "medium"
+    },
+    {
+      "id": "upper-back-60",
+      "name": "High Standing Banded Row",
+      "description": "A targeted upper back exercise using a resistance band anchored at upper abdominal height. This variation emphasizes the upper back muscles more than traditional rows due to the higher pulling angle. The exercise is particularly effective for improving posture and developing the rhomboids and middle trapezius muscles, while also engaging the rear deltoids.",
+      "targetBodyParts": ["Upper Back"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Bands"],
+      "steps": [
+        "Secure a resistance band to a sturdy anchor point at upper abdominal height (just below chest level).",
+        "Stand facing the anchor point with feet shoulder-width apart, maintaining an athletic stance.",
+        "Grasp the band with both hands, arms extended forward at upper ab height.",
+        "Step back until you feel tension in the band while keeping your chest high.",
+        "Initiate the pull by squeezing your shoulder blades together.",
+        "Pull the band toward your upper abs/lower chest, keeping your elbows slightly higher than in a traditional row.",
+        "Focus on maximally retracting your shoulder blades at the end position.",
+        "Control the return to the starting position, maintaining tension throughout.",
+        "Repeat for the desired number of repetitions."
+      ],
+      "tips": [
+        "Keep your elbows at or slightly above band level throughout the movement.",
+        "Focus on squeezing your shoulder blades together rather than just pulling with your arms.",
+        "Maintain a proud chest posture throughout the exercise.",
+        "Avoid shrugging your shoulders - keep them down and back.",
+        "The higher anchor point helps target the upper back more effectively.",
+        "If you feel it too much in your arms, focus on leading the movement with your elbows.",
+        "Keep your core engaged to prevent swaying or leaning back."
+      ],
+      "contraindications": [
+        "Upper Back injury",
+        "Neck pain or injury",
+        "Shoulder impingement",
+        "Acute pain during movement"
+      ],
+      "muscles": [
+        "Upper Back",
+        "Rear Deltoids",
+        "Rhomboids",
+        "Middle Trapezius",
+        "Biceps"
+      ],
+      "alternatives": [
+        "upper-back-7",
+        "upper-back-10",
+        "upper-back-24",
+        "upper-back-43",
+        "upper-back-4"
+      ],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 45,
+      "forceType": "Pull",
+      "mechanics": "Compound",
+      "videoUrl": "https://www.dropbox.com/scl/fi/z8j29mrzpztwgrdh4nxwk/IMG_3741.MOV?rlkey=nj27lvx6i4f3107tnp0vbht8d&st=hlfzzbu4&dl=0",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper-Back.jpg",
+      "viewCount": 0,
+      "popularity": "medium"
+    },
+    {
+      "id": "upper-back-61",
+      "name": "Seated Floor Single-Arm Cable Lat Pulldown",
+      "description": "A single-arm lat exercise performed seated on the floor using a high cable pulley, emphasizing lat isolation and minimizing momentum.",
+      "targetBodyParts": ["Upper Back"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Cable"],
+      "steps": [
+        "Attach a single handle to a high cable pulley and sit on the floor facing it.",
+        "Grasp the handle with one hand, arm extended overhead with tension on the cable.",
+        "Keeping your torso upright, pull the handle down by driving your elbow towards your side.",
+        "Squeeze your lat at the bottom of the movement.",
+        "Slowly control the return to the starting position.",
+        "Complete reps on one side, then switch."
+      ],
+      "tips": [
+        "Keep your elbow tucked close to your side.",
+        "Focus on driving the elbow down and back.",
+        "Avoid leaning back excessively; keep the core braced.",
+        "Control the upward (eccentric) phase."
+      ],
+      "contraindications": [
+        "Latissimus Dorsi injury",
+        "Shoulder impingement",
+        "Elbow pain",
+        "Acute back pain",
+        "Core instability issues"
+      ],
+      "muscles": [
+        "Lats",
+        "Teres Major",
+        "Biceps",
+        "Lower Trapezius",
+        "Rhomboids",
+        "Core"
+      ],
+      "alternatives": ["lats-1", "lats-4", "lats-6", "lats-9", "upper-back-43"],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Pull (Unilateral)",
+      "mechanics": "Compound",
+      "videoUrl": "https://www.dropbox.com/scl/fi/b4iuh6292b3ajytsqxps1/IMG_3746.MOV?rlkey=nj4ubor8gwvf9i34se7d0fkmy&st=b3jym8lv&dl=0",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Lats.jpg",
+      "viewCount": 0,
+      "popularity": "low"
+    }
+  ]
+}

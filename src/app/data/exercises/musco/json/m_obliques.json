@@ -1,0 +1,45 @@
+{
+  "bodyPart": "Abdomen",
+  "exercises": [
+    {
+      "id": "obliques-4",
+      "name": "Side Plank with Hip Dip",
+      "targetBodyParts": ["Obliques"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Bodyweight"],
+      "contraindications": [
+        "Obliques injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": ["Obliques", "Abs"],
+      "forceType": "Isometric",
+      "mechanics": "Compound",
+      "viewCount": 24500,
+      "popularity": "low"
+    },
+    {
+      "id": "obliques-14",
+      "name": "Side Plank with Rotational Reach-Through",
+      "targetBodyParts": ["Core", "Shoulders"],
+      "exerciseType": ["strength"],
+      "difficulty": "intermediate",
+      "equipment": ["Bodyweight"],
+      "contraindications": [
+        "Shoulder injury",
+        "Lower back pain",
+        "Rotator cuff issues",
+        "Wrist problems",
+        "Acute core injury"
+      ],
+      "muscles": ["Obliques", "Core", "Shoulders", "Glutes", "Back"],
+      "forceType": "Push-Pull (Unilateral)",
+      "mechanics": "Compound",
+      "viewCount": 0,
+      "popularity": "medium"
+    }
+  ]
+}

@@ -45,7 +45,7 @@ export const bicepsExercises: ExerciseGroup = {
       forceType: 'Pull',
       mechanics: 'Isolation',
       videoUrl:
-        'https://player.vimeo.com/video/756794163?badge=0&autopause=0&quality_selector=1&player_id=0&app_id=58479',
+        'https://www.dropbox.com/scl/fi/fhkletwteoao7qkokorir/IMG_3116.MOV?rlkey=cxwciuk3w3ohs6yzikqfa2v06&st=83mw46bp&dl=0',
       imageUrl:
         'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Biceps.jpg',
       viewCount: 3000000,
@@ -92,7 +92,7 @@ export const bicepsExercises: ExerciseGroup = {
       forceType: 'Pull',
       mechanics: 'Isolation',
       videoUrl:
-        'https://player.vimeo.com/video/756794078?badge=0&autopause=0&quality_selector=1&player_id=0&app_id=58479',
+        'https://www.dropbox.com/scl/fi/cmoyvlmaj5c6icfl0tuqi/IMG_3117.MOV?rlkey=b9f8ur6yq1rtg2q5lxb0h75bn&st=x9b9c4y5&dl=0',
       imageUrl:
         'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Biceps.jpg',
       viewCount: 4100000,
@@ -180,7 +180,7 @@ export const bicepsExercises: ExerciseGroup = {
       forceType: 'Pull',
       mechanics: 'Isolation',
       videoUrl:
-        'https://player.vimeo.com/video/760008460?title=0&byline=0&portrait=0&badge=0&autopause=0&player_id=0&app_id=58479',
+        'https://www.dropbox.com/scl/fi/4w0lts40wavh65jnc60zb/IMG_3114.MOV?rlkey=fslnykm81val15woxs1vevbx5&st=vehg5p92&dl=0',
       imageUrl:
         'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Biceps.jpg',
       viewCount: 4600000,
@@ -452,7 +452,7 @@ export const bicepsExercises: ExerciseGroup = {
       forceType: 'Pull',
       mechanics: 'Isolation',
       videoUrl:
-        'https://player.vimeo.com/video/756794053?badge=0&autopause=0&quality_selector=1&player_id=0&app_id=58479',
+        'https://www.dropbox.com/scl/fi/4w0lts40wavh65jnc60zb/IMG_3114.MOV?rlkey=fslnykm81val15woxs1vevbx5&st=r00gg9mw&dl=0',
       imageUrl:
         'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Biceps.jpg',
       viewCount: 836500,
@@ -820,7 +820,7 @@ export const bicepsExercises: ExerciseGroup = {
       forceType: 'Pull',
       mechanics: 'Isolation',
       videoUrl:
-        'https://player.vimeo.com/video/756794196?badge=0&autopause=0&quality_selector=1&player_id=0&app_id=58479',
+        'https://www.dropbox.com/scl/fi/135cxj0zne3oxhyue10fi/IMG_3006.mov?rlkey=5miqu5ngj9w37fyhj19uk3egh&st=h33z9k52&dl=0',
       imageUrl:
         'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Biceps.jpg',
       viewCount: 530800,
@@ -2410,7 +2410,7 @@ export const bicepsExercises: ExerciseGroup = {
       forceType: 'Pull',
       mechanics: 'Isolation',
       videoUrl:
-        'https://player.vimeo.com/video/756794439?badge=0&autopause=0&quality_selector=1&player_id=0&app_id=58479',
+        'https://www.dropbox.com/scl/fi/r8zl3ipilpo919lck2x0f/IMG_3121.mov?rlkey=o3igk75ccmhin0l925p5gk0p9&st=d14wgw8a&dl=0',
       imageUrl:
         'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Biceps.jpg',
       viewCount: 10700,
@@ -3520,6 +3520,56 @@ export const bicepsExercises: ExerciseGroup = {
         'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Biceps.jpg',
       viewCount: 9400,
       popularity: 'low',
+    },
+    {
+      id: 'biceps-78',
+      name: 'Chest-Supported Incline Dumbbell Curl',
+      description:
+        'Also known as the Prone Incline Curl, this exercise is performed with the chest supported against an incline bench. This position eliminates body momentum, isolates the biceps, and provides constant tension throughout the movement, making it ideal for strict, controlled curls and peak contraction.',
+      targetBodyParts: ['Biceps'],
+      exerciseType: ['strength'],
+      difficulty: 'beginner',
+      equipment: ['Dumbbell', 'Bench'],
+      steps: [
+        'Set an incline bench to a 45-60 degree angle.',
+        'Lie face down (prone) on the bench with your chest and stomach supported, feet firmly on the ground.',
+        'Let your arms hang straight down, holding a dumbbell in each hand with a supinated (palms up) grip.',
+        'Keeping your upper arms perpendicular to the floor, curl the dumbbells up towards your shoulders by flexing your elbows.',
+        'Squeeze your biceps at the top of the movement, focusing on peak contraction.',
+        'Slowly lower the dumbbells back to the starting position, maintaining control and tension.',
+        'Repeat for the desired number of repetitions.',
+      ],
+      tips: [
+        'Keep your chest in contact with the bench at all times to prevent using momentum.',
+        'Avoid swinging or using your shoulders to lift the weight.',
+        'Focus on a slow, controlled movement, especially during the lowering phase.',
+        'Do not let the dumbbells touch the floor between reps to maintain constant tension.',
+        'Use a full range of motion for maximum biceps activation.',
+      ],
+      contraindications: [
+        'Biceps injury',
+        'Elbow pain or injury',
+        'Shoulder impingement',
+        'Acute pain during movement',
+      ],
+      muscles: ['Biceps'],
+      alternatives: [
+        'biceps-1', // Standing Dumbbell Curl
+        'biceps-2', // Incline Dumbbell Curl
+        'biceps-5', // Preacher Curl
+        'biceps-8', // Concentration Curl
+        'biceps-13', // Cable Curl
+      ],
+      repetitions: 10 - 15,
+      sets: 3,
+      restBetweenSets: 60,
+      forceType: 'Pull (Bilateral)',
+      mechanics: 'Isolation',
+      videoUrl:
+        'https://www.dropbox.com/scl/fi/8050wei5whahqvf7a9msa/IMG_3120.MOV?rlkey=iglt6vnnywx2kr4bu742bqlau&st=0128kbwe&dl=0', // Add a video URL if available
+      imageUrl: '', // Add an image URL if available
+      viewCount: 0,
+      popularity: 'medium',
     },
   ],
 };

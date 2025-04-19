@@ -1,0 +1,122 @@
+{
+  "bodyPart": "Upper Arms",
+  "exercises": [
+    {
+      "id": "triceps-4",
+      "name": "Rope Tricep Extension",
+      "targetBodyParts": ["Triceps"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Cable"],
+      "contraindications": [
+        "Triceps injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Shoulder impingement"
+      ],
+      "muscles": ["Triceps"],
+      "forceType": "Push (Bilateral)",
+      "mechanics": "Isolation",
+      "viewCount": 2500000,
+      "popularity": "high"
+    },
+    {
+      "id": "triceps-11",
+      "name": "French Press",
+      "targetBodyParts": ["Triceps"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Barbell"],
+      "contraindications": [
+        "Triceps injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Shoulder impingement"
+      ],
+      "muscles": ["Triceps"],
+      "forceType": "Push",
+      "mechanics": "Isolation",
+      "viewCount": 1500000,
+      "popularity": "high"
+    },
+    {
+      "id": "triceps-17",
+      "name": "Bench Dip",
+      "targetBodyParts": ["Triceps"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Bodyweight"],
+      "contraindications": [
+        "Triceps injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Shoulder impingement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": ["Triceps", "Shoulders"],
+      "forceType": "Push",
+      "mechanics": "Compound",
+      "viewCount": 1300000,
+      "popularity": "high"
+    },
+    {
+      "id": "triceps-21",
+      "name": "One-Arm Cable Tricep Extension",
+      "targetBodyParts": ["Triceps"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Cable"],
+      "contraindications": [
+        "Triceps injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Shoulder impingement"
+      ],
+      "muscles": ["Triceps"],
+      "forceType": "Push",
+      "mechanics": "Isolation",
+      "viewCount": 352800,
+      "popularity": "medium"
+    },
+    {
+      "id": "triceps-23",
+      "name": "Standing Low Pulley Overhead Tricep Extension (Rope Extension)",
+      "targetBodyParts": ["Triceps"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Cable"],
+      "contraindications": [
+        "Triceps injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Shoulder impingement"
+      ],
+      "muscles": ["Triceps"],
+      "forceType": "Push",
+      "mechanics": "Isolation",
+      "viewCount": 239900,
+      "popularity": "medium"
+    },
+    {
+      "id": "triceps-107",
+      "name": "Dumbbell Tricep Extension",
+      "targetBodyParts": ["Triceps"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Dumbbell", "Bench"],
+      "contraindications": [
+        "Triceps injury",
+        "Elbow pain or injury",
+        "Shoulder impingement",
+        "Wrist issues",
+        "Acute pain during movement"
+      ],
+      "muscles": ["Triceps"],
+      "forceType": "Push (Bilateral)",
+      "mechanics": "Isolation",
+      "viewCount": 0,
+      "popularity": "medium"
+    }
+  ]
+}
