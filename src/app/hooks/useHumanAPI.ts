@@ -816,6 +816,29 @@ export function useHumanAPI({
           [getGenderedId('muscular_system-left_cremaster_ID', gender)]: false,
         });
       }
+      // 'connective_tissue-connective_tissue_of_vertebral_column_ID',
+      // 'connective_tissue-intervertebral_discs_ID',
+      // 'connective_tissue-anterior_longitudinal_ligament_ID',
+      // 'skeletal_system-cervical_vertebrae_ID',
+      // 'skeletal_system-thoracic_vertebrae_ID',
+      if (group.id !== 'back') {
+        Object.assign(deselectionMap, {
+          [getGenderedId(
+            'connective_tissue-connective_tissue_of_vertebral_column_ID',
+            gender
+          )]: false,
+          [getGenderedId('connective_tissue-intervertebral_discs_ID', gender)]:
+            false,
+          [getGenderedId(
+            'connective_tissue-anterior_longitudinal_ligament_ID',
+            gender
+          )]: false,
+          [getGenderedId('skeletal_system-cervical_vertebrae_ID', gender)]:
+            false,
+          [getGenderedId('skeletal_system-thoracic_vertebrae_ID', gender)]:
+            false,
+        });
+      }
 
       const selectedIdNeutral = getNeutralId(selectedId);
 

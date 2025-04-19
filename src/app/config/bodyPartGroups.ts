@@ -17597,12 +17597,13 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
       // 'connective_tissue-connective_tissue_of_vertebral_column_ID',
       // 'connective_tissue-intervertebral_discs_ID',
       // 'connective_tissue-anterior_longitudinal_ligament_ID',
+      // 'skeletal_system-cervical_vertebrae_ID',
+      // 'skeletal_system-thoracic_vertebrae_ID',
+      
       // 'muscular_system-right_latissimus_dorsi_ID',
       // 'muscular_system-left_latissimus_dorsi_ID',
       // 'muscular_system-right_trapezius_ID',
       // 'muscular_system-left_trapezius_ID',
-      // 'skeletal_system-cervical_vertebrae_ID',
-      // 'skeletal_system-thoracic_vertebrae_ID',
     ],
     parts: [
       {
@@ -27819,7 +27820,6 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
       'gluteus medius',
       'gluteus minimus',
     ],
-   
   },
   rightThigh: {
     id: 'right_thigh',
