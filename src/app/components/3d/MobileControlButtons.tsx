@@ -8,6 +8,7 @@ import FemaleIcon from '@mui/icons-material/Female';
 import { Gender } from '@/app/types';
 import { Steps } from 'intro.js-react';
 import 'intro.js/introjs.css';
+import { useTranslation } from '@/app/i18n';
 
 interface MobileControlButtonsProps {
   isRotating: boolean;
@@ -32,23 +33,24 @@ export default function MobileControlButtons({
   onReset,
   onSwitchModel,
 }: MobileControlButtonsProps) {
+  const { t } = useTranslation();
   const [stepsEnabled, setStepsEnabled] = useState(false);
   const [initialStep, setInitialStep] = useState(0);
 
   const steps = [
     {
       element: '.rotate-button',
-      intro: 'Rotate the 3D model to view it from different angles',
+      intro: t('bottomSheet.tourRotate'),
       position: 'left',
     },
     {
       element: '.reset-button',
-      intro: 'Reset the view back to its original position',
+      intro: t('bottomSheet.tourResetModel'),
       position: 'left',
     },
     {
       element: '.gender-button',
-      intro: 'Switch between male and female anatomical models',
+      intro: t('bottomSheet.tourGender'),
       position: 'left',
     },
   ];
@@ -84,9 +86,9 @@ export default function MobileControlButtons({
           showProgress: true,
           hideNext: false,
           hidePrev: false,
-          nextLabel: 'Next →',
-          prevLabel: '← Back',
-          doneLabel: 'Got it',
+          nextLabel: t('mobile.controls.next'),
+          prevLabel: t('mobile.controls.back'),
+          doneLabel: t('mobile.controls.gotIt'),
           tooltipClass: 'bg-gray-900 text-white',
           highlightClass: 'intro-highlight',
         }}

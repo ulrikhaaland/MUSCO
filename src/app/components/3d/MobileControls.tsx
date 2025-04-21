@@ -24,6 +24,7 @@ import { AnatomyPart } from '@/app/types/human';
 import { ExerciseSelection } from '../ui/ExerciseSelection';
 import { useApp, ProgramIntention } from '@/app/context/AppContext';
 import { ExerciseFooter } from './ExerciseFooter';
+import { useTranslation } from '@/app/i18n';
 
 enum SnapPoint {
   MINIMIZED = 0, // minHeight (15% or 72px)
@@ -72,6 +73,7 @@ export default function MobileControls({
   hideBottomSheet,
   onAreasSelected,
 }: MobileControlsProps) {
+  const { t } = useTranslation();
   const [isMobile, setIsMobile] = useState(false);
   const [contentHeight, setContentHeight] = useState(0);
   const [userModifiedSheetHeight, setUserModifiedSheetHeight] = useState(false);
@@ -111,32 +113,29 @@ export default function MobileControls({
 
   const bottomSheetSteps = [
     {
-      element: '[data-rsbs-header] .flex-col',
-      intro:
-        'Here you can see the selected body group, and right below it, the selected body part.',
+      element: '.model-title-container',
+      intro: t('bottomSheet.tourHeader'),
       position: 'bottom',
     },
     {
-      element: '[data-rsbs-header] button',
-      intro: 'Use this button to reset the chat and start over.',
+      element: '.chat-reset-button',
+      intro: t('bottomSheet.tourReset'),
       position: 'bottom',
     },
     {
-      element: '[data-rsbs-scroll]',
-      intro:
-        'Click on suggested questions to learn more about the selected body part.',
-      position: 'bottom',
-    },
-    {
-      element: '[data-rsbs-footer] textarea',
-      intro:
-        'Type your questions here to learn more about anatomy, exercises, and treatment options.',
+      element: '.suggested-questions',
+      intro: t('bottomSheet.tourSuggestions'),
       position: 'top',
     },
     {
-      element: '.mobile-controls-toggle',
-      intro: 'Use these buttons to expand or minimize the chat area.',
-      position: 'left',
+      element: '.chat-input',
+      intro: t('bottomSheet.tourInput'),
+      position: 'top',
+    },
+    {
+      element: '.chat-controls',
+      intro: t('bottomSheet.tourControls'),
+      position: 'top',
     },
   ];
 
@@ -242,11 +241,14 @@ export default function MobileControls({
           if (contentHeight < snapPoint) {
             snapPoint = contentHeight;
           }
-          setTimeout(() => {
-            if (sheetRef.current) {
-              sheetRef.current.snapTo(({ maxHeight }) => snapPoint);
-            }
-          }, intention === ProgramIntention.Exercise ? 1000 : 300);
+          setTimeout(
+            () => {
+              if (sheetRef.current) {
+                sheetRef.current.snapTo(({ maxHeight }) => snapPoint);
+              }
+            },
+            intention === ProgramIntention.Exercise ? 1000 : 300
+          );
         }
       } else if (
         selectedGroups.length > 0 &&
@@ -453,9 +455,9 @@ export default function MobileControls({
           showProgress: true,
           hideNext: false,
           hidePrev: false,
-          nextLabel: 'Next →',
-          prevLabel: '← Back',
-          doneLabel: 'Got it',
+          nextLabel: t('mobile.controls.next'),
+          prevLabel: t('mobile.controls.back'),
+          doneLabel: t('mobile.controls.gotIt'),
           tooltipClass: 'bg-gray-900 text-white',
           highlightClass: 'intro-highlight',
           exitOnOverlayClick: false,
@@ -521,7 +523,7 @@ export default function MobileControls({
                   ? 'opacity-50 cursor-not-allowed'
                   : 'hover:bg-white/10'
               }`}
-              aria-label="Minimize"
+              aria-label={t('mobile.controls.minimize')}
             >
               <ExpandLessIcon className="h-6 w-6 rotate-180" />
             </button>
@@ -560,7 +562,7 @@ export default function MobileControls({
                   ? 'opacity-50 cursor-not-allowed'
                   : 'hover:bg-white/10'
               }`}
-              aria-label="Expand"
+              aria-label={t('mobile.controls.expand')}
             >
               <ExpandLessIcon className="h-6 w-6" />
             </button>
@@ -679,6 +681,7 @@ export default function MobileControls({
               textareaRef={textareaRef}
               setMessage={setMessage}
               handleOptionClick={handleOptionClick}
+              messagesCount={messages.length}
             />
           ))
         }
@@ -696,7 +699,7 @@ export default function MobileControls({
             >
               {/* Show either ChatMessages or ExerciseSelection based on intention */}
               {intention === ProgramIntention.Exercise ? (
-                <ExerciseSelection isMobile={isMobile} />
+                <ExerciseSelection />
               ) : (
                 <div className="flex-1 min-h-0">
                   <ChatMessages

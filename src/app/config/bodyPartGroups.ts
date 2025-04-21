@@ -11542,7 +11542,7 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
     ],
   },
   rightHand: {
-    id: 'rightHand',
+    id: 'right_hand',
     zoomId: 'skeletal_system-bones_of_right_hand_and_wrist_ID',
     name: 'Right Hand',
     deselectIds: [],

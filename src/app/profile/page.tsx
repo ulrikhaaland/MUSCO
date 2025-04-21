@@ -1,5 +1,4 @@
 'use client';
-
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/app/context/AuthContext';
@@ -20,6 +19,14 @@ import {
   PLANNED_EXERCISE_FREQUENCY_OPTIONS,
 } from '@/app/types/program';
 import { UserProfile } from '@/app/types/user';
+import { useTranslation } from '../i18n';
+import {
+  getTranslatedTargetBodyParts,
+  getTranslatedExerciseEnvironments,
+  getTranslatedWorkoutDurations,
+  getTranslatedPainBodyParts,
+  getTranslatedPlannedExerciseFrequencyOptions
+} from '@/app/utils/programTranslation';
 
 // Custom hook to track window dimensions
 const useWindowDimensions = () => {
@@ -45,23 +52,23 @@ const useWindowDimensions = () => {
   return windowDimensions;
 };
 
-// Add a constant for FITNESS_LEVELS with descriptions
-const FITNESS_LEVELS = [
+// Add a constant for getFitnessLevels with descriptions
+const getFitnessLevels = (t: any) => [
   {
-    name: 'beginner',
-    description: 'New to exercise or returning after long break',
+    name: t('profile.beginner.name'),
+    description: t('profile.beginner.desc'),
   },
   {
-    name: 'intermediate',
-    description: 'Regular exercise for 6+ months',
+    name: t('profile.intermediate.name'),
+    description: t('profile.intermediate.desc'),
   },
   {
-    name: 'advanced',
-    description: 'Consistent training for 2+ years',
+    name: t('profile.advanced.name'),
+    description: t('profile.advanced.desc'),
   },
   {
-    name: 'elite',
-    description: 'High performance athlete',
+    name: t('profile.elite.name'),
+    description: t('profile.elite.desc'),
   },
 ];
 
@@ -69,49 +76,49 @@ const FITNESS_LEVELS = [
 const EXERCISE_MODALITIES = [
   {
     name: 'strength',
-    description: 'Weight training, resistance training, bodyweight exercises',
+    description: t => t('profile.modality.strength.description'),
   },
   {
     name: 'cardio',
-    description: 'Running, cycling, swimming, HIIT, aerobic exercise',
+    description: t => t('profile.modality.cardio.description'),
   },
   {
     name: 'recovery',
-    description: 'Stretching, yoga, mobility work, active recovery',
+    description: t => t('profile.modality.recovery.description'),
   },
 ];
 
 // Common health goals options
-const HEALTH_GOALS_OPTIONS = [
-  'Weight loss',
-  'Muscle gain',
-  'Improved fitness',
-  'Strength development',
-  'Injury recovery',
-  'Pain reduction',
-  'Better mobility',
-  'Sports performance',
-  'General wellness',
-  'Stress reduction',
-  'Better sleep',
-  'Improved posture',
+const getHealthGoalsOptions = (t: any) => [
+  t('profile.goals.weightLoss'),
+  t('profile.goals.muscleGain'),
+  t('profile.goals.improvedFitness'),
+  t('profile.goals.strengthDevelopment'),
+  t('profile.goals.injuryRecovery'),
+  t('profile.goals.painReduction'),
+  t('profile.goals.betterMobility'),
+  t('profile.goals.sportsPerformance'),
+  t('profile.goals.generalWellness'),
+  t('profile.goals.stressReduction'),
+  t('profile.goals.betterSleep'),
+  t('profile.goals.improvedPosture'),
 ];
 
 // Common dietary preference options
-const DIETARY_PREFERENCES_OPTIONS = [
-  'No specific diet',
-  'Vegetarian',
-  'Vegan',
-  'Pescatarian',
-  'Paleo',
-  'Keto',
-  'Carnivore',
-  'Low carb',
-  'Low fat',
-  'Gluten-free',
-  'Dairy-free',
-  'Mediterranean',
-  'Intermittent fasting',
+const getDietaryPreferencesOptions = (t: any) => [
+  t('profile.diet.noSpecificDiet'),
+  t('profile.diet.vegetarian'),
+  t('profile.diet.vegan'),
+  t('profile.diet.pescatarian'),
+  t('profile.diet.paleo'),
+  t('profile.diet.keto'),
+  t('profile.diet.carnivore'),
+  t('profile.diet.lowCarb'),
+  t('profile.diet.lowFat'),
+  t('profile.diet.glutenFree'),
+  t('profile.diet.dairyFree'),
+  t('profile.diet.mediterranean'),
+  t('profile.diet.intermittentFasting'),
 ];
 
 // Reusable icon components for section headers
@@ -148,6 +155,8 @@ const CollapsedIcon = () => (
 );
 
 export default function ProfilePage() {
+  const { t } = useTranslation();
+
   const { user, loading: authLoading, logOut, updateUserProfile } = useAuth();
   const {
     activeProgram,
@@ -156,6 +165,17 @@ export default function ProfilePage() {
   } = useUser();
   const router = useRouter();
   const { width, height } = useWindowDimensions();
+
+  // Get translated constants
+  const translatedTargetBodyParts = getTranslatedTargetBodyParts(t);
+  const translatedExerciseEnvironments = getTranslatedExerciseEnvironments(t);
+  const translatedWorkoutDurations = getTranslatedWorkoutDurations(t);
+  const translatedPainBodyParts = getTranslatedPainBodyParts(t);
+  const translatedPlannedFrequencyOptions = getTranslatedPlannedExerciseFrequencyOptions(t);
+  
+  // Use the translation functions to get localized options
+  const healthGoalsOptions = getHealthGoalsOptions(t);
+  const dietaryPreferencesOptions = getDietaryPreferencesOptions(t);
 
   // CSS styles for smooth section transitions
   const sectionContentStyle = {
@@ -1748,7 +1768,7 @@ export default function ProfilePage() {
                         {editingField === 'fitnessLevel' ? (
                           <div className="space-y-4">
                             <div className="grid grid-cols-1 gap-3">
-                              {FITNESS_LEVELS.map((level) => (
+                              {getFitnessLevels(t).map((level) => (
                                 <label
                                   key={level.name}
                                   className="relative flex items-center"
@@ -1809,7 +1829,7 @@ export default function ProfilePage() {
                             className="w-full bg-gray-700 border border-gray-600 rounded-lg py-2 px-3 text-white"
                           >
                             <option value="">Select Frequency</option>
-                            {PLANNED_EXERCISE_FREQUENCY_OPTIONS.map(
+                            {translatedPlannedFrequencyOptions.map(
                               (frequency) => (
                                 <option key={frequency} value={frequency}>
                                   {frequency}
@@ -1869,10 +1889,10 @@ export default function ProfilePage() {
                                   />
                                   <div className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 text-gray-400 peer-checked:text-white peer-checked:bg-indigo-500/20 peer-checked:border-indigo-500 cursor-pointer transition-all duration-200">
                                     <div className="font-medium capitalize">
-                                      {modality.name}
+                                      {t(`profile.modality.${modality.name}`)}
                                     </div>
                                     <div className="text-sm mt-1 text-gray-500 peer-checked:text-gray-300">
-                                      {modality.description}
+                                      {modality.description(t)}
                                     </div>
                                   </div>
                                 </label>
@@ -1928,8 +1948,8 @@ export default function ProfilePage() {
                                       checked={
                                         region === 'Full Body'
                                           ? targetAreas.length ===
-                                              TARGET_BODY_PARTS.length &&
-                                            TARGET_BODY_PARTS.every((part) =>
+                                              translatedTargetBodyParts.length &&
+                                            translatedTargetBodyParts.every((part) =>
                                               targetAreas.includes(part)
                                             )
                                           : region === 'Upper Body'
@@ -1951,7 +1971,7 @@ export default function ProfilePage() {
                                           let newTargetAreas: string[] = [];
                                           if (region === 'Full Body') {
                                             newTargetAreas = [
-                                              ...TARGET_BODY_PARTS,
+                                              ...translatedTargetBodyParts,
                                             ];
                                           } else if (region === 'Upper Body') {
                                             newTargetAreas = [
@@ -1981,7 +2001,7 @@ export default function ProfilePage() {
                                 Or select specific areas:
                               </p>
                               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                                {TARGET_BODY_PARTS.map((part) => (
+                                {translatedTargetBodyParts.map((part) => (
                                   <label
                                     key={part}
                                     className="relative flex items-center"
@@ -2144,7 +2164,7 @@ export default function ProfilePage() {
                         {editingField === 'healthGoals' ? (
                           <div className="space-y-4">
                             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                              {HEALTH_GOALS_OPTIONS.map((goal) => (
+                              {healthGoalsOptions.map((goal) => (
                                 <label
                                   key={goal}
                                   className="relative flex items-center"
@@ -2254,7 +2274,7 @@ export default function ProfilePage() {
                         {editingField === 'exerciseEnvironments' ? (
                           <div className="space-y-4">
                             <div className="grid grid-cols-1 gap-3">
-                              {EXERCISE_ENVIRONMENTS.map((environment) => (
+                              {translatedExerciseEnvironments.map((environment) => (
                                 <label
                                   key={environment.name}
                                   className="relative flex items-center"
@@ -2311,7 +2331,7 @@ export default function ProfilePage() {
                         {editingField === 'workoutDuration' ? (
                           <div className="space-y-4">
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                              {WORKOUT_DURATIONS.map((duration) => (
+                              {translatedWorkoutDurations.map((duration) => (
                                 <label
                                   key={duration}
                                   className="relative flex items-center"
@@ -2361,7 +2381,7 @@ export default function ProfilePage() {
                         {editingField === 'dietaryPreferences' ? (
                           <div className="space-y-4">
                             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                              {DIETARY_PREFERENCES_OPTIONS.map((diet) => (
+                              {dietaryPreferencesOptions.map((diet) => (
                                 <label
                                   key={diet}
                                   className="relative flex items-center"
@@ -2691,7 +2711,7 @@ export default function ProfilePage() {
                             )}
 
                             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                              {PAIN_BODY_PARTS.map((part) => (
+                              {translatedPainBodyParts.map((part) => (
                                 <label
                                   key={part}
                                   className="relative flex items-center"

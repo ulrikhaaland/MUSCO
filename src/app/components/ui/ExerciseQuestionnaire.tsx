@@ -18,6 +18,20 @@ import {
   PAIN_BODY_PARTS
 } from '@/app/types/program';
 
+import { useTranslation } from '@/app/i18n';
+import {
+  getTranslatedTargetBodyParts,
+  getTranslatedExerciseEnvironments,
+  getTranslatedWorkoutDurations,
+  getTranslatedAgeRanges,
+  getTranslatedExerciseFrequencyOptions,
+  getTranslatedPlannedExerciseFrequencyOptions,
+  getTranslatedExerciseModalities,
+  getTranslatedPainBodyParts,
+  translatePainBodyPart,
+  getTranslatedBodyRegions
+} from '@/app/utils/programTranslation';
+
 interface ExerciseQuestionnaireProps {
   onClose: () => void;
   onSubmit: (answers: ExerciseQuestionnaireAnswers) => void;
@@ -34,7 +48,7 @@ const compositeAreaMapping: { [key: string]: string[] } = {
 };
 
 // Function to expand composite areas into individual parts
-const expandPainAreas = (areas: string[]): string[] => {
+const expandPainAreas = (areas: string[], t: (key: string, options?: any) => string, translatedPainBodyParts: string[]): string[] => {
   const expandedAreas = new Set<string>();
 
   areas.forEach((area) => {
@@ -54,7 +68,9 @@ const expandPainAreas = (areas: string[]): string[] => {
       );
     } else {
       // Find the matching pain body part with correct capitalization
-      const matchingPart = PAIN_BODY_PARTS.find(
+      const matchingPart = translatedPainBodyParts.find(
+        (part) => part.toLowerCase() === lowerArea
+      ) || PAIN_BODY_PARTS.find(
         (part) => part.toLowerCase() === lowerArea
       );
       expandedAreas.add(matchingPart || area);
@@ -78,8 +94,7 @@ const getWorkoutDurations = (programType: ProgramType) => {
     : WORKOUT_DURATIONS;
 };
 
-// Body parts for target areas
-const bodyRegions = ['Full Body', 'Upper Body', 'Lower Body'] as const;
+
 // Target body parts now imported from program.ts
 
 function useIntersectionObserver(
@@ -192,8 +207,29 @@ export function ExerciseQuestionnaire({
   targetAreas,
   fullBody,
 }: ExerciseQuestionnaireProps) {
+  const { t } = useTranslation();
+  
+  // Get translated options
+  const translatedTargetBodyParts = getTranslatedTargetBodyParts(t);
+  const translatedExerciseEnvironments = getTranslatedExerciseEnvironments(t);
+  const translatedAgeRanges = getTranslatedAgeRanges(t);
+  const translatedExerciseFrequencyOptions = getTranslatedExerciseFrequencyOptions(t);
+  const translatedPlannedFrequencyOptions = getTranslatedPlannedExerciseFrequencyOptions(t);
+  const translatedExerciseModalities = getTranslatedExerciseModalities(t);
+  const translatedPainBodyParts = getTranslatedPainBodyParts(t);
+  const translatedBodyRegions = getTranslatedBodyRegions(t);
+  
+  // Translate workout durations based on program type
+  const TRANSLATED_RECOVERY_WORKOUT_DURATIONS = RECOVERY_WORKOUT_DURATIONS.map(
+    duration => t(`program.duration.${duration.toLowerCase().replace(/\s+/g, '_')}`)
+  );
+  
+  const translatedWorkoutDurations = programType === ProgramType.Recovery
+    ? TRANSLATED_RECOVERY_WORKOUT_DURATIONS
+    : getTranslatedWorkoutDurations(t);
+  
   // Normalize and expand the incoming pain areas while preserving proper capitalization
-  const normalizedPainAreas = expandPainAreas(generallyPainfulAreas || []);
+  const normalizedPainAreas = expandPainAreas(generallyPainfulAreas || [], t, translatedPainBodyParts);
 
   const [targetAreasReopened, setTargetAreasReopened] = useState(false);
   const [editingField, setEditingField] = useState<
@@ -641,13 +677,16 @@ export function ExerciseQuestionnaire({
                 renderSelectedAnswers(answers.age, () => handleEdit('age'))
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {AGE_RANGES.map((range) => (
-                    <label key={range} className="relative flex items-center">
+                  {translatedAgeRanges.map((range, index) => (
+                    <label
+                      key={range}
+                      className="relative flex items-center"
+                    >
                       <input
                         type="radio"
                         name="age"
-                        value={range}
-                        checked={answers.age === range}
+                        value={AGE_RANGES[index]}
+                        checked={answers.age === AGE_RANGES[index]}
                         onChange={(e) =>
                           handleInputChange('age', e.target.value, ageRef)
                         }
@@ -697,7 +736,7 @@ export function ExerciseQuestionnaire({
                   )
                 ) : (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {EXERCISE_FREQUENCY_OPTIONS.map((option) => (
+                    {translatedExerciseFrequencyOptions.map((option) => (
                       <label
                         key={option}
                         className="relative flex items-center"
@@ -765,7 +804,7 @@ export function ExerciseQuestionnaire({
                   )
                 ) : (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {PLANNED_EXERCISE_FREQUENCY_OPTIONS.map((option) => (
+                    {translatedPlannedFrequencyOptions.map((option) => (
                       <label
                         key={option}
                         className="relative flex items-center"
@@ -850,7 +889,7 @@ export function ExerciseQuestionnaire({
                       Select all that apply
                     </p>
                     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-                      {PAIN_BODY_PARTS.map((part) => (
+                      {translatedPainBodyParts.map((part) => (
                         <label
                           key={part}
                           className="relative flex items-center"
@@ -919,7 +958,7 @@ export function ExerciseQuestionnaire({
                   )
                 ) : (
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    {EXERCISE_MODALITIES.map((option) => (
+                    {translatedExerciseModalities.map((option) => (
                       <label
                         key={option}
                         className="relative flex items-center"
@@ -997,7 +1036,7 @@ export function ExerciseQuestionnaire({
                   <div className="space-y-6">
                     {/* Body Regions */}
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                      {bodyRegions.map((region) => (
+                      {translatedBodyRegions.map((region) => (
                         <label
                           key={region}
                           className="relative flex items-center"
@@ -1124,7 +1163,7 @@ export function ExerciseQuestionnaire({
                   )
                 ) : (
                   <div className="space-y-4">
-                    {EXERCISE_ENVIRONMENTS.map((environment) => (
+                    {translatedExerciseEnvironments.map((environment) => (
                       <label
                         key={environment.name}
                         className="relative flex items-center"
@@ -1194,7 +1233,7 @@ export function ExerciseQuestionnaire({
                   )
                 ) : (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {workoutDurations.map((duration) => (
+                    {translatedWorkoutDurations.map((duration) => (
                       <label
                         key={duration}
                         className="relative flex items-center"

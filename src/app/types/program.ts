@@ -7,6 +7,9 @@ export enum ProgramStatus {
   Error = 'error',
 }
 
+// Body parts for target areas
+export const BODY_REGIONS = ['Full Body', 'Upper Body', 'Lower Body'] as const;
+
 // Body part groupings
 export const TARGET_BODY_PARTS = [
   'Neck',

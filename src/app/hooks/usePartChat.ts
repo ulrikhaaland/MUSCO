@@ -5,26 +5,27 @@ import { Question } from '../types';
 import { BodyPartGroup } from '../config/bodyPartGroups';
 import { ProgramIntention, useApp } from '../context/AppContext';
 import { ProgramType } from '../shared/types';
+import { useTranslation } from '../i18n';
+import { translateBodyPartGroupName, translatePartDirectionPrefix } from '../utils/bodyPartTranslation';
 
-const initialQuestions: Question[] = [
+// Initialize translations with null function that will be replaced
+let t = (key: string) => key;
+
+// Define initial questions using translation function
+const getInitialQuestionsTemplate = (): Question[] => [
   {
-    title: 'Find the source of my pain',
-    question: "I'm experiencing discomfort in the $part. Can you help me find out what's wrong?",
+    title: t('chat.question.painSource.title'),
+    question: t('chat.question.painSource.text'),
     asked: false,
   },
   {
-    title: 'Test my movement',
-    question: "Can you walk me through some movements to check if there's an issue with the $part?",
+    title: t('chat.question.movement.title'),
+    question: t('chat.question.movement.text'),
     asked: false,
   },
-  // {
-  //   title: 'Learn about common problems',
-  //   question: 'What are some common issues or injuries related to the $part?',
-  //   asked: false,
-  // },
   {
-    title: 'Exercise program',
-    question: 'What is the best exercise program for my $part?',
+    title: t('chat.question.exercise.title'),
+    question: t('chat.question.exercise.text'),
     asked: false,
     generate: true,
     diagnosis: '',
@@ -32,22 +33,28 @@ const initialQuestions: Question[] = [
   },
 ];
 
-function getInitialQuestions(name?: string, intention?: string): Question[] {
+function getInitialQuestions(name?: string, intention?: string, translationFunc?: (key: string) => string): Question[] {
   if (!name) return [];
 
-  // Modify questions based on intention
-  const questions = initialQuestions.map(q => {
+  // Use provided translation function or fallback to identity function
+  const translate = translationFunc || ((key: string) => key);
+  
+  // Update t for template generation
+  t = translate;
+  
+  // Get questions with translations applied
+  const questions = getInitialQuestionsTemplate().map(q => {
     // Deep copy to avoid modifying the original
     const question = {...q};
     
     // Replace the Exercise program question with Recovery program when intention is recovery
-    if (question.title === 'Exercise program' && intention === ProgramIntention.Recovery) {
-      question.title = 'Recovery program';
-      question.question = 'What is the best recovery program for my $part?';
+    if (question.title === translate('chat.question.exercise.title') && intention === ProgramIntention.Recovery) {
+      question.title = translate('chat.question.recovery.title');
+      question.question = translate('chat.question.recovery.text');
       question.programType = ProgramType.Recovery;
     }
     
-    // Always use the full part name
+    // Always replace the $part placeholder with the part name
     return {
       ...question,
       question: question.question.replace('$part', name.toLowerCase()),
@@ -66,6 +73,7 @@ export function usePartChat({
   selectedPart,
   selectedGroups,
 }: UsePartChatProps) {
+  const { t } = useTranslation();
   const messagesRef = useRef<HTMLDivElement>(null);
   const {
     messages,
@@ -81,21 +89,30 @@ export function usePartChat({
 
   const [localFollowUpQuestions, setLocalFollowUpQuestions] = useState<
     Question[]
-  >(() => getInitialQuestions(selectedPart?.name, intention));
+  >(() => {
+    const name = selectedPart 
+      ? translatePartDirectionPrefix(selectedPart, t).toLowerCase()
+      : (selectedGroups.length > 0 ? translateBodyPartGroupName(selectedGroups[0], t).toLowerCase() : '');
+    return getInitialQuestions(name, intention, t);
+  });
 
   const [previousQuestions, setPreviousQuestions] = useState<Question[]>([]);
 
   // Update the questions when part changes
   useEffect(() => {
     if (selectedPart || selectedGroups.length > 0) {
+      const name = selectedPart 
+        ? translatePartDirectionPrefix(selectedPart, t).toLowerCase()
+        : (selectedGroups.length > 0 ? translateBodyPartGroupName(selectedGroups[0], t).toLowerCase() : '');
+        
       setLocalFollowUpQuestions(
-        getInitialQuestions(selectedPart?.name ?? selectedGroups[0].name, intention)
+        getInitialQuestions(name, intention, t)
       );
     } else if (messages.length === 0) {
       setLocalFollowUpQuestions([]);
       setPreviousQuestions([]);
     }
-  }, [selectedPart, selectedGroups, messages.length, intention]);
+  }, [selectedPart, selectedGroups, messages.length, intention, t]);
 
   // Update local follow-up questions when chat questions change
   useEffect(() => {
@@ -103,6 +120,7 @@ export function usePartChat({
       setLocalFollowUpQuestions(chatFollowUpQuestions);
     }
   }, [chatFollowUpQuestions]);
+
   const handleOptionClick = (question: Question) => {
     const prevQuestions = [...previousQuestions, ...localFollowUpQuestions];
     setPreviousQuestions(prevQuestions);
@@ -110,7 +128,7 @@ export function usePartChat({
     sendChatMessage(question.question, {
       userPreferences,
       selectedBodyPart: selectedPart || undefined,
-      selectedBodyGroupName: selectedGroups[0]?.name || '',
+      selectedBodyGroupName: selectedGroups[0] ? translateBodyPartGroupName(selectedGroups[0], t) : '',
       bodyPartsInSelectedGroup:
         selectedGroups[0]?.parts.map((part) => part.name) || [],
       previousQuestions: prevQuestions,
@@ -120,10 +138,10 @@ export function usePartChat({
   const getGroupDisplayName = (): string => {
     if (selectedGroups.length === 0) {
       return messages.length > 0
-        ? 'No body part selected'
-        : 'Select a body part to get started';
+        ? t('chat.noBodyPartSelected')
+        : t('chat.selectBodyPartToStart');
     } else {
-      return selectedGroups[0].name;
+      return translateBodyPartGroupName(selectedGroups[0], t);
     }
   };
 
@@ -132,10 +150,11 @@ export function usePartChat({
       if (selectedGroups.length === 0) {
         return '';
       } else {
-        return `Chat about the ${selectedGroups[0].name} or select a specific part`;
+        const translatedGroupName = translateBodyPartGroupName(selectedGroups[0], t);
+        return t('chat.chatAboutOrSelectSpecific', { group: translatedGroupName.toLowerCase() });
       }
     }
-    return selectedPart.name;
+    return translatePartDirectionPrefix(selectedPart, t);
   };
 
   return {

@@ -1,6 +1,8 @@
 import { ChatMessage } from '@/app/types';
 import { useEffect, useRef } from 'react';
 import { useApp, ProgramIntention } from '@/app/context/AppContext';
+import { useTranslation } from '@/app/i18n';
+import { translateBodyPartGroupName, translatePartDirectionPrefix } from '@/app/utils/bodyPartTranslation';
 
 interface BottomSheetHeaderProps {
   messages: ChatMessage[];
@@ -21,6 +23,7 @@ export function BottomSheetHeader({
   onHeightChange,
   isMinimized,
 }: BottomSheetHeaderProps) {
+  const { t } = useTranslation();
   const headerRef = useRef<HTMLDivElement>(null);
   const {
     intention,
@@ -59,15 +62,17 @@ export function BottomSheetHeader({
       // If we have a selected group (checking through selectedGroups)
       if (selectedGroups.length > 0) {
         return {
-          main: selectedGroups[0].name,
+          main: translateBodyPartGroupName(selectedGroups[0], t),
           sub: selectedPart
-            ? selectedPart.name
-            : `Select a specific area of the ${selectedGroups[0].name.toLowerCase()} (optional)`,
+            ? translatePartDirectionPrefix(selectedPart, t)
+            : t('bottomSheet.selectSpecificArea', { 
+                group: translateBodyPartGroupName(selectedGroups[0], t).toLowerCase() 
+              }),
         };
       }
       return {
-        main: 'Select Recovery Area',
-        sub: 'Choose the body part you want to focus on for recovery',
+        main: t('bottomSheet.selectRecoveryArea'),
+        sub: t('bottomSheet.chooseBodyPart'),
       };
     }
 
@@ -75,8 +80,8 @@ export function BottomSheetHeader({
     if (intention === ProgramIntention.Exercise) {
       // For Exercise mode, we only have painful areas selection now
       return {
-        main: 'Select Painful Exercise Areas',
-        sub: 'Select the areas that are painful during exercise (optional)',
+        main: t('bottomSheet.selectPainfulExerciseAreas'),
+        sub: t('bottomSheet.selectPainfulAreasOptional'),
       };
     }
 
@@ -110,7 +115,7 @@ export function BottomSheetHeader({
                 ? 'opacity-50 cursor-not-allowed hover:bg-transparent'
                 : ''
             }`}
-            aria-label="Reset Chat"
+            aria-label={t('bottomSheet.resetChat')}
             disabled={
               intention !== ProgramIntention.Exercise &&
               (isLoading || messages.length === 0)

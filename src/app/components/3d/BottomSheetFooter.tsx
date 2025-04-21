@@ -1,6 +1,7 @@
 import { RefObject } from 'react';
 import { Question } from '@/app/types';
 import { BottomSheetRef } from 'react-spring-bottom-sheet';
+import { useTranslation } from '@/app/i18n';
 
 interface BottomSheetFooterProps {
   message: string;
@@ -8,6 +9,7 @@ interface BottomSheetFooterProps {
   textareaRef: RefObject<HTMLTextAreaElement>;
   setMessage: (message: string) => void;
   handleOptionClick: (question: Question) => void;
+  messagesCount?: number;
 }
 
 export function BottomSheetFooter({
@@ -16,7 +18,10 @@ export function BottomSheetFooter({
   textareaRef,
   setMessage,
   handleOptionClick,
+  messagesCount = 0,
 }: BottomSheetFooterProps) {
+  const { t } = useTranslation();
+  
   const handleSendMessage = () => {
     if (message.trim() && !isLoading) {
       handleOptionClick({
@@ -32,6 +37,10 @@ export function BottomSheetFooter({
       }
     }
   };
+
+  const placeholderText = messagesCount > 0 
+    ? t('bottomSheet.typeMessage') 
+    : t('bottomSheet.askSomethingElse');
 
   return (
     <div className="border-t border-gray-700 pt-2 pb-1 flex-shrink-0 bg-gray-900 pr-[60px]">
@@ -62,7 +71,7 @@ export function BottomSheetFooter({
               }
             }}
             rows={1}
-            placeholder="Type your message..."
+            placeholder={placeholderText}
             className="w-full bg-gray-800 rounded-lg px-4 py-3 pr-12 focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
           />
           <button

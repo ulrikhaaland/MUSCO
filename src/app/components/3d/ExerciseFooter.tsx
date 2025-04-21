@@ -1,4 +1,5 @@
 import { useApp } from '@/app/context/AppContext';
+import { useTranslation } from '@/app/i18n';
 
 interface ExerciseFooterProps {
   onReset: (resetSelectionState?: boolean) => void;
@@ -9,6 +10,7 @@ export function ExerciseFooter({
   onReset,
   onAreasSelected,
 }: ExerciseFooterProps) {
+  const { t } = useTranslation();
   const {
     selectedExerciseGroups,
     selectedPainfulAreas,
@@ -18,8 +20,8 @@ export function ExerciseFooter({
   } = useApp();
 
   const buttonText = isSelectingExerciseBodyParts
-    ? 'Continue to Painful Areas'
-    : 'Create Exercise Program';
+    ? t('exerciseFooter.continueToPainful')
+    : t('exerciseFooter.createProgram');
 
   const handleClick = () => {
     if (isSelectingExerciseBodyParts) {

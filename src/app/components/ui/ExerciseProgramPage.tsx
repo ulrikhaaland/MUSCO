@@ -8,6 +8,7 @@ import { submitProgramFeedback } from '@/app/services/programFeedbackService';
 import { useAuth } from '@/app/context/AuthContext';
 import { ExerciseSelectionPage } from './ExerciseSelectionPage';
 import { useUser } from '@/app/context/UserContext';
+import { useTranslation } from '@/app/i18n';
 
 // Updated interface to match the actual program structure
 
@@ -104,6 +105,7 @@ export function ExerciseProgramPage({
   // Add state to save feedback form scroll position
   const [feedbackScrollPosition, setFeedbackScrollPosition] = useState(0);
   const { answers } = useUser();
+  const { t } = useTranslation();
 
   // Check if overview has been seen before
   useEffect(() => {
@@ -546,8 +548,8 @@ export function ExerciseProgramPage({
                   <h1 className="text-app-title text-center">
                     {program.title ||
                       (program.type === ProgramType.Recovery
-                        ? 'Recovery Program'
-                        : 'Exercise Program')}
+                        ? t('program.recoveryProgramTitle')
+                        : t('program.exerciseProgramTitle'))}
                   </h1>
                   {isActive ? (
                     <div className="mt-1 px-2 py-0.5 bg-green-500/20 text-green-300 text-xs rounded-full flex items-center">
@@ -577,8 +579,8 @@ export function ExerciseProgramPage({
                     <h2 className="text-3xl font-bold text-white tracking-tight">
                       {program.title ||
                         (program.type === ProgramType.Exercise
-                          ? 'Your Exercise Program'
-                          : 'Your Recovery Program')}
+                          ? t('program.yourExerciseProgramTitle')
+                          : t('program.yourRecoveryProgramTitle'))}
                     </h2>
                     <p className="mt-4 text-lg text-gray-400">
                       {program.type === ProgramType.Exercise

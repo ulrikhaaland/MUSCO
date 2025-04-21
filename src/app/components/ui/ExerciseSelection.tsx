@@ -1,64 +1,26 @@
-import { BodyPartGroup } from '@/app/config/bodyPartGroups';
 import { useApp } from '@/app/context/AppContext';
+import { useTranslation } from '@/app/i18n';
+import { translateBodyPartGroupName } from '@/app/utils/bodyPartTranslation';
 
-interface ExerciseSelectionProps {
-  isMobile: boolean;
-}
-
-// Function to map anatomical groups to target areas
-function mapAnatomicalGroupToTargetArea(group: BodyPartGroup): string | null {
-  const groupId = group.id.toLowerCase();
-
-  // Map specific anatomical groups to target areas
-  if (groupId.includes('shoulder')) return 'Shoulders';
-  if (groupId.includes('upper_arm')) return 'Upper Arms';
-  if (groupId.includes('forearm')) return 'Forearms';
-  if (groupId.includes('chest')) return 'Chest';
-  if (groupId.includes('torso')) return 'Abdomen';
-  if (groupId.includes('back')) return 'Upper Back';
-  if (groupId.includes('pelvis')) return 'Lower Back';
-  if (groupId.includes('glutes')) return 'Glutes';
-  if (groupId.includes('thigh')) return 'Upper Legs';
-  if (groupId.includes('lower_leg')) return 'Lower Legs';
-  if (groupId.includes('neck')) return 'Neck';
-
-  return null;
-}
-
-export function ExerciseSelection({ isMobile }: ExerciseSelectionProps) {
-  const {
-    selectedExerciseGroups,
-    selectedPainfulAreas,
-    isSelectingExerciseBodyParts,
-    fullBodyRef,
-    intention,
-  } = useApp();
-
-  // Function to get unique target areas from selected groups
-  const getUniqueTargetAreas = (
-    groups: BodyPartGroup[]
-  ): { area: string; groups: BodyPartGroup[] }[] => {
-    // Always return Full Body for exercise programs
-    return [{ area: 'Full Body', groups: [] }];
-  };
+export function ExerciseSelection() {
+  const { t } = useTranslation();
+  const { selectedPainfulAreas } = useApp();
 
   return (
     <div className="flex flex-col gap-4">
       {/* Target Areas Section */}
       <div className="flex flex-col gap-2">
-        <h3 className="text-lg font-semibold text-white">Target Areas</h3>
+        <h3 className="text-lg font-semibold text-white">{t('exerciseSelection.targetAreas')}</h3>
         <div className="flex flex-wrap gap-2">
-          <div
-            className="bg-gray-800 text-white px-3 py-1 rounded-full text-sm"
-          >
-            <span>Full Body</span>
+          <div className="bg-gray-800 text-white px-3 py-1 rounded-full text-sm">
+            <span>{t('profile.bodyRegions.fullBody')}</span>
           </div>
         </div>
       </div>
 
       {/* Painful Areas Section */}
       <div className="flex flex-col gap-2">
-        <h3 className="text-lg font-semibold text-white">Painful Areas</h3>
+        <h3 className="text-lg font-semibold text-white">{t('exerciseSelection.painfulAreas')}</h3>
         {selectedPainfulAreas.length > 0 ? (
           <div className="flex flex-wrap gap-2">
             {selectedPainfulAreas.map((group) => (
@@ -66,12 +28,12 @@ export function ExerciseSelection({ isMobile }: ExerciseSelectionProps) {
                 key={group.id}
                 className="bg-red-900/50 text-white px-3 py-1 rounded-full text-sm"
               >
-                <span>{group.name}</span>
+                <span>{translateBodyPartGroupName(group, t)}</span>
               </div>
             ))}
           </div>
         ) : (
-          <p className="text-gray-400 text-sm">No painful areas selected</p>
+          <p className="text-gray-400 text-sm">{t('exerciseSelection.noPainfulAreas')}</p>
         )}
       </div>
     </div>

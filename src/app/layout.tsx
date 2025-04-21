@@ -50,19 +50,19 @@ export default function RootLayout({
       </head>
       <body>
         <I18nWrapper>
-          <AuthProvider>
-            <UserProvider>
-              <AppProvider>
-                <ToastProvider>
-                  <RouteChangeListener />
-                  <SafeArea>
-                    <div className="h-full pb-16">{children}</div>
-                    <NavigationMenu />
-                  </SafeArea>
-                </ToastProvider>
-              </AppProvider>
-            </UserProvider>
-          </AuthProvider>
+        <AuthProvider>
+          <UserProvider>
+            <AppProvider>
+              <ToastProvider>
+                <RouteChangeListener />
+                <SafeArea>
+                  <div className="h-full pb-16">{children}</div>
+                  <NavigationMenu />
+                </SafeArea>
+              </ToastProvider>
+            </AppProvider>
+          </UserProvider>
+        </AuthProvider>
         </I18nWrapper>
       </body>
     </html>
