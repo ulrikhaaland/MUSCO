@@ -138,7 +138,7 @@ const translations = {
   'language.nb': 'Norsk',
   
   // Home page
-  'home.pageTitle': 'MUSCO - Lag ditt program',
+  'home.pageTitle': 'bodAI',
   'home.male': 'Mann',
   'home.female': 'Kvinne',
   
@@ -149,6 +149,16 @@ const translations = {
   'auth.createAccount': 'Opprett konto',
   'auth.signIn': 'Logg inn',
   'auth.signOut': 'Logg ut',
+  'auth.checkEmail': 'Sjekk e-posten din',
+  'auth.sentLoginLink': 'Vi har sendt en innloggingslenke til',
+  'auth.clickLinkToSignIn': 'Klikk på lenken i e-posten for å logge inn',
+  'auth.useDifferentEmail': 'Bruk en annen e-post',
+  'auth.continueWithoutLogin': 'Fortsett uten innlogging',
+  'auth.welcome': 'Velkommen til bodAI',
+  'auth.enterEmailToStart': 'Skriv inn e-postadressen din for å komme i gang',
+  'auth.emailAddress': 'E-postadresse',
+  'auth.sending': 'Sender...',
+  'auth.sendLoginLink': 'Send innloggingslenke',
   
   // Navigation
   'nav.home': 'Hjem',

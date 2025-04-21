@@ -138,7 +138,7 @@ const translations = {
   'language.nb': 'Norwegian',
   
   // Home page
-  'home.pageTitle': 'MUSCO - Create Your Program',
+  'home.pageTitle': 'bodAI',
   'home.male': 'Male',
   'home.female': 'Female',
   
@@ -149,6 +149,16 @@ const translations = {
   'auth.createAccount': 'Create Account',
   'auth.signIn': 'Sign in',
   'auth.signOut': 'Sign out',
+  'auth.checkEmail': 'Check your email',
+  'auth.sentLoginLink': 'We sent a login link to',
+  'auth.clickLinkToSignIn': 'Click the link in the email to sign in',
+  'auth.useDifferentEmail': 'Use a different email',
+  'auth.continueWithoutLogin': 'Continue without login',
+  'auth.welcome': 'Welcome to bodAI',
+  'auth.enterEmailToStart': 'Enter your email to get started',
+  'auth.emailAddress': 'Email address',
+  'auth.sending': 'Sending...',
+  'auth.sendLoginLink': 'Send login link',
   
   // Navigation
   'nav.home': 'Home',

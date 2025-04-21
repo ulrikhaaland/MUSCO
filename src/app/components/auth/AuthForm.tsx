@@ -2,8 +2,10 @@
 
 import { useState } from 'react';
 import { useAuth } from '@/app/context/AuthContext';
+import { useTranslation } from '@/app/i18n';
 
 export function AuthForm({ onSkip }: { onSkip: () => void }) {
+  const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -32,12 +34,12 @@ export function AuthForm({ onSkip }: { onSkip: () => void }) {
     return (
       <div className="w-full max-w-md space-y-8 px-4">
         <div className="text-center">
-          <h2 className="text-3xl font-bold text-white">Check your email</h2>
+          <h2 className="text-3xl font-bold text-white">{t('auth.checkEmail')}</h2>
           <p className="mt-4 text-gray-400">
-            We sent a login link to <span className="text-white">{email}</span>
+            {t('auth.sentLoginLink')} <span className="text-white">{email}</span>
           </p>
           <p className="mt-2 text-sm text-gray-400">
-            Click the link in the email to sign in
+            {t('auth.clickLinkToSignIn')}
           </p>
         </div>
 
@@ -47,7 +49,7 @@ export function AuthForm({ onSkip }: { onSkip: () => void }) {
             onClick={() => setEmailSent(false)}
             className="w-full px-6 py-3 rounded-xl bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition-colors duration-200"
           >
-            Use a different email
+            {t('auth.useDifferentEmail')}
           </button>
 
           <button
@@ -55,7 +57,7 @@ export function AuthForm({ onSkip }: { onSkip: () => void }) {
             onClick={onSkip}
             className="w-full px-6 py-3 rounded-xl bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition-colors duration-200"
           >
-            Continue without login
+            {t('auth.continueWithoutLogin')}
           </button>
         </div>
       </div>
@@ -65,16 +67,16 @@ export function AuthForm({ onSkip }: { onSkip: () => void }) {
   return (
     <div className="w-full max-w-md space-y-8 px-4">
       <div className="text-center">
-        <h2 className="text-3xl font-bold text-white">Welcome to Musco</h2>
+        <h2 className="text-3xl font-bold text-white">{t('auth.welcome')}</h2>
         <p className="mt-2 text-sm text-gray-400">
-          Enter your email to get started
+          {t('auth.enterEmailToStart')}
         </p>
       </div>
 
       <form onSubmit={handleSubmit} className="mt-8 space-y-6">
         <div>
           <label htmlFor="email" className="sr-only">
-            Email address
+            {t('auth.emailAddress')}
           </label>
           <input
             id="email"
@@ -85,7 +87,7 @@ export function AuthForm({ onSkip }: { onSkip: () => void }) {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="w-full px-4 py-3 rounded-xl bg-gray-900/50 border border-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            placeholder="Email address"
+            placeholder={t('auth.emailAddress')}
           />
         </div>
 
@@ -99,7 +101,7 @@ export function AuthForm({ onSkip }: { onSkip: () => void }) {
             disabled={loading}
             className="w-full px-6 py-3 rounded-xl bg-indigo-600 text-white hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {loading ? 'Sending...' : 'Send login link'}
+            {loading ? t('auth.sending') : t('auth.sendLoginLink')}
           </button>
 
           <button
@@ -107,7 +109,7 @@ export function AuthForm({ onSkip }: { onSkip: () => void }) {
             onClick={onSkip}
             className="w-full px-6 py-3 rounded-xl bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition-colors duration-200"
           >
-            Continue without login
+            {t('auth.continueWithoutLogin')}
           </button>
         </div>
       </form>
