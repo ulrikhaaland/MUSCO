@@ -10,6 +10,8 @@ import { db } from '../firebase/config';
 import { DiagnosisAssistantResponse } from '../types';
 import { ExerciseQuestionnaireAnswers } from '../shared/types';
 import { ProgramStatus } from '../types/program';
+import { Locale } from '../i18n/translations';
+import { getSavedLocalePreference } from '../i18n/utils';
 
 async function generateProgram(
   userId: string,
@@ -19,6 +21,9 @@ async function generateProgram(
   assistantId?: string
 ) {
   try {
+    // Get user's language preference
+    const userLanguage: Locale = typeof window !== 'undefined' ? getSavedLocalePreference() : 'en';
+    
     const response = await fetch('/api/assistant', {
       method: 'POST',
       headers: {
@@ -32,6 +37,7 @@ async function generateProgram(
           userId: userId,
           programId: programId,
           assistantId: assistantId,
+          language: userLanguage, // Pass the user's language preference
         },
       }),
     });

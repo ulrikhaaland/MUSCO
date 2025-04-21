@@ -4,7 +4,7 @@
     {
       "id": "biceps-1",
       "name": "Standing Hammer Curl",
-      "description": "No description available",
+      "description": "The Standing Hammer Curl uses a neutral‑grip to emphasize the brachialis and brachioradialis while still hitting the biceps brachii. Because the wrists remain in a thumbs‑up position, the movement is joint‑friendly and allows heavier loading than a supinated curl. It is ideal for adding overall arm thickness and forearm strength while reducing wrist strain.",
       "targetBodyParts": ["Biceps"],
       "exerciseType": ["strength"],
       "difficulty": "beginner",
@@ -45,7 +45,7 @@
     {
       "id": "biceps-2",
       "name": "Standing Dumbbell Curl",
-      "description": "No description available",
+      "description": "The Standing Dumbbell Curl is a classic biceps isolation exercise performed with a supinated grip, allowing each arm to work independently for balanced development. The movement builds biceps size and peak by keeping constant tension through a full range of motion. Strict form—elbows fixed and torso upright—maximizes muscle activation and minimizes momentum.",
       "targetBodyParts": ["Biceps"],
       "exerciseType": ["strength"],
       "difficulty": "beginner",
@@ -131,7 +131,7 @@
     {
       "id": "biceps-10",
       "name": "EZ Bar Curl",
-      "description": "No description available",
+      "description": "The EZ Bar Curl targets the biceps brachii with a semi‑supinated grip that relieves stress on the wrists and elbows. The angled handle positions encourage natural forearm alignment, letting you train heavier and more comfortably than a straight‑bar curl. Maintaining stable elbows and a controlled tempo ensures optimal biceps engagement and arm growth.",
       "targetBodyParts": ["Biceps"],
       "exerciseType": ["strength"],
       "difficulty": "beginner",
@@ -174,7 +174,7 @@
     {
       "id": "biceps-18",
       "name": "Seated Dumbbell Curl",
-      "description": "No description available",
+      "description": "The Seated Dumbbell Curl removes lower‑body assistance, forcing the biceps to lift the load without momentum. Sitting tall with the torso braced isolates the elbow flexors, delivering a strong contraction and improved mind‑muscle connection. This variation is excellent for promoting symmetrical arm development and refining peak strength at lighter to moderate loads.",
       "targetBodyParts": ["Biceps"],
       "exerciseType": ["strength"],
       "difficulty": "beginner",
@@ -219,7 +219,7 @@
     {
       "id": "biceps-53",
       "name": "One-Arm Prone Incline Dumbbell Curl",
-      "description": "No description available",
+      "description": "The One‑Arm Prone Incline Dumbbell Curl pins the chest against a low‑angle bench, eliminating body sway and keeping the shoulder behind the elbow for a long‑lever pull. Curling one arm at a time enhances unilateral focus and allows precise control through the eccentric phase, producing constant tension from full extension to peak contraction. It is an effective option for isolating the long head and correcting side‑to‑side imbalances.",
       "targetBodyParts": ["Biceps"],
       "exerciseType": ["strength"],
       "difficulty": "beginner",

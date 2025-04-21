@@ -4,6 +4,8 @@ import { DiagnosisAssistantResponse } from '@/app/types';
 import { ExerciseQuestionnaireAnswers, ProgramType } from '@/app/shared/types';
 import { ProgramStatus, ExerciseProgram } from '@/app/types/program';
 import { ProgramFeedback } from '../components/ui/ProgramFeedbackQuestionnaire';
+import { Locale } from '../i18n/translations';
+import { getSavedLocalePreference } from '../i18n/utils';
 
 // Extended ExerciseQuestionnaireAnswers to include feedback fields
 interface FeedbackEnhancedQuestionnaire extends ExerciseQuestionnaireAnswers {
@@ -157,6 +159,9 @@ submitProgramFeedback = async (
     });
     
     try {
+      // Get user's language preference
+      const userLanguage: Locale = typeof window !== 'undefined' ? getSavedLocalePreference() : 'en';
+      
       // Call the API to generate a follow-up program
       const response = await fetch('/api/assistant', {
         method: 'POST',
@@ -172,6 +177,7 @@ submitProgramFeedback = async (
             programId: programId,
             assistantId: assistantId || 'asst_PjMTzHis7vLSeDZRhbBB1tbe',
             previousProgram: currentProgram.program || [], // Pass the program data
+            language: userLanguage, // Pass the user's language preference
           },
         }),
       });

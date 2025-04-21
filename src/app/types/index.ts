@@ -59,6 +59,7 @@ export interface ChatPayload {
   selectedBodyGroupName: string;
   bodyPartsInSelectedGroup: string[];
   previousQuestions?: Question[];
+  language?: string; // User's preferred language (en/nb)
 }
 
 export interface Question {

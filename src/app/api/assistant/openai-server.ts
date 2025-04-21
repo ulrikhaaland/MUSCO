@@ -215,6 +215,7 @@ export async function generateExerciseProgram(context: {
   assistantId?: string;
   isFollowUp?: boolean;
   previousProgram?: ExerciseProgram;
+  language?: string;
 }) {
   try {
     // If we have a userId and programId, update the program status to Generating
@@ -247,6 +248,9 @@ export async function generateExerciseProgram(context: {
     // Create a new thread
     const thread = await createThread();
 
+    // Determine language - default to 'en' if not specified
+    const language = context.language || 'en';
+
     // Transform context into a valid ChatPayload
     const payload: ChatPayload = {
       message: JSON.stringify({
@@ -255,6 +259,7 @@ export async function generateExerciseProgram(context: {
         currentDay: new Date().getDay(),
         previousProgram: context.previousProgram,
         isFollowUp: context.isFollowUp,
+        language: language // Add language parameter to the payload
       }),
       selectedBodyGroupName: '', // Not needed for exercise program
       bodyPartsInSelectedGroup: [], // Not needed for exercise program
@@ -453,6 +458,7 @@ export async function generateExerciseProgramWithModel(context: {
   assistantId?: string;
   isFollowUp?: boolean;
   previousProgram?: ExerciseProgram;
+  language?: string;
 }) {
   return generateExerciseProgram(context);
 }

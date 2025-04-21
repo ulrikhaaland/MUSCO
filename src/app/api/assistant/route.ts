@@ -116,7 +116,8 @@ export async function POST(request: Request) {
             userInfo: payload.userInfo,
             userId: payload.userId,
             programId: payload.programId,
-            assistantId: payload.assistantId
+            assistantId: payload.assistantId,
+            language: payload.language || 'en'
           });
 
           return NextResponse.json({
@@ -147,7 +148,8 @@ export async function POST(request: Request) {
           userId: string;
           programId: string;
           assistantId?: string;
-          previousProgram?: any[]
+          previousProgram?: any[];
+          language?: string;
         }
         
         try {
@@ -161,7 +163,8 @@ export async function POST(request: Request) {
             programId: payload.programId,
             assistantId: assistantId,
             isFollowUp: true, // Flag to indicate this is a follow-up week
-            previousProgram: payload.previousProgram // Pass the previous program data
+            previousProgram: payload.previousProgram, // Pass the previous program data
+            language: payload.language || 'en' // Add language parameter with default fallback
           });
 
           return NextResponse.json({

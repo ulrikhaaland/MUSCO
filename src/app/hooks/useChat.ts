@@ -12,8 +12,10 @@ import {
   UserPreferences,
   DiagnosisAssistantResponse,
 } from '../types';
+import { useTranslation } from '../i18n';
 
 export function useChat() {
+  const { locale } = useTranslation();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [userPreferences, setUserPreferences] = useState<
@@ -92,6 +94,7 @@ export function useChat() {
       const payload: ChatPayload = {
         ...chatPayload,
         message: messageContent,
+        language: locale,
       };
 
       let accumulatedContent = '';

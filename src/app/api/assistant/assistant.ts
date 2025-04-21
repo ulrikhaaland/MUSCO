@@ -67,6 +67,7 @@ export async function sendMessage(
     selectedBodyPart:
       payload.selectedBodyPart || "no body part of body group selected",
     bodyPartsInSelectedGroup: payload.bodyPartsInSelectedGroup,
+    language: payload.language,
   };
 
   // Start both requests in parallel
