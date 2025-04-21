@@ -214,11 +214,11 @@ export function ProgramDayComponent({
   };
 
   return (
-    <div className="h-full space-y-8" onClick={onClick}>
+    <div className="h-full space-y-4" onClick={onClick}>
       {/* Header section - Removed negative margins to prevent overflow */}
-      <div className="bg-gray-900/95 backdrop-blur-sm py-4 mb-8">
+      <div className="bg-gray-900/95 backdrop-blur-sm py-4">
         {programTitle && (
-          <div className="mb-8">
+          <div className="mb-4">
             <button 
               className={`text-lg font-medium text-indigo-200 transition-all flex items-center py-2 -ml-2 pl-2 pr-3 rounded-xl ${isTitleHovered ? 'bg-indigo-900/30 text-indigo-100' : ''} hover:bg-indigo-900/30 hover:text-indigo-100 active:bg-indigo-900/50 active:scale-[0.99] w-auto`}
               onClick={(e) => {
@@ -243,7 +243,7 @@ export function ProgramDayComponent({
         )}
         
         {/* Combined Activity/Duration Badge */}
-        <div className="mb-8">
+        <div className="mb-4">
           <button 
             className={`inline-flex items-center px-4 py-2 rounded-xl bg-indigo-900/40 text-indigo-100 transition-all ${
               isActivityBadgeHovered ? 'bg-indigo-800/50 shadow-sm translate-y-[-2px]' : ''
@@ -287,12 +287,12 @@ export function ProgramDayComponent({
           </button>
         </div>
 
-        <p className="text-gray-50 mb-2 leading-relaxed">{day.description}</p>
+        <p className="text-gray-50 leading-relaxed">{day.description}</p>
       </div>
 
       {/* Body Parts Filter Section */}
       {allBodyParts.length > 0 && (
-        <div className="mb-8">
+        <div className="mb-4">
           <h4 className="text-gray-50 font-medium mb-4">Target Body Parts:</h4>
           <div className="relative max-w-full overflow-hidden">
             <div 
