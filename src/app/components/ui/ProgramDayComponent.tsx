@@ -214,9 +214,9 @@ export function ProgramDayComponent({
   };
 
   return (
-    <div className="h-full px-0 space-y-8" onClick={onClick}>
-      {/* Header section */}
-      <div className="bg-gray-900/95 backdrop-blur-sm py-4 mb-8 -mx-6 px-6">
+    <div className="h-full space-y-8" onClick={onClick}>
+      {/* Header section - Removed negative margins to prevent overflow */}
+      <div className="bg-gray-900/95 backdrop-blur-sm py-4 mb-8">
         {programTitle && (
           <div className="mb-8">
             <button 
