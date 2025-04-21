@@ -72,6 +72,7 @@ export default function DayDetailPage() {
   const [loadingVideoExercise, setLoadingVideoExercise] = useState<string | null>(null);
   const [expandedExercises, setExpandedExercises] = useState<string[]>([]);
   const [selectedProgram, setSelectedProgram] = useState<ExerciseProgram | null>(null);
+  const [preloadedVideoUrls, setPreloadedVideoUrls] = useState<{ [key: string]: string }>({});
 
   const isLoading = authLoading || userLoading;
 
@@ -136,16 +137,81 @@ export default function DayDetailPage() {
     }
   }, [user, program, programStatus, authLoading, userLoading, router]);
 
-  const handleExerciseToggle = (exerciseName: string) => {
+  // Preload Firebase video URL and hint browser to download video content
+  const handleExerciseToggle = async (exerciseName: string) => {
+    const isCurrentlyExpanded = expandedExercises.includes(exerciseName);
+
     setExpandedExercises(prev => 
-      prev.includes(exerciseName) 
+      isCurrentlyExpanded
         ? prev.filter(name => name !== exerciseName)
         : [...prev, exerciseName]
     );
+
+    const linkId = `preload-video-${exerciseName.replace(/\s+/g, '-')}`; // Create a safe ID
+
+    // If expanding
+    if (!isCurrentlyExpanded) {
+      const exercise = dayData?.exercises.find(ex => ex.name === exerciseName);
+
+      if (exercise?.videoUrl && isFirebaseStorageUrl(exercise.videoUrl) && !preloadedVideoUrls[exerciseName]) {
+        try {
+          console.log(`Preloading video URL for: ${exerciseName}`);
+          const storageRef = ref(storage, exercise.videoUrl);
+          const downloadUrl = await getDownloadURL(storageRef);
+          setPreloadedVideoUrls(prev => ({ ...prev, [exerciseName]: downloadUrl }));
+          console.log(`Preloaded video URL obtained for ${exerciseName}`);
+
+          // Hint the browser to preload the video content
+          if (downloadUrl && !document.getElementById(linkId)) {
+            const link = document.createElement('link');
+            link.id = linkId;
+            link.rel = 'preload';
+            link.href = downloadUrl;
+            link.as = 'video';
+            // You might need to specify the video type if known, e.g., link.type = 'video/mp4'
+            document.head.appendChild(link);
+            console.log(`Added preload link for ${exerciseName}`);
+          }
+        } catch (preloadError) {
+          console.error(`Error preloading Firebase video for ${exerciseName}:`, preloadError);
+        }
+      }
+    } 
+    // If collapsing
+    else {
+      // Remove the preload hint if it exists
+      const existingLink = document.getElementById(linkId);
+      if (existingLink) {
+        document.head.removeChild(existingLink);
+        console.log(`Removed preload link for ${exerciseName}`);
+      }
+    }
   };
 
+  // Ensure preload links are cleaned up on component unmount
+  useEffect(() => {
+    return () => {
+      expandedExercises.forEach(exerciseName => {
+        const linkId = `preload-video-${exerciseName.replace(/\s+/g, '-')}`;
+        const existingLink = document.getElementById(linkId);
+        if (existingLink) {
+          document.head.removeChild(existingLink);
+          console.log(`Cleaned up preload link on unmount for ${exerciseName}`);
+        }
+      });
+    };
+  }, [expandedExercises]); // Dependency array includes expandedExercises
+
+  // Updated to handle Firebase Storage URL fetching and utilize preloaded URLs
   const handleVideoClick = async (exercise: Exercise) => {
     if (loadingVideoExercise === exercise.name) return;
+
+    // --- Check for Preloaded URL First ---
+    if (preloadedVideoUrls[exercise.name]) {
+      console.log(`Using preloaded URL for ${exercise.name}`);
+      setVideoUrl(preloadedVideoUrls[exercise.name]);
+      return; // Skip fetching/searching if preloaded URL exists
+    }
 
     // Helper function to search YouTube and update video URL
     const searchYouTubeAndUpdateUrl = async () => {
@@ -168,8 +234,10 @@ export default function DayDetailPage() {
       }
     };
 
+    // --- Main Logic (if not preloaded) ---
     if (exercise.videoUrl) {
       if (isFirebaseStorageUrl(exercise.videoUrl)) {
+        // Fetch Firebase download URL (if not preloaded or preload failed)
         setLoadingVideoExercise(exercise.name);
         try {
           const storageRef = ref(storage, exercise.videoUrl);
