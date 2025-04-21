@@ -49,6 +49,9 @@ const translations = {
   'program.duration.45_60_minutes': '45-60 minutter',
   'program.duration.60_90_minutes': '60-90 minutter',
   'program.duration.more_than_90_minutes': 'Mer enn 90 minutter',
+  'program.duration.15_minutes': '15 minutter',
+  'program.duration.30_minutes': '30 minutter',
+  'program.duration.45_minutes': '45 minutter',
   
   // Program - Age Ranges
   'program.ageRange.under_20': 'Under 20',
@@ -382,6 +385,46 @@ const translations = {
   'program.exerciseProgramTitle': 'Treningsprogram',
   'program.yourRecoveryProgramTitle': 'Ditt restitusjonsprogram',
   'program.yourExerciseProgramTitle': 'Ditt treningsprogram',
+  
+  // Questionnaire
+  'questionnaire.exerciseTitle': 'Spørreskjema for treningsprogram',
+  'questionnaire.recoveryTitle': 'Spørreskjema for restitusjonsprogram',
+  'questionnaire.exerciseDescription': 'Hjelp oss med å tilpasse treningsprogrammet ditt ved å svare på noen spørsmål',
+  'questionnaire.recoveryDescription': 'Hjelp oss med å lage et restitusjonsprogram tilpasset dine behov ved å svare på noen spørsmål',
+  'questionnaire.age': 'Hvor gammel er du?',
+  'questionnaire.pastExercise': 'Hvor ofte har du trent det siste året?',
+  'questionnaire.exerciseDays': 'Hvor mange dager i uken vil du trene?',
+  'questionnaire.recoveryDays': 'Hvor mange dager i uken vil du fokusere på restitusjon?',
+  'questionnaire.painAreas': 'Har du smerter noe sted?',
+  'questionnaire.trainingType': 'Hvilken type trening vil du gjøre?',
+  'questionnaire.targetAreas': 'Hvilke områder vil du fokusere på i treningen din?',
+  'questionnaire.exerciseLocation': 'Hvor foretrekker du å trene?',
+  'questionnaire.recoveryLocation': 'Hvor foretrekker du å gjennomføre restitusjonstreningen?',
+  'questionnaire.workoutDuration': 'Hvor mye tid vil du bruke på hver treningsøkt?',
+  'questionnaire.recoveryDuration': 'Hvor mye tid vil du bruke på hver restitusjonstrening?',
+  'questionnaire.noPain': 'Nei, jeg har ingen smerter',
+  'questionnaire.selectAll': 'Velg alle som gjelder',
+  'questionnaire.selectSpecific': 'Eller velg spesifikke områder:',
+  'questionnaire.cancel': 'Avbryt',
+  'questionnaire.createProgram': 'Lag program',
+  
+  // Program page translations
+  'program.loading': 'Laster program...',
+  'program.loadingData': 'Laster programdata...',
+  'program.creating': 'Oppretter programmet ditt',
+  'program.waitMessage': 'Vennligst vent mens vi oppretter det personlige programmet ditt. Dette kan ta litt tid...',
+  'program.exerciseVideoTitle': 'Treningsvideo',
+  'program.pageTitle': 'Treningsprogram | MUSCO',
+  'program.defaultPageTitle': 'Program | MUSCO',
+  
+  // Days of the week
+  'days.monday': 'Mandag',
+  'days.tuesday': 'Tirsdag',
+  'days.wednesday': 'Onsdag',
+  'days.thursday': 'Torsdag',
+  'days.friday': 'Fredag',
+  'days.saturday': 'Lørdag',
+  'days.sunday': 'Søndag',
 };
 
 export default translations; 

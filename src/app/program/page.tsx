@@ -14,9 +14,11 @@ import {
 import { searchYouTubeVideo } from '@/app/utils/youtube';
 import { LoadingSpinner } from '@/app/components/ui/LoadingSpinner';
 import { ErrorDisplay } from '@/app/components/ui/ErrorDisplay';
+import { useTranslation } from '@/app/i18n';
 
 export default function ProgramPage() {
   const router = useRouter();
+  const { t } = useTranslation();
   const { user, loading: authLoading, error: authError } = useAuth();
   const {
     program,
@@ -48,9 +50,9 @@ export default function ProgramPage() {
     if (selectedProgram?.title && typeof document !== 'undefined') {
       document.title = `${selectedProgram.title} | MUSCO`;
     } else if (typeof document !== 'undefined') {
-      document.title = 'Exercise Program | MUSCO';
+      document.title = t('program.pageTitle');
     }
-  }, [selectedProgram]);
+  }, [selectedProgram, t]);
 
   // Redirect to home if no user or program
   useEffect(() => {
@@ -80,19 +82,19 @@ export default function ProgramPage() {
     if (selectedProgram?.title) {
       document.title = `${selectedProgram.title} | Musco`;
     } else {
-      document.title = 'Program | Musco';
+      document.title = t('program.defaultPageTitle');
     }
-  }, [selectedProgram?.title]);
+  }, [selectedProgram?.title, t]);
 
   const getDayName = (dayOfWeek: number): string => {
     const days = [
-      'Monday',
-      'Tuesday',
-      'Wednesday',
-      'Thursday',
-      'Friday',
-      'Saturday',
-      'Sunday',
+      t('days.monday'),
+      t('days.tuesday'),
+      t('days.wednesday'),
+      t('days.thursday'),
+      t('days.friday'),
+      t('days.saturday'),
+      t('days.sunday'),
     ];
     return days[dayOfWeek - 1];
   };
@@ -144,7 +146,7 @@ export default function ProgramPage() {
           <iframe
             src={videoUrl}
             className="w-full h-full"
-            title="Exercise Video"
+            title={t('program.exerciseVideoTitle')}
             frameBorder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
@@ -174,7 +176,7 @@ export default function ProgramPage() {
   };
 
   if (isLoading) {
-    return <LoadingSpinner fullScreen={true} message="Loading program..." />;
+    return <LoadingSpinner fullScreen={true} message={t('program.loading')} />;
   }
 
   if (error || authError) {
@@ -183,7 +185,7 @@ export default function ProgramPage() {
 
   if (!selectedProgram && programStatus !== ProgramStatus.Generating) {
     return (
-      <LoadingSpinner message="Loading program data..." fullScreen={true} />
+      <LoadingSpinner message={t('program.loadingData')} fullScreen={true} />
     );
   }
 
@@ -191,8 +193,8 @@ export default function ProgramPage() {
     return (
       <div className="h-screen flex flex-col items-center justify-center bg-gray-900 p-8">
         <LoadingSpinner 
-          message="Creating Your Program" 
-          submessage="Please wait while we create your personalized program. This may take a minute..."
+          message={t('program.creating')}
+          submessage={t('program.waitMessage')}
           fullScreen={true} 
         />
       </div>

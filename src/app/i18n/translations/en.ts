@@ -49,6 +49,9 @@ const translations = {
   'program.duration.45_60_minutes': '45-60 minutes',
   'program.duration.60_90_minutes': '60-90 minutes',
   'program.duration.more_than_90_minutes': 'More than 90 minutes',
+  'program.duration.15_minutes': '15 minutes',
+  'program.duration.30_minutes': '30 minutes',
+  'program.duration.45_minutes': '45 minutes',
   
   // Program - Age Ranges
   'program.ageRange.under_20': 'Under 20',
@@ -371,6 +374,46 @@ const translations = {
   'program.exerciseProgramTitle': 'Exercise Program',
   'program.yourRecoveryProgramTitle': 'Your Recovery Program',
   'program.yourExerciseProgramTitle': 'Your Exercise Program',
+  
+  // Questionnaire
+  'questionnaire.exerciseTitle': 'Exercise Program Questionnaire',
+  'questionnaire.recoveryTitle': 'Recovery Program Questionnaire',
+  'questionnaire.exerciseDescription': 'Help us personalize your exercise program by answering a few questions',
+  'questionnaire.recoveryDescription': 'Help us create a recovery program tailored to your needs by answering a few questions',
+  'questionnaire.age': 'How old are you?',
+  'questionnaire.pastExercise': 'How often have you exercised in the past year?',
+  'questionnaire.exerciseDays': 'How many days per week would you like to exercise?',
+  'questionnaire.recoveryDays': 'How many days per week would you like to focus on recovery?',
+  'questionnaire.painAreas': 'Do you have pain anywhere?',
+  'questionnaire.trainingType': 'What type of training do you want to do?',
+  'questionnaire.targetAreas': 'Which areas would you like to target in your workouts?',
+  'questionnaire.exerciseLocation': 'Where do you prefer to exercise?',
+  'questionnaire.recoveryLocation': 'Where do you prefer to do your recovery sessions?',
+  'questionnaire.workoutDuration': 'How much time would you like to spend on each workout?',
+  'questionnaire.recoveryDuration': 'How much time would you like to spend on each recovery session?',
+  'questionnaire.noPain': 'No, I don\'t have any pain',
+  'questionnaire.selectAll': 'Select all that apply',
+  'questionnaire.selectSpecific': 'Or select specific areas:',
+  'questionnaire.cancel': 'Cancel',
+  'questionnaire.createProgram': 'Create Program',
+  
+  // Program page translations
+  'program.loading': 'Loading program...',
+  'program.loadingData': 'Loading program data...',
+  'program.creating': 'Creating Your Program',
+  'program.waitMessage': 'Please wait while we create your personalized program. This may take a minute...',
+  'program.exerciseVideoTitle': 'Exercise Video',
+  'program.pageTitle': 'Exercise Program | MUSCO',
+  'program.defaultPageTitle': 'Program | MUSCO',
+  
+  // Days of the week
+  'days.monday': 'Monday',
+  'days.tuesday': 'Tuesday',
+  'days.wednesday': 'Wednesday',
+  'days.thursday': 'Thursday',
+  'days.friday': 'Friday',
+  'days.saturday': 'Saturday',
+  'days.sunday': 'Sunday',
 };
 
 export default translations; 

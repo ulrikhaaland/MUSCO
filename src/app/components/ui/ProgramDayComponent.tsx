@@ -48,6 +48,8 @@ export function ProgramDayComponent({
   const [isMobile, setIsMobile] = useState(false);
   // Ref for body parts container
   const bodyPartsRef = useRef<HTMLDivElement>(null);
+  // Ref to track current overflow state to avoid dependency loops
+  const isOverflowingRef = useRef(false);
   
   // Get all unique body parts from exercises
   const allBodyParts = Array.from(
@@ -68,9 +70,13 @@ export function ProgramDayComponent({
   // Check for overflow using ResizeObserver instead of direct effect
   const checkOverflow = useCallback(() => {
     if (bodyPartsRef.current) {
-      setIsBodyPartsOverflowing(
-        bodyPartsRef.current.scrollWidth > bodyPartsRef.current.clientWidth
-      );
+      const isOverflowing = bodyPartsRef.current.scrollWidth > bodyPartsRef.current.clientWidth;
+      
+      // Only update state if the overflow status has changed
+      if (isOverflowing !== isOverflowingRef.current) {
+        isOverflowingRef.current = isOverflowing;
+        setIsBodyPartsOverflowing(isOverflowing);
+      }
     }
   }, []);
   
@@ -153,66 +159,28 @@ export function ProgramDayComponent({
     });
   };
 
-  // Render visible and "+X more" body parts
+  // Render all body parts with horizontal scrolling
   const renderBodyParts = () => {
-    if (allBodyParts.length <= 3 || !isBodyPartsOverflowing) {
-      return allBodyParts.map(bodyPart => (
-        <Chip
-          key={bodyPart}
-          onClick={() => toggleBodyPart(bodyPart)}
-          variant={removedBodyParts.includes(bodyPart) ? 'inactive' : 'default'}
-          icon={
-            removedBodyParts.includes(bodyPart) ? (
-              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-              </svg>
-            ) : (
-              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            )
-          }
-        >
-          {bodyPart}
-        </Chip>
-      ));
-    }
-
-    // Show first 2 and then "+X more"
-    const visible = allBodyParts.slice(0, 2);
-    const more = allBodyParts.length - 2;
-
-    return (
-      <>
-        {visible.map(bodyPart => (
-          <Chip
-            key={bodyPart}
-            onClick={() => toggleBodyPart(bodyPart)}
-            variant={removedBodyParts.includes(bodyPart) ? 'inactive' : 'default'}
-            icon={
-              removedBodyParts.includes(bodyPart) ? (
-                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                </svg>
-              ) : (
-                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              )
-            }
-          >
-            {bodyPart}
-          </Chip>
-        ))}
-        <Chip
-          onClick={() => {
-            bodyPartsRef.current?.scrollTo({ left: bodyPartsRef.current.scrollWidth, behavior: 'smooth' });
-          }}
-        >
-          +{more} more
-        </Chip>
-      </>
-    );
+    return allBodyParts.map(bodyPart => (
+      <Chip
+        key={bodyPart}
+        onClick={() => toggleBodyPart(bodyPart)}
+        variant={removedBodyParts.includes(bodyPart) ? 'inactive' : 'default'}
+        icon={
+          removedBodyParts.includes(bodyPart) ? (
+            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            </svg>
+          ) : (
+            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          )
+        }
+      >
+        {bodyPart}
+      </Chip>
+    ));
   };
 
   // Render exercise information chips
@@ -329,8 +297,9 @@ export function ProgramDayComponent({
           <div 
             ref={bodyPartsRef}
             className="flex overflow-x-auto hide-scrollbar pb-2 relative max-w-full"
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           >
-            <div className="flex gap-2">
+            <div className="flex gap-2 min-w-min">
               {renderBodyParts()}
             </div>
             {isBodyPartsOverflowing && (

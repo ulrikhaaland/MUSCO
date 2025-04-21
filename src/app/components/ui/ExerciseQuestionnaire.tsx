@@ -29,7 +29,8 @@ import {
   getTranslatedExerciseModalities,
   getTranslatedPainBodyParts,
   translatePainBodyPart,
-  getTranslatedBodyRegions
+  getTranslatedBodyRegions,
+  translateBodyPart
 } from '@/app/utils/programTranslation';
 
 interface ExerciseQuestionnaireProps {
@@ -600,11 +601,15 @@ export function ExerciseQuestionnaire({
             answers.generallyPainfulAreas.length === 0)
         );
       case 'targetAreas':
+        // Check for Strength or Both in a translation-safe way by looking at the underlying value
+        // or comparing with translated strings
         return (
           programType === ProgramType.Exercise &&
           !!answers.exerciseModalities &&
           (answers.exerciseModalities === 'Strength' ||
-            answers.exerciseModalities === 'Both')
+           answers.exerciseModalities === t('program.modality.strength') ||
+           answers.exerciseModalities === 'Both' ||
+           answers.exerciseModalities === t('program.modality.both'))
         );
       case 'exerciseEnvironments':
         if (programType === ProgramType.Recovery) {
@@ -637,13 +642,13 @@ export function ExerciseQuestionnaire({
             <div className="text-center">
               <h2 className="text-4xl font-bold text-white tracking-tight">
                 {programType === ProgramType.Exercise
-                  ? 'Exercise Program Questionnaire'
-                  : 'Recovery Program Questionnaire'}
+                  ? t('questionnaire.exerciseTitle')
+                  : t('questionnaire.recoveryTitle')}
               </h2>
               <p className="mt-4 text-lg text-gray-400">
                 {programType === ProgramType.Exercise
-                  ? 'Help us personalize your exercise program by answering a few questions'
-                  : 'Help us create a recovery program tailored to your needs by answering a few questions'}
+                  ? t('questionnaire.exerciseDescription')
+                  : t('questionnaire.recoveryDescription')}
               </p>
             </div>
           </RevealOnScroll>
@@ -669,7 +674,7 @@ export function ExerciseQuestionnaire({
                     d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
                   />
                 </svg>
-                How old are you?
+                {t('questionnaire.age')}
               </h3>
               {answers.age &&
               editingField !== 'age' &&
@@ -725,7 +730,7 @@ export function ExerciseQuestionnaire({
                       d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
                     />
                   </svg>
-                  How often have you exercised in the past year?
+                  {t('questionnaire.pastExercise')}
                 </h3>
                 {answers.lastYearsExerciseFrequency &&
                 editingField !== 'lastYearsExerciseFrequency' &&
@@ -736,7 +741,7 @@ export function ExerciseQuestionnaire({
                   )
                 ) : (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {translatedExerciseFrequencyOptions.map((option) => (
+                    {translatedExerciseFrequencyOptions.map((option, index) => (
                       <label
                         key={option}
                         className="relative flex items-center"
@@ -744,9 +749,9 @@ export function ExerciseQuestionnaire({
                         <input
                           type="radio"
                           name="lastYearsExerciseFrequency"
-                          value={option}
+                          value={EXERCISE_FREQUENCY_OPTIONS[index]}
                           checked={
-                            answers.lastYearsExerciseFrequency === option
+                            answers.lastYearsExerciseFrequency === EXERCISE_FREQUENCY_OPTIONS[index]
                           }
                           onChange={(e) =>
                             handleInputChange(
@@ -792,8 +797,8 @@ export function ExerciseQuestionnaire({
                     />
                   </svg>
                   {programType === ProgramType.Exercise
-                    ? 'How many days per week would you like to exercise?'
-                    : 'How many days per week would you like to focus on recovery?'}
+                    ? t('questionnaire.exerciseDays')
+                    : t('questionnaire.recoveryDays')}
                 </h3>
                 {answers.numberOfActivityDays &&
                 editingField !== 'numberOfActivityDays' &&
@@ -804,7 +809,7 @@ export function ExerciseQuestionnaire({
                   )
                 ) : (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {translatedPlannedFrequencyOptions.map((option) => (
+                    {translatedPlannedFrequencyOptions.map((option, index) => (
                       <label
                         key={option}
                         className="relative flex items-center"
@@ -812,9 +817,9 @@ export function ExerciseQuestionnaire({
                         <input
                           type="radio"
                           name="numberOfActivityDays"
-                          value={option}
+                          value={PLANNED_EXERCISE_FREQUENCY_OPTIONS[index]}
                           checked={
-                            answers.numberOfActivityDays === option
+                            answers.numberOfActivityDays === PLANNED_EXERCISE_FREQUENCY_OPTIONS[index]
                           }
                           onChange={(e) =>
                             handleInputChange(
@@ -859,7 +864,7 @@ export function ExerciseQuestionnaire({
                       d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
                     />
                   </svg>
-                  Do you have pain anywhere?
+                  {t('questionnaire.painAreas')}
                 </h3>
 
                 {editingField !== 'generallyPainfulAreas' ||
@@ -882,11 +887,11 @@ export function ExerciseQuestionnaire({
                             : 'bg-gray-900/50 ring-gray-700/30 text-gray-400 hover:bg-gray-900/70'
                         } ring-1 transition-all duration-200 text-left`}
                       >
-                        No, I don&apos;t have any pain
+                        {t('questionnaire.noPain')}
                       </button>
                     </div>
                     <p className="text-gray-400 font-medium text-base mb-4">
-                      Select all that apply
+                      {t('questionnaire.selectAll')}
                     </p>
                     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
                       {translatedPainBodyParts.map((part) => (
@@ -948,7 +953,7 @@ export function ExerciseQuestionnaire({
                       d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064"
                     />
                   </svg>
-                  What type of training do you want to do?
+                  {t('questionnaire.trainingType')}
                 </h3>
                 {answers.exerciseModalities &&
                 editingField !== 'exerciseModalities' &&
@@ -958,31 +963,36 @@ export function ExerciseQuestionnaire({
                   )
                 ) : (
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    {translatedExerciseModalities.map((option) => (
-                      <label
-                        key={option}
-                        className="relative flex items-center"
-                      >
-                        <input
-                          type="radio"
-                          name="exerciseModalities"
-                          value={option}
-                          checked={answers.exerciseModalities === option}
-                          onChange={(e) =>
-                            handleInputChange(
-                              'exerciseModalities',
-                              e.target.value,
-                              exerciseModalitiesRef
-                            )
-                          }
-                          className="peer sr-only"
-                          required
-                        />
-                        <div className="w-full p-4 rounded-xl bg-gray-900/50 ring-1 ring-gray-700/30 text-gray-400 peer-checked:text-white peer-checked:bg-indigo-500/10 peer-checked:ring-indigo-500 cursor-pointer transition-all duration-200">
-                          {option}
-                        </div>
-                      </label>
-                    ))}
+                    {translatedExerciseModalities.map((option, index) => {
+                      // Use the actual value from EXERCISE_MODALITIES array based on index to maintain order
+                      const modalityValue = EXERCISE_MODALITIES[index];
+                        
+                      return (
+                        <label
+                          key={option}
+                          className="relative flex items-center"
+                        >
+                          <input
+                            type="radio"
+                            name="exerciseModalities"
+                            value={modalityValue}
+                            checked={answers.exerciseModalities === modalityValue}
+                            onChange={(e) =>
+                              handleInputChange(
+                                'exerciseModalities',
+                                e.target.value,
+                                exerciseModalitiesRef
+                              )
+                            }
+                            className="peer sr-only"
+                            required
+                          />
+                          <div className="w-full p-4 rounded-xl bg-gray-900/50 ring-1 ring-gray-700/30 text-gray-400 peer-checked:text-white peer-checked:bg-indigo-500/10 peer-checked:ring-indigo-500 cursor-pointer transition-all duration-200">
+                            {option}
+                          </div>
+                        </label>
+                      );
+                    })}
                   </div>
                 )}
               </div>
@@ -1011,7 +1021,7 @@ export function ExerciseQuestionnaire({
                       d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                     />
                   </svg>
-                  Which areas would you like to target in your workouts?
+                  {t('questionnaire.targetAreas')}
                 </h3>
                 {answers.targetAreas.length > 0 &&
                 editingField !== 'targetAreas' &&
@@ -1036,91 +1046,105 @@ export function ExerciseQuestionnaire({
                   <div className="space-y-6">
                     {/* Body Regions */}
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                      {translatedBodyRegions.map((region) => (
-                        <label
-                          key={region}
-                          className="relative flex items-center"
-                        >
-                          <input
-                            type="radio"
-                            name="bodyRegion"
-                            value={region}
-                            checked={
-                              region === 'Full Body'
-                                ? answers.targetAreas.length ===
-                                  TARGET_BODY_PARTS.length
-                                : region === 'Upper Body'
-                                ? UPPER_BODY_PARTS.every((part) =>
-                                    answers.targetAreas.includes(part)
-                                  ) &&
-                                  answers.targetAreas.length ===
-                                    UPPER_BODY_PARTS.length
-                                : region === 'Lower Body'
-                                ? LOWER_BODY_PARTS.every((part) =>
-                                    answers.targetAreas.includes(part)
-                                  ) &&
-                                  answers.targetAreas.length ===
-                                    LOWER_BODY_PARTS.length
-                                : false
-                            }
-                            onChange={(e) => {
-                              if (e.target.checked) {
-                                let newTargetAreas: string[] = [];
-                                if (region === 'Full Body') {
-                                  newTargetAreas = [...TARGET_BODY_PARTS];
-                                } else if (region === 'Upper Body') {
-                                  newTargetAreas = [...UPPER_BODY_PARTS];
-                                } else if (region === 'Lower Body') {
-                                  newTargetAreas = [...LOWER_BODY_PARTS];
-                                }
-                                handleInputChange(
-                                  'targetAreas',
-                                  newTargetAreas
-                                );
+                      {translatedBodyRegions.map((region, index) => {
+                        // Map to consistent English values for comparison
+                        const regionValue = index === 0 
+                          ? 'Full Body' 
+                          : index === 1 
+                            ? 'Upper Body' 
+                            : 'Lower Body';
+                        
+                        return (
+                          <label
+                            key={region}
+                            className="relative flex items-center"
+                          >
+                            <input
+                              type="radio"
+                              name="bodyRegion"
+                              value={regionValue}
+                              checked={
+                                regionValue === 'Full Body'
+                                  ? answers.targetAreas.length ===
+                                    TARGET_BODY_PARTS.length
+                                  : regionValue === 'Upper Body'
+                                  ? UPPER_BODY_PARTS.every((part) =>
+                                      answers.targetAreas.includes(part)
+                                    ) &&
+                                    answers.targetAreas.length ===
+                                      UPPER_BODY_PARTS.length
+                                  : regionValue === 'Lower Body'
+                                  ? LOWER_BODY_PARTS.every((part) =>
+                                      answers.targetAreas.includes(part)
+                                    ) &&
+                                    answers.targetAreas.length ===
+                                      LOWER_BODY_PARTS.length
+                                  : false
                               }
-                            }}
-                            className="peer sr-only"
-                          />
-                          <div className="w-full p-4 rounded-xl bg-gray-900/50 ring-1 ring-gray-700/30 text-gray-400 peer-checked:text-white peer-checked:bg-indigo-500/10 peer-checked:ring-indigo-500 cursor-pointer transition-all duration-200">
-                            {region}
-                          </div>
-                        </label>
-                      ))}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  let newTargetAreas: string[] = [];
+                                  if (regionValue === 'Full Body') {
+                                    newTargetAreas = [...TARGET_BODY_PARTS];
+                                  } else if (regionValue === 'Upper Body') {
+                                    newTargetAreas = [...UPPER_BODY_PARTS];
+                                  } else if (regionValue === 'Lower Body') {
+                                    newTargetAreas = [...LOWER_BODY_PARTS];
+                                  }
+                                  handleInputChange(
+                                    'targetAreas',
+                                    newTargetAreas
+                                  );
+                                }
+                              }}
+                              className="peer sr-only"
+                            />
+                            <div className="w-full p-4 rounded-xl bg-gray-900/50 ring-1 ring-gray-700/30 text-gray-400 peer-checked:text-white peer-checked:bg-indigo-500/10 peer-checked:ring-indigo-500 cursor-pointer transition-all duration-200">
+                              {region}
+                            </div>
+                          </label>
+                        );
+                      })}
                     </div>
 
                     {/* Individual Body Parts */}
                     <div>
                       <p className="text-gray-400 font-medium text-base mb-4">
-                        Or select specific areas:
+                        {t('questionnaire.selectSpecific')}
                       </p>
                       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-                        {TARGET_BODY_PARTS.map((part) => (
-                          <label
-                            key={part}
-                            className="relative flex items-center"
-                          >
-                            <input
-                              type="checkbox"
-                              value={part}
-                              checked={answers.targetAreas.includes(part)}
-                              onChange={(e) => {
-                                const newTargetAreas = e.target.checked
-                                  ? [...answers.targetAreas, part]
-                                  : answers.targetAreas.filter(
-                                      (p) => p !== part
-                                    );
-                                handleInputChange(
-                                  'targetAreas',
-                                  newTargetAreas
-                                );
-                              }}
-                              className="peer sr-only"
-                            />
-                            <div className="w-full p-4 rounded-xl bg-gray-900/50 ring-1 ring-gray-700/30 text-gray-400 peer-checked:text-white peer-checked:bg-indigo-500/10 peer-checked:ring-indigo-500 cursor-pointer transition-all duration-200">
-                              {part}
-                            </div>
-                          </label>
-                        ))}
+                        {TARGET_BODY_PARTS.map((part) => {
+                          // Get translated body part name for display
+                          const translatedPart = translateBodyPart(part, t);
+                          
+                          return (
+                            <label
+                              key={part}
+                              className="relative flex items-center"
+                            >
+                              <input
+                                type="checkbox"
+                                value={part}
+                                checked={answers.targetAreas.includes(part)}
+                                onChange={(e) => {
+                                  const newTargetAreas = e.target.checked
+                                    ? [...answers.targetAreas, part]
+                                    : answers.targetAreas.filter(
+                                        (p) => p !== part
+                                      );
+                                  handleInputChange(
+                                    'targetAreas',
+                                    newTargetAreas
+                                  );
+                                }}
+                                className="peer sr-only"
+                              />
+                              <div className="w-full p-4 rounded-xl bg-gray-900/50 ring-1 ring-gray-700/30 text-gray-400 peer-checked:text-white peer-checked:bg-indigo-500/10 peer-checked:ring-indigo-500 cursor-pointer transition-all duration-200">
+                                {translatedPart}
+                              </div>
+                            </label>
+                          );
+                        })}
                       </div>
                     </div>
                   </div>
@@ -1152,8 +1176,8 @@ export function ExerciseQuestionnaire({
                     />
                   </svg>
                   {programType === ProgramType.Exercise
-                    ? 'Where do you prefer to exercise?'
-                    : 'Where do you prefer to do your recovery sessions?'}
+                    ? t('questionnaire.exerciseLocation')
+                    : t('questionnaire.recoveryLocation')}
                 </h3>
                 {answers.exerciseEnvironments &&
                 editingField !== 'exerciseEnvironments' &&
@@ -1163,7 +1187,7 @@ export function ExerciseQuestionnaire({
                   )
                 ) : (
                   <div className="space-y-4">
-                    {translatedExerciseEnvironments.map((environment) => (
+                    {translatedExerciseEnvironments.map((environment, index) => (
                       <label
                         key={environment.name}
                         className="relative flex items-center"
@@ -1171,9 +1195,9 @@ export function ExerciseQuestionnaire({
                         <input
                           type="radio"
                           name="exerciseEnvironments"
-                          value={environment.name}
+                          value={EXERCISE_ENVIRONMENTS[index].name}
                           checked={
-                            answers.exerciseEnvironments === environment.name
+                            answers.exerciseEnvironments === EXERCISE_ENVIRONMENTS[index].name
                           }
                           onChange={(e) =>
                             handleInputChange(
@@ -1222,8 +1246,8 @@ export function ExerciseQuestionnaire({
                     />
                   </svg>
                   {programType === ProgramType.Exercise
-                    ? 'How much time would you like to spend on each workout?'
-                    : 'How much time would you like to spend on each recovery session?'}
+                    ? t('questionnaire.workoutDuration')
+                    : t('questionnaire.recoveryDuration')}
                 </h3>
                 {answers.workoutDuration &&
                 editingField !== 'workoutDuration' &&
@@ -1233,31 +1257,38 @@ export function ExerciseQuestionnaire({
                   )
                 ) : (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {translatedWorkoutDurations.map((duration) => (
-                      <label
-                        key={duration}
-                        className="relative flex items-center"
-                      >
-                        <input
-                          type="radio"
-                          name="workoutDuration"
-                          value={duration}
-                          checked={answers.workoutDuration === duration}
-                          onChange={(e) =>
-                            handleInputChange(
-                              'workoutDuration',
-                              e.target.value,
-                              workoutDurationRef
-                            )
-                          }
-                          className="peer sr-only"
-                          required
-                        />
-                        <div className="w-full p-4 rounded-xl bg-gray-900/50 ring-1 ring-gray-700/30 text-gray-400 peer-checked:text-white peer-checked:bg-indigo-500/10 peer-checked:ring-indigo-500 cursor-pointer transition-all duration-200">
-                          {duration}
-                        </div>
-                      </label>
-                    ))}
+                    {translatedWorkoutDurations.map((duration, index) => {
+                      // Get the original English value based on program type
+                      const originalDuration = programType === ProgramType.Recovery
+                        ? RECOVERY_WORKOUT_DURATIONS[index]
+                        : WORKOUT_DURATIONS[index];
+                      
+                      return (
+                        <label
+                          key={duration}
+                          className="relative flex items-center"
+                        >
+                          <input
+                            type="radio"
+                            name="workoutDuration"
+                            value={originalDuration}
+                            checked={answers.workoutDuration === originalDuration}
+                            onChange={(e) =>
+                              handleInputChange(
+                                'workoutDuration',
+                                e.target.value,
+                                workoutDurationRef
+                              )
+                            }
+                            className="peer sr-only"
+                            required
+                          />
+                          <div className="w-full p-4 rounded-xl bg-gray-900/50 ring-1 ring-gray-700/30 text-gray-400 peer-checked:text-white peer-checked:bg-indigo-500/10 peer-checked:ring-indigo-500 cursor-pointer transition-all duration-200">
+                            {duration}
+                          </div>
+                        </label>
+                      );
+                    })}
                   </div>
                 )}
               </div>
@@ -1271,13 +1302,13 @@ export function ExerciseQuestionnaire({
                 onClick={onClose}
                 className="px-6 py-3 rounded-xl bg-gray-800/80 text-gray-300 hover:text-white hover:bg-gray-700/80 transition-colors duration-200"
               >
-                Cancel
+                {t('questionnaire.cancel')}
               </button>
               <button
                 type="submit"
                 className="px-6 py-3 rounded-xl bg-indigo-600 text-white hover:bg-indigo-500 transition-colors duration-200"
               >
-                Create Program
+                {t('questionnaire.createProgram')}
               </button>
             </div>
           </RevealOnScroll>
