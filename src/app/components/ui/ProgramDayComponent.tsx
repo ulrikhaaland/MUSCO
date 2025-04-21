@@ -294,16 +294,18 @@ export function ProgramDayComponent({
       {allBodyParts.length > 0 && (
         <div className="mb-8">
           <h4 className="text-gray-50 font-medium mb-4">Target Body Parts:</h4>
-          <div 
-            ref={bodyPartsRef}
-            className="flex overflow-x-auto hide-scrollbar pb-2 relative max-w-full"
-            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-          >
-            <div className="flex gap-2 min-w-min">
-              {renderBodyParts()}
+          <div className="relative max-w-full overflow-hidden">
+            <div 
+              ref={bodyPartsRef}
+              className="flex overflow-x-auto hide-scrollbar pb-2 max-w-full"
+              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+            >
+              <div className="flex gap-2 min-w-min pr-8">
+                {renderBodyParts()}
+              </div>
             </div>
             {isBodyPartsOverflowing && (
-              <div className="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-gray-900 via-gray-900/90 to-transparent pointer-events-none" />
+              <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-gray-900 from-30% via-gray-900/95 via-60% to-transparent pointer-events-none" style={{ right: '-2px' }} />
             )}
           </div>
         </div>
