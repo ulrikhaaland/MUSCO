@@ -81,7 +81,7 @@ export const m_hamstrings: ExerciseGroup = {
       forceType: 'Hinge (Bilateral)',
       mechanics: 'Compound',
       videoUrl:
-        'https://www.dropbox.com/scl/fi/qhlgqvtytczt928rr5d6s/IMG_3001.MOV?rlkey=jrrs3rkvsw0juahytssv1wtos&st=lhqm8v8b&dl=0',
+        'gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3001.MOV',
       imageUrl:
         'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Hamstrings.jpg',
       viewCount: 5100000,
@@ -144,7 +144,7 @@ export const m_hamstrings: ExerciseGroup = {
         restBetweenSets: 60,
         forceType: 'Hinge (Bilateral)',
         mechanics: 'Compound',
-        videoUrl: 'https://www.dropbox.com/scl/fi/7vtepkz3pmiyqw5b8vt2s/IMG_3031.MOV?rlkey=dk59jnfxc0oo3hgl23zjrwj16&st=9jcsg28u&dl=0',
+        videoUrl: 'gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3031.MOV',
         imageUrl:
           'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Hamstrings.jpg',
         viewCount: 1800000,
@@ -218,7 +218,7 @@ export const m_hamstrings: ExerciseGroup = {
       restBetweenSets: 60,
       forceType: 'Hinge (Bilateral)',
       mechanics: 'Compound',
-      videoUrl: 'https://www.dropbox.com/scl/fi/ulus5yh6o4up229vvhneq/IMG_3030.mov?rlkey=74wlh7062skn3u5dloinuks2m&st=t13zrmci&dl=0',
+      videoUrl: 'gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3030.mov',
       imageUrl:
         'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Hamstrings.jpg',
       viewCount: 8600,

@@ -38,7 +38,7 @@ export const m_abs: ExerciseGroup = {
       forceType: 'Pull',
       mechanics: 'Isolation',
       videoUrl:
-        'https://www.dropbox.com/scl/fi/l0jt3xdncqqunpao0r520/IMG_3025.MOV?rlkey=x8cd7sari65o91pnlngy7moh8&st=zdz5kkto&dl=0',
+        'gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3025.MOV',
       imageUrl:
         'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Abs.jpg',
       viewCount: 1400000,
@@ -87,7 +87,7 @@ export const m_abs: ExerciseGroup = {
       forceType: 'Static',
       mechanics: 'Isolation',
       videoUrl:
-        'https://www.dropbox.com/scl/fi/as71j9buyie5y1titern6/IMG_3022.MOV?rlkey=iz4cwdsc5xtiefjy73wencge0&st=oijjl7up&dl=0',
+        'gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3022.MOV',
       imageUrl:
         'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Abs.jpg',
       viewCount: 1600000,
@@ -126,7 +126,7 @@ export const m_abs: ExerciseGroup = {
       forceType: 'Pull (Bilateral)',
       mechanics: 'Isolation',
       videoUrl:
-        'https://www.dropbox.com/scl/fi/ubq3muem74qa5dz64hw04/IMG_3023.MOV?rlkey=bxz4ut6mo4iuvgd967hdalb89&st=5cdpckhy&dl=0',
+        'gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3023.MOV',
       imageUrl:
         'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Abs.jpg',
       viewCount: 1200000,
@@ -167,7 +167,7 @@ export const m_abs: ExerciseGroup = {
       forceType: 'Pull (Bilateral)',
       mechanics: 'Compound',
       videoUrl:
-        'https://www.dropbox.com/scl/fi/ktmm5qs91z6cesfqtgy03/IMG_3024.MOV?rlkey=vzgeztk9fj7adxd1987ushyr9&st=5xysj15q&dl=0',
+        'gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3024.MOV',
       imageUrl:
         'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Abs.jpg',
       viewCount: 675800,
@@ -209,7 +209,7 @@ export const m_abs: ExerciseGroup = {
       forceType: 'Isometric',
       mechanics: 'Compound',
       videoUrl:
-        'https://www.dropbox.com/scl/fi/7lvmro154jm5pz1r4j5bx/IMG_3762.MOV?rlkey=9ftjw6jzsno2s5k8p8ixlz5kd&st=jumqwxyg&dl=0',
+        'gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3762.MOV',
       imageUrl:
         'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Abs.jpg',
       viewCount: 103500,
@@ -253,7 +253,7 @@ export const m_abs: ExerciseGroup = {
       forceType: 'N/A',
       mechanics: 'Compound',
       videoUrl:
-        'https://www.dropbox.com/scl/fi/qrg9rgsqa0q7f5ahcq5vt/IMG_3763.mov?rlkey=bxco2unjukqei7olf7zznf4r4&st=xree3bkc&dl=0',
+        'gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3763.MOV',
       imageUrl:
         'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Abs.jpg',
       viewCount: 65000,
@@ -299,7 +299,7 @@ export const m_abs: ExerciseGroup = {
       forceType: 'Pull',
       mechanics: 'Compound',
       videoUrl:
-        'https://www.dropbox.com/scl/fi/5yjoy7iopdlo9fh3fg5ep/IMG_3760.mov?rlkey=1l7yzcwgn6vmky8lghawmjhns&st=n8lnr59e&dl=0',
+        'gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3760.MOV',
       imageUrl:
         'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Abs.jpg',
       viewCount: 0,
@@ -345,7 +345,7 @@ export const m_abs: ExerciseGroup = {
       forceType: 'Push',
       mechanics: 'Compound',
       videoUrl:
-        'https://www.dropbox.com/scl/fi/wqmq5vblie4l36lr2jcly/IMG_3765.MOV?rlkey=exgkty66xfsqp0hydnzyr52nt&st=as1pg9q5&dl=0',
+        'gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3765.MOV',
       imageUrl:
         'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Abs.jpg',
       viewCount: 0,

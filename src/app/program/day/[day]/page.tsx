@@ -8,6 +8,8 @@ import { searchYouTubeVideo } from '@/app/utils/youtube';
 import { useAuth } from '@/app/context/AuthContext';
 import { useUser } from '@/app/context/UserContext';
 import { LoadingSpinner } from '@/app/components/ui/LoadingSpinner';
+import { getStorage, ref, getDownloadURL } from 'firebase/storage';
+import { storage } from '@/app/firebase/config';
 
 function ErrorDisplay({ error }: { error: Error }) {
   return (
@@ -28,12 +30,17 @@ function ErrorDisplay({ error }: { error: Error }) {
   );
 }
 
+function isYouTubeUrl(url: string): boolean {
+  const youtubeRegExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+  return youtubeRegExp.test(url);
+}
+
 function isVimeoUrl(url: string): boolean {
   return url.includes('vimeo.com') || url.includes('player.vimeo.com');
 }
 
-function isDropboxUrl(url: string): boolean {
-  return url.includes('dropbox.com');
+function isFirebaseStorageUrl(url: string): boolean {
+  return url.startsWith('gs://');
 }
 
 function getVideoEmbedUrl(url: string): string {
@@ -45,20 +52,8 @@ function getVideoEmbedUrl(url: string): string {
     return `https://www.youtube.com/embed/${youtubeMatch[2]}`;
   }
   
-  // Dropbox URL handling
-  if (isDropboxUrl(url)) {
-    // Transform Dropbox URL to make it directly playable
-    // Change dl=0 to dl=1 or add raw=1 if not present
-    let embedUrl = url;
-    if (embedUrl.includes('dl=0')) {
-      embedUrl = embedUrl.replace('dl=0', 'dl=1');
-    } else if (!embedUrl.includes('dl=1')) {
-      embedUrl += embedUrl.includes('?') ? '&dl=1' : '?dl=1';
-    }
-    return embedUrl;
-  }
-  
-  // For non-YouTube URLs, return as is
+  // For non-YouTube URLs (including potential direct video links, etc.), return as is.
+  // Firebase download URLs will already be HTTPS.
   return url;
 }
 
@@ -161,32 +156,39 @@ export default function DayDetailPage() {
         if (youtubeUrl) {
           exercise.videoUrl = youtubeUrl;
           setVideoUrl(getVideoEmbedUrl(youtubeUrl));
+        } else {
+          console.log('No YouTube video found for:', searchQuery);
+          setVideoUrl(null);
         }
       } catch (error) {
         console.error('Error fetching YouTube video:', error);
+        setVideoUrl(null);
       } finally {
         setLoadingVideoExercise(null);
       }
     };
 
-    // If we already have a video URL
     if (exercise.videoUrl) {
-      // Check if it's a Vimeo URL
-      if (isVimeoUrl(exercise.videoUrl)) {
-        // For Vimeo links, search YouTube instead
+      if (isFirebaseStorageUrl(exercise.videoUrl)) {
+        setLoadingVideoExercise(exercise.name);
+        try {
+          const storageRef = ref(storage, exercise.videoUrl);
+          const downloadUrl = await getDownloadURL(storageRef);
+          setVideoUrl(downloadUrl);
+        } catch (error) {
+          console.error('Error fetching Firebase video URL:', error);
+          setVideoUrl(null);
+        } finally {
+          setLoadingVideoExercise(null);
+        }
+      } else if (isVimeoUrl(exercise.videoUrl)) {
         await searchYouTubeAndUpdateUrl();
-      } else if (isDropboxUrl(exercise.videoUrl)) {
-        // Handle Dropbox links
-        setVideoUrl(getVideoEmbedUrl(exercise.videoUrl));
       } else {
-        // For YouTube or other URLs, use as normal
         setVideoUrl(getVideoEmbedUrl(exercise.videoUrl));
       }
-      return;
+    } else {
+      await searchYouTubeAndUpdateUrl();
     }
-
-    // If no video URL exists yet, search YouTube
-    await searchYouTubeAndUpdateUrl();
   };
 
   const closeVideo = () => setVideoUrl(null);
@@ -240,7 +242,7 @@ export default function DayDetailPage() {
               />
             </svg>
           </button>
-          {isDropboxUrl(videoUrl) ? (
+          {videoUrl && videoUrl.includes('firebasestorage.googleapis.com') ? (
             <div className="w-full h-full flex items-center justify-center">
               <video
                 className="max-h-full max-w-full h-full object-contain"
@@ -250,18 +252,29 @@ export default function DayDetailPage() {
                 playsInline
               ></video>
             </div>
-          ) : (
+          ) : videoUrl && isYouTubeUrl(videoUrl) ? (
             <div className="w-full max-w-4xl mx-4 rounded-2xl overflow-hidden shadow-2xl">
               <div className="relative pt-[56.25%]">
                 <iframe
                   className="absolute inset-0 w-full h-full"
                   src={videoUrl}
+                  title="Exercise Video"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
                 ></iframe>
               </div>
             </div>
-          )}
+          ) : videoUrl ? (
+            <div className="w-full h-full flex items-center justify-center">
+              <video
+                className="max-h-full max-w-full h-full object-contain"
+                src={videoUrl}
+                controls
+                autoPlay
+                playsInline
+              ></video>
+            </div>
+          ) : null}
         </div>
       </div>
     );

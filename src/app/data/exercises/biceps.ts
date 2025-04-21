@@ -45,7 +45,7 @@ export const bicepsExercises: ExerciseGroup = {
       forceType: 'Pull',
       mechanics: 'Isolation',
       videoUrl:
-        'https://www.dropbox.com/scl/fi/fhkletwteoao7qkokorir/IMG_3116.MOV?rlkey=cxwciuk3w3ohs6yzikqfa2v06&st=83mw46bp&dl=0',
+        'gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3116.MOV',
       imageUrl:
         'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Biceps.jpg',
       viewCount: 3000000,
@@ -92,7 +92,7 @@ export const bicepsExercises: ExerciseGroup = {
       forceType: 'Pull',
       mechanics: 'Isolation',
       videoUrl:
-        'https://www.dropbox.com/scl/fi/cmoyvlmaj5c6icfl0tuqi/IMG_3117.MOV?rlkey=b9f8ur6yq1rtg2q5lxb0h75bn&st=x9b9c4y5&dl=0',
+        'gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3117.MOV',
       imageUrl:
         'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Biceps.jpg',
       viewCount: 4100000,
@@ -180,7 +180,7 @@ export const bicepsExercises: ExerciseGroup = {
       forceType: 'Pull',
       mechanics: 'Isolation',
       videoUrl:
-        'https://www.dropbox.com/scl/fi/4w0lts40wavh65jnc60zb/IMG_3114.MOV?rlkey=fslnykm81val15woxs1vevbx5&st=vehg5p92&dl=0',
+        'gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3114.MOV',
       imageUrl:
         'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Biceps.jpg',
       viewCount: 4600000,
@@ -452,7 +452,7 @@ export const bicepsExercises: ExerciseGroup = {
       forceType: 'Pull',
       mechanics: 'Isolation',
       videoUrl:
-        'https://www.dropbox.com/scl/fi/4w0lts40wavh65jnc60zb/IMG_3114.MOV?rlkey=fslnykm81val15woxs1vevbx5&st=r00gg9mw&dl=0',
+        'gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3114.MOV',
       imageUrl:
         'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Biceps.jpg',
       viewCount: 836500,
@@ -820,7 +820,7 @@ export const bicepsExercises: ExerciseGroup = {
       forceType: 'Pull',
       mechanics: 'Isolation',
       videoUrl:
-        'https://www.dropbox.com/scl/fi/135cxj0zne3oxhyue10fi/IMG_3006.mov?rlkey=5miqu5ngj9w37fyhj19uk3egh&st=h33z9k52&dl=0',
+        'gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3006.mov',
       imageUrl:
         'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Biceps.jpg',
       viewCount: 530800,
@@ -2410,7 +2410,7 @@ export const bicepsExercises: ExerciseGroup = {
       forceType: 'Pull',
       mechanics: 'Isolation',
       videoUrl:
-        'https://www.dropbox.com/scl/fi/r8zl3ipilpo919lck2x0f/IMG_3121.mov?rlkey=o3igk75ccmhin0l925p5gk0p9&st=d14wgw8a&dl=0',
+        'gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3121.mov',
       imageUrl:
         'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Biceps.jpg',
       viewCount: 10700,
@@ -3566,7 +3566,7 @@ export const bicepsExercises: ExerciseGroup = {
       forceType: 'Pull (Bilateral)',
       mechanics: 'Isolation',
       videoUrl:
-        'https://www.dropbox.com/scl/fi/8050wei5whahqvf7a9msa/IMG_3120.MOV?rlkey=iglt6vnnywx2kr4bu742bqlau&st=0128kbwe&dl=0', // Add a video URL if available
+        'gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3120.MOV', // Add a video URL if available
       imageUrl: '', // Add an image URL if available
       viewCount: 0,
       popularity: 'medium',

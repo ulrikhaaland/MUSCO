@@ -547,7 +547,7 @@ export const tricepsExercises: ExerciseGroup = {
       forceType: 'Push',
       mechanics: 'Isolation',
       videoUrl:
-        'https://www.dropbox.com/scl/fi/obsbcpu45qvat8inra5j9/IMG_3110.MOV?rlkey=4xtt7mupyn2a69bqbpr7dl98b&st=m9328g3g&dl=0',
+        'gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3110.MOV',
       imageUrl:
         'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Triceps.jpg',
       viewCount: 1500000,
@@ -833,7 +833,7 @@ export const tricepsExercises: ExerciseGroup = {
       forceType: 'Push',
       mechanics: 'Compound',
       videoUrl:
-        'https://www.dropbox.com/scl/fi/hwjgnf83fkvb29kgipjle/IMG_3126.MOV?rlkey=a4bhn36oxsr9kxt8i8y1561iy&st=564bcatk&dl=0',
+        'gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3126.MOV',
       imageUrl:
         'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Triceps.jpg',
       viewCount: 1300000,
@@ -1020,7 +1020,7 @@ export const tricepsExercises: ExerciseGroup = {
       forceType: 'Push',
       mechanics: 'Isolation',
       videoUrl:
-        'https://www.dropbox.com/scl/fi/bejfxapc54dq0stvyyi4a/IMG_3123.MOV?rlkey=jzamw9kfg80tq6t71rkhiqwsn&st=wfh3ple8&dl=0',
+        'gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3123.MOV',
       imageUrl:
         'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Triceps.jpg',
       viewCount: 352800,
@@ -1116,7 +1116,7 @@ export const tricepsExercises: ExerciseGroup = {
       forceType: 'Push',
       mechanics: 'Isolation',
       videoUrl:
-        'https://www.dropbox.com/scl/fi/9ufevm32ffau118t98gyy/IMG_3122.MOV?rlkey=pc9r37eaouih83lzyuhntk93b&st=ip5t8wvd&dl=0',
+        'gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3122.MOV',
       imageUrl:
         'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Triceps.jpg',
       viewCount: 239900,
@@ -5207,7 +5207,7 @@ export const tricepsExercises: ExerciseGroup = {
       forceType: 'Push (Bilateral)',
       mechanics: 'Isolation',
       videoUrl:
-        'https://www.dropbox.com/scl/fi/y1ui1ggp3pb0rk8vxk1nc/IMG_3111.MOV?rlkey=ehlez5acrldxm9jhw1yjmqad1&st=l9s4x2sf&dl=0', // Would need actual video URL
+        'gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3111.MOV', // Would need actual video URL
       imageUrl:
         'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Triceps.jpg',
       viewCount: 0,

@@ -663,7 +663,8 @@ export const obliquesExercises: ExerciseGroup = {
       restBetweenSets: 60,
       forceType: 'Push-Pull (Unilateral)',
       mechanics: 'Compound',
-      videoUrl: 'https://www.dropbox.com/scl/fi/ye5uss53fnbhdyo7l4qq9/IMG_3759.mov?rlkey=agb5q9ruc3xzv71vlvj60i7qp&st=l553wvsr&dl=0',
+      videoUrl:
+        'gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3759.MOV',
       imageUrl:
         'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Core.jpg',
       viewCount: 0,

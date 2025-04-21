@@ -40,7 +40,8 @@ export const m_lats: ExerciseGroup = {
       restBetweenSets: 60,
       forceType: 'Pull (Bilateral)',
       mechanics: 'Compound',
-      videoUrl: 'https://www.dropbox.com/scl/fi/i4f1v0siu4d4hlx8bdvca/IMG_3015.mov?rlkey=aseb3tjbxf8w775vn6ojn4yaa&st=e5e91d5x&dl=0',
+      videoUrl:
+        'gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3015.mov',
       imageUrl:
         'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Lats.jpg',
       viewCount: 4700000,
@@ -86,7 +87,7 @@ export const m_lats: ExerciseGroup = {
       forceType: 'Pull (Bilateral)',
       mechanics: 'Compound',
       videoUrl:
-        'https://www.dropbox.com/scl/fi/eu991seislu4ckwbm7pji/IMG_2998.mov?rlkey=2ro57hqsfofk5xzn3lty7e19l&st=j8v3bowk&dl=0',
+        'gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_2998.mov',
       imageUrl:
         'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Lats.jpg',
       viewCount: 462800,
@@ -130,7 +131,7 @@ export const m_lats: ExerciseGroup = {
       forceType: 'Pull (Bilateral)',
       mechanics: 'Compound',
       videoUrl:
-        'https://www.dropbox.com/scl/fi/dabu26bjuth9av2o5zn4a/IMG_2993.MOV?rlkey=ypat6a24ld3ecy02f6prnidkw&st=ggnoeb8m&dl=0',
+        'gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_2993.MOV',
       imageUrl:
         'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Lats.jpg',
       viewCount: 117800,

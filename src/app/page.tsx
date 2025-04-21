@@ -68,31 +68,6 @@ function HomeContent() {
     }
   }, [completeReset, newParam, intention]);
 
-  // Redirect to program page if user is logged in and has a program
-  useEffect(() => {
-    // Only redirect after loading is complete
-    if (!authLoading && !userLoading) {
-      // If user is logged in AND has a program AND NOT explicitly trying to create a new program
-      if (
-        user &&
-        (program || programStatus === ProgramStatus.Generating) &&
-        newParam !== 'true'
-      ) {
-        router.push('/program');
-      }
-      // asd
-    }
-  }, [
-    user,
-    program,
-    programStatus,
-    authLoading,
-    userLoading,
-    router,
-    searchParams,
-    newParam,
-  ]);
-
   // Update gender when URL param changes
   useEffect(() => {
     if (genderParam && (genderParam === 'male' || genderParam === 'female')) {
@@ -187,19 +162,10 @@ function HomeContent() {
         )}
 
       {/* Conditionally overlay the auth form */}
-      {showAuthForm && (
+      {showAuthForm && pendingQuestionnaire && (
         <div className="fixed inset-0 bg-gray-900/95 backdrop-blur-sm z-50 flex items-center justify-center">
           <div className="max-w-lg w-full mx-4">
-            {pendingQuestionnaire ? (
-              <QuestionnaireAuthForm />
-            ) : (
-              <AuthForm
-                onSkip={() => {
-                  setSkipAuth(true);
-                  setShowAuthForm(false);
-                }}
-              />
-            )}
+            <QuestionnaireAuthForm />
           </div>
         </div>
       )}

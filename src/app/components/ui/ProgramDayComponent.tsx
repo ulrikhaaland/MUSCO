@@ -214,7 +214,7 @@ export function ProgramDayComponent({
   };
 
   return (
-    <div className="h-full px-6 space-y-8" onClick={onClick}>
+    <div className="h-full px-0 space-y-8" onClick={onClick}>
       {/* Header section */}
       <div className="bg-gray-900/95 backdrop-blur-sm py-4 mb-8 -mx-6 px-6">
         {programTitle && (
@@ -305,7 +305,7 @@ export function ProgramDayComponent({
               </div>
             </div>
             {isBodyPartsOverflowing && (
-              <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-gray-900 from-30% via-gray-900/95 via-60% to-transparent pointer-events-none" style={{ right: '-2px' }} />
+              <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-gray-900/90 from-30% via-gray-900/70 via-60% to-transparent pointer-events-none" style={{ right: '-2px' }} />
             )}
           </div>
         </div>

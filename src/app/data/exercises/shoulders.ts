@@ -49,7 +49,7 @@ export const shouldersExercises: ExerciseGroup = {
       forceType: 'Pull',
       mechanics: 'Isolation',
       videoUrl:
-        'https://www.dropbox.com/scl/fi/el50tdrtx156yyhn3iqfx/IMG_3133.MOV?rlkey=34rp6oinlphfel8882315teh0&st=wtgf7kmo&dl=0',
+        'gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3133.MOV',
       imageUrl:
         'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Shoulders.jpg',
       viewCount: 9800000,
@@ -792,7 +792,7 @@ export const shouldersExercises: ExerciseGroup = {
       forceType: 'Pull',
       mechanics: 'Isolation',
       videoUrl:
-        'https://www.dropbox.com/scl/fi/6fzk6hzb1e6rh808i9dz8/IMG_3132.MOV?rlkey=flhqszfmb50h57kusbmt47ukv&st=mux7yfwk&dl=0',
+        'gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3132.MOV',
       imageUrl:
         'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Shoulders.jpg',
       viewCount: 952600,
@@ -8764,7 +8764,7 @@ export const shouldersExercises: ExerciseGroup = {
       forceType: 'Pull',
       mechanics: 'Isolation',
       videoUrl:
-        'https://www.dropbox.com/scl/fi/qa2699p4mcz07sp2au73v/IMG_3134.mov?rlkey=z383cadt9k76av1hmvr6z62dm&st=0xf2enyt&dl=0',
+        'gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3134.mov',
       imageUrl:
         'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Shoulders.jpg',
       viewCount: 0,
@@ -8818,7 +8818,7 @@ export const shouldersExercises: ExerciseGroup = {
       forceType: 'Pull',
       mechanics: 'Compound',
       videoUrl:
-        'https://www.dropbox.com/scl/fi/xklbt0gcmbzp9qjd8brid/IMG_3135.mov?rlkey=8eq75mlkoe8at1llhbebdmcje&st=8jpwjjha&dl=0',
+        'gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3135.mov',
       imageUrl:
         'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Shoulders.jpg',
       viewCount: 0,
@@ -8870,7 +8870,7 @@ export const shouldersExercises: ExerciseGroup = {
       forceType: 'Pull (Bilateral)',
       mechanics: 'Isolation',
       videoUrl:
-        'https://www.dropbox.com/scl/fi/5ra44zv65aru6k0wbexoz/IMG_3739.MOV?rlkey=pprru71bo2nrqhnff1vlcpzbi&st=emdmyl64&dl=0', // Add video URL if available
+        'gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3739.MOV', // Add video URL if available
       imageUrl:
         'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Shoulders.jpg',
       viewCount: 0,
@@ -8932,7 +8932,7 @@ export const shouldersExercises: ExerciseGroup = {
       forceType: 'Push-Pull',
       mechanics: 'Compound',
       videoUrl:
-        'https://www.dropbox.com/scl/fi/exfuczv5h5bxnmuxxviy5/IMG_3744.MOV?rlkey=ydzt26w620dcqs3tkw4jjhgds&st=x93vvrpy&dl=0',
+        'gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3744.MOV',
       imageUrl:
         'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Shoulders.jpg',
       viewCount: 0,

@@ -62,7 +62,7 @@ export const quadsExercises: ExerciseGroup = {
       forceType: 'Push',
       mechanics: 'Compound',
       videoUrl:
-        'https://www.dropbox.com/scl/fi/0o1aqcshjm8aaxnyd55g6/IMG_2999.MOV?rlkey=b16gje0nhjn8s4ljyp06fkjgy&st=g87o057p&dl=0',
+        'gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_2999.MOV',
       imageUrl:
         'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 5100000,
@@ -266,7 +266,7 @@ export const quadsExercises: ExerciseGroup = {
       forceType: 'Push (Bilateral)',
       mechanics: 'Compound',
       videoUrl:
-        'https://www.dropbox.com/scl/fi/0i9e5y1m14g26871u77cs/IMG_2991.MOV?rlkey=110dmmaqtltzdyl9uh7b9y5f4&st=7dpf9wci&dl=0',
+        'gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_2991.MOV',
       imageUrl:
         'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 3100000,
@@ -10755,7 +10755,7 @@ export const quadsExercises: ExerciseGroup = {
       forceType: 'Push',
       mechanics: 'Compound',
       videoUrl:
-        'https://www.dropbox.com/scl/fi/n0w141dah9q5uz0izzglx/IMG_3002.MOV?rlkey=zni7exxry05vi41l3iwgvd8nd&st=1o0c239n&dl=0',
+        'gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3002.MOV',
       imageUrl:
         'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 16200,
@@ -11000,7 +11000,7 @@ export const quadsExercises: ExerciseGroup = {
       forceType: 'Push',
       mechanics: 'Compound',
       videoUrl:
-        'https://www.dropbox.com/scl/fi/gac5ppt96xkc2s2hl1nlo/IMG_3130.mov?rlkey=nmsf2yswknz4x61ghw0b4x9ob&st=dc434sww&dl=0', // Add video URL if available
+        'gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3130.mov', // Add video URL if available
       imageUrl:
         'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 850000,
@@ -11062,7 +11062,7 @@ export const quadsExercises: ExerciseGroup = {
       forceType: 'Push (Unilateral)',
       mechanics: 'Compound',
       videoUrl:
-        'https://www.dropbox.com/scl/fi/0tvrt2dnrvp9yzmrfh9i5/IMG_3748.MOV?rlkey=vaa5nlj6hi01fz0htya8m0ejw&st=xpomjmte&dl=0',
+        'gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3748.MOV',
       imageUrl:
         'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 0,
@@ -11116,7 +11116,7 @@ export const quadsExercises: ExerciseGroup = {
       forceType: 'Push (Unilateral)',
       mechanics: 'Compound',
       videoUrl:
-        'https://www.dropbox.com/scl/fi/p63er0mqrt6e6o6rbw2fo/IMG_3750.MOV?rlkey=9efaaao3svvmn8krpdo9gseet&st=f8eb5p9c&dl=0',
+        'gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3750.MOV',
       imageUrl:
         'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg',
       viewCount: 0,

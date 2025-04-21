@@ -329,9 +329,12 @@ export function UserProvider({ children }: { children: ReactNode }) {
             setProgramStatus(null);
             setProgram(null);
           }
+          router.push('/program');
 
           // Only set isLoading to false after we've completed all program fetching
-          setIsLoading(false);
+          setTimeout(() => {
+            setIsLoading(false);
+          }, 1000);
         }
       } catch (error) {
         console.error('Error fetching user data:', error);

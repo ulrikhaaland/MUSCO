@@ -289,7 +289,7 @@ export const calvesExercises: ExerciseGroup = {
       forceType: 'Push',
       mechanics: 'Isolation',
       videoUrl:
-        'https://www.dropbox.com/scl/fi/30amyaed1x6u0ye8s21eq/IMG_3026.MOV?rlkey=jenaipqok87u9mse37vq48r65&st=0gngejd9&dl=0',
+        'gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3026.MOV',
       imageUrl:
         'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Calves.jpg',
       viewCount: 423300,
@@ -573,7 +573,7 @@ export const calvesExercises: ExerciseGroup = {
       forceType: 'Push',
       mechanics: 'Isolation',
       videoUrl:
-        'https://www.dropbox.com/scl/fi/bedoyymqe717tm9nywcz0/IMG_3027.mov?rlkey=udzxho4fu5lchgkheizjzblvk&st=1hcqud4u&dl=0',
+        'gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3027.mov',
       imageUrl:
         'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Calves.jpg',
       viewCount: 198500,
@@ -3070,7 +3070,7 @@ export const calvesExercises: ExerciseGroup = {
       forceType: 'Push',
       mechanics: 'Isolation',
       videoUrl:
-        'https://www.dropbox.com/scl/fi/yhgzsdxtkhjvqz39lpv2x/IMG_3029.MOV?rlkey=678ajsmt4juwr0kxspj6z3sh1&st=rl0eim2x&dl=0',
+        'gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3029.MOV',
       imageUrl:
         'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Calves.jpg',
       viewCount: 0,

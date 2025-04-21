@@ -2120,7 +2120,7 @@ export const glutesExercises: ExerciseGroup = {
       forceType: 'Push (Unilateral)',
       mechanics: 'Isolation',
       videoUrl:
-        'https://www.dropbox.com/scl/fi/i3o0xioxwlnjlm6mcdzz2/IMG_3757.mov?rlkey=3nz3dsqn52umum1hymw912a61&st=y0i5s7wc&dl=0',
+        'gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3757.mov',
       imageUrl:
         'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Glutes.jpg',
       viewCount: 0,
@@ -2171,7 +2171,7 @@ export const glutesExercises: ExerciseGroup = {
       forceType: 'Push (Unilateral)',
       mechanics: 'Compound',
       videoUrl:
-        'https://www.dropbox.com/scl/fi/mwe871n54xgwbezraaj8h/IMG_3758.MOV?rlkey=g2egyxoen94ye8czvgkdgbssh&st=5yvncvi0&dl=0',
+        'gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3758.MOV',
       imageUrl:
         'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Glutes.jpg',
       viewCount: 0,

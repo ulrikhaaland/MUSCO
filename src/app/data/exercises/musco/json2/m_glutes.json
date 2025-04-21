@@ -40,7 +40,7 @@
       "restBetweenSets": 60,
       "forceType": "Push (Bilateral)",
       "mechanics": "Isolation",
-      "videoUrl": "https://www.dropbox.com/scl/fi/m7atx8a633wa8nsgpel8m/IMG_3754.MOV?rlkey=v2ojuadx1tidw2hfvwsqbo1yq&st=sj57d944&dl=0",
+      "videoUrl": "gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3754.MOV",
       "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Glutes.jpg",
       "viewCount": 319600,
       "popularity": "medium"
@@ -85,7 +85,7 @@
       "restBetweenSets": 60,
       "forceType": "Push (Bilateral)",
       "mechanics": "Isolation",
-      "videoUrl": "https://www.dropbox.com/scl/fi/dfw09c7te9rwc18kv72en/IMG_3014.MOV?rlkey=68j7l3b2y6u4iwkrpot6doenp&st=7bixslkp&dl=0",
+      "videoUrl": "gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3014.MOV",
       "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Glutes.jpg",
       "viewCount": 129200,
       "popularity": "medium"
@@ -133,10 +133,58 @@
       "restBetweenSets": 45,
       "forceType": "Push (Unilateral)",
       "mechanics": "Isolation",
-      "videoUrl": "https://www.dropbox.com/scl/fi/i3o0xioxwlnjlm6mcdzz2/IMG_3757.mov?rlkey=3nz3dsqn52umum1hymw912a61&st=y0i5s7wc&dl=0",
+      "videoUrl": "gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3757.mov",
       "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Glutes.jpg",
       "viewCount": 0,
       "popularity": "medium"
+    },
+    {
+      "id": "glutes-45",
+      "name": "Modified Side Plank Hip Abduction",
+      "description": "A rehabilitation and activation-friendly exercise combining elements of a side plank with hip abduction. This variation uses a bent bottom leg and forearm support to reduce stress on the lower back and shoulders while effectively targeting the gluteus medius and core stabilizers.",
+      "targetBodyParts": ["Glutes", "Core"],
+      "exerciseType": ["strength", "activation"],
+      "difficulty": "beginner",
+      "equipment": ["Bodyweight"],
+      "steps": [
+        "Lie on your side and prop yourself up on your forearm, with elbow directly under shoulder.",
+        "Bend your bottom leg at approximately 90 degrees for stability.",
+        "Keep your top leg straight and aligned with your body.",
+        "Lift your hips off the ground, creating a stable side plank position.",
+        "Raise your top leg toward the ceiling while maintaining hip alignment.",
+        "Lower the leg with control while maintaining the plank position.",
+        "Complete all reps before switching sides."
+      ],
+      "tips": [
+        "Keep your body aligned from head to toe throughout the movement.",
+        "Avoid letting your hips sink during the leg raises.",
+        "Focus on initiating the movement from your hip, not momentum.",
+        "Maintain a neutral spine and neck position.",
+        "If you feel lower back strain, reduce the range of motion."
+      ],
+      "contraindications": [
+        "Shoulder injury",
+        "Hip injury",
+        "Lower back pain",
+        "Acute pain during movement"
+      ],
+      "muscles": ["Glutes", "Obliques", "Hip Abductors", "Core"],
+      "alternatives": [
+        "glutes-44",
+        "glutes-11",
+        "glutes-17",
+        "glutes-26",
+        "glutes-30"
+      ],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 45,
+      "forceType": "Push (Unilateral)",
+      "mechanics": "Compound",
+      "videoUrl": "gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3758.MOV",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Glutes.jpg",
+      "viewCount": 0,
+      "popularity": "low"
     }
   ]
 }

@@ -52,7 +52,7 @@ export const m_chest: ExerciseGroup = {
       forceType: 'Push (Bilateral)',
       mechanics: 'Compound',
       videoUrl:
-        'https://www.dropbox.com/scl/fi/r6am41dm74k0074roe35c/IMG_3127.mov?rlkey=jgyn1rhj6x5akjme75l94nmpt&st=ldiqbj1s&dl=0',
+        'gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3127.mov',
       imageUrl:
         'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Chest.jpg',
       viewCount: 6500000,
@@ -107,7 +107,7 @@ export const m_chest: ExerciseGroup = {
       forceType: 'Push (Bilateral)',
       mechanics: 'Compound',
       videoUrl:
-        'https://www.dropbox.com/scl/fi/cnznwmgiiflkswdcjipx9/IMG_3005.MOV?rlkey=f33wwz2nqaiij305lvpi4lbyp&st=pcocjowv&dl=0',
+        'gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3005.MOV',
       imageUrl:
         'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Chest.jpg',
       viewCount: 5600000,
@@ -171,7 +171,7 @@ export const m_chest: ExerciseGroup = {
       forceType: 'Push (Bilateral)',
       mechanics: 'Compound',
       videoUrl:
-        'https://www.dropbox.com/scl/fi/v4da5tqjuxhr7kxh9t9n1/IMG_2997.MOV?rlkey=f78aifx7rfcfwiga5kd362o9s&st=c9ri1464&dl=0',
+        'gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_2997.MOV',
       imageUrl:
         'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Chest.jpg',
       viewCount: 4900000,
@@ -221,7 +221,7 @@ export const m_chest: ExerciseGroup = {
       forceType: 'Push (Bilateral)',
       mechanics: 'Isolation',
       videoUrl:
-        'https://www.dropbox.com/scl/fi/xr63pjjmhv5sxhzqp13jy/IMG_3140.MOV?rlkey=osmqt6uya7yog4qcgnauuzsnf&st=a9trxehc&dl=0',
+        'gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3140.MOV',
       imageUrl:
         'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Chest.jpg',
       viewCount: 1700000,
@@ -267,7 +267,7 @@ export const m_chest: ExerciseGroup = {
       forceType: 'Push (Bilateral)',
       mechanics: 'Compound',
       videoUrl:
-        'https://www.dropbox.com/scl/fi/0g4ddwlrswpwh7jb5sv8z/IMG_3012.MOV?rlkey=9gy5b21momh0i2lfk6masm0c1&st=drlrrb9b&dl=0',
+        'gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3012.MOV',
       imageUrl:
         'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Chest.jpg',
       viewCount: 1900000,
@@ -313,7 +313,7 @@ export const m_chest: ExerciseGroup = {
       forceType: 'Push',
       mechanics: 'Isolation',
       videoUrl:
-        'https://www.dropbox.com/scl/fi/pnwxem2s5dkk07s2rqi7q/IMG_3010.mov?rlkey=cmv8k0w28o4a0lhuqz33qqos5&st=u2ofs68l&dl=0',
+        'gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3010.mov',
       imageUrl:
         'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Chest.jpg',
       viewCount: 1100000,
@@ -363,7 +363,7 @@ export const m_chest: ExerciseGroup = {
       forceType: 'Push (Bilateral)',
       mechanics: 'Isolation',
       videoUrl:
-        'https://www.dropbox.com/scl/fi/o2wxhykikcek2olxt3lg6/IMG_3141.MOV?rlkey=r079w144zcvmj37uvvzqs6gev&st=mhg2gtzy&dl=0',
+        'gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3141.MOV',
       imageUrl:
         'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Chest.jpg',
       viewCount: 174300,
@@ -419,7 +419,7 @@ export const m_chest: ExerciseGroup = {
       forceType: 'Push (Bilateral)',
       mechanics: 'Compound',
       videoUrl:
-        'https://www.dropbox.com/scl/fi/t0w917fwj7szvfnruccwm/IMG_3128.mov?rlkey=icom9rf40k9ha1zhhous4h4ri&st=e3qd8hqv&dl=0',
+        'gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3128.mov',
       imageUrl:
         'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Chest.jpg',
       viewCount: 960000,
@@ -469,7 +469,7 @@ export const m_chest: ExerciseGroup = {
       forceType: 'Push (Bilateral)',
       mechanics: 'Isolation',
       videoUrl:
-        'https://www.dropbox.com/scl/fi/ae6ass52bgnb0wvptl4kl/IMG_3139.MOV?rlkey=m79gxv64nseus1matml95t8jb&st=h5zwgtet&dl=0',
+        'gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3139.MOV',
       imageUrl:
         'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Chest.jpg',
       viewCount: 164000,

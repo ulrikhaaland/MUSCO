@@ -44,7 +44,7 @@ export const m_glutes: ExerciseGroup = {
       forceType: 'Push (Bilateral)',
       mechanics: 'Isolation',
       videoUrl:
-        'https://www.dropbox.com/scl/fi/m7atx8a633wa8nsgpel8m/IMG_3754.MOV?rlkey=v2ojuadx1tidw2hfvwsqbo1yq&st=sj57d944&dl=0',
+        'gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3754.MOV',
       imageUrl:
         'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Glutes.jpg',
       viewCount: 319600,
@@ -92,7 +92,7 @@ export const m_glutes: ExerciseGroup = {
       forceType: 'Push (Bilateral)',
       mechanics: 'Isolation',
       videoUrl:
-        'https://www.dropbox.com/scl/fi/dfw09c7te9rwc18kv72en/IMG_3014.MOV?rlkey=68j7l3b2y6u4iwkrpot6doenp&st=7bixslkp&dl=0',
+        'gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3014.MOV',
       imageUrl:
         'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Glutes.jpg',
       viewCount: 129200,
@@ -143,7 +143,7 @@ export const m_glutes: ExerciseGroup = {
       forceType: 'Push (Unilateral)',
       mechanics: 'Isolation',
       videoUrl:
-        'https://www.dropbox.com/scl/fi/i3o0xioxwlnjlm6mcdzz2/IMG_3757.mov?rlkey=3nz3dsqn52umum1hymw912a61&st=y0i5s7wc&dl=0',
+        'gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3757.mov',
       imageUrl:
         'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Glutes.jpg',
       viewCount: 0,

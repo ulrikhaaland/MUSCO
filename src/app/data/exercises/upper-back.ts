@@ -725,7 +725,7 @@ export const upperBackExercises: ExerciseGroup = {
       forceType: 'Pull',
       mechanics: 'Compound',
       videoUrl:
-        'https://www.dropbox.com/scl/fi/rlimzrdm8ikg2dkdu3l34/IMG_3125.mov?rlkey=r3c1e21ke72xagzd6ipf65s7a&st=24xznjsu&dl=0',
+        'gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3125.mov',
       imageUrl:
         'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper-Back.jpg',
       viewCount: 485600,
@@ -835,7 +835,7 @@ export const upperBackExercises: ExerciseGroup = {
       forceType: 'Pull',
       mechanics: 'Compound',
       videoUrl:
-        'https://www.dropbox.com/scl/fi/sv4wawb2837bfxre1hnto/IMG_3747.MOV?rlkey=xui3mqoii4zwj8x4lup46v9ty&st=z5nxsjdg&dl=0', // Keep existing video, or suggest finding a more general one
+        'gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3747.MOV', // Keep existing video, or suggest finding a more general one
       imageUrl:
         'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper-Back.jpg',
       viewCount: 431900, // Keep existing data
@@ -3095,7 +3095,7 @@ export const upperBackExercises: ExerciseGroup = {
       forceType: 'Pull',
       mechanics: 'Compound',
       videoUrl:
-        'https://www.dropbox.com/scl/fi/z8j29mrzpztwgrdh4nxwk/IMG_3741.MOV?rlkey=nj27lvx6i4f3107tnp0vbht8d&st=hlfzzbu4&dl=0',
+        'gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3741.MOV',
       imageUrl:
         'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper-Back.jpg',
       viewCount: 0,
@@ -3146,7 +3146,7 @@ export const upperBackExercises: ExerciseGroup = {
       forceType: 'Pull (Unilateral)',
       mechanics: 'Compound',
       videoUrl:
-        'https://www.dropbox.com/scl/fi/b4iuh6292b3ajytsqxps1/IMG_3746.MOV?rlkey=nj4ubor8gwvf9i34se7d0fkmy&st=b3jym8lv&dl=0',
+        'gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3746.MOV',
       imageUrl:
         'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Lats.jpg',
       viewCount: 0,

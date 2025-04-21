@@ -40,7 +40,7 @@
       "restBetweenSets": 60,
       "forceType": "Pull",
       "mechanics": "Isolation",
-      "videoUrl": "https://www.dropbox.com/scl/fi/el50tdrtx156yyhn3iqfx/IMG_3133.MOV?rlkey=34rp6oinlphfel8882315teh0&st=wtgf7kmo&dl=0",
+      "videoUrl": "gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3133.MOV",
       "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Shoulders.jpg",
       "viewCount": 9800000,
       "popularity": "high"
@@ -92,7 +92,7 @@
       "restBetweenSets": 60,
       "forceType": "Push (Bilateral)",
       "mechanics": "Compound",
-      "videoUrl": "https://www.dropbox.com/scl/fi/qn9426udgxtbkmp6qvso9/IMG_3131.MOV?rlkey=zzthkgx60wszr93hnqfl8a8ir&st=l3e91yfa&dl=0",
+      "videoUrl": "gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3131.MOV",
       "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Shoulders.jpg",
       "viewCount": 6000000,
       "popularity": "high"
@@ -144,7 +144,7 @@
       "restBetweenSets": 60,
       "forceType": "Push (Bilateral)",
       "mechanics": "Compound",
-      "videoUrl": "https://www.dropbox.com/scl/fi/msws6jal90dy5mjohodgp/IMG_3009.MOV?rlkey=e1dhgubbjls4wlww573je5vpx&st=yznju5gx&dl=0",
+      "videoUrl": "gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3009.MOV",
       "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Shoulders.jpg",
       "viewCount": 2700000,
       "popularity": "high"
@@ -195,7 +195,7 @@
       "restBetweenSets": 60,
       "forceType": "Push (Bilateral)",
       "mechanics": "Compound",
-      "videoUrl": "https://www.dropbox.com/scl/fi/mvubtwwljto6fbrcawnsu/IMG_3007.MOV?rlkey=zwbbbv93ijhm0xgq6ad45hbk4&st=3qd4510a&dl=0",
+      "videoUrl": "gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3007.MOV",
       "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Shoulders.jpg",
       "viewCount": 4100000,
       "popularity": "high"
@@ -241,7 +241,7 @@
       "restBetweenSets": 60,
       "forceType": "Pull (Bilateral)",
       "mechanics": "Compound",
-      "videoUrl": "https://www.dropbox.com/scl/fi/0y3kkrs3othh2j579jh7n/IMG_2994.MOV?rlkey=wq23vg4l1j65dycaptwm0007j&st=79rk33ri&dl=0",
+      "videoUrl": "gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_2994.MOV",
       "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Shoulders.jpg",
       "viewCount": 1100000,
       "popularity": "high"
@@ -285,7 +285,7 @@
       "restBetweenSets": 60,
       "forceType": "Pull",
       "mechanics": "Isolation",
-      "videoUrl": "https://www.dropbox.com/scl/fi/6fzk6hzb1e6rh808i9dz8/IMG_3132.MOV?rlkey=flhqszfmb50h57kusbmt47ukv&st=mux7yfwk&dl=0",
+      "videoUrl": "gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3132.MOV",
       "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Shoulders.jpg",
       "viewCount": 952600,
       "popularity": "medium"
@@ -333,7 +333,7 @@
       "restBetweenSets": 60,
       "forceType": "Pull (Bilateral)",
       "mechanics": "Compound",
-      "videoUrl": "https://www.dropbox.com/scl/fi/kg7te6bnvyv4k5dbe42h6/IMG_3737.mov?rlkey=u7sznp56kegl3sq0q3e309q0p&st=trq0p0ah&dl=0",
+      "videoUrl": "gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3737.mov",
       "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Shoulders.jpg",
       "viewCount": 179500,
       "popularity": "medium"
@@ -376,7 +376,7 @@
       "restBetweenSets": 60,
       "forceType": "Pull (Unilateral)",
       "mechanics": "Isolation",
-      "videoUrl": "https://www.dropbox.com/scl/fi/m0hw6ugllhqs8de58hj1d/IMG_3137.mov?rlkey=n2ybbalup4cr6plnvksjii5v8&st=be4gg3f8&dl=0",
+      "videoUrl": "gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3137.mov",
       "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Shoulders.jpg",
       "viewCount": 16100,
       "popularity": "low"
@@ -418,7 +418,7 @@
       "restBetweenSets": 60,
       "forceType": "Pull (Bilateral)",
       "mechanics": "Isolation",
-      "videoUrl": "https://www.dropbox.com/scl/fi/iv511l4enspkzaegegjcs/IMG_3738.mov?rlkey=czv1wal24grfdsj2v90x54jg0&st=fk6k6ljj&dl=0",
+      "videoUrl": "gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3738.mov",
       "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Shoulders.jpg",
       "viewCount": 43600,
       "popularity": "low"
@@ -463,7 +463,7 @@
       "restBetweenSets": 60,
       "forceType": "Push (Unilateral)",
       "mechanics": "Isolation",
-      "videoUrl": "https://www.dropbox.com/scl/fi/xi4c4b9gymjur11zbrgnl/IMG_3138.mov?rlkey=t8rzkwsj8180xoi31n2r31vmi&st=a82yg9w3&dl=0",
+      "videoUrl": "gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3138.mov",
       "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Shoulders.jpg",
       "viewCount": 10100,
       "popularity": "low"
@@ -507,7 +507,7 @@
       "restBetweenSets": 60,
       "forceType": "Pull (Bilateral)",
       "mechanics": "Isolation",
-      "videoUrl": "https://www.dropbox.com/scl/fi/9l6vp1emtyty4tzz4vu1t/IMG_3742.MOV?rlkey=u9ekhmtbzd6di1bzl2ajuqhlp&st=qkyo7o2g&dl=0",
+      "videoUrl": "gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3742.MOV",
       "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Shoulders.jpg",
       "viewCount": 13000,
       "popularity": "low"
@@ -549,7 +549,7 @@
       "restBetweenSets": 60,
       "forceType": "Pull (Unilateral)",
       "mechanics": "Isolation",
-      "videoUrl": "https://www.dropbox.com/scl/fi/efmstcabossvb9d8oavu7/IMG_3740.MOV?rlkey=pjokgcqa8ug755o17wdo8mph0&st=1skwn1ei&dl=0",
+      "videoUrl": "gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3740.MOV",
       "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Shoulders.jpg",
       "viewCount": 4700,
       "popularity": "low"
@@ -598,7 +598,7 @@
       "restBetweenSets": 60,
       "forceType": "Pull",
       "mechanics": "Isolation",
-      "videoUrl": "https://www.dropbox.com/scl/fi/qa2699p4mcz07sp2au73v/IMG_3134.mov?rlkey=z383cadt9k76av1hmvr6z62dm&st=0xf2enyt&dl=0",
+      "videoUrl": "gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3134.mov",
       "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Shoulders.jpg",
       "viewCount": 0,
       "popularity": "medium"
@@ -649,7 +649,7 @@
       "restBetweenSets": 60,
       "forceType": "Pull",
       "mechanics": "Compound",
-      "videoUrl": "https://www.dropbox.com/scl/fi/xklbt0gcmbzp9qjd8brid/IMG_3135.mov?rlkey=8eq75mlkoe8at1llhbebdmcje&st=8jpwjjha&dl=0",
+      "videoUrl": "gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3135.mov",
       "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Shoulders.jpg",
       "viewCount": 0,
       "popularity": "low"
@@ -698,7 +698,7 @@
       "restBetweenSets": 45,
       "forceType": "Pull (Bilateral)",
       "mechanics": "Isolation",
-      "videoUrl": "https://www.dropbox.com/scl/fi/5ra44zv65aru6k0wbexoz/IMG_3739.MOV?rlkey=pprru71bo2nrqhnff1vlcpzbi&st=emdmyl64&dl=0",
+      "videoUrl": "gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3739.MOV",
       "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Shoulders.jpg",
       "viewCount": 0,
       "popularity": "low"
@@ -758,7 +758,7 @@
       "restBetweenSets": 30,
       "forceType": "Push-Pull",
       "mechanics": "Compound",
-      "videoUrl": "https://www.dropbox.com/scl/fi/exfuczv5h5bxnmuxxviy5/IMG_3744.MOV?rlkey=ydzt26w620dcqs3tkw4jjhgds&st=3knuayrk&dl=0",
+      "videoUrl": "gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3744.MOV",
       "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Shoulders.jpg",
       "viewCount": 0,
       "popularity": "low"
@@ -820,7 +820,7 @@
       "restBetweenSets": 45,
       "forceType": "Push-Pull",
       "mechanics": "Compound",
-      "videoUrl": "https://www.dropbox.com/scl/fi/d3qjbo5cjvdods0o60hoj/IMG_3745.MOV?rlkey=5qjqj77lgzwiakwn1iz4j8cxj&st=dbiwf071&dl=0",
+      "videoUrl": "gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3745.MOV",
       "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Shoulders.jpg",
       "viewCount": 0,
       "popularity": "low"
