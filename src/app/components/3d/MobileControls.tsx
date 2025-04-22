@@ -18,8 +18,6 @@ import { BottomSheetHeader } from './BottomSheetHeader';
 import { BottomSheetFooter } from './BottomSheetFooter';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import MobileControlButtons from './MobileControlButtons';
-import { Steps } from 'intro.js-react';
-import 'intro.js/introjs.css';
 import { AnatomyPart } from '@/app/types/human';
 import { ExerciseSelection } from '../ui/ExerciseSelection';
 import { useApp, ProgramIntention } from '@/app/context/AppContext';
@@ -88,13 +86,7 @@ export default function MobileControls({
   const [controlsBottom, setControlsBottom] = useState('5rem');
   const [message, setMessage] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const [bottomSheetTourEnabled, setBottomSheetTourEnabled] = useState(false);
-  const {
-    intention,
-    selectedExerciseGroupsRef,
-    isSelectingExerciseRef,
-    fullBodyRef,
-  } = useApp();
+  const { intention, selectedExerciseGroupsRef, fullBodyRef } = useApp();
 
   const {
     messages,
@@ -110,52 +102,6 @@ export default function MobileControls({
     selectedPart: selectedPart,
     selectedGroups: selectedGroups,
   });
-
-  const bottomSheetSteps = [
-    {
-      element: '.model-title-container',
-      intro: t('bottomSheet.tourHeader'),
-      position: 'bottom',
-    },
-    {
-      element: '.chat-reset-button',
-      intro: t('bottomSheet.tourReset'),
-      position: 'bottom',
-    },
-    {
-      element: '.suggested-questions',
-      intro: t('bottomSheet.tourSuggestions'),
-      position: 'top',
-    },
-    {
-      element: '.chat-input',
-      intro: t('bottomSheet.tourInput'),
-      position: 'top',
-    },
-    {
-      element: '.chat-controls',
-      intro: t('bottomSheet.tourControls'),
-      position: 'top',
-    },
-  ];
-
-  const onBottomSheetTourExit = () => {
-    if (selectedGroups.length > 0) {
-      setBottomSheetTourEnabled(false);
-      localStorage.setItem('bottomSheetTourShown', 'true');
-    }
-  };
-
-  useEffect(() => {
-    if (selectedGroups.length > 0) {
-      const tourShown = localStorage.getItem('bottomSheetTourShown');
-      if (false) {
-        setTimeout(() => {
-          setBottomSheetTourEnabled(true);
-        }, 1000);
-      }
-    }
-  }, [selectedGroups]);
 
   // Get the actual viewport height accounting for mobile browser UI
   const getViewportHeight = () => {
@@ -445,27 +391,6 @@ export default function MobileControls({
 
   return (
     <>
-      <Steps
-        enabled={bottomSheetTourEnabled}
-        steps={bottomSheetSteps}
-        initialStep={0}
-        onExit={onBottomSheetTourExit}
-        options={{
-          showBullets: false,
-          showProgress: true,
-          hideNext: false,
-          hidePrev: false,
-          nextLabel: t('mobile.controls.next'),
-          prevLabel: t('mobile.controls.back'),
-          doneLabel: t('mobile.controls.gotIt'),
-          tooltipClass: 'bg-gray-900 text-white',
-          highlightClass: 'intro-highlight',
-          exitOnOverlayClick: false,
-          exitOnEsc: true,
-          scrollTo: false,
-        }}
-      />
-
       {/* Mobile Controls - Positioned relative to bottom sheet */}
       {isMobile && currentSnapPoint !== SnapPoint.FULL && (
         <MobileControlButtons
@@ -573,7 +498,7 @@ export default function MobileControls({
       <BottomSheetBase
         className={`!bg-gray-900 [&>*]:!bg-gray-900 relative h-[100dvh] ${
           hideBottomSheet ? 'pointer-events-none opacity-0' : ''
-        } ${bottomSheetTourEnabled ? 'z-[999999]' : ''}`}
+        }`}
         ref={sheetRef}
         open={!hideBottomSheet}
         blocking={false}

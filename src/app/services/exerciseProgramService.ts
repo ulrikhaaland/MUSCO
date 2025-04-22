@@ -2,434 +2,286 @@ import { fetchExercisesForBodyParts } from './exerciseTemplateService';
 import { Exercise, ExerciseProgram } from '@/app/types/program';
 import { ExerciseQuestionnaireAnswers } from '@/app/shared/types';
 
-// Map of body parts to their JSON file paths
+// Helper function to fetch JSON data
+const fetchJson = async (url: string): Promise<{ exercises: Exercise[] }> => {
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      // Don't log error if file just not found (404), common for optional musco files
+      if (response.status !== 404) {
+        console.error(`Failed to fetch ${url}: ${response.status} ${response.statusText}`);
+      }
+      return { exercises: [] }; // Return empty structure on fetch error
+    }
+    // Assuming the JSON file's top-level structure is { exercises: [...] }
+    const data = await response.json();
+    // Ensure data has the exercises property, even if empty
+    return data && Array.isArray(data.exercises) ? data : { exercises: [] };
+  } catch (error) {
+    console.error(`Error fetching or parsing ${url}:`, error);
+    return { exercises: [] }; // Return empty structure on other errors
+  }
+};
+
+// Map of body parts to their JSON file paths (using fetch)
 const exerciseFiles: Record<
   string,
   () => Promise<{ default: { exercises: Exercise[] } }>
 > = {
   Shoulders: async () => {
-    // Load both sources and combine them
-    const muscoExercises: Exercise[] = [];
-    try {
-      const muscoData = await import('@/app/data/exercises/musco/json2/m_shoulders.json');
-      // Use exercises directly without mapping since they have the same structure
-      muscoExercises.push(...muscoData.default.exercises);
-    } catch (error) {
-      // Silently continue if musco file not found
-    }
-
-    // Always load original data
-    const originalData = await import('@/app/data/exercises/json/shoulders.json');
-    const originalExercises = originalData.default.exercises;
+    // Load both sources using fetch
+    const [muscoData, originalData] = await Promise.all([
+      fetchJson('/data/exercises/musco/json2/m_shoulders.json'),
+      fetchJson('/data/exercises/json/shoulders.json')
+    ]);
+    const muscoExercises = muscoData.exercises || [];
+    const originalExercises = originalData.exercises || [];
 
     // Combine exercises, avoiding duplicates by ID
     const exerciseMap = new Map<string, Exercise>();
-    
-    // Add musco exercises first (they take priority)
     muscoExercises.forEach(exercise => {
-      if (exercise.id) {
-        exerciseMap.set(exercise.id, exercise);
-      }
+      if (exercise.id) exerciseMap.set(exercise.id, exercise);
     });
-    
-    // Add original exercises that don't conflict with musco ones
     originalExercises.forEach(exercise => {
       if (exercise.id && !exerciseMap.has(exercise.id)) {
         exerciseMap.set(exercise.id, exercise);
       }
     });
 
-    return {
-      default: {
-        exercises: Array.from(exerciseMap.values()),
-      },
-    };
+    return { default: { exercises: Array.from(exerciseMap.values()) } };
   },
   'Upper Arms': async () => {
-    const muscoExercises: Exercise[] = [];
-    try {
-      const muscoBiceps = await import('@/app/data/exercises/musco/json2/m_biceps.json').catch(() => ({ default: { exercises: [] } }));
-      const muscoTriceps = await import('@/app/data/exercises/musco/json2/m_triceps.json').catch(() => ({ default: { exercises: [] } }));
-      
-      // Use exercises directly without mapping
-      muscoExercises.push(...muscoBiceps.default.exercises, ...muscoTriceps.default.exercises);
-    } catch (error) {
-      // Silently continue if musco files not found
-    }
-
-    // Always load original data
-    const [biceps, triceps] = await Promise.all([
-      import('@/app/data/exercises/json/biceps.json'),
-      import('@/app/data/exercises/json/triceps.json'),
-    ]);
-    const originalExercises = [...biceps.default.exercises, ...triceps.default.exercises];
+     const [muscoBiceps, muscoTriceps, biceps, triceps] = await Promise.all([
+        fetchJson('/data/exercises/musco/json2/m_biceps.json'),
+        fetchJson('/data/exercises/musco/json2/m_triceps.json'),
+        fetchJson('/data/exercises/json/biceps.json'),
+        fetchJson('/data/exercises/json/triceps.json')
+     ]);
+     const muscoExercises = [...(muscoBiceps.exercises || []), ...(muscoTriceps.exercises || [])];
+     const originalExercises = [...(biceps.exercises || []), ...(triceps.exercises || [])];
 
     // Combine exercises, avoiding duplicates by ID
     const exerciseMap = new Map<string, Exercise>();
-    
-    // Add musco exercises first (they take priority)
     muscoExercises.forEach(exercise => {
-      if (exercise.id) {
-        exerciseMap.set(exercise.id, exercise);
-      }
+      if (exercise.id) exerciseMap.set(exercise.id, exercise);
     });
-    
-    // Add original exercises that don't conflict with musco ones
     originalExercises.forEach(exercise => {
       if (exercise.id && !exerciseMap.has(exercise.id)) {
         exerciseMap.set(exercise.id, exercise);
       }
     });
 
-    return {
-      default: {
-        exercises: Array.from(exerciseMap.values()),
-      },
-    };
+    return { default: { exercises: Array.from(exerciseMap.values()) } };
   },
   Forearms: async () => {
-    const muscoExercises: Exercise[] = [];
-    try {
-      const muscoData = await import('@/app/data/exercises/musco/json2/m_forearms.json');
-      // Use exercises directly without mapping
-      muscoExercises.push(...muscoData.default.exercises);
-    } catch (error) {
-      // Silently continue if musco file not found
-    }
-
-    // Always load original data
-    const originalData = await import('@/app/data/exercises/json/forearms.json');
-    const originalExercises = originalData.default.exercises;
+    const [muscoData, originalData] = await Promise.all([
+      fetchJson('/data/exercises/musco/json2/m_forearms.json'),
+      fetchJson('/data/exercises/json/forearms.json')
+    ]);
+    const muscoExercises = muscoData.exercises || [];
+    const originalExercises = originalData.exercises || [];
 
     // Combine exercises, avoiding duplicates by ID
     const exerciseMap = new Map<string, Exercise>();
-    
-    // Add musco exercises first (they take priority)
     muscoExercises.forEach(exercise => {
-      if (exercise.id) {
-        exerciseMap.set(exercise.id, exercise);
-      }
+      if (exercise.id) exerciseMap.set(exercise.id, exercise);
     });
-    
-    // Add original exercises that don't conflict with musco ones
     originalExercises.forEach(exercise => {
       if (exercise.id && !exerciseMap.has(exercise.id)) {
         exerciseMap.set(exercise.id, exercise);
       }
     });
 
-    return {
-      default: {
-        exercises: Array.from(exerciseMap.values()),
-      },
-    };
+    return { default: { exercises: Array.from(exerciseMap.values()) } };
   },
   Chest: async () => {
-    const muscoExercises: Exercise[] = [];
-    try {
-      const muscoData = await import('@/app/data/exercises/musco/json2/m_chest.json');
-      // Use exercises directly without mapping
-      muscoExercises.push(...muscoData.default.exercises);
-    } catch (error) {
-      // Silently continue if musco file not found
-    }
-
-    // Always load original data
-    const originalData = await import('@/app/data/exercises/json/chest.json');
-    const originalExercises = originalData.default.exercises;
+     const [muscoData, originalData] = await Promise.all([
+      fetchJson('/data/exercises/musco/json2/m_chest.json'),
+      fetchJson('/data/exercises/json/chest.json')
+    ]);
+    const muscoExercises = muscoData.exercises || [];
+    const originalExercises = originalData.exercises || [];
 
     // Combine exercises, avoiding duplicates by ID
     const exerciseMap = new Map<string, Exercise>();
-    
-    // Add musco exercises first (they take priority)
     muscoExercises.forEach(exercise => {
-      if (exercise.id) {
-        exerciseMap.set(exercise.id, exercise);
-      }
+      if (exercise.id) exerciseMap.set(exercise.id, exercise);
     });
-    
-    // Add original exercises that don't conflict with musco ones
     originalExercises.forEach(exercise => {
       if (exercise.id && !exerciseMap.has(exercise.id)) {
         exerciseMap.set(exercise.id, exercise);
       }
     });
 
-    return {
-      default: {
-        exercises: Array.from(exerciseMap.values()),
-      },
-    };
+    return { default: { exercises: Array.from(exerciseMap.values()) } };
   },
   Abdomen: async () => {
-    const muscoExercises: Exercise[] = [];
-    try {
-      const muscoAbs = await import('@/app/data/exercises/musco/json2/m_abs.json').catch(() => ({ default: { exercises: [] } }));
-      const muscoObliques = await import('@/app/data/exercises/musco/json2/m_obliques.json').catch(() => ({ default: { exercises: [] } }));
-      
-      // Use exercises directly without mapping
-      muscoExercises.push(...muscoAbs.default.exercises, ...muscoObliques.default.exercises);
-    } catch (error) {
-      // Silently continue if musco files not found
-    }
-
-    // Always load original data
-    const [abs, obliques] = await Promise.all([
-      import('@/app/data/exercises/json/abs.json'),
-      import('@/app/data/exercises/json/obliques.json'),
+    const [muscoAbs, muscoObliques, abs, obliques] = await Promise.all([
+      fetchJson('/data/exercises/musco/json2/m_abs.json'),
+      fetchJson('/data/exercises/musco/json2/m_obliques.json'),
+      fetchJson('/data/exercises/json/abs.json'),
+      fetchJson('/data/exercises/json/obliques.json')
     ]);
-    const originalExercises = [...abs.default.exercises, ...obliques.default.exercises];
+     const muscoExercises = [...(muscoAbs.exercises || []), ...(muscoObliques.exercises || [])];
+     const originalExercises = [...(abs.exercises || []), ...(obliques.exercises || [])];
 
     // Combine exercises, avoiding duplicates by ID
     const exerciseMap = new Map<string, Exercise>();
-    
-    // Add musco exercises first (they take priority)
     muscoExercises.forEach(exercise => {
-      if (exercise.id) {
-        exerciseMap.set(exercise.id, exercise);
-      }
+      if (exercise.id) exerciseMap.set(exercise.id, exercise);
     });
-    
-    // Add original exercises that don't conflict with musco ones
     originalExercises.forEach(exercise => {
       if (exercise.id && !exerciseMap.has(exercise.id)) {
         exerciseMap.set(exercise.id, exercise);
       }
     });
 
-    return {
-      default: {
-        exercises: Array.from(exerciseMap.values()),
-      },
-    };
+    return { default: { exercises: Array.from(exerciseMap.values()) } };
   },
   'Upper Back': async () => {
-    const muscoExercises: Exercise[] = [];
-    try {
-      const muscoUpperBack = await import('@/app/data/exercises/musco/json2/m_upper-back.json').catch(() => ({ default: { exercises: [] } }));
-      const muscoLats = await import('@/app/data/exercises/musco/json2/m_lats.json').catch(() => ({ default: { exercises: [] } }));
-      const muscoTraps = await import('@/app/data/exercises/musco/json2/m_traps.json').catch(() => ({ default: { exercises: [] } }));
-      
-      // Use exercises directly without mapping
-      muscoExercises.push(
-        ...muscoUpperBack.default.exercises, 
-        ...muscoLats.default.exercises, 
-        ...muscoTraps.default.exercises
-      );
-    } catch (error) {
-      // Silently continue if musco files not found
-    }
-
-    // Always load original data
-    const [upperBack, lats, traps] = await Promise.all([
-      import('@/app/data/exercises/json/upper_back.json'),
-      import('@/app/data/exercises/json/lats.json'),
-      import('@/app/data/exercises/json/traps.json'),
+    const [muscoUpperBack, muscoLats, muscoTraps, upperBack, lats, traps] = await Promise.all([
+      fetchJson('/data/exercises/musco/json2/m_upper-back.json'),
+      fetchJson('/data/exercises/musco/json2/m_lats.json'),
+      fetchJson('/data/exercises/musco/json2/m_traps.json'),
+      fetchJson('/data/exercises/json/upper_back.json'),
+      fetchJson('/data/exercises/json/lats.json'),
+      fetchJson('/data/exercises/json/traps.json')
     ]);
-    const originalExercises = [...upperBack.default.exercises, ...lats.default.exercises, ...traps.default.exercises];
+     const muscoExercises = [
+       ...(muscoUpperBack.exercises || []),
+       ...(muscoLats.exercises || []),
+       ...(muscoTraps.exercises || [])
+      ];
+     const originalExercises = [
+       ...(upperBack.exercises || []),
+       ...(lats.exercises || []),
+       ...(traps.exercises || [])
+      ];
 
     // Combine exercises, avoiding duplicates by ID
     const exerciseMap = new Map<string, Exercise>();
-    
-    // Add musco exercises first (they take priority)
     muscoExercises.forEach(exercise => {
-      if (exercise.id) {
-        exerciseMap.set(exercise.id, exercise);
-      }
+      if (exercise.id) exerciseMap.set(exercise.id, exercise);
     });
-    
-    // Add original exercises that don't conflict with musco ones
     originalExercises.forEach(exercise => {
       if (exercise.id && !exerciseMap.has(exercise.id)) {
         exerciseMap.set(exercise.id, exercise);
       }
     });
 
-    return {
-      default: {
-        exercises: Array.from(exerciseMap.values()),
-      },
-    };
+    return { default: { exercises: Array.from(exerciseMap.values()) } };
   },
   'Lower Back': async () => {
-    const muscoExercises: Exercise[] = [];
-    try {
-      const muscoData = await import('@/app/data/exercises/musco/json2/m_lower-back.json');
-      // Use exercises directly without mapping
-      muscoExercises.push(...muscoData.default.exercises);
-    } catch (error) {
-      // Silently continue if musco file not found
-    }
-
-    // Always load original data
-    const originalData = await import('@/app/data/exercises/json/lower_back.json');
-    const originalExercises = originalData.default.exercises;
+    const [muscoData, originalData] = await Promise.all([
+      fetchJson('/data/exercises/musco/json2/m_lower-back.json'),
+      fetchJson('/data/exercises/json/lower_back.json')
+    ]);
+    const muscoExercises = muscoData.exercises || [];
+    const originalExercises = originalData.exercises || [];
 
     // Combine exercises, avoiding duplicates by ID
     const exerciseMap = new Map<string, Exercise>();
-    
-    // Add musco exercises first (they take priority)
     muscoExercises.forEach(exercise => {
-      if (exercise.id) {
-        exerciseMap.set(exercise.id, exercise);
-      }
+      if (exercise.id) exerciseMap.set(exercise.id, exercise);
     });
-    
-    // Add original exercises that don't conflict with musco ones
     originalExercises.forEach(exercise => {
       if (exercise.id && !exerciseMap.has(exercise.id)) {
         exerciseMap.set(exercise.id, exercise);
       }
     });
 
-    return {
-      default: {
-        exercises: Array.from(exerciseMap.values()),
-      },
-    };
+    return { default: { exercises: Array.from(exerciseMap.values()) } };
   },
   Glutes: async () => {
-    const muscoExercises: Exercise[] = [];
-    try {
-      const muscoData = await import('@/app/data/exercises/musco/json2/m_glutes.json');
-      // Use exercises directly without mapping
-      muscoExercises.push(...muscoData.default.exercises);
-    } catch (error) {
-      // Silently continue if musco file not found
-    }
-
-    // Always load original data
-    const originalData = await import('@/app/data/exercises/json/glutes.json');
-    const originalExercises = originalData.default.exercises;
+    const [muscoData, originalData] = await Promise.all([
+      fetchJson('/data/exercises/musco/json2/m_glutes.json'),
+      fetchJson('/data/exercises/json/glutes.json')
+    ]);
+    const muscoExercises = muscoData.exercises || [];
+    const originalExercises = originalData.exercises || [];
 
     // Combine exercises, avoiding duplicates by ID
     const exerciseMap = new Map<string, Exercise>();
-    
-    // Add musco exercises first (they take priority)
     muscoExercises.forEach(exercise => {
-      if (exercise.id) {
-        exerciseMap.set(exercise.id, exercise);
-      }
+      if (exercise.id) exerciseMap.set(exercise.id, exercise);
     });
-    
-    // Add original exercises that don't conflict with musco ones
     originalExercises.forEach(exercise => {
       if (exercise.id && !exerciseMap.has(exercise.id)) {
         exerciseMap.set(exercise.id, exercise);
       }
     });
 
-    return {
-      default: {
-        exercises: Array.from(exerciseMap.values()),
-      },
-    };
+    return { default: { exercises: Array.from(exerciseMap.values()) } };
   },
   'Upper Legs': async () => {
-    const muscoExercises: Exercise[] = [];
-    try {
-      // Safely import each file, using empty exercises array if import fails
-      const safeImport = async (path: string) => {
-        try {
-          return await import(path);
-        } catch {
-          return { default: { exercises: [] } };
-        }
-      };
-      
-      const muscoQuads = await safeImport('@/app/data/exercises/musco/json2/m_quads.json');
-      const muscoHamstrings = await safeImport('@/app/data/exercises/musco/json2/m_hamstrings.json');
-      const muscoHipFlexors = await safeImport('@/app/data/exercises/musco/json2/m_hip_flexors.json');
-      const muscoAdductors = await safeImport('@/app/data/exercises/musco/json2/m_adductors.json');
-      const muscoAbductors = await safeImport('@/app/data/exercises/musco/json2/m_abductors.json');
-      
-      // Use exercises directly without mapping
-      muscoExercises.push(
-        ...muscoQuads.default.exercises,
-        ...muscoHamstrings.default.exercises,
-        ...muscoHipFlexors.default.exercises,
-        ...muscoAdductors.default.exercises,
-        ...muscoAbductors.default.exercises
-      );
-    } catch (error) {
-      // Silently continue if musco files not found
-    }
-
-    // Always load original data
-    const [quads, hamstrings, hipFlexors, adductors, abductors] = await Promise.all([
-      import('@/app/data/exercises/json/quads.json'),
-      import('@/app/data/exercises/json/hamstrings.json'),
-      import('@/app/data/exercises/json/hip_flexors.json'),
-      import('@/app/data/exercises/json/adductors.json'),
-      import('@/app/data/exercises/json/abductors.json'),
+     // Fetch all relevant JSON files concurrently
+    const [
+      muscoQuads, muscoHamstrings, muscoHipFlexors, muscoAdductors, muscoAbductors,
+      quads, hamstrings, hipFlexors, adductors, abductors
+    ] = await Promise.all([
+      fetchJson('/data/exercises/musco/json2/m_quads.json'),
+      fetchJson('/data/exercises/musco/json2/m_hamstrings.json'),
+      fetchJson('/data/exercises/musco/json2/m_hip_flexors.json'),
+      fetchJson('/data/exercises/musco/json2/m_adductors.json'),
+      fetchJson('/data/exercises/musco/json2/m_abductors.json'),
+      fetchJson('/data/exercises/json/quads.json'),
+      fetchJson('/data/exercises/json/hamstrings.json'),
+      fetchJson('/data/exercises/json/hip_flexors.json'),
+      fetchJson('/data/exercises/json/adductors.json'),
+      fetchJson('/data/exercises/json/abductors.json'),
     ]);
-    const originalExercises = [
-      ...quads.default.exercises,
-      ...hamstrings.default.exercises,
-      ...hipFlexors.default.exercises,
-      ...adductors.default.exercises,
-      ...abductors.default.exercises
+
+    // Combine musco exercises, ensuring arrays exist
+    const muscoExercises = [
+      ...(muscoQuads.exercises || []),
+      ...(muscoHamstrings.exercises || []),
+      ...(muscoHipFlexors.exercises || []),
+      ...(muscoAdductors.exercises || []),
+      ...(muscoAbductors.exercises || [])
     ];
 
-    // Combine exercises, avoiding duplicates by ID
+    // Combine original exercises, ensuring arrays exist
+    const originalExercises = [
+      ...(quads.exercises || []),
+      ...(hamstrings.exercises || []),
+      ...(hipFlexors.exercises || []),
+      ...(adductors.exercises || []),
+      ...(abductors.exercises || [])
+    ];
+
+    // Combine exercises, avoiding duplicates by ID (musco takes priority)
     const exerciseMap = new Map<string, Exercise>();
-    
-    // Add musco exercises first (they take priority)
     muscoExercises.forEach(exercise => {
-      if (exercise.id) {
-        exerciseMap.set(exercise.id, exercise);
-      }
+      if (exercise.id) exerciseMap.set(exercise.id, exercise);
     });
-    
-    // Add original exercises that don't conflict with musco ones
     originalExercises.forEach(exercise => {
       if (exercise.id && !exerciseMap.has(exercise.id)) {
         exerciseMap.set(exercise.id, exercise);
       }
     });
 
-    return {
-      default: {
-        exercises: Array.from(exerciseMap.values()),
-      },
-    };
+    return { default: { exercises: Array.from(exerciseMap.values()) } };
   },
   'Lower Legs': async () => {
-    const muscoExercises: Exercise[] = [];
-    try {
-      const muscoData = await import('@/app/data/exercises/musco/json2/m_calves.json');
-      // Use exercises directly without mapping
-      muscoExercises.push(...muscoData.default.exercises);
-    } catch (error) {
-      // Silently continue if musco file not found
-    }
-
-    // Always load original data
-    const originalData = await import('@/app/data/exercises/json/calves.json');
-    const originalExercises = originalData.default.exercises;
+    const [muscoData, originalData] = await Promise.all([
+      fetchJson('/data/exercises/musco/json2/m_calves.json'),
+      fetchJson('/data/exercises/json/calves.json')
+    ]);
+    const muscoExercises = muscoData.exercises || [];
+    const originalExercises = originalData.exercises || [];
 
     // Combine exercises, avoiding duplicates by ID
     const exerciseMap = new Map<string, Exercise>();
-    
-    // Add musco exercises first (they take priority)
     muscoExercises.forEach(exercise => {
-      if (exercise.id) {
-        exerciseMap.set(exercise.id, exercise);
-      }
+      if (exercise.id) exerciseMap.set(exercise.id, exercise);
     });
-    
-    // Add original exercises that don't conflict with musco ones
     originalExercises.forEach(exercise => {
       if (exercise.id && !exerciseMap.has(exercise.id)) {
         exerciseMap.set(exercise.id, exercise);
       }
     });
 
-    return {
-      default: {
-        exercises: Array.from(exerciseMap.values()),
-      },
-    };
+    return { default: { exercises: Array.from(exerciseMap.values()) } };
   },
 };
 
@@ -437,7 +289,7 @@ const exerciseFiles: Record<
 const exerciseCache: Record<string, Exercise> = {};
 
 /**
- * Loads exercises from local JSON files
+ * Loads exercises from JSON files fetched from public directory
  */
 async function loadExercisesFromJson(bodyParts: string[]): Promise<Exercise[]> {
   const exercises: Exercise[] = [];

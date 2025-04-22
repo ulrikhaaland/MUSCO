@@ -19,10 +19,9 @@ export function TranslationProvider({
   children, 
   initialLocale 
 }: TranslationProviderProps) {
-  // Initialize locale from provided initialLocale, localStorage, or browser settings
-  const [locale, setLocaleState] = useState<Locale>(() => {
-    return initialLocale || (typeof window !== 'undefined' ? getSavedLocalePreference() : 'en');
-  });
+  // Initialize locale: Prioritize initialLocale, then fallback to a fixed default ('en') for SSR.
+  // Reading from localStorage here can cause hydration mismatch.
+  const [locale, setLocaleState] = useState<Locale>(initialLocale || 'en');
 
   // Custom setLocale that also saves the preference
   const setLocale = useCallback((newLocale: Locale) => {
@@ -45,13 +44,14 @@ export function TranslationProvider({
 
   // Hydration fix for server-side rendering
   useEffect(() => {
-    // If initialLocale wasn't provided, update the locale client-side
-    if (!initialLocale) {
-      const savedLocale = getSavedLocalePreference();
-      if (savedLocale !== locale) {
-        setLocaleState(savedLocale);
-      }
+    // On the client, after hydration, check localStorage for saved preference
+    // and update if different from the initial server render locale.
+    // This ensures hydration passes using the initialLocale/default, then updates.
+    const savedLocale = getSavedLocalePreference(); // Safe to call now
+    if (savedLocale && savedLocale !== locale) {
+      setLocaleState(savedLocale);
     }
+  // We only want this effect to run once on mount to check localStorage.
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

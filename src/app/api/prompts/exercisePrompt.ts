@@ -60,19 +60,14 @@ Behavior Guidelines
 3. Exercise Selection Guidelines
 
 EXERCISE SELECTION PROTOCOL
-• MANDATORY: Always run retrieval against the exercise database BEFORE creating a program. Do not skip this step.
-• The vector store contains a comprehensive database of exercises with their properties.
-• For each target body part, search for exercises that match the desired body part and difficulty level.
-• If no suitable exercises are found, broaden your search by relaxing criteria like difficulty or equipment requirements.
-• Prioritize exercises with high to medium popularity ratings.
-• CRITICAL: Validate that every exercise ID actually exists in the database before including it in your program. Never include an exercise ID that you haven't verified exists.
-• Always run a final verification on all exercise IDs to ensure they match the format "[muscle]-[number]" and are documented in the database.
+• MANDATORY: Always select exercises exclusively from the exercise database list appended at the end of these instructions. Do not invent new exercises or IDs.
+• CRITICAL: Validate that every exercise ID you choose exists in the appended list before including it in your program. Never include an exercise ID that you haven't verified exists in the provided list.
+• Always run a final verification on all exercise IDs to ensure they match the format "[muscle]-[number]" and are present in the appended exercise list.
 
-- CRITICAL: You MUST select exercises exclusively from the exercise database in the vector store. Do not invent new exercises or IDs.
-- Always search for exercises by body part and optionally by difficulty, equipment, or mechanics.
-- If your search returns no results, try with fewer criteria to broaden your search.
-- For each exercise you include in the program, you MUST include its exercise ID in the format provided in the exercise database.
-- For EVERY exercise you plan to include, first verify it exists by retrieving its information from the database.
+- CRITICAL: You MUST select exercises exclusively from the exercise database list appended at the end of these instructions. Do not invent new exercises or IDs.
+- Select exercises based on target body part, and optionally by difficulty, equipment, or mechanics as listed in the appended exercise database.
+- For each exercise you include in the program, you MUST include its exact exercise ID as listed in the appended exercise database.
+- For EVERY exercise you plan to include, first verify it exists by checking the appended exercise database list.
 - CRITICAL: Exercise IDs must follow the exact format for each body area. ONLY use these formats:
   
   • Back exercises:
@@ -110,22 +105,23 @@ EXERCISE SELECTION PROTOCOL
   - For beginners especially, stick to well-known, fundamental exercises rather than highly specialized variations
   - Only use less common exercises when they specifically address unique user needs that cannot be met with more common exercises
 
-- How to access exercises:
-  1. Search for exercises by body part, difficulty, equipment, and mechanics in the vector store
-  2. Verify exercise details including metadata, contraindications, and popularity
-  3. You MUST ONLY include exercises that exist in the exercise database. Never guess or fabricate IDs.
+- How to select exercises:
+  1. Identify the target body part(s) for the workout.
+  2. Filter the appended exercise database list based on the target body part, desired difficulty, available equipment, and mechanics.
+  3. Verify exercise details including contraindications using the information in the appended list.
+  4. You MUST ONLY include exercises that exist in the appended exercise database list. Never guess or fabricate IDs.
 
-- Each exercise has a structured metadata entry in the vector store. Never guess exercise properties — retrieve and use them.
+- Use the properties (difficulty, equipment, contraindications) provided for each exercise in the appended list. Do not guess properties.
 
 - When choosing exercises, consider:
   - The user's target areas (select exercises that specifically target these areas)
   - Their fitness level and experience (beginners need simpler exercises)
   - Any painful areas or conditions to avoid (don't select exercises that could aggravate these areas)
   - The available equipment based on their exercise environment
-  - Contraindications listed for each exercise
+  - Contraindications listed for each exercise in the appended list
   - Exercise types needed for a balanced program
 
-- IMPORTANT: In the JSON response, include an "exerciseId" field for each exercise containing the exact ID from the exercise database.
+- IMPORTANT: In the JSON response, include an "exerciseId" field for each exercise containing the exact ID from the appended exercise database list.
 
 - For a balanced program, aim to include exercises from different categories:
   - Strength exercises: Build muscular strength and endurance
@@ -407,4 +403,1097 @@ EXERCISE SELECTION PROTOCOL
 - When referencing exercises, simply use their names without citations or references
 - This applies to all fields, especially the "description" field for workout days
 
-FINAL REMINDER: YOUR RESPONSE MUST BE NOTHING BUT A PURE JSON OBJECT. DO NOT ADD ANY INTRODUCTION, EXPLANATION, OR CONCLUSION TEXT. DO NOT ENCLOSE THE JSON IN CODE BLOCKS OR BACKTICKS. JUST RETURN THE RAW JSON.`;
+FINAL REMINDER: YOUR RESPONSE MUST BE NOTHING BUT A PURE JSON OBJECT. DO NOT ADD ANY INTRODUCTION, EXPLANATION, OR CONCLUSION TEXT. DO NOT ENCLOSE THE JSON IN CODE BLOCKS OR BACKTICKS. JUST RETURN THE RAW JSON.
+
+EXERCISE DATABASE:
+
+
+{
+  "bodyPart": "Abdomen",
+  "exercises": [
+    {
+      "id": "abs-5",
+      "name": "Hanging Leg Raise",
+      "difficulty": "advanced",
+      "equipment": ["Bodyweight"],
+      "contraindications": [
+        "Abs injury",
+        "Joint pain",
+        "Acute pain during movement"
+      ],
+    },
+    {
+      "id": "abs-6",
+      "name": "Plank",
+      "difficulty": "beginner",
+      "equipment": ["Bodyweight"],
+      "contraindications": [
+        "Abs injury",
+        "Joint pain",
+        "Acute pain during movement"
+      ],
+    },
+    {
+      "id": "abs-9",
+      "name": "Sit Up",
+      "difficulty": "beginner",
+      "equipment": ["Bodyweight"],
+      "contraindications": [
+        "Abs injury",
+        "Joint pain",
+        "Acute pain during movement"
+      ],
+    },
+    {
+      "id": "abs-13",
+      "name": "Abdominal Air Bike (AKA Bicycle)",
+      "difficulty": "beginner",
+      "equipment": ["Bodyweight"],
+      "contraindications": [
+        "Abs injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+    },
+    {
+      "id": "abs-20",
+      "name": "Dead Bug",
+      "difficulty": "intermediate",
+      "equipment": ["Bodyweight"],
+      "contraindications": [
+        "Abs injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+    },
+    {
+      "id": "abs-22",
+      "name": "Lying Leg Raise With Hip Thrust",
+      "difficulty": "beginner",
+      "equipment": ["Bodyweight"],
+      "contraindications": [
+        "Abs injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+    },
+    {
+      "id": "abs-119",
+      "name": "Hollow Body Crunch with Arm Sweep",
+      "difficulty": "beginner",
+      "equipment": ["Bodyweight"],
+      "contraindications": [
+        "Lower back injury",
+        "Neck pain or injury",
+        "Recent abdominal surgery",
+        "Pregnancy",
+        "Acute core strain"
+      ],
+    },
+    {
+      "id": "abs-120",
+      "name": "Plank to Push-Up",
+      "difficulty": "intermediate",
+      "equipment": ["Bodyweight"],
+      "contraindications": [
+        "Shoulder injury",
+        "Wrist pain or injury",
+        "Lower back pain",
+        "Core instability",
+        "Elbow issues"
+      ],
+    },
+    {
+      "id": "abs-121",
+      "name": "Spiderman Plank",
+      "difficulty": "intermediate",
+      "equipment": ["Bodyweight"],
+      "contraindications": [
+        "Shoulder injury",
+        "Wrist pain",
+        "Lower back pain",
+        "Hip flexor strain",
+        "Core instability"
+      ],
+    }
+  ]
+},
+}
+  "bodyPart": "Upper Arms",
+  "exercises": [
+    {
+      "id": "biceps-1",
+      "name": "Standing Hammer Curl",
+      "difficulty": "beginner",
+      "equipment": ["Dumbbell"],
+      "contraindications": [
+        "Biceps injury",
+        "Joint pain",
+        "Acute pain during movement"
+      ],
+    },
+    {
+      "id": "biceps-2",
+      "name": "Standing Dumbbell Curl",
+      "difficulty": "beginner",
+      "equipment": ["Dumbbell"],
+      "contraindications": [
+        "Biceps injury",
+        "Joint pain",
+        "Acute pain during movement"
+      ],
+    },
+    {
+      "id": "biceps-4",
+      "name": "Standing Barbell Curl",
+      "difficulty": "beginner",
+      "equipment": ["Barbell"],
+      "contraindications": [
+        "Biceps injury",
+        "Joint pain",
+        "Acute pain during movement"
+      ],
+    },
+    {
+      "id": "biceps-10",
+      "name": "EZ Bar Curl",
+      "difficulty": "beginner",
+      "equipment": ["Barbell"],
+      "contraindications": [
+        "Squeeze your biceps hard at the top of the movement, and then slowly lower it back to the starting position.",
+        "Repeat for desired reps."
+      ],
+      "tips": [
+        "Use the EZ bar curl when you have had wrist injuries or if you feel pain in the wrists when doing barbell curls.",
+        "Do not swing back when you curl the bar up.",
+        "Keep your body fixed and elbows in at your sides throughout the movement."
+      ],
+      "contraindications": [
+        "Biceps injury",
+        "Joint pain",
+        "Acute pain during movement"
+      ],
+    },
+    {
+      "id": "biceps-18",
+      "name": "Seated Dumbbell Curl",
+      "difficulty": "beginner",
+      "equipment": ["Dumbbell"],
+      "contraindications": [
+        "Biceps injury",
+        "Joint pain",
+        "Acute pain during movement"
+      ],
+    },
+    {
+      "id": "biceps-53",
+      "name": "One-Arm Prone Incline Dumbbell Curl",
+      "difficulty": "beginner",
+      "equipment": ["Dumbbell"],
+      "contraindications": [
+        "Biceps injury",
+        "Joint pain",
+        "Acute pain during movement"
+      ],
+    },
+    {
+      "id": "biceps-78",
+      "name": "Chest-Supported Incline Dumbbell Curl",
+      "difficulty": "beginner",
+      "equipment": ["Dumbbell", "Bench"],
+      "contraindications": [
+        "Keeping your upper arms perpendicular to the floor, curl the dumbbells up towards your shoulders by flexing your elbows.",
+        "Squeeze your biceps at the top of the movement, focusing on peak contraction.",
+        "Slowly lower the dumbbells back to the starting position, maintaining control and tension.",
+        "Repeat for the desired number of repetitions."
+      ],
+      "contraindications": [
+        "Biceps injury",
+        "Elbow pain or injury",
+        "Shoulder impingement",
+        "Acute pain during movement"
+      ],
+    }
+  ]
+}
+{
+  "bodyPart": "Lower Legs",
+  "exercises": [
+    {
+      "id": "calves-6",
+      "name": "Bodyweight Standing Calf Raise",
+      "difficulty": "beginner",
+      "equipment": ["Bodyweight"],
+      "contraindications": [
+        "Calves injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Shoulder impingement"
+      ],
+    },
+    {
+      "id": "calves-12",
+      "name": "One-Leg Standing Bodyweight Calf Raise",
+      "difficulty": "beginner",
+      "equipment": ["Bodyweight"],
+      "contraindications": [
+        "Calves injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Shoulder impingement"
+      ],
+    },
+    {
+      "id": "calves-63",
+      "name": "Unilateral Eccentric Bodyweight Standing Calf Raise",
+      "difficulty": "intermediate",
+      "equipment": ["Bodyweight"],
+      "contraindications": [
+        "Calves injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Balance issues",
+        "Ankle instability"
+      ],
+    }
+  ]
+}
+{
+  "bodyPart": "Chest",
+  "exercises": [
+    {
+      "id": "chest-1",
+      "name": "Dumbbell Bench Press",
+      "difficulty": "beginner",
+      "equipment": ["Dumbbell"],
+      "contraindications": [
+        "Chest injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Shoulder impingement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+    },
+    {
+      "id": "chest-3",
+      "name": "Incline Dumbbell Bench Press",
+      "difficulty": "beginner",
+      "equipment": ["Dumbbell"],
+      "contraindications": [
+        "Chest injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Shoulder impingement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+    },
+    {
+      "id": "chest-7",
+      "name": "Barbell Bench Press",
+      "difficulty": "intermediate",
+      "equipment": ["Barbell"],
+      "contraindications": [
+        "Chest injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Shoulder impingement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+    },
+    {
+      "id": "chest-10",
+      "name": "Standing Cable Fly",
+      "difficulty": "beginner",
+      "equipment": ["Cable"],
+      "steps": [
+        "Set both pulleys directly at (or slightly above) shoulder height and select the desired weight.",
+        "Grasp both handles with a neutral grip and take a step forward to split the stance.",
+        "Press the handles to lockout while flexing the pecs and extending the elbows.",
+        "Keep a slight bend in the elbows, move entirely at the shoulder joint, and slowly allow the arms to open while the pecs stretch.",
+        "Return to the starting position by flexing your pecs and bringing the handles together at chest height.",
+        "Slowly lower back to the starting position and repeat for the desired number of repetitions."
+      ],
+      "tips": [
+        "Imagine you're trying to hug a tree while completing the exercise.",
+        "Don't squeeze the handles excessively tight as this can over recruit the forearms and biceps thereby reducing activation of the pecs.",
+        "Avoid touching or banging the handles together at peak contraction to keep constant tension on the intended muscle groups.",
+        "Always keep a slight bend in the elbows and never lower the weight to the point where you get any sort of pain and pressure at the front of the shoulder joint.",
+        "Ensure you maintain some tension in your abs and don't allow your lower back to arch excessively."
+      ],
+      "contraindications": [
+        "Chest injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Shoulder impingement"
+      ],
+    },
+    {
+      "id": "chest-11",
+      "name": "Hammer Strength Bench Press",
+      "difficulty": "beginner",
+      "equipment": ["Machine"],
+      "contraindications": [
+        "Chest injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Shoulder impingement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+    },
+    {
+      "id": "chest-14",
+      "name": "Incline Dumbbell Flys",
+      "difficulty": "beginner",
+      "equipment": ["Dumbbell"],
+      "contraindications": [
+        "Chest injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Shoulder impingement"
+      ],
+    },
+    {
+      "id": "chest-16",
+      "name": "Standing Low to High Cable Fly",
+      "difficulty": "intermediate",
+      "equipment": ["Cable"],
+      "contraindications": [
+        "Chest injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Shoulder impingement"
+      ],
+    },
+    {
+      "id": "chest-18",
+      "name": "Push Up",
+      "difficulty": "beginner",
+      "equipment": ["Bodyweight"],
+      "contraindications": [
+        "Chest injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Shoulder impingement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+    },
+    {
+      "id": "chest-22",
+      "name": "Standing High to Low Cable Fly",
+      "difficulty": "beginner",
+      "equipment": ["Cable"],
+      "contraindications": [
+        "Chest injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Shoulder impingement"
+      ],
+    }
+  ]
+}
+{
+  "bodyPart": "Glutes",
+  "exercises": [
+    {
+      "id": "glutes-7",
+      "name": "Bodyweight Glute Bridge",
+      "difficulty": "beginner",
+      "equipment": ["Bodyweight"],
+      "contraindications": [
+        "Glutes injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Shoulder impingement"
+      ],
+    },
+    {
+      "id": "glutes-8",
+      "name": "Barbell Glute Bridge",
+      "difficulty": "intermediate",
+      "equipment": ["Barbell"],
+      "contraindications": [
+        "Glutes injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Shoulder impingement"
+      ],
+    },
+    {
+      "id": "glutes-44",
+      "name": "Side Lying Hip Abduction",
+      "difficulty": "beginner",
+      "equipment": ["Bodyweight"],
+      "contraindications": [
+        "Hip injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent hip surgery"
+      ],
+    },
+    {
+      "id": "glutes-45",
+      "name": "Modified Side Plank Hip Abduction",
+      "difficulty": "beginner",
+      "equipment": ["Bodyweight"],
+      "contraindications": [
+        "Shoulder injury",
+        "Hip injury",
+        "Lower back pain",
+        "Acute pain during movement"
+      ],
+    }
+  ]
+}
+{
+  "bodyPart": "Upper Legs",
+  "exercises": [
+    {
+      "id": "hamstrings-2",
+      "name": "Conventional Deadlift",
+      "difficulty": "intermediate",
+      "equipment": ["Barbell"],
+      "contraindications": [
+        "Hamstrings injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+    },
+    {
+      "id": "hamstrings-5",
+      "name": "Romanian Deadlift (AKA RDL)",
+      "difficulty": "beginner",
+      "equipment": ["Barbell"],
+      "contraindications": [
+        "Hamstrings injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+    },
+    {
+      "id": "hamstrings-34",
+      "name": "Straight Leg Deadlift",
+      "difficulty": "intermediate",
+      "equipment": ["Barbell"],
+      "contraindications": [
+        "Hamstrings injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      ],
+    }
+  ]
+}
+{
+  "bodyPart": "Upper Back",
+  "exercises": [
+    {
+      "id": "lats-1",
+      "name": "Lat Pull Down",
+      "difficulty": "beginner",
+      "equipment": ["Cable"],
+      "contraindications": [
+        "Lats injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+    },
+    {
+      "id": "lats-6",
+      "name": "Pull Up",
+      "difficulty": "beginner",
+      "equipment": ["Bodyweight"],
+      "contraindications": [
+        "Lats injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+    },
+    {
+      "id": "lats-10",
+      "name": "Rope Straight Arm Pull Down",
+      "difficulty": "beginner",
+      "equipment": ["Cable"],
+      "contraindications": [
+        "Lats injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+    }
+  ]
+}
+{
+  "bodyPart": "Abdomen",
+  "exercises": [
+    {
+      "id": "obliques-4",
+      "name": "Side Plank with Hip Dip",
+      "difficulty": "beginner",
+      "equipment": ["Bodyweight"],
+      "contraindications": [
+        "Obliques injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+    },
+    {
+      "id": "obliques-14",
+      "name": "Side Plank with Rotational Reach-Through",
+      "difficulty": "intermediate",
+      "equipment": ["Bodyweight"],
+      "contraindications": [
+        "Shoulder injury",
+        "Lower back pain",
+        "Rotator cuff issues",
+        "Wrist problems",
+        "Acute core injury"
+      ],
+    }
+  ]
+}
+{
+  "bodyPart": "Upper Legs",
+  "exercises": [
+    {
+      "id": "quads-1",
+      "name": "Barbell Back Squat",
+      "difficulty": "intermediate",
+      "equipment": ["Barbell"],
+      "contraindications": [
+        "Upper Legs injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Shoulder impingement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+    },
+    {
+      "id": "quads-4",
+      "name": "Leg Extension",
+      "difficulty": "beginner",
+      "equipment": ["Machine"],
+      "contraindications": [
+        "Upper Legs injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Shoulder impingement"
+      ],
+    },
+    {
+      "id": "quads-5",
+      "name": "Leg Press",
+      "difficulty": "beginner",
+      "equipment": ["Machine"],
+      "contraindications": [
+        "Upper Legs injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Shoulder impingement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+    },
+    {
+      "id": "quads-28",
+      "name": "Bodyweight Lunge",
+      "difficulty": "beginner",
+      "equipment": ["Bodyweight"],
+      "contraindications": [
+        "Upper Legs injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Shoulder impingement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+    },
+    {
+      "id": "quads-51",
+      "name": "Single Leg Squat From Bench",
+      "difficulty": "intermediate",
+      "equipment": ["Bench"],
+      "contraindications": [
+        "Upper Legs injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Shoulder impingement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+    },
+    {
+      "id": "quads-186",
+      "name": "Bodyweight Bulgarian Split Squat",
+      "difficulty": "beginner",
+      "equipment": ["Bodyweight"],
+      "contraindications": [
+        "Upper Legs injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Shoulder impingement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+    },
+    {
+      "id": "quads-190",
+      "name": "Bodyweight Squat",
+      "difficulty": "beginner",
+      "equipment": ["Bodyweight"],
+      "contraindications": [
+        "Knee injury or pain",
+        "Hip injury",
+        "Acute lower back pain",
+        "Severe ankle mobility restrictions",
+        "Balance issues"
+      ],
+    },
+    {
+      "id": "quads-191",
+      "name": "Assisted Pistol Squat",
+      "difficulty": "intermediate",
+      "equipment": ["Bodyweight", "TRX", "Bands", "Support Structure"],
+      "contraindications": [
+        "Upper Legs injury",
+        "Significant knee or hip pain",
+        "Acute pain during movement",
+        "Severe balance impairments",
+        "Poor ankle/hip mobility (address concurrently)"
+      ],
+    },
+    {
+      "id": "quads-192",
+      "name": "Single-Leg Box Squat (Sit-to-Stand)",
+      "difficulty": "intermediate",
+      "equipment": ["Bodyweight", "Bench", "Box", "Chair"],
+      "contraindications": [
+        "Upper Legs injury",
+        "Significant knee or hip pain",
+        "Acute pain during movement",
+        "Severe balance impairments"
+      ],
+    }
+  ]
+}
+  {
+  "bodyPart": "Shoulders",
+  "exercises": [
+    {
+      "id": "shoulders-1",
+      "name": "Dumbbell Lateral Raise",
+      "difficulty": "beginner",
+      "equipment": ["Dumbbell"],
+      "contraindications": [
+        "Shoulders injury",
+        "Joint pain",
+        "Acute pain during movement"
+      ],
+    },
+    {
+      "id": "shoulders-2",
+      "name": "Military Press (AKA Overhead Press)",
+      "difficulty": "intermediate",
+      "equipment": ["Barbell"],
+      "contraindications": [
+        "Shoulders injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Shoulder impingement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+    },
+    {
+      "id": "shoulders-4",
+      "name": "Seated Arnold Press",
+      "difficulty": "intermediate",
+      "equipment": ["Dumbbell"],
+      "contraindications": [
+        "Shoulders injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Shoulder impingement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+    },
+    {
+      "id": "shoulders-5",
+      "name": "Seated Dumbbell Press",
+      "difficulty": "beginner",
+      "equipment": ["Dumbbell"],
+      "contraindications": [
+        "Shoulders injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Shoulder impingement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+    },
+    {
+      "id": "shoulders-10",
+      "name": "Cable Face Pull",
+      "difficulty": "beginner",
+      "equipment": ["Cable"],
+      "contraindications": [
+        "Shoulders injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+    },
+    {
+      "id": "shoulders-16",
+      "name": "Cable Lateral Raise",
+      "difficulty": "beginner",
+      "equipment": ["Cable"],
+      "contraindications": [
+        "Shoulders injury",
+        "Joint pain",
+        "Acute pain during movement"
+      ],
+    },
+    {
+      "id": "shoulders-30",
+      "name": "Band Pull Apart",
+      "difficulty": "beginner",
+      "equipment": ["Bands"],
+      "contraindications": [
+        "Shoulders injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+    },
+    {
+      "id": "shoulders-32",
+      "name": "Cable External Rotation",
+      "difficulty": "beginner",
+      "equipment": ["Machine"],
+      "contraindications": [
+        "Shoulders injury",
+        "Joint pain",
+        "Acute pain during movement"
+      ],
+    },
+    {
+      "id": "shoulders-39",
+      "name": "Banded Lateral Raise",
+      "difficulty": "beginner",
+      "equipment": ["Bands"],
+      "contraindications": [
+        "Shoulders injury",
+        "Joint pain",
+        "Acute pain during movement"
+      ],
+    },
+    {
+      "id": "shoulders-62",
+      "name": "Cable Internal Rotation",
+      "difficulty": "beginner",
+      "equipment": ["Cable"],
+      "contraindications": [
+        "Shoulders injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Shoulder impingement"
+      ],
+    },
+    {
+      "id": "shoulders-78",
+      "name": "Standing Banded Face Pull",
+      "difficulty": "intermediate",
+      "equipment": ["Bands"],
+      "contraindications": [
+        "Shoulders injury",
+        "Joint pain",
+        "Acute pain during movement"
+      ],
+    },
+    {
+      "id": "shoulders-94",
+      "name": "Single Arm Banded External Rotation",
+      "difficulty": "beginner",
+      "equipment": ["Bands"],
+      "contraindications": [
+        "Shoulders injury",
+        "Joint pain",
+        "Acute pain during movement"
+      ],
+    },
+    {
+      "id": "shoulders-176",
+      "name": "Neutral Grip Dumbbell Front Raise",
+      "difficulty": "beginner",
+      "equipment": ["Dumbbell"],
+      "contraindications": [
+        "Shoulders injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Rotator cuff issues"
+      ],
+    },
+    {
+      "id": "shoulders-177",
+      "name": "Arc Shoulder Raise",
+      "difficulty": "intermediate",
+      "equipment": ["Dumbbell"],
+      "contraindications": [
+        "Shoulder injury or impingement",
+        "Rotator cuff issues",
+        "Joint pain",
+        "Limited shoulder mobility",
+        "Acute pain during movement"
+      ],
+    },
+    {
+      "id": "shoulders-178",
+      "name": "Modified Banded Lateral Raise",
+      "difficulty": "beginner",
+      "equipment": ["Bands"],
+      "contraindications": [
+        "Acute shoulder injury",
+        "Recent shoulder surgery (without clearance)",
+        "Active inflammation"
+      ],
+    },
+    {
+      "id": "shoulders-179",
+      "name": "Banded Shoulder Flexion Raise",
+      "difficulty": "beginner",
+      "equipment": ["Bands"],
+      "contraindications": [
+        "Acute shoulder injury",
+        "Severe shoulder impingement",
+        "Recent shoulder surgery",
+        "Active rotator cuff tears",
+        "Significant limited shoulder mobility"
+      ],
+        "Shoulders",
+        "Rotator Cuff",
+        "Serratus Anterior",
+        "Trapezius",
+        "Upper Back"
+      ],
+    },
+    {
+      "id": "shoulders-90",
+      "name": "Straight-Arm Banded Shoulder Flexion Raise",
+      "difficulty": "intermediate",
+      "equipment": ["Bands"],
+      "contraindications": [
+        "Shoulder impingement syndrome",
+        "Limited shoulder mobility",
+        "Acute shoulder injury",
+        "Recent shoulder surgery",
+        "Active rotator cuff issues",
+        "Shoulder instability"
+      ],
+    }
+  ]
+}
+{
+  "bodyPart": "Upper Arms",
+  "exercises": [
+    {
+      "id": "triceps-4",
+      "name": "Rope Tricep Extension",
+      "difficulty": "beginner",
+      "equipment": ["Cable"],
+      "contraindications": [
+        "Triceps injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Shoulder impingement"
+      ],
+},
+    {
+      "id": "triceps-11",
+      "name": "French Press",
+      "difficulty": "beginner",
+      "equipment": ["Barbell"],
+      "contraindications": [
+        "Triceps injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Shoulder impingement"
+      ],
+    },
+    {
+      "id": "triceps-17",
+      "name": "Bench Dip",
+      "difficulty": "beginner",
+      "equipment": ["Bodyweight"],
+      "contraindications": [
+        "Triceps injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Shoulder impingement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+    },
+    {
+      "id": "triceps-21",
+      "name": "One-Arm Cable Tricep Extension",
+      "difficulty": "beginner",
+      "equipment": ["Cable"],
+      "contraindications": [
+        "Triceps injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Shoulder impingement"
+      ],
+    },
+    {
+      "id": "triceps-23",
+      "name": "Standing Low Pulley Overhead Tricep Extension (Rope Extension)",
+      "difficulty": "beginner",
+      "equipment": ["Cable"],
+      "contraindications": [
+        "Triceps injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Shoulder impingement"
+      ],
+    },
+    {
+      "id": "triceps-107",
+      "name": "Dumbbell Tricep Extension",
+      "difficulty": "beginner",
+      "equipment": ["Dumbbell", "Bench"],
+      "contraindications": [
+        "Triceps injury",
+        "Elbow pain or injury",
+        "Shoulder impingement",
+        "Wrist issues",
+        "Acute pain during movement"
+      ],
+    }
+  ]
+}
+{
+  "bodyPart": "Upper Back",
+  "exercises": [
+    {
+      "id": "upper-back-3",
+      "name": "Bent Over Row",
+      "description": "The bent over row is a back day staple exercise and is considered one of the best muscle building back building exercises you can do. Sometimes referred to as the barbell row, the bent over row is a staple movement in most muscle building workouts. Those looking to build muscle utilize the bent over row to target their back, bicep and core muscle. Those in powerlifting and strength circles perform bent over rows to increase their strength on the big 3 movements. The bent over row is typically used to build and strengthen the muscles of the upper back (latissimus dorsi, rhomboids, and trapezius). However, it requires assistance from muscles of the low back, core, and arms to perform a bent over row correctly. There are several variations of the bent over row one can and should perform. Bent over row variations include: Dumbbell Bent Over Row One Arm Bent Over Dumbbell Row Reverse Grip Bent Over Row T-Bar Row Smith Machine Row The back is a tricky muscle group to build and strengthen. Sometimes it can help to vary the degree in which you perform the bent over row and well as the hand placement on the bar. Regardless, the bent over row is a great exercise to include in your back workout.",
+      "difficulty": "beginner",
+      "equipment": ["Barbell"],
+      "contraindications": [
+        "Upper Back injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+    },
+    {
+      "id": "upper-back-4",
+      "name": "Seated Cable Row",
+      "difficulty": "beginner",
+      "equipment": ["Cable"],
+      "contraindications": [
+        "Upper Back injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+    },
+    {
+      "id": "upper-back-8",
+      "name": "Tripod Dumbbell Row",
+      "difficulty": "beginner",
+      "equipment": ["Dumbbell"],
+      "contraindications": [
+        "Upper Back injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+    },
+    {
+      "id": "upper-back-14",
+      "name": "Reverse Grip Bent Over Row",
+      "difficulty": "intermediate",
+      "equipment": ["Barbell"],
+      "contraindications": [
+        "Upper Back injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+    },
+    {
+      "id": "upper-back-16",
+      "name": "Inverted Row",
+      "difficulty": "beginner",
+      "equipment": ["Bodyweight", "Barbell", "Smith Machine", "TRX", "Rings"],
+      "contraindications": [
+        "Upper Back injury",
+        "Shoulder impingement",
+        "Elbow or wrist pain",
+        "Acute pain during movement",
+        "Inability to maintain core stability"
+      ],
+    },
+    {
+      "id": "upper-back-60",
+      "name": "High Standing Banded Row",
+      "difficulty": "beginner",
+      "equipment": ["Bands"],
+      "contraindications": [
+        "Upper Back injury",
+        "Neck pain or injury",
+        "Shoulder impingement",
+        "Acute pain during movement"
+      ],
+    },
+    {
+      "id": "upper-back-61",
+      "name": "Seated Floor Single-Arm Cable Lat Pulldown",
+      "difficulty": "beginner",
+      "equipment": ["Cable"],
+      "contraindications": [
+        "Latissimus Dorsi injury",
+        "Shoulder impingement",
+        "Elbow pain",
+        "Acute back pain",
+        "Core instability issues"
+      ],
+    }
+  ]
+}
+`;

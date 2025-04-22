@@ -10,7 +10,6 @@ import { Gender } from '../types';
 import { bodyPartGroups, BodyPartGroup } from '../config/bodyPartGroups';
 import {
   getPartGroup,
-  getGroupParts,
   createSelectionMap,
   getNeutralId,
   getGenderedId,

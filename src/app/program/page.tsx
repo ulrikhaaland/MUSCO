@@ -40,7 +40,6 @@ export default function ProgramPage() {
   // Always use the combined program with all weeks
   useEffect(() => {
     if (program) {
-      console.log("Setting combined program with all weeks:", program);
       setSelectedProgram(program);
     }
   }, [program]);
@@ -48,7 +47,7 @@ export default function ProgramPage() {
   // Update page title when program loads
   useEffect(() => {
     if (selectedProgram?.title && typeof document !== 'undefined') {
-      document.title = `${selectedProgram.title} | MUSCO`;
+      document.title = `${selectedProgram.title} | bodAI`;
     } else if (typeof document !== 'undefined') {
       document.title = t('program.pageTitle');
     }
