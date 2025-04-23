@@ -398,6 +398,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logOut = async () => {
     try {
       await signOut(auth);
+      setUser(null); // Optimistically set user to null
       
       // Use the router for a cleaner transition
       router.push('/');

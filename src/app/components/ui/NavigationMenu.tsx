@@ -223,10 +223,14 @@ function NavigationMenuContent() {
   };
 
   const handleLogout = async () => {
-    await logOut();
-    setShowUserMenu(false);
-    setDrawerOpen(false);
-    setShowDevNavBar(false);
+    try {
+      await logOut();
+      setShowUserMenu(false);
+      setDrawerOpen(false);
+      setShowDevNavBar(false);
+    } catch (error) {
+      console.error('Error during handleLogout:', error);
+    }
   };
 
   const toggleDevNavBar = () => {
@@ -329,7 +333,13 @@ function NavigationMenuContent() {
 
             {/* Sign Out Button */}
             <button
-              onClick={user ? handleLogout : () => router.push('/login')}
+              onClick={() => {
+                if (user) {
+                  handleLogout();
+                } else {
+                  router.push('/login');
+                }
+              }}
               className="flex items-center w-full px-8 py-2 mt-4 text-sm text-gray-300 hover:bg-gray-800 hover:text-white rounded-lg transition-colors duration-200"
             >
               <svg

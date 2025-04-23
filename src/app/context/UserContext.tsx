@@ -92,133 +92,147 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
   // Set up real-time listener for program status changes and latest program
   useEffect(() => {
-    if (!user) {
-      return;
-    }
+    let unsubscribe: (() => void) | null = null; // Initialize unsubscribe
 
-    // Listen to all user programs
-    const programsRef = collection(db, `users/${user.uid}/programs`);
-    const q = query(programsRef, orderBy('createdAt', 'desc'));
+    if (user) {
+      // Listen to all user programs
+      const programsRef = collection(db, `users/${user.uid}/programs`);
+      const q = query(programsRef, orderBy('createdAt', 'desc'));
 
-    const unsubscribe = onSnapshot(q, async (snapshot) => {
-      const programs: UserProgramWithId[] = [];
-      let mostRecentStatus: ProgramStatus | null = null;
-      let mostRecentProgram: UserProgramWithId | null = null;
-      let mostRecentDate: Date | null = null;
+      // Assign the unsubscribe function returned by onSnapshot
+      unsubscribe = onSnapshot(q, async (snapshot) => {
+        const programs: UserProgramWithId[] = [];
+        let mostRecentStatus: ProgramStatus | null = null;
+        let mostRecentProgram: UserProgramWithId | null = null;
+        let mostRecentDate: Date | null = null;
 
-      // Check if any program is currently being generated
-      const hasGeneratingProgram = snapshot.docs.some(
-        (doc) => doc.data().status === ProgramStatus.Generating
-      );
+        // Check if any program is currently being generated
+        const hasGeneratingProgram = snapshot.docs.some(
+          (doc) => doc.data().status === ProgramStatus.Generating
+        );
 
-      // If a program is being generated, set status and redirect to program page
-      if (hasGeneratingProgram) {
-        setProgramStatus(ProgramStatus.Generating);
-        // Only navigate to program page if we're not already there
-        if (
-          typeof window !== 'undefined' &&
-          !window.location.pathname.includes('/program')
-        ) {
-          router.push('/program');
-        }
-      }
-
-      // First pass: collect all programs
-      for (const doc of snapshot.docs) {
-        const data = doc.data();
-
-        // Track the most recent status for any program
-        if (!mostRecentStatus && data.status) {
-          mostRecentStatus = data.status;
+        // If a program is being generated, set status and redirect to program page
+        if (hasGeneratingProgram) {
+          setProgramStatus(ProgramStatus.Generating);
+          // Only navigate to program page if we're not already there
+          if (
+            typeof window !== 'undefined' &&
+            !window.location.pathname.includes('/program')
+          ) {
+            router.push('/program');
+          }
         }
 
-        if (data.status === ProgramStatus.Done) {
-          const programsCollectionRef = collection(
-            db,
-            `users/${user.uid}/programs/${doc.id}/programs`
-          );
-          const programQ = query(
-            programsCollectionRef,
-            orderBy('createdAt', 'desc')
-          );
-          const programSnapshot = await getDocs(programQ);
+        // First pass: collect all programs
+        for (const doc of snapshot.docs) {
+          const data = doc.data();
 
-          if (!programSnapshot.empty) {
-            const exercisePrograms = await Promise.all(
-              programSnapshot.docs.map(async (programDoc) => {
-                const program = programDoc.data() as ExerciseProgram;
-                await enrichExercisesWithFullData(program);
-                return program;
-              })
+          // Track the most recent status for any program
+          if (!mostRecentStatus && data.status) {
+            mostRecentStatus = data.status;
+          }
+
+          if (data.status === ProgramStatus.Done) {
+            const programsCollectionRef = collection(
+              db,
+              `users/${user.uid}/programs/${doc.id}/programs`
             );
+            const programQ = query(
+              programsCollectionRef,
+              orderBy('createdAt', 'desc')
+            );
+            const programSnapshot = await getDocs(programQ);
 
-            const updatedAt = data.updatedAt
-              ? new Date(data.updatedAt)
-              : new Date(data.createdAt);
-            const userProgram: UserProgramWithId = {
-              programs: exercisePrograms,
-              diagnosis: data.diagnosis,
-              questionnaire: data.questionnaire,
-              active: data.active ?? true, // Use active status from Firebase or default to true
-              createdAt: new Date(data.createdAt),
-              updatedAt: updatedAt,
-              type: data.type,
-              docId: doc.id, // Store the document ID
-            };
-            programs.push(userProgram);
+            if (!programSnapshot.empty) {
+              const exercisePrograms = await Promise.all(
+                programSnapshot.docs.map(async (programDoc) => {
+                  const program = programDoc.data() as ExerciseProgram;
+                  await enrichExercisesWithFullData(program);
+                  return program;
+                })
+              );
 
-            // Check if this is the most recent program we've seen
-            if (!mostRecentDate || updatedAt > mostRecentDate) {
-              mostRecentDate = updatedAt;
-              mostRecentProgram = userProgram;
+              const updatedAt = data.updatedAt
+                ? new Date(data.updatedAt)
+                : new Date(data.createdAt);
+              const userProgram: UserProgramWithId = {
+                programs: exercisePrograms,
+                diagnosis: data.diagnosis,
+                questionnaire: data.questionnaire,
+                active: data.active ?? true, // Use active status from Firebase or default to true
+                createdAt: new Date(data.createdAt),
+                updatedAt: updatedAt,
+                type: data.type,
+                docId: doc.id, // Store the document ID
+              };
+              programs.push(userProgram);
+
+              // Check if this is the most recent program we've seen
+              if (!mostRecentDate || updatedAt > mostRecentDate) {
+                mostRecentDate = updatedAt;
+                mostRecentProgram = userProgram;
+              }
             }
           }
         }
-      }
 
-      // Now set all state at once to prevent flickering
-      setUserPrograms(programs);
+        // Now set all state at once to prevent flickering
+        setUserPrograms(programs);
 
-      if (mostRecentProgram && mostRecentStatus !== ProgramStatus.Generating) {
-        // Set the most recent program as the active one
-        setActiveProgram(mostRecentProgram);
+        if (mostRecentProgram && mostRecentStatus !== ProgramStatus.Generating) {
+          // Set the most recent program as the active one
+          setActiveProgram(mostRecentProgram);
 
-        // Use the first program as the base and combine all program weeks
-        const allWeeks = mostRecentProgram.programs.flatMap(
-          (p) => p.program || []
-        );
-        const renumberedWeeks = allWeeks.map((weekData, i) => ({
-          ...weekData,
-          week: i + 1, // Renumber weeks sequentially starting from 1
-        }));
+          // Use the first program as the base and combine all program weeks
+          const allWeeks = mostRecentProgram.programs.flatMap(
+            (p) => p.program || []
+          );
+          const renumberedWeeks = allWeeks.map((weekData, i) => ({
+            ...weekData,
+            week: i + 1, // Renumber weeks sequentially starting from 1
+          }));
 
-        const combinedProgram = {
-          ...mostRecentProgram.programs[0], // Get basics from first program
-          program: renumberedWeeks,
-          docId: mostRecentProgram.docId,
-        };
+          const combinedProgram = {
+            ...mostRecentProgram.programs[0], // Get basics from first program
+            program: renumberedWeeks,
+            docId: mostRecentProgram.docId,
+          };
 
-        setProgram(combinedProgram);
-        setAnswers(mostRecentProgram.questionnaire);
+          setProgram(combinedProgram);
+          setAnswers(mostRecentProgram.questionnaire);
 
-        // Only update the status to Done if we're not currently generating a new program
-        if (
-          programStatus !== ProgramStatus.Generating &&
-          !hasGeneratingProgram
+          // Only update the status to Done if we're not currently generating a new program
+          if (
+            programStatus !== ProgramStatus.Generating &&
+            !hasGeneratingProgram
+          ) {
+            setProgramStatus(ProgramStatus.Done);
+          }
+        } else if (
+          mostRecentStatus &&
+          programStatus !== ProgramStatus.Generating
         ) {
-          setProgramStatus(ProgramStatus.Done);
+          // Only set status if no program was found AND we're not generating
+          setProgramStatus(mostRecentStatus);
         }
-      } else if (
-        mostRecentStatus &&
-        programStatus !== ProgramStatus.Generating
-      ) {
-        // Only set status if no program was found AND we're not generating
-        setProgramStatus(mostRecentStatus);
-      }
-    });
+      });
+    } else {
+      // Explicitly reset state when user is null (logged out)
+      setProgram(null);
+      setUserPrograms([]);
+      setActiveProgram(null);
+      setProgramStatus(null);
+      // Maybe set loading to true or false depending on desired behavior?
+      // setIsLoading(true); 
+    }
 
-    return () => unsubscribe();
-  }, [user]);
+    // Cleanup function
+    return () => {
+      if (unsubscribe) {
+        unsubscribe(); // Call the unsubscribe function if it exists
+      }
+    };
+  }, [user]); // Dependency array remains [user]
 
   // Fetch initial user data when user logs in
   useEffect(() => {
