@@ -9,6 +9,7 @@ import { LoadingSpinner } from './LoadingSpinner';
 import { ProgramStatus } from '@/app/types/program';
 import { useTranslation } from '@/app/i18n';
 import LanguageSwitcher from './LanguageSwitcher';
+import DevMobileNavBar from './DevMobileNavBar';
 
 // Create a separate component that uses the search params
 function NavigationMenuContent() {
@@ -22,6 +23,7 @@ function NavigationMenuContent() {
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const drawerRef = useRef<HTMLDivElement>(null);
+  const [showDevNavBar, setShowDevNavBar] = useState(false);
 
   // Close drawer when clicking outside
   useEffect(() => {
@@ -185,6 +187,11 @@ function NavigationMenuContent() {
     await logOut();
     setShowUserMenu(false);
     setDrawerOpen(false);
+    setShowDevNavBar(false);
+  };
+
+  const toggleDevNavBar = () => {
+    setShowDevNavBar(prev => !prev);
   };
 
   return (
@@ -260,10 +267,20 @@ function NavigationMenuContent() {
 
           {/* User actions */}
           {user ? (
-            <div className="p-4 border-t border-gray-800">
+            <div className="border-t border-gray-800 pb-16">
+              {/* Language Switcher */}
+              <div className="mt-4 px-8 ">
+                <p className="text-sm text-gray-400 mb-2">{t('common.language')}</p>
+                <LanguageSwitcher showFullNames />
+              </div>
+              
+              {/* Divider */}
+              <hr className="border-gray-800 my-4" />
+              
+              {/* Sign Out Button */}
               <button
                 onClick={handleLogout}
-                className="flex items-center w-full px-4 py-2 text-sm text-gray-300 hover:bg-gray-800 hover:text-white rounded-lg transition-colors duration-200"
+                className="flex items-center w-full px-8 py-2 mt-4 text-sm text-gray-300 hover:bg-gray-800 hover:text-white rounded-lg transition-colors duration-200"
               >
                 <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
@@ -275,18 +292,12 @@ function NavigationMenuContent() {
                 </svg>
                 {t('auth.signOut')}
               </button>
-              
-              {/* Language Switcher */}
-              <div className="mt-4 px-4">
-                <p className="text-sm text-gray-400 mb-2">{t('common.language')}</p>
-                <LanguageSwitcher showFullNames />
-              </div>
             </div>
           ) : (
-            <div className="p-4 border-t border-gray-800">
+            <div className="px-8 pb-16">
               <button
                 onClick={() => handleNavigation('/login')}
-                className="flex items-center w-full px-4 py-2 text-sm text-gray-300 hover:bg-gray-800 hover:text-white rounded-lg transition-colors duration-200"
+                className="flex items-center w-full px-8 py-2 text-sm text-gray-300 hover:bg-gray-800 hover:text-white rounded-lg transition-colors duration-200"
               >
                 <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
@@ -300,14 +311,32 @@ function NavigationMenuContent() {
               </button>
               
               {/* Language Switcher */}
-              <div className="mt-4 px-4">
+              <div className="mt-4 px-8">
                 <p className="text-sm text-gray-400 mb-2">{t('common.language')}</p>
                 <LanguageSwitcher showFullNames />
               </div>
+              
+              {/* Dev Mode Toggle */}
+              {process.env.NODE_ENV === 'development' && (
+                 <div className="mt-4 px-8">
+                   <button
+                    onClick={toggleDevNavBar}
+                    className="flex items-center w-full px-4 py-2 text-sm text-yellow-400 hover:bg-gray-800 hover:text-yellow-300 rounded-lg transition-colors duration-200"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                    </svg>
+                    Toggle Dev Nav Bar ({showDevNavBar ? 'On' : 'Off'})
+                  </button>
+                </div>
+              )}
             </div>
           )}
         </div>
       </div>
+      
+      {/* Conditionally render the Dev Mobile Nav Bar */}
+      {showDevNavBar && <DevMobileNavBar />}
     </div>
   );
 }
