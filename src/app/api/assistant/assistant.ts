@@ -123,6 +123,10 @@ export async function sendMessage(
           }
         }
       }
+    } catch (streamError) {
+        console.error('Error reading stream:', streamError);
+        // Re-throw the error so the calling hook can handle it
+        throw new Error(`Stream reading failed: ${streamError.message}`);
     } finally {
       reader.releaseLock();
     }

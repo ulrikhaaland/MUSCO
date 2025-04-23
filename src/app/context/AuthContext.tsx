@@ -10,7 +10,7 @@ import {
   signInWithEmailLink,
   deleteUser,
 } from 'firebase/auth';
-import { auth, db } from '../firebase/config';
+import { auth, db, functions } from '../firebase/config';
 import { doc, setDoc, getDoc, deleteDoc } from 'firebase/firestore';
 import { useClientUrl } from '../hooks/useClientUrl';
 import { useRouter } from 'next/navigation';
@@ -21,6 +21,7 @@ import {
 } from '../services/questionnaire';
 import { ExtendedUser, UserProfile } from '../types/user';
 import { toast } from '../components/ui/ToastProvider';
+import { getFunctions, httpsCallable } from 'firebase/functions';
 
 interface AuthContextType {
   user: ExtendedUser | null;
@@ -387,11 +388,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const sendSignInLink = async (email: string) => {
+    // Store email locally for sign-in completion
+    window.localStorage.setItem('emailForSignIn', email);
     try {
-      await sendSignInLinkToEmail(auth, email, actionCodeSettings);
+      // Ensure functions is initialized before calling httpsCallable
+      if (!functions) {
+        console.error('Firebase Functions instance is not available.');
+        toast.error('Configuration error. Please try again later.');
+        return;
+      }
+      const sendLoginEmail = httpsCallable(functions, 'sendLoginEmail');
+      await sendLoginEmail({ email });
+      // Optionally, show a success message
+      toast.success('Check your email for the sign-in link!');
     } catch (error) {
-      console.error('Error sending sign-in link:', error);
-      return handleAuthError(error, 'Failed to send sign-in link', false);
+      console.error('Error calling sendLoginEmail function:', error);
+      // Use toast directly for user feedback
+      toast.error('Failed to send sign-in link. Please try again.');
+      // Rethrow if you want calling code to be aware of the failure
+      // throw error; 
+      // Or adapt handleAuthError if needed
+      // return handleAuthError(error, 'Failed to send sign-in link', false);
     }
   };
 
