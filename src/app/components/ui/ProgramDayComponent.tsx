@@ -175,14 +175,15 @@ export function ProgramDayComponent({
       <Chip
         key={bodyPart}
         onClick={() => toggleBodyPart(bodyPart)}
+        size="lg"
         variant={removedBodyParts.includes(bodyPart) ? 'inactive' : 'default'}
         icon={
           removedBodyParts.includes(bodyPart) ? (
-            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
             </svg>
           ) : (
-            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
           )
@@ -206,7 +207,7 @@ export function ProgramDayComponent({
     } else {
       if (exercise.sets && exercise.repetitions) {
         chips.push(
-          <Chip key="sets-reps">
+          <Chip key="sets-reps" size="lg">
             {exercise.sets} × {exercise.repetitions}
           </Chip>
         );
@@ -356,7 +357,7 @@ export function ProgramDayComponent({
                   }
                   tag={
                     exercise.bodyPart && (
-                      <Chip size="sm">
+                      <Chip size="md">
                         {exercise.bodyPart}
                       </Chip>
                     )
@@ -440,7 +441,7 @@ export function ProgramDayComponent({
                       )}
                       
                       {exercise.precaution && (
-                        <p className="text-yellow-200/90 text-sm leading-relaxed">
+                        <p className="text-red-400/90 text-sm leading-relaxed">
                           <span className="font-medium">Precaution:</span>{' '}
                           {exercise.precaution}
                         </p>

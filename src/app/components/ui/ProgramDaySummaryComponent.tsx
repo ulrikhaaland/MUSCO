@@ -1,4 +1,5 @@
 import { ProgramDay } from '@/app/types/program';
+import Chip from './Chip';
 
 interface ProgramDaySummaryComponentProps {
   day: ProgramDay;
@@ -7,6 +8,7 @@ interface ProgramDaySummaryComponentProps {
   onClick?: () => void;
   programTitle?: string;
   isCalendarView?: boolean;
+  isHighlighted?: boolean;
 }
 
 export function ProgramDaySummaryComponent({
@@ -16,6 +18,7 @@ export function ProgramDaySummaryComponent({
   onClick,
   programTitle,
   isCalendarView = false,
+  isHighlighted = false,
 }: ProgramDaySummaryComponentProps) {
   // Calculate exercise statistics
   const totalExercises = day.exercises?.length || 0;
@@ -24,7 +27,7 @@ export function ProgramDaySummaryComponent({
   return (
     <div>
     <div 
-      className={`bg-gray-800/50 rounded-xl overflow-hidden ring-1 ring-gray-700/50 transition-colors duration-200 ${onClick ? 'hover:bg-gray-700/50 cursor-pointer' : ''}`}
+      className={`bg-gray-800/50 rounded-xl overflow-hidden ring-1 ring-gray-700/50 transition-colors duration-200 ${onClick ? 'hover:bg-gray-700/50 cursor-pointer' : ''} ${isHighlighted ? 'shadow-[inset_0_0_0_1px_rgba(255,255,255,0.04)]' : ''}`}
       onClick={onClick}
     >
       <div className="px-6 py-4">
@@ -35,13 +38,9 @@ export function ProgramDaySummaryComponent({
                 {dayName}
               </h3>
               {day.isRestDay ? (
-                <span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-500/20 text-blue-300">
-                  Rest
-                </span>
+                <Chip variant="highlight" size="sm">Rest</Chip>
               ) : (
-                <span className="px-2 py-1 rounded-full text-xs font-medium bg-indigo-500/20 text-indigo-300">
-                  Activity
-                </span>
+                <Chip variant="default" size="sm">Activity</Chip>
               )}
             </div>
             <div className="flex items-center gap-6">

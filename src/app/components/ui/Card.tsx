@@ -23,7 +23,7 @@ export const Card = ({
   headerContent,
   footerContent
 }: CardProps) => {
-  const baseClasses = "bg-gray-800/95 rounded-xl overflow-hidden shadow-lg box-shadow-card transition-all duration-200";
+  const baseClasses = "bg-gray-800/50 rounded-xl overflow-hidden shadow-lg ring-1 ring-gray-700/50 transition-all duration-200";
   
   // Enhanced hover effect with subtle elevation and lighting
   const hoverClasses = isHoverable 
