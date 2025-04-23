@@ -343,7 +343,7 @@ export function ExerciseProgramCalendar({
           <div
             key={index}
             className={`space-y-2 ${
-              index === programDays.length - 1 ? 'pb-32' : 'pb-0'
+              index === programDays.length - 1 ? 'pb-20' : 'pb-0'
             }`}
           >
             <ProgramDaySummaryComponent
