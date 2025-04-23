@@ -382,7 +382,6 @@ export default function HumanViewer({
           recoveryGoals: [],
           timeFrame: '1 week',
           followUpQuestions: [],
-          progressive: true,
         };
         setDiagnosis(newDiagnosis);
       }
@@ -404,7 +403,6 @@ export default function HumanViewer({
       recoveryGoals: [],
       timeFrame: '1 week',
       followUpQuestions: [],
-      progressive: false,
     };
     setDiagnosis(newDiagnosis);
     setShowQuestionnaire(true);
