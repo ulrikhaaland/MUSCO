@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTranslation } from '@/app/i18n';
+import type { Locale } from '@/app/i18n';
 
 // Simple SVG Flag Components
 const UKFlag = () => (
@@ -51,11 +52,11 @@ export default function LanguageSwitcher({
           role="radio"
           aria-checked={locale === lang.code}
           tabIndex={0}
-          onClick={() => setLocale(lang.code)}
+          onClick={() => setLocale(lang.code as Locale)}
           onKeyDown={(e) => {
             if (e.key === 'Enter' || e.key === ' ') {
               e.preventDefault();
-              setLocale(lang.code);
+              setLocale(lang.code as Locale);
             }
           }}
         >
