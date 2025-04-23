@@ -13,6 +13,12 @@ import {
 } from '../types';
 import { useTranslation } from '../i18n';
 
+// Type for storing failed message details for retry
+type FailedMessageInfo = {
+  messageContent: string;
+  chatPayload: Omit<ChatPayload, 'message'>;
+};
+
 export function useChat() {
   const { locale } = useTranslation();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -29,6 +35,19 @@ export function useChat() {
     { message: string; payload: Omit<ChatPayload, 'message'> }[]
   >([]);
 
+  // Refs to track the last message and stream state for reconnection
+  const lastUserMessageRef = useRef<{
+    messageContent: string;
+    chatPayload: Omit<ChatPayload, 'message'>;
+  } | null>(null);
+  const streamPossiblyInterruptedRef = useRef(false);
+  const isRefetchingRef = useRef(false); // Prevent multiple refetches
+
+  // State to store details of the last message that failed to send
+  const [lastSendError, setLastSendError] = useState<FailedMessageInfo | null>(
+    null
+  );
+
   useEffect(() => {
     async function initializeAssistant() {
       try {
@@ -43,11 +62,54 @@ export function useChat() {
     initializeAssistant();
   }, []);
 
+  // Add listener for visibility change to handle stream interruptions
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (
+        document.visibilityState === 'visible' &&
+        streamPossiblyInterruptedRef.current &&
+        lastUserMessageRef.current &&
+        !isRefetchingRef.current // Only refetch if not already doing so
+      ) {
+        console.log(
+          'App became visible, potential stream interruption detected. Re-fetching last message.'
+        );
+        isRefetchingRef.current = true; // Mark as refetching
+        streamPossiblyInterruptedRef.current = false; // Reset flag immediately
+
+        // Re-send the last message without adding it again to the UI
+        sendChatMessage(
+          lastUserMessageRef.current.messageContent,
+          lastUserMessageRef.current.chatPayload,
+          true // Indicate this is a refetch
+        ).finally(() => {
+          isRefetchingRef.current = false; // Mark refetching as complete
+          console.log(`Refetch finally block: isRefetchingRef reset to ${isRefetchingRef.current}`);
+        });
+      } else if (document.visibilityState === 'hidden' && isLoading) {
+        // If page hides while loading, mark stream as potentially interrupted
+        streamPossiblyInterruptedRef.current = true;
+        console.log('App hidden while loading, marking stream as potentially interrupted.');
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    // Cleanup listener on unmount
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [isLoading]); // Dependency on isLoading to update ref correctly
+
   const resetChat = () => {
     setMessages([]);
     setFollowUpQuestions([]);
     setAssistantResponse(null);
     messageQueueRef.current = []; // Clear the queue on reset
+    lastUserMessageRef.current = null; // Clear last message on reset
+    streamPossiblyInterruptedRef.current = false; // Reset interruption flag
+    isRefetchingRef.current = false; // Reset refetching flag
+    setLastSendError(null); // Clear any send error on reset
     createThread().then(({ threadId }) => {
       threadIdRef.current = threadId;
     });
@@ -63,7 +125,8 @@ export function useChat() {
 
   const sendChatMessage = async (
     messageContent: string,
-    chatPayload: Omit<ChatPayload, 'message'>
+    chatPayload: Omit<ChatPayload, 'message'>,
+    isRefetch: boolean = false // Added flag to indicate refetch
   ) => {
     // Create the message object
     const newMessage: ChatMessage = {
@@ -73,21 +136,40 @@ export function useChat() {
       timestamp: new Date(),
     };
 
-    if (isLoading) {
-      // Since we're queueing a new message, we can consider the current response complete
-      setIsLoading(false);
-      // Queue the message for processing after current response is marked complete
-      messageQueueRef.current.push({
-        message: messageContent,
-        payload: chatPayload,
+    if (!isRefetch) {
+      if (isLoading) {
+        // Queue the message if loading (unless it's a refetch)
+        // Since we're queueing a new message, we can consider the current response complete
+        // setIsLoading(false); // Let's not assume the current response is complete, just queue
+        console.log("Chat is busy, queuing message:", messageContent);
+        messageQueueRef.current.push({
+          message: messageContent,
+          payload: chatPayload,
+        });
+        return;
+      }
+      // Add the user message to chat only if it's not a refetch
+      setMessages((prev) => [...prev, newMessage]);
+      // Store the details of the last message sent by the user
+      lastUserMessageRef.current = { messageContent, chatPayload };
+    } else {
+      // If it's a refetch, remove the potentially incomplete last assistant message
+      console.log("Refetching: Removing potentially incomplete last assistant message.");
+      setMessages((prev) => {
+          const lastMsg = prev[prev.length - 1];
+          if (lastMsg && lastMsg.role === 'assistant') {
+              return prev.slice(0, -1); // Remove last assistant message
+          }
+          return prev; // No assistant message to remove
       });
-      return;
     }
 
-    // Add the message to chat only when we're actually processing it
-    setMessages((prev) => [...prev, newMessage]);
+    // Reset state for the new/refetched response
     setFollowUpQuestions([]);
+    setAssistantResponse(null); // Also reset previous assistant response data
+    setLastSendError(null); // Clear any previous error when sending a new message
     setIsLoading(true);
+    streamPossiblyInterruptedRef.current = false; // Reset before starting
 
     try {
       const payload: ChatPayload = {
@@ -105,6 +187,17 @@ export function useChat() {
       // Send the message and handle streaming response
       await sendMessage(threadIdRef.current ?? '', payload, (content) => {
         if (!content) return;
+
+        if (isRefetch) {
+          console.log("Refetch: Received content chunk:", content ? content.substring(0, 50) + '...' : 'null');
+        }
+
+        // If the stream was previously marked as interrupted and we are now receiving content,
+        // it means the connection survived or reconnected automatically. Reset the flag.
+        if (streamPossiblyInterruptedRef.current) {
+            console.log("Receiving content after potential interruption, resetting flag.");
+            streamPossiblyInterruptedRef.current = false;
+        }
 
         // Add to buffer for cross-chunk marker detection
         accumulatedJsonBuffer += content;
@@ -673,16 +766,45 @@ export function useChat() {
           }
         }
       });
+
+      // Log added to check if await sendMessage completes during refetch
+      if (isRefetch) {
+        console.log("Refetch: await sendMessage has completed.");
+      }
+
+      // Stream finished successfully, reset interruption flag
+      console.log("Stream finished successfully.");
+      streamPossiblyInterruptedRef.current = false;
+
     } catch (error) {
       console.error('Error sending message:', error);
+      // Store details of the failed message for potential retry
+      setLastSendError({ messageContent, chatPayload });
+      // Ensure flag is reset even on error
+      streamPossiblyInterruptedRef.current = false;
     } finally {
       setIsLoading(false);
+      console.log(`Send message finally block: isLoading set to false. isRefetch: ${isRefetch}, isRefetchingRef: ${isRefetchingRef.current}`);
+      // Stream finished (successfully or with error), ensure flag is reset
+      streamPossiblyInterruptedRef.current = false;
 
-      // Final safety check to clean up any JSON that might have slipped through
+      // Final safety check to clean up any JSON markers
       cleanupJsonInMessages();
 
       // Process next message in queue if any
       processNextMessage();
+    }
+  };
+
+  // Function to retry sending the last failed message
+  const retryLastMessage = () => {
+    if (lastSendError) {
+      console.log('Retrying last failed message...');
+      const { messageContent, chatPayload } = lastSendError;
+      setLastSendError(null); // Clear the error state before retrying
+      // Send the message again. It won't be added to UI again due to checks
+      // in sendChatMessage, and won't be queued if not loading.
+      sendChatMessage(messageContent, chatPayload);
     }
   };
 
@@ -694,25 +816,28 @@ export function useChat() {
       const lastMessage = prev[prev.length - 1];
       if (lastMessage.role !== 'assistant') return prev;
 
-      // Simplify - look for '<< and cut off everything from that point
-      const markerIndex = lastMessage.content.indexOf('<<');
-      if (markerIndex !== -1) {
-        // Only keep content before the marker
-        const cleanContent = lastMessage.content
-          .substring(0, markerIndex)
-          .trim();
+      // Remove markers and any text after them
+      const markerRegex = /<<JSON_DATA>>|<<JSON_END>>/;
+      const match = lastMessage.content.match(markerRegex);
 
-        // If we've removed everything, don't update
-        if (!cleanContent) return prev;
+      if (match && match.index !== undefined) {
+          const cleanContent = lastMessage.content.substring(0, match.index).trim();
+          console.log("Cleaning up JSON markers from last message.");
 
-        return [
-          ...prev.slice(0, -1),
-          {
-            ...lastMessage,
-            content: cleanContent,
-            timestamp: new Date(),
-          },
-        ];
+          // If cleaning removed everything, remove the message entirely
+          if (!cleanContent) {
+             console.log("Cleaned content is empty, removing message.");
+            return prev.slice(0,-1);
+          }
+
+          return [
+            ...prev.slice(0, -1),
+            {
+              ...lastMessage,
+              content: cleanContent,
+              timestamp: new Date(),
+            },
+          ];
       }
 
       return prev;
@@ -725,8 +850,10 @@ export function useChat() {
     userPreferences,
     followUpQuestions,
     assistantResponse,
+    lastSendError,
     resetChat,
     sendChatMessage,
+    retryLastMessage,
     setFollowUpQuestions,
   };
 }
