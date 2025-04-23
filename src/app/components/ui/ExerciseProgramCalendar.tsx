@@ -124,7 +124,7 @@ export function ExerciseProgramCalendar({
         <div className="flex space-x-4">
           <button
             onClick={() => handleMonthChange(-1)}
-            className="p-2 rounded-full hover:bg-gray-800/80 text-gray-400 hover:text-white transition-colors"
+            className="p-3 rounded-full hover:bg-gray-800/80 text-gray-400 hover:text-white transition-colors disabled:opacity-60"
           >
             <svg
               className="w-5 h-5"
@@ -142,7 +142,7 @@ export function ExerciseProgramCalendar({
           </button>
           <button
             onClick={() => handleMonthChange(1)}
-            className="p-2 rounded-full hover:bg-gray-800/80 text-gray-400 hover:text-white transition-colors"
+            className="p-3 rounded-full hover:bg-gray-800/80 text-gray-400 hover:text-white transition-colors disabled:opacity-60"
           >
             <svg
               className="w-5 h-5"
@@ -249,7 +249,7 @@ export function ExerciseProgramCalendar({
 
                 return (
                   <button
-                    key={dayIndex}
+                    key={date.toDateString()}
                     onClick={() => handleDateClick(date)}
                     className={`
                       relative aspect-square p-1 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-900
@@ -262,13 +262,14 @@ export function ExerciseProgramCalendar({
                       }
                       ${
                         isSelected
-                          ? 'bg-indigo-500/30 ring-1 ring-indigo-400'
+                          ? 'bg-indigo-600/40 border-2 border-indigo-400'
                           : ''
                       }
-                      ${isToday ? 'font-bold' : ''}
                       ${
                         isProgramDay && isCurrentMonth && !isSelected
                           ? 'hover:bg-gray-700/50'
+                          : !isProgramDay && isCurrentMonth && !isSelected
+                          ? 'hover:bg-gray-800/40'
                           : ''
                       }
                       transition-all duration-200
@@ -277,7 +278,7 @@ export function ExerciseProgramCalendar({
                     <div className="flex flex-col h-full">
                       <div
                         className={`
-                        flex justify-center items-center mb-1
+                        flex justify-center items-center flex-grow
                         ${isToday ? 'relative' : ''}
                       `}
                       >
@@ -285,14 +286,15 @@ export function ExerciseProgramCalendar({
                           className={`
                             text-sm relative z-10 ${
                               isToday
-                                ? 'text-indigo-300'
+                                ? 'text-indigo-300 font-semibold'
+                                : isSelected
+                                ? 'text-white font-semibold'
                                 : isCurrentMonth
                                 ? isProgramDay
-                                  ? 'text-gray-300'
-                                  : 'text-gray-500'
+                                  ? 'text-gray-100'
+                                  : 'text-gray-300'
                                 : 'text-gray-600'
                             }
-                            ${isSelected ? 'text-white' : ''}
                           `}
                         >
                           {date.getDate()}
@@ -301,11 +303,11 @@ export function ExerciseProgramCalendar({
                       {isProgramDay && isCurrentMonth && (
                         <div className="mt-auto">
                           {hasWorkout ? (
-                            <div className="text-xs text-white mt-1 flex items-center justify-center">
+                            <div className="text-xs text-white mt-1 flex items-center justify-center opacity-65">
                               Workout
                             </div>
                           ) : isRestOnly ? (
-                            <div className="text-xs text-white mt-1 flex items-center justify-center">
+                            <div className="text-xs text-white mt-1 flex items-center justify-center opacity-65">
                               Rest
                             </div>
                           ) : null}
@@ -336,7 +338,7 @@ export function ExerciseProgramCalendar({
     // Format the date for display
 
     return (
-      <div className="mt-6 space-y-8">
+      <div className="mt-8 space-y-8">
         {programDays.map((programDay, index) => (
           <div
             key={index}

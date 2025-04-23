@@ -4967,7 +4967,7 @@ export const absExercises: ExerciseGroup = {
       forceType: 'Pull',
       mechanics: 'Compound',
       videoUrl:
-        'gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3760.MOV',
+        'gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3760.mov',
       imageUrl:
         'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Abs.jpg',
       viewCount: 0,
