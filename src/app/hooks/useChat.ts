@@ -178,11 +178,20 @@ export function useChat() {
         language: locale,
       };
 
+      if (isRefetch) {
+        console.log("Refetch: Sending payload:", JSON.stringify(payload));
+      }
+
       let accumulatedContent = '';
       let jsonDetected = false;
-
-      // Reset accumulated JSON buffer on each new message
       let accumulatedJsonBuffer = '';
+
+      // Mark stream as potentially interruptible right before the async call
+      // Only set if not already loading (prevents overriding during queue processing)
+      if (!isLoading) {
+        streamPossiblyInterruptedRef.current = true;
+        console.log("Set streamPossiblyInterruptedRef = true before await sendMessage");
+      }
 
       // Send the message and handle streaming response
       await sendMessage(threadIdRef.current ?? '', payload, (content) => {
@@ -787,6 +796,7 @@ export function useChat() {
       console.log(`Send message finally block: isLoading set to false. isRefetch: ${isRefetch}, isRefetchingRef: ${isRefetchingRef.current}`);
       // Stream finished (successfully or with error), ensure flag is reset
       streamPossiblyInterruptedRef.current = false;
+      console.log("Set streamPossiblyInterruptedRef = false in finally block");
 
       // Final safety check to clean up any JSON markers
       cleanupJsonInMessages();
