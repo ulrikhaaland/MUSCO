@@ -712,7 +712,7 @@ export function ExerciseProgramPage({
             </div>
           )}
 
-          <div ref={containerRef} className="h-screen overflow-y-auto pb-20">
+          <div ref={containerRef} className="h-screen overflow-y-auto pb-32">
             <div className="max-w-4xl mx-auto px-4">
               {/* Program overview button - hide when showing feedback or selection */}
               {!showFeedbackQuestionnaire && !showExerciseSelectionPage && (

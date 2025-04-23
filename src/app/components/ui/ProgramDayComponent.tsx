@@ -46,6 +46,8 @@ export function ProgramDayComponent({
   const [isActivityBadgePressed, setIsActivityBadgePressed] = useState(false);
   // State to track viewport width for responsive adjustments
   const [isMobile, setIsMobile] = useState(false);
+  // State to track if the body parts container is scrolled to the end
+  const [isScrolledToEnd, setIsScrolledToEnd] = useState(false);
   // Ref for body parts container
   const bodyPartsRef = useRef<HTMLDivElement>(null);
   // Ref to track current overflow state to avoid dependency loops
@@ -80,6 +82,14 @@ export function ProgramDayComponent({
     }
   }, []);
   
+  // Handle scroll events on the body parts container
+  const handleBodyPartsScroll = useCallback((event: React.UIEvent<HTMLDivElement>) => {
+    const { scrollLeft, scrollWidth, clientWidth } = event.currentTarget;
+    // Check if scrolled to the end (within a small tolerance)
+    const atEnd = scrollWidth - clientWidth - scrollLeft < 1;
+    setIsScrolledToEnd(atEnd);
+  }, []);
+
   // Check if body parts container is overflowing
   useEffect(() => {
     checkOverflow();
@@ -196,7 +206,7 @@ export function ProgramDayComponent({
     } else {
       if (exercise.sets && exercise.repetitions) {
         chips.push(
-          <Chip key="sets-reps" size="sm">
+          <Chip key="sets-reps">
             {exercise.sets} × {exercise.repetitions}
           </Chip>
         );
@@ -299,12 +309,13 @@ export function ProgramDayComponent({
               ref={bodyPartsRef}
               className="flex overflow-x-auto hide-scrollbar pb-2 max-w-full"
               style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+              onScroll={handleBodyPartsScroll}
             >
               <div className="flex gap-2 min-w-min pr-8">
                 {renderBodyParts()}
               </div>
             </div>
-            {isBodyPartsOverflowing && (
+            {isBodyPartsOverflowing && !isScrolledToEnd && (
               <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-gray-900/90 from-30% via-gray-900/70 via-60% to-transparent pointer-events-none" style={{ right: '-2px' }} />
             )}
           </div>
@@ -328,7 +339,7 @@ export function ProgramDayComponent({
 
         {/* Exercise list - same for both rest days and workout days */}
         {filteredExercises && filteredExercises.length > 0 ? (
-          <div className="space-y-8 pb-32">
+          <div className="space-y-8">
             {filteredExercises.map((exercise) => {
               const exerciseId = exercise.id || exercise.exerciseId || exercise.name;
               const isExpanded = !onExerciseToggle || expandedExercises.includes(exercise.name);
