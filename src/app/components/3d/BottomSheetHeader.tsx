@@ -99,7 +99,7 @@ export function BottomSheetHeader({
       className="h-12 w-full flex justify-between items-center"
     >
       <div className="flex flex-col items-start text-left flex-1 mr-4 max-h-12 overflow-hidden">
-        <h3 className="text-lg font-bold text-white text-left break-words w-full line-clamp-1">
+        <h3 className="text-md font-bold text-white text-left break-words w-full line-clamp-1">
           {main}
         </h3>
         <h2 className="text-sm text-white text-left break-words w-full line-clamp-1">

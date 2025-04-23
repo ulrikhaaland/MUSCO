@@ -3,7 +3,6 @@ import { ChatPayload, DiagnosisAssistantResponse } from '../../types';
 import { ExerciseQuestionnaireAnswers, ProgramType } from '@/app/shared/types';
 import { adminDb } from '@/app/firebase/admin';
 import { ProgramStatus, ExerciseProgram } from '@/app/types/program';
-import { recoverySystemPrompt } from '../prompts/recoveryPrompt';
 
 // Initialize OpenAI client
 const openai = new OpenAI({
@@ -85,7 +84,7 @@ export async function runAssistant(threadId: string, assistantId: string) {
   try {
     const run = await openai.beta.threads.runs.create(threadId, {
       assistant_id: assistantId,
-      response_format: { type: 'json_object' }
+      response_format: { type: 'json_object' },
     });
 
     // Wait for the run to complete
@@ -123,87 +122,6 @@ export async function getMessages(threadId: string) {
   } catch (error) {
     console.error('Error getting messages:', error);
     throw new Error('Failed to get messages');
-  }
-}
-
-export async function generateFollowUpQuestions(context: {
-  messages: { role: string; content: string }[];
-  bodyGroup: string;
-  bodyPart: string;
-  previousQuestions?: {
-    questions: {
-      title: string;
-      description: string;
-      question: string;
-    }[];
-    selected?: string;
-  };
-}) {
-  try {
-    const systemPrompt = `You are a follow-up question generator for a musculoskeletal diagnosis app.
-
-Your task is to generate 3 targeted follow-up questions to help the user better identify the cause of their discomfort. The questions should guide the user through simple physical actions or inquiries to gather more information about their condition.
-
-Guidelines:
-1. Questions should flow naturally from the conversation history and current focus area.
-2. Avoid repeating previously suggested questions.
-3. Focus on the current body group or part being discussed.
-4. Each question should explore different diagnostic angles:
-   - Symptom specifics (e.g., nature, duration, triggers of pain).
-   - Physical tests (e.g., movements to perform, actions that provoke pain).
-   - Possible causes (e.g., strain, posture, recent activities).
-5. Ensure questions are specific, actionable, and formatted as if the user is directly asking the assistant for guidance.
-
-Question Formatting:
-- The "question" field must be phrased in first-person, where the user is asking the assistant for guidance on what to do next (e.g., "Should I try bending sideways to see if it changes the intensity of my discomfort?").
-- The "title" should be a short, engaging summary.
-
-Examples:
-- Title: "Specific Movement Test"
-- Question: "Should I try bending sideways to see if it changes the intensity of my discomfort?"
-
-- Title: "Core Muscle Tension Test"
-- Question: "Should I try tightening my abdominal muscles to see if it changes my discomfort?"
-
-Return exactly 3 questions in the following JSON format:
-{
-  "followUpQuestions": [
-    {
-      "title": "Brief, engaging title",
-      "question": "The actual question phrased from the user's perspective asking for guidance"
-    }
-  ]
-}`;
-
-    const completion = await openai.chat.completions.create({
-      model: 'gpt-4o',
-      response_format: { type: 'json_object' },
-      messages: [
-        {
-          role: 'system',
-          content: systemPrompt,
-        },
-        {
-          role: 'user',
-          content: JSON.stringify({
-            bodyGroup: context.bodyGroup,
-            bodyPart: context.bodyPart,
-            conversationHistory: context.messages,
-            previousQuestions: context.previousQuestions,
-          }),
-        },
-      ],
-    });
-
-    const response = completion.choices[0].message.content;
-    if (!response) {
-      throw new Error('No response from OpenAI');
-    }
-
-    return JSON.parse(response);
-  } catch (error) {
-    console.error('Error generating follow-up questions:', error);
-    throw new Error('Failed to generate follow-up questions');
   }
 }
 
@@ -259,7 +177,7 @@ export async function generateExerciseProgram(context: {
         currentDay: new Date().getDay(),
         previousProgram: context.previousProgram,
         isFollowUp: context.isFollowUp,
-        language: language // Add language parameter to the payload
+        language: language, // Add language parameter to the payload
       }),
       selectedBodyGroupName: '', // Not needed for exercise program
       bodyPartsInSelectedGroup: [], // Not needed for exercise program
@@ -288,47 +206,59 @@ export async function generateExerciseProgram(context: {
     }
 
     // Parse the response as JSON
-    console.log(`Response first 100 chars: "${messageContent.text.value.substring(0, 100)}..."`);
-    console.log(`Response length: ${messageContent.text.value.length} characters`);
+    console.log(
+      `Response first 100 chars: "${messageContent.text.value.substring(
+        0,
+        100
+      )}..."`
+    );
+    console.log(
+      `Response length: ${messageContent.text.value.length} characters`
+    );
     console.log(`Complete response: ${messageContent.text.value}`);
-    
+
     // Helper function to extract JSON from text
     const extractJsonFromText = (text: string): string => {
       // Try to find content between JSON code blocks (```json ... ```)
       const jsonBlockMatch = text.match(/```json\s*([\s\S]*?)\s*```/);
       if (jsonBlockMatch && jsonBlockMatch[1]) {
-        console.log("Found JSON in code block, extracting...");
+        console.log('Found JSON in code block, extracting...');
         return jsonBlockMatch[1].trim();
       }
-      
+
       // Try to find content that looks like a JSON object
       const jsonObjectMatch = text.match(/(\{[\s\S]*\})/);
       if (jsonObjectMatch && jsonObjectMatch[1]) {
-        console.log("Found JSON object pattern, extracting...");
+        console.log('Found JSON object pattern, extracting...');
         return jsonObjectMatch[1].trim();
       }
-      
+
       // Return the original text if no JSON-like content found
       return text;
     };
-    
+
     let response;
     try {
       response = JSON.parse(messageContent.text.value);
     } catch (parseError) {
       console.error('JSON parse error:', parseError);
-      console.error('First 200 characters of raw response:', messageContent.text.value.substring(0, 200));
-      
+      console.error(
+        'First 200 characters of raw response:',
+        messageContent.text.value.substring(0, 200)
+      );
+
       // Try to extract JSON from text and parse again
       const extractedJson = extractJsonFromText(messageContent.text.value);
       console.log('Attempting to parse extracted content...');
-      
+
       try {
         response = JSON.parse(extractedJson);
         console.log('Successfully parsed extracted JSON');
       } catch (extractError) {
         console.error('Failed to parse extracted content:', extractError);
-        throw new Error(`Failed to parse response as JSON: ${parseError.message}`);
+        throw new Error(
+          `Failed to parse response as JSON: ${parseError.message}`
+        );
       }
     }
 

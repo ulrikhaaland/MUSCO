@@ -28,7 +28,10 @@ function NavigationMenuContent() {
   // Close drawer when clicking outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (drawerRef.current && !drawerRef.current.contains(event.target as Node)) {
+      if (
+        drawerRef.current &&
+        !drawerRef.current.contains(event.target as Node)
+      ) {
         setDrawerOpen(false);
       }
     }
@@ -50,7 +53,12 @@ function NavigationMenuContent() {
       name: t('nav.home'),
       path: '/',
       icon: (
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg
+          className="w-6 h-6"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -61,10 +69,16 @@ function NavigationMenuContent() {
       ),
     },
     {
-      name: user && program ? t('nav.createNewProgram') : t('nav.createProgram'),
+      name:
+        user && program ? t('nav.createNewProgram') : t('nav.createProgram'),
       path: '/?new=true',
       icon: (
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg
+          className="w-6 h-6"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -78,7 +92,12 @@ function NavigationMenuContent() {
       name: t('nav.programs'),
       path: '/programs',
       icon: (
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg
+          className="w-6 h-6"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -93,7 +112,12 @@ function NavigationMenuContent() {
       name: t('nav.calendar'),
       path: '/program/calendar',
       icon: (
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg
+          className="w-6 h-6"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -108,7 +132,12 @@ function NavigationMenuContent() {
       name: t('nav.profile'),
       path: '/profile',
       icon: (
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg
+          className="w-6 h-6"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -118,7 +147,7 @@ function NavigationMenuContent() {
         </svg>
       ),
       disabled: !user,
-    }
+    },
   ];
 
   const isActive = (path: string, name: string) => {
@@ -126,41 +155,51 @@ function NavigationMenuContent() {
     const currentBasePath = pathname;
     const currentParams = searchParams?.toString() || '';
     const pathWithoutQuery = path.split('?')[0];
-    
+
     // Check for exact matches first (most specific routes)
-    if (path === '/admin/translations' && currentBasePath === '/admin/translations') {
+    if (
+      path === '/admin/translations' &&
+      currentBasePath === '/admin/translations'
+    ) {
       return true;
     }
-    
-    if (path === '/program/calendar' && currentBasePath === '/program/calendar') {
+
+    if (
+      path === '/program/calendar' &&
+      currentBasePath === '/program/calendar'
+    ) {
       return true;
     }
-    
+
     if (path === '/programs' && currentBasePath === '/programs') {
       return true;
     }
-    
+
     if (path === '/profile' && currentBasePath === '/profile') {
       return true;
     }
-    
+
     // Special case for Create Program - only active when on home with new=true
     if (path === '/?new=true') {
       return currentBasePath === '/' && currentParams.includes('new=true');
     }
-    
+
     // Home is active in these cases:
     // 1. On exact home route without new=true
     // 2. On /program route (when viewing program)
     if (path === '/') {
       // For program pages, Home tab should be active
-      if (program && (currentBasePath === '/program' || currentBasePath.startsWith('/program/day/'))) {
+      if (
+        program &&
+        (currentBasePath === '/program' ||
+          currentBasePath.startsWith('/program/day/'))
+      ) {
         return true;
       }
       // On home page without new=true parameter
       return currentBasePath === '/' && !currentParams.includes('new=true');
     }
-    
+
     // If none of the specific cases match, no match
     return false;
   };
@@ -171,7 +210,7 @@ function NavigationMenuContent() {
       if (path.includes('/?new=true')) {
         // Reset app state when navigating to create program page
         completeReset();
-        
+
         // Add a timestamp to force a navigation event even if already on the page
         const timestamp = Date.now();
         router.push(`/?new=true&ts=${timestamp}`);
@@ -191,7 +230,7 @@ function NavigationMenuContent() {
   };
 
   const toggleDevNavBar = () => {
-    setShowDevNavBar(prev => !prev);
+    setShowDevNavBar((prev) => !prev);
   };
 
   return (
@@ -202,7 +241,12 @@ function NavigationMenuContent() {
         className="fixed top-4 right-4 z-[70] p-2 rounded-lg bg-gray-800 text-white hover:bg-gray-700 transition-colors"
         aria-label="Menu"
       >
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg
+          className="w-6 h-6"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -230,10 +274,14 @@ function NavigationMenuContent() {
             <div className="p-4 border-b border-gray-800">
               <div className="flex items-center space-x-3">
                 <div className="w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center text-white">
-                  {user.displayName ? user.displayName.charAt(0).toUpperCase() : user.email?.charAt(0).toUpperCase()}
+                  {user.displayName
+                    ? user.displayName.charAt(0).toUpperCase()
+                    : user.email?.charAt(0).toUpperCase()}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-white truncate">{user.displayName || 'User'}</p>
+                  <p className="text-sm font-medium text-white truncate">
+                    {user.displayName || 'User'}
+                  </p>
                   <p className="text-xs text-gray-400 truncate">{user.email}</p>
                 </div>
               </div>
@@ -266,90 +314,69 @@ function NavigationMenuContent() {
           </nav>
 
           {/* User actions */}
-          {user ? (
-            <div className="border-t border-gray-800 pb-16">
-              {/* Language Switcher */}
-              <div className="mt-4 px-8 ">
-                <p className="text-sm text-gray-400 mb-2">{t('common.language')}</p>
-                <LanguageSwitcher showFullNames />
-              </div>
-              
-              {/* Divider */}
-              <hr className="border-gray-800 my-4" />
-              
-              {/* Sign Out Button */}
-              <button
-                onClick={handleLogout}
-                className="flex items-center w-full px-8 py-2 mt-4 text-sm text-gray-300 hover:bg-gray-800 hover:text-white rounded-lg transition-colors duration-200"
-              >
-                <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-                  />
-                </svg>
-                {t('auth.signOut')}
-              </button>
 
-              {/* Dev Mode Toggle */}
-              {process.env.NODE_ENV === 'development' && (
-                <div className="mt-4 px-8">
-                  <button
-                    onClick={toggleDevNavBar}
-                    className="flex items-center w-full px-4 py-2 text-sm text-yellow-400 hover:bg-gray-800 hover:text-yellow-300 rounded-lg transition-colors duration-200"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                    </svg>
-                    Toggle Dev Nav Bar ({showDevNavBar ? 'On' : 'Off'})
-                  </button>
-                </div>
-              )}
+          <div className="border-t border-gray-800 pb-16">
+            {/* Language Switcher */}
+            <div className="mt-4 px-8 ">
+              <p className="text-sm text-gray-400 mb-2">
+                {t('common.language')}
+              </p>
+              <LanguageSwitcher showFullNames />
             </div>
-          ) : (
-            <div className="px-8 pb-16">
-              <button
-                onClick={() => handleNavigation('/login')}
-                className="flex items-center w-full px-8 py-2 text-sm text-gray-300 hover:bg-gray-800 hover:text-white rounded-lg transition-colors duration-200"
+
+            {/* Divider */}
+            <hr className="border-gray-800 my-4" />
+
+            {/* Sign Out Button */}
+            <button
+              onClick={user ? handleLogout : () => router.push('/login')}
+              className="flex items-center w-full px-8 py-2 mt-4 text-sm text-gray-300 hover:bg-gray-800 hover:text-white rounded-lg transition-colors duration-200"
+            >
+              <svg
+                className="w-5 h-5 mr-3"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
               >
-                <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"
-                  />
-                </svg>
-                {t('auth.signIn')}
-              </button>
-              
-              {/* Language Switcher */}
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                />
+              </svg>
+              {user ? t('auth.signOut') : t('auth.signIn')}
+            </button>
+
+            {/* Dev Mode Toggle */}
+            {process.env.NODE_ENV === 'development' && (
               <div className="mt-4 px-8">
-                <p className="text-sm text-gray-400 mb-2">{t('common.language')}</p>
-                <LanguageSwitcher showFullNames />
-              </div>
-              
-              {/* Dev Mode Toggle */}
-              {process.env.NODE_ENV === 'development' && (
-                 <div className="mt-4 px-8">
-                   <button
-                    onClick={toggleDevNavBar}
-                    className="flex items-center w-full px-4 py-2 text-sm text-yellow-400 hover:bg-gray-800 hover:text-yellow-300 rounded-lg transition-colors duration-200"
+                <button
+                  onClick={toggleDevNavBar}
+                  className="flex items-center w-full px-4 py-2 text-sm text-yellow-400 hover:bg-gray-800 hover:text-yellow-300 rounded-lg transition-colors duration-200"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5 mr-3"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2}
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                    </svg>
-                    Toggle Dev Nav Bar ({showDevNavBar ? 'On' : 'Off'})
-                  </button>
-                </div>
-              )}
-            </div>
-          )}
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"
+                    />
+                  </svg>
+                  Toggle Dev Nav Bar ({showDevNavBar ? 'On' : 'Off'})
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
-      
+
       {/* Conditionally render the Dev Mobile Nav Bar */}
       {showDevNavBar && <DevMobileNavBar />}
     </div>
@@ -368,15 +395,15 @@ function MenuLoadingFallback() {
 export function NavigationMenu() {
   // Check programStatus here instead of in the NavigationMenuContent
   const { programStatus } = useUser();
-  
+
   // Don't render the navigation menu when generating a program
   if (programStatus === ProgramStatus.Generating) {
     return null;
   }
-  
+
   return (
     <Suspense fallback={<MenuLoadingFallback />}>
       <NavigationMenuContent />
     </Suspense>
   );
-} 
+}

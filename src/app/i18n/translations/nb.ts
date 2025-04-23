@@ -207,7 +207,7 @@ const translations = {
   
   // Chat - Body Part Selection
   'chat.noBodyPartSelected': 'Ingen kroppsdel valgt',
-  'chat.selectBodyPartToStart': 'Velg en kroppsdel for å komme i gang',
+  'chat.selectBodyPartToStart': 'Trykk på en kroppsdel for å komme i gang',
   'chat.chatAboutOrSelectSpecific': 'Start en chat eller velg en spesifikk del av {{group}}',
   
   // Chat - Question Options
