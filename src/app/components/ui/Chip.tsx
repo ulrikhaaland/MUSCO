@@ -34,8 +34,8 @@ export const Chip = ({
   
   // Variant classes
   const variantClasses = {
-    default: "bg-indigo-600/20 text-indigo-300 hover:bg-indigo-600/30",
-    active: "bg-indigo-600/20 text-indigo-100 hover:bg-indigo-600/30",
+    default: "bg-indigo-600/20 text-white-300 hover:bg-indigo-600/30",
+    active: "bg-indigo-600/20 text-white-100 hover:bg-indigo-600/30",
     inactive: "bg-gray-700 text-gray-300",
     highlight: "bg-blue-500/20 text-blue-300 hover:bg-blue-500/30",
   };

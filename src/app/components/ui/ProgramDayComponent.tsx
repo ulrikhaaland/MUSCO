@@ -33,7 +33,9 @@ export function ProgramDayComponent({
   // State to track removed body parts
   const [removedBodyParts, setRemovedBodyParts] = useState<string[]>([]);
   // State to track expanded description of exercises
-  const [expandedDescriptions, setExpandedDescriptions] = useState<string[]>([]);
+  const [expandedDescriptions, setExpandedDescriptions] = useState<string[]>(
+    []
+  );
   // State to track visible instructions
   const [visibleInstructions, setVisibleInstructions] = useState<string[]>([]);
   // State to track if title is being hovered
@@ -52,28 +54,29 @@ export function ProgramDayComponent({
   const bodyPartsRef = useRef<HTMLDivElement>(null);
   // Ref to track current overflow state to avoid dependency loops
   const isOverflowingRef = useRef(false);
-  
+
   // Get all unique body parts from exercises
   const allBodyParts = Array.from(
     new Set(
-      day.exercises?.map(exercise => exercise.bodyPart).filter(Boolean) || []
+      day.exercises?.map((exercise) => exercise.bodyPart).filter(Boolean) || []
     )
   ).sort();
-  
+
   // Filter exercises based on removed body parts
-  const filteredExercises = day.exercises?.filter(exercise => {
+  const filteredExercises = day.exercises?.filter((exercise) => {
     // If exercise has no body part, show it
     if (!exercise.bodyPart) return true;
-    
+
     // Only filter out if the exercise's body part is in the removed list
     return !removedBodyParts.includes(exercise.bodyPart);
   });
-  
+
   // Check for overflow using ResizeObserver instead of direct effect
   const checkOverflow = useCallback(() => {
     if (bodyPartsRef.current) {
-      const isOverflowing = bodyPartsRef.current.scrollWidth > bodyPartsRef.current.clientWidth;
-      
+      const isOverflowing =
+        bodyPartsRef.current.scrollWidth > bodyPartsRef.current.clientWidth;
+
       // Only update state if the overflow status has changed
       if (isOverflowing !== isOverflowingRef.current) {
         isOverflowingRef.current = isOverflowing;
@@ -81,28 +84,31 @@ export function ProgramDayComponent({
       }
     }
   }, []);
-  
+
   // Handle scroll events on the body parts container
-  const handleBodyPartsScroll = useCallback((event: React.UIEvent<HTMLDivElement>) => {
-    const { scrollLeft, scrollWidth, clientWidth } = event.currentTarget;
-    // Check if scrolled to the end (within a small tolerance)
-    const atEnd = scrollWidth - clientWidth - scrollLeft < 1;
-    setIsScrolledToEnd(atEnd);
-  }, []);
+  const handleBodyPartsScroll = useCallback(
+    (event: React.UIEvent<HTMLDivElement>) => {
+      const { scrollLeft, scrollWidth, clientWidth } = event.currentTarget;
+      // Check if scrolled to the end (within a small tolerance)
+      const atEnd = scrollWidth - clientWidth - scrollLeft < 1;
+      setIsScrolledToEnd(atEnd);
+    },
+    []
+  );
 
   // Check if body parts container is overflowing
   useEffect(() => {
     checkOverflow();
-    
+
     // Set up resize observer
     const resizeObserver = new ResizeObserver(() => {
       checkOverflow();
     });
-    
+
     if (bodyPartsRef.current) {
       resizeObserver.observe(bodyPartsRef.current);
     }
-    
+
     return () => {
       resizeObserver.disconnect();
     };
@@ -113,20 +119,20 @@ export function ProgramDayComponent({
     const checkIsMobile = () => {
       setIsMobile(window.innerWidth < 768);
     };
-    
+
     checkIsMobile();
     window.addEventListener('resize', checkIsMobile);
-    
+
     return () => {
       window.removeEventListener('resize', checkIsMobile);
     };
   }, []);
-  
+
   // Toggle body part filter
   const toggleBodyPart = (bodyPart: string) => {
-    setRemovedBodyParts(prev => {
+    setRemovedBodyParts((prev) => {
       if (prev.includes(bodyPart)) {
-        return prev.filter(part => part !== bodyPart);
+        return prev.filter((part) => part !== bodyPart);
       } else {
         return [...prev, bodyPart];
       }
@@ -136,22 +142,23 @@ export function ProgramDayComponent({
   // Function to truncate description at a character limit (100 chars) while respecting word boundaries
   const getTruncatedDescription = (description: string, charLimit = 100) => {
     if (description.length <= charLimit) return description;
-    
+
     // Find the last space within the character limit
     const lastSpaceIndex = description.lastIndexOf(' ', charLimit);
-    
+
     // If no space found, just cut at the character limit
-    if (lastSpaceIndex === -1) return description.substring(0, charLimit) + '...';
-    
+    if (lastSpaceIndex === -1)
+      return description.substring(0, charLimit) + '...';
+
     // Otherwise cut at the last space
     return description.substring(0, lastSpaceIndex) + '...';
   };
 
   // Toggle expanded description
   const toggleDescriptionExpand = (exerciseId: string) => {
-    setExpandedDescriptions(prev => {
+    setExpandedDescriptions((prev) => {
       if (prev.includes(exerciseId)) {
-        return prev.filter(id => id !== exerciseId);
+        return prev.filter((id) => id !== exerciseId);
       } else {
         return [...prev, exerciseId];
       }
@@ -160,9 +167,9 @@ export function ProgramDayComponent({
 
   // Toggle instructions visibility
   const toggleInstructionsVisibility = (exerciseId: string) => {
-    setVisibleInstructions(prev => {
+    setVisibleInstructions((prev) => {
       if (prev.includes(exerciseId)) {
-        return prev.filter(id => id !== exerciseId);
+        return prev.filter((id) => id !== exerciseId);
       } else {
         return [...prev, exerciseId];
       }
@@ -171,7 +178,7 @@ export function ProgramDayComponent({
 
   // Render all body parts with horizontal scrolling
   const renderBodyParts = () => {
-    return allBodyParts.map(bodyPart => (
+    return allBodyParts.map((bodyPart) => (
       <Chip
         key={bodyPart}
         onClick={() => toggleBodyPart(bodyPart)}
@@ -179,12 +186,32 @@ export function ProgramDayComponent({
         variant={removedBodyParts.includes(bodyPart) ? 'inactive' : 'default'}
         icon={
           removedBodyParts.includes(bodyPart) ? (
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+              />
             </svg>
           ) : (
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           )
         }
@@ -197,7 +224,7 @@ export function ProgramDayComponent({
   // Render exercise information chips
   const renderExerciseChips = (exercise: Exercise) => {
     const chips = [];
-    
+
     if (exercise.duration) {
       chips.push(
         <Chip key="duration" size="sm">
@@ -212,15 +239,18 @@ export function ProgramDayComponent({
           </Chip>
         );
       }
-      if (exercise.rest && exercise.rest !== 0) {
+      if (exercise.restBetweenSets && exercise.restBetweenSets !== 0) {
         chips.push(
-          <Chip key="rest" size="sm">
-            {exercise.rest}s rest
+          <Chip
+            key="restBetweenSets"
+            size="lg"
+          >
+            {exercise.restBetweenSets}s rest
           </Chip>
         );
       }
     }
-    
+
     return chips;
   };
 
@@ -230,8 +260,10 @@ export function ProgramDayComponent({
       <div className="bg-gray-900/95 backdrop-blur-sm py-4">
         {programTitle && (
           <div className="mb-4">
-            <button 
-              className={`text-lg font-medium text-indigo-200 transition-all flex items-center py-2 -ml-2 pl-2 pr-3 rounded-xl ${isTitleHovered ? 'bg-indigo-900/30 text-indigo-100' : ''} hover:bg-indigo-900/30 hover:text-indigo-100 active:bg-indigo-900/50 active:scale-[0.99] w-auto`}
+            <button
+              className={`text-lg font-medium text-indigo-200 transition-all flex items-center py-2 -ml-2 pl-2 pr-3 rounded-xl ${
+                isTitleHovered ? 'bg-indigo-900/30 text-indigo-100' : ''
+              } hover:bg-indigo-900/30 hover:text-indigo-100 active:bg-indigo-900/50 active:scale-[0.99] w-auto`}
               onClick={(e) => {
                 e.stopPropagation();
                 if (onTitleClick) onTitleClick();
@@ -241,23 +273,31 @@ export function ProgramDayComponent({
             >
               {programTitle}
               {onTitleClick && (
-                <svg 
-                  className={`w-5 h-5 ml-2 transition-transform duration-200 ${isTitleHovered ? 'translate-x-1' : ''}`} 
-                  viewBox="0 0 20 20" 
+                <svg
+                  className={`w-5 h-5 ml-2 transition-transform duration-200 ${
+                    isTitleHovered ? 'translate-x-1' : ''
+                  }`}
+                  viewBox="0 0 20 20"
                   fill="currentColor"
                 >
-                  <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                  <path
+                    fillRule="evenodd"
+                    d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                    clipRule="evenodd"
+                  />
                 </svg>
               )}
             </button>
           </div>
         )}
-        
+
         {/* Combined Activity/Duration Badge */}
         <div className="mb-4">
-          <button 
+          <button
             className={`inline-flex items-center px-4 py-2 rounded-xl bg-indigo-900/40 text-indigo-100 transition-all ${
-              isActivityBadgeHovered ? 'bg-indigo-800/50 shadow-sm translate-y-[-2px]' : ''
+              isActivityBadgeHovered
+                ? 'bg-indigo-800/50 shadow-sm translate-y-[-2px]'
+                : ''
             } ${
               isActivityBadgePressed ? 'shadow-inner-sm' : ''
             } hover:bg-indigo-800/50 hover:shadow-sm hover:translate-y-[-2px] active:translate-y-0 active:bg-indigo-800/60 active:shadow-inner-sm`}
@@ -273,7 +313,7 @@ export function ProgramDayComponent({
             ) : (
               <span className="text-sm font-medium">Activity</span>
             )}
-            
+
             {day.duration && (
               <>
                 <span className="mx-2 text-indigo-300">·</span>
@@ -306,7 +346,7 @@ export function ProgramDayComponent({
         <div className="mb-4">
           <h4 className="text-gray-50 font-medium mb-4">Target Body Parts:</h4>
           <div className="relative max-w-full overflow-hidden">
-            <div 
+            <div
               ref={bodyPartsRef}
               className="flex overflow-x-auto hide-scrollbar pb-2 max-w-full"
               style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
@@ -317,7 +357,10 @@ export function ProgramDayComponent({
               </div>
             </div>
             {isBodyPartsOverflowing && !isScrolledToEnd && (
-              <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-gray-900/90 from-30% via-gray-900/70 via-60% to-transparent pointer-events-none" style={{ right: '-2px' }} />
+              <div
+                className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-gray-900/90 from-30% via-gray-900/70 via-60% to-transparent pointer-events-none"
+                style={{ right: '-2px' }}
+              />
             )}
           </div>
         </div>
@@ -342,28 +385,37 @@ export function ProgramDayComponent({
         {filteredExercises && filteredExercises.length > 0 ? (
           <div className="space-y-8">
             {filteredExercises.map((exercise) => {
-              const exerciseId = exercise.id || exercise.exerciseId || exercise.name;
-              const isExpanded = !onExerciseToggle || expandedExercises.includes(exercise.name);
-              
+              const exerciseId =
+                exercise.id || exercise.exerciseId || exercise.name;
+              const isExpanded =
+                !onExerciseToggle || expandedExercises.includes(exercise.name);
+
               return (
                 <Card
-                  key={exercise.id || exercise.exerciseId || `${exercise.name}-${exercise.bodyPart}`}
+                  key={
+                    exercise.id ||
+                    exercise.exerciseId ||
+                    `${exercise.name}-${exercise.bodyPart}`
+                  }
                   onClick={() => onExerciseToggle?.(exercise.name)}
                   isClickable={!!onExerciseToggle}
                   title={
-                    <span className={isMobile ? 'tracking-tighter' : 'tracking-tight'}>
+                    <span
+                      className={
+                        isMobile ? 'tracking-tighter' : 'tracking-tight'
+                      }
+                    >
                       {exercise.name}
                     </span>
                   }
                   tag={
                     exercise.bodyPart && (
-                      <Chip size="md">
-                        {exercise.bodyPart}
-                      </Chip>
+                      <Chip size="md">{exercise.bodyPart}</Chip>
                     )
                   }
                   headerContent={
-                    !expandedExercises.includes(exercise.name) && renderExerciseChips(exercise)
+                    !expandedExercises.includes(exercise.name) &&
+                    renderExerciseChips(exercise)
                   }
                 >
                   {/* Exercise Details - Only visible when expanded */}
@@ -371,25 +423,25 @@ export function ProgramDayComponent({
                     <Card.Section>
                       {exercise.description && (
                         <div className="text-gray-50 leading-relaxed">
-                          {expandedDescriptions.includes(exerciseId) 
-                            ? exercise.description 
+                          {expandedDescriptions.includes(exerciseId)
+                            ? exercise.description
                             : getTruncatedDescription(exercise.description)}
                           {exercise.description.length > 100 && (
-                            <button 
+                            <button
                               className="ml-1 text-indigo-300 hover:text-indigo-200 text-sm font-medium"
                               onClick={(e) => {
                                 e.stopPropagation();
                                 toggleDescriptionExpand(exerciseId);
                               }}
                             >
-                              {expandedDescriptions.includes(exerciseId) 
-                                ? 'See less' 
+                              {expandedDescriptions.includes(exerciseId)
+                                ? 'See less'
                                 : 'See more'}
                             </button>
                           )}
                         </div>
                       )}
-                      
+
                       {/* Exercise parameters in expanded view */}
                       <div className="flex flex-wrap gap-4 items-center">
                         {renderExerciseChips(exercise)}
@@ -410,7 +462,9 @@ export function ProgramDayComponent({
                             />
                           ) : (
                             <svg
-                              className={`${compact ? 'w-3.5 h-3.5' : 'w-4 h-4'} opacity-85`}
+                              className={`${
+                                compact ? 'w-3.5 h-3.5' : 'w-4 h-4'
+                              } opacity-85`}
                               fill="none"
                               stroke="currentColor"
                               viewBox="0 0 24 24"
@@ -432,21 +486,21 @@ export function ProgramDayComponent({
                           <span>Watch Video</span>
                         </div>
                       </div>
-                      
+
                       {exercise.modification && (
                         <p className="text-yellow-200/90 text-sm leading-relaxed">
                           <span className="font-medium">Modification:</span>{' '}
                           {exercise.modification}
                         </p>
                       )}
-                      
+
                       {exercise.precaution && (
                         <p className="text-red-400/90 text-sm leading-relaxed">
                           <span className="font-medium">Precaution:</span>{' '}
                           {exercise.precaution}
                         </p>
                       )}
-                      
+
                       {exercise.steps && exercise.steps.length > 0 && (
                         <div className="text-gray-300 text-sm leading-relaxed mt-4">
                           <div className="flex items-center">
@@ -457,23 +511,41 @@ export function ProgramDayComponent({
                               }}
                               className="text-indigo-300 hover:text-indigo-200 text-sm font-medium inline-flex items-center"
                             >
-                              {visibleInstructions.includes(exerciseId) 
-                                ? (
-                                  <>
-                                    <svg className="w-4 h-4 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 15l7-7 7 7" />
-                                    </svg>
-                                    Hide Instructions
-                                  </>
-                                ) 
-                                : (
-                                  <>
-                                    <svg className="w-4 h-4 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-                                    </svg>
-                                    View Instructions
-                                  </>
-                                )}
+                              {visibleInstructions.includes(exerciseId) ? (
+                                <>
+                                  <svg
+                                    className="w-4 h-4 mr-1"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth="2"
+                                      d="M5 15l7-7 7 7"
+                                    />
+                                  </svg>
+                                  Hide Instructions
+                                </>
+                              ) : (
+                                <>
+                                  <svg
+                                    className="w-4 h-4 mr-1"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth="2"
+                                      d="M19 9l-7 7-7-7"
+                                    />
+                                  </svg>
+                                  View Instructions
+                                </>
+                              )}
                             </button>
                           </div>
                           {visibleInstructions.includes(exerciseId) && (
@@ -481,7 +553,9 @@ export function ProgramDayComponent({
                               <div className="absolute left-0 top-0 bottom-0 w-[4px] bg-gradient-to-b from-indigo-700/80 via-indigo-700/50 to-indigo-700/20 rounded-full"></div>
                               <ol className="list-decimal pl-5 space-y-2">
                                 {exercise.steps.map((step, index) => (
-                                  <li key={index} className="leading-[1.4]">{step}</li>
+                                  <li key={index} className="leading-[1.4]">
+                                    {step}
+                                  </li>
                                 ))}
                               </ol>
                             </div>
@@ -497,7 +571,7 @@ export function ProgramDayComponent({
         ) : (
           <div className="py-8 text-center">
             <p className="text-gray-300">
-              No exercises available with the current filter. 
+              No exercises available with the current filter.
               {removedBodyParts.length > 0 && (
                 <button
                   onClick={(e) => {
