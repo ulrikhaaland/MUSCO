@@ -39,15 +39,15 @@ export async function POST(request: Request) {
           );
         }
 
-        // Run assistant retrieval and message adding in parallel
+        // Hardcoded Assistant ID for this path
+        const assistantId = 'asst_e1prLG3Ykh2ZCVspoAFMZPZC';
+
+        // Add the message to the thread (no need to get assistant object here)
         const preStreamStartTime = performance.now();
-        console.log(`[API Route] Starting pre-stream OpenAI calls (getAssistant, addMessage)...`);
-        const [assistant, _] = await Promise.all([
-          getOrCreateAssistant('asst_e1prLG3Ykh2ZCVspoAFMZPZC'),
-          addMessage(threadId, payload),
-        ]);
+        console.log(`[API Route] Starting pre-stream OpenAI call (addMessage)...`);
+        await addMessage(threadId, payload);
         const preStreamEndTime = performance.now();
-        console.log(`[API Route] Finished pre-stream OpenAI calls. Duration: ${preStreamEndTime - preStreamStartTime} ms`);
+        console.log(`[API Route] Finished pre-stream OpenAI call (addMessage). Duration: ${preStreamEndTime - preStreamStartTime} ms`);
 
         if (stream) {
           // Set up streaming response
@@ -64,7 +64,8 @@ export async function POST(request: Request) {
                 const callOpenAIStreamStartTime = performance.now();
                 console.log(`[API Route] Calling streamRunResponse... Time since stream start: ${callOpenAIStreamStartTime - streamStartTime} ms`);
 
-                await streamRunResponse(threadId, assistant.id, (content) => {
+                // Use the hardcoded assistantId directly
+                await streamRunResponse(threadId, assistantId, (content) => {
                   const openaiStreamChunkReceivedTime = performance.now();
                   if (!firstChunkSent) {
                     console.log(`[API Route] First chunk RECEIVED from OpenAI stream. Time since calling streamRunResponse: ${openaiStreamChunkReceivedTime - callOpenAIStreamStartTime} ms`);
