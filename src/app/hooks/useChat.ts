@@ -72,24 +72,38 @@ export function useChat() {
         !isRefetchingRef.current // Only refetch if not already doing so
       ) {
         console.log(
-          'App became visible, potential stream interruption detected. Re-fetching last message.'
+          'App became visible, potential stream interruption detected. Scheduling refetch...'
         );
-        isRefetchingRef.current = true; // Mark as refetching
-        streamPossiblyInterruptedRef.current = false; // Reset flag immediately
+        isRefetchingRef.current = true; // Mark as refetching immediately
+        streamPossiblyInterruptedRef.current = false; // Reset interruption flag
 
-        // Re-send the last message without adding it again to the UI
-        sendChatMessage(
-          lastUserMessageRef.current.messageContent,
-          lastUserMessageRef.current.chatPayload,
-          true // Indicate this is a refetch
-        ).finally(() => {
-          isRefetchingRef.current = false; // Mark refetching as complete
-          console.log(`Refetch finally block: isRefetchingRef reset to ${isRefetchingRef.current}`);
-        });
-      } else if (document.visibilityState === 'hidden' && isLoading) {
-        // If page hides while loading, mark stream as potentially interrupted
-        streamPossiblyInterruptedRef.current = true;
-        console.log('App hidden while loading, marking stream as potentially interrupted.');
+        // Delay the refetch attempt slightly
+        setTimeout(() => {
+          // Double check if still needed (e.g., user didn't reset chat in the meantime)
+          if (!lastUserMessageRef.current) {
+              console.log("Refetch cancelled: No last user message.");
+              isRefetchingRef.current = false;
+              return;
+          }
+          console.log("Executing delayed refetch...");
+          sendChatMessage(
+            lastUserMessageRef.current.messageContent,
+            lastUserMessageRef.current.chatPayload,
+            true // Indicate this is a refetch
+          ).finally(() => {
+            isRefetchingRef.current = false; // Mark refetching as complete
+            console.log(`Delayed Refetch finally block: isRefetchingRef reset to ${isRefetchingRef.current}`);
+          });
+        }, 1000); // Delay for 1 second (1000ms)
+
+      } else if (document.visibilityState === 'hidden' /* && isLoading - Removing isLoading check here, rely on flag set in sendChatMessage */) {
+        // If page hides, and streamPossiblyInterruptedRef is true (set before API call),
+        // keep the flag as true. If it's false, it means no stream was active.
+        if (streamPossiblyInterruptedRef.current) {
+             console.log('App hidden while stream might be active, interruption flag remains true.');
+        } else {
+             // console.log('App hidden, but no stream was active.');
+        }
       }
     };
 
@@ -99,7 +113,8 @@ export function useChat() {
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
-  }, [isLoading]); // Dependency on isLoading to update ref correctly
+    // Remove isLoading dependency, rely on the ref flag set within sendChatMessage
+  }, []);
 
   const resetChat = () => {
     setMessages([]);
