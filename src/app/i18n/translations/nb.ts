@@ -160,7 +160,7 @@ const translations = {
   'auth.welcome': 'Velkommen til bodAI',
   'auth.enterEmailToStart': 'Skriv inn e-postadressen din for å komme i gang',
   'auth.emailAddress': 'E-postadresse',
-  'auth.sending': 'Sender...',
+  'auth.sending': 'Sender',
   'auth.sendLoginLink': 'Send innloggingslenke',
   
   // Navigation

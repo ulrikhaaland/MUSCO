@@ -160,7 +160,7 @@ const translations = {
   'auth.welcome': 'Welcome to bodAI',
   'auth.enterEmailToStart': 'Enter your email to get started',
   'auth.emailAddress': 'Email address',
-  'auth.sending': 'Sending...',
+  'auth.sending': 'Sending',
   'auth.sendLoginLink': 'Send login link',
   
   // Navigation

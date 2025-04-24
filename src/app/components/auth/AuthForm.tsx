@@ -1,8 +1,27 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/app/context/AuthContext';
 import { useTranslation } from '@/app/i18n';
+
+// Loading dots component
+const LoadingDots = () => {
+  const [dots, setDots] = useState('');
+  
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setDots(prev => (prev.length >= 3 ? '' : prev + '.'));
+    }, 250);
+    
+    return () => clearInterval(interval);
+  }, []);
+  
+  return (
+    <span className="inline-block min-w-[18px] text-left">
+      {dots}
+    </span>
+  );
+};
 
 export function AuthForm({ onSkip }: { onSkip: () => void }) {
   const { t } = useTranslation();
@@ -101,7 +120,14 @@ export function AuthForm({ onSkip }: { onSkip: () => void }) {
             disabled={loading}
             className="w-full px-6 py-3 rounded-xl bg-indigo-600 text-white hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {loading ? t('auth.sending') : t('auth.sendLoginLink')}
+            {loading ? (
+              <span>
+                {t('auth.sending')}
+                <LoadingDots />
+              </span>
+            ) : (
+              t('auth.sendLoginLink')
+            )}
           </button>
 
           <button
