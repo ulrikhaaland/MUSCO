@@ -32,10 +32,10 @@ export function AuthForm({ onSkip }: { onSkip: () => void }) {
 
   if (emailSent) {
     return (
-      <div className="w-full max-w-md space-y-8 px-4 overflow-hidden">
+      <div className="w-full max-w-md space-y-6 px-4 pb-6 overflow-hidden">
         <div className="text-center">
           <h2 className="text-3xl font-bold text-white">{t('auth.checkEmail')}</h2>
-          <p className="mt-4 text-gray-400">
+          <p className="mt-3 text-gray-400">
             {t('auth.sentLoginLink')} <span className="text-white">{email}</span>
           </p>
           <p className="mt-2 text-sm text-gray-400">
@@ -43,7 +43,7 @@ export function AuthForm({ onSkip }: { onSkip: () => void }) {
           </p>
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-3">
           <button
             type="button"
             onClick={() => setEmailSent(false)}
@@ -65,7 +65,7 @@ export function AuthForm({ onSkip }: { onSkip: () => void }) {
   }
 
   return (
-    <div className="w-full max-w-md space-y-8 px-4 overflow-hidden">
+    <div className="w-full max-w-md space-y-6 px-4 pb-6 overflow-hidden">
       <div className="text-center">
         <h2 className="text-3xl font-bold text-white">{t('auth.welcome')}</h2>
         <p className="mt-2 text-sm text-gray-400">
@@ -73,7 +73,7 @@ export function AuthForm({ onSkip }: { onSkip: () => void }) {
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="mt-8 space-y-6">
+      <form onSubmit={handleSubmit} className="mt-6 space-y-5">
         <div>
           <label htmlFor="email" className="sr-only">
             {t('auth.emailAddress')}
@@ -95,7 +95,7 @@ export function AuthForm({ onSkip }: { onSkip: () => void }) {
           <div className="text-red-500 text-sm text-center">{error}</div>
         )}
 
-        <div className="space-y-4">
+        <div className="space-y-3">
           <button
             type="submit"
             disabled={loading}

@@ -136,6 +136,7 @@ export const sendLoginEmail = functions.https.onCall(
     <title>${emailTitle}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="light dark" />
+    <!-- no fixed widths: scales clean on mobile -->
   </head>
   <body bgcolor="#0d0e14" style="margin:0;padding:0;background-color:#0d0e14 !important;color:#e4e7ec;font-family:'Inter',Helvetica,Arial,sans-serif;line-height:1.7;mso-line-height-rule:exactly;">
     <!-- inbox preview text (hidden) -->
@@ -143,30 +144,31 @@ export const sendLoginEmail = functions.https.onCall(
 
     <table width="100%" cellpadding="0" cellspacing="0" role="presentation" bgcolor="#0d0e14" style="background-color:#0d0e14;border-collapse:collapse;">
       <tr>
-        <td align="center" style="padding:24px;">
-          <table width="520" cellpadding="0" cellspacing="0" role="presentation" bgcolor="#16171e" style="background-color:#16171e;border-radius:12px;box-shadow:0 8px 28px rgba(0,0,0,0.6);border-collapse:collapse;">
+        <td align="center" style="padding:16px;">
+          <!-- responsive card -->
+          <table width="100%" cellpadding="0" cellspacing="0" role="presentation" bgcolor="#16171e" style="max-width:520px;width:100%;background-color:#16171e;border-radius:12px;box-shadow:0 8px 28px rgba(0,0,0,0.6);border-collapse:collapse;">
             <tr>
-              <td style="padding:40px 48px;text-align:center;">
+              <td style="padding:32px 24px;text-align:center;">
                 <!-- logo -->
-                <h1 style="margin:0 0 16px;font-size:24px;font-weight:700;color:#fff;">
+                <h1 style="margin:0 0 16px;font-size:26px;font-weight:700;color:#fff;">
                   bod<span style="color:#4f46e5;">AI</span>
                 </h1>
                 <!-- tagline -->
-                <p style="margin:0 0 32px;font-size:14px;color:#9a9fad;text-transform:uppercase;letter-spacing:.5px;">
+                <p style="margin:0 0 28px;font-size:14px;color:#9a9fad;text-transform:uppercase;letter-spacing:.5px;">
                   ${tagline}
                 </p>
                 <!-- heading -->
-                <h2 style="margin:0 0 32px;font-size:24px;font-weight:600;color:#fff;">
+                <h2 style="margin:0 0 28px;font-size:22px;font-weight:600;color:#fff;">
                   ${heading}
                 </h2>
 
-                <!-- call‑to‑action -->
-                <a href="${link}" target="_blank" rel="noopener noreferrer" style="display:block;width:100%;max-width:280px;margin:0 auto 24px;padding:14px 24px;font-size:15px;font-weight:600;text-decoration:none;text-align:center;color:#fff;background-color:#4f46e5;border-radius:10px;">
+                <!-- call-to-action -->
+                <a href="${link}" target="_blank" rel="noopener noreferrer" style="display:block;width:100%;max-width:280px;margin:0 auto 24px;padding:16px 24px;font-size:16px;font-weight:600;text-decoration:none;text-align:center;color:#fff;background-color:#4f46e5;border-radius:10px;">
                   ${buttonText}
                 </a>
 
                 <!-- link expiry + fallback -->
-                <p style="margin:0 0 24px;font-size:12px;color:#cbd5e1;word-break:break-all;">
+                <p style="margin:0 0 24px;font-size:13px;color:#cbd5e1;word-break:break-all;">
                   ${expireText}<br />
                   ${troubleText}<br />
                   <a href="${link}" style="color:#4f46e5;text-decoration:none;">${link}</a>
