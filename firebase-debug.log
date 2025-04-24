@@ -1,0 +1,244 @@
+[debug] [2025-04-24T06:57:24.674Z] ----------------------------------------------------------------------
+[debug] [2025-04-24T06:57:24.676Z] Command:       /Users/ulrikhaland/.nvm/versions/node/v20.17.0/bin/node /Users/ulrikhaland/.nvm/versions/node/v20.17.0/bin/firebase deploy --only functions
+[debug] [2025-04-24T06:57:24.676Z] CLI Version:   13.22.1
+[debug] [2025-04-24T06:57:24.676Z] Platform:      darwin
+[debug] [2025-04-24T06:57:24.676Z] Node Version:  v20.17.0
+[debug] [2025-04-24T06:57:24.676Z] Time:          Thu Apr 24 2025 08:57:24 GMT+0200 (Central European Summer Time)
+[debug] [2025-04-24T06:57:24.676Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-04-24T06:57:24.715Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-04-24T06:57:24.715Z] > authorizing via signed-in user (ulrikhaaland2@gmail.com)
+[debug] [2025-04-24T06:57:24.715Z] [iam] checking project musco-dc111 for permissions ["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]
+[debug] [2025-04-24T06:57:24.715Z] Checked if tokens are valid: true, expires at: 1745480801193
+[debug] [2025-04-24T06:57:24.715Z] Checked if tokens are valid: true, expires at: 1745480801193
+[debug] [2025-04-24T06:57:24.716Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/musco-dc111:testIamPermissions [none]
+[debug] [2025-04-24T06:57:24.716Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/musco-dc111:testIamPermissions x-goog-quota-user=projects/musco-dc111
+[debug] [2025-04-24T06:57:24.716Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/musco-dc111:testIamPermissions {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]}
+[debug] [2025-04-24T06:57:25.493Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/musco-dc111:testIamPermissions 200
+[debug] [2025-04-24T06:57:25.493Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/musco-dc111:testIamPermissions {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]}
+[debug] [2025-04-24T06:57:25.494Z] Checked if tokens are valid: true, expires at: 1745480801193
+[debug] [2025-04-24T06:57:25.494Z] Checked if tokens are valid: true, expires at: 1745480801193
+[debug] [2025-04-24T06:57:25.494Z] >>> [apiv2][query] POST https://iam.googleapis.com/v1/projects/musco-dc111/serviceAccounts/musco-dc111@appspot.gserviceaccount.com:testIamPermissions [none]
+[debug] [2025-04-24T06:57:25.494Z] >>> [apiv2][body] POST https://iam.googleapis.com/v1/projects/musco-dc111/serviceAccounts/musco-dc111@appspot.gserviceaccount.com:testIamPermissions {"permissions":["iam.serviceAccounts.actAs"]}
+[debug] [2025-04-24T06:57:25.672Z] <<< [apiv2][status] POST https://iam.googleapis.com/v1/projects/musco-dc111/serviceAccounts/musco-dc111@appspot.gserviceaccount.com:testIamPermissions 404
+[debug] [2025-04-24T06:57:25.672Z] <<< [apiv2][body] POST https://iam.googleapis.com/v1/projects/musco-dc111/serviceAccounts/musco-dc111@appspot.gserviceaccount.com:testIamPermissions {"error":{"code":404,"message":"Unknown service account","status":"NOT_FOUND"}}
+[debug] [2025-04-24T06:57:25.673Z] [functions] service account IAM check errored, deploy may fail: HTTP Error: 404, Unknown service account {"name":"FirebaseError","children":[],"context":{"body":{"error":{"code":404,"message":"Unknown service account","status":"NOT_FOUND"}},"response":{"statusCode":404}},"exit":1,"message":"HTTP Error: 404, Unknown service account","status":404}
+[info] 
+[info] === Deploying to 'musco-dc111'...
+[info] 
+[info] i  deploying functions 
+[info] Running command: npm --prefix "$RESOURCE_DIR" run lint
+[info] Running command: npm --prefix "$RESOURCE_DIR" run build
+[info] ✔  functions: Finished running predeploy script. 
+[debug] [2025-04-24T06:57:30.972Z] Checked if tokens are valid: true, expires at: 1745480801193
+[debug] [2025-04-24T06:57:30.972Z] Checked if tokens are valid: true, expires at: 1745480801193
+[debug] [2025-04-24T06:57:30.972Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/musco-dc111 [none]
+[debug] [2025-04-24T06:57:31.222Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/musco-dc111 200
+[debug] [2025-04-24T06:57:31.223Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/musco-dc111 {"projectId":"musco-dc111","projectNumber":"1084458794272","displayName":"musco","name":"projects/musco-dc111","resources":{"hostingSite":"musco-dc111"},"state":"ACTIVE","etag":"1_1dfe5a59-c9a6-4b3c-b003-240660632792"}
+[info] i  functions: preparing codebase default for deployment 
+[info] i  functions: ensuring required API cloudfunctions.googleapis.com is enabled... 
+[debug] [2025-04-24T06:57:31.224Z] Checked if tokens are valid: true, expires at: 1745480801193
+[debug] [2025-04-24T06:57:31.224Z] Checked if tokens are valid: true, expires at: 1745480801193
+[debug] [2025-04-24T06:57:31.224Z] Checked if tokens are valid: true, expires at: 1745480801193
+[debug] [2025-04-24T06:57:31.224Z] Checked if tokens are valid: true, expires at: 1745480801193
+[info] i  functions: ensuring required API cloudbuild.googleapis.com is enabled... 
+[debug] [2025-04-24T06:57:31.225Z] Checked if tokens are valid: true, expires at: 1745480801193
+[debug] [2025-04-24T06:57:31.225Z] Checked if tokens are valid: true, expires at: 1745480801193
+[info] i  artifactregistry: ensuring required API artifactregistry.googleapis.com is enabled... 
+[debug] [2025-04-24T06:57:31.225Z] Checked if tokens are valid: true, expires at: 1745480801193
+[debug] [2025-04-24T06:57:31.225Z] Checked if tokens are valid: true, expires at: 1745480801193
+[debug] [2025-04-24T06:57:31.225Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/musco-dc111/services/cloudfunctions.googleapis.com [none]
+[debug] [2025-04-24T06:57:31.225Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/musco-dc111/services/cloudfunctions.googleapis.com x-goog-quota-user=projects/musco-dc111
+[debug] [2025-04-24T06:57:31.227Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/musco-dc111/services/runtimeconfig.googleapis.com [none]
+[debug] [2025-04-24T06:57:31.227Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/musco-dc111/services/runtimeconfig.googleapis.com x-goog-quota-user=projects/musco-dc111
+[debug] [2025-04-24T06:57:31.228Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/musco-dc111/services/cloudbuild.googleapis.com [none]
+[debug] [2025-04-24T06:57:31.228Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/musco-dc111/services/cloudbuild.googleapis.com x-goog-quota-user=projects/musco-dc111
+[debug] [2025-04-24T06:57:31.229Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/musco-dc111/services/artifactregistry.googleapis.com [none]
+[debug] [2025-04-24T06:57:31.229Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/musco-dc111/services/artifactregistry.googleapis.com x-goog-quota-user=projects/musco-dc111
+[debug] [2025-04-24T06:57:32.112Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/musco-dc111/services/cloudbuild.googleapis.com 200
+[debug] [2025-04-24T06:57:32.113Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/musco-dc111/services/cloudbuild.googleapis.com [omitted]
+[info] ✔  functions: required API cloudbuild.googleapis.com is enabled 
+[debug] [2025-04-24T06:57:32.133Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/musco-dc111/services/artifactregistry.googleapis.com 200
+[debug] [2025-04-24T06:57:32.133Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/musco-dc111/services/artifactregistry.googleapis.com [omitted]
+[info] ✔  artifactregistry: required API artifactregistry.googleapis.com is enabled 
+[debug] [2025-04-24T06:57:32.161Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/musco-dc111/services/runtimeconfig.googleapis.com 200
+[debug] [2025-04-24T06:57:32.161Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/musco-dc111/services/runtimeconfig.googleapis.com [omitted]
+[debug] [2025-04-24T06:57:32.171Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/musco-dc111/services/cloudfunctions.googleapis.com 200
+[debug] [2025-04-24T06:57:32.172Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/musco-dc111/services/cloudfunctions.googleapis.com [omitted]
+[info] ✔  functions: required API cloudfunctions.googleapis.com is enabled 
+[debug] [2025-04-24T06:57:32.172Z] Checked if tokens are valid: true, expires at: 1745480801193
+[debug] [2025-04-24T06:57:32.172Z] Checked if tokens are valid: true, expires at: 1745480801193
+[debug] [2025-04-24T06:57:32.172Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/musco-dc111/adminSdkConfig [none]
+[debug] [2025-04-24T06:57:32.622Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/musco-dc111/adminSdkConfig 200
+[debug] [2025-04-24T06:57:32.623Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/musco-dc111/adminSdkConfig {"projectId":"musco-dc111","storageBucket":"musco-dc111.firebasestorage.app"}
+[debug] [2025-04-24T06:57:32.623Z] Checked if tokens are valid: true, expires at: 1745480801193
+[debug] [2025-04-24T06:57:32.623Z] Checked if tokens are valid: true, expires at: 1745480801193
+[debug] [2025-04-24T06:57:32.624Z] >>> [apiv2][query] GET https://runtimeconfig.googleapis.com/v1beta1/projects/musco-dc111/configs [none]
+[debug] [2025-04-24T06:57:33.558Z] <<< [apiv2][status] GET https://runtimeconfig.googleapis.com/v1beta1/projects/musco-dc111/configs 200
+[debug] [2025-04-24T06:57:33.559Z] <<< [apiv2][body] GET https://runtimeconfig.googleapis.com/v1beta1/projects/musco-dc111/configs {}
+[debug] [2025-04-24T06:57:33.560Z] Validating nodejs source
+[warn] ⚠  functions: Runtime Node.js 18 will be deprecated on 2025-04-30 and will be decommissioned on 2025-10-31, after which you will not be able to deploy without upgrading. Consider upgrading now to avoid disruption. See https://cloud.google.com/functions/docs/runtime-support for full details on the lifecycle policy 
+[debug] [2025-04-24T06:57:33.980Z] > [functions] package.json contents: {
+  "name": "functions",
+  "scripts": {
+    "lint": "eslint --ext .js,.ts .",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "18"
+  },
+  "main": "lib/index.js",
+  "dependencies": {
+    "firebase-admin": "^13.3.0",
+    "firebase-functions": "^6.0.1",
+    "resend": "^4.4.0"
+  },
+  "devDependencies": {
+    "@babel/eslint-parser": "^7.27.0",
+    "@typescript-eslint/eslint-plugin": "^8.31.0",
+    "@typescript-eslint/parser": "^8.31.0",
+    "eslint": "^8.57.1",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.1.0",
+    "typescript": "^5.8.3"
+  },
+  "private": true
+}
+[debug] [2025-04-24T06:57:33.980Z] Building nodejs source
+[info] i  functions: Loading and analyzing source code for codebase default to determine what to deploy 
+[debug] [2025-04-24T06:57:33.981Z] Could not find functions.yaml. Must use http discovery
+[debug] [2025-04-24T06:57:33.984Z] Found firebase-functions binary at '/Users/ulrikhaland/Documents/musco-new/functions/node_modules/.bin/firebase-functions'
+[info] Serving at port 8822
+
+[debug] [2025-04-24T06:57:34.246Z] Got response from /__/functions.yaml {"endpoints":{"sendLoginEmail":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"sendLoginEmail"}},"specVersion":"v1alpha1","requiredAPIs":[],"extensions":{},"params":[{"name":"RESEND_API_KEY","type":"string"},{"name":"DYNAMIC_LINK_DOMAIN","type":"string"},{"name":"EMAIL_FROM_ADDRESS","type":"string","default":"noreply@bodai.no"},{"name":"ALLOWED_ORIGINS","type":"string","default":"http://localhost:3000,https://bodai.no"}]}
+[info] i  extensions: ensuring required API firebaseextensions.googleapis.com is enabled... 
+[debug] [2025-04-24T06:57:39.261Z] Checked if tokens are valid: true, expires at: 1745480801193
+[debug] [2025-04-24T06:57:39.261Z] Checked if tokens are valid: true, expires at: 1745480801193
+[debug] [2025-04-24T06:57:39.261Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/musco-dc111/services/firebaseextensions.googleapis.com [none]
+[debug] [2025-04-24T06:57:39.261Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/musco-dc111/services/firebaseextensions.googleapis.com x-goog-quota-user=projects/musco-dc111
+[debug] [2025-04-24T06:57:40.174Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/musco-dc111/services/firebaseextensions.googleapis.com 200
+[debug] [2025-04-24T06:57:40.175Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/musco-dc111/services/firebaseextensions.googleapis.com [omitted]
+[info] ✔  extensions: required API firebaseextensions.googleapis.com is enabled 
+[debug] [2025-04-24T06:57:40.175Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-04-24T06:57:40.175Z] > authorizing via signed-in user (ulrikhaaland2@gmail.com)
+[debug] [2025-04-24T06:57:40.175Z] [iam] checking project musco-dc111 for permissions ["firebase.projects.get","firebaseextensions.instances.list"]
+[debug] [2025-04-24T06:57:40.175Z] Checked if tokens are valid: true, expires at: 1745480801193
+[debug] [2025-04-24T06:57:40.175Z] Checked if tokens are valid: true, expires at: 1745480801193
+[debug] [2025-04-24T06:57:40.175Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/musco-dc111:testIamPermissions [none]
+[debug] [2025-04-24T06:57:40.175Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/musco-dc111:testIamPermissions x-goog-quota-user=projects/musco-dc111
+[debug] [2025-04-24T06:57:40.175Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/musco-dc111:testIamPermissions {"permissions":["firebase.projects.get","firebaseextensions.instances.list"]}
+[debug] [2025-04-24T06:57:40.903Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/musco-dc111:testIamPermissions 200
+[debug] [2025-04-24T06:57:40.904Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/musco-dc111:testIamPermissions {"permissions":["firebase.projects.get","firebaseextensions.instances.list"]}
+[debug] [2025-04-24T06:57:40.905Z] Checked if tokens are valid: true, expires at: 1745480801193
+[debug] [2025-04-24T06:57:40.906Z] Checked if tokens are valid: true, expires at: 1745480801193
+[debug] [2025-04-24T06:57:40.906Z] >>> [apiv2][query] GET https://firebaseextensions.googleapis.com/v1beta/projects/musco-dc111/instances pageSize=100&pageToken=
+[debug] [2025-04-24T06:57:41.734Z] <<< [apiv2][status] GET https://firebaseextensions.googleapis.com/v1beta/projects/musco-dc111/instances 200
+[debug] [2025-04-24T06:57:41.735Z] <<< [apiv2][body] GET https://firebaseextensions.googleapis.com/v1beta/projects/musco-dc111/instances {}
+[info] i  functions: Loaded environment variables from .env.musco-dc111. 
+[info] i  functions: preparing functions directory for uploading... 
+[info] i  functions: packaged /Users/ulrikhaland/Documents/musco-new/functions (99.04 KB) for uploading 
+[debug] [2025-04-24T06:57:41.780Z] Checked if tokens are valid: true, expires at: 1745480801193
+[debug] [2025-04-24T06:57:41.781Z] Checked if tokens are valid: true, expires at: 1745480801193
+[debug] [2025-04-24T06:57:41.781Z] >>> [apiv2][query] GET https://cloudfunctions.googleapis.com/v1/projects/musco-dc111/locations/-/functions [none]
+[debug] [2025-04-24T06:57:42.420Z] <<< [apiv2][status] GET https://cloudfunctions.googleapis.com/v1/projects/musco-dc111/locations/-/functions 200
+[debug] [2025-04-24T06:57:42.420Z] <<< [apiv2][body] GET https://cloudfunctions.googleapis.com/v1/projects/musco-dc111/locations/-/functions {}
+[debug] [2025-04-24T06:57:42.421Z] Checked if tokens are valid: true, expires at: 1745480801193
+[debug] [2025-04-24T06:57:42.421Z] Checked if tokens are valid: true, expires at: 1745480801193
+[debug] [2025-04-24T06:57:42.422Z] >>> [apiv2][query] GET https://cloudfunctions.googleapis.com/v2/projects/musco-dc111/locations/-/functions filter=environment%3D%22GEN_2%22
+[debug] [2025-04-24T06:57:43.514Z] <<< [apiv2][status] GET https://cloudfunctions.googleapis.com/v2/projects/musco-dc111/locations/-/functions 200
+[debug] [2025-04-24T06:57:43.514Z] <<< [apiv2][body] GET https://cloudfunctions.googleapis.com/v2/projects/musco-dc111/locations/-/functions {"functions":[{"name":"projects/musco-dc111/locations/us-central1/functions/sendLoginEmail","buildConfig":{"build":"projects/1084458794272/locations/us-central1/builds/428ab27a-1a6b-453d-acfa-fec6ed8a76e1","runtime":"nodejs18","entryPoint":"sendLoginEmail","source":{"storageSource":{"bucket":"gcf-v2-sources-1084458794272-us-central1","object":"sendLoginEmail/function-source.zip","generation":"1745477538720817"}},"environmentVariables":{"GOOGLE_NODE_RUN_SCRIPTS":""},"dockerRepository":"projects/musco-dc111/locations/us-central1/repositories/gcf-artifacts","sourceProvenance":{"resolvedStorageSource":{"bucket":"gcf-v2-sources-1084458794272-us-central1","object":"sendLoginEmail/function-source.zip","generation":"1745477538720817"}},"dockerRegistry":"ARTIFACT_REGISTRY","serviceAccount":"projects/musco-dc111/serviceAccounts/1084458794272-compute@developer.gserviceaccount.com","automaticUpdatePolicy":{}},"serviceConfig":{"service":"projects/musco-dc111/locations/us-central1/services/sendloginemail","timeoutSeconds":60,"environmentVariables":{"RESEND_API_KEY":"re_h4S7TWqJ_63xzUJ1UsPLjGDLkKwg1CaR2","APP_BASE_URL":"https://bodai.no","DYNAMIC_LINK_DOMAIN":"","EMAIL_FROM_ADDRESS":"noreply@bodai.no","ALLOWED_ORIGINS":"http://localhost:3000,https://bodai.no","FIREBASE_CONFIG":"{\"projectId\":\"musco-dc111\",\"storageBucket\":\"musco-dc111.firebasestorage.app\"}","GCLOUD_PROJECT":"musco-dc111","EVENTARC_CLOUD_EVENT_SOURCE":"projects/musco-dc111/locations/us-central1/services/sendLoginEmail","FUNCTION_TARGET":"sendLoginEmail","LOG_EXECUTION_ID":"true"},"maxInstanceCount":3,"ingressSettings":"ALLOW_ALL","uri":"https://sendloginemail-latacasvlq-uc.a.run.app","serviceAccountEmail":"1084458794272-compute@developer.gserviceaccount.com","availableMemory":"256Mi","allTrafficOnLatestRevision":true,"revision":"sendloginemail-00013-cuq","maxInstanceRequestConcurrency":80,"availableCpu":"1"},"state":"ACTIVE","updateTime":"2025-04-24T06:54:44.649933357Z","labels":{"deployment-callable":"true","firebase-functions-hash":"e188fdb3f1947d513c091db77f9cbd4fa3544d8f","deployment-tool":"cli-firebase"},"environment":"GEN_2","url":"https://us-central1-musco-dc111.cloudfunctions.net/sendLoginEmail","createTime":"2025-04-23T12:30:44.171642589Z","satisfiesPzi":true}]}
+[info] i  functions: ensuring required API run.googleapis.com is enabled... 
+[debug] [2025-04-24T06:57:43.516Z] Checked if tokens are valid: true, expires at: 1745480801193
+[debug] [2025-04-24T06:57:43.516Z] Checked if tokens are valid: true, expires at: 1745480801193
+[info] i  functions: ensuring required API eventarc.googleapis.com is enabled... 
+[debug] [2025-04-24T06:57:43.517Z] Checked if tokens are valid: true, expires at: 1745480801193
+[debug] [2025-04-24T06:57:43.517Z] Checked if tokens are valid: true, expires at: 1745480801193
+[info] i  functions: ensuring required API pubsub.googleapis.com is enabled... 
+[debug] [2025-04-24T06:57:43.517Z] Checked if tokens are valid: true, expires at: 1745480801193
+[debug] [2025-04-24T06:57:43.517Z] Checked if tokens are valid: true, expires at: 1745480801193
+[info] i  functions: ensuring required API storage.googleapis.com is enabled... 
+[debug] [2025-04-24T06:57:43.517Z] Checked if tokens are valid: true, expires at: 1745480801193
+[debug] [2025-04-24T06:57:43.517Z] Checked if tokens are valid: true, expires at: 1745480801193
+[debug] [2025-04-24T06:57:43.517Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/musco-dc111/services/run.googleapis.com [none]
+[debug] [2025-04-24T06:57:43.517Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/musco-dc111/services/run.googleapis.com x-goog-quota-user=projects/musco-dc111
+[debug] [2025-04-24T06:57:43.517Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/musco-dc111/services/eventarc.googleapis.com [none]
+[debug] [2025-04-24T06:57:43.517Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/musco-dc111/services/eventarc.googleapis.com x-goog-quota-user=projects/musco-dc111
+[debug] [2025-04-24T06:57:43.519Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/musco-dc111/services/pubsub.googleapis.com [none]
+[debug] [2025-04-24T06:57:43.519Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/musco-dc111/services/pubsub.googleapis.com x-goog-quota-user=projects/musco-dc111
+[debug] [2025-04-24T06:57:43.520Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/musco-dc111/services/storage.googleapis.com [none]
+[debug] [2025-04-24T06:57:43.521Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/musco-dc111/services/storage.googleapis.com x-goog-quota-user=projects/musco-dc111
+[debug] [2025-04-24T06:57:44.418Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/musco-dc111/services/eventarc.googleapis.com 200
+[debug] [2025-04-24T06:57:44.419Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/musco-dc111/services/eventarc.googleapis.com [omitted]
+[info] ✔  functions: required API eventarc.googleapis.com is enabled 
+[debug] [2025-04-24T06:57:44.420Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/musco-dc111/services/run.googleapis.com 200
+[debug] [2025-04-24T06:57:44.420Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/musco-dc111/services/run.googleapis.com [omitted]
+[info] ✔  functions: required API run.googleapis.com is enabled 
+[debug] [2025-04-24T06:57:44.431Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/musco-dc111/services/pubsub.googleapis.com 200
+[debug] [2025-04-24T06:57:44.432Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/musco-dc111/services/pubsub.googleapis.com [omitted]
+[info] ✔  functions: required API pubsub.googleapis.com is enabled 
+[debug] [2025-04-24T06:57:44.460Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/musco-dc111/services/storage.googleapis.com 200
+[debug] [2025-04-24T06:57:44.460Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/musco-dc111/services/storage.googleapis.com [omitted]
+[info] ✔  functions: required API storage.googleapis.com is enabled 
+[info] i  functions: generating the service identity for pubsub.googleapis.com... 
+[debug] [2025-04-24T06:57:44.460Z] Checked if tokens are valid: true, expires at: 1745480801193
+[debug] [2025-04-24T06:57:44.460Z] Checked if tokens are valid: true, expires at: 1745480801193
+[info] i  functions: generating the service identity for eventarc.googleapis.com... 
+[debug] [2025-04-24T06:57:44.460Z] Checked if tokens are valid: true, expires at: 1745480801193
+[debug] [2025-04-24T06:57:44.460Z] Checked if tokens are valid: true, expires at: 1745480801193
+[debug] [2025-04-24T06:57:44.460Z] >>> [apiv2][query] POST https://serviceusage.googleapis.com/v1beta1/projects/1084458794272/services/pubsub.googleapis.com:generateServiceIdentity [none]
+[debug] [2025-04-24T06:57:44.461Z] >>> [apiv2][query] POST https://serviceusage.googleapis.com/v1beta1/projects/1084458794272/services/eventarc.googleapis.com:generateServiceIdentity [none]
+[debug] [2025-04-24T06:57:45.334Z] <<< [apiv2][status] POST https://serviceusage.googleapis.com/v1beta1/projects/1084458794272/services/pubsub.googleapis.com:generateServiceIdentity 200
+[debug] [2025-04-24T06:57:45.335Z] <<< [apiv2][body] POST https://serviceusage.googleapis.com/v1beta1/projects/1084458794272/services/pubsub.googleapis.com:generateServiceIdentity {"name":"operations/finished.DONE_OPERATION","done":true,"response":{"@type":"type.googleapis.com/google.api.serviceusage.v1beta1.ServiceIdentity","email":"service-1084458794272@gcp-sa-pubsub.iam.gserviceaccount.com","uniqueId":"116138625822808422071"}}
+[debug] [2025-04-24T06:57:45.369Z] <<< [apiv2][status] POST https://serviceusage.googleapis.com/v1beta1/projects/1084458794272/services/eventarc.googleapis.com:generateServiceIdentity 200
+[debug] [2025-04-24T06:57:45.369Z] <<< [apiv2][body] POST https://serviceusage.googleapis.com/v1beta1/projects/1084458794272/services/eventarc.googleapis.com:generateServiceIdentity {"name":"operations/finished.DONE_OPERATION","done":true,"response":{"@type":"type.googleapis.com/google.api.serviceusage.v1beta1.ServiceIdentity","email":"service-1084458794272@gcp-sa-eventarc.iam.gserviceaccount.com","uniqueId":"108128622036870707275"}}
+[debug] [2025-04-24T06:57:45.372Z] Checked if tokens are valid: true, expires at: 1745480801193
+[debug] [2025-04-24T06:57:45.372Z] Checked if tokens are valid: true, expires at: 1745480801193
+[debug] [2025-04-24T06:57:45.372Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/musco-dc111 [none]
+[debug] [2025-04-24T06:57:45.648Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/musco-dc111 200
+[debug] [2025-04-24T06:57:45.648Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/musco-dc111 {"projectId":"musco-dc111","projectNumber":"1084458794272","displayName":"musco","name":"projects/musco-dc111","resources":{"hostingSite":"musco-dc111"},"state":"ACTIVE","etag":"1_1dfe5a59-c9a6-4b3c-b003-240660632792"}
+[debug] [2025-04-24T06:57:45.649Z] Checked if tokens are valid: true, expires at: 1745480801193
+[debug] [2025-04-24T06:57:45.649Z] Checked if tokens are valid: true, expires at: 1745480801193
+[debug] [2025-04-24T06:57:45.649Z] >>> [apiv2][query] GET https://cloudbilling.googleapis.com/v1/projects/musco-dc111/billingInfo [none]
+[debug] [2025-04-24T06:57:46.055Z] <<< [apiv2][status] GET https://cloudbilling.googleapis.com/v1/projects/musco-dc111/billingInfo 200
+[debug] [2025-04-24T06:57:46.055Z] <<< [apiv2][body] GET https://cloudbilling.googleapis.com/v1/projects/musco-dc111/billingInfo {"name":"projects/musco-dc111/billingInfo","projectId":"musco-dc111","billingAccountName":"billingAccounts/01AF99-69253D-2DC18C","billingEnabled":true}
+[debug] [2025-04-24T06:57:46.057Z] Checked if tokens are valid: true, expires at: 1745480801193
+[debug] [2025-04-24T06:57:46.057Z] Checked if tokens are valid: true, expires at: 1745480801193
+[debug] [2025-04-24T06:57:46.057Z] >>> [apiv2][query] POST https://cloudfunctions.googleapis.com/v2/projects/musco-dc111/locations/us-central1/functions:generateUploadUrl [none]
+[debug] [2025-04-24T06:57:46.955Z] <<< [apiv2][status] POST https://cloudfunctions.googleapis.com/v2/projects/musco-dc111/locations/us-central1/functions:generateUploadUrl 200
+[debug] [2025-04-24T06:57:46.955Z] <<< [apiv2][body] POST https://cloudfunctions.googleapis.com/v2/projects/musco-dc111/locations/us-central1/functions:generateUploadUrl {"uploadUrl":"https://storage.googleapis.com/gcf-v2-uploads-1084458794272.us-central1.cloudfunctions.appspot.com/671c92c9-a17b-42ba-bd67-6a2e2390da8a.zip?GoogleAccessId=service-1084458794272@gcf-admin-robot.iam.gserviceaccount.com&Expires=1745479666&Signature=DKBS7ZlvhDqherCRUnU5CXw7LUcOFeA1h8uWyxdG%2BJQs3TnwRk5DWyQjtORf0yS9Ac7UK2i5ODeoQfP%2FNqEJLYLUEgLaelkXLPSUTNxEPSnXL4u5LaFGODHLSSR0zUmbG3hA2ooXmpoYwtuct6ixTsYiIN91UJkJYgMeHxjJBb1ZMmY6RDiyX8o1FgkO9TYI1eouxf7r8sLnjvMD65A6rgJ3yaceioXiU25VvcpCdgQMA5yXvHOFHiBEQ3LaKMOM7kkdndcsmwkl%2B%2BKs0vTGtYu%2Bw8mRxFRcUlciGpNLe8tvLPM8qGP6vS28wqPOPO2Gwsyzwx0KOPC2BJXj0dsxww%3D%3D","storageSource":{"bucket":"gcf-v2-uploads-1084458794272.us-central1.cloudfunctions.appspot.com","object":"671c92c9-a17b-42ba-bd67-6a2e2390da8a.zip"}}
+[debug] [2025-04-24T06:57:46.958Z] >>> [apiv2][query] PUT https://storage.googleapis.com/gcf-v2-uploads-1084458794272.us-central1.cloudfunctions.appspot.com/671c92c9-a17b-42ba-bd67-6a2e2390da8a.zip GoogleAccessId=service-1084458794272%40gcf-admin-robot.iam.gserviceaccount.com&Expires=1745479666&Signature=DKBS7ZlvhDqherCRUnU5CXw7LUcOFeA1h8uWyxdG%2BJQs3TnwRk5DWyQjtORf0yS9Ac7UK2i5ODeoQfP%2FNqEJLYLUEgLaelkXLPSUTNxEPSnXL4u5LaFGODHLSSR0zUmbG3hA2ooXmpoYwtuct6ixTsYiIN91UJkJYgMeHxjJBb1ZMmY6RDiyX8o1FgkO9TYI1eouxf7r8sLnjvMD65A6rgJ3yaceioXiU25VvcpCdgQMA5yXvHOFHiBEQ3LaKMOM7kkdndcsmwkl%2B%2BKs0vTGtYu%2Bw8mRxFRcUlciGpNLe8tvLPM8qGP6vS28wqPOPO2Gwsyzwx0KOPC2BJXj0dsxww%3D%3D
+[debug] [2025-04-24T06:57:46.958Z] >>> [apiv2][body] PUT https://storage.googleapis.com/gcf-v2-uploads-1084458794272.us-central1.cloudfunctions.appspot.com/671c92c9-a17b-42ba-bd67-6a2e2390da8a.zip [stream]
+[debug] [2025-04-24T06:57:48.216Z] <<< [apiv2][status] PUT https://storage.googleapis.com/gcf-v2-uploads-1084458794272.us-central1.cloudfunctions.appspot.com/671c92c9-a17b-42ba-bd67-6a2e2390da8a.zip 200
+[debug] [2025-04-24T06:57:48.216Z] <<< [apiv2][body] PUT https://storage.googleapis.com/gcf-v2-uploads-1084458794272.us-central1.cloudfunctions.appspot.com/671c92c9-a17b-42ba-bd67-6a2e2390da8a.zip [omitted]
+[info] ✔  functions: functions folder uploaded successfully 
+[info] i  functions: updating Node.js 18 (2nd Gen) function sendLoginEmail(us-central1)... 
+[debug] [2025-04-24T06:57:48.217Z] Checked if tokens are valid: true, expires at: 1745480801193
+[debug] [2025-04-24T06:57:48.218Z] Checked if tokens are valid: true, expires at: 1745480801193
+[debug] [2025-04-24T06:57:48.218Z] >>> [apiv2][query] PATCH https://cloudfunctions.googleapis.com/v2/projects/musco-dc111/locations/us-central1/functions/sendLoginEmail updateMask=name%2CbuildConfig.runtime%2CbuildConfig.entryPoint%2CbuildConfig.source.storageSource.bucket%2CbuildConfig.source.storageSource.object%2CbuildConfig.environmentVariables%2CbuildConfig.sourceToken%2CserviceConfig.environmentVariables%2CserviceConfig.ingressSettings%2CserviceConfig.timeoutSeconds%2CserviceConfig.serviceAccountEmail%2CserviceConfig.availableMemory%2CserviceConfig.minInstanceCount%2CserviceConfig.maxInstanceCount%2CserviceConfig.maxInstanceRequestConcurrency%2CserviceConfig.availableCpu%2CserviceConfig.vpcConnector%2CserviceConfig.vpcConnectorEgressSettings%2Clabels%2CbuildConfig.buildEnvironmentVariables
+[debug] [2025-04-24T06:57:48.218Z] >>> [apiv2][body] PATCH https://cloudfunctions.googleapis.com/v2/projects/musco-dc111/locations/us-central1/functions/sendLoginEmail {"name":"projects/musco-dc111/locations/us-central1/functions/sendLoginEmail","buildConfig":{"runtime":"nodejs18","entryPoint":"sendLoginEmail","source":{"storageSource":{"bucket":"gcf-v2-uploads-1084458794272.us-central1.cloudfunctions.appspot.com","object":"671c92c9-a17b-42ba-bd67-6a2e2390da8a.zip"}},"environmentVariables":{"GOOGLE_NODE_RUN_SCRIPTS":""}},"serviceConfig":{"environmentVariables":{"RESEND_API_KEY":"re_h4S7TWqJ_63xzUJ1UsPLjGDLkKwg1CaR2","APP_BASE_URL":"https://bodai.no","DYNAMIC_LINK_DOMAIN":"","EMAIL_FROM_ADDRESS":"noreply@bodai.no","ALLOWED_ORIGINS":"http://localhost:3000,https://bodai.no","FIREBASE_CONFIG":"{\"projectId\":\"musco-dc111\",\"storageBucket\":\"musco-dc111.firebasestorage.app\"}","GCLOUD_PROJECT":"musco-dc111","EVENTARC_CLOUD_EVENT_SOURCE":"projects/musco-dc111/locations/us-central1/services/sendLoginEmail","FUNCTION_TARGET":"sendLoginEmail"},"ingressSettings":null,"timeoutSeconds":null,"serviceAccountEmail":null,"availableMemory":"256Mi","minInstanceCount":null,"maxInstanceCount":null,"maxInstanceRequestConcurrency":80,"availableCpu":"1","vpcConnector":null,"vpcConnectorEgressSettings":null},"labels":{"deployment-tool":"cli-firebase","deployment-callable":"true","firebase-functions-hash":"910308873d4465675dd87a8c3fd214a9dc9843e8"}}
+[debug] [2025-04-24T06:57:49.904Z] <<< [apiv2][status] PATCH https://cloudfunctions.googleapis.com/v2/projects/musco-dc111/locations/us-central1/functions/sendLoginEmail 200
+[debug] [2025-04-24T06:57:49.905Z] <<< [apiv2][body] PATCH https://cloudfunctions.googleapis.com/v2/projects/musco-dc111/locations/us-central1/functions/sendLoginEmail {"name":"projects/musco-dc111/locations/us-central1/operations/operation-1745477869013-63380bc588902-a8c8663e-acb1b889","metadata":{"@type":"type.googleapis.com/google.cloud.functions.v2.OperationMetadata","createTime":"2025-04-24T06:57:49.814621508Z","target":"projects/musco-dc111/locations/us-central1/functions/sendLoginEmail","verb":"update","cancelRequested":false,"apiVersion":"v2"},"done":false}
+[debug] [2025-04-24T06:57:49.905Z] Checked if tokens are valid: true, expires at: 1745480801193
+[debug] [2025-04-24T06:57:49.905Z] Checked if tokens are valid: true, expires at: 1745480801193
+[debug] [2025-04-24T06:57:49.906Z] >>> [apiv2][query] GET https://cloudfunctions.googleapis.com/v2/projects/musco-dc111/locations/us-central1/operations/operation-1745477869013-63380bc588902-a8c8663e-acb1b889 [none]
+[debug] [2025-04-24T06:57:50.717Z] <<< [apiv2][status] GET https://cloudfunctions.googleapis.com/v2/projects/musco-dc111/locations/us-central1/operations/operation-1745477869013-63380bc588902-a8c8663e-acb1b889 200
+[debug] [2025-04-24T06:57:50.717Z] <<< [apiv2][body] GET https://cloudfunctions.googleapis.com/v2/projects/musco-dc111/locations/us-central1/operations/operation-1745477869013-63380bc588902-a8c8663e-acb1b889 {"name":"projects/musco-dc111/locations/us-central1/operations/operation-1745477869013-63380bc588902-a8c8663e-acb1b889","metadata":{"@type":"type.googleapis.com/google.cloud.functions.v2.OperationMetadata","createTime":"2025-04-24T06:57:49.814621508Z","target":"projects/musco-dc111/locations/us-central1/functions/sendLoginEmail","verb":"update","cancelRequested":false,"apiVersion":"v2","requestResource":{"@type":"type.googleapis.com/google.cloud.functions.v2.Function","name":"projects/musco-dc111/locations/us-central1/functions/sendLoginEmail","buildConfig":{"runtime":"nodejs18","entryPoint":"sendLoginEmail","source":{"storageSource":{"bucket":"gcf-v2-sources-1084458794272-us-central1","object":"sendLoginEmail/function-source.zip","generation":"1745477869758776"}},"environmentVariables":{"GOOGLE_NODE_RUN_SCRIPTS":""},"dockerRepository":"projects/musco-dc111/locations/us-central1/repositories/gcf-artifacts","sourceProvenance":{"resolvedStorageSource":{"bucket":"gcf-v2-sources-1084458794272-us-central1","object":"sendLoginEmail/function-source.zip","generation":"1745477538720817"}},"dockerRegistry":"ARTIFACT_REGISTRY","serviceAccount":"projects/musco-dc111/serviceAccounts/1084458794272-compute@developer.gserviceaccount.com","automaticUpdatePolicy":{}},"serviceConfig":{"service":"projects/musco-dc111/locations/us-central1/services/sendloginemail","timeoutSeconds":60,"environmentVariables":{"RESEND_API_KEY":"re_h4S7TWqJ_63xzUJ1UsPLjGDLkKwg1CaR2","APP_BASE_URL":"https://bodai.no","DYNAMIC_LINK_DOMAIN":"","EMAIL_FROM_ADDRESS":"noreply@bodai.no","ALLOWED_ORIGINS":"http://localhost:3000,https://bodai.no","FIREBASE_CONFIG":"{\"projectId\":\"musco-dc111\",\"storageBucket\":\"musco-dc111.firebasestorage.app\"}","GCLOUD_PROJECT":"musco-dc111","EVENTARC_CLOUD_EVENT_SOURCE":"projects/musco-dc111/locations/us-central1/services/sendLoginEmail","FUNCTION_TARGET":"sendLoginEmail","LOG_EXECUTION_ID":"true"},"ingressSettings":"ALLOW_ALL","uri":"https://sendloginemail-latacasvlq-uc.a.run.app","serviceAccountEmail":"1084458794272-compute@developer.gserviceaccount.com","availableMemory":"256Mi","allTrafficOnLatestRevision":true,"revision":"sendloginemail-00013-cuq","maxInstanceRequestConcurrency":80,"availableCpu":"1"},"state":"ACTIVE","labels":{"deployment-tool":"cloud-console","deployment-callable":"true","firebase-functions-hash":"910308873d4465675dd87a8c3fd214a9dc9843e8"},"environment":"GEN_2","url":"https://us-central1-musco-dc111.cloudfunctions.net/sendLoginEmail","satisfiesPzi":true},"stages":[{"name":"BUILD","state":"NOT_STARTED","stateMessages":[{"severity":"WARNING","type":"BuildAnalysisWarning","message":"Node.js 18 is no longer supported by the Node.js community as of 30 April, 2025. Node.js 18 will be deprecated on 2025-04-30. We recommend you to upgrade to the latest version of Node.js as soon as possible."}]},{"name":"SERVICE","state":"NOT_STARTED"}],"operationType":"UPDATE_FUNCTION"},"done":false}
+[debug] [2025-04-24T06:57:51.219Z] [update-default-us-central1-sendLoginEmail] Retrying task index 0
+[debug] [2025-04-24T06:57:51.219Z] Checked if tokens are valid: true, expires at: 1745480801193
+[debug] [2025-04-24T06:57:51.219Z] Checked if tokens are valid: true, expires at: 1745480801193
+[debug] [2025-04-24T06:57:51.219Z] >>> [apiv2][query] GET https://cloudfunctions.googleapis.com/v2/projects/musco-dc111/locations/us-central1/operations/operation-1745477869013-63380bc588902-a8c8663e-acb1b889 [none]
+[debug] [2025-04-24T06:57:52.040Z] <<< [apiv2][status] GET https://cloudfunctions.googleapis.com/v2/projects/musco-dc111/locations/us-central1/operations/operation-1745477869013-63380bc588902-a8c8663e-acb1b889 200
+[debug] [2025-04-24T06:57:52.040Z] <<< [apiv2][body] GET https://cloudfunctions.googleapis.com/v2/projects/musco-dc111/locations/us-central1/operations/operation-1745477869013-63380bc588902-a8c8663e-acb1b889 {"name":"projects/musco-dc111/locations/us-central1/operations/operation-1745477869013-63380bc588902-a8c8663e-acb1b889","metadata":{"@type":"type.googleapis.com/google.cloud.functions.v2.OperationMetadata","createTime":"2025-04-24T06:57:49.814621508Z","target":"projects/musco-dc111/locations/us-central1/functions/sendLoginEmail","verb":"update","cancelRequested":false,"apiVersion":"v2","requestResource":{"@type":"type.googleapis.com/google.cloud.functions.v2.Function","name":"projects/musco-dc111/locations/us-central1/functions/sendLoginEmail","buildConfig":{"runtime":"nodejs18","entryPoint":"sendLoginEmail","source":{"storageSource":{"bucket":"gcf-v2-sources-1084458794272-us-central1","object":"sendLoginEmail/function-source.zip","generation":"1745477869758776"}},"environmentVariables":{"GOOGLE_NODE_RUN_SCRIPTS":""},"dockerRepository":"projects/musco-dc111/locations/us-central1/repositories/gcf-artifacts","sourceProvenance":{"resolvedStorageSource":{"bucket":"gcf-v2-sources-1084458794272-us-central1","object":"sendLoginEmail/function-source.zip","generation":"1745477538720817"}},"dockerRegistry":"ARTIFACT_REGISTRY","serviceAccount":"projects/musco-dc111/serviceAccounts/1084458794272-compute@developer.gserviceaccount.com","automaticUpdatePolicy":{}},"serviceConfig":{"service":"projects/musco-dc111/locations/us-central1/services/sendloginemail","timeoutSeconds":60,"environmentVariables":{"RESEND_API_KEY":"re_h4S7TWqJ_63xzUJ1UsPLjGDLkKwg1CaR2","APP_BASE_URL":"https://bodai.no","DYNAMIC_LINK_DOMAIN":"","EMAIL_FROM_ADDRESS":"noreply@bodai.no","ALLOWED_ORIGINS":"http://localhost:3000,https://bodai.no","FIREBASE_CONFIG":"{\"projectId\":\"musco-dc111\",\"storageBucket\":\"musco-dc111.firebasestorage.app\"}","GCLOUD_PROJECT":"musco-dc111","EVENTARC_CLOUD_EVENT_SOURCE":"projects/musco-dc111/locations/us-central1/services/sendLoginEmail","FUNCTION_TARGET":"sendLoginEmail","LOG_EXECUTION_ID":"true"},"ingressSettings":"ALLOW_ALL","uri":"https://sendloginemail-latacasvlq-uc.a.run.app","serviceAccountEmail":"1084458794272-compute@developer.gserviceaccount.com","availableMemory":"256Mi","allTrafficOnLatestRevision":true,"revision":"sendloginemail-00013-cuq","maxInstanceRequestConcurrency":80,"availableCpu":"1"},"state":"ACTIVE","labels":{"deployment-tool":"cloud-console","deployment-callable":"true","firebase-functions-hash":"910308873d4465675dd87a8c3fd214a9dc9843e8"},"environment":"GEN_2","url":"https://us-central1-musco-dc111.cloudfunctions.net/sendLoginEmail","satisfiesPzi":true},"stages":[{"name":"BUILD","message":"Build in progress","state":"IN_PROGRESS","resource":"projects/1084458794272/locations/us-central1/builds/eb677ba1-0557-4e8c-82d8-23ab61598b68","resourceUri":"https://console.cloud.google.com/cloud-build/builds;region=us-central1/eb677ba1-0557-4e8c-82d8-23ab61598b68?project=1084458794272"},{"name":"SERVICE","state":"NOT_STARTED"}],"operationType":"UPDATE_FUNCTION","buildName":"projects/1084458794272/locations/us-central1/builds/eb677ba1-0557-4e8c-82d8-23ab61598b68"},"done":false}
+[debug] [2025-04-24T06:57:53.041Z] [update-default-us-central1-sendLoginEmail] Retrying task index 0
+[debug] [2025-04-24T06:57:53.041Z] Checked if tokens are valid: true, expires at: 1745480801193
+[debug] [2025-04-24T06:57:53.041Z] Checked if tokens are valid: true, expires at: 1745480801193
+[debug] [2025-04-24T06:57:53.042Z] >>> [apiv2][query] GET https://cloudfunctions.googleapis.com/v2/projects/musco-dc111/locations/us-central1/operations/operation-1745477869013-63380bc588902-a8c8663e-acb1b889 [none]
+[debug] [2025-04-24T06:57:53.884Z] <<< [apiv2][status] GET https://cloudfunctions.googleapis.com/v2/projects/musco-dc111/locations/us-central1/operations/operation-1745477869013-63380bc588902-a8c8663e-acb1b889 200
+[debug] [2025-04-24T06:57:53.884Z] <<< [apiv2][body] GET https://cloudfunctions.googleapis.com/v2/projects/musco-dc111/locations/us-central1/operations/operation-1745477869013-63380bc588902-a8c8663e-acb1b889 {"name":"projects/musco-dc111/locations/us-central1/operations/operation-1745477869013-63380bc588902-a8c8663e-acb1b889","metadata":{"@type":"type.googleapis.com/google.cloud.functions.v2.OperationMetadata","createTime":"2025-04-24T06:57:49.814621508Z","target":"projects/musco-dc111/locations/us-central1/functions/sendLoginEmail","verb":"update","cancelRequested":false,"apiVersion":"v2","requestResource":{"@type":"type.googleapis.com/google.cloud.functions.v2.Function","name":"projects/musco-dc111/locations/us-central1/functions/sendLoginEmail","buildConfig":{"runtime":"nodejs18","entryPoint":"sendLoginEmail","source":{"storageSource":{"bucket":"gcf-v2-sources-1084458794272-us-central1","object":"sendLoginEmail/function-source.zip","generation":"1745477869758776"}},"environmentVariables":{"GOOGLE_NODE_RUN_SCRIPTS":""},"dockerRepository":"projects/musco-dc111/locations/us-central1/repositories/gcf-artifacts","sourceProvenance":{"resolvedStorageSource":{"bucket":"gcf-v2-sources-1084458794272-us-central1","object":"sendLoginEmail/function-source.zip","generation":"1745477538720817"}},"dockerRegistry":"ARTIFACT_REGISTRY","serviceAccount":"projects/musco-dc111/serviceAccounts/1084458794272-compute@developer.gserviceaccount.com","automaticUpdatePolicy":{}},"serviceConfig":{"service":"projects/musco-dc111/locations/us-central1/services/sendloginemail","timeoutSeconds":60,"environmentVariables":{"RESEND_API_KEY":"re_h4S7TWqJ_63xzUJ1UsPLjGDLkKwg1CaR2","APP_BASE_URL":"https://bodai.no","DYNAMIC_LINK_DOMAIN":"","EMAIL_FROM_ADDRESS":"noreply@bodai.no","ALLOWED_ORIGINS":"http://localhost:3000,https://bodai.no","FIREBASE_CONFIG":"{\"projectId\":\"musco-dc111\",\"storageBucket\":\"musco-dc111.firebasestorage.app\"}","GCLOUD_PROJECT":"musco-dc111","EVENTARC_CLOUD_EVENT_SOURCE":"projects/musco-dc111/locations/us-central1/services/sendLoginEmail","FUNCTION_TARGET":"sendLoginEmail","LOG_EXECUTION_ID":"true"},"ingressSettings":"ALLOW_ALL","uri":"https://sendloginemail-latacasvlq-uc.a.run.app","serviceAccountEmail":"1084458794272-compute@developer.gserviceaccount.com","availableMemory":"256Mi","allTrafficOnLatestRevision":true,"revision":"sendloginemail-00013-cuq","maxInstanceRequestConcurrency":80,"availableCpu":"1"},"state":"ACTIVE","labels":{"deployment-tool":"cloud-console","deployment-callable":"true","firebase-functions-hash":"910308873d4465675dd87a8c3fd214a9dc9843e8"},"environment":"GEN_2","url":"https://us-central1-musco-dc111.cloudfunctions.net/sendLoginEmail","satisfiesPzi":true},"stages":[{"name":"BUILD","message":"Build in progress","state":"IN_PROGRESS","resource":"projects/1084458794272/locations/us-central1/builds/eb677ba1-0557-4e8c-82d8-23ab61598b68","resourceUri":"https://console.cloud.google.com/cloud-build/builds;region=us-central1/eb677ba1-0557-4e8c-82d8-23ab61598b68?project=1084458794272"},{"name":"SERVICE","state":"NOT_STARTED"}],"operationType":"UPDATE_FUNCTION","buildName":"projects/1084458794272/locations/us-central1/builds/eb677ba1-0557-4e8c-82d8-23ab61598b68"},"done":false}

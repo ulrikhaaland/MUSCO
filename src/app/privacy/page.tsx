@@ -234,7 +234,7 @@ export default function PrivacyPage() {
   };
 
   return (
-    <div className="fixed inset-0 bg-gray-900 flex flex-col">
+    <div className="bg-gray-900 flex flex-col min-h-screen">
       <div className="py-3 px-4 flex items-center justify-between">
         {/* Back button */}
         <button
@@ -265,10 +265,10 @@ export default function PrivacyPage() {
         <div className="w-10"></div>
       </div>
 
-      <div className="h-screen overflow-y-auto">
-        <div className="max-w-md mx-auto px-4 py-6">
+      <div className="flex-1">
+        <div className="max-w-md mx-auto px-4 pt-6">
           {/* Privacy information section */}
-          <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-xl ring-1 ring-gray-700/50 p-6 mb-6">
+          <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-xl ring-1 ring-gray-700/50 p-6 mb-8">
             <h2 className="text-xl font-bold text-white mb-4">Your Privacy Matters</h2>
             <p className="text-gray-300 mb-4">
               We take your privacy seriously. This page allows you to manage your data and understand how we protect your information.
@@ -285,7 +285,7 @@ export default function PrivacyPage() {
           </div>
           
           {/* Data export section */}
-          <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-xl ring-1 ring-gray-700/50 p-6 mb-6">
+          <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-xl ring-1 ring-gray-700/50 p-6 mb-8">
             <h2 className="text-xl font-bold text-white mb-4">Your Data</h2>
             <p className="text-gray-300 mb-4">
               Under GDPR, you have the right to access and export your personal data.
@@ -337,7 +337,7 @@ export default function PrivacyPage() {
           </div>
           
           {/* Delete account section - only show the button here */}
-          <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-xl ring-1 ring-gray-700/50 p-6 mb-6">
+          <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-xl ring-1 ring-gray-700/50 p-6 mb-8">
             <h2 className="text-xl font-bold text-white mb-4">Delete Account</h2>
             <p className="text-gray-300 mb-4">
               You have the right to be forgotten. Deleting your account will permanently remove all your personal data from our systems.
@@ -356,7 +356,7 @@ export default function PrivacyPage() {
           </div>
           
           {/* Contact for data requests */}
-          <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-xl ring-1 ring-gray-700/50 p-6 mb-6">
+          <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-xl ring-1 ring-gray-700/50 p-6 mb-8">
             <h2 className="text-xl font-bold text-white mb-4">Additional Requests</h2>
             <p className="text-gray-300 mb-4">
               For any other data-related requests or questions about your privacy, please contact our data protection team.

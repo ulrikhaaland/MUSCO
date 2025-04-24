@@ -10,7 +10,7 @@ import {
   signInWithEmailLink,
   deleteUser,
 } from 'firebase/auth';
-import { auth, db } from '../firebase/config';
+import { auth, db, functions } from '../firebase/config';
 import { doc, setDoc, getDoc, deleteDoc } from 'firebase/firestore';
 import { useClientUrl } from '../hooks/useClientUrl';
 import { useRouter } from 'next/navigation';
@@ -21,6 +21,8 @@ import {
 } from '../services/questionnaire';
 import { ExtendedUser, UserProfile } from '../types/user';
 import { toast } from '../components/ui/ToastProvider';
+import { httpsCallable } from 'firebase/functions';
+import { useTranslation } from "../i18n";
 
 interface AuthContextType {
   user: ExtendedUser | null;
@@ -52,6 +54,7 @@ const actionCodeSettings = {
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { href, isReady } = useClientUrl();
   const router = useRouter();
+  const { locale } = useTranslation();
   const [user, setUser] = useState<ExtendedUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
@@ -403,10 +406,42 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const sendSignInLink = async (email: string) => {
     try {
-      await sendSignInLinkToEmail(auth, email, actionCodeSettings);
+      await sendCustomSignInLink(email);
+      // await sendSignInLinkToEmail(auth, email, actionCodeSettings);
     } catch (error) {
-      console.error('Error sending sign-in link:', error);
-      return handleAuthError(error, 'Failed to send sign-in link', false);
+      try {
+        await sendSignInLinkToEmail(auth, email, actionCodeSettings);
+      } catch (error) {
+        console.error('Error sending sign-in link:', error);
+        return handleAuthError(error, 'Failed to send sign-in link', false);
+      }
+    }
+  };
+
+  const sendCustomSignInLink = async (email: string) => {
+    // Store email locally for sign-in completion
+    window.localStorage.setItem('emailForSignIn', email);
+    try {
+      // Ensure functions is initialized before calling httpsCallable
+      if (!functions) {
+        console.error('Firebase Functions instance is not available.');
+        toast.error('Configuration error. Please try again later.');
+        return;
+      }
+      const origin = window.location.origin; // Get current origin
+      const sendLoginEmail = httpsCallable(functions, 'sendLoginEmail');
+      // Pass email, origin, AND language: locale
+      await sendLoginEmail({ email, origin, language: locale });
+      // Optionally, show a success message
+      toast.success('Check your email for the sign-in link!');
+    } catch (error) {
+      console.error('Error calling sendLoginEmail function:', error);
+      // Use toast directly for user feedback
+      toast.error('Failed to send sign-in link. Please try again.');
+      // Rethrow if you want calling code to be aware of the failure
+      // throw error;
+      // Or adapt handleAuthError if needed
+      // return handleAuthError(error, 'Failed to send sign-in link', false);
     }
   };
 

@@ -1267,7 +1267,7 @@ export default function ProfilePage() {
       <style jsx global>
         {fadeInAnimation}
       </style>
-      <div className="fixed inset-0 bg-gray-900 flex flex-col">
+      <div className="bg-gray-900 flex flex-col min-h-screen"> {/* Removed fixed inset-0, added min-h-screen */}
         <div className="py-3 px-4 flex items-center justify-between">
           {/* Empty spacer to balance the title */}
           <div className="w-10"></div>
@@ -1297,12 +1297,12 @@ export default function ProfilePage() {
           </div>
         )}
 
-        <div className="h-screen overflow-y-auto">
+        <div className="flex-1"> {/* Removed h-screen overflow-y-auto, added flex-1 */}
           <div
             ref={topRef}
-            className={`max-w-md mx-auto px-4 py-6 ${isEditing ? 'pb-24' : ''}`}
+            className="max-w-md mx-auto px-4 pt-6 pb-8" // Adjusted padding
           >
-            <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-xl ring-1 ring-gray-700/50 p-6 mb-6">
+            <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-xl ring-1 ring-gray-700/50 p-6 mb-8">
               <div className="flex flex-col items-center mb-6 relative">
                 {/* Edit button - only visible when not in edit mode */}
                 {!isEditing && (
@@ -2799,7 +2799,7 @@ export default function ProfilePage() {
 
             {/* Only show these sections when not in edit mode */}
             {!isEditing && (
-              <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-xl ring-1 ring-gray-700/50 p-6 mb-6">
+              <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-xl ring-1 ring-gray-700/50 p-6">
                 <h3 className="text-lg font-medium text-white mb-4">Account</h3>
                 <div className="space-y-4">
                   <button
