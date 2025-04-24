@@ -62,11 +62,11 @@ function getNextMonday(d: Date): Date {
 // Create a reusable loading component
 function ProgramLoadingUI() {
   return (
-    <div className="min-h-screen w-screen flex items-center justify-center bg-gray-900">
-      <LoadingSpinner 
-        message="Creating Program" 
+    <div className="w-full flex items-center justify-center bg-gray-900 py-20">
+      <LoadingSpinner
+        message="Creating Program"
         submessage="Please wait while we generate your personalized exercise program..."
-        fullScreen={true}
+        fullScreen={false}
         size="large"
       />
     </div>

@@ -447,7 +447,7 @@ function ProgramsContent() {
 
 export default function ProgramsPage() {
   return (
-    <div className="min-h-screen h-screen overflow-hidden bg-gray-900 text-white flex flex-col">
+    <div className="min-h-screen bg-gray-900 text-white flex flex-col">
       <Suspense fallback={<div className="h-screen flex items-center justify-center"><LoadingSpinner /></div>}>
         <ProgramsContent />
       </Suspense>
