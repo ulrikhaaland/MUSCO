@@ -10,6 +10,7 @@ import { ProgramStatus } from '@/app/types/program';
 import { useTranslation } from '@/app/i18n';
 import LanguageSwitcher from './LanguageSwitcher';
 import DevMobileNavBar from './DevMobileNavBar';
+import Logo from './Logo';
 
 // Create a separate component that uses the search params
 function NavigationMenuContent() {
@@ -239,26 +240,28 @@ function NavigationMenuContent() {
 
   return (
     <div className="fixed bottom-0 left-0 z-50 w-full border-t border-gray-800 bg-gray-900">
-      {/* Hamburger button */}
-      <button
-        onClick={() => setDrawerOpen(!drawerOpen)}
-        className="fixed top-4 right-4 z-[70] p-2 rounded-lg bg-gray-800 text-white hover:bg-gray-700 transition-colors"
-        aria-label="Menu"
-      >
-        <svg
-          className="w-6 h-6"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
+      {/* Hamburger button - only show when drawer is closed */}
+      {!drawerOpen && (
+        <button
+          onClick={() => setDrawerOpen(true)}
+          className="fixed top-4 right-4 z-[70] p-2 rounded-lg bg-gray-800 text-white hover:bg-gray-700 transition-colors"
+          aria-label="Menu"
         >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M4 6h16M4 12h16M4 18h16"
-          />
-        </svg>
-      </button>
+          <svg
+            className="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M4 6h16M4 12h16M4 18h16"
+            />
+          </svg>
+        </button>
+      )}
 
       {/* Drawer overlay */}
       {drawerOpen && (
@@ -268,34 +271,16 @@ function NavigationMenuContent() {
       {/* Drawer */}
       <div
         ref={drawerRef}
-        className={`fixed top-0 right-0 h-full w-64 bg-gray-900 shadow-lg z-[70] transform transition-transform duration-300 ease-in-out ${
+        className={`fixed inset-y-0 right-0 z-[60] w-64 bg-gray-900 shadow-lg transform transition-transform duration-300 ease-in-out ${
           drawerOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
-        <div className="flex flex-col h-full">
-          {/* User info section */}
-          {user ? (
-            <div className="p-4 border-b border-gray-800">
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center text-white">
-                  {user.displayName
-                    ? user.displayName.charAt(0).toUpperCase()
-                    : user.email?.charAt(0).toUpperCase()}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-white truncate">
-                    {user.displayName || 'User'}
-                  </p>
-                  <p className="text-xs text-gray-400 truncate">{user.email}</p>
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div className="p-4 border-b border-gray-800">
-              <h2 className="text-app-title text-white">MUSCO</h2>
-            </div>
-          )}
+        {/* Logo Container */}
+        <div className="flex justify-center items-center py-2 border-b border-gray-800">
+          <Logo />
+        </div>
 
+        <div className="flex flex-col h-full">
           {/* Navigation items */}
           <nav className="flex-1 px-2 py-4 space-y-1">
             {navItems.map((item) => (

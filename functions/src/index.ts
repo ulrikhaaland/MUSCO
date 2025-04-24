@@ -17,7 +17,8 @@ const resendApiKey = defineString("RESEND_API_KEY");
 const dynamicLinkDomain = defineString("DYNAMIC_LINK_DOMAIN");
 const emailFromAddress = defineString("EMAIL_FROM_ADDRESS", {default: "noreply@bodai.no"});
 // Add ALLOWED_ORIGINS parameter - set this env var to a comma-separated list
-const allowedOrigins = defineString("ALLOWED_ORIGINS", {default: "http://localhost:3000,https://bodai.no,https://www.bodai.no"});
+const allowedOrigins = defineString("ALLOWED_ORIGINS", {
+  default: "http://localhost:3000,https://bodai.no,https://www.bodai.no,https://musco-one.vercel.app,https://musco-cakqufmza-zone2lab.vercel.app"});
 
 // Define the expected data structure within the CallableRequest
 interface RequestData {
@@ -94,7 +95,7 @@ export const sendLoginEmail = functions.https.onCall(
       let emailTitle = ""; // Title used in <title> tag
       let tagline = "";
       let heading = "";
-      let valueProp = "";
+      // let valueProp = "";
       let buttonText = "";
       let expireText = "";
       let troubleText = "";
@@ -106,7 +107,7 @@ export const sendLoginEmail = functions.https.onCall(
         emailTitle = "Logg inn på bodAI";
         tagline = "Intelligent trening, uten friksjonen";
         heading = "Magisk lenke-innlogging";
-        valueProp = "bodAI blander banebrytende KI med en interaktiv muskelskjelettmodell for å lage personlige trenings- og rehabiliteringsprogrammer. Klikk nedenfor for å hoppe tilbake – passordfritt.";
+        // valueProp = "bodAI blander banebrytende KI med en interaktiv muskelskjelettmodell for å lage personlige trenings- og rehabiliteringsprogrammer. Klikk nedenfor for å hoppe tilbake – passordfritt.";
         buttonText = "Åpne bodAI";
         expireText = "Lenken utløper om 1 time.";
         troubleText = "Hvis knappen ikke virker, kopier og lim inn denne URL-en:";
@@ -117,7 +118,7 @@ export const sendLoginEmail = functions.https.onCall(
         emailTitle = "Sign In To bodAI";
         tagline = "Intelligent Training, Minus The Friction";
         heading = "Magic Link Sign‑In";
-        valueProp = "bodAI blends cutting‑edge AI with an interactive musculoskeletal model to craft truly personal training & rehab programs. click below to jump back in—password‑free.";
+        // valueProp = "bodAI blends cutting‑edge AI with an interactive musculoskeletal model to craft truly personal training & rehab programs. click below to jump back in—password‑free.";
         buttonText = "Open bodAI";
         expireText = "Link expires in 1 hour.";
         troubleText = "If the button doesn't work, copy and paste this URL:";
@@ -134,50 +135,45 @@ export const sendLoginEmail = functions.https.onCall(
     <meta http-equiv="x-ua-compatible" content="ie=edge" />
     <title>${emailTitle}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <!-- dark‑mode friendly, inlined css for maximum client support -->
+    <meta name="color-scheme" content="light dark" />
   </head>
-  <body style="margin:0;padding:0;background-color:#0d0e14;color:#e4e7ec;font-family:'Inter',Helvetica,Arial,sans-serif;line-height:1.7;mso-line-height-rule:exactly;">
-    <!-- inbox preview text (hidden in client) -->
-    <span style="display:none;font-size:0;line-height:0;max-height:0;max-width:0;opacity:0;overflow:hidden;">${preheaderText}&nbsp;&nbsp;&nbsp;</span>
-    <!-- wrapper -->
-    <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="background-color:#0d0e14;border-collapse:collapse;">
+  <body bgcolor="#0d0e14" style="margin:0;padding:0;background-color:#0d0e14 !important;color:#e4e7ec;font-family:'Inter',Helvetica,Arial,sans-serif;line-height:1.7;mso-line-height-rule:exactly;">
+    <!-- inbox preview text (hidden) -->
+    <span style="display:none;font-size:0;max-height:0;opacity:0;overflow:hidden;">${preheaderText}&nbsp;&nbsp;&nbsp;</span>
+
+    <table width="100%" cellpadding="0" cellspacing="0" role="presentation" bgcolor="#0d0e14" style="background-color:#0d0e14;border-collapse:collapse;">
       <tr>
         <td align="center" style="padding:24px;">
-          <!-- card -->
-          <table width="520" cellpadding="0" cellspacing="0" role="presentation" style="background-color:#16171e;border-radius:12px;box-shadow:0 8px 28px rgba(0,0,0,0.6);border-collapse:collapse;">
+          <table width="520" cellpadding="0" cellspacing="0" role="presentation" bgcolor="#16171e" style="background-color:#16171e;border-radius:12px;box-shadow:0 8px 28px rgba(0,0,0,0.6);border-collapse:collapse;">
             <tr>
               <td style="padding:40px 48px;text-align:center;">
-                <!-- brand -->
-                <h1 style="margin:0 0 16px 0;font-size:24px;line-height:1.25;font-weight:700;color:#ffffff;">
+                <!-- logo -->
+                <h1 style="margin:0 0 16px;font-size:24px;font-weight:700;color:#fff;">
                   bod<span style="color:#4f46e5;">AI</span>
                 </h1>
                 <!-- tagline -->
-                <p style="margin:0 0 32px 0;font-size:14px;color:#9a9fad;text-transform:uppercase;letter-spacing:0.5px;">
+                <p style="margin:0 0 32px;font-size:14px;color:#9a9fad;text-transform:uppercase;letter-spacing:.5px;">
                   ${tagline}
                 </p>
                 <!-- heading -->
-                <h2 style="margin:0 0 24px 0;font-size:24px;font-weight:600;color:#ffffff;text-transform:capitalize;">
+                <h2 style="margin:0 0 32px;font-size:24px;font-weight:600;color:#fff;">
                   ${heading}
                 </h2>
-                <!-- urgency note -->
-                <p style="margin:0 0 16px 0;font-size:13px;color:#9a9fad;">
-                  ${expireText}
-                </p>
-                <!-- value prop -->
-                <p style="margin:0 0 24px 0;font-size:15px;color:#e4e7ec;max-width:420px;margin-left:auto;margin-right:auto;">
-                  ${valueProp}
-                </p>
-                <!-- cta -->
-                <a href="${link}" target="_blank" rel="noopener noreferrer" style="display:block;width:100%;max-width:280px;margin:0 auto;padding:14px 24px;font-size:15px;font-weight:600;text-decoration:none;text-align:center;color:#ffffff;background-color:#4f46e5;border-radius:10px;">
+
+                <!-- call‑to‑action -->
+                <a href="${link}" target="_blank" rel="noopener noreferrer" style="display:block;width:100%;max-width:280px;margin:0 auto 24px;padding:14px 24px;font-size:15px;font-weight:600;text-decoration:none;text-align:center;color:#fff;background-color:#4f46e5;border-radius:10px;">
                   ${buttonText}
                 </a>
-                <!-- fallback url -->
-                <p style="margin:32px 0 0 0;font-size:12px;color:#cbd5e1;word-break:break-all;">
+
+                <!-- link expiry + fallback -->
+                <p style="margin:0 0 24px;font-size:12px;color:#cbd5e1;word-break:break-all;">
+                  ${expireText}<br />
                   ${troubleText}<br />
                   <a href="${link}" style="color:#4f46e5;text-decoration:none;">${link}</a>
                 </p>
+
                 <!-- footer -->
-                <p style="margin:40px 0 0 0;font-size:11px;color:#8a8d9c;">
+                <p style="margin:0;font-size:11px;color:#8a8d9c;">
                   ${footerText}
                 </p>
               </td>
