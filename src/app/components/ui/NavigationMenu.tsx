@@ -25,6 +25,60 @@ function NavigationMenuContent() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const drawerRef = useRef<HTMLDivElement>(null);
   const [showDevNavBar, setShowDevNavBar] = useState(false);
+  
+  // Add state for tracking drag
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [dragging, setDragging] = useState(false);
+  const [dragPosition, setDragPosition] = useState(0);
+  
+  // Required min distance for drawer to close (in px)
+  const closeThreshold = 120; // px - adjust as needed
+
+  // Handle touch start event
+  const onTouchStart = (e: React.TouchEvent) => {
+    setTouchStart(e.targetTouches[0].clientX);
+    setDragging(true);
+  };
+
+  // Handle touch move event
+  const onTouchMove = (e: React.TouchEvent) => {
+    if (!touchStart || !dragging) return;
+    
+    const currentTouch = e.targetTouches[0].clientX;
+    const diff = currentTouch - touchStart;
+    
+    // Only allow dragging to the right (positive diff)
+    if (diff > 0) {
+      setDragPosition(diff);
+    }
+  };
+
+  // Handle touch end event
+  const onTouchEnd = () => {
+    if (!dragging) return;
+    
+    // If dragged past threshold, close drawer
+    if (dragPosition > closeThreshold) {
+      setDrawerOpen(false);
+    }
+    
+    // Reset drag state
+    setDragging(false);
+    setDragPosition(0);
+  };
+  
+  // Calculate transform style based on drag position
+  const getDrawerStyle = () => {
+    if (!drawerOpen) {
+      return { transform: 'translateX(100%)' };
+    }
+    
+    if (dragging && dragPosition > 0) {
+      return { transform: `translateX(${dragPosition}px)` };
+    }
+    
+    return { transform: 'translateX(0)' };
+  };
 
   // Close drawer when clicking outside
   useEffect(() => {
@@ -48,10 +102,35 @@ function NavigationMenuContent() {
     setDrawerOpen(false);
   }, [pathname, searchParams]);
 
+  // Prevent background scrolling when drawer is open
+  useEffect(() => {
+    if (drawerOpen) {
+      // Save the current scroll position
+      const scrollY = window.scrollY;
+      
+      // Add a class to prevent scrolling on the body
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.width = '100%';
+      document.body.style.overflowY = 'hidden';
+      
+      return () => {
+        // Restore scrolling when component unmounts or drawer closes
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.width = '';
+        document.body.style.overflowY = '';
+        
+        // Restore scroll position
+        window.scrollTo(0, scrollY);
+      };
+    }
+  }, [drawerOpen]);
+
   // Navigation items
   const navItems = [
     {
-      name: t('nav.home'),
+      name: t('nav.explore'),
       path: '/',
       icon: (
         <svg
@@ -64,15 +143,14 @@ function NavigationMenuContent() {
             strokeLinecap="round"
             strokeLinejoin="round"
             strokeWidth={2}
-            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
           />
         </svg>
       ),
     },
     {
-      name:
-        user && program ? t('nav.createNewProgram') : t('nav.createProgram'),
-      path: '/?new=true',
+      name: t('nav.myProgram'),
+      path: '/program',
       icon: (
         <svg
           className="w-6 h-6"
@@ -84,10 +162,11 @@ function NavigationMenuContent() {
             strokeLinecap="round"
             strokeLinejoin="round"
             strokeWidth={2}
-            d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
           />
         </svg>
       ),
+      disabled: !program,
     },
     {
       name: t('nav.programs'),
@@ -171,6 +250,13 @@ function NavigationMenuContent() {
     ) {
       return true;
     }
+    
+    if (
+      path === '/program' && 
+      (currentBasePath === '/program' || currentBasePath.startsWith('/program/day/'))
+    ) {
+      return true;
+    }
 
     if (path === '/programs' && currentBasePath === '/programs') {
       return true;
@@ -180,25 +266,10 @@ function NavigationMenuContent() {
       return true;
     }
 
-    // Special case for Create Program - only active when on home with new=true
-    if (path === '/?new=true') {
-      return currentBasePath === '/' && currentParams.includes('new=true');
-    }
-
     // Home is active in these cases:
-    // 1. On exact home route without new=true
-    // 2. On /program route (when viewing program)
+    // 1. On exact home route
     if (path === '/') {
-      // For program pages, Home tab should be active
-      if (
-        program &&
-        (currentBasePath === '/program' ||
-          currentBasePath.startsWith('/program/day/'))
-      ) {
-        return true;
-      }
-      // On home page without new=true parameter
-      return currentBasePath === '/' && !currentParams.includes('new=true');
+      return currentBasePath === '/';
     }
 
     // If none of the specific cases match, no match
@@ -207,17 +278,7 @@ function NavigationMenuContent() {
 
   const handleNavigation = (path: string, disabled: boolean = false) => {
     if (!disabled) {
-      // Special case for Create Program button
-      if (path.includes('/?new=true')) {
-        // Reset app state when navigating to create program page
-        completeReset();
-
-        // Add a timestamp to force a navigation event even if already on the page
-        const timestamp = Date.now();
-        router.push(`/?new=true&ts=${timestamp}`);
-      } else {
-        router.push(path);
-      }
+      router.push(path);
       setDrawerOpen(false);
       setShowUserMenu(false);
     }
@@ -268,12 +329,14 @@ function NavigationMenuContent() {
         <div className="fixed inset-0 bg-black bg-opacity-50 z-[60] transition-opacity" />
       )}
 
-      {/* Drawer */}
+      {/* Draggable drawer */}
       <div
         ref={drawerRef}
-        className={`fixed inset-y-0 right-0 z-[60] w-64 bg-gray-900 shadow-lg transform transition-transform duration-300 ease-in-out ${
-          drawerOpen ? 'translate-x-0' : 'translate-x-full'
-        } flex flex-col max-h-screen overflow-hidden`}
+        className={`fixed inset-y-0 right-0 z-[60] w-64 bg-gray-900 shadow-lg flex flex-col max-h-screen overflow-hidden ${!dragging ? 'transition-transform duration-300 ease-in-out' : ''}`}
+        style={getDrawerStyle()}
+        onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEnd}
       >
         {/* Logo Container */}
         <div className="flex justify-center items-center py-2 border-b border-gray-800 flex-shrink-0">

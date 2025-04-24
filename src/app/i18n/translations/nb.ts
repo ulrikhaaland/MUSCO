@@ -165,8 +165,10 @@ const translations = {
   
   // Navigation
   'nav.home': 'Hjem',
+  'nav.explore': 'Utforsk',
   'nav.createProgram': 'Lag program',
   'nav.createNewProgram': 'Lag nytt program',
+  'nav.myProgram': 'Mitt program',
   'nav.programs': 'Programmer',
   'nav.calendar': 'Kalender',
   'nav.profile': 'Profil',
