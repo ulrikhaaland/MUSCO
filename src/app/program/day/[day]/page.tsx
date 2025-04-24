@@ -374,7 +374,7 @@ export default function DayDetailPage() {
         <h1 className="text-app-title text-center">{dayName}</h1>
       </div>
       <div className="flex-1">
-        <div className="px-4 pb-32 max-w-4xl mx-auto">
+        <div className="px-4 max-w-4xl mx-auto">
           <ProgramDayComponent
             day={dayData}
             dayName={dayName}

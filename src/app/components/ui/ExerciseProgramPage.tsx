@@ -701,7 +701,7 @@ export function ExerciseProgramPage({
           )}
 
           <div className="flex-1">
-            <div className="max-w-4xl mx-auto px-4 pb-32">
+            <div className="max-w-4xl mx-auto px-4">
               {/* Program overview button - hide when showing feedback or selection */}
               {!showFeedbackQuestionnaire && !showExerciseSelectionPage && (
                 <div className="text-center mb-4 space-y-2 mt-2">

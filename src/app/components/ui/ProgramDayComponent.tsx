@@ -367,7 +367,7 @@ export function ProgramDayComponent({
       )}
 
       {/* Content section */}
-      <div className="space-y-8 pb-32 flex-1">
+      <div className="space-y-8 flex-1 pb-8">
         {/* Optional exercises message for rest days */}
         {day.isRestDay && filteredExercises && filteredExercises.length > 0 && (
           <div className="mb-8">

@@ -29,11 +29,6 @@ export function ExerciseProgramCalendar({
     .filter((up) => up.active)
     .flatMap((up) => up.programs);
 
-  // Add the current program if it's not already in activePrograms
-  if (!activePrograms.some((p) => p.createdAt === program.createdAt)) {
-    activePrograms.push(program);
-  }
-
   const getDayProgram = (date: Date): ProgramDayWithSource[] => {
     const result: ProgramDayWithSource[] = [];
 
@@ -340,12 +335,7 @@ export function ExerciseProgramCalendar({
     return (
       <div className="mt-8 space-y-8">
         {programDays.map((programDay, index) => (
-          <div
-            key={index}
-            className={`space-y-2 ${
-              index === programDays.length - 1 ? 'pb-20' : 'pb-0'
-            }`}
-          >
+          <div key={index} className="space-y-2">
             <ProgramDaySummaryComponent
               day={programDay.day}
               dayName={dayName(programDay.dayOfWeek)}
@@ -369,7 +359,7 @@ export function ExerciseProgramCalendar({
   };
 
   return (
-    <div className="fixed inset-0 bg-gray-900 to-gray-800 flex flex-col">
+    <div className="bg-gray-900 min-h-screen flex flex-col">
       <div className="py-3 px-4 flex items-center justify-between">
         {/* Empty spacer with same width as menu button to balance the title */}
         <div className="w-10"></div>
@@ -380,8 +370,8 @@ export function ExerciseProgramCalendar({
         <div className="w-10"></div>
       </div>
 
-      <div className="h-screen overflow-y-auto">
-        <div className="max-w-2xl mx-auto px-4 py-8">
+      <div className="flex-1">
+        <div className="max-w-2xl mx-auto px-4 pt-8 pb-8">
           <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-xl ring-1 ring-gray-700/50">
             {renderHeader()}
             <div className="p-4">
