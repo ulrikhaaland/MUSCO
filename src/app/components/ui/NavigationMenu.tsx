@@ -273,102 +273,104 @@ function NavigationMenuContent() {
         ref={drawerRef}
         className={`fixed inset-y-0 right-0 z-[60] w-64 bg-gray-900 shadow-lg transform transition-transform duration-300 ease-in-out ${
           drawerOpen ? 'translate-x-0' : 'translate-x-full'
-        }`}
+        } flex flex-col max-h-screen overflow-hidden`}
       >
         {/* Logo Container */}
-        <div className="flex justify-center items-center py-2 border-b border-gray-800">
+        <div className="flex justify-center items-center py-2 border-b border-gray-800 flex-shrink-0">
           <Logo />
         </div>
 
-        <div className="flex flex-col h-full">
-          {/* Navigation items */}
-          <nav className="flex-1 px-2 py-4 space-y-1">
-            {navItems.map((item) => (
-              <button
-                key={item.name}
-                onClick={() => handleNavigation(item.path, item.disabled)}
-                className={`flex items-center w-full px-4 py-3 rounded-lg transition-colors duration-200 ${
-                  isActive(item.path, item.name)
-                    ? 'text-white bg-indigo-900/70 font-medium'
-                    : item.disabled
-                    ? 'text-gray-600 cursor-not-allowed'
-                    : 'text-gray-300 hover:text-white hover:bg-gray-800/70'
-                }`}
-                disabled={item.disabled}
-              >
-                <span className="mr-3">{item.icon}</span>
-                <span>{item.name}</span>
-              </button>
-            ))}
-          </nav>
-
-          {/* User actions */}
-
-          <div className="border-t border-gray-800 pb-16">
-            {/* Language Switcher */}
-            <div className="mt-4 px-8 ">
-              <p className="text-sm text-gray-400 mb-2">
-                {t('common.language')}
-              </p>
-              <LanguageSwitcher showFullNames />
-            </div>
-
-            {/* Divider */}
-            <hr className="border-gray-800 my-4" />
-
-            {/* Sign Out Button */}
-            <button
-              onClick={() => {
-                if (user) {
-                  handleLogout();
-                } else {
-                  router.push('/login');
-                }
-              }}
-              className="flex items-center w-full px-8 py-2 mt-4 text-sm text-gray-300 hover:bg-gray-800 hover:text-white rounded-lg transition-colors duration-200"
-            >
-              <svg
-                className="w-5 h-5 mr-3"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-                />
-              </svg>
-              {user ? t('auth.signOut') : t('auth.signIn')}
-            </button>
-
-            {/* Dev Mode Toggle */}
-            {process.env.NODE_ENV === 'development' && (
-              <div className="mt-4 px-8">
+        {/* Scrollable content area */}
+        <div className="flex-1 overflow-y-auto">
+          <div className="flex flex-col h-full">
+            {/* Navigation items */}
+            <nav className="flex-1 px-2 py-4 space-y-1">
+              {navItems.map((item) => (
                 <button
-                  onClick={toggleDevNavBar}
-                  className="flex items-center w-full px-4 py-2 text-sm text-yellow-400 hover:bg-gray-800 hover:text-yellow-300 rounded-lg transition-colors duration-200"
+                  key={item.name}
+                  onClick={() => handleNavigation(item.path, item.disabled)}
+                  className={`flex items-center w-full px-4 py-3 rounded-lg transition-colors duration-200 ${
+                    isActive(item.path, item.name)
+                      ? 'text-white bg-indigo-900/70 font-medium'
+                      : item.disabled
+                      ? 'text-gray-600 cursor-not-allowed'
+                      : 'text-gray-300 hover:text-white hover:bg-gray-800/70'
+                  }`}
+                  disabled={item.disabled}
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5 mr-3"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth={2}
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"
-                    />
-                  </svg>
-                  Toggle Dev Nav Bar ({showDevNavBar ? 'On' : 'Off'})
+                  <span className="mr-3">{item.icon}</span>
+                  <span>{item.name}</span>
                 </button>
-              </div>
-            )}
+              ))}
+            </nav>
           </div>
+        </div>
+
+        {/* Footer section with language and login - fixed at bottom */}
+        <div className="border-t border-gray-800 pb-4 flex-shrink-0">
+          {/* Language Switcher */}
+          <div className="mt-4 px-8">
+            <p className="text-sm text-gray-400 mb-2">
+              {t('common.language')}
+            </p>
+            <LanguageSwitcher showFullNames />
+          </div>
+
+          {/* Divider */}
+          <hr className="border-gray-800 my-4" />
+
+          {/* Sign Out Button */}
+          <button
+            onClick={() => {
+              if (user) {
+                handleLogout();
+              } else {
+                router.push('/login');
+              }
+            }}
+            className="flex items-center w-full px-8 py-2 text-sm text-gray-300 hover:bg-gray-800 hover:text-white rounded-lg transition-colors duration-200"
+          >
+            <svg
+              className="w-5 h-5 mr-3"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+              />
+            </svg>
+            {user ? t('auth.signOut') : t('auth.signIn')}
+          </button>
+
+          {/* Dev Mode Toggle */}
+          {process.env.NODE_ENV === 'development' && (
+            <div className="mt-4 px-8">
+              <button
+                onClick={toggleDevNavBar}
+                className="flex items-center w-full px-4 py-2 text-sm text-yellow-400 hover:bg-gray-800 hover:text-yellow-300 rounded-lg transition-colors duration-200"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5 mr-3"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"
+                  />
+                </svg>
+                Toggle Dev Nav Bar ({showDevNavBar ? 'On' : 'Off'})
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
