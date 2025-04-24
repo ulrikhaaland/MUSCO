@@ -55,8 +55,8 @@ export default function RootLayout({
             <AppProvider>
               <ToastProvider>
                 <RouteChangeListener />
-                <SafeArea className="flex flex-col h-full">
-                  <div className="flex-1 pb-16">{children}</div>
+                <SafeArea className="h-full">
+                  <div className="flex-1">{children}</div>
                   <NavigationMenu />
                 </SafeArea>
               </ToastProvider>

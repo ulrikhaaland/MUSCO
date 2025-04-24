@@ -2,9 +2,10 @@ import React, { useEffect, useState } from "react";
 
 interface SafeAreaProps {
   children: React.ReactNode;
+  className?: string;
 }
 
-export function SafeArea({ children }: SafeAreaProps) {
+export function SafeArea({ children, className }: SafeAreaProps) {
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -26,9 +27,9 @@ export function SafeArea({ children }: SafeAreaProps) {
       className={`
         min-h-screen flex flex-col
         ${isMobile ? "pb-[calc(env(safe-area-inset-bottom)+4rem)]" : ""}
+        ${className || ''}
       `}
       style={{
-        height: isMobile ? "100dvh" : "100vh",
         WebkitOverflowScrolling: "touch",
       }}
     >

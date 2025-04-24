@@ -301,7 +301,7 @@ function ProgramsContent() {
 
       {/* Scrollable program list */}
       <div className="flex-1 overflow-y-auto px-4 py-6">
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 pb-8 mb-24">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 pb-8">
           {filteredAndSortedPrograms.map((program, index) => {
             // Find the original index in userPrograms
             const originalIndex = userPrograms.findIndex(p => 
