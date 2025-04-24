@@ -369,12 +369,12 @@ export default function DayDetailPage() {
   }
 
   return (
-    <div className="fixed inset-0 bg-gray-900 z-50 flex flex-col">
+    <div className="bg-gray-900 min-h-screen z-50 flex flex-col">
       <div className="py-3 px-4 flex items-center justify-center">
         <h1 className="text-app-title text-center">{dayName}</h1>
       </div>
-      <div className="flex-1 overflow-hidden">
-        <div className="h-full overflow-y-auto px-4 pb-32 max-w-4xl mx-auto">
+      <div className="flex-1">
+        <div className="px-4 pb-32 max-w-4xl mx-auto">
           <ProgramDayComponent
             day={dayData}
             dayName={dayName}

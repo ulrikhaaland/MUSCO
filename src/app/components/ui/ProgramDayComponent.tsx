@@ -255,7 +255,7 @@ export function ProgramDayComponent({
   };
 
   return (
-    <div className="h-full space-y-4" onClick={onClick}>
+    <div className="h-full flex flex-col" onClick={onClick}>
       {/* Header section - Removed negative margins to prevent overflow */}
       <div className="bg-gray-900/95 backdrop-blur-sm py-4">
         {programTitle && (
@@ -367,7 +367,7 @@ export function ProgramDayComponent({
       )}
 
       {/* Content section */}
-      <div className="space-y-8 pb-32">
+      <div className="space-y-8 pb-32 flex-1">
         {/* Optional exercises message for rest days */}
         {day.isRestDay && filteredExercises && filteredExercises.length > 0 && (
           <div className="mb-8">
