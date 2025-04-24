@@ -21,7 +21,6 @@ body {
   background-color: rgb(var(--background-rgb));
   color: rgb(var(--foreground-rgb));
   height: 100%;
-  overflow: hidden;
 }
 
 /* Hide navigation menu when video modal is open */

@@ -184,7 +184,6 @@ function HomeContent() {
 
 // Main component that wraps the HomeContent with suspense
 export default function Home() {
-  const { t } = useTranslation();
 
   return (
     <ErrorBoundary>
