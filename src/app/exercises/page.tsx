@@ -676,203 +676,205 @@ export default function AvailableExercisesPage() {
   }, [allEquipment, showAllEquipment]);
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8 space-y-8 bg-gray-900 min-h-screen text-white">
-      <h1 className="text-3xl font-bold text-center text-indigo-200 mb-8">Available Exercises</h1>
-      
-      {/* Exercise source toggle */}
-      <div className="flex justify-center mb-6">
-        <div className="bg-gray-800 p-1 rounded-lg inline-flex">
-          <button
-            className={`px-4 py-2 rounded-md font-medium transition-all ${
-              showMuscoExercises
-                ? 'bg-indigo-600 text-white'
-                : 'bg-transparent text-gray-400 hover:text-white'
-            }`}
-            onClick={() => toggleExerciseSource(true)}
-          >
-            bodAI Exercises
-          </button>
-          <button
-            className={`px-4 py-2 rounded-md font-medium transition-all ${
-              !showMuscoExercises
-                ? 'bg-indigo-600 text-white'
-                : 'bg-transparent text-gray-400 hover:text-white'
-            }`}
-            onClick={() => toggleExerciseSource(false)}
-          >
-            Other Exercises
-          </button>
+    <div className="w-full bg-gray-900 min-h-screen text-white">
+      <div className="max-w-4xl mx-auto px-4 py-8 space-y-8">
+        <h1 className="text-3xl font-bold text-center text-indigo-200 mb-8">Available Exercises</h1>
+        
+        {/* Exercise source toggle */}
+        <div className="flex justify-center mb-6">
+          <div className="bg-gray-800 p-1 rounded-lg inline-flex">
+            <button
+              className={`px-4 py-2 rounded-md font-medium transition-all ${
+                showMuscoExercises
+                  ? 'bg-indigo-600 text-white'
+                  : 'bg-transparent text-gray-400 hover:text-white'
+              }`}
+              onClick={() => toggleExerciseSource(true)}
+            >
+              bodAI Exercises
+            </button>
+            <button
+              className={`px-4 py-2 rounded-md font-medium transition-all ${
+                !showMuscoExercises
+                  ? 'bg-indigo-600 text-white'
+                  : 'bg-transparent text-gray-400 hover:text-white'
+              }`}
+              onClick={() => toggleExerciseSource(false)}
+            >
+              Other Exercises
+            </button>
+          </div>
         </div>
-      </div>
-      
-      {/* Equipment filters */}
-      {allEquipment.length > 0 && (
-        <div className="mb-6 bg-gray-800/80 p-5 rounded-xl shadow-lg border border-gray-700/50">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-semibold text-white">Filter by Equipment</h2>
-            {selectedEquipment.length > 0 && (
-              <button 
-                className="text-xs text-indigo-300 hover:text-indigo-200 underline flex items-center"
-                onClick={clearEquipmentFilters}
-              >
-                <svg className="w-3 h-3 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-                Clear filters
-              </button>
-            )}
-          </div>
-
-          {selectedEquipment.length === 0 && (
-            <p className="text-xs text-gray-400 mb-3">
-              Select equipment to filter exercises by available gear
-            </p>
-          )}
-          
-          <div className="flex flex-wrap items-center gap-3 mb-2">
-            {visibleEquipment.map(equipment => (
-              <Chip 
-                key={equipment}
-                variant={selectedEquipment.includes(equipment) ? 'active' : 'default'}
-                size="md"
-                onClick={() => toggleEquipmentFilter(equipment)}
-                className={`${
-                  selectedEquipment.includes(equipment) 
-                  ? 'bg-indigo-600 text-white font-medium ring-2 ring-indigo-400 shadow-md' 
-                  : 'bg-gray-700/60 text-gray-200 hover:bg-gray-700'
-                } transition-all duration-200`}
-              >
-                {equipment} ({equipmentCounts[equipment] || 0})
-              </Chip>
-            ))}
-            
-            {allEquipment.length > 10 && (
-              <button 
-                className="text-sm text-indigo-300 hover:text-indigo-200 ml-2 underline"
-                onClick={() => setShowAllEquipment(!showAllEquipment)}
-              >
-                {showAllEquipment ? 'Show less' : `Show ${allEquipment.length - 10} more`}
-              </button>
-            )}
-          </div>
-          
-          {selectedEquipment.length > 0 && (
-            <div className="mt-4 pt-3 border-t border-gray-700/50">
-              <p className="text-sm text-indigo-200 flex items-start">
-                <svg className="w-4 h-4 mr-2 mt-0.5 text-indigo-400" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                Showing exercises with: {selectedEquipment.join(', ')}
-              </p>
+        
+        {/* Equipment filters */}
+        {allEquipment.length > 0 && (
+          <div className="mb-6 bg-gray-800/80 p-5 rounded-xl shadow-lg border border-gray-700/50">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-lg font-semibold text-white">Filter by Equipment</h2>
+              {selectedEquipment.length > 0 && (
+                <button 
+                  className="text-xs text-indigo-300 hover:text-indigo-200 underline flex items-center"
+                  onClick={clearEquipmentFilters}
+                >
+                  <svg className="w-3 h-3 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                  Clear filters
+                </button>
+              )}
             </div>
+
+            {selectedEquipment.length === 0 && (
+              <p className="text-xs text-gray-400 mb-3">
+                Select equipment to filter exercises by available gear
+              </p>
+            )}
+            
+            <div className="flex flex-wrap items-center gap-3 mb-2">
+              {visibleEquipment.map(equipment => (
+                <Chip 
+                  key={equipment}
+                  variant={selectedEquipment.includes(equipment) ? 'active' : 'default'}
+                  size="md"
+                  onClick={() => toggleEquipmentFilter(equipment)}
+                  className={`${
+                    selectedEquipment.includes(equipment) 
+                    ? 'bg-indigo-600 text-white font-medium ring-2 ring-indigo-400 shadow-md' 
+                    : 'bg-gray-700/60 text-gray-200 hover:bg-gray-700'
+                  } transition-all duration-200`}
+                >
+                  {equipment} ({equipmentCounts[equipment] || 0})
+                </Chip>
+              ))}
+              
+              {allEquipment.length > 10 && (
+                <button 
+                  className="text-sm text-indigo-300 hover:text-indigo-200 ml-2 underline"
+                  onClick={() => setShowAllEquipment(!showAllEquipment)}
+                >
+                  {showAllEquipment ? 'Show less' : `Show ${allEquipment.length - 10} more`}
+                </button>
+              )}
+            </div>
+            
+            {selectedEquipment.length > 0 && (
+              <div className="mt-4 pt-3 border-t border-gray-700/50">
+                <p className="text-sm text-indigo-200 flex items-start">
+                  <svg className="w-4 h-4 mr-2 mt-0.5 text-indigo-400" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  Showing exercises with: {selectedEquipment.join(', ')}
+                </p>
+              </div>
+            )}
+          </div>
+        )}
+        
+        {/* Search input */}
+        <div className="relative w-full max-w-lg mx-auto mb-8">
+          <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+            <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+                strokeWidth="2" 
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
+            </svg>
+          </div>
+          <input
+            type="search"
+            className="block w-full p-3 pl-10 text-sm text-white border border-gray-700 rounded-lg bg-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            placeholder="Search exercises by name, body part, etc..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          {searchQuery && (
+            <button
+              className="absolute inset-y-0 right-0 flex items-center pr-3"
+              onClick={() => setSearchQuery('')}
+            >
+              <svg className="w-5 h-5 text-gray-400 hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
           )}
         </div>
-      )}
-      
-      {/* Search input */}
-      <div className="relative w-full max-w-lg mx-auto mb-8">
-        <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-          <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path 
-              strokeLinecap="round" 
-              strokeLinejoin="round" 
-              strokeWidth="2" 
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-            />
-          </svg>
-        </div>
-        <input
-          type="search"
-          className="block w-full p-3 pl-10 text-sm text-white border border-gray-700 rounded-lg bg-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          placeholder="Search exercises by name, body part, etc..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
-        {searchQuery && (
-          <button
-            className="absolute inset-y-0 right-0 flex items-center pr-3"
-            onClick={() => setSearchQuery('')}
-          >
-            <svg className="w-5 h-5 text-gray-400 hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
+        
+        {isLoading ? (
+          <div className="flex justify-center items-center h-64">
+            <div className="w-8 h-8 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+          </div>
+        ) : Object.keys(displayExercises).length === 0 ? (
+          <div className="text-center py-16">
+            {searchQuery ? (
+              <p className="text-white">No exercises found matching &ldquo;{searchQuery}&rdquo;</p>
+            ) : (
+              <p className="text-white">No exercises available</p>
+            )}
+          </div>
+        ) : (
+          <div className="space-y-6">
+            {/* Sort body parts alphabetically for consistent display */}
+            {Object.keys(displayExercises).sort().map((bodyPart) => {
+              const exercises = displayExercises[bodyPart];
+              const isCategoryExpanded = expandedCategories.includes(bodyPart);
+              const exerciseCount = exercises.length;
+
+              return (
+                <section 
+                  key={bodyPart} 
+                  className="space-y-4"
+                  ref={(el: HTMLElement | null) => { categoryRefs.current[bodyPart] = el; }}
+                >
+                  <button
+                    className="flex items-center w-full text-left text-white group"
+                    onClick={() => handleToggleCategory(bodyPart)}
+                  >
+                    <svg
+                      className={`w-5 h-5 mr-2 text-white transition-transform duration-200 group-hover:text-white ${
+                        isCategoryExpanded ? 'rotate-90' : 'rotate-0'
+                      }`}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                    <h2 className="text-2xl font-semibold text-white group-hover:text-white">
+                      {bodyPart}
+                    </h2>
+                    <span className="ml-2 text-sm text-gray-400">({exerciseCount})</span>
+                  </button>
+
+                  {isCategoryExpanded && (
+                    <div className="space-y-6 pl-7">
+                      {exercises.length > 0 ? (
+                        exercises.map((ex) => (
+                          <ExerciseCard
+                            key={ex.id || ex.exerciseId || ex.name}
+                            exercise={ex}
+                            isExpanded={(expandedExercises[bodyPart] || []).includes(ex.name)}
+                            onToggle={() => handleToggleExercise(bodyPart, ex.name)}
+                            onVideoClick={() => handleVideoClick(ex)}
+                            compact={true}
+                            loadingVideoExercise={loadingVideoExercise}
+                          />
+                        ))
+                      ) : (
+                        <div className="py-4 text-center text-gray-400">
+                          <p>No {showMuscoExercises ? 'bodAI' : 'other'} exercises available for {bodyPart}</p>
+                          <p className="text-sm mt-1">Try switching the exercise source using the toggle above</p>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </section>
+              );
+            })}
+          </div>
         )}
       </div>
-      
-      {isLoading ? (
-        <div className="flex justify-center items-center h-64">
-          <div className="w-8 h-8 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
-        </div>
-      ) : Object.keys(displayExercises).length === 0 ? (
-        <div className="text-center py-16">
-          {searchQuery ? (
-            <p className="text-white">No exercises found matching &ldquo;{searchQuery}&rdquo;</p>
-          ) : (
-            <p className="text-white">No exercises available</p>
-          )}
-        </div>
-      ) : (
-        <div className="space-y-6">
-          {/* Sort body parts alphabetically for consistent display */}
-          {Object.keys(displayExercises).sort().map((bodyPart) => {
-            const exercises = displayExercises[bodyPart];
-            const isCategoryExpanded = expandedCategories.includes(bodyPart);
-            const exerciseCount = exercises.length;
-
-            return (
-              <section 
-                key={bodyPart} 
-                className="space-y-4"
-                ref={(el: HTMLElement | null) => { categoryRefs.current[bodyPart] = el; }}
-              >
-                <button
-                  className="flex items-center w-full text-left text-white group"
-                  onClick={() => handleToggleCategory(bodyPart)}
-                >
-                  <svg
-                    className={`w-5 h-5 mr-2 text-white transition-transform duration-200 group-hover:text-white ${
-                      isCategoryExpanded ? 'rotate-90' : 'rotate-0'
-                    }`}
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
-                  </svg>
-                  <h2 className="text-2xl font-semibold text-white group-hover:text-white">
-                    {bodyPart}
-                  </h2>
-                  <span className="ml-2 text-sm text-gray-400">({exerciseCount})</span>
-                </button>
-
-                {isCategoryExpanded && (
-                  <div className="space-y-6 pl-7">
-                    {exercises.length > 0 ? (
-                      exercises.map((ex) => (
-                        <ExerciseCard
-                          key={ex.id || ex.exerciseId || ex.name}
-                          exercise={ex}
-                          isExpanded={(expandedExercises[bodyPart] || []).includes(ex.name)}
-                          onToggle={() => handleToggleExercise(bodyPart, ex.name)}
-                          onVideoClick={() => handleVideoClick(ex)}
-                          compact={true}
-                          loadingVideoExercise={loadingVideoExercise}
-                        />
-                      ))
-                    ) : (
-                      <div className="py-4 text-center text-gray-400">
-                        <p>No {showMuscoExercises ? 'bodAI' : 'other'} exercises available for {bodyPart}</p>
-                        <p className="text-sm mt-1">Try switching the exercise source using the toggle above</p>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </section>
-            );
-          })}
-        </div>
-      )}
       {/* Render video modal */}
       {renderVideoModal()}
     </div>

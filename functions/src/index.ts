@@ -17,7 +17,7 @@ const resendApiKey = defineString("RESEND_API_KEY");
 const dynamicLinkDomain = defineString("DYNAMIC_LINK_DOMAIN");
 const emailFromAddress = defineString("EMAIL_FROM_ADDRESS", {default: "noreply@bodai.no"});
 // Add ALLOWED_ORIGINS parameter - set this env var to a comma-separated list
-const allowedOrigins = defineString("ALLOWED_ORIGINS", {default: "http://localhost:3000,https://bodai.no"});
+const allowedOrigins = defineString("ALLOWED_ORIGINS", {default: "http://localhost:3000,https://bodai.no,https://www.bodai.no"});
 
 // Define the expected data structure within the CallableRequest
 interface RequestData {

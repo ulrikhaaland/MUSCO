@@ -1,4 +1,4 @@
-zone 2:     gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3019.MOV
+zone 2: (rolig løping prate tempo)     gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3019.MOV
 intervals: gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3020.MOV
 rowing machine: gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3021.mov
 spinning: gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3753.mov
