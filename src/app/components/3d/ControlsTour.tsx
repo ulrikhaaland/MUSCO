@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { TourStep } from '@/app/hooks/useControlsTour';
+import { useTranslation } from '@/app/i18n';
 
 interface ControlsTourProps {
   currentStep: TourStep;
@@ -105,6 +106,7 @@ const HighlightRing = ({ currentStep, controlsBottom }: { currentStep: TourStep,
 };
 
 export default function ControlsTour({ currentStep, onNext, onSkip, controlsBottom }: ControlsTourProps) {
+  const { t } = useTranslation();
   const tooltipRef = useRef<HTMLDivElement>(null);
   const [prevFocusElement, setPrevFocusElement] = useState<HTMLElement | null>(null);
   const [tooltipPosition, setTooltipPosition] = useState({ left: 0, top: 0 });
@@ -253,11 +255,11 @@ export default function ControlsTour({ currentStep, onNext, onSkip, controlsBott
   const getTooltipText = () => {
     switch (currentStep) {
       case 'rotate':
-        return 'Drag-free rotate the model.';
+        return t('mobile.controls.tour.rotate');
       case 'reset':
-        return 'Recenter view to default.';
+        return t('mobile.controls.tour.reset');
       case 'gender':
-        return 'Toggle male / female anatomy.';
+        return t('mobile.controls.tour.gender');
       default:
         return '';
     }
@@ -304,7 +306,7 @@ export default function ControlsTour({ currentStep, onNext, onSkip, controlsBott
             }}
             className="text-[14px] leading-5 font-semibold bg-[#374151] hover:bg-[#4b5563] h-8 px-4 rounded-md transition-colors duration-200"
           >
-            Next
+            {t('mobile.controls.next')}
           </button>
         </div>
       </div>
