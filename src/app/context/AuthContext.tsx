@@ -22,7 +22,7 @@ import {
 import { ExtendedUser, UserProfile } from '../types/user';
 import { toast } from '../components/ui/ToastProvider';
 import { httpsCallable } from 'firebase/functions';
-import { useTranslation } from "../i18n";
+import { useTranslation } from '../i18n';
 
 interface AuthContextType {
   user: ExtendedUser | null;
@@ -432,8 +432,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const sendLoginEmail = httpsCallable(functions, 'sendLoginEmail');
       // Pass email, origin, AND language: locale
       await sendLoginEmail({ email, origin, language: locale });
-      // Optionally, show a success message
-      toast.success('Check your email for the sign-in link!');
     } catch (error) {
       console.error('Error calling sendLoginEmail function:', error);
       // Use toast directly for user feedback
