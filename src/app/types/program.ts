@@ -236,6 +236,7 @@ export interface Exercise {
   forceType?: string;
   mechanics?: string;
   restBetweenSets?: number;
+  isOriginal?: boolean;
 }
 
 // Helper function to get bodyPart from an Exercise

@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { Exercise, ProgramDay } from '@/app/types/program';
-import Card from './Card';
+import ExerciseCard from './ExerciseCard';
 import Chip from './Chip';
 
 interface ProgramDayComponentProps {
@@ -32,12 +32,6 @@ export function ProgramDayComponent({
 }: ProgramDayComponentProps) {
   // State to track removed body parts
   const [removedBodyParts, setRemovedBodyParts] = useState<string[]>([]);
-  // State to track expanded description of exercises
-  const [expandedDescriptions, setExpandedDescriptions] = useState<string[]>(
-    []
-  );
-  // State to track visible instructions
-  const [visibleInstructions, setVisibleInstructions] = useState<string[]>([]);
   // State to track if title is being hovered
   const [isTitleHovered, setIsTitleHovered] = useState(false);
   // State to track if body parts container is overflowing
@@ -139,43 +133,6 @@ export function ProgramDayComponent({
     });
   };
 
-  // Function to truncate description at a character limit (100 chars) while respecting word boundaries
-  const getTruncatedDescription = (description: string, charLimit = 100) => {
-    if (description.length <= charLimit) return description;
-
-    // Find the last space within the character limit
-    const lastSpaceIndex = description.lastIndexOf(' ', charLimit);
-
-    // If no space found, just cut at the character limit
-    if (lastSpaceIndex === -1)
-      return description.substring(0, charLimit) + '...';
-
-    // Otherwise cut at the last space
-    return description.substring(0, lastSpaceIndex) + '...';
-  };
-
-  // Toggle expanded description
-  const toggleDescriptionExpand = (exerciseId: string) => {
-    setExpandedDescriptions((prev) => {
-      if (prev.includes(exerciseId)) {
-        return prev.filter((id) => id !== exerciseId);
-      } else {
-        return [...prev, exerciseId];
-      }
-    });
-  };
-
-  // Toggle instructions visibility
-  const toggleInstructionsVisibility = (exerciseId: string) => {
-    setVisibleInstructions((prev) => {
-      if (prev.includes(exerciseId)) {
-        return prev.filter((id) => id !== exerciseId);
-      } else {
-        return [...prev, exerciseId];
-      }
-    });
-  };
-
   // Render all body parts with horizontal scrolling
   const renderBodyParts = () => {
     return allBodyParts.map((bodyPart) => (
@@ -219,39 +176,6 @@ export function ProgramDayComponent({
         {bodyPart}
       </Chip>
     ));
-  };
-
-  // Render exercise information chips
-  const renderExerciseChips = (exercise: Exercise) => {
-    const chips = [];
-
-    if (exercise.duration) {
-      chips.push(
-        <Chip key="duration" size="sm">
-          {exercise.duration} min
-        </Chip>
-      );
-    } else {
-      if (exercise.sets && exercise.repetitions) {
-        chips.push(
-          <Chip key="sets-reps" size="lg">
-            {exercise.sets} × {exercise.repetitions}
-          </Chip>
-        );
-      }
-      if (exercise.restBetweenSets && exercise.restBetweenSets !== 0) {
-        chips.push(
-          <Chip
-            key="restBetweenSets"
-            size="lg"
-          >
-            {exercise.restBetweenSets}s rest
-          </Chip>
-        );
-      }
-    }
-
-    return chips;
   };
 
   return (
@@ -391,180 +315,19 @@ export function ProgramDayComponent({
                 !onExerciseToggle || expandedExercises.includes(exercise.name);
 
               return (
-                <Card
+                <ExerciseCard
                   key={
                     exercise.id ||
                     exercise.exerciseId ||
                     `${exercise.name}-${exercise.bodyPart}`
                   }
-                  onClick={() => onExerciseToggle?.(exercise.name)}
-                  isClickable={!!onExerciseToggle}
-                  title={
-                    <span
-                      className={
-                        isMobile ? 'tracking-tighter' : 'tracking-tight'
-                      }
-                    >
-                      {exercise.name}
-                    </span>
-                  }
-                  tag={
-                    exercise.bodyPart && (
-                      <Chip size="md">{exercise.bodyPart}</Chip>
-                    )
-                  }
-                  headerContent={
-                    !expandedExercises.includes(exercise.name) &&
-                    renderExerciseChips(exercise)
-                  }
-                >
-                  {/* Exercise Details - Only visible when expanded */}
-                  {isExpanded && (
-                    <Card.Section>
-                      {exercise.description && (
-                        <div className="text-gray-50 leading-relaxed">
-                          {expandedDescriptions.includes(exerciseId)
-                            ? exercise.description
-                            : getTruncatedDescription(exercise.description)}
-                          {exercise.description.length > 100 && (
-                            <button
-                              className="ml-1 text-indigo-300 hover:text-indigo-200 text-sm font-medium"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                toggleDescriptionExpand(exerciseId);
-                              }}
-                            >
-                              {expandedDescriptions.includes(exerciseId)
-                                ? 'See less'
-                                : 'See more'}
-                            </button>
-                          )}
-                        </div>
-                      )}
-
-                      {/* Exercise parameters in expanded view */}
-                      <div className="flex flex-wrap gap-4 items-center">
-                        {renderExerciseChips(exercise)}
-                        <div
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            onVideoClick(exercise);
-                          }}
-                          className={`inline-flex items-center space-x-1 bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-1.5 rounded-xl ${
-                            compact ? 'text-xs' : 'text-sm'
-                          } transition-colors duration-200 cursor-pointer ml-auto`}
-                        >
-                          {loadingVideoExercise === exercise.name ? (
-                            <div
-                              className={`${
-                                compact ? 'w-3.5 h-3.5' : 'w-4 h-4'
-                              } border-t-2 border-white rounded-full animate-spin`}
-                            />
-                          ) : (
-                            <svg
-                              className={`${
-                                compact ? 'w-3.5 h-3.5' : 'w-4 h-4'
-                              } opacity-85`}
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={1.75}
-                                d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
-                              />
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={1.75}
-                                d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                              />
-                            </svg>
-                          )}
-                          <span>Watch Video</span>
-                        </div>
-                      </div>
-
-                      {exercise.modification && (
-                        <p className="text-yellow-200/90 text-sm leading-relaxed">
-                          <span className="font-medium">Modification:</span>{' '}
-                          {exercise.modification}
-                        </p>
-                      )}
-
-                      {exercise.precaution && (
-                        <p className="text-red-400/90 text-sm leading-relaxed">
-                          <span className="font-medium">Precaution:</span>{' '}
-                          {exercise.precaution}
-                        </p>
-                      )}
-
-                      {exercise.steps && exercise.steps.length > 0 && (
-                        <div className="text-gray-300 text-sm leading-relaxed mt-4">
-                          <div className="flex items-center">
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                toggleInstructionsVisibility(exerciseId);
-                              }}
-                              className="text-indigo-300 hover:text-indigo-200 text-sm font-medium inline-flex items-center"
-                            >
-                              {visibleInstructions.includes(exerciseId) ? (
-                                <>
-                                  <svg
-                                    className="w-4 h-4 mr-1"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                  >
-                                    <path
-                                      strokeLinecap="round"
-                                      strokeLinejoin="round"
-                                      strokeWidth="2"
-                                      d="M5 15l7-7 7 7"
-                                    />
-                                  </svg>
-                                  Hide Instructions
-                                </>
-                              ) : (
-                                <>
-                                  <svg
-                                    className="w-4 h-4 mr-1"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                  >
-                                    <path
-                                      strokeLinecap="round"
-                                      strokeLinejoin="round"
-                                      strokeWidth="2"
-                                      d="M19 9l-7 7-7-7"
-                                    />
-                                  </svg>
-                                  View Instructions
-                                </>
-                              )}
-                            </button>
-                          </div>
-                          {visibleInstructions.includes(exerciseId) && (
-                            <div className="mt-3 pl-6 relative bg-gray-800/40 p-4 mx-2 rounded-r-xl">
-                              <div className="absolute left-0 top-0 bottom-0 w-[4px] bg-gradient-to-b from-indigo-700/80 via-indigo-700/50 to-indigo-700/20 rounded-full"></div>
-                              <ol className="list-decimal pl-5 space-y-2">
-                                {exercise.steps.map((step, index) => (
-                                  <li key={index} className="leading-[1.4]">
-                                    {step}
-                                  </li>
-                                ))}
-                              </ol>
-                            </div>
-                          )}
-                        </div>
-                      )}
-                    </Card.Section>
-                  )}
-                </Card>
+                  exercise={exercise}
+                  isExpanded={isExpanded}
+                  onToggle={() => onExerciseToggle?.(exercise.name)}
+                  onVideoClick={onVideoClick}
+                  loadingVideoExercise={loadingVideoExercise}
+                  compact={compact}
+                />
               );
             })}
           </div>

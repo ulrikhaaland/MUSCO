@@ -343,7 +343,9 @@ export function UserProvider({ children }: { children: ReactNode }) {
             setProgramStatus(null);
             setProgram(null);
           }
-          router.push('/program');
+          if(typeof window !== 'undefined' && !window.location.pathname.includes('/exercises')) {
+            router.push('/program');
+          }
 
           // Only set isLoading to false after we've completed all program fetching
           setTimeout(() => {

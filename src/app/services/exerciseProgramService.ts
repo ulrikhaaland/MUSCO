@@ -1,6 +1,4 @@
-import { fetchExercisesForBodyParts } from './exerciseTemplateService';
 import { Exercise, ExerciseProgram } from '@/app/types/program';
-import { ExerciseQuestionnaireAnswers } from '@/app/shared/types';
 
 // Helper function to fetch JSON data
 const fetchJson = async (url: string): Promise<{ exercises: Exercise[] }> => {
@@ -9,7 +7,9 @@ const fetchJson = async (url: string): Promise<{ exercises: Exercise[] }> => {
     if (!response.ok) {
       // Don't log error if file just not found (404), common for optional musco files
       if (response.status !== 404) {
-        console.error(`Failed to fetch ${url}: ${response.status} ${response.statusText}`);
+        console.error(
+          `Failed to fetch ${url}: ${response.status} ${response.statusText}`
+        );
       }
       return { exercises: [] }; // Return empty structure on fetch error
     }
@@ -29,206 +29,162 @@ const exerciseFiles: Record<
   () => Promise<{ default: { exercises: Exercise[] } }>
 > = {
   Shoulders: async () => {
-    // Load both sources using fetch
-    const [muscoData, originalData] = await Promise.all([
-      fetchJson('/data/exercises/musco/json2/m_shoulders.json'),
-      fetchJson('/data/exercises/json/shoulders.json')
-    ]);
+    // First try to load only musco data
+    const muscoData = await fetchJson(
+      '/data/exercises/musco/json2/m_shoulders.json'
+    );
     const muscoExercises = muscoData.exercises || [];
-    const originalExercises = originalData.exercises || [];
 
-    // Combine exercises, avoiding duplicates by ID
+    // Create a map of all musco exercises by ID for quick lookup
     const exerciseMap = new Map<string, Exercise>();
-    muscoExercises.forEach(exercise => {
+    muscoExercises.forEach((exercise) => {
       if (exercise.id) exerciseMap.set(exercise.id, exercise);
-    });
-    originalExercises.forEach(exercise => {
-      if (exercise.id && !exerciseMap.has(exercise.id)) {
-        exerciseMap.set(exercise.id, exercise);
-      }
     });
 
     return { default: { exercises: Array.from(exerciseMap.values()) } };
   },
   'Upper Arms': async () => {
-     const [muscoBiceps, muscoTriceps, biceps, triceps] = await Promise.all([
+    // Load only musco data
+    const [muscoBiceps, muscoTriceps] = await Promise.all([
         fetchJson('/data/exercises/musco/json2/m_biceps.json'),
         fetchJson('/data/exercises/musco/json2/m_triceps.json'),
-        fetchJson('/data/exercises/json/biceps.json'),
-        fetchJson('/data/exercises/json/triceps.json')
-     ]);
-     const muscoExercises = [...(muscoBiceps.exercises || []), ...(muscoTriceps.exercises || [])];
-     const originalExercises = [...(biceps.exercises || []), ...(triceps.exercises || [])];
+    ]);
+    const muscoExercises = [
+      ...(muscoBiceps.exercises || []),
+      ...(muscoTriceps.exercises || []),
+    ];
 
-    // Combine exercises, avoiding duplicates by ID
+    // Create a map of all musco exercises by ID
     const exerciseMap = new Map<string, Exercise>();
-    muscoExercises.forEach(exercise => {
+    muscoExercises.forEach((exercise) => {
       if (exercise.id) exerciseMap.set(exercise.id, exercise);
-    });
-    originalExercises.forEach(exercise => {
-      if (exercise.id && !exerciseMap.has(exercise.id)) {
-        exerciseMap.set(exercise.id, exercise);
-      }
     });
 
     return { default: { exercises: Array.from(exerciseMap.values()) } };
   },
   Forearms: async () => {
-    const [muscoData, originalData] = await Promise.all([
-      fetchJson('/data/exercises/musco/json2/m_forearms.json'),
-      fetchJson('/data/exercises/json/forearms.json')
-    ]);
+    // Load only musco data
+    const muscoData = await fetchJson(
+      '/data/exercises/musco/json2/m_forearms.json'
+    );
     const muscoExercises = muscoData.exercises || [];
-    const originalExercises = originalData.exercises || [];
 
-    // Combine exercises, avoiding duplicates by ID
+    // Create a map of all musco exercises by ID
     const exerciseMap = new Map<string, Exercise>();
-    muscoExercises.forEach(exercise => {
+    muscoExercises.forEach((exercise) => {
       if (exercise.id) exerciseMap.set(exercise.id, exercise);
-    });
-    originalExercises.forEach(exercise => {
-      if (exercise.id && !exerciseMap.has(exercise.id)) {
-        exerciseMap.set(exercise.id, exercise);
-      }
     });
 
     return { default: { exercises: Array.from(exerciseMap.values()) } };
   },
   Chest: async () => {
-     const [muscoData, originalData] = await Promise.all([
-      fetchJson('/data/exercises/musco/json2/m_chest.json'),
-      fetchJson('/data/exercises/json/chest.json')
-    ]);
+    // Load only musco data
+    const muscoData = await fetchJson(
+      '/data/exercises/musco/json2/m_chest.json'
+    );
     const muscoExercises = muscoData.exercises || [];
-    const originalExercises = originalData.exercises || [];
 
-    // Combine exercises, avoiding duplicates by ID
+    // Create a map of all musco exercises by ID
     const exerciseMap = new Map<string, Exercise>();
-    muscoExercises.forEach(exercise => {
+    muscoExercises.forEach((exercise) => {
       if (exercise.id) exerciseMap.set(exercise.id, exercise);
-    });
-    originalExercises.forEach(exercise => {
-      if (exercise.id && !exerciseMap.has(exercise.id)) {
-        exerciseMap.set(exercise.id, exercise);
-      }
     });
 
     return { default: { exercises: Array.from(exerciseMap.values()) } };
   },
   Abdomen: async () => {
-    const [muscoAbs, muscoObliques, abs, obliques] = await Promise.all([
+    // Load only musco data
+    const [muscoAbs, muscoObliques] = await Promise.all([
       fetchJson('/data/exercises/musco/json2/m_abs.json'),
       fetchJson('/data/exercises/musco/json2/m_obliques.json'),
-      fetchJson('/data/exercises/json/abs.json'),
-      fetchJson('/data/exercises/json/obliques.json')
     ]);
-     const muscoExercises = [...(muscoAbs.exercises || []), ...(muscoObliques.exercises || [])];
-     const originalExercises = [...(abs.exercises || []), ...(obliques.exercises || [])];
+    const muscoExercises = [
+      ...(muscoAbs.exercises || []),
+      ...(muscoObliques.exercises || []),
+    ];
 
-    // Combine exercises, avoiding duplicates by ID
+    // Create a map of all musco exercises by ID
     const exerciseMap = new Map<string, Exercise>();
-    muscoExercises.forEach(exercise => {
+    muscoExercises.forEach((exercise) => {
       if (exercise.id) exerciseMap.set(exercise.id, exercise);
-    });
-    originalExercises.forEach(exercise => {
-      if (exercise.id && !exerciseMap.has(exercise.id)) {
-        exerciseMap.set(exercise.id, exercise);
-      }
     });
 
     return { default: { exercises: Array.from(exerciseMap.values()) } };
   },
   'Upper Back': async () => {
-    const [muscoUpperBack, muscoLats, muscoTraps, upperBack, lats, traps] = await Promise.all([
+    // Load only musco data
+    const [muscoUpperBack, muscoLats, muscoTraps] = await Promise.all([
       fetchJson('/data/exercises/musco/json2/m_upper-back.json'),
       fetchJson('/data/exercises/musco/json2/m_lats.json'),
       fetchJson('/data/exercises/musco/json2/m_traps.json'),
-      fetchJson('/data/exercises/json/upper_back.json'),
-      fetchJson('/data/exercises/json/lats.json'),
-      fetchJson('/data/exercises/json/traps.json')
     ]);
      const muscoExercises = [
        ...(muscoUpperBack.exercises || []),
        ...(muscoLats.exercises || []),
-       ...(muscoTraps.exercises || [])
-      ];
-     const originalExercises = [
-       ...(upperBack.exercises || []),
-       ...(lats.exercises || []),
-       ...(traps.exercises || [])
-      ];
+      ...(muscoTraps.exercises || []),
+    ];
 
-    // Combine exercises, avoiding duplicates by ID
+    // Create a map of all musco exercises by ID
     const exerciseMap = new Map<string, Exercise>();
-    muscoExercises.forEach(exercise => {
+    muscoExercises.forEach((exercise) => {
       if (exercise.id) exerciseMap.set(exercise.id, exercise);
-    });
-    originalExercises.forEach(exercise => {
-      if (exercise.id && !exerciseMap.has(exercise.id)) {
-        exerciseMap.set(exercise.id, exercise);
-      }
     });
 
     return { default: { exercises: Array.from(exerciseMap.values()) } };
   },
   'Lower Back': async () => {
-    const [muscoData, originalData] = await Promise.all([
-      fetchJson('/data/exercises/musco/json2/m_lower-back.json'),
-      fetchJson('/data/exercises/json/lower_back.json')
-    ]);
+    // Load only musco data
+    const muscoData = await fetchJson(
+      '/data/exercises/musco/json2/m_lower-back.json'
+    );
+    console.log(`Lower Back file result:`, 
+      muscoData ? `Found data structure` : 'No data', 
+      `Exercises array length: ${muscoData?.exercises?.length || 0}`
+    );
+    
+    if (muscoData?.exercises?.length === 0) {
+      console.log('The m_lower-back.json file exists but contains no exercises or has wrong format');
+    }
+    
     const muscoExercises = muscoData.exercises || [];
-    const originalExercises = originalData.exercises || [];
 
-    // Combine exercises, avoiding duplicates by ID
+    // Create a map of all musco exercises by ID
     const exerciseMap = new Map<string, Exercise>();
-    muscoExercises.forEach(exercise => {
+    muscoExercises.forEach((exercise) => {
       if (exercise.id) exerciseMap.set(exercise.id, exercise);
-    });
-    originalExercises.forEach(exercise => {
-      if (exercise.id && !exerciseMap.has(exercise.id)) {
-        exerciseMap.set(exercise.id, exercise);
-      }
     });
 
     return { default: { exercises: Array.from(exerciseMap.values()) } };
   },
   Glutes: async () => {
-    const [muscoData, originalData] = await Promise.all([
-      fetchJson('/data/exercises/musco/json2/m_glutes.json'),
-      fetchJson('/data/exercises/json/glutes.json')
-    ]);
+    // Load only musco data
+    const muscoData = await fetchJson(
+      '/data/exercises/musco/json2/m_glutes.json'
+    );
     const muscoExercises = muscoData.exercises || [];
-    const originalExercises = originalData.exercises || [];
 
-    // Combine exercises, avoiding duplicates by ID
+    // Create a map of all musco exercises by ID
     const exerciseMap = new Map<string, Exercise>();
-    muscoExercises.forEach(exercise => {
+    muscoExercises.forEach((exercise) => {
       if (exercise.id) exerciseMap.set(exercise.id, exercise);
-    });
-    originalExercises.forEach(exercise => {
-      if (exercise.id && !exerciseMap.has(exercise.id)) {
-        exerciseMap.set(exercise.id, exercise);
-      }
     });
 
     return { default: { exercises: Array.from(exerciseMap.values()) } };
   },
   'Upper Legs': async () => {
-     // Fetch all relevant JSON files concurrently
+    // Load only musco data
     const [
-      muscoQuads, muscoHamstrings, muscoHipFlexors, muscoAdductors, muscoAbductors,
-      quads, hamstrings, hipFlexors, adductors, abductors
+      muscoQuads,
+      muscoHamstrings,
+      muscoHipFlexors,
+      muscoAdductors,
+      muscoAbductors,
     ] = await Promise.all([
       fetchJson('/data/exercises/musco/json2/m_quads.json'),
       fetchJson('/data/exercises/musco/json2/m_hamstrings.json'),
       fetchJson('/data/exercises/musco/json2/m_hip_flexors.json'),
       fetchJson('/data/exercises/musco/json2/m_adductors.json'),
       fetchJson('/data/exercises/musco/json2/m_abductors.json'),
-      fetchJson('/data/exercises/json/quads.json'),
-      fetchJson('/data/exercises/json/hamstrings.json'),
-      fetchJson('/data/exercises/json/hip_flexors.json'),
-      fetchJson('/data/exercises/json/adductors.json'),
-      fetchJson('/data/exercises/json/abductors.json'),
     ]);
 
     // Combine musco exercises, ensuring arrays exist
@@ -237,48 +193,28 @@ const exerciseFiles: Record<
       ...(muscoHamstrings.exercises || []),
       ...(muscoHipFlexors.exercises || []),
       ...(muscoAdductors.exercises || []),
-      ...(muscoAbductors.exercises || [])
+      ...(muscoAbductors.exercises || []),
     ];
 
-    // Combine original exercises, ensuring arrays exist
-    const originalExercises = [
-      ...(quads.exercises || []),
-      ...(hamstrings.exercises || []),
-      ...(hipFlexors.exercises || []),
-      ...(adductors.exercises || []),
-      ...(abductors.exercises || [])
-    ];
-
-    // Combine exercises, avoiding duplicates by ID (musco takes priority)
+    // Create a map of all musco exercises by ID
     const exerciseMap = new Map<string, Exercise>();
-    muscoExercises.forEach(exercise => {
+    muscoExercises.forEach((exercise) => {
       if (exercise.id) exerciseMap.set(exercise.id, exercise);
-    });
-    originalExercises.forEach(exercise => {
-      if (exercise.id && !exerciseMap.has(exercise.id)) {
-        exerciseMap.set(exercise.id, exercise);
-      }
     });
 
     return { default: { exercises: Array.from(exerciseMap.values()) } };
   },
   'Lower Legs': async () => {
-    const [muscoData, originalData] = await Promise.all([
-      fetchJson('/data/exercises/musco/json2/m_calves.json'),
-      fetchJson('/data/exercises/json/calves.json')
-    ]);
+    // Load only musco data
+    const muscoData = await fetchJson(
+      '/data/exercises/musco/json2/m_calves.json'
+    );
     const muscoExercises = muscoData.exercises || [];
-    const originalExercises = originalData.exercises || [];
 
-    // Combine exercises, avoiding duplicates by ID
+    // Create a map of all musco exercises by ID
     const exerciseMap = new Map<string, Exercise>();
-    muscoExercises.forEach(exercise => {
+    muscoExercises.forEach((exercise) => {
       if (exercise.id) exerciseMap.set(exercise.id, exercise);
-    });
-    originalExercises.forEach(exercise => {
-      if (exercise.id && !exerciseMap.has(exercise.id)) {
-        exerciseMap.set(exercise.id, exercise);
-      }
     });
 
     return { default: { exercises: Array.from(exerciseMap.values()) } };
@@ -288,12 +224,119 @@ const exerciseFiles: Record<
 // Cache for loaded exercises
 const exerciseCache: Record<string, Exercise> = {};
 
+// Map to track file paths for original exercises
+const originalExerciseFiles: Record<string, string> = {
+  shoulders: '/data/exercises/json/shoulders.json',
+  biceps: '/data/exercises/json/biceps.json',
+  triceps: '/data/exercises/json/triceps.json',
+  forearms: '/data/exercises/json/forearms.json',
+  chest: '/data/exercises/json/chest.json',
+  abs: '/data/exercises/json/abs.json',
+  obliques: '/data/exercises/json/obliques.json',
+  upper_back: '/data/exercises/json/upper_back.json',
+  lats: '/data/exercises/json/lats.json',
+  traps: '/data/exercises/json/traps.json',
+  lower_back: '/data/exercises/json/lower_back.json',
+  glutes: '/data/exercises/json/glutes.json',
+  quads: '/data/exercises/json/quads.json',
+  hamstrings: '/data/exercises/json/hamstrings.json',
+  hip_flexors: '/data/exercises/json/hip_flexors.json',
+  adductors: '/data/exercises/json/adductors.json',
+  abductors: '/data/exercises/json/abductors.json',
+  calves: '/data/exercises/json/calves.json',
+};
+
+/**
+ * Loads fallback exercises from original json files for specific IDs
+ */
+async function loadFallbackExercises(missingIds: Set<string>): Promise<void> {
+  if (missingIds.size === 0) return;
+  
+  console.log(`Loading ${missingIds.size} fallback exercises from original files...`);
+
+  // Group missing IDs by their prefix to determine which files to load
+  const idsByPrefix: Record<string, string[]> = {};
+  missingIds.forEach((id) => {
+    // Handle special cases with hyphens in the prefix
+    let prefix;
+    if (id.startsWith('lower-back')) {
+      prefix = 'lower_back';
+    } else if (id.startsWith('upper-back')) {
+      prefix = 'upper_back';
+    } else if (id.startsWith('hip-flexors') || id.startsWith('hip_flexors')) {
+      prefix = 'hip_flexors';
+    } else {
+      // Standard case: extract prefix (e.g., 'shoulders', 'biceps', etc.)
+      prefix = id.split('-')[0];
+    }
+    
+    if (!idsByPrefix[prefix]) idsByPrefix[prefix] = [];
+    idsByPrefix[prefix].push(id);
+  });
+
+  // Load exercises from each needed file
+  for (const [prefix, ids] of Object.entries(idsByPrefix)) {
+    const filePath = originalExerciseFiles[prefix];
+    if (!filePath) {
+      console.log(`No file mapping found for prefix: ${prefix}`);
+      continue; // Skip if we don't have a mapping for this prefix
+    }
+
+    console.log(`Loading ${ids.length} missing exercises with prefix '${prefix}' from ${filePath}`);
+    
+    try {
+      const { exercises = [] } = await fetchJson(filePath);
+      
+      let foundCount = 0;
+      
+      // Find the exercises with matching IDs and add them to cache
+      exercises.forEach((exercise: Exercise) => {
+        if (exercise.id && missingIds.has(exercise.id)) {
+          // Mark as original exercise
+          exerciseCache[exercise.id] = {
+            ...exercise,
+            isOriginal: true
+          };
+          
+          foundCount++;
+
+          // Also cache by exerciseId if available
+          if (exercise.exerciseId) {
+            exerciseCache[exercise.exerciseId] = {
+              ...exercise,
+              isOriginal: true
+            };
+          }
+        }
+      });
+      
+      console.log(`Found ${foundCount} of ${ids.length} missing exercises in ${filePath}`);
+    } catch (error) {
+      console.error(
+        `Error loading fallback exercises from ${filePath}:`,
+        error
+      );
+    }
+  }
+}
+
 /**
  * Loads exercises from JSON files fetched from public directory
+ * Prioritizes musco exercises and only loads non-musco as fallback when needed
+ * @param bodyParts Array of body part names to load
+ * @param includeOriginals When true, loads original exercises too (needed for toggle feature)
+ * @param onlyLoadMissingOriginals When true, only loads original exercises that weren't found in Musco files
  */
-async function loadExercisesFromJson(bodyParts: string[]): Promise<Exercise[]> {
+async function loadExercisesFromJson(
+  bodyParts: string[],
+  includeOriginals: boolean = true,
+  onlyLoadMissingOriginals: boolean = false
+): Promise<Exercise[]> {
   const exercises: Exercise[] = [];
 
+  console.log(`Loading exercises for ${bodyParts.join(', ')}, includeOriginals: ${includeOriginals}, onlyLoadMissingOriginals: ${onlyLoadMissingOriginals}`);
+
+  // First pass: load all musco exercises
   for (const bodyPart of bodyParts) {
     const loader = exerciseFiles[bodyPart];
     if (loader) {
@@ -301,9 +344,12 @@ async function loadExercisesFromJson(bodyParts: string[]): Promise<Exercise[]> {
         const {
           default: { exercises: exerciseData },
         } = await loader();
+        console.log(`Loaded ${exerciseData.length} Musco exercises for ${bodyPart}`);
+        
         const processedExercises = exerciseData.map((data) => ({
           ...data,
           bodyPart: data.targetBodyParts?.[0],
+          isOriginal: false, // Mark explicitly as non-original (Musco)
         }));
         exercises.push(...processedExercises);
 
@@ -323,319 +369,77 @@ async function loadExercisesFromJson(bodyParts: string[]): Promise<Exercise[]> {
     }
   }
 
-  return exercises;
-}
-
-// Since we'll be deleting exercises.ts, we'll create a temporary interface for types returned by fetchExercisesForBodyParts
-interface TemplateExercise {
-  id?: string;
-  name?: string;
-  description?: string;
-  targetBodyParts?: string[];
-  exerciseType?: string | string[];
-  difficulty?: string;
-  equipment?: string[];
-  steps?: string[];
-  imageUrl?: string;
-  videoUrl?: string;
-  tips?: string[];
-  contraindications?: string[];
-  alternatives?: string[];
-  muscles?: string[];
-  duration?: number;
-  repetitions?: number;
-  sets?: number;
-  restBetweenSets?: number;
-  viewCount?: number;
-  popularity?: string;
-  forceType?: string;
-  mechanics?: string;
-}
-
-/**
- * Prepares exercise data to be sent to the LLM for program generation
- * @param bodyParts Array of target body parts for the program
- * @param userInfo Optional user information for filtering exercises
- * @returns A formatted string containing exercises for the LLM to choose from
- */
-export const prepareExercisesForLLM = async (
-  bodyParts: string[],
-  userInfo?: ExerciseQuestionnaireAnswers
-): Promise<string> => {
-  try {
-    // Determine filters based on user information
-    const filters: {
-      equipment?: string[];
-      difficulty?: string[];
-      maxExercisesPerBodyPart?: number;
-      exerciseType?: string[];
-    } = {
-      maxExercisesPerBodyPart: 15, // Default to 15 exercises per body part
+  // If requested, load original exercises too for the toggle feature
+  // But if onlyLoadMissingOriginals is true, we'll handle them later
+  if (includeOriginals && !onlyLoadMissingOriginals) {
+    console.log('Loading original exercises...');
+    
+    // Create a mapping from body part names to original exercise file paths
+    const bodyPartToOriginalFiles: Record<string, string[]> = {
+      'Shoulders': [originalExerciseFiles.shoulders],
+      'Upper Arms': [originalExerciseFiles.biceps, originalExerciseFiles.triceps],
+      'Forearms': [originalExerciseFiles.forearms],
+      'Chest': [originalExerciseFiles.chest],
+      'Abdomen': [originalExerciseFiles.abs, originalExerciseFiles.obliques],
+      'Upper Back': [originalExerciseFiles.upper_back, originalExerciseFiles.lats, originalExerciseFiles.traps],
+      'Lower Back': [originalExerciseFiles.lower_back],
+      'Glutes': [originalExerciseFiles.glutes],
+      'Upper Legs': [
+        originalExerciseFiles.quads,
+        originalExerciseFiles.hamstrings,
+        originalExerciseFiles.hip_flexors,
+        originalExerciseFiles.adductors,
+        originalExerciseFiles.abductors
+      ],
+      'Lower Legs': [originalExerciseFiles.calves]
     };
 
-    // Apply user-specific filters if available
-    if (userInfo) {
-      // Filter by available equipment
-      if (userInfo.equipment && userInfo.equipment.length > 0) {
-        filters.equipment = userInfo.equipment;
-      }
-
-      // Filter by experience level/difficulty
-      if (userInfo.experienceLevel) {
-        switch (userInfo.experienceLevel.toLowerCase()) {
-          case 'beginner':
-            filters.difficulty = ['beginner'];
-            break;
-          case 'intermediate':
-            filters.difficulty = ['beginner', 'intermediate'];
-            break;
-          case 'advanced':
-            filters.difficulty = ['intermediate', 'advanced'];
-            break;
-          default:
-            // Include all difficulty levels
-            break;
-        }
-      }
-
-      // Adjust max exercises based on weekly frequency to ensure variety
-      if (userInfo.weeklyFrequency) {
-        const frequency = parseInt(userInfo.weeklyFrequency);
-        if (frequency <= 2) {
-          filters.maxExercisesPerBodyPart = 10; // Fewer options for less frequent training
-        } else if (frequency >= 5) {
-          filters.maxExercisesPerBodyPart = 20; // More options for frequent training
-        }
-      }
-    }
-
-    // Fetch exercises for the specified body parts with filters
-    const templateExercises = await fetchExercisesForBodyParts(
-      bodyParts,
-      filters
-    );
-
-    // Group exercises by body part
-    const exercisesByBodyPart: Record<string, Exercise[]> = {};
-
-    for (const templateExercise of templateExercises) {
-      const exercise =
-        convertTemplateExerciseToProgramExercise(templateExercise);
-      for (const bodyPart of exercise.targetBodyParts || []) {
-        if (!exercisesByBodyPart[bodyPart]) {
-          exercisesByBodyPart[bodyPart] = [];
-        }
-        exercisesByBodyPart[bodyPart].push(exercise);
-      }
-    }
-
-    // Format the exercises for the LLM - using a more concise format
-    let exercisePrompt = 'AVAILABLE EXERCISES BY BODY PART:\n\n';
-
-    for (const bodyPart of Object.keys(exercisesByBodyPart)) {
-      exercisePrompt += `${bodyPart.toUpperCase()}:\n`;
-
-      // Sort exercises by type for better organization
-      const exercisesByType: Record<string, Exercise[]> = {};
-      exercisesByBodyPart[bodyPart].forEach((exercise) => {
-        const types = Array.isArray(exercise.exerciseType)
-          ? exercise.exerciseType
-          : [exercise.exerciseType];
-
-        for (const type of types) {
-          if (!type) continue;
-          const formattedType = formatExerciseType(type);
-          if (!exercisesByType[formattedType]) {
-            exercisesByType[formattedType] = [];
+    // Load original exercises for each requested body part
+    for (const bodyPart of bodyParts) {
+      const filePaths = bodyPartToOriginalFiles[bodyPart] || [];
+      console.log(`Loading original exercises for ${bodyPart} from ${filePaths.length} files`);
+      
+      for (const filePath of filePaths) {
+        if (!filePath) continue;
+        
+        try {
+          const { exercises: originalExercises = [] } = await fetchJson(filePath);
+          console.log(`Loaded ${originalExercises.length} original exercises from ${filePath}`);
+          
+          const processedExercises = originalExercises.map((data: Exercise) => ({
+            ...data,
+            bodyPart: data.targetBodyParts?.[0],
+            isOriginal: true, // Mark as original for filtering
+          }));
+          exercises.push(...processedExercises);
+          
+          // Cache these too
+          processedExercises.forEach((exercise: Exercise) => {
+            if (exercise.id && !exerciseCache[exercise.id]) {
+              exerciseCache[exercise.id] = exercise;
+            }
+            if (exercise.exerciseId && !exerciseCache[exercise.exerciseId]) {
+              exerciseCache[exercise.exerciseId] = exercise;
+            }
+          });
+        } catch (error) {
+          // Ignore 404 errors for original files
+          if (!(error instanceof Response && error.status === 404)) {
+            console.error(`Error loading original exercises from ${filePath}:`, error);
           }
-          exercisesByType[formattedType].push(exercise);
         }
-      });
-
-      // Add exercises by type with minimal but essential information
-      for (const type of Object.keys(exercisesByType)) {
-        exercisePrompt += `\n${formatExerciseType(type)} EXERCISES:\n`;
-
-        // Sort exercises by popularity and view count within each type
-        const sortedExercises = [...exercisesByType[type]].sort((a, b) => {
-          // First sort by popularity
-          const popularityOrder = { high: 3, medium: 2, low: 1, unknown: 0 };
-          const popA =
-            popularityOrder[
-              (a.popularity || 'unknown') as keyof typeof popularityOrder
-            ];
-          const popB =
-            popularityOrder[
-              (b.popularity || 'unknown') as keyof typeof popularityOrder
-            ];
-
-          if (popB !== popA) return popB - popA;
-
-          // Then by view count
-          return (b.viewCount || 0) - (a.viewCount || 0);
-        });
-
-        sortedExercises.forEach((exercise, index) => {
-          // More concise format to reduce token count while preserving essential info
-          const popularityLabel = exercise.popularity
-            ? `[Popularity: ${exercise.popularity.toUpperCase()}]`
-            : '';
-
-          exercisePrompt += `${index + 1}. ${exercise.name} (${
-            exercise.id || exercise.exerciseId
-          }) ${popularityLabel}: ${exercise.description.substring(0, 100)}${
-            exercise.description.length > 100 ? '...' : ''
-          }\n`;
-        });
-
-        exercisePrompt += '\n';
       }
     }
-
-    // Add a section with detailed information about selected exercises
-    exercisePrompt += '\nDETAILED EXERCISE INFORMATION (Reference by ID):\n\n';
-
-    // Create a set of unique exercise IDs
-    const uniqueExercises = new Set<Exercise>();
-    Object.values(exercisesByBodyPart).forEach((exerciseList) => {
-      exerciseList.forEach((exercise) => uniqueExercises.add(exercise));
-    });
-
-    // Sort detailed exercises by popularity for emphasis
-    const sortedDetailedExercises = Array.from(uniqueExercises).sort((a, b) => {
-      const popularityOrder = { high: 3, medium: 2, low: 1, unknown: 0 };
-      const popA =
-        popularityOrder[
-          (a.popularity || 'unknown') as keyof typeof popularityOrder
-        ];
-      const popB =
-        popularityOrder[
-          (b.popularity || 'unknown') as keyof typeof popularityOrder
-        ];
-
-      if (popB !== popA) return popB - popA;
-
-      return (b.viewCount || 0) - (a.viewCount || 0);
-    });
-
-    // Add detailed information for each unique exercise
-    sortedDetailedExercises.forEach((exercise) => {
-      const exerciseId = exercise.id || exercise.exerciseId;
-      if (!exerciseId) return;
-
-      const popularityInfo = exercise.popularity
-        ? `Popularity: ${exercise.popularity.toUpperCase()}`
-        : '';
-      const viewCountInfo = exercise.viewCount
-        ? `Views: ${exercise.viewCount.toLocaleString()}`
-        : '';
-
-      exercisePrompt += `ID: ${exerciseId}\n`;
-      exercisePrompt += `Name: ${exercise.name}\n`;
-      if (popularityInfo || viewCountInfo) {
-        exercisePrompt += `${popularityInfo}${
-          popularityInfo && viewCountInfo ? ' | ' : ''
-        }${viewCountInfo}\n`;
-      }
-      exercisePrompt += `Description: ${exercise.description.substring(
-        0,
-        150
-      )}...\n`; // Truncate long descriptions
-      exercisePrompt += `Muscles: ${exercise.muscles.join(', ')}\n`;
-
-      // Only include contraindications if they exist
-      if (exercise.contraindications && exercise.contraindications.length > 0) {
-        exercisePrompt += `Contraindications: ${exercise.contraindications.join(
-          ', '
-        )}\n`;
-      }
-
-      exercisePrompt += '\n';
-    });
-
-    // Add a reminder about prioritizing popular exercises
-    exercisePrompt +=
-      'IMPORTANT: When creating the exercise program, prioritize exercises with HIGH and MEDIUM popularity ratings as they are more familiar to users and have better instructional resources available. Only use LOW popularity exercises when they specifically address unique user needs.\n\n';
-
-    return exercisePrompt;
-  } catch (error) {
-    console.error('Error preparing exercises for LLM:', error);
-    throw error;
   }
-};
+   
+  const muscoCount = exercises.filter(ex => ex.isOriginal === false).length;
+  const originalCount = exercises.filter(ex => ex.isOriginal === true).length;
+  const untaggedCount = exercises.length - muscoCount - originalCount;
+  
+  console.log(`Loaded ${exercises.length} total exercises: ${muscoCount} Musco, ${originalCount} original, ${untaggedCount} untagged`);
 
-/**
- * Helper function to format exercise type name
- * @param type The exercise type
- * @returns A formatted type name
- */
-const formatExerciseType = (type: string): string => {
-  return type.charAt(0).toUpperCase() + type.slice(1);
-};
-
-/**
- * Converts a template exercise to a program exercise
- */
-const convertTemplateExerciseToProgramExercise = (
-  templateExercise: TemplateExercise
-): Exercise => {
-  return {
-    name: templateExercise.name,
-    description: templateExercise.description,
-    sets: templateExercise.sets,
-    repetitions: templateExercise.repetitions,
-    rest: templateExercise.restBetweenSets,
-    videoUrl: templateExercise.videoUrl,
-    duration: templateExercise.duration,
-    imageUrl: templateExercise.imageUrl,
-    steps: templateExercise.steps,
-    tips: templateExercise.tips,
-    contraindications: templateExercise.contraindications,
-    muscles: templateExercise.muscles,
-    equipment: templateExercise.equipment,
-    difficulty: templateExercise.difficulty,
-    targetBodyParts: templateExercise.targetBodyParts,
-    exerciseType: templateExercise.exerciseType,
-    alternatives: templateExercise.alternatives,
-    viewCount: templateExercise.viewCount,
-    popularity: templateExercise.popularity,
-    forceType: templateExercise.forceType,
-    mechanics: templateExercise.mechanics,
-    id: templateExercise.id,
-  };
-};
-
-/**
- * Enhances an LLM prompt with exercise template data
- * @param originalPrompt The original prompt for the LLM
- * @param bodyParts Array of target body parts for the program
- * @param userInfo Optional user information for filtering exercises
- * @returns The enhanced prompt with exercise templates
- */
-export const enhancePromptWithExerciseTemplates = async (
-  originalPrompt: string,
-  bodyParts: string[],
-  userInfo?: ExerciseQuestionnaireAnswers
-): Promise<string> => {
-  try {
-    // Get formatted exercises with user-specific filtering
-    const exerciseTemplateData = await prepareExercisesForLLM(
-      bodyParts,
-      userInfo
-    );
-
-    // Insert the template data into the prompt
-    // Look for a marker in the original prompt or append at the end
-    if (originalPrompt.includes('{{EXERCISES}}')) {
-      return originalPrompt.replace('{{EXERCISES}}', exerciseTemplateData);
-    } else {
-      return `${originalPrompt}\n\nPlease select exercises from the following list to create the program. Include exercise IDs in your response so they can be properly referenced:\n\n${exerciseTemplateData}`;
-    }
-  } catch (error) {
-    console.error('Error enhancing prompt with exercise templates:', error);
-    throw error;
-  }
-};
+  return exercises;
+}
 
 /**
  * Enriches exercises in a program with complete data from the exercise repository
@@ -647,6 +451,7 @@ export const enrichExercisesWithFullData = async (
 
   // First, collect all unique target areas from the program
   const targetAreas = new Set<string>();
+  const missingIds = new Set<string>(); // Track exercise IDs not found in musco files
 
   // Map lowercase body part names to their proper cased version from exerciseFiles
   const bodyPartMapping: Record<string, string> = {};
@@ -727,7 +532,7 @@ export const enrichExercisesWithFullData = async (
     return bodyPartKey || null;
   };
 
-  // Collect all unique body parts from exercise IDs
+  // Collect all unique body parts from exercise IDs and track missing IDs
   for (const week of program.program) {
     for (const day of week.days) {
       if (day.exercises) {
@@ -745,8 +550,32 @@ export const enrichExercisesWithFullData = async (
     }
   }
 
-  // Load all exercises for the target areas
-  await loadExercisesFromJson(Array.from(targetAreas));
+  // Load all musco exercises for the target areas
+  // For enrichment, we only want the musco exercises and potentially missing fallbacks
+  await loadExercisesFromJson(Array.from(targetAreas), true, true);
+
+  // Check which IDs are still missing after loading musco exercises
+  for (const week of program.program) {
+    for (const day of week.days) {
+      if (day.exercises) {
+        day.exercises.forEach((exercise) => {
+          const exerciseId = exercise.id || exercise.exerciseId;
+          if (exerciseId && !exerciseCache[exerciseId]) {
+            missingIds.add(exerciseId);
+            console.log(`Missing exercise ID: ${exerciseId}`);
+          }
+        });
+      }
+    }
+  }
+
+  // If we have missing IDs, load the fallback exercises
+  if (missingIds.size > 0) {
+    console.log(
+      `Found ${missingIds.size} missing exercise IDs, loading fallback exercises`
+    );
+    await loadFallbackExercises(missingIds);
+  }
 
   // Now enrich the exercises using the loaded cache
   for (const week of program.program) {
@@ -805,3 +634,5 @@ export const enrichExercisesWithFullData = async (
     }
   }
 };
+
+export { exerciseFiles, loadExercisesFromJson };
