@@ -246,6 +246,14 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
     let isSubscribed = true;
 
+    // Safety timeout to ensure loading eventually completes
+    const safetyTimer = setTimeout(() => {
+      console.log('User data loading safety timeout triggered');
+      if (isSubscribed) {
+        setIsLoading(false);
+      }
+    }, 15000); // 15 seconds max loading time
+
     async function fetchUserData() {
       if (!user) {
         setAnswers(null);
@@ -348,9 +356,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
           }
 
           // Only set isLoading to false after we've completed all program fetching
-          setTimeout(() => {
-            setIsLoading(false);
-          }, 1000);
+          setIsLoading(false);
         }
       } catch (error) {
         console.error('Error fetching user data:', error);
@@ -365,6 +371,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
     // Cleanup function
     return () => {
       isSubscribed = false;
+      clearTimeout(safetyTimer);
     };
   }, [user, authLoading]);
 

@@ -123,6 +123,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                       // Delete the pending questionnaire
                       await deletePendingQuestionnaire(email);
                       console.log('Questionnaire processed successfully');
+                    } else {
+                      setLoading(false);
                     }
                   } catch (error) {
                     console.error(
@@ -134,10 +136,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                       'Failed to process questionnaire',
                       true
                     );
+                    setLoading(false);
                   }
                 } else {
                   setLoading(false);
                 }
+              } else {
+                setLoading(false);
               }
 
               // Clean up localStorage
@@ -149,18 +154,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             } catch (error) {
               console.error('Error signing in with email link:', error);
               handleAuthError(error, 'Failed to sign in with email link', true);
+              setLoading(false);
             }
           } else {
             setLoading(false);
           }
+        } else {
+          // No email link, let auth state listener handle auth state
+          handledEmailLink.current = false;
         }
       } catch (error) {
         console.error('Error in handleEmailLink:', error);
         handleAuthError(error, 'Failed to handle email link', true);
-      } finally {
-        if (user) {
-          setLoading(false);
-        }
+        setLoading(false);
       }
     };
 
@@ -207,7 +213,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     );
 
-    return () => unsubscribe();
+    // Safety timeout: ensure loading state is eventually set to false
+    // even if auth operations take too long or fail silently
+    const safetyTimer = setTimeout(() => {
+      console.log('Auth loading safety timeout triggered');
+      setLoading(false);
+    }, 10000); // 10 seconds max loading time
+
+    return () => {
+      unsubscribe();
+      clearTimeout(safetyTimer);
+    };
   }, [isReady]);
 
   // Fetch user profile data from Firestore
