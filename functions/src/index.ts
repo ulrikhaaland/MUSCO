@@ -11,6 +11,7 @@ admin.initializeApp();
 // --- Define Configuration Parameters (v2 style) ---
 // NOTE: These now expect environment variables in UPPERCASE_SNAKE_CASE
 // Set these in the Google Cloud Console for the function or during deployment.
+// const resendApiKey = defineString("re_h4S7TWqJ_63xzUJ1UsPLjGDLkKwg1CaR2");
 const resendApiKey = defineString("RESEND_API_KEY");
 const appBaseUrl = defineString("APP_BASE_URL", {default: "http://localhost:3000"});
 const dynamicLinkDomain = defineString("DYNAMIC_LINK_DOMAIN");

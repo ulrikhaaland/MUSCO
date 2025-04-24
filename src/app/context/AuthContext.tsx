@@ -10,7 +10,7 @@ import {
   signInWithEmailLink,
   deleteUser,
 } from 'firebase/auth';
-import { auth, db, functions } from '../firebase/config';
+import { auth, db } from '../firebase/config';
 import { doc, setDoc, getDoc, deleteDoc } from 'firebase/firestore';
 import { useClientUrl } from '../hooks/useClientUrl';
 import { useRouter } from 'next/navigation';
@@ -21,7 +21,6 @@ import {
 } from '../services/questionnaire';
 import { ExtendedUser, UserProfile } from '../types/user';
 import { toast } from '../components/ui/ToastProvider';
-import { getFunctions, httpsCallable } from 'firebase/functions';
 
 interface AuthContextType {
   user: ExtendedUser | null;
@@ -127,7 +126,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                       'Error processing pending questionnaire:',
                       error
                     );
-                    handleAuthError(error, 'Failed to process questionnaire', true);
+                    handleAuthError(
+                      error,
+                      'Failed to process questionnaire',
+                      true
+                    );
                   }
                 } else {
                   setLoading(false);
@@ -238,26 +241,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const updateUserProfile = async (profileData: Partial<UserProfile>) => {
     if (!user) throw new Error('No user is logged in');
-    
+
     try {
       const userDocRef = doc(db, 'users', user.uid);
-      
+
       // Get current data
       const userDoc = await getDoc(userDocRef);
       const currentData = userDoc.exists()
         ? (userDoc.data() as UserProfile)
         : {};
-      
+
       // Merge with new data
       const updatedData = {
         ...currentData,
         ...profileData,
         updatedAt: new Date().toISOString(),
       };
-      
+
       // Save to Firestore
       await setDoc(userDocRef, updatedData);
-      
+
       // Update local user state
       setUser((prevUser) => {
         if (!prevUser) return null;
@@ -274,7 +277,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const getUserProfile = async (): Promise<UserProfile | null> => {
     if (!user) return null;
-    
+
     try {
       return await fetchUserProfile(user.uid);
     } catch (error) {
@@ -303,7 +306,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     try {
       const uid = auth.currentUser.uid;
-      
+
       // First delete the user document from Firestore
       try {
         await deleteUserDoc(uid);
@@ -311,48 +314,57 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         console.error('Error deleting user document:', firestoreError);
         // Continue with account deletion even if document deletion fails
       }
-      
+
       // Then delete the authentication account
       await deleteUser(auth.currentUser);
-      
+
       toast.success('Your account has been successfully deleted');
       return true;
     } catch (error: any) {
       console.error('Error deleting user account:', error);
-      
+
       // Handle specific Firebase error codes
       if (error.code === 'auth/requires-recent-login') {
-        toast.error('For security reasons, please log in again before deleting your account');
+        toast.error(
+          'For security reasons, please log in again before deleting your account'
+        );
         return false;
       }
-      
+
       handleAuthError(error, 'Failed to delete account', false);
       return false;
     }
   };
 
   // Helper function to handle auth errors
-  const handleAuthError = (error: any, fallbackMessage: string, shouldRedirect = false) => {
+  const handleAuthError = (
+    error: any,
+    fallbackMessage: string,
+    shouldRedirect = false
+  ) => {
     // Log the error for debugging
     console.error('Authentication error:', error);
-    
+
     // Set the error state
     setError(error instanceof Error ? error : new Error(fallbackMessage));
-    
+
     // Determine the error message to display
     let displayMessage = fallbackMessage;
-    
+
     // Handle specific Firebase error codes
     if (error instanceof Error && 'code' in error) {
       switch (error.code as string) {
         case 'auth/invalid-action-code':
-          displayMessage = 'The sign-in link has expired or already been used. Please request a new sign-in link.';
+          displayMessage =
+            'The sign-in link has expired or already been used. Please request a new sign-in link.';
           break;
         case 'auth/user-disabled':
-          displayMessage = 'Your account has been disabled. Please contact support.';
+          displayMessage =
+            'Your account has been disabled. Please contact support.';
           break;
         case 'auth/user-not-found':
-          displayMessage = 'User not found. Please check your email or sign up.';
+          displayMessage =
+            'User not found. Please check your email or sign up.';
           break;
         case 'auth/too-many-requests':
           displayMessage = 'Too many failed attempts. Please try again later.';
@@ -360,27 +372,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         // Add other specific error codes as needed
       }
     }
-    
+
     // Reset authentication state if needed for certain errors
     if (
-      error instanceof Error && 
-      'code' in error && 
-      ['auth/invalid-action-code', 'auth/user-disabled'].includes(error.code as string)
+      error instanceof Error &&
+      'code' in error &&
+      ['auth/invalid-action-code', 'auth/user-disabled'].includes(
+        error.code as string
+      )
     ) {
       window.localStorage.removeItem('emailForSignIn');
       window.localStorage.removeItem('hasPendingQuestionnaire');
     }
-    
+
     // Show toast notification
     toast.error(displayMessage);
-    
+
     // Redirect to the root page if needed
     if (shouldRedirect) {
       // Use Next.js router for client-side transition (keeps toast visible)
       setLoading(false);
       // router.push('/');
     }
-    
+
     // For non-redirect cases, still need to return a rejected promise
     if (!shouldRedirect) {
       return Promise.reject(error);
@@ -388,27 +402,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const sendSignInLink = async (email: string) => {
-    // Store email locally for sign-in completion
-    window.localStorage.setItem('emailForSignIn', email);
     try {
-      // Ensure functions is initialized before calling httpsCallable
-      if (!functions) {
-        console.error('Firebase Functions instance is not available.');
-        toast.error('Configuration error. Please try again later.');
-        return;
-      }
-      const sendLoginEmail = httpsCallable(functions, 'sendLoginEmail');
-      await sendLoginEmail({ email });
-      // Optionally, show a success message
-      toast.success('Check your email for the sign-in link!');
+      await sendSignInLinkToEmail(auth, email, actionCodeSettings);
     } catch (error) {
-      console.error('Error calling sendLoginEmail function:', error);
-      // Use toast directly for user feedback
-      toast.error('Failed to send sign-in link. Please try again.');
-      // Rethrow if you want calling code to be aware of the failure
-      // throw error; 
-      // Or adapt handleAuthError if needed
-      // return handleAuthError(error, 'Failed to send sign-in link', false);
+      console.error('Error sending sign-in link:', error);
+      return handleAuthError(error, 'Failed to send sign-in link', false);
     }
   };
 
@@ -416,9 +414,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       await signOut(auth);
       setUser(null); // Optimistically set user to null
-      
+
       // Use the router for a cleaner transition
-      router.push('/');
+      router.push('/login');
     } catch (error) {
       console.error('Error signing out:', error);
       return handleAuthError(error, 'Failed to sign out', false);

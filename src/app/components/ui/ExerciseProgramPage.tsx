@@ -62,7 +62,7 @@ function getNextMonday(d: Date): Date {
 // Create a reusable loading component
 function ProgramLoadingUI() {
   return (
-    <div className="h-screen w-screen flex items-center justify-center bg-gray-900">
+    <div className="min-h-screen w-screen flex items-center justify-center bg-gray-900">
       <LoadingSpinner 
         message="Creating Program" 
         submessage="Please wait while we generate your personalized exercise program..."
@@ -163,30 +163,25 @@ export function ExerciseProgramPage({
     setShowExerciseSelectionPage(false);
     setShowFeedbackQuestionnaire(true);
     
-    // Restore feedback form scroll position
+    // Restore feedback form scroll position using window
     setTimeout(() => {
-      if (containerRef.current) {
-        containerRef.current.scrollTo({ top: feedbackScrollPosition, behavior: 'instant' });
-      }
+      // Use window.scrollTo for page scroll restoration
+      window.scrollTo({ top: feedbackScrollPosition, behavior: 'instant' });
     }, 0);
   };
 
   // Function to handle editing a specific selection step
   const handleEditSelection = (step: 'effective' | 'ineffective') => {
-    // Save current scroll position before switching to exercise selection
-    if (containerRef.current) {
-      setFeedbackScrollPosition(containerRef.current.scrollTop);
-    }
+    // Save current window scroll position before switching
+    setFeedbackScrollPosition(window.scrollY);
     
     setSelectionStep(step);
     setShowFeedbackQuestionnaire(false);
     setShowExerciseSelectionPage(true);
     
-    // Reset scroll position when switching to exercise selection
+    // Reset window scroll position when switching to exercise selection
     setTimeout(() => {
-      if (containerRef.current) {
-        containerRef.current.scrollTo({ top: 0, behavior: 'instant' });
-      }
+      window.scrollTo({ top: 0, behavior: 'instant' });
     }, 0);
   };
 
@@ -213,7 +208,7 @@ export function ExerciseProgramPage({
     setSelectedWeek(weekToSelect);
     setExpandedDays([currentDayOfWeek]);
 
-    // Scroll selected week and day into view after state updates
+    // Scroll selected week and day into view using element.scrollIntoView (better for targeting elements)
     setTimeout(() => {
       // Scroll week into view
       const weekButton = document.querySelector(
@@ -231,7 +226,8 @@ export function ExerciseProgramPage({
       const dayButton = document.querySelector(
         `[data-day="${currentDayOfWeek}"]`
       );
-      if (dayButton) {
+      // Scroll only if the week hasn't scrolled it already
+      if (dayButton && weekButton?.getBoundingClientRect().bottom < window.innerHeight * 0.8) { 
         dayButton.scrollIntoView({
           behavior: 'smooth',
           block: 'nearest',
@@ -276,7 +272,7 @@ export function ExerciseProgramPage({
       setExpandedDays([currentDayOfWeek]);
     }
 
-    // Scroll the selected week button into view with a slight delay to ensure DOM update
+    // Scroll the selected week button into view using element.scrollIntoView
     setTimeout(() => {
       const weekButton = document.querySelector(`[data-week="${weekNumber}"]`);
       if (weekButton) {
@@ -287,48 +283,40 @@ export function ExerciseProgramPage({
         });
       }
 
-      // After scrolling the week button into view, scroll to the bottom
-      if (containerRef.current) {
-        setTimeout(() => {
-          containerRef.current?.scrollTo({
-            top: containerRef.current.scrollHeight,
-            behavior: 'smooth',
-          });
-        }, 100);
-      }
+      // Scroll towards the bottom after week potentially scrolled into view
+      // Use window scroll
+      setTimeout(() => {
+        const targetY = document.body.scrollHeight * 0.8; // Scroll 80% down
+        window.scrollTo({ top: targetY, behavior: 'smooth' });
+      }, 150); // Delay slightly after element scroll
     }, 0);
   };
 
   const handleDayClick = (dayNumber: number) => {
     const isExpanding = !expandedDays.includes(dayNumber);
 
-    // Only change selection if we're selecting a different day
     if (isExpanding) {
       setExpandedDays([dayNumber]); // Show only the clicked day
       
-      // Scroll the selected day button into view with a slight delay to ensure DOM update
+      // Scroll the selected day button into view using element.scrollIntoView
       setTimeout(() => {
         const dayButton = document.querySelector(`[data-day="${dayNumber}"]`);
         if (dayButton) {
           dayButton.scrollIntoView({
             behavior: 'smooth',
-            block: 'nearest',
+            block: 'nearest', // Changed to 'nearest' to avoid unnecessary large scrolls
             inline: 'center',
           });
         }
 
-        // After scrolling the day button into view, scroll to the bottom
-        if (containerRef.current) {
-          setTimeout(() => {
-            containerRef.current?.scrollTo({
-              top: containerRef.current.scrollHeight,
-              behavior: 'smooth',
-            });
-          }, 100);
-        }
+        // Scroll towards the bottom after day potentially scrolled into view
+        // Use window scroll
+        setTimeout(() => {
+           const targetY = document.body.scrollHeight * 0.8; // Scroll 80% down
+           window.scrollTo({ top: targetY, behavior: 'smooth' });
+        }, 150); // Delay slightly after element scroll
       }, 0);
     }
-    // If already selected, do nothing (prevent deselection)
   };
 
   const handleDayDetailClick = (day: ProgramDay, dayName: string) => {
@@ -528,7 +516,7 @@ export function ExerciseProgramPage({
 
   return (
     <div
-      className={`bg-gray-900 flex flex-col h-screen text-white ${
+      className={`bg-gray-900 flex flex-col min-h-screen text-white ${
         isLoading ? 'items-center justify-center' : ''
       }`}
     >
@@ -712,8 +700,8 @@ export function ExerciseProgramPage({
             </div>
           )}
 
-          <div ref={containerRef} className="h-screen overflow-y-auto pb-32">
-            <div className="max-w-4xl mx-auto px-4">
+          <div className="flex-1">
+            <div className="max-w-4xl mx-auto px-4 pb-32">
               {/* Program overview button - hide when showing feedback or selection */}
               {!showFeedbackQuestionnaire && !showExerciseSelectionPage && (
                 <div className="text-center mb-4 space-y-2 mt-2">
