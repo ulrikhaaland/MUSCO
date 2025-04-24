@@ -5,6 +5,10 @@ import MyLocationIcon from '@mui/icons-material/MyLocation';
 import MaleIcon from '@mui/icons-material/Male';
 import FemaleIcon from '@mui/icons-material/Female';
 import { Gender } from '@/app/types';
+import useControlsTour from '@/app/hooks/useControlsTour';
+import ControlsTour from './ControlsTour';
+import { useEffect } from 'react';
+
 interface MobileControlButtonsProps {
   isRotating: boolean;
   isResetting: boolean;
@@ -28,16 +32,59 @@ export default function MobileControlButtons({
   onReset,
   onSwitchModel,
 }: MobileControlButtonsProps) {
+  const { shouldShowTour, currentStep, isTourMounted, nextStep, skipTour } = useControlsTour();
+
+  // Set CSS variable for positioning tour elements
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      document.documentElement.style.setProperty('--controls-bottom', controlsBottom);
+    }
+  }, [controlsBottom]);
+
+  // Handle button clicks during tour
+  const handleRotate = () => {
+    if (shouldShowTour && currentStep === 'rotate') {
+      nextStep();
+    }
+    
+    // Always allow the normal functionality to work
+    if (!isRotating && !isResetting && isReady) {
+      onRotate();
+    }
+  };
+
+  const handleReset = () => {
+    if (shouldShowTour && currentStep === 'reset') {
+      nextStep();
+    }
+    
+    // Always allow the normal functionality to work
+    if (!isResetting && needsReset && isReady) {
+      onReset();
+    }
+  };
+
+  const handleSwitchModel = () => {
+    if (shouldShowTour && currentStep === 'gender') {
+      nextStep();
+    }
+    
+    // Always allow the normal functionality to work
+    if (isReady) {
+      onSwitchModel();
+    }
+  };
+
   return (
     <>
       <div
-        className="md:hidden fixed right-4 flex flex-col gap-2 bg-[#111827] p-1.5 rounded-lg shadow-lg transition-all duration-300"
+        className="md:hidden fixed right-4 flex flex-col gap-2 bg-[#111827]/80 p-1.5 rounded-lg shadow-lg transition-all duration-300 backdrop-blur-md z-[50] mobile-controls-container"
         style={{
           bottom: controlsBottom,
         }}
       >
         <button
-          onClick={onRotate}
+          onClick={handleRotate}
           disabled={isRotating || isResetting || !isReady}
           className={`rotate-button text-white p-2 rounded-lg transition-colors duration-200 ${
             isRotating || isResetting || !isReady
@@ -51,10 +98,10 @@ export default function MobileControlButtons({
         </button>
 
         <button
-          onClick={onReset}
+          onClick={handleReset}
           disabled={isResetting || !needsReset || !isReady}
           className={`reset-button text-white p-2 rounded-lg transition-colors duration-200 ${
-            isResetting || !needsReset ? 'opacity-50' : 'hover:bg-white/10'
+            isResetting || !needsReset || !isReady ? 'opacity-50' : 'hover:bg-white/10'
           }`}
         >
           <MyLocationIcon
@@ -63,7 +110,7 @@ export default function MobileControlButtons({
         </button>
 
         <button
-          onClick={onSwitchModel}
+          onClick={handleSwitchModel}
           disabled={!isReady}
           className={`gender-button text-white p-2 rounded-lg hover:bg-white/10 transition-colors duration-200 ${
             !isReady ? 'opacity-50' : ''
@@ -76,6 +123,15 @@ export default function MobileControlButtons({
           )}
         </button>
       </div>
+
+      {isTourMounted && shouldShowTour && (
+        <ControlsTour 
+          currentStep={currentStep}
+          onNext={nextStep}
+          onSkip={skipTour}
+          controlsBottom={controlsBottom}
+        />
+      )}
     </>
   );
 }

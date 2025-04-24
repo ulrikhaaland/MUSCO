@@ -137,12 +137,12 @@ function NavigationMenuContent() {
           className="w-6 h-6"
           fill="none"
           stroke="currentColor"
+          strokeWidth={1.5}
           viewBox="0 0 24 24"
         >
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
-            strokeWidth={2}
             d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
           />
         </svg>
@@ -156,12 +156,12 @@ function NavigationMenuContent() {
           className="w-6 h-6"
           fill="none"
           stroke="currentColor"
+          strokeWidth={1.5}
           viewBox="0 0 24 24"
         >
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
-            strokeWidth={2}
             d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
           />
         </svg>
@@ -176,12 +176,12 @@ function NavigationMenuContent() {
           className="w-6 h-6"
           fill="none"
           stroke="currentColor"
+          strokeWidth={1.5}
           viewBox="0 0 24 24"
         >
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
-            strokeWidth={2}
             d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2M7 7h10"
           />
         </svg>
@@ -196,12 +196,12 @@ function NavigationMenuContent() {
           className="w-6 h-6"
           fill="none"
           stroke="currentColor"
+          strokeWidth={1.5}
           viewBox="0 0 24 24"
         >
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
-            strokeWidth={2}
             d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
           />
         </svg>
@@ -216,12 +216,12 @@ function NavigationMenuContent() {
           className="w-6 h-6"
           fill="none"
           stroke="currentColor"
+          strokeWidth={1.5}
           viewBox="0 0 24 24"
         >
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
-            strokeWidth={2}
             d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
           />
         </svg>
@@ -356,12 +356,12 @@ function NavigationMenuContent() {
                     isActive(item.path, item.name)
                       ? 'text-white bg-indigo-900/70 font-medium'
                       : item.disabled
-                      ? 'text-gray-600 cursor-not-allowed'
+                      ? 'text-gray-400 cursor-not-allowed'
                       : 'text-gray-300 hover:text-white hover:bg-gray-800/70'
                   }`}
                   disabled={item.disabled}
                 >
-                  <span className="mr-3">{item.icon}</span>
+                  <span className="mr-4">{item.icon}</span>
                   <span>{item.name}</span>
                 </button>
               ))}
@@ -372,8 +372,8 @@ function NavigationMenuContent() {
         {/* Footer section with language and login - fixed at bottom */}
         <div className="border-t border-gray-800 pb-4 flex-shrink-0">
           {/* Language Switcher */}
-          <div className="mt-4 px-8">
-            <p className="text-sm text-gray-400 mb-2">
+          <div className="mt-8 px-8">
+            <p className="text-sm text-gray-400 mb-4">
               {t('common.language')}
             </p>
             <LanguageSwitcher showFullNames />
@@ -391,22 +391,37 @@ function NavigationMenuContent() {
                 router.push('/login');
               }
             }}
-            className="flex items-center w-full px-8 py-2 text-sm text-gray-300 hover:bg-gray-800 hover:text-white rounded-lg transition-colors duration-200"
+            className="flex items-center justify-between w-full px-8 py-2 text-sm text-gray-300 hover:bg-gray-800 hover:text-white rounded-lg transition-colors duration-200"
           >
-            <svg
-              className="w-5 h-5 mr-3"
-              fill="none"
-              stroke="currentColor"
+            <div className="flex items-center">
+              <svg
+                className="w-5 h-5 mr-4"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={1.5}
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                />
+              </svg>
+              {user ? t('auth.signOut') : t('auth.signIn')}
+            </div>
+            <svg 
+              className="w-4 h-4 text-gray-500" 
+              fill="none" 
+              stroke="currentColor" 
+              strokeWidth={1.5}
               viewBox="0 0 24 24"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+              <path 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+                d="M9 5l7 7-7 7" 
               />
             </svg>
-            {user ? t('auth.signOut') : t('auth.signIn')}
           </button>
 
           {/* Dev Mode Toggle */}

@@ -125,7 +125,7 @@ iframe {
 
 /* Bottom Sheet Styles */
 [data-rsbs-header]:before {
-  background: white !important;
+  background: #566074 !important;
 }
 
 /* Custom intro.js styles */
@@ -195,3 +195,113 @@ iframe {
 }
 
 /* Remove all remaining phone input related CSS */
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-scale-in {
+  animation: scale-in 150ms ease-out forwards;
+}
+
+/* Tour animations */
+@keyframes tooltip-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes highlight-ring-scale {
+  from {
+    opacity: 0;
+    transform: scale(0.8) translate(-50%, -50%);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translate(-50%, -50%);
+  }
+}
+
+@keyframes highlight-ring-pulse {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.1);
+    opacity: 0.4;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.8;
+  }
+}
+
+.tooltip-slide-up {
+  animation: tooltip-slide-up 150ms cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+}
+
+.highlight-ring-animation {
+  animation: highlight-ring-scale 150ms ease-out forwards;
+}
+
+.highlight-ring-pulse {
+  animation: highlight-ring-pulse 2s ease-in-out infinite;
+}
+
+/* Tooltip arrow */
+.tooltip-arrow-right::before {
+  content: '';
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background-color: #1f2937e0;
+  right: -4px;
+  top: 50%;
+  transform: translateY(-50%) rotate(45deg);
+}
+
+.tooltip-arrow-left::before {
+  content: '';
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background-color: #1f2937e0;
+  left: -4px;
+  top: 50%;
+  transform: translateY(-50%) rotate(45deg);
+}
+
+.tooltip-arrow-top::before {
+  content: '';
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background-color: #1f2937e0;
+  top: -4px;
+  left: 50%;
+  transform: translateX(-50%) rotate(45deg);
+}
+
+.tooltip-arrow-bottom::before {
+  content: '';
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background-color: #1f2937e0;
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%) rotate(45deg);
+}

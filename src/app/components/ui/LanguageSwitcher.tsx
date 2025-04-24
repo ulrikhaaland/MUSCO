@@ -47,7 +47,7 @@ export default function LanguageSwitcher({
           className={`flex items-center px-3 py-2 rounded-lg cursor-pointer transition-colors focus-within:ring-2 focus-within:ring-indigo-400 focus-within:ring-offset-2 focus-within:ring-offset-gray-900 ${ 
             locale === lang.code
               ? 'bg-indigo-600/20 border border-indigo-500 text-indigo-100'
-              : 'bg-gray-700/50 border border-gray-600 text-gray-300 hover:bg-gray-600/70'
+              : 'bg-gray-800/40 border border-gray-700 text-gray-400 hover:bg-gray-700/50 hover:text-gray-300'
           }`}
           role="radio"
           aria-checked={locale === lang.code}
