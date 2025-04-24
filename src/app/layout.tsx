@@ -47,6 +47,7 @@ export default function RootLayout({
           name="viewport"
           content="width=device-width, initial-scale=1, viewport-fit=cover"
         />
+        <link rel="icon" href="/img/logo_biceps.png" />
       </head>
       <body>
         <I18nWrapper>

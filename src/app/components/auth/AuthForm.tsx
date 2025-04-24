@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/app/context/AuthContext';
 import { useTranslation } from '@/app/i18n';
+import Logo from '@/app/components/ui/Logo';
 
 // Loading dots component
 const LoadingDots = () => {
@@ -51,18 +52,19 @@ export function AuthForm({ onSkip }: { onSkip: () => void }) {
 
   if (emailSent) {
     return (
-      <div className="w-full max-w-md space-y-6 px-4 pb-6 overflow-hidden">
+      <div className="w-full max-w-md space-y-4 px-4 pb-6 overflow-hidden">
+        <Logo variant="vertical" />
         <div className="text-center">
           <h2 className="text-3xl font-bold text-white">{t('auth.checkEmail')}</h2>
-          <p className="mt-3 text-gray-400">
+          <p className="mt-2 text-gray-400">
             {t('auth.sentLoginLink')} <span className="text-white">{email}</span>
           </p>
-          <p className="mt-2 text-sm text-gray-400">
+          <p className="mt-1 text-sm text-gray-400">
             {t('auth.clickLinkToSignIn')}
           </p>
         </div>
 
-        <div className="space-y-3">
+        <div className="space-y-2 mt-4">
           <button
             type="button"
             onClick={() => setEmailSent(false)}
@@ -84,15 +86,16 @@ export function AuthForm({ onSkip }: { onSkip: () => void }) {
   }
 
   return (
-    <div className="w-full max-w-md space-y-6 px-4 pb-6 overflow-hidden">
+    <div className="w-full max-w-md space-y-4 px-4 pb-6 overflow-hidden">
+      <Logo variant="vertical" />
       <div className="text-center">
         <h2 className="text-3xl font-bold text-white">{t('auth.welcome')}</h2>
-        <p className="mt-2 text-sm text-gray-400">
+        <p className="mt-1 text-sm text-gray-400">
           {t('auth.enterEmailToStart')}
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="mt-6 space-y-5">
+      <form onSubmit={handleSubmit} className="mt-4 space-y-4">
         <div>
           <label htmlFor="email" className="sr-only">
             {t('auth.emailAddress')}
