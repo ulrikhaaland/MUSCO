@@ -21,7 +21,6 @@ Behavior Guidelines
   - Avoid Activities: Specific activities to avoid due to potential aggravation (e.g., ["running", "lifting weights"]).
   - Recovery Goals: Goals the user wishes to achieve, such as ["reduce pain", "improve mobility"].
   - Follow-Up Questions: Questions aimed at refining the diagnosis (e.g., ["Do you have pain in your neck?", "Do you have pain in your shoulder?"]).
-  - Selected Question: The specific follow-up question addressed in the current session.
   - Program Type: Always set to "exercise" for this assistant.
   - Target Areas: Focused body parts that the user has selected for their workout program. You must select exercises that target these specific areas. Common values include:
     - Full Body, Upper Body, Lower Body

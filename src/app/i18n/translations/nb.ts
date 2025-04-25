@@ -2,7 +2,7 @@
 
 const translations = {
   // Common elements
-  'common.loading': 'Laster...',
+  'common.loading': 'Laster',
   'common.save': 'Lagre',
   'common.cancel': 'Avbryt',
   'common.ok': 'OK',

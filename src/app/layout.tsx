@@ -39,10 +39,21 @@ export default function RootLayout({
     ) {
       getAnalytics(app);
     }
+    
+    // Force Android Chrome navigation bar color
+    if (typeof navigator !== 'undefined' && /Android/i.test(navigator.userAgent)) {
+      document.documentElement.style.setProperty('--navigation-bar-color', '#111827');
+      
+      // Try to use Android Chrome's theme-color API if available
+      const metaThemeColor = document.querySelector('meta[name=theme-color]');
+      if (metaThemeColor) {
+        metaThemeColor.setAttribute('content', '#111827');
+      }
+    }
   }, []);
 
   return (
-    <html lang="en" className="h-full">
+    <html lang="en" className="h-full bg-gray-900">
       <head>
         <meta
           name="viewport"
@@ -50,14 +61,40 @@ export default function RootLayout({
         />
         <link rel="icon" href="/img/logo_biceps.png" />
         <link rel="manifest" href="/manifest.json" />
+        {/* Primary theme color meta tags */}
         <meta name="theme-color" content="#111827" />
+        <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#111827" />
+        <meta name="theme-color" media="(prefers-color-scheme: light)" content="#111827" />
+        
+        {/* Android Chrome specific */}
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="navigation-bar-color" content="#111827" />
+        
+        {/* iOS specific */}
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="apple-mobile-web-app-title" content="Musco" />
         <link rel="apple-touch-icon" href="/img/logo_biceps.png" />
         <script src="/sw-register.js" defer></script>
+        
+        {/* Force Android Chrome navigation bar color */}
+        <script dangerouslySetInnerHTML={{
+          __html: `
+            (function() {
+              if (/Android/i.test(navigator.userAgent)) {
+                document.documentElement.style.setProperty('--navigation-bar-color', '#111827');
+                document.documentElement.style.backgroundColor = '#111827';
+                document.body.style.backgroundColor = '#111827';
+                
+                // Try to set it via meta tag as a backup
+                var meta = document.querySelector('meta[name="theme-color"]');
+                if (meta) meta.setAttribute('content', '#111827');
+              }
+            })();
+          `
+        }} />
       </head>
-      <body>
+      <body className="bg-gray-900">
         <I18nWrapper>
         <AuthProvider>
           <UserProvider>

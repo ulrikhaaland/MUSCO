@@ -14,6 +14,8 @@
 :root {
   --foreground-rgb: 255, 255, 255;
   --background-rgb: 0, 0, 0;
+  --navigation-bar-color: #111827;
+  --mobile-chrome-fix: #111827;
 }
 
 html,
@@ -248,4 +250,67 @@ iframe {
   bottom: -4px;
   left: 50%;
   transform: translateX(-50%) rotate(45deg);
+}
+
+/* Android navigation bar color fix */
+:root {
+  --navigation-bar-color: #111827;
+  --mobile-chrome-fix: #111827;
+}
+
+/* Target Chrome/Android */
+@media (display-mode: browser) {
+  body {
+    background-color: #111827;
+  }
+  html {
+    background-color: #111827;
+  }
+}
+
+/* Chrome-specific Android navigation bar fix */
+.android-safe-area {
+  padding-bottom: env(safe-area-inset-bottom) !important;
+}
+
+/* Force the navigation bar color in Chrome for Android */
+@media screen and (orientation: portrait) {
+  body::after {
+    content: '';
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 100px;
+    background-color: #111827;
+    z-index: -10;
+  }
+}
+
+/* Landscape mode */
+@media screen and (orientation: landscape) {
+  body::after {
+    content: '';
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    height: 50px;
+    background-color: #111827;
+    z-index: -10;
+  }
+}
+
+/* Ensure dark nav bar in supported browsers */
+@supports (-webkit-overflow-scrolling: touch) {
+  body::after {
+    content: '';
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 100px;
+    background: #111827;
+    z-index: -1;
+  }
 }

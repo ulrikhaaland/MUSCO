@@ -2,7 +2,7 @@
 
 const translations = {
   // Common elements
-  'common.loading': 'Loading...',
+  'common.loading': 'Loading',
   'common.save': 'Save',
   'common.cancel': 'Cancel',
   'common.ok': 'OK',
@@ -144,8 +144,8 @@ const translations = {
   'home.pageTitle': 'bodAI',
   'home.male': 'Male',
   'home.female': 'Female',
-  'home.loading': 'Loading...',
-  'home.initializing': 'Initializing muscles...',
+  'home.loading': 'Loading',
+  'home.initializing': 'Initializing muscles',
   
   // Auth
   'auth.skip': 'Skip',
