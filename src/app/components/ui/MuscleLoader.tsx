@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-
 interface MuscleLoaderProps {
   fullScreen?: boolean;
   baseColor?: string; // static outline colour
@@ -1275,9 +1274,7 @@ l-8 40 -1 -45z"
         </p>
 
         {submessage && (
-          <p className="mt-2 text-xs text-gray-400 text-center">
-            {submessage}
-          </p>
+          <p className="mt-2 text-xs text-gray-400 text-center">{submessage}</p>
         )}
 
         {showRetry && onRetry && (

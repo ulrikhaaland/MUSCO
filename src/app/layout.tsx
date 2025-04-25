@@ -49,6 +49,13 @@ export default function RootLayout({
           content="width=device-width, initial-scale=1, viewport-fit=cover"
         />
         <link rel="icon" href="/img/logo_biceps.png" />
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#6366f1" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="apple-mobile-web-app-title" content="Musco" />
+        <link rel="apple-touch-icon" href="/img/logo_biceps.png" />
+        <script src="/sw-register.js" defer></script>
       </head>
       <body>
         <I18nWrapper>

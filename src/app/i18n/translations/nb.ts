@@ -414,10 +414,10 @@ const translations = {
   'questionnaire.createProgram': 'Lag program',
   
   // Program page translations
-  'program.loading': 'Laster program...',
-  'program.loadingData': 'Laster programdata...',
+  'program.loading': 'Laster program',
+  'program.loadingData': 'Laster programdata',
   'program.creating': 'Oppretter programmet ditt',
-  'program.waitMessage': 'Vennligst vent mens vi oppretter det personlige programmet ditt. Dette kan ta litt tid...',
+  'program.waitMessage': 'Vennligst vent mens vi oppretter det personlige programmet ditt. Dette kan ta litt tid',
   'program.exerciseVideoTitle': 'Treningsvideo',
   'program.pageTitle': 'Treningsprogram | MUSCO',
   'program.defaultPageTitle': 'Program | MUSCO',
@@ -430,6 +430,12 @@ const translations = {
   'days.friday': 'Fredag',
   'days.saturday': 'Lørdag',
   'days.sunday': 'Søndag',
+  
+  // PWA Installation
+  'pwa.addToHomescreen': 'Legg til på Hjem-skjermen',
+  'pwa.addToHomescreenMessage': 'Installer denne appen på enheten din for rask og enkel tilgang.',
+  'pwa.install': 'Installer',
+  'pwa.notNow': 'Ikke nå',
 };
 
 export default translations; 
