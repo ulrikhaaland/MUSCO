@@ -1,39 +1,26 @@
 'use client';
 
 import { usePathname, useSearchParams } from 'next/navigation';
-import { useEffect, Suspense } from 'react';
-import { useApp } from '../context/AppContext';
+import { useEffect, useRef } from 'react';
+import { useLoader } from '../context/LoaderContext';
 
-// Create a separate component that uses the searchParams
-function RouteChangeListenerContent() {
+export function RouteChangeListener() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const { shouldNavigateToProgram, setShouldNavigateToProgram, completeReset } = useApp();
+  const { hideLoader } = useLoader();
+  const prevPathRef = useRef<string | null>(null);
 
+  // Hide loader on route change
   useEffect(() => {
-    // Check for ?new=true parameter and reset app state if found
-    const newParam = searchParams.get('new');
-    if (newParam === 'true') {
-      console.log('Detected ?new=true parameter, resetting app state');
-      completeReset();
+    // Only consider actual route changes, not initial mount
+    if (prevPathRef.current !== null && prevPathRef.current !== pathname) {
+      console.log(`Route changed from ${prevPathRef.current} to ${pathname}`);
+      hideLoader();
     }
     
-    // If we're not on the root page and shouldNavigateToProgram is true,
-    // set it to false to prevent automatic navigation to program page
-    if (pathname !== '/' && shouldNavigateToProgram) {
-      setShouldNavigateToProgram(false);
-    }
-  }, [pathname, searchParams, shouldNavigateToProgram, setShouldNavigateToProgram, completeReset]);
+    // Update the previous path
+    prevPathRef.current = pathname;
+  }, [pathname, searchParams, hideLoader]);
 
-  // This component doesn't render anything
   return null;
-}
-
-// Main component that wraps content with suspense
-export function RouteChangeListener() {
-  return (
-    <Suspense fallback={null}>
-      <RouteChangeListenerContent />
-    </Suspense>
-  );
 } 

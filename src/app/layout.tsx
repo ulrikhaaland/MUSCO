@@ -10,6 +10,7 @@ import { app } from './firebase/config';
 import { AuthProvider } from './context/AuthContext';
 import { UserProvider } from './context/UserContext';
 import { AppProvider } from './context/AppContext';
+import { LoaderProvider } from './context/LoaderContext';
 import { RouteChangeListener } from './components/RouteChangeListener';
 import { ToastProvider } from './components/ui/ToastProvider';
 import { I18nWrapper } from './i18n/setup';
@@ -54,6 +55,7 @@ export default function RootLayout({
         <AuthProvider>
           <UserProvider>
             <AppProvider>
+              <LoaderProvider>
               <ToastProvider>
                 <RouteChangeListener />
                 <SafeArea className="h-full">
@@ -61,6 +63,7 @@ export default function RootLayout({
                   <NavigationMenu />
                 </SafeArea>
               </ToastProvider>
+              </LoaderProvider>
             </AppProvider>
           </UserProvider>
         </AuthProvider>

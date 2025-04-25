@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { ExerciseProgramPage } from '@/app/components/ui/ExerciseProgramPage';
 import { useUser } from '@/app/context/UserContext';
 import { useAuth } from '@/app/context/AuthContext';
+import { useLoader } from '@/app/context/LoaderContext';
 import {
   ProgramStatus,
   Exercise,
@@ -12,7 +13,6 @@ import {
   ExerciseProgram,
 } from '@/app/types/program';
 import { searchYouTubeVideo } from '@/app/utils/youtube';
-import { LoadingSpinner } from '@/app/components/ui/LoadingSpinner';
 import { ErrorDisplay } from '@/app/components/ui/ErrorDisplay';
 import { useTranslation } from '@/app/i18n';
 
@@ -27,6 +27,7 @@ export default function ProgramPage() {
     programStatus,
     userPrograms,
   } = useUser();
+  const { showLoader, hideLoader } = useLoader();
   const [error, setError] = useState<Error | null>(null);
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [loadingVideoExercise, setLoadingVideoExercise] = useState<
@@ -43,6 +44,34 @@ export default function ProgramPage() {
       setSelectedProgram(program);
     }
   }, [program]);
+  
+  // Control the loader visibility based on loading states
+  useEffect(() => {
+    if (isLoading) {
+      showLoader(t('program.loading'));
+    } else if (!selectedProgram && programStatus !== ProgramStatus.Generating) {
+      showLoader(t('program.loadingData'));
+    } else if (programStatus === ProgramStatus.Generating) {
+      showLoader(t('program.creating'), t('program.waitMessage'));
+    } else {
+      // Content is ready, hide the loader
+      hideLoader();
+    }
+  }, [
+    isLoading,
+    selectedProgram,
+    programStatus,
+    showLoader,
+    hideLoader,
+    t
+  ]);
+
+  // Force hide the loader when the component is about to be unmounted
+  useEffect(() => {
+    return () => {
+      hideLoader();
+    };
+  }, [hideLoader]);
 
   // Update page title when program loads
   useEffect(() => {
@@ -174,30 +203,14 @@ export default function ProgramPage() {
     );
   };
 
-  if (isLoading) {
-    return <LoadingSpinner fullScreen={true} message={t('program.loading')} />;
-  }
-
   if (error || authError) {
     return <ErrorDisplay error={error || authError} />;
   }
 
-  if (!selectedProgram && programStatus !== ProgramStatus.Generating) {
-    return (
-      <LoadingSpinner message={t('program.loadingData')} fullScreen={true} />
-    );
-  }
-
-  if (programStatus === ProgramStatus.Generating) {
-    return (
-      <div className="h-screen flex flex-col items-center justify-center bg-gray-900 p-8">
-        <LoadingSpinner 
-          message={t('program.creating')}
-          submessage={t('program.waitMessage')}
-          fullScreen={true} 
-        />
-      </div>
-    );
+  // We don't need these loader returns anymore as loader visibility is managed by effect
+  // Instead, let's render nothing if we're loading
+  if (isLoading || !selectedProgram || programStatus === ProgramStatus.Generating) {
+    return null;
   }
 
   return (

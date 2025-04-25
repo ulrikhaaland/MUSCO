@@ -144,6 +144,8 @@ const translations = {
   'home.pageTitle': 'bodAI',
   'home.male': 'Male',
   'home.female': 'Female',
+  'home.loading': 'Loading...',
+  'home.initializing': 'Initializing muscles...',
   
   // Auth
   'auth.skip': 'Skip',
@@ -179,9 +181,9 @@ const translations = {
   'mobile.controls.next': 'Next →',
   'mobile.controls.back': '← Back',
   'mobile.controls.gotIt': 'Got it',
-  'mobile.controls.tour.rotate': 'Drag-free rotate the model.',
-  'mobile.controls.tour.reset': 'Reset selections, zoom and view position.',
-  'mobile.controls.tour.gender': 'Toggle male / female anatomy.',
+  'mobile.controls.tour.rotate': 'Rotate the model',
+  'mobile.controls.tour.reset': 'Reset selections, zoom and view position',
+  'mobile.controls.tour.gender': 'Toggle male / female anatomy',
   
   // BottomSheet Components
   'bottomSheet.resetChat': 'Reset chat',

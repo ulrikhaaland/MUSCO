@@ -7,11 +7,11 @@ import { ProgramStatus } from './types/program';
 import { useApp, ProgramIntention } from './context/AppContext';
 import { useAuth } from './context/AuthContext';
 import { useUser } from './context/UserContext';
+import { useLoader } from './context/LoaderContext';
 import { QuestionnaireAuthForm } from './components/auth/QuestionnaireAuthForm';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { IntentionQuestion } from './components/ui/IntentionQuestion';
-import { LoadingSpinner } from './components/ui/LoadingSpinner';
 import { ErrorDisplay } from './components/ui/ErrorDisplay';
 import { AuthForm } from './components/auth/AuthForm';
 import { useTranslation } from './i18n';
@@ -35,6 +35,7 @@ function HomeContent() {
     programStatus,
     pendingQuestionnaire,
   } = useUser();
+  const { setIsLoading, isLoading: loaderLoading } = useLoader();
   const { t } = useTranslation();
   const [showAuthForm, setShowAuthForm] = useState(false);
   const router = useRouter();
@@ -44,6 +45,27 @@ function HomeContent() {
   const [gender, setGender] = useState<Gender>(genderParam || 'male');
   const [intentionSelected, setIntentionSelected] = useState(false);
   const [shouldResetModel, setShouldResetModel] = useState(false);
+
+  const isLoading = authLoading || userLoading;
+
+  // Control the loader visibility based on loading state
+  useEffect(() => {
+    // Avoid infinite render loops by not changing the loader state on every render
+    const timer = setTimeout(() => {
+      if (isLoading && !loaderLoading) {
+        setIsLoading(true, t('home.loading'));
+      } else if (
+        typeof window !== 'undefined' &&
+        window.location.pathname !== '/program' &&
+        loaderLoading
+      ) {
+        // Only hide the loader when content is ready
+        setIsLoading(false);
+      }
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, [isLoading]);
 
   // Set page title
   useEffect(() => {
@@ -139,14 +161,13 @@ function HomeContent() {
     }
   }, [newParam, searchParams]); // searchParams helps detect any change to the URL params
 
-  const isLoading = authLoading || userLoading;
-
-  if (isLoading) {
-    return <LoadingSpinner fullScreen message={t('common.loading')} />;
-  }
-
   if (authError) {
     return <ErrorDisplay error={authError} />;
+  }
+
+  // If we're loading, render nothing as the loader is managed via context
+  if (isLoading) {
+    return null;
   }
 
   return (
@@ -184,10 +205,9 @@ function HomeContent() {
 
 // Main component that wraps the HomeContent with suspense
 export default function Home() {
-
   return (
     <ErrorBoundary>
-      <Suspense fallback={<LoadingSpinner fullScreen />}>
+      <Suspense fallback={null}>
         <HomeContent />
       </Suspense>
     </ErrorBoundary>

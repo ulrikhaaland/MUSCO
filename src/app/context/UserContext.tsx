@@ -199,6 +199,8 @@ export function UserProvider({ children }: { children: ReactNode }) {
           };
 
           setProgram(combinedProgram);
+          setIsLoading(false);
+
           setAnswers(mostRecentProgram.questionnaire);
 
           // Only update the status to Done if we're not currently generating a new program
@@ -285,7 +287,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
             router.push('/program');
           }
           // Early return as we're now handling the generating state
-          setIsLoading(false);
+          // setIsLoading(false);
           return;
         }
 
@@ -353,10 +355,12 @@ export function UserProvider({ children }: { children: ReactNode }) {
           }
           if(typeof window !== 'undefined' && !window.location.pathname.includes('/exercises')) {
             router.push('/program');
+            // setIsLoading(false);
+
           }
 
           // Only set isLoading to false after we've completed all program fetching
-          setIsLoading(false);
+          // setIsLoading(false);
         }
       } catch (error) {
         console.error('Error fetching user data:', error);
@@ -644,6 +648,8 @@ export function UserProvider({ children }: { children: ReactNode }) {
       }
 
       setProgram(combinedProgram);
+      setIsLoading(false);
+
       setAnswers(userPrograms[index].questionnaire);
     }
   };
@@ -708,6 +714,8 @@ export function UserProvider({ children }: { children: ReactNode }) {
         };
 
         setProgram(combinedProgram);
+        setIsLoading(false);
+
         setAnswers(updatedSelectedProgram.questionnaire);
         setProgramStatus(ProgramStatus.Done);
       }

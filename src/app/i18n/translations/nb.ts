@@ -179,9 +179,9 @@ const translations = {
   'mobile.controls.next': 'Neste →',
   'mobile.controls.back': '← Tilbake',
   'mobile.controls.gotIt': 'Forstått',
-  'mobile.controls.tour.rotate': 'Roter modellen uten å dra.',
-  'mobile.controls.tour.reset': 'Tilbakestill valg, zoom og visningsposisjon.',
-  'mobile.controls.tour.gender': 'Bytt mellom mannlig / kvinnelig anatomi.',
+  'mobile.controls.tour.rotate': 'Roter modellen',
+  'mobile.controls.tour.reset': 'Tilbakestill valg, zoom og visningsposisjon',
+  'mobile.controls.tour.gender': 'Bytt mellom mannlig / kvinnelig anatomi',
   
   // BottomSheet Components
   'bottomSheet.resetChat': 'Tilbakestill Chat',
