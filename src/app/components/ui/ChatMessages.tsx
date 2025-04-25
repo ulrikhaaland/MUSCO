@@ -186,6 +186,17 @@ export function ChatMessages({
     };
   }, [isMobile, messagesRef, resetTouchState, userTouched, updateScrollButtonVisibility]);
 
+  // Helper function to check if the container is scrolled to the bottom
+  const isScrolledToBottom = useCallback((container: Element | null): boolean => {
+    if (!container) return true;
+    
+    const { scrollTop, scrollHeight, clientHeight } = container;
+    const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
+    
+    // Consider "at bottom" if within 30px of actual bottom
+    return distanceFromBottom < 30;
+  }, []);
+
   // Check message types and update scroll position when messages change
   useEffect(() => {
     // Auto-scroll to bottom when new messages are added
@@ -193,6 +204,14 @@ export function ChatMessages({
       const lastMessage = messages[messages.length - 1];
       const lastMessageContent = lastMessage?.content || '';
       const prevContent = lastMessageContentRef.current;
+      
+      // Get the current container
+      const container = isMobile
+        ? document.querySelector('[data-rsbs-scroll]')
+        : messagesRef.current;
+      
+      // Check if we're currently at the bottom before any updates
+      const wasAtBottom = isScrolledToBottom(container);
       
       // Reset content tracking when role changes or content is completely different
       // This handles new messages being added
@@ -230,28 +249,60 @@ export function ChatMessages({
       // Auto-scroll in these cases:
       // 1. User just sent a message
       // 2. We're showing the loading placeholder
-      // 3. Message is streaming AND user hasn't touched the screen recently
+      // 3. Message is streaming AND user was at the bottom before the update started
       if (isNewUserMessage || 
           needsResponsePlaceholder || 
-          (isStreaming && !userTouched)) {
+          (isStreaming && wasAtBottom && !userTouched)) {
         scrollToBottom();
       } else {
         // For other message updates, just check if we need to show the scroll button
         setTimeout(
           () => {
-            const container = isMobile
-              ? document.querySelector('[data-rsbs-scroll]')
-              : messagesRef.current;
             updateScrollButtonVisibility(container);
           },
           200
         );
       }
     }
-  }, [messages, needsResponsePlaceholder, isMobile, userTouched, isLoading, updateScrollButtonVisibility]);
+  }, [messages, needsResponsePlaceholder, isMobile, userTouched, isLoading, updateScrollButtonVisibility, isScrolledToBottom]);
 
   // Track follow-up questions and auto-scroll when they appear
   const followUpQuestionsRef = useRef<Question[]>([]);
+  const followUpObserverRef = useRef<MutationObserver | null>(null);
+  
+  // Function to ensure follow-up questions are visible
+  const ensureFollowUpQuestionsVisible = useCallback(() => {
+    // Don't scroll if user has explicitly scrolled away
+    if (userTouched) return;
+    
+    // Clear touch state to allow auto-scrolling
+    hasHadTouchRef.current = false;
+    
+    // Clear any existing touch timeout to prevent unexpected resets
+    if (touchTimeoutRef.current) {
+      clearTimeout(touchTimeoutRef.current);
+      touchTimeoutRef.current = null;
+    }
+    
+    // First try to locate and scroll to the follow-up questions container
+    const followUpsContainer = document.querySelector('.space-y-2');
+    if (followUpsContainer) {
+      // Try to make follow-ups visible by directly scrolling to them
+      try {
+        followUpsContainer.scrollIntoView({ behavior: 'smooth', block: 'end' });
+      } catch (e) {
+        // Fallback to general scrollToBottom if direct scroll fails
+        setTimeout(scrollToBottom, 50);
+      }
+    } else {
+      // If container not found, use regular scroll to bottom
+      scrollToBottom();
+    }
+    
+    // Additional attempt after a delay to ensure visibility
+    setTimeout(scrollToBottom, 250);
+  }, [userTouched]);
+  
   useEffect(() => {
     // Skip empty arrays
     if (followUpQuestions.length === 0) {
@@ -265,21 +316,62 @@ export function ChatMessages({
       return !followUpQuestionsRef.current.some(oldQ => oldQ.title === newQ.title);
     });
     
-    // Only auto-scroll if new questions appeared AND user hasn't touched the screen
-    if (hasNewQuestions && !userTouched) {
-      // Small delay to ensure questions are rendered
-      setTimeout(() => {
-        scrollToBottom();
+    // Always scroll when follow-up questions appear or change unless user has explicitly scrolled
+    if (hasNewQuestions) {
+      // Disconnect any existing observer
+      if (followUpObserverRef.current) {
+        followUpObserverRef.current.disconnect();
+        followUpObserverRef.current = null;
+      }
+      
+      // Set up a mutation observer to detect when follow-up questions are fully rendered
+      const targetNode = document.querySelector('.space-y-2');
+      if (targetNode) {
+        // Initial attempt to scroll
+        ensureFollowUpQuestionsVisible();
         
-        // After scrolling for follow-up questions, don't let it trigger user touch state
-        // This prevents auto-scroll from triggering touch detection
-        hasHadTouchRef.current = false;
-      }, 100);
+        // Create an observer to watch for DOM changes in the follow-up questions area
+        followUpObserverRef.current = new MutationObserver((mutations) => {
+          // When DOM changes detected, ensure questions are visible
+          ensureFollowUpQuestionsVisible();
+          
+          // Disconnect after a certain time to avoid infinite loops
+          setTimeout(() => {
+            if (followUpObserverRef.current) {
+              followUpObserverRef.current.disconnect();
+              followUpObserverRef.current = null;
+            }
+          }, 1000);
+        });
+        
+        // Start observing
+        followUpObserverRef.current.observe(targetNode, { 
+          childList: true, 
+          subtree: true, 
+          attributes: true 
+        });
+        
+        // Backup plan: try scrolling again after a delay
+        setTimeout(ensureFollowUpQuestionsVisible, 500);
+      } else {
+        // If we can't find the container yet, try a few times with delay
+        setTimeout(ensureFollowUpQuestionsVisible, 100);
+        setTimeout(ensureFollowUpQuestionsVisible, 300);
+        setTimeout(ensureFollowUpQuestionsVisible, 600);
+      }
     }
     
     // Update reference for next comparison
     followUpQuestionsRef.current = [...followUpQuestions];
-  }, [followUpQuestions, userTouched]);
+    
+    // Clean up observer on unmount or when follow-up questions change
+    return () => {
+      if (followUpObserverRef.current) {
+        followUpObserverRef.current.disconnect();
+        followUpObserverRef.current = null;
+      }
+    };
+  }, [followUpQuestions, ensureFollowUpQuestionsVisible]);
 
   // Handler for desktop scroll events
   const handleDesktopScroll = (e: React.UIEvent<HTMLDivElement>) => {
