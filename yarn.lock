@@ -2375,42 +2375,6 @@
     suspend-react "^0.1.3"
     zustand "^3.7.1"
 
-"@reactour/mask@*":
-  version "1.1.0"
-  resolved "https://registry.npmjs.org/@reactour/mask/-/mask-1.1.0.tgz"
-  integrity sha512-GkJMLuTs3vTsm4Ryq2uXcE4sMzRP1p4xSd6juSOMqbHa7IVD/UiLCLqJWHR9xGSQPbYhpZAZAORUG5cS0U5tBA==
-  dependencies:
-    "@reactour/utils" "*"
-
-"@reactour/popover@*":
-  version "1.2.0"
-  resolved "https://registry.npmjs.org/@reactour/popover/-/popover-1.2.0.tgz"
-  integrity sha512-1JMykZ+MmDmRlEVC5+DwlvK1exwV5bFHtiSFwVXnoPZmsSfwId6SLyjo9H6bybeuNtNEzviKdsF/ZBC1UQbDqg==
-  dependencies:
-    "@reactour/utils" "*"
-
-"@reactour/tour@^3.7.0":
-  version "3.7.0"
-  resolved "https://registry.npmjs.org/@reactour/tour/-/tour-3.7.0.tgz"
-  integrity sha512-p0USaOBc5fcNBS5ZiQ2lsmztAhIGCUfx913Zw14FbEM8bhSXpR1F2JD0alVj9Ya1N+pnTNYatf14rSNGJsEnCg==
-  dependencies:
-    "@reactour/mask" "*"
-    "@reactour/popover" "*"
-    "@reactour/utils" "*"
-
-"@reactour/utils@*":
-  version "0.5.0"
-  resolved "https://registry.npmjs.org/@reactour/utils/-/utils-0.5.0.tgz"
-  integrity sha512-yQs5Nm/Dg1xRM7d/S/UILBV5OInrTgrjGzgc81/RP5khqdO5KnpOaC46yF83kDtCalte8X3RCwp+F2YA509k1w==
-  dependencies:
-    "@rooks/use-mutation-observer" "^4.11.2"
-    resize-observer-polyfill "^1.5.1"
-
-"@rooks/use-mutation-observer@^4.11.2":
-  version "4.11.2"
-  resolved "https://registry.npmjs.org/@rooks/use-mutation-observer/-/use-mutation-observer-4.11.2.tgz"
-  integrity sha512-vpsdrZdr6TkB1zZJcHx+fR1YC/pHs2BaqcuYiEGjBVbwY5xcC49+h0hAUtQKHth3oJqXfIX/Ng8S7s5HFHdM/A==
-
 "@rtsao/scc@^1.1.0":
   version "1.1.0"
   resolved "https://registry.npmjs.org/@rtsao/scc/-/scc-1.1.0.tgz"
@@ -5435,16 +5399,6 @@ internal-slot@^1.0.7:
     hasown "^2.0.0"
     side-channel "^1.0.4"
 
-intro.js-react@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.npmjs.org/intro.js-react/-/intro.js-react-1.0.0.tgz"
-  integrity sha512-zR8pbTyX20RnCZpJMc0nuHBpsjcr1wFkj3ZookV6Ly4eE/LGpFTQwPsaA61Cryzwiy/tTFsusf4hPU9NpI9UOg==
-
-intro.js@^7.2.0, intro.js@>=2.5.0:
-  version "7.2.0"
-  resolved "https://registry.npmjs.org/intro.js/-/intro.js-7.2.0.tgz"
-  integrity sha512-qbMfaB70rOXVBceIWNYnYTpVTiZsvQh/MIkfdQbpA9di9VBfj1GigUPfcCv3aOfsbrtPcri8vTLTA4FcEDcHSQ==
-
 invariant@^2.2.4:
   version "2.2.4"
   resolved "https://registry.npmjs.org/invariant/-/invariant-2.2.4.tgz"
@@ -7788,7 +7742,7 @@ react-zdog@>=1.0:
     react-dom "^18.2.0"
     resize-observer-polyfill "^1.5.1"
 
-react@*, "react@^16.12.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^20.0.0 || ^21.0.0", "react@^16.14.0 || 17 || 18", "react@^16.8.0 || ^17.0.0", "react@^16.8.0 || ^17.0.0 || ^18.0.0", "react@^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0", "react@^16.8.0 || 17.x", "react@^16.9.0 || ^17 || ^18 || ^19 || ^19.0.0-rc", "react@^17.0.0 || ^18.0.0 || ^19.0.0", "react@^18.0 || ^19.0 || ^19.0.0-rc", react@^18.0.0, react@^18.2.0, "react@^18.2.0 || 19.0.0-rc-66855b96-20241106 || ^19.0.0", react@^18.3.1, "react@>= 16.8.0", "react@>= 16.8.0 || 17.x.x || ^18.0.0-0 || ^19.0.0-0", react@>=0.14.0, react@>=16, react@>=16.6.0, react@>=16.8, react@>=16.8.0, react@>=17.0, react@>=17.0.0, react@>=18, react@>=18.0, react@>=18.0.0, react@>=18.1.0, "react@16.8.0  || >=17.0.0 || >=18.0.0", "react@16.x || 17.x || 18.x":
+react@*, "react@^16.12.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^20.0.0 || ^21.0.0", "react@^16.14.0 || 17 || 18", "react@^16.8.0 || ^17.0.0", "react@^16.8.0 || ^17.0.0 || ^18.0.0", "react@^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0", "react@^16.8.0 || 17.x", "react@^16.9.0 || ^17 || ^18 || ^19 || ^19.0.0-rc", "react@^17.0.0 || ^18.0.0 || ^19.0.0", "react@^18.0 || ^19.0 || ^19.0.0-rc", react@^18.0.0, react@^18.2.0, "react@^18.2.0 || 19.0.0-rc-66855b96-20241106 || ^19.0.0", react@^18.3.1, "react@>= 16.8.0", "react@>= 16.8.0 || 17.x.x || ^18.0.0-0 || ^19.0.0-0", react@>=16, react@>=16.6.0, react@>=16.8, react@>=16.8.0, react@>=17.0, react@>=17.0.0, react@>=18, react@>=18.0, react@>=18.0.0, react@>=18.1.0, "react@16.8.0  || >=17.0.0 || >=18.0.0":
   version "18.3.1"
   resolved "https://registry.npmjs.org/react/-/react-18.3.1.tgz"
   integrity sha512-wS+hAgJShR0KhEvPJArfuPVN1+Hz1t0Y6n5jLrGQbkb4urgPE/0Rve+1kMB1v/oWgHgm4WIcV+i7F2pTVj+2iQ==

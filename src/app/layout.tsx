@@ -50,7 +50,7 @@ export default function RootLayout({
         />
         <link rel="icon" href="/img/logo_biceps.png" />
         <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#6366f1" />
+        <meta name="theme-color" content="#111827" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="apple-mobile-web-app-title" content="Musco" />
