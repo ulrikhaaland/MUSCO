@@ -2,7 +2,7 @@ import { useState, useRef, ChangeEvent } from "react";
 import { ChatMessages } from "./ChatMessages";
 import { usePartChat } from "@/app/hooks/usePartChat";
 import { BodyPartGroup } from "@/app/config/bodyPartGroups";
-import { Question } from "@/app/types";
+import { Question, ChatMessage } from "@/app/types";
 import { AnatomyPart } from "@/app/types/human";
 
 interface PartPopupProps {
@@ -29,6 +29,7 @@ export default function PartPopup({
     handleOptionClick,
     getGroupDisplayName,
     getPartDisplayName,
+    streamError,
   } = usePartChat({ selectedPart: part, selectedGroups: groups });
 
   const [userHasScrolled, setUserHasScrolled] = useState(false);
@@ -83,6 +84,16 @@ export default function PartPopup({
     }
   };
 
+  // Handle resending a message when it was interrupted
+  const handleResendMessage = (message: ChatMessage) => {
+    if (message.role === 'user') {
+      handleOptionClick({
+        title: "",
+        question: message.content,
+      });
+    }
+  };
+
   return (
     <div className="h-full bg-gray-900 text-white p-6 flex flex-col">
       <div className="flex justify-between items-start mb-6 flex-shrink-0">
@@ -119,12 +130,14 @@ export default function PartPopup({
         messages={messages}
         messagesRef={messagesRef}
         isLoading={isLoading}
+        streamError={streamError}
         followUpQuestions={followUpQuestions}
         onQuestionClick={handleQuestionSelect}
         onScroll={handleScroll}
         onUserScroll={handleUserScroll}
         part={part}
         groups={groups}
+        onResend={handleResendMessage}
       />
 
       <div className="mt-4 border-t border-gray-700 pt-4 flex-shrink-0">

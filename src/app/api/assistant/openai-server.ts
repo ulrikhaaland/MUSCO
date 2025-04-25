@@ -56,6 +56,32 @@ export async function streamRunResponse(
       assistant_id: assistantId,
     });
 
+    // Keep track if we've already handled stream completion
+    let streamEnded = false;
+
+    // Add proper error handling - common for client disconnects
+    const handleStreamEnd = (error?: Error) => {
+      if (streamEnded) return; // Prevent duplicate handling
+      streamEnded = true;
+      
+      if (error) {
+        // Check if it's a premature close error (client disconnected)
+        const isPrematureClose = 
+          error.message?.includes('Premature close') || 
+          (error.cause as any)?.code === 'ERR_STREAM_PREMATURE_CLOSE';
+        
+        if (isPrematureClose) {
+          // This is expected when clients navigate away or close the page
+          console.log('Client disconnected from stream (expected behavior)');
+        } else {
+          // For other errors, log them as actual errors
+          console.error('Stream error:', error);
+        }
+      } else {
+        console.log('Stream completed successfully');
+      }
+    };
+
     stream
       .on('textCreated', () => {
         // Optional: Handle when text is created
@@ -66,12 +92,19 @@ export async function streamRunResponse(
         }
       })
       .on('error', (error) => {
-        console.error('Stream error:', error);
-        throw error;
+        handleStreamEnd(error);
+      })
+      .on('end', () => {
+        handleStreamEnd();
       });
 
-    await stream.done();
-    console.log('Stream completed successfully');
+    try {
+      await stream.done();
+    } catch (error) {
+      // Handle the error at the await point if it wasn't caught by the event handlers
+      handleStreamEnd(error instanceof Error ? error : new Error(String(error)));
+    }
+    
     return;
   } catch (error) {
     console.error('Error in streamRunResponse:', error);

@@ -10,7 +10,7 @@ import {
 import { BottomSheet, BottomSheetRef } from 'react-spring-bottom-sheet';
 import type { BottomSheetProps } from 'react-spring-bottom-sheet';
 import 'react-spring-bottom-sheet/dist/style.css';
-import { DiagnosisAssistantResponse, Gender, Question } from '@/app/types';
+import { DiagnosisAssistantResponse, Gender, Question, ChatMessage } from '@/app/types';
 import { ChatMessages } from '../ui/ChatMessages';
 import { usePartChat } from '@/app/hooks/usePartChat';
 import { BodyPartGroup } from '@/app/config/bodyPartGroups';
@@ -98,6 +98,7 @@ export default function MobileControls({
     getGroupDisplayName,
     getPartDisplayName,
     assistantResponse,
+    streamError,
   } = usePartChat({
     selectedPart: selectedPart,
     selectedGroups: selectedGroups,
@@ -389,10 +390,20 @@ export default function MobileControls({
     }
   }, [selectedGroups.length, userModifiedSheetHeight]);
 
+  // Handle resending a message when it was interrupted
+  const handleResendMessage = (message: ChatMessage) => {
+    if (message.role === 'user') {
+      handleOptionClick({
+        title: "",
+        question: message.content,
+      });
+    }
+  };
+
   return (
     <>
       {/* Mobile Controls - Positioned relative to bottom sheet */}
-      {isMobile && currentSnapPoint !== SnapPoint.FULL && (
+      {isMobile && currentSnapPoint !== SnapPoint.FULL && currentSnapPoint !== SnapPoint.EXPANDED && (
         <MobileControlButtons
           isRotating={isRotating}
           isResetting={isResetting}
@@ -630,11 +641,13 @@ export default function MobileControls({
                   <ChatMessages
                     messages={messages}
                     isLoading={isLoading}
+                    streamError={streamError}
                     followUpQuestions={followUpQuestions}
                     onQuestionClick={handleQuestionSelect}
                     part={selectedPart}
                     messagesRef={messagesRef}
                     isMobile={isMobile}
+                    onResend={handleResendMessage}
                   />
                 </div>
               )}

@@ -34,6 +34,7 @@ export interface ChatMessage {
   content: string;
   role: 'user' | 'assistant' | 'system';
   timestamp: Date;
+  hasError?: boolean; // Flag to indicate if the message streaming was interrupted
 }
 
 export interface UserPreferences {

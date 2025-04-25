@@ -83,6 +83,7 @@ export function usePartChat({
     resetChat,
     sendChatMessage,
     assistantResponse,
+    streamError,
   } = useChat();
 
   const { intention } = useApp();
@@ -168,5 +169,6 @@ export function usePartChat({
     getGroupDisplayName,
     getPartDisplayName,
     assistantResponse,
+    streamError,
   };
 }
