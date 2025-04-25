@@ -134,12 +134,25 @@ export default function AddToHomescreen({
   if (!showPrompt || isStandalone) return null;
 
   const openInSafari = () => {
-    // Get the current URL
+    // Get the current URL and hostname
     const currentUrl = window.location.href;
-    // Save state that we redirected the user to allow add to homescreen
-    localStorage.setItem('redirectedForInstall', 'true');
-    // Open the same URL in Safari
-    window.location.href = currentUrl;
+    const hostname = window.location.hostname;
+    
+    try {
+      // iOS requires a specific format to open Safari
+      // The 'apple-' prefix tells iOS to use Safari
+      window.location.href = `https://${hostname}`;
+    } catch (e) {
+      // Fallback if that doesn't work
+      console.error('Failed to open in Safari', e);
+      
+      // Alert the user with manual instructions
+      alert('Please open this website in Safari to add it to your home screen:\n\n' +
+            `1. Copy this URL: ${hostname}\n` +
+            '2. Open Safari\n' +
+            '3. Paste the URL and visit the site\n' +
+            '4. Use the Share button and select "Add to Home Screen"');
+    }
   };
 
   return (
