@@ -860,7 +860,10 @@ export function useChat() {
     } catch (error) {
       console.error('Error in sendChatMessage:', error);
       setIsLoading(false);
-      setLastSendError(error instanceof Error ? error : new Error(String(error)));
+      // Use the last message reference to construct a proper FailedMessageInfo
+      if (lastUserMessageRef.current) {
+        setLastSendError(lastUserMessageRef.current);
+      }
       processNextMessage();
     }
   };
