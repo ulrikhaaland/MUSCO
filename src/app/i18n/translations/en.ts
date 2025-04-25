@@ -213,7 +213,7 @@ const translations = {
   'chat.question.movement.title': 'Test my movement',
   'chat.question.movement.text': "Can you walk me through some movements to check if there's an issue with the $part?",
   'chat.question.exercise.title': 'Exercise program',
-  'chat.question.exercise.text': 'What is the best exercise program for my $part?',
+  'chat.question.exercise.text': 'Can you help me create an exercise program?',
   'chat.question.recovery.title': 'Recovery program',
   'chat.question.recovery.text': 'What is the best recovery program for my $part?',
   

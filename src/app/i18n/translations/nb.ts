@@ -221,7 +221,7 @@ const translations = {
   'chat.question.movement.title': 'Test bevegelsen min',
   'chat.question.movement.text': 'Kan du guide meg gjennom noen bevegelser for å sjekke om det er et problem med $part?',
   'chat.question.exercise.title': 'Treningsprogram',
-  'chat.question.exercise.text': 'Hva er det beste treningsprogrammet for $part?',
+  'chat.question.exercise.text': 'Kan du hjelpe meg med å lage et treningsprogram?',
   'chat.question.recovery.title': 'Restitusjonsprogram',
   'chat.question.recovery.text': 'Hva er det beste restitusjonsprogrammet for $part?',
   

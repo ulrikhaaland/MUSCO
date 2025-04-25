@@ -362,7 +362,7 @@ export default function HumanViewer({
     if (question.generate) {
       if (diagnosis) {
         diagnosis.followUpQuestions = [];
-        diagnosis.programType = diagnosis.programType ?? ProgramType.Exercise;
+        diagnosis.programType = ProgramType.Exercise;
       } else {
         const programType = question.programType ?? ProgramType.Exercise;
         const newDiagnosis: DiagnosisAssistantResponse = {

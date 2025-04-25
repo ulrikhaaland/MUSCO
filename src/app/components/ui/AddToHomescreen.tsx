@@ -18,14 +18,46 @@ export default function AddToHomescreen({
   const [showPrompt, setShowPrompt] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [isIOSDevice, setIsIOSDevice] = useState(false);
+  const [isIOSChrome, setIsIOSChrome] = useState(false);
+  const [isSafari, setIsSafari] = useState(false);
+  const [isStandalone, setIsStandalone] = useState(false);
+  const [debugInfo, setDebugInfo] = useState<string>('');
 
   useEffect(() => {
+    // Don't run on server side
+    if (typeof window === 'undefined') return;
+    
     // Track whether the user has already dismissed the prompt or installed the app
     const hasPromptBeenShown = localStorage.getItem('pwaPromptDismissed');
     
-    // Detect iOS devices
+    // Detect browsers and platforms
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
+    const isChromeIOS = isIOS && /CriOS/.test(navigator.userAgent);
+    const isSafariCheck = isIOS && /Safari/.test(navigator.userAgent) && !/CriOS|FxiOS|OPiOS|mercury/i.test(navigator.userAgent);
+
+    // Check if already in standalone mode
+    const isInStandaloneMode = window.matchMedia('(display-mode: standalone)').matches 
+                            || (window.navigator as any).standalone === true
+                            || document.referrer.includes('android-app://');
+    
+    // Set state for UI decisions
     setIsIOSDevice(isIOS);
+    setIsIOSChrome(isChromeIOS);
+    setIsSafari(isSafariCheck);
+    setIsStandalone(isInStandaloneMode);
+    
+    // Compile debug info
+    const debug = [
+      `iOS: ${isIOS}`,
+      `Chrome iOS: ${isChromeIOS}`,
+      `Safari: ${isSafariCheck}`,
+      `Standalone: ${isInStandaloneMode}`,
+      `Navigator standalone: ${(window.navigator as any).standalone}`,
+      `Previously dismissed: ${hasPromptBeenShown === 'true'}`,
+      `User Agent: ${navigator.userAgent.slice(0, 50)}...`
+    ].join(' | ');
+    
+    setDebugInfo(debug);
     
     // Listen for beforeinstallprompt event (fired on non-iOS devices)
     const handleBeforeInstallPrompt = (e: Event) => {
@@ -40,21 +72,16 @@ export default function AddToHomescreen({
       }
     };
 
-    // Check if app is already installed on PWA or standalone mode
-    const isInStandaloneMode = window.matchMedia('(display-mode: standalone)').matches 
-                            || (window.navigator as any).standalone 
-                            || document.referrer.includes('android-app://');
-
     // Only show prompt if not already in standalone mode
     if (!isInStandaloneMode) {
       window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
       
-      // For iOS, we'll show the prompt after a delay if they haven't seen it
+      // For iOS Safari, we'll show the prompt after a delay if they haven't seen it
       if (isIOS && hasPromptBeenShown !== 'true') {
         // Delay showing iOS instructions to avoid interrupting initial app experience
         const timer = setTimeout(() => {
           setShowPrompt(true);
-        }, 5000);
+        }, 3000);
         return () => clearTimeout(timer);
       }
     }
@@ -86,6 +113,8 @@ export default function AddToHomescreen({
     
     // For iOS, just close the prompt when they click install (they'll need to follow instructions)
     if (isIOSDevice) {
+      // Set flag to remember they've seen the prompt
+      localStorage.setItem('pwaPromptDismissed', 'true');
       setShowPrompt(false);
     }
   };
@@ -96,7 +125,22 @@ export default function AddToHomescreen({
     setShowPrompt(false);
   };
 
-  if (!showPrompt) return null;
+  // Reset the dismissed prompt status to test again
+  const handleReset = () => {
+    localStorage.removeItem('pwaPromptDismissed');
+    setShowPrompt(true);
+  };
+
+  if (!showPrompt || isStandalone) return null;
+
+  const openInSafari = () => {
+    // Get the current URL
+    const currentUrl = window.location.href;
+    // Save state that we redirected the user to allow add to homescreen
+    localStorage.setItem('redirectedForInstall', 'true');
+    // Open the same URL in Safari
+    window.location.href = currentUrl;
+  };
 
   return (
     <div className="fixed inset-x-0 bottom-0 z-50 pb-safe animate-scale-in">
@@ -107,7 +151,12 @@ export default function AddToHomescreen({
               <h3 className="text-lg font-medium text-white">{title}</h3>
               <p className="mt-1 text-sm text-gray-300">{message}</p>
               
-              {isIOSDevice && (
+              {isIOSChrome ? (
+                <div className="mt-2 text-sm text-gray-300">
+                  <p>Chrome on iOS doesn&apos;t support adding to homescreen.</p>
+                  <p className="mt-1">Please open this site in Safari instead:</p>
+                </div>
+              ) : isIOSDevice && (
                 <div className="mt-2 text-sm text-gray-300">
                   <p>To install:</p>
                   <ol className="list-decimal pl-5 mt-1 space-y-1">
@@ -119,6 +168,23 @@ export default function AddToHomescreen({
                     <li>Scroll down and tap &quot;Add to Home Screen&quot;</li>
                     <li>Tap &quot;Add&quot; to confirm</li>
                   </ol>
+                  <p className="mt-2 text-xs text-gray-400">
+                    {isSafari ? 
+                      "You're using Safari, so you can follow these steps to install." :
+                      "Note: This works best in Safari browser."}
+                  </p>
+                </div>
+              )}
+              
+              {process.env.NODE_ENV !== 'production' && (
+                <div className="mt-2 border-t border-gray-700 pt-2 text-xs text-gray-400">
+                  <p className="font-mono break-words">Debug: {debugInfo}</p>
+                  <button 
+                    onClick={handleReset} 
+                    className="mt-1 text-indigo-400 hover:text-indigo-300 underline"
+                  >
+                    Reset prompt status
+                  </button>
                 </div>
               )}
             </div>
@@ -131,12 +197,22 @@ export default function AddToHomescreen({
             >
               {cancelButtonText}
             </button>
-            <button
-              onClick={handleInstallClick}
-              className="px-3 py-2 text-sm font-medium bg-indigo-500 hover:bg-indigo-600 text-white rounded"
-            >
-              {installButtonText}
-            </button>
+            
+            {isIOSChrome ? (
+              <button
+                onClick={openInSafari}
+                className="px-3 py-2 text-sm font-medium bg-indigo-500 hover:bg-indigo-600 text-white rounded"
+              >
+                Open in Safari
+              </button>
+            ) : (
+              <button
+                onClick={handleInstallClick}
+                className="px-3 py-2 text-sm font-medium bg-indigo-500 hover:bg-indigo-600 text-white rounded"
+              >
+                {installButtonText}
+              </button>
+            )}
           </div>
         </div>
       </div>
