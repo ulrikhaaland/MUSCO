@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useTranslation } from '@/app/i18n';
 import { addTranslation, Locale } from '@/app/i18n';
 import LanguageSwitcher from '@/app/components/ui/LanguageSwitcher';
@@ -12,7 +12,7 @@ const emptyTranslation = {
   locale: 'en' as Locale
 };
 
-export default function TranslationsPage() {
+function TranslationsPageContent() {
   const { t, locale } = useTranslation();
   const [newTranslation, setNewTranslation] = useState(emptyTranslation);
   const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
@@ -172,5 +172,22 @@ export default function TranslationsPage() {
         </div>
       )}
     </div>
+  );
+}
+
+// Loading fallback UI
+function LoadingTranslations() {
+  return (
+    <div className="max-w-4xl mx-auto p-6 flex items-center justify-center">
+      <div className="w-8 h-8 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+    </div>
+  );
+}
+
+export default function TranslationsPage() {
+  return (
+    <Suspense fallback={<LoadingTranslations />}>
+      <TranslationsPageContent />
+    </Suspense>
   );
 } 
