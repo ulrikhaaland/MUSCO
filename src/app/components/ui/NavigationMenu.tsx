@@ -468,14 +468,6 @@ function MenuLoadingFallback() {
 }
 
 export function NavigationMenu() {
-  // Check programStatus here instead of in the NavigationMenuContent
-  const { programStatus } = useUser();
-
-  // Don't render the navigation menu when generating a program
-  if (programStatus === ProgramStatus.Generating) {
-    return null;
-  }
-
   return (
     <Suspense fallback={<MenuLoadingFallback />}>
       <NavigationMenuContent />

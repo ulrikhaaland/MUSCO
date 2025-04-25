@@ -1,10 +1,10 @@
 'use client';
 
 import { usePathname, useSearchParams } from 'next/navigation';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, Suspense } from 'react';
 import { useLoader } from '../context/LoaderContext';
 
-export function RouteChangeListener() {
+function RouteChangeListenerContent() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { hideLoader } = useLoader();
@@ -23,4 +23,12 @@ export function RouteChangeListener() {
   }, [pathname, searchParams, hideLoader]);
 
   return null;
+}
+
+export function RouteChangeListener() {
+  return (
+    <Suspense fallback={null}>
+      <RouteChangeListenerContent />
+    </Suspense>
+  );
 } 
