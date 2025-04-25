@@ -116,8 +116,8 @@ export default function AddToHomescreen({
                         <path d="M13 4.5a2.5 2.5 0 1 1 .621 1.651L8.496 8.962a2.5 2.5 0 0 1 0 2.076l5.125 2.812a2.5 2.5 0 1 1-.75 1.372l-5.125-2.813a2.5 2.5 0 1 1 0-4.82l5.125-2.812A2.499 2.499 0 0 1 13 4.5Z" />
                       </svg>
                     </span></li>
-                    <li>Scroll down and tap "Add to Home Screen"</li>
-                    <li>Tap "Add" to confirm</li>
+                    <li>Scroll down and tap &quot;Add to Home Screen&quot;</li>
+                    <li>Tap &quot;Add&quot; to confirm</li>
                   </ol>
                 </div>
               )}
