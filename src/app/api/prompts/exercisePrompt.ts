@@ -182,7 +182,7 @@ EXERCISE SELECTION PROTOCOL
     - If Workout Duration is "30-45 minutes", set Zone 2 cardio duration to 45 minutes
     - If Workout Duration is "45-60 minutes", set Zone 2 cardio duration to 60 minutes
     - If Workout Duration is "60+ minutes", set Zone 2 cardio duration to 60 minutes
-  - For 4x4 interval training (high intensity), recommend shorter durations (16-28 minutes including recovery periods)
+  - For 4x4 interval training (high intensity), recommend shorter durations (28-30 minutes including recovery periods)
 
 - Include enough exercises to satisfy the user's preferred workout duration:
   - 15-30 minutes: 4-6 exercises (including warmups)

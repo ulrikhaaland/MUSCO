@@ -47,9 +47,11 @@ export default function ExerciseCard({
     if (ex.duration) {
       chips.push(
         <Chip key="duration" size="sm">
-          {ex.duration >= 60
-            ? `${Math.floor(ex.duration / 60)} min${ex.duration % 60 > 0 ? ` ${ex.duration % 60} sec` : ''}`
-            : `${ex.duration} sec`}
+          {ex.bodyPart === "Cardio" 
+            ? `${ex.duration} min` // For cardio exercises, duration is always in minutes
+            : ex.duration >= 60
+              ? `${Math.floor(ex.duration / 60)} min${ex.duration % 60 > 0 ? ` ${ex.duration % 60} sec` : ''}`
+              : `${ex.duration} sec`}
         </Chip>
       );
     } else {

@@ -5,6 +5,7 @@ import {
   addDoc,
   collection,
   setDoc,
+  serverTimestamp,
 } from 'firebase/firestore';
 import { db } from '../firebase/config';
 import { DiagnosisAssistantResponse } from '../types';
@@ -53,43 +54,61 @@ async function generateProgram(
   }
 }
 
-export async function submitQuestionnaire(
+export const submitQuestionnaire = async (
   userId: string,
   diagnosis: DiagnosisAssistantResponse,
-  answers: ExerciseQuestionnaireAnswers,
-  onProgramDocAdded?: () => void,
+  questionnaire: ExerciseQuestionnaireAnswers,
   assistantId?: string
-) {
-  // Create a new document in the programs collection
-  const programsRef = collection(db, `users/${userId}/programs`);
-  const programDoc = await addDoc(programsRef, {
-    diagnosis,
-    questionnaire: answers,
-    createdAt: new Date().toISOString(),
-    status: ProgramStatus.Generating,
-    type: diagnosis.programType || 'exercise',
-    active: true,
-  });
-
-  if (onProgramDocAdded) {
-    onProgramDocAdded();
-  }
-
-  // Start program generation
+): Promise<string> => {
   try {
-    await generateProgram(
-      userId,
-      programDoc.id,
-      diagnosis,
-      answers,
-      assistantId
-    );
-  } catch (error) {
-    console.error('Error starting program generation:', error);
-  }
+    // Create a sanitized copy of the questionnaire to ensure no undefined values
+    const sanitizedQuestionnaire = { ...questionnaire };
+    
+    // Replace undefined with null for modalitySplit and other potentially undefined fields
+    if (sanitizedQuestionnaire.modalitySplit === undefined) {
+      sanitizedQuestionnaire.modalitySplit = null;
+    }
+    
+    // Check for any other undefined values and convert them to null
+    Object.keys(sanitizedQuestionnaire).forEach(key => {
+      if (sanitizedQuestionnaire[key] === undefined) {
+        sanitizedQuestionnaire[key] = null;
+      }
+    });
 
-  return programDoc.id;
-}
+    // Use sanitized questionnaire in the Firestore document
+    const programsRef = collection(db, `users/${userId}/programs`);
+    const docRef = await addDoc(programsRef, {
+      diagnosis,
+      questionnaire: sanitizedQuestionnaire,
+      status: ProgramStatus.Generating,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+      type: diagnosis.programType,
+      active: true,
+    });
+
+    // Start program generation
+    try {
+      await generateProgram(
+        userId,
+        docRef.id,
+        diagnosis,
+        sanitizedQuestionnaire,
+        assistantId
+      );
+    } catch (error) {
+      console.error('Error starting program generation:', error);
+      // Still return the program ID even if generation failed
+    }
+
+    console.log(`Program created with ID: ${docRef.id}`);
+    return docRef.id;
+  } catch (error) {
+    console.error('Error submitting questionnaire:', error);
+    throw error;
+  }
+};
 
 export async function getPendingQuestionnaire(email: string) {
   const pendingDocRef = doc(db, 'pendingQuestionnaires', email.toLowerCase());
