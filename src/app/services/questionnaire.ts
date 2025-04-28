@@ -58,7 +58,8 @@ export const submitQuestionnaire = async (
   userId: string,
   diagnosis: DiagnosisAssistantResponse,
   questionnaire: ExerciseQuestionnaireAnswers,
-  assistantId?: string
+  assistantId?: string,
+  onComplete?: () => void
 ): Promise<string> => {
   try {
     // Create a sanitized copy of the questionnaire to ensure no undefined values
@@ -100,6 +101,11 @@ export const submitQuestionnaire = async (
     } catch (error) {
       console.error('Error starting program generation:', error);
       // Still return the program ID even if generation failed
+    }
+
+    // Call the onComplete callback if provided
+    if (onComplete) {
+      onComplete();
     }
 
     console.log(`Program created with ID: ${docRef.id}`);

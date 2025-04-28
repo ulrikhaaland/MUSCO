@@ -115,6 +115,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                         result.user.uid,
                         data.diagnosis,
                         data.answers,
+                        undefined,
                         () => {
                           setLoading(false);
                         }
