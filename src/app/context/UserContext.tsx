@@ -608,26 +608,40 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const selectProgram = (index: number) => {
     console.log(`Selecting program at index ${index}`);
     // If user has program already, select it
-    if (userPrograms && userPrograms.length > index) {
-      setActiveProgram(userPrograms[index]);
+    if (userPrograms && userPrograms.length > index && userPrograms[index]) {
+      const selectedProgram = userPrograms[index];
+      
+      // Make sure the program has a programs array and it's not empty
+      if (!selectedProgram.programs || !Array.isArray(selectedProgram.programs) || selectedProgram.programs.length === 0) {
+        console.error('Invalid program data: programs array is missing or empty', selectedProgram);
+        return;
+      }
+      
+      setActiveProgram(selectedProgram);
 
       // Log program info for debugging
       console.log('=== DEBUG: Selected userProgram ===');
       console.log(
         'Number of programs in collection:',
-        userPrograms[index].programs.length
+        selectedProgram.programs.length
       );
-      userPrograms[index].programs.forEach((p, i) => {
-        console.log(`Program ${i + 1} weeks:`, p.program?.length || 0);
-        if (p.program) {
+      selectedProgram.programs.forEach((p, i) => {
+        console.log(`Program ${i + 1} weeks:`, p?.program?.length || 0);
+        if (p?.program) {
           p.program.forEach((w, j) =>
-            console.log(`Program ${i + 1} Week ${j + 1}:`, w.week)
+            console.log(`Program ${i + 1} Week ${j + 1}:`, w?.week)
           );
         }
       });
 
-      const allWeeks = userPrograms[index].programs.flatMap(
-        (p) => p.program || []
+      // Make sure we have at least one valid program with program array
+      if (!selectedProgram.programs[0]) {
+        console.error('First program in collection is missing', selectedProgram);
+        return;
+      }
+
+      const allWeeks = selectedProgram.programs.flatMap(
+        (p) => p?.program || []
       );
       const renumberedWeeks = allWeeks.map((weekData, i) => ({
         ...weekData,
@@ -635,26 +649,28 @@ export function UserProvider({ children }: { children: ReactNode }) {
       }));
 
       const combinedProgram = {
-        ...userPrograms[index].programs[0],
+        ...selectedProgram.programs[0],
         program: renumberedWeeks,
-        docId: userPrograms[index].docId,
+        docId: selectedProgram.docId,
       };
 
       console.log('=== DEBUG: combinedProgram in selectProgram ===');
       console.log(
         'Total weeks in combined program:',
-        combinedProgram.program?.length || 0
+        combinedProgram?.program?.length || 0
       );
-      if (combinedProgram.program) {
+      if (combinedProgram?.program) {
         combinedProgram.program.forEach((w, i) =>
-          console.log(`Combined Week ${i + 1}:`, w.week)
+          console.log(`Combined Week ${i + 1}:`, w?.week)
         );
       }
 
       setProgram(combinedProgram);
       setIsLoading(false);
 
-      setAnswers(userPrograms[index].questionnaire);
+      setAnswers(selectedProgram.questionnaire);
+    } else {
+      console.error(`Cannot select program at index ${index}: program not found`);
     }
   };
 
