@@ -386,7 +386,11 @@ function ProgramsContent() {
                   
                   {/* Creation date and toggle switch */}
                   <div className="text-xs text-gray-400 pt-3 flex justify-between items-center">
-                    <span>Created: {format(program.createdAt, 'MMM d, yyyy')}</span>
+                    <span>Created: {
+                      program.createdAt && program.createdAt instanceof Date && !isNaN(program.createdAt.getTime())
+                        ? format(program.createdAt, 'MMM d, yyyy')
+                        : 'N/A'
+                    }</span>
                     
                     {/* Toggle switch */}
                     <div className="flex items-center">
