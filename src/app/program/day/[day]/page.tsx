@@ -10,6 +10,7 @@ import { useUser } from '@/app/context/UserContext';
 import { LoadingSpinner } from '@/app/components/ui/LoadingSpinner';
 import { getStorage, ref, getDownloadURL } from 'firebase/storage';
 import { storage } from '@/app/firebase/config';
+import { preloadExerciseVideos } from '@/app/utils/videoPreloader';
 
 function ErrorDisplay({ error }: { error: Error }) {
   return (
@@ -73,6 +74,8 @@ export default function DayDetailPage() {
   const [expandedExercises, setExpandedExercises] = useState<string[]>([]);
   const [selectedProgram, setSelectedProgram] = useState<ExerciseProgram | null>(null);
   const [preloadedVideoUrls, setPreloadedVideoUrls] = useState<{ [key: string]: string }>({});
+  const [videosPreloaded, setVideosPreloaded] = useState(false);
+  const [currentExerciseIndex, setCurrentExerciseIndex] = useState<number>(-1);
 
   const isLoading = authLoading || userLoading;
 
@@ -116,6 +119,49 @@ export default function DayDetailPage() {
       }
     }
   }, [selectedProgram, dayNumber]);
+
+  // Preload all videos when the day data is first loaded
+  useEffect(() => {
+    if (dayData?.exercises && !videosPreloaded) {
+      console.log(`Starting preload for ${dayData.exercises.length} exercises on ${dayName}`);
+      
+      try {
+        // Preload all videos at once
+        preloadExerciseVideos(dayData.exercises)
+          .then(() => {
+            console.log("All exercise videos preloaded successfully");
+            setVideosPreloaded(true);
+
+            // Now prefetch the HTTP URLs and store them for immediate access
+            const prefetchHttpUrls = async () => {
+              const urlMap: { [key: string]: string } = {};
+              for (const exercise of dayData.exercises) {
+                if (exercise.videoUrl && exercise.videoUrl.startsWith('gs://')) {
+                  try {
+                    const storageRef = ref(storage, exercise.videoUrl);
+                    const downloadUrl = await getDownloadURL(storageRef);
+                    urlMap[exercise.name] = downloadUrl;
+                  } catch (error) {
+                    console.error(`Error converting Firebase URL for ${exercise.name}:`, error);
+                  }
+                }
+              }
+              setPreloadedVideoUrls(urlMap);
+              console.log(`Prefetched ${Object.keys(urlMap).length} HTTP URLs for immediate access`);
+            };
+            
+            prefetchHttpUrls().catch(error => {
+              console.error("Error prefetching HTTP URLs:", error);
+            });
+          })
+          .catch(error => {
+            console.error("Error preloading exercise videos:", error);
+          });
+      } catch (error) {
+        console.error("Error initiating video preload:", error);
+      }
+    }
+  }, [dayData, dayName, videosPreloaded]);
 
   // Update page title
   useEffect(() => {
@@ -206,6 +252,10 @@ export default function DayDetailPage() {
   const handleVideoClick = async (exercise: Exercise) => {
     if (loadingVideoExercise === exercise.name) return;
 
+    // Find the index of the exercise in the day's exercises
+    const exerciseIndex = dayData?.exercises.findIndex(ex => ex.name === exercise.name) ?? -1;
+    setCurrentExerciseIndex(exerciseIndex);
+
     // --- Check for Preloaded URL First ---
     if (preloadedVideoUrls[exercise.name]) {
       console.log(`Using preloaded URL for ${exercise.name}`);
@@ -279,8 +329,42 @@ export default function DayDetailPage() {
     }
   }, [videoUrl]);
 
+  const navigateToVideo = async (direction: 'next' | 'prev') => {
+    if (!dayData?.exercises || currentExerciseIndex === -1) return;
+    
+    const totalExercises = dayData.exercises.length;
+    let newIndex: number;
+    
+    if (direction === 'next') {
+      // Don't loop, just move to the next if not at the end
+      if (currentExerciseIndex < totalExercises - 1) {
+        newIndex = currentExerciseIndex + 1;
+      } else {
+        return; // Already at the last video, do nothing
+      }
+    } else {
+      // Don't loop, just move to the previous if not at the beginning
+      if (currentExerciseIndex > 0) {
+        newIndex = currentExerciseIndex - 1;
+      } else {
+        return; // Already at the first video, do nothing
+      }
+    }
+    
+    // Set the new index
+    setCurrentExerciseIndex(newIndex);
+    
+    // Get the new exercise and load its video
+    const nextExercise = dayData.exercises[newIndex];
+    await handleVideoClick(nextExercise);
+  };
+
   const renderVideoModal = () => {
     if (!videoUrl) return null;
+
+    const hasMultipleVideos = dayData?.exercises && dayData.exercises.length > 1;
+    const showPreviousButton = hasMultipleVideos && currentExerciseIndex > 0;
+    const showNextButton = hasMultipleVideos && currentExerciseIndex < (dayData?.exercises.length ?? 0) - 1;
 
     return (
       <div
@@ -291,6 +375,55 @@ export default function DayDetailPage() {
           className="relative w-full h-full flex items-center justify-center"
           onClick={(e) => e.stopPropagation()}
         >
+          {/* Navigation buttons */}
+          <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-between px-4 sm:px-8 z-[10001]">
+            {showPreviousButton && (
+              <button
+                onClick={() => navigateToVideo('prev')}
+                className="bg-black/70 rounded-full p-3 text-white/90 hover:text-white hover:bg-black/90 transition-colors duration-200 shadow-lg"
+                aria-label="Previous video"
+              >
+                <svg
+                  className="w-8 h-8"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 19l-7-7 7-7"
+                  />
+                </svg>
+              </button>
+            )}
+            
+            {!showPreviousButton && <div></div>} {/* Empty div to maintain flex justify-between */}
+            
+            {showNextButton && (
+              <button
+                onClick={() => navigateToVideo('next')}
+                className="bg-black/70 rounded-full p-3 text-white/90 hover:text-white hover:bg-black/90 transition-colors duration-200 shadow-lg"
+                aria-label="Next video"
+              >
+                <svg
+                  className="w-8 h-8"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 5l7 7-7 7"
+                  />
+                </svg>
+              </button>
+            )}
+          </div>
+          
           <button
             onClick={closeVideo}
             className="absolute top-16 right-6 bg-black/70 rounded-full p-3 text-white/90 hover:text-white hover:bg-black/90 transition-colors duration-200 z-[10001] shadow-lg"
@@ -310,6 +443,21 @@ export default function DayDetailPage() {
               />
             </svg>
           </button>
+          
+          {/* Exercise name display */}
+          {currentExerciseIndex !== -1 && dayData?.exercises && (
+            <div className="absolute top-4 left-0 right-0 text-center">
+              <h2 className="text-xl md:text-2xl font-bold text-white/90 px-4">
+                {dayData.exercises[currentExerciseIndex].name}
+                {dayData.exercises.length > 1 && (
+                  <span className="text-white/60 text-sm ml-2">
+                    {currentExerciseIndex + 1} / {dayData.exercises.length}
+                  </span>
+                )}
+              </h2>
+            </div>
+          )}
+          
           {videoUrl && videoUrl.includes('firebasestorage.googleapis.com') ? (
             <div className="w-full h-full flex items-center justify-center">
               <video

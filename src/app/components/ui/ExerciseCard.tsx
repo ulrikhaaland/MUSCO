@@ -36,7 +36,8 @@ export default function ExerciseCard({
   const getTruncatedDescription = (description: string, charLimit = 100) => {
     if (description.length <= charLimit) return description;
     const lastSpaceIndex = description.lastIndexOf(' ', charLimit);
-    if (lastSpaceIndex === -1) return description.substring(0, charLimit) + '...';
+    if (lastSpaceIndex === -1)
+      return description.substring(0, charLimit) + '...';
     return description.substring(0, lastSpaceIndex) + '...';
   };
 
@@ -46,7 +47,9 @@ export default function ExerciseCard({
     if (ex.duration) {
       chips.push(
         <Chip key="duration" size="sm">
-          {ex.duration} min
+          {ex.duration >= 60
+            ? `${Math.floor(ex.duration / 60)} min${ex.duration % 60 > 0 ? ` ${ex.duration % 60} sec` : ''}`
+            : `${ex.duration} sec`}
         </Chip>
       );
     } else {
@@ -79,12 +82,33 @@ export default function ExerciseCard({
       title={
         <span className={isMobile ? 'tracking-tighter' : 'tracking-tight'}>
           {exercise.name}
+          {onToggle && (
+            <svg
+              className={`inline-block ml-2 w-4 h-4 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          )}
         </span>
       }
-      tag={exercise.bodyPart && <Chip size="md">{exercise.bodyPart}</Chip>}
-      headerContent={!isExpanded && renderExerciseChips(exercise)}
+      tag={
+        exercise.bodyPart && (
+          <Chip
+            size="md"
+            backgroundColor={exercise.warmup ? 'bg-amber-600' : ''}
+          >
+            {exercise.bodyPart}
+          </Chip>
+        )
+      }
     >
-      {isExpanded && (
+      {isExpanded ? (
         <Card.Section>
           {exercise.description && (
             <div className="text-gray-50 leading-relaxed">
@@ -118,7 +142,8 @@ export default function ExerciseCard({
               } transition-colors duration-200 cursor-pointer ml-auto`}
             >
               {(() => {
-                const exerciseIdentifier = exercise.name || exercise.id || exercise.exerciseId;
+                const exerciseIdentifier =
+                  exercise.name || exercise.id || exercise.exerciseId;
                 return loadingVideoExercise === exerciseIdentifier ? (
                   <div
                     className={`${compact ? 'w-3.5 h-3.5' : 'w-4 h-4'} border-t-2 border-white rounded-full animate-spin`}
@@ -151,13 +176,15 @@ export default function ExerciseCard({
 
           {exercise.modification && (
             <p className="text-yellow-200/90 text-sm leading-relaxed">
-              <span className="font-medium">Modification:</span> {exercise.modification}
+              <span className="font-medium">Modification:</span>{' '}
+              {exercise.modification}
             </p>
           )}
 
           {exercise.precaution && (
             <p className="text-red-400/90 text-sm leading-relaxed">
-              <span className="font-medium">Precaution:</span> {exercise.precaution}
+              <span className="font-medium">Precaution:</span>{' '}
+              {exercise.precaution}
             </p>
           )}
 
@@ -173,15 +200,35 @@ export default function ExerciseCard({
                 >
                   {showInstructions ? (
                     <>
-                      <svg className="w-4 h-4 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 15l7-7 7 7" />
+                      <svg
+                        className="w-4 h-4 mr-1"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M5 15l7-7 7 7"
+                        />
                       </svg>
                       Hide Instructions
                     </>
                   ) : (
                     <>
-                      <svg className="w-4 h-4 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                      <svg
+                        className="w-4 h-4 mr-1"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M19 9l-7 7-7-7"
+                        />
                       </svg>
                       View Instructions
                     </>
@@ -203,7 +250,57 @@ export default function ExerciseCard({
             </div>
           )}
         </Card.Section>
+      ) : null}
+      {/* Show chips at the bottom when collapsed */}
+      {!isExpanded && (
+        <Card.Section className="mt-auto">
+          <div className="flex flex-wrap gap-2 items-center">
+            <div className="flex flex-wrap gap-2 justify-start">
+              {renderExerciseChips(exercise)}
+            </div>
+            <div
+              onClick={(e) => {
+                e.stopPropagation();
+                onVideoClick(exercise);
+              }}
+              className={`inline-flex items-center space-x-1 bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-1.5 rounded-xl ${
+                compact ? 'text-xs' : 'text-sm'
+              } transition-colors duration-200 cursor-pointer ml-auto`}
+            >
+              {(() => {
+                const exerciseIdentifier =
+                  exercise.name || exercise.id || exercise.exerciseId;
+                return loadingVideoExercise === exerciseIdentifier ? (
+                  <div
+                    className={`${compact ? 'w-3.5 h-3.5' : 'w-4 h-4'} border-t-2 border-white rounded-full animate-spin`}
+                  />
+                ) : (
+                  <svg
+                    className={`${compact ? 'w-3.5 h-3.5' : 'w-4 h-4'} opacity-85`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1.75}
+                      d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1.75}
+                      d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                );
+              })()}
+              <span>Watch Video</span>
+            </div>
+          </div>
+        </Card.Section>
       )}
     </Card>
   );
-} 
+}

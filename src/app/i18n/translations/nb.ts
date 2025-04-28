@@ -31,6 +31,7 @@ const translations = {
   
   // Program - Equipment Access
   'program.equipment.large_gym': 'Stort treningssenter',
+  'program.equipment.custom_(pick_and_choose)': 'Tilpasset',
   'program.equipment.small_gym': 'Lite treningssenter',
   'program.equipment.garage_gym': 'Garasje-gym',
   'program.equipment.at_home': 'Hjemme',
@@ -38,6 +39,7 @@ const translations = {
   
   // Program - Equipment Descriptions
   'program.equipmentDesc.large_gym': 'Komplett treningssenter med omfattende utstyr inkludert kardiotrening, vektmaskiner, frivekter og spesialiserte treningsområder',
+  'program.equipmentDesc.custom_(pick_and_choose)': 'Tilpass ditt eget treningsmiljø ved å velge spesifikt utstyr du har tilgang til',
   'program.equipmentDesc.small_gym': 'Kompakt offentlig treningssenter med begrenset utstyr',
   'program.equipmentDesc.garage_gym': 'Vektstenger, squat-stativ, manualer og mer',
   'program.equipmentDesc.at_home': 'Begrenset utstyr som manualer, strikk, pull-up stang osv.',
@@ -266,9 +268,9 @@ const translations = {
   'profile.sleep.selectPattern': 'Velg søvnmønster',
   
   // Profile - Body Regions
-  'profile.bodyRegions.fullBody': 'Hele kroppen',
-  'profile.bodyRegions.upperBody': 'Overkropp',
-  'profile.bodyRegions.lowerBody': 'Underkropp',
+  'profile.bodyRegions.full_body': 'Hele kroppen',
+  'profile.bodyRegions.upper_body': 'Overkropp',
+  'profile.bodyRegions.lower_body': 'Underkropp',
   
   // Profile - Fitness Levels
   'profile.beginner.name': 'Nybegynner',
@@ -401,8 +403,19 @@ const translations = {
   'questionnaire.exerciseDays': 'Hvor mange dager i uken vil du trene?',
   'questionnaire.recoveryDays': 'Hvor mange dager i uken vil du fokusere på restitusjon?',
   'questionnaire.painAreas': 'Har du smerter noe sted?',
-  'questionnaire.trainingType': 'Hvilken type trening vil du gjøre?',
+  'questionnaire.trainingType': 'Hva slags utstyr har du tilgang til?',
+  'questionnaire.exerciseModalities': 'Hvilken type trening ønsker du å gjøre?',
+  'questionnaire.modalitySplit': 'Hvordan vil du fordele treningsdagene dine?',
+  'questionnaire.modalitySplit.description': 'Velg hvor mange dager i uken du ønsker å bruke på hver type trening (totalt: {{total}} dager)',
+  'questionnaire.modalitySplit.cardioDays': 'Kardiodager per uke',
+  'questionnaire.modalitySplit.strengthDays': 'Styrkedager per uke',
+  'questionnaire.modalitySplit.totalDaysError': 'Det totale antallet dager overstiger din valgte frekvens på {{total}} dager per uke',
+  'questionnaire.cardio': 'kardiodager',
+  'questionnaire.strength': 'styrkedager',
   'questionnaire.targetAreas': 'Hvilke områder vil du fokusere på i treningen din?',
+  'questionnaire.strengthTargetAreas': 'Hvilke områder vil du fokusere på i styrketreningen din?',
+  'questionnaire.cardioType': 'Hvilken type kardiotrening foretrekker du?',
+  'questionnaire.cardioEnvironment': 'Hvor foretrekker du å gjøre kardiotrening?',
   'questionnaire.exerciseLocation': 'Hvor foretrekker du å trene?',
   'questionnaire.recoveryLocation': 'Hvor foretrekker du å gjennomføre restitusjonstreningen?',
   'questionnaire.workoutDuration': 'Hvor mye tid vil du bruke på hver treningsøkt?',
@@ -410,8 +423,16 @@ const translations = {
   'questionnaire.noPain': 'Nei, jeg har ingen smerter',
   'questionnaire.selectAll': 'Velg alle som gjelder',
   'questionnaire.selectSpecific': 'Eller velg spesifikke områder:',
+  'questionnaire.selectEquipmentCategory': 'Velg utstyrskategori',
+  'questionnaire.strengthEquipment': 'Styrke',
+  'questionnaire.cardioEquipment': 'Kardio',
+  'questionnaire.selectSpecificEquipment': 'Velg ditt primære utstyr',
+  'questionnaire.selectEquipment': 'Velg alt utstyr du har tilgang til',
+  'questionnaire.continue': 'Fortsett',
+  'questionnaire.skipEquipment': 'Hopp over utstyr',
   'questionnaire.cancel': 'Avbryt',
   'questionnaire.createProgram': 'Lag program',
+  'questionnaire.selectedCardioType': 'Valgt kardiotype',
   
   // Program page translations
   'program.loading': 'Laster program',
@@ -436,6 +457,16 @@ const translations = {
   'pwa.addToHomescreenMessage': 'Installer denne appen på enheten din for rask og enkel tilgang.',
   'pwa.install': 'Installer',
   'pwa.notNow': 'Ikke nå',
+  
+  // Program - Cardio Types
+  'program.cardioType.running': 'Løping',
+  'program.cardioType.cycling': 'Sykling',
+  'program.cardioType.rowing': 'Roing',
+  
+  // Program - Cardio Environments
+  'program.cardioEnvironment.outside': 'Utendørs',
+  'program.cardioEnvironment.inside': 'Innendørs',
+  'program.cardioEnvironment.both': 'Begge'
 };
 
 export default translations; 

@@ -158,7 +158,7 @@
       "restBetweenSets": 60,
       "forceType": "Push (Bilateral)",
       "mechanics": "Compound",
-      
+
       "videoUrl": "gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_2991.MOV",
       "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg",
       "viewCount": 3100000,
@@ -391,7 +391,7 @@
       "targetBodyParts": ["Upper Legs"],
       "exerciseType": ["strength"],
       "difficulty": "intermediate",
-      "equipment": ["Bodyweight", "TRX", "Bands", "Support Structure"],
+      "equipment": ["Bodyweight", "TRX", "Bands"],
       "steps": [
         "Set up your chosen assistance: Hold TRX handles, secure a band overhead, or stand beside a stable support.",
         "Assume a single-leg stance, extending the non-working leg straight out in front.",
@@ -450,7 +450,7 @@
       "targetBodyParts": ["Upper Legs"],
       "exerciseType": ["strength"],
       "difficulty": "intermediate",
-      "equipment": ["Bodyweight", "Bench", "Box", "Chair"],
+      "equipment": ["Bodyweight", "Bench"],
       "steps": [
         "Sit on the edge of a box or bench with feet flat on the floor.",
         "Extend one leg straight out in front, keeping the heel off the ground.",

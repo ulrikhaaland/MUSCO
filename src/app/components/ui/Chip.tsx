@@ -11,6 +11,7 @@ interface ChipProps {
   iconPosition?: 'left' | 'right';
   onClick?: (e: React.MouseEvent) => void;
   className?: string;
+  backgroundColor?: string; // Custom Tailwind background color class
 }
 
 export const Chip = ({
@@ -21,6 +22,7 @@ export const Chip = ({
   iconPosition = 'right',
   onClick,
   className = '',
+  backgroundColor,
 }: ChipProps) => {
   // Base classes for all variants
   const baseClasses = "rounded-xl text-xs font-medium transition-colors duration-200 flex items-center";
@@ -46,10 +48,15 @@ export const Chip = ({
     onClick?.(e);
   };
 
+  // Get the variant classes and override background color if custom background color is provided
+  const variantClass = backgroundColor 
+    ? variantClasses[variant].replace(/bg-[^\\s]+/, backgroundColor) 
+    : variantClasses[variant];
+
   return (
     <button
       onClick={onClick ? handleClick : undefined}
-      className={`${baseClasses} ${sizeClasses[size]} ${variantClasses[variant]} ${onClick ? 'cursor-pointer' : 'cursor-default'} ${className}`}
+      className={`${baseClasses} ${sizeClasses[size]} ${variantClass} ${onClick ? 'cursor-pointer' : 'cursor-default'} ${className}`}
     >
       {icon && iconPosition === 'left' && <span className="mr-1">{icon}</span>}
       {children}

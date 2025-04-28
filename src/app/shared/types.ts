@@ -9,6 +9,12 @@ export interface ExerciseQuestionnaireAnswers {
   generallyPainfulAreas: string[];
   // The modalities of exercise the user prefers, e.g. 'strength'
   exerciseModalities?: string;
+  // For 'Both' modality, how to split between cardio and strength
+  modalitySplit?: string;
+  // Number of days per week dedicated to cardio training
+  cardioDays?: number;
+  // Number of days per week dedicated to strength training
+  strengthDays?: number;
   // The environment of exercise the user has access to, e.g. 'gym'
   exerciseEnvironments: string;
   // The duration of the workout the user prefers, e.g. '30-45 minutes'
@@ -20,6 +26,10 @@ export interface ExerciseQuestionnaireAnswers {
   experienceLevel?: string;
   // Weekly frequency of exercise, e.g. '3' (days per week)
   weeklyFrequency?: string;
+  // Type of cardio exercise, e.g. 'Running', 'Cycling', 'Rowing'
+  cardioType?: string;
+  // Preferred cardio environment, e.g. 'Outside', 'Inside', 'Both'
+  cardioEnvironment?: string;
 }
 
 export enum ProgramType {

@@ -1,0 +1,370 @@
+{
+  "bodyPart": "Warmup",
+  "exercises": [
+    {
+      "id": "warmup-1",
+      "name": "Rowing Machine",
+      "description": "A low-impact cardio warmup that activates the entire upper body, including back, shoulders, and arms. This exercise increases blood flow to major muscle groups and prepares the body for strength training.",
+      "targetBodyParts": ["Warmup"],
+      "exerciseType": ["warmup", "cardio"],
+      "difficulty": "beginner",
+      "equipment": ["Rowing Machine"],
+      "duration": 600,
+      "steps": [
+        "Sit on the rower with your feet secured on the footplates and grab the handle with both hands.",
+        "Start with your knees bent and arms extended forward.",
+        "Push with your legs first, then pull the handle toward your lower chest as you lean back slightly.",
+        "Return to the starting position by extending your arms first, then bending your knees.",
+        "Continue this motion for a total distance of 1000 meters at a moderate pace."
+      ],
+      "tips": [
+        "Focus on proper technique rather than speed.",
+        "Maintain a rhythm of legs-back-arms on the pull, and arms-back-legs on the return.",
+        "Keep a moderate pace that elevates your heart rate without exhausting you.",
+        "Use this as an upper body warmup before strength training."
+      ],
+      "contraindications": [
+        "Back injury",
+        "Shoulder injury",
+        "Wrist pain",
+        "Knee problems"
+      ],
+      "muscles": ["Back", "Shoulders", "Arms", "Core"],
+      "forceType": "Pull",
+      "mechanics": "Compound",
+      "category": "gym",
+      "videoUrl": "gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3021.mov"
+    },
+    {
+      "id": "warmup-2",
+      "name": "Stationary Bike",
+      "description": "A low-impact cardio exercise that effectively warms up the lower body, particularly the quadriceps, hamstrings, and calves. Using a stationary bike increases circulation to the legs and joints while gradually raising your heart rate.",
+      "targetBodyParts": ["Warmup"],
+      "exerciseType": ["warmup", "cardio"],
+      "difficulty": "beginner",
+      "equipment": ["Stationary Bike"],
+      "duration": 600,
+      "steps": [
+        "Adjust the bike seat to the proper height - your leg should be almost fully extended at the bottom of the pedal stroke.",
+        "Begin pedaling at a comfortable pace with light resistance.",
+        "Maintain a steady cadence for 10 minutes.",
+        "Focus on keeping your upper body relaxed and your core engaged.",
+        "Gradually increase the resistance if desired, but keep the intensity moderate."
+      ],
+      "tips": [
+        "Keep resistance light to moderate - this is a warmup, not a workout.",
+        "Maintain proper posture with your back straight and shoulders relaxed.",
+        "Pedal at a consistent pace that elevates your heart rate to about 50-60% of your maximum.",
+        "Use this as a leg warmup before strength training."
+      ],
+      "contraindications": ["Knee injury", "Hip pain", "Severe back problems"],
+      "muscles": ["Quadriceps", "Hamstrings", "Calves"],
+      "forceType": "Push/Pull",
+      "mechanics": "Compound",
+      "category": "gym",
+      "videoUrl": "gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3753.mov"
+    },
+    {
+      "id": "warmup-3",
+      "name": "Treadmill Walk/Jog (5° Incline)",
+      "description": "A versatile warmup that engages the entire lower body while gradually raising heart rate. Walking or light jogging on an inclined treadmill activates the posterior chain more intensely than flat walking, making it an excellent full-body preparation.",
+      "targetBodyParts": ["Warmup"],
+      "exerciseType": ["warmup", "cardio"],
+      "difficulty": "beginner",
+      "equipment": ["Treadmill"],
+      "duration": 600,
+      "steps": [
+        "Set the treadmill to a 5-degree incline.",
+        "Begin with a slow walk (2-3 mph) for 2-3 minutes.",
+        "Gradually increase to a brisk walk or light jog, depending on your fitness level.",
+        "Maintain this pace for the remainder of the 10 minutes.",
+        "Focus on proper posture and breathing throughout the exercise."
+      ],
+      "tips": [
+        "Avoid holding onto the treadmill handles during your warmup.",
+        "Keep your posture upright with shoulders back and core engaged.",
+        "The incline will increase engagement of your calves, hamstrings, and glutes.",
+        "This is an ideal combined warmup for full-body workout days."
+      ],
+      "contraindications": [
+        "Ankle or knee injury",
+        "Balance issues",
+        "Severe back problems",
+        "Cardiovascular conditions"
+      ],
+      "muscles": ["Quadriceps", "Hamstrings", "Calves", "Glutes", "Core"],
+      "forceType": "Push",
+      "mechanics": "Compound",
+      "category": "gym"
+    },
+    {
+      "id": "warmup-4",
+      "name": "Bodyweight Squat",
+      "description": "A fundamental lower body movement that effectively warms up the hips, knees, and ankles while engaging all major muscles of the legs. Bodyweight squats increase blood flow to the lower body and prepare the joints for more intense exercise.",
+      "targetBodyParts": ["Warmup"],
+      "exerciseType": ["warmup", "strength"],
+      "difficulty": "beginner",
+      "equipment": ["Bodyweight"],
+      "sets": 1,
+      "repetitions": 15,
+      "steps": [
+        "Stand with feet shoulder-width apart, toes pointed slightly outward.",
+        "Extend your arms forward for balance or keep them at your sides.",
+        "Initiate the movement by hinging at the hips, then bend your knees.",
+        "Lower your body as if sitting back into a chair until your thighs are parallel to the ground, or as low as comfortable.",
+        "Push through your heels to return to the starting position.",
+        "Perform 10-15 repetitions at a controlled pace."
+      ],
+      "tips": [
+        "Keep your chest up and spine neutral throughout the movement.",
+        "Ensure your knees track in line with your toes, not caving inward.",
+        "Focus on full range of motion to properly warm up the joints.",
+        "Breathe naturally - exhale on the way up, inhale on the way down."
+      ],
+      "contraindications": [
+        "Acute knee injury",
+        "Severe hip pain",
+        "Recent lower body surgery"
+      ],
+      "muscles": ["Quadriceps", "Hamstrings", "Glutes", "Core"],
+      "forceType": "Push",
+      "mechanics": "Compound",
+      "category": "home"
+    },
+    {
+      "id": "warmup-5",
+      "name": "Pelvic Tilt",
+      "description": "A gentle exercise that activates the core and lower back muscles while improving pelvic mobility. This movement helps prepare the spine for exercise while engaging the deep abdominal muscles.",
+      "targetBodyParts": ["Warmup"],
+      "exerciseType": ["warmup", "mobility"],
+      "difficulty": "beginner",
+      "equipment": ["Bodyweight"],
+      "sets": 1,
+      "repetitions": 12,
+      "steps": [
+        "Lie on your back with knees bent and feet flat on the floor, hip-width apart.",
+        "Place your arms at your sides with palms facing down.",
+        "Take a deep breath in, then exhale as you gently press your lower back into the floor, tilting your pelvis upward.",
+        "Hold this position for 2-3 seconds, engaging your core and glute muscles.",
+        "Inhale as you release back to the neutral position.",
+        "Perform 10-12 repetitions at a slow, controlled pace."
+      ],
+      "tips": [
+        "Focus on the movement coming from your pelvis, not your legs.",
+        "Keep the movement small and controlled - it's a subtle tilt, not a large bridge.",
+        "Coordinate your breathing with the movement for better activation.",
+        "This is particularly beneficial before exercises that involve the lower back."
+      ],
+      "contraindications": ["Acute back pain", "Recent abdominal surgery"],
+      "muscles": ["Abs", "Lower Back", "Glutes"],
+      "forceType": "Push",
+      "mechanics": "Isolation",
+      "category": "home"
+    },
+    {
+      "id": "warmup-6",
+      "name": "Jogging in Place",
+      "description": "A simple cardiovascular warmup that raises heart rate while engaging multiple muscle groups. This exercise improves circulation throughout the body and prepares the legs for more intense activity.",
+      "targetBodyParts": ["Warmup"],
+      "exerciseType": ["warmup", "cardio"],
+      "difficulty": "beginner",
+      "equipment": ["Bodyweight"],
+      "duration": 60,
+      "steps": [
+        "Stand with feet hip-width apart and arms at your sides.",
+        "Begin by lifting your right knee, then your left, alternating in a jogging motion.",
+        "Keep your core engaged and posture upright.",
+        "Start at a comfortable pace and gradually increase speed slightly.",
+        "Continue jogging in place for 30-60 seconds.",
+        "Focus on landing softly on the balls of your feet."
+      ],
+      "tips": [
+        "Lift your knees to about hip height for better activation.",
+        "Keep your upper body relaxed with a slight forward lean.",
+        "Add arm movements to increase heart rate and engage more muscles.",
+        "Breathe rhythmically and naturally throughout the exercise."
+      ],
+      "contraindications": [
+        "Balance issues",
+        "Severe joint pain",
+        "Cardiovascular conditions"
+      ],
+      "muscles": ["Quadriceps", "Hamstrings", "Calves", "Core"],
+      "forceType": "Push",
+      "mechanics": "Compound",
+      "category": "home"
+    },
+    {
+      "id": "warmup-7",
+      "name": "Wall Push-Ups",
+      "description": "A modified push-up variation that gently engages the chest, shoulders, and arms. This exercise provides a low-impact way to prepare the upper body for more challenging movements.",
+      "targetBodyParts": ["Warmup"],
+      "exerciseType": ["warmup", "strength"],
+      "difficulty": "beginner",
+      "equipment": ["Bodyweight"],
+      "sets": 1,
+      "repetitions": 15,
+      "steps": [
+        "Stand facing a wall at arm's length distance.",
+        "Place your palms flat against the wall at shoulder height, slightly wider than shoulder-width apart.",
+        "Position your feet hip-width apart, a comfortable distance from the wall.",
+        "Keeping your body straight from head to heels, slowly bend your elbows to bring your chest toward the wall.",
+        "Push back to the starting position by straightening your arms.",
+        "Perform 10-15 repetitions at a controlled pace."
+      ],
+      "tips": [
+        "Keep your core engaged and body straight throughout the movement.",
+        "The further your feet are from the wall, the more challenging the exercise.",
+        "Focus on squeezing your chest muscles as you push away from the wall.",
+        "This is an excellent warmup before chest, shoulder, or arm exercises."
+      ],
+      "contraindications": ["Acute wrist pain", "Shoulder injury"],
+      "muscles": ["Chest", "Shoulders", "Triceps", "Core"],
+      "forceType": "Push",
+      "mechanics": "Compound",
+      "category": "home"
+    },
+    {
+      "id": "warmup-8",
+      "name": "Arm Circles",
+      "description": "A dynamic warmup exercise that mobilizes the shoulder joints and activates the muscles of the upper body. Arm circles increase blood flow to the shoulder complex and prepare the joints for more intense upper body exercises.",
+      "targetBodyParts": ["Warmup"],
+      "exerciseType": ["warmup", "mobility"],
+      "difficulty": "beginner",
+      "equipment": ["Bodyweight"],
+      "sets": 3,
+      "repetitions": 10,
+      "steps": [
+        "Stand with feet shoulder-width apart and extend both arms out to the sides at shoulder height.",
+        "Begin making small circular motions with both arms, rotating forward.",
+        "Gradually increase the size of the circles for 10-15 seconds.",
+        "Reverse direction and perform circles backward for another 10-15 seconds.",
+        "Complete 2-3 sets in each direction."
+      ],
+      "tips": [
+        "Keep your core engaged and shoulders relaxed - avoid shrugging.",
+        "Start with smaller circles and gradually increase the size.",
+        "If you feel any pinching in the shoulders, reduce the size of your circles.",
+        "Focus on smooth, controlled movements rather than speed."
+      ],
+      "contraindications": [
+        "Shoulder impingement",
+        "Rotator cuff injury",
+        "Recent shoulder surgery"
+      ],
+      "muscles": ["Deltoids", "Rotator Cuff", "Upper Back"],
+      "forceType": "Dynamic",
+      "mechanics": "Isolation",
+      "category": "home"
+    },
+    {
+      "id": "warmup-9",
+      "name": "Standing Trunk Rotation",
+      "description": "A rotational exercise that warms up the core and improves spinal mobility. This movement prepares the torso for twisting motions and engages the obliques and other core stabilizers.",
+      "targetBodyParts": ["Warmup"],
+      "exerciseType": ["warmup", "mobility"],
+      "difficulty": "beginner",
+      "equipment": ["Bodyweight"],
+      "sets": 1,
+      "repetitions": 24,
+      "steps": [
+        "Stand with feet shoulder-width apart and knees slightly bent.",
+        "Extend your arms straight out to the sides at shoulder height, or place hands lightly on shoulders.",
+        "Keeping your hips facing forward, rotate your torso to the right as far as comfortable.",
+        "Hold for 1-2 seconds, then rotate to the left side.",
+        "Continue alternating sides for 10-12 repetitions per side.",
+        "Focus on the rotation coming from your spine, not your hips."
+      ],
+      "tips": [
+        "Keep your lower body stable throughout the movement - the rotation should come from your torso.",
+        "Breathe naturally, exhaling as you rotate to each side.",
+        "Move slowly and with control to maximize the benefits to your spine.",
+        "For added challenge, hold the position at the end range for 2-3 seconds on each side."
+      ],
+      "contraindications": [
+        "Acute back pain",
+        "Herniated disc",
+        "Recent abdominal surgery"
+      ],
+      "muscles": ["Obliques", "Erector Spinae", "Core"],
+      "forceType": "Dynamic",
+      "mechanics": "Isolation",
+      "category": "home"
+    },
+    {
+      "id": "warmup-10",
+      "name": "Elliptical Machine 10 Minutes",
+      "description": "A low-impact full-body cardio warmup that engages both upper and lower body simultaneously. The elliptical machine provides a smooth, fluid motion that increases circulation while being gentle on the joints.",
+      "targetBodyParts": ["Warmup"],
+      "exerciseType": ["warmup", "cardio"],
+      "difficulty": "beginner",
+      "equipment": ["Elliptical Machine"],
+      "duration": 600,
+      "steps": [
+        "Step onto the elliptical and place your feet on the pedals.",
+        "Grasp the moving handlebars with both hands.",
+        "Begin pedaling forward at a comfortable pace with light resistance.",
+        "Maintain an upright posture with your core engaged.",
+        "Continue at a moderate pace for 10 minutes, allowing your heart rate to gradually increase.",
+        "Focus on using both your arms and legs to drive the movement."
+      ],
+      "tips": [
+        "Start with lower resistance and gradually increase if desired.",
+        "Maintain proper posture - avoid leaning forward or putting excessive weight on the handlebars.",
+        "Push and pull evenly with your arms to engage your upper body.",
+        "This is an excellent warmup choice for full-body or circuit training days."
+      ],
+      "contraindications": [
+        "Balance issues",
+        "Severe joint pain",
+        "Cardiovascular conditions"
+      ],
+      "muscles": [
+        "Quadriceps",
+        "Hamstrings",
+        "Glutes",
+        "Calves",
+        "Shoulders",
+        "Arms",
+        "Core"
+      ],
+      "forceType": "Push/Pull",
+      "mechanics": "Compound",
+      "category": "gym"
+    },
+    {
+      "id": "warmup-11",
+      "name": "Jump Rope",
+      "description": "A high-efficiency cardiovascular warmup that rapidly increases heart rate while improving coordination and footwork. Jump rope activates the entire body, especially the calves, shoulders, and core, making it an excellent preparation for a variety of workouts.",
+      "targetBodyParts": ["Warmup"],
+      "exerciseType": ["warmup", "cardio"],
+      "difficulty": "beginner",
+      "equipment": ["Jump Rope"],
+      "duration": 180,
+      "steps": [
+        "Hold the handles of the jump rope with each hand, positioning the rope behind you.",
+        "Swing the rope over your head and jump over it as it approaches your feet.",
+        "Keep jumps small and controlled, landing softly on the balls of your feet.",
+        "Start with 30-second intervals, resting as needed between sets.",
+        "Build up to 3-5 minutes of continuous jumping at a moderate pace.",
+        "Maintain proper posture with shoulders relaxed and core engaged."
+      ],
+      "tips": [
+        "Keep your elbows close to your body and rotate from the wrists, not the shoulders.",
+        "Jump just high enough to clear the rope - about 1-2 inches off the ground.",
+        "If you're a beginner, start with simulated jumping without a rope to master the rhythm.",
+        "For less impact, try 'boxer skipping' - alternating feet instead of jumping with both feet together."
+      ],
+      "contraindications": [
+        "Ankle or knee injury",
+        "Severe back problems",
+        "Balance issues",
+        "Cardiovascular conditions"
+      ],
+      "muscles": ["Calves", "Shoulders", "Forearms", "Core", "Quadriceps"],
+      "forceType": "Dynamic",
+      "mechanics": "Compound",
+      "category": "both"
+    }
+  ]
+}

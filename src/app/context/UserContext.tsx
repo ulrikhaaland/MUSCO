@@ -179,7 +179,10 @@ export function UserProvider({ children }: { children: ReactNode }) {
         // Now set all state at once to prevent flickering
         setUserPrograms(programs);
 
-        if (mostRecentProgram && mostRecentStatus !== ProgramStatus.Generating) {
+        if (
+          mostRecentProgram &&
+          mostRecentStatus !== ProgramStatus.Generating
+        ) {
           // Set the most recent program as the active one
           setActiveProgram(mostRecentProgram);
 
@@ -225,7 +228,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
       setActiveProgram(null);
       setProgramStatus(null);
       // Maybe set loading to true or false depending on desired behavior?
-      // setIsLoading(true); 
+      // setIsLoading(true);
     }
 
     // Cleanup function
@@ -353,10 +356,12 @@ export function UserProvider({ children }: { children: ReactNode }) {
             setProgramStatus(null);
             setProgram(null);
           }
-          if(typeof window !== 'undefined' && !window.location.pathname.includes('/exercises')) {
+          if (
+            typeof window !== 'undefined' &&
+            window.location.pathname == '/'
+          ) {
             router.push('/program');
             // setIsLoading(false);
-
           }
 
           // Only set isLoading to false after we've completed all program fetching
@@ -566,9 +571,8 @@ export function UserProvider({ children }: { children: ReactNode }) {
               'Checking for pending questionnaire for email:',
               pendingEmail
             );
-            const storedQuestionnaire = await getPendingQuestionnaire(
-              pendingEmail
-            );
+            const storedQuestionnaire =
+              await getPendingQuestionnaire(pendingEmail);
 
             if (storedQuestionnaire) {
               console.log('Found pending questionnaire in Firebase');

@@ -9,7 +9,9 @@ import {
   PAIN_BODY_PARTS,
   ExerciseEnvironment,
   EXERCISE_ENVIRONMENTS,
-  BODY_REGIONS
+  BODY_REGIONS,
+  CARDIO_TYPES,
+  CARDIO_ENVIRONMENTS
 } from '../types/program';
 
 /**
@@ -175,7 +177,7 @@ export function translatePainBodyPart(bodyPart: string, t: (key: string, options
  * @returns Translated body region
  */
 export function translateBodyRegion(region: string, t: (key: string, options?: any) => string): string {
-  const translationKey = `profile.bodyRegions.${region.toLowerCase().replace(/\s+/g, '')}`;
+  const translationKey = `profile.bodyRegions.${region.toLowerCase().replace(/\s+/g, '_')}`;
   const translation = t(translationKey);
   
   if (translation !== translationKey) { 
@@ -278,4 +280,56 @@ export function getTranslatedPainBodyParts(t: (key: string, options?: any) => st
  */
 export function getTranslatedBodyRegions(t: (key: string, options?: any) => string): string[] {
   return BODY_REGIONS.map(region => translateBodyRegion(region, t));
+}
+
+/**
+ * Translates a cardio type
+ * @param cardioType The cardio type to translate
+ * @param t Translation function
+ * @returns Translated cardio type
+ */
+export function translateCardioType(cardioType: string, t: (key: string, options?: any) => string): string {
+  const translationKey = `program.cardioType.${cardioType.toLowerCase().replace(/\s+/g, '_')}`;
+  const translation = t(translationKey);
+  
+  if (translation !== translationKey) {
+    return translation;
+  }
+  
+  return cardioType;
+}
+
+/**
+ * Translates a cardio environment
+ * @param environment The cardio environment to translate
+ * @param t Translation function
+ * @returns Translated cardio environment
+ */
+export function translateCardioEnvironment(environment: string, t: (key: string, options?: any) => string): string {
+  const translationKey = `program.cardioEnvironment.${environment.toLowerCase().replace(/\s+/g, '_')}`;
+  const translation = t(translationKey);
+  
+  if (translation !== translationKey) {
+    return translation;
+  }
+  
+  return environment;
+}
+
+/**
+ * Get translated array of cardio types
+ * @param t Translation function
+ * @returns Array of translated cardio types
+ */
+export function getTranslatedCardioTypes(t: (key: string, options?: any) => string): string[] {
+  return CARDIO_TYPES.map(type => translateCardioType(type, t));
+}
+
+/**
+ * Get translated array of cardio environments
+ * @param t Translation function
+ * @returns Array of translated cardio environments
+ */
+export function getTranslatedCardioEnvironments(t: (key: string, options?: any) => string): string[] {
+  return CARDIO_ENVIRONMENTS.map(env => translateCardioEnvironment(env, t));
 }

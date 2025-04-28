@@ -41,20 +41,34 @@ export const LOWER_BODY_PARTS = ['Glutes', 'Upper Legs', 'Lower Legs'] as const;
 // Equipment access options
 export const EQUIPMENT_ACCESS = [
   'Large Gym',
-  'Small Gym',
-  'Garage Gym',
-  'At Home',
-  'Bodyweight Only',
+  'Custom',
 ] as const;
 
 export const EQUIPMENT_DESCRIPTIONS = {
   'Large Gym':
     'Full-service fitness facility with extensive equipment including cardio machines, weight machines, free weights, and specialized training areas',
-  'Small Gym': 'Compact public gym with limited equipment',
-  'Garage Gym': 'Barbells, squat rack, dumbells and more',
-  'At Home': 'Limited equipment such as dumbells, bands, pull-up bars etc.',
-  'Bodyweight Only': 'Work out anywhere without gym equipment',
+    'Custom': 'Customize your own environment by selecting specific equipment you have access to',
 } as const;
+
+// Equipment options by category
+export const STRENGTH_EQUIPMENT = [
+  'Dumbbell',
+  'Barbell',
+  'Cable',
+  'Bands',
+  'Bench',
+  'TRX',
+  'Kettle Bell',
+  'Medicine Ball',
+] as const;
+
+export const CARDIO_EQUIPMENT = [
+  'Treadmill',
+  'Exercise Bike',
+  'Rowing Machine',
+  'Elliptical',
+  'Jump Rope',
+] as const;
 
 // Exercise environment type and data
 export interface ExerciseEnvironment {
@@ -69,20 +83,9 @@ export const EXERCISE_ENVIRONMENTS: ExerciseEnvironment[] = [
       'Full-service fitness facility with extensive equipment including cardio machines, weight machines, free weights, and specialized training areas',
   },
   {
-    name: 'Small Gym',
-    description: 'Compact public gym with limited equipment',
-  },
-  {
-    name: 'Garage Gym',
-    description: 'Barbells, squat rack, dumbells and more',
-  },
-  {
-    name: 'At Home',
-    description: 'Limited equipment such as dumbells, bands, pull-up bars etc.',
-  },
-  {
-    name: 'Bodyweight Only',
-    description: 'Work out anywhere without gym equipment',
+    name: 'Custom',
+    description:
+      'Customize your own environment by selecting specific equipment you have access to',
   },
 ] as const;
 
@@ -309,3 +312,8 @@ export type ExerciseType =
   | 'endurance'
   | 'coordination'
   | 'relaxation';
+
+// Add the cardio types and environments constants
+export const CARDIO_TYPES = ['Running', 'Cycling', 'Rowing'] as const;
+
+export const CARDIO_ENVIRONMENTS = ['Outside', 'Inside', 'Both'] as const;

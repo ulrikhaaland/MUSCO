@@ -353,29 +353,3 @@ export function ProgramDayComponent({
     </div>
   );
 }
-
-// Add this to your global CSS
-/*
-.hide-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-.hide-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-.line-clamp-2 {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-.tracking-tighter {
-  letter-spacing: -0.025em;
-}
-.shadow-inner-sm {
-  box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.2);
-}
-.box-shadow-card {
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06), inset 0 0 0 1px rgba(255, 255, 255, 0.04);
-}
-*/

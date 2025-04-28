@@ -4,6 +4,9 @@ import { useEffect, useRef, useState } from 'react';
 import { TourStep } from '@/app/hooks/useControlsTour';
 import { useTranslation } from '@/app/i18n';
 
+// LocalStorage key for tracking tour viewed status
+const TOUR_VIEWED_KEY = 'controls_tour_viewed';
+
 interface ControlsTourProps {
   currentStep: TourStep;
   onNext: () => void;
@@ -114,6 +117,22 @@ export default function ControlsTour({ currentStep, onNext, onSkip, controlsBott
   const observerRef = useRef<MutationObserver | null>(null);
   const resizeObserverRef = useRef<ResizeObserver | null>(null);
   
+  // Check localStorage on mount to see if tour has been viewed
+  useEffect(() => {
+    const hasViewedTour = localStorage.getItem(TOUR_VIEWED_KEY) === 'true';
+    if (hasViewedTour) {
+      // If tour has been viewed before, skip it
+      onSkip();
+    }
+  }, [onSkip]);
+
+  // Mark tour as viewed when completed
+  useEffect(() => {
+    if (currentStep === 'complete') {
+      localStorage.setItem(TOUR_VIEWED_KEY, 'true');
+    }
+  }, [currentStep]);
+  
   // Handle accessibility - move focus to tooltip when step changes
   useEffect(() => {
     if (tooltipRef.current) {
@@ -217,6 +236,7 @@ export default function ControlsTour({ currentStep, onNext, onSkip, controlsBott
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         onSkip();
+        localStorage.setItem(TOUR_VIEWED_KEY, 'true');
       }
     };
 
@@ -233,6 +253,7 @@ export default function ControlsTour({ currentStep, onNext, onSkip, controlsBott
         !(e.target as Element).closest('.rotate-button, .reset-button, .gender-button')
       ) {
         onSkip();
+        localStorage.setItem(TOUR_VIEWED_KEY, 'true');
       }
     };
 
@@ -303,6 +324,9 @@ export default function ControlsTour({ currentStep, onNext, onSkip, controlsBott
             onClick={(e) => {
               e.stopPropagation();
               onNext();
+              if (getStepNumber() === 3) {
+                localStorage.setItem(TOUR_VIEWED_KEY, 'true');
+              }
             }}
             className="text-[14px] leading-5 font-semibold bg-[#374151] hover:bg-[#4b5563] h-8 px-4 rounded-md transition-colors duration-200"
           >

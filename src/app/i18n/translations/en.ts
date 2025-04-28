@@ -31,6 +31,7 @@ const translations = {
   
   // Program - Equipment Access
   'program.equipment.large_gym': 'Large Gym',
+  'program.equipment.custom_(pick_and_choose)': 'Custom',
   'program.equipment.small_gym': 'Small Gym',
   'program.equipment.garage_gym': 'Garage Gym',
   'program.equipment.at_home': 'At Home',
@@ -38,6 +39,7 @@ const translations = {
   
   // Program - Equipment Descriptions
   'program.equipmentDesc.large_gym': 'Full-service fitness facility with extensive equipment including cardio machines, weight machines, free weights, and specialized training areas',
+  'program.equipmentDesc.custom_(pick_and_choose)': 'Customize your own environment by selecting specific equipment you have access to',
   'program.equipmentDesc.small_gym': 'Compact public gym with limited equipment',
   'program.equipmentDesc.garage_gym': 'Barbells, squat rack, dumbells and more',
   'program.equipmentDesc.at_home': 'Limited equipment such as dumbells, bands, pull-up bars etc.',
@@ -258,9 +260,9 @@ const translations = {
   'profile.sleep.selectPattern': 'Select Sleep Pattern',
   
   // Profile - Body Regions
-  'profile.bodyRegions.fullBody': 'Full Body',
-  'profile.bodyRegions.upperBody': 'Upper Body',
-  'profile.bodyRegions.lowerBody': 'Lower Body',
+  'profile.bodyRegions.full_body': 'Full Body',
+  'profile.bodyRegions.upper_body': 'Upper Body',
+  'profile.bodyRegions.lower_body': 'Lower Body',
   
   // Profile - Fitness Levels
   'profile.beginner.name': 'Beginner',
@@ -383,17 +385,28 @@ const translations = {
   'program.yourExerciseProgramTitle': 'Your Exercise Program',
   
   // Questionnaire
-  'questionnaire.exerciseTitle': 'Exercise Program Questionnaire',
-  'questionnaire.recoveryTitle': 'Recovery Program Questionnaire',
-  'questionnaire.exerciseDescription': 'Help us personalize your exercise program by answering a few questions',
-  'questionnaire.recoveryDescription': 'Help us create a recovery program tailored to your needs by answering a few questions',
-  'questionnaire.age': 'How old are you?',
+  'questionnaire.exerciseTitle': 'Exercise Program',
+  'questionnaire.recoveryTitle': 'Recovery Program',
+  'questionnaire.exerciseDescription': 'Please answer the following questions to help us create a personalized exercise program for you.',
+  'questionnaire.recoveryDescription': 'Please answer the following questions to help us create a personalized recovery program for you.',
+  'questionnaire.age': 'What is your age range?',
   'questionnaire.pastExercise': 'How often have you exercised in the past year?',
   'questionnaire.exerciseDays': 'How many days per week would you like to exercise?',
   'questionnaire.recoveryDays': 'How many days per week would you like to focus on recovery?',
   'questionnaire.painAreas': 'Do you have pain anywhere?',
-  'questionnaire.trainingType': 'What type of training do you want to do?',
+  'questionnaire.trainingType': 'What equipment do you have access to?',
+  'questionnaire.exerciseModalities': 'What type of exercise would you like to do?',
+  'questionnaire.modalitySplit': 'How would you like to distribute your training days?',
+  'questionnaire.modalitySplit.description': 'Choose how many days per week you want to dedicate to each type of training (total: {{total}} days)',
+  'questionnaire.modalitySplit.cardioDays': 'Cardio days per week',
+  'questionnaire.modalitySplit.strengthDays': 'Strength days per week',
+  'questionnaire.modalitySplit.totalDaysError': 'The total number of days exceeds your selected frequency of {{total}} days per week',
+  'questionnaire.cardio': 'cardio days',
+  'questionnaire.strength': 'strength days',
   'questionnaire.targetAreas': 'Which areas would you like to target in your workouts?',
+  'questionnaire.strengthTargetAreas': 'Which areas would you like to target in your strength training?',
+  'questionnaire.cardioType': 'What type of cardio exercise do you prefer?',
+  'questionnaire.cardioEnvironment': 'Where do you prefer to do your cardio?',
   'questionnaire.exerciseLocation': 'Where do you prefer to exercise?',
   'questionnaire.recoveryLocation': 'Where do you prefer to do your recovery sessions?',
   'questionnaire.workoutDuration': 'How much time would you like to spend on each workout?',
@@ -401,8 +414,16 @@ const translations = {
   'questionnaire.noPain': 'No, I don\'t have any pain',
   'questionnaire.selectAll': 'Select all that apply',
   'questionnaire.selectSpecific': 'Or select specific areas:',
+  'questionnaire.selectEquipmentCategory': 'Select equipment category',
+  'questionnaire.strengthEquipment': 'Strength',
+  'questionnaire.cardioEquipment': 'Cardio',
+  'questionnaire.selectSpecificEquipment': 'Select your primary equipment',
+  'questionnaire.selectEquipment': 'Select all equipment you have access to',
+  'questionnaire.continue': 'Continue',
+  'questionnaire.skipEquipment': 'Skip Equipment',
   'questionnaire.cancel': 'Cancel',
   'questionnaire.createProgram': 'Create Program',
+  'questionnaire.selectedCardioType': 'Selected cardio type',
   
   // Program page translations
   'program.loading': 'Loading program',
@@ -427,6 +448,16 @@ const translations = {
   'pwa.addToHomescreenMessage': 'Install this app on your device for quick and easy access.',
   'pwa.install': 'Install',
   'pwa.notNow': 'Not Now',
+  
+  // Program - Cardio Types
+  'program.cardioType.running': 'Running',
+  'program.cardioType.cycling': 'Cycling',
+  'program.cardioType.rowing': 'Rowing',
+  
+  // Program - Cardio Environments
+  'program.cardioEnvironment.outside': 'Outside',
+  'program.cardioEnvironment.inside': 'Inside',
+  'program.cardioEnvironment.both': 'Both',
 };
 
 export default translations; 
