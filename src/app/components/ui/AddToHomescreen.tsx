@@ -25,6 +25,7 @@ export default function AddToHomescreen({
   const [isStandalone, setIsStandalone] = useState(false);
   const [debugInfo, setDebugInfo] = useState<string>('');
   const [showShareHint, setShowShareHint] = useState(false);
+  const [showCopiedMessage, setShowCopiedMessage] = useState(false);
 
   useEffect(() => {
     // Don't run on server side
@@ -156,31 +157,41 @@ export default function AddToHomescreen({
 
   if (!showPrompt || isStandalone) return null;
 
-  const openInSafari = () => {
-    // Get the current URL
-    const currentUrl = window.location.href;
+  const copyToClipboard = async () => {
+    // Create url based on current location
+    const url = window.location.origin;
     
     try {
-      // This approach works better on iOS Chrome to ensure it actually opens Safari
-      // We use a small trick: redirect to a special URL schema that iOS will always open in Safari
-      window.location.href = `googlechrome://navigate?url=${encodeURIComponent(currentUrl)}`;
+      await navigator.clipboard.writeText(url);
+      setShowCopiedMessage(true);
+      setTimeout(() => setShowCopiedMessage(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy: ', err);
+      // Fallback for older browsers
+      const textArea = document.createElement('textarea');
+      textArea.value = url;
+      textArea.style.position = 'fixed';
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
       
-      // After a short delay, redirect to the URL directly which will open in Safari
-      // if the custom schema didn't work
-      setTimeout(() => {
-        window.location.href = currentUrl;
-      }, 500);
-    } catch (e) {
-      // Fallback if that doesn't work
-      console.error('Failed to open in Safari', e);
+      try {
+        document.execCommand('copy');
+        setShowCopiedMessage(true);
+        setTimeout(() => setShowCopiedMessage(false), 2000);
+      } catch (err) {
+        console.error('Fallback: Could not copy text: ', err);
+        alert(`Please copy this URL manually: ${url}`);
+      }
       
-      // Direct user to copy the URL
-      alert('Please open this website in Safari to add it to your home screen:\n\n' +
-            `1. Copy this URL: ${window.location.hostname}\n` +
-            '2. Open Safari\n' +
-            '3. Paste the URL and visit the site\n' +
-            '4. Use the Share button and select "Add to Home Screen"');
+      document.body.removeChild(textArea);
     }
+  };
+
+  const openInSafari = () => {
+    // iOS doesn't allow direct navigation between browsers
+    // Instead, we'll copy the URL and show instructions
+    copyToClipboard();
   };
 
   return (
@@ -196,6 +207,17 @@ export default function AddToHomescreen({
                 <div className="mt-2 text-sm text-gray-300">
                   <p>Chrome on iOS doesn&apos;t support adding to homescreen directly.</p>
                   <p className="mt-1">Please open this site in Safari instead to install:</p>
+                  {showCopiedMessage && (
+                    <div className="mt-2 p-2 bg-indigo-500/20 text-indigo-200 text-sm rounded-md">
+                      URL copied! Open Safari and paste in the address bar.
+                    </div>
+                  )}
+                  <ol className="list-decimal pl-5 mt-2 space-y-1">
+                    <li>Click the &quot;Copy URL&quot; button below</li>
+                    <li>Open Safari browser on your device</li>
+                    <li>Paste the URL and visit the site</li>
+                    <li>Then use the Share button to add to Home Screen</li>
+                  </ol>
                 </div>
               ) : isIOSDevice && (
                 <div className="mt-2 text-sm text-gray-300">
@@ -261,7 +283,7 @@ export default function AddToHomescreen({
                 onClick={openInSafari}
                 className="px-3 py-2 text-sm font-medium bg-indigo-500 hover:bg-indigo-600 text-white rounded"
               >
-                Open in Safari
+                Copy URL
               </button>
             ) : (
               <button
