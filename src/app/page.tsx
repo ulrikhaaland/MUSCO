@@ -13,10 +13,7 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { IntentionQuestion } from './components/ui/IntentionQuestion';
 import { ErrorDisplay } from './components/ui/ErrorDisplay';
-import { AuthForm } from './components/auth/AuthForm';
 import { useTranslation } from './i18n';
-import LanguageSwitcher from './components/ui/LanguageSwitcher';
-import AddToHomescreen from './components/ui/AddToHomescreen';
 
 // Create a separate component for search params functionality
 function HomeContent() {

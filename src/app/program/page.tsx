@@ -46,7 +46,7 @@ export default function ProgramPage() {
       setSelectedProgram(program);
     }
   }, [program]);
-  
+
   // Control the loader visibility based on loading states
   useEffect(() => {
     if (isLoading) {
@@ -59,14 +59,7 @@ export default function ProgramPage() {
       // Content is ready, hide the loader
       hideLoader();
     }
-  }, [
-    isLoading,
-    selectedProgram,
-    programStatus,
-    showLoader,
-    hideLoader,
-    t
-  ]);
+  }, [isLoading, selectedProgram, programStatus, showLoader, hideLoader, t]);
 
   // Force hide the loader when the component is about to be unmounted
   useEffect(() => {
@@ -211,7 +204,11 @@ export default function ProgramPage() {
 
   // We don't need these loader returns anymore as loader visibility is managed by effect
   // Instead, let's render nothing if we're loading
-  if (isLoading || !selectedProgram || programStatus === ProgramStatus.Generating) {
+  if (
+    isLoading ||
+    !selectedProgram ||
+    programStatus === ProgramStatus.Generating
+  ) {
     return null;
   }
 
@@ -227,22 +224,16 @@ export default function ProgramPage() {
         onDaySelect={handleDaySelect}
         isActive={
           selectedProgram &&
-          userPrograms.some(up => 
-            up.active && up.programs.some(p => p.createdAt === selectedProgram.createdAt)
+          userPrograms.some(
+            (up) =>
+              up.active &&
+              up.programs.some((p) => p.createdAt === selectedProgram.createdAt)
           )
         }
         onOverviewVisibilityChange={(visible) => setIsOverviewVisible(visible)}
       />
       {renderVideoModal()}
-      {!isOverviewVisible && (
-        <AddToHomescreen 
-          title="Add to Home Screen"
-          message="Install this app on your device for quick access to your exercise program."
-          installButtonText="Install"
-          cancelButtonText="Not Now"
-          neverShowText="Never Show Again"
-        />
-      )}
+      {!isOverviewVisible && <AddToHomescreen />}
     </>
   );
 }

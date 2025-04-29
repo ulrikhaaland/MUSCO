@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from '../../../app/i18n';
 import BrowserUpdatedIcon from '@mui/icons-material/BrowserUpdated';
+import IosShareIcon from '@mui/icons-material/IosShare';
 
 interface AddToHomescreenProps {
   title?: string;
@@ -145,6 +146,7 @@ export default function AddToHomescreen({
       `Previously dismissed: ${hasPromptBeenShown === 'true'}`,
       `Permanently dismissed: ${permanentlyDismissed === 'true'}`,
       `User Agent: ${navigator.userAgent.slice(0, 50)}...`,
+      `beforeinstallprompt event: not received yet`
     ].join(' | ');
 
     setDebugInfo(debug);
@@ -156,6 +158,10 @@ export default function AddToHomescreen({
       e.preventDefault();
       // Stash the event so it can be triggered later
       setDeferredPrompt(e);
+
+      // Update debug info to indicate the event was received
+      const updatedDebug = debug.replace('not received yet', 'RECEIVED ✓');
+      setDebugInfo(updatedDebug);
 
       // Show the prompt if it hasn't been dismissed before
       if (hasPromptBeenShown !== 'true') {
@@ -236,13 +242,17 @@ export default function AddToHomescreen({
       return;
     }
 
+    // For debugging - show a message in console if the event wasn't captured
+    console.log('Install button clicked but no deferredPrompt available', {
+      browser: browserType,
+      isDesktop,
+      isIOSDevice
+    });
+
     // For iOS Safari, show the visual hint for the share button
     if (isIOSDevice && isSafari) {
       setShowShareHint(true);
-      // Hide after 5 seconds
-      setTimeout(() => {
-        setShowShareHint(false);
-      }, 5000);
+      // Don't auto-hide the hint
       return;
     }
 
@@ -349,7 +359,10 @@ export default function AddToHomescreen({
         <div className="mt-2 text-sm text-gray-300">
           <p>{t('pwa.ios.title')}</p>
           <ol className="list-decimal pl-5 mt-1 space-y-1">
-            <li>{t('pwa.ios.steps.0')}</li>
+            <li className="flex items-center">
+              {t('pwa.ios.steps.0')} 
+              <IosShareIcon className="h-5 w-5 text-blue-400 ml-1" fontSize="small" />
+            </li>
             <li>{t('pwa.ios.steps.1')}</li>
             <li>{t('pwa.ios.steps.2')}</li>
           </ol>
@@ -485,14 +498,7 @@ export default function AddToHomescreen({
                 {showShareHint && isSafari && (
                   <div className="mt-3 p-3 border border-yellow-500 bg-yellow-900/30 rounded-md text-sm text-yellow-200 flex items-center">
                     <span className="mr-2">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-5 w-5"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                      >
-                        <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" />
-                      </svg>
+                      <IosShareIcon className="h-5 w-5" />
                     </span>
                     {t('pwa.ios.hint')}
                   </div>
@@ -501,6 +507,9 @@ export default function AddToHomescreen({
                 {process.env.NODE_ENV !== 'production' && (
                   <div className="mt-2 border-t border-gray-700 pt-2 text-xs text-gray-400">
                     <p className="font-mono break-words">Debug: {debugInfo}</p>
+                    <p className="mt-1 text-amber-400">
+                      {deferredPrompt ? 'Install API available ✓' : 'Install API not available ✗ (manual installation required)'}
+                    </p>
                     <button
                       onClick={handleReset}
                       className="mt-1 text-indigo-400 hover:text-indigo-300 underline"
