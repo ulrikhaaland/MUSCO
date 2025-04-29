@@ -200,14 +200,6 @@ function HomeContent() {
           }}
         />
       )}
-      
-      {/* Add to Homescreen prompt */}
-      <AddToHomescreen 
-        title={t('pwa.addToHomescreen')} 
-        message={t('pwa.addToHomescreenMessage')}
-        installButtonText={t('pwa.install')}
-        cancelButtonText={t('pwa.notNow')}
-      />
     </div>
   );
 }

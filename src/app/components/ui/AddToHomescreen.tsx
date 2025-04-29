@@ -7,6 +7,7 @@ interface AddToHomescreenProps {
   message?: string;
   installButtonText?: string;
   cancelButtonText?: string;
+  neverShowText?: string;
 }
 
 export default function AddToHomescreen({
@@ -14,6 +15,7 @@ export default function AddToHomescreen({
   message = 'Install this app on your device for quick and easy access.',
   installButtonText = 'Install',
   cancelButtonText = 'Not Now',
+  neverShowText = 'Never Show Again',
 }: AddToHomescreenProps) {
   const [showPrompt, setShowPrompt] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
@@ -22,6 +24,7 @@ export default function AddToHomescreen({
   const [isSafari, setIsSafari] = useState(false);
   const [isStandalone, setIsStandalone] = useState(false);
   const [debugInfo, setDebugInfo] = useState<string>('');
+  const [showShareHint, setShowShareHint] = useState(false);
 
   useEffect(() => {
     // Don't run on server side
@@ -29,6 +32,12 @@ export default function AddToHomescreen({
     
     // Track whether the user has already dismissed the prompt or installed the app
     const hasPromptBeenShown = localStorage.getItem('pwaPromptDismissed');
+    const permanentlyDismissed = localStorage.getItem('pwaPromptPermanentlyDismissed');
+    
+    // If the user has permanently dismissed, don't show the prompt
+    if (permanentlyDismissed === 'true') {
+      return;
+    }
     
     // Detect browsers and platforms
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
@@ -54,6 +63,7 @@ export default function AddToHomescreen({
       `Standalone: ${isInStandaloneMode}`,
       `Navigator standalone: ${(window.navigator as any).standalone}`,
       `Previously dismissed: ${hasPromptBeenShown === 'true'}`,
+      `Permanently dismissed: ${permanentlyDismissed === 'true'}`,
       `User Agent: ${navigator.userAgent.slice(0, 50)}...`
     ].join(' | ');
     
@@ -111,44 +121,62 @@ export default function AddToHomescreen({
       }
     }
     
-    // For iOS, just close the prompt when they click install (they'll need to follow instructions)
-    if (isIOSDevice) {
-      // Set flag to remember they've seen the prompt
-      localStorage.setItem('pwaPromptDismissed', 'true');
-      setShowPrompt(false);
+    // For iOS Safari, show the visual hint for the share button
+    if (isIOSDevice && isSafari) {
+      setShowShareHint(true);
+      // Hide after 5 seconds
+      setTimeout(() => {
+        setShowShareHint(false);
+      }, 5000);
     }
+    
+    // For iOS Chrome, we'll handle this differently - button will say "Open in Safari" (see below)
   };
 
   const handleCancelClick = () => {
     // Set flag to not show prompt again for a while
     localStorage.setItem('pwaPromptDismissed', 'true');
     setShowPrompt(false);
+    setShowShareHint(false);
+  };
+
+  const handleNeverShowClick = () => {
+    // Set flag to never show the prompt again
+    localStorage.setItem('pwaPromptPermanentlyDismissed', 'true');
+    setShowPrompt(false);
+    setShowShareHint(false);
   };
 
   // Reset the dismissed prompt status to test again
   const handleReset = () => {
     localStorage.removeItem('pwaPromptDismissed');
+    localStorage.removeItem('pwaPromptPermanentlyDismissed');
     setShowPrompt(true);
   };
 
   if (!showPrompt || isStandalone) return null;
 
   const openInSafari = () => {
-    // Get the current URL and hostname
+    // Get the current URL
     const currentUrl = window.location.href;
-    const hostname = window.location.hostname;
     
     try {
-      // iOS requires a specific format to open Safari
-      // The 'apple-' prefix tells iOS to use Safari
-      window.location.href = `https://${hostname}`;
+      // This approach works better on iOS Chrome to ensure it actually opens Safari
+      // We use a small trick: redirect to a special URL schema that iOS will always open in Safari
+      window.location.href = `googlechrome://navigate?url=${encodeURIComponent(currentUrl)}`;
+      
+      // After a short delay, redirect to the URL directly which will open in Safari
+      // if the custom schema didn't work
+      setTimeout(() => {
+        window.location.href = currentUrl;
+      }, 500);
     } catch (e) {
       // Fallback if that doesn't work
       console.error('Failed to open in Safari', e);
       
-      // Alert the user with manual instructions
+      // Direct user to copy the URL
       alert('Please open this website in Safari to add it to your home screen:\n\n' +
-            `1. Copy this URL: ${hostname}\n` +
+            `1. Copy this URL: ${window.location.hostname}\n` +
             '2. Open Safari\n' +
             '3. Paste the URL and visit the site\n' +
             '4. Use the Share button and select "Add to Home Screen"');
@@ -166,8 +194,8 @@ export default function AddToHomescreen({
               
               {isIOSChrome ? (
                 <div className="mt-2 text-sm text-gray-300">
-                  <p>Chrome on iOS doesn&apos;t support adding to homescreen.</p>
-                  <p className="mt-1">Please open this site in Safari instead:</p>
+                  <p>Chrome on iOS doesn&apos;t support adding to homescreen directly.</p>
+                  <p className="mt-1">Please open this site in Safari instead to install:</p>
                 </div>
               ) : isIOSDevice && (
                 <div className="mt-2 text-sm text-gray-300">
@@ -189,6 +217,17 @@ export default function AddToHomescreen({
                 </div>
               )}
               
+              {showShareHint && isSafari && (
+                <div className="mt-3 p-3 border border-yellow-500 bg-yellow-900/30 rounded-md text-sm text-yellow-200 flex items-center">
+                  <span className="mr-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" />
+                    </svg>
+                  </span>
+                  Look for the Share button in your browser toolbar ↑ and select &quot;Add to Home Screen&quot;
+                </div>
+              )}
+              
               {process.env.NODE_ENV !== 'production' && (
                 <div className="mt-2 border-t border-gray-700 pt-2 text-xs text-gray-400">
                   <p className="font-mono break-words">Debug: {debugInfo}</p>
@@ -203,7 +242,13 @@ export default function AddToHomescreen({
             </div>
           </div>
           
-          <div className="mt-4 flex space-x-3 justify-end">
+          <div className="mt-4 flex flex-wrap gap-2 justify-end">
+            <button
+              onClick={handleNeverShowClick}
+              className="px-3 py-2 text-sm font-medium text-gray-400 hover:text-gray-200"
+            >
+              {neverShowText}
+            </button>
             <button
               onClick={handleCancelClick}
               className="px-3 py-2 text-sm font-medium text-gray-300 hover:text-white"

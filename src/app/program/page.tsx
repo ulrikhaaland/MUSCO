@@ -6,6 +6,7 @@ import { ExerciseProgramPage } from '@/app/components/ui/ExerciseProgramPage';
 import { useUser } from '@/app/context/UserContext';
 import { useAuth } from '@/app/context/AuthContext';
 import { useLoader } from '@/app/context/LoaderContext';
+import AddToHomescreen from '@/app/components/ui/AddToHomescreen';
 import {
   ProgramStatus,
   Exercise,
@@ -231,6 +232,13 @@ export default function ProgramPage() {
         }
       />
       {renderVideoModal()}
+      <AddToHomescreen 
+        title="Add to Home Screen"
+        message="Install this app on your device for quick access to your exercise program."
+        installButtonText="Install"
+        cancelButtonText="Not Now"
+        neverShowText="Never Show Again"
+      />
     </>
   );
 }
