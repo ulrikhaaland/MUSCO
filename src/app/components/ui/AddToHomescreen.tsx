@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useTranslation } from '../../../app/i18n';
+import BrowserUpdatedIcon from '@mui/icons-material/BrowserUpdated';
 
 interface AddToHomescreenProps {
   title?: string;
@@ -44,18 +45,31 @@ export default function AddToHomescreen({
 
     // Track whether the user has already dismissed the prompt or installed the app
     const hasPromptBeenShown = localStorage.getItem('pwaPromptDismissed');
+    const dismissedTimestamp = localStorage.getItem('pwaPromptDismissedTimestamp');
     const permanentlyDismissed = localStorage.getItem(
       'pwaPromptPermanentlyDismissed'
     );
 
+    // Check if temporary dismissal has expired (1 hour = 3600000 ms)
+    const temporaryDismissalExpired = !dismissedTimestamp || 
+      (Date.now() - parseInt(dismissedTimestamp, 10)) > 3600000;
+
     console.log('LocalStorage checks:', {
       hasPromptBeenShown,
+      dismissedTimestamp,
+      temporaryDismissalExpired,
       permanentlyDismissed,
     });
 
     // If the user has permanently dismissed, don't show the prompt
     if (permanentlyDismissed === 'true') {
       console.log('Permanently dismissed, not showing prompt');
+      return;
+    }
+
+    // If temporary dismissal hasn't expired, don't show the prompt
+    if (hasPromptBeenShown === 'true' && !temporaryDismissalExpired) {
+      console.log('Temporarily dismissed, not showing prompt yet');
       return;
     }
 
@@ -241,8 +255,9 @@ export default function AddToHomescreen({
   };
 
   const handleCancelClick = () => {
-    // Set flag to not show prompt again for a while
+    // Set timestamp to allow showing the prompt again after 1 hour
     localStorage.setItem('pwaPromptDismissed', 'true');
+    localStorage.setItem('pwaPromptDismissedTimestamp', Date.now().toString());
     setShowPrompt(false);
     setShowShareHint(false);
   };
@@ -257,6 +272,7 @@ export default function AddToHomescreen({
   // Reset the dismissed prompt status to test again
   const handleReset = () => {
     localStorage.removeItem('pwaPromptDismissed');
+    localStorage.removeItem('pwaPromptDismissedTimestamp');
     localStorage.removeItem('pwaPromptPermanentlyDismissed');
     setShowPrompt(true);
   };
@@ -352,7 +368,13 @@ export default function AddToHomescreen({
           <div className="mt-2 text-sm text-gray-300">
             <p>{t('pwa.desktop.chrome.title')}</p>
             <ol className="list-decimal pl-5 mt-1 space-y-1">
-              <li>{t('pwa.desktop.chrome.steps.0')}</li>
+              <li>
+                {t('pwa.desktop.chrome.steps.0')} 
+                <span className="inline-flex items-center align-middle ml-1">
+                  <BrowserUpdatedIcon className="h-5 w-5 text-blue-400" fontSize="small" />
+                  <span className="ml-1 align-middle">in the address bar at the right side</span>
+                </span>
+              </li>
               <li>{t('pwa.desktop.chrome.steps.1')}</li>
               <li>{t('pwa.desktop.chrome.steps.2')}</li>
             </ol>
@@ -366,7 +388,13 @@ export default function AddToHomescreen({
           <div className="mt-2 text-sm text-gray-300">
             <p>{t('pwa.desktop.edge.title')}</p>
             <ol className="list-decimal pl-5 mt-1 space-y-1">
-              <li>{t('pwa.desktop.edge.steps.0')}</li>
+              <li>
+                {t('pwa.desktop.edge.steps.0')}
+                <span className="inline-flex items-center align-middle ml-1">
+                  <BrowserUpdatedIcon className="h-5 w-5 text-blue-400" fontSize="small" />
+                  <span className="ml-1 align-middle">in the address bar at the right side</span>
+                </span>
+              </li>
               <li>{t('pwa.desktop.edge.steps.1')}</li>
               <li>{t('pwa.desktop.edge.steps.2')}</li>
               <li>{t('pwa.desktop.edge.steps.3')}</li>
@@ -445,7 +473,7 @@ export default function AddToHomescreen({
 
       {/* Dialog content */}
       <div className="fixed inset-x-0 bottom-0 z-50 pb-safe animate-scale-in">
-        <div className="mx-4 mb-4 bg-gray-800 border border-gray-700 rounded-lg shadow-lg overflow-hidden">
+        <div className="mx-auto max-w-md sm:max-w-lg md:max-w-4xl mb-4 bg-gray-800 border border-gray-700 rounded-lg shadow-lg overflow-hidden">
           <div className="p-4">
             <div className="flex items-start">
               <div className="flex-1">
