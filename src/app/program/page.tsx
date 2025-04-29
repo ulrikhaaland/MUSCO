@@ -36,6 +36,7 @@ export default function ProgramPage() {
   >(null);
   const [selectedProgram, setSelectedProgram] =
     useState<ExerciseProgram | null>(null);
+  const [isOverviewVisible, setIsOverviewVisible] = useState(true);
 
   const isLoading = authLoading || userLoading;
 
@@ -230,15 +231,18 @@ export default function ProgramPage() {
             up.active && up.programs.some(p => p.createdAt === selectedProgram.createdAt)
           )
         }
+        onOverviewVisibilityChange={(visible) => setIsOverviewVisible(visible)}
       />
       {renderVideoModal()}
-      <AddToHomescreen 
-        title="Add to Home Screen"
-        message="Install this app on your device for quick access to your exercise program."
-        installButtonText="Install"
-        cancelButtonText="Not Now"
-        neverShowText="Never Show Again"
-      />
+      {!isOverviewVisible && (
+        <AddToHomescreen 
+          title="Add to Home Screen"
+          message="Install this app on your device for quick access to your exercise program."
+          installButtonText="Install"
+          cancelButtonText="Not Now"
+          neverShowText="Never Show Again"
+        />
+      )}
     </>
   );
 }

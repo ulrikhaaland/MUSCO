@@ -21,6 +21,7 @@ interface ExerciseProgramPageProps {
   loadingVideoExercise?: string | null;
   onDaySelect: (day: ProgramDay, dayName: string) => void;
   isActive?: boolean;
+  onOverviewVisibilityChange?: (visible: boolean) => void;
 }
 
 // Add styles to hide scrollbars while maintaining scroll functionality
@@ -79,6 +80,7 @@ export function ExerciseProgramPage({
   dayName,
   onDaySelect,
   isActive = false,
+  onOverviewVisibilityChange,
 }: ExerciseProgramPageProps) {
   // Get current date info
   const currentDate = new Date();
@@ -122,6 +124,13 @@ export function ExerciseProgramPage({
       localStorage.setItem(programId, 'true');
     }
   }, [program]);
+  
+  // Notify parent when overview visibility changes
+  useEffect(() => {
+    if (onOverviewVisibilityChange) {
+      onOverviewVisibilityChange(showOverview);
+    }
+  }, [showOverview, onOverviewVisibilityChange]);
 
   // Check if today is the day for feedback (the same date as nextMonday)
   useEffect(() => {
