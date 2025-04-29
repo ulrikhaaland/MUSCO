@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTranslation } from '../../../app/i18n';
 
 interface AddToHomescreenProps {
   title?: string;
@@ -11,12 +12,14 @@ interface AddToHomescreenProps {
 }
 
 export default function AddToHomescreen({
-  title = 'Add to Home Screen',
-  message = 'Install this app on your device for quick and easy access.',
-  installButtonText = 'Install',
-  cancelButtonText = 'Not Now',
-  neverShowText = 'Never Show Again',
+  title,
+  message,
+  installButtonText,
+  cancelButtonText,
+  neverShowText,
 }: AddToHomescreenProps) {
+  const { t } = useTranslation();
+  
   const [showPrompt, setShowPrompt] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [isIOSDevice, setIsIOSDevice] = useState(false);
@@ -267,21 +270,21 @@ export default function AddToHomescreen({
       return (
         <div className="mt-2 text-sm text-gray-300">
           <p>
-            Chrome on iOS doesn&apos;t support adding to homescreen directly.
+            {t('pwa.iosChrome.title')}
           </p>
           <p className="mt-1">
-            Please open this site in Safari instead to install:
+            {t('pwa.iosChrome.subtitle')}
           </p>
           {showCopiedMessage && (
             <div className="mt-2 p-2 bg-indigo-500/20 text-indigo-200 text-sm rounded-md">
-              URL copied! Open Safari and paste in the address bar.
+              {t('pwa.urlCopied')}
             </div>
           )}
           <ol className="list-decimal pl-5 mt-2 space-y-1">
-            <li>Click the &quot;Copy URL&quot; button below</li>
-            <li>Open Safari browser on your device</li>
-            <li>Paste the URL and visit the site</li>
-            <li>Then use the Share button to add to Home Screen</li>
+            <li>{t('pwa.iosChrome.steps.0')}</li>
+            <li>{t('pwa.iosChrome.steps.1')}</li>
+            <li>{t('pwa.iosChrome.steps.2')}</li>
+            <li>{t('pwa.iosChrome.steps.3')}</li>
           </ol>
         </div>
       );
@@ -291,27 +294,14 @@ export default function AddToHomescreen({
     if (isIOSDevice) {
       return (
         <div className="mt-2 text-sm text-gray-300">
-          <p>To install:</p>
+          <p>{t('pwa.ios.title')}</p>
           <ol className="list-decimal pl-5 mt-1 space-y-1">
-            <li>
-              Tap the share icon{' '}
-              <span className="inline-block w-5">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path d="M13 4.5a2.5 2.5 0 1 1 .621 1.651L8.496 8.962a2.5 2.5 0 0 1 0 2.076l5.125 2.812a2.5 2.5 0 1 1-.75 1.372l-5.125-2.813a2.5 2.5 0 1 1 0-4.82l5.125-2.812A2.499 2.499 0 0 1 13 4.5Z" />
-                </svg>
-              </span>
-            </li>
-            <li>Scroll down and tap &quot;Add to Home Screen&quot;</li>
-            <li>Tap &quot;Add&quot; to confirm</li>
+            <li>{t('pwa.ios.steps.0')}</li>
+            <li>{t('pwa.ios.steps.1')}</li>
+            <li>{t('pwa.ios.steps.2')}</li>
           </ol>
           <p className="mt-2 text-xs text-gray-400">
-            {isSafari
-              ? "You're using Safari, so you can follow these steps to install."
-              : 'Note: This works best in Safari browser.'}
+            {isSafari ? t('pwa.ios.safari') : t('pwa.ios.other')}
           </p>
         </div>
       );
@@ -323,28 +313,11 @@ export default function AddToHomescreen({
       if (browserType === 'chrome') {
         return (
           <div className="mt-2 text-sm text-gray-300">
-            <p>Install this app on your computer:</p>
+            <p>{t('pwa.desktop.chrome.title')}</p>
             <ol className="list-decimal pl-5 mt-1 space-y-1">
-              <li>Click the install button below, or</li>
-              <li>
-                Click the install icon{' '}
-                <span className="inline-block w-5">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                    className="w-5 h-5"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 9a.75.75 0 00-1.5 0v2.25H9a.75.75 0 000 1.5h2.25V15a.75.75 0 001.5 0v-2.25H15a.75.75 0 000-1.5h-2.25V9z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </span>{' '}
-                in the address bar
-              </li>
-              <li>Select &quot;Install&quot; from the prompt that appears</li>
+              <li>{t('pwa.desktop.chrome.steps.0')}</li>
+              <li>{t('pwa.desktop.chrome.steps.1')}</li>
+              <li>{t('pwa.desktop.chrome.steps.2')}</li>
             </ol>
           </div>
         );
@@ -354,15 +327,12 @@ export default function AddToHomescreen({
       if (browserType === 'edge') {
         return (
           <div className="mt-2 text-sm text-gray-300">
-            <p>Install this app on your computer:</p>
+            <p>{t('pwa.desktop.edge.title')}</p>
             <ol className="list-decimal pl-5 mt-1 space-y-1">
-              <li>Click the install button below, or</li>
-              <li>Click the menu (⋯) in the top-right corner</li>
-              <li>
-                Select &quot;Apps&quot; → &quot;Install this site as an
-                app&quot;
-              </li>
-              <li>Follow the on-screen instructions</li>
+              <li>{t('pwa.desktop.edge.steps.0')}</li>
+              <li>{t('pwa.desktop.edge.steps.1')}</li>
+              <li>{t('pwa.desktop.edge.steps.2')}</li>
+              <li>{t('pwa.desktop.edge.steps.3')}</li>
             </ol>
           </div>
         );
@@ -372,15 +342,11 @@ export default function AddToHomescreen({
       if (browserType === 'firefox') {
         return (
           <div className="mt-2 text-sm text-gray-300">
-            <p>Firefox has limited support for web apps. To install:</p>
+            <p>{t('pwa.desktop.firefox.title')}</p>
             <ol className="list-decimal pl-5 mt-1 space-y-1">
-              <li>Click the menu (☰) in the top-right corner</li>
-              <li>
-                Select &quot;Add to Home Screen&quot; or &quot;Install&quot;
-              </li>
-              <li>
-                If that option isn't available, bookmark this page instead
-              </li>
+              <li>{t('pwa.desktop.firefox.steps.0')}</li>
+              <li>{t('pwa.desktop.firefox.steps.1')}</li>
+              <li>{t('pwa.desktop.firefox.steps.2')}</li>
             </ol>
           </div>
         );
@@ -390,13 +356,11 @@ export default function AddToHomescreen({
       if (browserType === 'safari') {
         return (
           <div className="mt-2 text-sm text-gray-300">
-            <p>Safari has limited support for web apps. To install:</p>
+            <p>{t('pwa.desktop.safari.title')}</p>
             <ol className="list-decimal pl-5 mt-1 space-y-1">
-              <li>Click the &quot;Share&quot; button in the toolbar</li>
-              <li>Select &quot;Add to Dock&quot; if available</li>
-              <li>
-                If that option isn't available, bookmark this page instead
-              </li>
+              <li>{t('pwa.desktop.safari.steps.0')}</li>
+              <li>{t('pwa.desktop.safari.steps.1')}</li>
+              <li>{t('pwa.desktop.safari.steps.2')}</li>
             </ol>
           </div>
         );
@@ -405,17 +369,14 @@ export default function AddToHomescreen({
       // Default/other desktop browsers
       return (
         <div className="mt-2 text-sm text-gray-300">
-          <p>Install this app on your computer:</p>
+          <p>{t('pwa.desktop.other.title')}</p>
           <ol className="list-decimal pl-5 mt-1 space-y-1">
-            <li>Click the menu button in your browser</li>
-            <li>
-              Look for &quot;Install&quot; or &quot;Add to Home Screen&quot;
-              option
-            </li>
-            <li>Follow the on-screen instructions</li>
+            <li>{t('pwa.desktop.other.steps.0')}</li>
+            <li>{t('pwa.desktop.other.steps.1')}</li>
+            <li>{t('pwa.desktop.other.steps.2')}</li>
           </ol>
           <p className="mt-2 text-xs text-gray-400">
-            Note: This works best in Chrome or Edge.
+            {t('pwa.desktop.other.note')}
           </p>
         </div>
       );
@@ -424,11 +385,18 @@ export default function AddToHomescreen({
     // Default case (should not reach here normally)
     return (
       <div className="mt-2 text-sm text-gray-300">
-        <p>To install this application:</p>
-        <p>Follow your browser's installation instructions when prompted.</p>
+        <p>{t('pwa.default.title')}</p>
+        <p>{t('pwa.default.message')}</p>
       </div>
     );
   };
+
+  // Use translation or fallback to props
+  const translatedTitle = title || t('pwa.addToHomescreen');
+  const translatedMessage = message || t('pwa.addToHomescreenMessage');
+  const translatedInstallButtonText = installButtonText || t('pwa.install');
+  const translatedCancelButtonText = cancelButtonText || t('pwa.notNow');
+  const translatedNeverShowText = neverShowText || t('pwa.neverShow');
 
   return (
     <>
@@ -444,8 +412,8 @@ export default function AddToHomescreen({
           <div className="p-4">
             <div className="flex items-start">
               <div className="flex-1">
-                <h3 className="text-lg font-medium text-white">{title}</h3>
-                <p className="mt-1 text-sm text-gray-300">{message}</p>
+                <h3 className="text-lg font-medium text-white">{translatedTitle}</h3>
+                <p className="mt-1 text-sm text-gray-300">{translatedMessage}</p>
 
                 {renderInstructions()}
 
@@ -461,8 +429,7 @@ export default function AddToHomescreen({
                         <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" />
                       </svg>
                     </span>
-                    Look for the Share button in your browser toolbar ↑ and
-                    select &quot;Add to Home Screen&quot;
+                    {t('pwa.ios.hint')}
                   </div>
                 )}
 
@@ -485,13 +452,13 @@ export default function AddToHomescreen({
                 onClick={handleNeverShowClick}
                 className="px-3 py-2 text-sm font-medium text-gray-400 hover:text-gray-200"
               >
-                {neverShowText}
+                {translatedNeverShowText}
               </button>
               <button
                 onClick={handleCancelClick}
                 className="px-3 py-2 text-sm font-medium text-gray-300 hover:text-white"
               >
-                {cancelButtonText}
+                {translatedCancelButtonText}
               </button>
 
               {isIOSChrome ? (
@@ -499,14 +466,14 @@ export default function AddToHomescreen({
                   onClick={openInSafari}
                   className="px-3 py-2 text-sm font-medium bg-indigo-500 hover:bg-indigo-600 text-white rounded"
                 >
-                  Copy URL
+                  {t('pwa.copyUrl')}
                 </button>
               ) : (
                 <button
                   onClick={handleInstallClick}
                   className="px-3 py-2 text-sm font-medium bg-indigo-500 hover:bg-indigo-600 text-white rounded"
                 >
-                  {installButtonText}
+                  {translatedInstallButtonText}
                 </button>
               )}
             </div>

@@ -457,6 +457,70 @@ const translations = {
   'pwa.addToHomescreenMessage': 'Installer denne appen på enheten din for rask og enkel tilgang.',
   'pwa.install': 'Installer',
   'pwa.notNow': 'Ikke nå',
+  'pwa.neverShow': 'Vis aldri igjen',
+  'pwa.copyUrl': 'Kopier URL',
+  'pwa.urlCopied': 'URL kopiert! Åpne Safari og lim inn i adressefeltet.',
+  
+  // PWA Installation Instructions
+  'pwa.iosChrome.title': 'Chrome på iOS støtter ikke direkte installasjon på Hjem-skjermen.',
+  'pwa.iosChrome.subtitle': 'Vennligst åpne denne siden i Safari for å installere:',
+  'pwa.iosChrome.steps': [
+    'Klikk på "Kopier URL"-knappen under',
+    'Åpne Safari-nettleseren på enheten din',
+    'Lim inn URL-en og besøk nettstedet',
+    'Bruk deretter Del-knappen for å legge til på Hjem-skjermen'
+  ],
+  
+  'pwa.ios.title': 'Slik installerer du:',
+  'pwa.ios.steps': [
+    'Trykk på Del-ikonet',
+    'Rull ned og trykk på "Legg til på Hjem-skjerm"',
+    'Trykk på "Legg til" for å bekrefte'
+  ],
+  'pwa.ios.safari': 'Du bruker Safari, så du kan følge disse trinnene for å installere.',
+  'pwa.ios.other': 'Merk: Dette fungerer best i Safari-nettleseren.',
+  'pwa.ios.hint': 'Se etter Del-knappen i nettleserens verktøylinje ↑ og velg "Legg til på Hjem-skjerm"',
+  
+  // Desktop Browser Instructions
+  'pwa.desktop.chrome.title': 'Installer denne appen på datamaskinen din:',
+  'pwa.desktop.chrome.steps': [
+    'Klikk på installer-knappen under, eller',
+    'Klikk på installasjons-ikonet i adressefeltet',
+    'Velg "Installer" fra dialogen som vises'
+  ],
+  
+  'pwa.desktop.edge.title': 'Installer denne appen på datamaskinen din:',
+  'pwa.desktop.edge.steps': [
+    'Klikk på installer-knappen under, eller',
+    'Klikk på menyen (⋯) øverst til høyre',
+    'Velg "Apper" → "Installer dette nettstedet som en app"',
+    'Følg instruksjonene på skjermen'
+  ],
+  
+  'pwa.desktop.firefox.title': 'Firefox har begrenset støtte for webapper. For å installere:',
+  'pwa.desktop.firefox.steps': [
+    'Klikk på menyen (☰) øverst til høyre',
+    'Velg "Legg til på Hjem-skjerm" eller "Installer"',
+    'Hvis dette alternativet ikke er tilgjengelig, bokmerke denne siden i stedet'
+  ],
+  
+  'pwa.desktop.safari.title': 'Safari har begrenset støtte for webapper. For å installere:',
+  'pwa.desktop.safari.steps': [
+    'Klikk på "Del"-knappen i verktøylinjen',
+    'Velg "Legg til i Dock" hvis tilgjengelig',
+    'Hvis dette alternativet ikke er tilgjengelig, bokmerke denne siden i stedet'
+  ],
+  
+  'pwa.desktop.other.title': 'Installer denne appen på datamaskinen din:',
+  'pwa.desktop.other.steps': [
+    'Klikk på menyknappen i nettleseren din',
+    'Se etter "Installer" eller "Legg til på Hjem-skjerm"-alternativet',
+    'Følg instruksjonene på skjermen'
+  ],
+  'pwa.desktop.other.note': 'Merk: Dette fungerer best i Chrome eller Edge.',
+  
+  'pwa.default.title': 'For å installere denne applikasjonen:',
+  'pwa.default.message': 'Følg nettleserens installasjonsanvisninger når du blir bedt om det.',
   
   // Program - Cardio Types
   'program.cardioType.running': 'Løping',
