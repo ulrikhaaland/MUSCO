@@ -99,7 +99,7 @@ export const m_obliques: ExerciseGroup = {
       forceType: 'Push-Pull (Unilateral)',
       mechanics: 'Compound',
       videoUrl:
-        'gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3759.MOV',
+        'gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3759.mov',
       imageUrl:
         'https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Core.jpg',
       viewCount: 0,

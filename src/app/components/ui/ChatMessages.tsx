@@ -36,16 +36,22 @@ export function ChatMessages({
 }: ChatMessagesProps) {
   const [showScrollButton, setShowScrollButton] = useState(false);
   const [userTouched, setUserTouched] = useState(false);
+  const [streamingMessageIds, setStreamingMessageIds] = useState<Set<string>>(
+    new Set()
+  );
+  const [loadingMessageVisible, setLoadingMessageVisible] = useState(true);
   const touchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const lastMessageContentRef = useRef<string>('');
+  const lastMessageIdRef = useRef<string>('');
   const hasHadTouchRef = useRef<boolean>(false);
+  const initialLoadingRef = useRef<boolean>(true);
 
   // Reset touch state after a delay
   const resetTouchState = useCallback(() => {
     if (touchTimeoutRef.current) {
       clearTimeout(touchTimeoutRef.current);
     }
-    
+
     // Only set a timeout if we've had a real touch before
     if (hasHadTouchRef.current) {
       touchTimeoutRef.current = setTimeout(() => {
@@ -58,13 +64,13 @@ export function ChatMessages({
   const handleDOMInteraction = (e: Event) => {
     // Skip if the interaction is on a follow-up question button or scroll button
     const target = e.target as HTMLElement;
-    
+
     // Check if the click is on a follow-up question button or its children
     const isFollowUpQuestion = target.closest('.follow-up-question-btn');
-    
+
     // Check if the click is on the scroll-to-bottom button or its children
     const isScrollButton = target.closest('.scroll-to-bottom-btn');
-    
+
     // Only set userTouched if it's not on these special elements
     if (!isFollowUpQuestion && !isScrollButton) {
       setUserTouched(true);
@@ -72,20 +78,25 @@ export function ChatMessages({
       resetTouchState();
     }
   };
-  
+
   // Handle React touch events
-  const handleReactTouchStart = useCallback<React.TouchEventHandler<HTMLDivElement>>((e) => {
-    // Same logic as DOM event handler
-    const target = e.target as HTMLElement;
-    const isFollowUpQuestion = target.closest('.follow-up-question-btn');
-    const isScrollButton = target.closest('.scroll-to-bottom-btn');
-    
-    if (!isFollowUpQuestion && !isScrollButton) {
-      setUserTouched(true);
-      hasHadTouchRef.current = true;
-      resetTouchState();
-    }
-  }, [resetTouchState, userTouched]);
+  const handleReactTouchStart = useCallback<
+    React.TouchEventHandler<HTMLDivElement>
+  >(
+    (e) => {
+      // Same logic as DOM event handler
+      const target = e.target as HTMLElement;
+      const isFollowUpQuestion = target.closest('.follow-up-question-btn');
+      const isScrollButton = target.closest('.scroll-to-bottom-btn');
+
+      if (!isFollowUpQuestion && !isScrollButton) {
+        setUserTouched(true);
+        hasHadTouchRef.current = true;
+        resetTouchState();
+      }
+    },
+    [resetTouchState, userTouched]
+  );
 
   // Clean up timeout on unmount
   useEffect(() => {
@@ -95,6 +106,40 @@ export function ChatMessages({
       }
     };
   }, [userTouched]);
+
+  // Replace the loadingMessage visibility logic
+  useEffect(() => {
+    // Show loading message when:
+    // 1. It's the start of conversation (messages.length === 1 and isLoading)
+    // 2. User sent a message and we're waiting for a response
+    const shouldShowLoadingMessage =
+      isLoading &&
+      (messages.length === 1 ||
+        (messages.length > 1 && messages[messages.length - 1].role === 'user'));
+
+    // If we should show the loading indicator
+    if (shouldShowLoadingMessage) {
+      // When loading starts, immediately show at full visibility
+      setLoadingMessageVisible(true);
+      initialLoadingRef.current = true;
+    }
+    // When streaming begins (first assistant message starts coming in)
+    else if (streamingMessageIds.size > 0 && initialLoadingRef.current) {
+      // Change loading visibility to false so container stays but content fades
+      setLoadingMessageVisible(false);
+      initialLoadingRef.current = false;
+    }
+    // When loading completely stops
+    else if (!isLoading && streamingMessageIds.size === 0) {
+      // Clean up effects after a delay to ensure smooth transition
+      const timer = setTimeout(() => {
+        setStreamingMessageIds(new Set());
+        initialLoadingRef.current = true;
+      }, 200);
+
+      return () => clearTimeout(timer);
+    }
+  }, [isLoading, messages, streamingMessageIds]);
 
   // Check if we need to show the standard loading message (beginning of conversation)
   const showLoading = isLoading && messages.length === 1;
@@ -108,21 +153,24 @@ export function ChatMessages({
   const showFollowUps = followUpQuestions.length > 0;
 
   // Unified function to check scroll position and update button visibility
-  const updateScrollButtonVisibility = useCallback((container: Element | null) => {
-    // Don't show button if we have fewer than 2 messages
-    if (!container || messages.length < 2) {
-      setShowScrollButton(false);
-      return;
-    }
+  const updateScrollButtonVisibility = useCallback(
+    (container: Element | null) => {
+      // Don't show button if we have fewer than 2 messages
+      if (!container || messages.length < 2) {
+        setShowScrollButton(false);
+        return;
+      }
 
-    const { scrollTop, scrollHeight, clientHeight } = container;
-    const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
+      const { scrollTop, scrollHeight, clientHeight } = container;
+      const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
 
-    // Show button when scrolled more than 150px from bottom
-    const scrollThreshold = 150;
-    const isScrolledUpEnough = distanceFromBottom > scrollThreshold;
-    setShowScrollButton(isScrolledUpEnough);
-  }, [messages.length]);
+      // Show button when scrolled more than 150px from bottom
+      const scrollThreshold = 150;
+      const isScrolledUpEnough = distanceFromBottom > scrollThreshold;
+      setShowScrollButton(isScrolledUpEnough);
+    },
+    [messages.length]
+  );
 
   // Set up scroll event listeners and handle initial scroll position
   useEffect(() => {
@@ -135,20 +183,20 @@ export function ChatMessages({
 
     // Add a flag to track if we initiated the scroll programmatically
     let isProgrammaticScroll = false;
-    
+
     const handleScroll = () => {
       updateScrollButtonVisibility(container);
-      
+
       // Skip handling user interaction if this is a programmatic scroll
       if (isProgrammaticScroll) {
         return;
       }
-      
+
       // Only treat as user interaction if not at the bottom
       const { scrollTop, scrollHeight, clientHeight } = container;
       const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
       const isNearBottom = distanceFromBottom < 30; // Within 30px of bottom
-      
+
       if (!isNearBottom) {
         // User manually scrolled away from bottom - set touched flag
         setUserTouched(true);
@@ -156,7 +204,7 @@ export function ChatMessages({
         resetTouchState();
       }
     };
-    
+
     // Check initial position
     updateScrollButtonVisibility(container);
 
@@ -164,17 +212,17 @@ export function ChatMessages({
     container.addEventListener('scroll', handleScroll);
     container.addEventListener('touchstart', handleDOMInteraction);
     container.addEventListener('mousedown', handleDOMInteraction);
-    
+
     // Override the scrollTo method to mark programmatic scrolls
     const originalScrollTo = container.scrollTo;
-    container.scrollTo = function(...args) {
+    container.scrollTo = function (...args) {
       isProgrammaticScroll = true;
       setTimeout(() => {
         isProgrammaticScroll = false;
       }, 500); // Give 500ms for the scroll to complete and events to fire
       return originalScrollTo.apply(this, args);
     };
-    
+
     return () => {
       container.removeEventListener('scroll', handleScroll);
       container.removeEventListener('touchstart', handleDOMInteraction);
@@ -184,18 +232,40 @@ export function ChatMessages({
         container.scrollTo = originalScrollTo;
       }
     };
-  }, [isMobile, messagesRef, resetTouchState, userTouched, updateScrollButtonVisibility]);
+  }, [
+    isMobile,
+    messagesRef,
+    resetTouchState,
+    userTouched,
+    updateScrollButtonVisibility,
+  ]);
 
   // Helper function to check if the container is scrolled to the bottom
-  const isScrolledToBottom = useCallback((container: Element | null): boolean => {
-    if (!container) return true;
-    
-    const { scrollTop, scrollHeight, clientHeight } = container;
-    const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
-    
-    // Consider "at bottom" if within 30px of actual bottom
-    return distanceFromBottom < 30;
-  }, []);
+  const isScrolledToBottom = useCallback(
+    (container: Element | null): boolean => {
+      if (!container) return true;
+
+      const { scrollTop, scrollHeight, clientHeight } = container;
+      const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
+
+      // Consider "at bottom" if within 30px of actual bottom
+      return distanceFromBottom < 30;
+    },
+    []
+  );
+
+  // Modify the effect to reset streaming state when loading stops
+  useEffect(() => {
+    if (!isLoading) {
+      // When loading completely stops, reset streaming state after a short delay
+      // to ensure any final content is displayed properly
+      const timer = setTimeout(() => {
+        setStreamingMessageIds(new Set());
+      }, 150);
+
+      return () => clearTimeout(timer);
+    }
+  }, [isLoading]);
 
   // Check message types and update scroll position when messages change
   useEffect(() => {
@@ -204,41 +274,51 @@ export function ChatMessages({
       const lastMessage = messages[messages.length - 1];
       const lastMessageContent = lastMessage?.content || '';
       const prevContent = lastMessageContentRef.current;
-      
+      const lastMessageId = lastMessage?.id || '';
+
       // Get the current container
       const container = isMobile
         ? document.querySelector('[data-rsbs-scroll]')
         : messagesRef.current;
-      
+
       // Check if we're currently at the bottom before any updates
       const wasAtBottom = isScrolledToBottom(container);
-      
+
       // Reset content tracking when role changes or content is completely different
       // This handles new messages being added
-      if (prevContent && 
-          ((lastMessage?.role === 'assistant' && prevContent.length === 0) || 
-           (lastMessageContent.length < prevContent.length))) {
-        // Reset tracking for new message
-        lastMessageContentRef.current = ''; // Start fresh for the new message
+      if (lastMessageId !== lastMessageIdRef.current) {
+        // It's a new message - reset tracking
+        lastMessageContentRef.current = '';
+        lastMessageIdRef.current = lastMessageId;
       }
-      
+
       // Detect if content is streaming (getting longer)
-      const isStreaming = lastMessage?.role === 'assistant' && 
-                          lastMessageContent.length > lastMessageContentRef.current.length;
-      
+      const isMessageStreaming =
+        lastMessage?.role === 'assistant' &&
+        lastMessageContent.length > lastMessageContentRef.current.length;
+
+      // Update the streaming state for this specific message
+      if (isMessageStreaming && lastMessageId) {
+        setStreamingMessageIds((prev) => {
+          const newSet = new Set(prev);
+          newSet.add(lastMessageId);
+          return newSet;
+        });
+      }
+
       // Update the reference for next comparison
       lastMessageContentRef.current = lastMessageContent;
-      
+
       // Check message types
       const isNewUserMessage = lastMessage?.role === 'user';
       const isAssistantMessage = lastMessage?.role === 'assistant';
-      
+
       // Reset user touch state when streaming begins
-      if (isStreaming && lastMessageContent.length <= 20) {
+      if (isMessageStreaming && lastMessageContent.length <= 20) {
         // If we just started streaming (first ~20 chars), reset touch state
         hasHadTouchRef.current = false; // This is critical - don't auto-set to true
         setUserTouched(false);
-        
+
         // Clear any existing touch timeout to avoid phantom timeouts
         if (touchTimeoutRef.current) {
           clearTimeout(touchTimeoutRef.current);
@@ -250,40 +330,47 @@ export function ChatMessages({
       // 1. User just sent a message
       // 2. We're showing the loading placeholder
       // 3. Message is streaming AND user was at the bottom before the update started
-      if (isNewUserMessage || 
-          needsResponsePlaceholder || 
-          (isStreaming && wasAtBottom && !userTouched)) {
+      if (
+        isNewUserMessage ||
+        needsResponsePlaceholder ||
+        (isMessageStreaming && wasAtBottom && !userTouched)
+      ) {
         scrollToBottom();
       } else {
         // For other message updates, just check if we need to show the scroll button
-        setTimeout(
-          () => {
-            updateScrollButtonVisibility(container);
-          },
-          200
-        );
+        setTimeout(() => {
+          updateScrollButtonVisibility(container);
+        }, 200);
       }
     }
-  }, [messages, needsResponsePlaceholder, isMobile, userTouched, isLoading, updateScrollButtonVisibility, isScrolledToBottom]);
+  }, [
+    messages,
+    needsResponsePlaceholder,
+    isMobile,
+    userTouched,
+    isLoading,
+    updateScrollButtonVisibility,
+    isScrolledToBottom,
+  ]);
 
   // Track follow-up questions and auto-scroll when they appear
   const followUpQuestionsRef = useRef<Question[]>([]);
   const followUpObserverRef = useRef<MutationObserver | null>(null);
-  
+
   // Function to ensure follow-up questions are visible
   const ensureFollowUpQuestionsVisible = useCallback(() => {
     // Don't scroll if user has explicitly scrolled away
     if (userTouched) return;
-    
+
     // Clear touch state to allow auto-scrolling
     hasHadTouchRef.current = false;
-    
+
     // Clear any existing touch timeout to prevent unexpected resets
     if (touchTimeoutRef.current) {
       clearTimeout(touchTimeoutRef.current);
       touchTimeoutRef.current = null;
     }
-    
+
     // First try to locate and scroll to the follow-up questions container
     const followUpsContainer = document.querySelector('.space-y-2');
     if (followUpsContainer) {
@@ -298,24 +385,26 @@ export function ChatMessages({
       // If container not found, use regular scroll to bottom
       scrollToBottom();
     }
-    
+
     // Additional attempt after a delay to ensure visibility
     setTimeout(scrollToBottom, 250);
   }, [userTouched]);
-  
+
   useEffect(() => {
     // Skip empty arrays
     if (followUpQuestions.length === 0) {
       followUpQuestionsRef.current = [];
       return;
     }
-    
+
     // Deep check if questions have changed (not just count)
-    const hasNewQuestions = followUpQuestions.some(newQ => {
+    const hasNewQuestions = followUpQuestions.some((newQ) => {
       // If we can't find this question title in the previous questions, it's new
-      return !followUpQuestionsRef.current.some(oldQ => oldQ.title === newQ.title);
+      return !followUpQuestionsRef.current.some(
+        (oldQ) => oldQ.title === newQ.title
+      );
     });
-    
+
     // Always scroll when follow-up questions appear or change unless user has explicitly scrolled
     if (hasNewQuestions) {
       // Disconnect any existing observer
@@ -323,18 +412,18 @@ export function ChatMessages({
         followUpObserverRef.current.disconnect();
         followUpObserverRef.current = null;
       }
-      
+
       // Set up a mutation observer to detect when follow-up questions are fully rendered
       const targetNode = document.querySelector('.space-y-2');
       if (targetNode) {
         // Initial attempt to scroll
         ensureFollowUpQuestionsVisible();
-        
+
         // Create an observer to watch for DOM changes in the follow-up questions area
         followUpObserverRef.current = new MutationObserver((mutations) => {
           // When DOM changes detected, ensure questions are visible
           ensureFollowUpQuestionsVisible();
-          
+
           // Disconnect after a certain time to avoid infinite loops
           setTimeout(() => {
             if (followUpObserverRef.current) {
@@ -343,14 +432,14 @@ export function ChatMessages({
             }
           }, 1000);
         });
-        
+
         // Start observing
-        followUpObserverRef.current.observe(targetNode, { 
-          childList: true, 
-          subtree: true, 
-          attributes: true 
+        followUpObserverRef.current.observe(targetNode, {
+          childList: true,
+          subtree: true,
+          attributes: true,
         });
-        
+
         // Backup plan: try scrolling again after a delay
         setTimeout(ensureFollowUpQuestionsVisible, 500);
       } else {
@@ -360,10 +449,10 @@ export function ChatMessages({
         setTimeout(ensureFollowUpQuestionsVisible, 600);
       }
     }
-    
+
     // Update reference for next comparison
     followUpQuestionsRef.current = [...followUpQuestions];
-    
+
     // Clean up observer on unmount or when follow-up questions change
     return () => {
       if (followUpObserverRef.current) {
@@ -376,18 +465,18 @@ export function ChatMessages({
   // Handler for desktop scroll events
   const handleDesktopScroll = (e: React.UIEvent<HTMLDivElement>) => {
     updateScrollButtonVisibility(e.currentTarget);
-    
+
     // If this is an actual user scroll (not programmatic), mark as user touched
     const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
     const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
     const isNearBottom = distanceFromBottom < 30; // Within 30px of bottom
-    
+
     if (!isNearBottom) {
       setUserTouched(true);
       hasHadTouchRef.current = true;
       resetTouchState();
     }
-    
+
     onScroll?.(e);
   };
 
@@ -396,7 +485,7 @@ export function ChatMessages({
     try {
       // Flag to prevent double scrolling attempts
       let scrollAttempted = false;
-      
+
       // For mobile view
       if (isMobile) {
         const mobileContainer = document.querySelector('[data-rsbs-scroll]');
@@ -408,7 +497,7 @@ export function ChatMessages({
             behavior: 'smooth',
           });
           scrollAttempted = true;
-          
+
           // Use just one backup attempt with a delay
           setTimeout(() => {
             if (mobileContainer) {
@@ -427,7 +516,7 @@ export function ChatMessages({
           behavior: 'smooth',
         });
         scrollAttempted = true;
-        
+
         // Just to be safe, set scroll directly after animation starts
         setTimeout(() => {
           if (messagesRef.current) {
@@ -455,6 +544,24 @@ export function ChatMessages({
     if (messages[prevIndex].role === 'user') {
       return messages[prevIndex];
     }
+    return null;
+  };
+
+  // This is the key part to fix - update the loading message display
+  const renderLoadingMessage = () => {
+    // Check if we need to show the standard loading message (beginning of conversation)
+    const showLoading = isLoading && messages.length === 1;
+
+    // Check if we need to show a placeholder for awaiting response (when user sent a message but no response yet)
+    const needsResponsePlaceholder =
+      isLoading &&
+      messages.length > 1 &&
+      messages[messages.length - 1].role === 'user';
+
+    if (showLoading || needsResponsePlaceholder) {
+      return <LoadingMessage visible={loadingMessageVisible} />;
+    }
+
     return null;
   };
 
@@ -542,8 +649,8 @@ export function ChatMessages({
             </div>
           ))}
 
-          {/* Loading indicator for first message of conversation */}
-          {showLoading || needsResponsePlaceholder ? <LoadingMessage /> : null}
+          {/* Loading indicator with improved visibility control */}
+          {renderLoadingMessage()}
 
           {showFollowUps && (
             <div className={`space-y-2  ${messages.length > 0 ? 'pb-4' : ''}`}>

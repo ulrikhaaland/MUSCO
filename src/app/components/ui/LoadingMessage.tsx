@@ -1,7 +1,7 @@
-export function LoadingMessage() {
+export function LoadingMessage({ visible = true }: { visible?: boolean }) {
   return (
-    <div className="p-4 rounded-lg bg-gray-800 mr-8 w-full">
-      <div className="space-y-3">
+    <div className={`p-4 rounded-lg ${visible ? 'bg-gray-800' : 'bg-transparent'} mr-8 w-full transition-colors duration-200`}>
+      <div className={visible ? 'space-y-3' : 'opacity-0 space-y-3'}>
         {/* First line - longer */}
         <div className="flex space-x-3">
           <div className="shimmer w-3/4 h-4 bg-gray-700 rounded" />
@@ -18,7 +18,7 @@ export function LoadingMessage() {
           <div className="shimmer w-1/3 h-4 bg-gray-700 rounded" />
         </div>
       </div>
-      <div className="space-y-3 mt-2">
+      <div className={visible ? 'space-y-3 mt-2' : 'opacity-0 space-y-3 mt-2'}>
         {/* First line - longer */}
         <div className="flex space-x-3">
           <div className="shimmer w-3/4 h-4 bg-gray-700 rounded" />
@@ -35,7 +35,7 @@ export function LoadingMessage() {
           <div className="shimmer w-1/3 h-4 bg-gray-700 rounded" />
         </div>
       </div>
-      <div className="space-y-3 mt-2">
+      <div className={visible ? 'space-y-3 mt-2' : 'opacity-0 space-y-3 mt-2'}>
         {/* First line - longer */}
         <div className="flex space-x-3">
           <div className="shimmer w-3/4 h-4 bg-gray-700 rounded" />
@@ -52,7 +52,7 @@ export function LoadingMessage() {
           <div className="shimmer w-1/3 h-4 bg-gray-700 rounded" />
         </div>
       </div>
-      <div className="space-y-3 mt-2">
+      <div className={visible ? 'space-y-3 mt-2' : 'opacity-0 space-y-3 mt-2'}>
         {/* First line - longer */}
         <div className="flex space-x-3">
           <div className="shimmer w-3/4 h-4 bg-gray-700 rounded" />
