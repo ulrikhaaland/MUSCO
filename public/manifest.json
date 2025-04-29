@@ -9,16 +9,41 @@
   "orientation": "portrait",
   "icons": [
     {
-      "src": "/img/logo_biceps.png",
-      "sizes": "192x192",
+      "src": "/ms-icon-310x310.png",
+      "sizes": "310x310",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "/apple-icon-180x180.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/apple-icon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any"
     },
     {
       "src": "/img/logo_biceps.png",
-      "sizes": "512x512",
+      "sizes": "1024x1536",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshots/desktop.png",
+      "sizes": "3456x1984",
+      "type": "image/png",
+      "form_factor": "wide"
+    },
+    {
+      "src": "/screenshots/mobile.png",
+      "sizes": "798x1730",
+      "type": "image/png"
     }
   ]
 } 
