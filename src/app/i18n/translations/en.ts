@@ -464,12 +464,11 @@ const translations = {
   'pwa.urlCopied': 'URL copied! Open Safari and paste in the address bar.',
   
   // PWA Installation Instructions - iOS Chrome
-  'pwa.iosChrome.title': 'Chrome on iOS does not support direct home screen installation.',
-  'pwa.iosChrome.subtitle': 'Please open this page in Safari to install:',
-  'pwa.iosChrome.steps.0': 'Click the "Copy URL" button below',
-  'pwa.iosChrome.steps.1': 'Open the Safari browser on your device',
-  'pwa.iosChrome.steps.2': 'Paste the URL and visit the site',
-  'pwa.iosChrome.steps.3': 'Then use the Share button to add to Home Screen',
+  'pwa.iosChrome.title': 'Install this app on your iOS device:',
+  'pwa.iosChrome.steps.0': 'Tap the share icon',
+  'pwa.iosChrome.steps.1': 'Scroll down and tap "Add to Home Screen"',
+  'pwa.iosChrome.steps.2': 'Tap "Add" to confirm',
+  'pwa.iosChrome.steps.3': 'Access your app from the home screen',
   
   // PWA Installation Instructions - iOS Safari
   'pwa.ios.title': 'How to install:',

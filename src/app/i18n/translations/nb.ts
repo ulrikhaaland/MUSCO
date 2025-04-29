@@ -462,12 +462,11 @@ const translations = {
   'pwa.urlCopied': 'URL kopiert! Åpne Safari og lim inn i adressefeltet.',
   
   // PWA Installation Instructions - iOS Chrome
-  'pwa.iosChrome.title': 'Chrome på iOS støtter ikke direkte installasjon til hjemskjerm.',
-  'pwa.iosChrome.subtitle': 'Vennligst åpne denne siden i Safari for å installere:',
-  'pwa.iosChrome.steps.0': 'Klikk på "Kopier URL" knappen under',
-  'pwa.iosChrome.steps.1': 'Åpne Safari-nettleseren på enheten din',
-  'pwa.iosChrome.steps.2': 'Lim inn URL-en og besøk nettsiden',
-  'pwa.iosChrome.steps.3': 'Bruk deretter Del-knappen for å legge til på Hjemskjerm',
+  'pwa.iosChrome.title': 'Installer denne appen på iOS-enheten din:',
+  'pwa.iosChrome.steps.0': 'Trykk på del-ikonet',
+  'pwa.iosChrome.steps.1': 'Bla ned og trykk på "Legg til på Hjem-skjerm"',
+  'pwa.iosChrome.steps.2': 'Trykk "Legg til" for å bekrefte',
+  'pwa.iosChrome.steps.3': 'Åpne appen fra hjemskjermen din',
   
   // PWA Installation Instructions - iOS Safari
   'pwa.ios.title': 'Slik installerer du:',

@@ -5,21 +5,7 @@ import { useTranslation } from '../../../app/i18n';
 import BrowserUpdatedIcon from '@mui/icons-material/BrowserUpdated';
 import IosShareIcon from '@mui/icons-material/IosShare';
 
-interface AddToHomescreenProps {
-  title?: string;
-  message?: string;
-  installButtonText?: string;
-  cancelButtonText?: string;
-  neverShowText?: string;
-}
-
-export default function AddToHomescreen({
-  title,
-  message,
-  installButtonText,
-  cancelButtonText,
-  neverShowText,
-}: AddToHomescreenProps) {
+export default function AddToHomescreen() {
   const { t } = useTranslation();
   
   const [showPrompt, setShowPrompt] = useState(false);
@@ -249,8 +235,8 @@ export default function AddToHomescreen({
       isIOSDevice
     });
 
-    // For iOS Safari, show the visual hint for the share button
-    if (isIOSDevice && isSafari) {
+    // For iOS Safari and Chrome, show the visual hint for the share button
+    if (isIOSDevice && (isSafari || isIOSChrome)) {
       setShowShareHint(true);
       // Don't auto-hide the hint
       return;
@@ -335,16 +321,11 @@ export default function AddToHomescreen({
           <p>
             {t('pwa.iosChrome.title')}
           </p>
-          <p className="mt-1">
-            {t('pwa.iosChrome.subtitle')}
-          </p>
-          {showCopiedMessage && (
-            <div className="mt-2 p-2 bg-indigo-500/20 text-indigo-200 text-sm rounded-md">
-              {t('pwa.urlCopied')}
-            </div>
-          )}
-          <ol className="list-decimal pl-5 mt-2 space-y-1">
-            <li>{t('pwa.iosChrome.steps.0')}</li>
+          <ol className="list-decimal pl-5 mt-1 space-y-1">
+            <li className="flex items-center">
+              {t('pwa.iosChrome.steps.0')}
+              <IosShareIcon className="h-5 w-5 text-blue-400 ml-1" fontSize="small" />
+            </li>
             <li>{t('pwa.iosChrome.steps.1')}</li>
             <li>{t('pwa.iosChrome.steps.2')}</li>
             <li>{t('pwa.iosChrome.steps.3')}</li>
@@ -470,11 +451,11 @@ export default function AddToHomescreen({
   };
 
   // Use translation or fallback to props
-  const translatedTitle = title || t('pwa.addToHomescreen');
-  const translatedMessage = message || t('pwa.addToHomescreenMessage');
-  const translatedInstallButtonText = installButtonText || t('pwa.install');
-  const translatedCancelButtonText = cancelButtonText || t('pwa.notNow');
-  const translatedNeverShowText = neverShowText || t('pwa.neverShow');
+  const translatedTitle = t('pwa.addToHomescreen');
+  const translatedMessage = t('pwa.addToHomescreenMessage');
+  const translatedInstallButtonText = t('pwa.install');
+  const translatedCancelButtonText = t('pwa.notNow');
+  const translatedNeverShowText = t('pwa.neverShow');
 
   return (
     <>
@@ -495,7 +476,7 @@ export default function AddToHomescreen({
 
                 {renderInstructions()}
 
-                {showShareHint && isSafari && (
+                {showShareHint && (isSafari || isIOSChrome) && (
                   <div className="mt-3 p-3 border border-yellow-500 bg-yellow-900/30 rounded-md text-sm text-yellow-200 flex items-center">
                     <span className="mr-2">
                       <IosShareIcon className="h-5 w-5" />
