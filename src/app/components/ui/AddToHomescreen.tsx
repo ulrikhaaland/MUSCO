@@ -323,7 +323,7 @@ export default function AddToHomescreen() {
           </p>
           <ol className="list-decimal pl-5 mt-1 space-y-1">
             <li className="flex items-center">
-              {t('pwa.iosChrome.steps.0')}
+              {t('pwa.iosChrome.steps.0')} 
               <IosShareIcon className="h-5 w-5 text-blue-400 ml-1" fontSize="small" />
             </li>
             <li>{t('pwa.iosChrome.steps.1')}</li>
@@ -516,21 +516,13 @@ export default function AddToHomescreen() {
                 {translatedCancelButtonText}
               </button>
 
-              {isIOSChrome ? (
-                <button
-                  onClick={openInSafari}
-                  className="px-3 py-2 text-sm font-medium bg-indigo-500 hover:bg-indigo-600 text-white rounded"
-                >
-                  {t('pwa.copyUrl')}
-                </button>
-              ) : (
-                <button
-                  onClick={handleInstallClick}
-                  className="px-3 py-2 text-sm font-medium bg-indigo-500 hover:bg-indigo-600 text-white rounded"
-                >
-                  {translatedInstallButtonText}
-                </button>
-              )}
+              {/* Use Install button for all browsers including iOS Chrome */}
+              <button
+                onClick={handleInstallClick}
+                className="px-3 py-2 text-sm font-medium bg-indigo-500 hover:bg-indigo-600 text-white rounded"
+              >
+                {translatedInstallButtonText}
+              </button>
             </div>
           </div>
         </div>
