@@ -461,66 +461,58 @@ const translations = {
   'pwa.copyUrl': 'Kopier URL',
   'pwa.urlCopied': 'URL kopiert! Åpne Safari og lim inn i adressefeltet.',
   
-  // PWA Installation Instructions
-  'pwa.iosChrome.title': 'Chrome på iOS støtter ikke direkte installasjon på Hjem-skjermen.',
+  // PWA Installation Instructions - iOS Chrome
+  'pwa.iosChrome.title': 'Chrome på iOS støtter ikke direkte installasjon til hjemskjerm.',
   'pwa.iosChrome.subtitle': 'Vennligst åpne denne siden i Safari for å installere:',
-  'pwa.iosChrome.steps': [
-    'Klikk på "Kopier URL"-knappen under',
-    'Åpne Safari-nettleseren på enheten din',
-    'Lim inn URL-en og besøk nettstedet',
-    'Bruk deretter Del-knappen for å legge til på Hjem-skjermen'
-  ],
+  'pwa.iosChrome.steps.0': 'Klikk på "Kopier URL" knappen under',
+  'pwa.iosChrome.steps.1': 'Åpne Safari-nettleseren på enheten din',
+  'pwa.iosChrome.steps.2': 'Lim inn URL-en og besøk nettsiden',
+  'pwa.iosChrome.steps.3': 'Bruk deretter Del-knappen for å legge til på Hjemskjerm',
   
+  // PWA Installation Instructions - iOS Safari
   'pwa.ios.title': 'Slik installerer du:',
-  'pwa.ios.steps': [
-    'Trykk på Del-ikonet',
-    'Rull ned og trykk på "Legg til på Hjem-skjerm"',
-    'Trykk på "Legg til" for å bekrefte'
-  ],
+  'pwa.ios.steps.0': 'Trykk på del-ikonet',
+  'pwa.ios.steps.1': 'Bla ned og trykk på "Legg til på Hjem-skjerm"',
+  'pwa.ios.steps.2': 'Trykk "Legg til" for å bekrefte',
   'pwa.ios.safari': 'Du bruker Safari, så du kan følge disse trinnene for å installere.',
   'pwa.ios.other': 'Merk: Dette fungerer best i Safari-nettleseren.',
   'pwa.ios.hint': 'Se etter Del-knappen i nettleserens verktøylinje ↑ og velg "Legg til på Hjem-skjerm"',
   
-  // Desktop Browser Instructions
+  // Desktop Browser Instructions - Chrome
   'pwa.desktop.chrome.title': 'Installer denne appen på datamaskinen din:',
-  'pwa.desktop.chrome.steps': [
-    'Klikk på installer-knappen under, eller',
-    'Klikk på installasjons-ikonet i adressefeltet',
-    'Velg "Installer" fra dialogen som vises'
-  ],
+  'pwa.desktop.chrome.steps.0': 'Klikk på installer-knappen under, eller',
+  'pwa.desktop.chrome.steps.1': 'Klikk på installasjons-ikonet i adressefeltet',
+  'pwa.desktop.chrome.steps.2': 'Velg "Installer" fra dialogen som vises',
   
+  // Desktop Browser Instructions - Edge
   'pwa.desktop.edge.title': 'Installer denne appen på datamaskinen din:',
-  'pwa.desktop.edge.steps': [
-    'Klikk på installer-knappen under, eller',
-    'Klikk på menyen (⋯) øverst til høyre',
-    'Velg "Apper" → "Installer dette nettstedet som en app"',
-    'Følg instruksjonene på skjermen'
-  ],
+  'pwa.desktop.edge.steps.0': 'Klikk på installer-knappen under, eller',
+  'pwa.desktop.edge.steps.1': 'Klikk på menyen (⋯) øverst til høyre',
+  'pwa.desktop.edge.steps.2': 'Velg "Apper" → "Installer dette nettstedet som en app"',
+  'pwa.desktop.edge.steps.3': 'Følg instruksjonene på skjermen',
   
+  // Desktop Browser Instructions - Firefox
   'pwa.desktop.firefox.title': 'Firefox har begrenset støtte for webapper. For å installere:',
-  'pwa.desktop.firefox.steps': [
-    'Klikk på menyen (☰) øverst til høyre',
-    'Velg "Legg til på Hjem-skjerm" eller "Installer"',
-    'Hvis dette alternativet ikke er tilgjengelig, bokmerke denne siden i stedet'
-  ],
+  'pwa.desktop.firefox.steps.0': 'Klikk på menyen (☰) øverst til høyre',
+  'pwa.desktop.firefox.steps.1': 'Velg "Legg til på Hjem-skjerm" eller "Installer"',
+  'pwa.desktop.firefox.steps.2': 'Hvis dette alternativet ikke er tilgjengelig, legg til et bokmerke i stedet',
   
+  // Desktop Browser Instructions - Safari
   'pwa.desktop.safari.title': 'Safari har begrenset støtte for webapper. For å installere:',
-  'pwa.desktop.safari.steps': [
-    'Klikk på "Del"-knappen i verktøylinjen',
-    'Velg "Legg til i Dock" hvis tilgjengelig',
-    'Hvis dette alternativet ikke er tilgjengelig, bokmerke denne siden i stedet'
-  ],
+  'pwa.desktop.safari.steps.0': 'Klikk på "Del"-knappen i verktøylinjen',
+  'pwa.desktop.safari.steps.1': 'Velg "Legg til i Dock" hvis tilgjengelig',
+  'pwa.desktop.safari.steps.2': 'Hvis dette alternativet ikke er tilgjengelig, legg til et bokmerke i stedet',
   
+  // Desktop Browser Instructions - Other
   'pwa.desktop.other.title': 'Installer denne appen på datamaskinen din:',
-  'pwa.desktop.other.steps': [
-    'Klikk på menyknappen i nettleseren din',
-    'Se etter "Installer" eller "Legg til på Hjem-skjerm"-alternativet',
-    'Følg instruksjonene på skjermen'
-  ],
+  'pwa.desktop.other.steps.0': 'Klikk på menyknappen i nettleseren din',
+  'pwa.desktop.other.steps.1': 'Se etter "Installer" eller "Legg til på Hjem-skjerm" alternativet',
+  'pwa.desktop.other.steps.2': 'Følg instruksjonene på skjermen',
   'pwa.desktop.other.note': 'Merk: Dette fungerer best i Chrome eller Edge.',
   
+  // Default PWA Instructions
   'pwa.default.title': 'For å installere denne applikasjonen:',
-  'pwa.default.message': 'Følg nettleserens installasjonsanvisninger når du blir bedt om det.',
+  'pwa.default.message': 'Følg nettleserens installasjonsinstruksjoner når du blir bedt om det.',
   
   // Program - Cardio Types
   'program.cardioType.running': 'Løping',

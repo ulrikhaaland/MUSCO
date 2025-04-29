@@ -1,7 +1,7 @@
 {
-  "name": "Musco App",
-  "short_name": "Musco",
-  "description": "Your personalized muscle-building companion",
+  "name": "bodAI",
+  "short_name": "bodAI",
+  "description": "AI powered workout coach",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#111827",

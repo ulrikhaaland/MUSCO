@@ -40,14 +40,22 @@ export default function AddToHomescreen({
     // Don't run on server side
     if (typeof window === 'undefined') return;
 
+    console.log('AddToHomescreen mount effect running');
+
     // Track whether the user has already dismissed the prompt or installed the app
     const hasPromptBeenShown = localStorage.getItem('pwaPromptDismissed');
     const permanentlyDismissed = localStorage.getItem(
       'pwaPromptPermanentlyDismissed'
     );
 
+    console.log('LocalStorage checks:', {
+      hasPromptBeenShown,
+      permanentlyDismissed,
+    });
+
     // If the user has permanently dismissed, don't show the prompt
     if (permanentlyDismissed === 'true') {
+      console.log('Permanently dismissed, not showing prompt');
       return;
     }
 
@@ -94,6 +102,15 @@ export default function AddToHomescreen({
       (window.navigator as any).standalone === true ||
       document.referrer.includes('android-app://');
 
+    console.log('Browser detection:', {
+      isIOS,
+      isChromeIOS,
+      isSafariCheck,
+      isDesktopDevice,
+      detectedBrowser,
+      isInStandaloneMode,
+    });
+
     // Set state for UI decisions
     setIsIOSDevice(isIOS);
     setIsIOSChrome(isChromeIOS);
@@ -120,6 +137,7 @@ export default function AddToHomescreen({
 
     // Listen for beforeinstallprompt event (fired on supported desktop and Android browsers)
     const handleBeforeInstallPrompt = (e: Event) => {
+      console.log('beforeinstallprompt event fired', e);
       // Prevent Chrome 76+ from automatically showing the prompt
       e.preventDefault();
       // Stash the event so it can be triggered later
@@ -127,34 +145,53 @@ export default function AddToHomescreen({
 
       // Show the prompt if it hasn't been dismissed before
       if (hasPromptBeenShown !== 'true') {
+        console.log('Setting showPrompt to true from beforeinstallprompt event');
         setShowPrompt(true);
       }
     };
 
     // Only show prompt if not already in standalone mode
     if (!isInStandaloneMode) {
+      console.log('Adding beforeinstallprompt event listener');
       window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
 
       // For iOS Safari, we'll show the prompt after a delay if they haven't seen it
       if (isIOS && hasPromptBeenShown !== 'true') {
         // Delay showing iOS instructions to avoid interrupting initial app experience
+        console.log('Setting timer for iOS prompt');
         const timer = setTimeout(() => {
+          console.log('Timer fired - showing iOS prompt');
           setShowPrompt(true);
         }, 3000);
         return () => clearTimeout(timer);
       }
 
       // For desktop browsers that don't support beforeinstallprompt, show manual instructions
-      if (isDesktopDevice && !deferredPrompt && hasPromptBeenShown !== 'true') {
+      if (isDesktopDevice && hasPromptBeenShown !== 'true') {
         // Wait a moment before showing to avoid interrupting initial page load
+        console.log('Setting timer for desktop prompt');
         const timer = setTimeout(() => {
+          console.log('Timer fired - showing desktop prompt');
           setShowPrompt(true);
         }, 3000);
         return () => clearTimeout(timer);
       }
+
+      // For development mode, show prompt regardless of events
+      if (process.env.NODE_ENV === 'development' && hasPromptBeenShown !== 'true') {
+        console.log('In development mode - forcing prompt to show after delay');
+        const timer = setTimeout(() => {
+          console.log('Development timer fired - showing prompt');
+          setShowPrompt(true);
+        }, 3000);
+        return () => clearTimeout(timer);
+      }
+    } else {
+      console.log('App is in standalone mode, not showing prompt');
     }
 
     return () => {
+      console.log('Removing beforeinstallprompt event listener');
       window.removeEventListener(
         'beforeinstallprompt',
         handleBeforeInstallPrompt

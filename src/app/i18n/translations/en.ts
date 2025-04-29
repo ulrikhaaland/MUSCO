@@ -278,7 +278,7 @@ const translations = {
   'profile.beginner.name': 'Beginner',
   'profile.beginner.desc': 'New to exercise or returning after a long break',
   'profile.intermediate.name': 'Intermediate',
-  'profile.intermediate.desc': 'Consistent exercise for at least several months',
+  'profile.intermediate.desc': 'Regular exercise for at least several months',
   'profile.advanced.name': 'Advanced',
   'profile.advanced.desc': 'Consistent training for over a year with good technique',
   'profile.elite.name': 'Elite',
@@ -288,7 +288,7 @@ const translations = {
   'profile.modality.strength': 'Strength',
   'profile.modality.strength.description': 'Weight training, resistance training, bodyweight exercises',
   'profile.modality.cardio': 'Cardio',
-  'profile.modality.cardio.description': 'Running, cycling, swimming, HIIT, aerobic exercises',
+  'profile.modality.cardio.description': 'Running, cycling, swimming, HIIT, aerobics',
   'profile.modality.recovery': 'Recovery',
   'profile.modality.recovery.description': 'Stretching, yoga, mobility work, active recovery',
   
@@ -319,10 +319,10 @@ const translations = {
   'profile.diet.glutenFree': 'Gluten free',
   'profile.diet.dairyFree': 'Dairy free',
   'profile.diet.mediterranean': 'Mediterranean',
-  'profile.diet.intermittentFasting': 'Intermittent Fasting',
+  'profile.diet.intermittentFasting': 'Intermittent fasting',
   
   // Profile - Actions
-  'profile.actions.editProfile': 'Edit Profile',
+  'profile.actions.editProfile': 'Edit profile',
   'profile.actions.profileUpdated': 'Profile updated',
   'profile.actions.errorUpdating': 'Error updating profile',
   'profile.actions.selectFrequency': 'Select frequency',
@@ -338,7 +338,7 @@ const translations = {
   'admin.keyAndTextRequired': 'Key and text are required',
   'admin.translationAddedSuccess': 'Translation added!',
   'admin.translationAddError': 'Error adding translation',
-  'admin.dotNotationTip': 'Use dot notation for organization (e.g. \'category.feature.element\')',
+  'admin.dotNotationTip': 'Use dot notation for organization (e.g., \'category.feature.element\')',
   
   // Program
   'program.activity': 'Activity',
@@ -347,7 +347,7 @@ const translations = {
   'program.targetBodyParts': 'Target body parts:',
   'program.moreBodyParts': '+{{count}} more',
   'program.optionalRecovery': 'Optional recovery activities',
-  'program.recoveryMessage': 'These gentle exercises can be performed at home to help with recovery. Listen to your body and only do what feels comfortable.',
+  'program.recoveryMessage': 'These gentle exercises can be done at home to aid recovery. Listen to your body and only do what feels comfortable.',
   'program.noExercises': 'No exercises available with current filters.',
   'program.resetFilters': 'Reset filters',
   'program.watchVideo': 'Watch video',
@@ -358,6 +358,7 @@ const translations = {
   'program.modification': 'Modification:',
   'program.precaution': 'Precaution:',
   'program.rest': '{{seconds}}s rest',
+
   bottomSheet: {
     minimize: 'Minimize',
     expand: 'Expand',
@@ -372,10 +373,10 @@ const translations = {
     tourStep4: 'Type your questions here to learn more about anatomy, exercises, and treatment options.',
     tourStep5: 'Use these buttons to expand or minimize the chat area.',
   },
-  
+
   // Exercise Selection
-  'exerciseSelection.targetAreas': 'Target areas',
-  'exerciseSelection.painfulAreas': 'Painful areas',
+  'exerciseSelection.targetAreas': 'Target Areas',
+  'exerciseSelection.painfulAreas': 'Painful Areas',
   'exerciseSelection.noPainfulAreas': 'No painful areas selected',
   
   // Exercise Footer
@@ -384,9 +385,9 @@ const translations = {
   
   // Intention Question
   'intentionQuestion.title': 'How can we help you today?',
-  'intentionQuestion.subtitle': 'Choose what you\'re looking for:',
-  'intentionQuestion.exerciseProgram': 'Exercise program',
-  'intentionQuestion.recoveryProgram': 'Recovery program',
+  'intentionQuestion.subtitle': 'Select what you\'re looking for:',
+  'intentionQuestion.exerciseProgram': 'Exercise Program',
+  'intentionQuestion.recoveryProgram': 'Recovery Program',
   
   // Program Titles
   'program.recoveryProgramTitle': 'Recovery Program',
@@ -404,16 +405,16 @@ const translations = {
   'questionnaire.exerciseDays': 'How many days per week do you want to exercise?',
   'questionnaire.recoveryDays': 'How many days per week do you want to focus on recovery?',
   'questionnaire.painAreas': 'Do you have pain anywhere?',
-  'questionnaire.trainingType': 'What equipment do you have access to?',
+  'questionnaire.trainingType': 'What type of equipment do you have access to?',
   'questionnaire.exerciseModalities': 'What type of exercise do you want to do?',
-  'questionnaire.modalitySplit': 'How would you like to split your exercise days?',
-  'questionnaire.modalitySplit.description': 'Choose how many days per week to dedicate to each type of exercise (total: {{total}} days)',
+  'questionnaire.modalitySplit': 'How do you want to split your exercise days?',
+  'questionnaire.modalitySplit.description': 'Select how many days per week you want to spend on each type of exercise (total: {{total}} days)',
   'questionnaire.modalitySplit.cardioDays': 'Cardio days per week',
   'questionnaire.modalitySplit.strengthDays': 'Strength days per week',
-  'questionnaire.modalitySplit.totalDaysError': 'Total days exceeds your chosen frequency of {{total}} days per week',
+  'questionnaire.modalitySplit.totalDaysError': 'Total days exceeds your selected frequency of {{total}} days per week',
   'questionnaire.cardio': 'cardio days',
   'questionnaire.strength': 'strength days',
-  'questionnaire.targetAreas': 'Which areas do you want to focus on in your workout?',
+  'questionnaire.targetAreas': 'Which areas do you want to focus on in your training?',
   'questionnaire.strengthTargetAreas': 'Which areas do you want to focus on in your strength training?',
   'questionnaire.cardioType': 'What type of cardio do you prefer?',
   'questionnaire.cardioEnvironment': 'Where do you prefer to do cardio?',
@@ -462,64 +463,56 @@ const translations = {
   'pwa.copyUrl': 'Copy URL',
   'pwa.urlCopied': 'URL copied! Open Safari and paste in the address bar.',
   
-  // PWA Installation Instructions
-  'pwa.iosChrome.title': 'Chrome on iOS doesn\'t support direct installation to home screen.',
+  // PWA Installation Instructions - iOS Chrome
+  'pwa.iosChrome.title': 'Chrome on iOS does not support direct home screen installation.',
   'pwa.iosChrome.subtitle': 'Please open this page in Safari to install:',
-  'pwa.iosChrome.steps': [
-    'Click the "Copy URL" button below',
-    'Open the Safari browser on your device',
-    'Paste the URL and visit the website',
-    'Then use the Share button to add to Home Screen'
-  ],
+  'pwa.iosChrome.steps.0': 'Click the "Copy URL" button below',
+  'pwa.iosChrome.steps.1': 'Open the Safari browser on your device',
+  'pwa.iosChrome.steps.2': 'Paste the URL and visit the site',
+  'pwa.iosChrome.steps.3': 'Then use the Share button to add to Home Screen',
   
+  // PWA Installation Instructions - iOS Safari
   'pwa.ios.title': 'How to install:',
-  'pwa.ios.steps': [
-    'Tap the share icon',
-    'Scroll down and tap "Add to Home Screen"',
-    'Tap "Add" to confirm'
-  ],
+  'pwa.ios.steps.0': 'Tap the share icon',
+  'pwa.ios.steps.1': 'Scroll down and tap "Add to Home Screen"',
+  'pwa.ios.steps.2': 'Tap "Add" to confirm',
   'pwa.ios.safari': 'You\'re using Safari, so you can follow these steps to install.',
-  'pwa.ios.other': 'Note: This works best in Safari browser.',
-  'pwa.ios.hint': 'Look for the Share button in your browser toolbar ↑ and select "Add to Home Screen"',
+  'pwa.ios.other': 'Note: This works best in the Safari browser.',
+  'pwa.ios.hint': 'Look for the Share button in the browser toolbar ↑ and select "Add to Home Screen"',
   
-  // Desktop Browser Instructions
+  // Desktop Browser Instructions - Chrome
   'pwa.desktop.chrome.title': 'Install this app on your computer:',
-  'pwa.desktop.chrome.steps': [
-    'Click the install button below, or',
-    'Click the install icon in the address bar',
-    'Select "Install" from the dialog that appears'
-  ],
+  'pwa.desktop.chrome.steps.0': 'Click the install button below, or',
+  'pwa.desktop.chrome.steps.1': 'Click the installation icon in the address bar',
+  'pwa.desktop.chrome.steps.2': 'Select "Install" from the dialog that appears',
   
+  // Desktop Browser Instructions - Edge
   'pwa.desktop.edge.title': 'Install this app on your computer:',
-  'pwa.desktop.edge.steps': [
-    'Click the install button below, or',
-    'Click the menu (⋯) in the top right',
-    'Select "Apps" → "Install this site as an app"',
-    'Follow the on-screen instructions'
-  ],
+  'pwa.desktop.edge.steps.0': 'Click the install button below, or',
+  'pwa.desktop.edge.steps.1': 'Click the menu (⋯) at the top right',
+  'pwa.desktop.edge.steps.2': 'Select "Apps" → "Install this site as an app"',
+  'pwa.desktop.edge.steps.3': 'Follow the on-screen instructions',
   
+  // Desktop Browser Instructions - Firefox
   'pwa.desktop.firefox.title': 'Firefox has limited web app support. To install:',
-  'pwa.desktop.firefox.steps': [
-    'Click the menu (☰) in the top right',
-    'Select "Add to Home Screen" or "Install"',
-    'If this option is not available, bookmark this page instead'
-  ],
+  'pwa.desktop.firefox.steps.0': 'Click the menu (☰) at the top right',
+  'pwa.desktop.firefox.steps.1': 'Select "Add to Home Screen" or "Install"',
+  'pwa.desktop.firefox.steps.2': 'If this option is not available, bookmark the site instead',
   
+  // Desktop Browser Instructions - Safari
   'pwa.desktop.safari.title': 'Safari has limited web app support. To install:',
-  'pwa.desktop.safari.steps': [
-    'Click the "Share" button in the toolbar',
-    'Select "Add to Dock" if available',
-    'If this option is not available, bookmark this page instead'
-  ],
+  'pwa.desktop.safari.steps.0': 'Click the "Share" button in the toolbar',
+  'pwa.desktop.safari.steps.1': 'Select "Add to Dock" if available',
+  'pwa.desktop.safari.steps.2': 'If this option is not available, bookmark the site instead',
   
+  // Desktop Browser Instructions - Other
   'pwa.desktop.other.title': 'Install this app on your computer:',
-  'pwa.desktop.other.steps': [
-    'Click the menu button in your browser',
-    'Look for "Install" or "Add to Home Screen" option',
-    'Follow the on-screen instructions'
-  ],
+  'pwa.desktop.other.steps.0': 'Click the menu button in your browser',
+  'pwa.desktop.other.steps.1': 'Look for "Install" or "Add to Home Screen" option',
+  'pwa.desktop.other.steps.2': 'Follow the on-screen instructions',
   'pwa.desktop.other.note': 'Note: This works best in Chrome or Edge.',
   
+  // Default PWA Instructions
   'pwa.default.title': 'To install this application:',
   'pwa.default.message': 'Follow your browser\'s installation instructions when prompted.',
   
