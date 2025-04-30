@@ -470,6 +470,52 @@ export default function HumanViewer({
     }
   }, [shouldResetModel, isReady, resetModel]);
 
+  // Prevent parent scrolling
+  useEffect(() => {
+    const preventParentScroll = (e: WheelEvent) => {
+      // Only prevent default if we're not in a scrollable element with actual overflow
+      if (e.target instanceof Element) {
+        let target = e.target;
+        let preventScroll = true;
+        
+        // Check if any parent element is scrollable
+        while (target !== document.body) {
+          const style = window.getComputedStyle(target);
+          const overflowY = style.getPropertyValue('overflow-y');
+          
+          if ((overflowY === 'auto' || overflowY === 'scroll') &&
+              target.scrollHeight > target.clientHeight) {
+            // If element is scrollable and has content to scroll
+            const isAtTop = target.scrollTop === 0;
+            const isAtBottom = Math.abs(target.scrollHeight - target.scrollTop - target.clientHeight) < 1;
+            
+            // Only prevent if at boundaries and trying to scroll beyond
+            if ((isAtTop && e.deltaY < 0) || (isAtBottom && e.deltaY > 0)) {
+              preventScroll = true;
+            } else {
+              preventScroll = false;
+              break;
+            }
+          }
+          
+          target = target.parentElement as Element;
+          if (!target) break;
+        }
+        
+        if (preventScroll) {
+          e.preventDefault();
+        }
+      }
+    };
+
+    // Add the event listener with passive: false to allow preventDefault
+    document.addEventListener('wheel', preventParentScroll, { passive: false });
+    
+    return () => {
+      document.removeEventListener('wheel', preventParentScroll);
+    };
+  }, []);
+
   return (
     <div className="flex flex-col md:flex-row relative h-screen w-screen overflow-hidden">
       {/* Fullscreen overlay when dragging */}
@@ -582,14 +628,14 @@ export default function HumanViewer({
       <div
         className={`hidden md:block flex-shrink-0 transform ${
           isDragging ? '' : 'transition-all duration-300 ease-in-out'
-        } ${'translate-x-0 opacity-100'}`}
+        } ${'translate-x-0 opacity-100'} overflow-y-auto`}
         style={{
           width: `${chatWidth}px`,
           minWidth: `${minChatWidth}px`,
           maxWidth: `${maxChatWidth}px`,
         }}
       >
-        <div className="h-full border-l border-gray-800">
+        <div className="h-full border-l border-gray-800 overflow-y-auto">
           <PartPopup
             part={selectedPart}
             groups={selectedGroups}
