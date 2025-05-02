@@ -7,7 +7,6 @@ import { ProgramDayComponent } from '@/app/components/ui/ProgramDayComponent';
 import { searchYouTubeVideo } from '@/app/utils/youtube';
 import { useAuth } from '@/app/context/AuthContext';
 import { useUser } from '@/app/context/UserContext';
-import { LoadingSpinner } from '@/app/components/ui/LoadingSpinner';
 import { getStorage, ref, getDownloadURL } from 'firebase/storage';
 import { storage } from '@/app/firebase/config';
 import { preloadExerciseVideos } from '@/app/utils/videoPreloader';
@@ -496,10 +495,6 @@ export default function DayDetailPage() {
     );
   };
 
-  if (isLoading) {
-    return <LoadingSpinner />;
-  }
-
   if (authError) {
     return <ErrorDisplay error={authError} />;
   }
@@ -508,12 +503,9 @@ export default function DayDetailPage() {
     return <ErrorDisplay error={error} />;
   }
 
-  if (!program && programStatus !== ProgramStatus.Generating) {
-    return <LoadingSpinner />;
-  }
-
-  if (!selectedProgram || !dayData) {
-    return <LoadingSpinner />;
+  if (isLoading || !dayData) {
+    // We're using the global loader context instead of rendering our own spinner
+    return null;
   }
 
   return (

@@ -5,7 +5,6 @@ import { useAuth } from '@/app/context/AuthContext';
 import { useUser } from '@/app/context/UserContext';
 import { useApp } from '@/app/context/AppContext';
 import { useState, useEffect, useRef, Suspense } from 'react';
-import { LoadingSpinner } from './LoadingSpinner';
 import { ProgramStatus } from '@/app/types/program';
 import { useTranslation } from '@/app/i18n';
 import LanguageSwitcher from './LanguageSwitcher';
@@ -462,7 +461,7 @@ function NavigationMenuContent() {
 function MenuLoadingFallback() {
   return (
     <div className="fixed bottom-0 left-0 z-50 w-full h-16 border-t border-gray-800 bg-gray-900 flex items-center justify-center">
-      <LoadingSpinner />
+      {/* No need to render anything since we're using the global loader */}
     </div>
   );
 }

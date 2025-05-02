@@ -96,21 +96,21 @@ export default function RootLayout({
       </head>
       <body className="bg-gray-900">
         <I18nWrapper>
-        <AuthProvider>
-          <UserProvider>
-            <AppProvider>
-              <LoaderProvider>
-              <ToastProvider>
-                <RouteChangeListener />
-                <SafeArea className="h-full">
-                  <div className="flex-1">{children}</div>
-                  <NavigationMenu />
-                </SafeArea>
-              </ToastProvider>
-              </LoaderProvider>
-            </AppProvider>
-          </UserProvider>
-        </AuthProvider>
+        <LoaderProvider>
+          <AuthProvider>
+            <UserProvider>
+              <AppProvider>
+                <ToastProvider>
+                  <RouteChangeListener />
+                  <SafeArea className="h-full">
+                    <div className="flex-1">{children}</div>
+                    <NavigationMenu />
+                  </SafeArea>
+                </ToastProvider>
+              </AppProvider>
+            </UserProvider>
+          </AuthProvider>
+        </LoaderProvider>
         </I18nWrapper>
       </body>
     </html>

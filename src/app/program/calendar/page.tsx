@@ -6,7 +6,6 @@ import { ExerciseProgramCalendar } from '@/app/components/ui/ExerciseProgramCale
 import { useUser } from '@/app/context/UserContext';
 import { useAuth } from '@/app/context/AuthContext';
 import { ProgramStatus, ProgramDay } from '@/app/types/program';
-import { LoadingSpinner } from '@/app/components/ui/LoadingSpinner';
 import { ErrorDisplay } from '@/app/components/ui/ErrorDisplay';
 
 export default function CalendarPage() {
@@ -21,8 +20,6 @@ export default function CalendarPage() {
   const [error, setError] = useState<Error | null>(null);
 
   const isLoading = authLoading || userLoading;
-
-
 
   // Update page title
   useEffect(() => {
@@ -79,7 +76,8 @@ export default function CalendarPage() {
   };
 
   if (isLoading) {
-    return <LoadingSpinner />;
+    // We're using the global loader context instead of rendering our own spinner
+    return null;
   }
 
   if (authError) {
@@ -91,7 +89,8 @@ export default function CalendarPage() {
   }
 
   if (!program && programStatus !== ProgramStatus.Generating) {
-    return <LoadingSpinner />;
+    // We're using the global loader context instead of rendering our own spinner
+    return null;
   }
 
   return (

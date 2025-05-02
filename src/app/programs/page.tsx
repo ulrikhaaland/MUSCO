@@ -1,11 +1,10 @@
 'use client';
 
-import { useState, Suspense } from 'react';
+import { useState, Suspense, useEffect } from 'react';
 import { useUser } from '@/app/context/UserContext';
 import { format } from 'date-fns';
 import { useRouter } from 'next/navigation';
 import { ProgramStatus, getBodyRegionFromParts } from '@/app/types/program';
-import { LoadingSpinner } from '@/app/components/ui/LoadingSpinner';
 
 function ProgramsContent() {
   const { userPrograms, isLoading, selectProgram, toggleActiveProgram } = useUser();
@@ -41,8 +40,8 @@ function ProgramsContent() {
       
       // If neither has updatedAt, fall back to createdAt
       return sortBy === 'newest'
-        ? b.createdAt.getTime() - a.createdAt.getTime()
-        : a.createdAt.getTime() - b.createdAt.getTime();
+        ? new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        : new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
     });
 
   const handleProgramClick = (programIndex: number) => {
@@ -118,11 +117,8 @@ function ProgramsContent() {
   };
 
   if (isLoading) {
-    return (
-      <div className="h-full flex items-center justify-center">
-        <LoadingSpinner />
-      </div>
-    );
+    // We're using the global loader context instead of rendering our own spinner
+    return null;
   }
 
   if (userPrograms.length === 0) {
@@ -305,7 +301,7 @@ function ProgramsContent() {
           {filteredAndSortedPrograms.map((program, index) => {
             // Find the original index in userPrograms
             const originalIndex = userPrograms.findIndex(p => 
-              p.createdAt.getTime() === program.createdAt.getTime()
+              p.createdAt === program.createdAt
             );
             
             // Get the first exercise program from the list
@@ -387,8 +383,8 @@ function ProgramsContent() {
                   {/* Creation date and toggle switch */}
                   <div className="text-xs text-gray-400 pt-3 flex justify-between items-center">
                     <span>Created: {
-                      program.createdAt && program.createdAt instanceof Date && !isNaN(program.createdAt.getTime())
-                        ? format(program.createdAt, 'MMM d, yyyy')
+                      program.createdAt 
+                        ? format(new Date(program.createdAt), 'MMM d, yyyy')
                         : 'N/A'
                     }</span>
                     
@@ -452,7 +448,7 @@ function ProgramsContent() {
 export default function ProgramsPage() {
   return (
     <div className="min-h-screen bg-gray-900 text-white flex flex-col">
-      <Suspense fallback={<div className="h-screen flex items-center justify-center"><LoadingSpinner /></div>}>
+      <Suspense fallback={null}>
         <ProgramsContent />
       </Suspense>
     </div>

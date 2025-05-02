@@ -293,7 +293,7 @@ export interface UserProgram {
   diagnosis: DiagnosisAssistantResponse;
   questionnaire: ExerciseQuestionnaireAnswers;
   active: boolean;
-  createdAt: Date;
+  createdAt: string;
   updatedAt: Date;
   type: ProgramType;
 }

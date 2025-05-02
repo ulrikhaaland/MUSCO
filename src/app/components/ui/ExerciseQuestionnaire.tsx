@@ -315,7 +315,11 @@ export function ExerciseQuestionnaire({
 
     // Special handling for modality split
     if (field === 'modalitySplit') {
-      return !!answers.cardioType || !!answers.targetAreas.length;
+      // Only collapse if no longer editing AND there's a subsequent question answered
+      // This prevents auto-collapse when selecting cardio type/environment
+      return editingField !== 'modalitySplit' && 
+        ((!!answers.cardioType && !!answers.cardioEnvironment) || 
+         !!answers.targetAreas.length);
     }
 
     // Special handling for cardio type
@@ -497,6 +501,12 @@ export function ExerciseQuestionnaire({
         }
         return;
       }
+    }
+    
+    // Special case for target areas - Skip automatic handling since we now handle it directly in the UI
+    if (field === 'targetAreas' && Array.isArray(value)) {
+      // We now handle target areas in the UI directly
+      return;
     }
     
     // Create a mutable version of the normalized value
@@ -1915,10 +1925,32 @@ export function ExerciseQuestionnaire({
                                   } else if (regionValue === 'Lower Body') {
                                     newTargetAreas = [...LOWER_BODY_PARTS];
                                   }
-                                  handleInputChange(
-                                    'targetAreas',
-                                    newTargetAreas
-                                  );
+                                  
+                                  // Set the answers first
+                                  setAnswers(prev => ({
+                                    ...prev,
+                                    targetAreas: newTargetAreas
+                                  }));
+                                  
+                                  // Close the editing field
+                                  setEditingField(null);
+                                  
+                                  // Scroll to the next question after selecting a region
+                                  setTimeout(() => {
+                                    if (exerciseEnvironmentRef.current) {
+                                      const formElement = formRef.current;
+                                      if (formElement) {
+                                        const formRect = formElement.getBoundingClientRect();
+                                        const elementRect = exerciseEnvironmentRef.current.getBoundingClientRect();
+                                        const relativeTop = elementRect.top - formRect.top + formElement.scrollTop;
+                                        
+                                        formElement.scrollTo({
+                                          top: relativeTop - 60,
+                                          behavior: 'smooth',
+                                        });
+                                      }
+                                    }
+                                  }, 150);
                                 }
                               }}
                               className="peer sr-only"
@@ -1956,10 +1988,13 @@ export function ExerciseQuestionnaire({
                                     : answers.targetAreas.filter(
                                         (p) => p !== part
                                       );
-                                  handleInputChange(
-                                    'targetAreas',
-                                    newTargetAreas
-                                  );
+                                  
+                                  // For individual body parts, just update the state
+                                  // without auto-collapsing or scrolling
+                                  setAnswers(prev => ({
+                                    ...prev,
+                                    targetAreas: newTargetAreas
+                                  }));
                                 }}
                                 className="peer sr-only"
                               />
@@ -2097,7 +2132,7 @@ export function ExerciseQuestionnaire({
                   )
                 ) : (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {translatedWorkoutDurations.map((duration, index) => {
+                    {translatedWorkoutDurations.map((durationText, index) => {
                       // Get the original English value based on program type
                       const originalDuration = programType === ProgramType.Recovery
                         ? RECOVERY_WORKOUT_DURATIONS[index]
@@ -2105,7 +2140,7 @@ export function ExerciseQuestionnaire({
                       
                       return (
                         <label
-                          key={duration}
+                          key={durationText}
                           className="relative flex items-center"
                         >
                           <input
@@ -2124,7 +2159,7 @@ export function ExerciseQuestionnaire({
                             required
                           />
                           <div className="w-full p-4 rounded-xl bg-gray-900/50 ring-1 ring-gray-700/30 text-gray-400 peer-checked:text-white peer-checked:bg-indigo-500/10 peer-checked:ring-indigo-500 cursor-pointer transition-all duration-200">
-                            {duration}
+                            {durationText}
                           </div>
                         </label>
                       );

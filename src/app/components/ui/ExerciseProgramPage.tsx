@@ -2,13 +2,13 @@ import { useState, useEffect, useRef } from 'react';
 import { ProgramDaySummaryComponent } from './ProgramDaySummaryComponent';
 import { ProgramType } from '@/app/shared/types';
 import { Exercise, ExerciseProgram, ProgramDay } from '@/app/types/program';
-import { LoadingSpinner } from './LoadingSpinner';
 import { ProgramFeedbackQuestionnaire, ProgramFeedback } from './ProgramFeedbackQuestionnaire';
 import { submitProgramFeedback } from '@/app/services/programFeedbackService';
 import { useAuth } from '@/app/context/AuthContext';
 import { ExerciseSelectionPage } from './ExerciseSelectionPage';
 import { useUser } from '@/app/context/UserContext';
 import { useTranslation } from '@/app/i18n';
+import { useLoader } from '@/app/context/LoaderContext';
 
 // Updated interface to match the actual program structure
 
@@ -60,19 +60,8 @@ function getNextMonday(d: Date): Date {
   return result;
 }
 
-// Create a reusable loading component
-function ProgramLoadingUI() {
-  return (
-    <div className="w-full flex items-center justify-center bg-gray-900 py-20">
-      <LoadingSpinner
-        message="Creating Program"
-        submessage="Please wait while we generate your personalized exercise program..."
-        fullScreen={false}
-        size="large"
-      />
-    </div>
-  );
-}
+// Create a reusable loading component - no longer needed as we're using the global loader context
+// This function is removed in favor of using the global loader context
 
 export function ExerciseProgramPage({
   program,
@@ -86,6 +75,7 @@ export function ExerciseProgramPage({
   const currentDate = new Date();
   const currentWeekNumber = getWeekNumber(currentDate);
   const currentDayOfWeek = currentDate.getDay() || 7; // Convert Sunday (0) to 7
+  const { setIsLoading } = useLoader();
 
   const [selectedWeek, setSelectedWeek] = useState<number>(1);
   const [expandedDays, setExpandedDays] = useState<number[]>([]);
@@ -108,6 +98,15 @@ export function ExerciseProgramPage({
   const [feedbackScrollPosition, setFeedbackScrollPosition] = useState(0);
   const { answers } = useUser();
   const { t } = useTranslation();
+
+  // Show loader when generating program
+  useEffect(() => {
+    if (isLoading) {
+      setIsLoading(true, 'Creating Program', 'Please wait while we generate your personalized exercise program...');
+    } else {
+      setIsLoading(false);
+    }
+  }, [isLoading, setIsLoading]);
 
   // Check if overview has been seen before
   useEffect(() => {
@@ -517,8 +516,55 @@ export function ExerciseProgramPage({
     );
   };
 
+  // If loading or no program, just return null as we're using the global loader context
   if (isLoading || program === null || !Array.isArray(program.program)) {
-    return <ProgramLoadingUI />;
+    return null;
+  }
+
+  // If showing exercise selection page, display that instead
+  if (showExerciseSelectionPage) {
+    return (
+      <ExerciseSelectionPage
+        previousExercises={getAllProgramExercises()}
+        onSave={(effective, ineffective) => {
+          if (selectionStep === 'effective') {
+            handleExerciseSelection(effective, selectedExercises.ineffective);
+          } else {
+            handleExerciseSelection(selectedExercises.effective, ineffective);
+          }
+        }}
+        onCancel={() => {
+          setShowExerciseSelectionPage(false);
+          setShowFeedbackQuestionnaire(true);
+          
+          // Restore feedback form scroll position
+          setTimeout(() => {
+            if (containerRef.current) {
+              containerRef.current.scrollTo({ top: feedbackScrollPosition, behavior: 'instant' });
+            }
+          }, 0);
+        }}
+        initialStep={selectionStep}
+        initialEffectiveExercises={selectedExercises.effective}
+        initialIneffectiveExercises={selectedExercises.ineffective}
+      />
+    );
+  }
+
+  // If showing feedback questionnaire, display that instead
+  if (showFeedbackQuestionnaire) {
+    return (
+      <ProgramFeedbackQuestionnaire
+        onSubmit={handleFeedbackSubmit}
+        onCancel={handleFeedbackCancel}
+        nextWeekDate={getNextMonday(new Date())}
+        isFeedbackDay={true}
+        previousExercises={getAllProgramExercises()}
+        mostEffectiveExercises={selectedExercises.effective}
+        leastEffectiveExercises={selectedExercises.ineffective}
+        onEditExercises={handleEditSelection}
+      />
+    );
   }
 
   const selectedWeekData = program.program.find((w) => w.week === selectedWeek);
@@ -530,7 +576,12 @@ export function ExerciseProgramPage({
       }`}
     >
       {isLoading ? (
-        <ProgramLoadingUI />
+        <div className="w-full flex items-center justify-center bg-gray-900 py-20">
+          {/* We're using the global loader context now, no need for a spinner here */}
+          <div className="text-center">
+            <p className="text-gray-400">Loading program...</p>
+          </div>
+        </div>
       ) : (
         <>
           <style>{scrollbarHideStyles}</style>

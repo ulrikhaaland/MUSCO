@@ -23,6 +23,7 @@ import { ExtendedUser, UserProfile } from '../types/user';
 import { toast } from '../components/ui/ToastProvider';
 import { httpsCallable } from 'firebase/functions';
 import { useTranslation } from '../i18n';
+import { useLoader } from './LoaderContext';
 
 interface AuthContextType {
   user: ExtendedUser | null;
@@ -55,6 +56,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { href, isReady } = useClientUrl();
   const router = useRouter();
   const { locale } = useTranslation();
+  const { setIsLoading: showGlobalLoader } = useLoader();
   const [user, setUser] = useState<ExtendedUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
@@ -75,6 +77,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           console.log('Valid email link detected');
           handledEmailLink.current = true;
           setLoading(true);
+          showGlobalLoader(true, 'Signing you in...');
           setError(null);
 
           let email = window.localStorage.getItem('emailForSignIn');
@@ -168,6 +171,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         console.error('Error in handleEmailLink:', error);
         handleAuthError(error, 'Failed to handle email link', true);
         setLoading(false);
+        showGlobalLoader(false);
       }
     };
 
@@ -179,6 +183,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (!isReady || handledEmailLink.current) return;
 
     console.log('Setting up auth state listener...');
+    showGlobalLoader(true, 'Checking login status...');
+    
     const unsubscribe = onAuthStateChanged(
       auth,
       async (firebaseUser) => {
@@ -206,11 +212,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
 
         setLoading(false);
+        showGlobalLoader(false);
       },
       (error) => {
         console.error('Auth state change error:', error);
         handleAuthError(error, 'Authentication state error', false);
         setLoading(false);
+        showGlobalLoader(false);
       }
     );
 
@@ -219,11 +227,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const safetyTimer = setTimeout(() => {
       console.log('Auth loading safety timeout triggered');
       setLoading(false);
+      showGlobalLoader(false);
     }, 10000); // 10 seconds max loading time
 
     return () => {
       unsubscribe();
       clearTimeout(safetyTimer);
+      showGlobalLoader(false);
     };
   }, [isReady]);
 
@@ -462,13 +472,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logOut = async () => {
     try {
+      showGlobalLoader(true, 'Signing you out...');
       await signOut(auth);
       setUser(null); // Optimistically set user to null
 
       // Use the router for a cleaner transition
       router.push('/login');
+      showGlobalLoader(false);
     } catch (error) {
       console.error('Error signing out:', error);
+      showGlobalLoader(false);
       return handleAuthError(error, 'Failed to sign out', false);
     }
   };
