@@ -1731,6 +1731,7 @@ export function ExerciseQuestionnaire({
                               checked={answers.cardioType === CARDIO_TYPES[index]}
                               onChange={(e) => {
                                 handleCardioTypeSelect(e.target.value);
+                                // Don't auto-scroll here
                               }}
                               className="peer sr-only"
                               required
@@ -1767,11 +1768,11 @@ export function ExerciseQuestionnaire({
                                 onChange={(e) => {
                                   handleInputChange(
                                     'cardioEnvironment',
-                                    e.target.value,
-                                    cardioTypeRef
+                                    e.target.value
                                   );
                                   setEditingField(null);
-                                  // After selecting environment, scroll to next question
+                                  
+                                  // Only auto-scroll AFTER selecting the cardio environment
                                   setTimeout(() => {
                                     if (answers.exerciseModalities === 'Both' || 
                                         answers.exerciseModalities === t('program.modality.both')) {
@@ -1789,11 +1790,11 @@ export function ExerciseQuestionnaire({
                                         }
                                       }
                                     } else {
-                                      if (exerciseEnvironmentRef.current) {
+                                      if (workoutDurationRef.current) {
                                         const formElement = formRef.current;
                                         if (formElement) {
                                           const formRect = formElement.getBoundingClientRect();
-                                          const elementRect = exerciseEnvironmentRef.current.getBoundingClientRect();
+                                          const elementRect = workoutDurationRef.current.getBoundingClientRect();
                                           const relativeTop = elementRect.top - formRect.top + formElement.scrollTop;
                                           
                                           formElement.scrollTo({

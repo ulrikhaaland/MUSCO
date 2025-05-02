@@ -1,0 +1,193 @@
+{
+  "nodes": [
+    {
+      "id": "repo",
+      "name": "musco-new (root)",
+      "observations": "Monorepo for a Next.js 13 (app router) project that delivers a muscle-oriented exercise application. Uses React, TypeScript, Tailwind CSS, Firebase (functions, hosting, storage rules) and heavy client-side interactive UI."
+    },
+    {
+      "id": "app",
+      "name": "src/app",
+      "observations": "Top-level Next.js application directory. Holds pages, layouts, components, hooks, utils, data and service layers."
+    },
+    {
+      "id": "components",
+      "name": "src/app/components/ui",
+      "observations": "Large collection of presentational and interactive React components (e.g. ChatMessages, ExerciseProgramPage, ExerciseQuestionnaire, AddToHomescreen). Mainly responsible for rendering UI and user workflows."
+    },
+    {
+      "id": "services",
+      "name": "src/app/services",
+      "observations": "Domain logic layer. Implements exercise program generation, questionnaire handling, feedback processing and exercise template CRUD. Files are pure TS modules, called from pages/hooks/components."
+    },
+    {
+      "id": "hooks",
+      "name": "src/app/hooks",
+      "observations": "Custom React hooks that encapsulate stateful logic: useChat (LLM-style chat), useHumanAPI (body-part diagnostics), useControlsTour, usePartChat, useClientUrl."
+    },
+    {
+      "id": "utils",
+      "name": "src/app/utils",
+      "observations": "Stateless helper functions (translation dictionaries, YouTube helpers, anatomy helpers, video preloading, etc.)."
+    },
+    {
+      "id": "firebase",
+      "name": "firebase layer",
+      "observations": "firebase.json, storage.rules, functions/ directory; configures hosting, storage security, and cloud functions to support backend needs."
+    },
+    {
+      "id": "exerciseProgramService",
+      "name": "exerciseProgramService.ts",
+      "observations": "≈ 700 LOC core service that generates and manipulates personalized exercise programs. Central orchestrator for program days, exercises, progression, and persistence."
+    },
+    {
+      "id": "programFeedbackService",
+      "name": "programFeedbackService.ts",
+      "observations": "Handles collection and storage of user feedback about exercise programs."
+    },
+    {
+      "id": "questionnaireService",
+      "name": "questionnaire.ts",
+      "observations": "Creates and evaluates onboarding questionnaires to capture user goals, injuries, equipment, etc."
+    },
+    {
+      "id": "chatMessagesComp",
+      "name": "ChatMessages.tsx",
+      "observations": "≈ 1 000 LOC chat UI that streams model responses, renders Markdown, keeps scroll glued to bottom, and supports message feedback."
+    },
+    {
+      "id": "useChatHook",
+      "name": "useChat.ts",
+      "observations": "Main hook powering chat UX. Manages SSE / streaming, abort controllers, optimistic UI updates, error handling."
+    },
+    {
+      "id": "exerciseQuestionnaireComp",
+      "name": "ExerciseQuestionnaire.tsx",
+      "observations": "≈ 2 100 LOC dynamic form wizard for gathering user data used by exerciseProgramService."
+    },
+    {
+      "id": "exerciseProgramPageComp",
+      "name": "ExerciseProgramPage.tsx",
+      "observations": "Displays a calendar-style overview of the generated program with navigation, completion toggles, and feedback links."
+    },
+    {
+      "id": "globalsCss",
+      "name": "globals.css",
+      "observations": "Tailwind-powered global styles including resets, typography tweaks and dark-mode colors."
+    },
+    {
+      "id": "homePage",
+      "name": "page.tsx (root page)",
+      "observations": "Landing/home screen that wires together questionnaire, chat, and program generator."
+    },
+    {
+      "id": "tailwindConfig",
+      "name": "tailwind.config.(js/ts)",
+      "observations": "Customizes Tailwind theme, adds color palette and safelist for dynamic classes."
+    }
+  ],
+  "edges": [
+    {
+      "source": "repo",
+      "target": "app",
+      "name": "contains",
+      "description": "The root repository contains the Next.js application directory."
+    },
+    {
+      "source": "app",
+      "target": "components",
+      "name": "contains",
+      "description": "UI components live under src/app/components/ui."
+    },
+    {
+      "source": "app",
+      "target": "services",
+      "name": "contains",
+      "description": "Business-logic services located here."
+    },
+    {
+      "source": "app",
+      "target": "hooks",
+      "name": "contains",
+      "description": "Custom React hooks folder."
+    },
+    {
+      "source": "app",
+      "target": "utils",
+      "name": "contains",
+      "description": "Utility helpers folder."
+    },
+    {
+      "source": "repo",
+      "target": "firebase",
+      "name": "integrates-with",
+      "description": "Firebase config and Cloud Functions provide backend capabilities."
+    },
+    {
+      "source": "components",
+      "target": "services",
+      "name": "calls-into",
+      "description": "UI components fetch data and trigger logic from service layer."
+    },
+    {
+      "source": "components",
+      "target": "hooks",
+      "name": "uses",
+      "description": "Components rely on custom hooks for stateful logic (e.g. chat, human API)."
+    },
+    {
+      "source": "hooks",
+      "target": "services",
+      "name": "orchestrates",
+      "description": "Hooks coordinate calls to backend/service functions, encapsulating async control flow."
+    },
+    {
+      "source": "exerciseProgramPageComp",
+      "target": "exerciseProgramService",
+      "name": "depends-on",
+      "description": "Program page renders data generated by the exerciseProgramService."
+    },
+    {
+      "source": "exerciseQuestionnaireComp",
+      "target": "questionnaireService",
+      "name": "submits-to",
+      "description": "Questionnaire component sends answers to the questionnaire service."
+    },
+    {
+      "source": "chatMessagesComp",
+      "target": "useChatHook",
+      "name": "powered-by",
+      "description": "ChatMessages UI derives state and functions from useChat."
+    },
+    {
+      "source": "useChatHook",
+      "target": "services",
+      "name": "invokes",
+      "description": "useChat calls API endpoints / services for AI responses."
+    },
+    {
+      "source": "programFeedbackService",
+      "target": "exerciseProgramService",
+      "name": "augments",
+      "description": "Feedback service records data that can influence future program generation."
+    },
+    {
+      "source": "utils",
+      "target": "components",
+      "name": "utility-for",
+      "description": "Helper functions assist rendering logic and data formatting in components."
+    },
+    {
+      "source": "tailwindConfig",
+      "target": "globalsCss",
+      "name": "configures",
+      "description": "Tailwind configuration feeds into compiled global CSS."
+    },
+    {
+      "source": "homePage",
+      "target": "components",
+      "name": "renders",
+      "description": "Root page composes many UI components for initial user flow."
+    }
+  ]
+}

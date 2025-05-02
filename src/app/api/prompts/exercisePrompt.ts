@@ -214,6 +214,18 @@ EXERCISE SELECTION PROTOCOL
 - Use \`isRestDay: true\` for recovery days when no exercises should be performed
 - Use \`isRestDay: false\` for active workout days
 - Distribute rest days appropriately throughout the week to allow for recovery
+
+- CRITICAL - WORKOUT SCHEDULE DISTRIBUTION RULES:
+  • For 2-3 workout days: Always space workouts with at least one rest day in between (e.g., Mon/Wed/Fri)
+  • For 4+ workout days: Allow a maximum of 2 consecutive workout days before requiring a rest day
+  • For muscle-specific programs: Ensure 48-72 hours between workouts targeting the same muscle groups
+  • Evenly distribute workout days across the week rather than clustering them at the beginning or end
+  • If "current day" falls on a day with consecutive workouts, adjust surrounding days to prevent overtraining
+  • For users with "both" modality (cardio+strength): Alternate between cardio and strength days when possible
+  • Place higher intensity workouts before rest days
+  • If consecutive workout days are necessary, vary intensity (hard day followed by easier day)
+  • For 5+ workout days: Include one "active recovery" workout (very light intensity) in addition to complete rest days
+
 - Always make sure the current day (provided in the input) is an active workout day (\`isRestDay: false\`)
 - IMPORTANT: DO NOT mention the current day in any descriptions or explanations. Do not include text like "start here if you are on day X" or "Day X is an active workout day".
 - Clearly specify the activities for each day, ensuring a balance between workout intensity and rest

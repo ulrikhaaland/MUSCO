@@ -137,10 +137,25 @@ export async function storePendingQuestionnaire(
   diagnosis: DiagnosisAssistantResponse,
   answers: ExerciseQuestionnaireAnswers
 ) {
+  // Create a sanitized copy of the answers to ensure no undefined values
+  const sanitizedAnswers = { ...answers };
+  
+  // Replace undefined with null for modalitySplit and other potentially undefined fields
+  if (sanitizedAnswers.modalitySplit === undefined) {
+    sanitizedAnswers.modalitySplit = null;
+  }
+  
+  // Check for any other undefined values and convert them to null
+  Object.keys(sanitizedAnswers).forEach(key => {
+    if (sanitizedAnswers[key] === undefined) {
+      sanitizedAnswers[key] = null;
+    }
+  });
+
   const tempDocRef = doc(db, 'pendingQuestionnaires', email.toLowerCase());
   await setDoc(tempDocRef, {
     diagnosis,
-    answers,
+    answers: sanitizedAnswers,
     createdAt: new Date().toISOString(),
     email: email.toLowerCase(),
   });
