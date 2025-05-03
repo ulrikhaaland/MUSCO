@@ -67,7 +67,7 @@ export const LoaderProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   return (
     <LoaderContext.Provider
       value={{
-        showLoader,
+        showLoader, 
         hideLoader,
         isLoading: isVisible,
         setIsLoading,

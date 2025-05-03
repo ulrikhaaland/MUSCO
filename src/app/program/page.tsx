@@ -38,7 +38,7 @@ export default function ProgramPage() {
     useState<ExerciseProgram | null>(null);
   const [isOverviewVisible, setIsOverviewVisible] = useState(false);
 
-  const isLoading = authLoading || userLoading;
+  const isLoading = (authLoading || userLoading) && !program;
 
   // Always use the combined program with all weeks
   useEffect(() => {
