@@ -685,6 +685,10 @@ export default function MobileControls({
             <div
               id="bottom-sheet-content"
               className="flex-1 flex px-4 py-2 flex-col"
+              onWheel={(e) => {
+                // Stop wheel events from propagating to parent containers
+                e.stopPropagation();
+              }}
             >
               {/* Show either ChatMessages or ExerciseSelection based on intention */}
               {intention === ProgramIntention.Exercise ? (

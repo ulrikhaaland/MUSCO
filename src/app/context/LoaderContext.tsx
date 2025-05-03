@@ -34,11 +34,16 @@ export const LoaderProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   }, [isVisible, message]);
 
   const showLoader = (newMessage?: string, newSubmessage?: string) => {
+    // Check if the loader is already visible with the same message and submessage
+    if (isVisible && newMessage === message && newSubmessage === submessage) {
+      return; // Skip update if already showing the same message
+    }
+    
     console.log('Showing loader with message:', newMessage);
     
     // Update message first if provided
     if (newMessage) setMessage(newMessage);
-    if (submessage !== newSubmessage) setSubmessage(newSubmessage);
+    if (newSubmessage !== submessage) setSubmessage(newSubmessage);
     
     // Then update visibility
     setIsVisible(true);

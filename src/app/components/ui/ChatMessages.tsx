@@ -115,6 +115,26 @@ export function ChatMessages({
     };
   }, [userTouched]);
 
+  // Add effect to prevent wheel events from propagating to parent components
+  useEffect(() => {
+    // Function to prevent wheel events from propagating to parent containers
+    const preventWheelPropagation = (event: WheelEvent) => {
+      // Always prevent wheel events from propagating, even if there's no overflow
+      event.stopPropagation();
+    };
+
+    // Add event listener to the message container
+    const container = messagesRef.current;
+    if (container) {
+      container.addEventListener('wheel', preventWheelPropagation);
+      
+      // Clean up
+      return () => {
+        container.removeEventListener('wheel', preventWheelPropagation);
+      };
+    }
+  }, [messagesRef]);
+
   // Check if we need to show a placeholder for awaiting response (when user sent a message but no response yet)
   const needsResponsePlaceholder =
     isLoading &&

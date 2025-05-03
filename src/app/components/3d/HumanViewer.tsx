@@ -478,23 +478,34 @@ export default function HumanViewer({
         let target = e.target;
         let preventScroll = true;
         
-        // Check if any parent element is scrollable
+        // Check if any parent element is scrollable and should handle the event
         while (target !== document.body) {
           const style = window.getComputedStyle(target);
           const overflowY = style.getPropertyValue('overflow-y');
           
-          if ((overflowY === 'auto' || overflowY === 'scroll') &&
-              target.scrollHeight > target.clientHeight) {
-            // If element is scrollable and has content to scroll
-            const isAtTop = target.scrollTop === 0;
-            const isAtBottom = Math.abs(target.scrollHeight - target.scrollTop - target.clientHeight) < 1;
+          if ((overflowY === 'auto' || overflowY === 'scroll')) {
+            // This is a scrollable container - check if it can actually scroll
+            const hasVerticalOverflow = target.scrollHeight > target.clientHeight;
             
-            // Only prevent if at boundaries and trying to scroll beyond
-            if ((isAtTop && e.deltaY < 0) || (isAtBottom && e.deltaY > 0)) {
-              preventScroll = true;
-            } else {
-              preventScroll = false;
-              break;
+            if (hasVerticalOverflow) {
+              // Check if we're at the top or bottom boundary
+              const isAtTop = target.scrollTop === 0;
+              const isAtBottom = Math.abs(target.scrollHeight - target.scrollTop - target.clientHeight) < 1;
+              
+              // Only prevent if at boundaries and trying to scroll beyond them
+              if ((isAtTop && e.deltaY < 0) || (isAtBottom && e.deltaY > 0)) {
+                // Still prevent scroll if trying to scroll past limits
+                preventScroll = true;
+              } else {
+                // This container can handle the scroll - don't prevent
+                preventScroll = false;
+                break;
+              }
+            }
+            // Even if no overflow, we want to capture wheel events on scrollable elements
+            // to prevent them from bubbling to parent
+            else {
+              e.stopPropagation();
             }
           }
           

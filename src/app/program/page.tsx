@@ -50,24 +50,19 @@ export default function ProgramPage() {
 
   // Control the loader visibility based on loading states
   useEffect(() => {
-    if (isLoading) {
-      showLoader(t('program.loading'));
-    } else if (!selectedProgram && programStatus !== ProgramStatus.Generating) {
-      showLoader(t('program.loadingData'));
-    } else if (programStatus === ProgramStatus.Generating) {
+    if (programStatus === ProgramStatus.Generating) {
       showLoader(t('program.creating'), t('program.waitMessage'));
+    } else if (isLoading) {
+      if (!selectedProgram) {
+        showLoader(t('program.loadingData'));
+      } else {
+        showLoader(t('program.loading'));
+      }
     } else {
       // Content is ready, hide the loader
       hideLoader();
     }
-  }, [isLoading, selectedProgram, programStatus, showLoader, hideLoader, t]);
-
-  // Force hide the loader when the component is about to be unmounted
-  useEffect(() => {
-    return () => {
-      hideLoader();
-    };
-  }, [hideLoader]);
+  }, [isLoading, selectedProgram, programStatus, t]);
 
   // Update page title when program loads
   useEffect(() => {
@@ -118,7 +113,7 @@ export default function ProgramPage() {
       const timer = setTimeout(() => {
         setUserLoading(false);
       }, 200);
-      
+
       return () => clearTimeout(timer);
     }
   }, [setUserLoading, authLoading]);
