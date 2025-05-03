@@ -162,7 +162,7 @@ export function ChatMessages({
       const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
 
       // Show button when scrolled more than 150px from bottom
-      const scrollThreshold = 150;
+      const scrollThreshold = 250;
       const isScrolledUpEnough = distanceFromBottom > scrollThreshold;
       setShowScrollButton(isScrolledUpEnough);
     },

@@ -5,13 +5,11 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { isSignInWithEmailLink, signInWithEmailLink } from 'firebase/auth';
 import { auth } from '@/app/firebase/config';
 import { useLoader } from '@/app/context/LoaderContext';
-import { useTranslation } from '@/app/i18n';
 
 export default function SharedLinkHandlerContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { setIsLoading } = useLoader();
-  const { t } = useTranslation();
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -85,8 +83,8 @@ export default function SharedLinkHandlerContent() {
           <h2 className="text-xl font-bold text-white mb-3">Authentication Error</h2>
           <p className="text-red-300 mb-4">{error}</p>
           <p className="text-gray-300 mb-6 text-sm">
-            Magic links expire after 1 hour or once they've been used.
-            If you're using a PWA, try using the verification code that was sent in your email.
+            Magic links expire after 1 hour or once they&apos;ve been used.
+            If you&apos;re using a PWA, try using the verification code that was sent in your email.
           </p>
           <button
             onClick={() => router.push('/login')}

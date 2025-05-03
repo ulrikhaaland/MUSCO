@@ -103,7 +103,11 @@ export function QuestionnaireAuthForm() {
           {!isPwa && (
             <button
               type="button"
-              onClick={() => setShowAuthCode(true)}
+              onClick={() => {
+                // Set a timestamp to remember that code entry was requested
+                window.localStorage.setItem('codeRequestTimestamp', Date.now().toString());
+                setShowAuthCode(true);
+              }}
               className="w-full px-6 py-3 rounded-xl bg-indigo-700/30 text-indigo-300 hover:bg-indigo-700/40 hover:text-indigo-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition-colors duration-200"
             >
               {t('auth.alreadyHaveCode')}
@@ -113,7 +117,11 @@ export function QuestionnaireAuthForm() {
           {isPwa && (
             <button
               type="button"
-              onClick={() => setShowAuthCode(true)}
+              onClick={() => {
+                // Set a timestamp to remember that code entry was requested
+                window.localStorage.setItem('codeRequestTimestamp', Date.now().toString());
+                setShowAuthCode(true);
+              }}
               className="w-full px-6 py-3 rounded-xl bg-indigo-600 text-white hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition-colors duration-200"
             >
               {t('login.continue')}

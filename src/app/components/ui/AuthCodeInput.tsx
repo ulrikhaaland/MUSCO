@@ -253,16 +253,6 @@ export function AuthCodeInput() {
           {isLoading ? t('login.verifying') : t('login.verify')}
         </button>
       </form>
-
-      <div className="text-center">
-        <button
-          type="button"
-          onClick={handleBackToEmail}
-          className="text-indigo-400 hover:text-indigo-300 text-sm focus:outline-none"
-        >
-          {t('login.back')}
-        </button>
-      </div>
     </div>
   );
 } 
