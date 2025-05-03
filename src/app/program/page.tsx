@@ -39,7 +39,7 @@ export default function ProgramPage() {
     useState<ExerciseProgram | null>(null);
   const [isOverviewVisible, setIsOverviewVisible] = useState(true);
 
-  const isLoading = authLoading || userLoading || loaderLoading;
+  const isLoading = authLoading || userLoading;
 
   // Always use the combined program with all weeks
   useEffect(() => {
@@ -59,13 +59,13 @@ export default function ProgramPage() {
         showLoader(t('program.loading'));
       }
     } else {
-      if (!selectedProgram) {
+      if (!program) {
         router.push('/');
       }
       // Content is ready, hide the loader
       hideLoader();
     }
-  }, [isLoading, selectedProgram, programStatus, t]);
+  }, [isLoading, selectedProgram, programStatus, t, authLoading]);
 
   // Update page title when program loads
   useEffect(() => {

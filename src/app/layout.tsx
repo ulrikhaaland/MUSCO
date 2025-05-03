@@ -2,7 +2,7 @@
 
 import localFont from 'next/font/local';
 import './globals.css';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { getAnalytics } from 'firebase/analytics';
 import { SafeArea } from './components/ui/SafeArea';
 import { NavigationMenu } from './components/ui/NavigationMenu';
@@ -17,6 +17,12 @@ import { I18nWrapper } from './i18n/setup';
 import { isSignInWithEmailLink } from 'firebase/auth';
 import { auth } from './firebase/config';
 import { useRouter } from 'next/navigation';
+import dynamic from 'next/dynamic';
+
+// Dynamically import the PwaViewportFix component to avoid loading it unnecessarily
+const PwaViewportFix = dynamic(() => import('./components/ui/PwaViewportFix'), { 
+  ssr: false 
+});
 
 // const geistSans = localFont({
 //   src: "./fonts/GeistVF.woff",
@@ -29,12 +35,54 @@ import { useRouter } from 'next/navigation';
 //   weight: "100 900",
 // });
 
+// PWA Safe Area Wrapper component
+const PwaSafeArea = ({ 
+  children, 
+  isPwa 
+}: { 
+  children: React.ReactNode; 
+  isPwa: boolean 
+}) => {
+  if (!isPwa) return <>{children}</>;
+  
+  return (
+    <div className="pwa-safe-area">
+      <style jsx global>{`
+        .pwa-safe-area {
+          /* Apply safe area insets for PWA mode */
+          padding-top: env(safe-area-inset-top, 0);
+          padding-bottom: env(safe-area-inset-bottom, 0);
+          padding-left: env(safe-area-inset-left, 0);
+          padding-right: env(safe-area-inset-right, 0);
+          min-height: 100vh;
+          min-height: -webkit-fill-available;
+          display: flex;
+          flex-direction: column;
+        }
+        
+        /* Additional PWA mode fixes */
+        @supports (-webkit-touch-callout: none) {
+          body {
+            /* Avoid iOS Safari viewport issues */
+            height: -webkit-fill-available;
+          }
+          html {
+            height: -webkit-fill-available;
+          }
+        }
+      `}</style>
+      {children}
+    </div>
+  );
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   const router = useRouter();
+  const [isPwa, setIsPwa] = useState(false);
 
   useEffect(() => {
     // Only initialize analytics in production and on the client side
@@ -55,6 +103,46 @@ export default function RootLayout({
         metaThemeColor.setAttribute('content', '#111827');
       }
     }
+
+    // Detect if we're in PWA mode on component mount
+    if (typeof window !== 'undefined') {
+      const detectPwa = () => {
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || 
+                         (window.navigator as any).standalone ||
+                         document.referrer.includes('android-app://');
+        setIsPwa(isStandalone);
+        
+        // Add a body class for additional CSS targeting
+        if (isStandalone) {
+          document.body.classList.add('pwa-mode');
+        }
+      };
+      
+      // Initial detection
+      detectPwa();
+      
+      // Setup listener for display mode changes
+      const mediaQuery = window.matchMedia('(display-mode: standalone)');
+      const handleChange = (e: MediaQueryListEvent) => {
+        setIsPwa(e.matches);
+        if (e.matches) {
+          document.body.classList.add('pwa-mode');
+        } else {
+          document.body.classList.remove('pwa-mode');
+        }
+      };
+      
+      // Add listener if supported
+      if (mediaQuery.addEventListener) {
+        mediaQuery.addEventListener('change', handleChange);
+      }
+      
+      return () => {
+        if (mediaQuery.removeEventListener) {
+          mediaQuery.removeEventListener('change', handleChange);
+        }
+      };
+    }
   }, []);
 
   // Handle email sign-in links when opened in browser
@@ -66,11 +154,6 @@ export default function RootLayout({
       if (isSignInWithEmailLink(auth, currentUrl)) {
         // Get the email from localStorage
         const email = window.localStorage.getItem('emailForSignIn');
-        
-        // Check if we're in a standalone PWA
-        const isPwa = window.matchMedia('(display-mode: standalone)').matches || 
-                     (window.navigator as any).standalone ||
-                     document.referrer.includes('android-app://');
         
         // Check if we're already in the shared link handler page
         const isInSharedLinkHandler = window.location.pathname.includes('/auth/shared-link');
@@ -112,14 +195,14 @@ export default function RootLayout({
         }
       }
     }
-  }, [router]);
+  }, [router, isPwa]);
 
   return (
     <html lang="en" className="h-full bg-gray-900">
       <head>
         <meta
           name="viewport"
-          content="width=device-width, initial-scale=1, viewport-fit=cover"
+          content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no"
         />
         <link rel="icon" href="/img/logo_biceps.png" />
         <link rel="manifest" href="/manifest.json" />
@@ -155,6 +238,29 @@ export default function RootLayout({
             })();
           `
         }} />
+        
+        {/* Additional CSS specifically for PWA mode */}
+        {isPwa && (
+          <style dangerouslySetInnerHTML={{
+            __html: `
+              /* PWA-specific styles */
+              body {
+                padding: env(safe-area-inset-top, 0) env(safe-area-inset-right, 0) env(safe-area-inset-bottom, 0) env(safe-area-inset-left, 0);
+                -webkit-overflow-scrolling: touch;
+              }
+              
+              /* Fix navigation menu positioning for PWA mode */
+              .pwa-mode .navigation-menu {
+                padding-bottom: env(safe-area-inset-bottom, 0);
+              }
+              
+              /* Ensure content doesn't go under status bar */
+              .pwa-safe-area > * {
+                padding-top: max(env(safe-area-inset-top, 0), 20px);
+              }
+            `
+          }} />
+        )}
       </head>
       <body className="bg-gray-900">
         <I18nWrapper>
@@ -164,10 +270,13 @@ export default function RootLayout({
               <AppProvider>
                 <ToastProvider>
                   <RouteChangeListener />
-                  <SafeArea className="h-full">
-                    <div className="flex-1">{children}</div>
-                    <NavigationMenu />
-                  </SafeArea>
+                  {isPwa && <PwaViewportFix />}
+                  <PwaSafeArea isPwa={isPwa}>
+                    <SafeArea className={`h-full ${isPwa ? 'app-container' : ''}`}>
+                      <div className="flex-1">{children}</div>
+                      <NavigationMenu />
+                    </SafeArea>
+                  </PwaSafeArea>
                 </ToastProvider>
               </AppProvider>
             </UserProvider>

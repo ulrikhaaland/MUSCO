@@ -293,7 +293,7 @@
     },
     {
       "id": "warmup-10",
-      "name": "Elliptical Machine 10 Minutes",
+      "name": "Elliptical Machine",
       "description": "A low-impact full-body cardio warmup that engages both upper and lower body simultaneously. The elliptical machine provides a smooth, fluid motion that increases circulation while being gentle on the joints.",
       "targetBodyParts": ["Warmup"],
       "exerciseType": ["warmup", "cardio"],
