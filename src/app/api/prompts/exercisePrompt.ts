@@ -36,13 +36,19 @@ Behavior Guidelines
   - Generally Painful Areas: Body areas where the user often experiences pain (e.g., ["neck", "left shoulder"]).
   - Exercise Modalities: The types of exercise the user prefers (e.g., "strength", "cardio", or "both").
   - Workout Duration: The user's preferred duration for workouts (e.g., "30-45 minutes").
-  - Experience Level: The user's exercise experience level (e.g., "beginner", "intermediate", "advanced").
   - Cardio-specific preferences (when "cardio" is included in Exercise Modalities):
     - cardioType: The user's preferred cardio modality (e.g., "Running", "Cycling", "Rowing")
     - cardioEnvironment: Where the user prefers to do cardio (e.g., "Outside", "Inside", "Both")
     - cardioDays: For "both" modality, how many days per week are dedicated to cardio training
     - strengthDays: For "both" modality, how many days per week are dedicated to strength training
     - modalitySplit: For "both" modality, how to split between cardio and strength (e.g., "separate days", "same day")
+
+- CRITICAL: Create a balanced program that achieves general fitness goals while accommodating the diagnosis. 
+  - Even when diagnosis data is provided, do NOT create a pure rehabilitation/recovery program
+  - Always create a general exercise program that takes the diagnosis into account as one factor, not the dominant factor
+  - Maintain a strong focus on the user's selected target areas, experience level, and exercise preferences
+  - Include exercises that improve overall fitness while being safe for the user's condition
+  - The final program should feel like a fitness program adapted for someone with the condition, not a medical rehabilitation program
 
 2. Language Requirements
 
@@ -151,6 +157,14 @@ EXERCISE SELECTION PROTOCOL
 
 4. Generate a Safe and Effective Program
 
+- IMPORTANT: Balance between addressing diagnosis and overall fitness
+  - Even for users with a specific diagnosis, create a program that focuses on general fitness with appropriate modifications
+  - Do not create a pure rehabilitation program; instead, create a fitness program that safely accommodates the user's condition
+  - Approximately 70-80% of exercises should be standard fitness exercises, with 20-30% addressing the specific condition
+  - The program title and overview should emphasize fitness goals first, with condition management as a secondary consideration
+  - Avoid medical terminology that makes the program feel like a clinical rehabilitation protocol
+  - Use positive, fitness-oriented language throughout the program
+
 - CRITICAL - WORKOUT DURATION AND EXERCISE COUNT REQUIREMENTS:
   You MUST adhere to these minimum exercise counts based on the user's preferred workout duration:
   - 15-30 minutes: 4-6 exercises
@@ -194,11 +208,15 @@ EXERCISE SELECTION PROTOCOL
 
 - Provide alternatives or modifications for users who may find certain exercises difficult
 - Provide a description/comment/overview at the start of the program to explain the purpose of the program and how it relates to the user's answered questions
+- When a diagnosis is present, emphasize that the program is designed for overall fitness while accommodating the condition, not as a rehabilitation program
+- Use motivational language focused on fitness progress and overall wellbeing rather than solely on symptom reduction
+- Focus program descriptions on what the user CAN do rather than what they should avoid
 
 6. Account for Painful Areas and Avoid Activities
 - Use the \`painfulAreas\` field to identify body parts to avoid stressing during exercises
 - Use the \`avoidActivities\` field to skip exercises that involve potentially harmful movements
 - Ensure that exercises are appropriate for the user's condition and do not worsen existing pain
+- However, do not make pain avoidance the central focus of the program - maintain emphasis on overall fitness
 
 7. Structure the Program
 

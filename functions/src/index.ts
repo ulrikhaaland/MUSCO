@@ -2,6 +2,7 @@ import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 import {Resend} from "resend";
 import {defineString} from "firebase-functions/params";
+import * as crypto from "crypto";
 
 // Initialize Firebase Admin SDK (only once)
 // Ensure you have service account credentials configured
@@ -91,6 +92,18 @@ export const sendLoginEmail = functions.https.onCall(
       );
       console.log(`Sign-in link generated successfully for ${email}`);
 
+      // Generate a 6-digit code for PWA users
+      const code = crypto.randomInt(100000, 999999).toString();
+      
+      // Store the code in Firestore with expiration (1 hour)
+      const expirationTime = Date.now() + 3600000; // 1 hour from now
+      await admin.firestore().collection('authCodes').doc(email).set({
+        code,
+        link,
+        expirationTime,
+        used: false
+      });
+
       let emailSubject = "";
       let emailTitle = ""; // Title used in <title> tag
       let tagline = "";
@@ -101,6 +114,7 @@ export const sendLoginEmail = functions.https.onCall(
       let troubleText = "";
       let footerText = "";
       let preheaderText = "";
+      let codeLabel = "";
 
       if (language === "nb") {
         emailSubject = "Logg inn på bodAI";
@@ -113,6 +127,7 @@ export const sendLoginEmail = functions.https.onCall(
         troubleText = "Hvis knappen ikke virker, kopier og lim inn denne URL-en:";
         footerText = "Du mottar denne e-posten fordi en bodAI-innlogging ble forespurt.<br />Ba du ikke om den? Slett denne meldingen og fortsett med dagen din.";
         preheaderText = "trykk for å logge inn – lenken utløper om 1 t.";
+        codeLabel = "PWA-brukere: Skriv inn denne koden i appen";
       } else { // Default to English
         emailSubject = "Sign In To bodAI";
         emailTitle = "Sign In To bodAI";
@@ -124,6 +139,7 @@ export const sendLoginEmail = functions.https.onCall(
         troubleText = "If the button doesn't work, copy and paste this URL:";
         footerText = "You're receiving this email because a bodAI sign‑in was requested.<br />Didn't request it? Delete this message and carry on.";
         preheaderText = "tap to sign in instantly – link expires in 1h.";
+        codeLabel = "PWA users: Enter this code in the app";
       }
 
       // Inject variables into the existing HTML structure
@@ -166,6 +182,16 @@ export const sendLoginEmail = functions.https.onCall(
                 <a href="${link}" target="_blank" rel="noopener noreferrer" style="display:block;width:100%;max-width:280px;margin:0 auto 24px;padding:16px 24px;font-size:16px;font-weight:600;text-decoration:none;text-align:center;color:#fff;background-color:#4f46e5;border-radius:10px;">
                   ${buttonText}
                 </a>
+
+                <!-- Auth code for PWA users -->
+                <div style="margin:24px 0;padding:16px;background-color:#1e1f2a;border-radius:10px;border:1px solid #2e2f3a;">
+                  <p style="margin:0 0 8px;font-size:14px;color:#9a9fad;">
+                    ${codeLabel}
+                  </p>
+                  <p style="margin:0;font-size:28px;font-weight:700;letter-spacing:3px;color:#fff;">
+                    ${code}
+                  </p>
+                </div>
 
                 <!-- link expiry + fallback -->
                 <p style="margin:0 0 24px;font-size:13px;color:#cbd5e1;word-break:break-all;">
@@ -227,4 +253,84 @@ export const sendLoginEmail = functions.https.onCall(
       );
     }
   },
+);
+
+/**
+ * Validates a numeric authentication code and returns the corresponding sign-in link.
+ * 
+ * @param request - CallableRequest containing { email: string, code: string }
+ * @param _context - CallableContext containing auth information (optional)
+ * @returns Promise with the sign-in link if successful
+ */
+export const validateAuthCode = functions.https.onCall(
+  async (request: functions.https.CallableRequest<{ email: string; code: string }>, _context) => {
+    const { email, code } = request.data;
+
+    // Validate inputs
+    if (!email || !code) {
+      throw new functions.https.HttpsError(
+        "invalid-argument",
+        "Both email and code must be provided",
+      );
+    }
+
+    try {
+      // Get the stored code information
+      const codeDoc = await admin.firestore().collection('authCodes').doc(email).get();
+      
+      if (!codeDoc.exists) {
+        throw new functions.https.HttpsError(
+          "not-found",
+          "No authentication code found for this email",
+        );
+      }
+
+      const codeData = codeDoc.data();
+      
+      // Check if code is already used
+      if (codeData?.used) {
+        throw new functions.https.HttpsError(
+          "already-exists",
+          "This code has already been used",
+        );
+      }
+      
+      // Check if code is expired
+      if (codeData?.expirationTime < Date.now()) {
+        throw new functions.https.HttpsError(
+          "deadline-exceeded",
+          "This code has expired",
+        );
+      }
+      
+      // Verify the code
+      if (codeData?.code !== code) {
+        throw new functions.https.HttpsError(
+          "invalid-argument",
+          "Invalid authentication code",
+        );
+      }
+      
+      // Mark the code as used
+      await admin.firestore().collection('authCodes').doc(email).update({
+        used: true
+      });
+      
+      // Return the sign-in link
+      return { link: codeData.link };
+    } catch (error) {
+      console.error("Error validating auth code:", error);
+      
+      // Re-throw HttpsError if it's already that type
+      if (error instanceof functions.https.HttpsError) {
+        throw error;
+      }
+      
+      // Otherwise wrap in a generic error
+      throw new functions.https.HttpsError(
+        "internal",
+        "Failed to validate authentication code",
+      );
+    }
+  }
 );

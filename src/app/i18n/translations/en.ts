@@ -166,6 +166,26 @@ const translations = {
   'auth.emailAddress': 'Email address',
   'auth.sending': 'Sending',
   'auth.sendLoginLink': 'Send login link',
+  'auth.useAuthCode': 'Enter auth code instead',
+  'auth.alreadyHaveCode': 'I already have an auth code',
+  'auth.codeLogin': 'Code Authentication',
+  'auth.enterCodeFromEmail': 'Enter the 6-digit code from your email',
+  'auth.backToEmail': 'Back to email login',
+  
+  // Login form
+  'login.email': 'Email',
+  'login.continue': 'Continue',
+  'login.enterEmail': 'Enter your email',
+  'login.invalidEmail': 'Please enter a valid email',
+  'login.enterCode': 'Enter verification code',
+  'login.code': 'Verification Code',
+  'login.codeInstructions': 'Enter the 6-digit code sent to your email',
+  'login.invalidCode': 'Please enter a valid 6-digit code',
+  'login.verify': 'Verify Code',
+  'login.verifying': 'Verifying...',
+  'login.success': 'Successfully signed in!',
+  'login.codeFailed': 'Invalid or expired code. Please try again.',
+  'login.back': 'Back',
   
   // Navigation
   'nav.home': 'Home',

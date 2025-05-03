@@ -146,12 +146,6 @@ export default function MobileControls({
         setFooterHeight(footerHeight);
         const contentHeight = totalHeight - headerHeight - footerHeight;
 
-        console.log('Bottom sheet height calculation:', {
-          actualOverlayHeight: overlayHeight,
-          contentHeight,
-          totalHeight,
-        });
-
         if (contentHeight > 0) {
           setContentHeight(contentHeight);
         } else {

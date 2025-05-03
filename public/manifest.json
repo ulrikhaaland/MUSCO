@@ -45,5 +45,22 @@
       "sizes": "798x1730",
       "type": "image/png"
     }
-  ]
+  ],
+  "url_handlers": [
+    {
+      "origin": "https://bodai.no"
+    },
+    {
+      "origin": "https://www.bodai.no"
+    }
+  ],
+  "share_target": {
+    "action": "/auth/shared-link",
+    "method": "GET",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "link"
+    }
+  }
 } 

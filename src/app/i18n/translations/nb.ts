@@ -164,6 +164,26 @@ const translations = {
   'auth.emailAddress': 'E-postadresse',
   'auth.sending': 'Sender',
   'auth.sendLoginLink': 'Send innloggingslenke',
+  'auth.useAuthCode': 'Bruk verifiseringskode i stedet',
+  'auth.alreadyHaveCode': 'Jeg har allerede en verifiseringskode',
+  'auth.codeLogin': 'Kodeautentisering',
+  'auth.enterCodeFromEmail': 'Skriv inn 6-sifret kode fra e-posten din',
+  'auth.backToEmail': 'Tilbake til e-postinnlogging',
+  
+  // Login form
+  'login.email': 'E-post',
+  'login.continue': 'Fortsett',
+  'login.enterEmail': 'Skriv inn e-posten din',
+  'login.invalidEmail': 'Vennligst skriv inn en gyldig e-postadresse',
+  'login.enterCode': 'Skriv inn verifiseringskode',
+  'login.code': 'Verifiseringskode',
+  'login.codeInstructions': 'Skriv inn 6-sifret kode sendt til e-posten din',
+  'login.invalidCode': 'Vennligst skriv inn en gyldig 6-sifret kode',
+  'login.verify': 'Verifiser kode',
+  'login.verifying': 'Verifiserer...',
+  'login.success': 'Vellykket innlogging!',
+  'login.codeFailed': 'Ugyldig eller utløpt kode. Vennligst prøv igjen.',
+  'login.back': 'Tilbake',
   
   // Navigation
   'nav.home': 'Hjem',

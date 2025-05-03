@@ -14,6 +14,9 @@ import { LoaderProvider } from './context/LoaderContext';
 import { RouteChangeListener } from './components/RouteChangeListener';
 import { ToastProvider } from './components/ui/ToastProvider';
 import { I18nWrapper } from './i18n/setup';
+import { isSignInWithEmailLink } from 'firebase/auth';
+import { auth } from './firebase/config';
+import { useRouter } from 'next/navigation';
 
 // const geistSans = localFont({
 //   src: "./fonts/GeistVF.woff",
@@ -31,6 +34,8 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const router = useRouter();
+
   useEffect(() => {
     // Only initialize analytics in production and on the client side
     if (
@@ -48,6 +53,43 @@ export default function RootLayout({
       const metaThemeColor = document.querySelector('meta[name=theme-color]');
       if (metaThemeColor) {
         metaThemeColor.setAttribute('content', '#111827');
+      }
+    }
+  }, []);
+
+  // Handle email sign-in links when opened in browser
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const currentUrl = window.location.href;
+
+      // Check if this is a sign-in link
+      if (isSignInWithEmailLink(auth, currentUrl)) {
+        // Check if we're in a standalone PWA
+        const isPwa = window.matchMedia('(display-mode: standalone)').matches;
+        
+        // If we're not in a PWA, try to redirect to PWA
+        if (!isPwa) {
+          const email = window.localStorage.getItem('emailForSignIn');
+          if (email) {
+            // Try to use URL scheme for a better native PWA experience
+            const pwaRedirect = `${window.location.origin}/auth/shared-link?link=${encodeURIComponent(currentUrl)}`;
+            
+            // See if we can open the PWA app directly
+            try {
+              // First try to open in PWA directly
+              window.location.href = pwaRedirect;
+              
+              // We need to keep this page open for a bit to let the user choose
+              // the PWA in the prompt. After 8 seconds, we'll handle in-browser auth.
+              setTimeout(() => {
+                // If we're still here, continue with browser auth flow
+                console.log('Continuing with in-browser auth');
+              }, 8000);
+            } catch (e) {
+              console.log('Failed to redirect to PWA, continuing in browser');
+            }
+          }
+        }
       }
     }
   }, []);

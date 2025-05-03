@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/app/context/AuthContext';
 import { useTranslation } from '@/app/i18n';
 import Logo from '@/app/components/ui/Logo';
+import { AuthCodeInput } from '@/app/components/ui/AuthCodeInput';
 
 // Loading dots component
 const LoadingDots = () => {
@@ -30,7 +31,16 @@ export function AuthForm({ onSkip }: { onSkip: () => void }) {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
+  const [isPwa, setIsPwa] = useState(false);
+  const [showAuthCode, setShowAuthCode] = useState(false);
   const { sendSignInLink } = useAuth();
+
+  // Detect if running as a PWA (standalone mode)
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setIsPwa(window.matchMedia('(display-mode: standalone)').matches);
+    }
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,6 +60,30 @@ export function AuthForm({ onSkip }: { onSkip: () => void }) {
     }
   };
 
+  if (showAuthCode) {
+    return (
+      <div className="w-full max-w-md space-y-4 px-4 pb-6 overflow-hidden">
+        <Logo variant="vertical" />
+        <div className="text-center">
+          <h2 className="text-3xl font-bold text-white">{t('auth.codeLogin')}</h2>
+          <p className="mt-1 text-sm text-gray-400">
+            {t('auth.enterCodeFromEmail')}
+          </p>
+        </div>
+        
+        <AuthCodeInput />
+        
+        <button
+          type="button"
+          onClick={() => setShowAuthCode(false)}
+          className="w-full px-6 py-3 rounded-xl bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition-colors duration-200"
+        >
+          {t('auth.backToEmail')}
+        </button>
+      </div>
+    );
+  }
+
   if (emailSent) {
     return (
       <div className="w-full max-w-md space-y-4 px-4 pb-6 overflow-hidden">
@@ -65,6 +99,16 @@ export function AuthForm({ onSkip }: { onSkip: () => void }) {
         </div>
 
         <div className="space-y-2 mt-4">
+          {isPwa && (
+            <button
+              type="button" 
+              onClick={() => setShowAuthCode(true)}
+              className="w-full px-6 py-3 rounded-xl bg-indigo-600 text-white hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition-colors duration-200"
+            >
+              {t('auth.useAuthCode')}
+            </button>
+          )}
+
           <button
             type="button"
             onClick={() => setEmailSent(false)}
@@ -132,6 +176,16 @@ export function AuthForm({ onSkip }: { onSkip: () => void }) {
               t('auth.sendLoginLink')
             )}
           </button>
+
+          {isPwa && (
+            <button
+              type="button"
+              onClick={() => setShowAuthCode(true)}
+              className="w-full px-6 py-3 rounded-xl bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition-colors duration-200"
+            >
+              {t('auth.alreadyHaveCode')}
+            </button>
+          )}
 
           <button
             type="button"
