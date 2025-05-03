@@ -38,7 +38,20 @@ export function AuthForm({ onSkip }: { onSkip: () => void }) {
   // Detect if running as a PWA (standalone mode)
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      setIsPwa(window.matchMedia('(display-mode: standalone)').matches);
+      // Check if running in standalone mode (PWA)
+      const isStandalone = 
+        window.matchMedia('(display-mode: standalone)').matches || 
+        (window.navigator as any).standalone ||
+        document.referrer.includes('android-app://');
+      
+      setIsPwa(isStandalone);
+      
+      // For PWA, if we have an email in localStorage already, go straight to auth code view
+      const storedEmail = window.localStorage.getItem('emailForSignIn');
+      if (isStandalone && storedEmail) {
+        setEmail(storedEmail);
+        setShowAuthCode(true);
+      }
     }
   }, []);
 
@@ -62,24 +75,18 @@ export function AuthForm({ onSkip }: { onSkip: () => void }) {
 
   if (showAuthCode) {
     return (
-      <div className="w-full max-w-md space-y-4 px-4 pb-6 overflow-hidden">
-        <Logo variant="vertical" />
-        <div className="text-center">
-          <h2 className="text-3xl font-bold text-white">{t('auth.codeLogin')}</h2>
-          <p className="mt-1 text-sm text-gray-400">
-            {t('auth.enterCodeFromEmail')}
-          </p>
-        </div>
-        
+      <div className="w-full max-w-md px-4 pb-6 overflow-hidden">
         <AuthCodeInput />
         
-        <button
-          type="button"
-          onClick={() => setShowAuthCode(false)}
-          className="w-full px-6 py-3 rounded-xl bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition-colors duration-200"
-        >
-          {t('auth.backToEmail')}
-        </button>
+        <div className="mt-4">
+          <button
+            type="button"
+            onClick={() => setShowAuthCode(false)}
+            className="w-full px-6 py-3 rounded-xl bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition-colors duration-200"
+          >
+            {t('auth.backToEmail')}
+          </button>
+        </div>
       </div>
     );
   }
