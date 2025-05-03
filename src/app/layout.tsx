@@ -64,35 +64,46 @@ export default function RootLayout({
 
       // Check if this is a sign-in link
       if (isSignInWithEmailLink(auth, currentUrl)) {
-        // Check if we're in a standalone PWA
-        const isPwa = window.matchMedia('(display-mode: standalone)').matches;
+        // Get the email from localStorage
+        const email = window.localStorage.getItem('emailForSignIn');
         
-        // If we're not in a PWA, try to redirect to PWA
-        if (!isPwa) {
-          const email = window.localStorage.getItem('emailForSignIn');
-          if (email) {
-            // Try to use URL scheme for a better native PWA experience
-            const pwaRedirect = `${window.location.origin}/auth/shared-link?link=${encodeURIComponent(currentUrl)}`;
-            
-            // See if we can open the PWA app directly
-            try {
-              // First try to open in PWA directly
-              window.location.href = pwaRedirect;
+        // Check if we're in a standalone PWA
+        const isPwa = window.matchMedia('(display-mode: standalone)').matches || 
+                     (window.navigator as any).standalone ||
+                     document.referrer.includes('android-app://');
+        
+        if (email) {
+          try {
+            // If we're in PWA, handle it internally
+            if (isPwa) {
+              // Let the AuthContext handle the sign-in
+              console.log('In PWA mode, letting AuthContext handle sign-in');
+            } 
+            // If we're in browser but came from mobile, redirect to code page
+            else if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+              // Create a redirect to the auth code input page with a flag to show code input
+              console.log('Mobile browser detected, redirecting to code input');
               
-              // We need to keep this page open for a bit to let the user choose
-              // the PWA in the prompt. After 8 seconds, we'll handle in-browser auth.
-              setTimeout(() => {
-                // If we're still here, continue with browser auth flow
-                console.log('Continuing with in-browser auth');
-              }, 8000);
-            } catch (e) {
-              console.log('Failed to redirect to PWA, continuing in browser');
+              // Set the flag to show code input instead of email input
+              window.localStorage.setItem('codeRequestTimestamp', Date.now().toString());
+              
+              // Redirect to login page with code input showing
+              router.push('/login?showcode=true');
             }
+            // Otherwise, we'll let AuthContext handle it normally in browser
+          } catch (e) {
+            console.error('Error handling sign-in link:', e);
+            // Redirect to login page for fallback
+            router.push('/login');
           }
+        } else {
+          // No email in localStorage, redirect to login page
+          console.log('No email found in localStorage, redirecting to login');
+          router.push('/login');
         }
       }
     }
-  }, []);
+  }, [router]);
 
   return (
     <html lang="en" className="h-full bg-gray-900">

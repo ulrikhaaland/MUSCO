@@ -59,6 +59,9 @@ export default function ProgramPage() {
         showLoader(t('program.loading'));
       }
     } else {
+      if (!selectedProgram) {
+        router.push('/');
+      }
       // Content is ready, hide the loader
       hideLoader();
     }

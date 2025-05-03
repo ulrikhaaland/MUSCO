@@ -5,11 +5,13 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { isSignInWithEmailLink, signInWithEmailLink } from 'firebase/auth';
 import { auth } from '@/app/firebase/config';
 import { useLoader } from '@/app/context/LoaderContext';
+import { useTranslation } from '@/app/i18n';
 
 export default function SharedLinkHandlerContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { setIsLoading } = useLoader();
+  const { t } = useTranslation();
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -40,17 +42,30 @@ export default function SharedLinkHandlerContent() {
             return;
           }
 
-          // Attempt to sign in
-          await signInWithEmailLink(auth, email, url);
+          try {
+            // Attempt to sign in
+            await signInWithEmailLink(auth, email, url);
 
-          // Clean up localStorage
-          window.localStorage.removeItem('emailForSignIn');
-          window.localStorage.removeItem('hasPendingQuestionnaire');
+            // Clean up localStorage
+            window.localStorage.removeItem('emailForSignIn');
+            window.localStorage.removeItem('hasPendingQuestionnaire');
 
-          // Redirect to home page
-          router.push('/');
+            // Redirect to home page
+            router.push('/');
+          } catch (authError: any) {
+            console.error('Error signing in with email link:', authError);
+            
+            // Handle specific Firebase error codes
+            if (authError?.code === 'auth/invalid-action-code') {
+              setError(
+                'This sign-in link has expired or has already been used. Please request a new sign-in link.'
+              );
+            } else {
+              setError(`Authentication error: ${authError?.message || 'Unknown error'}`);
+            }
+          }
         } else {
-          setError('Invalid sign-in link.');
+          setError('Invalid sign-in link. Please request a new link.');
         }
       } catch (err) {
         console.error('Error processing shared link:', err);
@@ -66,11 +81,16 @@ export default function SharedLinkHandlerContent() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-4 bg-gray-900 text-white">
       {error ? (
-        <div className="bg-red-900/30 border border-red-500 rounded-lg p-4 max-w-md w-full text-center">
-          <p className="text-red-300">{error}</p>
+        <div className="bg-red-900/30 border border-red-500 rounded-lg p-6 max-w-md w-full text-center">
+          <h2 className="text-xl font-bold text-white mb-3">Authentication Error</h2>
+          <p className="text-red-300 mb-4">{error}</p>
+          <p className="text-gray-300 mb-6 text-sm">
+            Magic links expire after 1 hour or once they've been used.
+            If you're using a PWA, try using the verification code that was sent in your email.
+          </p>
           <button
             onClick={() => router.push('/login')}
-            className="mt-4 px-4 py-2 bg-indigo-600 rounded-md text-white hover:bg-indigo-700 transition-colors"
+            className="mt-4 px-6 py-3 bg-indigo-600 rounded-md text-white hover:bg-indigo-700 transition-colors w-full"
           >
             Back to Login
           </button>

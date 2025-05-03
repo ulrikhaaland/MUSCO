@@ -381,12 +381,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Determine the error message to display
     let displayMessage = fallbackMessage;
 
+    // Check if we're in PWA mode
+    const isPwa = typeof window !== 'undefined' && (
+      window.matchMedia('(display-mode: standalone)').matches || 
+      (window.navigator as any).standalone ||
+      document.referrer.includes('android-app://')
+    );
+
     // Handle specific Firebase error codes
     if (error instanceof Error && 'code' in error) {
       switch (error.code as string) {
         case 'auth/invalid-action-code':
-          displayMessage =
-            'The sign-in link has expired or already been used. Please request a new sign-in link.';
+          displayMessage = isPwa 
+            ? 'This sign-in link has expired or already been used. Please use the 6-digit code that was sent to your email instead.'
+            : 'The sign-in link has expired or already been used. Please request a new sign-in link.';
+          // For PWA users with invalid link, redirect to code input page
+          if (isPwa) {
+            setTimeout(() => {
+              router.push('/login?showcode=true');
+            }, 1500); // Delay to allow toast to show
+          }
           break;
         case 'auth/user-disabled':
           displayMessage =
