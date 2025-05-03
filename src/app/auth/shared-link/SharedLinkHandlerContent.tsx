@@ -48,7 +48,11 @@ export default function SharedLinkHandlerContent() {
             window.localStorage.removeItem('emailForSignIn');
             window.localStorage.removeItem('hasPendingQuestionnaire');
 
-            // Redirect to home page
+            // Important: Set loading to false before navigation
+            setIsLoading(false);
+
+            // Redirect to home page - ensure this executes
+            console.log('Sign-in successful, redirecting to home page');
             router.push('/');
           } catch (authError: any) {
             console.error('Error signing in with email link:', authError);

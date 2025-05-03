@@ -72,6 +72,15 @@ export default function RootLayout({
                      (window.navigator as any).standalone ||
                      document.referrer.includes('android-app://');
         
+        // Check if we're already in the shared link handler page
+        const isInSharedLinkHandler = window.location.pathname.includes('/auth/shared-link');
+        
+        // Don't interfere if we're already in the shared link handler
+        if (isInSharedLinkHandler) {
+          console.log('Already in shared link handler, not redirecting');
+          return;
+        }
+        
         if (email) {
           try {
             // If we're in PWA, handle it internally

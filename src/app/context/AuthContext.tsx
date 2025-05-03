@@ -155,6 +155,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
               // Clear the URL to remove the sign-in link
               window.history.replaceState(null, '', window.location.pathname);
+              
+              // If we're in the shared-link page, don't navigate since that component handles its own navigation
+              if (!window.location.pathname.includes('/auth/shared-link')) {
+                console.log('Auth success, redirecting to home page');
+                
+                // Only hide loader after successful auth
+                hideLoader();
+                setLoading(false);
+                
+                // Navigate to home
+                router.push('/');
+              }
             } catch (error) {
               console.error('Error signing in with email link:', error);
               handleAuthError(error, 'Failed to sign in with email link', true);
