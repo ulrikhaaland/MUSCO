@@ -171,6 +171,13 @@ const translations = {
   'auth.codeLogin': 'Code Authentication',
   'auth.enterCodeFromEmail': 'Enter the 6-digit code from your email',
   'auth.backToEmail': 'Back to email login',
+  'auth.enterEmailForCode': 'Enter your email to receive a login code',
+  'auth.sendCode': 'Send login code',
+  'auth.checkCode': 'Check for the 6-digit code in your email',
+  'auth.checkCodePwa': 'We\'ve sent a 6-digit code to your email',
+  'auth.sentLoginCode': 'We\'ve sent a login code to',
+  'auth.enterCodeToSignIn': 'Enter the 6-digit code to sign in',
+  'auth.codeSentTo': 'Code sent to',
   
   // Login form
   'login.email': 'Email',

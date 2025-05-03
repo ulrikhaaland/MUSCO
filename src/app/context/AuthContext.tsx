@@ -457,8 +457,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
       const origin = window.location.origin; // Get current origin
       const sendLoginEmail = httpsCallable(functions, 'sendLoginEmail');
-      // Pass email, origin, AND language: locale
-      await sendLoginEmail({ email, origin, language: locale });
+      
+      // Check if running in standalone mode (PWA)
+      const isPwa = typeof window !== 'undefined' && (
+        window.matchMedia('(display-mode: standalone)').matches || 
+        (window.navigator as any).standalone ||
+        document.referrer.includes('android-app://')
+      );
+      
+      // Pass email, origin, language, AND isPwa flag
+      await sendLoginEmail({ email, origin, language: locale, isPwa });
     } catch (error) {
       console.error('Error calling sendLoginEmail function:', error);
       // Use toast directly for user feedback
@@ -478,6 +486,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       showGlobalLoader(true, 'Signing you out...');
       await signOut(auth);
       setUser(null); // Optimistically set user to null
+      
+      // Clear authentication related localStorage items
+      window.localStorage.removeItem('emailForSignIn');
+      window.localStorage.removeItem('codeRequestTimestamp');
       
       // Hide loader before navigation
       hideLoader();

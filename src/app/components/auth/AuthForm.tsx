@@ -65,6 +65,11 @@ export function AuthForm({ onSkip }: { onSkip: () => void }) {
       // Save the email locally to complete sign in after user clicks the link
       window.localStorage.setItem('emailForSignIn', email);
       setEmailSent(true);
+      
+      // If in PWA mode, go directly to the code entry screen
+      if (isPwa) {
+        setShowAuthCode(true);
+      }
     } catch (error: any) {
       setError(error.message);
       setEmailSent(false);
@@ -91,31 +96,23 @@ export function AuthForm({ onSkip }: { onSkip: () => void }) {
     );
   }
 
-  if (emailSent) {
+  if (emailSent && !showAuthCode) {
     return (
-      <div className="w-full max-w-md space-y-4 px-4 pb-6 overflow-hidden">
-        <Logo variant="vertical" />
+      <div className="w-full max-w-md space-y-8 px-4">
         <div className="text-center">
           <h2 className="text-3xl font-bold text-white">{t('auth.checkEmail')}</h2>
-          <p className="mt-2 text-gray-400">
-            {t('auth.sentLoginLink')} <span className="text-white">{email}</span>
+          <p className="mt-4 text-gray-400">
+            {isPwa ? t('auth.sentLoginCode') : t('auth.sentLoginLink')} <span className="text-white">{email}</span>
           </p>
-          <p className="mt-1 text-sm text-gray-400">
-            {t('auth.clickLinkToSignIn')}
+          <p className="mt-2 text-sm text-gray-400">
+            {isPwa 
+              ? t('auth.enterCodeToSignIn')
+              : t('auth.clickLinkToSignIn')
+            }
           </p>
         </div>
 
-        <div className="space-y-2 mt-4">
-          {isPwa && (
-            <button
-              type="button" 
-              onClick={() => setShowAuthCode(true)}
-              className="w-full px-6 py-3 rounded-xl bg-indigo-600 text-white hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition-colors duration-200"
-            >
-              {t('auth.useAuthCode')}
-            </button>
-          )}
-
+        <div className="space-y-4">
           <button
             type="button"
             onClick={() => setEmailSent(false)}
@@ -123,14 +120,36 @@ export function AuthForm({ onSkip }: { onSkip: () => void }) {
           >
             {t('auth.useDifferentEmail')}
           </button>
-
-          <button
-            type="button"
-            onClick={onSkip}
-            className="w-full px-6 py-3 rounded-xl bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition-colors duration-200"
-          >
-            {t('auth.continueWithoutLogin')}
-          </button>
+          
+          {!isPwa && (
+            <button
+              type="button"
+              onClick={() => setShowAuthCode(true)}
+              className="w-full px-6 py-3 rounded-xl bg-indigo-700/30 text-indigo-300 hover:bg-indigo-700/40 hover:text-indigo-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition-colors duration-200"
+            >
+              {t('auth.alreadyHaveCode')}
+            </button>
+          )}
+            
+          {isPwa && (
+            <button
+              type="button"
+              onClick={() => setShowAuthCode(true)}
+              className="w-full px-6 py-3 rounded-xl bg-indigo-600 text-white hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition-colors duration-200"
+            >
+              {t('login.continue')}
+            </button>
+          )}
+          
+          {onSkip && (
+            <button
+              type="button"
+              onClick={onSkip}
+              className="w-full px-6 py-3 rounded-xl border border-gray-700 bg-transparent text-gray-400 hover:bg-gray-800 hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition-colors duration-200"
+            >
+              {t('auth.continueWithoutLogin')}
+            </button>
+          )}
         </div>
       </div>
     );
@@ -142,7 +161,7 @@ export function AuthForm({ onSkip }: { onSkip: () => void }) {
       <div className="text-center">
         <h2 className="text-3xl font-bold text-white">{t('auth.welcome')}</h2>
         <p className="mt-1 text-sm text-gray-400">
-          {t('auth.enterEmailToStart')}
+          {isPwa ? t('auth.enterEmailForCode') : t('auth.enterEmailToStart')}
         </p>
       </div>
 
@@ -180,7 +199,7 @@ export function AuthForm({ onSkip }: { onSkip: () => void }) {
                 <LoadingDots />
               </span>
             ) : (
-              t('auth.sendLoginLink')
+              isPwa ? t('auth.sendCode') : t('auth.sendLoginLink')
             )}
           </button>
 

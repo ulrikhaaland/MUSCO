@@ -30,9 +30,31 @@ export function AuthCodeInput() {
   // Get email from localStorage if available (for PWA flow)
   useEffect(() => {
     const storedEmail = window.localStorage.getItem('emailForSignIn');
+    
     if (storedEmail) {
       setEmail(storedEmail);
-      setStep('code');
+      
+      // Only automatically go to code entry if:
+      // 1. We're in PWA mode, OR 
+      // 2. There's a parameter/flag indicating we came from code request flow
+      const isPwa = typeof window !== 'undefined' && (
+        window.matchMedia('(display-mode: standalone)').matches || 
+        (window.navigator as any).standalone ||
+        document.referrer.includes('android-app://')
+      );
+      
+      // Get URL parameter 'showcode' if present
+      const urlParams = new URLSearchParams(window.location.search);
+      const showCode = urlParams.get('showcode');
+      
+      // Check for a recently requested code timestamp
+      const codeRequestTimestamp = window.localStorage.getItem('codeRequestTimestamp');
+      const isRecentCodeRequest = codeRequestTimestamp && 
+        (Date.now() - parseInt(codeRequestTimestamp, 10) < 5 * 60 * 1000); // 5 minutes
+      
+      if (isPwa || showCode === 'true' || isRecentCodeRequest) {
+        setStep('code');
+      }
     }
   }, []);
 
@@ -45,6 +67,10 @@ export function AuthCodeInput() {
     
     // Store email for the code step
     window.localStorage.setItem('emailForSignIn', email);
+    
+    // Set a timestamp for the code request
+    window.localStorage.setItem('codeRequestTimestamp', Date.now().toString());
+    
     setStep('code');
   };
 
@@ -151,7 +177,7 @@ export function AuthCodeInput() {
         <div className="text-center mb-6">
           <Logo variant="vertical" />
           <h2 className="text-3xl font-bold text-white mt-5">{t('login.enterEmail')}</h2>
-          <p className="text-gray-400 text-sm mt-2">{t('auth.enterEmailToStart')}</p>
+          <p className="text-gray-400 text-sm mt-2">{t('auth.enterEmailForCode')}</p>
         </div>
         
         <form onSubmit={handleEmailSubmit} className="space-y-6">
@@ -174,7 +200,7 @@ export function AuthCodeInput() {
             type="submit"
             className="w-full flex justify-center py-3 px-6 rounded-xl shadow-lg text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-200"
           >
-            {t('login.continue')}
+            {t('auth.sendCode')}
           </button>
         </form>
       </div>
@@ -182,61 +208,61 @@ export function AuthCodeInput() {
   }
 
   return (
-    <div className="w-full max-w-md space-y-6">
+    <div className="w-full max-w-md space-y-8">
       <div className="text-center">
         <Logo variant="vertical" />
-        <h2 className="text-3xl font-bold text-white mt-5">{t('auth.codeLogin')}</h2>
+        <h2 className="text-3xl font-bold text-white mt-5">
+          {t('auth.codeLogin')}
+        </h2>
+        
+        {/* Show email that code was sent to */}
+        <p className="text-gray-400 text-sm mt-2">
+          {t('auth.codeSentTo')} <span className="text-white">{email}</span>
+        </p>
+        
         <p className="text-gray-400 text-sm mt-2">
           {t('auth.enterCodeFromEmail')}
         </p>
       </div>
 
       <form onSubmit={handleCodeSubmit} className="space-y-6">
-        {/* 6-digit code input with individual boxes */}
-        <div className="mt-8">
-          <label className="block text-sm font-medium text-gray-300 mb-2 text-center">
-            {t('login.code')}
-          </label>
-          <div className="flex justify-between space-x-2">
-            {[0, 1, 2, 3, 4, 5].map((index) => (
-              <input
-                key={index}
-                ref={inputRefs[index]}
-                type="text"
-                inputMode="numeric"
-                maxLength={1}
-                value={code[index] || ''}
-                onChange={(e) => handleCodeDigitChange(index, e.target.value)}
-                onKeyDown={(e) => handleKeyDown(index, e)}
-                onPaste={index === 0 ? handlePaste : undefined}
-                className="w-12 h-14 text-center text-2xl font-bold bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                required
-                autoComplete="one-time-code"
-              />
-            ))}
-          </div>
-          <p className="text-xs text-gray-400 mt-2 text-center">
-            {t('login.codeInstructions')}
-          </p>
+        <div className="flex justify-center space-x-2 sm:space-x-4">
+          {/* Individual digit inputs */}
+          {[...Array(6)].map((_, index) => (
+            <input
+              key={index}
+              ref={inputRefs[index]}
+              type="text"
+              inputMode="numeric"
+              pattern="[0-9]*"
+              maxLength={1}
+              autoFocus={index === 0}
+              className="w-10 h-12 sm:w-12 sm:h-14 text-center text-2xl font-bold rounded-lg bg-gray-900/50 border border-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              onChange={(e) => handleCodeDigitChange(index, e.target.value)}
+              onKeyDown={(e) => handleKeyDown(index, e)}
+              onPaste={handlePaste}
+            />
+          ))}
         </div>
 
-        <div className="flex flex-col space-y-3">
-          <button
-            type="submit"
-            disabled={isLoading || code.length !== 6}
-            className="w-full flex justify-center py-3 px-6 rounded-xl shadow-lg text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isLoading ? t('login.verifying') : t('login.verify')}
-          </button>
-          <button
-            type="button"
-            onClick={handleBackToEmail}
-            className="w-full flex justify-center py-3 px-6 rounded-xl text-sm font-medium text-gray-300 bg-gray-800 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors duration-200"
-          >
-            {t('login.back')}
-          </button>
-        </div>
+        <button
+          type="submit"
+          disabled={isLoading}
+          className="w-full flex justify-center py-3 px-6 rounded-xl shadow-lg text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {isLoading ? t('login.verifying') : t('login.verify')}
+        </button>
       </form>
+
+      <div className="text-center">
+        <button
+          type="button"
+          onClick={handleBackToEmail}
+          className="text-indigo-400 hover:text-indigo-300 text-sm focus:outline-none"
+        >
+          {t('login.back')}
+        </button>
+      </div>
     </div>
   );
 } 

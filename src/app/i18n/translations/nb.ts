@@ -169,6 +169,13 @@ const translations = {
   'auth.codeLogin': 'Kodeautentisering',
   'auth.enterCodeFromEmail': 'Skriv inn 6-sifret kode fra e-posten din',
   'auth.backToEmail': 'Tilbake til e-postinnlogging',
+  'auth.enterEmailForCode': 'Angi e-postadressen din for å motta en innloggingskode',
+  'auth.sendCode': 'Send innloggingskode',
+  'auth.checkCode': 'Se etter 6-sifret kode i e-posten din',
+  'auth.checkCodePwa': 'Vi har sendt en 6-sifret kode til e-posten din',
+  'auth.sentLoginCode': 'Vi har sendt en innloggingskode til',
+  'auth.enterCodeToSignIn': 'Skriv inn 6-sifret kode for å logge inn',
+  'auth.codeSentTo': 'Kode sendt til',
   
   // Login form
   'login.email': 'E-post',
