@@ -63,7 +63,7 @@ export default function ProgramPage() {
     }
   }, [isLoading, selectedProgram, programStatus, t, authLoading]);
 
-  // Update page title when program loads
+  // Update page title when program loads 
   useEffect(() => {
     if (selectedProgram?.title && typeof document !== 'undefined') {
       document.title = `${selectedProgram.title} | bodAI`;

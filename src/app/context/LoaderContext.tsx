@@ -35,7 +35,7 @@ export const LoaderProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   const showLoader = (newMessage?: string, newSubmessage?: string) => {
     // Check if the loader is already visible with the same message and submessage
-    if (isVisible && newMessage === message && newSubmessage === submessage) {
+    if (isVisible || (newMessage === message && newSubmessage === submessage)) {
       return; // Skip update if already showing the same message
     }
     
@@ -51,7 +51,9 @@ export const LoaderProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   const hideLoader = () => {
     console.log('Hiding loader');
-    setIsVisible(false);
+    if (isVisible) {
+      setIsVisible(false);
+    }
   };
 
   const setIsLoading = (loading: boolean, newMessage?: string, newSubmessage?: string) => {
