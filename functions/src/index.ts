@@ -1,8 +1,8 @@
-import * as functions from "firebase-functions";
-import * as admin from "firebase-admin";
-import {Resend} from "resend";
-import {defineString} from "firebase-functions/params";
-import * as crypto from "crypto";
+import * as functions from 'firebase-functions';
+import * as admin from 'firebase-admin';
+import {Resend} from 'resend';
+import {defineString} from 'firebase-functions/params';
+import * as crypto from 'crypto';
 
 // Initialize Firebase Admin SDK (only once)
 // Ensure you have service account credentials configured
@@ -12,14 +12,18 @@ admin.initializeApp();
 // --- Define Configuration Parameters (v2 style) ---
 // NOTE: These now expect environment variables in UPPERCASE_SNAKE_CASE
 // Set these in the Google Cloud Console for the function or during deployment.
-const resendApiKey = defineString("RESEND_API_KEY");
+const resendApiKey = defineString('RESEND_API_KEY');
 // Remove APP_BASE_URL, as origin will be passed from client
 // const appBaseUrl = defineString("APP_BASE_URL", { default: "http://localhost:3000" });
-const dynamicLinkDomain = defineString("DYNAMIC_LINK_DOMAIN");
-const emailFromAddress = defineString("EMAIL_FROM_ADDRESS", {default: "noreply@bodai.no"});
+const dynamicLinkDomain = defineString('DYNAMIC_LINK_DOMAIN');
+const emailFromAddress = defineString('EMAIL_FROM_ADDRESS', {
+  default: 'noreply@bodai.no',
+});
 // Add ALLOWED_ORIGINS parameter - set this env var to a comma-separated list
-const allowedOrigins = defineString("ALLOWED_ORIGINS", {
-  default: "http://localhost:3000,https://bodai.no,https://www.bodai.no,https://musco-one.vercel.app,https://musco-cakqufmza-zone2lab.vercel.app"});
+const allowedOrigins = defineString('ALLOWED_ORIGINS', {
+  default:
+    'http://localhost:3000,https://bodai.no,https://www.bodai.no,https://musco-one.vercel.app,https://musco-cakqufmza-zone2lab.vercel.app',
+});
 
 // Define the expected data structure within the CallableRequest
 interface RequestData {
@@ -42,34 +46,39 @@ export const sendLoginEmail = functions.https.onCall(
     // const currentAppBaseUrl = appBaseUrl.value();
     const currentDynamicLinkDomain = dynamicLinkDomain.value();
     const currentEmailFromAddress = emailFromAddress.value();
-    const currentAllowedOrigins = allowedOrigins.value().split(","); // Split into array
+    const currentAllowedOrigins = allowedOrigins.value().split(','); // Split into array
 
     if (!currentResendApiKey) {
-      console.error("FATAL ERROR: Resend API key parameter is not set.");
+      console.error('FATAL ERROR: Resend API key parameter is not set.');
       throw new functions.https.HttpsError(
-        "internal",
-        "Email service configuration error. Please contact support.",
+        'internal',
+        'Email service configuration error. Please contact support.',
       );
     }
 
     const email = request.data.email;
     const origin = request.data.origin;
-    const language = request.data.language || "en"; // Get language, default to 'en'
+    const language = request.data.language || 'en'; // Get language, default to 'en'
 
     // --- Validate Origin ---
-    if (!origin || !currentAllowedOrigins.map((o) => o.trim()).includes(origin)) {
-      console.error(`Disallowed origin attempted: ${origin}. Allowed: ${currentAllowedOrigins.join(", ")}`);
+    if (
+      !origin ||
+      !currentAllowedOrigins.map((o) => o.trim()).includes(origin)
+    ) {
+      console.error(
+        `Disallowed origin attempted: ${origin}. Allowed: ${currentAllowedOrigins.join(', ')}`,
+      );
       throw new functions.https.HttpsError(
-        "invalid-argument",
-        "Invalid request origin.",
+        'invalid-argument',
+        'Invalid request origin.',
       );
     }
 
     // Basic email validation
-    if (!email || typeof email !== "string" || !email.includes("@")) {
+    if (!email || typeof email !== 'string' || !email.includes('@')) {
       throw new functions.https.HttpsError(
-        "invalid-argument",
-        "The function must be called with a valid 'email' argument.",
+        'invalid-argument',
+        'The function must be called with a valid \'email\' argument.',
       );
     }
 
@@ -79,7 +88,9 @@ export const sendLoginEmail = functions.https.onCall(
     const actionCodeSettings: admin.auth.ActionCodeSettings = {
       url: `${origin}/`, // Use validated origin root from client
       handleCodeInApp: true,
-      ...(currentDynamicLinkDomain && {dynamicLinkDomain: currentDynamicLinkDomain}),
+      ...(currentDynamicLinkDomain && {
+        dynamicLinkDomain: currentDynamicLinkDomain,
+      }),
     };
 
     try {
@@ -94,52 +105,56 @@ export const sendLoginEmail = functions.https.onCall(
 
       // Generate a 6-digit code for PWA users
       const code = crypto.randomInt(100000, 999999).toString();
-      
+
       // Store the code in Firestore with expiration (1 hour)
       const expirationTime = Date.now() + 3600000; // 1 hour from now
       await admin.firestore().collection('authCodes').doc(email).set({
         code,
         link,
         expirationTime,
-        used: false
+        used: false,
       });
 
-      let emailSubject = "";
-      let emailTitle = ""; // Title used in <title> tag
-      let tagline = "";
-      let heading = "";
+      let emailSubject = '';
+      let emailTitle = ''; // Title used in <title> tag
+      let tagline = '';
+      let heading = '';
       // let valueProp = "";
-      let buttonText = "";
-      let expireText = "";
-      let troubleText = "";
-      let footerText = "";
-      let preheaderText = "";
-      let codeLabel = "";
+      let buttonText = '';
+      let expireText = '';
+      let troubleText = '';
+      let footerText = '';
+      let preheaderText = '';
+      let codeLabel = '';
 
-      if (language === "nb") {
-        emailSubject = "Logg inn på bodAI";
-        emailTitle = "Logg inn på bodAI";
-        tagline = "Intelligent trening, uten friksjonen";
-        heading = "Magisk lenke-innlogging";
+      if (language === 'nb') {
+        emailSubject = 'Logg inn på bodAI';
+        emailTitle = 'Logg inn på bodAI';
+        tagline = 'Intelligent trening, uten friksjonen';
+        heading = 'Magisk lenke-innlogging';
         // valueProp = "bodAI blander banebrytende KI med en interaktiv muskelskjelettmodell for å lage personlige trenings- og rehabiliteringsprogrammer. Klikk nedenfor for å hoppe tilbake – passordfritt.";
-        buttonText = "Åpne bodAI";
-        expireText = "Lenken utløper om 1 time.";
-        troubleText = "Hvis knappen ikke virker, kopier og lim inn denne URL-en:";
-        footerText = "Du mottar denne e-posten fordi en bodAI-innlogging ble forespurt.<br />Ba du ikke om den? Slett denne meldingen og fortsett med dagen din.";
-        preheaderText = "trykk for å logge inn – lenken utløper om 1 t.";
-        codeLabel = "PWA-brukere: Skriv inn denne koden i appen";
-      } else { // Default to English
-        emailSubject = "Sign In To bodAI";
-        emailTitle = "Sign In To bodAI";
-        tagline = "Intelligent Training, Minus The Friction";
-        heading = "Magic Link Sign‑In";
+        buttonText = 'Åpne bodAI';
+        expireText = 'Lenken utløper om 1 time.';
+        troubleText =
+          'Hvis knappen ikke virker, kopier og lim inn denne URL-en:';
+        footerText =
+          'Du mottar denne e-posten fordi en bodAI-innlogging ble forespurt.<br />Ba du ikke om den? Slett denne meldingen og fortsett med dagen din.';
+        preheaderText = 'trykk for å logge inn – lenken utløper om 1 t.';
+        codeLabel = 'PWA-brukere: Skriv inn denne koden i appen';
+      } else {
+        // Default to English
+        emailSubject = 'Sign In To bodAI';
+        emailTitle = 'Sign In To bodAI';
+        tagline = 'Intelligent Training, Minus The Friction';
+        heading = 'Magic Link Sign‑In';
         // valueProp = "bodAI blends cutting‑edge AI with an interactive musculoskeletal model to craft truly personal training & rehab programs. click below to jump back in—password‑free.";
-        buttonText = "Open bodAI";
-        expireText = "Link expires in 1 hour.";
-        troubleText = "If the button doesn't work, copy and paste this URL:";
-        footerText = "You're receiving this email because a bodAI sign‑in was requested.<br />Didn't request it? Delete this message and carry on.";
-        preheaderText = "tap to sign in instantly – link expires in 1h.";
-        codeLabel = "PWA users: Enter this code in the app";
+        buttonText = 'Open bodAI';
+        expireText = 'Link expires in 1 hour.';
+        troubleText = 'If the button doesn\'t work, copy and paste this URL:';
+        footerText =
+          'You\'re receiving this email because a bodAI sign‑in was requested.<br />Didn\'t request it? Delete this message and carry on.';
+        preheaderText = 'tap to sign in instantly – link expires in 1h.';
+        codeLabel = 'PWA users: Enter this code in the app';
       }
 
       // Inject variables into the existing HTML structure
@@ -214,7 +229,9 @@ export const sendLoginEmail = functions.https.onCall(
 </html>
     `;
 
-      console.log(`Attempting to send email via Resend to ${email} in language: ${language}`);
+      console.log(
+        `Attempting to send email via Resend to ${email} in language: ${language}`,
+      );
       await resend.emails.send({
         from: currentEmailFromAddress,
         to: email,
@@ -227,9 +244,10 @@ export const sendLoginEmail = functions.https.onCall(
     } catch (error: unknown) {
       console.error(`Error sending sign-in email to ${email}:`, error);
 
-      let errorMessage = "An unexpected error occurred.";
-      let errorCode: functions.https.FunctionsErrorCode = "internal";
-      let specificMessage = "An unexpected error occurred while sending the sign-in email.";
+      let errorMessage = 'An unexpected error occurred.';
+      let errorCode: functions.https.FunctionsErrorCode = 'internal';
+      let specificMessage =
+        'An unexpected error occurred while sending the sign-in email.';
 
       if (error instanceof functions.https.HttpsError) {
         errorCode = error.code;
@@ -237,12 +255,13 @@ export const sendLoginEmail = functions.https.onCall(
       } else if (error instanceof Error) {
         errorMessage = error.message;
         specificMessage = error.message;
-        if ("code" in error && error.code === "auth/invalid-email") {
-          errorCode = "invalid-argument";
-          specificMessage = "Invalid email address provided.";
-        } else if ("name" in error && error.name === "ResendError") {
-          errorCode = "internal";
-          specificMessage = "Could not send the sign-in email due to a provider issue.";
+        if ('code' in error && error.code === 'auth/invalid-email') {
+          errorCode = 'invalid-argument';
+          specificMessage = 'Invalid email address provided.';
+        } else if ('name' in error && error.name === 'ResendError') {
+          errorCode = 'internal';
+          specificMessage =
+            'Could not send the sign-in email due to a provider issue.';
         }
       }
 
@@ -257,80 +276,87 @@ export const sendLoginEmail = functions.https.onCall(
 
 /**
  * Validates a numeric authentication code and returns the corresponding sign-in link.
- * 
+ *
  * @param request - CallableRequest containing { email: string, code: string }
  * @param _context - CallableContext containing auth information (optional)
  * @returns Promise with the sign-in link if successful
  */
 export const validateAuthCode = functions.https.onCall(
-  async (request: functions.https.CallableRequest<{ email: string; code: string }>, _context) => {
-    const { email, code } = request.data;
+  async (
+    request: functions.https.CallableRequest<{email: string; code: string}>,
+    _context,
+  ) => {
+    const {email, code} = request.data;
 
     // Validate inputs
     if (!email || !code) {
       throw new functions.https.HttpsError(
-        "invalid-argument",
-        "Both email and code must be provided",
+        'invalid-argument',
+        'Both email and code must be provided',
       );
     }
 
     try {
       // Get the stored code information
-      const codeDoc = await admin.firestore().collection('authCodes').doc(email).get();
-      
+      const codeDoc = await admin
+        .firestore()
+        .collection('authCodes')
+        .doc(email)
+        .get();
+
       if (!codeDoc.exists) {
         throw new functions.https.HttpsError(
-          "not-found",
-          "No authentication code found for this email",
+          'not-found',
+          'No authentication code found for this email',
         );
       }
 
       const codeData = codeDoc.data();
-      
+
       // Check if code is already used
       if (codeData?.used) {
         throw new functions.https.HttpsError(
-          "already-exists",
-          "This code has already been used",
+          'already-exists',
+          'This code has already been used',
         );
       }
-      
+
       // Check if code is expired
       if (codeData?.expirationTime < Date.now()) {
         throw new functions.https.HttpsError(
-          "deadline-exceeded",
-          "This code has expired",
+          'deadline-exceeded',
+          'This code has expired',
         );
       }
-      
+
       // Verify the code
       if (codeData?.code !== code) {
         throw new functions.https.HttpsError(
-          "invalid-argument",
-          "Invalid authentication code",
+          'invalid-argument',
+          'Invalid authentication code',
         );
       }
-      
+
       // Mark the code as used
       await admin.firestore().collection('authCodes').doc(email).update({
-        used: true
+        used: true,
       });
-      
+
       // Return the sign-in link
-      return { link: codeData.link };
+      return {link: codeData.link};
     } catch (error) {
-      console.error("Error validating auth code:", error);
-      
+      console.error('Error validating auth code:', error);
+
       // Re-throw HttpsError if it's already that type
       if (error instanceof functions.https.HttpsError) {
         throw error;
       }
-      
+
       // Otherwise wrap in a generic error
       throw new functions.https.HttpsError(
-        "internal",
-        "Failed to validate authentication code",
+        'internal',
+        'Failed to validate authentication code',
       );
     }
-  }
+  },
 );

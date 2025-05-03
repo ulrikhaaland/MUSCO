@@ -12,40 +12,42 @@ export default function SharedLinkHandler() {
   const searchParams = useSearchParams();
   const { setIsLoading } = useLoader();
   const [error, setError] = useState<string | null>(null);
-  
+
   useEffect(() => {
     const handleSharedLink = async () => {
       setIsLoading(true, 'Processing sign-in link...');
-      
+
       try {
         // Extract the link from search params
         const url = searchParams.get('link');
-        
+
         if (!url) {
           setError('No link was shared.');
           setIsLoading(false);
           return;
         }
-        
+
         // Check if this is a valid sign-in link
         if (isSignInWithEmailLink(auth, url)) {
           // Get the email from localStorage
-          let email = window.localStorage.getItem('emailForSignIn');
-          
+          const email = window.localStorage.getItem('emailForSignIn');
+
           // If no email in storage, we can't proceed
           if (!email) {
-            setError('Please use the original device where you requested the sign-in link.');
+            setError(
+              'Please use the original device where you requested the sign-in link.'
+            );
             setIsLoading(false);
             return;
           }
-          
+
           // Attempt to sign in
           await signInWithEmailLink(auth, email, url);
-          
+
           // Clean up localStorage
           window.localStorage.removeItem('emailForSignIn');
           window.localStorage.removeItem('hasPendingQuestionnaire');
-          
+
           // Redirect to home page
           router.push('/');
         } else {
@@ -58,16 +60,16 @@ export default function SharedLinkHandler() {
         setIsLoading(false);
       }
     };
-    
+
     handleSharedLink();
   }, [searchParams, router, setIsLoading]);
-  
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-4 bg-gray-900 text-white">
       {error ? (
         <div className="bg-red-900/30 border border-red-500 rounded-lg p-4 max-w-md w-full text-center">
           <p className="text-red-300">{error}</p>
-          <button 
+          <button
             onClick={() => router.push('/login')}
             className="mt-4 px-4 py-2 bg-indigo-600 rounded-md text-white hover:bg-indigo-700 transition-colors"
           >
@@ -81,4 +83,4 @@ export default function SharedLinkHandler() {
       )}
     </div>
   );
-} 
+}
