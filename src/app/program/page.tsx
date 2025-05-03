@@ -72,29 +72,6 @@ export default function ProgramPage() {
     }
   }, [selectedProgram, t]);
 
-  // Redirect to home if no user or program
-  useEffect(() => {
-    if (!isLoading) {
-      if (!user) {
-        router.push('/');
-      } else if (
-        !userPrograms.length &&
-        !program &&
-        programStatus !== ProgramStatus.Generating
-      ) {
-        router.push('/');
-      }
-    }
-  }, [
-    user,
-    userPrograms,
-    program,
-    programStatus,
-    authLoading,
-    userLoading,
-    router,
-  ]);
-
   // Update page title with program title
   useEffect(() => {
     if (selectedProgram?.title) {
