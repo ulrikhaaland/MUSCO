@@ -7,6 +7,7 @@ import { useApp } from '@/app/context/AppContext';
 import { useState, useEffect, useRef, Suspense } from 'react';
 import { ProgramStatus } from '@/app/types/program';
 import { useTranslation } from '@/app/i18n';
+import { useLoader } from '@/app/context/LoaderContext';
 import LanguageSwitcher from './LanguageSwitcher';
 import DevMobileNavBar from './DevMobileNavBar';
 import Logo from './Logo';
@@ -19,6 +20,7 @@ function NavigationMenuContent() {
   const { user, logOut } = useAuth();
   const { program } = useUser();
   const { completeReset } = useApp();
+  const { setIsLoading, hideLoader } = useLoader();
   const { t } = useTranslation();
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -32,6 +34,16 @@ function NavigationMenuContent() {
   
   // Required min distance for drawer to close (in px)
   const closeThreshold = 120; // px - adjust as needed
+
+  // Ensure loader is hidden when navigation is visible
+  useEffect(() => {
+    // Small delay to ensure other context effects have run
+    const safetyTimer = setTimeout(() => {
+      setIsLoading(false);
+    }, 500);
+    
+    return () => clearTimeout(safetyTimer);
+  }, [setIsLoading]);
 
   // Handle touch start event
   const onTouchStart = (e: React.TouchEvent) => {
@@ -285,12 +297,21 @@ function NavigationMenuContent() {
 
   const handleLogout = async () => {
     try {
+      // Ensure loader is hidden before logout
+      hideLoader();
+      
       await logOut();
       setShowUserMenu(false);
       setDrawerOpen(false);
       setShowDevNavBar(false);
+      
+      // Additional safety measure
+      setTimeout(() => {
+        hideLoader();
+      }, 500);
     } catch (error) {
       console.error('Error during handleLogout:', error);
+      hideLoader();
     }
   };
 

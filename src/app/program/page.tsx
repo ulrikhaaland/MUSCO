@@ -27,8 +27,9 @@ export default function ProgramPage() {
     isLoading: userLoading,
     programStatus,
     userPrograms,
+    setIsLoading: setUserLoading,
   } = useUser();
-  const { showLoader, hideLoader } = useLoader();
+  const { showLoader, hideLoader, isLoading: loaderLoading } = useLoader();
   const [error, setError] = useState<Error | null>(null);
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [loadingVideoExercise, setLoadingVideoExercise] = useState<
@@ -38,7 +39,7 @@ export default function ProgramPage() {
     useState<ExerciseProgram | null>(null);
   const [isOverviewVisible, setIsOverviewVisible] = useState(true);
 
-  const isLoading = authLoading || userLoading;
+  const isLoading = authLoading || userLoading || loaderLoading;
 
   // Always use the combined program with all weeks
   useEffect(() => {
@@ -79,7 +80,7 @@ export default function ProgramPage() {
 
   // Redirect to home if no user or program
   useEffect(() => {
-    if (!authLoading && !userLoading) {
+    if (!isLoading) {
       if (!user) {
         router.push('/');
       } else if (
@@ -108,6 +109,19 @@ export default function ProgramPage() {
       document.title = t('program.defaultPageTitle');
     }
   }, [selectedProgram?.title, t]);
+
+  // Add a new useEffect to set isLoading false when program page loads
+  useEffect(() => {
+    // Set UserContext's isLoading to false once the program page is mounted
+    if (setUserLoading && !authLoading) {
+      // Small delay to ensure the page is fully rendered
+      const timer = setTimeout(() => {
+        setUserLoading(false);
+      }, 200);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [setUserLoading, authLoading]);
 
   const getDayName = (dayOfWeek: number): string => {
     const days = [

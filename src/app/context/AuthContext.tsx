@@ -56,7 +56,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { href, isReady } = useClientUrl();
   const router = useRouter();
   const { locale } = useTranslation();
-  const { setIsLoading: showGlobalLoader } = useLoader();
+  const { setIsLoading: showGlobalLoader, hideLoader } = useLoader();
   const [user, setUser] = useState<ExtendedUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
@@ -472,16 +472,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logOut = async () => {
     try {
+      // Mark the body as logging out to prevent issues
+      document.body.classList.add('logging-out');
+      
       showGlobalLoader(true, 'Signing you out...');
       await signOut(auth);
       setUser(null); // Optimistically set user to null
-
-      // Use the router for a cleaner transition
-      router.push('/login');
-      showGlobalLoader(false);
+      
+      // Hide loader before navigation
+      hideLoader();
+      
+      // Add a small delay before navigation to ensure loader state is updated
+      setTimeout(() => {
+        // Use the router for a cleaner transition
+        router.push('/login');
+      }, 100);
+      
+      // Safety timeout to ensure loader is hidden even if navigation fails
+      setTimeout(() => {
+        hideLoader();
+        document.body.classList.remove('logging-out');
+      }, 1000);
     } catch (error) {
       console.error('Error signing out:', error);
-      showGlobalLoader(false);
+      hideLoader();
+      document.body.classList.remove('logging-out');
       return handleAuthError(error, 'Failed to sign out', false);
     }
   };

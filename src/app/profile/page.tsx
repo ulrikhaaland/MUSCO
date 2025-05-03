@@ -25,7 +25,7 @@ import {
   getTranslatedExerciseEnvironments,
   getTranslatedWorkoutDurations,
   getTranslatedPainBodyParts,
-  getTranslatedPlannedExerciseFrequencyOptions
+  getTranslatedPlannedExerciseFrequencyOptions,
 } from '@/app/utils/programTranslation';
 
 // Custom hook to track window dimensions
@@ -76,15 +76,15 @@ const getFitnessLevels = (t: any) => [
 const EXERCISE_MODALITIES = [
   {
     name: 'strength',
-    description: t => t('profile.modality.strength.description'),
+    description: (t) => t('profile.modality.strength.description'),
   },
   {
     name: 'cardio',
-    description: t => t('profile.modality.cardio.description'),
+    description: (t) => t('profile.modality.cardio.description'),
   },
   {
     name: 'recovery',
-    description: t => t('profile.modality.recovery.description'),
+    description: (t) => t('profile.modality.recovery.description'),
   },
 ];
 
@@ -171,8 +171,9 @@ export default function ProfilePage() {
   const translatedExerciseEnvironments = getTranslatedExerciseEnvironments(t);
   const translatedWorkoutDurations = getTranslatedWorkoutDurations(t);
   const translatedPainBodyParts = getTranslatedPainBodyParts(t);
-  const translatedPlannedFrequencyOptions = getTranslatedPlannedExerciseFrequencyOptions(t);
-  
+  const translatedPlannedFrequencyOptions =
+    getTranslatedPlannedExerciseFrequencyOptions(t);
+
   // Use the translation functions to get localized options
   const healthGoalsOptions = getHealthGoalsOptions(t);
   const dietaryPreferencesOptions = getDietaryPreferencesOptions(t);
@@ -480,13 +481,6 @@ export default function ProfilePage() {
       document.title = 'Profile | MUSCO';
     }
   }, []);
-
-  // Redirect to home if not logged in
-  // useEffect(() => {
-  //   if (!authLoading && !user) {
-  //     router.push('/');
-  //   }
-  // }, [user, authLoading, router]);
 
   const handleLogout = async () => {
     try {
@@ -1168,17 +1162,6 @@ export default function ProfilePage() {
     return Array.from(allPainfulAreas);
   };
 
-  if (authLoading || !user) {
-    return (
-      <div className="fixed inset-0 bg-gray-900/95 backdrop-blur-sm z-50 flex items-center justify-center">
-        <div className="flex flex-col items-center space-y-4">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
-          <p className="text-white text-lg">Loading...</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <>
       <style jsx global>{`
@@ -1267,7 +1250,9 @@ export default function ProfilePage() {
       <style jsx global>
         {fadeInAnimation}
       </style>
-      <div className="bg-gray-900 flex flex-col min-h-screen"> {/* Removed fixed inset-0, added min-h-screen */}
+      <div className="bg-gray-900 flex flex-col min-h-screen">
+        {' '}
+        {/* Removed fixed inset-0, added min-h-screen */}
         <div className="py-3 px-4 flex items-center justify-between">
           {/* Empty spacer to balance the title */}
           <div className="w-10"></div>
@@ -1277,7 +1262,6 @@ export default function ProfilePage() {
           {/* Empty spacer to balance the title */}
           <div className="w-10"></div>
         </div>
-
         {/* Message display */}
         {message && (
           <div
@@ -1296,8 +1280,9 @@ export default function ProfilePage() {
             </button>
           </div>
         )}
-
-        <div className="flex-1"> {/* Removed h-screen overflow-y-auto, added flex-1 */}
+        <div className="flex-1">
+          {' '}
+          {/* Removed h-screen overflow-y-auto, added flex-1 */}
           <div
             ref={topRef}
             className="max-w-md mx-auto px-4 pt-6 pb-8" // Adjusted padding
@@ -1949,22 +1934,23 @@ export default function ProfilePage() {
                                         region === 'Full Body'
                                           ? targetAreas.length ===
                                               translatedTargetBodyParts.length &&
-                                            translatedTargetBodyParts.every((part) =>
-                                              targetAreas.includes(part)
+                                            translatedTargetBodyParts.every(
+                                              (part) =>
+                                                targetAreas.includes(part)
                                             )
                                           : region === 'Upper Body'
-                                          ? UPPER_BODY_PARTS.every((part) =>
-                                              targetAreas.includes(part)
-                                            ) &&
-                                            targetAreas.length ===
-                                              UPPER_BODY_PARTS.length
-                                          : region === 'Lower Body'
-                                          ? LOWER_BODY_PARTS.every((part) =>
-                                              targetAreas.includes(part)
-                                            ) &&
-                                            targetAreas.length ===
-                                              LOWER_BODY_PARTS.length
-                                          : false
+                                            ? UPPER_BODY_PARTS.every((part) =>
+                                                targetAreas.includes(part)
+                                              ) &&
+                                              targetAreas.length ===
+                                                UPPER_BODY_PARTS.length
+                                            : region === 'Lower Body'
+                                              ? LOWER_BODY_PARTS.every((part) =>
+                                                  targetAreas.includes(part)
+                                                ) &&
+                                                targetAreas.length ===
+                                                  LOWER_BODY_PARTS.length
+                                              : false
                                       }
                                       onChange={(e) => {
                                         if (e.target.checked) {
@@ -2046,18 +2032,19 @@ export default function ProfilePage() {
                             {targetAreas.length === TARGET_BODY_PARTS.length
                               ? 'Full Body'
                               : UPPER_BODY_PARTS.every((part) =>
-                                  targetAreas.includes(part)
-                                ) &&
-                                targetAreas.length === UPPER_BODY_PARTS.length
-                              ? 'Upper Body'
-                              : LOWER_BODY_PARTS.every((part) =>
-                                  targetAreas.includes(part)
-                                ) &&
-                                targetAreas.length === LOWER_BODY_PARTS.length
-                              ? 'Lower Body'
-                              : targetAreas.length > 0
-                              ? targetAreas.join(', ')
-                              : 'Not set'}
+                                    targetAreas.includes(part)
+                                  ) &&
+                                  targetAreas.length === UPPER_BODY_PARTS.length
+                                ? 'Upper Body'
+                                : LOWER_BODY_PARTS.every((part) =>
+                                      targetAreas.includes(part)
+                                    ) &&
+                                    targetAreas.length ===
+                                      LOWER_BODY_PARTS.length
+                                  ? 'Lower Body'
+                                  : targetAreas.length > 0
+                                    ? targetAreas.join(', ')
+                                    : 'Not set'}
                           </p>
                         )}
                       </div>
@@ -2092,8 +2079,8 @@ export default function ProfilePage() {
                               ? sleepPattern === 'less-than-6'
                                 ? 'Less than 6 hours'
                                 : sleepPattern === 'more-than-8'
-                                ? 'More than 8 hours'
-                                : `${sleepPattern} hours`
+                                  ? 'More than 8 hours'
+                                  : `${sleepPattern} hours`
                               : 'Not set'}
                           </p>
                         )}
@@ -2274,33 +2261,36 @@ export default function ProfilePage() {
                         {editingField === 'exerciseEnvironments' ? (
                           <div className="space-y-4">
                             <div className="grid grid-cols-1 gap-3">
-                              {translatedExerciseEnvironments.map((environment) => (
-                                <label
-                                  key={environment.name}
-                                  className="relative flex items-center"
-                                >
-                                  <input
-                                    type="radio"
-                                    name="exerciseEnvironments"
-                                    value={environment.name}
-                                    checked={
-                                      exerciseEnvironments === environment.name
-                                    }
-                                    onChange={(e) => {
-                                      setExerciseEnvironments(e.target.value);
-                                    }}
-                                    className="peer sr-only"
-                                  />
-                                  <div className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 text-gray-400 peer-checked:text-white peer-checked:bg-indigo-500/20 peer-checked:border-indigo-500 cursor-pointer transition-all duration-200">
-                                    <div className="font-medium">
-                                      {environment.name}
+                              {translatedExerciseEnvironments.map(
+                                (environment) => (
+                                  <label
+                                    key={environment.name}
+                                    className="relative flex items-center"
+                                  >
+                                    <input
+                                      type="radio"
+                                      name="exerciseEnvironments"
+                                      value={environment.name}
+                                      checked={
+                                        exerciseEnvironments ===
+                                        environment.name
+                                      }
+                                      onChange={(e) => {
+                                        setExerciseEnvironments(e.target.value);
+                                      }}
+                                      className="peer sr-only"
+                                    />
+                                    <div className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 text-gray-400 peer-checked:text-white peer-checked:bg-indigo-500/20 peer-checked:border-indigo-500 cursor-pointer transition-all duration-200">
+                                      <div className="font-medium">
+                                        {environment.name}
+                                      </div>
+                                      <div className="text-sm mt-1 text-gray-500 peer-checked:text-gray-300">
+                                        {environment.description}
+                                      </div>
                                     </div>
-                                    <div className="text-sm mt-1 text-gray-500 peer-checked:text-gray-300">
-                                      {environment.description}
-                                    </div>
-                                  </div>
-                                </label>
-                              ))}
+                                  </label>
+                                )
+                              )}
                             </div>
 
                             {/* Done button */}
@@ -2839,7 +2829,6 @@ export default function ProfilePage() {
             )}
           </div>
         </div>
-
         {/* Fixed save/cancel bar that shows in edit mode */}
         {isEditing && (
           <div className="fixed bottom-0 left-0 right-0 bg-gray-900/95 backdrop-blur-md p-4 border-t border-gray-800 flex justify-center z-50">

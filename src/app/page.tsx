@@ -46,25 +46,6 @@ function HomeContent() {
 
   const isLoading = authLoading || userLoading;
 
-  // Control the loader visibility based on loading state
-  // useEffect(() => {
-  //   // Avoid infinite render loops by not changing the loader state on every render
-  //   const timer = setTimeout(() => {
-  //     if (isLoading && !loaderLoading) {
-  //       setIsLoading(true, t('home.loading'));
-  //     } else if (
-  //       typeof window !== 'undefined' &&
-  //       window.location.pathname !== '/program' &&
-  //       loaderLoading
-  //     ) {
-  //       // Only hide the loader when content is ready
-  //       setIsLoading(false);
-  //     }
-  //   }, 100);
-
-  //   return () => clearTimeout(timer);
-  // }, [isLoading]);
-
   // Set page title
   useEffect(() => {
     if (typeof document !== 'undefined') {
@@ -161,11 +142,6 @@ function HomeContent() {
 
   if (authError) {
     return <ErrorDisplay error={authError} />;
-  }
-
-  // If we're loading, render nothing as the loader is managed via context
-  if (isLoading) {
-    return null;
   }
 
   return (
