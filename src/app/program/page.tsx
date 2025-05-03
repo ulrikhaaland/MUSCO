@@ -37,7 +37,7 @@ export default function ProgramPage() {
   >(null);
   const [selectedProgram, setSelectedProgram] =
     useState<ExerciseProgram | null>(null);
-  const [isOverviewVisible, setIsOverviewVisible] = useState(true);
+  const [isOverviewVisible, setIsOverviewVisible] = useState(false);
 
   const isLoading = authLoading || userLoading;
 
