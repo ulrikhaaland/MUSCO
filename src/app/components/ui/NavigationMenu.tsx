@@ -35,6 +35,15 @@ function NavigationMenuContent() {
   // Required min distance for drawer to close (in px)
   const closeThreshold = 120; // px - adjust as needed
 
+  // Ensure loader is hidden when navigation is visible
+  useEffect(() => {
+    // Small delay to ensure other context effects have run
+    const safetyTimer = setTimeout(() => {
+      setIsLoading(false);
+    }, 500);
+    
+    return () => clearTimeout(safetyTimer);
+  }, [setIsLoading]);
 
   // Handle touch start event
   const onTouchStart = (e: React.TouchEvent) => {
@@ -311,7 +320,7 @@ function NavigationMenuContent() {
   };
 
   return (
-    <div className="fixed bottom-0 left-0 z-50 w-full border-t border-gray-800 bg-gray-900 navigation-menu">
+    <div className="fixed bottom-0 left-0 z-50 w-full border-t border-gray-800 bg-gray-900">
       {/* Hamburger button - only show when drawer is closed */}
       {!drawerOpen && (
         <button
