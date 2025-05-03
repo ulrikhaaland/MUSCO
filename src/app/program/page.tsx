@@ -59,10 +59,6 @@ export default function ProgramPage() {
         showLoader(t('program.loading'));
       }
     } else {
-      if (!program) {
-        router.push('/');
-      }
-      // Content is ready, hide the loader
       hideLoader();
     }
   }, [isLoading, selectedProgram, programStatus, t, authLoading]);
@@ -121,6 +117,39 @@ export default function ProgramPage() {
     }
   }, [setUserLoading, authLoading]);
 
+  // Effect to change theme color when video modal is open
+  useEffect(() => {
+    if (typeof document !== 'undefined') {
+      // Get the theme-color meta tag
+      const metaThemeColor = document.querySelector('meta[name=theme-color]');
+
+      if (metaThemeColor) {
+        if (videoUrl) {
+          // Set to black when video modal is open
+          metaThemeColor.setAttribute('content', '#000000');
+          // Also add a class to the body
+          document.body.classList.add('video-modal-open');
+        } else {
+          // Restore original dark gray when closed
+          metaThemeColor.setAttribute('content', '#111827');
+          // Remove the class
+          document.body.classList.remove('video-modal-open');
+        }
+      }
+    }
+
+    // Cleanup on component unmount
+    return () => {
+      if (typeof document !== 'undefined') {
+        const metaThemeColor = document.querySelector('meta[name=theme-color]');
+        if (metaThemeColor) {
+          metaThemeColor.setAttribute('content', '#111827');
+        }
+        document.body.classList.remove('video-modal-open');
+      }
+    };
+  }, [videoUrl]);
+
   const getDayName = (dayOfWeek: number): string => {
     const days = [
       t('days.monday'),
@@ -176,7 +205,7 @@ export default function ProgramPage() {
     if (!videoUrl) return null;
 
     return (
-      <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
+      <div className="modal-fullscreen-safe-area flex items-center justify-center">
         <div className="relative w-full max-w-4xl aspect-video bg-black rounded-xl overflow-hidden">
           <iframe
             src={videoUrl}

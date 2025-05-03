@@ -224,7 +224,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
 
         setLoading(false);
-        showGlobalLoader(false);
+        // showGlobalLoader(false);
       },
       (error) => {
         console.error('Auth state change error:', error);

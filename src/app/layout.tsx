@@ -17,6 +17,7 @@ import { I18nWrapper } from './i18n/setup';
 import { isSignInWithEmailLink } from 'firebase/auth';
 import { auth } from './firebase/config';
 import { useRouter } from 'next/navigation';
+import { SafeAreaPWA } from './components/ui/SafeAreaPWA';
 
 // const geistSans = localFont({
 //   src: "./fonts/GeistVF.woff",
@@ -164,10 +165,12 @@ export default function RootLayout({
               <AppProvider>
                 <ToastProvider>
                   <RouteChangeListener />
-                  <SafeArea className="h-full">
-                    <div className="flex-1">{children}</div>
-                    <NavigationMenu />
-                  </SafeArea>
+                  <SafeAreaPWA>
+                    <SafeArea className="h-full">
+                      <div className="flex-1">{children}</div>
+                      <NavigationMenu />
+                    </SafeArea>
+                  </SafeAreaPWA>
                 </ToastProvider>
               </AppProvider>
             </UserProvider>

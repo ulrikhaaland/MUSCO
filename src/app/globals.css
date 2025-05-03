@@ -327,3 +327,47 @@ iframe {
 .animate-pulse-subtle {
   animation: pulse-subtle 2s ease-in-out infinite;
 }
+
+/* Safe area insets with fallbacks for older browsers */
+:root {
+  --safe-area-inset-top: env(safe-area-inset-top, 0px);
+  --safe-area-inset-right: env(safe-area-inset-right, 0px);
+  --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-area-inset-left: env(safe-area-inset-left, 0px);
+}
+
+/* Add padding to main PWA container in standalone mode */
+@media (display-mode: standalone) {
+  body {
+    background-color: #111827;
+  }
+}
+
+/* Fullscreen modal safe area utility class */
+.modal-fullscreen-safe-area {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 9999;
+  padding-top: var(--safe-area-inset-top);
+  padding-right: var(--safe-area-inset-right);
+  padding-bottom: var(--safe-area-inset-bottom);
+  padding-left: var(--safe-area-inset-left);
+  background-color: rgba(0, 0, 0, 0.9);
+}
+
+/* Add additional PWA-specific styling for video modals */
+@media (display-mode: standalone) {
+  .modal-fullscreen-safe-area {
+    /* Ensure the background extends fully behind status bar */
+    /* Slightly darker background in PWA mode for better contrast */
+    background-color: rgba(0, 0, 0, 0.95);
+  }
+  
+  /* Force status bar to be black in video modal */
+  body:has(.modal-fullscreen-safe-area) {
+    background-color: black !important;
+  }
+}
