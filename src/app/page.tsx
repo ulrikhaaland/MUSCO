@@ -3,11 +3,9 @@
 import { Suspense, useState, useCallback, useEffect, useRef } from 'react';
 import HumanViewer from './components/3d/HumanViewer';
 import { Gender } from './types';
-import { ProgramStatus } from './types/program';
 import { useApp, ProgramIntention } from './context/AppContext';
 import { useAuth } from './context/AuthContext';
 import { useUser } from './context/UserContext';
-import { useLoader } from './context/LoaderContext';
 import { QuestionnaireAuthForm } from './components/auth/QuestionnaireAuthForm';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { useSearchParams, useRouter } from 'next/navigation';
@@ -21,19 +19,10 @@ function HomeContent() {
     intention,
     setIntention,
     skipAuth,
-    setSkipAuth,
-    shouldNavigateToProgram,
-    setShouldNavigateToProgram,
     completeReset,
   } = useApp();
   const { user, loading: authLoading, error: authError } = useAuth();
-  const {
-    program,
-    isLoading: userLoading,
-    programStatus,
-    pendingQuestionnaire,
-  } = useUser();
-  const { setIsLoading, isLoading: loaderLoading } = useLoader();
+  const { pendingQuestionnaire } = useUser();
   const { t } = useTranslation();
   const [showAuthForm, setShowAuthForm] = useState(false);
   const router = useRouter();
@@ -43,8 +32,6 @@ function HomeContent() {
   const [gender, setGender] = useState<Gender>(genderParam || 'male');
   const [intentionSelected, setIntentionSelected] = useState(false);
   const [shouldResetModel, setShouldResetModel] = useState(false);
-
-  const isLoading = authLoading || userLoading;
 
   // Set page title
   useEffect(() => {

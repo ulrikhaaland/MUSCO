@@ -27,7 +27,6 @@ export default function ProgramPage() {
     isLoading: userLoading,
     programStatus,
     userPrograms,
-    setIsLoading: setUserLoading,
   } = useUser();
   const { showLoader, hideLoader, isLoading: loaderLoading } = useLoader();
   const [error, setError] = useState<Error | null>(null);
@@ -63,7 +62,7 @@ export default function ProgramPage() {
     }
   }, [isLoading, selectedProgram, programStatus, t, authLoading]);
 
-  // Update page title when program loads 
+  // Update page title when program loads
   useEffect(() => {
     if (selectedProgram?.title && typeof document !== 'undefined') {
       document.title = `${selectedProgram.title} | bodAI`;
@@ -75,24 +74,11 @@ export default function ProgramPage() {
   // Update page title with program title
   useEffect(() => {
     if (selectedProgram?.title) {
-      document.title = `${selectedProgram.title} | Musco`;
+      document.title = `${selectedProgram.title} | bodAI`;
     } else {
       document.title = t('program.defaultPageTitle');
     }
   }, [selectedProgram?.title, t]);
-
-  // Add a new useEffect to set isLoading false when program page loads
-  useEffect(() => {
-    // Set UserContext's isLoading to false once the program page is mounted
-    if (setUserLoading && !authLoading) {
-      // Small delay to ensure the page is fully rendered
-      const timer = setTimeout(() => {
-        setUserLoading(false);
-      }, 200);
-
-      return () => clearTimeout(timer);
-    }
-  }, [setUserLoading, authLoading]);
 
   // Effect to change theme color when video modal is open
   useEffect(() => {

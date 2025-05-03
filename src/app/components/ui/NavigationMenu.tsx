@@ -20,30 +20,19 @@ function NavigationMenuContent() {
   const { user, logOut } = useAuth();
   const { program } = useUser();
   const { completeReset } = useApp();
-  const { setIsLoading, hideLoader } = useLoader();
   const { t } = useTranslation();
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const drawerRef = useRef<HTMLDivElement>(null);
   const [showDevNavBar, setShowDevNavBar] = useState(false);
-  
+
   // Add state for tracking drag
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [dragging, setDragging] = useState(false);
   const [dragPosition, setDragPosition] = useState(0);
-  
+
   // Required min distance for drawer to close (in px)
   const closeThreshold = 120; // px - adjust as needed
-
-  // Ensure loader is hidden when navigation is visible
-  useEffect(() => {
-    // Small delay to ensure other context effects have run
-    const safetyTimer = setTimeout(() => {
-      setIsLoading(false);
-    }, 500);
-    
-    return () => clearTimeout(safetyTimer);
-  }, [setIsLoading]);
 
   // Handle touch start event
   const onTouchStart = (e: React.TouchEvent) => {
@@ -54,10 +43,10 @@ function NavigationMenuContent() {
   // Handle touch move event
   const onTouchMove = (e: React.TouchEvent) => {
     if (!touchStart || !dragging) return;
-    
+
     const currentTouch = e.targetTouches[0].clientX;
     const diff = currentTouch - touchStart;
-    
+
     // Only allow dragging to the right (positive diff)
     if (diff > 0) {
       setDragPosition(diff);
@@ -67,27 +56,27 @@ function NavigationMenuContent() {
   // Handle touch end event
   const onTouchEnd = () => {
     if (!dragging) return;
-    
+
     // If dragged past threshold, close drawer
     if (dragPosition > closeThreshold) {
       setDrawerOpen(false);
     }
-    
+
     // Reset drag state
     setDragging(false);
     setDragPosition(0);
   };
-  
+
   // Calculate transform style based on drag position
   const getDrawerStyle = () => {
     if (!drawerOpen) {
       return { transform: 'translateX(100%)' };
     }
-    
+
     if (dragging && dragPosition > 0) {
       return { transform: `translateX(${dragPosition}px)` };
     }
-    
+
     return { transform: 'translateX(0)' };
   };
 
@@ -118,20 +107,20 @@ function NavigationMenuContent() {
     if (drawerOpen) {
       // Save the current scroll position
       const scrollY = window.scrollY;
-      
+
       // Add a class to prevent scrolling on the body
       document.body.style.position = 'fixed';
       document.body.style.top = `-${scrollY}px`;
       document.body.style.width = '100%';
       document.body.style.overflowY = 'hidden';
-      
+
       return () => {
         // Restore scrolling when component unmounts or drawer closes
         document.body.style.position = '';
         document.body.style.top = '';
         document.body.style.width = '';
         document.body.style.overflowY = '';
-        
+
         // Restore scroll position
         window.scrollTo(0, scrollY);
       };
@@ -261,10 +250,11 @@ function NavigationMenuContent() {
     ) {
       return true;
     }
-    
+
     if (
-      path === '/program' && 
-      (currentBasePath === '/program' || currentBasePath.startsWith('/program/day/'))
+      path === '/program' &&
+      (currentBasePath === '/program' ||
+        currentBasePath.startsWith('/program/day/'))
     ) {
       return true;
     }
@@ -298,20 +288,13 @@ function NavigationMenuContent() {
   const handleLogout = async () => {
     try {
       // Ensure loader is hidden before logout
-      hideLoader();
-      
+
       await logOut();
       setShowUserMenu(false);
       setDrawerOpen(false);
       setShowDevNavBar(false);
-      
-      // Additional safety measure
-      setTimeout(() => {
-        hideLoader();
-      }, 500);
     } catch (error) {
       console.error('Error during handleLogout:', error);
-      hideLoader();
     }
   };
 
@@ -376,8 +359,8 @@ function NavigationMenuContent() {
                     isActive(item.path, item.name)
                       ? 'text-white bg-indigo-900/70 font-medium'
                       : item.disabled
-                      ? 'text-gray-400 cursor-not-allowed'
-                      : 'text-gray-300 hover:text-white hover:bg-gray-800/70'
+                        ? 'text-gray-400 cursor-not-allowed'
+                        : 'text-gray-300 hover:text-white hover:bg-gray-800/70'
                   }`}
                   disabled={item.disabled}
                 >
@@ -393,9 +376,7 @@ function NavigationMenuContent() {
         <div className="border-t border-gray-800 pb-4 flex-shrink-0">
           {/* Language Switcher */}
           <div className="mt-8 px-8">
-            <p className="text-sm text-gray-400 mb-4">
-              {t('common.language')}
-            </p>
+            <p className="text-sm text-gray-400 mb-4">{t('common.language')}</p>
             <LanguageSwitcher showFullNames />
           </div>
 
@@ -430,17 +411,17 @@ function NavigationMenuContent() {
               </svg>
               {user ? t('auth.signOut') : t('auth.signIn')}
             </div>
-            <svg 
-              className="w-4 h-4 text-gray-500" 
-              fill="none" 
-              stroke="currentColor" 
+            <svg
+              className="w-4 h-4 text-gray-500"
+              fill="none"
+              stroke="currentColor"
               strokeWidth={1.5}
               viewBox="0 0 24 24"
             >
-              <path 
-                strokeLinecap="round" 
-                strokeLinejoin="round" 
-                d="M9 5l7 7-7 7" 
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M9 5l7 7-7 7"
               />
             </svg>
           </button>

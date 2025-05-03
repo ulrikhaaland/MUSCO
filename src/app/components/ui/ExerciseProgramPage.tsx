@@ -2,13 +2,15 @@ import { useState, useEffect, useRef } from 'react';
 import { ProgramDaySummaryComponent } from './ProgramDaySummaryComponent';
 import { ProgramType } from '@/app/shared/types';
 import { Exercise, ExerciseProgram, ProgramDay } from '@/app/types/program';
-import { ProgramFeedbackQuestionnaire, ProgramFeedback } from './ProgramFeedbackQuestionnaire';
+import {
+  ProgramFeedbackQuestionnaire,
+  ProgramFeedback,
+} from './ProgramFeedbackQuestionnaire';
 import { submitProgramFeedback } from '@/app/services/programFeedbackService';
 import { useAuth } from '@/app/context/AuthContext';
 import { ExerciseSelectionPage } from './ExerciseSelectionPage';
 import { useUser } from '@/app/context/UserContext';
 import { useTranslation } from '@/app/i18n';
-import { useLoader } from '@/app/context/LoaderContext';
 
 // Updated interface to match the actual program structure
 
@@ -75,38 +77,31 @@ export function ExerciseProgramPage({
   const currentDate = new Date();
   const currentWeekNumber = getWeekNumber(currentDate);
   const currentDayOfWeek = currentDate.getDay() || 7; // Convert Sunday (0) to 7
-  const { setIsLoading } = useLoader();
 
   const [selectedWeek, setSelectedWeek] = useState<number>(1);
   const [expandedDays, setExpandedDays] = useState<number[]>([]);
   const [showOverview, setShowOverview] = useState(true);
   const containerRef = useRef<HTMLDivElement>(null);
-  const [showFeedbackQuestionnaire, setShowFeedbackQuestionnaire] = useState(false);
-  const [isGeneratingProgram, setIsGeneratingProgram] = useState(false);
+  const [showFeedbackQuestionnaire, setShowFeedbackQuestionnaire] =
+    useState(false);
   const { user } = useAuth();
-  const [showExerciseSelectionPage, setShowExerciseSelectionPage] = useState(false);
+  const [showExerciseSelectionPage, setShowExerciseSelectionPage] =
+    useState(false);
   const [selectedExercises, setSelectedExercises] = useState<{
     effective: string[];
     ineffective: string[];
   }>({
     effective: [],
-    ineffective: []
+    ineffective: [],
   });
   // Add state to track which selection step to show
-  const [selectionStep, setSelectionStep] = useState<'effective' | 'ineffective'>('effective');
+  const [selectionStep, setSelectionStep] = useState<
+    'effective' | 'ineffective'
+  >('effective');
   // Add state to save feedback form scroll position
   const [feedbackScrollPosition, setFeedbackScrollPosition] = useState(0);
   const { answers } = useUser();
   const { t } = useTranslation();
-
-  // Show loader when generating program
-  useEffect(() => {
-    if (isLoading) {
-      setIsLoading(true, 'Creating Program', 'Please wait while we generate your personalized exercise program...');
-    } else {
-      setIsLoading(false);
-    }
-  }, [isLoading, setIsLoading]);
 
   // Check if overview has been seen before
   useEffect(() => {
@@ -123,7 +118,7 @@ export function ExerciseProgramPage({
       localStorage.setItem(programId, 'true');
     }
   }, [program]);
-  
+
   // Notify parent when overview visibility changes
   useEffect(() => {
     if (onOverviewVisibilityChange) {
@@ -136,15 +131,15 @@ export function ExerciseProgramPage({
     const checkFeedbackDay = () => {
       const nextMonday = getNextMonday(new Date());
       const today = new Date();
-      
+
       // Check if the dates match (ignoring time)
       const todayStr = today.toDateString();
       const nextMondayStr = nextMonday.toDateString();
-      
+
       // Set to show feedback questionnaire directly instead of exercise selection
       setShowFeedbackQuestionnaire(todayStr === nextMondayStr);
     };
-    
+
     checkFeedbackDay();
   }, []);
 
@@ -153,24 +148,27 @@ export function ExerciseProgramPage({
   };
 
   // Function to handle exercise selection
-  const handleExerciseSelection = (effectiveExercises: string[], ineffectiveExercises: string[]) => {
+  const handleExerciseSelection = (
+    effectiveExercises: string[],
+    ineffectiveExercises: string[]
+  ) => {
     // Update the selected exercises
     if (selectionStep === 'effective') {
-      setSelectedExercises(prev => ({
+      setSelectedExercises((prev) => ({
         ...prev,
-        effective: effectiveExercises
+        effective: effectiveExercises,
       }));
     } else {
-      setSelectedExercises(prev => ({
+      setSelectedExercises((prev) => ({
         ...prev,
-        ineffective: ineffectiveExercises
+        ineffective: ineffectiveExercises,
       }));
     }
-    
+
     // Return to the feedback form
     setShowExerciseSelectionPage(false);
     setShowFeedbackQuestionnaire(true);
-    
+
     // Restore feedback form scroll position using window
     setTimeout(() => {
       // Use window.scrollTo for page scroll restoration
@@ -182,11 +180,11 @@ export function ExerciseProgramPage({
   const handleEditSelection = (step: 'effective' | 'ineffective') => {
     // Save current window scroll position before switching
     setFeedbackScrollPosition(window.scrollY);
-    
+
     setSelectionStep(step);
     setShowFeedbackQuestionnaire(false);
     setShowExerciseSelectionPage(true);
-    
+
     // Reset window scroll position when switching to exercise selection
     setTimeout(() => {
       window.scrollTo({ top: 0, behavior: 'instant' });
@@ -235,7 +233,10 @@ export function ExerciseProgramPage({
         `[data-day="${currentDayOfWeek}"]`
       );
       // Scroll only if the week hasn't scrolled it already
-      if (dayButton && weekButton?.getBoundingClientRect().bottom < window.innerHeight * 0.8) { 
+      if (
+        dayButton &&
+        weekButton?.getBoundingClientRect().bottom < window.innerHeight * 0.8
+      ) {
         dayButton.scrollIntoView({
           behavior: 'smooth',
           block: 'nearest',
@@ -305,7 +306,7 @@ export function ExerciseProgramPage({
 
     if (isExpanding) {
       setExpandedDays([dayNumber]); // Show only the clicked day
-      
+
       // Scroll the selected day button into view using element.scrollIntoView
       setTimeout(() => {
         const dayButton = document.querySelector(`[data-day="${dayNumber}"]`);
@@ -320,8 +321,8 @@ export function ExerciseProgramPage({
         // Scroll towards the bottom after day potentially scrolled into view
         // Use window scroll
         setTimeout(() => {
-           const targetY = document.body.scrollHeight * 0.8; // Scroll 80% down
-           window.scrollTo({ top: targetY, behavior: 'smooth' });
+          const targetY = document.body.scrollHeight * 0.8; // Scroll 80% down
+          window.scrollTo({ top: targetY, behavior: 'smooth' });
         }, 150); // Delay slightly after element scroll
       }, 0);
     }
@@ -342,31 +343,33 @@ export function ExerciseProgramPage({
       console.error('User must be logged in to submit feedback');
       return Promise.reject(new Error('User must be logged in'));
     }
-    
+
     try {
-      setIsGeneratingProgram(true);
-      
       // Extract only the latest week from the program for the follow-up
-      const latestWeekNumber = Math.max(...(program?.program?.map(week => week.week) || [0]));
-      const latestWeek = program?.program?.find(week => week.week === latestWeekNumber);
-      
+      const latestWeekNumber = Math.max(
+        ...(program?.program?.map((week) => week.week) || [0])
+      );
+      const latestWeek = program?.program?.find(
+        (week) => week.week === latestWeekNumber
+      );
+
       // Create a new program object with only the latest week
       const programWithLatestWeek = {
         ...program,
         program: latestWeek ? [latestWeek] : [],
-        questionnaire: answers // Include the original questionnaire answers
+        questionnaire: answers, // Include the original questionnaire answers
       };
-      
+
       // Merge selected exercises with feedback data
       const feedbackWithExercises = {
         ...feedback,
         mostEffectiveExercises: selectedExercises.effective,
-        leastEffectiveExercises: selectedExercises.ineffective
+        leastEffectiveExercises: selectedExercises.ineffective,
       };
-      
+
       // Use the program follow up assistant ID
       const programFollowUpAssistantId = 'asst_PjMTzHis7vLSeDZRhbBB1tbe';
-      
+
       // Submit feedback and generate new program with the specific assistant
       const newProgramId = await submitProgramFeedback(
         user.uid,
@@ -374,25 +377,24 @@ export function ExerciseProgramPage({
         feedbackWithExercises,
         programFollowUpAssistantId
       );
-      
+
       console.log('New program generated with ID:', newProgramId);
-      
+
       // Redirect to refresh program view
       window.location.href = '/program';
-      
+
       return Promise.resolve();
     } catch (error) {
       console.error('Error generating new program:', error);
-      setIsGeneratingProgram(false);
       return Promise.reject(error);
     }
   };
-  
+
   const handleFeedbackCancel = () => {
     // Always go back to the program page
     setShowFeedbackQuestionnaire(false);
     setShowExerciseSelectionPage(false);
-    
+
     // Reset scroll position
     setTimeout(() => {
       if (containerRef.current) {
@@ -404,14 +406,15 @@ export function ExerciseProgramPage({
   // Extract all unique exercises from the program
   const getAllProgramExercises = (): Exercise[] => {
     if (!program?.program) return [];
-    
+
     const uniqueExercises = new Map<string, Exercise>();
-    
-    program.program.forEach(week => {
-      week.days.forEach(day => {
+
+    program.program.forEach((week) => {
+      week.days.forEach((day) => {
         if (day.exercises) {
-          day.exercises.forEach(exercise => {
-            const exerciseId = exercise.id || exercise.exerciseId || exercise.name;
+          day.exercises.forEach((exercise) => {
+            const exerciseId =
+              exercise.id || exercise.exerciseId || exercise.name;
             if (exerciseId && !uniqueExercises.has(exerciseId)) {
               uniqueExercises.set(exerciseId, exercise);
             }
@@ -419,18 +422,18 @@ export function ExerciseProgramPage({
         }
       });
     });
-    
+
     return Array.from(uniqueExercises.values());
   };
 
   const renderNextWeekCard = () => {
     const nextMonday = getNextMonday(new Date());
     const previousExercises = getAllProgramExercises();
-    
+
     // Show the exercise selection page if user clicked on a field
     if (showExerciseSelectionPage) {
       // Filter exercises to prevent overlap between effective/ineffective selections
-      const filteredExercises = previousExercises.filter(exercise => {
+      const filteredExercises = previousExercises.filter((exercise) => {
         const exerciseId = exercise.id || exercise.exerciseId || exercise.name;
         // For effective selection, filter out exercises already marked as ineffective
         if (selectionStep === 'effective') {
@@ -439,7 +442,7 @@ export function ExerciseProgramPage({
         // For ineffective selection, filter out exercises already marked as effective
         return !selectedExercises.effective.includes(exerciseId);
       });
-      
+
       return (
         <ExerciseSelectionPage
           previousExercises={filteredExercises}
@@ -453,11 +456,14 @@ export function ExerciseProgramPage({
           onCancel={() => {
             setShowExerciseSelectionPage(false);
             setShowFeedbackQuestionnaire(true);
-            
+
             // Restore feedback form scroll position
             setTimeout(() => {
               if (containerRef.current) {
-                containerRef.current.scrollTo({ top: feedbackScrollPosition, behavior: 'instant' });
+                containerRef.current.scrollTo({
+                  top: feedbackScrollPosition,
+                  behavior: 'instant',
+                });
               }
             }, 0);
           }}
@@ -467,7 +473,7 @@ export function ExerciseProgramPage({
         />
       );
     }
-    
+
     // Show the feedback form directly instead of starting with exercise selection
     if (showFeedbackQuestionnaire) {
       return (
@@ -483,7 +489,7 @@ export function ExerciseProgramPage({
         />
       );
     }
-    
+
     // Otherwise just show the "Coming Soon" card with a button to start feedback
     return (
       <div className="bg-gray-800/50 rounded-xl overflow-hidden ring-1 ring-gray-700/50 p-8">
@@ -501,9 +507,12 @@ export function ExerciseProgramPage({
               d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
             />
           </svg>
-          <h3 className="text-app-title text-white">Ready for Your Next Program?</h3>
+          <h3 className="text-app-title text-white">
+            Ready for Your Next Program?
+          </h3>
           <p className="text-gray-300">
-            Share your feedback on this week&rsquo;s exercises to get your personalized program for next week
+            Share your feedback on this week&rsquo;s exercises to get your
+            personalized program for next week
           </p>
           <button
             onClick={() => setShowFeedbackQuestionnaire(true)}
@@ -536,11 +545,14 @@ export function ExerciseProgramPage({
         onCancel={() => {
           setShowExerciseSelectionPage(false);
           setShowFeedbackQuestionnaire(true);
-          
+
           // Restore feedback form scroll position
           setTimeout(() => {
             if (containerRef.current) {
-              containerRef.current.scrollTo({ top: feedbackScrollPosition, behavior: 'instant' });
+              containerRef.current.scrollTo({
+                top: feedbackScrollPosition,
+                behavior: 'instant',
+              });
             }
           }, 0);
         }}
@@ -821,7 +833,9 @@ export function ExerciseProgramPage({
                             ? 'bg-indigo-600 text-white'
                             : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white'
                         }`}
-                        onClick={() => handleWeekChange(program.program.length + 1)}
+                        onClick={() =>
+                          handleWeekChange(program.program.length + 1)
+                        }
                       >
                         Next Week
                       </button>
@@ -831,7 +845,10 @@ export function ExerciseProgramPage({
               )}
 
               {/* Selected Week Content */}
-              {selectedWeek <= program.program.length && selectedWeekData && !showFeedbackQuestionnaire && !showExerciseSelectionPage ? (
+              {selectedWeek <= program.program.length &&
+              selectedWeekData &&
+              !showFeedbackQuestionnaire &&
+              !showExerciseSelectionPage ? (
                 <div className="space-y-4">
                   {/* Day Tabs */}
                   <div className="overflow-x-auto scrollbar-hide mb-6">
