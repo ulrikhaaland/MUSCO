@@ -7,48 +7,73 @@ export function LoadingMessage({
   absolute?: boolean,
   containerHeight?: number
 }) {
-  // Calculate a reasonable shimmer height based on container height
-  // Default to the original size if no container height is provided
-  // Use 60-70% of the container height, but not more than the original size
-  const getShimmerRowCount = () => {
-    if (!containerHeight || containerHeight < 200) {
-      return 4; // Default number of shimmer groups
+  // Constants for shimmer group sizing
+  const SHIMMER_GROUP_HEIGHT = 65; // Height of one shimmer group including spacing
+  const PADDING_TOP = 16;
+  const PADDING_BOTTOM = 20;
+  const MIN_GROUPS = 1;
+  const MAX_GROUPS = 8;
+  
+  // Calculate how many complete shimmer groups can fit in the container height
+  const calculateFittingGroups = () => {
+    if (!containerHeight || containerHeight < 150) {
+      return 2; // Default for small containers
     }
     
-    // For very large containers, add more shimmer rows
-    if (containerHeight > 800) {
-      return 6;
-    } else if (containerHeight > 500) {
-      return 5;
-    } else {
-      return 4;
-    }
+    // Reserve space for padding
+    const availableHeight = containerHeight - PADDING_TOP - PADDING_BOTTOM;
+    const possibleGroups = Math.floor(availableHeight / SHIMMER_GROUP_HEIGHT);
+    
+    return Math.max(MIN_GROUPS, Math.min(possibleGroups, MAX_GROUPS));
   };
   
-  const shimmerRowCount = getShimmerRowCount();
+  const shimmerRowCount = calculateFittingGroups();
 
   return (
-    <div className={`p-4 rounded-lg ${visible ? 'bg-gray-800' : 'bg-transparent'} mr-8 w-full transition-colors duration-200 ${absolute ? 'absolute top-0 left-0 z-10' : ''}`} style={{ marginTop: '0' }}>
-      {/* Render the appropriate number of shimmer groups based on container height */}
-      {Array.from({ length: shimmerRowCount }).map((_, groupIndex) => (
-        <div key={`group-${groupIndex}`} className={visible ? (groupIndex > 0 ? 'space-y-3 mt-2' : 'space-y-3') : 'opacity-0 space-y-3' + (groupIndex > 0 ? ' mt-2' : '')}>
-          {/* First line - longer */}
-          <div className="flex space-x-3">
-            <div className="shimmer w-3/4 h-4 bg-gray-700 rounded" />
-            <div className="shimmer w-1/4 h-4 bg-gray-700 rounded" />
-          </div>
-          {/* Second line - shorter */}
-          <div className="flex space-x-3">
-            <div className="shimmer w-2/3 h-4 bg-gray-700 rounded" />
-            <div className="shimmer w-1/6 h-4 bg-gray-700 rounded" />
-          </div>
-          {/* Third line - medium */}
-          <div className="flex space-x-3">
-            <div className="shimmer w-1/2 h-4 bg-gray-700 rounded" />
-            <div className="shimmer w-1/3 h-4 bg-gray-700 rounded" />
-          </div>
+    <div 
+      className={`${visible ? 'bg-gray-800' : 'bg-transparent'} w-full h-full transition-colors duration-200 ${absolute ? 'absolute top-0 left-0 z-10' : ''}`} 
+      style={{ 
+        borderRadius: 'inherit', // Inherit border radius from parent
+        display: 'flex',
+        flexDirection: 'column'
+      }}
+    >
+      {/* Main content area with padding */}
+      <div 
+        style={{ 
+          padding: '16px',
+          paddingBottom: '20px',
+          flex: '1 1 auto',
+          display: 'flex',
+          flexDirection: 'column'
+        }}
+      >
+        {/* Shimmer groups container */}
+        <div className="flex-grow">
+          {Array.from({ length: shimmerRowCount }).map((_, groupIndex) => (
+            <div 
+              key={`group-${groupIndex}`} 
+              className={visible ? (groupIndex > 0 ? 'mt-4' : '') : 'opacity-0' + (groupIndex > 0 ? ' mt-4' : '')}
+            >
+              {/* First line - longer */}
+              <div className="flex space-x-3 mb-2">
+                <div className="shimmer w-3/4 h-4 bg-gray-700 rounded" />
+                <div className="shimmer w-1/4 h-4 bg-gray-700 rounded" />
+              </div>
+              {/* Second line - shorter */}
+              <div className="flex space-x-3 mb-2">
+                <div className="shimmer w-2/3 h-4 bg-gray-700 rounded" />
+                <div className="shimmer w-1/6 h-4 bg-gray-700 rounded" />
+              </div>
+              {/* Third line - medium */}
+              <div className="flex space-x-3">
+                <div className="shimmer w-1/2 h-4 bg-gray-700 rounded" />
+                <div className="shimmer w-1/3 h-4 bg-gray-700 rounded" />
+              </div>
+            </div>
+          ))}
         </div>
-      ))}
+      </div>
       
       <style jsx>{`
         .shimmer {

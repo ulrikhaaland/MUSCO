@@ -115,13 +115,10 @@ export function ChatMessages({
     };
   }, [userTouched]);
 
-  // Check if we need to show the standard loading message (beginning of conversation)
-  const showLoading = isLoading && messages.length === 1;
-
   // Check if we need to show a placeholder for awaiting response (when user sent a message but no response yet)
   const needsResponsePlaceholder =
     isLoading &&
-    messages.length > 1 &&
+    messages.length > 0 &&
     messages[messages.length - 1].role === 'user';
 
   // Determine if we're in streaming mode
@@ -153,38 +150,44 @@ export function ChatMessages({
   );
 
   // Check if we're in the current turn (user message waiting for response or streaming response)
-  const isCurrentTurn = useCallback((index: number) => {
-    if (messages.length === 0) return false;
-    
-    // If the last message is from user and we're loading, it's the current turn
-    if (isLoading && messages[messages.length - 1].role === 'user') {
-      return index === messages.length - 1;
-    }
-    
-    // If we're streaming an assistant response, include both the user question and assistant answer
-    if (isLoading && messages[messages.length - 1].role === 'assistant') {
-      return index === messages.length - 1 || index === messages.length - 2;
-    }
-    
-    return false;
-  }, [messages, isLoading]);
+  const isCurrentTurn = useCallback(
+    (index: number) => {
+      if (messages.length === 0) return false;
+
+      // If the last message is from user and we're loading, it's the current turn
+      if (isLoading && messages[messages.length - 1].role === 'user') {
+        return index === messages.length - 1;
+      }
+
+      // If we're streaming an assistant response, include both the user question and assistant answer
+      if (isLoading && messages[messages.length - 1].role === 'assistant') {
+        return index === messages.length - 1 || index === messages.length - 2;
+      }
+
+      return false;
+    },
+    [messages, isLoading]
+  );
 
   // Check if this is the last user message before an assistant response
-  const isLastUserMessage = useCallback((index: number) => {
-    if (messages.length === 0) return false;
-    
-    // If last message is from user and loading, it's the last user message
-    if (isLoading && messages[messages.length - 1].role === 'user') {
-      return index === messages.length - 1;
-    }
-    
-    // If we're streaming an assistant response, the previous message is the last user message
-    if (isLoading && messages[messages.length - 1].role === 'assistant') {
-      return index === messages.length - 2 && messages[index].role === 'user';
-    }
-    
-    return false;
-  }, [messages, isLoading]);
+  const isLastUserMessage = useCallback(
+    (index: number) => {
+      if (messages.length === 0) return false;
+
+      // If last message is from user and loading, it's the last user message
+      if (isLoading && messages[messages.length - 1].role === 'user') {
+        return index === messages.length - 1;
+      }
+
+      // If we're streaming an assistant response, the previous message is the last user message
+      if (isLoading && messages[messages.length - 1].role === 'assistant') {
+        return index === messages.length - 2 && messages[index].role === 'user';
+      }
+
+      return false;
+    },
+    [messages, isLoading]
+  );
 
   // Set up scroll event listeners and handle initial scroll position
   useEffect(() => {
@@ -467,7 +470,7 @@ export function ChatMessages({
       setChatContainerHeight(containerHeight);
       return;
     }
-    
+
     // Otherwise measure it ourselves
     const measureChatContainer = () => {
       if (messagesRef?.current) {
@@ -584,7 +587,7 @@ export function ChatMessages({
     const calculateAvailableHeight = () => {
       // Start with full container height
       let height = chatContainerHeight;
-      
+
       // Subtract stream message height if it exists and is visible
       if (streamMessageRef.current && isStreaming) {
         const streamHeight = streamMessageRef.current.offsetHeight;
@@ -593,7 +596,7 @@ export function ChatMessages({
       } else {
         setStreamMessageHeight(0);
       }
-      
+
       // Subtract questions height if they exist
       if (questionsRef.current && showFollowUps) {
         const qHeight = questionsRef.current.offsetHeight;
@@ -602,29 +605,21 @@ export function ChatMessages({
       } else {
         setQuestionsHeight(0);
       }
-      
+
       // Ensure minimum height and set result
       const minHeight = 100; // Minimum height in pixels
       const calculatedHeight = Math.max(height * 0.7, minHeight);
       setAvailableHeight(calculatedHeight);
-      
-      // Debug logging
-      console.log({
-        chatContainerHeight,
-        streamMessageHeight: streamMessageRef.current?.offsetHeight || 0,
-        questionsHeight: questionsRef.current?.offsetHeight || 0,
-        calculatedAvailableHeight: calculatedHeight
-      });
     };
-    
+
     // Calculate on initial render and when dependencies change
     calculateAvailableHeight();
-    
+
     // Set up a resize observer to recalculate on DOM changes
     const resizeObserver = new ResizeObserver(() => {
       calculateAvailableHeight();
     });
-    
+
     // Observe elements that affect height
     if (messagesRef.current) {
       resizeObserver.observe(messagesRef.current);
@@ -635,16 +630,16 @@ export function ChatMessages({
     if (questionsRef.current) {
       resizeObserver.observe(questionsRef.current);
     }
-    
+
     return () => {
       resizeObserver.disconnect();
     };
   }, [
-    chatContainerHeight, 
-    isStreaming, 
-    showFollowUps, 
-    messages, 
-    followUpQuestions
+    chatContainerHeight,
+    isStreaming,
+    showFollowUps,
+    messages,
+    followUpQuestions,
   ]);
 
   return (
@@ -751,14 +746,18 @@ export function ChatMessages({
               {/* User message at top */}
               {messages.map((msg, index) => {
                 if (!isLastUserMessage(index)) return null;
-                
+
                 // Remove mb-4 when followed by a streaming response
-                const isFollowedByStreaming = isStreaming && messages.length > 0 && 
+                const isFollowedByStreaming =
+                  isStreaming &&
+                  messages.length > 0 &&
                   messages[messages.length - 1].role === 'assistant';
-                  
+
                 return (
                   <div key={`current-user-${msg.id}`} className="flex-none">
-                    <div className={`px-4 py-2 rounded-lg bg-indigo-600 ml-8 ${isFollowedByStreaming ? '' : 'mb-4'}`}>
+                    <div
+                      className={`px-4 py-2 rounded-lg bg-indigo-600 ml-8 ${isFollowedByStreaming ? '' : 'mb-4'}`}
+                    >
                       <div className="text-base">{msg.content}</div>
                     </div>
                   </div>
@@ -766,72 +765,74 @@ export function ChatMessages({
               })}
 
               {/* Assistant streaming message - placed immediately after user message */}
-              {isStreaming && messages.length > 0 && messages[messages.length - 1].role === 'assistant' && (
-                <div 
-                  key={`streaming-${messages[messages.length - 1].id}`} 
-                  className="flex-none"
-                  ref={streamMessageRef}
-                >
-                <div
-                  className={`px-4 py-2 rounded-lg bg-gray-800 mr-8 ${streamError ? 'border border-red-400' : ''}`}
-                >
-                  <div className="prose prose-invert max-w-none prose-p:my-2 prose-pre:my-0 prose-pre:leading-none prose-strong:text-white prose-strong:font-semibold">
-                    <ReactMarkdown
-                      className="text-base leading-relaxed"
-                      components={{
-                        ul: ({ children }) => (
-                          <ul className="list-none">
-                            {children as React.ReactNode}
-                          </ul>
-                        ),
-                      }}
+              {isStreaming &&
+                messages.length > 0 &&
+                messages[messages.length - 1].role === 'assistant' && (
+                  <div
+                    key={`streaming-${messages[messages.length - 1].id}`}
+                    className="flex-none"
+                    ref={streamMessageRef}
+                  >
+                    <div
+                      className={`px-4 py-2 rounded-lg bg-gray-800 mr-8 ${streamError ? 'border border-red-400' : ''}`}
                     >
-                      {messages[messages.length - 1].content}
-                    </ReactMarkdown>
+                      <div className="prose prose-invert max-w-none prose-p:my-2 prose-pre:my-0 prose-pre:leading-none prose-strong:text-white prose-strong:font-semibold">
+                        <ReactMarkdown
+                          className="text-base leading-relaxed"
+                          components={{
+                            ul: ({ children }) => (
+                              <ul className="list-none">
+                                {children as React.ReactNode}
+                              </ul>
+                            ),
+                          }}
+                        >
+                          {messages[messages.length - 1].content}
+                        </ReactMarkdown>
 
-                    {/* Show error message if stream error occurred */}
-                    {streamError && (
-                      <div className="mt-2">
-                        <div className="text-sm text-red-400">
-                          Note: This message was interrupted due to connection
-                          issues.
-                        </div>
-                        {onResend && (
-                          <div className="mt-3">
-                            <button
-                              onClick={() => {
-                                const userMsg = findUserMessageBeforeError(
-                                  messages.length - 1
-                                );
-                                if (userMsg) {
-                                  handleResend(userMsg);
-                                }
-                              }}
-                              className="px-3 py-1 bg-indigo-700 hover:bg-indigo-600 text-white text-sm rounded-md flex items-center gap-1 transition-colors duration-200"
-                              disabled={isLoading}
-                            >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="h-4 w-4"
-                                viewBox="0 0 20 20"
-                                fill="currentColor"
-                              >
-                                <path
-                                  fillRule="evenodd"
-                                  d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
-                                  clipRule="evenodd"
-                                />
-                              </svg>
-                              {isLoading ? 'Sending...' : 'Try Again'}
-                            </button>
+                        {/* Show error message if stream error occurred */}
+                        {streamError && (
+                          <div className="mt-2">
+                            <div className="text-sm text-red-400">
+                              Note: This message was interrupted due to
+                              connection issues.
+                            </div>
+                            {onResend && (
+                              <div className="mt-3">
+                                <button
+                                  onClick={() => {
+                                    const userMsg = findUserMessageBeforeError(
+                                      messages.length - 1
+                                    );
+                                    if (userMsg) {
+                                      handleResend(userMsg);
+                                    }
+                                  }}
+                                  className="px-3 py-1 bg-indigo-700 hover:bg-indigo-600 text-white text-sm rounded-md flex items-center gap-1 transition-colors duration-200"
+                                  disabled={isLoading}
+                                >
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    className="h-4 w-4"
+                                    viewBox="0 0 20 20"
+                                    fill="currentColor"
+                                  >
+                                    <path
+                                      fillRule="evenodd"
+                                      d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
+                                      clipRule="evenodd"
+                                    />
+                                  </svg>
+                                  {isLoading ? 'Sending...' : 'Try Again'}
+                                </button>
+                              </div>
+                            )}
                           </div>
                         )}
                       </div>
-                    )}
+                    </div>
                   </div>
-                </div>
-              </div>
-            )}
+                )}
             </>
           )}
 
@@ -872,35 +873,22 @@ export function ChatMessages({
             - Completely removed after streaming completes
           */}
           {isLoading && (needsResponsePlaceholder || isStreaming) && (
-              <div
+            <div
               className="block w-full overflow-hidden"
-                style={{
-                height: `${availableHeight}px`, 
-                maxHeight: `${availableHeight}px`,
-                minHeight: 'unset',
-                marginTop: '0'  // Ensure no extra margin at top
-              }}
-              ref={(el) => {
-                if (el) {
-                  // Log the actual rendered height of the placeholder
-                  console.log('Placeholder actual height:', el.offsetHeight);
-                  console.log('Placeholder style height:', el.style.height);
-                  console.log('Placeholder computed style:', window.getComputedStyle(el).height);
-                  
-                  // Force height to match calculation if there's a discrepancy
-                  if (Math.abs(el.offsetHeight - availableHeight) > 5) {
-                    console.log('Fixing height discrepancy');
-                    el.style.height = `${availableHeight}px`;
-                  }
-                }
+              style={{
+                height: `${availableHeight}px`,
+                position: 'relative',
+                borderRadius: '8px',
+                overflow: 'hidden', // Keep overflow hidden on the parent
+                marginTop: '0',
               }}
             >
-              <LoadingMessage 
-                containerHeight={availableHeight} 
+              <LoadingMessage
+                containerHeight={availableHeight}
                 visible={needsResponsePlaceholder && !isStreaming}
               />
             </div>
-            )}
+          )}
         </div>
       </div>
 
