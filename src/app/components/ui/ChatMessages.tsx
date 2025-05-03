@@ -19,6 +19,7 @@ interface ChatMessagesProps {
   isMobile?: boolean;
   onResend?: (message: ChatMessage) => void;
   disableAutoScroll?: boolean;
+  containerHeight?: number;
 }
 
 export function ChatMessages({
@@ -35,15 +36,13 @@ export function ChatMessages({
   isMobile = false,
   onResend,
   disableAutoScroll = true,
+  containerHeight,
 }: ChatMessagesProps) {
   const [showScrollButton, setShowScrollButton] = useState(false);
   const [userTouched, setUserTouched] = useState(false);
-  const [streamingMessageIds, setStreamingMessageIds] = useState<Set<string>>(
-    new Set()
-  );
-  const [messageStreamProgress, setMessageStreamProgress] = useState<
-    Map<string, number>
-  >(new Map());
+  const [streamMessageHeight, setStreamMessageHeight] = useState(0);
+  const [questionsHeight, setQuestionsHeight] = useState(0);
+  const [availableHeight, setAvailableHeight] = useState(0);
   const [chatContainerHeight, setChatContainerHeight] = useState(0);
   const touchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const lastMessageContentRef = useRef<string>('');
@@ -52,6 +51,8 @@ export function ChatMessages({
   const initialLoadingRef = useRef<boolean>(true);
   const loadingTransitionTimerRef = useRef<NodeJS.Timeout | null>(null);
   const chatViewRef = useRef<HTMLDivElement>(null);
+  const streamMessageRef = useRef<HTMLDivElement>(null);
+  const questionsRef = useRef<HTMLDivElement>(null);
 
   // Reset touch state after a delay
   const resetTouchState = useCallback(() => {
@@ -114,98 +115,6 @@ export function ChatMessages({
     };
   }, [userTouched]);
 
-  // Update the loading message visibility logic
-  useEffect(() => {
-    // Clear any existing timers to prevent memory leaks
-    const clearTimers = () => {
-      if (loadingTransitionTimerRef.current) {
-        clearTimeout(loadingTransitionTimerRef.current);
-        loadingTransitionTimerRef.current = null;
-      }
-    };
-
-    // Show loading message when:
-    // 1. It's the start of conversation (messages.length === 1 and isLoading)
-    // 2. User sent a message and we're waiting for a response
-    const shouldShowLoadingMessage =
-      isLoading &&
-      (messages.length === 1 ||
-        (messages.length > 1 && messages[messages.length - 1].role === 'user'));
-
-    // If we should show the loading indicator
-    if (shouldShowLoadingMessage) {
-      // When loading starts, immediately show at full visibility
-      initialLoadingRef.current = true;
-
-      // Clear any existing transition timer
-      clearTimers();
-    }
-    // When streaming begins (first assistant message starts coming in)
-    else if (
-      messages.length > 0 &&
-      messages[messages.length - 1].role === 'assistant' &&
-      isLoading
-    ) {
-      // Only update streaming IDs if we're transitioning from loading to streaming
-      // This prevents infinite update loops
-      if (initialLoadingRef.current) {
-        // First, mark that we're no longer in initial loading
-        initialLoadingRef.current = false;
-
-        // Then update the streaming message IDs
-        const lastMessageId = messages[messages.length - 1].id || '';
-        if (lastMessageId) {
-          // Use a timeout to break the render cycle
-          setTimeout(() => {
-            setStreamingMessageIds((prev) => {
-              // Only add to the set if it's not already there
-              if (!prev.has(lastMessageId)) {
-                const newSet = new Set(prev);
-                newSet.add(lastMessageId);
-                return newSet;
-              }
-              return prev;
-            });
-
-            // Set initial progress to 5%
-            setMessageStreamProgress((prev) => {
-              // Only update if not already set
-              if (!prev.has(lastMessageId)) {
-                const newMap = new Map(prev);
-                newMap.set(lastMessageId, 5);
-                return newMap;
-              }
-              return prev;
-            });
-          }, 0);
-        }
-      }
-    }
-    // When loading completely stops, we'll preserve the streaming message ID
-    // but set progress to 100% to maintain the element's visibility
-    else if (!isLoading && streamingMessageIds.size > 0) {
-      // Update progress to 100% for completed messages
-      const currentStreamingIds = Array.from(streamingMessageIds);
-      if (currentStreamingIds.length > 0) {
-        setTimeout(() => {
-          setMessageStreamProgress((prev) => {
-            const newMap = new Map(prev);
-            currentStreamingIds.forEach((id) => {
-              newMap.set(id, 100);
-            });
-            return newMap;
-          });
-        }, 0);
-      }
-
-      // Reset the initial loading flag for next message
-      initialLoadingRef.current = true;
-    }
-
-    // Cleanup function to prevent memory leaks
-    return clearTimers;
-  }, [isLoading, messages, streamingMessageIds.size]); // Only depend on the size, not the full set
-
   // Check if we need to show the standard loading message (beginning of conversation)
   const showLoading = isLoading && messages.length === 1;
 
@@ -214,6 +123,12 @@ export function ChatMessages({
     isLoading &&
     messages.length > 1 &&
     messages[messages.length - 1].role === 'user';
+
+  // Determine if we're in streaming mode
+  const isStreaming =
+    messages.length > 0 &&
+    isLoading &&
+    messages[messages.length - 1].role !== 'user';
 
   const showFollowUps = followUpQuestions.length > 0;
 
@@ -236,6 +151,40 @@ export function ChatMessages({
     },
     [messages.length]
   );
+
+  // Check if we're in the current turn (user message waiting for response or streaming response)
+  const isCurrentTurn = useCallback((index: number) => {
+    if (messages.length === 0) return false;
+    
+    // If the last message is from user and we're loading, it's the current turn
+    if (isLoading && messages[messages.length - 1].role === 'user') {
+      return index === messages.length - 1;
+    }
+    
+    // If we're streaming an assistant response, include both the user question and assistant answer
+    if (isLoading && messages[messages.length - 1].role === 'assistant') {
+      return index === messages.length - 1 || index === messages.length - 2;
+    }
+    
+    return false;
+  }, [messages, isLoading]);
+
+  // Check if this is the last user message before an assistant response
+  const isLastUserMessage = useCallback((index: number) => {
+    if (messages.length === 0) return false;
+    
+    // If last message is from user and loading, it's the last user message
+    if (isLoading && messages[messages.length - 1].role === 'user') {
+      return index === messages.length - 1;
+    }
+    
+    // If we're streaming an assistant response, the previous message is the last user message
+    if (isLoading && messages[messages.length - 1].role === 'assistant') {
+      return index === messages.length - 2 && messages[index].role === 'user';
+    }
+    
+    return false;
+  }, [messages, isLoading]);
 
   // Set up scroll event listeners and handle initial scroll position
   useEffect(() => {
@@ -260,7 +209,7 @@ export function ChatMessages({
       // Only treat as user interaction if not at the bottom
       const { scrollTop, scrollHeight, clientHeight } = container;
       const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
-      const isNearBottom = distanceFromBottom < 30; // Within 30px of bottom
+      const isNearBottom = distanceFromBottom < 100; // Within 30px of bottom
 
       if (!isNearBottom) {
         // User manually scrolled away from bottom - set touched flag
@@ -511,8 +460,15 @@ export function ChatMessages({
     return null;
   };
 
-  // Measure the chat container height
+  // Measure the chat container height - use prop if provided, measure if not
   useEffect(() => {
+    // If containerHeight prop is provided, use it directly
+    if (containerHeight !== undefined) {
+      setChatContainerHeight(containerHeight);
+      return;
+    }
+    
+    // Otherwise measure it ourselves
     const measureChatContainer = () => {
       if (messagesRef?.current) {
         const height = messagesRef.current.clientHeight;
@@ -535,38 +491,7 @@ export function ChatMessages({
     return () => {
       resizeObserver.disconnect();
     };
-  }, [messagesRef, messages, followUpQuestions]);
-
-  // Adjust the getStreamingPadding function to use the container height
-  const getStreamingPadding = useCallback(
-    (messageId: string): number => {
-      // Get the progress (0-100%)
-      const progress = messageStreamProgress.get(messageId) || 0;
-
-      // Calculate padding based on container height
-      // Start with 60% of container height as max padding
-      const maxPadding = Math.max(chatContainerHeight * 0.6, 300);
-
-      // Linear decrease based on progress - this creates a smooth transition
-      // As progress increases from 0 to 100, padding decreases from maxPadding to 0
-      const paddingValue = maxPadding * (1 - progress / 100) - 50;
-
-      // Return integer value with a minimum of 0
-      return Math.max(0, Math.round(paddingValue));
-    },
-    [messageStreamProgress, chatContainerHeight]
-  );
-
-  // Fix the scrollToBottom click handler
-  const handleScrollToBottomClick = () => {
-    scrollToBottom(true);
-  };
-
-  // Determine if we're in streaming mode
-  const isStreaming =
-    messages.length > 0 &&
-    isLoading &&
-    messages[messages.length - 1].role !== 'user';
+  }, [messagesRef, messages, followUpQuestions, containerHeight]);
 
   // Helper function to check if the container is scrolled to the bottom
   const isScrolledToBottom = useCallback(
@@ -576,19 +501,11 @@ export function ChatMessages({
       const { scrollTop, scrollHeight, clientHeight } = container;
       const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
 
-      // Calculate the height of the padding container
-      let paddingHeight = 0;
-      if (isStreaming && messages.length > 0) {
-        const lastMessageId = messages[messages.length - 1].id;
-        paddingHeight = getStreamingPadding(lastMessageId);
-      }
-
-      // Consider "at bottom" if within threshold of actual bottom,
-      // accounting for the dynamic padding area
+      // Consider "at bottom" if within threshold of actual bottom
       const scrollThreshold = 60;
-      return distanceFromBottom < scrollThreshold + paddingHeight;
+      return distanceFromBottom < scrollThreshold;
     },
-    [isStreaming, messages, getStreamingPadding]
+    []
   );
 
   // Update the message streaming effect to always scroll for user messages
@@ -614,39 +531,6 @@ export function ChatMessages({
 
     // Reset content tracking when message ID changes
     if (isNewMessage) {
-      // If the new message is from the user, clear the streaming state
-      if (lastMessage.role === 'user') {
-        // Use timeout to break the render cycle
-        setTimeout(() => {
-          setStreamingMessageIds(new Set());
-          setMessageStreamProgress(new Map());
-        }, 0);
-      }
-      // If this is a new assistant message and it's streaming
-      else if (lastMessage.role === 'assistant' && isLoading) {
-        // Add this message to the streaming set
-        setTimeout(() => {
-          setStreamingMessageIds((prev) => {
-            if (!prev.has(lastMessageId)) {
-              const newSet = new Set(prev);
-              newSet.add(lastMessageId);
-              return newSet;
-            }
-            return prev;
-          });
-
-          // Initialize progress to 5%
-          setMessageStreamProgress((prev) => {
-            if (!prev.has(lastMessageId)) {
-              const newMap = new Map(prev);
-              newMap.set(lastMessageId, 5);
-              return newMap;
-            }
-            return prev;
-          });
-        }, 0);
-      }
-
       lastMessageContentRef.current = '';
       lastMessageIdRef.current = lastMessageId;
     }
@@ -655,80 +539,6 @@ export function ChatMessages({
     const isMessageStreaming =
       lastMessage?.role === 'assistant' &&
       lastMessageContent.length > lastMessageContentRef.current.length;
-
-    // Only process streaming for assistant messages that are actually streaming
-    if (isMessageStreaming && lastMessageId) {
-      // Use a timeout to break the update cycle for state updates
-      const prevLength = lastMessageContentRef.current.length;
-      const currentLength = lastMessageContent.length;
-
-      // Only update stream progress if the content actually changed
-      if (currentLength > prevLength) {
-        // Calculate progress (0-100%)
-        let progress = 5; // Minimum 5% to start
-
-        // If we have previous content to compare against
-        if (prevLength > 0) {
-          // Calculate rate of content growth
-          const growthRate = currentLength / (prevLength || 1);
-
-          // Estimate total length based on content characteristics
-          let estimatedFullLength;
-
-          // For very short messages that have grown significantly
-          if (currentLength < 100 && growthRate > 1.5) {
-            estimatedFullLength = currentLength * 4;
-          }
-          // For short responses
-          else if (currentLength < 300) {
-            estimatedFullLength = 600;
-          }
-          // For medium responses
-          else if (currentLength < 1000) {
-            estimatedFullLength = currentLength * 1.7;
-          }
-          // For longer responses
-          else {
-            estimatedFullLength = currentLength * 1.3;
-          }
-
-          // Calculate progress percentage based on estimation
-          progress = Math.min(
-            95,
-            Math.round((currentLength / estimatedFullLength) * 100)
-          );
-
-          // If content growth has slowed significantly, assume we're near the end
-          if (currentLength > 300 && currentLength - prevLength < 5) {
-            progress = Math.max(progress, 90); // At least 90% if growth has slowed
-          }
-
-          // If we have periods or line breaks near the end, likely closer to completion
-          if (
-            lastMessageContent.endsWith('.') ||
-            lastMessageContent.endsWith('\n') ||
-            lastMessageContent.endsWith('.\n')
-          ) {
-            progress = Math.max(progress, 85);
-          }
-        }
-
-        // Store current progress in a ref to avoid triggering renders
-        const currentProgress = messageStreamProgress.get(lastMessageId) || 0;
-
-        // Only update progress if it has changed significantly (>5%)
-        if (Math.abs(progress - currentProgress) > 5) {
-          // Use timeout to break the render cycle
-          setTimeout(() => {
-            setMessageStreamProgress((prev) => {
-              const newMap = new Map(prev);
-              newMap.set(lastMessageId, progress);
-              return newMap;
-            });
-          }, 0);
-        }
-      }
-    }
 
     // Update the reference for next comparison
     lastMessageContentRef.current = lastMessageContent;
@@ -764,6 +574,79 @@ export function ChatMessages({
     disableAutoScroll,
   ]);
 
+  // Fix the scrollToBottom click handler
+  const handleScrollToBottomClick = () => {
+    scrollToBottom(true);
+  };
+
+  // Calculate available height for loading message
+  useEffect(() => {
+    const calculateAvailableHeight = () => {
+      // Start with full container height
+      let height = chatContainerHeight;
+      
+      // Subtract stream message height if it exists and is visible
+      if (streamMessageRef.current && isStreaming) {
+        const streamHeight = streamMessageRef.current.offsetHeight;
+        setStreamMessageHeight(streamHeight);
+        height -= streamHeight;
+      } else {
+        setStreamMessageHeight(0);
+      }
+      
+      // Subtract questions height if they exist
+      if (questionsRef.current && showFollowUps) {
+        const qHeight = questionsRef.current.offsetHeight;
+        setQuestionsHeight(qHeight);
+        height -= qHeight;
+      } else {
+        setQuestionsHeight(0);
+      }
+      
+      // Ensure minimum height and set result
+      const minHeight = 100; // Minimum height in pixels
+      const calculatedHeight = Math.max(height * 0.7, minHeight);
+      setAvailableHeight(calculatedHeight);
+      
+      // Debug logging
+      console.log({
+        chatContainerHeight,
+        streamMessageHeight: streamMessageRef.current?.offsetHeight || 0,
+        questionsHeight: questionsRef.current?.offsetHeight || 0,
+        calculatedAvailableHeight: calculatedHeight
+      });
+    };
+    
+    // Calculate on initial render and when dependencies change
+    calculateAvailableHeight();
+    
+    // Set up a resize observer to recalculate on DOM changes
+    const resizeObserver = new ResizeObserver(() => {
+      calculateAvailableHeight();
+    });
+    
+    // Observe elements that affect height
+    if (messagesRef.current) {
+      resizeObserver.observe(messagesRef.current);
+    }
+    if (streamMessageRef.current) {
+      resizeObserver.observe(streamMessageRef.current);
+    }
+    if (questionsRef.current) {
+      resizeObserver.observe(questionsRef.current);
+    }
+    
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, [
+    chatContainerHeight, 
+    isStreaming, 
+    showFollowUps, 
+    messages, 
+    followUpQuestions
+  ]);
+
   return (
     <div
       className="flex-1 flex flex-col overflow-hidden relative"
@@ -787,22 +670,16 @@ export function ChatMessages({
         )}
 
         {/* Regular messages container */}
-        <div className="space-y-4 min-h-full relative">
-          {/* User and assistant messages */}
+        <div className="space-y-4 min-h-full relative flex flex-col">
+          {/* Prior messages (not part of current turn) */}
           {messages.map((msg, index) => {
-            // Only include non-streaming messages here
-            const isCurrentlyStreaming =
-              msg.role === 'assistant' &&
-              isLoading &&
-              index === messages.length - 1 &&
-              messages[messages.length - 1].role === 'assistant';
-
-            if (isCurrentlyStreaming) return null; // Skip streaming message in normal flow
+            // Skip current turn messages as they'll be rendered differently
+            if (isCurrentTurn(index)) return null;
 
             return (
               <div key={msg.id}>
                 <div
-                  className={`p-4 rounded-lg ${
+                  className={`px-4 py-2 rounded-lg ${
                     msg.role === 'user'
                       ? 'bg-indigo-600 ml-8'
                       : 'bg-gray-800 mr-8'
@@ -868,91 +745,99 @@ export function ChatMessages({
             );
           })}
 
-          {/* Loading/streaming layer */}
-          {(showLoading || needsResponsePlaceholder || isStreaming) && (
-            <div
-              className={`relative ${needsResponsePlaceholder || isStreaming ? 'mt-4' : ''}`}
-            >
-              {/* Loading container (only show when not streaming) */}
-              {(showLoading || needsResponsePlaceholder) && !isStreaming && (
-                <div className="w-full transition-opacity duration-300">
-                  <LoadingMessage containerHeight={chatContainerHeight} />
-                </div>
-              )}
-
-              {/* Streaming message container */}
-              {isStreaming && messages.length > 0 && (
-                <div className="w-full z-10 transition-all duration-300 ease-out">
-                  {/* Actual message content with gray background */}
-                  <div
-                    className={`p-4 rounded-lg bg-gray-800 mr-8 ${streamError ? 'border border-red-400' : ''}`}
-                    style={{
-                      minHeight: `${Math.min(chatContainerHeight * 0.2, 100)}px`,
-                    }}
-                  >
-                    <div className="prose prose-invert max-w-none prose-p:my-2 prose-pre:my-0 prose-pre:leading-none prose-strong:text-white prose-strong:font-semibold">
-                      <ReactMarkdown
-                        className="text-base leading-relaxed"
-                        components={{
-                          ul: ({ children }) => (
-                            <ul className="list-none">
-                              {children as React.ReactNode}
-                            </ul>
-                          ),
-                        }}
-                      >
-                        {messages[messages.length - 1].content}
-                      </ReactMarkdown>
-
-                      {/* Show error message if stream error occurred */}
-                      {streamError && (
-                        <div className="mt-2">
-                          <div className="text-sm text-red-400">
-                            Note: This message was interrupted due to connection
-                            issues.
-                          </div>
-                          {onResend && (
-                            <div className="mt-3">
-                              <button
-                                onClick={() => {
-                                  const userMsg = findUserMessageBeforeError(
-                                    messages.length - 1
-                                  );
-                                  if (userMsg) {
-                                    handleResend(userMsg);
-                                  }
-                                }}
-                                className="px-3 py-1 bg-indigo-700 hover:bg-indigo-600 text-white text-sm rounded-md flex items-center gap-1 transition-colors duration-200"
-                                disabled={isLoading}
-                              >
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  className="h-4 w-4"
-                                  viewBox="0 0 20 20"
-                                  fill="currentColor"
-                                >
-                                  <path
-                                    fillRule="evenodd"
-                                    d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
-                                    clipRule="evenodd"
-                                  />
-                                </svg>
-                                {isLoading ? 'Sending...' : 'Try Again'}
-                              </button>
-                            </div>
-                          )}
-                        </div>
-                      )}
+          {/* Current turn with flex layout */}
+          {messages.length > 0 && (
+            <>
+              {/* User message at top */}
+              {messages.map((msg, index) => {
+                if (!isLastUserMessage(index)) return null;
+                
+                // Remove mb-4 when followed by a streaming response
+                const isFollowedByStreaming = isStreaming && messages.length > 0 && 
+                  messages[messages.length - 1].role === 'assistant';
+                  
+                return (
+                  <div key={`current-user-${msg.id}`} className="flex-none">
+                    <div className={`px-4 py-2 rounded-lg bg-indigo-600 ml-8 ${isFollowedByStreaming ? '' : 'mb-4'}`}>
+                      <div className="text-base">{msg.content}</div>
                     </div>
                   </div>
+                );
+              })}
+
+              {/* Assistant streaming message - placed immediately after user message */}
+              {isStreaming && messages.length > 0 && messages[messages.length - 1].role === 'assistant' && (
+                <div 
+                  key={`streaming-${messages[messages.length - 1].id}`} 
+                  className="flex-none"
+                  ref={streamMessageRef}
+                >
+                <div
+                  className={`px-4 py-2 rounded-lg bg-gray-800 mr-8 ${streamError ? 'border border-red-400' : ''}`}
+                >
+                  <div className="prose prose-invert max-w-none prose-p:my-2 prose-pre:my-0 prose-pre:leading-none prose-strong:text-white prose-strong:font-semibold">
+                    <ReactMarkdown
+                      className="text-base leading-relaxed"
+                      components={{
+                        ul: ({ children }) => (
+                          <ul className="list-none">
+                            {children as React.ReactNode}
+                          </ul>
+                        ),
+                      }}
+                    >
+                      {messages[messages.length - 1].content}
+                    </ReactMarkdown>
+
+                    {/* Show error message if stream error occurred */}
+                    {streamError && (
+                      <div className="mt-2">
+                        <div className="text-sm text-red-400">
+                          Note: This message was interrupted due to connection
+                          issues.
+                        </div>
+                        {onResend && (
+                          <div className="mt-3">
+                            <button
+                              onClick={() => {
+                                const userMsg = findUserMessageBeforeError(
+                                  messages.length - 1
+                                );
+                                if (userMsg) {
+                                  handleResend(userMsg);
+                                }
+                              }}
+                              className="px-3 py-1 bg-indigo-700 hover:bg-indigo-600 text-white text-sm rounded-md flex items-center gap-1 transition-colors duration-200"
+                              disabled={isLoading}
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-4 w-4"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                              >
+                                <path
+                                  fillRule="evenodd"
+                                  d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
+                                  clipRule="evenodd"
+                                />
+                              </svg>
+                              {isLoading ? 'Sending...' : 'Try Again'}
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
                 </div>
-              )}
-            </div>
+              </div>
+            )}
+            </>
           )}
 
           {/* Follow-up questions */}
           {showFollowUps && (
-            <div className="mt-4 space-y-2">
+            <div ref={questionsRef}>
               <div className="space-y-2">
                 {followUpQuestions.map((question) => (
                   <button
@@ -981,17 +866,40 @@ export function ChatMessages({
             </div>
           )}
 
-          {/* Dynamic padding container with transparent background - now placed after follow-up questions */}
-          {(isStreaming || streamingMessageIds.size > 0) &&
-            messages.length > 0 && (
+          {/* 
+            Loading message spacer - rendered ONLY during active loading or streaming
+            - Uses dynamic height calculation that adjusts based on content
+            - Completely removed after streaming completes
+          */}
+          {isLoading && (needsResponsePlaceholder || isStreaming) && (
               <div
+              className="block w-full overflow-hidden"
                 style={{
-                  height: `${getStreamingPadding(messages[messages.length - 1].id)}px`,
-                  transition: 'height 0.3s ease-out',
-                }}
-                className="w-full"
-                aria-hidden="true"
+                height: `${availableHeight}px`, 
+                maxHeight: `${availableHeight}px`,
+                minHeight: 'unset',
+                marginTop: '0'  // Ensure no extra margin at top
+              }}
+              ref={(el) => {
+                if (el) {
+                  // Log the actual rendered height of the placeholder
+                  console.log('Placeholder actual height:', el.offsetHeight);
+                  console.log('Placeholder style height:', el.style.height);
+                  console.log('Placeholder computed style:', window.getComputedStyle(el).height);
+                  
+                  // Force height to match calculation if there's a discrepancy
+                  if (Math.abs(el.offsetHeight - availableHeight) > 5) {
+                    console.log('Fixing height discrepancy');
+                    el.style.height = `${availableHeight}px`;
+                  }
+                }
+              }}
+            >
+              <LoadingMessage 
+                containerHeight={availableHeight} 
+                visible={needsResponsePlaceholder && !isStreaming}
               />
+            </div>
             )}
         </div>
       </div>

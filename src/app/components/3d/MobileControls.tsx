@@ -10,7 +10,12 @@ import {
 import { BottomSheet, BottomSheetRef } from 'react-spring-bottom-sheet';
 import type { BottomSheetProps } from 'react-spring-bottom-sheet';
 import 'react-spring-bottom-sheet/dist/style.css';
-import { DiagnosisAssistantResponse, Gender, Question, ChatMessage } from '@/app/types';
+import {
+  DiagnosisAssistantResponse,
+  Gender,
+  Question,
+  ChatMessage,
+} from '@/app/types';
 import { ChatMessages } from '../ui/ChatMessages';
 import { usePartChat } from '@/app/hooks/usePartChat';
 import { BodyPartGroup } from '@/app/config/bodyPartGroups';
@@ -82,6 +87,7 @@ export default function MobileControls({
   const sheetRef = useRef<BottomSheetRef>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const [headerHeight, setHeaderHeight] = useState(0);
+  const [footerHeight, setFooterHeight] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const [controlsBottom, setControlsBottom] = useState('5rem');
   const [message, setMessage] = useState('');
@@ -121,21 +127,66 @@ export default function MobileControls({
 
   useEffect(() => {
     const updateContentHeight = () => {
-      if (contentRef.current) {
-        // Get the container that holds all content (messages and input)
-        const contentContainer = contentRef.current.querySelector(
-          '#bottom-sheet-content'
-        );
+      // Get the overlay element (main bottom sheet container)
+      const overlay = document.querySelector('[data-rsbs-overlay="true"]');
+      const header = document.querySelector('[data-rsbs-header="true"]');
+      const footer = document.querySelector('[data-rsbs-footer]');
 
-        // Find the footer element in the bottom sheet
+      if (overlay && header) {
+        // Get the exact height of the overlay element directly
+        const overlayHeight = (overlay as HTMLElement).getBoundingClientRect()
+          .height;
+
+        // Just use the actual height of the overlay element
+        const totalHeight = overlayHeight;
+
+        // For informational purposes only, still calculate content height
+        const headerHeight = header.getBoundingClientRect().height;
+        const footerHeight = footer?.getBoundingClientRect().height ?? 0;
+        setFooterHeight(footerHeight);
+        const contentHeight = totalHeight - headerHeight - footerHeight;
+
+        console.log('Bottom sheet height calculation:', {
+          actualOverlayHeight: overlayHeight,
+          contentHeight,
+          totalHeight,
+        });
+
+        if (contentHeight > 0) {
+          setContentHeight(contentHeight);
+        } else {
+          if (contentRef.current) {
+            // Get the container that holds all content (messages and input)
+            const contentContainer = contentRef.current.querySelector(
+              '#bottom-sheet-content'
+            );
+
+            // Find the footer element in the bottom sheet
+            const footer = document.querySelector('[data-rsbs-footer]');
+            const footerHeight = footer?.getBoundingClientRect().height ?? 0;
+            setFooterHeight(footerHeight);
+            if (contentContainer) {
+              const localContentHeight = (
+                contentContainer as HTMLElement
+              ).getBoundingClientRect().height;
+              const height = localContentHeight + headerHeight + footerHeight;
+              setContentHeight(height);
+            }
+          }
+        }
+      } else if (contentRef.current) {
+        // Fallback to our original approach if overlay elements aren't found
+        console.log('Fallback: overlay or header not found, using contentRef');
+
         const footer = document.querySelector('[data-rsbs-footer]');
         const footerHeight = footer?.getBoundingClientRect().height ?? 0;
+        setFooterHeight(footerHeight);
 
-        if (contentContainer) {
-          const localContentHeight = contentContainer.scrollHeight;
-          const height = localContentHeight + headerHeight + footerHeight;
-          setContentHeight(height);
-        }
+        // Fixed reasonable height that doesn't expand too much
+        const fixedContentHeight = 200 + Math.min(200, messages.length * 50);
+        const totalHeight = fixedContentHeight + headerHeight + footerHeight;
+
+        setContentHeight(totalHeight);
       }
     };
 
@@ -394,7 +445,7 @@ export default function MobileControls({
   const handleResendMessage = (message: ChatMessage) => {
     if (message.role === 'user') {
       handleOptionClick({
-        title: "",
+        title: '',
         question: message.content,
       });
     }
@@ -403,19 +454,21 @@ export default function MobileControls({
   return (
     <>
       {/* Mobile Controls - Positioned relative to bottom sheet */}
-      {isMobile && currentSnapPoint !== SnapPoint.FULL && currentSnapPoint !== SnapPoint.EXPANDED && (
-        <MobileControlButtons
-          isRotating={isRotating}
-          isResetting={isResetting}
-          isReady={isReady}
-          needsReset={needsReset}
-          currentGender={currentGender}
-          controlsBottom={controlsBottom}
-          onRotate={onRotate}
-          onReset={() => onReset(intention !== ProgramIntention.Exercise)}
-          onSwitchModel={onSwitchModel}
-        />
-      )}
+      {isMobile &&
+        currentSnapPoint !== SnapPoint.FULL &&
+        currentSnapPoint !== SnapPoint.EXPANDED && (
+          <MobileControlButtons
+            isRotating={isRotating}
+            isResetting={isResetting}
+            isReady={isReady}
+            needsReset={needsReset}
+            currentGender={currentGender}
+            controlsBottom={controlsBottom}
+            onRotate={onRotate}
+            onReset={() => onReset(intention !== ProgramIntention.Exercise)}
+            onSwitchModel={onSwitchModel}
+          />
+        )}
 
       {/* Expand/Collapse Buttons - Fixed to bottom right */}
       {isMobile &&
@@ -648,6 +701,7 @@ export default function MobileControls({
                     messagesRef={messagesRef}
                     isMobile={isMobile}
                     onResend={handleResendMessage}
+                    containerHeight={contentHeight}
                   />
                 </div>
               )}

@@ -28,7 +28,7 @@ export function LoadingMessage({
   const shimmerRowCount = getShimmerRowCount();
 
   return (
-    <div className={`p-4 rounded-lg ${visible ? 'bg-gray-800' : 'bg-transparent'} mr-8 w-full transition-colors duration-200 ${absolute ? 'absolute top-0 left-0 z-10' : ''}`}>
+    <div className={`p-4 rounded-lg ${visible ? 'bg-gray-800' : 'bg-transparent'} mr-8 w-full transition-colors duration-200 ${absolute ? 'absolute top-0 left-0 z-10' : ''}`} style={{ marginTop: '0' }}>
       {/* Render the appropriate number of shimmer groups based on container height */}
       {Array.from({ length: shimmerRowCount }).map((_, groupIndex) => (
         <div key={`group-${groupIndex}`} className={visible ? (groupIndex > 0 ? 'space-y-3 mt-2' : 'space-y-3') : 'opacity-0 space-y-3' + (groupIndex > 0 ? ' mt-2' : '')}>
