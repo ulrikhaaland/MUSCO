@@ -27,10 +27,8 @@ export const LoaderProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   useEffect(() => {
     if (isVisible) {
       document.body.style.overflow = 'hidden';
-      console.log('Loader shown:', message);
     } else {
       document.body.style.overflow = '';
-      console.log('Loader hidden');
     }
 
     return () => {
@@ -49,8 +47,6 @@ export const LoaderProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     // Then update visibility
     setIsVisible(true);
     isTransitioning.current = false;
-    
-    console.log('Showing loader with message:', newMessage || message);
   };
 
   const hideLoader = () => {
@@ -64,18 +60,15 @@ export const LoaderProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       if (isTransitioning.current) return; // Don't schedule multiple hides
       
       isTransitioning.current = true;
-      console.log('Scheduling loader hide after minimum display time');
       
       setTimeout(() => {
         setIsVisible(false);
         isTransitioning.current = false;
-        console.log('Loader hidden (after delay)');
       }, minDisplayTime - (currentTime - showTimeRef.current));
     } else {
       // Otherwise hide immediately
       setIsVisible(false);
       isTransitioning.current = false;
-      console.log('Hiding loader');
     }
   };
 

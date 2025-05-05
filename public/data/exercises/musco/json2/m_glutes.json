@@ -15,10 +15,10 @@
         "Lower your hips back to the starting position and repeat for the desired number of repetitions."
       ],
       "tips": [
-        "Ensure that the lower back doesn’t arch as you extend the hip, you should focus on squeezing the glutes and slightly posteriorly tilting the pelvis.",
+        "Ensure that the lower back doesn't arch as you extend the hip, you should focus on squeezing the glutes and slightly posteriorly tilting the pelvis.",
         "Ideally you should prioritize a straight line from your knees through your shoulders at the peak of contraction.",
-        "Focus on exhaling as you bridge the hips up. You shouldn’t feel the movement through your lower back at all.",
-        "If you can’t seem to feel your glutes activating, palpate the musculature with your hands and focus on pausing the movement at the peak of contraction.",
+        "Focus on exhaling as you bridge the hips up. You shouldn't feel the movement through your lower back at all.",
+        "If you can't seem to feel your glutes activating, palpate the musculature with your hands and focus on pausing the movement at the peak of contraction.",
         "If you find one glute has less contractility than another, perform the movement unilaterally and then incorporate the bilateral version after you have accumulated sufficient volume on the side with poor contractility."
       ],
       "contraindications": [
@@ -29,11 +29,9 @@
       ],
       "muscles": ["Glutes", "Abs", "Hamstrings"],
       "alternatives": [
-        "glutes-1",
-        "glutes-5",
-        "glutes-10",
-        "glutes-12",
-        "glutes-20"
+        "glutes-8",
+        "glutes-44",
+        "glutes-45"
       ],
       "repetitions": 12,
       "sets": 3,
@@ -48,7 +46,7 @@
     {
       "id": "glutes-8",
       "name": "Barbell Glute Bridge",
-      "description": "The barbell glute bridge is an exercise used to strengthen the glute muscles. A lot of lifters believe all you need to build a complete and strong set of glutes are exercises such as the squat and deadlift. However, this isn’t completely true. Implementing more isolation focused glute exercises such as the barbell glute bridge is a smart idea for aesthetics, functionality, and strength.",
+      "description": "The barbell glute bridge is an exercise used to strengthen the glute muscles. A lot of lifters believe all you need to build a complete and strong set of glutes are exercises such as the squat and deadlift. However, this isn't completely true. Implementing more isolation focused glute exercises such as the barbell glute bridge is a smart idea for aesthetics, functionality, and strength.",
       "targetBodyParts": ["Glutes"],
       "exerciseType": ["strength"],
       "difficulty": "intermediate",
@@ -61,10 +59,10 @@
       ],
       "tips": [
         "Utilize an airex or squat bar pad on the bar as this will help to reduce the discomfort during the exercise.",
-        "Ensure that the lower back doesn’t arch as you extend the hip, you should focus on squeezing the glutes and slightly posteriorly tilting the pelvis.",
+        "Ensure that the lower back doesn't arch as you extend the hip, you should focus on squeezing the glutes and slightly posteriorly tilting the pelvis.",
         "Ideally you should prioritize a straight line from your knees through your shoulders at the peak of contraction.",
-        "Focus on exhaling as you bridge the hips up. You shouldn’t feel the movement through your lower back at all.",
-        "If you can’t seem to feel your glutes activating, palpate the musculature with your hands and focus on pausing the movement at the peak of contraction."
+        "Focus on exhaling as you bridge the hips up. You shouldn't feel the movement through your lower back at all.",
+        "If you can't seem to feel your glutes activating, palpate the musculature with your hands and focus on pausing the movement at the peak of contraction."
       ],
       "contraindications": [
         "Glutes injury",
@@ -74,11 +72,9 @@
       ],
       "muscles": ["Glutes", "Abs", "Hamstrings"],
       "alternatives": [
-        "glutes-2",
-        "glutes-13",
-        "glutes-43",
-        "glutes-3",
-        "glutes-7"
+        "glutes-7",
+        "glutes-44",
+        "glutes-45"
       ],
       "repetitions": 12,
       "sets": 3,
@@ -122,11 +118,9 @@
       ],
       "muscles": ["Glutes", "Hip Abductors"],
       "alternatives": [
-        "glutes-11",
-        "glutes-17",
-        "glutes-21",
-        "glutes-26",
-        "glutes-30"
+        "glutes-45",
+        "glutes-7",
+        "glutes-8"
       ],
       "repetitions": 15,
       "sets": 3,
@@ -171,10 +165,8 @@
       "muscles": ["Glutes", "Obliques", "Hip Abductors", "Core"],
       "alternatives": [
         "glutes-44",
-        "glutes-11",
-        "glutes-17",
-        "glutes-26",
-        "glutes-30"
+        "glutes-7",
+        "glutes-8"
       ],
       "repetitions": 12,
       "sets": 3,

@@ -266,6 +266,7 @@ export interface ProgramWeek {
   week: number;
   differenceReason?: string;
   days: ProgramDay[];
+  createdAt: string;
 }
 
 export interface AfterTimeFrame {

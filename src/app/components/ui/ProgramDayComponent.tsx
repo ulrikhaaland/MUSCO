@@ -1,7 +1,8 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { Exercise, ProgramDay } from '@/app/types/program';
 import ExerciseCard from './ExerciseCard';
 import Chip from './Chip';
+import BodyPartFilter from './BodyPartFilter';
 
 interface ProgramDayComponentProps {
   day: ProgramDay;
@@ -34,79 +35,37 @@ export function ProgramDayComponent({
   const [removedBodyParts, setRemovedBodyParts] = useState<string[]>([]);
   // State to track if title is being hovered
   const [isTitleHovered, setIsTitleHovered] = useState(false);
-  // State to track if body parts container is overflowing
-  const [isBodyPartsOverflowing, setIsBodyPartsOverflowing] = useState(false);
   // State to track if activity badge is hovered
   const [isActivityBadgeHovered, setIsActivityBadgeHovered] = useState(false);
   // State to track if activity badge is pressed
   const [isActivityBadgePressed, setIsActivityBadgePressed] = useState(false);
   // State to track viewport width for responsive adjustments
   const [isMobile, setIsMobile] = useState(false);
-  // State to track if the body parts container is scrolled to the end
-  const [isScrolledToEnd, setIsScrolledToEnd] = useState(false);
-  // Ref for body parts container
-  const bodyPartsRef = useRef<HTMLDivElement>(null);
-  // Ref to track current overflow state to avoid dependency loops
-  const isOverflowingRef = useRef(false);
 
   // Get all unique body parts from exercises
-  const allBodyParts = Array.from(
+  const allBodyParts = useMemo(() => {
+    return Array.from(
     new Set(
       day.exercises?.map((exercise) => exercise.bodyPart).filter(Boolean) || []
     )
   ).sort();
+  }, [day.exercises]);
 
   // Filter exercises based on removed body parts
-  const filteredExercises = day.exercises?.filter((exercise) => {
+  const filteredExercises = useMemo(() => {
+    return day.exercises?.filter((exercise) => {
     // If exercise has no body part, show it
     if (!exercise.bodyPart) return true;
 
     // Only filter out if the exercise's body part is in the removed list
     return !removedBodyParts.includes(exercise.bodyPart);
   });
+  }, [day.exercises, removedBodyParts]);
 
-  // Check for overflow using ResizeObserver instead of direct effect
-  const checkOverflow = useCallback(() => {
-    if (bodyPartsRef.current) {
-      const isOverflowing =
-        bodyPartsRef.current.scrollWidth > bodyPartsRef.current.clientWidth;
-
-      // Only update state if the overflow status has changed
-      if (isOverflowing !== isOverflowingRef.current) {
-        isOverflowingRef.current = isOverflowing;
-        setIsBodyPartsOverflowing(isOverflowing);
-      }
-    }
-  }, []);
-
-  // Handle scroll events on the body parts container
-  const handleBodyPartsScroll = useCallback(
-    (event: React.UIEvent<HTMLDivElement>) => {
-      const { scrollLeft, scrollWidth, clientWidth } = event.currentTarget;
-      // Check if scrolled to the end (within a small tolerance)
-      const atEnd = scrollWidth - clientWidth - scrollLeft < 1;
-      setIsScrolledToEnd(atEnd);
-    },
-    []
-  );
-
-  // Check if body parts container is overflowing
-  useEffect(() => {
-    checkOverflow();
-
-    // Set up resize observer
-    const resizeObserver = new ResizeObserver(() => {
-      checkOverflow();
-    });
-
-    if (bodyPartsRef.current) {
-      resizeObserver.observe(bodyPartsRef.current);
-    }
-
-    return () => {
-      resizeObserver.disconnect();
-    };
-  }, [checkOverflow]);
+  // Handle body part filter changes
+  const handleBodyPartFilterChange = (newRemovedBodyParts: string[]) => {
+    setRemovedBodyParts(newRemovedBodyParts);
+  };
 
   // Check if viewport is mobile sized
   useEffect(() => {
@@ -121,62 +80,6 @@ export function ProgramDayComponent({
       window.removeEventListener('resize', checkIsMobile);
     };
   }, []);
-
-  // Toggle body part filter
-  const toggleBodyPart = (bodyPart: string) => {
-    setRemovedBodyParts((prev) => {
-      if (prev.includes(bodyPart)) {
-        return prev.filter((part) => part !== bodyPart);
-      } else {
-        return [...prev, bodyPart];
-      }
-    });
-  };
-
-  // Render all body parts with horizontal scrolling
-  const renderBodyParts = () => {
-    return allBodyParts.map((bodyPart) => (
-      <Chip
-        key={bodyPart}
-        onClick={() => toggleBodyPart(bodyPart)}
-        size="lg"
-        variant={removedBodyParts.includes(bodyPart) ? 'inactive' : 'default'}
-        icon={
-          removedBodyParts.includes(bodyPart) ? (
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-              />
-            </svg>
-          ) : (
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          )
-        }
-      >
-        {bodyPart}
-      </Chip>
-    ));
-  };
 
   return (
     <div className="h-full flex flex-col" onClick={onClick}>
@@ -267,27 +170,11 @@ export function ProgramDayComponent({
 
       {/* Body Parts Filter Section */}
       {allBodyParts.length > 0 && (
-        <div className="mb-4">
-          <h4 className="text-gray-50 font-medium mb-4">Target Body Parts:</h4>
-          <div className="relative max-w-full overflow-hidden">
-            <div
-              ref={bodyPartsRef}
-              className="flex overflow-x-auto hide-scrollbar pb-2 max-w-full"
-              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-              onScroll={handleBodyPartsScroll}
-            >
-              <div className="flex gap-2 min-w-min pr-8">
-                {renderBodyParts()}
-              </div>
-            </div>
-            {isBodyPartsOverflowing && !isScrolledToEnd && (
-              <div
-                className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-gray-900/90 from-30% via-gray-900/70 via-60% to-transparent pointer-events-none"
-                style={{ right: '-2px' }}
+        <BodyPartFilter
+          bodyParts={allBodyParts}
+          onFilterChange={handleBodyPartFilterChange}
+          initialRemovedBodyParts={removedBodyParts}
               />
-            )}
-          </div>
-        </div>
       )}
 
       {/* Content section */}
@@ -335,17 +222,6 @@ export function ProgramDayComponent({
           <div className="py-8 text-center">
             <p className="text-gray-300">
               No exercises available with the current filter.
-              {removedBodyParts.length > 0 && (
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setRemovedBodyParts([]);
-                  }}
-                  className="text-indigo-300 hover:text-indigo-200 ml-2 underline"
-                >
-                  Reset filters
-                </button>
-              )}
             </p>
           </div>
         )}

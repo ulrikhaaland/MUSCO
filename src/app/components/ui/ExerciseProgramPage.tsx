@@ -1,7 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
 import { ProgramDaySummaryComponent } from './ProgramDaySummaryComponent';
 import { ProgramType } from '@/app/shared/types';
-import { Exercise, ExerciseProgram, ProgramDay } from '@/app/types/program';
+import {
+  Exercise,
+  ExerciseProgram,
+  ProgramDay,
+  ProgramStatus,
+} from '@/app/types/program';
 import {
   ProgramFeedbackQuestionnaire,
   ProgramFeedback,
@@ -11,6 +16,7 @@ import { useAuth } from '@/app/context/AuthContext';
 import { ExerciseSelectionPage } from './ExerciseSelectionPage';
 import { useUser } from '@/app/context/UserContext';
 import { useTranslation } from '@/app/i18n';
+import router from 'next/router';
 
 // Updated interface to match the actual program structure
 
@@ -62,6 +68,44 @@ function getNextMonday(d: Date): Date {
   return result;
 }
 
+// Helper function to get the end of the week (Sunday) for a given date
+const getEndOfWeek = (date: Date): Date => {
+  const result = new Date(date);
+  const dayOfWeek = result.getDay(); // 0 is Sunday, 1 is Monday, etc.
+
+  if (dayOfWeek === 0) {
+    // Already Sunday
+    return result;
+  }
+
+  // Add days until we reach Sunday (day 0)
+  const daysUntilSunday = 7 - dayOfWeek;
+  result.setDate(result.getDate() + daysUntilSunday);
+
+  // Set to end of day (23:59:59.999)
+  result.setHours(23, 59, 59, 999);
+
+  return result;
+};
+
+// Helper function to get the start of the week (Monday) for a given date
+const getStartOfWeek = (date: Date): Date => {
+  const result = new Date(date);
+  const dayOfWeek = result.getDay(); // 0 is Sunday, 1 is Monday, etc.
+
+  // Calculate days to subtract to get to Monday
+  // For Sunday (0), subtract 6 days to get to previous Monday
+  // For Monday (1), subtract 0 days
+  // For Tuesday (2), subtract 1 day, etc.
+  const daysToSubtract = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+  result.setDate(result.getDate() - daysToSubtract);
+
+  // Set to start of day (00:00:00.000)
+  result.setHours(0, 0, 0, 0);
+
+  return result;
+};
+
 // Create a reusable loading component - no longer needed as we're using the global loader context
 // This function is removed in favor of using the global loader context
 
@@ -100,7 +144,7 @@ export function ExerciseProgramPage({
   >('effective');
   // Add state to save feedback form scroll position
   const [feedbackScrollPosition, setFeedbackScrollPosition] = useState(0);
-  const { answers } = useUser();
+  const { answers, diagnosisData, setProgramStatus } = useUser();
   const { t } = useTranslation();
 
   // Check if overview has been seen before
@@ -176,39 +220,93 @@ export function ExerciseProgramPage({
     }, 0);
   };
 
-  // Function to handle editing a specific selection step
-  const handleEditSelection = (step: 'effective' | 'ineffective') => {
-    // Save current window scroll position before switching
-    setFeedbackScrollPosition(window.scrollY);
-
-    setSelectionStep(step);
-    setShowFeedbackQuestionnaire(false);
-    setShowExerciseSelectionPage(true);
-
-    // Reset window scroll position when switching to exercise selection
-    setTimeout(() => {
-      window.scrollTo({ top: 0, behavior: 'instant' });
-    }, 0);
-  };
-
   // Set initial week and day when program loads
   useEffect(() => {
     if (!program?.program || !Array.isArray(program.program)) return;
 
     // Find the program week that corresponds to the current calendar week
     let weekToSelect = 1;
-    for (let i = 0; i < program.program.length; i++) {
-      const weekDate = new Date(currentDate);
-      weekDate.setDate(currentDate.getDate() - (currentDayOfWeek - 1) + i * 7);
-      if (getWeekNumber(weekDate) === currentWeekNumber) {
-        weekToSelect = i + 1;
-        break;
+    let foundMatch = false;
+
+    // Get current date for comparison
+    const currentDate = new Date();
+    const currentTimestamp = currentDate.getTime();
+
+    // Get the current week's Monday and Sunday
+    const currentWeekStart = getStartOfWeek(currentDate);
+    const currentWeekEnd = getEndOfWeek(currentDate);
+
+    // Sort weeks by createdAt date for consistent processing
+    const sortedWeeks = [...program.program].sort((a, b) => {
+      if (a.createdAt && b.createdAt) {
+        return (
+          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+        );
+      }
+      return a.week - b.week;
+    });
+
+    // First try to find the week that contains today's date
+    for (let i = 0; i < sortedWeeks.length; i++) {
+      const week = sortedWeeks[i];
+
+      // Check if week has a createdAt property (newer program format)
+      if (week.createdAt) {
+        const weekCreatedAt = new Date(week.createdAt);
+        const weekStartDate = getStartOfWeek(weekCreatedAt);
+        const weekEndDate = getEndOfWeek(weekCreatedAt);
+
+        // Check if current date falls within this week's time range
+        // or if current week overlaps with program week
+        const isCurrentDateInWeekRange =
+          currentTimestamp >= weekStartDate.getTime() &&
+          currentTimestamp <= weekEndDate.getTime();
+
+        const doWeeksOverlap =
+          currentWeekStart.getTime() <= weekEndDate.getTime() &&
+          currentWeekEnd.getTime() >= weekStartDate.getTime();
+
+        if (isCurrentDateInWeekRange || doWeeksOverlap) {
+          weekToSelect = week.week;
+          foundMatch = true;
+          break;
+        }
+      } else {
+        // Fall back to the old method for programs without createdAt
+        const weekDate = new Date(currentDate);
+        weekDate.setDate(
+          currentDate.getDate() - (currentDayOfWeek - 1) + i * 7
+        );
+        if (getWeekNumber(weekDate) === currentWeekNumber) {
+          weekToSelect = week.week;
+          foundMatch = true;
+          break;
+        }
       }
     }
 
-    // If current week is beyond program weeks, select the last available week
-    if (weekToSelect > program.program.length) {
-      weekToSelect = program.program.length;
+    // If no direct match found, try to find the most recent week
+    if (!foundMatch && sortedWeeks.length > 0) {
+      // Get the most recent week from sorted weeks (last in the array)
+      const mostRecentWeek = sortedWeeks[sortedWeeks.length - 1];
+
+      if (mostRecentWeek.createdAt) {
+        const weekCreatedAt = new Date(mostRecentWeek.createdAt);
+        const weekEndDate = getEndOfWeek(weekCreatedAt);
+
+        // If today is after the most recent week's end date, show Next Week
+        if (currentTimestamp > weekEndDate.getTime()) {
+          weekToSelect = program.program.length + 1; // Next Week
+        } else {
+          // Otherwise show the most recent week
+          weekToSelect = mostRecentWeek.week;
+          foundMatch = true;
+        }
+      } else {
+        // For old programs without createdAt, select the last week
+        weekToSelect = mostRecentWeek.week;
+        foundMatch = true;
+      }
     }
 
     setSelectedWeek(weekToSelect);
@@ -357,7 +455,6 @@ export function ExerciseProgramPage({
       const programWithLatestWeek = {
         ...program,
         program: latestWeek ? [latestWeek] : [],
-        questionnaire: answers, // Include the original questionnaire answers
       };
 
       // Merge selected exercises with feedback data
@@ -367,21 +464,21 @@ export function ExerciseProgramPage({
         leastEffectiveExercises: selectedExercises.ineffective,
       };
 
-      // Use the program follow up assistant ID
-      const programFollowUpAssistantId = 'asst_PjMTzHis7vLSeDZRhbBB1tbe';
+      setProgramStatus(ProgramStatus.Generating);
 
       // Submit feedback and generate new program with the specific assistant
       const newProgramId = await submitProgramFeedback(
         user.uid,
         programWithLatestWeek,
-        feedbackWithExercises,
-        programFollowUpAssistantId
+        diagnosisData,
+        answers,
+        feedbackWithExercises
       );
 
       console.log('New program generated with ID:', newProgramId);
 
       // Redirect to refresh program view
-      window.location.href = '/program';
+      router.push('/program');
 
       return Promise.resolve();
     } catch (error) {
@@ -409,8 +506,16 @@ export function ExerciseProgramPage({
 
     const uniqueExercises = new Map<string, Exercise>();
 
-    program.program.forEach((week) => {
-      week.days.forEach((day) => {
+    // Find the latest week based on createdAt date
+    const latestWeek = program.program.reduce((latest, current) => {
+      if (!latest.createdAt) return current;
+      if (!current.createdAt) return latest;
+      return new Date(current.createdAt) > new Date(latest.createdAt) ? current : latest;
+    }, program.program[0]);
+
+    // Only process exercises from the latest week
+    if (latestWeek) {
+      latestWeek.days.forEach((day) => {
         if (day.exercises) {
           day.exercises.forEach((exercise) => {
             const exerciseId =
@@ -421,7 +526,7 @@ export function ExerciseProgramPage({
           });
         }
       });
-    });
+    }
 
     return Array.from(uniqueExercises.values());
   };
@@ -483,9 +588,6 @@ export function ExerciseProgramPage({
           nextWeekDate={nextMonday}
           isFeedbackDay={true}
           previousExercises={previousExercises}
-          mostEffectiveExercises={selectedExercises.effective}
-          leastEffectiveExercises={selectedExercises.ineffective}
-          onEditExercises={handleEditSelection}
         />
       );
     }
@@ -572,9 +674,6 @@ export function ExerciseProgramPage({
         nextWeekDate={getNextMonday(new Date())}
         isFeedbackDay={true}
         previousExercises={getAllProgramExercises()}
-        mostEffectiveExercises={selectedExercises.effective}
-        leastEffectiveExercises={selectedExercises.ineffective}
-        onEditExercises={handleEditSelection}
       />
     );
   }
@@ -807,26 +906,39 @@ export function ExerciseProgramPage({
                   {/* Week Tabs */}
                   <div className="mb-6 overflow-x-auto scrollbar-hide">
                     <div className="flex space-x-2 min-w-max">
-                      {program.program.map((week) => (
-                        <button
-                          key={week.week}
-                          data-week={week.week}
-                          onClick={() => handleWeekChange(week.week)}
-                          className={`px-6 py-3 rounded-lg font-medium transition-colors duration-200 ${
-                            selectedWeek === week.week
-                              ? 'bg-indigo-600 text-white'
-                              : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white'
-                          }`}
-                        >
-                          Week{' '}
-                          {getWeekNumber(
-                            new Date(
-                              currentDate.getTime() +
-                                (week.week - 1) * 7 * 24 * 60 * 60 * 1000
-                            )
-                          )}
-                        </button>
-                      ))}
+                      {program.program
+                        // Sort weeks by their createdAt date if available, otherwise by week number
+                        .sort((a, b) => {
+                          if (a.createdAt && b.createdAt) {
+                            return (
+                              new Date(a.createdAt).getTime() -
+                              new Date(b.createdAt).getTime()
+                            );
+                          }
+                          return a.week - b.week;
+                        })
+                        .map((week) => (
+                          <button
+                            key={week.week}
+                            data-week={week.week}
+                            onClick={() => handleWeekChange(week.week)}
+                            className={`px-6 py-3 rounded-lg font-medium transition-colors duration-200 ${
+                              selectedWeek === week.week
+                                ? 'bg-indigo-600 text-white'
+                                : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white'
+                            }`}
+                          >
+                            Week{' '}
+                            {week.createdAt
+                              ? getWeekNumber(new Date(week.createdAt))
+                              : getWeekNumber(
+                                  new Date(
+                                    currentDate.getTime() +
+                                      (week.week - 1) * 7 * 24 * 60 * 60 * 1000
+                                  )
+                                )}
+                          </button>
+                        ))}
                       <button
                         className={`px-6 py-3 rounded-lg font-medium transition-colors duration-200 ${
                           selectedWeek === program.program.length + 1

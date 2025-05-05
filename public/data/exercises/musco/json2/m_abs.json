@@ -29,7 +29,7 @@
         "Acute pain during movement"
       ],
       "muscles": ["Abs", "Forearms"],
-      "alternatives": ["abs-7", "abs-10", "abs-17", "abs-29", "abs-36"],
+      "alternatives": ["abs-22", "abs-13", "abs-9", "abs-6", "abs-20"],
       "repetitions": 12,
       "sets": 3,
       "restBetweenSets": 60,
@@ -61,9 +61,9 @@
         "Wall Plank: Stand facing a wall and place your hands on it at shoulder height. Step your feet back slightly and bend your elbows to create a straight line from your head to your heels. Hold for 30 seconds, focusing on keeping your core tight.",
         "Incline Plank: Use a bench or sturdy surface. Place your forearms on the bench and your feet on the floor, forming a straight line from head to heels. Engage your core and hold for 30 seconds.",
         "Knee Plank: Start in a standard plank position but with your knees on the ground instead of your toes. Keep your body in a straight line from head to knees, engaging your core. Hold for 30 seconds.",
-        "Wall Plank: Stand facing a wall and place your hands on it at shoulder height. Step your feet back slightly and bend your elbows to create a straight line from your head to your heels. Hold for 30 seconds, focusing on keeping your core tight.",
-        "Incline Plank: Use a bench or sturdy surface. Place your forearms on the bench and your feet on the floor, forming a straight line from head to heels. Engage your core and hold for 30 seconds.",
-        "Knee Plank: Start in a standard plank position but with your knees on the ground instead of your toes. Keep your body in a straight line from head to knees, engaging your core. Hold for 30 seconds.",
+        "Wall Plank: Stand facing a wall and place your hands on it at shoulder height. Step your feet back slightly and bend your elbows to create a straight line from your head to your heels. Hold for 30 seconds, focusing on keeping your core tight.",
+        "Incline Plank: Use a bench or sturdy surface. Place your forearms on the bench and your feet on the floor, forming a straight line from head to heels. Engage your core and hold for 30 seconds.",
+        "Knee Plank: Start in a standard plank position but with your knees on the ground instead of your toes. Keep your body in a straight line from head to knees, engaging your core. Hold for 30 seconds.",
         "Keep breathing steadily through the nose and mouth.",
         "Keep your body in a straight line, and avoid letting your hips sag or rise.",
         "Gradually increase your hold time by 5-10 seconds as you build strength.",
@@ -75,7 +75,7 @@
         "Acute pain during movement"
       ],
       "muscles": ["Abs", "Lower Back"],
-      "alternatives": ["abs-1", "abs-2", "abs-3", "abs-4", "abs-5"],
+      "alternatives": ["abs-120", "abs-121", "abs-20", "abs-9", "abs-13"],
       "repetitions": 12,
       "sets": 3,
       "restBetweenSets": 60,
@@ -89,7 +89,7 @@
     {
       "id": "abs-9",
       "name": "Sit Up",
-      "description": "The sit up is a classic abdominal exercise. It’s rarely performed anymore, however, it’s still a very effective flexion based exercise for those looking to utilize it to target their core. There are some risks involved in performing the sit up as opposed to crunches (or stability ball crunches). The primary one being the common complaint of lower back pain. One can perform sit ups as part of their ab workout or full body workout.",
+      "description": "The sit up is a classic abdominal exercise. It's rarely performed anymore, however, it's still a very effective flexion based exercise for those looking to utilize it to target their core. There are some risks involved in performing the sit up as opposed to crunches (or stability ball crunches). The primary one being the common complaint of lower back pain. One can perform sit ups as part of their ab workout or full body workout.",
       "targetBodyParts": ["Abs"],
       "exerciseType": ["strength"],
       "difficulty": "beginner",
@@ -101,7 +101,7 @@
         "Complete for the assigned number of repetitions."
       ],
       "tips": [
-        "Exhale hard like you’re blowing out candles on a cake and hold the contraction for a second in order to improve mind muscle connection.",
+        "Exhale hard like you're blowing out candles on a cake and hold the contraction for a second in order to improve mind muscle connection.",
         "If your lower back bothers you during this exercise, choose more anti extension and anti rotation based movements.",
         "Avoid putting the hands behind the head as this can lead to excess strain upon the neck."
       ],
@@ -111,7 +111,7 @@
         "Acute pain during movement"
       ],
       "muscles": ["Abs"],
-      "alternatives": ["abs-1", "abs-8", "abs-55", "abs-56", "abs-61"],
+      "alternatives": ["abs-13", "abs-119", "abs-6", "abs-5", "abs-20"],
       "repetitions": 12,
       "sets": 3,
       "restBetweenSets": 60,
@@ -125,7 +125,7 @@
     {
       "id": "abs-13",
       "name": "Abdominal Air Bike (AKA Bicycle)",
-      "description": "The abdominal air bike is probably the most feared abdominal movement from anyone who’s performed an at-home ab workout video. The bicycle exercise targets the whole abdomen and places constant tension on the mid-section as you go through the motions on both sides. This exercise is an advanced variation of a crunch. It can be performed for timed sets or as a set with a fixed rep range.",
+      "description": "The abdominal air bike is probably the most feared abdominal movement from anyone who's performed an at-home ab workout video. The bicycle exercise targets the whole abdomen and places constant tension on the mid-section as you go through the motions on both sides. This exercise is an advanced variation of a crunch. It can be performed for timed sets or as a set with a fixed rep range.",
       "targetBodyParts": ["Abs"],
       "exerciseType": ["strength"],
       "difficulty": "beginner",
@@ -137,7 +137,7 @@
         "Complete for the assigned number of repetitions."
       ],
       "tips": [
-        "Exhale hard like you’re blowing out candles on a cake and hold the contraction for a second in order to improve mind muscle connection.",
+        "Exhale hard like you're blowing out candles on a cake and hold the contraction for a second in order to improve mind muscle connection.",
         "If your lower back bothers you during this exercise, choose more anti extension and anti rotation based movements.",
         "Avoid putting the hands behind the head as this can lead to excess strain upon the neck."
       ],
@@ -149,7 +149,7 @@
         "Severe cardiovascular issues (for heavy compound movements)"
       ],
       "muscles": ["Abs"],
-      "alternatives": ["abs-19", "abs-63", "abs-1", "abs-8", "abs-9"],
+      "alternatives": ["abs-9", "abs-121", "abs-20", "abs-6", "abs-119"],
       "repetitions": 12,
       "sets": 3,
       "restBetweenSets": 60,
@@ -175,10 +175,10 @@
         "Repeat for the desired number of total repetitions."
       ],
       "tips": [
-        "Do not hold your breath, you shouldn’t be using respiration to compensate for a lack of stability. Learn how to move while maintaining position without having to rely upon your breath.",
+        "Do not hold your breath, you shouldn't be using respiration to compensate for a lack of stability. Learn how to move while maintaining position without having to rely upon your breath.",
         "Move slowly but methodically. The goal is control within space, not simply completion of repetitions.",
         "Ensure that you exhale as the arm moves overhead and the leg extends. The goal is to keep the ribs down and prevent the lower back from hyperextending.",
-        "If you can’t maintain a neutral spine while moving the arm and leg simultaneously, then begin with just the arms or legs by themselves. Only incorporate more elements when you’ve mastered control of the individual components."
+        "If you can't maintain a neutral spine while moving the arm and leg simultaneously, then begin with just the arms or legs by themselves. Only incorporate more elements when you've mastered control of the individual components."
       ],
       "contraindications": [
         "Abs injury",
@@ -188,7 +188,7 @@
         "Severe cardiovascular issues (for heavy compound movements)"
       ],
       "muscles": ["Abs"],
-      "alternatives": ["abs-14", "abs-38", "abs-77", "abs-83", "abs-16"],
+      "alternatives": ["abs-121", "abs-6", "abs-13", "abs-119", "abs-22"],
       "repetitions": 12,
       "sets": 3,
       "restBetweenSets": 60,
@@ -208,7 +208,7 @@
       "difficulty": "beginner",
       "equipment": ["Bodyweight"],
       "steps": [
-        "The lying bench leg raise with hip thrust is a great exercise for hitting your abdominal muscles. Set up for the exercise by getting a flat bench and positioning it to give enough room for your legs to extend out one end.",
+        "The lying bench leg raise with hip thrust is a great exercise for hitting your abdominal muscles. Set up for the exercise by getting a flat bench and positioning it to give enough room for your legs to extend out one end.",
         "Sit on the bench with your buttocks close to one end, then lay back.",
         "Grasp the bench at head height for stability.",
         "Extend your legs straight out level with your body, keeping your knees and feet together. This is the starting position for the movement.",
@@ -230,7 +230,7 @@
         "Severe cardiovascular issues (for heavy compound movements)"
       ],
       "muscles": ["Abs"],
-      "alternatives": ["abs-25", "abs-47", "abs-62", "abs-64", "abs-68"],
+      "alternatives": ["abs-5", "abs-119", "abs-13", "abs-9", "abs-120"],
       "repetitions": 12,
       "sets": 3,
       "restBetweenSets": 60,
@@ -273,7 +273,7 @@
         "Acute core strain"
       ],
       "muscles": ["Abs", "Hip Flexors", "Serratus Anterior", "Core"],
-      "alternatives": ["abs-12", "abs-15", "abs-22", "abs-31", "abs-35"],
+      "alternatives": ["abs-9", "abs-13", "abs-22", "abs-120", "abs-6"],
       "repetitions": 12,
       "sets": 3,
       "restBetweenSets": 60,
@@ -316,7 +316,7 @@
         "Elbow issues"
       ],
       "muscles": ["Abs", "Shoulders", "Triceps", "Chest", "Core"],
-      "alternatives": ["abs-12", "abs-15", "abs-22", "abs-31", "abs-35"],
+      "alternatives": ["abs-6", "abs-121", "abs-119", "abs-20", "abs-22"],
       "repetitions": 10,
       "sets": 3,
       "restBetweenSets": 60,
@@ -359,7 +359,7 @@
         "Core instability"
       ],
       "muscles": ["Abs", "Obliques", "Hip Flexors", "Shoulders", "Core"],
-      "alternatives": ["abs-14", "abs-20", "abs-38", "abs-77", "abs-16"],
+      "alternatives": ["abs-6", "abs-120", "abs-20", "abs-13", "abs-5"],
       "repetitions": 12,
       "sets": 3,
       "restBetweenSets": 60,

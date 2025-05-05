@@ -19,13 +19,13 @@
       "tips": [
         "Maintain more tension through the pecs by not locking out the elbows entirely.",
         "Keep the weights slightly tilted at a 45 degree angle in order to keep the elbows in a neutral position.",
-        "Don’t allow the dumbbells to collide at the top of each rep - bouncing them together may cause you to lose stability within the shoulder and injure yourself.",
+        "Don't allow the dumbbells to collide at the top of each rep - bouncing them together may cause you to lose stability within the shoulder and injure yourself.",
         "Squeeze the dumbbells as tight as possible to improve a phenomenon known as “irradiation” which promotes greater shoulder stability.",
         "Keep your shoulder blades pinched together to ensure the shoulders remain in a safe position.",
-        "Imagine you’re trying to push yourself away from the weights rather than pushing the weights away from yourself.",
-        "If you’re feeling pain within the shoulder joint itself (specifically at the front), ensure your shoulder blades are slightly retracted and try to keep the shoulder girdle “packed”.",
-        "Ensure you maintain some tension in your abs and don’t allow your lower back to arch excessively.",
-        "Keep your feet flat on the floor and don’t allow the lower body to move during the set."
+        "Imagine you're trying to push yourself away from the weights rather than pushing the weights away from yourself.",
+        "If you're feeling pain within the shoulder joint itself (specifically at the front), ensure your shoulder blades are slightly retracted and try to keep the shoulder girdle “packed“.",
+        "Ensure you maintain some tension in your abs and don't allow your lower back to arch excessively.",
+        "Keep your feet flat on the floor and don't allow the lower body to move during the set."
       ],
       "contraindications": [
         "Chest injury",
@@ -38,10 +38,9 @@
       "muscles": ["Chest", "Shoulders", "Triceps"],
       "alternatives": [
         "chest-3",
-        "chest-20",
-        "chest-34",
-        "chest-76",
-        "chest-112"
+        "chest-7",
+        "chest-11",
+        "chest-18"
       ],
       "repetitions": 8,
       "sets": 3,
@@ -71,13 +70,13 @@
       "tips": [
         "Maintain more tension through the pecs by not locking out the elbows entirely.",
         "Keep the weights slightly tilted at a 45 degree angle in order to keep the elbows in a neutral position.",
-        "Don’t allow the dumbbells to collide at the top of each rep - bouncing them together may cause you to lose stability within the shoulder and injure yourself.",
+        "Don't allow the dumbbells to collide at the top of each rep - bouncing them together may cause you to lose stability within the shoulder and injure yourself.",
         "Squeeze the dumbbells as tight as possible to improve a phenomenon known as “irradiation” which promotes greater shoulder stability.",
         "Keep your shoulder blades pinched together to ensure the shoulders remain in a safe position.",
-        "Imagine you’re trying to push yourself away from the weights rather than pushing the weights away from yourself.",
-        "If you’re feeling pain within the shoulder joint itself (specifically at the front), ensure your shoulder blades are slightly retracted and try to keep the shoulder girdle “packed”.",
-        "Ensure you maintain some tension in your abs and don’t allow your lower back to excessive arch.",
-        "Keep your feet flat on the floor and don’t allow the lower body to move during the set."
+        "Imagine you're trying to push yourself away from the weights rather than pushing the weights away from yourself.",
+        "If you're feeling pain within the shoulder joint itself (specifically at the front), ensure your shoulder blades are slightly retracted and try to keep the shoulder girdle “packed“.",
+        "Ensure you maintain some tension in your abs and don't allow your lower back to excessive arch.",
+        "Keep your feet flat on the floor and don't allow the lower body to move during the set."
       ],
       "contraindications": [
         "Chest injury",
@@ -90,10 +89,9 @@
       "muscles": ["Chest", "Shoulders", "Triceps"],
       "alternatives": [
         "chest-1",
-        "chest-20",
-        "chest-34",
-        "chest-76",
-        "chest-112"
+        "chest-7",
+        "chest-14",
+        "chest-11"
       ],
       "repetitions": 8,
       "sets": 3,
@@ -108,7 +106,7 @@
     {
       "id": "chest-7",
       "name": "Barbell Bench Press",
-      "description": "The barbell bench press is a classic exercise popular among all weight lifting circles. From bodybuilders to powerlifters, the bench press is a staple chest exercise in nearly every workout program. For powerlifters, it is known as one of the “big three” lifts which includes the squat, deadlift, and bench press. For athletes, 1 rep max on bench press is a good indicator for on field/court performance. And for bodybuilders, the bench press is a compound exercise that targets many of the muscles in your upper body. By performing the bench press, you primarily work your pectoralis major (your chest). Other muscles which assist in moving the barbell during a bench press are other muscles of the chest, triceps, and shoulders. Not everyone is built to perform the traditional barbell bench press, so several variations have been created to ensure people can train this crucial movement pattern in a safe and comfortable way. Some of these variations include: Incline bench press Decline bench press, Dumbbell bench press Dumbbell incline bench press Dumbbell decline bench press Smith machine bench press Those with shoulder injuries can also utilize many of the alternative barbells out there that place less pressure on the shoulder to bench press. Some of these variations include hex bar bench press, football bar bench press, and Swiss bar bench press.",
+      "description": "The barbell bench press is a classic exercise popular among all weight lifting circles. From bodybuilders to powerlifters, the bench press is a staple chest exercise in nearly every workout program. For powerlifters, it is known as one of the “big three“ lifts which includes the squat, deadlift, and bench press. For athletes, 1 rep max on bench press is a good indicator for on field/court performance. And for bodybuilders, the bench press is a compound exercise that targets many of the muscles in your upper body. By performing the bench press, you primarily work your pectoralis major (your chest). Other muscles which assist in moving the barbell during a bench press are other muscles of the chest, triceps, and shoulders. Not everyone is built to perform the traditional barbell bench press, so several variations have been created to ensure people can train this crucial movement pattern in a safe and comfortable way. Some of these variations include: Incline bench press Decline bench press, Dumbbell bench press Dumbbell incline bench press Dumbbell decline bench press Smith machine bench press Those with shoulder injuries can also utilize many of the alternative barbells out there that place less pressure on the shoulder to bench press. Some of these variations include hex bar bench press, football bar bench press, and Swiss bar bench press.",
       "targetBodyParts": ["Chest"],
       "exerciseType": ["strength"],
       "difficulty": "intermediate",
@@ -127,24 +125,24 @@
         "Technique first, weight second - no one cares how much you bench if you get injured.",
         "Keep the bar in line with your wrist and elbows and ensure it travels in a straight line. In order to keep the wrist straight, try to position the bar as low in the palm as possible while still being able to wrap the thumb.",
         "If you want to keep more tension through the triceps and chest, stop each repetition just short of lockout at the top.",
-        "Don’t worry about tucking the elbows excessively, much of this advice is from geared lifters using suits. A slight tuck on the way down may be advisable for some lifters but other lifters can use an excellent cue from Greg Nuckols that will accomplish the same thing: “Flare and push”.",
-        "Arching may be advisable depending upon your goals but ensure that most of the arch comes from the mid to upper back and not your lower back. If your lower back is cramping as you set up for the lift, you’re out of position and putting yourself at risk for potential injury.",
+        "Don't worry about tucking the elbows excessively, much of this advice is from geared lifters using suits. A slight tuck on the way down may be advisable for some lifters but other lifters can use an excellent cue from Greg Nuckols that will accomplish the same thing: “Flare and push”.",
+        "Arching may be advisable depending upon your goals but ensure that most of the arch comes from the mid to upper back and not your lower back. If your lower back is cramping as you set up for the lift, you're out of position and putting yourself at risk for potential injury.",
         "The bar should touch your chest with every single repetition. If you want to overload specific ranges of motion, look into board presses or accommodating resistance with chains or bands.",
         "As the bar descends, aim for your sternum (breastbone) or slightly below depending upon the length of your upper arm in order to promote a linear bar path.",
         "Intermediate and advanced lifters may use a thumbless or “suicide” grip but for the majority of lifters, it would be wiser to learn how to bench with the thumb wrapped around the bar at first.",
         "Fight to the urge to allow the wrists to roll back into extension, think about rolling your knuckles toward the ceiling.",
-        "Experiment with grip width - if your have longer arms you may need to use a slightly wider grip. However, if you’re feeling pressure in the front of the shoulder during the exercise, you may need to widen your grip, improve scapular retraction, or slightly lessen the range of motion via exercises such as floor or board presses.",
+        "Experiment with grip width - if your have longer arms you may need to use a slightly wider grip. However, if you're feeling pressure in the front of the shoulder during the exercise, you may need to widen your grip, improve scapular retraction, or slightly lessen the range of motion via exercises such as floor or board presses.",
         "Squeeze the bar as tightly as possible to help enhance shoulder stability.",
         "Some lifters prefer to tuck their toes while other prefer to keep the feet flat in order to optimize leg drive - experiment with both and see which one feels and allows for greater power production.",
-        "Ensure the shoulder blades remain retracted and don’t allow them to change position as you press.",
-        "The bar should descend under control and touch the lifter’s chest - no bouncing or excess momentum.",
+        "Ensure the shoulder blades remain retracted and don't allow them to change position as you press.",
+        "The bar should descend under control and touch the lifter's chest - no bouncing or excess momentum.",
         "Think about trying to push yourself away from the bar instead of pushing the bar off of you.",
         "Tightness through the upper back should be one of your main priorities throughout the course of the lift.",
         "Ideally, use a spotter to help assist with the lift off in order to maintain tension through the upper back.",
         "Keep the feet quiet throughout the lift and utilize leg drive by pushing your feet into the floor and squeezing your glutes to stabilize the pelvis.",
         "Focus on pulling the bar apart or trying to “bend the bar” in order to activate some of the intrinsic stabilizers in the shoulder.",
         "The glutes and shoulder blades should maintain contact with the bench throughout the entirety of the movement.",
-        "If you want to learn more about about the intricacies of benching, Dave Tate’s benching bible is a great place to start."
+        "If you want to learn more about about the intricacies of benching, Dave Tate's benching bible is a great place to start."
       ],
       "contraindications": [
         "Chest injury",
@@ -156,11 +154,10 @@
       ],
       "muscles": ["Chest", "Shoulders", "Triceps"],
       "alternatives": [
-        "chest-33",
-        "chest-98",
-        "chest-122",
-        "chest-5",
-        "chest-8"
+        "chest-1",
+        "chest-3",
+        "chest-11",
+        "chest-18"
       ],
       "repetitions": 8,
       "sets": 3,
@@ -189,40 +186,40 @@
         "Slowly lower back to the starting position and repeat for the desired number of repetitions."
       ],
       "tips": [
-        "Imagine you’re trying to hug a tree while completing the exercise.",
-        "Don’t squeeze the handles excessively tight as this can over recruit the forearms and biceps thereby reducing activation of the pecs.",
+        "Imagine you're trying to hug a tree while completing the exercise.",
+        "Don't squeeze the handles excessively tight as this can over recruit the forearms and biceps thereby reducing activation of the pecs.",
         "Avoid touching or banging the handles together at peak contraction to keep constant tension on the intended muscle groups.",
         "Always keep a slight bend in the elbows and never lower the weight to the point where you get any sort of pain and pressure at the front of the shoulder joint.",
-        "Ensure you maintain some tension in your abs and don’t allow your lower back to arch excessively."
+        "Ensure you maintain some tension in your abs and don't allow your lower back to arch excessively."
       ],
       "contraindications": [
         "Chest injury",
         "Joint pain",
         "Acute pain during movement",
-        "Shoulder impingement"
+        "Shoulder impingement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
       ],
       "muscles": ["Chest", "Shoulders", "Triceps"],
       "alternatives": [
-        "chest-12",
+        "chest-16",
         "chest-22",
-        "chest-32",
-        "chest-68",
-        "chest-107"
+        "chest-14"
       ],
       "repetitions": 12,
       "sets": 3,
       "restBetweenSets": 60,
       "forceType": "Push (Bilateral)",
       "mechanics": "Isolation",
-      "videoUrl": "gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3140.MOV",
+      "videoUrl": "gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_2993.MOV",
       "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Chest.jpg",
-      "viewCount": 1700000,
-      "popularity": "high"
+      "viewCount": 840300,
+      "popularity": "medium"
     },
     {
       "id": "chest-11",
       "name": "Hammer Strength Bench Press",
-      "description": "The machine bench press is a variation of the barbell bench press used to strengthen the muscles of the chest. It will also indirectly target the muscles of the shoulders and triceps. One would use the machine bench press as a way to perform the pressing movement pattern with a focus on isolating the chest. One can better isolate certain muscle groups with a machine due to its fixed movement pattern. The machine bench press is best added towards the end of your chest workout if you are training for hypertrophy, after you’ve used other more compound variations to work your push muscles.",
+      "description": "The machine bench press is a variation of the barbell bench press used to strengthen the muscles of the chest. It will also indirectly target the muscles of the shoulders and triceps. One would use the machine bench press as a way to perform the pressing movement pattern with a focus on isolating the chest. One can better isolate certain muscle groups with a machine due to its fixed movement pattern. The machine bench press is best added towards the end of your chest workout if you are training for hypertrophy, after you've used other more compound variations to work your push muscles.",
       "targetBodyParts": ["Chest"],
       "exerciseType": ["strength"],
       "difficulty": "beginner",
@@ -235,12 +232,12 @@
       ],
       "tips": [
         "Many lifters use a thumbless grip with this machine variation as they feel it is easier to keep tension through the pecs and triceps rather than having to worry about squeezing the bar excessively tight.",
-        "Squeezing the handles tightly instead of using a thumbless grip can help to improve a phenomenon known as “irradiation” which promotes greater shoulder stability.",
+        "Squeezing the handles tightly instead of using a thumbless grip can help to improve a phenomenon known as “irradiation” which promotes greater shoulder stability.",
         "Keep your shoulder blades pinched together to ensure the shoulders remain in a safe position.",
-        "Imagine you’re trying to push yourself away from the weights rather than pushing the weights away from yourself.",
-        "If you’re feeling pain within the shoulder joint itself (specifically at the front), ensure your shoulder blades are slightly retracted and try to keep the shoulder girdle “packed”.",
-        "Ensure you maintain some tension in your abs and don’t allow your lower back to excessive arch.",
-        "Keep your feet flat on the floor and don’t allow the lower body to move during the set."
+        "Imagine you're trying to push yourself away from the weights rather than pushing the weights away from yourself.",
+        "If you're feeling pain within the shoulder joint itself (specifically at the front), ensure your shoulder blades are slightly retracted and try to keep the shoulder girdle “packed”.",
+        "Ensure you maintain some tension in your abs and don't allow your lower back to excessive arch.",
+        "Keep your feet flat on the floor and don't allow the lower body to move during the set."
       ],
       "contraindications": [
         "Chest injury",
@@ -251,7 +248,12 @@
         "Severe cardiovascular issues (for heavy compound movements)"
       ],
       "muscles": ["Chest", "Shoulders", "Triceps"],
-      "alternatives": ["chest-17", "chest-1", "chest-3", "chest-5", "chest-18"],
+      "alternatives": [
+        "chest-7",
+        "chest-1",
+        "chest-3",
+        "chest-18"
+      ],
       "repetitions": 12,
       "sets": 3,
       "restBetweenSets": 60,
@@ -279,13 +281,13 @@
       ],
       "tips": [
         "Use a slight incline such as 30 degrees. Extremes are never the best option.",
-        "Imagine you’re trying to hug a tree while you complete the exercise.",
-        "Don’t squeeze the dumbbell handles excessively tight as this can over recruit the forearms and biceps thereby reducing activation of the pecs.",
+        "Imagine you're trying to hug a tree while you complete the exercise.",
+        "Don't squeeze the dumbbell handles excessively tight as this can over recruit the forearms and biceps thereby reducing activation of the pecs.",
         "Avoid touching or banging the dumbbells together at the top of each repetition in order to keep constant tension on the intended muscle groups.",
         "Always keep a slight bend in the elbows and never lower the weight to the point where you get any sort of pain and pressure at the front of the shoulder joint.",
-        "If you’re feeling pain within the shoulder joint itself (specifically at the front), ensure your shoulder blades are slightly retracted and try to keep the shoulder girdle “packed”.",
+        "If you're feeling pain within the shoulder joint itself (specifically at the front), ensure your shoulder blades are slightly retracted and try to keep the shoulder girdle “packed”.",
         "Keep your feet flat on the floor, focus solely on keeping your elbows bent and activating your pecs.",
-        "Ensure you maintain some tension in your abs and don’t allow your lower back to excessive arch."
+        "Ensure you maintain some tension in your abs and don't allow your lower back to excessive arch."
       ],
       "contraindications": [
         "Chest injury",
@@ -295,11 +297,9 @@
       ],
       "muscles": ["Chest", "Shoulders", "Triceps"],
       "alternatives": [
-        "chest-56",
-        "chest-70",
-        "chest-85",
-        "chest-4",
-        "chest-6"
+        "chest-10",
+        "chest-16",
+        "chest-22"
       ],
       "repetitions": 12,
       "sets": 3,
@@ -328,11 +328,11 @@
         "Slowly lower back to the starting position and repeat for the desired number of repetitions."
       ],
       "tips": [
-        "Imagine you’re trying to hug a tree while completing the exercise.",
-        "Don’t squeeze the handles excessively tight as this can over recruit the forearms and biceps thereby reducing activation of the pecs.",
-        "Avoid touching or banging the handles together at peak contraction to keep constant tension on the intended muscle groups.",
+        "Imagine you're trying to hug a tree while completing the exercise.",
+        "Don't squeeze the handles excessively tight as this can over recruit the forearms and biceps thereby reducing activation of the pecs.",
+        "Avoid touching or banging the handles together at peak contraction to keep constant tension on the intended muscle groups.",
         "Always keep a slight bend in the elbows and never lower the weight to the point where you get any sort of pain and pressure at the front of the shoulder joint.",
-        "Ensure you maintain some tension in your abs and don’t allow your lower back to arch excessively."
+        "Ensure you maintain some tension in your abs and don't allow your lower back to arch excessively."
       ],
       "contraindications": [
         "Chest injury",
@@ -343,10 +343,8 @@
       "muscles": ["Chest", "Shoulders", "Triceps"],
       "alternatives": [
         "chest-10",
-        "chest-12",
         "chest-22",
-        "chest-32",
-        "chest-68"
+        "chest-14"
       ],
       "repetitions": 12,
       "sets": 3,
@@ -378,12 +376,12 @@
         "Your arms should resemble an arrow in the bottom position, not a “T”.",
         "Your spine should remain rigid throughout the entire exercise, think of the pushup as a moving plank.",
         "Squeeze your glutes and brace your abs before descending in order to keep the ribcage neutral.",
-        "Keep the chin down and don’t look forward.",
-        "Imagine you’re trying to push your thumbs together while completing the movement, this will improve activation of the pecs.",
-        "Don’t allow the head to jut forward, the chest should touch at the same time as your nose.",
-        "Think about trying to push yourself as far away from the floor as possible.\n          Ensure you push all the way through the floor at the top of the repetition and allow your shoulder blades to move around your ribcage.\n          Most folks cut the repetition short and don’t garner the full benefits as such.",
+        "Keep the chin down and don't look forward.",
+        "Imagine you're trying to push your thumbs together while completing the movement, this will improve activation of the pecs.",
+        "Don't allow the head to jut forward, the chest should touch at the same time as your nose.",
+        "Think about trying to push yourself as far away from the floor as possible.\n          Ensure you push all the way through the floor at the top of the repetition and allow your shoulder blades to move around your ribcage.\n          Most folks cut the repetition short and don't garner the full benefits as such.",
         "Ensure you push all the way through the floor at the top of the repetition and allow your shoulder blades to move around your ribcage.",
-        "Most folks cut the repetition short and don’t garner the full benefits as such."
+        "Most folks cut the repetition short and don't garner the full benefits as such."
       ],
       "contraindications": [
         "Chest injury",
@@ -395,11 +393,9 @@
       ],
       "muscles": ["Chest", "Abs", "Shoulders", "Triceps"],
       "alternatives": [
-        "chest-26",
-        "chest-52",
-        "chest-64",
-        "chest-67",
-        "chest-80"
+        "chest-1",
+        "chest-7",
+        "chest-11"
       ],
       "repetitions": 12,
       "sets": 3,
@@ -428,11 +424,11 @@
         "Slowly lower back to the starting position and repeat for the desired number of repetitions."
       ],
       "tips": [
-        "Imagine you’re trying to hug a tree while completing the exercise.",
-        "Don’t squeeze the handles excessively tight as this can over recruit the forearms and biceps thereby reducing activation of the pecs.",
-        "Avoid touching or banging the handles together at peak contraction to keep constant tension on the intended muscle groups.",
+        "Imagine you're trying to hug a tree while completing the exercise.",
+        "Don't squeeze the handles excessively tight as this can over recruit the forearms and biceps thereby reducing activation of the pecs.",
+        "Avoid touching or banging the handles together at peak contraction to keep constant tension on the intended muscle groups.",
         "Always keep a slight bend in the elbows and never lower the weight to the point where you get any sort of pain and pressure at the front of the shoulder joint.",
-        "Ensure you maintain some tension in your abs and don’t allow your lower back to arch excessively."
+        "Ensure you maintain some tension in your abs and don't allow your lower back to arch excessively."
       ],
       "contraindications": [
         "Chest injury",
@@ -443,10 +439,8 @@
       "muscles": ["Chest", "Shoulders", "Triceps"],
       "alternatives": [
         "chest-10",
-        "chest-12",
-        "chest-32",
-        "chest-68",
-        "chest-107"
+        "chest-16",
+        "chest-14"
       ],
       "repetitions": 12,
       "sets": 3,

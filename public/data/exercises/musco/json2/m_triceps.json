@@ -17,10 +17,10 @@
         "Repeat for the desired number of repetitions."
       ],
       "tips": [
-        "If you want to keep more tension in the triceps, don’t lock the elbows out entirely.",
-        "Imagine there’s a screw running through your elbow and don’t allow them to move in front of the body as you extend at the bottom of the movement.",
+        "If you want to keep more tension in the triceps, don't lock the elbows out entirely.",
+        "Imagine there's a screw running through your elbow and don't allow them to move in front of the body as you extend at the bottom of the movement.",
         "Experiment with static elbow positioning throughout the lift - some may find that they get a better stretch in the bottom portion of the movement by allowing their elbows to drift behind the body during the eccentric portion of the movement (similar to a drag curl).",
-        "Ensure the shoulder blades don’t tilt forward as you extend the elbows."
+        "Ensure the shoulder blades don't tilt forward as you extend the elbows."
       ],
       "contraindications": [
         "Triceps injury",
@@ -30,11 +30,10 @@
       ],
       "muscles": ["Triceps"],
       "alternatives": [
-        "triceps-1",
-        "triceps-18",
-        "triceps-19",
-        "triceps-28",
-        "triceps-3"
+        "triceps-21",
+        "triceps-23",
+        "triceps-107",
+        "triceps-11"
       ],
       "repetitions": 12,
       "sets": 3,
@@ -77,10 +76,9 @@
       ],
       "muscles": ["Triceps"],
       "alternatives": [
-        "triceps-15",
-        "triceps-63",
-        "triceps-10",
-        "triceps-14",
+        "triceps-107",
+        "triceps-23",
+        "triceps-4",
         "triceps-21"
       ],
       "repetitions": 12,
@@ -125,11 +123,10 @@
       ],
       "muscles": ["Triceps", "Shoulders"],
       "alternatives": [
-        "triceps-7",
-        "triceps-25",
-        "triceps-37",
-        "triceps-30",
-        "triceps-50"
+        "triceps-11",
+        "triceps-4",
+        "triceps-21",
+        "triceps-107"
       ],
       "repetitions": 12,
       "sets": 3,
@@ -151,7 +148,7 @@
       "equipment": ["Cable"],
       "steps": [
         "Set up for the one-arm cable tricep extension by attaching a single grip handle to a high pulley cable and selecting the weight you want to use on the stack.",
-        "Stand facing the machine and grab the handle with an overhand grip.",
+        "Stand facing the machine and grab the handle with an overhand grip.",
         "Pull your elbow down and keep it tucked in at your wide. You can use your free arm for support.",
         "Keeping your body fixed, slowly extend the arm as far as possible.",
         "Pause and squeeze the tricep muscle, and then slowly lower the weight.",
@@ -170,10 +167,9 @@
       "muscles": ["Triceps"],
       "alternatives": [
         "triceps-23",
-        "triceps-29",
-        "triceps-35",
-        "triceps-44",
-        "triceps-51"
+        "triceps-4",
+        "triceps-107",
+        "triceps-11"
       ],
       "repetitions": 12,
       "sets": 3,
@@ -216,10 +212,9 @@
       "muscles": ["Triceps"],
       "alternatives": [
         "triceps-21",
-        "triceps-29",
-        "triceps-35",
-        "triceps-44",
-        "triceps-51"
+        "triceps-4",
+        "triceps-11",
+        "triceps-107"
       ],
       "repetitions": 12,
       "sets": 3,
@@ -263,11 +258,10 @@
       ],
       "muscles": ["Triceps"],
       "alternatives": [
-        "triceps-39",
-        "triceps-3",
-        "triceps-8",
-        "triceps-12",
-        "triceps-36"
+        "triceps-11",
+        "triceps-23",
+        "triceps-4",
+        "triceps-21"
       ],
       "repetitions": 12,
       "sets": 3,

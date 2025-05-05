@@ -16,11 +16,11 @@
         "Repeat for the desired number of repetitions."
       ],
       "tips": [
-        "Keep some tone through your abdominals as you pull the bar into your body to ensure you don’t arch excessively through the spine.",
-        "Don’t allow momentum to dictate the movement, control the dumbbells throughout the entirety of each rep.",
-        "If you feel your biceps being overused and your back remaining under active, consider utilizing a false grip (i.e. don’t wrap the thumb around the dumbbell).",
-        "Don’t allow the head to jut forward as you pull.",
-        "Similarly, ensure the shoulder blade moves on the rib cage. Don’t lock the shoulder blade down and just move through the glenohumeral joint.",
+        "Keep some tone through your abdominals as you pull the bar into your body to ensure you don't arch excessively through the spine.",
+        "Don't allow momentum to dictate the movement, control the dumbbells throughout the entirety of each rep.",
+        "If you feel your biceps being overused and your back remaining under active, consider utilizing a false grip (i.e. don't wrap the thumb around the dumbbell).",
+        "Don't allow the head to jut forward as you pull.",
+        "Similarly, ensure the shoulder blade moves on the rib cage. Don't lock the shoulder blade down and just move through the glenohumeral joint.",
         "Allow the shoulder to internally rotate and shrug slightly at the top of the movement. You will obviously reverse the movement and depress the shoulder blade before you pull with the arm."
       ],
       "contraindications": [
@@ -31,7 +31,7 @@
         "Severe cardiovascular issues (for heavy compound movements)"
       ],
       "muscles": ["Lats", "Abs", "Biceps", "Shoulders", "Upper Back"],
-      "alternatives": ["lats-3", "lats-4", "lats-10", "lats-11", "lats-2"],
+      "alternatives": ["lats-10", "lats-6"],
       "repetitions": 12,
       "sets": 3,
       "restBetweenSets": 60,
@@ -45,7 +45,7 @@
     {
       "id": "lats-6",
       "name": "Pull Up",
-      "description": "The pull up is a classic exercise and one used to target the upper back muscles such as the latissimus dorsi. Vertical pulling movements, such as the pull up, are foundational movements that should be included in your workout routines. So, once you’ve found a variation you like and feels comfortable to you, master it as it will benefit you from a strength and aesthetic standpoint. The pull up can be incorporated into back workouts, pull workouts, upper body workouts, or full body workouts.",
+      "description": "The pull up is a classic exercise and one used to target the upper back muscles such as the latissimus dorsi. Vertical pulling movements, such as the pull up, are foundational movements that should be included in your workout routines. So, once you've found a variation you like and feels comfortable to you, master it as it will benefit you from a strength and aesthetic standpoint. The pull up can be incorporated into back workouts, pull workouts, upper body workouts, or full body workouts.",
       "targetBodyParts": ["Lats"],
       "exerciseType": ["strength"],
       "difficulty": "beginner",
@@ -60,10 +60,10 @@
         "Try to keep a neutral head position (looking straight ahead or slightly up) as hyperextending the neck can lead to compensations throughout the spine.",
         "If the bar is high enough, keep the legs straight and in front of the body in a hollow body position.",
         "Avoid falling into overextension of the lumbar spine by squeezing your glutes and bracing your abs.",
-        "The pullup is completed when the lats are fully flexed, don’t continue pulling and compensate with the pecs. When this occurs, the elbows will flare up behind the body, the shoulder will round forward, and you’ll begin to feel pressure in the front of your shoulders.",
-        "A lifter’s segment length will determine whether or not they can actually get their chin over the bar, it’s not an absolute for everyone.",
+        "The pullup is completed when the lats are fully flexed, don't continue pulling and compensate with the pecs. When this occurs, the elbows will flare up behind the body, the shoulder will round forward, and you'll begin to feel pressure in the front of your shoulders.",
+        "A lifter's segment length will determine whether or not they can actually get their chin over the bar, it's not an absolute for everyone.",
         "Lower to almost full extension of the elbow but avoid locking out completely as this can place excessive strain on the ligamentous structures within the elbow and shoulder.",
-        "If you can’t complete a single bodyweight pullup, start with slow negatives (add weight when these can be accomplished under control) or flexed arm hangs in the top position.",
+        "If you can't complete a single bodyweight pullup, start with slow negatives (add weight when these can be accomplished under control) or flexed arm hangs in the top position.",
         "Ditch the straps and kips, neither one is necessary or recommended."
       ],
       "contraindications": [
@@ -74,7 +74,7 @@
         "Severe cardiovascular issues (for heavy compound movements)"
       ],
       "muscles": ["Lats", "Abs", "Biceps", "Shoulders", "Upper Back"],
-      "alternatives": ["lats-2", "lats-5", "lats-13", "lats-17", "lats-23"],
+      "alternatives": ["lats-1", "lats-10"],
       "repetitions": 12,
       "sets": 3,
       "restBetweenSets": 60,
@@ -101,11 +101,11 @@
         "Repeat for the desired number of repetitions."
       ],
       "tips": [
-        "Keep some tone through your abdominals as you pull the weight into your body to ensure you don’t arch excessively through the spine.",
-        "If you feel your biceps being overused and your back remaining under active, consider utilizing a false grip (i.e. don’t wrap the thumb around the dumbbell).",
-        "Don’t allow the head to jut forward as you pull.",
-        "Similarly, ensure the shoulder blade moves on the rib cage. Don’t lock the shoulder blade down and just move through the glenohumeral joint.",
-        "If you can’t seem to feel your lats engaging, try to “screw your shoulders” into their sockets by pointing your elbows behind your body. Another cue that works exceptionally well is to “squeeze oranges in your armpits”."
+        "Keep some tone through your abdominals as you pull the weight into your body to ensure you don't arch excessively through the spine.",
+        "If you feel your biceps being overused and your back remaining under active, consider utilizing a false grip (i.e. don't wrap the thumb around the dumbbell).",
+        "Don't allow the head to jut forward as you pull.",
+        "Similarly, ensure the shoulder blade moves on the rib cage. Don't lock the shoulder blade down and just move through the glenohumeral joint.",
+        "If you can't seem to feel your lats engaging, try to “screw your shoulders” into their sockets by pointing your elbows behind your body. Another cue that works exceptionally well is to “squeeze oranges in your armpits”."
       ],
       "contraindications": [
         "Lats injury",
@@ -115,7 +115,7 @@
         "Severe cardiovascular issues (for heavy compound movements)"
       ],
       "muscles": ["Lats", "Abs", "Biceps", "Shoulders", "Upper Back"],
-      "alternatives": ["lats-1", "lats-3", "lats-4", "lats-11", "lats-2"],
+      "alternatives": ["lats-1", "lats-6"],
       "repetitions": 12,
       "sets": 3,
       "restBetweenSets": 60,

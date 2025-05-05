@@ -6,6 +6,7 @@ import {
   streamRunResponse,
   getMessages,
   generateExerciseProgramWithModel,
+  generateFollowUpExerciseProgram,
 } from '@/app/api/assistant/openai-server';
 import { OpenAIMessage } from '@/app/types';
 import { ProgramStatus } from '@/app/types/program';
@@ -30,7 +31,9 @@ export async function POST(request: Request) {
 
       case 'send_message': {
         const sendMessageStartTime = performance.now();
-        console.log(`[API Route] Action: send_message started. Stream: ${stream}. Time since handler start: ${sendMessageStartTime - handlerStartTime} ms`);
+        console.log(
+          `[API Route] Action: send_message started. Stream: ${stream}. Time since handler start: ${sendMessageStartTime - handlerStartTime} ms`
+        );
 
         if (!threadId) {
           return NextResponse.json(
@@ -44,31 +47,43 @@ export async function POST(request: Request) {
 
         // Add the message to the thread (no need to get assistant object here)
         const preStreamStartTime = performance.now();
-        console.log(`[API Route] Starting pre-stream OpenAI call (addMessage)...`);
+        console.log(
+          `[API Route] Starting pre-stream OpenAI call (addMessage)...`
+        );
         await addMessage(threadId, payload);
         const preStreamEndTime = performance.now();
-        console.log(`[API Route] Finished pre-stream OpenAI call (addMessage). Duration: ${preStreamEndTime - preStreamStartTime} ms`);
+        console.log(
+          `[API Route] Finished pre-stream OpenAI call (addMessage). Duration: ${preStreamEndTime - preStreamStartTime} ms`
+        );
 
         if (stream) {
           // Set up streaming response
           const encoder = new TextEncoder();
           let firstChunkSent = false;
           const streamSetupTime = performance.now();
-          console.log(`[API Route] Starting stream setup. Time since send_message start: ${streamSetupTime - sendMessageStartTime} ms`);
+          console.log(
+            `[API Route] Starting stream setup. Time since send_message start: ${streamSetupTime - sendMessageStartTime} ms`
+          );
 
           const customReadable = new ReadableStream({
             async start(controller) {
               const streamStartTime = performance.now();
-              console.log(`[API Route] ReadableStream start() called. Time since stream setup: ${streamStartTime - streamSetupTime} ms`);
+              console.log(
+                `[API Route] ReadableStream start() called. Time since stream setup: ${streamStartTime - streamSetupTime} ms`
+              );
               try {
                 const callOpenAIStreamStartTime = performance.now();
-                console.log(`[API Route] Calling streamRunResponse... Time since stream start: ${callOpenAIStreamStartTime - streamStartTime} ms`);
+                console.log(
+                  `[API Route] Calling streamRunResponse... Time since stream start: ${callOpenAIStreamStartTime - streamStartTime} ms`
+                );
 
                 // Use the hardcoded assistantId directly
                 await streamRunResponse(threadId, assistantId, (content) => {
                   const openaiStreamChunkReceivedTime = performance.now();
                   if (!firstChunkSent) {
-                    console.log(`[API Route] First chunk RECEIVED from OpenAI stream. Time since calling streamRunResponse: ${openaiStreamChunkReceivedTime - callOpenAIStreamStartTime} ms`);
+                    console.log(
+                      `[API Route] First chunk RECEIVED from OpenAI stream. Time since calling streamRunResponse: ${openaiStreamChunkReceivedTime - callOpenAIStreamStartTime} ms`
+                    );
                   }
 
                   const chunk = encoder.encode(
@@ -76,14 +91,18 @@ export async function POST(request: Request) {
                   );
                   controller.enqueue(chunk);
                   if (!firstChunkSent) {
-                     const firstChunkSentTime = performance.now();
-                     console.log(`[API Route] First chunk ENQUEUED to client response. Time since receiving from OpenAI: ${firstChunkSentTime - openaiStreamChunkReceivedTime} ms`);
-                     firstChunkSent = true;
+                    const firstChunkSentTime = performance.now();
+                    console.log(
+                      `[API Route] First chunk ENQUEUED to client response. Time since receiving from OpenAI: ${firstChunkSentTime - openaiStreamChunkReceivedTime} ms`
+                    );
+                    firstChunkSent = true;
                   }
                 });
 
                 const streamFinishedTime = performance.now();
-                console.log(`[API Route] streamRunResponse finished. Total stream duration: ${streamFinishedTime - callOpenAIStreamStartTime} ms`);
+                console.log(
+                  `[API Route] streamRunResponse finished. Total stream duration: ${streamFinishedTime - callOpenAIStreamStartTime} ms`
+                );
 
                 controller.enqueue(encoder.encode('data: [DONE]\n\n'));
                 controller.close();
@@ -95,7 +114,9 @@ export async function POST(request: Request) {
           });
 
           const returnResponseTime = performance.now();
-          console.log(`[API Route] Returning streaming response object. Time since stream setup: ${returnResponseTime - streamSetupTime} ms`);
+          console.log(
+            `[API Route] Returning streaming response object. Time since stream setup: ${returnResponseTime - streamSetupTime} ms`
+          );
           return new Response(customReadable, {
             headers: {
               'Content-Type': 'text/event-stream',
@@ -135,7 +156,6 @@ export async function POST(request: Request) {
             userInfo: payload.userInfo,
             userId: payload.userId,
             programId: payload.programId,
-            assistantId: payload.assistantId,
             language: payload.language || 'en',
           });
 
@@ -163,29 +183,13 @@ export async function POST(request: Request) {
           );
         }
 
-        // Define a specific type for the payload for this case
-        interface FollowUpProgramPayload {
-          diagnosisData: any;
-          userInfo: any;
-          userId: string;
-          programId: string;
-          assistantId?: string;
-          previousProgram?: any[];
-          language?: string;
-        }
-
         try {
-          // Use the provided assistantId or fall back to default
-          const assistantId =
-            payload.assistantId || 'asst_PjMTzHis7vLSeDZRhbBB1tbe';
-
-          const program = await generateExerciseProgramWithModel({
+          const program = await generateFollowUpExerciseProgram({
             diagnosisData: payload.diagnosisData,
             userInfo: payload.userInfo,
+            feedback: payload.feedback,
             userId: payload.userId,
             programId: payload.programId,
-            assistantId: assistantId,
-            isFollowUp: true, // Flag to indicate this is a follow-up week
             previousProgram: payload.previousProgram, // Pass the previous program data
             language: payload.language || 'en', // Add language parameter with default fallback
           });
@@ -211,7 +215,9 @@ export async function POST(request: Request) {
     }
   } catch (error) {
     const errorTime = performance.now();
-    console.error(`[API Route] Error in assistant API: ${error}. Time since handler start: ${errorTime - handlerStartTime} ms`);
+    console.error(
+      `[API Route] Error in assistant API: ${error}. Time since handler start: ${errorTime - handlerStartTime} ms`
+    );
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

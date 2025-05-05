@@ -1,9 +1,9 @@
-import { useState, useRef, ChangeEvent } from "react";
-import { ChatMessages } from "./ChatMessages";
-import { usePartChat } from "@/app/hooks/usePartChat";
-import { BodyPartGroup } from "@/app/config/bodyPartGroups";
-import { Question, ChatMessage } from "@/app/types";
-import { AnatomyPart } from "@/app/types/human";
+import { useState, useRef, ChangeEvent } from 'react';
+import { ChatMessages } from './ChatMessages';
+import { usePartChat } from '@/app/hooks/usePartChat';
+import { BodyPartGroup } from '@/app/config/bodyPartGroups';
+import { Question, ChatMessage } from '@/app/types';
+import { AnatomyPart } from '@/app/types/human';
 
 interface PartPopupProps {
   part: AnatomyPart | null;
@@ -18,7 +18,7 @@ export default function PartPopup({
   onClose,
   onQuestionClick,
 }: PartPopupProps) {
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const {
     messages,
@@ -35,7 +35,7 @@ export default function PartPopup({
   const [userHasScrolled, setUserHasScrolled] = useState(false);
 
   const handleResetChat = () => {
-    setMessage("");
+    setMessage('');
     resetChat();
   };
 
@@ -44,7 +44,7 @@ export default function PartPopup({
 
     const textarea = textareaRef.current;
     if (textarea) {
-      textarea.style.height = "auto";
+      textarea.style.height = 'auto';
       const newHeight = Math.min(textarea.scrollHeight, 480);
       textarea.style.height = `${newHeight}px`;
     }
@@ -53,7 +53,7 @@ export default function PartPopup({
   const handleTextareaKeyDown = (
     e: React.KeyboardEvent<HTMLTextAreaElement>
   ) => {
-    if (e.key === "Enter" && !e.shiftKey) {
+    if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSendMessage(message);
     }
@@ -61,15 +61,15 @@ export default function PartPopup({
 
   const handleSendMessage = async (messageContent: string) => {
     if (!messageContent.trim()) return;
-    setMessage("");
+    setMessage('');
     handleOptionClick({
-      title: "",
+      title: '',
       question: messageContent,
     });
   };
 
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
-    console.log("Scroll event in PartPopup");
+    console.log('Scroll event in PartPopup');
   };
 
   const handleUserScroll = (hasScrolled: boolean) => {
@@ -88,7 +88,7 @@ export default function PartPopup({
   const handleResendMessage = (message: ChatMessage) => {
     if (message.role === 'user') {
       handleOptionClick({
-        title: "",
+        title: '',
         question: message.content,
       });
     }
@@ -97,32 +97,35 @@ export default function PartPopup({
   return (
     <div className="h-full bg-gray-900 text-white p-6 flex flex-col">
       <div className="flex justify-between items-start mb-6 flex-shrink-0">
-        <div>
+        <div className="w-full">
           <h2 className="text-sm text-gray-400 mb-1">
             Musculoskeletal Assistant
           </h2>
           <h3 className="text-app-title">{getGroupDisplayName()}</h3>
-          <h2 className="text-sm text-gray-400">{getPartDisplayName()}</h2>
-        </div>
-        <div className="flex gap-2">
-          <button
-            onClick={handleResetChat}
-            className="text-gray-400 hover:text-white p-1 rounded-full hover:bg-gray-800 transition-colors"
-            aria-label="Reset Chat"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path
-                fillRule="evenodd"
-                d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
-                clipRule="evenodd"
-              />
-            </svg>
-          </button>
+          <div>
+            <div className="flex items-center justify-between w-full gap-2">
+              <h2 className="text-sm text-gray-400">{getPartDisplayName()}</h2>
+
+              <button
+                onClick={handleResetChat}
+                className="text-gray-400 hover:text-white p-1 rounded-full hover:bg-gray-800 transition-colors"
+                aria-label="Reset Chat"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -163,8 +166,8 @@ export default function PartPopup({
             disabled={isLoading || !message.trim()}
             className={`absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-lg transition-colors ${
               isLoading || !message.trim()
-                ? "text-gray-500 cursor-not-allowed"
-                : "text-indigo-600 hover:text-indigo-500 hover:bg-gray-700/50"
+                ? 'text-gray-500 cursor-not-allowed'
+                : 'text-indigo-600 hover:text-indigo-500 hover:bg-gray-700/50'
             }`}
           >
             {isLoading ? (

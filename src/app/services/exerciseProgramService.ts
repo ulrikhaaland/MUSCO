@@ -137,17 +137,6 @@ const exerciseFiles: Record<
     const muscoData = await fetchJson(
       '/data/exercises/musco/json2/m_lower-back.json'
     );
-    console.log(
-      `Lower Back file result:`,
-      muscoData ? `Found data structure` : 'No data',
-      `Exercises array length: ${muscoData?.exercises?.length || 0}`
-    );
-
-    if (muscoData?.exercises?.length === 0) {
-      console.log(
-        'The m_lower-back.json file exists but contains no exercises or has wrong format'
-      );
-    }
 
     const muscoExercises = muscoData.exercises || [];
 
@@ -274,10 +263,6 @@ const originalExerciseFiles: Record<string, string> = {
 async function loadFallbackExercises(missingIds: Set<string>): Promise<void> {
   if (missingIds.size === 0) return;
 
-  console.log(
-    `Loading ${missingIds.size} fallback exercises from original files...`
-  );
-
   // Group missing IDs by their prefix to determine which files to load
   const idsByPrefix: Record<string, string[]> = {};
   missingIds.forEach((id) => {
@@ -302,13 +287,8 @@ async function loadFallbackExercises(missingIds: Set<string>): Promise<void> {
   for (const [prefix, ids] of Object.entries(idsByPrefix)) {
     const filePath = originalExerciseFiles[prefix];
     if (!filePath) {
-      console.log(`No file mapping found for prefix: ${prefix}`);
       continue; // Skip if we don't have a mapping for this prefix
     }
-
-    console.log(
-      `Loading ${ids.length} missing exercises with prefix '${prefix}' from ${filePath}`
-    );
 
     try {
       const { exercises = [] } = await fetchJson(filePath);
@@ -335,10 +315,6 @@ async function loadFallbackExercises(missingIds: Set<string>): Promise<void> {
           }
         }
       });
-
-      console.log(
-        `Found ${foundCount} of ${ids.length} missing exercises in ${filePath}`
-      );
     } catch (error) {
       console.error(
         `Error loading fallback exercises from ${filePath}:`,
@@ -362,10 +338,6 @@ async function loadExercisesFromJson(
 ): Promise<Exercise[]> {
   const exercises: Exercise[] = [];
 
-  console.log(
-    `Loading exercises for ${bodyParts.join(', ')}, includeOriginals: ${includeOriginals}, onlyLoadMissingOriginals: ${onlyLoadMissingOriginals}`
-  );
-
   // First pass: load all musco exercises
   for (const bodyPart of bodyParts) {
     const loader = exerciseFiles[bodyPart];
@@ -374,9 +346,6 @@ async function loadExercisesFromJson(
         const {
           default: { exercises: exerciseData },
         } = await loader();
-        console.log(
-          `Loaded ${exerciseData.length} Musco exercises for ${bodyPart}`
-        );
 
         const processedExercises = exerciseData.map((data) => ({
           ...data,
@@ -404,8 +373,6 @@ async function loadExercisesFromJson(
   // If requested, load original exercises too for the toggle feature
   // But if onlyLoadMissingOriginals is true, we'll handle them later
   if (includeOriginals && !onlyLoadMissingOriginals) {
-    console.log('Loading original exercises...');
-
     // Create a mapping from body part names to original exercise file paths
     const bodyPartToOriginalFiles: Record<string, string[]> = {
       Shoulders: [originalExerciseFiles.shoulders],
@@ -437,9 +404,6 @@ async function loadExercisesFromJson(
     // Load original exercises for each requested body part
     for (const bodyPart of bodyParts) {
       const filePaths = bodyPartToOriginalFiles[bodyPart] || [];
-      console.log(
-        `Loading original exercises for ${bodyPart} from ${filePaths.length} files`
-      );
 
       for (const filePath of filePaths) {
         if (!filePath) continue;
@@ -447,9 +411,6 @@ async function loadExercisesFromJson(
         try {
           const { exercises: originalExercises = [] } =
             await fetchJson(filePath);
-          console.log(
-            `Loaded ${originalExercises.length} original exercises from ${filePath}`
-          );
 
           const processedExercises = originalExercises.map(
             (data: Exercise) => ({
@@ -481,14 +442,6 @@ async function loadExercisesFromJson(
       }
     }
   }
-
-  const muscoCount = exercises.filter((ex) => ex.isOriginal === false).length;
-  const originalCount = exercises.filter((ex) => ex.isOriginal === true).length;
-  const untaggedCount = exercises.length - muscoCount - originalCount;
-
-  console.log(
-    `Loaded ${exercises.length} total exercises: ${muscoCount} Musco, ${originalCount} original, ${untaggedCount} untagged`
-  );
 
   return exercises;
 }
@@ -568,7 +521,7 @@ export const enrichExercisesWithFullData = async (
     if (prefix === 'glutes') {
       return 'Glutes';
     }
-    
+
     if (prefix === 'cardio') {
       return 'Cardio';
     }
@@ -618,7 +571,6 @@ export const enrichExercisesWithFullData = async (
           const exerciseId = exercise.id || exercise.exerciseId;
           if (exerciseId && !exerciseCache[exerciseId]) {
             missingIds.add(exerciseId);
-            console.log(`Missing exercise ID: ${exerciseId}`);
           }
         });
       }
@@ -627,9 +579,6 @@ export const enrichExercisesWithFullData = async (
 
   // If we have missing IDs, load the fallback exercises
   if (missingIds.size > 0) {
-    console.log(
-      `Found ${missingIds.size} missing exercise IDs, loading fallback exercises`
-    );
     await loadFallbackExercises(missingIds);
   }
 
@@ -646,7 +595,7 @@ export const enrichExercisesWithFullData = async (
               const fullData = exerciseCache[exerciseId];
               // Check if this is a cardio exercise by ID prefix
               const isCardioExercise = exerciseId.startsWith('cardio-');
-              
+
               return {
                 ...fullData,
                 ...exercise,
@@ -655,7 +604,9 @@ export const enrichExercisesWithFullData = async (
                 sets: exercise.sets || fullData.sets,
                 repetitions: exercise.repetitions || fullData.repetitions,
                 // For cardio exercises, prioritize the duration from the LLM response
-                duration: isCardioExercise ? exercise.duration : (exercise.duration || fullData.duration),
+                duration: isCardioExercise
+                  ? exercise.duration
+                  : exercise.duration || fullData.duration,
                 bodyPart: exercise.bodyPart || fullData.targetBodyParts?.[0],
               };
             }
@@ -669,11 +620,11 @@ export const enrichExercisesWithFullData = async (
 
               if (matchByName) {
                 // Check if this is a cardio exercise by ID or name
-                const isCardioExercise = 
-                  (exercise.id && exercise.id.startsWith('cardio-')) || 
+                const isCardioExercise =
+                  (exercise.id && exercise.id.startsWith('cardio-')) ||
                   (matchByName.id && matchByName.id.startsWith('cardio-')) ||
                   exercise.name.toLowerCase().includes('cardio');
-                
+
                 return {
                   ...matchByName,
                   ...exercise,
@@ -681,7 +632,9 @@ export const enrichExercisesWithFullData = async (
                   sets: exercise.sets || matchByName.sets,
                   repetitions: exercise.repetitions || matchByName.repetitions,
                   // For cardio exercises, prioritize the duration from the LLM response
-                  duration: isCardioExercise ? exercise.duration : (exercise.duration || matchByName.duration),
+                  duration: isCardioExercise
+                    ? exercise.duration
+                    : exercise.duration || matchByName.duration,
                   id: matchByName.id, // Ensure we keep the ID from the cache
                   exerciseId: matchByName.exerciseId, // Also keep exerciseId if available
                   bodyPart:

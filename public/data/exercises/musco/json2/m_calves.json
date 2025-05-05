@@ -30,11 +30,8 @@
       ],
       "muscles": ["Calves"],
       "alternatives": [
-        "calves-11",
         "calves-12",
-        "calves-33",
-        "calves-40",
-        "calves-44"
+        "calves-63"
       ],
       "repetitions": 12,
       "sets": 3,
@@ -78,10 +75,7 @@
       "muscles": ["Calves"],
       "alternatives": [
         "calves-6",
-        "calves-11",
-        "calves-33",
-        "calves-40",
-        "calves-44"
+        "calves-63"
       ],
       "repetitions": 12,
       "sets": 3,
@@ -125,11 +119,8 @@
       ],
       "muscles": ["Calves"],
       "alternatives": [
-        "calves-6",
         "calves-12",
-        "calves-33",
-        "calves-40",
-        "calves-44"
+        "calves-6"
       ],
       "repetitions": 10,
       "sets": 3,

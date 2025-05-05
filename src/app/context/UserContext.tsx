@@ -48,7 +48,9 @@ interface UserContextType {
     answers: ExerciseQuestionnaireAnswers
   ) => Promise<{ requiresAuth?: boolean; programId?: string }>;
   answers: ExerciseQuestionnaireAnswers | null;
+  diagnosisData: DiagnosisAssistantResponse | null;
   programStatus: ProgramStatus | null;
+  setProgramStatus: (status: ProgramStatus) => void;
   program: ExerciseProgram | null;
   userPrograms: UserProgramWithId[]; // Updated to use the extended interface
   activeProgram: UserProgramWithId | null; // Updated to use the extended interface
@@ -77,6 +79,9 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const [answers, setAnswers] = useState<ExerciseQuestionnaireAnswers | null>(
     null
   );
+  const [diagnosisData, setDiagnosisData] =
+    useState<DiagnosisAssistantResponse | null>(null);
+
   const [programStatus, setProgramStatus] = useState<ProgramStatus | null>(
     null
   );
@@ -215,6 +220,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
                 // Set the program and mark loading as complete
                 setProgram(combinedProgram);
                 setAnswers(userProgram.questionnaire);
+                setDiagnosisData(userProgram.diagnosis);
               }
             } catch (error) {
               console.error('Error processing active program:', error);
@@ -303,6 +309,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
                     setProgram(combinedProgram);
                     setAnswers(userProgram.questionnaire);
+                    setDiagnosisData(userProgram.diagnosis);
                     setIsLoading(false);
                     showGlobalLoader(false);
                     hasSetInitialProgram = true;
@@ -468,6 +475,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
     async function fetchUserData() {
       if (!user) {
         setAnswers(null);
+        setDiagnosisData(null);
         setProgramStatus(null);
         setProgram(null);
         setIsLoading(false);
@@ -513,6 +521,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
             const programDoc = programsSnapshot.docs[0];
             const programData = programDoc.data();
             setAnswers(programData.questionnaire);
+            setDiagnosisData(programData.diagnosis);
             setProgramStatus(programData.status);
 
             // Only fetch the program if status is Done
@@ -560,6 +569,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
             }
           } else {
             setAnswers(null);
+            setDiagnosisData(null);
             setProgramStatus(null);
             setProgram(null);
           }
@@ -712,7 +722,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
       // Update local state
       setAnswers(answers);
-
+      setDiagnosisData(diagnosis);
       // Set program status to generating after clearing program state
       setProgramStatus(ProgramStatus.Generating);
 
@@ -894,6 +904,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
       setIsLoading(false);
 
       setAnswers(selectedProgram.questionnaire);
+      setDiagnosisData(selectedProgram.diagnosis);
     } else {
       console.error(
         `Cannot select program at index ${index}: program not found`
@@ -998,7 +1009,11 @@ export function UserProvider({ children }: { children: ReactNode }) {
       value={{
         onQuestionnaireSubmit,
         answers,
+        diagnosisData,
         programStatus,
+        setProgramStatus: (status: ProgramStatus) => {
+          setProgramStatus(status);
+        },
         program,
         userPrograms,
         activeProgram,

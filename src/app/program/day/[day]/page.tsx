@@ -11,11 +11,6 @@ import { useLoader } from '@/app/context/LoaderContext';
 import { getStorage, ref, getDownloadURL } from 'firebase/storage';
 import { storage } from '@/app/firebase/config';
 
-// Simple timing utility
-const getElapsedTime = (startTime: number) => {
-  return Math.round(performance.now() - startTime);
-};
-
 function ErrorDisplay({ error }: { error: Error }) {
   return (
     <div className="fixed inset-0 bg-gray-900/95 backdrop-blur-sm z-50 flex items-center justify-center p-4">
@@ -65,8 +60,6 @@ function getVideoEmbedUrl(url: string): string {
 export default function DayDetailPage() {
   // Use a persistent ID to avoid duplicate render issues
   const componentId = useRef(`day-page-${Date.now()}`);
-  console.log(`🔍 Component mounted: ${componentId.current}`);
-  const startTime = useRef(performance.now());
   
   // Component state
   const [error, setError] = useState<Error | null>(null);
@@ -86,14 +79,10 @@ export default function DayDetailPage() {
   const dayParam = params.day as string;
   const dayNumber = parseInt(dayParam);
   
-  console.log(`🔍 [${componentId.current}] Initial params loaded in ${getElapsedTime(startTime.current)}ms - day: ${dayNumber}`);
-  
   // Access context data
   const { user, error: authError } = useAuth();
   const { program, programStatus, userPrograms } = useUser();
   const { showLoader, hideLoader, isLoading } = useLoader();
-  
-  console.log(`🔍 [${componentId.current}] Contexts accessed in ${getElapsedTime(startTime.current)}ms - has program: ${!!program}, has userPrograms: ${!!userPrograms && userPrograms.length > 0}`);
   
   // Flag to track if we've shown the loader
   const loaderShown = useRef(false);
@@ -102,29 +91,25 @@ export default function DayDetailPage() {
   useEffect(() => {
     // Only show loader once when component mounts
     if (!loaderShown.current) {
-      console.log(`🔍 [${componentId.current}] Showing loader at ${getElapsedTime(startTime.current)}ms`);
       showLoader('Loading program day...');
       loaderShown.current = true;
       
       // Force hide loader after a timeout as a fallback
       const timeoutId = setTimeout(() => {
         if (!dataLoaded) {
-          console.log(`🔍 [${componentId.current}] Force hiding loader after timeout`);
           hideLoader();
         }
       }, 5000); // Force hide after 5 seconds
       
       return () => clearTimeout(timeoutId);
     }
-  }, [showLoader]);
+  }, [showLoader, dataLoaded]);
 
   // Load data effect with cleanup
   useEffect(() => {
     let mounted = true;
     
     const loadProgramData = async () => {
-      console.log(`🔍 [${componentId.current}] Starting data load at ${getElapsedTime(startTime.current)}ms`);
-      
       try {
         // Skip processing if component unmounted
         if (!mounted) return;
@@ -135,8 +120,6 @@ export default function DayDetailPage() {
           const queryParams = new URLSearchParams(window.location.search);
           const programId = queryParams.get('programId');
           
-          console.log(`🔍 [${componentId.current}] Looking for programId ${programId} at ${getElapsedTime(startTime.current)}ms`);
-          
           if (programId) {
             // Find the specific program by its createdAt value
             const foundProgram = userPrograms
@@ -145,7 +128,6 @@ export default function DayDetailPage() {
               
             if (foundProgram) {
               programToUse = foundProgram;
-              console.log(`🔍 [${componentId.current}] Found specific program at ${getElapsedTime(startTime.current)}ms: ${foundProgram.title}`);
             }
           }
         }
@@ -155,7 +137,6 @@ export default function DayDetailPage() {
         
         // 2. Set the selected program immediately
         setSelectedProgram(programToUse);
-        console.log(`🔍 [${componentId.current}] Selected program set at ${getElapsedTime(startTime.current)}ms`);
         
         // 3. Find the day data if program is available
         if (programToUse?.program && !isNaN(dayNumber)) {
@@ -167,26 +148,18 @@ export default function DayDetailPage() {
               if (!mounted) return;
               
               // 4. Set day data and name at the same time
-              console.log(`🔍 [${componentId.current}] Found day data at ${getElapsedTime(startTime.current)}ms`);
               setDayData(day);
               const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
               setDayName(days[dayNumber - 1]);
               
-              console.log(`🔍 [${componentId.current}] Day has ${day.exercises?.length || 0} exercises`);
-              
               // 5. Mark data as loaded
               setDataLoaded(true);
-            } else {
-              console.log(`🔍 [${componentId.current}] Day ${dayNumber} not found in program at ${getElapsedTime(startTime.current)}ms`);
             }
           }
-        } else {
-          console.log(`🔍 [${componentId.current}] No program data or invalid day number at ${getElapsedTime(startTime.current)}ms`);
         }
         
         // 6. Ensure loader is hidden regardless of outcome
         if (loaderShown.current && mounted) {
-          console.log(`🔍 [${componentId.current}] Hiding loader at ${getElapsedTime(startTime.current)}ms`);
           hideLoader();
         }
       } catch (err) {
@@ -198,7 +171,6 @@ export default function DayDetailPage() {
         // Ensure loader is hidden even on error
         if (loaderShown.current && mounted) {
           hideLoader();
-          console.log(`🔍 [${componentId.current}] Loader hidden after error at ${getElapsedTime(startTime.current)}ms`);
         }
       }
     };
@@ -212,7 +184,6 @@ export default function DayDetailPage() {
       // Ensure loader is hidden when component unmounts
       if (loaderShown.current) {
         hideLoader();
-        console.log(`🔍 [${componentId.current}] Loader hidden during cleanup`);
       }
     };
   }, [program, userPrograms, dayNumber, hideLoader]);
@@ -222,7 +193,6 @@ export default function DayDetailPage() {
     if (dataLoaded && loaderShown.current) {
       setTimeout(() => {
         hideLoader();
-        console.log(`🔍 [${componentId.current}] Loader hidden after data loaded`);
       }, 0);
     }
   }, [dataLoaded, hideLoader]);
@@ -511,7 +481,6 @@ export default function DayDetailPage() {
 
   // Return loading UI if no data yet
   if (!dayData) {
-    console.log(`🔍 [${componentId.current}] Rendering loading UI at ${getElapsedTime(startTime.current)}ms`);
     return (
       <div className="bg-gray-900 min-h-screen flex items-center justify-center">
         <div className="text-gray-400 text-sm">Loading program day...</div>
@@ -519,7 +488,6 @@ export default function DayDetailPage() {
     );
   }
 
-  console.log(`🔍 [${componentId.current}] Rendering complete content at ${getElapsedTime(startTime.current)}ms`);
   return (
     <div className="bg-gray-900 min-h-screen z-50 flex flex-col">
       <div className="py-3 px-4 flex items-center justify-center">
