@@ -24,21 +24,29 @@ const BottomSheetBase = BottomSheet as ComponentType<
 // Map between our display categories and bodyParts used in loadExercisesFromJson
 const categoryToBodyPartMap: Record<string, string> = {
   'Abs': 'Abdomen',
-  'Biceps': 'Upper Arms',
-  'Calves': 'Lower Legs',
   'Cardio': 'Cardio',
   'Chest': 'Chest',
   'Forearms': 'Forearms',
   'Glutes': 'Glutes',
-  'Hamstrings': 'Upper Legs',
-  'Lats': 'Upper Back',
+  'Upper Legs': 'Upper Legs',
+  'Lower Legs': 'Lower Legs',
   'Lower Back': 'Lower Back',
-  'Obliques': 'Abdomen',
-  'Quads': 'Upper Legs',
   'Shoulders': 'Shoulders',
-  'Traps': 'Upper Back',
-  'Triceps': 'Upper Arms',
+  'Upper Arms': 'Upper Arms',
   'Upper Back': 'Upper Back'
+};
+
+// A mapping to handle legacy category names
+const legacyCategoryMap: Record<string, string> = {
+  'Hamstrings': 'Upper Legs',
+  'Quads': 'Upper Legs',
+  'Obliques': 'Abs',
+  'Biceps': 'Upper Arms',
+  'Triceps': 'Upper Arms',
+  'Lats': 'Upper Back',
+  'Traps': 'Upper Back',
+  'Core': 'Abs',
+  'Calves': 'Lower Legs'
 };
 
 export default function ExerciseSelectionBottomSheet({
@@ -59,9 +67,12 @@ export default function ExerciseSelectionBottomSheet({
       try {
         setIsLoading(true);
         
+        // Check if this is a legacy category that needs to be mapped
+        const effectiveCategory = legacyCategoryMap[category] || category;
+        
         // Get the bodyPart that corresponds to this category for loading
-        const bodyPart = categoryToBodyPartMap[category];
-        console.log(`Looking for exercises for category: ${category}, mapped to body part: ${bodyPart}`);
+        const bodyPart = categoryToBodyPartMap[effectiveCategory];
+        console.log(`Looking for exercises for category: ${category}, effective category: ${effectiveCategory}, mapped to body part: ${bodyPart}`);
         
         if (!bodyPart) {
           console.error(`No mapping found for category: ${category}`);
@@ -71,7 +82,14 @@ export default function ExerciseSelectionBottomSheet({
         }
         
         // Load all exercises for this body part
-        const allExercises = await loadExercisesFromJson([bodyPart], true, false);
+        // For Lower Legs, also search for Calves to ensure we find all relevant exercises
+        const searchBodyParts = [bodyPart];
+        if (bodyPart === 'Lower Legs') {
+          console.log('Adding "Calves" to search terms for Lower Legs exercises');
+          searchBodyParts.push('Calves');
+        }
+        
+        const allExercises = await loadExercisesFromJson(searchBodyParts, true, false);
         console.log(`Loaded ${allExercises.length} exercises for body part: ${bodyPart}`);
         
         // Filter to include only Musco exercises
@@ -102,19 +120,19 @@ export default function ExerciseSelectionBottomSheet({
           // Then check if it belongs to the target category
           // Check ID patterns
           if (ex.id) {
-            if (category === 'Abs' && (ex.id.startsWith('abs-') || ex.id.includes('abs'))) return true;
-            if (category === 'Biceps' && (ex.id.startsWith('biceps-') || ex.id.includes('biceps'))) return true;
-            if (category === 'Triceps' && (ex.id.startsWith('triceps-') || ex.id.includes('triceps'))) return true;
+            if ((category === 'Abs' || category === 'Core') && (ex.id.startsWith('abs-') || ex.id.includes('abs') || ex.id.includes('core'))) return true;
+            if ((category === 'Upper Arms' || category === 'Biceps') && (ex.id.startsWith('biceps-') || ex.id.includes('biceps'))) return true;
+            if ((category === 'Upper Arms' || category === 'Triceps') && (ex.id.startsWith('triceps-') || ex.id.includes('triceps'))) return true;
             if (category === 'Shoulders' && (ex.id.startsWith('shoulders-') || ex.id.includes('shoulder'))) return true;
-            if (category === 'Obliques' && (ex.id.startsWith('obliques-') || ex.id.includes('obliques'))) return true;
+            if ((category === 'Abs' || category === 'Obliques') && (ex.id.startsWith('obliques-') || ex.id.includes('obliques'))) return true;
             if (category === 'Glutes' && (ex.id.startsWith('glutes-') || ex.id.includes('glutes'))) return true;
-            if (category === 'Hamstrings' && (ex.id.startsWith('hamstrings-') || ex.id.includes('hamstrings'))) return true;
-            if (category === 'Quads' && (ex.id.startsWith('quads-') || ex.id.includes('quads'))) return true;
-            if (category === 'Calves' && (ex.id.startsWith('calves-') || ex.id.includes('calves'))) return true;
+            if ((category === 'Upper Legs' || category === 'Hamstrings') && (ex.id.startsWith('hamstrings-') || ex.id.includes('hamstrings'))) return true;
+            if ((category === 'Upper Legs' || category === 'Quads') && (ex.id.startsWith('quads-') || ex.id.includes('quads'))) return true;
+            if ((category === 'Lower Legs' || category === 'Calves') && (ex.id.startsWith('calves-') || ex.id.includes('calves'))) return true;
             if (category === 'Chest' && (ex.id.startsWith('chest-') || ex.id.includes('chest'))) return true;
             if (category === 'Forearms' && (ex.id.startsWith('forearms-') || ex.id.includes('forearm'))) return true;
-            if (category === 'Lats' && (ex.id.startsWith('lats-') || ex.id.includes('lats'))) return true;
-            if (category === 'Traps' && (ex.id.startsWith('traps-') || ex.id.includes('traps'))) return true;
+            if ((category === 'Upper Back' || category === 'Lats') && (ex.id.startsWith('lats-') || ex.id.includes('lats'))) return true;
+            if ((category === 'Upper Back' || category === 'Traps') && (ex.id.startsWith('traps-') || ex.id.includes('traps'))) return true;
             if (category === 'Upper Back' && (ex.id.startsWith('upper-back-') || ex.id.includes('upper_back') || ex.id.includes('upper-back'))) return true;
             if (category === 'Lower Back' && (ex.id.startsWith('lower-back-') || ex.id.includes('lower_back') || ex.id.includes('lower-back'))) return true;
             if (category === 'Cardio' && (ex.id.startsWith('cardio-') || ex.id.includes('cardio'))) return true;
@@ -122,38 +140,38 @@ export default function ExerciseSelectionBottomSheet({
           
           // Check muscles array
           if (ex.muscles?.length) {
-            if (category === 'Abs' && ex.muscles.includes('Abs')) return true;
-            if (category === 'Biceps' && ex.muscles.includes('Biceps')) return true;
-            if (category === 'Triceps' && ex.muscles.includes('Triceps')) return true;
+            if ((category === 'Abs' || category === 'Core') && (ex.muscles.includes('Abs') || ex.muscles.includes('Core'))) return true;
+            if ((category === 'Upper Arms' || category === 'Biceps') && ex.muscles.includes('Biceps')) return true;
+            if ((category === 'Upper Arms' || category === 'Triceps') && ex.muscles.includes('Triceps')) return true;
             if (category === 'Shoulders' && ex.muscles.includes('Shoulders')) return true;
-            if (category === 'Obliques' && ex.muscles.includes('Obliques')) return true;
+            if ((category === 'Abs' || category === 'Obliques') && ex.muscles.includes('Obliques')) return true;
             if (category === 'Glutes' && ex.muscles.includes('Glutes')) return true;
-            if (category === 'Hamstrings' && ex.muscles.includes('Hamstrings')) return true;
-            if (category === 'Quads' && ex.muscles.includes('Quads')) return true;
-            if (category === 'Calves' && ex.muscles.includes('Calves')) return true;
+            if ((category === 'Upper Legs' || category === 'Hamstrings') && ex.muscles.includes('Hamstrings')) return true;
+            if ((category === 'Upper Legs' || category === 'Quads') && ex.muscles.includes('Quads')) return true;
+            if ((category === 'Lower Legs' || category === 'Calves') && ex.muscles.includes('Calves')) return true;
             if (category === 'Chest' && ex.muscles.includes('Chest')) return true;
             if (category === 'Forearms' && ex.muscles.includes('Forearms')) return true;
-            if (category === 'Lats' && ex.muscles.includes('Lats')) return true;
-            if (category === 'Traps' && ex.muscles.includes('Traps')) return true;
+            if ((category === 'Upper Back' || category === 'Lats') && ex.muscles.includes('Lats')) return true;
+            if ((category === 'Upper Back' || category === 'Traps') && ex.muscles.includes('Traps')) return true;
             if (category === 'Upper Back' && ex.muscles.includes('Upper Back')) return true;
             if (category === 'Lower Back' && ex.muscles.includes('Lower Back')) return true;
           }
           
           // Check targetBodyParts array
           if (ex.targetBodyParts?.length) {
-            if (category === 'Abs' && ex.targetBodyParts.includes('Abs')) return true;
-            if (category === 'Biceps' && ex.targetBodyParts.includes('Biceps')) return true;
-            if (category === 'Triceps' && ex.targetBodyParts.includes('Triceps')) return true;
+            if ((category === 'Abs' || category === 'Core') && (ex.targetBodyParts.includes('Abs') || ex.targetBodyParts.includes('Core'))) return true;
+            if ((category === 'Upper Arms' || category === 'Biceps') && ex.targetBodyParts.includes('Biceps')) return true;
+            if ((category === 'Upper Arms' || category === 'Triceps') && ex.targetBodyParts.includes('Triceps')) return true;
             if (category === 'Shoulders' && ex.targetBodyParts.includes('Shoulders')) return true;
-            if (category === 'Obliques' && ex.targetBodyParts.includes('Obliques')) return true;
+            if ((category === 'Abs' || category === 'Obliques') && ex.targetBodyParts.includes('Obliques')) return true;
             if (category === 'Glutes' && ex.targetBodyParts.includes('Glutes')) return true;
-            if (category === 'Hamstrings' && ex.targetBodyParts.includes('Hamstrings')) return true;
-            if (category === 'Quads' && ex.targetBodyParts.includes('Quads')) return true;
-            if (category === 'Calves' && ex.targetBodyParts.includes('Calves')) return true;
+            if ((category === 'Upper Legs' || category === 'Hamstrings') && ex.targetBodyParts.includes('Hamstrings')) return true;
+            if ((category === 'Upper Legs' || category === 'Quads') && ex.targetBodyParts.includes('Quads')) return true;
+            if ((category === 'Lower Legs' || category === 'Calves') && ex.targetBodyParts.includes('Calves')) return true;
             if (category === 'Chest' && ex.targetBodyParts.includes('Chest')) return true;
             if (category === 'Forearms' && ex.targetBodyParts.includes('Forearms')) return true;
-            if (category === 'Lats' && ex.targetBodyParts.includes('Lats')) return true;
-            if (category === 'Traps' && ex.targetBodyParts.includes('Traps')) return true;
+            if ((category === 'Upper Back' || category === 'Lats') && ex.targetBodyParts.includes('Lats')) return true;
+            if ((category === 'Upper Back' || category === 'Traps') && ex.targetBodyParts.includes('Traps')) return true;
             if (category === 'Upper Back' && ex.targetBodyParts.includes('Upper Back')) return true;
             if (category === 'Lower Back' && ex.targetBodyParts.includes('Lower Back')) return true;
             if (category === 'Cardio' && ex.targetBodyParts.includes('Cardio')) return true;

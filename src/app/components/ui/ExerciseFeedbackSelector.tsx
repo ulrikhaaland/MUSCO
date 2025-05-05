@@ -80,6 +80,19 @@ export function ExerciseFeedbackSelector({
 
   // Modified to replace exercises with their replacements
   const displayExercises = useMemo(() => {
+    // Legacy category mapping
+    const legacyCategoryMap: Record<string, string> = {
+      'Hamstrings': 'Upper Legs',
+      'Quads': 'Upper Legs',
+      'Obliques': 'Abs',
+      'Biceps': 'Upper Arms',
+      'Triceps': 'Upper Arms',
+      'Lats': 'Upper Back',
+      'Traps': 'Upper Back',
+      'Calves': 'Lower Legs',
+      'Core': 'Abs'
+    };
+    
     // First filter out completely removed exercises and exercises that have been replaced
     const filteredExercises = exercises.filter(exercise => {
       const exerciseId = getExerciseId(exercise);
@@ -100,6 +113,11 @@ export function ExerciseFeedbackSelector({
           isReplacement: true
         } as ExtendedExercise;
         
+        // Map legacy bodyPart to consolidated category if needed
+        if (replacement.bodyPart && legacyCategoryMap[replacement.bodyPart]) {
+          replacement.bodyPart = legacyCategoryMap[replacement.bodyPart];
+        }
+        
         // Copy position properties if they exist
         // Using type assertion to avoid TypeScript errors
         const originalAny = originalExercise as any;
@@ -112,8 +130,17 @@ export function ExerciseFeedbackSelector({
       })
       .filter(Boolean) as ExtendedExercise[]; // Filter out any null values
     
+    // Convert legacy bodyPart categories to consolidated categories
+    const remappedExercises = filteredExercises.map(exercise => {
+      const remapped = { ...exercise } as ExtendedExercise;
+      if (remapped.bodyPart && legacyCategoryMap[remapped.bodyPart]) {
+        remapped.bodyPart = legacyCategoryMap[remapped.bodyPart];
+      }
+      return remapped;
+    });
+    
     // Combine filtered original exercises with replacements
-    return [...filteredExercises, ...replacementsToAdd];
+    return [...remappedExercises, ...replacementsToAdd];
   }, [exercises, removedExercises, replacedExercises, replacementMap]);
 
   // Filter exercises based on removed body parts
@@ -140,9 +167,47 @@ export function ExerciseFeedbackSelector({
     });
   }, [displayExercises, removedBodyParts]);
 
+  // Ensure legacy categories don't appear in the UI
+  useEffect(() => {
+    // Legacy categories that should be mapped to consolidated categories
+    const legacyCategories = [
+      'Hamstrings', 'Quads', 'Obliques', 'Biceps', 'Triceps', 
+      'Lats', 'Traps', 'Calves', 'Core', 'Other'
+    ];
+    
+    // Force clean up any expanded legacy categories
+    const updatedExpandedCategories = { ...expandedCategories };
+    let hasChanges = false;
+    
+    legacyCategories.forEach(legacyCategory => {
+      if (updatedExpandedCategories[legacyCategory] !== undefined) {
+        delete updatedExpandedCategories[legacyCategory];
+        hasChanges = true;
+      }
+    });
+    
+    if (hasChanges) {
+      setExpandedCategories(updatedExpandedCategories);
+    }
+  }, [expandedCategories]);
+
   // Group exercises by body part
   const exercisesByCategory = useMemo(() => {
     const grouped: { [key: string]: ExtendedExercise[] } = {};
+    
+    // Legacy category mapping for consistency
+    const legacyCategoryMap: Record<string, string> = {
+      'Hamstrings': 'Upper Legs',
+      'Quads': 'Upper Legs',
+      'Obliques': 'Abs',
+      'Biceps': 'Upper Arms',
+      'Triceps': 'Upper Arms',
+      'Lats': 'Upper Back',
+      'Traps': 'Upper Back',
+      'Calves': 'Lower Legs',
+      'Core': 'Abs',
+      'Other': '' // Map 'Other' to empty string to skip it
+    };
     
     // Initialize all expanded categories on first load
     if (Object.keys(expandedCategories).length === 0) {
@@ -150,13 +215,22 @@ export function ExerciseFeedbackSelector({
       allBodyParts.forEach(part => {
         initialExpanded[part] = false; // Start with all categories collapsed
       });
-      initialExpanded['Other'] = false;
       setExpandedCategories(initialExpanded);
     }
     
     // Group original and replacement exercises by body part
     filteredExercises.forEach(exercise => {
-      const category = exercise.bodyPart || 'Other';
+      let category = exercise.bodyPart || '';
+      
+      // Skip exercises with no category or 'Other' category
+      if (!category) return;
+      
+      // Map legacy categories to consolidated ones
+      if (legacyCategoryMap[category]) {
+        // If mapped to empty string, skip this exercise
+        if (legacyCategoryMap[category] === '') return;
+        category = legacyCategoryMap[category];
+      }
       
       if (!grouped[category]) {
         grouped[category] = [];
@@ -187,7 +261,17 @@ export function ExerciseFeedbackSelector({
         return;
       }
       
-      const category = exercise.bodyPart || 'Other';
+      let category = exercise.bodyPart || '';
+      
+      // Skip exercises with no category or 'Other' category
+      if (!category) return;
+      
+      // Map legacy categories to consolidated ones
+      if (legacyCategoryMap[category]) {
+        // If mapped to empty string, skip this exercise
+        if (legacyCategoryMap[category] === '') return;
+        category = legacyCategoryMap[category];
+      }
       
       if (!grouped[category]) {
         grouped[category] = [];
@@ -259,26 +343,37 @@ export function ExerciseFeedbackSelector({
   const allCategories = useMemo(() => {
     // Standard list of all exercise categories
     const standardCategories = [
-      'Abs', 'Biceps', 'Calves', 'Cardio', 'Chest', 'Forearms', 'Glutes', 'Hamstrings',
-      'Lats', 'Lower Back', 'Obliques', 'Quads', 'Shoulders', 'Traps', 'Triceps', 'Upper Back', 'Other'
+      'Abs', 'Cardio', 'Chest', 'Forearms', 'Glutes', 
+      'Lower Back', 'Lower Legs', 'Shoulders', 'Upper Arms', 'Upper Back', 
+      'Upper Legs'
+    ];
+    
+    // Legacy categories that should be mapped to consolidated categories
+    const legacyCategories = [
+      'Hamstrings', 'Quads', 'Obliques', 'Biceps', 'Triceps', 
+      'Lats', 'Traps', 'Calves', 'Core', 'Other'
     ];
     
     // Add any additional categories from exercises that might not be in the standard list
     const categoriesFromExercises = new Set<string>();
     exercises.forEach(exercise => {
       if (exercise.bodyPart) {
-        categoriesFromExercises.add(exercise.bodyPart);
-      } else {
-        categoriesFromExercises.add('Other');
+        // Skip legacy categories
+        if (!legacyCategories.includes(exercise.bodyPart)) {
+          categoriesFromExercises.add(exercise.bodyPart);
+        }
       }
+      // Don't add 'Other' category anymore
     });
     
     addedExercises.forEach(exercise => {
       if (exercise.bodyPart) {
-        categoriesFromExercises.add(exercise.bodyPart);
-      } else {
-        categoriesFromExercises.add('Other');
+        // Skip legacy categories
+        if (!legacyCategories.includes(exercise.bodyPart)) {
+          categoriesFromExercises.add(exercise.bodyPart);
+        }
       }
+      // Don't add 'Other' category anymore
     });
     
     // Combine standard categories with any additional categories found
@@ -320,8 +415,9 @@ export function ExerciseFeedbackSelector({
     e.stopPropagation();
     // Check if category is valid
     const validCategories = [
-      'Abs', 'Biceps', 'Calves', 'Cardio', 'Chest', 'Forearms', 'Glutes', 'Hamstrings',
-      'Lats', 'Lower Back', 'Obliques', 'Quads', 'Shoulders', 'Traps', 'Triceps', 'Upper Back'
+      'Abs', 'Cardio', 'Chest', 'Forearms', 'Glutes',
+      'Lower Back', 'Lower Legs', 'Shoulders', 'Upper Arms', 'Upper Back',
+      'Upper Legs', 'Calves'
     ];
     
     if (!validCategories.includes(category)) {
@@ -330,7 +426,26 @@ export function ExerciseFeedbackSelector({
       return;
     }
     
-    setSelectedCategory(category);
+    // Map legacy categories to their consolidated equivalents
+    let effectiveCategory = category;
+    if (category === 'Quads' || category === 'Hamstrings') {
+      console.log(`Mapping legacy category ${category} to Upper Legs for exercise selection`);
+      effectiveCategory = 'Upper Legs';
+    } else if (category === 'Obliques' || category === 'Core') {
+      console.log(`Mapping legacy category ${category} to Abs for exercise selection`);
+      effectiveCategory = 'Abs';
+    } else if (category === 'Biceps' || category === 'Triceps') {
+      console.log(`Mapping legacy category ${category} to Upper Arms for exercise selection`);
+      effectiveCategory = 'Upper Arms';
+    } else if (category === 'Traps' || category === 'Lats') {
+      console.log(`Mapping legacy category ${category} to Upper Back for exercise selection`);
+      effectiveCategory = 'Upper Back';
+    } else if (category === 'Calves') {
+      console.log(`Mapping legacy category Calves to Lower Legs for exercise selection`);
+      effectiveCategory = 'Lower Legs';
+    }
+    
+    setSelectedCategory(effectiveCategory);
     setIsBottomSheetOpen(true);
   };
 
