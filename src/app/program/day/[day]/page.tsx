@@ -10,7 +10,11 @@ import { useUser } from '@/app/context/UserContext';
 import { useLoader } from '@/app/context/LoaderContext';
 import { getStorage, ref, getDownloadURL } from 'firebase/storage';
 import { storage } from '@/app/firebase/config';
-import { preloadExerciseVideos } from '@/app/utils/videoPreloader';
+
+// Simple timing utility
+const getElapsedTime = (startTime: number) => {
+  return Math.round(performance.now() - startTime);
+};
 
 function ErrorDisplay({ error }: { error: Error }) {
   return (
@@ -59,14 +63,12 @@ function getVideoEmbedUrl(url: string): string {
 }
 
 export default function DayDetailPage() {
-  const router = useRouter();
-  const params = useParams();
-  const dayParam = params.day as string;
-  const dayNumber = parseInt(dayParam);
+  // Use a persistent ID to avoid duplicate render issues
+  const componentId = useRef(`day-page-${Date.now()}`);
+  console.log(`🔍 Component mounted: ${componentId.current}`);
+  const startTime = useRef(performance.now());
   
-  const { user, loading: authLoading, error: authError } = useAuth();
-  const { program, isLoading: userLoading, programStatus, userPrograms } = useUser();
-  const { showLoader, hideLoader } = useLoader();
+  // Component state
   const [error, setError] = useState<Error | null>(null);
   const [dayData, setDayData] = useState<ProgramDay | null>(null);
   const [dayName, setDayName] = useState('');
@@ -75,116 +77,155 @@ export default function DayDetailPage() {
   const [expandedExercises, setExpandedExercises] = useState<string[]>([]);
   const [selectedProgram, setSelectedProgram] = useState<ExerciseProgram | null>(null);
   const [preloadedVideoUrls, setPreloadedVideoUrls] = useState<{ [key: string]: string }>({});
-  const [videosPreloaded, setVideosPreloaded] = useState(false);
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState<number>(-1);
-  const [initialRenderComplete, setInitialRenderComplete] = useState(false);
-  const [preloadingStarted, setPreloadingStarted] = useState(false);
-  
-  const isLoading = authLoading || userLoading || (!dayData && !error);
+  const [dataLoaded, setDataLoaded] = useState(false);
 
-  // Show loader when loading
+  // Router and params
+  const router = useRouter();
+  const params = useParams();
+  const dayParam = params.day as string;
+  const dayNumber = parseInt(dayParam);
+  
+  console.log(`🔍 [${componentId.current}] Initial params loaded in ${getElapsedTime(startTime.current)}ms - day: ${dayNumber}`);
+  
+  // Access context data
+  const { user, error: authError } = useAuth();
+  const { program, programStatus, userPrograms } = useUser();
+  const { showLoader, hideLoader, isLoading } = useLoader();
+  
+  console.log(`🔍 [${componentId.current}] Contexts accessed in ${getElapsedTime(startTime.current)}ms - has program: ${!!program}, has userPrograms: ${!!userPrograms && userPrograms.length > 0}`);
+  
+  // Flag to track if we've shown the loader
+  const loaderShown = useRef(false);
+  
+  // Show loader on initial mount only once
   useEffect(() => {
-    if (isLoading) {
+    // Only show loader once when component mounts
+    if (!loaderShown.current) {
+      console.log(`🔍 [${componentId.current}] Showing loader at ${getElapsedTime(startTime.current)}ms`);
       showLoader('Loading program day...');
-    } else {
-      hideLoader();
-    }
-  }, [isLoading, showLoader, hideLoader]);
-
-  // Mark when initial render is complete
-  useEffect(() => {
-    setInitialRenderComplete(true);
-  }, []);
-
-  // Extract programId from query parameters
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const queryParams = new URLSearchParams(window.location.search);
-      const programId = queryParams.get('programId');
+      loaderShown.current = true;
       
-      if (programId && userPrograms) {
-        // Find the specific program by its createdAt value
-        const foundProgram = userPrograms
-          .flatMap(up => up.programs)
-          .find(p => p.createdAt.toString() === programId);
-          
-        if (foundProgram) {
-          setSelectedProgram(foundProgram);
-        } else {
-          setSelectedProgram(program); // Fallback to the default program
+      // Force hide loader after a timeout as a fallback
+      const timeoutId = setTimeout(() => {
+        if (!dataLoaded) {
+          console.log(`🔍 [${componentId.current}] Force hiding loader after timeout`);
+          hideLoader();
         }
-      } else {
-        setSelectedProgram(program); // Fallback to the default program
-      }
+      }, 5000); // Force hide after 5 seconds
+      
+      return () => clearTimeout(timeoutId);
     }
-  }, [program, userPrograms]);
+  }, [showLoader]);
 
-  // Find the day data based on the day number
+  // Load data effect with cleanup
   useEffect(() => {
-    if (selectedProgram?.program && !isNaN(dayNumber)) {
-      // Attempt to find the day in the current week
-      const currentWeek = selectedProgram.program[0]; // Start with first week
-      if (currentWeek) {
-        const day = currentWeek.days.find(d => d.day === dayNumber);
-        if (day) {
-          setDayData(day);
+    let mounted = true;
+    
+    const loadProgramData = async () => {
+      console.log(`🔍 [${componentId.current}] Starting data load at ${getElapsedTime(startTime.current)}ms`);
+      
+      try {
+        // Skip processing if component unmounted
+        if (!mounted) return;
+        
+        // 1. Determine which program to use
+        let programToUse = program;
+        if (typeof window !== 'undefined' && userPrograms) {
+          const queryParams = new URLSearchParams(window.location.search);
+          const programId = queryParams.get('programId');
           
-          // Set day name
-          const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-          setDayName(days[dayNumber - 1]);
-        }
-      }
-    }
-  }, [selectedProgram, dayNumber]);
-
-  // DEFERRED VIDEO PRELOADING: Start preloading only after initial render and day data is available
-  useEffect(() => {
-    if (dayData?.exercises && initialRenderComplete && !preloadingStarted && !videosPreloaded) {
-      // Set this state first to prevent duplicate preloading
-      setPreloadingStarted(true);
-      
-      console.log(`Starting deferred preload for ${dayData.exercises.length} exercises on ${dayName}`);
-      
-      // Use setTimeout to ensure this happens after render is complete
-      setTimeout(() => {
-        try {
-          // Preload all videos at once
-          preloadExerciseVideos(dayData.exercises)
-            .then(() => {
-              console.log("All exercise videos preloaded successfully");
-              setVideosPreloaded(true);
-  
-              // Now prefetch the HTTP URLs and store them for immediate access
-              const prefetchHttpUrls = async () => {
-                const urlMap: { [key: string]: string } = {};
-                for (const exercise of dayData.exercises) {
-                  if (exercise.videoUrl && exercise.videoUrl.startsWith('gs://')) {
-                    try {
-                      const storageRef = ref(storage, exercise.videoUrl);
-                      const downloadUrl = await getDownloadURL(storageRef);
-                      urlMap[exercise.name] = downloadUrl;
-                    } catch (error) {
-                      console.error(`Error converting Firebase URL for ${exercise.name}:`, error);
-                    }
-                  }
-                }
-                setPreloadedVideoUrls(urlMap);
-                console.log(`Prefetched ${Object.keys(urlMap).length} HTTP URLs for immediate access`);
-              };
+          console.log(`🔍 [${componentId.current}] Looking for programId ${programId} at ${getElapsedTime(startTime.current)}ms`);
+          
+          if (programId) {
+            // Find the specific program by its createdAt value
+            const foundProgram = userPrograms
+              .flatMap(up => up.programs)
+              .find(p => p.createdAt.toString() === programId);
               
-              prefetchHttpUrls().catch(error => {
-                console.error("Error prefetching HTTP URLs:", error);
-              });
-            })
-            .catch(error => {
-              console.error("Error preloading exercise videos:", error);
-            });
-        } catch (error) {
-          console.error("Error initiating video preload:", error);
+            if (foundProgram) {
+              programToUse = foundProgram;
+              console.log(`🔍 [${componentId.current}] Found specific program at ${getElapsedTime(startTime.current)}ms: ${foundProgram.title}`);
+            }
+          }
         }
-      }, 500); // Small delay to ensure UI is responsive first
+        
+        // Skip further processing if component unmounted
+        if (!mounted) return;
+        
+        // 2. Set the selected program immediately
+        setSelectedProgram(programToUse);
+        console.log(`🔍 [${componentId.current}] Selected program set at ${getElapsedTime(startTime.current)}ms`);
+        
+        // 3. Find the day data if program is available
+        if (programToUse?.program && !isNaN(dayNumber)) {
+          const currentWeek = programToUse.program[0];
+          if (currentWeek) {
+            const day = currentWeek.days.find(d => d.day === dayNumber);
+            if (day) {
+              // Skip if component unmounted
+              if (!mounted) return;
+              
+              // 4. Set day data and name at the same time
+              console.log(`🔍 [${componentId.current}] Found day data at ${getElapsedTime(startTime.current)}ms`);
+              setDayData(day);
+              const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+              setDayName(days[dayNumber - 1]);
+              
+              console.log(`🔍 [${componentId.current}] Day has ${day.exercises?.length || 0} exercises`);
+              
+              // 5. Mark data as loaded
+              setDataLoaded(true);
+            } else {
+              console.log(`🔍 [${componentId.current}] Day ${dayNumber} not found in program at ${getElapsedTime(startTime.current)}ms`);
+            }
+          }
+        } else {
+          console.log(`🔍 [${componentId.current}] No program data or invalid day number at ${getElapsedTime(startTime.current)}ms`);
+        }
+        
+        // 6. Ensure loader is hidden regardless of outcome
+        if (loaderShown.current && mounted) {
+          console.log(`🔍 [${componentId.current}] Hiding loader at ${getElapsedTime(startTime.current)}ms`);
+          hideLoader();
+        }
+      } catch (err) {
+        console.error('Error loading program data:', err);
+        if (mounted) {
+          setError(err instanceof Error ? err : new Error('Failed to load program data'));
+        }
+        
+        // Ensure loader is hidden even on error
+        if (loaderShown.current && mounted) {
+          hideLoader();
+          console.log(`🔍 [${componentId.current}] Loader hidden after error at ${getElapsedTime(startTime.current)}ms`);
+        }
+      }
+    };
+    
+    loadProgramData();
+    
+    // Cleanup function
+    return () => {
+      mounted = false;
+      
+      // Ensure loader is hidden when component unmounts
+      if (loaderShown.current) {
+        hideLoader();
+        console.log(`🔍 [${componentId.current}] Loader hidden during cleanup`);
+      }
+    };
+  }, [program, userPrograms, dayNumber, hideLoader]);
+
+  // Effect to hide the loader when data is loaded
+  useEffect(() => {
+    if (dataLoaded && loaderShown.current) {
+      setTimeout(() => {
+        hideLoader();
+        console.log(`🔍 [${componentId.current}] Loader hidden after data loaded`);
+      }, 0);
     }
-  }, [dayData, dayName, initialRenderComplete, preloadingStarted, videosPreloaded]);
+  }, [dataLoaded, hideLoader]);
 
   // Update page title
   useEffect(() => {
@@ -197,67 +238,24 @@ export default function DayDetailPage() {
 
   // Redirect to home if no user or program
   useEffect(() => {
-    if (!authLoading && !userLoading) {
-      if (!user) {
-        router.push('/');
-      } else if (!program && programStatus !== ProgramStatus.Generating) {
-        router.push('/');
-      }
+    if (!user) {
+      router.push('/');
+    } else if (!program && programStatus !== ProgramStatus.Generating) {
+      router.push('/');
     }
-  }, [user, program, programStatus, authLoading, userLoading, router]);
+  }, [user, program, programStatus, router]);
 
-  // Preload Firebase video URL and hint browser to download video content
-  const handleExerciseToggle = async (exerciseName: string) => {
+  // Simplified exercise toggle without preloading
+  const handleExerciseToggle = (exerciseName: string) => {
     const isCurrentlyExpanded = expandedExercises.includes(exerciseName);
-
     setExpandedExercises(prev => 
       isCurrentlyExpanded
         ? prev.filter(name => name !== exerciseName)
         : [...prev, exerciseName]
     );
-
-    const linkId = `preload-video-${exerciseName.replace(/\s+/g, '-')}`; // Create a safe ID
-
-    // If expanding
-    if (!isCurrentlyExpanded) {
-      const exercise = dayData?.exercises.find(ex => ex.name === exerciseName);
-
-      if (exercise?.videoUrl && isFirebaseStorageUrl(exercise.videoUrl) && !preloadedVideoUrls[exerciseName]) {
-        try {
-          console.log(`Preloading video URL for: ${exerciseName}`);
-          const storageRef = ref(storage, exercise.videoUrl);
-          const downloadUrl = await getDownloadURL(storageRef);
-          setPreloadedVideoUrls(prev => ({ ...prev, [exerciseName]: downloadUrl }));
-          console.log(`Preloaded video URL obtained for ${exerciseName}`);
-
-          // Hint the browser to preload the video content
-          if (downloadUrl && !document.getElementById(linkId)) {
-            const link = document.createElement('link');
-            link.id = linkId;
-            link.rel = 'preload';
-            link.href = downloadUrl;
-            link.as = 'video';
-            // You might need to specify the video type if known, e.g., link.type = 'video/mp4'
-            document.head.appendChild(link);
-            console.log(`Added preload link for ${exerciseName}`);
-          }
-        } catch (preloadError) {
-          console.error(`Error preloading Firebase video for ${exerciseName}:`, preloadError);
-        }
-      }
-    } 
-    // If collapsing
-    else {
-      // Remove the preload hint if it exists
-      const existingLink = document.getElementById(linkId);
-      if (existingLink) {
-        document.head.removeChild(existingLink);
-        console.log(`Removed preload link for ${exerciseName}`);
-      }
-    }
   };
 
-  // Ensure preload links are cleaned up on component unmount
+  // Clean up any lingering elements on unmount
   useEffect(() => {
     return () => {
       expandedExercises.forEach(exerciseName => {
@@ -265,13 +263,12 @@ export default function DayDetailPage() {
         const existingLink = document.getElementById(linkId);
         if (existingLink) {
           document.head.removeChild(existingLink);
-          console.log(`Cleaned up preload link on unmount for ${exerciseName}`);
         }
       });
     };
-  }, [expandedExercises]); // Dependency array includes expandedExercises
+  }, [expandedExercises]);
 
-  // Updated to handle Firebase Storage URL fetching and utilize preloaded URLs
+  // Handle video clicks with simpler implementation
   const handleVideoClick = async (exercise: Exercise) => {
     if (loadingVideoExercise === exercise.name) return;
 
@@ -281,54 +278,38 @@ export default function DayDetailPage() {
 
     // --- Check for Preloaded URL First ---
     if (preloadedVideoUrls[exercise.name]) {
-      console.log(`Using preloaded URL for ${exercise.name}`);
       setVideoUrl(preloadedVideoUrls[exercise.name]);
-      return; // Skip fetching/searching if preloaded URL exists
+      return;
     }
 
-    // Helper function to search YouTube and update video URL
-    const searchYouTubeAndUpdateUrl = async () => {
-      setLoadingVideoExercise(exercise.name);
-      try {
+    setLoadingVideoExercise(exercise.name);
+    
+    try {
+      if (exercise.videoUrl) {
+        if (isFirebaseStorageUrl(exercise.videoUrl)) {
+          // Fetch Firebase download URL
+          const storageRef = ref(storage, exercise.videoUrl);
+          const downloadUrl = await getDownloadURL(storageRef);
+          setVideoUrl(downloadUrl);
+        } else {
+          setVideoUrl(getVideoEmbedUrl(exercise.videoUrl));
+        }
+      } else {
+        // Search YouTube
         const searchQuery = `${exercise.name} proper form`;
         const youtubeUrl = await searchYouTubeVideo(searchQuery);
         if (youtubeUrl) {
           exercise.videoUrl = youtubeUrl;
           setVideoUrl(getVideoEmbedUrl(youtubeUrl));
         } else {
-          console.log('No YouTube video found for:', searchQuery);
           setVideoUrl(null);
         }
-      } catch (error) {
-        console.error('Error fetching YouTube video:', error);
-        setVideoUrl(null);
-      } finally {
-        setLoadingVideoExercise(null);
       }
-    };
-
-    // --- Main Logic (if not preloaded) ---
-    if (exercise.videoUrl) {
-      if (isFirebaseStorageUrl(exercise.videoUrl)) {
-        // Fetch Firebase download URL (if not preloaded or preload failed)
-        setLoadingVideoExercise(exercise.name);
-        try {
-          const storageRef = ref(storage, exercise.videoUrl);
-          const downloadUrl = await getDownloadURL(storageRef);
-          setVideoUrl(downloadUrl);
-        } catch (error) {
-          console.error('Error fetching Firebase video URL:', error);
-          setVideoUrl(null);
-        } finally {
-          setLoadingVideoExercise(null);
-        }
-      } else if (isVimeoUrl(exercise.videoUrl)) {
-        await searchYouTubeAndUpdateUrl();
-      } else {
-        setVideoUrl(getVideoEmbedUrl(exercise.videoUrl));
-      }
-    } else {
-      await searchYouTubeAndUpdateUrl();
+    } catch (error) {
+      console.error('Error fetching video:', error);
+      setVideoUrl(null);
+    } finally {
+      setLoadingVideoExercise(null);
     }
   };
 
@@ -519,6 +500,7 @@ export default function DayDetailPage() {
     );
   };
 
+  // Handle errors
   if (authError) {
     return <ErrorDisplay error={authError} />;
   }
@@ -527,11 +509,17 @@ export default function DayDetailPage() {
     return <ErrorDisplay error={error} />;
   }
 
-  // Don't return null while loading, let the loader context handle visibility
+  // Return loading UI if no data yet
   if (!dayData) {
-    return null;
+    console.log(`🔍 [${componentId.current}] Rendering loading UI at ${getElapsedTime(startTime.current)}ms`);
+    return (
+      <div className="bg-gray-900 min-h-screen flex items-center justify-center">
+        <div className="text-gray-400 text-sm">Loading program day...</div>
+      </div>
+    );
   }
 
+  console.log(`🔍 [${componentId.current}] Rendering complete content at ${getElapsedTime(startTime.current)}ms`);
   return (
     <div className="bg-gray-900 min-h-screen z-50 flex flex-col">
       <div className="py-3 px-4 flex items-center justify-center">

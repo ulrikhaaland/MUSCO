@@ -17,6 +17,11 @@ export const LoaderProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [message, setMessage] = useState('initializing muscles');
   const [submessage, setSubmessage] = useState<string | undefined>(undefined);
   const loaderRef = useRef<HTMLDivElement>(null);
+  
+  // Add timer ref to track when loader was shown
+  const showTimeRef = useRef<number | null>(null);
+  // Track if we're in transition
+  const isTransitioning = useRef(false);
 
   // Prevent body scrolling when loader is visible
   useEffect(() => {
@@ -34,12 +39,8 @@ export const LoaderProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   }, [isVisible, message]);
 
   const showLoader = (newMessage?: string, newSubmessage?: string) => {
-    // Check if the loader is already visible with the same message and submessage
-    if (isVisible || (newMessage === message && newSubmessage === submessage)) {
-      return; // Skip update if already showing the same message
-    }
-    
-    console.log('Showing loader with message:', newMessage);
+    // Set the show time
+    showTimeRef.current = Date.now();
     
     // Update message first if provided
     if (newMessage) setMessage(newMessage);
@@ -47,12 +48,34 @@ export const LoaderProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     
     // Then update visibility
     setIsVisible(true);
+    isTransitioning.current = false;
+    
+    console.log('Showing loader with message:', newMessage || message);
   };
 
   const hideLoader = () => {
-    console.log('Hiding loader');
-    if (isVisible) {
+    // If loader was just shown, add a minimum display time
+    // to prevent flashing of loader for quick operations
+    const currentTime = Date.now();
+    const minDisplayTime = 300; // minimum ms to show loader
+    
+    if (showTimeRef.current && currentTime - showTimeRef.current < minDisplayTime) {
+      // If we've shown the loader very briefly, keep it a bit longer
+      if (isTransitioning.current) return; // Don't schedule multiple hides
+      
+      isTransitioning.current = true;
+      console.log('Scheduling loader hide after minimum display time');
+      
+      setTimeout(() => {
+        setIsVisible(false);
+        isTransitioning.current = false;
+        console.log('Loader hidden (after delay)');
+      }, minDisplayTime - (currentTime - showTimeRef.current));
+    } else {
+      // Otherwise hide immediately
       setIsVisible(false);
+      isTransitioning.current = false;
+      console.log('Hiding loader');
     }
   };
 
