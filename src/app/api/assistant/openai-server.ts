@@ -766,6 +766,7 @@ FAILURE TO FOLLOW THE ABOVE INSTRUCTIONS EXACTLY WILL RESULT IN POOR USER EXPERI
           await programRef.update({
             status: ProgramStatus.Done,
             updatedAt: new Date().toISOString(),
+            active: true, // Set the new program as active
           });
 
         console.log('Successfully updated program document and set as active');

@@ -68,6 +68,7 @@ interface UserContextType {
   ) => void;
   selectProgram: (programIndex: number) => void;
   toggleActiveProgram: (programIndex: number) => Promise<void>;
+  generateFollowUpProgram: () => Promise<void>;
 }
 
 const UserContext = createContext<UserContextType>({} as UserContextType);
@@ -135,6 +136,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
           ) {
             router.push('/program');
           }
+          return;
         }
 
         // First, look for any active program as that should be loaded first
@@ -148,6 +150,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
           if (data.status === ProgramStatus.Done && data.active === true) {
             foundActiveProgram = true;
+            setProgramStatus(ProgramStatus.Done);
 
             // Process this active program first
             const programsCollectionRef = collection(
@@ -1004,6 +1007,11 @@ export function UserProvider({ children }: { children: ReactNode }) {
     return Promise.reject(new Error('Invalid program index'));
   };
 
+  const generateFollowUpProgram = async () => {
+    setProgramStatus(ProgramStatus.Generating);
+    router.push('/program');
+  };
+
   return (
     <UserContext.Provider
       value={{
@@ -1023,6 +1031,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
         setPendingQuestionnaire,
         selectProgram,
         toggleActiveProgram,
+        generateFollowUpProgram,
       }}
     >
       {children}
