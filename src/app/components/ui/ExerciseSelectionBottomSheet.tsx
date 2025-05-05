@@ -217,8 +217,8 @@ export default function ExerciseSelectionBottomSheet({
       open={isOpen}
       onDismiss={onClose}
       ref={sheetRef}
-      snapPoints={({ maxHeight }) => [maxHeight * 0.4, maxHeight * 0.8]}
-      defaultSnap={({ maxHeight }) => maxHeight * 0.8}
+      snapPoints={({ maxHeight }) => [maxHeight * 0.9]}
+      defaultSnap={({ maxHeight }) => maxHeight * 0.9}
       expandOnContentDrag
       className="z-50 !bg-gray-900"
       header={
