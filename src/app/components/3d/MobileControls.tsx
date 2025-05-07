@@ -171,7 +171,6 @@ export default function MobileControls({
         }
       } else if (contentRef.current) {
         // Fallback to our original approach if overlay elements aren't found
-        console.log('Fallback: overlay or header not found, using contentRef');
 
         const footer = document.querySelector('[data-rsbs-footer]');
         const footerHeight = footer?.getBoundingClientRect().height ?? 0;

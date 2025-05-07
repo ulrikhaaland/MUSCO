@@ -45,7 +45,7 @@ export function ExerciseFeedbackSelector({
   removedExercises = [],
   replacedExercises = [],
   replacementMap = {},
-  hasAlternatives = () => true, // Default to true if not provided
+  hasAlternatives = () => true,
   loadingAlternatives = false,
 }: ExerciseFeedbackSelectorProps) {
   // State to track removed body parts for filtering
@@ -119,7 +119,6 @@ export function ExerciseFeedbackSelector({
         }
         
         // Copy position properties if they exist
-        // Using type assertion to avoid TypeScript errors
         const originalAny = originalExercise as any;
         if ('order' in originalAny) replacement.order = originalAny.order;
         if ('dayIndex' in originalAny) replacement.dayIndex = originalAny.dayIndex;
@@ -287,14 +286,42 @@ export function ExerciseFeedbackSelector({
       existingExerciseIds.add(exerciseId);
     });
     
-    // Sort exercises within each category by name
+    // Sort exercises within each category by position (order), then name
     Object.keys(grouped).forEach(category => {
       grouped[category].sort((a, b) => {
-        // Keep newly added exercises at the bottom
+        // Rule 1: Handle 'isNewlyAdded' flag. Newly added exercises go to the bottom.
         if (a.isNewlyAdded && !b.isNewlyAdded) return 1;
         if (!a.isNewlyAdded && b.isNewlyAdded) return -1;
-        
-        // Sort by name otherwise
+        if (a.isNewlyAdded && b.isNewlyAdded) {
+          return a.name.localeCompare(b.name); // Sort newly added among themselves by name
+        }
+
+        // At this point, neither 'a' nor 'b' is 'isNewlyAdded'.
+        // They are either original exercises or replacement exercises.
+
+        const orderA = a.order;
+        const orderB = b.order;
+
+        // Check if orders are valid numbers
+        const aHasValidOrder = typeof orderA === 'number' && isFinite(orderA);
+        const bHasValidOrder = typeof orderB === 'number' && isFinite(orderB);
+
+        // Rule 2: Sort by 'order' property if valid numbers
+        if (aHasValidOrder && bHasValidOrder) {
+          // If orders are different, sort by order
+          if (orderA !== orderB) {
+            return orderA - orderB; // Ascending order
+          }
+          // If orders are numerically equal, sort by name for stability
+          return a.name.localeCompare(b.name);
+        }
+
+        // Rule 3: Prioritize exercises with a valid order over those without
+        if (aHasValidOrder) return -1; // a has a valid order, b does not
+        if (bHasValidOrder) return 1;  // b has a valid order, a does not
+
+        // Rule 4: Fallback: If neither has a valid 'order' (e.g., undefined, NaN, non-numeric),
+        // sort by name.
         return a.name.localeCompare(b.name);
       });
     });
@@ -469,6 +496,12 @@ export function ExerciseFeedbackSelector({
   const allExistingExercises = useMemo(() => {
     return [...exercises, ...addedExercises];
   }, [exercises, addedExercises]);
+
+  // Prepare the list of exercises to be excluded from the selection sheet.
+  // This includes exercises currently displayed (originals + replacements) and newly added exercises.
+  const activeSheetExclusionList = useMemo(() => {
+    return [...displayExercises, ...addedExercises];
+  }, [displayExercises, addedExercises]);
 
   return (
     <div className="bg-gray-800/50 rounded-xl overflow-hidden shadow-lg ring-1 ring-gray-700/50">
@@ -693,7 +726,7 @@ export function ExerciseFeedbackSelector({
           onClose={handleCloseBottomSheet}
           category={selectedCategory}
           onSelectExercise={handleSelectExercise}
-          existingExercises={allExistingExercises}
+          existingExercises={activeSheetExclusionList}
         />
       )}
     </div>

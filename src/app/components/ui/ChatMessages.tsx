@@ -127,7 +127,7 @@ export function ChatMessages({
     const container = messagesRef.current;
     if (container) {
       container.addEventListener('wheel', preventWheelPropagation);
-      
+
       // Clean up
       return () => {
         container.removeEventListener('wheel', preventWheelPropagation);
@@ -630,6 +630,7 @@ export function ChatMessages({
       const minHeight = 100; // Minimum height in pixels
       const calculatedHeight = Math.max(height * 0.7, minHeight);
       setAvailableHeight(calculatedHeight);
+      console.log('[ChatMessages] Calculated availableHeight:', calculatedHeight); // DEBUG PRINT
     };
 
     // Calculate on initial render and when dependencies change

@@ -105,8 +105,9 @@ export default function ExerciseSelectionBottomSheet({
         
         // Further filter to match the exact category and exclude existing exercises
         const categoryExercises = muscoExercises.filter(ex => {
-          // First check if exercise already exists in the list
           const exerciseId = ex.id || ex.exerciseId || ex.name;
+
+          // First check if exercise already exists in the list
           const alreadyExists = existingExercises.some(existingEx => {
             const existingId = existingEx.id || existingEx.exerciseId || existingEx.name;
             return existingId === exerciseId || existingEx.name === ex.name;
@@ -219,7 +220,7 @@ export default function ExerciseSelectionBottomSheet({
       ref={sheetRef}
       snapPoints={({ maxHeight }) => [maxHeight * 0.9]}
       defaultSnap={({ maxHeight }) => maxHeight * 0.9}
-      expandOnContentDrag
+      expandOnContentDrag={false}
       className="z-50 !bg-gray-900"
       header={
         <div className="px-4 pt-4 pb-2 !bg-gray-900 border-b border-gray-800">

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import { Exercise } from '@/app/types/program';
 import { ExerciseFeedbackSelector } from './ExerciseFeedbackSelector';
 import { exerciseFiles, loadExercisesFromJson } from '@/app/services/exerciseProgramService';
@@ -44,7 +44,18 @@ export function ProgramFeedbackQuestionnaire({
   const [loadingAlternatives, setLoadingAlternatives] = useState(false);
   const [replacementMap, setReplacementMap] = useState<Record<string, Exercise>>({});
   const [usedAlternativeIds, setUsedAlternativeIds] = useState<Set<string>>(new Set());
+  const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
+  const [selectedCategoryForSheet, setSelectedCategoryForSheet] = useState('');
+  const [allExistingExercises, setAllExistingExercises] = useState<Exercise[]>([]);
   
+  // Process previousExercises to ensure they have an 'order' property
+  const processedPreviousExercises = useMemo(() => {
+    return previousExercises.map((exercise, index) => ({
+      ...exercise,
+      order: index, // Add order based on the original array index
+    }));
+  }, [previousExercises]);
+
   // Load all alternative exercises for the current exercises
   useEffect(() => {
     const loadAllAlternatives = async () => {
@@ -106,6 +117,7 @@ export function ProgramFeedbackQuestionnaire({
         });
         
         setAlternativeExercises(exercisesByCategory);
+        setAllExistingExercises(muscoExercises);
       }
       
       setLoadingAlternatives(false);
@@ -120,22 +132,12 @@ export function ProgramFeedbackQuestionnaire({
       const exerciseId = exercise.id || exercise.exerciseId || exercise.name;
       console.log(`Adding exercise: ${exercise.name} to category: ${category}`);
       
-      // Check if this exercise is already used as a replacement
-      const isAlreadyReplacement = Object.values(replacementMap).some(ex => {
-        const replacementId = ex.id || ex.exerciseId || ex.name;
-        return replacementId === exerciseId;
-      });
-      
-      if (isAlreadyReplacement) {
-        console.log(`Cannot add exercise: ${exercise.name} because it's already used as a replacement`);
-        alert(`This exercise is already being used as a replacement for another exercise. Please remove the replacement first if you want to add it as a new exercise.`);
-        return;
-      }
-      
       // Add to local state
       setAddedExercises(prev => [...prev, exercise as ExtendedExercise]);
       
       // Add to used alternatives to prevent using it as a replacement elsewhere
+      // This might need re-evaluation if an exercise can be both added AND a replacement simultaneously
+      // For now, if it's added, it probably shouldn't be immediately available as an auto-replacement choice elsewhere
       setUsedAlternativeIds(prev => {
         const newSet = new Set(prev);
         newSet.add(exerciseId);
@@ -470,7 +472,7 @@ export function ProgramFeedbackQuestionnaire({
 
         {/* Exercise List */}
         <ExerciseFeedbackSelector
-          exercises={previousExercises}
+          exercises={processedPreviousExercises}
           title="Exercises from Your Previous Program"
           description="Filter by body part to find specific exercises. Click the buttons to mark exercises for replacement or removal."
           onReplaceExercise={handleReplaceExercise}
@@ -538,3 +540,9 @@ export function ProgramFeedbackQuestionnaire({
     </div>
   );
 }
+
+// Helper to get a unique ID for an exercise (if not already present)
+// This is a conceptual placement, ensure it's defined or imported appropriately if used more broadly.
+const getExerciseId = (exercise: Exercise): string => {
+  return exercise.id || exercise.exerciseId || exercise.name;
+};
