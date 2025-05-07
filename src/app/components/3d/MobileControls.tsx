@@ -78,6 +78,7 @@ export default function MobileControls({
 }: MobileControlsProps) {
   const { t } = useTranslation();
   const [isMobile, setIsMobile] = useState(false);
+  const hasInitiallyExpanded = useRef(false);
   const [contentHeight, setContentHeight] = useState(0);
   const [userModifiedSheetHeight, setUserModifiedSheetHeight] = useState(false);
   const [currentSnapPoint, setCurrentSnapPoint] = useState<SnapPoint>(
@@ -226,10 +227,12 @@ export default function MobileControls({
           fullBodyRef.current) &&
         loadingComplete &&
         hasContent &&
-        getSnapPointIndex(currentSnapPoint) < 2
+        getSnapPointIndex(currentSnapPoint) < 2 &&
+        !hasInitiallyExpanded.current
       ) {
         if (sheetRef.current) {
           let snapPoint = getSnapPoints()[1];
+
           if (contentHeight < snapPoint) {
             snapPoint = contentHeight;
           }
@@ -237,6 +240,7 @@ export default function MobileControls({
             () => {
               if (sheetRef.current) {
                 sheetRef.current.snapTo(({ maxHeight }) => snapPoint);
+                hasInitiallyExpanded.current = true;
               }
             },
             intention === ProgramIntention.Exercise ? 1000 : 300
