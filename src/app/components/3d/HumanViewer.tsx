@@ -371,13 +371,10 @@ export default function HumanViewer({
               ? 'No diagnosis, just an exercise program'
               : 'No diagnosis, just a recovery program',
           programType: programType,
-          painfulAreas:
-            programType === ProgramType.Recovery
-              ? [
-                  ...(selectedGroups[0]?.name ? [selectedGroups[0].name] : []),
-                  ...(selectedPart?.name ? [selectedPart.name] : []),
-                ]
-              : [],
+          painfulAreas: [
+            ...(selectedGroups[0]?.name ? [selectedGroups[0].name] : []),
+            ...(selectedPart?.name ? [selectedPart.name] : []),
+          ],
           avoidActivities: [],
           recoveryGoals: [],
           timeFrame: '1 week',
@@ -477,21 +474,25 @@ export default function HumanViewer({
       if (e.target instanceof Element) {
         let target = e.target;
         let preventScroll = true;
-        
+
         // Check if any parent element is scrollable and should handle the event
         while (target !== document.body) {
           const style = window.getComputedStyle(target);
           const overflowY = style.getPropertyValue('overflow-y');
-          
-          if ((overflowY === 'auto' || overflowY === 'scroll')) {
+
+          if (overflowY === 'auto' || overflowY === 'scroll') {
             // This is a scrollable container - check if it can actually scroll
-            const hasVerticalOverflow = target.scrollHeight > target.clientHeight;
-            
+            const hasVerticalOverflow =
+              target.scrollHeight > target.clientHeight;
+
             if (hasVerticalOverflow) {
               // Check if we're at the top or bottom boundary
               const isAtTop = target.scrollTop === 0;
-              const isAtBottom = Math.abs(target.scrollHeight - target.scrollTop - target.clientHeight) < 1;
-              
+              const isAtBottom =
+                Math.abs(
+                  target.scrollHeight - target.scrollTop - target.clientHeight
+                ) < 1;
+
               // Only prevent if at boundaries and trying to scroll beyond them
               if ((isAtTop && e.deltaY < 0) || (isAtBottom && e.deltaY > 0)) {
                 // Still prevent scroll if trying to scroll past limits
@@ -508,11 +509,11 @@ export default function HumanViewer({
               e.stopPropagation();
             }
           }
-          
+
           target = target.parentElement as Element;
           if (!target) break;
         }
-        
+
         if (preventScroll) {
           e.preventDefault();
         }
@@ -521,7 +522,7 @@ export default function HumanViewer({
 
     // Add the event listener with passive: false to allow preventDefault
     document.addEventListener('wheel', preventParentScroll, { passive: false });
-    
+
     return () => {
       document.removeEventListener('wheel', preventParentScroll);
     };

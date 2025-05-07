@@ -1429,8 +1429,7 @@ export function ExerciseQuestionnaire({
                   {t('questionnaire.painAreas')}
                 </h3>
 
-                {editingField !== 'generallyPainfulAreas' ||
-                answers.generallyPainfulAreas.length === 0 ? (
+                {editingField !== 'generallyPainfulAreas' ? (
                   renderSelectedAnswers(
                     answers.generallyPainfulAreas.length === 0
                       ? [t('questionnaire.noPain')]
@@ -1442,7 +1441,10 @@ export function ExerciseQuestionnaire({
                     <div className="mb-4">
                       <button
                         type="button"
-                        onClick={handleNoPainAreas}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleNoPainAreas();
+                        }}
                         className={`w-full p-4 rounded-xl ${
                           answers.generallyPainfulAreas.length === 0
                             ? 'bg-red-500/10 ring-red-500 text-white'
