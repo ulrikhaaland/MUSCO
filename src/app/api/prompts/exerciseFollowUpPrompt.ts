@@ -392,5 +392,5 @@ EXERCISE SELECTION PROTOCOL
 - CRITICAL: Do NOT include any citations, markdown-style links, or references in any part of your response
 - Do NOT include text like "citeturn0file1" or any other citation markers
 - All descriptions, exercise names, and instructions should be plain text only
-- When referencing exercises, simply use their names without citations or references
+- When referencing exercises in descriptive text (e.g., programOverview, day descriptions, whatNotToDo), ALWAYS use their plain text names (e.g., "Running", "Push-ups"). NEVER include exercise IDs (e.g., "cardio-2", "chest-5") in these narrative sections. Exercise IDs are strictly for the "exerciseId" field within the exercise objects themselves.
 - This applies to all fields, especially the "description" field for workout days`;

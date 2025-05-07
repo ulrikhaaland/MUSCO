@@ -163,7 +163,7 @@ export async function getMessages(threadId: string) {
 }
 
 // Utility function to prepare exercises prompt for the LLM
-async function prepareExercisesPrompt(userInfo: ExerciseQuestionnaireAnswers): Promise<{
+async function prepareExercisesPrompt(userInfo: ExerciseQuestionnaireAnswers, removedExerciseIds?: string[]): Promise<{
   exercisesPrompt: string;
   exerciseCount: number;
 }> {
@@ -218,8 +218,18 @@ async function prepareExercisesPrompt(userInfo: ExerciseQuestionnaireAnswers): P
   // Combine exercise arrays
   availableExercises = [...availableExercises, ...cardioExercises];
 
+  // If removedExerciseIds are provided, filter them out from availableExercises
+  if (removedExerciseIds && removedExerciseIds.length > 0) {
+    const removedIdsSet = new Set(removedExerciseIds);
+    availableExercises = availableExercises.filter(ex => {
+      const id = ex.id || ex.exerciseId || ex.name; // Use a consistent way to get ID
+      return !removedIdsSet.has(id);
+    });
+    console.log(`Filtered out ${removedExerciseIds.length} removed exercises from the database. Remaining: ${availableExercises.length}`);
+  }
+
   console.log(
-    `Loaded ${availableExercises.length} exercises for prompt construction`
+    `Loaded ${availableExercises.length} exercises for prompt construction after filtering removed ones`
   );
 
   // Separate warmup exercises from other exercises
@@ -501,9 +511,14 @@ export async function generateFollowUpExerciseProgram(context: {
       }
     }
 
-    // Get exercises prompt from shared utility function
-    const { exercisesPrompt, exerciseCount } = await prepareExercisesPrompt(context.userInfo);
-    console.log(`Prepared exercise prompt with ${exerciseCount} total exercises`);
+    // Prepare a clean list of removed exercise IDs for the prompt generation
+    const removedExerciseIdsForPrompt = (context.feedback.removedExercises || [])
+      .map(id => typeof id === 'string' ? id : (id as any)?.id || (id as any)?.exerciseId || null)
+      .filter(Boolean) as string[];
+
+    // Get exercises prompt from shared utility function, excluding removed exercises
+    const { exercisesPrompt, exerciseCount } = await prepareExercisesPrompt(context.userInfo, removedExerciseIdsForPrompt);
+    console.log(`Prepared exercise prompt with ${exerciseCount} total exercises after excluding removed ones`);
 
     // Import the follow-up system prompt
     const systemPrompt = await import('../prompts/exerciseFollowUpPrompt');
@@ -515,7 +530,7 @@ export async function generateFollowUpExerciseProgram(context: {
     console.log('replacedExercises:', context.feedback.replacedExercises);
     console.log('addedExercises:', context.feedback.addedExercises);
 
-    // Only include necessary exercise information (id and name)
+    // Only include necessary exercise information (id and name) for the main feedback object
     const programFeedback = {
       preferredExercises: (context.feedback.preferredExercises || [])
         .map(id => typeof id === 'string' ? id : (id as any)?.id || (id as any)?.exerciseId || null)
