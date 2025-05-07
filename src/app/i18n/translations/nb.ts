@@ -146,6 +146,7 @@ const translations = {
   'home.pageTitle': 'bodAI',
   'home.male': 'Mann',
   'home.female': 'Kvinne',
+  'home.initializing': 'Initialiserer muskler',
   
   // Auth
   'auth.skip': 'Hopp over',
@@ -187,7 +188,7 @@ const translations = {
   'login.codeInstructions': 'Skriv inn 6-sifret kode sendt til e-posten din',
   'login.invalidCode': 'Vennligst skriv inn en gyldig 6-sifret kode',
   'login.verify': 'Verifiser kode',
-  'login.verifying': 'Verifiserer...',
+  'login.verifying': 'Verifiserer',
   'login.success': 'Vellykket innlogging!',
   'login.codeFailed': 'Ugyldig eller utløpt kode. Vennligst prøv igjen.',
   'login.back': 'Tilbake',
@@ -548,7 +549,34 @@ const translations = {
   // Program - Cardio Environments
   'program.cardioEnvironment.outside': 'Utendørs',
   'program.cardioEnvironment.inside': 'Innendørs',
-  'program.cardioEnvironment.both': 'Begge'
+  'program.cardioEnvironment.both': 'Begge',
+
+  // Program Feedback Questionnaire
+  'programFeedback.alert.cannotReplaceAdded': 'Du kan ikke erstatte en øvelse du nettopp har lagt til. Fjern den i stedet om nødvendig.',
+  'programFeedback.alert.alreadyAddedReplacement': 'Kan ikke bruke denne øvelsen som erstatning fordi du allerede har lagt den til som en ny øvelse. Prøv et annet alternativ eller fjern den tillagte øvelsen først.',
+  'programFeedback.alert.noAlternatives': 'Ingen tilgjengelige alternativer for denne øvelsen: {{exerciseName}}',
+  'programFeedback.comingSoon.title': 'Kommer snart',
+  'programFeedback.comingSoon.message': 'Neste ukes program vil være tilgjengelig på {{formattedDate}}',
+  'programFeedback.previousExercises.title': 'Dine tidligere øvelser',
+  'programFeedback.previousExercises.description': 'Bla gjennom øvelser fra ditt forrige treningsprogram. Bruk knappene for å merke øvelser for erstatning eller fjerning.',
+  'programFeedback.selector.title': 'Øvelser fra ditt forrige program',
+  'programFeedback.selector.description': 'Filtrer etter kroppsdel for å finne spesifikke øvelser. Klikk på knappene for å merke øvelser for erstatning eller fjerning.',
+  'programFeedback.button.back': 'Tilbake',
+  'programFeedback.button.generating': 'Genererer program...',
+  'programFeedback.button.generateNextWeek': 'Generer neste ukes program',
+
+  // Exercise Feedback Selector
+  'exerciseFeedbackSelector.chip.new': 'Ny',
+  'exerciseFeedbackSelector.chip.replacement': 'Erstatning',
+  'exerciseFeedbackSelector.button.title.revert': 'Tilbakestill til opprinnelig øvelse',
+  'exerciseFeedbackSelector.button.title.replace': 'Erstatt øvelse',
+  'exerciseFeedbackSelector.button.title.remove': 'Fjern øvelse',
+  'exerciseFeedbackSelector.noExercisesFound': 'Ingen øvelser funnet med gjeldende filtre',
+  'exerciseFeedbackSelector.category.exerciseCount': '({{count}} øvelser)',
+  'exerciseFeedbackSelector.button.addExercise': 'Legg til {{category}} øvelse',
+  'exerciseFeedbackSelector.alert.addNotSupported': 'Legge til øvelser for {{category}} støttes ikke ennå.',
+  'exerciseFeedbackSelector.button.expandAll': 'Utvid alle',
+  'exerciseFeedbackSelector.button.collapseAll': 'Skjul alle'
 };
 
 export default translations; 

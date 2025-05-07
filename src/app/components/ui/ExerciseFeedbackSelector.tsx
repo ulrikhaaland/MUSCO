@@ -3,6 +3,7 @@ import { Exercise } from '@/app/types/program';
 import BodyPartFilter from './BodyPartFilter';
 import Chip from './Chip';
 import ExerciseSelectionBottomSheet from './ExerciseSelectionBottomSheet';
+import { useTranslation } from '@/app/i18n';
 
 // Extend the Exercise type to include our custom property
 interface ExtendedExercise extends Exercise {
@@ -48,6 +49,7 @@ export function ExerciseFeedbackSelector({
   hasAlternatives = () => true,
   loadingAlternatives = false,
 }: ExerciseFeedbackSelectorProps) {
+  const { t } = useTranslation();
   // State to track removed body parts for filtering
   const [removedBodyParts, setRemovedBodyParts] = useState<string[]>([]);
   // State to track expanded categories
@@ -449,7 +451,7 @@ export function ExerciseFeedbackSelector({
     
     if (!validCategories.includes(category)) {
       console.warn(`Category "${category}" is not supported for exercise selection`);
-      alert(`Adding exercises for ${category} is not supported yet.`);
+      handleUnsupportedCategoryAdd(category);
       return;
     }
     
@@ -490,6 +492,11 @@ export function ExerciseFeedbackSelector({
   const handleCloseBottomSheet = () => {
     setIsBottomSheetOpen(false);
     setSelectedCategory(null);
+  };
+
+  // Alert when trying to add exercises for an unsupported category
+  const handleUnsupportedCategoryAdd = (category: string) => {
+    alert(t('exerciseFeedbackSelector.alert.addNotSupported', { category }));
   };
 
   // Get all exercises from both original and added exercises
@@ -549,7 +556,7 @@ export function ExerciseFeedbackSelector({
       <div className="px-8 pb-8 space-y-6">
         {filteredExercises.length === 0 && addedExercises.length === 0 ? (
           <div className="bg-gray-900/50 rounded-xl overflow-hidden ring-1 ring-gray-700/30 p-4">
-            <p className="text-gray-500 italic">No exercises found with the current filters</p>
+            <p className="text-gray-500 italic">{t('exerciseFeedbackSelector.noExercisesFound')}</p>
           </div>
         ) : (
           allCategories.map(category => (
@@ -565,7 +572,7 @@ export function ExerciseFeedbackSelector({
                 <div className="flex items-center">
                   <h3 className="text-white font-medium">{category}</h3>
                   <span className="ml-2 text-gray-400 text-sm">
-                    ({(exercisesByCategory[category] || []).length} exercises)
+                    {t('exerciseFeedbackSelector.category.exerciseCount', { count: (exercisesByCategory[category] || []).length.toString() })}
                   </span>
                 </div>
                 <svg
@@ -619,10 +626,10 @@ export function ExerciseFeedbackSelector({
                               <h3 className="font-medium text-white break-words flex-1">
                                 {exercise.name}
                                 {isNewlyAdded && (
-                                  <span className="ml-2 bg-green-500/20 text-green-400 text-xs px-2 py-0.5 rounded">New</span>
+                                  <span className="ml-2 bg-green-500/20 text-green-400 text-xs px-2 py-0.5 rounded">{t('exerciseFeedbackSelector.chip.new')}</span>
                                 )}
                                 {isReplacement && (
-                                  <span className="ml-2 bg-blue-500/20 text-blue-400 text-xs px-2 py-0.5 rounded">Replacement</span>
+                                  <span className="ml-2 bg-blue-500/20 text-blue-400 text-xs px-2 py-0.5 rounded">{t('exerciseFeedbackSelector.chip.replacement')}</span>
                                 )}
                               </h3>
                               {exercise.bodyPart && (
@@ -659,7 +666,7 @@ export function ExerciseFeedbackSelector({
                             <button 
                               onClick={(e) => handleRevertClick(originalExerciseId, e)}
                               className="w-8 h-8 flex items-center justify-center bg-indigo-600 hover:bg-indigo-500 text-white rounded-full shadow-lg transition-transform duration-200 hover:scale-110"
-                              title="Revert to original exercise"
+                              title={t('exerciseFeedbackSelector.button.title.revert')}
                             >
                               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
@@ -672,7 +679,7 @@ export function ExerciseFeedbackSelector({
                             <button 
                               onClick={(e) => handleReplaceClick(exerciseId, e)}
                               className="w-8 h-8 flex items-center justify-center bg-blue-600 hover:bg-blue-500 text-white rounded-full shadow-lg transition-transform duration-200 hover:scale-110"
-                              title="Replace exercise"
+                              title={t('exerciseFeedbackSelector.button.title.replace')}
                             >
                               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
@@ -684,7 +691,7 @@ export function ExerciseFeedbackSelector({
                           <button 
                             onClick={(e) => handleRemoveClick(exerciseId, e)}
                             className="w-8 h-8 flex items-center justify-center bg-red-600 hover:bg-red-500 text-white rounded-full shadow-lg transition-transform duration-200 hover:scale-110"
-                            title="Remove exercise"
+                            title={t('exerciseFeedbackSelector.button.title.remove')}
                           >
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -698,19 +705,32 @@ export function ExerciseFeedbackSelector({
                   {/* Empty state if no exercises */}
                   {(!exercisesByCategory[category] || exercisesByCategory[category].length === 0) && (
                     <div className="p-3 bg-gray-900/30 rounded-xl text-gray-400 text-center italic">
-                      No exercises in this category
+                      {t('exerciseFeedbackSelector.noExercisesFound')}
                     </div>
                   )}
                   
                   {/* Add Exercise Button */}
                   <button
-                    onClick={(e) => handleOpenBottomSheet(category, e)}
+                    onClick={(e) => {
+                        // Check if category is valid before opening bottom sheet
+                        const validCategories = [
+                          'Abs', 'Cardio', 'Chest', 'Forearms', 'Glutes',
+                          'Lower Back', 'Lower Legs', 'Shoulders', 'Upper Arms', 'Upper Back',
+                          'Upper Legs', 'Calves'
+                        ];
+                        if (!validCategories.includes(category)) {
+                          console.warn(`Category "${category}" is not supported for exercise selection`);
+                          handleUnsupportedCategoryAdd(category);
+                          return;
+                        }
+                        handleOpenBottomSheet(category, e);
+                      }}
                     className="w-full p-3 mt-2 bg-gray-900/30 hover:bg-gray-900/50 text-indigo-400 rounded-xl border border-dashed border-gray-700/50 flex items-center justify-center transition-colors"
                   >
                     <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                     </svg>
-                    Add {category} Exercise
+                    {t('exerciseFeedbackSelector.button.addExercise', { category })}
                   </button>
                 </div>
               )}

@@ -189,7 +189,7 @@ const translations = {
   'login.codeInstructions': 'Enter the 6-digit code sent to your email',
   'login.invalidCode': 'Please enter a valid 6-digit code',
   'login.verify': 'Verify Code',
-  'login.verifying': 'Verifying...',
+  'login.verifying': 'Verifying',
   'login.success': 'Successfully signed in!',
   'login.codeFailed': 'Invalid or expired code. Please try again.',
   'login.back': 'Back',
@@ -550,7 +550,34 @@ const translations = {
   // Program - Cardio Environments
   'program.cardioEnvironment.outside': 'Outdoors',
   'program.cardioEnvironment.inside': 'Indoors',
-  'program.cardioEnvironment.both': 'Both'
+  'program.cardioEnvironment.both': 'Both',
+
+  // Program Feedback Questionnaire
+  'programFeedback.alert.cannotReplaceAdded': 'You cannot replace an exercise you just added. Remove it instead if needed.',
+  'programFeedback.alert.alreadyAddedReplacement': 'Cannot use this exercise as a replacement because you\'ve already added it as a new exercise. Please try another alternative or remove the added exercise first.',
+  'programFeedback.alert.noAlternatives': 'No available alternatives for this exercise: {{exerciseName}}',
+  'programFeedback.comingSoon.title': 'Coming Soon',
+  'programFeedback.comingSoon.message': 'Your next week\'s program will be available on {{formattedDate}}',
+  'programFeedback.previousExercises.title': 'Your Previous Exercises',
+  'programFeedback.previousExercises.description': 'Browse through exercises from your previous workout program. Use the buttons to mark exercises for replacement or removal.',
+  'programFeedback.selector.title': 'Exercises from Your Previous Program',
+  'programFeedback.selector.description': 'Filter by body part to find specific exercises. Click the buttons to mark exercises for replacement or removal.',
+  'programFeedback.button.back': 'Back',
+  'programFeedback.button.generating': 'Generating Program...',
+  'programFeedback.button.generateNextWeek': 'Generate Next Week\'s Program',
+
+  // Exercise Feedback Selector
+  'exerciseFeedbackSelector.chip.new': 'New',
+  'exerciseFeedbackSelector.chip.replacement': 'Replacement',
+  'exerciseFeedbackSelector.button.title.revert': 'Revert to original exercise',
+  'exerciseFeedbackSelector.button.title.replace': 'Replace exercise',
+  'exerciseFeedbackSelector.button.title.remove': 'Remove exercise',
+  'exerciseFeedbackSelector.noExercisesFound': 'No exercises found with the current filters',
+  'exerciseFeedbackSelector.category.exerciseCount': '({{count}} exercises)',
+  'exerciseFeedbackSelector.button.addExercise': 'Add {{category}} Exercise',
+  'exerciseFeedbackSelector.alert.addNotSupported': 'Adding exercises for {{category}} is not supported yet.',
+  'exerciseFeedbackSelector.button.expandAll': 'Expand All',
+  'exerciseFeedbackSelector.button.collapseAll': 'Collapse All'
 };
 
 export default translations; 

@@ -4,6 +4,7 @@ import { useState, useRef, useEffect, useMemo } from 'react';
 import { Exercise } from '@/app/types/program';
 import { ExerciseFeedbackSelector } from './ExerciseFeedbackSelector';
 import { exerciseFiles, loadExercisesFromJson } from '@/app/services/exerciseProgramService';
+import { useTranslation } from '@/app/i18n';
 
 // Extend the Exercise type to include additional properties
 interface ExtendedExercise extends Exercise {
@@ -47,6 +48,7 @@ export function ProgramFeedbackQuestionnaire({
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
   const [selectedCategoryForSheet, setSelectedCategoryForSheet] = useState('');
   const [allExistingExercises, setAllExistingExercises] = useState<Exercise[]>([]);
+  const { t } = useTranslation();
   
   // Process previousExercises to ensure they have an 'order' property
   const processedPreviousExercises = useMemo(() => {
@@ -211,7 +213,7 @@ export function ProgramFeedbackQuestionnaire({
     if (isAddedExercise) {
       // Don't allow replacing newly added exercises - just show a message
       console.log(`Cannot replace a newly added exercise: ${exerciseId}`);
-      alert('You cannot replace an exercise you just added. Remove it instead if needed.');
+      alert(t('programFeedback.alert.cannotReplaceAdded'));
       return;
     }
     
@@ -240,7 +242,7 @@ export function ProgramFeedbackQuestionnaire({
       
       if (isAlreadyAdded) {
         console.log(`Cannot use ${alternative.name} as replacement because it's already added as a new exercise`);
-        alert(`Cannot use this exercise as a replacement because you've already added it as a new exercise. Please try another alternative or remove the added exercise first.`);
+        alert(t('programFeedback.alert.alreadyAddedReplacement'));
         return;
       }
       
@@ -275,7 +277,7 @@ export function ProgramFeedbackQuestionnaire({
     } else {
       // No alternatives available
       console.log(`No available alternatives for: ${exercise.name}`);
-      alert(`No available alternatives for this exercise: ${exercise.name}`);
+      alert(t('programFeedback.alert.noAlternatives', { exerciseName: exercise.name }));
     }
   };
 
@@ -449,9 +451,9 @@ export function ProgramFeedbackQuestionnaire({
               d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
             />
           </svg>
-          <h3 className="text-app-title text-white">Coming Soon</h3>
+          <h3 className="text-app-title text-white">{t('programFeedback.comingSoon.title')}</h3>
           <p className="text-gray-300">
-            Your next week&apos;s program will be available on {formattedDate}
+            {t('programFeedback.comingSoon.message', { formattedDate })}
           </p>
         </div>
       </div>
@@ -463,18 +465,18 @@ export function ProgramFeedbackQuestionnaire({
       <div className="space-y-6">
         <div className="text-center mb-8">
           <h3 className="text-app-title text-white">
-            Your Previous Exercises
+            {t('programFeedback.previousExercises.title')}
           </h3>
           <p className="text-gray-300 mt-2">
-            Browse through exercises from your previous workout program. Use the buttons to mark exercises for replacement or removal.
+            {t('programFeedback.previousExercises.description')}
           </p>
         </div>
 
         {/* Exercise List */}
         <ExerciseFeedbackSelector
           exercises={processedPreviousExercises}
-          title="Exercises from Your Previous Program"
-          description="Filter by body part to find specific exercises. Click the buttons to mark exercises for replacement or removal."
+          title={t('programFeedback.selector.title')}
+          description={t('programFeedback.selector.description')}
           onReplaceExercise={handleReplaceExercise}
           onRemoveExercise={handleRemoveExercise}
           onRevertReplacement={handleRevertReplacement}
@@ -496,7 +498,7 @@ export function ProgramFeedbackQuestionnaire({
             onClick={onCancel}
             className="px-6 py-3 rounded-xl bg-gray-700 text-gray-300 hover:bg-gray-600 transition-colors duration-200"
           >
-            Back
+            {t('programFeedback.button.back')}
           </button>
           <button
             type="button"
@@ -529,10 +531,10 @@ export function ProgramFeedbackQuestionnaire({
                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                   ></path>
                 </svg>
-                Generating Program...
+                {t('programFeedback.button.generating')}
               </>
             ) : (
-              "Generate Next Week's Program"
+              t('programFeedback.button.generateNextWeek')
             )}
           </button>
         </div>

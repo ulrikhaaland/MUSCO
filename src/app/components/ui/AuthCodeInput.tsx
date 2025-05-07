@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 import { toast } from './ToastProvider';
 import { useTranslation } from '@/app/i18n';
 import Logo from './Logo';
+import { LoadingDots } from './LoadingDots';
 
 export function AuthCodeInput() {
   const [email, setEmail] = useState('');
@@ -74,18 +75,14 @@ export function AuthCodeInput() {
     setStep('code');
   };
 
-  const handleCodeSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!code || code.length !== 6) {
-      toast.error(t('login.invalidCode'));
-      return;
-    }
+  const performCodeValidation = async (codeToValidate: string) => {
+    if (isLoading) return; // Prevent concurrent submissions
 
     setIsLoading(true);
     try {
       // Call the Cloud Function to validate the code
       const validateAuthCode = httpsCallable(functions, 'validateAuthCode');
-      const result = await validateAuthCode({ email, code });
+      const result = await validateAuthCode({ email, code: codeToValidate });
       
       // Get the sign-in link from the result
       const data = result.data as { link: string };
@@ -117,6 +114,15 @@ export function AuthCodeInput() {
     }
   };
 
+  const handleCodeSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!code || code.length !== 6) {
+      toast.error(t('login.invalidCode'));
+      return;
+    }
+    await performCodeValidation(code);
+  };
+
   const handleBackToEmail = () => {
     setStep('email');
     setCode('');
@@ -140,6 +146,11 @@ export function AuthCodeInput() {
     // Move focus to next input if this one has a value
     if (value && index < 5) {
       inputRefs[index + 1].current?.focus();
+    }
+
+    // Auto-submit if code is complete
+    if (updatedCode.length === 6) {
+      performCodeValidation(updatedCode);
     }
   };
 
@@ -167,6 +178,8 @@ export function AuthCodeInput() {
         inputRefs[digits.length]?.current?.focus();
       } else {
         inputRefs[5]?.current?.focus();
+        // Auto-submit if code is complete after paste
+        performCodeValidation(digits);
       }
     }
   };
@@ -238,6 +251,7 @@ export function AuthCodeInput() {
               maxLength={1}
               autoFocus={index === 0}
               className="w-10 h-12 sm:w-12 sm:h-14 text-center text-2xl font-bold rounded-lg bg-gray-900/50 border border-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              value={code[index] || ''}
               onChange={(e) => handleCodeDigitChange(index, e.target.value)}
               onKeyDown={(e) => handleKeyDown(index, e)}
               onPaste={handlePaste}
@@ -250,7 +264,7 @@ export function AuthCodeInput() {
           disabled={isLoading}
           className="w-full flex justify-center py-3 px-6 rounded-xl shadow-lg text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {isLoading ? t('login.verifying') : t('login.verify')}
+          {isLoading ? <>{t('login.verifying')}<LoadingDots /></> : t('login.verify')}
         </button>
       </form>
     </div>

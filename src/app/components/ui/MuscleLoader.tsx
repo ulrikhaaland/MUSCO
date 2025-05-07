@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from '@/app/i18n'; // Corrected import path
 interface MuscleLoaderProps {
   fullScreen?: boolean;
   baseColor?: string; // static outline colour
@@ -15,9 +16,10 @@ export default function MuscleLoader({
   baseColor = '#94a3b8', // slate-400 (was #4b5563/slate-600)
   pulseColor = '#6366f1', // indigo-500
   onRetry,
-  message = 'initializing muscles', // Default message
+  message, // Default message will be set using useTranslation
   submessage,
 }: MuscleLoaderProps) {
+  const { t } = useTranslation(); // Added useTranslation hook
   const svgRef = useRef<SVGSVGElement>(null);
   const [dotFrame, setDotFrame] = useState(0); // 0,1,2 for "·","··","···"
   const [showRetry, setShowRetry] = useState(false);
@@ -25,8 +27,6 @@ export default function MuscleLoader({
   /* ─── stroke-dash pulse ─────────────────────────────────────────────── */
   useEffect(() => {
     if (!svgRef.current) return;
-
-    console.log('Initializing MuscleLoader animation');
 
     // Use timeout to ensure DOM is fully ready
     const initTimer = setTimeout(() => {
@@ -91,10 +91,12 @@ export default function MuscleLoader({
     return () => clearTimeout(t);
   }, []);
 
+  const defaultMessage = message || t('home.initializing'); // Use translated default message
+
   // Log message changes to help debugging
   useEffect(() => {
-    console.log('MuscleLoader message updated:', message);
-  }, [message]);
+    console.log('MuscleLoader message updated:', defaultMessage);
+  }, [defaultMessage]);
 
   const wrapCls = fullScreen
     ? 'fixed inset-0 z-50 flex items-center justify-center bg-[#111827]'
@@ -1270,7 +1272,7 @@ l-8 40 -1 -45z"
 
         {/* loading caption */}
         <p className="mt-6 text-sm text-center" aria-live="polite">
-          {message} {dots}
+          {defaultMessage} {dots}
         </p>
 
         {submessage && (

@@ -5,25 +5,7 @@ import { useAuth } from '@/app/context/AuthContext';
 import { useTranslation } from '@/app/i18n';
 import Logo from '@/app/components/ui/Logo';
 import { AuthCodeInput } from '@/app/components/ui/AuthCodeInput';
-
-// Loading dots component
-const LoadingDots = () => {
-  const [dots, setDots] = useState('');
-  
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setDots(prev => (prev.length >= 3 ? '' : prev + '.'));
-    }, 250);
-    
-    return () => clearInterval(interval);
-  }, []);
-  
-  return (
-    <span className="inline-block min-w-[18px] text-left">
-      {dots}
-    </span>
-  );
-};
+import { LoadingDots } from '@/app/components/ui/LoadingDots';
 
 export function AuthForm({ onSkip }: { onSkip: () => void }) {
   const { t } = useTranslation();
