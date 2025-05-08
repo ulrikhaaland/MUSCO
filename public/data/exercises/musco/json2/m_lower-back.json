@@ -1,5 +1,99 @@
 {
   "bodyPart": "Lower Back",
-  "exercises": []
+  "exercises": [
+    {
+      "id": "lower-back-1",
+      "name": "Superman Raise",
+      "description": "The superman raise is a dynamic posterior chain exercise performed lying prone, where both the arms and legs are lifted simultaneously from the floor in a controlled concentric motion, held briefly at the top, and then lowered back down. This trains spinal erectors, glutes, hamstrings, and mid-back muscles through repeated extension under tension. The short hold at the peak reinforces positional strength and neuromuscular control.",
+      "targetBodyParts": ["Lower Back"],
+      "exerciseType": ["strength", "endurance"],
+      "difficulty": "beginner",
+      "equipment": ["Bodyweight"],
+      "steps": [
+        "Lie face down on a mat with your arms extended overhead and legs straight.",
+        "Keep your neck in a neutral position with your eyes toward the floor.",
+        "Engage your core and contract your glutes.",
+        "Simultaneously lift your arms, chest, and legs off the floor in a controlled motion.",
+        "Aim to raise your limbs about 4-6 inches off the ground.",
+        "Hold at the top position for 1-2 seconds, squeezing your glutes and back muscles.",
+        "Lower back down with control to the starting position.",
+        "Repeat for the prescribed number of repetitions."
+      ],
+      "tips": [
+        "Lift limbs with control, pause 1–2 seconds at the top.",
+        "Squeeze glutes, upper back, and shoulder blades throughout the movement.",
+        "Keep movement smooth, avoid jerky motion or overextension.",
+        "10–15 reps per set works well for endurance and control.",
+        "Focus on quality over quantity - proper form is more important than how high you lift.",
+        "Keep your head in a neutral position to avoid neck strain.",
+        "If the full movement is too challenging, start by lifting just arms or just legs.",
+        "Breathe normally throughout the exercise - exhale on exertion, inhale on the lowering phase."
+      ],
+      "contraindications": [
+        "Acute lower back pain or injury",
+        "Herniated disc",
+        "Spinal stenosis",
+        "Pregnancy (especially late term)",
+        "Recent abdominal surgery"
+      ],
+      "muscles": ["Lower Back", "Glutes", "Hamstrings", "Upper Back"],
+      "alternatives": [],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Push (Bilateral)",
+      "mechanics": "Compound",
+      "videoUrl": "gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_4738.mov",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Lower Back.jpg",
+      "viewCount": 0,
+      "popularity": "medium"
+    },
+    {
+      "id": "lower-back-2",
+      "name": "Prone Swimmer Raises",
+      "description": "This is a dynamic bodyweight drill performed lying prone, where the arms begin extended overhead in a \"superman\" position, then sweep down and back into a bent-elbow scapular retraction (\"pull\") before returning to the ground. It trains the mid and lower trapezius, rhomboids, rear delts, and spinal erectors, building coordination, shoulder control, and upper posterior chain strength with minimal equipment.",
+      "targetBodyParts": ["Lower Back", "Upper Back"],
+      "exerciseType": ["strength", "endurance"],
+      "difficulty": "beginner",
+      "equipment": ["Bodyweight"],
+      "steps": [
+        "Lie face down on a mat with your arms extended overhead and legs straight, slightly elevated off the ground.",
+        "Maintain a neutral neck position with your eyes toward the floor.",
+        "Begin by lifting your chest and arms slightly off the ground into a superman position.",
+        "Initiate a pulling motion by drawing your shoulder blades together and down.",
+        "Bend your elbows and pull your arms back alongside your torso, as if performing a rowing motion.",
+        "Pause briefly in this retracted position, squeezing your shoulder blades together.",
+        "Return your arms to the overhead extended position in a controlled manner.",
+        "Continue the cycle without letting your arms or legs touch the ground between repetitions."
+      ],
+      "tips": [
+        "Initiate the pull with shoulder blades, not hands.",
+        "Keep legs off the ground for full posterior chain tension.",
+        "Move slowly and deliberately—avoid swinging or momentum.",
+        "Pause briefly in the \"pulled\" position for maximum activation.",
+        "Focus on the quality of the movement rather than speed.",
+        "Maintain tension in your core throughout the exercise.",
+        "Keep your head in a neutral position to avoid neck strain.",
+        "If maintaining lifted legs is too challenging, you can keep legs on the ground and focus on the upper body movement."
+      ],
+      "contraindications": [
+        "Acute lower back pain or injury",
+        "Shoulder impingement or injury",
+        "Herniated disc",
+        "Spinal stenosis",
+        "Recent abdominal or back surgery"
+      ],
+      "muscles": ["Lower Back", "Upper Back", "Rear Deltoids", "Rhomboids", "Trapezius"],
+      "alternatives": ["lower-back-1"],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Pull (Bilateral)",
+      "mechanics": "Compound",
+      "videoUrl": "gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_4739.mov",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Lower Back.jpg",
+      "viewCount": 0,
+      "popularity": "medium"
+    }
+  ]
 }
-

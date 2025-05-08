@@ -369,6 +369,53 @@
       "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Abs.jpg",
       "viewCount": 0,
       "popularity": "medium"
+    },
+    {
+      "id": "abs-122",
+      "name": "Mountain Climbers",
+      "description": "This is a high-intensity cardio and core drill where you rapidly alternate driving your knees toward your chest from a plank position. The version in your image involves a more explosive, jumping-style movement—less like \"climbing\" and more like switch jumps in plank form. It lights up the hip flexors, shoulders, and abs while spiking heart rate.",
+      "targetBodyParts": ["Abs", "Cardio"],
+      "exerciseType": ["cardio", "strength"],
+      "difficulty": "intermediate",
+      "equipment": ["Bodyweight"],
+      "steps": [
+        "Start in a high plank position with hands directly under shoulders and body forming a straight line.",
+        "Engage your core and ensure your shoulders are stacked over your wrists.",
+        "Explosively drive your right knee toward your chest, then quickly switch legs in a jumping motion.",
+        "Continue alternating legs at a rapid pace, keeping your core tight and body stable.",
+        "Focus on maintaining a strong plank position while driving the knees forward.",
+        "Continue for the desired duration or repetition count.",
+        "Keep the pace fast but controlled throughout the movement."
+      ],
+      "tips": [
+        "Keep hands stacked under shoulders throughout the exercise.",
+        "Drive knees explosively without bouncing hips too high.",
+        "Brace your core to avoid sagging or arching the lower back.",
+        "Go fast, but stay clean—tempo > flailing.",
+        "Breathe rhythmically with the movement to maintain energy.",
+        "Start with shorter intervals (20-30 seconds) and build endurance over time.",
+        "For greater challenge, increase speed or add ankle weights.",
+        "To modify, slow the pace or perform from an elevated surface."
+      ],
+      "contraindications": [
+        "Wrist pain or injury",
+        "Shoulder instability",
+        "Acute lower back pain",
+        "Hip flexor strain",
+        "Ankle or knee injuries",
+        "Cardiovascular conditions (consult physician)"
+      ],
+      "muscles": ["Abs", "Hip Flexors", "Shoulders", "Quads", "Core"],
+      "alternatives": ["abs-121", "abs-120", "abs-13"],
+      "repetitions": 30,
+      "sets": 3,
+      "restBetweenSets": 45,
+      "forceType": "Push",
+      "mechanics": "Compound",
+      "videoUrl": "gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_4743.MOV",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Abs.jpg",
+      "viewCount": 0,
+      "popularity": "high"
     }
   ]
 }

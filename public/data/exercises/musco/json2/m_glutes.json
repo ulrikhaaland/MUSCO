@@ -2,6 +2,50 @@
   "bodyPart": "Glutes",
   "exercises": [
     {
+      "id": "glutes-1",
+      "name": "Hyperextension",
+      "description": "The hyperextension is a variation of the hip hinge movement pattern and an exercise used to target the glutes. Some may choose to utilize this exercise to target their lower back. However, for optimal health and maximum benefits, it is best to think of this exercise as a glute exercise. Hyperextensions can be included in your leg workouts and full body workouts.",
+      "targetBodyParts": ["Glutes"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Bodyweight"],
+      "steps": [
+        "Setup in a hyperextension machine with your feet anchored and torso roughly perpendicular to your legs at a 45 degree angle.",
+        "Begin in a hinged position with your arms crossed and initiate the movement by flexing your glutes.",
+        "Extend the hips and finish with your body in a straight line.",
+        "Repeat for the desired number of repetitions."
+      ],
+      "tips": [
+        "Keep in mind that there are two ways to do hyperextensions. For the vast majority of folks (outside of a sport specific application - ex. Gymnastics or Olympic weight lifting), they stick with the first rather than the second option.\n          \"Glutecentric\": Slightly flex your upper back and extend your hips until your body is in a straight line and focus entirely on gluteal activation.\n          Erector-centric: Arch globally through the spine and focus entirely on erector activation.",
+        "Glutecentric: Slightly flex your upper back and extend your hips until your body is in a straight line and focus entirely on gluteal activation.",
+        "Erector-centric: Arch globally through the spine and focus entirely on erector activation.",
+        "If you can’t seem to feel your glutes activating, palpate the musculature with your hands and focus on pausing the movement at the peak of contraction.",
+        "If you find one glute has less contractility than another, perform twice as much volume on that side relative to the other with unilateral variations until you have established an efficient mind/muscle connection."
+      ],
+      "contraindications": [
+        "Glutes injury",
+        "Joint pain",
+        "Acute pain during movement"
+      ],
+      "muscles": ["Glutes", "Hamstrings", "Lower Back"],
+      "alternatives": [
+        "glutes-5",
+        "glutes-7",
+        "glutes-10",
+        "glutes-14",
+        "glutes-4"
+      ],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Hinge (Bilateral)",
+      "mechanics": "Isolation",
+      "videoUrl": "gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_4732.mov",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Glutes.jpg",
+      "viewCount": 3100000,
+      "popularity": "high"
+    },
+    {
       "id": "glutes-7",
       "name": "Bodyweight Glute Bridge",
       "description": "The glute bridge is a variation of the hip thrust and an exercise that is used to build the glute muscles. It will also indirectly target the other muscles of the legs such as the hamstrings, quads, and calves. hip thrust variations are thought to be the optimal exercise for glute specific training. So, if you have goals to build a bigger butt, hip thrusts should be included in your workouts. Building strong glutes will also have a positive carryover into your other exercises including squat variations and deadlift variations. Glute bridges can be included in your leg workouts and full body workouts.",
@@ -28,11 +72,7 @@
         "Shoulder impingement"
       ],
       "muscles": ["Glutes", "Abs", "Hamstrings"],
-      "alternatives": [
-        "glutes-8",
-        "glutes-44",
-        "glutes-45"
-      ],
+      "alternatives": ["glutes-8", "glutes-44", "glutes-45"],
       "repetitions": 12,
       "sets": 3,
       "restBetweenSets": 60,
@@ -71,11 +111,7 @@
         "Shoulder impingement"
       ],
       "muscles": ["Glutes", "Abs", "Hamstrings"],
-      "alternatives": [
-        "glutes-7",
-        "glutes-44",
-        "glutes-45"
-      ],
+      "alternatives": ["glutes-7", "glutes-44", "glutes-45"],
       "repetitions": 12,
       "sets": 3,
       "restBetweenSets": 60,
@@ -117,11 +153,7 @@
         "Recent hip surgery"
       ],
       "muscles": ["Glutes", "Hip Abductors"],
-      "alternatives": [
-        "glutes-45",
-        "glutes-7",
-        "glutes-8"
-      ],
+      "alternatives": ["glutes-45", "glutes-7", "glutes-8"],
       "repetitions": 15,
       "sets": 3,
       "restBetweenSets": 45,
@@ -163,17 +195,56 @@
         "Acute pain during movement"
       ],
       "muscles": ["Glutes", "Obliques", "Hip Abductors", "Core"],
-      "alternatives": [
-        "glutes-44",
-        "glutes-7",
-        "glutes-8"
-      ],
+      "alternatives": ["glutes-44", "glutes-7", "glutes-8"],
       "repetitions": 12,
       "sets": 3,
       "restBetweenSets": 45,
       "forceType": "Push (Unilateral)",
       "mechanics": "Compound",
       "videoUrl": "gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3758.MOV",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Glutes.jpg",
+      "viewCount": 0,
+      "popularity": "low"
+    },
+    {
+      "id": "glutes-46",
+      "name": "Single-Leg Hip Thrust",
+      "description": "The single-leg hip thrust is a unilateral lower-body exercise designed to isolate and strengthen the gluteus maximus while also engaging the hamstrings and core stabilizers. Performed with the upper back supported on a bench and one foot planted firmly on the ground, the movement involves driving the hips upward by contracting the glutes, while the opposite leg remains elevated throughout the exercise. This variation enhances muscular balance, improves hip extension mechanics, and increases core control due to the instability created by using only one leg.",
+      "targetBodyParts": ["Glutes"],
+      "exerciseType": ["strength"],
+      "difficulty": "intermediate",
+      "equipment": ["Bench"],
+      "steps": [
+        "Position your upper back on a bench with your knees bent and feet flat on the floor.",
+        "Extend one leg straight out in front of you, keeping it active.",
+        "Place your arms on the bench for stability.",
+        "Drive through the heel of your planted foot, extending your hips upward.",
+        "Squeeze your glutes at the top position, creating a straight line from shoulders to knees.",
+        "Lower with control back to the starting position.",
+        "Complete all reps on one side before switching legs."
+      ],
+      "tips": [
+        "Keep the torso rigid and chin tucked throughout the movement.",
+        "Avoid overextending the lower back at the top of the movement.",
+        "Drive through the heel of the grounded foot for maximum glute activation.",
+        "Pause briefly at full hip extension for maximum glute activation.",
+        "Focus on controlled movement rather than speed.",
+        "Maintain a neutral spine position throughout the exercise."
+      ],
+      "contraindications": [
+        "Lower back injury",
+        "Hip injury",
+        "Acute pain during movement",
+        "Knee instability"
+      ],
+      "muscles": ["Glutes", "Hamstrings", "Core"],
+      "alternatives": ["glutes-7", "glutes-8", "glutes-44"],
+      "repetitions": 10,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Push (Unilateral)",
+      "mechanics": "Isolation",
+      "videoUrl": "gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_4729.MOV",
       "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Glutes.jpg",
       "viewCount": 0,
       "popularity": "low"

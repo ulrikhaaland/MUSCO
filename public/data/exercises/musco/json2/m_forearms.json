@@ -1,4 +1,97 @@
 {
   "bodyPart": "Forearms",
-  "exercises": []
+  "exercises": [
+    {
+      "id": "forearms-1",
+      "name": "Dumbbell Wrist Curl",
+      "description": "The dumbbell wrist curl is an isolation movement that strengthens the forearm flexors, particularly the flexor carpi radialis and flexor digitorum muscles. In this variation, the forearm is supported on a flat bench, palm facing upward, with the wrist hanging off the edge. The wrist is flexed upward to lift the dumbbell, then lowered under control to the starting position. This is a staple exercise for building grip strength, enhancing wrist stability, and preventing overuse injuries.",
+      "targetBodyParts": ["Forearms"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Dumbbell", "Bench"],
+      "steps": [
+        "Sit on a bench with your feet flat on the floor.",
+        "Hold a dumbbell in your hand and rest your forearm on the bench with your wrist hanging off the edge, palm facing up.",
+        "Start with your wrist fully extended, allowing the dumbbell to roll toward your fingertips.",
+        "Flex your wrist upward as far as possible while keeping your forearm stationary on the bench.",
+        "Pause briefly at the top of the movement, focusing on squeezing your forearm muscles.",
+        "Slowly lower the weight back to the starting position, allowing a full stretch in the forearm.",
+        "Complete all repetitions with one arm before switching to the other."
+      ],
+      "tips": [
+        "Keep forearm fully supported and still throughout the movement.",
+        "Use a full range of motion—let the dumbbell roll toward fingers at the bottom.",
+        "Avoid using momentum; lift under control.",
+        "Focus on squeezing the forearm at the top of each rep.",
+        "Start with light weights until you master the movement pattern.",
+        "If you experience any wrist pain, reduce the weight or check your form.",
+        "For added intensity, hold the contracted position for 1-2 seconds before lowering.",
+        "Ensure your grip is secure but not overly tight, as this can limit your range of motion."
+      ],
+      "contraindications": [
+        "Wrist injury or pain",
+        "Carpal tunnel syndrome",
+        "Recent forearm injury",
+        "Elbow tendonitis"
+      ],
+      "muscles": ["Forearms", "Grip"],
+      "alternatives": [],
+      "repetitions": 15,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Pull (Unilateral)",
+      "mechanics": "Isolation",
+      "videoUrl": "gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_4735.MOV",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Forearms.jpg",
+      "viewCount": 0,
+      "popularity": "medium"
+    },
+    {
+      "id": "forearms-2",
+      "name": "Dumbbell Wrist Rotation",
+      "description": "This is a forearm rotational control drill using a dumbbell held vertically by the end of its handle. It primarily trains the pronators and supinators of the forearm (pronator teres, supinator), as well as the muscles responsible for wrist radial and ulnar deviation. With the forearm braced on a bench and the wrist hanging free, the dumbbell is rotated slowly under control through its arc, resisting gravitational torque. This movement is key for strengthening rotational stability of the wrist and elbow—useful in sports, lifting, and injury prevention.",
+      "targetBodyParts": ["Forearms"],
+      "exerciseType": ["strength", "rehabilitation"],
+      "difficulty": "beginner",
+      "equipment": ["Dumbbell", "Bench"],
+      "steps": [
+        "Sit on a bench with your feet flat on the floor.",
+        "Hold a light dumbbell vertically by one end, with your forearm supported on the bench and your wrist hanging off the edge.",
+        "Keep your upper arm stationary and your elbow fixed at approximately 90 degrees.",
+        "Starting with your palm facing inward, slowly rotate your wrist to turn the palm upward (supination).",
+        "Continue through a controlled range of motion, rotating your wrist to turn the palm downward (pronation).",
+        "Move through the full range of rotation as comfort allows, focusing on controlled movement.",
+        "Perform additional movements by tilting the wrist side to side (radial and ulnar deviation) if desired.",
+        "Complete all repetitions with one arm before switching to the other."
+      ],
+      "tips": [
+        "Move slowly and avoid jerking or over-rotating.",
+        "Keep the elbow and forearm locked to isolate the wrist.",
+        "Let the dumbbell's leverage do the work—don't overload it.",
+        "Emphasize smooth transitions and control in both directions.",
+        "Start with a very light weight—this exercise requires less weight than you might expect.",
+        "Focus on quality of movement rather than quantity of repetitions.",
+        "If you feel any pain (not just resistance), stop the exercise.",
+        "Maintain a neutral wrist position when not actively moving through the rotations."
+      ],
+      "contraindications": [
+        "Wrist injury or pain",
+        "Recent forearm fracture",
+        "Carpal tunnel syndrome",
+        "Tennis or golfer's elbow",
+        "Recent surgery to wrist or forearm"
+      ],
+      "muscles": ["Forearms", "Wrist Pronators", "Wrist Supinators"],
+      "alternatives": ["forearms-1"],
+      "repetitions": 10,
+      "sets": 2,
+      "restBetweenSets": 60,
+      "forceType": "Pull (Unilateral)",
+      "mechanics": "Isolation",
+      "videoUrl": "gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_4736.MOV",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Forearms.jpg",
+      "viewCount": 0,
+      "popularity": "low"
+    }
+  ]
 }

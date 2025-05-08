@@ -31,9 +31,7 @@
         "Severe cardiovascular issues (for heavy compound movements)"
       ],
       "muscles": ["Obliques", "Abs"],
-      "alternatives": [
-        "obliques-14"
-      ],
+      "alternatives": ["obliques-14"],
       "repetitions": 12,
       "sets": 3,
       "restBetweenSets": 60,
@@ -76,15 +74,67 @@
         "Acute core injury"
       ],
       "muscles": ["Obliques", "Core", "Shoulders", "Glutes", "Back"],
-      "alternatives": [
-        "obliques-4"
-      ],
+      "alternatives": ["obliques-4"],
       "repetitions": 8,
       "sets": 3,
       "restBetweenSets": 60,
       "forceType": "Push-Pull (Unilateral)",
       "mechanics": "Compound",
       "videoUrl": "gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3759.mov",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Core.jpg",
+      "viewCount": 0,
+      "popularity": "medium"
+    },
+    {
+      "id": "obliques-15",
+      "name": "Renegade Row",
+      "description": "This is a compound movement combining a high plank isometric hold with an alternating single-arm dumbbell row. It targets the lats, rhomboids, and scapular stabilizers during the pull, while the core, glutes, and shoulders resist rotation and maintain a rigid body line. It's a brutal anti-rotation core drill disguised as an upper-body pull.",
+      "targetBodyParts": ["Obliques", "Core", "Back"],
+      "exerciseType": ["strength"],
+      "difficulty": "intermediate",
+      "equipment": ["Dumbbell"],
+      "steps": [
+        "Set up two dumbbells on the floor about shoulder-width apart.",
+        "Get into a high plank position with hands gripping the dumbbells, forming a straight line from head to heels.",
+        "Position your feet wider than hip-width for stability (narrow them for more challenge).",
+        "Engage your core and glutes to maintain a rigid body position.",
+        "Keeping your body stable and hips square to the ground, row one dumbbell up to your ribcage.",
+        "Lower the dumbbell with control back to the starting position.",
+        "Repeat the row with the opposite arm while maintaining the plank position.",
+        "Continue alternating sides for the prescribed number of repetitions."
+      ],
+      "tips": [
+        "Feet wide for more stability; narrow for more core demand.",
+        "Don't twist the torso when rowing—think anti-rotation.",
+        "Brace abs like someone's gonna punch you mid-rep.",
+        "Control the tempo; don't slam the dumbbell down.",
+        "Keep your hips square to the ground throughout the movement.",
+        "If the exercise is too challenging at first, use a wider foot stance or lighter weights.",
+        "Focus on maintaining a neutral spine position throughout.",
+        "Keep your shoulders pulled away from your ears to engage your lats properly."
+      ],
+      "contraindications": [
+        "Shoulder injury or impingement",
+        "Wrist pain or carpal tunnel",
+        "Lower back pain or injury",
+        "Acute core muscle strain",
+        "Elbow issues"
+      ],
+      "muscles": [
+        "Obliques",
+        "Core",
+        "Lats",
+        "Rhomboids",
+        "Glutes",
+        "Shoulders"
+      ],
+      "alternatives": ["obliques-4", "obliques-14"],
+      "repetitions": 10,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Pull (Unilateral)",
+      "mechanics": "Compound",
+      "videoUrl": "gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_4741.MOV",
       "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Core.jpg",
       "viewCount": 0,
       "popularity": "medium"

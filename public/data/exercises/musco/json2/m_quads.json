@@ -475,6 +475,107 @@
       "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg",
       "viewCount": 0,
       "popularity": "medium"
+    },
+    {
+      "id": "quads-193",
+      "name": "Wall Sit (Isometric Hold)",
+      "description": "The wall sit is an isometric lower-body endurance exercise where the individual holds a seated position with their back flat against a wall and knees bent to roughly 90 degrees. This static hold heavily recruits the quadriceps while also engaging the glutes, hamstrings, and core stabilizers. It's commonly used to build muscular endurance, improve joint stability, and increase time-under-tension for the lower body without joint impact.",
+      "targetBodyParts": ["Upper Legs"],
+      "exerciseType": ["strength", "endurance"],
+      "difficulty": "beginner",
+      "equipment": ["Bodyweight"],
+      "steps": [
+        "Find a flat, empty wall and stand about two feet away from it, facing away from the wall.",
+        "Lean back until your back is flat against the wall.",
+        "Slowly slide your back down the wall until your thighs are parallel to the ground, creating a 90-degree angle at your knees.",
+        "Adjust your feet if necessary so that your knees are directly above your ankles, not pushed forward over your toes.",
+        "Position your arms either straight down at your sides, crossed over your chest, or straight out in front for different levels of challenge.",
+        "Hold this position while maintaining normal breathing.",
+        "Maintain the position for the prescribed time (typically 30-60 seconds for beginners).",
+        "To finish, slowly slide back up the wall to the starting position."
+      ],
+      "tips": [
+        "Keep knees stacked over ankles, not past toes.",
+        "Maintain flat back contact with the wall—avoid arching.",
+        "Keep the thighs parallel to the ground.",
+        "Breathe slowly and avoid holding your breath (no valsalva).",
+        "Start with shorter durations (20-30 seconds) and gradually increase as strength improves.",
+        "Focus on proper form rather than maximum time under tension.",
+        "If your legs begin to shake, that's a sign you're challenging the muscles effectively.",
+        "For progression, try extending one leg straight out periodically, or holding small weights in your hands."
+      ],
+      "contraindications": [
+        "Acute knee pain or injury",
+        "Recent lower back injury",
+        "Significant hypertension",
+        "Acute joint inflammation"
+      ],
+      "muscles": ["Upper Legs", "Glutes", "Hamstrings", "Core"],
+      "alternatives": [
+        "quads-190",
+        "quads-1",
+        "quads-5"
+      ],
+      "repetitions": 1,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Isometric",
+      "mechanics": "Compound",
+      "videoUrl": "gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_4737.MOV",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg",
+      "viewCount": 0,
+      "popularity": "medium"
+    },
+    {
+      "id": "quads-194",
+      "name": "Burpee",
+      "description": "The burpee is a full-body conditioning exercise combining a squat, plank, and vertical jump in one continuous motion. From a standing position, you drop into a squat, kick your feet back into a push-up plank, return to squat, then explode upward into a jump. It builds explosive power, cardiovascular capacity, and muscular endurance using only bodyweight.",
+      "targetBodyParts": ["Upper Legs", "Cardio"],
+      "exerciseType": ["cardio", "strength"],
+      "difficulty": "intermediate",
+      "equipment": ["Bodyweight"],
+      "steps": [
+        "Start standing with feet shoulder-width apart.",
+        "Quickly lower your body into a squat position, placing your hands on the floor in front of you.",
+        "Kick or step your feet back into a plank position (top of a push-up) with arms extended.",
+        "Optional: Perform a push-up by bending and extending your elbows.",
+        "Jump or step your feet back toward your hands, returning to the squat position.",
+        "Explosively jump up into the air, reaching your arms overhead.",
+        "Land softly with knees slightly bent and immediately begin the next repetition."
+      ],
+      "tips": [
+        "Keep your core engaged throughout the entire movement.",
+        "For beginners, step back into plank instead of jumping back.",
+        "For lower impact, step up from squat position instead of jumping.",
+        "Move at a controlled pace until you master the form, then increase speed.",
+        "Breathe rhythmically - exhale during exertion (push-up, jump).",
+        "Land softly with knees slightly bent to absorb impact.",
+        "Keep your back flat during the plank portion.",
+        "For added challenge, add a full push-up or perform a tuck jump at the top."
+      ],
+      "contraindications": [
+        "Cardiovascular conditions",
+        "Knee or ankle injuries",
+        "Lower back problems",
+        "Shoulder injuries",
+        "Severe obesity",
+        "Hypertension"
+      ],
+      "muscles": ["Quads", "Hamstrings", "Glutes", "Core", "Chest", "Shoulders"],
+      "alternatives": [
+        "quads-190",
+        "quads-1",
+        "quads-5"
+      ],
+      "repetitions": 15,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Push",
+      "mechanics": "Compound",
+      "videoUrl": "gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_4744.mov",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper Legs.jpg",
+      "viewCount": 0,
+      "popularity": "high"
     }
   ]
 }

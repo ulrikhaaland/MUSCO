@@ -79,11 +79,7 @@
         "Severe cardiovascular issues (for heavy compound movements)"
       ],
       "muscles": ["Shoulders", "Abs", "Traps", "Triceps"],
-      "alternatives": [
-        "shoulders-4",
-        "shoulders-5",
-        "shoulders-90"
-      ],
+      "alternatives": ["shoulders-4", "shoulders-5", "shoulders-90"],
       "repetitions": 8,
       "sets": 3,
       "restBetweenSets": 60,
@@ -129,11 +125,7 @@
         "Severe cardiovascular issues (for heavy compound movements)"
       ],
       "muscles": ["Shoulders", "Traps", "Triceps"],
-      "alternatives": [
-        "shoulders-5",
-        "shoulders-2",
-        "shoulders-90"
-      ],
+      "alternatives": ["shoulders-5", "shoulders-2", "shoulders-90"],
       "repetitions": 8,
       "sets": 3,
       "restBetweenSets": 60,
@@ -178,11 +170,7 @@
         "Severe cardiovascular issues (for heavy compound movements)"
       ],
       "muscles": ["Shoulders", "Traps", "Triceps"],
-      "alternatives": [
-        "shoulders-4",
-        "shoulders-2",
-        "shoulders-90"
-      ],
+      "alternatives": ["shoulders-4", "shoulders-2", "shoulders-90"],
       "repetitions": 8,
       "sets": 3,
       "restBetweenSets": 60,
@@ -222,11 +210,7 @@
         "Severe cardiovascular issues (for heavy compound movements)"
       ],
       "muscles": ["Shoulders", "Traps", "Upper Back"],
-      "alternatives": [
-        "shoulders-78",
-        "shoulders-30",
-        "shoulders-94"
-      ],
+      "alternatives": ["shoulders-78", "shoulders-30", "shoulders-94"],
       "repetitions": 12,
       "sets": 3,
       "restBetweenSets": 60,
@@ -236,6 +220,53 @@
       "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Shoulders.jpg",
       "viewCount": 1100000,
       "popularity": "high"
+    },
+    {
+      "id": "shoulders-13",
+      "name": "Cable Reverse Fly",
+      "description": "The cable reverse fly is a shoulder isolation exercise that targets the posterior deltoids, rhomboids, and middle trapezius. Performed using a cable machine with handles set at shoulder height, the movement involves pulling both arms laterally and slightly backward while keeping a slight bend in the elbows. This exercise is effective for developing upper back strength, improving posture, and balancing shoulder musculature—especially for individuals overdeveloped in the anterior chain.",
+      "targetBodyParts": ["Shoulders"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Cable"],
+      "steps": [
+        "Set cable pulleys to shoulder height on both sides of the machine.",
+        "Stand in the center of the cable station and grasp each handle with opposite hands (right hand to left pulley, left hand to right pulley).",
+        "Step back to create tension in the cables, with feet shoulder-width apart and knees slightly bent.",
+        "Extend arms forward at shoulder height with a slight bend in the elbows.",
+        "While maintaining the elbow bend, pull both arms laterally and slightly backward in an arc motion.",
+        "Focus on squeezing your shoulder blades together at the end of the movement.",
+        "Pause briefly in the fully contracted position.",
+        "Slowly return to the starting position with control.",
+        "Repeat for the desired number of repetitions."
+      ],
+      "tips": [
+        "Maintain a slight bend in the elbows throughout the movement.",
+        "Avoid shrugging the shoulders or using momentum to move the weight.",
+        "Focus on squeezing shoulder blades together at the end range of motion.",
+        "Keep the torso still and core braced for stability.",
+        "Maintain a neutral spine position throughout the exercise.",
+        "Adjust the weight to allow for proper form - this is an isolation movement that benefits from lighter weight and proper execution.",
+        "Don't allow your wrists to bend during the movement - keep them in line with your forearms."
+      ],
+      "contraindications": [
+        "Shoulders injury",
+        "Rotator cuff issues",
+        "Acute shoulder pain",
+        "Recent shoulder surgery",
+        "Severe thoracic kyphosis"
+      ],
+      "muscles": ["Shoulders", "Upper Back", "Traps"],
+      "alternatives": ["shoulders-10", "shoulders-30", "shoulders-78"],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Pull (Bilateral)",
+      "mechanics": "Isolation",
+      "videoUrl": "gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_4734.MOV",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Shoulders.jpg",
+      "viewCount": 0,
+      "popularity": "medium"
     },
     {
       "id": "shoulders-16",
@@ -311,11 +342,7 @@
         "Severe cardiovascular issues (for heavy compound movements)"
       ],
       "muscles": ["Shoulders", "Traps", "Upper Back"],
-      "alternatives": [
-        "shoulders-78",
-        "shoulders-10",
-        "shoulders-94"
-      ],
+      "alternatives": ["shoulders-78", "shoulders-10", "shoulders-94"],
       "repetitions": 12,
       "sets": 3,
       "restBetweenSets": 60,
@@ -352,11 +379,7 @@
         "Acute pain during movement"
       ],
       "muscles": ["Shoulders", "Upper Back"],
-      "alternatives": [
-        "shoulders-94",
-        "shoulders-62",
-        "shoulders-30"
-      ],
+      "alternatives": ["shoulders-94", "shoulders-62", "shoulders-30"],
       "repetitions": 12,
       "sets": 3,
       "restBetweenSets": 60,
@@ -436,11 +459,7 @@
         "Shoulder impingement"
       ],
       "muscles": ["Shoulders", "Upper Back"],
-      "alternatives": [
-        "shoulders-32",
-        "shoulders-94",
-        "shoulders-30"
-      ],
+      "alternatives": ["shoulders-32", "shoulders-94", "shoulders-30"],
       "repetitions": 12,
       "sets": 3,
       "restBetweenSets": 60,
@@ -478,11 +497,7 @@
         "Acute pain during movement"
       ],
       "muscles": ["Shoulders", "Abs", "Upper Back"],
-      "alternatives": [
-        "shoulders-10",
-        "shoulders-30",
-        "shoulders-94"
-      ],
+      "alternatives": ["shoulders-10", "shoulders-30", "shoulders-94"],
       "repetitions": 12,
       "sets": 3,
       "restBetweenSets": 60,
@@ -518,11 +533,7 @@
         "Acute pain during movement"
       ],
       "muscles": ["Shoulders", "Upper Back"],
-      "alternatives": [
-        "shoulders-32",
-        "shoulders-62",
-        "shoulders-30"
-      ],
+      "alternatives": ["shoulders-32", "shoulders-62", "shoulders-30"],
       "repetitions": 12,
       "sets": 3,
       "restBetweenSets": 60,
@@ -564,11 +575,7 @@
         "Rotator cuff issues"
       ],
       "muscles": ["Shoulders"],
-      "alternatives": [
-        "shoulders-177",
-        "shoulders-1",
-        "shoulders-16"
-      ],
+      "alternatives": ["shoulders-177", "shoulders-1", "shoulders-16"],
       "repetitions": 12,
       "sets": 3,
       "restBetweenSets": 60,
@@ -613,11 +620,7 @@
         "Acute pain during movement"
       ],
       "muscles": ["Shoulders", "Upper Chest", "Trapezius"],
-      "alternatives": [
-        "shoulders-176",
-        "shoulders-1",
-        "shoulders-16"
-      ],
+      "alternatives": ["shoulders-176", "shoulders-1", "shoulders-16"],
       "repetitions": 10,
       "sets": 3,
       "restBetweenSets": 60,
@@ -660,11 +663,7 @@
         "Active inflammation"
       ],
       "muscles": ["Shoulders", "Upper Back"],
-      "alternatives": [
-        "shoulders-39",
-        "shoulders-179",
-        "shoulders-90"
-      ],
+      "alternatives": ["shoulders-39", "shoulders-179", "shoulders-90"],
       "repetitions": 15,
       "sets": 2,
       "restBetweenSets": 45,
@@ -718,11 +717,7 @@
         "Trapezius",
         "Upper Back"
       ],
-      "alternatives": [
-        "shoulders-90",
-        "shoulders-39",
-        "shoulders-178"
-      ],
+      "alternatives": ["shoulders-90", "shoulders-39", "shoulders-178"],
       "repetitions": 8,
       "sets": 2,
       "restBetweenSets": 30,
@@ -778,17 +773,61 @@
         "Upper Back",
         "Core Stabilizers"
       ],
-      "alternatives": [
-        "shoulders-179",
-        "shoulders-39",
-        "shoulders-178"
-      ],
+      "alternatives": ["shoulders-179", "shoulders-39", "shoulders-178"],
       "repetitions": 6,
       "sets": 2,
       "restBetweenSets": 45,
       "forceType": "Push-Pull",
       "mechanics": "Compound",
       "videoUrl": "gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3745.MOV",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Shoulders.jpg",
+      "viewCount": 0,
+      "popularity": "low"
+    },
+    {
+      "id": "shoulders-180",
+      "name": "Side-Lying Shoulder External Rotation",
+      "description": "This is a rotator cuff isolation exercise performed lying on your side, typically on a bench, with the working arm holding a dumbbell and the elbow bent to 90 degrees. The forearm rotates upward away from the body while the upper arm remains fixed against the torso. This movement targets the infraspinatus and teres minor—key stabilizers of the shoulder—helping to improve joint integrity, posture, and overhead performance.",
+      "targetBodyParts": ["Shoulders"],
+      "exerciseType": ["strength", "rehabilitation", "prehab"],
+      "difficulty": "beginner",
+      "equipment": ["Dumbbell"],
+      "steps": [
+        "Lie on your side on a flat bench or mat, with your knees bent for stability.",
+        "Rest your head on your lower arm or a small pillow for comfort.",
+        "Hold a light dumbbell in your upper hand, with your elbow bent at 90 degrees and tucked against your side.",
+        "Start with your forearm across your abdomen (internally rotated position).",
+        "Keeping your elbow pinned to your side, rotate your forearm upward away from your body.",
+        "Rotate as far as comfortable without moving your upper arm away from your torso.",
+        "Pause briefly at the top of the movement.",
+        "Slowly lower back to the starting position with control.",
+        "Complete all reps on one side before switching to the other."
+      ],
+      "tips": [
+        "Keep elbow pinned to your side or use a rolled towel between arm and ribs for proper positioning.",
+        "Rotate only through the shoulder joint—avoid any torso movement.",
+        "Use a light weight and move slowly through the full range of motion.",
+        "Don't let the wrist lead the motion—keep it neutral throughout.",
+        "Focus on muscle activation rather than the amount of weight used.",
+        "If you feel pain rather than tension in the targeted muscles, reduce the range of motion or weight.",
+        "Maintain proper breathing—exhale during the upward rotation, inhale during the return.",
+        "For greater isolation, you can perform this exercise with your head on the bench rather than using your arm as support."
+      ],
+      "contraindications": [
+        "Acute shoulder injury",
+        "Recent shoulder surgery",
+        "Severe shoulder impingement",
+        "Acute rotator cuff tears",
+        "Joint pain during movement"
+      ],
+      "muscles": ["Shoulders", "Rotator Cuff"],
+      "alternatives": ["shoulders-94", "shoulders-32", "shoulders-62"],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Pull (Unilateral)",
+      "mechanics": "Isolation",
+      "videoUrl": "gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_4733.MOV",
       "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Shoulders.jpg",
       "viewCount": 0,
       "popularity": "low"

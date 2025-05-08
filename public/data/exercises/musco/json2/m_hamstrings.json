@@ -65,10 +65,7 @@
         "Traps",
         "Upper Back"
       ],
-      "alternatives": [
-        "hamstrings-5",
-        "hamstrings-34"
-      ],
+      "alternatives": ["hamstrings-5", "hamstrings-34"],
       "repetitions": 8,
       "sets": 3,
       "restBetweenSets": 60,
@@ -123,10 +120,7 @@
         "Traps",
         "Upper Back"
       ],
-      "alternatives": [
-        "hamstrings-34",
-        "hamstrings-2"
-      ],
+      "alternatives": ["hamstrings-34", "hamstrings-2"],
       "repetitions": 8,
       "sets": 3,
       "restBetweenSets": 60,
@@ -136,6 +130,51 @@
       "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Hamstrings.jpg",
       "viewCount": 1800000,
       "popularity": "high"
+    },
+    {
+      "id": "hamstrings-20",
+      "name": "Nordic Hamstring Curl",
+      "description": "The Nordic hamstring curl is a highly effective eccentric hamstring-strengthening exercise performed by slowly lowering the torso forward from a kneeling position while keeping the hips extended and the spine neutral. The ankles are anchored—typically under a bar, machine, or fixed surface (here, a stall bar)—while the hamstrings resist the forward fall in a lengthening contraction. This controlled descent targets the hamstrings' eccentric strength, which is strongly correlated with reduced risk of hamstring strains and improved sprint performance.",
+      "targetBodyParts": ["Hamstrings"],
+      "exerciseType": ["strength"],
+      "difficulty": "advanced",
+      "equipment": ["Bodyweight"],
+      "steps": [
+        "Kneel on a soft surface with your ankles secured under a fixed bar or have a partner hold your ankles firmly.",
+        "Position your knees hip-width apart and maintain an upright torso with hips fully extended.",
+        "Cross your arms over your chest or place them at your sides.",
+        "Keeping your hips extended and your back straight, begin to lower your body forward as slowly as possible.",
+        "Use your hamstrings to resist gravity and control the descent for as long as possible.",
+        "When you can no longer control the descent, catch yourself with your hands on the floor.",
+        "Push yourself back to the starting position using your arms, or pull yourself back using your hamstrings if strong enough.",
+        "Repeat for the prescribed number of repetitions."
+      ],
+      "tips": [
+        "Keep hips extended; avoid bending at the waist.",
+        "Descend as slowly and controlled as possible.",
+        "Catch yourself with your hands only as a last resort.",
+        "Progress by increasing range before adding assistance or resistance.",
+        "Focus on maintaining a neutral spine throughout the entire movement.",
+        "Begin with a smaller range of motion if you're new to the exercise.",
+        "If you cannot return to the starting position using your hamstrings, use your arms to assist."
+      ],
+      "contraindications": [
+        "Hamstrings injury",
+        "Knee injuries",
+        "Acute pain during movement",
+        "Hypertension (due to potential breath holding during the exercise)"
+      ],
+      "muscles": ["Hamstrings", "Glutes", "Abs", "Calves"],
+      "alternatives": ["hamstrings-20", "hamstrings-5", "hamstrings-34"],
+      "repetitions": 6,
+      "sets": 3,
+      "restBetweenSets": 90,
+      "forceType": "Pull (Eccentric)",
+      "mechanics": "Isolation",
+      "videoUrl": "gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_4730.mov",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Hamstrings.jpg",
+      "viewCount": 0,
+      "popularity": "medium"
     },
     {
       "id": "hamstrings-34",
@@ -192,10 +231,7 @@
         "Traps",
         "Upper Back"
       ],
-      "alternatives": [
-        "hamstrings-5",
-        "hamstrings-2"
-      ],
+      "alternatives": ["hamstrings-5", "hamstrings-2"],
       "repetitions": 8,
       "sets": 3,
       "restBetweenSets": 60,
@@ -205,6 +241,52 @@
       "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Hamstrings.jpg",
       "viewCount": 8600,
       "popularity": "low"
+    },
+    {
+      "id": "hamstrings-48",
+      "name": "Single-Leg Romanian Deadlift",
+      "description": "The single-leg Romanian deadlift (RDL) is a unilateral posterior chain exercise targeting the hamstrings, glutes, and stabilizing muscles of the foot, ankle, and core. Performed by hinging at the hips while one leg extends backward and a weight lowers toward the floor, the movement emphasizes balance, control, and hamstring loading through a lengthened position. This variation is particularly effective for developing strength asymmetry correction, injury resilience, and hip-hinge mechanics.",
+      "targetBodyParts": ["Hamstrings"],
+      "exerciseType": ["strength"],
+      "difficulty": "intermediate",
+      "equipment": ["Kettlebell", "Dumbbell", "Weight Plate", "Barbell", "Bodyweight"],
+      "steps": [
+        "Stand upright holding a weight in your right hand (or opposite the working leg). For bodyweight, extend arms for balance.",
+        "Shift your weight to your left foot, keeping a slight bend in the knee.",
+        "Begin to hinge at the hips while extending your right leg straight behind you.",
+        "Lower the weight toward the floor, keeping it close to your standing leg.",
+        "Lower until you feel a stretch in your hamstring, maintaining a flat back.",
+        "Drive through the heel of your standing leg and squeeze your glutes to return to the starting position.",
+        "Complete all reps on one side before switching to the other leg."
+      ],
+      "tips": [
+        "Keep hips level and square to the ground throughout the movement.",
+        "Maintain a straight line from head to heel on the extended leg.",
+        "Let the weight travel close to the planted leg for proper balance.",
+        "Move slowly and under control to maximize tension and stability.",
+        "Focus on hinging at the hips rather than bending at the waist.",
+        "Keep your core engaged to maintain proper spinal alignment.",
+        "If balance is challenging, place fingertips of free hand against a wall for support.",
+        "You can perform this with dumbbells, kettlebells, weight plates, barbells, or bodyweight."
+      ],
+      "contraindications": [
+        "Hamstrings injury",
+        "Balance disorders",
+        "Acute lower back pain",
+        "Hip injury",
+        "Ankle instability"
+      ],
+      "muscles": ["Hamstrings", "Glutes", "Lower Back", "Core", "Calves"],
+      "alternatives": ["hamstrings-5", "hamstrings-34", "hamstrings-20"],
+      "repetitions": 10,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Hinge (Unilateral)",
+      "mechanics": "Compound",
+      "videoUrl": "gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_4731.mov",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Hamstrings.jpg",
+      "viewCount": 0,
+      "popularity": "medium"
     }
   ]
 }
