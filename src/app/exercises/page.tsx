@@ -680,6 +680,11 @@ export default function AvailableExercisesPage() {
       <div className="max-w-4xl mx-auto px-4 py-8 space-y-8">
         <h1 className="text-3xl font-bold text-center text-indigo-200 mb-8">Available Exercises</h1>
         
+        {/* Total exercise count */}
+        <p className="text-center font-serif italic text-gray-400 mb-6">
+          {Object.values(exercisesByBodyPart).reduce((total, exercises) => total + exercises.length, 0)} total exercises
+        </p>
+        
         {/* Exercise source toggle */}
         <div className="flex justify-center mb-6">
           <div className="bg-gray-800 p-1 rounded-lg inline-flex">
