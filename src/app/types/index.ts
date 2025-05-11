@@ -64,7 +64,7 @@ export interface ChatPayload {
 }
 
 export interface Question {
-  title: string;
+  title?: string;
   question: string;
   generate?: boolean;
   asked?: boolean;

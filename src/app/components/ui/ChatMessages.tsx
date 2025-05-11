@@ -863,7 +863,7 @@ export function ChatMessages({
               <div className="space-y-2">
                 {followUpQuestions.map((question) => (
                   <button
-                    key={question.title}
+                    key={question.title || question.question}
                     onClick={() => onQuestionClick?.(question)}
                     className={`follow-up-question-btn w-full text-left px-2 rounded-lg transition-colors ${
                       question.generate
@@ -872,16 +872,18 @@ export function ChatMessages({
                     } ${isMobile ? 'py-1' : 'py-2'}`}
                   >
                     <div className="flex items-center justify-between">
-                      <div className="font-medium">{question.title}</div>
+                      <div className="font-medium">{question.title || question.question}</div>
                       {question.generate && (
                         <div className="text-xs px-2 py-0.5 bg-indigo-600 rounded-full ml-2">
                           Generate program
                         </div>
                       )}
                     </div>
-                    <div className="text-sm text-gray-400">
-                      {question.question}
-                    </div>
+                    {question.title && (
+                      <div className="text-sm text-gray-400">
+                        {question.question}
+                      </div>
+                    )}
                   </button>
                 ))}
               </div>
