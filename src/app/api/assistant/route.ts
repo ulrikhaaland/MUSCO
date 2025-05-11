@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import OpenAI from 'openai';
 import {
   getOrCreateAssistant,
   createThread,
@@ -7,9 +8,17 @@ import {
   getMessages,
   generateExerciseProgramWithModel,
   generateFollowUpExerciseProgram,
+  streamChatCompletion,
+  getChatCompletion,
 } from '@/app/api/assistant/openai-server';
 import { OpenAIMessage } from '@/app/types';
 import { ProgramStatus } from '@/app/types/program';
+import { chatSystemPrompt } from '@/app/api/prompts/chatPrompt';
+
+// Initialize OpenAI client
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
 
 export async function POST(request: Request) {
   const handlerStartTime = performance.now();
@@ -42,10 +51,13 @@ export async function POST(request: Request) {
           );
         }
 
-        // Hardcoded Assistant ID for this path
-        const assistantId = 'asst_e1prLG3Ykh2ZCVspoAFMZPZC';
-
-        // Add the message to the thread (no need to get assistant object here)
+        // Get message history first (for conversation context)
+        const previousMessages = await getMessages(threadId);
+        
+        // Set up system message with our chat prompt
+        const systemMessage = chatSystemPrompt;
+        
+        // Store the new message in the thread for future reference
         const preStreamStartTime = performance.now();
         console.log(
           `[API Route] Starting pre-stream OpenAI call (addMessage)...`
@@ -74,34 +86,41 @@ export async function POST(request: Request) {
               try {
                 const callOpenAIStreamStartTime = performance.now();
                 console.log(
-                  `[API Route] Calling streamRunResponse... Time since stream start: ${callOpenAIStreamStartTime - streamStartTime} ms`
+                  `[API Route] Calling streamChatCompletion... Time since stream start: ${callOpenAIStreamStartTime - streamStartTime} ms`
                 );
 
-                // Use the hardcoded assistantId directly
-                await streamRunResponse(threadId, assistantId, (content) => {
-                  const openaiStreamChunkReceivedTime = performance.now();
-                  if (!firstChunkSent) {
-                    console.log(
-                      `[API Route] First chunk RECEIVED from OpenAI stream. Time since calling streamRunResponse: ${openaiStreamChunkReceivedTime - callOpenAIStreamStartTime} ms`
-                    );
-                  }
+                // Stream using chat completions instead of assistant API
+                await streamChatCompletion({
+                  threadId,
+                  messages: previousMessages,
+                  systemMessage,
+                  userMessage: payload,
+                  modelName: 'gpt-4.1-mini',
+                  onContent: (content) => {
+                    const openaiStreamChunkReceivedTime = performance.now();
+                    if (!firstChunkSent) {
+                      console.log(
+                        `[API Route] First chunk RECEIVED from OpenAI stream. Time since calling streamChatCompletion: ${openaiStreamChunkReceivedTime - callOpenAIStreamStartTime} ms`
+                      );
+                    }
 
-                  const chunk = encoder.encode(
-                    `data: ${JSON.stringify({ content })}\n\n`
-                  );
-                  controller.enqueue(chunk);
-                  if (!firstChunkSent) {
-                    const firstChunkSentTime = performance.now();
-                    console.log(
-                      `[API Route] First chunk ENQUEUED to client response. Time since receiving from OpenAI: ${firstChunkSentTime - openaiStreamChunkReceivedTime} ms`
+                    const chunk = encoder.encode(
+                      `data: ${JSON.stringify({ content })}\n\n`
                     );
-                    firstChunkSent = true;
-                  }
+                    controller.enqueue(chunk);
+                    if (!firstChunkSent) {
+                      const firstChunkSentTime = performance.now();
+                      console.log(
+                        `[API Route] First chunk ENQUEUED to client response. Time since receiving from OpenAI: ${firstChunkSentTime - openaiStreamChunkReceivedTime} ms`
+                      );
+                      firstChunkSent = true;
+                    }
+                  },
                 });
 
                 const streamFinishedTime = performance.now();
                 console.log(
-                  `[API Route] streamRunResponse finished. Total stream duration: ${streamFinishedTime - callOpenAIStreamStartTime} ms`
+                  `[API Route] streamChatCompletion finished. Total stream duration: ${streamFinishedTime - callOpenAIStreamStartTime} ms`
                 );
 
                 controller.enqueue(encoder.encode('data: [DONE]\n\n'));
@@ -126,8 +145,33 @@ export async function POST(request: Request) {
           });
         }
 
-        const messages = await getMessages(threadId);
-        return NextResponse.json({ messages: messages as OpenAIMessage[] });
+        // For non-streaming responses, use chat completions synchronously
+        try {
+          // Get completion from chat model
+          const assistantResponse = await getChatCompletion({
+            threadId,
+            messages: previousMessages,
+            systemMessage,
+            userMessage: payload,
+            modelName: 'gpt-4.1-mini',
+          });
+          
+          // Add assistant response to thread for history tracking
+          await openai.beta.threads.messages.create(threadId, {
+            role: 'assistant',
+            content: assistantResponse || '',
+          });
+          
+          // Return updated messages
+          const messages = await getMessages(threadId);
+          return NextResponse.json({ messages: messages as OpenAIMessage[] });
+        } catch (error) {
+          console.error('Error processing non-streaming message:', error);
+          return NextResponse.json(
+            { error: 'Failed to process message' },
+            { status: 500 }
+          );
+        }
       }
 
       case 'get_messages': {

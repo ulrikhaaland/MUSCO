@@ -11,6 +11,106 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
+// Stream chat completion with OpenAI
+export async function streamChatCompletion({
+  threadId,
+  messages,
+  systemMessage,
+  userMessage,
+  modelName = 'gpt-4.1-mini',
+  onContent,
+}: {
+  threadId: string;
+  messages: any[];
+  systemMessage: string;
+  userMessage: any;
+  modelName?: string;
+  onContent: (content: string) => void;
+}) {
+  try {
+    console.log(`[streamChatCompletion] Starting with model: ${modelName}`);
+    
+    // Format previous messages for OpenAI chat completion
+    const formattedMessages = formatMessagesForChatCompletion(messages);
+    
+    // Add the system message at the beginning
+    formattedMessages.unshift({
+      role: 'system',
+      content: systemMessage,
+    });
+    
+    // Add the new user message
+    formattedMessages.push({
+      role: 'user',
+      content: typeof userMessage === 'string' ? userMessage : JSON.stringify(userMessage),
+    });
+    
+    // Call OpenAI streaming chat completion
+    const stream = await openai.chat.completions.create({
+      model: modelName,
+      messages: formattedMessages,
+      stream: true,
+    });
+    
+    let streamEnded = false;
+    
+    // Process the streaming response
+    for await (const chunk of stream) {
+      try {
+        const content = chunk.choices[0]?.delta?.content || '';
+        if (content) {
+          onContent(content);
+        }
+      } catch (error) {
+        if (!streamEnded) {
+          console.error('[streamChatCompletion] Error processing chunk:', error);
+          streamEnded = true;
+        }
+      }
+    }
+    
+    console.log('[streamChatCompletion] Stream completed successfully');
+    
+  } catch (error) {
+    console.error('[streamChatCompletion] Error in stream:', error);
+    throw error;
+  }
+}
+
+// Helper function to format messages for chat completion
+function formatMessagesForChatCompletion(messages: any[]) {
+  return messages.map(msg => {
+    // Map OpenAI assistant API message format to chat completion format
+    const role = msg.role === 'user' ? 'user' : 'assistant';
+    
+    // Handle various content formats
+    let content = '';
+    if (typeof msg.content === 'string') {
+      content = msg.content;
+    } else if (Array.isArray(msg.content)) {
+      // Handle content array (text, image, etc.)
+      content = msg.content
+        .filter((item: any) => item.type === 'text')
+        .map((item: any) => item.text?.value || '')
+        .join('\n');
+    } else if (msg.content?.text) {
+      content = msg.content.text;
+    } else if (msg.content) {
+      // Try to stringify any other content object
+      try {
+        content = JSON.stringify(msg.content);
+      } catch (e) {
+        content = 'Content could not be processed';
+      }
+    }
+    
+    return { 
+      role: role as 'user' | 'assistant' | 'system', 
+      content 
+    };
+  });
+}
+
 // Create or load the assistant
 export async function getOrCreateAssistant(assistantId: string) {
   try {
@@ -1039,6 +1139,51 @@ export async function generateExerciseProgramWithModel(context: {
       }
     }
     throw new Error('Failed to generate exercise program with model');
+  }
+}
+
+// Non-streaming chat completion with OpenAI
+export async function getChatCompletion({
+  threadId,
+  messages,
+  systemMessage,
+  userMessage,
+  modelName = 'gpt-4.1-mini',
+}: {
+  threadId: string;
+  messages: any[];
+  systemMessage: string;
+  userMessage: any;
+  modelName?: string;
+}) {
+  try {
+    console.log(`[getChatCompletion] Starting with model: ${modelName}`);
+    
+    // Format previous messages for OpenAI chat completion
+    const formattedMessages = formatMessagesForChatCompletion(messages);
+    
+    // Add the system message at the beginning
+    formattedMessages.unshift({
+      role: 'system' as const,
+      content: systemMessage,
+    });
+    
+    // Add the new user message
+    formattedMessages.push({
+      role: 'user' as const,
+      content: typeof userMessage === 'string' ? userMessage : JSON.stringify(userMessage),
+    });
+    
+    // Call OpenAI chat completion
+    const response = await openai.chat.completions.create({
+      model: modelName,
+      messages: formattedMessages,
+    });
+    
+    return response.choices[0].message.content;
+  } catch (error) {
+    console.error('[getChatCompletion] Error:', error);
+    throw error;
   }
 }
 
