@@ -379,6 +379,19 @@ export default function HumanViewer({
           recoveryGoals: [],
           timeFrame: '1 week',
           followUpQuestions: [],
+          informationalInsights: '',
+          onset: '',
+          painScale: 0,
+          mechanismOfInjury: '',
+          aggravatingFactors: '',
+          relievingFactors: '',
+          priorInjury: '',
+          painPattern: '',
+          painLocation: '',
+          painCharacter: '',
+          assessmentComplete: false,
+          redFlagsPresent: false,
+          targetAreas: [],
         };
         setDiagnosis(newDiagnosis);
       }
@@ -400,6 +413,19 @@ export default function HumanViewer({
       recoveryGoals: [],
       timeFrame: '1 week',
       followUpQuestions: [],
+      informationalInsights: '',
+      onset: '',
+      painScale: 0,
+      mechanismOfInjury: '',
+      aggravatingFactors: '',
+      relievingFactors: '',
+      priorInjury: '',
+      painPattern: '',
+      painLocation: '',
+      painCharacter: '',
+      assessmentComplete: false,
+      redFlagsPresent: false,
+      targetAreas: [],
     };
     setDiagnosis(newDiagnosis);
     setShowQuestionnaire(true);

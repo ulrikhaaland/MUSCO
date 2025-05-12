@@ -1,0 +1,64 @@
+{
+  "bodyPart": "Upper Back",
+  "exercises": [
+    {
+      "id": "lats-1",
+      "name": "Nedtrekk",
+      "description": "Nedtrekk er en øvelse som bygger ryggmuskulaturen. Øvelsen retter seg primært mot lats, men du vil også aktivere biceps og øvre rygg. Ryggen krever variasjon, så eksperimenter med ulike vinkler og grep for maksimal muskelvekst. Nedtrekk kan utføres i rygg-, overkropps-, trekk- og helkroppsøkter.",
+      "steps": [
+        "Fest et bredt håndtak til nedtrekksmaskinen og sett deg i apparatet.",
+        "Grip håndtaket med overhåndsgrep og start bevegelsen ved å senke skulderbladet før du bøyer albuen og strekker skulderen.",
+        "Trekk håndtaket mot kroppen til albuene er på linje med overkroppen, og senk deretter håndtaket kontrollert tilbake til startposisjon.",
+        "Gjenta til ønsket antall repetisjoner."
+      ],
+      "tips": [
+        "Hold lett spenning i magemusklene når du trekker stangen mot kroppen for å hindre overdreven svai i ryggen.",
+        "La ikke momentum styre bevegelsen; kontroller stangen gjennom hele repetisjonen.",
+        "Hvis du kjenner at biceps tar over og ryggen er passiv, prøv et falskt grep uten tommel rundt stangen.",
+        "La ikke hodet skyte frem under draget.",
+        "Sørg for at skulderbladet glir på brystkassen; ikke lås det og beveg bare i skulderleddet.",
+        "La skulderen rotere lett innover og løftes svakt i topp­posisjon, og motsatt bevegelse før du trekker ned igjen."
+      ]
+    },
+    {
+      "id": "lats-6",
+      "name": "Pullup",
+      "description": "Pullup er en klassisk øvelse som trener øvre rygg, spesielt latissimus dorsi. Vertikale trekk som pullup er grunnleggende bevegelser som bør inngå i treningen. Når du har funnet en variant som passer deg, bør du mestre den for både styrke og estetikk. Pullup kan integreres i rygg-, trekk-, overkropps- eller helkroppsøkt.",
+      "steps": [
+        "Grip stangen med pronert grep litt bredere enn skulderbredde.",
+        "Ta et dypt pust, spenn setet og kjernen, senk skulderbladene og dra albuene ned mot gulvet mens du aktiverer lats.",
+        "Trekk haken mot stangen til lats er fullt kontrahert, senk deg deretter kontrollert tilbake til start og gjenta."
+      ],
+      "tips": [
+        "Bruk falskt grep uten tommel for å redusere bicepsaktivitet.",
+        "Hold hodet nøytralt; hyper­ekstensjon i nakken kan gi kompensasjon i ryggen.",
+        "Hvis stangen er høy nok, hold bena strake foran kroppen i «hollow body»-posisjon.",
+        "Unngå svai i korsryggen ved å spenne setet og kjernen.",
+        "Pullup er ferdig når lats er fullt fleksert; unngå å fortsette og kompensere med brystet.",
+        "Segmentlengde avgjør om du faktisk får haken over stangen; det er ikke absolutt for alle.",
+        "Senk til nesten full albue­ekstensjon, men unngå full lås for å skåne leddene.",
+        "Klarer du ingen kroppsvekt-pullups, start med kontrollerte negative eller heng i øvre posisjon.",
+        "Unngå reimer og kipping; de er verken nødvendige eller anbefalte."
+      ]
+    },
+    {
+      "id": "lats-10",
+      "name": "Tau Strak Arm Nedtrekk",
+      "description": "Tau strak arm nedtrekk er en variant av strak arm nedtrekk som bygger ryggmusklene. Øvelsen etterligner en pullover-bevegelse og treffer lats effektivt. Taugrepet gir mer nøytral håndposisjon og kan redusere leddbelastning sammenlignet med andre varianter.",
+      "steps": [
+        "Fest et tauhåndtak til kabelstativet og still deg oppreist foran apparatet.",
+        "Grip tauet med nøytralt grep og len deg lett frem ved å hinge i hoften.",
+        "Hold en liten bøy i albuen og start bevegelsen ved å senke skulderbladet og strekke skulderen bakover.",
+        "Trekk tauet mot lårene til lats er fullt kontrahert, og senk deretter vekten kontrollert tilbake.",
+        "Gjenta til ønsket antall repetisjoner."
+      ],
+      "tips": [
+        "Hold lett spenning i magemusklene for å unngå overdreven svai i ryggen.",
+        "Opplever du at biceps dominerer, prøv falskt grep uten tommel rundt tauet.",
+        "La ikke hodet skyte frem under draget.",
+        "Sørg for at skulderbladet beveger seg på brystkassen; ikke lås det ned.",
+        "Hvis du ikke kjenner latsene, «skru» skuldrene inn i leddet ved å peke albuene bak kroppen eller tenk at du «klemmer appelsiner i armhulene»."
+      ]
+    }
+  ]
+}

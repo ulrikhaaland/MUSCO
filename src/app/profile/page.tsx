@@ -745,17 +745,17 @@ export default function ProfilePage() {
       // Show success message
       setMessage({
         type: 'success',
-        text: 'Profile updated successfully',
+        text: t('profile.profileUpdated'),
       });
     } catch (error) {
       console.error('Error updating profile:', error);
       setIsLoading(false);
       setError(
-        error instanceof Error ? error.message : 'Error updating profile'
+        error instanceof Error ? error.message : t('profile.updateError')
       );
       setMessage({
         type: 'error',
-        text: 'Error updating profile',
+        text: t('profile.updateError'),
       });
     }
   };
@@ -1257,7 +1257,7 @@ export default function ProfilePage() {
           {/* Empty spacer to balance the title */}
           <div className="w-10"></div>
           <div className="flex flex-col items-center">
-            <h1 className="text-app-title text-center">Profile</h1>
+            <h1 className="text-app-title text-center">{t('profile.title')}</h1>
           </div>
           {/* Empty spacer to balance the title */}
           <div className="w-10"></div>
@@ -1294,7 +1294,7 @@ export default function ProfilePage() {
                   <button
                     onClick={() => setIsEditing(true)}
                     className="absolute top-0 right-0 bg-indigo-600 text-white p-2 rounded-full hover:bg-indigo-500 transition-colors"
-                    aria-label="Edit profile"
+                    aria-label={t('profile.actions.editProfile')}
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -1336,7 +1336,7 @@ export default function ProfilePage() {
                           />
                         ) : (
                           <div className="w-full h-full bg-gray-700 flex items-center justify-center text-white">
-                            <span>Add Photo</span>
+                            <span>{t('profile.addPhoto')}</span>
                           </div>
                         )}
                         <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center">
@@ -1567,7 +1567,7 @@ export default function ProfilePage() {
                           </svg>
                         </div>
                         <h3 className="text-white font-semibold flex items-center">
-                          Health Basics
+                          {t('profile.sections.healthBasics')}
                           {userHeight && weight && gender && (
                             <svg
                               className="ml-2 h-4 w-4 text-green-400"
@@ -1591,6 +1591,11 @@ export default function ProfilePage() {
                         )}
                       </div>
                     </div>
+                    {healthBasicsExpanded && (
+                      <p className="text-sm text-gray-400 mt-1 mb-3">
+                        {t('profile.info.healthBasics')}
+                      </p>
+                    )}
                   </div>
 
                   {/* Health Basics content */}
@@ -2550,7 +2555,7 @@ export default function ProfilePage() {
                           </svg>
                         </div>
                         <h3 className="text-white font-semibold flex items-center">
-                          Medical Background
+                          {t('profile.sections.medical')}
                           {medicalConditions.length > 0 &&
                             medications.length > 0 &&
                             injuries.length > 0 &&
@@ -2585,7 +2590,7 @@ export default function ProfilePage() {
                       {/* Medical Conditions */}
                       <div>
                         <label className="block text-sm font-medium text-gray-400 mb-1 text-left">
-                          Medical Conditions
+                          {t('profile.fields.medicalConditions')}
                         </label>
                         {isEditing ? (
                           <textarea
@@ -2608,7 +2613,7 @@ export default function ProfilePage() {
                           >
                             {medicalConditions.length > 0
                               ? medicalConditions.join(', ')
-                              : 'None'}
+                              : t('profile.noneSet')}
                           </p>
                         )}
                       </div>
@@ -2616,7 +2621,7 @@ export default function ProfilePage() {
                       {/* Medications */}
                       <div>
                         <label className="block text-sm font-medium text-gray-400 mb-1 text-left">
-                          Medications
+                          {t('profile.fields.medications')}
                         </label>
                         {isEditing ? (
                           <textarea
@@ -2639,7 +2644,7 @@ export default function ProfilePage() {
                           >
                             {medications.length > 0
                               ? medications.join(', ')
-                              : 'None'}
+                              : t('profile.noneSet')}
                           </p>
                         )}
                       </div>
@@ -2647,7 +2652,7 @@ export default function ProfilePage() {
                       {/* Previous Injuries */}
                       <div>
                         <label className="block text-sm font-medium text-gray-400 mb-1 text-left">
-                          Injuries
+                          {t('profile.fields.injuries')}
                         </label>
                         {isEditing ? (
                           <textarea
@@ -2668,7 +2673,7 @@ export default function ProfilePage() {
                             className="text-white cursor-pointer hover:text-indigo-400 transition-colors text-left"
                             onClick={() => handleEdit('injuries')}
                           >
-                            {injuries.length > 0 ? injuries.join(', ') : 'None'}
+                            {injuries.length > 0 ? injuries.join(', ') : t('profile.noneSet')}
                           </p>
                         )}
                       </div>
@@ -2676,7 +2681,7 @@ export default function ProfilePage() {
                       {/* Painful Areas */}
                       <div>
                         <label className="block text-sm font-medium text-gray-400 mb-1 text-left">
-                          Painful Areas
+                          {t('profile.fields.painfulAreas')}
                         </label>
                         {editingField === 'painfulAreas' ? (
                           <div className="space-y-4">
@@ -2690,13 +2695,13 @@ export default function ProfilePage() {
                                     : 'bg-gray-800 ring-gray-700 text-gray-400 hover:bg-gray-700'
                                 } ring-1 transition-all duration-200 text-left`}
                               >
-                                No pain areas
+                                {t('profile.fields.noPainAreas')}
                               </button>
                             </div>
 
                             {painfulAreas.length > 0 && (
                               <p className="text-gray-400 font-medium text-base mb-4">
-                                Select all that apply
+                                {t('questionnaire.selectAll')}
                               </p>
                             )}
 
@@ -2733,7 +2738,7 @@ export default function ProfilePage() {
                                 onClick={() => setEditingField(null)}
                                 className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition-colors text-sm"
                               >
-                                Done
+                                {t('common.done')}
                               </button>
                             </div>
                           </div>
@@ -2744,7 +2749,7 @@ export default function ProfilePage() {
                           >
                             {painfulAreas.length > 0
                               ? painfulAreas.join(', ')
-                              : 'No pain areas'}
+                              : t('profile.fields.noPainAreas')}
                           </p>
                         )}
                       </div>
@@ -2752,7 +2757,7 @@ export default function ProfilePage() {
                       {/* Family Medical History */}
                       <div>
                         <label className="block text-sm font-medium text-gray-400 mb-1 text-left">
-                          Family Medical History
+                          {t('profile.fields.familyHistory')}
                         </label>
                         {isEditing ? (
                           <textarea
@@ -2775,7 +2780,7 @@ export default function ProfilePage() {
                           >
                             {familyHistory.length > 0
                               ? familyHistory.join(', ')
-                              : 'Not set'}
+                              : t('profile.notSet')}
                           </p>
                         )}
                       </div>
@@ -2790,13 +2795,13 @@ export default function ProfilePage() {
             {/* Only show these sections when not in edit mode */}
             {!isEditing && (
               <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-xl ring-1 ring-gray-700/50 p-6">
-                <h3 className="text-lg font-medium text-white mb-4">Account</h3>
+                <h3 className="text-lg font-medium text-white mb-4">{t('profile.account')}</h3>
                 <div className="space-y-4">
                   <button
                     onClick={() => router.push('/privacy')}
                     className="px-4 py-3 bg-gray-700 text-white rounded-lg hover:bg-gray-600 w-full flex items-center justify-between"
                   >
-                    <span>Privacy & Data Controls</span>
+                    <span>{t('profile.privacyControls')}</span>
                     <svg
                       className="w-5 h-5"
                       fill="none"
@@ -2816,7 +2821,7 @@ export default function ProfilePage() {
                     onClick={handleLogout}
                     className="px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-500 w-full"
                   >
-                    Sign Out
+                    {t('profile.signOut')}
                   </button>
                 </div>
               </div>
@@ -2842,14 +2847,14 @@ export default function ProfilePage() {
                     : ''
                 }`}
               >
-                {isLoading ? 'Saving...' : 'Save Changes'}
+                {isLoading ? t('profile.saving') : t('profile.saveChanges')}
               </button>
               <button
                 onClick={handleCancelEdit}
                 disabled={isLoading}
                 className="px-4 py-3 bg-gray-700 text-white rounded-lg hover:bg-gray-600 flex-1 font-medium shadow-lg"
               >
-                Cancel
+                {t('profile.cancel')}
               </button>
             </div>
           </div>

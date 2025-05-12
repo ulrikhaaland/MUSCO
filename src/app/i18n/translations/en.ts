@@ -753,6 +753,18 @@ const translations = {
   'profile.fields.addCustomDiet': 'Add custom diet:',
   'profile.fields.enterCustomDiet': 'Enter custom diet',
   'profile.fields.selectedDiets': 'Selected diets:',
+
+  // Profile Info Questions
+  'profile.info.healthBasics': 'Please provide basic health information to help us personalize your experience',
+  'profile.info.fitnessProfile': 'Tell us about your fitness level and exercise habits',
+  'profile.info.goalsPreferences': 'What are your health and fitness goals?',
+  'profile.info.medicalBackground': 'Optional information to help tailor safer recommendations',
+  'profile.info.phoneDescription': 'Your phone number will not be shared and is used only for important account notifications',
+  'profile.info.dateFormat': 'MM/DD/YYYY',
+  'profile.info.photoUpload': 'Click to upload a profile photo',
+  'profile.info.phoneInvalid': 'Please enter a valid phone number',
+  'profile.info.phoneRequired': 'Phone number is required',
+  'profile.info.uploadProgress': 'Uploading profile image',
 };
 
 export default translations; 

@@ -752,6 +752,18 @@ const translations = {
   'profile.fields.addCustomDiet': 'Legg til egendefinert kosthold:',
   'profile.fields.enterCustomDiet': 'Skriv inn egendefinert kosthold',
   'profile.fields.selectedDiets': 'Valgte kosthold:',
+
+  // Profile Info Questions
+  'profile.info.healthBasics': 'Vennligst oppgi grunnleggende helseinformasjon for å hjelpe oss med å tilpasse opplevelsen din',
+  'profile.info.fitnessProfile': 'Fortell oss om ditt treningsnivå og treningsvaner',
+  'profile.info.goalsPreferences': 'Hva er dine helse- og treningsmål?',
+  'profile.info.medicalBackground': 'Valgfri informasjon for å hjelpe oss med å gi tryggere anbefalinger',
+  'profile.info.phoneDescription': 'Telefonnummeret ditt vil ikke bli delt og brukes kun for viktige kontovarsler',
+  'profile.info.dateFormat': 'DD.MM.ÅÅÅÅ',
+  'profile.info.photoUpload': 'Klikk for å laste opp et profilbilde',
+  'profile.info.phoneInvalid': 'Vennligst skriv inn et gyldig telefonnummer',
+  'profile.info.phoneRequired': 'Telefonnummer er påkrevd',
+  'profile.info.uploadProgress': 'Laster opp profilbilde',
 };
 
 export default translations; 
