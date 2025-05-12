@@ -36,6 +36,7 @@ const translations = {
   'program.equipment.garage_gym': 'Garage gym',
   'program.equipment.at_home': 'At home',
   'program.equipment.bodyweight_only': 'Bodyweight only',
+  'program.equipment.custom': 'Custom',
   
   // Program - Equipment Descriptions
   'program.equipmentDesc.large_gym': 'Complete commercial gym with extensive equipment including cardio machines, weight machines, free weights, and specialized training areas',
@@ -44,6 +45,7 @@ const translations = {
   'program.equipmentDesc.garage_gym': 'Barbells, squat rack, dumbbells, and more',
   'program.equipmentDesc.at_home': 'Limited equipment such as dumbbells, resistance bands, pull-up bar, etc.',
   'program.equipmentDesc.bodyweight_only': 'Train anywhere without fitness equipment',
+  'program.equipmentDesc.custom': 'Customize your training environment by selecting specific equipment you have access to',
   
   // Program - Workout Durations
   'program.duration.15_30_minutes': '15-30 minutes',
@@ -54,6 +56,19 @@ const translations = {
   'program.duration.15_minutes': '15 minutes',
   'program.duration.30_minutes': '30 minutes',
   'program.duration.45_minutes': '45 minutes',
+  'profile.duration.30to45minutes': '30-45 minutes',
+  
+  // Body parts
+  'bodyParts.Chest': 'Chest',
+  'bodyParts.chest': 'Chest',
+
+  // Profile separators
+  'profile.separateWithCommas.medicalConditions': 'Separate conditions with commas',
+  'profile.separateWithCommas.medications': 'Separate medications with commas',
+  'profile.separateWithCommas.injuries': 'Separate injuries with commas',
+  'profile.separateWithCommas.familyHistory': 'Separate family history items with commas',
+  'profile.selectFrequency': 'Select frequency',
+  'profile.selectedDiets': 'Selected diets',
   
   // Program - Age Ranges
   'program.ageRange.under_20': 'Under 20',
@@ -287,7 +302,7 @@ const translations = {
   'profile.gender.female': 'Female',
   'profile.gender.nonBinary': 'Non-binary',
   'profile.gender.preferNotToSay': 'Prefer not to say',
-  'profile.gender.selectGender': 'Select gender',
+  'profile.selectGender': 'Select gender',
   
   // Profile - Sleep Options
   'profile.sleep.lessThan6': 'Less than 6 hours',
@@ -754,17 +769,39 @@ const translations = {
   'profile.fields.enterCustomDiet': 'Enter custom diet',
   'profile.fields.selectedDiets': 'Selected diets:',
 
-  // Profile Info Questions
-  'profile.info.healthBasics': 'Please provide basic health information to help us personalize your experience',
-  'profile.info.fitnessProfile': 'Tell us about your fitness level and exercise habits',
-  'profile.info.goalsPreferences': 'What are your health and fitness goals?',
-  'profile.info.medicalBackground': 'Optional information to help tailor safer recommendations',
-  'profile.info.phoneDescription': 'Your phone number will not be shared and is used only for important account notifications',
-  'profile.info.dateFormat': 'MM/DD/YYYY',
-  'profile.info.photoUpload': 'Click to upload a profile photo',
-  'profile.info.phoneInvalid': 'Please enter a valid phone number',
-  'profile.info.phoneRequired': 'Phone number is required',
-  'profile.info.uploadProgress': 'Uploading profile image',
+  // Privacy Page
+  'privacy.title': 'Privacy & Data Settings',
+  'privacy.loading': 'Loading...',
+  'privacy.dataControl': 'Data Control',
+  'privacy.dataControl.description': 'Manage your personal data and privacy settings.',
+  'privacy.exportData': 'Export Your Data',
+  'privacy.exportData.description': 'Download a copy of all your personal data stored in our system.',
+  'privacy.exportData.button': 'Export My Data',
+  'privacy.deleteAccount': 'Delete Account',
+  'privacy.deleteAccount.description': 'Permanently delete your account and all associated data. This action cannot be undone.',
+  'privacy.deleteAccount.button': 'Delete My Account',
+  'privacy.deleteAccount.confirmationTitle': 'Delete Your Account',
+  'privacy.deleteAccount.confirmationDescription': 'This action permanently deletes your account and all your data. This cannot be undone.',
+  'privacy.deleteAccount.confirmationPrompt': 'Please enter your email address to confirm deletion:',
+  'privacy.deleteAccount.emailPlaceholder': 'Enter your email address',
+  'privacy.deleteAccount.mismatchError': "The email address you entered doesn't match your account email.",
+  'privacy.deleteAccount.confirm': 'Yes, Delete My Account',
+  'privacy.deleteAccount.cancel': 'Cancel',
+  'privacy.deleteAccount.emailSent': 'Verification Email Sent',
+  'privacy.deleteAccount.emailSentDescription': 'We\'ve sent a verification link to your email address. Please check your inbox and click the link to complete the account deletion process.',
+  'privacy.deleteAccount.emailSentNote': 'For your security, the link expires after 30 minutes.',
+  'privacy.backButton': 'Back',
+  'privacy.error.generic': 'An error occurred',
+  'privacy.error.tooManyRequests': 'Too many attempts. Please try again later.',
+  'privacy.error.invalidUrl': 'Error with redirect URL. Please try again later or contact support.',
+  'privacy.success.accountDeleted': 'Account successfully deleted.',
+  'privacy.dataExport.title': 'Your Data Export',
+  'privacy.dataExport.description': 'Here is all the data associated with your account:',
+  'privacy.dataExport.button.close': 'Close',
+  'privacy.dataExport.button.download': 'Download as JSON',
+  'privacy.goBack': 'Go back',
+  'privacy.policy.title': 'Privacy Policy',
+  'privacy.policy.lastUpdated': 'Last updated:',
 };
 
 export default translations; 

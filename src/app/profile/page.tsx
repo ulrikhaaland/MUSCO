@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, Fragment } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/app/context/AuthContext';
 import { useUser } from '@/app/context/UserContext';
@@ -157,6 +157,81 @@ const CollapsedIcon = () => (
 export default function ProfilePage() {
   const { t } = useTranslation();
 
+  // Helper function to normalize body part names between languages
+  const normalizeBodyPartName = (bodyPart: string, t: any): string => {
+    // Add function to check if a term is Norwegian
+    const isNorwegianBodyPart = (term: string): boolean => {
+      const norwegianTerms = [
+        'Øvre rygg', 'Korsrygg', 'Nakke', 'Bryst', 'Torso', 'Midtre rygg',
+        'Venstre skulder', 'Høyre skulder', 'Venstre overarm', 'Høyre overarm', 
+        'Venstre albue', 'Høyre albue', 'Venstre underarm', 'Høyre underarm',
+        'Venstre hånd', 'Høyre hånd', 'Bekken- og hofteregion', 'Venstre lår',
+        'Høyre lår', 'Venstre kne', 'Høyre kne', 'Venstre legg', 'Høyre legg',
+        'Venstre fot', 'Høyre fot', 'Upper Back', 'Lower Back',
+        // Diet related Norwegian terms
+        'kjøtteter', 'lavkarbo'
+      ];
+      return norwegianTerms.includes(term) || 
+             norwegianTerms.some(norwegian => term.toLowerCase() === norwegian.toLowerCase());
+    };
+    
+    // If it's already a Norwegian term, don't try to find an English key or translate
+    if (isNorwegianBodyPart(bodyPart)) {
+      return bodyPart;
+    }
+    
+    // Try to get the English key for a translated body part
+    const englishKey = Object.keys(PAIN_BODY_PARTS).find(key => {
+      try {
+        const translatedValue = t(`bodyParts.${key}`);
+        return translatedValue === bodyPart;
+      } catch (e) {
+        // If translation fails, it's not a match
+        return false;
+      }
+    });
+    
+    if (englishKey) {
+      return englishKey; // Return English key if found
+    }
+    
+    // If we have an English key, get its translation
+    if (PAIN_BODY_PARTS[bodyPart]) {
+      try {
+        const translated = t(`bodyParts.${bodyPart}`);
+        if (translated !== `bodyParts.${bodyPart}`) {
+          return translated;
+        }
+      } catch (e) {
+        // Translation not found, continue with original
+      }
+    }
+    
+    return bodyPart; // Return original if no match found
+  };
+
+  // Utility function to translate with fallback to formatted original text
+  const translateWithFallback = (key: string, originalText: string) => {
+    try {
+      const translated = t(key);
+      if (translated === key) {
+        // If the translation key is returned, it means no translation was found
+        // Format the original text by capitalizing words and adding spaces
+        return originalText
+          .replace(/([A-Z])/g, ' $1')
+          .replace(/^./, str => str.toUpperCase())
+          .trim();
+      }
+      return translated;
+    } catch (e) {
+      // Fallback to formatted text
+      return originalText
+        .replace(/([A-Z])/g, ' $1')
+        .replace(/^./, str => str.toUpperCase())
+        .trim();
+    }
+  };
+
   const { user, loading: authLoading, logOut, updateUserProfile } = useAuth();
   const {
     activeProgram,
@@ -257,6 +332,16 @@ export default function ProfilePage() {
   const [fitnessProfileExpanded, setFitnessProfileExpanded] = useState(false);
   const [goalsPreferencesExpanded, setGoalsPreferencesExpanded] =
     useState(false);
+
+  useEffect(() => {
+    // Log values for debugging translation issues
+    console.log("Profile debug values:");
+    console.log("Exercise modalities:", exerciseModalities);
+    console.log("Exercise environment:", exerciseEnvironments);
+    console.log("Workout duration:", workoutDuration);
+    console.log("Health goals:", healthGoals);
+    console.log("Painful areas:", painfulAreas);
+  }, [exerciseModalities, exerciseEnvironments, workoutDuration, healthGoals, painfulAreas]);
 
   // Auto-dismiss messages after 3 seconds
   useEffect(() => {
@@ -675,6 +760,248 @@ export default function ProfilePage() {
       // Update local state to show the new image
       setPhotoURL(profilePhotoURL);
 
+      // Function to get English key for a body part
+      const getEnglishBodyPartKey = (bodyPart: string): string => {
+        // If already an English key, return it
+        if (PAIN_BODY_PARTS[bodyPart]) {
+          return bodyPart;
+        }
+
+        // Try to find the English key for a translated body part
+        const englishKey = Object.keys(PAIN_BODY_PARTS).find(key => {
+          try {
+            const translatedValue = t(`bodyParts.${key}`);
+            return translatedValue === bodyPart || 
+                  translatedValue.toLowerCase() === bodyPart.toLowerCase() ||
+                  key.toLowerCase() === bodyPart.toLowerCase();
+          } catch (e) {
+            return false;
+          }
+        });
+
+        // Map common Norwegian terms to English keys
+        const norwegianToEnglish: Record<string, string> = {
+          'Øvre rygg': 'upper_back',
+          'Korsrygg': 'lower_back',
+          'Nakke': 'neck',
+          'Bryst': 'chest',
+          'Torso': 'torso',
+          'Midtre rygg': 'middle_back',
+          'Venstre skulder': 'left_shoulder',
+          'Høyre skulder': 'right_shoulder',
+          'Venstre overarm': 'left_upper_arm',
+          'Høyre overarm': 'right_upper_arm',
+          'Venstre albue': 'left_elbow',
+          'Høyre albue': 'right_elbow',
+          'Venstre underarm': 'left_forearm',
+          'Høyre underarm': 'right_forearm',
+          'Venstre hånd': 'left_hand',
+          'Høyre hånd': 'right_hand',
+          'Bekken- og hofteregion': 'pelvis_and_hip_region',
+          'Venstre lår': 'left_thigh',
+          'Høyre lår': 'right_thigh',
+          'Venstre kne': 'left_knee',
+          'Høyre kne': 'right_knee',
+          'Venstre legg': 'left_lower_leg',
+          'Høyre legg': 'right_lower_leg',
+          'Venstre fot': 'left_foot',
+          'Høyre fot': 'right_foot'
+        };
+
+        if (norwegianToEnglish[bodyPart]) {
+          return norwegianToEnglish[bodyPart];
+        }
+
+        return englishKey || bodyPart; // Return the found key or the original as fallback
+      };
+
+      // Function to normalize gender to English values
+      const normalizeGender = (genderValue: string): string => {
+        // Map translated gender values to English keys
+        const genderMap: Record<string, string> = {
+          [t('profile.gender.male')]: 'male',
+          [t('profile.gender.female')]: 'female',
+          [t('profile.gender.nonBinary')]: 'non-binary',
+          [t('profile.gender.preferNotToSay')]: 'prefer-not-to-say'
+        };
+        
+        // Return English key if found, otherwise return original value (likely already English)
+        return genderMap[genderValue] || genderValue;
+      };
+
+      // Function to normalize fitness level to English values
+      const normalizeFitnessLevel = (levelValue: string): string => {
+        // Map translated fitness levels to English keys
+        const fitnessLevels = getFitnessLevels(t);
+        for (const level of fitnessLevels) {
+          if (level.name === levelValue) {
+            // Find the English key for this fitness level
+            const englishKey = Object.keys(level).find(key => {
+              try {
+                // Try to find the original English key
+                return level.name === fitnessLevel;
+              } catch (e) {
+                return false;
+              }
+            });
+            if (englishKey) return englishKey;
+          }
+        }
+        
+        // Fallback mapping for common translations
+        const fitnessMap: Record<string, string> = {
+          [t('profile.beginner.name')]: 'Beginner',
+          [t('profile.intermediate.name')]: 'Intermediate',
+          [t('profile.advanced.name')]: 'Advanced',
+          [t('profile.elite.name')]: 'Elite'
+        };
+        
+        return fitnessMap[levelValue] || levelValue;
+      };
+
+      // Function to normalize exercise frequency to English values
+      const normalizeExerciseFrequency = (freqValue: string): string => {
+        // Try to find the English key in planned frequency options
+        for (const option of PLANNED_EXERCISE_FREQUENCY_OPTIONS) {
+          try {
+            const translatedOption = t(`exerciseFrequency.${option.toLowerCase().replace(/\s+/g, '')}`);
+            if (translatedOption === freqValue) return option;
+          } catch (e) {
+            // Continue to next option
+          }
+        }
+        return freqValue; // If not found, likely already English
+      };
+
+      // Function to normalize workout duration to English values
+      const normalizeWorkoutDuration = (durationValue: string): string => {
+        // Try to find the English key in workout durations
+        for (const duration of WORKOUT_DURATIONS) {
+          try {
+            const translatedDuration = t(`workoutDurations.${duration.toLowerCase().replace(/\s+/g, '')}`);
+            if (translatedDuration === durationValue) return duration;
+          } catch (e) {
+            // Continue to next option
+          }
+        }
+        return durationValue; // If not found, likely already English
+      };
+
+      // Function to normalize exercise environment to English values
+      const normalizeExerciseEnvironment = (envValue: string): string => {
+        // Try to find the English key in exercise environments
+        for (const env of EXERCISE_ENVIRONMENTS) {
+          try {
+            const envKey = typeof env === 'string' ? env : env.toString();
+            const translatedEnv = t(`exerciseEnvironments.${envKey.toLowerCase().replace(/\s+/g, '')}`);
+            if (translatedEnv === envValue) return envKey;
+          } catch (e) {
+            // Continue to next option
+          }
+        }
+        return envValue; // If not found, likely already English
+      };
+
+      // Function to normalize health goals to English values
+      const normalizeHealthGoals = (goals: string[]): string[] => {
+        // Get translated and English health goals options
+        const translatedOptions = getHealthGoalsOptions(t);
+        // Create a direct English version by using a pass-through translation function
+        const englishOptions = getHealthGoalsOptions((key: string) => key.replace('profile.goals.', ''));
+        
+        // Create a map from translated options to English options
+        const translationMap = new Map<string, string>();
+        translatedOptions.forEach((translatedOption, i) => {
+          if (i < englishOptions.length) {
+            translationMap.set(translatedOption, englishOptions[i]);
+          }
+        });
+        
+        // Map each goal to its English version
+        return goals.map(goal => translationMap.get(goal) || goal);
+      };
+
+      // Function to normalize dietary preferences to English values
+      const normalizeDietaryPreferences = (preferences: string[]): string[] => {
+        // Get translated and English dietary options
+        const translatedOptions = getDietaryPreferencesOptions(t);
+        // Create a direct English version by using a pass-through translation function
+        const englishOptions = getDietaryPreferencesOptions((key: string) => key.replace('profile.diet.', ''));
+        
+        // Create a map from translated options to English options
+        const translationMap = new Map<string, string>();
+        translatedOptions.forEach((translatedOption, i) => {
+          if (i < englishOptions.length) {
+            translationMap.set(translatedOption, englishOptions[i]);
+          }
+        });
+        
+        // Map each preference to its English version
+        return preferences.map(pref => translationMap.get(pref) || pref);
+      };
+
+      // Function to normalize target areas to English values
+      const normalizeTargetAreas = (areas: string[]): string[] => {
+        // Create a map of translated target body parts to English keys
+        const targetBodyPartMap = new Map<string, string>();
+        
+        // Fill the map with translations
+        Object.keys(TARGET_BODY_PARTS).forEach(key => {
+          try {
+            const translated = t(`targetBodyParts.${key.toLowerCase()}`);
+            targetBodyPartMap.set(translated, key);
+          } catch (e) {
+            // Skip if translation fails
+          }
+        });
+        
+        // For common body parts that might be in both lists
+        Object.keys(PAIN_BODY_PARTS).forEach(key => {
+          try {
+            const translated = t(`bodyParts.${key}`);
+            if (!targetBodyPartMap.has(translated)) {
+              targetBodyPartMap.set(translated, key);
+            }
+          } catch (e) {
+            // Skip if translation fails
+          }
+        });
+        
+        // Map Norwegian terms to English for target areas
+        const norwegianToEnglish: Record<string, string> = {
+          'Overkropp': 'Upper Body',
+          'Underkropp': 'Lower Body',
+          'Armer': 'Arms',
+          'Ben': 'Legs',
+          'Rygg': 'Back',
+          'Skuldre': 'Shoulders',
+          'Bryst': 'Chest',
+          'Kjerne': 'Core'
+        };
+        
+        // Normalize each area
+        return areas.map(area => {
+          // Check if it's a Norwegian term with direct mapping
+          if (norwegianToEnglish[area]) {
+            return norwegianToEnglish[area];
+          }
+          
+          // Check if we have a mapping for this translated term
+          if (targetBodyPartMap.has(area)) {
+            return targetBodyPartMap.get(area) || area;
+          }
+          
+          // Try to find in TARGET_BODY_PARTS directly
+          const targetMatch = Object.keys(TARGET_BODY_PARTS).find(key => 
+            key.toLowerCase() === area.toLowerCase()
+          );
+          if (targetMatch) return targetMatch;
+          
+          // Return original if no match found
+          return area;
+        });
+      };
+
       // Create profile data object with priority for exercise environments
       const profileData: Partial<UserProfile> = {
         displayName,
@@ -682,30 +1009,31 @@ export default function ProfilePage() {
         phone,
         height: userHeight,
         weight,
-        gender,
+        gender: normalizeGender(gender),
         dateOfBirth,
         medicalConditions: medicalConditions.join(','),
         medications: medications.join(','),
         injuries: injuries.join(','),
         familyHistory: familyHistory.join(','),
-        fitnessLevel,
+        fitnessLevel: normalizeFitnessLevel(fitnessLevel),
         sleepPattern,
-        exerciseFrequency,
+        exerciseFrequency: normalizeExerciseFrequency(exerciseFrequency),
         // Store exercise modalities in lowercase for consistency
         exerciseModalities: updatedExerciseModalities
           .map((m) => m.toLowerCase())
           .join(','),
         timeAvailability,
-        dietaryPreferences,
-        painfulAreas: updatedPainfulAreas,
-        healthGoals,
-        targetAreas,
+        dietaryPreferences: normalizeDietaryPreferences(dietaryPreferences),
+        // For painfulAreas, convert all to English keys for consistent storage
+        painfulAreas: updatedPainfulAreas.map(area => getEnglishBodyPartKey(area)),
+        healthGoals: normalizeHealthGoals(healthGoals),
+        targetAreas: normalizeTargetAreas(targetAreas),
       };
 
       // Add exercise environments with priority logic
       if (exerciseEnvironments) {
-        // Use user's selected value if available
-        profileData.exerciseEnvironments = exerciseEnvironments;
+        // Use user's selected value if available, but normalize to English
+        profileData.exerciseEnvironments = normalizeExerciseEnvironment(exerciseEnvironments);
       } else if (activeExerciseProgram?.questionnaire?.exerciseEnvironments) {
         // Prioritize exercise program environments
         const exerciseEnvs =
@@ -728,7 +1056,7 @@ export default function ProfilePage() {
 
       // Add workout duration
       if (workoutDuration) {
-        profileData.workoutDuration = workoutDuration;
+        profileData.workoutDuration = normalizeWorkoutDuration(workoutDuration);
       }
 
       // Update user profile using the AuthContext method
@@ -828,20 +1156,20 @@ export default function ProfilePage() {
         // First check active exercise program
         if (activeExerciseProgram?.questionnaire?.generallyPainfulAreas) {
           activeExerciseProgram.questionnaire.generallyPainfulAreas.forEach(
-            (area) => uniquePainfulAreas.add(area)
+            (area) => uniquePainfulAreas.add(normalizeBodyPartName(area, t))
           );
         }
 
         // Then check active recovery program
         if (activeRecoveryProgram?.questionnaire?.generallyPainfulAreas) {
           activeRecoveryProgram.questionnaire.generallyPainfulAreas.forEach(
-            (area) => uniquePainfulAreas.add(area)
+            (area) => uniquePainfulAreas.add(normalizeBodyPartName(area, t))
           );
         }
 
         // Next check recovery programs for painful areas
         const recoveryAreas = getPainfulAreasFromRecoveryPrograms();
-        recoveryAreas.forEach((area) => uniquePainfulAreas.add(area));
+        recoveryAreas.forEach((area) => uniquePainfulAreas.add(normalizeBodyPartName(area, t)));
 
         // Finally check other questionnaires
         for (const questionnaireData of questionnaires) {
@@ -850,7 +1178,7 @@ export default function ProfilePage() {
             questionnaireData.generallyPainfulAreas.length > 0
           ) {
             questionnaireData.generallyPainfulAreas.forEach((area) =>
-              uniquePainfulAreas.add(area)
+              uniquePainfulAreas.add(normalizeBodyPartName(area, t))
             );
           }
         }
@@ -1162,6 +1490,264 @@ export default function ProfilePage() {
     return Array.from(allPainfulAreas);
   };
 
+  // Utility component to format displayed values
+  const ProfileValueDisplay = ({ value, translationPrefix, fallback = 'profile.notSet' }) => {
+    if (!value || (Array.isArray(value) && value.length === 0)) {
+      return <>{t(fallback)}</>;
+    }
+
+    // Manual Norwegian translations for body parts
+    const norwegianBodyParts: Record<string, string> = {
+      'upper_back': 'Øvre rygg',
+      'upperBack': 'Øvre rygg',
+      'lower_back': 'Korsrygg',
+      'lowerBack': 'Korsrygg',
+      'middle_back': 'Midtre rygg',
+      'middleBack': 'Midtre rygg',
+      'neck': 'Nakke',
+      'chest': 'Bryst',
+      'torso': 'Torso',
+      'left_shoulder': 'Venstre skulder',
+      'leftShoulder': 'Venstre skulder',
+      'right_shoulder': 'Høyre skulder',
+      'rightShoulder': 'Høyre skulder',
+      'left_upper_arm': 'Venstre overarm',
+      'leftUpperArm': 'Venstre overarm',
+      'right_upper_arm': 'Høyre overarm',
+      'rightUpperArm': 'Høyre overarm',
+      'left_elbow': 'Venstre albue',
+      'leftElbow': 'Venstre albue',
+      'right_elbow': 'Høyre albue',
+      'rightElbow': 'Høyre albue',
+      'left_forearm': 'Venstre underarm',
+      'leftForearm': 'Venstre underarm',
+      'right_forearm': 'Høyre underarm',
+      'rightForearm': 'Høyre underarm',
+      'left_hand': 'Venstre hånd',
+      'leftHand': 'Venstre hånd',
+      'right_hand': 'Høyre hånd',
+      'rightHand': 'Høyre hånd',
+      'pelvis_and_hip_region': 'Bekken- og hofteregion',
+      'pelvisAndHipRegion': 'Bekken- og hofteregion',
+      'left_thigh': 'Venstre lår',
+      'leftThigh': 'Venstre lår',
+      'right_thigh': 'Høyre lår',
+      'rightThigh': 'Høyre lår',
+      'left_knee': 'Venstre kne',
+      'leftKnee': 'Venstre kne',
+      'right_knee': 'Høyre kne',
+      'rightKnee': 'Høyre kne',
+      'left_lower_leg': 'Venstre legg',
+      'leftLowerLeg': 'Venstre legg',
+      'right_lower_leg': 'Høyre legg',
+      'rightLowerLeg': 'Høyre legg',
+      'left_foot': 'Venstre fot',
+      'leftFoot': 'Venstre fot',
+      'right_foot': 'Høyre fot',
+      'rightFoot': 'Høyre fot'
+    };
+    
+    // Map English stored values to translation keys for common dietary preferences
+    const dietaryTranslationMap: Record<string, string> = {
+      'noSpecificDiet': 'profile.diet.noSpecificDiet',
+      'vegetarian': 'profile.diet.vegetarian',
+      'vegan': 'profile.diet.vegan',
+      'pescatarian': 'profile.diet.pescatarian',
+      'paleo': 'profile.diet.paleo',
+      'keto': 'profile.diet.keto',
+      'carnivore': 'profile.diet.carnivore',
+      'lowCarb': 'profile.diet.lowCarb',
+      'lowFat': 'profile.diet.lowFat',
+      'glutenFree': 'profile.diet.glutenFree',
+      'dairyFree': 'profile.diet.dairyFree',
+      'mediterranean': 'profile.diet.mediterranean',
+      'intermittentFasting': 'profile.diet.intermittentFasting',
+    };
+    
+    // Map for body parts with underscores
+    const bodyPartMap: Record<string, string> = {
+      'upper_back': 'bodyParts.upperBack',
+      'lower_back': 'bodyParts.lowerBack',
+      'middle_back': 'bodyParts.middleBack',
+      'left_shoulder': 'bodyParts.leftShoulder',
+      'right_shoulder': 'bodyParts.rightShoulder',
+      'left_upper_arm': 'bodyParts.leftUpperArm',
+      'right_upper_arm': 'bodyParts.rightUpperArm',
+      'left_elbow': 'bodyParts.leftElbow',
+      'right_elbow': 'bodyParts.rightElbow',
+      'left_forearm': 'bodyParts.leftForearm',
+      'right_forearm': 'bodyParts.rightForearm',
+      'left_hand': 'bodyParts.leftHand',
+      'right_hand': 'bodyParts.rightHand',
+      'left_thigh': 'bodyParts.leftThigh',
+      'right_thigh': 'bodyParts.rightThigh',
+      'left_knee': 'bodyParts.leftKnee',
+      'right_knee': 'bodyParts.rightKnee',
+      'left_lower_leg': 'bodyParts.leftLowerLeg',
+      'right_lower_leg': 'bodyParts.rightLowerLeg',
+      'left_foot': 'bodyParts.leftFoot',
+      'right_foot': 'bodyParts.rightFoot',
+      'pelvis_and_hip_region': 'bodyParts.pelvisAndHipRegion'
+    };
+    
+    // Skip translation attempt for Norwegian terms
+    const isNorwegianTerm = (term) => {
+      // List of Norwegian words/terms that shouldn't be translated
+      const norwegianTerms = [
+        'Øvre rygg', 'Korsrygg', 'Nakke', 'Bryst', 'Torso', 'Midtre rygg',
+        'Venstre skulder', 'Høyre skulder', 'Venstre overarm', 'Høyre overarm', 
+        'Venstre albue', 'Høyre albue', 'Venstre underarm', 'Høyre underarm',
+        'Venstre hånd', 'Høyre hånd', 'Bekken- og hofteregion', 'Venstre lår',
+        'Høyre lår', 'Venstre kne', 'Høyre kne', 'Venstre legg', 'Høyre legg',
+        'Venstre fot', 'Høyre fot', 'Upper Back', 'Lower Back',
+        // Diet related Norwegian terms
+        'kjøtteter', 'lavkarbo', 'Ingen spesifikk diett', 'Vegetarianer', 'Veganer',
+        'Pescetarianer', 'Paleo', 'Keto', 'Lavkarbo', 'Lavfett', 'Glutenfri',
+        'Melkefri', 'Middelhavskost', 'Intermitterende fasting'
+      ];
+      return norwegianTerms.includes(term) || 
+             norwegianTerms.some(norwegian => term.toLowerCase() === norwegian.toLowerCase());
+    };
+    
+    // Translation helper that tries multiple approaches
+    const translateTerm = (term) => {
+      // Skip translation for Norwegian terms
+      if (isNorwegianTerm(term)) {
+        return term;
+      }
+
+      // Check current locale
+      const isNorwegian = typeof window !== 'undefined' && 
+                          window.localStorage && 
+                          window.localStorage.getItem('i18nextLng') === 'nb';
+      
+      // Special handling for body parts in Norwegian locale
+      if (translationPrefix === 'bodyParts' && isNorwegian) {
+        // First try the direct Norwegian mapping
+        const normalizedTerm = term.replace(/-/g, '_');
+        if (norwegianBodyParts[normalizedTerm]) {
+          return norwegianBodyParts[normalizedTerm];
+        }
+        
+        // For camelCase, try converting to underscore format first
+        const underscored = term.replace(/([A-Z])/g, '_$1').toLowerCase();
+        if (norwegianBodyParts[underscored]) {
+          return norwegianBodyParts[underscored];
+        }
+      }
+      
+      // Special handling for body parts with underscores
+      if (translationPrefix === 'bodyParts' && term.includes('_')) {
+        // Check if we have a direct mapping
+        if (bodyPartMap[term]) {
+          try {
+            const translated = t(bodyPartMap[term]);
+            if (translated !== bodyPartMap[term]) {
+              return translated;
+            }
+          } catch (e) {
+            // If translation fails and we're in Norwegian, try direct mapping
+            if (isNorwegian && norwegianBodyParts[term]) {
+              return norwegianBodyParts[term];
+            }
+            // Continue to other methods if this fails
+          }
+        }
+        
+        // Try converting underscores to camelCase
+        const camelCased = term.replace(/_([a-z])/g, (match, letter) => letter.toUpperCase());
+        try {
+          const translatedCamel = t(`${translationPrefix}.${camelCased}`);
+          if (translatedCamel !== `${translationPrefix}.${camelCased}`) {
+            return translatedCamel;
+          }
+        } catch (e) {
+          // If translation fails and we're in Norwegian, try direct mapping of camelCase
+          if (isNorwegian && norwegianBodyParts[camelCased]) {
+            return norwegianBodyParts[camelCased];
+          }
+          // Continue to other methods if this fails
+        }
+        
+        // If we're in Norwegian, try to find any matching entry
+        if (isNorwegian) {
+          // Look for close matches by removing underscores
+          const simplified = term.replace(/_/g, '').toLowerCase();
+          for (const [key, value] of Object.entries(norwegianBodyParts)) {
+            if (key.replace(/_/g, '').toLowerCase() === simplified) {
+              return value;
+            }
+          }
+        }
+        
+        // Format the underscored term to be more readable
+        return term.split('_').map(word => 
+          word.charAt(0).toUpperCase() + word.slice(1)
+        ).join(' ');
+      }
+      
+      // For dietary preferences, try direct mapping
+      if (translationPrefix === 'profile.diet') {
+        // Try to find a match in our dietary mapping
+        const dietKey = Object.keys(dietaryTranslationMap).find(
+          key => key.toLowerCase() === term.toLowerCase()
+        );
+        
+        if (dietKey) {
+          try {
+            const translated = t(dietaryTranslationMap[dietKey]);
+            if (translated !== dietaryTranslationMap[dietKey]) {
+              return translated;
+            }
+          } catch (e) {
+            // Continue to other methods if this fails
+          }
+        }
+      }
+      
+      // Try with original format
+      try {
+        const translatedDirect = t(`${translationPrefix}.${term}`);
+        if (translatedDirect !== `${translationPrefix}.${term}`) {
+          return translatedDirect;
+        }
+      } catch (e) {
+        // Continue to other methods if this fails
+      }
+      
+      // Try with lowercase and no spaces
+      try {
+        const formattedKey = `${translationPrefix}.${term.toLowerCase().replace(/\s+/g, '').replace(/-/g, '')}`;
+        const translated = t(formattedKey);
+        if (translated !== formattedKey) {
+          return translated;
+        }
+      } catch (e) {
+        // Continue to other methods if this fails
+      }
+      
+      // Return formatted original if all translation attempts fail
+      return term.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase()).trim();
+    };
+    
+    // Handle array values
+    if (Array.isArray(value)) {
+      return (
+        <>
+          {value.map((item, index) => (
+            <Fragment key={index}>
+              {index > 0 && ', '}
+              {translateTerm(item)}
+            </Fragment>
+          ))}
+        </>
+      );
+    }
+    
+    // Handle single string value
+    return <>{translateTerm(value)}</>;
+  };
+
   return (
     <>
       <style jsx global>{`
@@ -1372,7 +1958,7 @@ export default function ProfilePage() {
                         />
                       ) : (
                         <div className="w-full h-full bg-gray-700 flex items-center justify-center text-white">
-                          <span>No Photo</span>
+                          <span>{t('profile.noPhoto')}</span>
                         </div>
                       )}
                       <div className="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-30 flex items-center justify-center transition-all duration-200">
@@ -1424,7 +2010,7 @@ export default function ProfilePage() {
                           </svg>
                         </div>
                         <h3 className="text-white font-semibold flex items-center">
-                          General
+                          {t('profile.sections.general')}
                           {displayName && phone && dateOfBirth && (
                             <svg
                               className="ml-2 h-4 w-4 text-green-400"
@@ -1452,7 +2038,7 @@ export default function ProfilePage() {
                       {/* Name */}
                       <div>
                         <label className="block text-sm font-medium text-gray-400 mb-1 text-left">
-                          Name
+                          {t('profile.fields.name')}
                         </label>
                         {isEditing ? (
                           <input
@@ -1466,7 +2052,7 @@ export default function ProfilePage() {
                             className="text-white cursor-pointer hover:text-indigo-400 transition-colors text-left"
                             onClick={() => handleEdit('displayName')}
                           >
-                            {displayName || 'Not set'}
+                            {displayName || t('profile.notSet')}
                           </p>
                         )}
                       </div>
@@ -1474,7 +2060,7 @@ export default function ProfilePage() {
                       {/* Phone */}
                       <div>
                         <label className="block text-sm font-medium text-gray-400 mb-1 text-left">
-                          Phone
+                          {t('profile.fields.phone')}
                         </label>
                         {isEditing ? (
                           <div className="phone-input-container">
@@ -1501,7 +2087,7 @@ export default function ProfilePage() {
                             className="text-white cursor-pointer hover:text-indigo-400 transition-colors text-left"
                             onClick={() => setIsEditing(true)}
                           >
-                            {phone || 'Not set'}
+                            {phone || t('profile.notSet')}
                           </p>
                         )}
                       </div>
@@ -1509,7 +2095,7 @@ export default function ProfilePage() {
                       {/* Date of Birth */}
                       <div className="pb-4">
                         <label className="block text-sm font-medium text-gray-400 mb-1 text-left">
-                          Date of Birth
+                          {t('profile.fields.dateOfBirth')}
                         </label>
                         {editingField === 'dateOfBirth' ? (
                           <div>
@@ -1534,7 +2120,7 @@ export default function ProfilePage() {
                           >
                             {dateOfBirth
                               ? new Date(dateOfBirth).toLocaleDateString()
-                              : 'Not set'}
+                              : t('profile.notSet')}
                           </p>
                         )}
                       </div>
@@ -1591,11 +2177,6 @@ export default function ProfilePage() {
                         )}
                       </div>
                     </div>
-                    {healthBasicsExpanded && (
-                      <p className="text-sm text-gray-400 mt-1 mb-3">
-                        {t('profile.info.healthBasics')}
-                      </p>
-                    )}
                   </div>
 
                   {/* Health Basics content */}
@@ -1604,7 +2185,7 @@ export default function ProfilePage() {
                       {/* Height */}
                       <div>
                         <label className="block text-sm font-medium text-gray-400 mb-1 text-left">
-                          Height (cm)
+                          {t('profile.fields.height')}
                         </label>
                         {isEditing ? (
                           <div className="relative">
@@ -1625,7 +2206,7 @@ export default function ProfilePage() {
                             className="text-white cursor-pointer hover:text-indigo-400 transition-colors text-left"
                             onClick={() => handleEdit('userHeight')}
                           >
-                            {userHeight ? `${userHeight} cm` : 'Not set'}
+                            {userHeight ? `${userHeight} cm` : t('profile.notSet')}
                           </p>
                         )}
                       </div>
@@ -1633,7 +2214,7 @@ export default function ProfilePage() {
                       {/* Weight */}
                       <div>
                         <label className="block text-sm font-medium text-gray-400 mb-1 text-left">
-                          Weight (kg)
+                          {t('profile.fields.weight')}
                         </label>
                         {isEditing ? (
                           <div className="relative">
@@ -1655,7 +2236,7 @@ export default function ProfilePage() {
                             className="text-white cursor-pointer hover:text-indigo-400 transition-colors text-left"
                             onClick={() => handleEdit('weight')}
                           >
-                            {weight ? `${weight} kg` : 'Not set'}
+                            {weight ? `${weight} kg` : t('profile.notSet')}
                           </p>
                         )}
                       </div>
@@ -1663,7 +2244,7 @@ export default function ProfilePage() {
                       {/* Gender */}
                       <div className="pb-4">
                         <label className="block text-sm font-medium text-gray-400 mb-1 text-left">
-                          Gender
+                          {t('profile.fields.gender')}
                         </label>
                         {isEditing ? (
                           <select
@@ -1671,20 +2252,18 @@ export default function ProfilePage() {
                             onChange={(e) => setGender(e.target.value)}
                             className="w-full bg-gray-700 border border-gray-600 rounded-lg py-2 px-3 text-white"
                           >
-                            <option value="">Select Gender</option>
-                            <option value="male">Male</option>
-                            <option value="female">Female</option>
-                            <option value="non-binary">Non-binary</option>
-                            <option value="prefer-not-to-say">
-                              Prefer not to say
-                            </option>
+                            <option value="">{t('profile.selectGender')}</option>
+                            <option value="male">{t('profile.gender.male')}</option>
+                            <option value="female">{t('profile.gender.female')}</option>
+                            <option value="non-binary">{t('profile.gender.nonBinary')}</option>
+                            <option value="prefer-not-to-say">{t('profile.gender.preferNotToSay')}</option>
                           </select>
                         ) : (
                           <p
                             className="text-white cursor-pointer hover:text-indigo-400 transition-colors text-left capitalize"
                             onClick={() => handleEdit('gender')}
                           >
-                            {gender || 'Not set'}
+                            {gender ? t(`profile.gender.${gender.replace(/-/g, '')}`) : t('profile.notSet')}
                           </p>
                         )}
                       </div>
@@ -1717,7 +2296,7 @@ export default function ProfilePage() {
                           </svg>
                         </div>
                         <h3 className="text-white font-semibold flex items-center">
-                          Fitness Profile
+                          {t('profile.sections.fitnessProfile')}
                           {fitnessLevel &&
                             sleepPattern &&
                             exerciseFrequency &&
@@ -1753,7 +2332,7 @@ export default function ProfilePage() {
                       {/* Fitness Level */}
                       <div>
                         <label className="block text-sm font-medium text-gray-400 mb-1 text-left">
-                          Fitness Level
+                          {t('profile.fields.fitnessLevel')}
                         </label>
                         {editingField === 'fitnessLevel' ? (
                           <div className="space-y-4">
@@ -1791,7 +2370,7 @@ export default function ProfilePage() {
                                 onClick={() => setEditingField(null)}
                                 className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition-colors text-sm"
                               >
-                                Done
+                                {t('common.done')}
                               </button>
                             </div>
                           </div>
@@ -1800,7 +2379,7 @@ export default function ProfilePage() {
                             className="text-white cursor-pointer hover:text-indigo-400 transition-colors text-left capitalize"
                             onClick={() => handleEdit('fitnessLevel')}
                           >
-                            {fitnessLevel || 'Not set'}
+                            {fitnessLevel || t('profile.notSet')}
                           </p>
                         )}
                       </div>
@@ -1808,7 +2387,7 @@ export default function ProfilePage() {
                       {/* Exercise Frequency */}
                       <div>
                         <label className="block text-sm font-medium text-gray-400 mb-1 text-left">
-                          Exercise Frequency
+                          {t('profile.fields.exerciseFrequency')}
                         </label>
                         {isEditing ? (
                           <select
@@ -1818,7 +2397,7 @@ export default function ProfilePage() {
                             }
                             className="w-full bg-gray-700 border border-gray-600 rounded-lg py-2 px-3 text-white"
                           >
-                            <option value="">Select Frequency</option>
+                            <option value="">{t('profile.selectFrequency')}</option>
                             {translatedPlannedFrequencyOptions.map(
                               (frequency) => (
                                 <option key={frequency} value={frequency}>
@@ -1832,7 +2411,7 @@ export default function ProfilePage() {
                             className="text-white cursor-pointer hover:text-indigo-400 transition-colors text-left"
                             onClick={() => handleEdit('exerciseFrequency')}
                           >
-                            {exerciseFrequency || 'Not set'}
+                            {exerciseFrequency || t('profile.notSet')}
                           </p>
                         )}
                       </div>
@@ -1840,7 +2419,7 @@ export default function ProfilePage() {
                       {/* Exercise Modalities */}
                       <div>
                         <label className="block text-sm font-medium text-gray-400 mb-1 text-left">
-                          Exercise Modalities
+                          {t('profile.fields.exerciseModalities')}
                         </label>
                         {editingField === 'exerciseModalities' ? (
                           <div className="space-y-4">
@@ -1895,7 +2474,7 @@ export default function ProfilePage() {
                                 onClick={() => setEditingField(null)}
                                 className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition-colors text-sm"
                               >
-                                Done
+                                {t('common.done')}
                               </button>
                             </div>
                           </div>
@@ -1905,415 +2484,8 @@ export default function ProfilePage() {
                             onClick={() => handleEdit('exerciseModalities')}
                           >
                             {exerciseModalities.length > 0
-                              ? exerciseModalities
-                                  .map(
-                                    (m) =>
-                                      m.charAt(0).toUpperCase() + m.slice(1)
-                                  )
-                                  .join(', ')
-                              : 'Not set'}
-                          </p>
-                        )}
-                      </div>
-
-                      {/* Target Areas */}
-                      <div>
-                        <label className="block text-sm font-medium text-gray-400 mb-1 text-left">
-                          Target Body Areas
-                        </label>
-                        {editingField === 'targetAreas' ? (
-                          <div className="space-y-4">
-                            {/* Body Regions */}
-                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                              {['Full Body', 'Upper Body', 'Lower Body'].map(
-                                (region) => (
-                                  <label
-                                    key={region}
-                                    className="relative flex items-center"
-                                  >
-                                    <input
-                                      type="radio"
-                                      name="bodyRegion"
-                                      value={region}
-                                      checked={
-                                        region === 'Full Body'
-                                          ? targetAreas.length ===
-                                              translatedTargetBodyParts.length &&
-                                            translatedTargetBodyParts.every(
-                                              (part) =>
-                                                targetAreas.includes(part)
-                                            )
-                                          : region === 'Upper Body'
-                                            ? UPPER_BODY_PARTS.every((part) =>
-                                                targetAreas.includes(part)
-                                              ) &&
-                                              targetAreas.length ===
-                                                UPPER_BODY_PARTS.length
-                                            : region === 'Lower Body'
-                                              ? LOWER_BODY_PARTS.every((part) =>
-                                                  targetAreas.includes(part)
-                                                ) &&
-                                                targetAreas.length ===
-                                                  LOWER_BODY_PARTS.length
-                                              : false
-                                      }
-                                      onChange={(e) => {
-                                        if (e.target.checked) {
-                                          let newTargetAreas: string[] = [];
-                                          if (region === 'Full Body') {
-                                            newTargetAreas = [
-                                              ...translatedTargetBodyParts,
-                                            ];
-                                          } else if (region === 'Upper Body') {
-                                            newTargetAreas = [
-                                              ...UPPER_BODY_PARTS,
-                                            ];
-                                          } else if (region === 'Lower Body') {
-                                            newTargetAreas = [
-                                              ...LOWER_BODY_PARTS,
-                                            ];
-                                          }
-                                          setTargetAreas(newTargetAreas);
-                                        }
-                                      }}
-                                      className="peer sr-only"
-                                    />
-                                    <div className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 text-gray-400 peer-checked:text-white peer-checked:bg-indigo-500/20 peer-checked:border-indigo-500 cursor-pointer transition-all duration-200">
-                                      {region}
-                                    </div>
-                                  </label>
-                                )
-                              )}
-                            </div>
-
-                            {/* Individual Body Parts */}
-                            <div>
-                              <p className="text-gray-400 text-sm mb-3">
-                                Or select specific areas:
-                              </p>
-                              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                                {translatedTargetBodyParts.map((part) => (
-                                  <label
-                                    key={part}
-                                    className="relative flex items-center"
-                                  >
-                                    <input
-                                      type="checkbox"
-                                      value={part}
-                                      checked={targetAreas.includes(part)}
-                                      onChange={(e) => {
-                                        const newTargetAreas = e.target.checked
-                                          ? [...targetAreas, part]
-                                          : targetAreas.filter(
-                                              (p) => p !== part
-                                            );
-                                        setTargetAreas(newTargetAreas);
-                                      }}
-                                      className="peer sr-only"
-                                    />
-                                    <div className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 text-gray-400 peer-checked:text-white peer-checked:bg-indigo-500/20 peer-checked:border-indigo-500 cursor-pointer transition-all duration-200">
-                                      {part}
-                                    </div>
-                                  </label>
-                                ))}
-                              </div>
-                            </div>
-
-                            {/* Done button */}
-                            <div className="flex justify-end">
-                              <button
-                                onClick={() => setEditingField(null)}
-                                className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition-colors text-sm"
-                              >
-                                Done
-                              </button>
-                            </div>
-                          </div>
-                        ) : (
-                          <p
-                            className="text-white cursor-pointer hover:text-indigo-400 transition-colors text-left"
-                            onClick={() => handleEdit('targetAreas')}
-                          >
-                            {targetAreas.length === TARGET_BODY_PARTS.length
-                              ? 'Full Body'
-                              : UPPER_BODY_PARTS.every((part) =>
-                                    targetAreas.includes(part)
-                                  ) &&
-                                  targetAreas.length === UPPER_BODY_PARTS.length
-                                ? 'Upper Body'
-                                : LOWER_BODY_PARTS.every((part) =>
-                                      targetAreas.includes(part)
-                                    ) &&
-                                    targetAreas.length ===
-                                      LOWER_BODY_PARTS.length
-                                  ? 'Lower Body'
-                                  : targetAreas.length > 0
-                                    ? targetAreas.join(', ')
-                                    : 'Not set'}
-                          </p>
-                        )}
-                      </div>
-
-                      {/* Sleep Patterns */}
-                      <div className="pb-4">
-                        <label className="block text-sm font-medium text-gray-400 mb-1 text-left">
-                          Sleep Pattern
-                        </label>
-                        {isEditing ? (
-                          <select
-                            value={sleepPattern}
-                            onChange={(e) => setSleepPattern(e.target.value)}
-                            className="w-full bg-gray-700 border border-gray-600 rounded-lg py-2 px-3 text-white"
-                          >
-                            <option value="">Select Sleep Pattern</option>
-                            <option value="less-than-6">
-                              Less than 6 hours
-                            </option>
-                            <option value="6-7">6-7 hours</option>
-                            <option value="7-8">7-8 hours</option>
-                            <option value="more-than-8">
-                              More than 8 hours
-                            </option>
-                          </select>
-                        ) : (
-                          <p
-                            className="text-white cursor-pointer hover:text-indigo-400 transition-colors text-left"
-                            onClick={() => handleEdit('sleepPattern')}
-                          >
-                            {sleepPattern
-                              ? sleepPattern === 'less-than-6'
-                                ? 'Less than 6 hours'
-                                : sleepPattern === 'more-than-8'
-                                  ? 'More than 8 hours'
-                                  : `${sleepPattern} hours`
-                              : 'Not set'}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  )}
-                  {/* Fitness Profile Section END */}
-
-                  {/* Goals and Preferences Section START */}
-                  <div className="border-t border-gray-700">
-                    <div
-                      className="flex justify-between items-center cursor-pointer hover:bg-gray-700/30 py-4 rounded-lg transition-colors"
-                      onClick={() =>
-                        setGoalsPreferencesExpanded(!goalsPreferencesExpanded)
-                      }
-                      data-section="goalsPreferences"
-                    >
-                      <div className="flex items-center">
-                        <div className="mr-3 text-indigo-400">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-5 w-5"
-                            viewBox="0 0 20 20"
-                            fill="currentColor"
-                          >
-                            <path d="M5 4a1 1 0 00-2 0v7.268a2 2 0 000 3.464V16a1 1 0 102 0v-1.268a2 2 0 000-3.464V4zM11 4a1 1 0 10-2 0v1.268a2 2 0 000 3.464V16a1 1 0 102 0V8.732a2 2 0 000-3.464V4zM16 3a1 1 0 011 1v7.268a2 2 0 010 3.464V16a1 1 0 11-2 0v-1.268a2 2 0 010-3.464V4a1 1 0 011-1z" />
-                          </svg>
-                        </div>
-                        <h3 className="text-white font-semibold flex items-center">
-                          Goals & Preferences
-                          {healthGoals.length > 0 &&
-                            workoutDuration &&
-                            exerciseEnvironments &&
-                            timeAvailability &&
-                            dietaryPreferences.length > 0 && (
-                              <svg
-                                className="ml-2 h-4 w-4 text-green-400"
-                                fill="currentColor"
-                                viewBox="0 0 20 20"
-                              >
-                                <path
-                                  fillRule="evenodd"
-                                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                  clipRule="evenodd"
-                                />
-                              </svg>
-                            )}
-                        </h3>
-                      </div>
-                      <div className="text-gray-400 hover:text-white">
-                        {goalsPreferencesExpanded ? (
-                          <ExpandedIcon />
-                        ) : (
-                          <CollapsedIcon />
-                        )}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Goals and Preferences content */}
-                  {goalsPreferencesExpanded && (
-                    <div className="space-y-4" style={sectionContentStyle}>
-                      {/* Health Goals */}
-                      <div>
-                        <label className="block text-sm font-medium text-gray-400 mb-1 text-left">
-                          Health Goals
-                        </label>
-                        {editingField === 'healthGoals' ? (
-                          <div className="space-y-4">
-                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                              {healthGoalsOptions.map((goal) => (
-                                <label
-                                  key={goal}
-                                  className="relative flex items-center"
-                                >
-                                  <input
-                                    type="checkbox"
-                                    value={goal}
-                                    checked={healthGoals.includes(goal)}
-                                    onChange={(e) => {
-                                      const newHealthGoals = e.target.checked
-                                        ? [...healthGoals, goal]
-                                        : healthGoals.filter((g) => g !== goal);
-                                      setHealthGoals(newHealthGoals);
-                                    }}
-                                    className="peer sr-only"
-                                  />
-                                  <div className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 text-gray-400 peer-checked:text-white peer-checked:bg-indigo-500/20 peer-checked:border-indigo-500 cursor-pointer transition-all duration-200">
-                                    {goal}
-                                  </div>
-                                </label>
-                              ))}
-                            </div>
-
-                            {/* Custom goal input */}
-                            <div>
-                              <p className="text-gray-400 text-sm mb-2">
-                                Add custom goal:
-                              </p>
-                              <div className="flex gap-2">
-                                <input
-                                  type="text"
-                                  id="custom-goal"
-                                  placeholder="Enter custom goal"
-                                  className="flex-1 bg-gray-700 border border-gray-600 rounded-lg py-2 px-3 text-white"
-                                  onKeyDown={(e) => {
-                                    if (
-                                      e.key === 'Enter' &&
-                                      e.currentTarget.value.trim()
-                                    ) {
-                                      const customGoal =
-                                        e.currentTarget.value.trim();
-                                      if (!healthGoals.includes(customGoal)) {
-                                        setHealthGoals([
-                                          ...healthGoals,
-                                          customGoal,
-                                        ]);
-                                        e.currentTarget.value = '';
-                                      }
-                                    }
-                                  }}
-                                />
-                                <button
-                                  onClick={() => {
-                                    const customGoalInput =
-                                      document.getElementById(
-                                        'custom-goal'
-                                      ) as HTMLInputElement;
-                                    if (
-                                      customGoalInput &&
-                                      customGoalInput.value.trim()
-                                    ) {
-                                      const customGoal =
-                                        customGoalInput.value.trim();
-                                      if (!healthGoals.includes(customGoal)) {
-                                        setHealthGoals([
-                                          ...healthGoals,
-                                          customGoal,
-                                        ]);
-                                        customGoalInput.value = '';
-                                      }
-                                    }
-                                  }}
-                                  className="px-3 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition-colors text-sm"
-                                >
-                                  Add
-                                </button>
-                              </div>
-                            </div>
-
-                            {/* Done button */}
-                            <div className="flex justify-end">
-                              <button
-                                onClick={() => setEditingField(null)}
-                                className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition-colors text-sm"
-                              >
-                                Done
-                              </button>
-                            </div>
-                          </div>
-                        ) : (
-                          <p
-                            className="text-white cursor-pointer hover:text-indigo-400 transition-colors text-left"
-                            onClick={() => handleEdit('healthGoals')}
-                          >
-                            {healthGoals.length > 0
-                              ? healthGoals.join(', ')
-                              : 'Not set'}
-                          </p>
-                        )}
-                      </div>
-
-                      {/* Exercise Environment */}
-                      <div>
-                        <label className="block text-sm font-medium text-gray-400 mb-1 text-left">
-                          Exercise Environment
-                        </label>
-                        {editingField === 'exerciseEnvironments' ? (
-                          <div className="space-y-4">
-                            <div className="grid grid-cols-1 gap-3">
-                              {translatedExerciseEnvironments.map(
-                                (environment) => (
-                                  <label
-                                    key={environment.name}
-                                    className="relative flex items-center"
-                                  >
-                                    <input
-                                      type="radio"
-                                      name="exerciseEnvironments"
-                                      value={environment.name}
-                                      checked={
-                                        exerciseEnvironments ===
-                                        environment.name
-                                      }
-                                      onChange={(e) => {
-                                        setExerciseEnvironments(e.target.value);
-                                      }}
-                                      className="peer sr-only"
-                                    />
-                                    <div className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 text-gray-400 peer-checked:text-white peer-checked:bg-indigo-500/20 peer-checked:border-indigo-500 cursor-pointer transition-all duration-200">
-                                      <div className="font-medium">
-                                        {environment.name}
-                                      </div>
-                                      <div className="text-sm mt-1 text-gray-500 peer-checked:text-gray-300">
-                                        {environment.description}
-                                      </div>
-                                    </div>
-                                  </label>
-                                )
-                              )}
-                            </div>
-
-                            {/* Done button */}
-                            <div className="flex justify-end">
-                              <button
-                                onClick={() => setEditingField(null)}
-                                className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition-colors text-sm"
-                              >
-                                Done
-                              </button>
-                            </div>
-                          </div>
-                        ) : (
-                          <p
-                            className="text-white cursor-pointer hover:text-indigo-400 transition-colors text-left"
-                            onClick={() => handleEdit('exerciseEnvironments')}
-                          >
-                            {exerciseEnvironments || 'Not set'}
+                              ? <ProfileValueDisplay value={exerciseModalities} translationPrefix="profile.modality" />
+                              : t('profile.notSet')}
                           </p>
                         )}
                       </div>
@@ -2321,7 +2493,7 @@ export default function ProfilePage() {
                       {/* Workout Duration */}
                       <div>
                         <label className="block text-sm font-medium text-gray-400 mb-1 text-left">
-                          Workout Duration
+                          {t('profile.fields.workoutDuration')}
                         </label>
                         {editingField === 'workoutDuration' ? (
                           <div className="space-y-4">
@@ -2354,7 +2526,7 @@ export default function ProfilePage() {
                                 onClick={() => setEditingField(null)}
                                 className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition-colors text-sm"
                               >
-                                Done
+                                {t('common.done')}
                               </button>
                             </div>
                           </div>
@@ -2363,7 +2535,9 @@ export default function ProfilePage() {
                             className="text-white cursor-pointer hover:text-indigo-400 transition-colors text-left"
                             onClick={() => handleEdit('workoutDuration')}
                           >
-                            {workoutDuration || 'Not set'}
+                            {workoutDuration 
+                              ? <ProfileValueDisplay value={workoutDuration} translationPrefix="profile.duration" />
+                              : t('profile.notSet')}
                           </p>
                         )}
                       </div>
@@ -2371,57 +2545,136 @@ export default function ProfilePage() {
                       {/* Dietary Preferences */}
                       <div className="pb-4">
                         <label className="block text-sm font-medium text-gray-400 mb-1 text-left">
-                          Dietary Preferences
+                          {t('profile.fields.dietaryPreferences')}
                         </label>
                         {editingField === 'dietaryPreferences' ? (
                           <div className="space-y-4">
                             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                              {dietaryPreferencesOptions.map((diet) => (
-                                <label
-                                  key={diet}
-                                  className="relative flex items-center"
-                                >
-                                  <input
-                                    type="checkbox"
-                                    name="dietaryPreference"
-                                    value={diet}
-                                    checked={dietaryPreferences.includes(diet)}
-                                    onChange={(e) => {
-                                      if (e.target.checked) {
-                                        // Add to selection
-                                        setDietaryPreferences([
-                                          ...dietaryPreferences,
-                                          diet,
-                                        ]);
-                                      } else {
-                                        // Remove from selection
-                                        setDietaryPreferences(
-                                          dietaryPreferences.filter(
-                                            (item) => item !== diet
-                                          )
-                                        );
-                                      }
-                                      markAsDirty();
-                                    }}
-                                    className="peer sr-only"
-                                  />
-                                  <div className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 text-gray-400 peer-checked:text-white peer-checked:bg-indigo-500/20 peer-checked:border-indigo-500 cursor-pointer transition-all duration-200">
-                                    {diet}
-                                  </div>
-                                </label>
-                              ))}
+                              {dietaryPreferencesOptions.map((diet) => {
+                                // Create a translation helper to map between UI language and English storage values
+                                const getDietEnglishKey = (displayValue: string): string => {
+                                  if (!displayValue) return '';
+                                  
+                                  // Normalize the displayed value
+                                  const normalizedDisplay = displayValue.toLowerCase().replace(/\s+/g, '');
+                                  
+                                  // Special cases with spaces that might exist in the data
+                                  const specialCases: Record<string, string> = {
+                                    'low carb': 'lowCarb',
+                                    'low fat': 'lowFat',
+                                    'gluten free': 'glutenFree',
+                                    'dairy free': 'dairyFree',
+                                    'intermittent fasting': 'intermittentFasting',
+                                    'no specific diet': 'noSpecificDiet'
+                                  };
+                                  
+                                  // Check if it's a special case with spaces
+                                  if (specialCases[displayValue.toLowerCase()]) {
+                                    return specialCases[displayValue.toLowerCase()];
+                                  }
+                                  
+                                  // Map of displayed values (in any language) to English storage keys
+                                  const displayToEnglish: Record<string, string> = {
+                                    // Norwegian display values to English keys
+                                    'ingenspesifikkdiett': 'noSpecificDiet',
+                                    'vegetarianer': 'vegetarian',
+                                    'veganer': 'vegan',
+                                    'pescetarianer': 'pescatarian',
+                                    'paleo': 'paleo',
+                                    'keto': 'keto',
+                                    'kjøtteter': 'carnivore',
+                                    'lavkarbo': 'lowCarb',
+                                    'lavfett': 'lowFat',
+                                    'glutenfri': 'glutenFree',
+                                    'melkefri': 'dairyFree',
+                                    'middelhavskost': 'mediterranean',
+                                    'intermitterendefasting': 'intermittentFasting',
+                                    
+                                    // English display values to English keys (for consistency)
+                                    'nospecificdiett': 'noSpecificDiet',
+                                    'vegetarian': 'vegetarian',
+                                    'vegan': 'vegan',
+                                    'pescatarian': 'pescatarian',
+                                    'carnivore': 'carnivore',
+                                    'lowcarb': 'lowCarb',
+                                    'lowfat': 'lowFat',
+                                    'glutenfree': 'glutenFree',
+                                    'dairyfree': 'dairyFree',
+                                    'mediterranean': 'mediterranean',
+                                    'intermittentfasting': 'intermittentFasting'
+                                  };
+                                  
+                                  return displayToEnglish[normalizedDisplay] || displayValue;
+                                };
+                                
+                                // Get the English equivalent of this displayed diet option
+                                const englishKey = getDietEnglishKey(diet);
+                                
+                                // Check if this option is selected by comparing with stored values
+                                const isSelected = dietaryPreferences.some(pref => {
+                                  // Get the English key for the stored preference
+                                  const normalizedPref = pref.toLowerCase().replace(/\s+/g, '');
+                                  const prefEnglishKey = normalizedPref === 'lowcarb' || normalizedPref === 'low carb' 
+                                    ? 'lowCarb'  // Special case for Low Carb
+                                    : normalizedPref === 'kjøtteter' || normalizedPref === 'carnivore'
+                                    ? 'carnivore'  // Special case for carnivore
+                                    : getDietEnglishKey(pref);
+                                  
+                                  // Compare keys in a case-insensitive way
+                                  return prefEnglishKey.toLowerCase() === englishKey.toLowerCase() ||
+                                         pref.toLowerCase() === diet.toLowerCase();
+                                });
+                                
+                                return (
+                                  <label
+                                    key={diet}
+                                    className="relative flex items-center"
+                                  >
+                                    <input
+                                      type="checkbox"
+                                      name="dietaryPreference"
+                                      value={diet}
+                                      checked={isSelected}
+                                      onChange={(e) => {
+                                        // Always store the English version in the state
+                                        const englishValue = getDietEnglishKey(diet);
+                                        
+                                        if (e.target.checked) {
+                                          // Add to selection - use the English key if available
+                                          setDietaryPreferences([
+                                            ...dietaryPreferences,
+                                            englishValue
+                                          ]);
+                                        } else {
+                                          // Remove from selection - remove both translated and English versions
+                                          setDietaryPreferences(
+                                            dietaryPreferences.filter(
+                                              (item) => item.toLowerCase() !== englishValue.toLowerCase()
+                                            )
+                                          );
+                                        }
+                                        markAsDirty();
+                                      }}
+                                      className="peer sr-only"
+                                    />
+                                    <div className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 text-gray-400 peer-checked:text-white peer-checked:bg-indigo-500/20 peer-checked:border-indigo-500 cursor-pointer transition-all duration-200">
+                                      {diet}
+                                    </div>
+                                  </label>
+                                );
+                              })}
                             </div>
 
                             {/* Custom diet input */}
                             <div>
                               <p className="text-gray-400 text-sm mb-2">
-                                Add custom diet:
+                                {t('profile.fields.addCustomDiet')}
                               </p>
                               <div className="flex gap-2">
                                 <input
                                   type="text"
                                   id="custom-diet"
-                                  placeholder="Enter custom diet"
+                                  placeholder={t('profile.fields.enterCustomDiet')}
                                   className="flex-1 bg-gray-700 border border-gray-600 rounded-lg py-2 px-3 text-white"
                                   onKeyDown={(e) => {
                                     if (
@@ -2469,7 +2722,7 @@ export default function ProfilePage() {
                                   }}
                                   className="px-3 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition-colors text-sm"
                                 >
-                                  Add
+                                  {t('common.add')}
                                 </button>
                               </div>
                             </div>
@@ -2478,30 +2731,86 @@ export default function ProfilePage() {
                             {dietaryPreferences.length > 0 && (
                               <div>
                                 <p className="text-gray-400 text-sm mb-2">
-                                  Selected diets:
+                                  {t('profile.selectedDiets')}
                                 </p>
                                 <div className="flex flex-wrap gap-2">
-                                  {dietaryPreferences.map((diet, index) => (
-                                    <div
-                                      key={index}
-                                      className="flex items-center bg-indigo-500/20 border border-indigo-500 rounded-lg px-3 py-1"
-                                    >
-                                      <span className="text-white">{diet}</span>
-                                      <button
-                                        onClick={() => {
-                                          setDietaryPreferences(
-                                            dietaryPreferences.filter(
-                                              (_, i) => i !== index
-                                            )
-                                          );
-                                          markAsDirty();
-                                        }}
-                                        className="ml-2 text-gray-300 hover:text-white"
+                                  {dietaryPreferences.map((diet, index) => {
+                                    // Enhanced function to translate diet names properly
+                                    const translateDietName = (dietName: string): string => {
+                                      if (!dietName) return '';
+                                      
+                                      // Handle capitalization and spacing variants
+                                      const lowerCased = dietName.toLowerCase();
+                                      const normalized = lowerCased.replace(/\s+/g, '');
+                                      
+                                      // Special cases with spaces
+                                      const spacedValues: Record<string, string> = {
+                                        'low carb': t('profile.diet.lowCarb'),
+                                        'low fat': t('profile.diet.lowFat'),
+                                        'gluten free': t('profile.diet.glutenFree'),
+                                        'dairy free': t('profile.diet.dairyFree'),
+                                        'no specific diet': t('profile.diet.noSpecificDiet'),
+                                        'intermittent fasting': t('profile.diet.intermittentFasting')
+                                      };
+                                      
+                                      // Check for direct matches with spaces
+                                      if (spacedValues[lowerCased]) {
+                                        return spacedValues[lowerCased];
+                                      }
+                                      
+                                      // Direct mapping for common diet names 
+                                      const dietMappings: Record<string, string> = {
+                                        // English values
+                                        'nospecificdiett': t('profile.diet.noSpecificDiet'),
+                                        'intermittent fasting': t('profile.diet.intermittentFasting'),
+                                        
+                                        // Norwegian variants (just in case)
+                                        'kjøtteter': t('profile.diet.carnivore'),
+                                        'lavkarbo': t('profile.diet.lowCarb'),
+                                        'lavfett': t('profile.diet.lowFat'),
+                                        'glutenfri': t('profile.diet.glutenFree'),
+                                        'melkefri': t('profile.diet.dairyFree'),
+                                        'middelhavskost': t('profile.diet.mediterranean'),
+                                        'intermitterende fasting': t('profile.diet.intermittentFasting'),
+                                        'ingen spesifikk diett': t('profile.diet.noSpecificDiet')
+                                      };
+                                      
+                                      // First check the direct mapping with the lowercase original
+                                      if (dietMappings[lowerCased]) {
+                                        return dietMappings[lowerCased];
+                                      }
+                                      
+                                      // Then check with the normalized version (no spaces)
+                                      if (dietMappings[normalized]) {
+                                        return dietMappings[normalized];
+                                      }
+                                      
+                                      // If all else fails, just format the original value nicely
+                                      return dietName.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase()).trim();
+                                    };
+                                    
+                                    return (
+                                      <div
+                                        key={index}
+                                        className="flex items-center bg-indigo-500/20 border border-indigo-500 rounded-lg px-3 py-1"
                                       >
-                                        ✕
-                                      </button>
-                                    </div>
-                                  ))}
+                                        <span className="text-white">{translateDietName(diet)}</span>
+                                        <button
+                                          onClick={() => {
+                                            setDietaryPreferences(
+                                              dietaryPreferences.filter(
+                                                (_, i) => i !== index
+                                              )
+                                            );
+                                            markAsDirty();
+                                          }}
+                                          className="ml-2 text-gray-300 hover:text-white"
+                                        >
+                                          ✕
+                                        </button>
+                                      </div>
+                                    );
+                                  })}
                                 </div>
                               </div>
                             )}
@@ -2512,7 +2821,7 @@ export default function ProfilePage() {
                                 onClick={() => setEditingField(null)}
                                 className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition-colors text-sm"
                               >
-                                Done
+                                {t('common.done')}
                               </button>
                             </div>
                           </div>
@@ -2522,8 +2831,8 @@ export default function ProfilePage() {
                             onClick={() => handleEdit('dietaryPreferences')}
                           >
                             {dietaryPreferences.length > 0
-                              ? dietaryPreferences.join(', ')
-                              : 'Not set'}
+                              ? <ProfileValueDisplay value={dietaryPreferences} translationPrefix="profile.diet" />
+                              : t('profile.notSet')}
                           </p>
                         )}
                       </div>
@@ -2604,7 +2913,7 @@ export default function ProfilePage() {
                               )
                             }
                             className="w-full bg-gray-700 border border-gray-600 rounded-lg py-2 px-3 text-white resize-none h-20"
-                            placeholder="Separate with commas (e.g., Diabetes, Hypertension)"
+                            placeholder={t('profile.separateWithCommas.medicalConditions')}
                           />
                         ) : (
                           <p
@@ -2635,7 +2944,7 @@ export default function ProfilePage() {
                               )
                             }
                             className="w-full bg-gray-700 border border-gray-600 rounded-lg py-2 px-3 text-white resize-none h-20"
-                            placeholder="Separate with commas (e.g., Aspirin, Metformin)"
+                            placeholder={t('profile.separateWithCommas.medications')}
                           />
                         ) : (
                           <p
@@ -2666,7 +2975,7 @@ export default function ProfilePage() {
                               )
                             }
                             className="w-full bg-gray-700 border border-gray-600 rounded-lg py-2 px-3 text-white resize-none h-20"
-                            placeholder="Separate with commas (e.g., ACL tear 2018, Shoulder surgery 2020)"
+                            placeholder={t('profile.separateWithCommas.injuries')}
                           />
                         ) : (
                           <p
@@ -2706,30 +3015,231 @@ export default function ProfilePage() {
                             )}
 
                             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                              {translatedPainBodyParts.map((part) => (
-                                <label
-                                  key={part}
-                                  className="relative flex items-center"
-                                >
-                                  <input
-                                    type="checkbox"
-                                    value={part}
-                                    checked={painfulAreas.includes(part)}
-                                    onChange={(e) => {
-                                      const newPainfulAreas = e.target.checked
-                                        ? [...painfulAreas, part]
-                                        : painfulAreas.filter(
-                                            (p) => p !== part
-                                          );
-                                      setPainfulAreas(newPainfulAreas);
-                                    }}
-                                    className="peer sr-only"
-                                  />
-                                  <div className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 text-gray-400 peer-checked:text-white peer-checked:bg-indigo-500/20 peer-checked:border-indigo-500 cursor-pointer transition-all duration-200">
-                                    <div className="font-medium">{part}</div>
-                                  </div>
-                                </label>
-                              ))}
+                              {translatedPainBodyParts.map((part) => {
+                                // Function to convert body part display names to storage keys
+                                const getBodyPartKey = (displayName: string): string => {
+                                  // First try to find a direct match in PAIN_BODY_PARTS
+                                  const directKey = Object.keys(PAIN_BODY_PARTS).find(key => {
+                                    try {
+                                      const translated = t(`bodyParts.${key}`);
+                                      return translated === displayName;
+                                    } catch (e) {
+                                      return false;
+                                    }
+                                  });
+                                  
+                                  if (directKey) return directKey;
+                                  
+                                  // Try camelCase to underscore conversion for common body parts
+                                  const underscoreMap: Record<string, string> = {
+                                    'upperBack': 'upper_back',
+                                    'lowerBack': 'lower_back',
+                                    'middleBack': 'middle_back',
+                                    'leftShoulder': 'left_shoulder',
+                                    'rightShoulder': 'right_shoulder',
+                                    'leftUpperArm': 'left_upper_arm',
+                                    'rightUpperArm': 'right_upper_arm',
+                                    'leftElbow': 'left_elbow',
+                                    'rightElbow': 'right_elbow',
+                                    'leftForearm': 'left_forearm',
+                                    'rightForearm': 'right_forearm',
+                                    'leftHand': 'left_hand',
+                                    'rightHand': 'right_hand',
+                                    'pelvisAndHipRegion': 'pelvis_and_hip_region',
+                                    'leftThigh': 'left_thigh',
+                                    'rightThigh': 'right_thigh',
+                                    'leftKnee': 'left_knee',
+                                    'rightKnee': 'right_knee',
+                                    'leftLowerLeg': 'left_lower_leg',
+                                    'rightLowerLeg': 'right_lower_leg',
+                                    'leftFoot': 'left_foot',
+                                    'rightFoot': 'right_foot'
+                                  };
+                                  
+                                  // Try to find camelCase equivalent first
+                                  for (const [camelKey, underscoreKey] of Object.entries(underscoreMap)) {
+                                    try {
+                                      const translated = t(`bodyParts.${camelKey}`);
+                                      if (translated === displayName) {
+                                        return underscoreKey;
+                                      }
+                                    } catch (e) {
+                                      // Continue to next key
+                                    }
+                                  }
+                                  
+                                  // Norwegian to English mapping
+                                  const norwegianToEnglish: Record<string, string> = {
+                                    'Øvre rygg': 'upper_back',
+                                    'Korsrygg': 'lower_back',
+                                    'Nakke': 'neck',
+                                    'Bryst': 'chest',
+                                    'Torso': 'torso',
+                                    'Midtre rygg': 'middle_back',
+                                    'Venstre skulder': 'left_shoulder',
+                                    'Høyre skulder': 'right_shoulder',
+                                    'Venstre overarm': 'left_upper_arm',
+                                    'Høyre overarm': 'right_upper_arm',
+                                    'Venstre albue': 'left_elbow',
+                                    'Høyre albue': 'right_elbow',
+                                    'Venstre underarm': 'left_forearm',
+                                    'Høyre underarm': 'right_forearm',
+                                    'Venstre hånd': 'left_hand',
+                                    'Høyre hånd': 'right_hand',
+                                    'Bekken- og hofteregion': 'pelvis_and_hip_region',
+                                    'Venstre lår': 'left_thigh',
+                                    'Høyre lår': 'right_thigh',
+                                    'Venstre kne': 'left_knee',
+                                    'Høyre kne': 'right_knee',
+                                    'Venstre legg': 'left_lower_leg',
+                                    'Høyre legg': 'right_lower_leg',
+                                    'Venstre fot': 'left_foot',
+                                    'Høyre fot': 'right_foot'
+                                  };
+                                  
+                                  // Check for Norwegian term
+                                  if (norwegianToEnglish[displayName]) {
+                                    return norwegianToEnglish[displayName];
+                                  }
+                                  
+                                  // Fallback to the display name as the key
+                                  return displayName;
+                                };
+                                
+                                // Function to check if a body part is selected
+                                const isBodyPartSelected = (displayName: string): boolean => {
+                                  if (painfulAreas.length === 0) return false;
+                                  
+                                  // First check direct match with display name
+                                  if (painfulAreas.includes(displayName)) return true;
+                                  
+                                  // Normalize display name for case-insensitive comparison
+                                  const normalizedDisplayName = displayName.toLowerCase();
+                                  if (painfulAreas.some(area => area.toLowerCase() === normalizedDisplayName)) return true;
+                                  
+                                  // Handle special cases for body parts with spaces
+                                  const spaceToUnderscore: Record<string, string[]> = {
+                                    'upper back': ['upper_back', 'upperback', 'upperBack'], 
+                                    'lower back': ['lower_back', 'lowerback', 'lowerBack'],
+                                    'middle back': ['middle_back', 'middleback', 'middleBack'],
+                                    'left shoulder': ['left_shoulder', 'leftshoulder', 'leftShoulder'],
+                                    'right shoulder': ['right_shoulder', 'rightshoulder', 'rightShoulder'],
+                                    'left upper arm': ['left_upper_arm', 'leftupperarm', 'leftUpperArm'],
+                                    'right upper arm': ['right_upper_arm', 'rightupperarm', 'rightUpperArm'],
+                                    'left elbow': ['left_elbow', 'leftelbow', 'leftElbow'],
+                                    'right elbow': ['right_elbow', 'rightelbow', 'rightElbow'],
+                                    'left forearm': ['left_forearm', 'leftforearm', 'leftForearm'],
+                                    'right forearm': ['right_forearm', 'rightforearm', 'rightForearm'],
+                                    'left hand': ['left_hand', 'lefthand', 'leftHand'],
+                                    'right hand': ['right_hand', 'righthand', 'rightHand'],
+                                    'pelvis and hip region': ['pelvis_and_hip_region', 'pelvisandhipregion', 'pelvisAndHipRegion'],
+                                    'left thigh': ['left_thigh', 'leftthigh', 'leftThigh'],
+                                    'right thigh': ['right_thigh', 'rightthigh', 'rightThigh'],
+                                    'left knee': ['left_knee', 'leftknee', 'leftKnee'],
+                                    'right knee': ['right_knee', 'rightknee', 'rightKnee'],
+                                    'left lower leg': ['left_lower_leg', 'leftlowerleg', 'leftLowerLeg'],
+                                    'right lower leg': ['right_lower_leg', 'rightlowerleg', 'rightLowerLeg'],
+                                    'left foot': ['left_foot', 'leftfoot', 'leftFoot'],
+                                    'right foot': ['right_foot', 'rightfoot', 'rightFoot']
+                                  };
+
+                                  // Check common variations with spaces vs underscores 
+                                  const key = Object.keys(spaceToUnderscore).find(k => 
+                                    k.toLowerCase() === normalizedDisplayName
+                                  );
+                                  
+                                  if (key) {
+                                    const variations = spaceToUnderscore[key];
+                                    return painfulAreas.some(area => 
+                                      variations.includes(area) || 
+                                      variations.includes(area.toLowerCase())
+                                    );
+                                  }
+                                  
+                                  // Get the storage key for this display name
+                                  const storageKey = getBodyPartKey(displayName);
+                                  
+                                  // Check if the storage key is in painfulAreas
+                                  if (painfulAreas.some(area => 
+                                    area === storageKey || 
+                                    area.toLowerCase() === storageKey.toLowerCase()
+                                  )) {
+                                    return true;
+                                  }
+                                  
+                                  // Try converting display name format
+                                  // From "Upper back" to "upper_back" or from "Upper Back" to "upper_back"
+                                  const wordsToUnderscore = displayName.toLowerCase().replace(/\s+/g, '_');
+                                  if (painfulAreas.some(area => 
+                                    area === wordsToUnderscore || 
+                                    area.toLowerCase() === wordsToUnderscore
+                                  )) {
+                                    return true;
+                                  }
+                                  
+                                  // From "Upper back" to "upperBack"
+                                  const wordsToCamel = displayName.toLowerCase().replace(/\s+(.)/g, (_, char) => 
+                                    char.toUpperCase()
+                                  );
+                                  if (painfulAreas.some(area => 
+                                    area === wordsToCamel || 
+                                    area.toLowerCase() === wordsToCamel.toLowerCase()
+                                  )) {
+                                    return true;
+                                  }
+                                  
+                                  return false;
+                                };
+                                
+                                // Check if this body part is selected
+                                const isSelected = isBodyPartSelected(part);
+                                
+                                return (
+                                  <label
+                                    key={part}
+                                    className="relative flex items-center"
+                                  >
+                                    <input
+                                      type="checkbox"
+                                      value={part}
+                                      checked={isSelected}
+                                      onChange={(e) => {
+                                        let newPainfulAreas;
+                                        if (e.target.checked) {
+                                          // When selecting, store the English key with proper format
+                                          const englishKey = getBodyPartKey(part);
+                                          newPainfulAreas = [...painfulAreas, englishKey];
+                                        } else {
+                                          // When deselecting, remove any variation of this body part
+                                          const storageKey = getBodyPartKey(part);
+                                          newPainfulAreas = painfulAreas.filter(area => {
+                                            // Remove direct match with display name
+                                            if (area === part) return false;
+                                            
+                                            // Remove match with storage key
+                                            if (area === storageKey) return false;
+                                            
+                                            // Remove camelCase variations
+                                            const camelCase = storageKey.replace(/_([a-z])/g, 
+                                              (match, letter) => letter.toUpperCase()
+                                            );
+                                            if (area === camelCase) return false;
+                                            
+                                            // Keep other areas
+                                            return true;
+                                          });
+                                        }
+                                        
+                                        setPainfulAreas(newPainfulAreas);
+                                      }}
+                                      className="peer sr-only"
+                                    />
+                                    <div className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 text-gray-400 peer-checked:text-white peer-checked:bg-indigo-500/20 peer-checked:border-indigo-500 cursor-pointer transition-all duration-200">
+                                      <div className="font-medium">{part}</div>
+                                    </div>
+                                  </label>
+                                );
+                              })}
                             </div>
 
                             {/* Done button */}
@@ -2748,7 +3258,7 @@ export default function ProfilePage() {
                             onClick={() => handleEdit('painfulAreas')}
                           >
                             {painfulAreas.length > 0
-                              ? painfulAreas.join(', ')
+                              ? <ProfileValueDisplay value={painfulAreas} translationPrefix="bodyParts" fallback="profile.fields.noPainAreas" />
                               : t('profile.fields.noPainAreas')}
                           </p>
                         )}
@@ -2771,7 +3281,7 @@ export default function ProfilePage() {
                               )
                             }
                             className="w-full bg-gray-700 border border-gray-600 rounded-lg py-2 px-3 text-white resize-none h-20"
-                            placeholder="Separate with commas (e.g., Heart disease, Diabetes)"
+                            placeholder={t('profile.separateWithCommas.familyHistory')}
                           />
                         ) : (
                           <p

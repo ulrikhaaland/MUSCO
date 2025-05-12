@@ -28,7 +28,43 @@
         "Bruk helhetlig fottrykk: stortå, lilletå og hæl.",
         "Hold albuene strake for å unngå bicepsbelastning.",
         "Er du svak i toppen, bruk rack pulls, RDL eller band/kjetting. Er du svak fra gulvet, bruk pauseløft eller deficit-løft."
-      ]
+      ],
+      "targetBodyParts": ["Hamstrings"],
+      "exerciseType": ["strength"],
+      "difficulty": "intermediate",
+      "equipment": ["Barbell"],
+      "contraindications": [
+        "Hamstrings injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": [
+        "Hamstrings",
+        "Abs",
+        "Adductors",
+        "Calves",
+        "Forearms",
+        "Glutes",
+        "Hamstrings",
+        "Lats",
+        "Lower Back",
+        "Middle Back",
+        "Quads",
+        "Traps",
+        "Upper Back"
+      ],
+      "alternatives": ["hamstrings-5", "hamstrings-34"],
+      "repetitions": 8,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Hinge (Bilateral)",
+      "mechanics": "Compound",
+      "videoUrl": "gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3001.MOV",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Hamstrings.jpg",
+      "viewCount": 5100000,
+      "popularity": "high"
     },
     {
       "id": "hamstrings-5",
@@ -49,7 +85,38 @@
         "Grip stangen hardt med tomlene rundt – unngå falskt grep.",
         "Hold vekten jevnt fordelt over hele foten; ikke la tærne løfte seg.",
         "Hold albuene strake for å minske risikoen for bicepskade."
-      ]
+      ],
+      "targetBodyParts": ["Hamstrings"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Barbell"],
+      "contraindications": [
+        "Hamstrings injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": [
+        "Hamstrings",
+        "Abs",
+        "Forearms",
+        "Glutes",
+        "Lats",
+        "Lower Back",
+        "Traps",
+        "Upper Back"
+      ],
+      "alternatives": ["hamstrings-34", "hamstrings-2"],
+      "repetitions": 8,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Hinge (Bilateral)",
+      "mechanics": "Compound",
+      "videoUrl": "gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3031.MOV",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Hamstrings.jpg",
+      "viewCount": 1800000,
+      "popularity": "high"
     },
     {
       "id": "hamstrings-20",
@@ -73,7 +140,28 @@
         "Oppretthold nøytral ryggrad hele tiden.",
         "Start med mindre bevegelse dersom du er ny til øvelsen.",
         "Bruk armene for å hjelpe tilbake hvis hamstrings ikke klarer opp-fasen."
-      ]
+      ],
+      "targetBodyParts": ["Hamstrings"],
+      "exerciseType": ["strength"],
+      "difficulty": "advanced",
+      "equipment": ["Bodyweight"],
+      "contraindications": [
+        "Hamstrings injury",
+        "Knee injuries",
+        "Acute pain during movement",
+        "Hypertension (due to potential breath holding during the exercise)"
+      ],
+      "muscles": ["Hamstrings", "Glutes", "Abs", "Calves"],
+      "alternatives": ["hamstrings-20", "hamstrings-5", "hamstrings-34"],
+      "repetitions": 6,
+      "sets": 3,
+      "restBetweenSets": 90,
+      "forceType": "Pull (Eccentric)",
+      "mechanics": "Isolation",
+      "videoUrl": "gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_4730.mov",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Hamstrings.jpg",
+      "viewCount": 0,
+      "popularity": "medium"
     },
     {
       "id": "hamstrings-34",
@@ -100,7 +188,41 @@
         "Grip stangen hardt, tomlene rundt, og la stangen gli langs beina.",
         "Hold vekten over hele foten – tre kontaktpunkter.",
         "Hold albuene strake for å beskytte biceps."
-      ]
+      ],
+      "targetBodyParts": ["Hamstrings"],
+      "exerciseType": ["strength"],
+      "difficulty": "intermediate",
+      "equipment": ["Barbell"],
+      "contraindications": [
+        "Hamstrings injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": [
+        "Hamstrings",
+        "Abs",
+        "Adductors",
+        "Calves",
+        "Forearms",
+        "Glutes",
+        "Lats",
+        "Lower Back",
+        "Quads",
+        "Traps",
+        "Upper Back"
+      ],
+      "alternatives": ["hamstrings-5", "hamstrings-2"],
+      "repetitions": 8,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Hinge (Bilateral)",
+      "mechanics": "Compound",
+      "videoUrl": "gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3030.mov",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Hamstrings.jpg",
+      "viewCount": 8600,
+      "popularity": "low"
     },
     {
       "id": "hamstrings-48",
@@ -124,7 +246,35 @@
         "Hold kjernen aktiv for å stabilisere ryggen.",
         "Bruk vegg-støtte med frie fingertupper om balansen er utfordrende.",
         "Øvelsen kan utføres med manual, kettlebell, vektplate, stang eller kroppsvekt."
-      ]
+      ],
+      "targetBodyParts": ["Hamstrings"],
+      "exerciseType": ["strength"],
+      "difficulty": "intermediate",
+      "equipment": [
+        "Kettlebell",
+        "Dumbbell",
+        "Weight Plate",
+        "Barbell",
+        "Bodyweight"
+      ],
+      "contraindications": [
+        "Hamstrings injury",
+        "Balance disorders",
+        "Acute lower back pain",
+        "Hip injury",
+        "Ankle instability"
+      ],
+      "muscles": ["Hamstrings", "Glutes", "Lower Back", "Core", "Calves"],
+      "alternatives": ["hamstrings-5", "hamstrings-34", "hamstrings-20"],
+      "repetitions": 10,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Hinge (Unilateral)",
+      "mechanics": "Compound",
+      "videoUrl": "gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_4731.mov",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Hamstrings.jpg",
+      "viewCount": 0,
+      "popularity": "medium"
     }
   ]
 }

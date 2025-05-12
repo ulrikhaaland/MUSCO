@@ -1,0 +1,143 @@
+{
+  "bodyPart": "Abdomen",
+  "exercises": [
+    {
+      "id": "obliques-4",
+      "name": "Sideplanke Med Hoftedipp",
+      "description": "Sideplanke Med Hoftedipp Er En Variant Av Sideplanke Og En Øvelse Som Styrker De Skrå Magemusklene. Hoftedippen Legger Til Ekstra Bevegelsesutslag Som Gir En Ytterligere Kontraksjon Av Obliques Under Utførelsen.",
+      "steps": [
+        "Legg Deg På Siden Med Underarmen Plantet I Gulvet.",
+        "Løft Hoftene Og Lag En Rett Linje Fra Skuldre Til Ankler.",
+        "Senk Hoftene Kontrollert Ned Mot Gulvet Uten Å Miste Spenningen.",
+        "Returner Til Startposisjon Og Gjenta Det Ønskede Antallet Repetisjoner På Begge Sider."
+      ],
+      "tips": [
+        "Sørg For At Overarmen Og Overkroppen Holder Cirka 90 Grad­ers Vinkel.",
+        "La Ikke Hoftene Skyte Bakover Når De Senkes; Spenningen Skal Bli I Kjernen.",
+        "Ikke La Korsryggen Svai. Avbryt Sett­et Hvis Nøytral Ryggrad Brytes; Kvalitet Er Viktigere Enn Kvantitet.",
+        "Klarer Du Ikke Holde Ryggen Nøytral, Velg Mer Stabile Varianter Som Veggpress, Hæltapp Eller Hoftestrekk.",
+        "Press Albuen Aktivt Ned I Gulvet For Å Aktivere Serratus Anterior Og Unngå Å Synke I Skulderen.",
+        "Ikke Hold Pusten; Lær Å Bevege Deg Mens Du Opprettholder Stabil Ryggrad."
+      ],
+      "targetBodyParts": ["Obliques"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Bodyweight"],
+      "contraindications": [
+        "Obliques injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": ["Obliques", "Abs"],
+      "alternatives": ["obliques-14"],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Isometric",
+      "mechanics": "Compound",
+      "videoUrl": "gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3756.MOV",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Obliques.jpg",
+      "viewCount": 24500,
+      "popularity": "low"
+    },
+    {
+      "id": "obliques-14",
+      "name": "Sideplanke Med Rotasjonsgjennomtrekk",
+      "description": "En Dynamisk Kjerneøvelse Som Kombinerer Sideplanke Med Roterende Bevegelse. Øvelsen Utfordrer Kjernestabilitet Samtidig Som Den Øker Bryst­rygg­mobilitet Og Skulderfunksjon. Også Kjent Som «Tre Nålen», Gir Den En Omfattende Kjerneutfordring I Flere Plan.",
+      "steps": [
+        "Start I Sideplanke Med Albuen Direkte Under Skulderen.",
+        "Stab­iliser Ved Å Stable Eller Stagge Føttene For Bal­anse.",
+        "Løft Øverste Arm Rett Mot Taket Og Åpne Brystet.",
+        "Roter Overkroppen Kontrollert Nedover Og Før Armen Inn Under Kroppen.",
+        "Træ Armen Gjennom Mellomrommet Mellom Støttearmen Og Gulvet.",
+        "Roter Tilbake Og Strekk Armen Opp Igjen Til Startposisjon.",
+        "Behold En Sterk Plankeposisjon Gjennom Hele Bevegelsen."
+      ],
+      "tips": [
+        "Hold Hoftene Løftet Under Hele Bevegelsen.",
+        "Roter Sakte Og Kontrollert For Å Unngå Momentum.",
+        "Pust Ut Idet Armen Føres Under Kroppen.",
+        "Hold Kjernemuskulaturen Aktiv For Å Beskytte Korsryggen.",
+        "Hvis Balansen Er Vanskelig, Utfør Øvelsen Med Knærne I Gulvet."
+      ],
+      "targetBodyParts": ["Core", "Shoulders"],
+      "exerciseType": ["strength"],
+      "difficulty": "intermediate",
+      "equipment": ["Bodyweight"],
+      "contraindications": [
+        "Shoulder injury",
+        "Lower back pain",
+        "Rotator cuff issues",
+        "Wrist problems",
+        "Acute core injury"
+      ],
+      "muscles": ["Obliques", "Core", "Shoulders", "Glutes", "Back"],
+      "alternatives": ["obliques-4"],
+      "repetitions": 8,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Push-Pull (Unilateral)",
+      "mechanics": "Compound",
+      "videoUrl": "gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3759.mov",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Core.jpg",
+      "viewCount": 0,
+      "popularity": "medium"
+    },
+    {
+      "id": "obliques-15",
+      "name": "Renegade-Roing",
+      "description": "Renegade-Roing Er En Sammensatt Bevegelse Som Kombinerer Isometrisk Høy Planke Med Alternerende Enarms Manualroing. Øvelsen Aktiverer Lats, Rhomboider Og Skulderbladstabilisatorer Under Roet, Mens Kjerne, Sete Og Skuldre Motstår Rotasjon Og Holder Kroppen Stiv. Det Er En Kraftig Antirotasjons­øvelse Forkledd Som Overkroppsroing.",
+      "steps": [
+        "Plasser To Manualer I Gulvet Cirka Skulderbredt.",
+        "Gå Opp I Høy Planke Med Hendene Rundt Manualhåndtakene Og Kroppen I En Rett Linje.",
+        "Sett Føttene Bredere Enn Hoftebredde For Stabilitet, Smalere For Større Kjernekrav.",
+        "Spenn Kjerne Og Sete For Å Holde Kroppen Stabil.",
+        "Ro Den Ene Manualen Opp Mot Ribbe­kassen Uten Å Vri Hoftene.",
+        "Senk Manualen Kontrollert Tilbake Til Gulvet.",
+        "Gjenta Roingen Med Motsatt Arm Mens Planken Opprettholdes.",
+        "Fortsett Å Alternere Sider Til Foreskrevet Antall Repetisjoner Er Fullført."
+      ],
+      "tips": [
+        "Brett Bena Bredt For Mer Stabilitet, Smalt For Høyere Kjernebelastning.",
+        "Unngå Å Vri Overkroppen; Tenk Antirotasjon Hele Tiden.",
+        "Hold Magen Stram Som Om Du Forventer Et Slag.",
+        "Kontroller Tempoet Og Ikke Slipp Manualen Hardt Ned.",
+        "Hold Hoftene Kvadrerte Mot Gulvet Gjennom Hele Øvelsen.",
+        "Bruk Lett­ere Vekter Eller Bredere Fotstilling Hvis Øvelsen Er For Tøff.",
+        "Oppretthold Nøytral Ryggrad Under Hele Bevegelsen.",
+        "Trekk Skulderbladene Bort Fra Ørene For Å Aktivere Lats Korrekt."
+      ],
+      "targetBodyParts": ["Obliques", "Core", "Back"],
+      "exerciseType": ["strength"],
+      "difficulty": "intermediate",
+      "equipment": ["Dumbbell"],
+      "contraindications": [
+        "Shoulder injury or impingement",
+        "Wrist pain or carpal tunnel",
+        "Lower back pain or injury",
+        "Acute core muscle strain",
+        "Elbow issues"
+      ],
+      "muscles": [
+        "Obliques",
+        "Core",
+        "Lats",
+        "Rhomboids",
+        "Glutes",
+        "Shoulders"
+      ],
+      "alternatives": ["obliques-4", "obliques-14"],
+      "repetitions": 10,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Pull (Unilateral)",
+      "mechanics": "Compound",
+      "videoUrl": "gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_4741.MOV",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Core.jpg",
+      "viewCount": 0,
+      "popularity": "medium"
+    }
+  ]
+}

@@ -17,33 +17,7 @@
         "Erektor-sentriske rygghev: Bøy deg globalt gjennom ryggraden og fokuser utelukkende på erektorene.",
         "Hvis du ikke kjenner setet arbeide, kjenn på musklene med hendene og hold en kort pause på toppen av bevegelsen.",
         "Dersom én setemuskel aktiveres dårligere enn den andre, tren den svakere siden med dobbelt så mange repetisjoner i enbeinsvarianter til du oppnår god muskelkontakt."
-      ],
-      "targetBodyParts": ["Glutes"],
-      "exerciseType": ["strength"],
-      "difficulty": "beginner",
-      "equipment": ["Bodyweight"],
-      "contraindications": [
-        "Glutes injury",
-        "Joint pain",
-        "Acute pain during movement"
-      ],
-      "muscles": ["Glutes", "Hamstrings", "Lower Back"],
-      "alternatives": [
-        "glutes-5",
-        "glutes-7",
-        "glutes-10",
-        "glutes-14",
-        "glutes-4"
-      ],
-      "repetitions": 12,
-      "sets": 3,
-      "restBetweenSets": 60,
-      "forceType": "Hinge (Bilateral)",
-      "mechanics": "Isolation",
-      "videoUrl": "gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_4732.mov",
-      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Glutes.jpg",
-      "viewCount": 3100000,
-      "popularity": "high"
+      ]
     },
     {
       "id": "glutes-7",
@@ -60,28 +34,7 @@
         "Pust ut når du løfter hoftene; du skal ikke kjenne bevegelsen i korsryggen.",
         "Palper setemusklene med hendene og hold en kort pause på toppen hvis du sliter med aktivering.",
         "Hvis én side er svakere, utfør øvelsen enbeint før du går tilbake til tobeinsversjonen."
-      ],
-      "targetBodyParts": ["Glutes"],
-      "exerciseType": ["strength"],
-      "difficulty": "beginner",
-      "equipment": ["Bodyweight"],
-      "contraindications": [
-        "Glutes injury",
-        "Joint pain",
-        "Acute pain during movement",
-        "Shoulder impingement"
-      ],
-      "muscles": ["Glutes", "Abs", "Hamstrings"],
-      "alternatives": ["glutes-8", "glutes-44", "glutes-45"],
-      "repetitions": 12,
-      "sets": 3,
-      "restBetweenSets": 60,
-      "forceType": "Push (Bilateral)",
-      "mechanics": "Isolation",
-      "videoUrl": "gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3754.MOV",
-      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Glutes.jpg",
-      "viewCount": 319600,
-      "popularity": "medium"
+      ]
     },
     {
       "id": "glutes-8",
@@ -99,28 +52,7 @@
         "Sikt mot en rett linje fra knær til skuldre på toppen.",
         "Pust ut når du løfter; du skal ikke kjenne bevegelsen i korsryggen.",
         "Kjenn etter med hendene og hold pausen på toppen om du ikke føler setet arbeide."
-      ],
-      "targetBodyParts": ["Glutes"],
-      "exerciseType": ["strength"],
-      "difficulty": "intermediate",
-      "equipment": ["Barbell"],
-      "contraindications": [
-        "Glutes injury",
-        "Joint pain",
-        "Acute pain during movement",
-        "Shoulder impingement"
-      ],
-      "muscles": ["Glutes", "Abs", "Hamstrings"],
-      "alternatives": ["glutes-7", "glutes-44", "glutes-45"],
-      "repetitions": 12,
-      "sets": 3,
-      "restBetweenSets": 60,
-      "forceType": "Push (Bilateral)",
-      "mechanics": "Isolation",
-      "videoUrl": "gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3014.MOV",
-      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Glutes.jpg",
-      "viewCount": 129200,
-      "popularity": "medium"
+      ]
     },
     {
       "id": "glutes-44",
@@ -141,28 +73,7 @@
         "Hold øverste ben rett uten å låse kneet.",
         "Bevar nøytral ryggstilling.",
         "For bedre isolasjon, pek tærne svakt ned mot gulvet."
-      ],
-      "targetBodyParts": ["Glutes"],
-      "exerciseType": ["strength"],
-      "difficulty": "beginner",
-      "equipment": ["Bodyweight"],
-      "contraindications": [
-        "Hip injury",
-        "Joint pain",
-        "Acute pain during movement",
-        "Recent hip surgery"
-      ],
-      "muscles": ["Glutes", "Hip Abductors"],
-      "alternatives": ["glutes-45", "glutes-7", "glutes-8"],
-      "repetitions": 15,
-      "sets": 3,
-      "restBetweenSets": 45,
-      "forceType": "Push (Unilateral)",
-      "mechanics": "Isolation",
-      "videoUrl": "gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3757.mov",
-      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Glutes.jpg",
-      "viewCount": 0,
-      "popularity": "medium"
+      ]
     },
     {
       "id": "glutes-45",
@@ -183,28 +94,7 @@
         "Start bevegelsen fra hoften, ikke med momentum.",
         "Bevar nøytral rygg og nakke.",
         "Reduser bevegelsesutslaget dersom du føler korsryggsbelastning."
-      ],
-      "targetBodyParts": ["Glutes", "Core"],
-      "exerciseType": ["strength", "activation"],
-      "difficulty": "beginner",
-      "equipment": ["Bodyweight"],
-      "contraindications": [
-        "Shoulder injury",
-        "Hip injury",
-        "Lower back pain",
-        "Acute pain during movement"
-      ],
-      "muscles": ["Glutes", "Obliques", "Hip Abductors", "Core"],
-      "alternatives": ["glutes-44", "glutes-7", "glutes-8"],
-      "repetitions": 12,
-      "sets": 3,
-      "restBetweenSets": 45,
-      "forceType": "Push (Unilateral)",
-      "mechanics": "Compound",
-      "videoUrl": "gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3758.MOV",
-      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Glutes.jpg",
-      "viewCount": 0,
-      "popularity": "low"
+      ]
     },
     {
       "id": "glutes-46",
@@ -226,28 +116,7 @@
         "Pause kort i full hofteekstensjon for ekstra aktivering.",
         "Bevegelsen skal være kontrollert, ikke rask.",
         "Hold nøytral ryggstilling hele tiden."
-      ],
-      "targetBodyParts": ["Glutes"],
-      "exerciseType": ["strength"],
-      "difficulty": "intermediate",
-      "equipment": ["Bench"],
-      "contraindications": [
-        "Lower back injury",
-        "Hip injury",
-        "Acute pain during movement",
-        "Knee instability"
-      ],
-      "muscles": ["Glutes", "Hamstrings", "Core"],
-      "alternatives": ["glutes-7", "glutes-8", "glutes-44"],
-      "repetitions": 10,
-      "sets": 3,
-      "restBetweenSets": 60,
-      "forceType": "Push (Unilateral)",
-      "mechanics": "Isolation",
-      "videoUrl": "gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_4729.MOV",
-      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Glutes.jpg",
-      "viewCount": 0,
-      "popularity": "low"
+      ]
     }
   ]
 }

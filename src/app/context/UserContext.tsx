@@ -109,7 +109,6 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
     if (user) {
       // Show loader when starting to fetch data
-      showGlobalLoader(true, t('userContext.loading.programs'));
 
       // Listen to all user programs
       const programsRef = collection(db, `users/${user.uid}/programs`);
@@ -228,7 +227,10 @@ export function UserProvider({ children }: { children: ReactNode }) {
                 setDiagnosisData(userProgram.diagnosis);
               }
             } catch (error) {
-              console.error(t('userContext.error.processingActiveProgram'), error);
+              console.error(
+                t('userContext.error.processingActiveProgram'),
+                error
+              );
             }
 
             // Break after processing the active program
@@ -410,7 +412,10 @@ export function UserProvider({ children }: { children: ReactNode }) {
               setUserPrograms(allPrograms);
             }
           } catch (error) {
-            console.error(t('userContext.error.loadingProgramsBackground'), error);
+            console.error(
+              t('userContext.error.loadingProgramsBackground'),
+              error
+            );
           }
         }, 100); // Small delay to let the UI render first
 
@@ -464,9 +469,6 @@ export function UserProvider({ children }: { children: ReactNode }) {
     if (authLoading) return;
 
     let isSubscribed = true;
-
-    // Show loader when starting to fetch data
-    showGlobalLoader(true, t('userContext.loading.data'));
 
     // Safety timeout to ensure loading eventually completes
     const safetyTimer = setTimeout(() => {
@@ -775,9 +777,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
       const handlePendingQuestionnaire = async () => {
         // Don't process if another submission is in progress
         if (submissionInProgressRef.current) {
-          console.log(
-            t('userContext.log.skipAutomaticSubmission')
-          );
+          console.log(t('userContext.log.skipAutomaticSubmission'));
           return;
         }
 
@@ -813,10 +813,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
               // Delete the pending questionnaire after submission
               await deletePendingQuestionnaire(pendingEmail);
             } else {
-              console.log(
-                t('userContext.log.noQuestionnaire'),
-                pendingEmail
-              );
+              console.log(t('userContext.log.noQuestionnaire'), pendingEmail);
             }
           }
         } catch (error) {
@@ -901,7 +898,10 @@ export function UserProvider({ children }: { children: ReactNode }) {
       );
       if (combinedProgram?.program) {
         combinedProgram.program.forEach((w, i) =>
-          console.log(`${t('userContext.debug.combinedWeek')} ${i + 1}:`, w?.week)
+          console.log(
+            `${t('userContext.debug.combinedWeek')} ${i + 1}:`,
+            w?.week
+          )
         );
       }
 
@@ -1006,7 +1006,9 @@ export function UserProvider({ children }: { children: ReactNode }) {
         });
     }
 
-    return Promise.reject(new Error(t('userContext.error.invalidProgramIndex')));
+    return Promise.reject(
+      new Error(t('userContext.error.invalidProgramIndex'))
+    );
   };
 
   const generateFollowUpProgram = async () => {

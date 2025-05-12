@@ -249,7 +249,13 @@
       "targetBodyParts": ["Hamstrings"],
       "exerciseType": ["strength"],
       "difficulty": "intermediate",
-      "equipment": ["Kettlebell", "Dumbbell", "Weight Plate", "Barbell", "Bodyweight"],
+      "equipment": [
+        "Kettlebell",
+        "Dumbbell",
+        "Weight Plate",
+        "Barbell",
+        "Bodyweight"
+      ],
       "steps": [
         "Stand upright holding a weight in your right hand (or opposite the working leg). For bodyweight, extend arms for balance.",
         "Shift your weight to your left foot, keeping a slight bend in the knee.",

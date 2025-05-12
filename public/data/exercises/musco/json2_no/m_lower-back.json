@@ -1,0 +1,106 @@
+{
+  "bodyPart": "Lower Back",
+  "exercises": [
+    {
+      "id": "lower-back-1",
+      "name": "Superman-løft",
+      "description": "Superman-løft er en dynamisk øvelse for bakre kjede som utføres liggende på magen, hvor både armer og bein løftes samtidig fra gulvet i en kontrollert konsentrisk bevegelse, holdes kort på toppen og senkes tilbake. Øvelsen trener ryggstrekkere, setemuskler, hamstrings og øvre rygg gjennom gjentatte ekstensjoner under spenning. Det korte holdet på toppen forsterker posisjonsstyrke og nevromuskulær kontroll.",
+      "steps": [
+        "Legg deg på magen på en matte med armene strukket fremover og bena rette.",
+        "Hold nakken nøytral og blikket mot gulvet.",
+        "Spenn kjernen og kontraher setet.",
+        "Løft samtidig armer, bryst og ben fra gulvet i en kontrollert bevegelse.",
+        "Sikt på å løfte lemmene ca. 10–15 cm over bakken.",
+        "Hold topp­posisjonen i 1–2 sekunder mens du klemmer setet og ryggmusklene.",
+        "Senk rolig tilbake til startposisjon.",
+        "Gjenta til foreskrevet antall repetisjoner."
+      ],
+      "tips": [
+        "Løft med kontroll og pause 1–2 sekunder på toppen.",
+        "Klem setet, øvre rygg og skulderbladene gjennom hele bevegelsen.",
+        "Hold bevegelsen jevn; unngå rykk eller overekstensjon.",
+        "10–15 repetisjoner per sett fungerer godt for utholdenhet og kontroll.",
+        "Fokuser på kvalitet fremfor høyde på løftet.",
+        "Bevar nøytral hodeposisjon for å unngå nakkebelastning.",
+        "Hvis full bevegelse er for krevende, start med å løfte bare armer eller bare ben.",
+        "Pust normalt – pust ut på løftet og inn på senkefasen."
+      ],
+      "targetBodyParts": ["Lower Back"],
+      "exerciseType": ["strength", "endurance"],
+      "difficulty": "beginner",
+      "equipment": ["Bodyweight"],
+      "contraindications": [
+        "Acute lower back pain or injury",
+        "Herniated disc",
+        "Spinal stenosis",
+        "Pregnancy (especially late term)",
+        "Recent abdominal surgery"
+      ],
+      "muscles": ["Lower Back", "Glutes", "Hamstrings", "Upper Back"],
+      "alternatives": [],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Push (Bilateral)",
+      "mechanics": "Compound",
+      "videoUrl": "gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_4738.mov",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Lower Back.jpg",
+      "viewCount": 0,
+      "popularity": "medium"
+    },
+    {
+      "id": "lower-back-2",
+      "name": "Svømmerløft I Mageleie",
+      "description": "Svømmerløft i mageleie er en kroppsvektøvelse der armene starter strakt frem i «superman»-posisjon, sveiper bak til bøyd albue med skulderblad­retraksjon og vender så kontrollert tilbake. Øvelsen trener midtre og nedre trapezius, rhomboider, bakre deltoider og ryggstrekkere, og utvikler koordinasjon, skulderkontroll og styrke i den øvre bakre kjeden med minimalt utstyr.",
+      "steps": [
+        "Legg deg på magen med armene strakt fremover og bena rette, lett hevet fra gulvet.",
+        "Hold nakken nøytral og blikket mot gulvet.",
+        "Løft brystet og armene litt fra gulvet til superman-posisjon.",
+        "Start en trekkbevegelse ved å samle og senke skulderbladene.",
+        "Bøy albuene og før armene bakover langs overkroppen som i en ro-bevegelse.",
+        "Pause kort i denne tilbaketrukne posisjonen mens du klemmer skulderbladene.",
+        "Før armene kontrollert tilbake til startposisjon over hodet.",
+        "Fortsett syklusen uten at armer eller ben berører gulvet mellom repetisjonene."
+      ],
+      "tips": [
+        "Start trekkbevegelsen med skulderbladene, ikke hendene.",
+        "Hold bena løftet for full spenning i bakre kjede.",
+        "Beveg langsomt og kontrollert – unngå sving og momentum.",
+        "Pause kort i «trekk»-posisjonen for maksimal aktivering.",
+        "Prioriter bevegelseskvalitet over hastighet.",
+        "Oppretthold kjernespenn under hele øvelsen.",
+        "Bevar nøytral hodeposisjon for å unngå nakkebelastning.",
+        "Hvis det er vanskelig å holde bena oppe, kan du la dem hvile i gulvet og fokusere på overkroppsbevegelsen."
+      ],
+
+      "targetBodyParts": ["Lower Back", "Upper Back"],
+      "exerciseType": ["strength", "endurance"],
+      "difficulty": "beginner",
+      "equipment": ["Bodyweight"],
+      "contraindications": [
+        "Acute lower back pain or injury",
+        "Shoulder impingement or injury",
+        "Herniated disc",
+        "Spinal stenosis",
+        "Recent abdominal or back surgery"
+      ],
+      "muscles": [
+        "Lower Back",
+        "Upper Back",
+        "Rear Deltoids",
+        "Rhomboids",
+        "Trapezius"
+      ],
+      "alternatives": ["lower-back-1"],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Pull (Bilateral)",
+      "mechanics": "Compound",
+      "videoUrl": "gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_4739.mov",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Lower Back.jpg",
+      "viewCount": 0,
+      "popularity": "medium"
+    }
+  ]
+}

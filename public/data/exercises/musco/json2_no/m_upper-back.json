@@ -1,0 +1,342 @@
+{
+  "bodyPart": "Upper Back",
+  "exercises": [
+    {
+      "id": "upper-back-3",
+      "name": "Stangroing Stående Fremoverbøyd",
+      "description": "Den fremoverbøyde stang­roen er en grunnleggende ryggøvelse som bygger muskulatur i øvre rygg, samtidig som den stiller krav til kjerne- og korsryggstabilitet.",
+      "steps": [
+        "Stå oppreist og hold stangen med dobbelt overhåndsgrep.",
+        "Bøy i hoften til overkroppen er omtrent parallell med gulvet, og start bevegelsen ved å trekke albuene bakover mens skulder­bladene trekkes sammen.",
+        "Dra stangen inn mot navlen til den berører kroppen, og senk den så kontrollert tilbake til startposisjon.",
+        "Gjenta for ønsket antall repetisjoner."
+      ],
+      "tips": [
+        "Test ulike hode­posisjoner (se frem vs. nøytral nakke) og merk hva som kjennes best.",
+        "Hold lett spenning i magen for å unngå overdreven svai i korsryggen.",
+        "La ikke momentet styre – kontroller stangen gjennom hele repetisjonen.",
+        "Unngå å skyte hodet frem når du trekker.",
+        "Pass på at skulder­bladet faktisk beveger seg på ribbe­kassen – ikke «låse» det ned."
+      ],
+      "targetBodyParts": ["Upper Back"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Barbell"],
+      "contraindications": [
+        "Upper Back injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": [
+        "Upper Back",
+        "Abs",
+        "Biceps",
+        "Lats",
+        "Lower Back",
+        "Shoulders"
+      ],
+      "alternatives": ["upper-back-14", "upper-back-8", "upper-back-4"],
+      "repetitions": 8,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Pull (Bilateral)",
+      "mechanics": "Compound",
+      "videoUrl": "gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3124.mov",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper-Back.jpg",
+      "viewCount": 8000000,
+      "popularity": "high"
+    },
+    {
+      "id": "upper-back-4",
+      "name": "Sittende Kabelroing",
+      "description": "Ingen beskrivelse tilgjengelig.",
+      "steps": [
+        "Velg passende vekt og fest et smalt V-håndtak på den sittende ro-maskinen.",
+        "Grip håndtaket med nøytralt grep og sett deg med lett bøyde knær og rett rygg.",
+        "Trekk vekten så vidt av vektstabelen; du sitter nå oppreist med skuldrene tilbake – startposisjon.",
+        "Uten å bevege overkroppen trekker du håndtaket mot magen.",
+        "Trekk skulderbladene sammen, klem, pause kort og senk deretter vekten kontrollert tilbake.",
+        "Gjenta ønsket antall repetisjoner."
+      ],
+      "tips": [
+        "Hold ryggen rett og overkroppen stille gjennom hele settet.",
+        "La ikke skuldrene runde frem når armene strekkes ut.",
+        "Bruk ryggmuskulaturen – ikke momentum – til å flytte vekten.",
+        "Pause og klem 1–2 sekunder på toppen for ekstra aktivering."
+      ],
+      "targetBodyParts": ["Upper Back"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Cable"],
+      "contraindications": [
+        "Upper Back injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": ["Upper Back", "Biceps", "Lats", "Shoulders"],
+      "alternatives": ["upper-back-8", "upper-back-3", "upper-back-14"],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Pull",
+      "mechanics": "Compound",
+      "videoUrl": "gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3016.MOV",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper-Back.jpg",
+      "viewCount": 5200000,
+      "popularity": "high"
+    },
+    {
+      "id": "upper-back-8",
+      "name": "Tripod-Hantelroing",
+      "description": "Tripod-hantelroing trener øvre rygg én side av gangen og krever mer kjernestabilitet enn støttede ro-varianter, noe som kan bidra til jevnere styrke og symmetri.",
+      "steps": [
+        "Plasser ett kne og samme sides hånd på benken som støtte.",
+        "Hold en hantel i den andre hånden med nøytralt grep.",
+        "Start bevegelsen ved å trekke albuen bakover mens skulderbladet trekkes sammen.",
+        "Dra hantelen inn til albuen passerer kroppens midtlinje, og senk deretter kontrollert tilbake.",
+        "Gjenta ønsket antall repetisjoner på begge sider."
+      ],
+      "tips": [
+        "Prøv både blikk frem og nøytral nakke for å se hva som kjennes best.",
+        "Hold kjernen aktiv for å hindre overdreven svai.",
+        "Kontroller vekten – unngå å «slunge» hantelen opp.",
+        "Om biceps tar over, prøv falskt grep uten tommel rundt håndtaket.",
+        "Ikke skyv hodet frem når du trekker.",
+        "La skulderbladet gli naturlig – unngå å låse det fast."
+      ],
+      "targetBodyParts": ["Upper Back"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Dumbbell"],
+      "contraindications": [
+        "Upper Back injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": [
+        "Upper Back",
+        "Abs",
+        "Biceps",
+        "Lats",
+        "Lower Back",
+        "Shoulders"
+      ],
+      "alternatives": ["upper-back-3", "upper-back-4", "upper-back-14"],
+      "repetitions": 8,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Pull (Unilateral)",
+      "mechanics": "Compound",
+      "videoUrl": "gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3003.MOV",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper-Back.jpg",
+      "viewCount": 955700,
+      "popularity": "medium"
+    },
+    {
+      "id": "upper-back-14",
+      "name": "Foroverbøyd Roing Med Omvendt Grep",
+      "description": "Ingen beskrivelse tilgjengelig.",
+      "steps": [
+        "Last en stang og plasser den foran deg på gulvet.",
+        "Stå med føttene skulderbredt, bøy knærne og grip stangen med omvendt grep, hendene bredere enn skuldrene.",
+        "Hold ryggen rett og reis deg til stangen hviler mot hoften.",
+        "Bøy så knærne lett og la stangen gli ned til like under knærne – dette er startposisjonen som forblir konstant.",
+        "Trekk stangen opp til like under brystet.",
+        "Klem skulderbladene sammen i topposisjonen.",
+        "Senk stangen kontrollert tilbake til start og gjenta.",
+        "Pause på toppen og fokuser på skulderblad-klem.",
+        "Senk vekten rolig – ikke slipp den ned.",
+        "Hold ryggen rett under hele settet.",
+        "Se fremover for å bevare riktig holdning."
+      ],
+      "tips": [
+        "Pause og klem skulderbladene sammen på toppen.",
+        "Hold senkefasen langsom for maksimal kontroll.",
+        "Ryggen skal være rett hele veien.",
+        "Hold hodet oppe og blikket frem.",
+        "Perfeksjoner teknikken før du legger på mye vekt for å unngå ryggskader."
+      ],
+      "targetBodyParts": ["Upper Back"],
+      "exerciseType": ["strength"],
+      "difficulty": "intermediate",
+      "equipment": ["Barbell"],
+      "contraindications": [
+        "Upper Back injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": ["Upper Back", "Biceps", "Lats", "Shoulders"],
+      "alternatives": ["upper-back-3", "upper-back-8", "upper-back-4"],
+      "repetitions": 8,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Pull",
+      "mechanics": "Compound",
+      "videoUrl": "gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3125.mov",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper-Back.jpg",
+      "viewCount": 485600,
+      "popularity": "medium"
+    },
+    {
+      "id": "upper-back-16",
+      "name": "Omvendt Roing",
+      "description": "Omvendt roing er en kroppsvekt­øvelse som bygger trekkstyrke horisontalt og fungerer som et mellom­steg mot pull-ups.",
+      "steps": [
+        "Still inn stang, ringer eller TRX i ønsket høyde – lavere høyde gir tyngre øvelse.",
+        "Plasser deg under utstyret med ansiktet opp og grip håndtaket med overhåndsgrep noe bredere enn skulderbredde.",
+        "Stram kjernen, hold kroppen i en rett linje fra hode til hæler og hælene i gulvet.",
+        "Trekk brystet mot stangen ved å dra skulderbladene sammen.",
+        "Pause kort når brystet nærmer seg stangen.",
+        "Senk kroppen kontrollert tilbake til startposisjon."
+      ],
+      "tips": [
+        "Hold kroppen strak – unngå hengende hofter eller svai rygg.",
+        "Tenk på å klemme skulderbladene sammen i hvert drag.",
+        "Kontroller eksentrisk fase – ikke slipp deg ned.",
+        "Flytt føttene for å justere vanskelighetsgrad: nærmere er lettere, lenger fra eller på kasse er tyngre.",
+        "Varier grep og bredde for å endre muskel­fokus."
+      ],
+      "targetBodyParts": ["Upper Back"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Bodyweight", "Barbell", "Smith Machine", "TRX", "Rings"],
+      "contraindications": [
+        "Upper Back injury",
+        "Shoulder impingement",
+        "Elbow or wrist pain",
+        "Acute pain during movement",
+        "Inability to maintain core stability"
+      ],
+      "muscles": ["Upper Back", "Biceps", "Lats", "Core"],
+      "alternatives": [
+        "upper-back-10",
+        "upper-back-4",
+        "upper-back-7",
+        "upper-back-12",
+        "upper-back-19"
+      ],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Pull",
+      "mechanics": "Compound",
+      "videoUrl": "gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3747.MOV",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper-Back.jpg",
+      "viewCount": 431900,
+      "popularity": "medium"
+    },
+    {
+      "id": "upper-back-60",
+      "name": "Høystående Båndroing",
+      "description": "En båndvariant som trekkes inn mot øvre mage og gir ekstra fokus på øvre rygg, rhomboideer og midtre trapezius – ypperlig for bedre holdning.",
+      "steps": [
+        "Fest et strikk til et solid anker i høyde med øvre mage.",
+        "Stå vendt mot ankeret med føttene skulderbredt og lett knebøy.",
+        "Grip strikken med begge hender, armene strak frem i ankerhøyde.",
+        "Steg bakover til det er spenning i strikken og hold brystet høyt.",
+        "Start draget ved å klemme skulderbladene sammen.",
+        "Trekk strikken mot øvre mage/lav bryst med albuene litt høyere enn ved tradisjonell roing.",
+        "Klem skulderbladene maksimalt i slutten av bevegelsen.",
+        "Returner kontrollert til startposisjon og oppretthold spenning.",
+        "Gjenta ønsket antall repetisjoner."
+      ],
+      "tips": [
+        "Hold albuene på eller litt over strikkens linje hele veien.",
+        "Led bevegelsen fra skulderbladene – ikke bare armene.",
+        "Bevar «stolt bryst» under hele øvelsen.",
+        "Unngå å trekke skuldrene opp – hold dem nede og bak.",
+        "Hvis armene tar over, fokuser på å dra med albuene.",
+        "Stram kjernen for å hindre svai eller lening bakover."
+      ],
+      "targetBodyParts": ["Upper Back"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Bands"],
+      "contraindications": [
+        "Upper Back injury",
+        "Neck pain or injury",
+        "Shoulder impingement",
+        "Acute pain during movement"
+      ],
+      "muscles": [
+        "Upper Back",
+        "Rear Deltoids",
+        "Rhomboids",
+        "Middle Trapezius",
+        "Biceps"
+      ],
+      "alternatives": [
+        "upper-back-7",
+        "upper-back-10",
+        "upper-back-24",
+        "upper-back-43",
+        "upper-back-4"
+      ],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 45,
+      "forceType": "Pull",
+      "mechanics": "Compound",
+      "videoUrl": "gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3741.MOV",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Upper-Back.jpg",
+      "viewCount": 0,
+      "popularity": "medium"
+    },
+    {
+      "id": "upper-back-61",
+      "name": "Sittende Enarms Nedtrekk Fra Gulv",
+      "description": "En isolert latøvelse utført sittende på gulvet med høyt kabel­feste – minimerer momentum og lar deg fokusere på én side av gangen.",
+      "steps": [
+        "Fest et enkelt håndtak i høyt kabel­feste og sett deg på gulvet vendt mot maskinen.",
+        "Grip håndtaket med én hånd – armen er strukket opp og kabelen under spenning.",
+        "Hold overkroppen oppreist og trekk håndtaket ned ved å føre albuen mot siden.",
+        "Klem latissimus i bunnposisjonen.",
+        "Kontroller bevegelsen tilbake til startposisjon.",
+        "Fullfør alle repetisjoner på én side før du bytter."
+      ],
+      "tips": [
+        "Hold albuen tett inntil kroppen gjennom hele draget.",
+        "Tenk på å føre albuen ned og bak i stedet for å dra med hånden.",
+        "Unngå overdrevent bakover­len – hold kjernen aktiv.",
+        "Kontroller den eksentriske fasen for maksimal muskel­arbeid."
+      ],
+      "targetBodyParts": ["Upper Back"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Cable"],
+      "contraindications": [
+        "Latissimus Dorsi injury",
+        "Shoulder impingement",
+        "Elbow pain",
+        "Acute back pain",
+        "Core instability issues"
+      ],
+      "muscles": [
+        "Lats",
+        "Teres Major",
+        "Biceps",
+        "Lower Trapezius",
+        "Rhomboids",
+        "Core"
+      ],
+      "alternatives": ["lats-1", "lats-4", "lats-6", "lats-9", "upper-back-43"],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Pull (Unilateral)",
+      "mechanics": "Compound",
+      "videoUrl": "gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3746.MOV",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Lats.jpg",
+      "viewCount": 0,
+      "popularity": "low"
+    }
+  ]
+}

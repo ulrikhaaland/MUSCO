@@ -155,15 +155,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
               // Clear the URL to remove the sign-in link
               window.history.replaceState(null, '', window.location.pathname);
-              
+
               // If we're in the shared-link page, don't navigate since that component handles its own navigation
               if (!window.location.pathname.includes('/auth/shared-link')) {
                 console.log('Auth success, redirecting to home page');
-                
+
                 // Only hide loader after successful auth
                 hideLoader();
                 setLoading(false);
-                
+
                 // Navigate to home
                 router.push('/');
               }
@@ -196,7 +196,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     console.log('Setting up auth state listener...');
     showGlobalLoader(true, 'Checking login status...');
-    
+
     const unsubscribe = onAuthStateChanged(
       auth,
       async (firebaseUser) => {
@@ -224,7 +224,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
 
         setLoading(false);
-        // showGlobalLoader(false);
+        // if route is not '/' show loader
+        if (window.location.pathname !== '/' && window.location.pathname !== '/program') {
+          showGlobalLoader(false);
+        }
       },
       (error) => {
         console.error('Auth state change error:', error);
@@ -394,17 +397,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     let displayMessage = fallbackMessage;
 
     // Check if we're in PWA mode
-    const isPwa = typeof window !== 'undefined' && (
-      window.matchMedia('(display-mode: standalone)').matches || 
-      (window.navigator as any).standalone ||
-      document.referrer.includes('android-app://')
-    );
+    const isPwa =
+      typeof window !== 'undefined' &&
+      (window.matchMedia('(display-mode: standalone)').matches ||
+        (window.navigator as any).standalone ||
+        document.referrer.includes('android-app://'));
 
     // Handle specific Firebase error codes
     if (error instanceof Error && 'code' in error) {
       switch (error.code as string) {
         case 'auth/invalid-action-code':
-          displayMessage = isPwa 
+          displayMessage = isPwa
             ? 'This sign-in link has expired or already been used. Please use the 6-digit code that was sent to your email instead.'
             : 'The sign-in link has expired or already been used. Please request a new sign-in link.';
           // For PWA users with invalid link, redirect to code input page
@@ -483,14 +486,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
       const origin = window.location.origin; // Get current origin
       const sendLoginEmail = httpsCallable(functions, 'sendLoginEmail');
-      
+
       // Check if running in standalone mode (PWA)
-      const isPwa = typeof window !== 'undefined' && (
-        window.matchMedia('(display-mode: standalone)').matches || 
-        (window.navigator as any).standalone ||
-        document.referrer.includes('android-app://')
-      );
-      
+      const isPwa =
+        typeof window !== 'undefined' &&
+        (window.matchMedia('(display-mode: standalone)').matches ||
+          (window.navigator as any).standalone ||
+          document.referrer.includes('android-app://'));
+
       // Pass email, origin, language, AND isPwa flag
       await sendLoginEmail({ email, origin, language: locale, isPwa });
     } catch (error) {
@@ -508,24 +511,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       // Mark the body as logging out to prevent issues
       document.body.classList.add('logging-out');
-      
+
       showGlobalLoader(true, 'Signing you out...');
       await signOut(auth);
       setUser(null); // Optimistically set user to null
-      
+
       // Clear authentication related localStorage items
       window.localStorage.removeItem('emailForSignIn');
       window.localStorage.removeItem('codeRequestTimestamp');
-      
+
       // Hide loader before navigation
       hideLoader();
-      
+
       // Add a small delay before navigation to ensure loader state is updated
       setTimeout(() => {
         // Use the router for a cleaner transition
         router.push('/login');
       }, 100);
-      
+
       // Safety timeout to ensure loader is hidden even if navigation fails
       setTimeout(() => {
         hideLoader();

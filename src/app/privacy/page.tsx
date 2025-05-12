@@ -13,9 +13,11 @@ import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../firebase/config';
 import { UserProfile } from '../types/user';
 import { toast } from '../components/ui/ToastProvider';
+import { useTranslation } from '../i18n/TranslationContext';
 
 export default function PrivacyPage() {
   const router = useRouter();
+  const { t } = useTranslation();
   const { user, loading: authLoading, deleteUserAccount } = useAuth();
   const [verificationEmail, setVerificationEmail] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -87,7 +89,7 @@ export default function PrivacyPage() {
       <div className="fixed inset-0 bg-gray-900/95 backdrop-blur-sm z-50 flex items-center justify-center">
         <div className="flex flex-col items-center space-y-4">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
-          <p className="text-white text-lg">Loading...</p>
+          <p className="text-white text-lg">{t('privacy.loading')}</p>
         </div>
       </div>
     );
@@ -254,11 +256,11 @@ export default function PrivacyPage() {
               d="M10 19l-7-7m0 0l7-7m-7 7h18"
             />
           </svg>
-          <span className="ml-2">Back</span>
+          <span className="ml-2">{t('privacy.backButton')}</span>
         </button>
         
         <div className="flex flex-col items-center">
-          <h1 className="text-app-title text-center">Privacy Center</h1>
+          <h1 className="text-app-title text-center">{t('privacy.title')}</h1>
         </div>
         
         {/* Empty spacer to balance the title */}
@@ -269,15 +271,15 @@ export default function PrivacyPage() {
         <div className="max-w-md mx-auto px-4 pt-6">
           {/* Privacy information section */}
           <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-xl ring-1 ring-gray-700/50 p-6 mb-8">
-            <h2 className="text-xl font-bold text-white mb-4">Your Privacy Matters</h2>
+            <h2 className="text-xl font-bold text-white mb-4">{t('privacy.dataControl')}</h2>
             <p className="text-gray-300 mb-4">
-              We take your privacy seriously. This page allows you to manage your data and understand how we protect your information.
+              {t('privacy.dataControl.description')}
             </p>
             <button
               onClick={() => router.push('/privacy-policy')}
               className="px-4 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 w-full flex items-center justify-between"
             >
-              <span>View Privacy Policy</span>
+              <span>{t('privacy.policy.title')}</span>
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
@@ -286,9 +288,9 @@ export default function PrivacyPage() {
           
           {/* Data export section */}
           <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-xl ring-1 ring-gray-700/50 p-6 mb-8">
-            <h2 className="text-xl font-bold text-white mb-4">Your Data</h2>
+            <h2 className="text-xl font-bold text-white mb-4">{t('privacy.exportData')}</h2>
             <p className="text-gray-300 mb-4">
-              Under GDPR, you have the right to access and export your personal data.
+              {t('privacy.exportData.description')}
             </p>
             
             {!showDataExport ? (
@@ -297,7 +299,7 @@ export default function PrivacyPage() {
                 disabled={isLoading}
                 className="px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-500 w-full flex items-center justify-center"
               >
-                {isLoading ? 'Preparing Data...' : 'Export My Data'}
+                {isLoading ? t('privacy.loading') : t('privacy.exportData.button')}
               </button>
             ) : (
               <div className="space-y-4">
@@ -323,13 +325,13 @@ export default function PrivacyPage() {
                     <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                     </svg>
-                    Download JSON
+                    {t('privacy.dataExport.button.download')}
                   </button>
                   <button
                     onClick={() => setShowDataExport(false)}
                     className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-500"
                   >
-                    Close
+                    {t('privacy.dataExport.button.close')}
                   </button>
                 </div>
               </div>
@@ -338,9 +340,9 @@ export default function PrivacyPage() {
           
           {/* Delete account section - only show the button here */}
           <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-xl ring-1 ring-gray-700/50 p-6 mb-8">
-            <h2 className="text-xl font-bold text-white mb-4">Delete Account</h2>
+            <h2 className="text-xl font-bold text-white mb-4">{t('privacy.deleteAccount')}</h2>
             <p className="text-gray-300 mb-4">
-              You have the right to be forgotten. Deleting your account will permanently remove all your personal data from our systems.
+              {t('privacy.deleteAccount.description')}
             </p>
             
             {/* Delete account button */}
@@ -348,7 +350,7 @@ export default function PrivacyPage() {
               onClick={openDeleteAccountDialog}
               className="px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-500 w-full flex items-center justify-between"
             >
-              <span>Delete My Account</span>
+              <span>{t('privacy.deleteAccount.button')}</span>
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
               </svg>
@@ -382,12 +384,12 @@ export default function PrivacyPage() {
             className="bg-gray-800 p-6 rounded-lg max-w-md w-full m-4 shadow-2xl border border-gray-700"
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 className="text-xl font-bold text-white mb-4">Delete Your Account</h3>
+            <h3 className="text-xl font-bold text-white mb-4">{t('privacy.deleteAccount.confirmationTitle')}</h3>
             <p className="text-gray-300 mb-4">
-              Warning: This action cannot be undone. All your data will be permanently deleted.
+              {t('privacy.deleteAccount.confirmationDescription')}
             </p>
             <p className="text-gray-300 mb-6">
-              To proceed, please enter your email address to confirm.
+              {t('privacy.deleteAccount.confirmationPrompt')}
             </p>
             
             {error && (
@@ -416,14 +418,14 @@ export default function PrivacyPage() {
                     isLoading || verificationEmail !== user?.email ? 'opacity-50 cursor-not-allowed' : 'hover:bg-red-500'
                   }`}
                 >
-                  {isLoading ? 'Processing...' : 'Delete My Account'}
+                  {isLoading ? t('privacy.loading') : t('privacy.deleteAccount.confirm')}
                 </button>
                 <button
                   type="button"
                   onClick={closeDeleteAccountDialog}
                   className="px-4 py-2 bg-gray-700 text-white rounded-lg flex-1 hover:bg-gray-600"
                 >
-                  Cancel
+                  {t('privacy.deleteAccount.cancel')}
                 </button>
               </div>
             </form>
@@ -447,18 +449,30 @@ export default function PrivacyPage() {
               </svg>
             </div>
             
-            <h3 className="text-xl font-bold text-white mb-4 text-center">Email Sent</h3>
-            <p className="text-gray-300 mb-6 text-center">
-              We&apos;ve sent a confirmation link to your email address ({user?.email}).
-              Please check your inbox and click the link to complete the account deletion process.
+            <h3 className="text-xl font-bold text-white mb-4 text-center">{t('privacy.deleteAccount.emailSent')}</h3>
+            <p className="text-gray-300 mb-4">
+              {t('privacy.deleteAccount.emailSentDescription')}
+            </p>
+            <p className="text-gray-400 mb-6 text-sm">
+              {t('privacy.deleteAccount.emailSentNote')}
             </p>
             
             <button
               onClick={closeDeleteAccountDialog}
-              className="w-full px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600"
+              className="px-4 py-2 bg-gray-700 text-white rounded-lg w-full hover:bg-gray-600"
             >
-              Close
+              {t('privacy.deleteAccount.cancel')}
             </button>
+          </div>
+        </div>
+      )}
+      
+      {/* Overall loading overlay */}
+      {isLoading && (
+        <div className="fixed inset-0 bg-gray-900/95 backdrop-blur-sm z-50 flex items-center justify-center">
+          <div className="flex flex-col items-center space-y-4">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
+            <p className="text-white text-lg">{t('privacy.loading')}</p>
           </div>
         </div>
       )}

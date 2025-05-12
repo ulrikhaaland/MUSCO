@@ -23,7 +23,28 @@
         "Reduser vekten eller kontroller teknikken dersom du kjenner smerte i håndleddet.",
         "For økt intensitet kan du holde den kontraherte posisjonen i 1–2 sekunder før du senker.",
         "Sørg for sikkert, men ikke overdrevent, grep for å bevare bevegelsesutslaget."
-      ]
+      ],
+      "targetBodyParts": ["Forearms"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Dumbbell", "Bench"],
+      "contraindications": [
+        "Wrist injury or pain",
+        "Carpal tunnel syndrome",
+        "Recent forearm injury",
+        "Elbow tendonitis"
+      ],
+      "muscles": ["Forearms", "Grip"],
+      "alternatives": [],
+      "repetitions": 15,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Pull (Unilateral)",
+      "mechanics": "Isolation",
+      "videoUrl": "gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_4735.MOV",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Forearms.jpg",
+      "viewCount": 0,
+      "popularity": "medium"
     },
     {
       "id": "forearms-2",
@@ -48,7 +69,29 @@
         "Prioriter bevegelseskvalitet fremfor høyt repetisjonstall.",
         "Stopp dersom du opplever smerte og ikke bare motstand.",
         "Hold håndleddet nøytralt når du ikke aktivt roterer."
-      ]
+      ],
+      "targetBodyParts": ["Forearms"],
+      "exerciseType": ["strength", "rehabilitation"],
+      "difficulty": "beginner",
+      "equipment": ["Dumbbell", "Bench"],
+      "contraindications": [
+        "Wrist injury or pain",
+        "Recent forearm fracture",
+        "Carpal tunnel syndrome",
+        "Tennis or golfer's elbow",
+        "Recent surgery to wrist or forearm"
+      ],
+      "muscles": ["Forearms", "Wrist Pronators", "Wrist Supinators"],
+      "alternatives": ["forearms-1"],
+      "repetitions": 10,
+      "sets": 2,
+      "restBetweenSets": 60,
+      "forceType": "Pull (Unilateral)",
+      "mechanics": "Isolation",
+      "videoUrl": "gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_4736.MOV",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Forearms.jpg",
+      "viewCount": 0,
+      "popularity": "low"
     }
   ]
 }

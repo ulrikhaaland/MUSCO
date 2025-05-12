@@ -22,7 +22,30 @@
         "Kjenn du får smerter i selve skulderleddet, trekk skulderbladene lett bakover og «pakk» skulderbuen.",
         "Hold kjernen aktiv og unngå overdreven svai i korsryggen.",
         "Hold føttene flatt i gulvet og ikke la underkroppen bevege seg under settet."
-      ]
+      ],
+      "targetBodyParts": ["Chest"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Dumbbell"],
+      "contraindications": [
+        "Chest injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Shoulder impingement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": ["Chest", "Shoulders", "Triceps"],
+      "alternatives": ["chest-3", "chest-7", "chest-11", "chest-18"],
+      "repetitions": 8,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Push (Bilateral)",
+      "mechanics": "Compound",
+      "videoUrl": "gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3127.mov",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Chest.jpg",
+      "viewCount": 6500000,
+      "popularity": "high"
     },
     {
       "id": "chest-3",
@@ -45,7 +68,30 @@
         "Ved skuldersmerter: trekk skulderbladene litt bakover og «pakk» skulderbuen.",
         "Hold kjernen aktiv og unngå overdreven korsryggsvei.",
         "Føtter flatt i gulvet; underkroppen skal være stille."
-      ]
+      ],
+      "targetBodyParts": ["Chest"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Dumbbell"],
+      "contraindications": [
+        "Chest injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Shoulder impingement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": ["Chest", "Shoulders", "Triceps"],
+      "alternatives": ["chest-1", "chest-7", "chest-14", "chest-11"],
+      "repetitions": 8,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Push (Bilateral)",
+      "mechanics": "Compound",
+      "videoUrl": "gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3005.MOV",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Chest.jpg",
+      "viewCount": 5600000,
+      "popularity": "high"
     },
     {
       "id": "chest-7",
@@ -72,7 +118,30 @@
         "Klem stangen så hardt som mulig for bedre skulderstabilitet.",
         "Hold skulderbladene retrahert gjennom hele løftet.",
         "Bruk spotter for løft av for å beholde spenning i øvre rygg."
-      ]
+      ],
+      "targetBodyParts": ["Chest"],
+      "exerciseType": ["strength"],
+      "difficulty": "intermediate",
+      "equipment": ["Barbell"],
+      "contraindications": [
+        "Chest injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Shoulder impingement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": ["Chest", "Shoulders", "Triceps"],
+      "alternatives": ["chest-1", "chest-3", "chest-11", "chest-18"],
+      "repetitions": 8,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Push (Bilateral)",
+      "mechanics": "Compound",
+      "videoUrl": "gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_2997.MOV",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Chest.jpg",
+      "viewCount": 4900000,
+      "popularity": "high"
     },
     {
       "id": "chest-10",
@@ -92,7 +161,30 @@
         "Unngå å slå håndtakene sammen på toppen for å bevare konstant spenning.",
         "Hold alltid en svak albuebøy og unngå posisjoner som gir skuldersmerter.",
         "Hold kjernen aktiv og unngå overdreven korsryggsvei."
-      ]
+      ],
+      "targetBodyParts": ["Chest"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Cable"],
+      "contraindications": [
+        "Chest injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Shoulder impingement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": ["Chest", "Shoulders", "Triceps"],
+      "alternatives": ["chest-16", "chest-22", "chest-14"],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Push (Bilateral)",
+      "mechanics": "Isolation",
+      "videoUrl": "gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_2993.MOV",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Chest.jpg",
+      "viewCount": 840300,
+      "popularity": "medium"
     },
     {
       "id": "chest-11",
@@ -112,7 +204,30 @@
         "Ved fremre skuldersmerter: sørg for lett retraksjon og en «pakket» skulderbue.",
         "Hold kjernen aktiv og unngå overdreven korsryggsbue.",
         "Føttene flatt i gulvet; underkroppen ubevegelig."
-      ]
+      ],
+      "targetBodyParts": ["Chest"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Machine"],
+      "contraindications": [
+        "Chest injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Shoulder impingement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": ["Chest", "Shoulders", "Triceps"],
+      "alternatives": ["chest-7", "chest-1", "chest-3", "chest-18"],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Push (Bilateral)",
+      "mechanics": "Compound",
+      "videoUrl": "gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3012.MOV",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Chest.jpg",
+      "viewCount": 1900000,
+      "popularity": "high"
     },
     {
       "id": "chest-14",
@@ -134,7 +249,28 @@
         "Ved skuldersmerter: retraher skulderbladene lett og «pakk» skulderbuen.",
         "Føtter flatt; fokuser på albuebøy og brystaktivering.",
         "Hold kjernen aktiv og unngå overdreven korsryggsbue."
-      ]
+      ],
+      "targetBodyParts": ["Chest"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Dumbbell"],
+      "contraindications": [
+        "Chest injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Shoulder impingement"
+      ],
+      "muscles": ["Chest", "Shoulders", "Triceps"],
+      "alternatives": ["chest-10", "chest-16", "chest-22"],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Push",
+      "mechanics": "Isolation",
+      "videoUrl": "gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3010.mov",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Chest.jpg",
+      "viewCount": 1100000,
+      "popularity": "high"
     },
     {
       "id": "chest-16",
@@ -154,7 +290,28 @@
         "Unngå å slå håndtakene sammen på toppen.",
         "Hold en liten albuebøy og unngå smertefulle skulderposisjoner.",
         "Hold kjernen aktiv og unngå overdreven korsryggsbue."
-      ]
+      ],
+      "targetBodyParts": ["Chest"],
+      "exerciseType": ["strength"],
+      "difficulty": "intermediate",
+      "equipment": ["Cable"],
+      "contraindications": [
+        "Chest injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Shoulder impingement"
+      ],
+      "muscles": ["Chest", "Shoulders", "Triceps"],
+      "alternatives": ["chest-10", "chest-22", "chest-14"],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Push (Bilateral)",
+      "mechanics": "Isolation",
+      "videoUrl": "gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3141.MOV",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Chest.jpg",
+      "viewCount": 174300,
+      "popularity": "medium"
     },
     {
       "id": "chest-18",
@@ -177,7 +334,30 @@
         "Ikke la hodet stikke frem; bryst og nese skal treffe samtidig.",
         "Skyv deg så langt fra gulvet som mulig og la skulderbladene bevege seg fritt.",
         "Fullfører du ikke bevegelsen, mister du effekt."
-      ]
+      ],
+      "targetBodyParts": ["Chest"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Bodyweight"],
+      "contraindications": [
+        "Chest injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Shoulder impingement",
+        "Recent surgery",
+        "Severe cardiovascular issues (for heavy compound movements)"
+      ],
+      "muscles": ["Chest", "Abs", "Shoulders", "Triceps"],
+      "alternatives": ["chest-1", "chest-7", "chest-11"],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Push (Bilateral)",
+      "mechanics": "Compound",
+      "videoUrl": "gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3128.mov",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Chest.jpg",
+      "viewCount": 960000,
+      "popularity": "medium"
     },
     {
       "id": "chest-22",
@@ -197,7 +377,28 @@
         "Ikke slå håndtakene sammen på toppen.",
         "Hold en liten albuebøy og unngå smertefulle skulderposisjoner.",
         "Hold kjernen aktiv og unngå overdreven korsryggsbue."
-      ]
+      ],
+      "targetBodyParts": ["Chest"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Cable"],
+      "contraindications": [
+        "Chest injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Shoulder impingement"
+      ],
+      "muscles": ["Chest", "Shoulders", "Triceps"],
+      "alternatives": ["chest-10", "chest-16", "chest-14"],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Push (Bilateral)",
+      "mechanics": "Isolation",
+      "videoUrl": "gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3139.MOV",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Chest.jpg",
+      "viewCount": 164000,
+      "popularity": "medium"
     }
   ]
 }
