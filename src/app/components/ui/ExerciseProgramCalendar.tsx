@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { ExerciseProgram, ProgramDay } from '@/app/types/program';
 import { ProgramDaySummaryComponent } from './ProgramDaySummaryComponent';
 import { useUser } from '@/app/context/UserContext';
+import { useTranslation } from '@/app/i18n/TranslationContext';
 
 interface ExerciseProgramCalendarProps {
   program: ExerciseProgram; // This will still be the initially selected program
@@ -23,6 +24,7 @@ export function ExerciseProgramCalendar({
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [showYearPicker, setShowYearPicker] = useState(false);
   const { userPrograms } = useUser();
+  const { t } = useTranslation();
 
   // Get all active programs from userPrograms
   const activePrograms = userPrograms
@@ -159,7 +161,15 @@ export function ExerciseProgramCalendar({
   };
 
   const renderWeekDays = () => {
-    const weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    const weekDays = [
+      t('calendar.weekdays.mon'),
+      t('calendar.weekdays.tue'), 
+      t('calendar.weekdays.wed'),
+      t('calendar.weekdays.thu'),
+      t('calendar.weekdays.fri'),
+      t('calendar.weekdays.sat'),
+      t('calendar.weekdays.sun')
+    ];
     return (
       <div className="grid grid-cols-7 mb-2">
         {weekDays.map((day) => (
@@ -299,11 +309,11 @@ export function ExerciseProgramCalendar({
                         <div className="mt-auto">
                           {hasWorkout ? (
                             <div className="text-xs text-white mt-1 flex items-center justify-center opacity-65">
-                              Workout
+                              {t('calendar.workout')}
                             </div>
                           ) : isRestOnly ? (
                             <div className="text-xs text-white mt-1 flex items-center justify-center opacity-65">
-                              Rest
+                              {t('calendar.rest')}
                             </div>
                           ) : null}
                         </div>
@@ -325,7 +335,7 @@ export function ExerciseProgramCalendar({
     if (programDays.length === 0) {
       return (
         <div className="mt-6 p-4 bg-gray-800/50 rounded-xl">
-          <p className="text-gray-400 text-center">No program for this day</p>
+          <p className="text-gray-400 text-center">{t('calendar.noProgramForThisDay')}</p>
         </div>
       );
     }
@@ -364,7 +374,7 @@ export function ExerciseProgramCalendar({
         {/* Empty spacer with same width as menu button to balance the title */}
         <div className="w-10"></div>
         <div className="flex flex-col items-center">
-          <h1 className="text-app-title text-center">Calendar</h1>
+          <h1 className="text-app-title text-center">{t('calendar.title')}</h1>
         </div>
         {/* Space for menu button */}
         <div className="w-10"></div>

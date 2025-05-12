@@ -61,6 +61,7 @@ export interface ChatPayload {
   bodyPartsInSelectedGroup: string[];
   previousQuestions?: Question[];
   language?: string; // User's preferred language (en/nb)
+  diagnosisAssistantResponse?: DiagnosisAssistantResponse; // Current diagnostic information
 }
 
 export interface Question {
@@ -77,6 +78,30 @@ export interface DiagnosisAssistantResponse {
   diagnosis: string | null;
   // The areas of the body that are painful, e.g. ['neck', 'left shoulder']
   painfulAreas: string[];
+  // Informational insights about the user's condition
+  informationalInsights: string | null;
+  // When symptoms began (acute / gradual / unknown)
+  onset: string | null;
+  // Pain intensity on scale of 0-10
+  painScale: number | null;
+  // How the issue developed (trauma / overuse / posture / unknown)
+  mechanismOfInjury: string | null;
+  // What makes symptoms worse
+  aggravatingFactors: string | null;
+  // What makes symptoms better
+  relievingFactors: string | null;
+  // Previous similar issues (yes/no)
+  priorInjury: string | null;
+  // How the pain occurs (constant, intermittent, activity-dependent)
+  painPattern: string | null;
+  // Specific area within the selected body part
+  painLocation: string | null;
+  // Type of pain (sharp, dull, achy, burning, etc.)
+  painCharacter: string | null;
+  // Whether assessment is complete
+  assessmentComplete: boolean;
+  // Whether red flags are present
+  redFlagsPresent: boolean;
   // The activities the user should avoid, e.g. ['running', 'lifting weights']
   avoidActivities: string[];
   // The goals of the user, e.g. ['reduce pain', 'improve mobility']
@@ -89,6 +114,5 @@ export interface DiagnosisAssistantResponse {
   // The type of program the user is getting, e.g. 'exercise' or 'recovery'
   programType: ProgramType;
   // The areas of the body that are targeted by the program, e.g. ['neck', 'left shoulder']
-  // only used for exercise programs, not recovery programs
-  // targetAreas: string[];
+  targetAreas: string[];
 }

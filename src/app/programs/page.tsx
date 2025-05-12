@@ -5,14 +5,20 @@ import { useUser } from '@/app/context/UserContext';
 import { format } from 'date-fns';
 import { useRouter } from 'next/navigation';
 import { ProgramStatus, getBodyRegionFromParts } from '@/app/types/program';
+import { useTranslation } from '@/app/i18n/TranslationContext';
+import { nb, enUS } from 'date-fns/locale';
 
 function ProgramsContent() {
   const { userPrograms, isLoading, selectProgram, toggleActiveProgram } = useUser();
   const router = useRouter();
+  const { t, locale } = useTranslation();
   const [sortBy, setSortBy] = useState<'newest' | 'oldest'>('newest');
   const [filterType, setFilterType] = useState<'all' | 'exercise' | 'recovery'>('all');
   // Track which program is being toggled to avoid flickering
   const [pendingToggles, setPendingToggles] = useState<Record<string, boolean>>({});
+
+  // Select date locale based on user's language
+  const dateLocale = locale === 'nb' ? nb : enUS;
 
   // Sort programs by date
   const filteredAndSortedPrograms = [...userPrograms]
@@ -124,15 +130,15 @@ function ProgramsContent() {
   if (userPrograms.length === 0) {
     return (
       <div className="h-full flex flex-col items-center justify-center p-8 text-white">
-        <h2 className="text-2xl font-semibold mb-4">No Programs Found</h2>
+        <h2 className="text-2xl font-semibold mb-4">{t('programs.noPrograms')}</h2>
         <p className="text-gray-300 text-center max-w-md">
-          You don&apos;t have any workout programs yet. Create your first program to get started!
+          {t('programs.noPrograms.message')}
         </p>
         <button 
           onClick={() => router.push('/')}
           className="mt-8 px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition-colors duration-200"
         >
-          Create Program
+          {t('programs.createProgram')}
         </button>
       </div>
     );
@@ -147,13 +153,13 @@ function ProgramsContent() {
           {/* Title section */}
           <div className="flex items-center justify-between mb-4">
             <div className="w-10"></div>
-            <h1 className="text-app-title text-center text-white">My Programs</h1>
+            <h1 className="text-app-title text-center text-white">{t('programs.title')}</h1>
             <div className="w-10"></div>
           </div>
           
           {/* Filter and Sorting buttons */}
+          {/* 
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-            {/* Type filters */}
             <div className="flex space-x-2">
               <button
                 onClick={() => setFilterType('all')}
@@ -163,7 +169,7 @@ function ProgramsContent() {
                     : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white'
                 }`}
               >
-                All
+                {t('programs.filter.all')}
               </button>
               <button
                 onClick={() => setFilterType('exercise')}
@@ -173,7 +179,7 @@ function ProgramsContent() {
                     : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white'
                 }`}
               >
-                Exercise
+                {t('programs.filter.exercise')}
               </button>
               <button
                 onClick={() => setFilterType('recovery')}
@@ -183,11 +189,10 @@ function ProgramsContent() {
                     : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white'
                 }`}
               >
-                Recovery
+                {t('programs.filter.recovery')}
               </button>
             </div>
             
-            {/* Sort buttons */}
             <div className="flex space-x-2">
               <button
                 onClick={() => setSortBy('newest')}
@@ -197,7 +202,7 @@ function ProgramsContent() {
                     : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white'
                 }`}
               >
-                Newest
+                {t('programs.sort.newest')}
               </button>
               <button
                 onClick={() => setSortBy('oldest')}
@@ -207,15 +212,16 @@ function ProgramsContent() {
                     : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white'
                 }`}
               >
-                Oldest
+                {t('programs.sort.oldest')}
               </button>
             </div>
           </div>
+          */}
         </div>
 
         <div className="flex-1 flex items-center justify-center px-4 py-6">
           <p className="text-gray-300 text-center">
-            No {filterType !== 'all' ? filterType : ''} programs found. Try a different filter or create a new program.
+            {t('programs.noPrograms.message')}
           </p>
         </div>
       </div>
@@ -229,13 +235,13 @@ function ProgramsContent() {
         {/* Title section */}
         <div className="flex items-center justify-between mb-4">
           <div className="w-10"></div>
-          <h1 className="text-app-title text-center text-white">My Programs</h1>
+          <h1 className="text-app-title text-center text-white">{t('programs.title')}</h1>
           <div className="w-10"></div>
         </div>
         
         {/* Filter and Sorting buttons */}
+        {/* 
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-          {/* Type filters */}
           <div className="flex space-x-2">
             <button
               onClick={() => setFilterType('all')}
@@ -245,7 +251,7 @@ function ProgramsContent() {
                   : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white'
               }`}
             >
-              All
+              {t('programs.filter.all')}
             </button>
             <button
               onClick={() => setFilterType('exercise')}
@@ -255,7 +261,7 @@ function ProgramsContent() {
                   : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white'
               }`}
             >
-              Exercise
+              {t('programs.filter.exercise')}
             </button>
             <button
               onClick={() => setFilterType('recovery')}
@@ -265,11 +271,10 @@ function ProgramsContent() {
                   : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white'
               }`}
             >
-              Recovery
+              {t('programs.filter.recovery')}
             </button>
           </div>
           
-          {/* Sort buttons */}
           <div className="flex space-x-2">
             <button
               onClick={() => setSortBy('newest')}
@@ -279,7 +284,7 @@ function ProgramsContent() {
                   : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white'
               }`}
             >
-              Newest
+              {t('programs.sort.newest')}
             </button>
             <button
               onClick={() => setSortBy('oldest')}
@@ -289,10 +294,11 @@ function ProgramsContent() {
                   : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white'
               }`}
             >
-              Oldest
+              {t('programs.sort.oldest')}
             </button>
           </div>
         </div>
+        */}
       </div>
 
       {/* Scrollable program list */}
@@ -317,13 +323,9 @@ function ProgramsContent() {
                   {/* Program title and type */}
                   <div className="flex justify-between items-start mb-3">
                     <h2 className="text-xl font-medium text-white truncate pr-2">
-                      {exerciseProgram.title || 'Workout Program'}
+                      {exerciseProgram.title || t('programs.defaultTitle')}
                     </h2>
-                    <span className="flex-shrink-0 text-xs px-2 py-1 bg-indigo-500/20 text-indigo-300 rounded-full">
-                      {program.type ? 
-                        program.type.charAt(0).toUpperCase() + program.type.slice(1) : 
-                        'Custom'}
-                    </span>
+                
                   </div>
                   
                   {/* Divider */}
@@ -335,7 +337,7 @@ function ProgramsContent() {
                       <p className="text-xl font-semibold text-white">
                         {exerciseProgram.program?.length || 0}
                       </p>
-                      <p className="text-xs text-gray-400">Weeks</p>
+                      <p className="text-xs text-gray-400">{t('programs.stats.weeks')}</p>
                     </div>
                     
                     <div className="text-center">
@@ -346,7 +348,7 @@ function ProgramsContent() {
                           }, 0);
                         }, 0) || 0}
                       </p>
-                      <p className="text-xs text-gray-400">Exercise Days</p>
+                      <p className="text-xs text-gray-400">{t('programs.stats.exerciseDays')}</p>
                     </div>
                     
                     <div className="text-center">
@@ -357,23 +359,23 @@ function ProgramsContent() {
                           }, 0);
                         }, 0) || 0}
                       </p>
-                      <p className="text-xs text-gray-400">Rest Days</p>
+                      <p className="text-xs text-gray-400">{t('programs.stats.restDays')}</p>
                     </div>
                   </div>
                   
                   {/* Target areas - only show if there are target areas */}
                   {exerciseProgram.targetAreas && exerciseProgram.targetAreas.length > 0 && (
                     <div className="mb-3">
-                      <p className="text-xs text-gray-400 mb-1">Target Areas</p>
+                      <p className="text-xs text-gray-400 mb-1">{t('programs.targetAreas')}</p>
                       <div className="flex flex-wrap gap-1">
                         {exerciseProgram.targetAreas.slice(0, 3).map((area, i) => (
                           <span key={i} className="text-xs px-2 py-1 bg-gray-700/50 text-gray-300 rounded-full">
-                            {area}
+                            {t(`program.bodyPart.${area.toLowerCase().replace(/\s+/g, '_')}`)}
                           </span>
                         ))}
                         {exerciseProgram.targetAreas.length > 3 && (
                           <span className="text-xs px-2 py-1 bg-gray-700/50 text-gray-300 rounded-full">
-                            +{exerciseProgram.targetAreas.length - 3} more
+                            {t('programs.targetAreas.more').replace('{count}', (exerciseProgram.targetAreas.length - 3).toString())}
                           </span>
                         )}
                       </div>
@@ -382,9 +384,13 @@ function ProgramsContent() {
                   
                   {/* Creation date and toggle switch */}
                   <div className="text-xs text-gray-400 pt-3 flex justify-between items-center">
-                    <span>Created: {
+                    <span>{t('programs.created')} {
                       program.createdAt 
-                        ? format(new Date(program.createdAt), 'MMM d, yyyy')
+                        ? (() => {
+                            const formattedDate = format(new Date(program.createdAt), 'MMM d, yyyy', { locale: dateLocale });
+                            // Capitalize the first letter of the month
+                            return formattedDate.charAt(0).toUpperCase() + formattedDate.slice(1);
+                          })()
                         : 'N/A'
                     }</span>
                     
@@ -392,8 +398,8 @@ function ProgramsContent() {
                     <div className="flex items-center">
                       <span className="text-xs mr-2">
                         {pendingToggles[program.docId] !== undefined 
-                          ? (pendingToggles[program.docId] ? 'Active' : 'Inactive') 
-                          : (program.active ? 'Active' : 'Inactive')}
+                          ? (pendingToggles[program.docId] ? t('programs.status.active') : t('programs.status.inactive')) 
+                          : (program.active ? t('programs.status.active') : t('programs.status.inactive'))}
                       </span>
                       <button
                         type="button" 
@@ -435,7 +441,7 @@ function ProgramsContent() {
       <button
         onClick={handleCreateNewProgram}
         className="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-indigo-600 text-white shadow-lg flex items-center justify-center hover:bg-indigo-500 transition-colors duration-200 z-50"
-        aria-label="Explore exercises"
+        aria-label={t('programs.createProgram')}
       >
         <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />

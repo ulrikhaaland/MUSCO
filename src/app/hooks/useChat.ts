@@ -161,7 +161,10 @@ export function useChat() {
         console.log("Chat is busy, queuing message:", messageContent);
         messageQueueRef.current.push({
           message: messageContent,
-          payload: chatPayload,
+          payload: {
+            ...chatPayload,
+            diagnosisAssistantResponse: assistantResponse
+          },
         });
         return;
       }
@@ -189,7 +192,13 @@ export function useChat() {
       }
       
       // Store the details of the last message sent by the user
-      lastUserMessageRef.current = { messageContent, chatPayload };
+      lastUserMessageRef.current = { 
+        messageContent, 
+        chatPayload: {
+          ...chatPayload,
+          diagnosisAssistantResponse: assistantResponse
+        }
+      };
     } else {
       // If it's a refetch, remove the potentially incomplete last assistant message
       console.log("Refetching: Removing potentially incomplete last assistant message.");
@@ -215,6 +224,7 @@ export function useChat() {
         ...chatPayload,
         message: messageContent,
         language: locale,
+        diagnosisAssistantResponse: assistantResponse,
       };
 
       if (isRefetch) {
@@ -875,7 +885,10 @@ export function useChat() {
       const { messageContent, chatPayload } = lastSendError;
       setLastSendError(null); // Clear the error state before retrying
       // Send the message again with the isResend flag
-      sendChatMessage(messageContent, chatPayload, false, true);
+      sendChatMessage(messageContent, {
+        ...chatPayload,
+        diagnosisAssistantResponse: assistantResponse
+      }, false, true);
     }
   };
 

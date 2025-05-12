@@ -7,6 +7,7 @@ import { BottomSheet, BottomSheetRef } from 'react-spring-bottom-sheet';
 import type { BottomSheetProps } from 'react-spring-bottom-sheet';
 import 'react-spring-bottom-sheet/dist/style.css';
 import ExerciseCard from './ExerciseCard';
+import { useTranslation } from '@/app/i18n';
 
 interface ExerciseSelectionBottomSheetProps {
   isOpen: boolean;
@@ -33,7 +34,8 @@ const categoryToBodyPartMap: Record<string, string> = {
   'Lower Back': 'Lower Back',
   'Shoulders': 'Shoulders',
   'Upper Arms': 'Upper Arms',
-  'Upper Back': 'Upper Back'
+  'Upper Back': 'Upper Back',
+  'Warmup': 'Warmup'
 };
 
 // A mapping to handle legacy category names
@@ -56,6 +58,7 @@ export default function ExerciseSelectionBottomSheet({
   onSelectExercise,
   existingExercises = [],
 }: ExerciseSelectionBottomSheetProps) {
+  const { t } = useTranslation();
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -137,6 +140,7 @@ export default function ExerciseSelectionBottomSheet({
             if (category === 'Upper Back' && (ex.id.startsWith('upper-back-') || ex.id.includes('upper_back') || ex.id.includes('upper-back'))) return true;
             if (category === 'Lower Back' && (ex.id.startsWith('lower-back-') || ex.id.includes('lower_back') || ex.id.includes('lower-back'))) return true;
             if (category === 'Cardio' && (ex.id.startsWith('cardio-') || ex.id.includes('cardio'))) return true;
+            if (category === 'Warmup' && (ex.id.startsWith('warmup-') || ex.id.includes('warmup'))) return true;
           }
           
           // Check muscles array
@@ -156,6 +160,7 @@ export default function ExerciseSelectionBottomSheet({
             if ((category === 'Upper Back' || category === 'Traps') && ex.muscles.includes('Traps')) return true;
             if (category === 'Upper Back' && ex.muscles.includes('Upper Back')) return true;
             if (category === 'Lower Back' && ex.muscles.includes('Lower Back')) return true;
+            if (category === 'Warmup' && ex.muscles.includes('Warmup')) return true;
           }
           
           // Check targetBodyParts array
@@ -176,6 +181,7 @@ export default function ExerciseSelectionBottomSheet({
             if (category === 'Upper Back' && ex.targetBodyParts.includes('Upper Back')) return true;
             if (category === 'Lower Back' && ex.targetBodyParts.includes('Lower Back')) return true;
             if (category === 'Cardio' && ex.targetBodyParts.includes('Cardio')) return true;
+            if (category === 'Warmup' && ex.targetBodyParts.includes('Warmup')) return true;
           }
           
           // Check bodyPart string
@@ -213,6 +219,9 @@ export default function ExerciseSelectionBottomSheet({
     );
   });
 
+  // Get the translated category name for display
+  const translatedCategory = t(`bodyPart.category.${category}`, { defaultValue: category });
+
   return (
     <BottomSheetBase
       open={isOpen}
@@ -225,7 +234,7 @@ export default function ExerciseSelectionBottomSheet({
       header={
         <div className="px-4 pt-4 pb-2 !bg-gray-900 border-b border-gray-800">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-medium text-white">Select {category} Exercise</h3>
+            <h3 className="text-lg font-medium text-white">{t('exerciseSelection.selectCategoryExercise', { category: translatedCategory })}</h3>
             <button
               onClick={onClose}
               className="rounded-full p-1 hover:bg-gray-800 transition-colors"
@@ -241,7 +250,7 @@ export default function ExerciseSelectionBottomSheet({
             <input
               type="search"
               className="w-full p-3 pl-10 text-sm text-white border border-gray-700 rounded-lg bg-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              placeholder={`Search ${category} exercises...`}
+              placeholder={t('exerciseSelection.searchPlaceholder', { category: translatedCategory })}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -268,8 +277,11 @@ export default function ExerciseSelectionBottomSheet({
           <div className="text-center py-8">
             <p className="text-gray-400">
               {searchQuery 
-                ? `No ${category} exercises found matching "${searchQuery}"` 
-                : `No ${category} exercises available`
+                ? t('exerciseSelection.noExercisesMatchingQuery', { 
+                    category: translatedCategory, 
+                    query: searchQuery 
+                  })
+                : t('exerciseSelection.noExercisesAvailable', { category: translatedCategory })
               }
             </p>
           </div>
@@ -289,11 +301,11 @@ export default function ExerciseSelectionBottomSheet({
                         {Array.isArray(exercise.targetBodyParts) 
                           ? exercise.targetBodyParts.map(part => (
                               <span key={part} className="inline-block px-2 py-1 text-xs bg-gray-700 text-gray-300 rounded">
-                                {part}
+                                {t(`bodyPart.category.${part}`, { defaultValue: part })}
                               </span>
                             ))
                           : <span className="inline-block px-2 py-1 text-xs bg-gray-700 text-gray-300 rounded">
-                              {exercise.targetBodyParts}
+                              {t(`bodyPart.category.${exercise.targetBodyParts}`, { defaultValue: exercise.targetBodyParts })}
                             </span>
                         }
                       </div>

@@ -446,11 +446,11 @@ export function ExerciseFeedbackSelector({
     const validCategories = [
       'Abs', 'Cardio', 'Chest', 'Forearms', 'Glutes',
       'Lower Back', 'Lower Legs', 'Shoulders', 'Upper Arms', 'Upper Back',
-      'Upper Legs', 'Calves'
+      'Upper Legs', 'Calves', 'Warmup'
     ];
     
     if (!validCategories.includes(category)) {
-      console.warn(`Category "${category}" is not supported for exercise selection`);
+      console.warn(t('exerciseFeedbackSelector.log.unsupported', { category }));
       handleUnsupportedCategoryAdd(category);
       return;
     }
@@ -458,19 +458,19 @@ export function ExerciseFeedbackSelector({
     // Map legacy categories to their consolidated equivalents
     let effectiveCategory = category;
     if (category === 'Quads' || category === 'Hamstrings') {
-      console.log(`Mapping legacy category ${category} to Upper Legs for exercise selection`);
+      console.log(t('exerciseFeedbackSelector.log.mapping', { category, effectiveCategory: 'Upper Legs' }));
       effectiveCategory = 'Upper Legs';
     } else if (category === 'Obliques' || category === 'Core') {
-      console.log(`Mapping legacy category ${category} to Abs for exercise selection`);
+      console.log(t('exerciseFeedbackSelector.log.mapping', { category, effectiveCategory: 'Abs' }));
       effectiveCategory = 'Abs';
     } else if (category === 'Biceps' || category === 'Triceps') {
-      console.log(`Mapping legacy category ${category} to Upper Arms for exercise selection`);
+      console.log(t('exerciseFeedbackSelector.log.mapping', { category, effectiveCategory: 'Upper Arms' }));
       effectiveCategory = 'Upper Arms';
     } else if (category === 'Traps' || category === 'Lats') {
-      console.log(`Mapping legacy category ${category} to Upper Back for exercise selection`);
+      console.log(t('exerciseFeedbackSelector.log.mapping', { category, effectiveCategory: 'Upper Back' }));
       effectiveCategory = 'Upper Back';
     } else if (category === 'Calves') {
-      console.log(`Mapping legacy category Calves to Lower Legs for exercise selection`);
+      console.log(t('exerciseFeedbackSelector.log.mappingCalves'));
       effectiveCategory = 'Lower Legs';
     }
     
@@ -480,7 +480,10 @@ export function ExerciseFeedbackSelector({
 
   // Handle exercise selection from bottom sheet
   const handleSelectExercise = (exercise: Exercise) => {
-    console.log(`Selected exercise: ${exercise.name} for category: ${selectedCategory}`);
+    console.log(t('exerciseFeedbackSelector.log.selected', { 
+      exercise: exercise.name, 
+      selectedCategory 
+    }));
     // Pass the selected exercise to the parent handler
     if (onAddExercise && selectedCategory) {
       onAddExercise(selectedCategory, exercise);
@@ -514,8 +517,8 @@ export function ExerciseFeedbackSelector({
     <div className="bg-gray-800/50 rounded-xl overflow-hidden shadow-lg ring-1 ring-gray-700/50">
       {/* Card Header */}
       <div className="w-full px-8 py-6 flex flex-col gap-2">
-        <h4 className="text-white font-medium text-lg">{title}</h4>
-        <p className="text-gray-400 text-sm">{description}</p>
+        <h4 className="text-white font-medium text-lg">{title || t('exerciseFeedbackSelector.title')}</h4>
+        <p className="text-gray-400 text-sm">{description || t('exerciseFeedbackSelector.description')}</p>
       </div>
 
       {/* Body Part Filter */}
@@ -538,7 +541,7 @@ export function ExerciseFeedbackSelector({
           }}
           className="text-sm text-indigo-400 hover:text-indigo-300 transition-colors"
         >
-          Expand All
+          {t('exerciseFeedbackSelector.expandAll')}
         </button>
         <span className="text-gray-500">|</span>
         <button 
@@ -548,7 +551,7 @@ export function ExerciseFeedbackSelector({
           }}
           className="text-sm text-indigo-400 hover:text-indigo-300 transition-colors"
         >
-          Collapse All
+          {t('exerciseFeedbackSelector.collapseAll')}
         </button>
       </div>
 
@@ -559,164 +562,168 @@ export function ExerciseFeedbackSelector({
             <p className="text-gray-500 italic">{t('exerciseFeedbackSelector.noExercisesFound')}</p>
           </div>
         ) : (
-          allCategories.map(category => (
-            <div key={category} className="bg-gray-850/30 rounded-xl overflow-hidden ring-1 ring-gray-700/30">
-              {/* Category Header */}
-              <button 
-                className="w-full p-4 flex items-center justify-between bg-gray-900/70 hover:bg-gray-900/90 transition-colors text-left"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  toggleCategory(category);
-                }}
-              >
-                <div className="flex items-center">
-                  <h3 className="text-white font-medium">{category}</h3>
-                  <span className="ml-2 text-gray-400 text-sm">
-                    {t('exerciseFeedbackSelector.category.exerciseCount', { count: (exercisesByCategory[category] || []).length.toString() })}
-                  </span>
-                </div>
-                <svg
-                  className={`w-5 h-5 text-gray-400 transition-transform duration-200 ${
-                    expandedCategories[category] ? 'rotate-180' : ''
-                  }`}
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
+          allCategories.map(category => {
+            // Translate the category name
+            const translatedCategory = t(`bodyPart.category.${category}`, { defaultValue: category });
+            
+            return (
+              <div key={category} className="bg-gray-850/30 rounded-xl overflow-hidden ring-1 ring-gray-700/30">
+                {/* Category Header */}
+                <button 
+                  className="w-full p-4 flex items-center justify-between bg-gray-900/70 hover:bg-gray-900/90 transition-colors text-left"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleCategory(category);
+                  }}
                 >
-                  <path
-                    fillRule="evenodd"
-                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </button>
-              
-              {/* Category Content */}
-              {expandedCategories[category] && (
-                <div className="grid grid-cols-1 gap-6 p-4">
-                  {/* Show exercises if there are any for this category */}
-                  {(exercisesByCategory[category] || []).map((exercise) => {
-                    const exerciseId = getExerciseId(exercise);
-                    const isNewlyAdded = exercise.isNewlyAdded;
-                    const isReplacement = (exercise as ExtendedExercise).isReplacement;
-                    const originalExerciseId = (exercise as ExtendedExercise).originalExerciseId;
-                    
-                    // Create unique key for this exercise card
-                    const uniqueKey = isReplacement 
-                      ? `replacement-${originalExerciseId}-${exerciseId}`
-                      : exerciseId;
-                    
-                    return (
-                      <div 
-                        key={uniqueKey} 
-                        className={`relative group 
-                          ${isNewlyAdded ? 'border-l-4 border-green-500 pl-2' : ''}
-                          ${isReplacement ? 'border-l-4 border-blue-500 pl-2' : ''}
-                        `}
-                      >
-                        <div className={`p-5 ${
-                          isNewlyAdded 
-                            ? 'bg-gray-900/70' 
-                            : isReplacement
-                              ? 'bg-gray-900/60 border border-blue-500/20'
-                              : 'bg-gray-900/50'
-                          } rounded-xl overflow-hidden ring-1 ring-gray-700/30`}
+                  <div className="flex items-center">
+                    <h3 className="text-white font-medium">{translatedCategory}</h3>
+                    <span className="ml-2 text-gray-400 text-sm">
+                      {t('exerciseFeedbackSelector.category.exerciseCount', { count: (exercisesByCategory[category] || []).length.toString() })}
+                    </span>
+                  </div>
+                  <svg
+                    className={`w-5 h-5 text-gray-400 transition-transform duration-200 ${
+                      expandedCategories[category] ? 'rotate-180' : ''
+                    }`}
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </button>
+                
+                {/* Category Content */}
+                {expandedCategories[category] && (
+                  <div className="grid grid-cols-1 gap-6 p-4">
+                    {/* Show exercises if there are any for this category */}
+                    {(exercisesByCategory[category] || []).map((exercise) => {
+                      const exerciseId = getExerciseId(exercise);
+                      const isNewlyAdded = exercise.isNewlyAdded;
+                      const isReplacement = (exercise as ExtendedExercise).isReplacement;
+                      const originalExerciseId = (exercise as ExtendedExercise).originalExerciseId;
+                      
+                      // Create unique key for this exercise card
+                      const uniqueKey = isReplacement 
+                        ? `replacement-${originalExerciseId}-${exerciseId}`
+                        : exerciseId;
+                      
+                      return (
+                        <div 
+                          key={uniqueKey} 
+                          className={`relative group 
+                            ${isNewlyAdded ? 'border-l-4 border-green-500 pl-2' : ''}
+                            ${isReplacement ? 'border-l-4 border-blue-500 pl-2' : ''}
+                          `}
                         >
-                          <div>
-                            <div className="flex flex-wrap items-start gap-2 mb-1">
-                              <h3 className="font-medium text-white break-words flex-1">
-                                {exercise.name}
-                                {isNewlyAdded && (
-                                  <span className="ml-2 bg-green-500/20 text-green-400 text-xs px-2 py-0.5 rounded">{t('exerciseFeedbackSelector.chip.new')}</span>
+                          <div className={`p-5 ${
+                            isNewlyAdded 
+                              ? 'bg-gray-900/70' 
+                              : isReplacement
+                                ? 'bg-gray-900/60 border border-blue-500/20'
+                                : 'bg-gray-900/50'
+                            } rounded-xl overflow-hidden ring-1 ring-gray-700/30`}
+                          >
+                            <div>
+                              <div className="flex flex-wrap items-start gap-2 mb-1">
+                                <h3 className="font-medium text-white break-words flex-1">
+                                  {exercise.name}
+                                  {isNewlyAdded && (
+                                    <span className="ml-2 bg-green-500/20 text-green-400 text-xs px-2 py-0.5 rounded">{t('exerciseFeedbackSelector.chip.new')}</span>
+                                  )}
+                                  {isReplacement && (
+                                    <span className="ml-2 bg-blue-500/20 text-blue-400 text-xs px-2 py-0.5 rounded">{t('exerciseFeedbackSelector.chip.replacement')}</span>
+                                  )}
+                                </h3>
+                                {exercise.bodyPart && (
+                                  <Chip
+                                    size="md"
+                                    backgroundColor={exercise.warmup ? 'bg-amber-600' : ''}
+                                  >
+                                    {exercise.bodyPart}
+                                  </Chip>
                                 )}
-                                {isReplacement && (
-                                  <span className="ml-2 bg-blue-500/20 text-blue-400 text-xs px-2 py-0.5 rounded">{t('exerciseFeedbackSelector.chip.replacement')}</span>
-                                )}
-                              </h3>
-                              {exercise.bodyPart && (
-                                <Chip
-                                  size="md"
-                                  backgroundColor={exercise.warmup ? 'bg-amber-600' : ''}
-                                >
-                                  {exercise.bodyPart}
-                                </Chip>
+                              </div>
+                              
+                              {/* Target body parts */}
+                              {(exercise.targetBodyParts && !exercise.bodyPart) && (
+                                <div className="flex flex-wrap gap-1 mt-2">
+                                  {Array.isArray(exercise.targetBodyParts) 
+                                    ? exercise.targetBodyParts.map(part => (
+                                        <Chip key={part} size="sm">{part}</Chip>
+                                      ))
+                                    : <Chip size="sm">{exercise.targetBodyParts}</Chip>
+                                  }
+                                </div>
                               )}
                             </div>
-                            
-                            {/* Target body parts */}
-                            {(exercise.targetBodyParts && !exercise.bodyPart) && (
-                              <div className="flex flex-wrap gap-1 mt-2">
-                                {Array.isArray(exercise.targetBodyParts) 
-                                  ? exercise.targetBodyParts.map(part => (
-                                      <Chip key={part} size="sm">{part}</Chip>
-                                    ))
-                                  : <Chip size="sm">{exercise.targetBodyParts}</Chip>
-                                }
-                              </div>
+                          </div>
+                          
+                          {/* Action buttons - always visible */}
+                          <div 
+                            className="absolute right-0 top-1/2 transform -translate-y-1/2 flex flex-col gap-2"
+                            style={{ right: '-12px' }}
+                          >
+                            {/* Revert button - only show for replacement exercises */}
+                            {isReplacement && originalExerciseId && onRevertReplacement && (
+                              <button 
+                                onClick={(e) => handleRevertClick(originalExerciseId, e)}
+                                className="w-8 h-8 flex items-center justify-center bg-indigo-600 hover:bg-indigo-500 text-white rounded-full shadow-lg transition-transform duration-200 hover:scale-110"
+                                title={t('exerciseFeedbackSelector.button.title.revert')}
+                              >
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
+                                </svg>
+                              </button>
                             )}
+                            
+                            {/* Replace button - only show if exercise has alternatives */}
+                            {!isNewlyAdded && !isReplacement && hasAlternatives(exerciseId) && !loadingAlternatives && (
+                              <button 
+                                onClick={(e) => handleReplaceClick(exerciseId, e)}
+                                className="w-8 h-8 flex items-center justify-center bg-blue-600 hover:bg-blue-500 text-white rounded-full shadow-lg transition-transform duration-200 hover:scale-110"
+                                title={t('exerciseFeedbackSelector.button.title.replace')}
+                              >
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                                </svg>
+                              </button>
+                            )}
+                            
+                            {/* Remove button */}
+                            <button 
+                              onClick={(e) => handleRemoveClick(exerciseId, e)}
+                              className="w-8 h-8 flex items-center justify-center bg-red-600 hover:bg-red-500 text-white rounded-full shadow-lg transition-transform duration-200 hover:scale-110"
+                              title={t('exerciseFeedbackSelector.button.title.remove')}
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                              </svg>
+                            </button>
                           </div>
                         </div>
-                        
-                        {/* Action buttons - always visible */}
-                        <div 
-                          className="absolute right-0 top-1/2 transform -translate-y-1/2 flex flex-col gap-2"
-                          style={{ right: '-12px' }}
-                        >
-                          {/* Revert button - only show for replacement exercises */}
-                          {isReplacement && originalExerciseId && onRevertReplacement && (
-                            <button 
-                              onClick={(e) => handleRevertClick(originalExerciseId, e)}
-                              className="w-8 h-8 flex items-center justify-center bg-indigo-600 hover:bg-indigo-500 text-white rounded-full shadow-lg transition-transform duration-200 hover:scale-110"
-                              title={t('exerciseFeedbackSelector.button.title.revert')}
-                            >
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
-                              </svg>
-                            </button>
-                          )}
-                          
-                          {/* Replace button - only show if exercise has alternatives */}
-                          {!isNewlyAdded && !isReplacement && hasAlternatives(exerciseId) && !loadingAlternatives && (
-                            <button 
-                              onClick={(e) => handleReplaceClick(exerciseId, e)}
-                              className="w-8 h-8 flex items-center justify-center bg-blue-600 hover:bg-blue-500 text-white rounded-full shadow-lg transition-transform duration-200 hover:scale-110"
-                              title={t('exerciseFeedbackSelector.button.title.replace')}
-                            >
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-                              </svg>
-                            </button>
-                          )}
-                          
-                          {/* Remove button */}
-                          <button 
-                            onClick={(e) => handleRemoveClick(exerciseId, e)}
-                            className="w-8 h-8 flex items-center justify-center bg-red-600 hover:bg-red-500 text-white rounded-full shadow-lg transition-transform duration-200 hover:scale-110"
-                            title={t('exerciseFeedbackSelector.button.title.remove')}
-                          >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                          </button>
-                        </div>
+                      );
+                    })}
+                    
+                    {/* Empty state if no exercises */}
+                    {(!exercisesByCategory[category] || exercisesByCategory[category].length === 0) && (
+                      <div className="p-3 bg-gray-900/30 rounded-xl text-gray-400 text-center italic">
+                        {t('exerciseFeedbackSelector.noExercisesFound')}
                       </div>
-                    );
-                  })}
-                  
-                  {/* Empty state if no exercises */}
-                  {(!exercisesByCategory[category] || exercisesByCategory[category].length === 0) && (
-                    <div className="p-3 bg-gray-900/30 rounded-xl text-gray-400 text-center italic">
-                      {t('exerciseFeedbackSelector.noExercisesFound')}
-                    </div>
-                  )}
-                  
-                  {/* Add Exercise Button */}
-                  <button
-                    onClick={(e) => {
+                    )}
+                    
+                    {/* Add Exercise Button */}
+                    <button
+                      onClick={(e) => {
                         // Check if category is valid before opening bottom sheet
                         const validCategories = [
                           'Abs', 'Cardio', 'Chest', 'Forearms', 'Glutes',
                           'Lower Back', 'Lower Legs', 'Shoulders', 'Upper Arms', 'Upper Back',
-                          'Upper Legs', 'Calves'
+                          'Upper Legs', 'Calves', 'Warmup'
                         ];
                         if (!validCategories.includes(category)) {
                           console.warn(`Category "${category}" is not supported for exercise selection`);
@@ -725,17 +732,18 @@ export function ExerciseFeedbackSelector({
                         }
                         handleOpenBottomSheet(category, e);
                       }}
-                    className="w-full p-3 mt-2 bg-gray-900/30 hover:bg-gray-900/50 text-indigo-400 rounded-xl border border-dashed border-gray-700/50 flex items-center justify-center transition-colors"
-                  >
-                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                    </svg>
-                    {t('exerciseFeedbackSelector.button.addExercise', { category })}
-                  </button>
-                </div>
-              )}
-            </div>
-          ))
+                      className="w-full p-3 mt-2 bg-gray-900/30 hover:bg-gray-900/50 text-indigo-400 rounded-xl border border-dashed border-gray-700/50 flex items-center justify-center transition-colors"
+                    >
+                      <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                      </svg>
+                      {t('exerciseFeedbackSelector.button.addExercise', { category })}
+                    </button>
+                  </div>
+                )}
+              </div>
+            );
+          })
         )}
       </div>
 

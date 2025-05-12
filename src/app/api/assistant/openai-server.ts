@@ -17,7 +17,7 @@ export async function streamChatCompletion({
   messages,
   systemMessage,
   userMessage,
-  modelName = 'gpt-4.1-mini',
+  modelName = 'gpt-4.1',
   onContent,
 }: {
   threadId: string;
@@ -1148,7 +1148,7 @@ export async function getChatCompletion({
   messages,
   systemMessage,
   userMessage,
-  modelName = 'gpt-4.1-mini',
+  modelName = 'gpt-4.1',
 }: {
   threadId: string;
   messages: any[];

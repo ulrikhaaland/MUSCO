@@ -1,0 +1,127 @@
+{
+  "bodyPart": "Lower Legs",
+  "exercises": [
+    {
+      "id": "calves-6",
+      "name": "Stående Tåhev Med Kroppsvekt",
+      "description": "Ingen beskrivelse tilgjengelig.",
+      "targetBodyParts": ["Calves"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Bodyweight"],
+      "steps": [
+        "Stå med forfoten på kanten av et trinn eller en blokk og la hælene senke seg så langt som mulig. Dette er startposisjonen for bevegelsen.",
+        "Løft hælene sakte så høyt som mulig.",
+        "Pause, og senk deretter hælene sakte tilbake til startposisjon.",
+        "Ikke hvil i bunnen; start neste repetisjon umiddelbart.",
+        "Gjenta til ønsket antall repetisjoner."
+      ],
+      "tips": [
+        "Bruk størst mulig bevegelsesbane ved å la hælene senke så langt som mulig og løfte så høyt som mulig.",
+        "Pause og klem i 1–2 sekunder på toppen av bevegelsen for økt intensitet.",
+        "Ikke hvil i bunnen av bevegelsen; når hælene er så langt nede som de kan, start neste repetisjon.",
+        "Hold forfoten på kanten av blokken eller trinnet; hvis du lar den komme lenger inn, blir øvelsen lettere."
+      ],
+      "contraindications": [
+        "Calves injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Shoulder impingement"
+      ],
+      "muscles": ["Calves"],
+      "alternatives": ["calves-12", "calves-63"],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Push",
+      "mechanics": "Isolation",
+      "videoUrl": "gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3026.MOV",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Calves.jpg",
+      "viewCount": 423300,
+      "popularity": "medium"
+    },
+    {
+      "id": "calves-12",
+      "name": "Ettbens Stående Tåhev Med Kroppsvekt",
+      "description": "Ingen beskrivelse tilgjengelig.",
+      "targetBodyParts": ["Calves"],
+      "exerciseType": ["strength"],
+      "difficulty": "beginner",
+      "equipment": ["Bodyweight"],
+      "steps": [
+        "Stå på blokken med venstre fot; forfoten skal hvile på kanten av blokken.",
+        "Kryss høyre ankel bak venstre ankel.",
+        "La hælen sakte senke seg så langt som mulig. Dette er startposisjonen.",
+        "Løft hælen sakte så høyt som mulig.",
+        "Pause, og senk deretter hælen sakte ned.",
+        "Gjenta bevegelsen til ønsket antall repetisjoner."
+      ],
+      "tips": [
+        "Bruk størst mulig bevegelsesbane ved å la hælen senke seg helt ned og deretter løfte den helt opp.",
+        "Pause og klem i 1–2 sekunder på toppen av bevegelsen for økt intensitet.",
+        "Ikke hvil i bunnen; når hælen er så langt nede som mulig, start neste repetisjon.",
+        "Hold forfoten på kanten av blokk eller trinn; hvis du lar den komme lenger inn, blir øvelsen lettere.",
+        "Fokuser på å unngå at kneet bøyer seg."
+      ],
+      "contraindications": [
+        "Calves injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Shoulder impingement"
+      ],
+      "muscles": ["Calves"],
+      "alternatives": ["calves-6", "calves-63"],
+      "repetitions": 12,
+      "sets": 3,
+      "restBetweenSets": 60,
+      "forceType": "Push",
+      "mechanics": "Isolation",
+      "videoUrl": "gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3027.mov",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Calves.jpg",
+      "viewCount": 198500,
+      "popularity": "medium"
+    },
+    {
+      "id": "calves-63",
+      "name": "Unilateral Eksentrisk Stående Tåhev Med Kroppsvekt",
+      "description": "En variant av stående tåhev der du bruker begge leggene til å løfte deg opp og én legg til å senke deg ned, noe som skaper en eksentrisk overbelastning på arbeidsbenet.",
+      "targetBodyParts": ["Calves"],
+      "exerciseType": ["strength", "eccentric"],
+      "difficulty": "intermediate",
+      "equipment": ["Bodyweight"],
+      "steps": [
+        "Stå med forfoten på kanten av et trinn eller en blokk og la hælene senke seg så langt som mulig. Dette er startposisjonen.",
+        "Bruk begge leggene til å løfte hælene sakte så høyt som mulig.",
+        "Pause i topposisjonen i 1–2 sekunder.",
+        "Løft den ikke-arbeidende foten fra trinnet, og senk arbeidsbenets hæl sakte tilbake til startposisjon med bare det benet.",
+        "Plasser begge føttene tilbake på trinnet og gjenta bevegelsen.",
+        "Fullfør alle repetisjoner på ett ben før du bytter til det andre."
+      ],
+      "tips": [
+        "Fokuser på å kontrollere den eksentriske (senkende) fasen fullstendig med arbeidsbenet.",
+        "Jo saktere du senker, desto mer spenning skaper du i leggmuskelen.",
+        "Hold kjernen aktiv og oppretthold god holdning gjennom hele bevegelsen.",
+        "Hvis øvelsen er for utfordrende, bruk en vegg eller stol for balanse.",
+        "Sørg for å trene begge ben like mye for å bevare symmetrien."
+      ],
+      "contraindications": [
+        "Calves injury",
+        "Joint pain",
+        "Acute pain during movement",
+        "Balance issues",
+        "Ankle instability"
+      ],
+      "muscles": ["Calves"],
+      "alternatives": ["calves-12", "calves-6"],
+      "repetitions": 10,
+      "sets": 3,
+      "restBetweenSets": 90,
+      "forceType": "Push",
+      "mechanics": "Isolation",
+      "videoUrl": "gs://musco-dc111.firebasestorage.app/exercise_videos/IMG_3029.MOV",
+      "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Calves.jpg",
+      "viewCount": 0,
+      "popularity": "low"
+    }
+  ]
+}

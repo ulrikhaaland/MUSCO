@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import Chip from './Chip';
+import { useTranslation } from '@/app/i18n';
 
 interface BodyPartFilterProps {
   bodyParts: string[];
@@ -12,6 +13,7 @@ export function BodyPartFilter({
   onFilterChange,
   initialRemovedBodyParts = [],
 }: BodyPartFilterProps) {
+  const { t } = useTranslation();
   // State to track removed body parts
   const [removedBodyParts, setRemovedBodyParts] = useState<string[]>(initialRemovedBodyParts);
   
@@ -89,9 +91,19 @@ export function BodyPartFilter({
     setRemovedBodyParts([]);
   };
 
+  // Function to get the translated body part name
+  const getTranslatedBodyPart = (bodyPart: string) => {
+    // First try with bodyPart.category prefix (for standard categories)
+    const translationWithPrefix = t(`bodyPart.category.${bodyPart}`, { defaultValue: '' });
+    if (translationWithPrefix) return translationWithPrefix;
+    
+    // Fallback to program.bodyPart prefix for other body parts
+    return t(`program.bodyPart.${bodyPart.toLowerCase().replace(/ /g, '_')}`, { defaultValue: bodyPart });
+  };
+
   return (
     <div className="mb-4">
-      <h4 className="text-gray-50 font-medium mb-4">Target Body Parts:</h4>
+      <h4 className="text-gray-50 font-medium mb-4">{t('exerciseFeedbackSelector.targetBodyParts')}</h4>
       <div className="relative max-w-full overflow-hidden">
         <div
           ref={bodyPartsRef}
@@ -138,7 +150,7 @@ export function BodyPartFilter({
                   )
                 }
               >
-                {bodyPart}
+                {getTranslatedBodyPart(bodyPart)}
               </Chip>
             ))}
           </div>
@@ -156,7 +168,7 @@ export function BodyPartFilter({
           onClick={resetFilters}
           className="text-indigo-300 hover:text-indigo-200 mt-2 text-sm underline"
         >
-          Reset filters
+          {t('program.resetFilters')}
         </button>
       )}
     </div>

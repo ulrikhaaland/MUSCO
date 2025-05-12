@@ -1,0 +1,122 @@
+{
+  "bodyPart": "Glutes",
+  "exercises": [
+    {
+      "id": "glutes-1",
+      "name": "Rygghev",
+      "description": "Rygghev er en variant av hoftehengs-mønsteret og en øvelse som retter seg mot setemusklene. Enkelte bruker øvelsen for å trene korsryggen, men for optimal helse og best effekt bør den betraktes som en seteøvelse. Rygghev kan inkluderes i beinøkter og helkroppsøkter.",
+      "steps": [
+        "Still deg i en rygghev-maskin med føttene forankret og overkroppen omtrent 45 grader i forhold til beina.",
+        "Start i en hengslet posisjon med armene i kors og initier bevegelsen ved å spenne setet.",
+        "Strekk hoftene og avslutt med kroppen i en rett linje.",
+        "Gjenta til ønsket antall repetisjoner."
+      ],
+      "tips": [
+        "Det finnes to måter å utføre rygghev på. De fleste, bortsett fra ved sports-spesifikke behov, velger den første fremfor den andre.",
+        "Glute-sentriske rygghev: Bøy øvre rygg lett, strekk hoftene til kroppen danner en rett linje, og fokuser kun på setemusklene.",
+        "Erektor-sentriske rygghev: Bøy deg globalt gjennom ryggraden og fokuser utelukkende på erektorene.",
+        "Hvis du ikke kjenner setet arbeide, kjenn på musklene med hendene og hold en kort pause på toppen av bevegelsen.",
+        "Dersom én setemuskel aktiveres dårligere enn den andre, tren den svakere siden med dobbelt så mange repetisjoner i enbeinsvarianter til du oppnår god muskelkontakt."
+      ]
+    },
+    {
+      "id": "glutes-7",
+      "name": "Setebro Med Kroppsvekt",
+      "description": "Setebro er en variant av hip-thrust som bygger setemusklene. Øvelsen aktiverer også hamstrings, lår og legger indirekte. Hip-thrust-varianter regnes som optimale for målrettet setetrening, og sterke setemuskler gir positiv overføring til knebøy- og markløftvarianter. Setebro kan legges inn i bein- og helkroppsprogrammer.",
+      "steps": [
+        "Ligg på ryggen med armene ut fra kroppen i cirka 45 graders vinkel.",
+        "Løft hoftene ved å klemme setet og presse hælene ned i gulvet.",
+        "Senk hoftene kontrollert tilbake til startposisjon og gjenta til ønsket antall repetisjoner."
+      ],
+      "tips": [
+        "Unngå at korsryggen svaier når du strekker hoften; fokuser på setekontraksjon og lett bakovervipp av bekkenet.",
+        "Prioriter en rett linje fra knær til skuldre på toppen av bevegelsen.",
+        "Pust ut når du løfter hoftene; du skal ikke kjenne bevegelsen i korsryggen.",
+        "Palper setemusklene med hendene og hold en kort pause på toppen hvis du sliter med aktivering.",
+        "Hvis én side er svakere, utfør øvelsen enbeint før du går tilbake til tobeinsversjonen."
+      ]
+    },
+    {
+      "id": "glutes-8",
+      "name": "Stang-Setebro",
+      "description": "Stang-setebro er en isolasjonsøvelse som styrker setemusklene. Selv om knebøy og markløft bygger setet, er det smart å inkludere mer isolasjon som stang-setebro for estetikk, funksjon og styrke.",
+      "steps": [
+        "Sitt med strake ben og rull en stang opp til hoftekammen.",
+        "Legg deg tilbake på gulvet og grip stangen.",
+        "Løft hoftene ved å klemme setet og presse hælene ned i gulvet.",
+        "Senk hoftene kontrollert og gjenta til ønsket antall repetisjoner."
+      ],
+      "tips": [
+        "Bruk en pute eller bar-pad for å redusere ubehag over hoftene.",
+        "Unngå korsryggsvei; fokuser på setekontraksjon og lett bakovervipp i bekkenet.",
+        "Sikt mot en rett linje fra knær til skuldre på toppen.",
+        "Pust ut når du løfter; du skal ikke kjenne bevegelsen i korsryggen.",
+        "Kjenn etter med hendene og hold pausen på toppen om du ikke føler setet arbeide."
+      ]
+    },
+    {
+      "id": "glutes-44",
+      "name": "Liggende Hofteabduksjon",
+      "description": "En målrettet isolasjonsøvelse som trener gluteus medius og minimus. Øvelsen forbedrer hoftestabilitet, setetaktivering og korrigerer muskulære ubalanser, og brukes både i styrketrening og rehabilitering.",
+      "steps": [
+        "Ligg på siden i en rett linje med det nederste benet lett bøyd for stabilitet.",
+        "Støtt hodet med underarmen eller legg det i gulvet.",
+        "Hold øverste ben rett og i linje med kroppen.",
+        "Løft øverste ben mot taket mens hoftene holdes stablet.",
+        "Pause kort på toppen.",
+        "Senk benet kontrollert tilbake.",
+        "Fullfør alle repetisjoner før du bytter side."
+      ],
+      "tips": [
+        "Hold hoftene stablet – unngå å rulle bakover.",
+        "Løft med hoftemuskulaturen, ikke med momentum.",
+        "Hold øverste ben rett uten å låse kneet.",
+        "Bevar nøytral ryggstilling.",
+        "For bedre isolasjon, pek tærne svakt ned mot gulvet."
+      ]
+    },
+    {
+      "id": "glutes-45",
+      "name": "Modifisert Sideplanke Med Hofteabduksjon",
+      "description": "En skånsom øvelse som kombinerer sideplanke med hofteabduksjon. Variasjonen bruker bøyd underben og underarmsstøtte for å redusere belastning på korsrygg og skuldre samtidig som den effektivt aktiverer gluteus medius og kjernestabilisatorer.",
+      "steps": [
+        "Ligg på siden og støtt deg på underarmen med albuen rett under skulderen.",
+        "Bøy nederste ben cirka 90 grader for stabilitet.",
+        "Hold øverste ben rett og i linje med kroppen.",
+        "Løft hoftene fra gulvet til en stabil sideplanke.",
+        "Løft øverste ben mot taket mens du beholder hoftejusteringen.",
+        "Senk benet kontrollert mens du opprettholder plankeposisjonen.",
+        "Fullfør alle repetisjoner før du bytter side."
+      ],
+      "tips": [
+        "Hold kroppen i en rett linje fra hode til knær gjennom hele bevegelsen.",
+        "La ikke hoftene synke når benet løftes.",
+        "Start bevegelsen fra hoften, ikke med momentum.",
+        "Bevar nøytral rygg og nakke.",
+        "Reduser bevegelsesutslaget dersom du føler korsryggsbelastning."
+      ]
+    },
+    {
+      "id": "glutes-46",
+      "name": "Ettbens Hip-Thrust",
+      "description": "Ettbens hip-thrust er en unilateral øvelse som isolerer og styrker gluteus maximus, samtidig som den aktiverer hamstrings og kjerne. Med øvre rygg støttet på en benk og én fot i gulvet løftes hoftene ved å kontrahere setet, mens motsatt ben holdes hevet. Variasjonen forbedrer muskulær balanse, hofteekstensjon og kjernestyring.",
+      "steps": [
+        "Plasser øvre rygg på en benk med knærne bøyd og føttene i gulvet.",
+        "Strekk det ene benet frem og hold det aktivt.",
+        "Legg armene på benken for stabilitet.",
+        "Press gjennom hælen på støttefoten og løft hoftene opp.",
+        "Klem setet på toppen slik at kroppen danner en rett linje fra skuldre til knær.",
+        "Senk hoftene kontrollert til startposisjon.",
+        "Fullfør alle repetisjoner før du bytter ben."
+      ],
+      "tips": [
+        "Hold overkroppen stiv og haken inn mot brystet.",
+        "Unngå å overekstendere korsryggen på toppen.",
+        "Press gjennom hælen for maksimal seteaktivering.",
+        "Pause kort i full hofteekstensjon for ekstra aktivering.",
+        "Bevegelsen skal være kontrollert, ikke rask.",
+        "Hold nøytral ryggstilling hele tiden."
+      ]
+    }
+  ]
+}

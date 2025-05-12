@@ -36,6 +36,7 @@ import { updateActiveProgramStatus } from '@/app/services/program';
 import { useRouter } from 'next/navigation';
 import { enrichExercisesWithFullData } from '@/app/services/exerciseProgramService';
 import { useLoader } from './LoaderContext';
+import { useTranslation } from '@/app/i18n/TranslationContext';
 
 // Update UserProgram interface to include the document ID
 interface UserProgramWithId extends UserProgram {
@@ -77,6 +78,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
   const { setIsLoading: showGlobalLoader } = useLoader();
+  const { t } = useTranslation();
   const [answers, setAnswers] = useState<ExerciseQuestionnaireAnswers | null>(
     null
   );
@@ -107,7 +109,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
     if (user) {
       // Show loader when starting to fetch data
-      showGlobalLoader(true, 'Loading your programs...');
+      showGlobalLoader(true, t('userContext.loading.programs'));
 
       // Listen to all user programs
       const programsRef = collection(db, `users/${user.uid}/programs`);
@@ -226,7 +228,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
                 setDiagnosisData(userProgram.diagnosis);
               }
             } catch (error) {
-              console.error('Error processing active program:', error);
+              console.error(t('userContext.error.processingActiveProgram'), error);
             }
 
             // Break after processing the active program
@@ -322,7 +324,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
                   }
                 }
               } catch (error) {
-                console.error('Error processing program:', error);
+                console.error(t('userContext.error.processingProgram'), error);
               }
             }
           }
@@ -396,7 +398,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
                   }
                 } catch (error) {
                   console.error(
-                    'Error processing program in background:',
+                    t('userContext.error.processingProgramBackground'),
                     error
                   );
                 }
@@ -408,7 +410,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
               setUserPrograms(allPrograms);
             }
           } catch (error) {
-            console.error('Error loading programs in background:', error);
+            console.error(t('userContext.error.loadingProgramsBackground'), error);
           }
         }, 100); // Small delay to let the UI render first
 
@@ -449,7 +451,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
       }
       showGlobalLoader(false); // Ensure loader is hidden when component unmounts
     };
-  }, [user, authLoading, router]); // Remove showGlobalLoader from dependencies
+  }, [user, authLoading, router, t]); // Remove showGlobalLoader from dependencies
 
   // Fetch initial user data when user logs in
   useEffect(() => {
@@ -464,11 +466,11 @@ export function UserProvider({ children }: { children: ReactNode }) {
     let isSubscribed = true;
 
     // Show loader when starting to fetch data
-    showGlobalLoader(true, 'Loading your data...');
+    showGlobalLoader(true, t('userContext.loading.data'));
 
     // Safety timeout to ensure loading eventually completes
     const safetyTimer = setTimeout(() => {
-      console.log('User data loading safety timeout triggered');
+      console.log(t('userContext.log.timeout'));
       if (isSubscribed) {
         setIsLoading(false);
         showGlobalLoader(false);
@@ -582,7 +584,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
           ) {
             // Keep isLoading true until program page sets it to false
             setIsLoading(true);
-            showGlobalLoader(true, 'Loading your program...');
+            showGlobalLoader(true, t('userContext.loading.programPage'));
 
             // Navigate to program page, but don't set isLoading=false here
             router.push('/program');
@@ -593,7 +595,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
           // setIsLoading(false);
         }
       } catch (error) {
-        console.error('Error fetching user data:', error);
+        console.error(t('userContext.error.fetchingUserData'), error);
         if (isSubscribed) {
           setIsLoading(false);
           showGlobalLoader(false);
@@ -609,14 +611,14 @@ export function UserProvider({ children }: { children: ReactNode }) {
       clearTimeout(safetyTimer);
       showGlobalLoader(false); // Ensure loader is hidden when component unmounts
     };
-  }, [user, authLoading, router]); // Remove showGlobalLoader from dependencies
+  }, [user, authLoading, router, t]); // Added t to dependencies
 
   // On initial load, check localStorage for pending questionnaire flag
   useEffect(() => {
     const hasPendingQuestionnaireFlag =
       window.localStorage.getItem('hasPendingQuestionnaire') === 'true';
     console.log(
-      'Checking for pending questionnaire flag:',
+      t('userContext.log.checkingQuestionnaire'),
       hasPendingQuestionnaireFlag
     );
 
@@ -658,7 +660,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
         });
       }
     }
-  }, []);
+  }, [t]); // Added t to dependencies
 
   const onQuestionnaireSubmit = async (
     diagnosis: DiagnosisAssistantResponse,
@@ -666,7 +668,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   ): Promise<{ requiresAuth?: boolean; programId?: string }> => {
     // Prevent duplicate submissions
     if (submissionInProgressRef.current) {
-      console.log('Submission already in progress, ignoring duplicate request');
+      console.log(t('userContext.log.submissionInProgress'));
       return {};
     }
 
@@ -682,7 +684,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
         try {
           // Store in Firebase using the email
           await storePendingQuestionnaire(email, diagnosis, answers);
-          console.log('Stored pending questionnaire for email:', email);
+          console.log(t('userContext.log.storedQuestionnaire'), email);
 
           // Set flag in localStorage to indicate pending questionnaire
           window.localStorage.setItem('hasPendingQuestionnaire', 'true');
@@ -698,7 +700,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
             JSON.stringify(answers)
           );
         } catch (error) {
-          console.error('Error storing pending questionnaire:', error);
+          console.error(t('userContext.error.storingQuestionnaire'), error);
         }
       } else {
         // Store in session storage as backup
@@ -755,7 +757,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
       submissionInProgressRef.current = false;
       return { programId };
     } catch (error) {
-      console.error('Error submitting questionnaire:', error);
+      console.error(t('userContext.error.submittingQuestionnaire'), error);
       setProgramStatus(ProgramStatus.Error);
       submissionInProgressRef.current = false;
       throw error;
@@ -774,7 +776,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
         // Don't process if another submission is in progress
         if (submissionInProgressRef.current) {
           console.log(
-            'Another submission is already in progress, skipping automatic submission'
+            t('userContext.log.skipAutomaticSubmission')
           );
           return;
         }
@@ -795,14 +797,14 @@ export function UserProvider({ children }: { children: ReactNode }) {
           // Then try to get it from Firebase using email
           else if (pendingEmail) {
             console.log(
-              'Checking for pending questionnaire for email:',
+              t('userContext.log.checkingQuestionnaire'),
               pendingEmail
             );
             const storedQuestionnaire =
               await getPendingQuestionnaire(pendingEmail);
 
             if (storedQuestionnaire) {
-              console.log('Found pending questionnaire in Firebase');
+              console.log(t('userContext.log.foundQuestionnaire'));
               await onQuestionnaireSubmit(
                 storedQuestionnaire.diagnosis,
                 storedQuestionnaire.answers
@@ -812,13 +814,13 @@ export function UserProvider({ children }: { children: ReactNode }) {
               await deletePendingQuestionnaire(pendingEmail);
             } else {
               console.log(
-                'No pending questionnaire found for email:',
+                t('userContext.log.noQuestionnaire'),
                 pendingEmail
               );
             }
           }
         } catch (error) {
-          console.error('Error processing pending questionnaire:', error);
+          console.error(t('userContext.error.processingQuestionnaire'), error);
         }
       };
 
@@ -829,12 +831,12 @@ export function UserProvider({ children }: { children: ReactNode }) {
         handlePendingQuestionnaire();
       }
     }
-  }, [user, authLoading, pendingQuestionnaire]);
+  }, [user, authLoading, pendingQuestionnaire, t]); // Added t to dependencies
 
   // Function to select a specific program from the userPrograms array
   const selectProgram = (index: number) => {
-    showGlobalLoader(true, 'Loading program...');
-    console.log(`Selecting program at index ${index}`);
+    showGlobalLoader(true, t('userContext.loading.program'));
+    console.log(`${t('userContext.log.selectingProgram')} ${index}`);
     // If user has program already, select it
     if (userPrograms && userPrograms.length > index && userPrograms[index]) {
       const selectedProgram = userPrograms[index];
@@ -855,9 +857,9 @@ export function UserProvider({ children }: { children: ReactNode }) {
       setActiveProgram(selectedProgram);
 
       // Log program info for debugging
-      console.log('=== DEBUG: Selected userProgram ===');
+      console.log(t('userContext.debug.selectedProgram'));
       console.log(
-        'Number of programs in collection:',
+        t('userContext.debug.numberPrograms'),
         selectedProgram.programs.length
       );
       selectedProgram.programs.forEach((p, i) => {
@@ -892,14 +894,14 @@ export function UserProvider({ children }: { children: ReactNode }) {
         docId: selectedProgram.docId,
       };
 
-      console.log('=== DEBUG: combinedProgram in selectProgram ===');
+      console.log(t('userContext.debug.combinedProgram'));
       console.log(
-        'Total weeks in combined program:',
+        t('userContext.debug.totalWeeks'),
         combinedProgram?.program?.length || 0
       );
       if (combinedProgram?.program) {
         combinedProgram.program.forEach((w, i) =>
-          console.log(`Combined Week ${i + 1}:`, w?.week)
+          console.log(`${t('userContext.debug.combinedWeek')} ${i + 1}:`, w?.week)
         );
       }
 
@@ -919,8 +921,8 @@ export function UserProvider({ children }: { children: ReactNode }) {
   // Function to toggle the active status of a program
   const toggleActiveProgram = (programIndex: number): Promise<void> => {
     if (!user) {
-      console.error('User must be logged in to toggle program status');
-      return Promise.reject(new Error('User must be logged in'));
+      console.error(t('userContext.error.userLoggedIn'));
+      return Promise.reject(new Error(t('userContext.error.userLoggedIn')));
     }
 
     if (programIndex >= 0 && programIndex < userPrograms.length) {
@@ -1004,7 +1006,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
         });
     }
 
-    return Promise.reject(new Error('Invalid program index'));
+    return Promise.reject(new Error(t('userContext.error.invalidProgramIndex')));
   };
 
   const generateFollowUpProgram = async () => {

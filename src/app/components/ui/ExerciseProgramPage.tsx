@@ -454,16 +454,44 @@ export function ExerciseProgramPage({
     onDaySelect(day, dayName);
   };
 
-  const getDayShortName = (dayOfWeek: number): string => {
-    const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  // Helper function to get the day short name with translations
+  function getDayShortName(dayOfWeek: number, t: (key: string) => string): string {
+    const days = [
+      t('exerciseProgram.dayAbbr.mon'),
+      t('exerciseProgram.dayAbbr.tue'),
+      t('exerciseProgram.dayAbbr.wed'),
+      t('exerciseProgram.dayAbbr.thu'),
+      t('exerciseProgram.dayAbbr.fri'),
+      t('exerciseProgram.dayAbbr.sat'),
+      t('exerciseProgram.dayAbbr.sun')
+    ];
     return days[dayOfWeek - 1];
-  };
+  }
+
+  // Helper function to get the translated month abbreviation
+  function getMonthAbbreviation(month: number, t: (key: string) => string): string {
+    const months = [
+      t('month.jan'),
+      t('month.feb'),
+      t('month.mar'),
+      t('month.apr'),
+      t('month.may'),
+      t('month.jun'),
+      t('month.jul'),
+      t('month.aug'),
+      t('month.sep'),
+      t('month.oct'),
+      t('month.nov'),
+      t('month.dec')
+    ];
+    return months[month];
+  }
 
   // Function to handle feedback submission and program generation
   const handleFeedbackSubmit = async (feedback: ProgramFeedback) => {
     if (!user || !user.uid) {
-      console.error('User must be logged in to submit feedback');
-      return Promise.reject(new Error('User must be logged in'));
+      console.error(t('exerciseProgram.feedback.error'));
+      return Promise.reject(new Error(t('exerciseProgram.feedback.error')));
     }
 
     try {
@@ -497,14 +525,14 @@ export function ExerciseProgramPage({
         feedbackWithExercises
       );
 
-      console.log('New program generated with ID:', newProgramId);
+      console.log(t('exerciseProgram.feedback.success'), newProgramId);
 
       // Redirect to refresh program view
       generateFollowUpProgram();
 
       return Promise.resolve();
     } catch (error) {
-      console.error('Error generating new program:', error);
+      console.error(t('exerciseProgram.feedback.error.generating'), error);
       return Promise.reject(error);
     }
   };
@@ -555,6 +583,7 @@ export function ExerciseProgramPage({
     return Array.from(uniqueExercises.values());
   };
 
+  // Render next week card function inside the component
   const renderNextWeekCard = () => {
     const nextMonday = getNextMonday(new Date());
     const previousExercises = getAllProgramExercises();
@@ -634,17 +663,16 @@ export function ExerciseProgramPage({
             />
           </svg>
           <h3 className="text-app-title text-white">
-            Ready for Your Next Program?
+            {t('exerciseProgram.nextWeekCard.title')}
           </h3>
           <p className="text-gray-300">
-            Share your feedback on this week&rsquo;s exercises to get your
-            personalized program for next week
+            {t('exerciseProgram.nextWeekCard.description')}
           </p>
           <button
             onClick={() => setShowFeedbackQuestionnaire(true)}
             className="mt-4 px-6 py-3 rounded-xl bg-indigo-600 text-white hover:bg-indigo-500 transition-colors duration-200"
           >
-            Start Feedback Process
+            {t('exerciseProgram.nextWeekCard.button')}
           </button>
         </div>
       </div>
@@ -714,7 +742,7 @@ export function ExerciseProgramPage({
         <div className="w-full flex items-center justify-center bg-gray-900 py-20">
           {/* We're using the global loader context now, no need for a spinner here */}
           <div className="text-center">
-            <p className="text-gray-400">Loading program...</p>
+            <p className="text-gray-400">{t('exerciseProgram.loading')}</p>
           </div>
         </div>
       ) : (
@@ -737,12 +765,12 @@ export function ExerciseProgramPage({
                   {isActive ? (
                     <div className="mt-1 px-2 py-0.5 bg-green-500/20 text-green-300 text-xs rounded-full flex items-center">
                       <span className="w-2 h-2 rounded-full bg-green-400 mr-1"></span>
-                      Active Program
+                      {t('exerciseProgram.badge.active')}
                     </div>
                   ) : (
                     <div className="mt-1 px-2 py-0.5 bg-gray-500/20 text-gray-300 text-xs rounded-full flex items-center">
                       <span className="w-2 h-2 rounded-full bg-gray-400 mr-1"></span>
-                      Inactive Program
+                      {t('exerciseProgram.badge.inactive')}
                     </div>
                   )}
                 </div>
@@ -767,8 +795,8 @@ export function ExerciseProgramPage({
                     </h2>
                     <p className="mt-4 text-lg text-gray-400">
                       {program.type === ProgramType.Exercise
-                        ? 'Personalized for your fitness goals'
-                        : 'Personalized for your recovery journey'}
+                        ? t('exerciseProgram.overview.title.exercise')
+                        : t('exerciseProgram.overview.title.recovery')}
                     </p>
                   </div>
                 </div>
@@ -795,7 +823,7 @@ export function ExerciseProgramPage({
                             d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
                           />
                         </svg>
-                        Program Duration: {program.timeFrame}
+                        {t('exerciseProgram.overview.programDuration')} {program.timeFrame}
                       </h3>
                       <p className="text-gray-300 leading-relaxed">
                         {program.timeFrameExplanation}
@@ -819,7 +847,7 @@ export function ExerciseProgramPage({
                             d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
                           />
                         </svg>
-                        What Not To Do
+                        {t('exerciseProgram.overview.whatNotToDo')}
                       </h3>
                       <p className="text-red-400 leading-relaxed">
                         {program.whatNotToDo}
@@ -845,7 +873,7 @@ export function ExerciseProgramPage({
                                 d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
                               />
                             </svg>
-                            Expected Outcome
+                            {t('exerciseProgram.overview.expectedOutcome')}
                           </h3>
                           <p className="text-gray-300 leading-relaxed">
                             {program.afterTimeFrame.expectedOutcome}
@@ -869,7 +897,7 @@ export function ExerciseProgramPage({
                                 d="M13 5l7 7-7 7M5 5l7 7-7 7"
                               />
                             </svg>
-                            Next Steps
+                            {t('exerciseProgram.overview.nextSteps')}
                           </h3>
                           <p className="text-gray-300 leading-relaxed">
                             {program.afterTimeFrame.nextSteps}
@@ -887,7 +915,7 @@ export function ExerciseProgramPage({
                       onClick={handleCloseOverview}
                       className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition-colors duration-200"
                     >
-                      Get Started
+                      {t('exerciseProgram.button.getStarted')}
                     </button>
                   </div>
                 </div>
@@ -918,7 +946,7 @@ export function ExerciseProgramPage({
                           d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                         />
                       </svg>
-                      View Program Overview
+                      {t('exerciseProgram.button.viewOverview')}
                     </button>
                   </div>
                 </div>
@@ -969,7 +997,7 @@ export function ExerciseProgramPage({
                                 : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white'
                             }`}
                           >
-                            Week{' '}
+                            {t('exerciseProgram.weekTab')}{' '}
                             {week.createdAt
                               ? getWeekNumber(new Date(week.createdAt))
                               : getWeekNumber(
@@ -986,11 +1014,11 @@ export function ExerciseProgramPage({
                                   const weekStart = getStartOfWeek(weekCreatedAt);
                                   const weekEnd = getEndOfWeek(weekCreatedAt);
                                   
-                                  // Format the dates
-                                  const startMonth = weekStart.toLocaleDateString('en-US', { month: 'short' });
+                                  // Format the dates with translated month names
+                                  const startMonth = getMonthAbbreviation(weekStart.getMonth(), t);
                                   const startDay = weekStart.getDate();
                                   const endDay = weekEnd.getDate();
-                                  const endMonth = weekEnd.toLocaleDateString('en-US', { month: 'short' });
+                                  const endMonth = getMonthAbbreviation(weekEnd.getMonth(), t);
                                   
                                   // If start and end are in the same month, use "Month Day-Day" format
                                   if (startMonth === endMonth) {
@@ -1016,7 +1044,7 @@ export function ExerciseProgramPage({
                           handleWeekChange(program.program.length + 1)
                         }
                       >
-                        Next Week
+                        {t('exerciseProgram.nextWeek')}
                       </button>
                     </div>
                   </div>
@@ -1066,15 +1094,15 @@ export function ExerciseProgramPage({
                                 }`}
                               >
                                 <span className="text-sm opacity-80 mb-1">
-                                  {getDayShortName(index + 1)}
+                                  {getDayShortName(index + 1, t)}
                                 </span>
                                 {day.isRestDay ? (
                                   <span className="text-xs mt-1 opacity-80">
-                                    Rest
+                                    {t('exerciseProgram.day.rest')}
                                   </span>
                                 ) : (
                                   <span className="text-xs mt-1 opacity-80">
-                                    Activity
+                                    {t('calendar.workout')}
                                   </span>
                                 )}
                               </button>

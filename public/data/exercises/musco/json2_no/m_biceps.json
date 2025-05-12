@@ -1,0 +1,132 @@
+{
+    "bodyPart": "Upper Arms",
+    "exercises": [
+      {
+        "id": "biceps-1",
+        "name": "Stående Hammercurl",
+        "description": "Stående hammercurl bruker et nøytralt grep for å understreke brachialis og brachioradialis samtidig som biceps brachii aktiveres. Fordi håndleddene holdes i tommel-opp-posisjon, er bevegelsen leddvennlig og tillater tyngre belastning enn en supinert curl. Øvelsen er ideell for å øke total armtykkelse og underarmsstyrke samtidig som den reduserer belastning på håndleddene.",
+        "steps": [
+          "Grip et par manualer og stå oppreist med manualene langs siden av kroppen.",
+          "Med nøytralt grep bøyer du armene lett for å holde spenningen på biceps.",
+          "Med håndflatene fortsatt vendt inn mot kroppen løfter du manualene sakte så høyt som mulig.",
+          "Klem biceps på toppen av bevegelsen, og senk deretter vekten kontrollert tilbake til startposisjon.",
+          "Gjenta til ønsket antall repetisjoner."
+        ],
+        "tips": [
+          "Hold repetisjonstempoet langsomt og kontroller vekten gjennom hele settet."
+        ]
+      },
+      {
+        "id": "biceps-2",
+        "name": "Stående Manualcurl",
+        "description": "Stående manualcurl er en klassisk isolasjonsøvelse for biceps utført med supinert grep, der hver arm arbeider uavhengig for balansert utvikling. Bevegelsen bygger størrelse og topp ved å holde konstant spenning gjennom full bevegelsesbane. Streng teknikk – albuer fiksert og overkropp oppreist – gir maksimal muskelaktivering og minimal momentum.",
+        "steps": [
+          "Stå rett opp med føttene samlet, hold et par manualer langs siden uten at de berører kroppen.",
+          "La håndflatene peke fremover.",
+          "Ta opp slakken ved å bøye albuene lett slik at spenningen havner på biceps.",
+          "Løft manualene sakte så høyt som mulig.",
+          "Klem biceps hardt, og senk manualene kontrollert tilbake til startposisjon.",
+          "Gjenta til ønsket antall repetisjoner."
+        ],
+        "tips": [
+          "Spenningen skal være på biceps hele tiden; la dem ikke \"henge\" i bunnen av øvelsen.",
+          "Hold repetisjonstempoet langsomt og kontroller vekten gjennom hele settet.",
+          "La ikke manualene berøre kroppen.",
+          "Sving ikke overkroppen bakover; kroppen skal være helt still, og kun underarmene skal bevege seg."
+        ]
+      },
+      {
+        "id": "biceps-4",
+        "name": "Stående Stangcurl",
+        "description": "Stående stangcurl er en bicepsfokusert øvelse som retter seg mot overarmene og arbeider primært med biceps brachii. Øvelsen er effektiv for å bygge styrke og størrelse og kan utføres med ulik vekt og repetisjoner for ulike treningsmål. Riktig teknikk – uten kroppssving og med kontrollert bevegelse – er nøkkelen til maksimal effekt.",
+        "steps": [
+          "Grip en stang eller EZ-stang med underhåndsgrep og stå med føttene omtrent skulderbreddes avstand. Dette er startposisjonen.",
+          "Bøy i albuene og løft vekten sakte så høyt som mulig.",
+          "Klem biceps, og senk deretter vekten kontrollert tilbake til startposisjon. Dette er én repetisjon.",
+          "Gjenta til ønsket antall repetisjoner."
+        ],
+        "tips": [
+          "Hold albuene tett inntil siden og beveg kun underarmene.",
+          "Hold bevegelsen langsom og kontrollert; sving ikke vekten."
+        ]
+      },
+      {
+        "id": "biceps-10",
+        "name": "EZ-Stangcurl",
+        "description": "EZ-stangcurl retter seg mot biceps brachii med et halvsupinert grep som avlaster håndledd og albuer. De vinklede håndtakene gir en naturlig underarmsposisjon som lar deg trene tyngre og mer komfortabelt enn med rett stang. Stabiliserte albuer og kontrollert tempo sikrer optimal bicepsaktivering og armvekst.",
+        "steps": [
+          "Grip en EZ-stang omtrent skulderbreddes avstand med underhåndsgrep.",
+          "Stå oppreist med føttene samlet (eventuelt ett ben bak for stabilitet), rygg strak og armene fullt utstrakt uten at stangen berører kroppen.",
+          "Hold blikket frem, albuene inntil siden og kroppen helt stille, og løft stangen sakte opp.",
+          "Klem biceps hardt på toppen, og senk stangen kontrollert tilbake til startposisjon.",
+          "Gjenta til ønsket antall repetisjoner."
+        ],
+        "tips": [
+          "Bruk EZ-stangcurl dersom håndleddene gjør vondt ved rett stangcurl.",
+          "Sving ikke kroppen bakover når du løfter stangen.",
+          "Hold kroppen stabil og albuene tett inntil siden gjennom hele bevegelsen."
+        ]
+      },
+      {
+        "id": "biceps-18",
+        "name": "Sittende Manualcurl",
+        "description": "Sittende manualcurl eliminerer hjelp fra underkroppen og tvinger biceps til å løfte belastningen uten momentum. Å sitte oppreist med stabil overkropp isolerer albuefleksorene, gir sterk kontraksjon og bedre kontakt mellom hode og muskel. Variasjonen er utmerket for symmetrisk armutvikling og for å finpusse toppstyrke med lette til moderate belastninger.",
+        "steps": [
+          "Sett deg på enden av en benk og plasser manualene ved siden av deg.",
+          "Sitt oppreist med føttene foran deg og knærne samlet.",
+          "Løft manualene og la dem henge langs siden med håndflatene opp.",
+          "Bøy armene lett for å legge spenning på biceps – dette er startposisjonen.",
+          "Med ryggen rett og albuene inntil siden løfter du begge manualene sakte så høyt som mulig.",
+          "Klem biceps hardt, og senk vekten kontrollert tilbake til startposisjon.",
+          "Gjenta til ønsket antall repetisjoner."
+        ],
+        "tips": [
+          "Hold albuene låst inntil siden.",
+          "La kun underarmene bevege seg.",
+          "Hold repetisjonstempoet langsomt og kontroller vekten – ikke la den falle raskt ned."
+        ]
+      },
+      {
+        "id": "biceps-53",
+        "name": "Enarms Liggende Skrå Manualcurl",
+        "description": "Enarms liggende skrå manualcurl presser brystet mot en lavt vinklet benk, eliminerer kroppssving og holder skulderen bak albuen for et langt utslagsmoment. Å curle én arm om gangen gir ensidig fokus og presis kontroll i den eksentriske fasen, noe som gir konstant spenning fra full strekk til toppkontraksjon. Øvelsen er effektiv for å isolere den lange bicepshodet og korrigere sideforskjeller.",
+        "steps": [
+          "Still inn en justerbar benk på 30–40 graders vinkel.",
+          "Grip en manual med én arm og legg deg med brystet mot benken.",
+          "Stabiliser deg med føttene, og la arbeidsarmen henge med underhåndsgrep.",
+          "Bruk den frie armen til støtte om nødvendig.",
+          "Bøy albuen lett for å legge spenning på biceps – dette er startposisjonen.",
+          "Med albuen fiksert løfter du manualen sakte så høyt som mulig.",
+          "Klem biceps og senk manualen kontrollert tilbake til startposisjon.",
+          "Gjenta til ønsket antall repetisjoner og bytt arm."
+        ],
+        "tips": [
+          "Hold repetisjonstempoet langsomt og kontroller vekten på vei ned.",
+          "Bruk full bevegelsesbane og hold spenningen på biceps hele tiden.",
+          "Hold albuen fiksert; la den ikke komme frem når du løfter vekten."
+        ]
+      },
+      {
+        "id": "biceps-78",
+        "name": "Bryststøttet Skrå Manualcurl",
+        "description": "Bryststøttet skrå manualcurl, også kjent som prone incline curl, utføres med brystet støttet mot en skråbenk. Denne posisjonen eliminerer kroppsmomentum, isolerer biceps og gir konstant spenning gjennom hele bevegelsen, noe som gjør den ideell for strenge, kontrollerte curls og toppkontraksjon.",
+        "steps": [
+          "Still inn en skråbenk på 45–60 graders vinkel.",
+          "Legg deg med bryst og mage mot benken, føttene støtt i gulvet.",
+          "La armene henge rett ned og hold en manual i hver hånd med supinert grep.",
+          "Med overarmene loddrette til gulvet løfter du manualene mot skuldrene ved å bøye albuene.",
+          "Klem biceps på toppen av bevegelsen og fokuser på toppkontraksjon.",
+          "Senk manualene sakte tilbake til startposisjon med kontroll og spenning.",
+          "Gjenta til ønsket antall repetisjoner."
+        ],
+        "tips": [
+          "Hold brystet i kontakt med benken for å hindre bruk av momentum.",
+          "Unngå å svinge eller bruke skuldrene til å løfte vekten.",
+          "Fokuser på en langsom, kontrollert bevegelse, spesielt i senkefasen.",
+          "La ikke manualene berøre gulvet mellom repetisjonene for å opprettholde spenning.",
+          "Bruk full bevegelsesbane for maksimal bicepsaktivering."
+        ]
+      }
+    ]
+  }
+  

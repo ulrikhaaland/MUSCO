@@ -1,0 +1,54 @@
+{
+  "bodyPart": "Forearms",
+  "exercises": [
+    {
+      "id": "forearms-1",
+      "name": "Manual Håndleddscurl",
+      "description": "Manual håndleddscurl er en isolasjonsøvelse som styrker underarmens fleksorer, spesielt flexor carpi radialis og flexor digitorum. I denne varianten hviler underarmen på en flat benk med håndflaten opp og håndleddet hengende utenfor kanten. Håndleddet bøyes opp for å løfte manualen og senkes deretter kontrollert tilbake til startposisjon. Øvelsen er en grunnpilar for å bygge grepsstyrke, forbedre håndleddsstabilitet og forebygge belastningsskader.",
+      "steps": [
+        "Sitt på en benk med føttene flatt i gulvet.",
+        "Hold en manual i hånden og la underarmen hvile på benken med håndleddet hengende utenfor kanten og håndflaten opp.",
+        "Start med håndleddet fullt strukket slik at manualen ruller ned mot fingertuppene.",
+        "Bøy håndleddet opp så langt som mulig mens underarmen ligger stille på benken.",
+        "Pause kort på toppen og klem underarmsmusklene.",
+        "Senk manualen sakte tilbake til startposisjon og la underarmen få full strekk.",
+        "Fullfør alle repetisjonene med én arm før du bytter."
+      ],
+      "tips": [
+        "Hold underarmen helt støttet og i ro gjennom hele bevegelsen.",
+        "Bruk full bevegelsesbane ved å la manualen rulle mot fingrene i bunnposisjon.",
+        "Unngå momentum; løft kontrollert.",
+        "Fokuser på å klemme underarmen på toppen av hver repetisjon.",
+        "Start med lett vekt til du mestrer bevegelsen.",
+        "Reduser vekten eller kontroller teknikken dersom du kjenner smerte i håndleddet.",
+        "For økt intensitet kan du holde den kontraherte posisjonen i 1–2 sekunder før du senker.",
+        "Sørg for sikkert, men ikke overdrevent, grep for å bevare bevegelsesutslaget."
+      ]
+    },
+    {
+      "id": "forearms-2",
+      "name": "Manual Håndleddsrotasjon",
+      "description": "Dette er en rotasjonsøvelse for underarmen der en manual holdes vertikalt i enden av håndtaket. Den trener primært pronatorene og supinatorene i underarmen samt musklene som styrer radial og ulnar deviasjon i håndleddet. Med underarmen støttet på en benk og håndleddet fritt, roteres manualen sakte og kontrollert gjennom buen sin mot gravitasjonsmomentet. Bevegelsen er avgjørende for å styrke rotasjonsstabiliteten i håndledd og albue, noe som er nyttig i idrett, løfting og skadeforebygging.",
+      "steps": [
+        "Sitt på en benk med føttene flatt i gulvet.",
+        "Hold en lett manual vertikalt i den ene enden, og la underarmen hvile på benken med håndleddet hengende utenfor kanten.",
+        "Hold overarmen i ro og albuen bøyd cirka 90 grader.",
+        "Start med håndflaten vendt innover og roter håndleddet sakte til håndflaten vender opp (supinasjon).",
+        "Fortsett rolig og kontroller bevegelsen til håndflaten vender ned (pronasjon).",
+        "Beveg deg gjennom hele rotasjonsutslaget så langt det er komfortabelt.",
+        "Om ønskelig kan du vippe håndleddet side til side for radial og ulnar deviasjon.",
+        "Fullfør alle repetisjonene med én arm før du bytter."
+      ],
+      "tips": [
+        "Beveg deg langsomt og unngå rykk eller overrotasjon.",
+        "Hold albuen og underarmen låst for å isolere håndleddet.",
+        "La manualens vektarm gjøre jobben – bruk ikke for tung belastning.",
+        "Legg vekt på jevn overgang og kontroll i begge retninger.",
+        "Start med svært lett vekt; øvelsen krever mindre motstand enn du kanskje tror.",
+        "Prioriter bevegelseskvalitet fremfor høyt repetisjonstall.",
+        "Stopp dersom du opplever smerte og ikke bare motstand.",
+        "Hold håndleddet nøytralt når du ikke aktivt roterer."
+      ]
+    }
+  ]
+}

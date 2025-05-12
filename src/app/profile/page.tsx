@@ -475,12 +475,12 @@ export default function ProfilePage() {
     }
   };
 
+  // Update page title
   useEffect(() => {
-    // Set page title
     if (typeof document !== 'undefined') {
-      document.title = 'Profile | MUSCO';
+      document.title = t('profile.title') + ' | MUSCO';
     }
-  }, []);
+  }, [t]);
 
   const handleLogout = async () => {
     try {

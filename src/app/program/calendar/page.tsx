@@ -5,29 +5,31 @@ import { useRouter } from 'next/navigation';
 import { ExerciseProgramCalendar } from '@/app/components/ui/ExerciseProgramCalendar';
 import { useUser } from '@/app/context/UserContext';
 import { ProgramDay } from '@/app/types/program';
+import { useTranslation } from '@/app/i18n/TranslationContext';
 
 export default function CalendarPage() {
   const router = useRouter();
   const { program, userPrograms } = useUser();
+  const { t } = useTranslation();
 
   // Update page title
   useEffect(() => {
     if (program?.title && typeof document !== 'undefined') {
-      document.title = `${program.title} - Calendar | MUSCO`;
+      document.title = `${program.title} - ${t('calendar.title')} | MUSCO`;
     } else if (typeof document !== 'undefined') {
-      document.title = 'Program Calendar | MUSCO';
+      document.title = t('calendar.programCalendarTitle');
     }
-  }, [program]);
+  }, [program, t]);
 
   const getDayName = (dayOfWeek: number): string => {
     const days = [
-      'Monday',
-      'Tuesday',
-      'Wednesday',
-      'Thursday',
-      'Friday',
-      'Saturday',
-      'Sunday',
+      t('days.monday'),
+      t('days.tuesday'),
+      t('days.wednesday'),
+      t('days.thursday'),
+      t('days.friday'),
+      t('days.saturday'),
+      t('days.sunday'),
     ];
     return days[dayOfWeek - 1];
   };

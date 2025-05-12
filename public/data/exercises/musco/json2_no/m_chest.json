@@ -1,0 +1,203 @@
+{
+  "bodyPart": "Chest",
+  "exercises": [
+    {
+      "id": "chest-1",
+      "name": "Manualbenkpress",
+      "description": "Manualbenkpress er en variant av stangbenkpress og brukes til å bygge brystmusklene. Øvelsen anbefales ofte når du har nådd et visst styrkenivå i stangbenkpress for å redusere risikoen for bryst- og skulderskader. Manualene gir dessuten et ego-sjekk fordi du må opprettholde skulderstabilitet gjennom hele løftet. Øvelsen kan fungere som hovedløft i programmet ditt eller som et assistanseløft til benkpress avhengig av målene dine.",
+      "steps": [
+        "Plukk opp manualene fra gulvet med nøytralt grep (håndflatene vendt inn). Plasser manualendene i hoftebøyen og sett deg på benken.",
+        "Len deg tilbake med manualene nær brystet. Når du ligger riktig, ta et dypt pust og press manualene opp til full utstrekk.",
+        "Senk manualene kontrollert ned så langt det er komfortabelt (håndtakene bør være omtrent i høyde med brystet).",
+        "Kontraher brystet og press manualene tilbake til startposisjon.",
+        "Gjenta til ønsket antall repetisjoner."
+      ],
+      "tips": [
+        "Bevar mer spenning i brystet ved å unngå full albuelås på toppen.",
+        "Hold manualene lett rotert cirka 45 grader for å holde albuene i en nøytral posisjon.",
+        "La ikke manualene kollidere øverst – treff kan føre til tap av skulderstabilitet.",
+        "Klem manualene så hardt som mulig for å øke «irradiation» og dermed skulderstabilitet.",
+        "Hold skulderbladene trukket sammen for å holde skuldrene i trygg posisjon.",
+        "Se for deg at du skyver deg selv bort fra vektene i stedet for å presse vektene fra deg.",
+        "Kjenn du får smerter i selve skulderleddet, trekk skulderbladene lett bakover og «pakk» skulderbuen.",
+        "Hold kjernen aktiv og unngå overdreven svai i korsryggen.",
+        "Hold føttene flatt i gulvet og ikke la underkroppen bevege seg under settet."
+      ]
+    },
+    {
+      "id": "chest-3",
+      "name": "Skrå Manualbenkpress",
+      "description": "Skrå manualbenkpress er en variant av skrå benkpress som bygger brystmusklene, spesielt øvre del. Skuldre og triceps bidrar indirekte. Skråvinkelen hjelper mange løftere med å treffe en ofte svak øvre brystregion, og manualer fremmer jevn styrke mellom sidene samt reduserer skade­risiko i skulder og bryst. Øvelsen passer i bryst-, push-, overkropps- eller helkroppsøkter.",
+      "steps": [
+        "Plukk opp manualene med nøytralt grep og plasser endene i hoftebøyen før du setter deg på kanten av skråbenken.",
+        "Len deg tilbake med manualene nær brystet. Når du ligger riktig, ta et dypt pust og press manualene opp til full utstrekk.",
+        "Senk manualene kontrollert til håndtakene er omtrent på brysthøyde.",
+        "Kontraher brystet og press manualene tilbake til startposisjon.",
+        "Gjenta til ønsket antall repetisjoner."
+      ],
+      "tips": [
+        "Bevar spenning i brystet ved å unngå full albuelås.",
+        "Hold manualene i cirka 45 graders vinkel for nøytral albueposisjon.",
+        "Unngå at manualene kolliderer på toppen.",
+        "Klem manualene hardt for å øke «irradiation» og skulderstabilitet.",
+        "Hold skulderbladene sammenklemt.",
+        "Tenk at du skyver deg selv bort fra vektene.",
+        "Ved skuldersmerter: trekk skulderbladene litt bakover og «pakk» skulderbuen.",
+        "Hold kjernen aktiv og unngå overdreven korsryggsvei.",
+        "Føtter flatt i gulvet; underkroppen skal være stille."
+      ]
+    },
+    {
+      "id": "chest-7",
+      "name": "Stangbenkpress",
+      "description": "Stangbenkpress er en klassiker i alle løftemiljøer. For styrkeløftere er den én av «de tre store» sammen med knebøy og markløft; for idrettsutøvere er én-reps maks et robust prestasjonsmål; for kroppsbyggere er det en sammensatt øvelse som treffer store deler av overkroppen. Øvelsen belaster primært pectoralis major, mens triceps og skuldre hjelper til. Ikke alle er bygd for tradisjonell stangbenk, så varianter som skrå, decline, manual- eller smith-benkpress, samt spesialstenger, lar flere trene mønsteret trygt.",
+      "steps": [
+        "Liggende på benk, plasser hendene litt utenfor skulderbredde.",
+        "Klem skulderbladene sammen og press dem ned i benken.",
+        "Ta et dypt pust og la spotteren hjelpe til med løftet for å bevare spenn i øvre rygg.",
+        "La vekten stabilisere seg mens ryggen forblir stram.",
+        "Inhaler og senk stangen kontrollert ved å bøye albuene.",
+        "Senkt stangen rett ned til nederst på brystbenet og berør brystet lett.",
+        "Press stangen rett opp ved å presse deg inn i benken, drive føttene i gulvet og strekke albuene.",
+        "Gjenta til ønsket antall repetisjoner."
+      ],
+      "tips": [
+        "Teknikk først, vekt deretter – skadefri fremgang slår store tall.",
+        "Hold stangen i linje med håndledd og albuer, og la den gå i rett bane.",
+        "Stopp like før full albuelås om du vil holde mer spenning i bryst og triceps.",
+        "En lett albuetuck ned og «flare and push» opp fungerer for de fleste.",
+        "Bue er ok, men la buens hoveddel komme fra midt- og øvre rygg, ikke korsrygg.",
+        "Stangen skal berøre brystet hver repetisjon – bruk brettpress eller kjeder hvis du vil overdra spesifikke leddutslag.",
+        "Gripbredden kan tilpasses arm-lengde; skuldersmerter kan kreve bredere grep eller bedre retraksjon.",
+        "Klem stangen så hardt som mulig for bedre skulderstabilitet.",
+        "Hold skulderbladene retrahert gjennom hele løftet.",
+        "Bruk spotter for løft av for å beholde spenning i øvre rygg."
+      ]
+    },
+    {
+      "id": "chest-10",
+      "name": "Stående Kabelflyes",
+      "description": "Stående kabelflyes er en variant av flyes og styrker kroppens pressmuskler – bryst, triceps og skuldre. Bevegelsen krever mye kjernestabilitet og er best som tilleggsøvelse for økt brystmasse.",
+      "steps": [
+        "Sett begge trinser omtrent i skulderhøyde og velg ønsket vekt.",
+        "Grip håndtakene med nøytralt grep og ta et skritt frem i splittstilling.",
+        "Press håndtakene til full utstrekk mens du spenner brystet og strekker albuene.",
+        "Med en lett albuebøy, åpne armene kontrollert ved skulderleddet til brystet strekkes.",
+        "Før håndtakene sammen i brysthøyde ved å kontrahere brystet.",
+        "Senk langsomt tilbake og gjenta."
+      ],
+      "tips": [
+        "Se for deg at du klemmer rundt et tre.",
+        "Ikke klem håndtakene altfor hardt – det kan aktivere underarmer og biceps mer enn nødvendig.",
+        "Unngå å slå håndtakene sammen på toppen for å bevare konstant spenning.",
+        "Hold alltid en svak albuebøy og unngå posisjoner som gir skuldersmerter.",
+        "Hold kjernen aktiv og unngå overdreven korsryggsvei."
+      ]
+    },
+    {
+      "id": "chest-11",
+      "name": "Maskinbenkpress (Hammer Strength)",
+      "description": "Maskinbenkpress er en pressvariant som isolerer brystet via en fast bevegelsesbane og belaster også skuldre og triceps indirekte. Siden banen er stabil, kan du fokusere mer på muskelkontakt mot slutten av brystøkten når målet er hypertrofi.",
+      "steps": [
+        "Sitt i maskinen slik at håndtakene er like under skulderhøyde.",
+        "Plasser håndflatene på håndtakene, inhaler og sett skulderbladene sammen på benken.",
+        "Press håndtakene til full utstrekk mens du ekshalerer, men hold skulderbladene pakket.",
+        "Gjenta til ønsket antall repetisjoner."
+      ],
+      "tips": [
+        "Mange foretrekker tommelløst grep for bedre kontakt med bryst og triceps.",
+        "Å klemme håndtakene hardt kan øke «irradiation» og skulderstabilitet.",
+        "Hold skulderbladene sammenklemt for sikker skulderposisjon.",
+        "Tenk at du skyver deg fra vektene, ikke vektene fra deg.",
+        "Ved fremre skuldersmerter: sørg for lett retraksjon og en «pakket» skulderbue.",
+        "Hold kjernen aktiv og unngå overdreven korsryggsbue.",
+        "Føttene flatt i gulvet; underkroppen ubevegelig."
+      ]
+    },
+    {
+      "id": "chest-14",
+      "name": "Skrå Manualflyes",
+      "description": "Skrå manualflyes isolerer brystet og brukes mest av løftere med estetiske mål. Skråvinkelen gir ekstra fokus på øvre bryst og gir en unik belastningskurve. Øvelsen passer best på hypertrofidager eller i tradisjonelle brystsplitt-økter.",
+      "steps": [
+        "Løft manualene med nøytralt grep og sett deg på skråbenken.",
+        "Len deg tilbake, ta et dypt pust og press manualene til full utstrekk.",
+        "Retraher skulderbladene lett, lås albuene med en liten bøy og senk manualene lateralt mens albuevinkelen bevares.",
+        "Når manualene er på brystnivå, press dem tilbake ved å klemme brystet sammen.",
+        "Uten å la manualene berøre hverandre, start neste repetisjon."
+      ],
+      "tips": [
+        "Bruk en moderat skråvinkel, ca. 30 grader.",
+        "Se for deg at du omfavner et tre.",
+        "Unngå å klemme håndtakene for hardt for å hindre over­aktivering av underarmer.",
+        "Ikke la manualene slå sammen på toppen – hold spenningen.",
+        "Hold en liten albuebøy og unngå stillinger som gir skuldersmerter.",
+        "Ved skuldersmerter: retraher skulderbladene lett og «pakk» skulderbuen.",
+        "Føtter flatt; fokuser på albuebøy og brystaktivering.",
+        "Hold kjernen aktiv og unngå overdreven korsryggsbue."
+      ]
+    },
+    {
+      "id": "chest-16",
+      "name": "Stående Kabelflyes Lav-Til-Høy",
+      "description": "Stående lav-til-høy kabelflyes er en flyes-variant som styrker bryst, triceps og skuldre. Kjernestabilitet gjør øvelsen krevende å overbelaste, så den brukes best som supplement for økt brystmasse.",
+      "steps": [
+        "Sett begge trinser lavest mulig og velg ønsket vekt.",
+        "Grip håndtakene med lett supinert grep og ta et skritt frem i splittstilling.",
+        "Press håndtakene til full utstrekk mens du spenner brystet.",
+        "Med lett albuebøy, før armene kontrollert oppover i 45-graders bane og åpne skuldrene.",
+        "Kontraher brystet og før håndtakene sammen i brysthøyde.",
+        "Senk rolig tilbake og gjenta."
+      ],
+      "tips": [
+        "Se for deg at du omfavner et tre.",
+        "Ikke klem håndtakene for hardt; det kan rekruttere underarmer unødvendig.",
+        "Unngå å slå håndtakene sammen på toppen.",
+        "Hold en liten albuebøy og unngå smertefulle skulderposisjoner.",
+        "Hold kjernen aktiv og unngå overdreven korsryggsbue."
+      ]
+    },
+    {
+      "id": "chest-18",
+      "name": "Armheving",
+      "description": "Armheving bygger brystmusklene og involverer indirekte skuldre og triceps. Bevegelsen er gammel og velkjent, og fremmer også skulderstabilitet. Den passer i bryst-, push-, overkropps- og helkroppsøkter.",
+      "steps": [
+        "Plasser hendene under skuldrene, tærne i gulvet og knærne under hoftene.",
+        "Strekk ett ben om gangen og innta push-up-posisjon med strak kropp.",
+        "Senk deg kontrollert ved å trekke skulderbladene sammen og bøye albuene.",
+        "Gå ned til overarmene er parallelle eller brystet berører gulvet.",
+        "Press tilbake til start ved å strekke albuene og presse håndflatene i gulvet.",
+        "Gjenta til ønsket antall repetisjoner."
+      ],
+      "tips": [
+        "Armer og kropp skal danne en pil i bunnposisjon, ikke en T.",
+        "Hold kroppen som en plank gjennom hele øvelsen.",
+        "Stram setet og kjernen før du senker deg.",
+        "Hold haken nede; se ikke frem.",
+        "Tenk at du prøver å presse tomlene mot hverandre for bedre brystaktivering.",
+        "Ikke la hodet stikke frem; bryst og nese skal treffe samtidig.",
+        "Skyv deg så langt fra gulvet som mulig og la skulderbladene bevege seg fritt.",
+        "Fullfører du ikke bevegelsen, mister du effekt."
+      ]
+    },
+    {
+      "id": "chest-22",
+      "name": "Stående Kabelflyes Høy-Til-Lav",
+      "description": "Stående høy-til-lav kabelflyes er en flyes-variant som styrker bryst, triceps og skuldre. Øvelsen krever mye kjernestabilitet og egner seg best som tilleggsøvelse for økt brystmasse.",
+      "steps": [
+        "Sett begge trinser høyest mulig og velg ønsket vekt.",
+        "Grip håndtakene med nøytralt grep og gå frem i splittstilling.",
+        "Press håndtakene til full utstrekk mens du spenner brystet.",
+        "Med lett albuebøy, åpne armene kontrollert mens brystet strekkes.",
+        "Kontraher brystet og før håndtakene sammen ved navlehøyde.",
+        "Senk rolig tilbake og gjenta."
+      ],
+      "tips": [
+        "Se for deg at du omfavner et tre.",
+        "Unngå å klemme håndtakene for hardt for å holde fokus på brystet.",
+        "Ikke slå håndtakene sammen på toppen.",
+        "Hold en liten albuebøy og unngå smertefulle skulderposisjoner.",
+        "Hold kjernen aktiv og unngå overdreven korsryggsbue."
+      ]
+    }
+  ]
+}
