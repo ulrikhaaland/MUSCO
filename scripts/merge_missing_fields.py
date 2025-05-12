@@ -19,7 +19,7 @@ from typing import Any, Dict, List
 BASE = "/Users/ulrikhaland/Documents/musco-new/public/data/exercises/musco"
 EN_DIR  = os.path.join(BASE, "json2")       # original English
 NO_DIR  = os.path.join(BASE, "json2_no")    # Norwegian (has gaps)
-FILENAMES = ["m_upper-back.json"]                # process only this file
+FILENAMES = ["warmups.json"]                # process only this file
 # ───────────────────────────────────────────────────────────────────────
 
 def is_missing(value: Any) -> bool:

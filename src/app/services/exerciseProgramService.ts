@@ -1,7 +1,12 @@
 import { Exercise, ExerciseProgram } from '@/app/types/program';
 
 // Helper function to fetch JSON data
-const fetchJson = async (url: string): Promise<{ exercises: Exercise[] }> => {
+const fetchJson = async (url: string, useNorwegian: boolean = false): Promise<{ exercises: Exercise[] }> => {
+  // If Norwegian is requested, modify the URL to use the Norwegian folder
+  if (useNorwegian) {
+    url = url.replace('/json2/', '/json2_no/');
+  }
+  
   try {
     const response = await fetch(url);
     if (!response.ok) {
@@ -24,14 +29,15 @@ const fetchJson = async (url: string): Promise<{ exercises: Exercise[] }> => {
 };
 
 // Map of body parts to their JSON file paths (using fetch)
-const exerciseFiles: Record<
+const exerciseFiles = (useNorwegian: boolean = false): Record<
   string,
   () => Promise<{ default: { exercises: Exercise[] } }>
-> = {
+> => ({
   Shoulders: async () => {
     // First try to load only musco data
     const muscoData = await fetchJson(
-      '/data/exercises/musco/json2/m_shoulders.json'
+      '/data/exercises/musco/json2/m_shoulders.json',
+      useNorwegian
     );
     const muscoExercises = muscoData.exercises || [];
 
@@ -46,8 +52,8 @@ const exerciseFiles: Record<
   'Upper Arms': async () => {
     // Load only musco data
     const [muscoBiceps, muscoTriceps] = await Promise.all([
-      fetchJson('/data/exercises/musco/json2/m_biceps.json'),
-      fetchJson('/data/exercises/musco/json2/m_triceps.json'),
+      fetchJson('/data/exercises/musco/json2/m_biceps.json', useNorwegian),
+      fetchJson('/data/exercises/musco/json2/m_triceps.json', useNorwegian),
     ]);
     const muscoExercises = [
       ...(muscoBiceps.exercises || []),
@@ -65,7 +71,8 @@ const exerciseFiles: Record<
   Forearms: async () => {
     // Load only musco data
     const muscoData = await fetchJson(
-      '/data/exercises/musco/json2/m_forearms.json'
+      '/data/exercises/musco/json2/m_forearms.json',
+      useNorwegian
     );
     const muscoExercises = muscoData.exercises || [];
 
@@ -80,7 +87,8 @@ const exerciseFiles: Record<
   Chest: async () => {
     // Load only musco data
     const muscoData = await fetchJson(
-      '/data/exercises/musco/json2/m_chest.json'
+      '/data/exercises/musco/json2/m_chest.json',
+      useNorwegian
     );
     const muscoExercises = muscoData.exercises || [];
 
@@ -95,8 +103,8 @@ const exerciseFiles: Record<
   Abdomen: async () => {
     // Load only musco data
     const [muscoAbs, muscoObliques] = await Promise.all([
-      fetchJson('/data/exercises/musco/json2/m_abs.json'),
-      fetchJson('/data/exercises/musco/json2/m_obliques.json'),
+      fetchJson('/data/exercises/musco/json2/m_abs.json', useNorwegian),
+      fetchJson('/data/exercises/musco/json2/m_obliques.json', useNorwegian),
     ]);
     const muscoExercises = [
       ...(muscoAbs.exercises || []),
@@ -114,9 +122,9 @@ const exerciseFiles: Record<
   'Upper Back': async () => {
     // Load only musco data
     const [muscoUpperBack, muscoLats, muscoTraps] = await Promise.all([
-      fetchJson('/data/exercises/musco/json2/m_upper-back.json'),
-      fetchJson('/data/exercises/musco/json2/m_lats.json'),
-      fetchJson('/data/exercises/musco/json2/m_traps.json'),
+      fetchJson('/data/exercises/musco/json2/m_upper-back.json', useNorwegian),
+      fetchJson('/data/exercises/musco/json2/m_lats.json', useNorwegian),
+      fetchJson('/data/exercises/musco/json2/m_traps.json', useNorwegian),
     ]);
     const muscoExercises = [
       ...(muscoUpperBack.exercises || []),
@@ -135,7 +143,8 @@ const exerciseFiles: Record<
   'Lower Back': async () => {
     // Load only musco data
     const muscoData = await fetchJson(
-      '/data/exercises/musco/json2/m_lower-back.json'
+      '/data/exercises/musco/json2/m_lower-back.json',
+      useNorwegian
     );
 
     const muscoExercises = muscoData.exercises || [];
@@ -151,7 +160,8 @@ const exerciseFiles: Record<
   Glutes: async () => {
     // Load only musco data
     const muscoData = await fetchJson(
-      '/data/exercises/musco/json2/m_glutes.json'
+      '/data/exercises/musco/json2/m_glutes.json',
+      useNorwegian
     );
     const muscoExercises = muscoData.exercises || [];
 
@@ -166,8 +176,8 @@ const exerciseFiles: Record<
   'Upper Legs': async () => {
     // Load only musco data
     const [muscoQuads, muscoHamstrings] = await Promise.all([
-      fetchJson('/data/exercises/musco/json2/m_quads.json'),
-      fetchJson('/data/exercises/musco/json2/m_hamstrings.json'),
+      fetchJson('/data/exercises/musco/json2/m_quads.json', useNorwegian),
+      fetchJson('/data/exercises/musco/json2/m_hamstrings.json', useNorwegian),
     ]);
 
     // Combine musco exercises, ensuring arrays exist
@@ -187,7 +197,8 @@ const exerciseFiles: Record<
   'Lower Legs': async () => {
     // Load only musco data
     const muscoData = await fetchJson(
-      '/data/exercises/musco/json2/m_calves.json'
+      '/data/exercises/musco/json2/m_calves.json',
+      useNorwegian
     );
     const muscoExercises = muscoData.exercises || [];
 
@@ -202,7 +213,8 @@ const exerciseFiles: Record<
   Warmup: async () => {
     // Load warmup exercises
     const warmupData = await fetchJson(
-      '/data/exercises/musco/json2/warmups.json'
+      '/data/exercises/musco/json2/warmups.json',
+      useNorwegian
     );
     const warmupExercises = warmupData.exercises || [];
 
@@ -217,7 +229,8 @@ const exerciseFiles: Record<
   Cardio: async () => {
     // Load cardio exercises
     const cardioData = await fetchJson(
-      '/data/exercises/musco/json2/cardio.json'
+      '/data/exercises/musco/json2/cardio.json',
+      useNorwegian
     );
     const cardioExercises = cardioData.exercises || [];
 
@@ -229,7 +242,7 @@ const exerciseFiles: Record<
 
     return { default: { exercises: Array.from(exerciseMap.values()) } };
   },
-};
+});
 
 // Cache for loaded exercises
 const exerciseCache: Record<string, Exercise> = {};
@@ -260,7 +273,7 @@ const originalExerciseFiles: Record<string, string> = {
 /**
  * Loads fallback exercises from original json files for specific IDs
  */
-async function loadFallbackExercises(missingIds: Set<string>): Promise<void> {
+async function loadFallbackExercises(missingIds: Set<string>, useNorwegian: boolean = false): Promise<void> {
   if (missingIds.size === 0) return;
 
   // Group missing IDs by their prefix to determine which files to load
@@ -291,7 +304,7 @@ async function loadFallbackExercises(missingIds: Set<string>): Promise<void> {
     }
 
     try {
-      const { exercises = [] } = await fetchJson(filePath);
+      const { exercises = [] } = await fetchJson(filePath, useNorwegian);
 
       let foundCount = 0;
 
@@ -330,17 +343,20 @@ async function loadFallbackExercises(missingIds: Set<string>): Promise<void> {
  * @param bodyParts Array of body part names to load
  * @param includeOriginals When true, loads original exercises too (needed for toggle feature)
  * @param onlyLoadMissingOriginals When true, only loads original exercises that weren't found in Musco files
+ * @param useNorwegian When true, loads Norwegian exercise data
  */
 async function loadExercisesFromJson(
   bodyParts: string[],
   includeOriginals: boolean = true,
-  onlyLoadMissingOriginals: boolean = false
+  onlyLoadMissingOriginals: boolean = false,
+  useNorwegian: boolean = false
 ): Promise<Exercise[]> {
   const exercises: Exercise[] = [];
+  const exerciseFilesMap = exerciseFiles(useNorwegian);
 
   // First pass: load all musco exercises
   for (const bodyPart of bodyParts) {
-    const loader = exerciseFiles[bodyPart];
+    const loader = exerciseFilesMap[bodyPart];
     if (loader) {
       try {
         const {
@@ -410,7 +426,7 @@ async function loadExercisesFromJson(
 
         try {
           const { exercises: originalExercises = [] } =
-            await fetchJson(filePath);
+            await fetchJson(filePath, useNorwegian);
 
           const processedExercises = originalExercises.map(
             (data: Exercise) => ({
@@ -448,9 +464,12 @@ async function loadExercisesFromJson(
 
 /**
  * Enriches exercises in a program with complete data from the exercise repository
+ * @param program The exercise program to enrich
+ * @param useNorwegian When true, loads Norwegian exercise data
  */
 export const enrichExercisesWithFullData = async (
-  program: ExerciseProgram
+  program: ExerciseProgram,
+  useNorwegian: boolean = false
 ): Promise<void> => {
   if (!program.program) return;
 
@@ -460,7 +479,7 @@ export const enrichExercisesWithFullData = async (
 
   // Map lowercase body part names to their proper cased version from exerciseFiles
   const bodyPartMapping: Record<string, string> = {};
-  Object.keys(exerciseFiles).forEach((key) => {
+  Object.keys(exerciseFiles(useNorwegian)).forEach((key) => {
     bodyPartMapping[key.toLowerCase()] = key;
   });
 
@@ -527,14 +546,14 @@ export const enrichExercisesWithFullData = async (
     }
 
     // If we can't directly map it, check if any exerciseFiles key contains this prefix
-    for (const bodyPart of Object.keys(exerciseFiles)) {
+    for (const bodyPart of Object.keys(exerciseFiles(useNorwegian))) {
       if (bodyPart.toLowerCase().includes(prefix)) {
         return bodyPart;
       }
     }
 
     // As a last resort, try to match it to an exerciseFiles key by checking case-insensitive
-    const bodyPartKey = Object.keys(exerciseFiles).find(
+    const bodyPartKey = Object.keys(exerciseFiles(useNorwegian)).find(
       (key) => key.toLowerCase() === prefix
     );
 
@@ -550,7 +569,7 @@ export const enrichExercisesWithFullData = async (
           const exerciseIdentifier = exercise.id || exercise.exerciseId;
           if (exerciseIdentifier) {
             const bodyPart = extractBodyPartFromId(exerciseIdentifier);
-            if (bodyPart && Object.keys(exerciseFiles).includes(bodyPart)) {
+            if (bodyPart && Object.keys(exerciseFiles(useNorwegian)).includes(bodyPart)) {
               targetAreas.add(bodyPart);
             }
           }
@@ -561,7 +580,7 @@ export const enrichExercisesWithFullData = async (
 
   // Load all musco exercises for the target areas
   // For enrichment, we only want the musco exercises and potentially missing fallbacks
-  await loadExercisesFromJson(Array.from(targetAreas), true, true);
+  await loadExercisesFromJson(Array.from(targetAreas), true, true, useNorwegian);
 
   // Check which IDs are still missing after loading musco exercises
   for (const week of program.program) {
@@ -579,7 +598,7 @@ export const enrichExercisesWithFullData = async (
 
   // If we have missing IDs, load the fallback exercises
   if (missingIds.size > 0) {
-    await loadFallbackExercises(missingIds);
+    await loadFallbackExercises(missingIds, useNorwegian);
   }
 
   // Now enrich the exercises using the loaded cache

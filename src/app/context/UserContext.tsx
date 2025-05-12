@@ -78,7 +78,8 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
   const { setIsLoading: showGlobalLoader } = useLoader();
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
+  const isNorwegian = locale === 'nb';
   const [answers, setAnswers] = useState<ExerciseQuestionnaireAnswers | null>(
     null
   );
@@ -170,7 +171,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
                 const exercisePrograms = await Promise.all(
                   programSnapshot.docs.map(async (programDoc) => {
                     const program = programDoc.data() as ExerciseProgram;
-                    await enrichExercisesWithFullData(program);
+                    await enrichExercisesWithFullData(program, isNorwegian);
                     return program;
                   })
                 );
@@ -260,7 +261,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
                   const exercisePrograms = await Promise.all(
                     programSnapshot.docs.map(async (programDoc) => {
                       const program = programDoc.data() as ExerciseProgram;
-                      await enrichExercisesWithFullData(program);
+                      await enrichExercisesWithFullData(program, isNorwegian);
                       return program;
                     })
                   );
@@ -364,7 +365,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
                     const exercisePrograms = await Promise.all(
                       programSnapshot.docs.map(async (programDoc) => {
                         const program = programDoc.data() as ExerciseProgram;
-                        await enrichExercisesWithFullData(program);
+                        await enrichExercisesWithFullData(program, isNorwegian);
                         return program;
                       })
                     );
@@ -456,7 +457,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
       }
       showGlobalLoader(false); // Ensure loader is hidden when component unmounts
     };
-  }, [user, authLoading, router, t]); // Remove showGlobalLoader from dependencies
+  }, [user, authLoading, router, t, isNorwegian]); // Added isNorwegian to dependencies
 
   // Fetch initial user data when user logs in
   useEffect(() => {
@@ -549,7 +550,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
                 const programWeeks = await Promise.all(
                   allProgramsSnapshot.docs.map(async (doc) => {
                     const program = doc.data() as ExerciseProgram;
-                    await enrichExercisesWithFullData(program);
+                    await enrichExercisesWithFullData(program, isNorwegian);
                     return program;
                   })
                 );
@@ -613,7 +614,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
       clearTimeout(safetyTimer);
       showGlobalLoader(false); // Ensure loader is hidden when component unmounts
     };
-  }, [user, authLoading, router, t]); // Added t to dependencies
+  }, [user, authLoading, router, t, isNorwegian]); // Added isNorwegian to dependencies
 
   // On initial load, check localStorage for pending questionnaire flag
   useEffect(() => {
@@ -834,6 +835,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const selectProgram = (index: number) => {
     showGlobalLoader(true, t('userContext.loading.program'));
     console.log(`${t('userContext.log.selectingProgram')} ${index}`);
+    
     // If user has program already, select it
     if (userPrograms && userPrograms.length > index && userPrograms[index]) {
       const selectedProgram = userPrograms[index];
