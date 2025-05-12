@@ -872,7 +872,7 @@ export function ChatMessages({
                     } ${isMobile ? 'py-1' : 'py-2'}`}
                   >
                     <div className="flex items-center justify-between">
-                      <div className="font-medium">{question.title || question.question}</div>
+                      <div className={`${!question.title ? 'text-lg' : 'font-medium'}`}>{question.title || question.question}</div>
                       {question.generate && (
                         <div className="text-xs px-2 py-0.5 bg-indigo-600 rounded-full ml-2">
                           Generate program

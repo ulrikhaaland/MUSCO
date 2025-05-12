@@ -167,20 +167,46 @@ export default function ProgramPage() {
   const renderVideoModal = () => {
     if (!videoUrl) return null;
 
+    // Use a modified YouTube URL that forces the native controls with autoplay
+    const enhancedVideoUrl = videoUrl.includes('?') 
+      ? `${videoUrl}&playsinline=1&controls=1&enablejsapi=1&modestbranding=1&showinfo=0&iv_load_policy=3&autoplay=1&mute=0` 
+      : `${videoUrl}?playsinline=1&controls=1&enablejsapi=1&modestbranding=1&showinfo=0&iv_load_policy=3&autoplay=1&mute=0`;
+
     return (
-      <div className="modal-fullscreen-safe-area flex items-center justify-center">
-        <div className="relative w-full max-w-4xl aspect-video bg-black rounded-xl overflow-hidden">
-          <iframe
-            src={videoUrl}
-            className="w-full h-full"
-            title={t('program.exerciseVideoTitle')}
-            frameBorder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-          ></iframe>
+      <>
+        <div className="fixed inset-0 z-50 bg-black">
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div 
+              className="w-full h-full max-w-3xl max-h-[60vh] mx-4"
+              style={{ 
+                position: 'relative',
+                paddingBottom: '56.25%', /* 16:9 Aspect Ratio */
+                paddingTop: '25px',
+                height: 0
+              }}
+            >
+              <iframe
+                src={enhancedVideoUrl}
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  height: '100%',
+                  border: 'none'
+                }}
+                title={t('program.exerciseVideoTitle')}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                loading="lazy"
+              ></iframe>
+            </div>
+          </div>
           <button
             onClick={() => setVideoUrl(null)}
-            className="absolute top-4 right-4 bg-white/10 hover:bg-white/20 text-white p-2 rounded-full"
+            className="absolute top-6 right-6 bg-white/10 hover:bg-white/20 text-white p-3 rounded-full z-10"
+            aria-label="Close video"
+            style={{ touchAction: 'manipulation' }}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -198,7 +224,7 @@ export default function ProgramPage() {
             </svg>
           </button>
         </div>
-      </div>
+      </>
     );
   };
 
