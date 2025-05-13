@@ -1190,6 +1190,53 @@ export function ExerciseQuestionnaire({
     return renderSelectedAnswers([splitText], () => handleEdit('modalitySplit'));
   };
 
+  // Check if we're in development mode
+  const [isDevMode, setIsDevMode] = useState(false);
+  const [isLoadingExercises, setIsLoadingExercises] = useState(false);
+  
+  // Check if we're in development mode on mount
+  useEffect(() => {
+    const hostname = window.location.hostname;
+    setIsDevMode(hostname === 'localhost' || hostname === '127.0.0.1');
+  }, []);
+  
+  // Debug function to log exercises by category using the API
+  const handleDebugExercises = async () => {
+    console.log('Running exercise debug...');
+    // loop object and print all keys and values
+    for (const key in answers) {
+      console.log(`${key}: ${answers[key]}`);
+    }
+    setIsLoadingExercises(true);
+    
+    try {
+      // Call our API endpoint instead of directly using the server function
+      const response = await fetch('/api/debug/exercises', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(answers),
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        console.log(`Total exercises loaded: ${data.exerciseCount}`);
+        console.log('Exercise prompt generated:');
+        console.log(data.exercisesPrompt);
+        alert(`Loaded ${data.exerciseCount} exercises. Check console for details.`);
+      } else {
+        throw new Error(data.error || 'Unknown error');
+      }
+    } catch (error) {
+      console.error('Error in exercise debug:', error);
+      alert('Error loading exercises. Check console for details.');
+    } finally {
+      setIsLoadingExercises(false);
+    }
+  };
+
   return (
     <div className="min-h-screen from-gray-900 to-gray-800 h-[calc(100dvh)]">
       <TopBar onBack={onClose} className="fixed top-0 left-0 right-0 z-50" />
@@ -2189,6 +2236,38 @@ export function ExerciseQuestionnaire({
               </button>
             </div>
           </RevealOnScroll>
+          
+          {/* Debug button - only visible in dev mode */}
+          {isDevMode && (
+            <RevealOnScroll>
+              <div className="mt-8 pt-6 border-t border-gray-700/50">
+                <div className="flex items-center justify-between">
+                  <div className="text-amber-400 text-sm font-semibold">DEVELOPMENT MODE TOOLS</div>
+                  <button
+                    type="button"
+                    onClick={handleDebugExercises}
+                    disabled={isLoadingExercises}
+                    className="px-4 py-2 rounded-lg bg-amber-600 text-white hover:bg-amber-500 transition-colors duration-200 disabled:opacity-50 flex items-center"
+                  >
+                    {isLoadingExercises ? (
+                      <>
+                        <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Loading Exercises...
+                      </>
+                    ) : (
+                      'Debug Exercise Prompt'
+                    )}
+                  </button>
+                </div>
+                <div className="mt-2 text-gray-400 text-xs">
+                  (Logs all available exercises to the browser console based on current form data)
+                </div>
+              </div>
+            </RevealOnScroll>
+          )}
         </div>
       </form>
     </div>

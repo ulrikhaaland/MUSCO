@@ -39,15 +39,13 @@ export const UPPER_BODY_PARTS = [
 export const LOWER_BODY_PARTS = ['Glutes', 'Upper Legs', 'Lower Legs'] as const;
 
 // Equipment access options
-export const EQUIPMENT_ACCESS = [
-  'Large Gym',
-  'Custom',
-] as const;
+export const EQUIPMENT_ACCESS = ['Large Gym', 'Custom'] as const;
 
 export const EQUIPMENT_DESCRIPTIONS = {
   'Large Gym':
     'Full-service fitness facility with extensive equipment including cardio machines, weight machines, free weights, and specialized training areas',
-    'Custom': 'Customize your own environment by selecting specific equipment you have access to',
+  Custom:
+    'Customize your own environment by selecting specific equipment you have access to',
 } as const;
 
 // Equipment options by category
@@ -59,7 +57,6 @@ export const STRENGTH_EQUIPMENT = [
   'Bench',
   'TRX',
   'Kettle Bell',
-  'Medicine Ball',
 ] as const;
 
 export const CARDIO_EQUIPMENT = [
@@ -233,6 +230,7 @@ export interface Exercise {
   targetBodyParts?: string[];
   bodyPart?: string;
   exerciseType?: string[] | string;
+  type?: string;
   alternatives?: string[];
   viewCount?: number;
   popularity?: string;

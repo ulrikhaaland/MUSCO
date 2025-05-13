@@ -162,15 +162,17 @@ export async function loadServerExercises(
 
       // Need to cast to array since we're extending the type
       const dataArray = exerciseData as (Exercise | EnhancedExercise)[];
-      
+
       let processedExercises = dataArray.map((data) => {
         // For warmup exercises, preserve the bodyPart as "Warmup"
         // For cardio exercises, preserve the bodyPart as "Cardio"
-        const preservedBodyPart = 
-          bodyPart === 'Warmup' ? 'Warmup' : 
-          bodyPart === 'Cardio' ? 'Cardio' : 
-          data.targetBodyParts?.[0] || bodyPart;
-        
+        const preservedBodyPart =
+          bodyPart === 'Warmup'
+            ? 'Warmup'
+            : bodyPart === 'Cardio'
+              ? 'Cardio'
+              : data.targetBodyParts?.[0] || bodyPart;
+
         return {
           ...data,
           bodyPart: preservedBodyPart,
@@ -196,9 +198,11 @@ export async function loadServerExercises(
         processedExercises = processedExercises.filter(
           (exercise) =>
             // Keep only non-bodyweight warmups (equipment that is not just bodyweight)
-            exercise.equipment && 
-            !(exercise.equipment.length === 1 && 
-              exercise.equipment[0].toLowerCase() === 'bodyweight')
+            exercise.equipment &&
+            !(
+              exercise.equipment.length === 1 &&
+              exercise.equipment[0].toLowerCase() === 'bodyweight'
+            )
         );
       }
 
@@ -278,15 +282,6 @@ export async function loadServerExercises(
       }
     }
   }
-
-  const muscoCount = exercises.filter((ex) => ex.isOriginal === false).length;
-  const originalCount = exercises.filter((ex) => ex.isOriginal === true).length;
-  const warmupCount = exercises.filter((ex) => ex.bodyPart === 'Warmup').length;
-  const cardioCount = exercises.filter((ex) => ex.bodyPart === 'Cardio').length;
-
-  console.log(
-    `Loaded ${exercises.length} exercises: ${muscoCount} Musco, ${originalCount} original, ${warmupCount} warmups, ${cardioCount} cardio`
-  );
 
   return exercises;
 }

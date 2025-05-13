@@ -203,6 +203,7 @@ export default function AvailableExercisesPage() {
           'm_abs.json': 'Abs',
           'm_biceps.json': 'Biceps',
           'm_calves.json': 'Calves',
+          'cardio.json': 'Cardio',
           'm_chest.json': 'Chest',
           'm_forearms.json': 'Forearms', 
           'm_glutes.json': 'Glutes',
@@ -214,7 +215,8 @@ export default function AvailableExercisesPage() {
           'm_shoulders.json': 'Shoulders',
           'm_traps.json': 'Traps',
           'm_triceps.json': 'Triceps',
-          'm_upper-back.json': 'Upper Back'
+          'm_upper-back.json': 'Upper Back',
+          'warmups.json': 'Warmup'
         };
 
         // Initialize categories based on actual file structure
@@ -250,6 +252,8 @@ export default function AvailableExercisesPage() {
               category = 'Lower Back';
               console.log('Found Lower Back exercise by ID:', ex.id, ex.name);
             }
+            else if (ex.id.startsWith('cardio-') || ex.id.includes('cardio')) category = 'Cardio';
+            else if (ex.id.startsWith('warmup-') || ex.id.includes('warmup') || ex.id.includes('warm-up')) category = 'Warmup';
           }
           
           // If we couldn't determine a category from ID, use the muscles array
@@ -273,6 +277,7 @@ export default function AvailableExercisesPage() {
               category = 'Lower Back';
               console.log('Found Lower Back exercise by muscle:', ex.name);
             }
+            else if (ex.muscles.includes('Cardio') || ex.muscles.includes('Cardiovascular')) category = 'Cardio';
           }
           
           // If still no category, check targetBodyParts
@@ -295,6 +300,8 @@ export default function AvailableExercisesPage() {
               category = 'Lower Back';
               console.log('Found Lower Back exercise by targetBodyParts:', ex.name);
             }
+            else if (ex.targetBodyParts.includes('Cardio') || ex.targetBodyParts.includes('Cardiovascular')) category = 'Cardio';
+            else if (ex.targetBodyParts.includes('Warmup') || ex.targetBodyParts.includes('Warm-up')) category = 'Warmup';
           }
           
           // Last resort: Check body part directly
@@ -319,6 +326,8 @@ export default function AvailableExercisesPage() {
               category = 'Lower Back';
               console.log('Found Lower Back exercise by bodyPart:', ex.name);
             }
+            else if (bodyPart.includes('cardio') || bodyPart.includes('cardiovascular')) category = 'Cardio';
+            else if (bodyPart.includes('warmup') || bodyPart.includes('warm-up') || bodyPart.includes('warm up')) category = 'Warmup';
             // Handle broader body part categories
             else if (bodyPart.includes('upper arms')) {
               // Default to Biceps if we can't determine more specifically
@@ -333,6 +342,24 @@ export default function AvailableExercisesPage() {
             }
             else if (bodyPart.includes('abdomen')) {
               category = 'Abs';
+            }
+          }
+          
+          // Special case: Check for cardio by exercise type or name
+          if (!category && ex.type?.toLowerCase() === 'cardio') {
+            category = 'Cardio';
+          }
+          
+          // Check if the exercise name suggests it's a cardio or warmup exercise
+          if (!category && ex.name) {
+            const lowerName = ex.name.toLowerCase();
+            if (lowerName.includes('run') || lowerName.includes('cardio') || lowerName.includes('jog') || 
+                lowerName.includes('sprint') || lowerName.includes('cycling') || lowerName.includes('bike') || 
+                lowerName.includes('swimming') || lowerName.includes('jumping jacks') || lowerName.includes('burpee')) {
+              category = 'Cardio';
+            } else if (lowerName.includes('warmup') || lowerName.includes('warm-up') || lowerName.includes('warm up') || 
+                       lowerName.includes('stretch') || lowerName.includes('mobility')) {
+              category = 'Warmup';
             }
           }
           
