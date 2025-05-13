@@ -73,7 +73,7 @@ export default function AvailableExercisesPage() {
     const load = async () => {
       try {
         setIsLoading(true);
-        const bodyParts = Object.keys(exerciseFiles);
+        const bodyParts = Object.keys(exerciseFiles());
         
         // For the toggle feature, we need both Musco and original exercises
         const loaded = await loadExercisesFromJson(bodyParts, true, false);
