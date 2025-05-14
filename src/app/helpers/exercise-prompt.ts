@@ -46,7 +46,8 @@ export function shouldIncludeIntervals(
  */
 export async function prepareExercisesPrompt(
   userInfo: ExerciseQuestionnaireAnswers,
-  removedExerciseIds?: string[]
+  removedExerciseIds?: string[],
+  includeEquipment: boolean = false
 ): Promise<{
   exercisesPrompt: string;
   exerciseCount: number;
@@ -395,17 +396,18 @@ export async function prepareExercisesPrompt(
       exercisesPrompt += `      "id": "${exercise.id || exercise.exerciseId}",\n`;
       exercisesPrompt += `      "name": "${exercise.name || ''}",\n`;
       exercisesPrompt += `      "difficulty": "${exercise.difficulty || 'beginner'}",\n`;
-      
-      // For exercises with special equipment, ensure it's visible in the prompt for testing
-      if (exercise.equipment && 
+
+      // Include equipment information when includeEquipment is true or for special equipment
+      if (includeEquipment || 
+          (exercise.equipment && 
           (exercise.equipment.some(eq => 
             eq.toLowerCase().includes('trx') || eq.toLowerCase().includes('suspension')
           ) ||
           exercise.equipment.some(eq =>
             eq.toLowerCase().includes('kettlebell') || eq.toLowerCase().includes('kettle bell')
-          ))
+          )))
       ) {
-        exercisesPrompt += `      "equipment": ["${exercise.equipment.join('", "')}"],\n`;
+        exercisesPrompt += `      "equipment": ${JSON.stringify(exercise.equipment || [])},\n`;
       }
 
       // If it's a warmup exercise, explicitly add the category

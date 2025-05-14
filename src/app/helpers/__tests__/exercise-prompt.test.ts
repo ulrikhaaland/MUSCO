@@ -477,6 +477,66 @@ describe('Equipment type coverage tests', () => {
     expect(strengthSection).not.toMatch(/"name": "Dumbbell[^"]*"/i);
   });
   
+  // Test dumbbell and bands equipment combination without barbell
+  test('Dumbbell and bands equipment should not include barbell exercises', async () => {
+    const userInfo = createUserInfo({
+      exerciseModalities: 'Strength',
+      exerciseEnvironments: 'Custom',
+      equipment: ['Dumbbell', 'Bands'], // Only dumbbells and bands
+      targetAreas: ['Chest', 'Upper Back', 'Shoulders', 'Upper Arms'],
+    });
+    
+    // Use the new includeEquipment parameter to include equipment information
+    const result = await prepareExercisesPrompt(userInfo, undefined, true);
+    
+    // Should include dumbbell exercises 
+    expect(result.exercisesPrompt).toMatch(/"equipment": \[.*?"Dumbbell".*?\]/);
+    
+    // Should include band exercises
+    expect(result.exercisesPrompt).toMatch(/"equipment": \[.*?"Bands".*?\]/);
+    
+    // Verify no barbell-only exercises are included
+    // We need to check that there aren't exercises where Barbell is the only equipment
+    const exercisePrompt = result.exercisesPrompt;
+    
+    // Check specific exercise names to make sure no barbell-specific exercises appear
+    expect(exercisePrompt).not.toMatch(/"name": "Barbell Bench Press"/);
+    expect(exercisePrompt).not.toMatch(/"name": "Barbell Row"/);
+    expect(exercisePrompt).not.toMatch(/"name": "Barbell Curl"/);
+    expect(exercisePrompt).not.toMatch(/"name": "Barbell Squat"/);
+    
+    // Verify barbell-only exercises don't appear
+    expect(exercisePrompt).not.toMatch(/"equipment": \["Barbell"\]/);
+    
+    // It's OK if there are multi-equipment exercises that include barbell as an option
+    // (like Inverted Row that can use Barbell, TRX, Rings, etc.)
+    // We'll verify these are valid cases by checking for the expected string format
+    const multiEquipmentMatches = exercisePrompt.match(/"equipment": \[.*?"Barbell".*?\]/g) || [];
+    
+    // For any matches that include Barbell, make sure they include multiple equipment options
+    multiEquipmentMatches.forEach(match => {
+      // The equipment array should have multiple items (not just Barbell)
+      const equipmentString = match.split(':')[1].trim();
+      const parsedEquipment = JSON.parse(equipmentString);
+      
+      // If Barbell is included, there should be other equipment options too
+      if (parsedEquipment.includes("Barbell")) {
+        expect(parsedEquipment.length).toBeGreaterThan(1);
+        
+        // And at least one of our selected equipment types should be in the array
+        // or bodyweight should be an option
+        const hasValidEquipment = parsedEquipment.some(eq => 
+          eq === "Dumbbell" || 
+          eq === "Bands" || 
+          eq === "Bodyweight" || 
+          eq === "TRX" || 
+          eq === "Rings"
+        );
+        expect(hasValidEquipment).toBe(true);
+      }
+    });
+  });
+  
   // Test combined strength equipment (barbell + dumbbell)
   test('Combined strength equipment should include exercises for both equipment types', async () => {
     const userInfo = createUserInfo({
@@ -539,7 +599,7 @@ describe('Equipment type coverage tests', () => {
       targetAreas: ['Lower Body', 'Upper Back', 'Core'],
     });
     
-    const result = await prepareExercisesPrompt(userInfo);
+    const result = await prepareExercisesPrompt(userInfo, undefined, true);
     
     // TRX may be included in exercise names or in exercises that can use multiple equipment types
     // Include exercises like "Assisted Pistol Squat" that can use TRX along with other equipment
@@ -555,7 +615,7 @@ describe('Equipment type coverage tests', () => {
       targetAreas: ['Shoulders', 'Core'],
     });
     
-    const result = await prepareExercisesPrompt(userInfo);
+    const result = await prepareExercisesPrompt(userInfo, undefined, true);
     
     // Should include kettlebell exercises
     expect(result.exercisesPrompt).toMatch(/Kettle(bell)?/i);
@@ -570,7 +630,7 @@ describe('Equipment type coverage tests', () => {
       targetAreas: ['Core', 'Chest', 'Full Body'],
     });
     
-    const result = await prepareExercisesPrompt(userInfo);
+    const result = await prepareExercisesPrompt(userInfo, undefined, true);
     
     // Should include medicine ball exercises
     expect(result.exercisesPrompt).toMatch(/Medicine Ball/i);
@@ -585,7 +645,7 @@ describe('Equipment type coverage tests', () => {
       targetAreas: ['Lower Body', 'Upper Back', 'Shoulders'],
     });
     
-    const result = await prepareExercisesPrompt(userInfo);
+    const result = await prepareExercisesPrompt(userInfo, undefined, true);
     
     // Should include exercises for the selected equipment types
     expect(result.exercisesPrompt).toMatch(/Band/i);
@@ -641,7 +701,7 @@ describe('Exercise count validation tests', () => {
       targetAreas: ['Lower Body', 'Upper Back'],
     });
     
-    const result = await prepareExercisesPrompt(userInfo);
+    const result = await prepareExercisesPrompt(userInfo, undefined, true);
     
     // Check for exercises that mention TRX or Suspension
     expect(result.exercisesPrompt).toMatch(/TRX|Suspension|Pistol|Assisted/i);
@@ -661,7 +721,7 @@ describe('Exercise count validation tests', () => {
       targetAreas: [targetArea], // Target specific area known to have exercises with this equipment
     });
     
-    const result = await prepareExercisesPrompt(userInfo);
+    const result = await prepareExercisesPrompt(userInfo, undefined, true);
     
     // Verify that the target area has exercises
     const areaCount = countExercisesForBodyPart(result.exercisesPrompt, targetArea);
@@ -691,7 +751,7 @@ describe('Exercise count validation tests', () => {
       targetAreas: [targetArea],
     });
     
-    const result = await prepareExercisesPrompt(userInfo);
+    const result = await prepareExercisesPrompt(userInfo, undefined, true);
     
     // Verify that we have some exercises (might be bodyweight fallbacks)
     expect(result.exercisesPrompt).toMatch(/"exercises": \[/);
