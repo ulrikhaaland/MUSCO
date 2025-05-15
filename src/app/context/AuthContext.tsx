@@ -55,7 +55,7 @@ const actionCodeSettings = {
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { href, isReady } = useClientUrl();
   const router = useRouter();
-  const { locale } = useTranslation();
+  const { locale, t } = useTranslation();
   const { setIsLoading: showGlobalLoader, hideLoader } = useLoader();
   const [user, setUser] = useState<ExtendedUser | null>(null);
   const [loading, setLoading] = useState(true);
@@ -77,7 +77,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           console.log('Valid email link detected');
           handledEmailLink.current = true;
           setLoading(true);
-          showGlobalLoader(true, 'Signing you in...');
+          showGlobalLoader(true, t('auth.signingIn'));
           setError(null);
 
           let email = window.localStorage.getItem('emailForSignIn');
@@ -195,7 +195,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (!isReady || handledEmailLink.current) return;
 
     console.log('Setting up auth state listener...');
-    showGlobalLoader(true, 'Checking login status...');
+    showGlobalLoader(true, t('auth.checkingLoginStatus'));
 
     const unsubscribe = onAuthStateChanged(
       auth,

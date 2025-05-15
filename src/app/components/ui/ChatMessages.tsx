@@ -44,6 +44,8 @@ export function ChatMessages({
   const [questionsHeight, setQuestionsHeight] = useState(0);
   const [availableHeight, setAvailableHeight] = useState(0);
   const [chatContainerHeight, setChatContainerHeight] = useState(0);
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  const [clickedQuestions, setClickedQuestions] = useState<Set<string>>(new Set());
   const touchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const lastMessageContentRef = useRef<string>('');
   const lastMessageIdRef = useRef<string>('');
@@ -53,6 +55,24 @@ export function ChatMessages({
   const chatViewRef = useRef<HTMLDivElement>(null);
   const streamMessageRef = useRef<HTMLDivElement>(null);
   const questionsRef = useRef<HTMLDivElement>(null);
+  const wasStreamingRef = useRef<boolean>(false);
+  const clickTimeoutRef = useRef<number | null>(null);
+  const isProcessingClickRef = useRef<boolean>(false);
+
+  // Check if user prefers reduced motion
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    setPrefersReducedMotion(mediaQuery.matches);
+    
+    const handleChange = (event: MediaQueryListEvent) => {
+      setPrefersReducedMotion(event.matches);
+    };
+    
+    mediaQuery.addEventListener('change', handleChange);
+    return () => {
+      mediaQuery.removeEventListener('change', handleChange);
+    };
+  }, []);
 
   // Reset touch state after a delay
   const resetTouchState = useCallback(() => {
@@ -663,6 +683,134 @@ export function ChatMessages({
     followUpQuestions,
   ]);
 
+  // Add touch animation style for quick-reply buttons on mobile
+  useEffect(() => {
+    // Add a style element to handle mobile touch animations
+    if (isMobile) {
+      const styleEl = document.createElement('style');
+      styleEl.innerHTML = `
+        @media (pointer: coarse) {
+          .follow-up-question-btn:active {
+            transform: scale(0.99) translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+            transition: transform 75ms ease-out, box-shadow 100ms ease-out;
+          }
+          
+          .follow-up-question-btn:active svg {
+            transform: translateX(6px);
+            transition: transform 90ms ease-out;
+          }
+          
+          @media (prefers-reduced-motion: reduce) {
+            .follow-up-question-btn:active {
+              transform: none;
+              box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+            }
+            
+            .follow-up-question-btn:active svg {
+              transform: none;
+            }
+          }
+        }
+      `;
+      document.head.appendChild(styleEl);
+      
+      return () => {
+        document.head.removeChild(styleEl);
+      };
+    }
+  }, [isMobile]);
+
+  // Handle question selection with additional cleanup and debounce
+  const handleQuestionSelect = (question: Question) => {
+    // Get unique identifier for this question
+    const questionId = question.title || question.question;
+    
+    // Prevent double-clicking/tapping the same question
+    if (isProcessingClickRef.current || clickedQuestions.has(questionId)) {
+      return;
+    }
+    
+    // Immediately mark as processing to prevent double clicks
+    isProcessingClickRef.current = true;
+    
+    // Add to clicked questions set
+    setClickedQuestions(prev => {
+      const newSet = new Set(prev);
+      newSet.add(questionId);
+      return newSet;
+    });
+    
+    // Clear any previous timeout if it exists
+    if (clickTimeoutRef.current) {
+      window.clearTimeout(clickTimeoutRef.current);
+    }
+    
+    // Set a timeout to reset the processing flag after a delay
+    // This prevents accidental double-clicks but allows clicking different questions
+    clickTimeoutRef.current = window.setTimeout(() => {
+      isProcessingClickRef.current = false;
+    }, 1000); // 1 second debounce
+    
+    // Process the click
+    if (question.generate && onQuestionClick) {
+      onQuestionClick(question);
+    } else {
+      // Clear any pending follow-up questions displayed in the UI
+      // This prevents follow-up questions from persisting when they should be cleared
+      if (isStreaming) {
+        // If we're in the middle of streaming, we need to manually clear
+        // the displayed follow-up questions to prevent them from
+        // reappearing after the next response
+        const questionContainer = questionsRef.current;
+        if (questionContainer) {
+          // Apply immediate visual feedback
+          questionContainer.style.opacity = '0';
+          questionContainer.style.transition = 'opacity 0.2s ease-out';
+          
+          // After a short delay to allow for animation
+          setTimeout(() => {
+            // Pass the selected question to the handler
+            onQuestionClick?.(question);
+          }, 200);
+        } else {
+          onQuestionClick?.(question);
+        }
+      } else {
+        // Normal flow when not streaming
+        onQuestionClick?.(question);
+      }
+    }
+  };
+
+  // Effect to track streaming state changes
+  useEffect(() => {
+    // If we just finished streaming, make sure to check if we need to clear any stale UI
+    const isCurrentlyStreaming = 
+      isLoading && 
+      messages.length > 0 && 
+      messages[messages.length - 1].role === 'assistant';
+    
+    // Detect when streaming ends
+    if (wasStreamingRef.current && !isCurrentlyStreaming) {
+      // Streaming just ended - if we have any pending questions in the UI
+      // that weren't properly cleared, fade them out
+      if (questionsRef.current && followUpQuestions.length === 0) {
+        questionsRef.current.style.opacity = '0';
+      }
+    }
+    
+    // Update ref for next check
+    wasStreamingRef.current = isCurrentlyStreaming;
+  }, [isLoading, messages, followUpQuestions]);
+
+  // Reset clicked questions when messages change
+  useEffect(() => {
+    // When new messages arrive, we can reset the clicked questions
+    // as the previous questions have already been processed
+    setClickedQuestions(new Set());
+  }, [messages.length]);
+
   return (
     <div
       className="flex-1 flex flex-col overflow-hidden relative"
@@ -698,7 +846,7 @@ export function ChatMessages({
                   className={`px-4 py-2 rounded-lg ${
                     msg.role === 'user'
                       ? 'bg-indigo-600 ml-8'
-                      : 'bg-gray-800 mr-8'
+                      : 'bg-gray-800 mr-4'
                   } ${msg.hasError ? 'border border-red-400' : ''}`}
                 >
                   {msg.role === 'assistant' ? (
@@ -795,7 +943,7 @@ export function ChatMessages({
                     ref={streamMessageRef}
                   >
                     <div
-                      className={`px-4 py-2 rounded-lg bg-gray-800 mr-8 ${streamError ? 'border border-red-400' : ''}`}
+                      className={`px-4 py-2 rounded-lg bg-gray-800 mr-4`}
                     >
                       <div className="prose prose-invert max-w-none prose-p:my-2 prose-pre:my-0 prose-pre:leading-none prose-strong:text-white prose-strong:font-semibold">
                         <ReactMarkdown
@@ -857,35 +1005,63 @@ export function ChatMessages({
             </>
           )}
 
-          {/* Follow-up questions */}
+          {/* Follow-up questions - with vertical spacing from assistant message */}
           {showFollowUps && (
-            <div ref={questionsRef}>
-              <div className="space-y-2">
-                {followUpQuestions.map((question) => (
-                  <button
-                    key={question.title || question.question}
-                    onClick={() => onQuestionClick?.(question)}
-                    className={`follow-up-question-btn w-full text-left px-2 rounded-lg transition-colors ${
-                      question.generate
-                        ? 'bg-gradient-to-r from-indigo-900 to-indigo-800 hover:from-indigo-800 hover:to-indigo-700'
-                        : 'bg-gray-800 hover:bg-gray-700'
-                    } ${isMobile ? 'py-1' : 'py-2'}`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className={`${!question.title ? 'text-lg' : 'font-medium'}`}>{question.title || question.question}</div>
-                      {question.generate && (
-                        <div className="text-xs px-2 py-0.5 bg-indigo-600 rounded-full ml-2">
-                          Generate program
+            <div ref={questionsRef} className="mt-[12px]" style={{transition: 'opacity 0.2s ease-out'}}>
+              <div className="space-y-[10px]">
+                {followUpQuestions.map((question) => {
+                  const questionId = question.title || question.question;
+                  const isClicked = clickedQuestions.has(questionId);
+                  
+                  return (
+                    <button
+                      key={questionId}
+                      onClick={() => handleQuestionSelect(question)}
+                      aria-label={questionId}
+                      data-quick-reply
+                      role="button"
+                      disabled={isClicked}
+                      className={`follow-up-question-btn w-full min-h-[48px] text-left px-4 py-3 pb-4 rounded-lg transition duration-75 cursor-pointer
+                        bg-[rgba(99,91,255,0.12)] border border-[rgba(99,91,255,0.35)] text-[#c8cbff] font-medium
+                        hover:border-[rgba(99,91,255,0.5)] focus:border-[rgba(99,91,255,0.5)] active:border-[rgba(99,91,255,0.5)]
+                        hover:shadow-[0_4px_12px_rgba(0,0,0,0.25)] focus:shadow-[0_4px_12px_rgba(0,0,0,0.25)] active:shadow-[0_4px_16px_rgba(0,0,0,0.3)]
+                        hover:bg-gradient-to-r hover:from-indigo-900/80 hover:to-indigo-800/80
+                        hover:-translate-y-[2px] active:-translate-y-[2px] active:shadow-[0_4px_16px_rgba(0,0,0,0.3)]
+                        group ${prefersReducedMotion ? '' : 'motion-safe:hover:-translate-y-[2px] motion-safe:active:scale-[0.99]'}
+                        ${isClicked ? 'opacity-50 pointer-events-none' : ''}`}
+                    >
+                      <div className="flex items-start">
+                        {/* Arrow icon */}
+                        <svg 
+                          width="20" 
+                          height="20" 
+                          viewBox="0 0 24 24" 
+                          fill="none" 
+                          xmlns="http://www.w3.org/2000/svg"
+                          className={`mr-2 text-[#635bff] transform transition-transform duration-[90ms] mt-[2px] ${prefersReducedMotion ? '' : 'group-hover:translate-x-[6px]'}`}
+                        >
+                          <path d="M7 17L17 7M17 7H7M17 7V17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                        
+                        <div className="flex-1">
+                          <div className={`${!question.title ? 'text-[#c8cbff]' : 'font-medium text-[#c8cbff] capitalize'}`}>
+                            {question.title ? question.title.toLowerCase() : question.question}
+                          </div>
+                          {question.meta && (
+                            <div className="text-sm text-[#c8cbff] opacity-75 mt-1">
+                              {question.meta}
+                            </div>
+                          )}
+                          {question.title && !question.meta && (
+                            <div className="text-sm text-gray-400">
+                              {question.question}
+                            </div>
+                          )}
                         </div>
-                      )}
-                    </div>
-                    {question.title && (
-                      <div className="text-sm text-gray-400">
-                        {question.question}
                       </div>
-                    )}
-                  </button>
-                ))}
+                    </button>
+                  );
+                })}
               </div>
             </div>
           )}
@@ -923,7 +1099,7 @@ export function ChatMessages({
       >
         <button
           onClick={handleScrollToBottomClick}
-          className="scroll-to-bottom-btn flex items-center justify-center w-10 h-10 bg-indigo-600/50 hover:bg-indigo-600/70 rounded-full shadow-md transition-all duration-200"
+          className="scroll-to-bottom-btn flex items-center justify-center w-10 h-10 bg-gray-600/70 hover:bg-gray-500/80 rounded-full shadow-md transition-all duration-200"
           aria-label="Scroll to bottom"
           disabled={!showScrollButton}
         >

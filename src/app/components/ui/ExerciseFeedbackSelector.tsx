@@ -513,6 +513,16 @@ export function ExerciseFeedbackSelector({
     return [...displayExercises, ...addedExercises];
   }, [displayExercises, addedExercises]);
 
+  // Function to get the translated body part name
+  const getTranslatedBodyPart = (bodyPart: string) => {
+    // First try with bodyPart.category prefix (for standard categories)
+    const translationWithPrefix = t(`bodyPart.category.${bodyPart}`, { defaultValue: '' });
+    if (translationWithPrefix) return translationWithPrefix;
+    
+    // Fallback to program.bodyPart prefix for other body parts
+    return t(`program.bodyPart.${bodyPart.toLowerCase().replace(/ /g, '_')}`, { defaultValue: bodyPart });
+  };
+
   return (
     <div className="bg-gray-800/50 rounded-xl overflow-hidden shadow-lg ring-1 ring-gray-700/50">
       {/* Card Header */}
@@ -644,7 +654,7 @@ export function ExerciseFeedbackSelector({
                                     size="md"
                                     backgroundColor={exercise.warmup ? 'bg-amber-600' : ''}
                                   >
-                                    {exercise.bodyPart}
+                                    {getTranslatedBodyPart(exercise.bodyPart)}
                                   </Chip>
                                 )}
                               </div>
@@ -654,9 +664,9 @@ export function ExerciseFeedbackSelector({
                                 <div className="flex flex-wrap gap-1 mt-2">
                                   {Array.isArray(exercise.targetBodyParts) 
                                     ? exercise.targetBodyParts.map(part => (
-                                        <Chip key={part} size="sm">{part}</Chip>
+                                        <Chip key={part} size="sm">{getTranslatedBodyPart(part)}</Chip>
                                       ))
-                                    : <Chip size="sm">{exercise.targetBodyParts}</Chip>
+                                    : <Chip size="sm">{getTranslatedBodyPart(exercise.targetBodyParts)}</Chip>
                                   }
                                 </div>
                               )}
@@ -737,7 +747,7 @@ export function ExerciseFeedbackSelector({
                       <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                       </svg>
-                      {t('exerciseFeedbackSelector.button.addExercise', { category })}
+                      {t('exerciseFeedbackSelector.button.addExercise', { category: getTranslatedBodyPart(category) })}
                     </button>
                   </div>
                 )}

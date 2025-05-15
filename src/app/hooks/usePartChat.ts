@@ -17,11 +17,13 @@ const getInitialQuestionsTemplate = (): Question[] => [
     title: t('chat.question.painSource.title'),
     question: t('chat.question.painSource.text'),
     asked: false,
+    meta: t('chat.question.painSource.meta'),
   },
   {
     title: t('chat.question.movement.title'),
     question: t('chat.question.movement.text'),
     asked: false,
+    meta: t('chat.question.movement.meta'),
   },
   {
     title: t('chat.question.exercise.title'),
@@ -30,6 +32,7 @@ const getInitialQuestionsTemplate = (): Question[] => [
     generate: true,
     diagnosis: '',
     programType: ProgramType.Exercise,
+    meta: t('chat.question.exercise.meta'),
   },
 ];
 
@@ -123,8 +126,12 @@ export function usePartChat({
   }, [chatFollowUpQuestions]);
 
   const handleOptionClick = (question: Question) => {
+    // Store the current questions before sending the new message
     const prevQuestions = [...previousQuestions, ...localFollowUpQuestions];
     setPreviousQuestions(prevQuestions);
+    
+    // Immediately clear follow-up questions to prevent stale questions from appearing
+    setLocalFollowUpQuestions([]);
 
     sendChatMessage(question.question, {
       userPreferences,

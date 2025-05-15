@@ -2,6 +2,7 @@ import { ReactNode, useState, useEffect } from 'react';
 import { Exercise } from '@/app/types/program';
 import Card from './Card';
 import Chip from './Chip';
+import { useTranslation } from '@/app/i18n/TranslationContext';
 
 interface ExerciseCardProps {
   exercise: Exercise;
@@ -20,6 +21,8 @@ export default function ExerciseCard({
   loadingVideoExercise = null,
   compact = false,
 }: ExerciseCardProps) {
+  const { t } = useTranslation();
+  
   // Detect mobile viewport
   const [isMobile, setIsMobile] = useState(false);
   useEffect(() => {
@@ -32,6 +35,18 @@ export default function ExerciseCard({
   // Local UI state per exercise card
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
   const [showInstructions, setShowInstructions] = useState(false);
+
+  // Function to get the translated body part name
+  const getTranslatedBodyPart = (bodyPart: string) => {
+    if (!bodyPart) return '';
+    
+    // First try with bodyPart.category prefix (for standard categories)
+    const translationWithPrefix = t(`bodyPart.category.${bodyPart}`, { defaultValue: '' });
+    if (translationWithPrefix) return translationWithPrefix;
+    
+    // Fallback to program.bodyPart prefix for other body parts
+    return t(`program.bodyPart.${bodyPart.toLowerCase().replace(/ /g, '_')}`, { defaultValue: bodyPart });
+  };
 
   const getTruncatedDescription = (description: string, charLimit = 100) => {
     if (description.length <= charLimit) return description;
@@ -65,7 +80,7 @@ export default function ExerciseCard({
       if (ex.restBetweenSets && ex.restBetweenSets !== 0) {
         chips.push(
           <Chip key="restBetweenSets" size="lg">
-            {ex.restBetweenSets}s rest
+            {t('program.rest', { seconds: ex.restBetweenSets.toString() })}
           </Chip>
         );
       }
@@ -73,6 +88,55 @@ export default function ExerciseCard({
 
     return chips;
   };
+
+  // Function to render the exercise metrics row (consistent between collapsed/expanded states)
+  const renderExerciseMetricsRow = () => (
+    <div className="flex flex-wrap gap-4 items-center mb-4">
+      <div className="flex flex-wrap gap-2 justify-start">
+        {renderExerciseChips(exercise)}
+      </div>
+      <div
+        onClick={(e) => {
+          e.stopPropagation();
+          onVideoClick(exercise);
+        }}
+        className={`inline-flex items-center space-x-1 bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-1.5 rounded-xl ${
+          compact ? 'text-xs' : 'text-sm'
+        } transition-colors duration-200 cursor-pointer ml-auto`}
+      >
+        {(() => {
+          const exerciseIdentifier =
+            exercise.name || exercise.id || exercise.exerciseId;
+          return loadingVideoExercise === exerciseIdentifier ? (
+            <div
+              className={`${compact ? 'w-3.5 h-3.5' : 'w-4 h-4'} border-t-2 border-white rounded-full animate-spin`}
+            />
+          ) : (
+            <svg
+              className={`${compact ? 'w-3.5 h-3.5' : 'w-4 h-4'} opacity-85`}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.75}
+                d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
+              />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.75}
+                d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+          );
+        })()}
+        <span>{t('program.watchVideo')}</span>
+      </div>
+    </div>
+  );
 
   const exerciseId = exercise.id || exercise.exerciseId || exercise.name;
 
@@ -84,9 +148,21 @@ export default function ExerciseCard({
       title={
         <span className={isMobile ? 'tracking-tighter' : 'tracking-tight'}>
           {exercise.name}
+        </span>
+      }
+      tag={
+        <div className="flex items-center gap-2">
+          {exercise.bodyPart && (
+            <Chip
+              size="md"
+              className={`bg-transparent border ${exercise.warmup ? 'border-amber-600 text-[#f2f6ff]' : 'border-[#635bff] text-[#f2f6ff]'}`}
+            >
+              {getTranslatedBodyPart(exercise.bodyPart)}
+            </Chip>
+          )}
           {onToggle && (
             <svg
-              className={`inline-block ml-2 w-4 h-4 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}
+              className={`w-4 h-4 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''} text-gray-400`}
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
@@ -97,23 +173,17 @@ export default function ExerciseCard({
               <polyline points="6 9 12 15 18 9"></polyline>
             </svg>
           )}
-        </span>
-      }
-      tag={
-        exercise.bodyPart && (
-          <Chip
-            size="md"
-            backgroundColor={exercise.warmup ? 'bg-amber-600' : ''}
-          >
-            {exercise.bodyPart}
-          </Chip>
-        )
+        </div>
       }
     >
       {isExpanded ? (
         <Card.Section>
+          {/* Exercise metrics row - now comes first */}
+          {renderExerciseMetricsRow()}
+
+          {/* Exercise description */}
           {exercise.description && (
-            <div className="text-gray-50 leading-relaxed">
+            <div className="text-gray-50 leading-relaxed mb-4">
               {isDescriptionExpanded
                 ? exercise.description
                 : getTruncatedDescription(exercise.description)}
@@ -125,73 +195,28 @@ export default function ExerciseCard({
                     setIsDescriptionExpanded((prev) => !prev);
                   }}
                 >
-                  {isDescriptionExpanded ? 'See less' : 'See more'}
+                  {isDescriptionExpanded ? t('program.seeLess') : t('program.seeMore')}
                 </button>
               )}
             </div>
           )}
 
-          {/* Parameters row */}
-          <div className="flex flex-wrap gap-4 items-center">
-            {renderExerciseChips(exercise)}
-            <div
-              onClick={(e) => {
-                e.stopPropagation();
-                onVideoClick(exercise);
-              }}
-              className={`inline-flex items-center space-x-1 bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-1.5 rounded-xl ${
-                compact ? 'text-xs' : 'text-sm'
-              } transition-colors duration-200 cursor-pointer ml-auto`}
-            >
-              {(() => {
-                const exerciseIdentifier =
-                  exercise.name || exercise.id || exercise.exerciseId;
-                return loadingVideoExercise === exerciseIdentifier ? (
-                  <div
-                    className={`${compact ? 'w-3.5 h-3.5' : 'w-4 h-4'} border-t-2 border-white rounded-full animate-spin`}
-                  />
-                ) : (
-                  <svg
-                    className={`${compact ? 'w-3.5 h-3.5' : 'w-4 h-4'} opacity-85`}
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={1.75}
-                      d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
-                    />
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={1.75}
-                      d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                );
-              })()}
-              <span>Watch Video</span>
-            </div>
-          </div>
-
           {exercise.modification && (
-            <p className="text-yellow-200/90 text-sm leading-relaxed">
-              <span className="font-medium">Modification:</span>{' '}
+            <p className="text-yellow-200/90 text-sm leading-relaxed mb-4">
+              <span className="font-medium">{t('program.modification')}</span>{' '}
               {exercise.modification}
             </p>
           )}
 
           {exercise.precaution && (
-            <p className="text-red-400/90 text-sm leading-relaxed">
-              <span className="font-medium">Precaution:</span>{' '}
+            <p className="text-red-400/90 text-sm leading-relaxed mb-4">
+              <span className="font-medium">{t('program.precaution')}</span>{' '}
               {exercise.precaution}
             </p>
           )}
 
           {exercise.steps && exercise.steps.length > 0 && (
-            <div className="text-gray-300 text-sm leading-relaxed mt-4">
+            <div className="text-gray-300 text-sm leading-relaxed">
               <div className="flex items-center">
                 <button
                   onClick={(e) => {
@@ -215,7 +240,7 @@ export default function ExerciseCard({
                           d="M5 15l7-7 7 7"
                         />
                       </svg>
-                      Hide Instructions
+                      {t('program.hideInstructions')}
                     </>
                   ) : (
                     <>
@@ -232,7 +257,7 @@ export default function ExerciseCard({
                           d="M19 9l-7 7-7-7"
                         />
                       </svg>
-                      View Instructions
+                      {t('program.viewInstructions')}
                     </>
                   )}
                 </button>
@@ -253,54 +278,11 @@ export default function ExerciseCard({
           )}
         </Card.Section>
       ) : null}
-      {/* Show chips at the bottom when collapsed */}
+      
+      {/* Show metrics row at the bottom when collapsed */}
       {!isExpanded && (
         <Card.Section className="mt-auto">
-          <div className="flex flex-wrap gap-2 items-center">
-            <div className="flex flex-wrap gap-2 justify-start">
-              {renderExerciseChips(exercise)}
-            </div>
-            <div
-              onClick={(e) => {
-                e.stopPropagation();
-                onVideoClick(exercise);
-              }}
-              className={`inline-flex items-center space-x-1 bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-1.5 rounded-xl ${
-                compact ? 'text-xs' : 'text-sm'
-              } transition-colors duration-200 cursor-pointer ml-auto`}
-            >
-              {(() => {
-                const exerciseIdentifier =
-                  exercise.name || exercise.id || exercise.exerciseId;
-                return loadingVideoExercise === exerciseIdentifier ? (
-                  <div
-                    className={`${compact ? 'w-3.5 h-3.5' : 'w-4 h-4'} border-t-2 border-white rounded-full animate-spin`}
-                  />
-                ) : (
-                  <svg
-                    className={`${compact ? 'w-3.5 h-3.5' : 'w-4 h-4'} opacity-85`}
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={1.75}
-                      d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
-                    />
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={1.75}
-                      d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                );
-              })()}
-              <span>Watch Video</span>
-            </div>
-          </div>
+          {renderExerciseMetricsRow()}
         </Card.Section>
       )}
     </Card>

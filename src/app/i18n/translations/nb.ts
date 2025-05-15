@@ -155,6 +155,7 @@ const translations = {
   'home.pageTitle': 'bodAI',
   'home.male': 'Mann',
   'home.female': 'Kvinne',
+  'home.loading': 'Laster',
   'home.initializing': 'Initialiserer muskler',
 
   // Auth
@@ -187,6 +188,8 @@ const translations = {
   'auth.sentLoginCode': 'Vi har sendt en innloggingskode til',
   'auth.enterCodeToSignIn': 'Skriv inn 6-sifret kode for å logge inn',
   'auth.codeSentTo': 'Kode sendt til',
+  'auth.signingIn': 'Logger deg inn...',
+  'auth.checkingLoginStatus': 'Sjekker innloggingsstatus...',
 
   // Login form
   'login.email': 'E-post',
@@ -272,18 +275,22 @@ const translations = {
     'Start en chat eller velg en spesifikk del av {{group}}',
 
   // Chat - Question Options
-  'chat.question.painSource.title': 'Finn kilden til smerten min',
+  'chat.question.painSource.title': 'Finn Smerte',
   'chat.question.painSource.text':
     'Jeg opplever ubehag i $part. Kan du hjelpe meg med å finne ut hva som er galt?',
-  'chat.question.movement.title': 'Test bevegelsen min',
+  'chat.question.painSource.meta': '3 raske spørsmål',
+  'chat.question.movement.title': 'Test Bevegelse',
   'chat.question.movement.text':
     'Kan du guide meg gjennom noen bevegelser for å sjekke om det er et problem med $part?',
-  'chat.question.exercise.title': 'Treningsprogram',
+  'chat.question.movement.meta': '2 enkle bevegelser',
+  'chat.question.exercise.title': 'Lag Program',
   'chat.question.exercise.text':
     'Kan du hjelpe meg med å lage et treningsprogram?',
-  'chat.question.recovery.title': 'Restitusjonsprogram',
+  'chat.question.exercise.meta': '5 min oppsett',
+  'chat.question.recovery.title': 'Planlegg Restitusjon',
   'chat.question.recovery.text':
     'Hva er det beste restitusjonsprogrammet for $part?',
+  'chat.question.recovery.meta': '5 min oppsett',
 
   // Profile - Sections
   'profile.sections.general': 'Generelt',
@@ -403,7 +410,7 @@ const translations = {
     "Bruk punktnotasjon for organisering (f.eks. 'kategori.funksjon.element')",
 
   // Program
-  'program.activity': 'Aktivitet',
+  'program.activity': 'Trening',
   'program.recovery': 'Restitusjon',
   'program.minutes': 'minutter',
   'program.targetBodyParts': 'Målrettede kroppsdeler:',
@@ -529,6 +536,8 @@ const translations = {
   'program.exerciseVideoTitle': 'Treningsvideo',
   'program.pageTitle': 'Treningsprogram | MUSCO',
   'program.defaultPageTitle': 'Program | MUSCO',
+  'program.optionalRecoveryActivity': 'valgfri restitusjons øvelse',
+  'program.optionalRecoveryActivities': 'valgfrie restitusjons øvelser',
 
   // Days of the week
   'days.monday': 'Mandag',
@@ -678,6 +687,9 @@ const translations = {
   'programFeedback.button.back': 'Tilbake',
   'programFeedback.button.generating': 'Genererer program',
   'programFeedback.button.generateNextWeek': 'Generer neste ukes program',
+  'programFeedback.button.disabledTooltip': 'Du må vente til neste uke for å generere et nytt program',
+  'programFeedback.button.waitUntilNextWeek': 'Du må fullføre denne ukens program før du kan generere neste ukes program.',
+  'programFeedback.button.waitUntilSpecificDate': 'Du kan generere neste ukes program på {{date}}.',
 
   // Exercise Feedback Selector
   'exerciseFeedbackSelector.chip.new': 'Ny',
@@ -754,7 +766,7 @@ const translations = {
   'exerciseProgram.dayAbbr.sat': 'Lør',
   'exerciseProgram.dayAbbr.sun': 'Søn',
   'exerciseProgram.day.rest': 'Hvile',
-  'exerciseProgram.day.activity': 'Aktivitet',
+  'exerciseProgram.day.activity': 'Trening',
   'exerciseProgram.overview.title.exercise':
     'Personlig tilpasset for dine treningsmål',
   'exerciseProgram.overview.title.recovery':

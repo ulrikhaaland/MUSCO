@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import MuscleLoader from '../components/ui/MuscleLoader';
+import { useTranslation } from '../i18n';
 
 interface LoaderContextType {
   showLoader: (message?: string, submessage?: string) => void;
@@ -13,8 +14,9 @@ interface LoaderContextType {
 const LoaderContext = createContext<LoaderContextType | undefined>(undefined);
 
 export const LoaderProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { t } = useTranslation();
   const [isVisible, setIsVisible] = useState(true);
-  const [message, setMessage] = useState('initializing muscles');
+  const [message, setMessage] = useState(t('home.initializing'));
   const [submessage, setSubmessage] = useState<string | undefined>(undefined);
   const loaderRef = useRef<HTMLDivElement>(null);
   

@@ -62,6 +62,19 @@ const translations = {
   'bodyParts.Chest': 'Chest',
   'bodyParts.chest': 'Chest',
 
+  // Additional Program Day Summary translations
+  'program.workout': 'Workout',
+  'program.activity': 'Exercise',
+  'program.recovery': 'Recovery',
+  'program.rest': '{{seconds}}s rest',
+  'program.minutes': 'minutes',
+  'program.noDuration': 'No duration',
+  'program.warmup': 'warm-up',
+  'program.exercise': 'exercise',
+  'program.exercises': 'exercises',
+  'program.optionalRecoveryActivity': 'optional recovery activity',
+  'program.optionalRecoveryActivities': 'optional recovery activities',
+  
   // Profile separators
   'profile.separateWithCommas.medicalConditions': 'Separate conditions with commas',
   'profile.separateWithCommas.medications': 'Separate medications with commas',
@@ -193,6 +206,8 @@ const translations = {
   'auth.sentLoginCode': 'We\'ve sent a login code to',
   'auth.enterCodeToSignIn': 'Enter the 6-digit code to sign in',
   'auth.codeSentTo': 'Code sent to',
+  'auth.signingIn': 'Signing you in...',
+  'auth.checkingLoginStatus': 'Checking login status...',
   
   // Login form
   'login.email': 'Email',
@@ -262,14 +277,18 @@ const translations = {
   'chat.chatAboutOrSelectSpecific': 'Start a chat or select a specific part of the {{group}}',
   
   // Chat - Question Options
-  'chat.question.painSource.title': 'Find source of my pain',
+  'chat.question.painSource.title': 'Find Pain',
   'chat.question.painSource.text': 'I\'m experiencing discomfort in my $part. Can you help me figure out what might be wrong?',
-  'chat.question.movement.title': 'Test my movement',
+  'chat.question.painSource.meta': '3 quick questions',
+  'chat.question.movement.title': 'Test Movement',
   'chat.question.movement.text': 'Can you guide me through some movements to check if there\'s an issue with my $part?',
-  'chat.question.exercise.title': 'Exercise program',
+  'chat.question.movement.meta': '2 simple motions',
+  'chat.question.exercise.title': 'Build Program',
   'chat.question.exercise.text': 'Can you help me create an exercise program?',
-  'chat.question.recovery.title': 'Recovery program',
+  'chat.question.exercise.meta': '5 min setup',
+  'chat.question.recovery.title': 'Plan Recovery',
   'chat.question.recovery.text': 'What\'s the best recovery program for my $part?',
+  'chat.question.recovery.meta': '5 min setup',
   
   // Profile - Sections
   'profile.sections.general': 'General',
@@ -383,9 +402,6 @@ const translations = {
   'admin.dotNotationTip': 'Use dot notation for organization (e.g., \'category.feature.element\')',
   
   // Program
-  'program.activity': 'Activity',
-  'program.recovery': 'Recovery',
-  'program.minutes': 'minutes',
   'program.targetBodyParts': 'Target body parts:',
   'program.moreBodyParts': '+{{count}} more',
   'program.optionalRecovery': 'Optional recovery activities',
@@ -399,7 +415,6 @@ const translations = {
   'program.hideInstructions': 'Hide instructions',
   'program.modification': 'Modification:',
   'program.precaution': 'Precaution:',
-  'program.rest': '{{seconds}}s rest',
 
   bottomSheet: {
     minimize: 'Minimize',
@@ -679,7 +694,7 @@ const translations = {
   'exerciseProgram.dayAbbr.sat': 'Sat',
   'exerciseProgram.dayAbbr.sun': 'Sun',
   'exerciseProgram.day.rest': 'Rest',
-  'exerciseProgram.day.activity': 'Activity',
+  'exerciseProgram.day.activity': 'Exercise',
   'exerciseProgram.overview.title.exercise': 'Personalized for your fitness goals',
   'exerciseProgram.overview.title.recovery': 'Personalized for your recovery journey',
   'exerciseProgram.overview.programDuration': 'Program Duration:',

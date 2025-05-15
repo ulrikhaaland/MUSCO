@@ -5,6 +5,7 @@ import { Exercise } from '@/app/types/program';
 import { ExerciseFeedbackSelector } from './ExerciseFeedbackSelector';
 import { exerciseFiles, loadExercisesFromJson } from '@/app/services/exerciseProgramService';
 import { useTranslation } from '@/app/i18n';
+import { toast } from './ToastProvider';
 
 // Extend the Exercise type to include additional properties
 interface ExtendedExercise extends Exercise {
@@ -19,6 +20,8 @@ interface ProgramFeedbackQuestionnaireProps {
   isFeedbackDay: boolean;
   previousExercises: Exercise[];
   onAddExercise?: (category: string, exercise: Exercise) => void;
+  isFutureWeek?: boolean; // Whether today is in a week later than the newest program week
+  nextProgramDate?: Date | null; // The date when a new program can be generated
 }
 
 export interface ProgramFeedback {
@@ -35,6 +38,8 @@ export function ProgramFeedbackQuestionnaire({
   isFeedbackDay,
   previousExercises = [],
   onAddExercise,
+  isFutureWeek,
+  nextProgramDate,
 }: ProgramFeedbackQuestionnaireProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
@@ -504,10 +509,62 @@ export function ProgramFeedbackQuestionnaire({
             type="button"
             onClick={(e) => {
               e.stopPropagation();
+              // If not in a future week, show toast instead of submitting
+              if (!isFutureWeek) {
+                // Format the date if available
+                let message = t('programFeedback.button.waitUntilNextWeek');
+                
+                if (nextProgramDate) {
+                  // Use Norwegian locale for date formatting
+                  const formattedDate = nextProgramDate.toLocaleDateString('nb-NO', {
+                    weekday: 'long',
+                    month: 'long', 
+                    day: 'numeric'
+                  });
+                  
+                  message = t('programFeedback.button.waitUntilSpecificDate', {
+                    date: formattedDate
+                  });
+                }
+                
+                toast.custom(
+                  (toastObj) => (
+                    <div
+                      className={`${
+                        toastObj.visible ? 'animate-enter' : 'animate-leave'
+                      } max-w-md w-full bg-amber-600 shadow-lg rounded-lg pointer-events-auto flex ring-1 ring-black ring-opacity-5`}
+                    >
+                      <div className="flex-1 w-0 p-4">
+                        <div className="flex items-start">
+                          <div className="flex-shrink-0 pt-0.5">
+                            ⚠️
+                          </div>
+                          <div className="ml-3 flex-1">
+                            <p className="text-sm font-medium text-white">
+                              {message}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ),
+                  {
+                    duration: 4000,
+                  }
+                );
+                return;
+              }
               handleSubmit(e);
             }}
             disabled={isSubmitting}
-            className="px-6 py-3 rounded-xl bg-indigo-600 text-white hover:bg-indigo-500 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+            className={`px-6 py-3 rounded-xl text-white transition-colors duration-200 flex items-center justify-center
+              ${isSubmitting 
+                ? 'bg-indigo-600/50 cursor-not-allowed opacity-50' 
+                : !isFutureWeek 
+                  ? 'bg-indigo-600/50 opacity-50 hover:bg-indigo-500/50'
+                  : 'bg-indigo-600 hover:bg-indigo-500'
+              }`}
+            title={!isFutureWeek ? t('programFeedback.button.disabledTooltip') : ''}
           >
             {isSubmitting ? (
               <>

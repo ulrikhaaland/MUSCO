@@ -61,59 +61,41 @@ function ProgramsContent() {
   const handleToggleActive = (e: React.MouseEvent, programIndex: number) => {
     // Stop propagation to prevent card click
     e.stopPropagation();
-    // Prevent default browser behavior (like scrolling to the top)
+    // Prevent default browser behavior
     e.preventDefault();
 
     // Get the program details
     const program = userPrograms[programIndex];
     if (!program) return;
 
-    // Track this program as being toggled (store the target state)
+    // Get the new toggle state
     const newToggleState = !program.active;
     
-    // IMMEDIATELY update the pendingToggles state for instant UI feedback
-    setPendingToggles(prev => ({
-      ...prev,
-      [program.docId]: newToggleState
-    }));
-
-    // If activating a program, find other programs of the same type to mark as pending inactive
+    // Set pending toggle state for immediate UI feedback
+    const newPendingToggles: Record<string, boolean> = {};
+    
+    // If activating a program, mark all other programs of same type as inactive
     if (newToggleState) {
-      const otherActivePrograms = userPrograms.filter(p => 
-        p.docId !== program.docId && p.type === program.type && p.active
-      );
-      
-      if (otherActivePrograms.length > 0) {
-        // Create a new pending state for all programs of the same type
-        const updatedPending = {...pendingToggles};
-        otherActivePrograms.forEach(p => {
-          updatedPending[p.docId] = false; // Mark as pending inactive
-        });
-        setPendingToggles(updatedPending);
-      }
+      userPrograms.forEach(p => {
+        if (p.type === program.type) {
+          // Mark active the selected program, inactive all others of same type
+          newPendingToggles[p.docId] = p.docId === program.docId;
+        }
+      });
+    } else {
+      // Just toggling current program to inactive
+      newPendingToggles[program.docId] = false;
     }
     
+    // Update pending toggles state for immediate UI feedback
+    setPendingToggles(newPendingToggles);
+    
     // Toggle the program active state in the background
-    // We don't wait for this to complete to make the UI feel more responsive
     toggleActiveProgram(programIndex)
       .catch(error => {
         console.error('Error toggling program:', error);
-        // If there was an error, revert the toggle state
-        setPendingToggles(prev => {
-          const updated = {...prev};
-          delete updated[program.docId];
-          
-          // Also revert any other programs we might have toggled
-          if (newToggleState) {
-            userPrograms.forEach(p => {
-              if (p.docId !== program.docId && p.type === program.type) {
-                delete updated[p.docId];
-              }
-            });
-          }
-          
-          return updated;
-        });
+        // Revert all pending toggles on error
+        setPendingToggles({});
       });
   };
 
@@ -122,9 +104,13 @@ function ProgramsContent() {
     router.push('/');
   };
 
-  if (isLoading) {
-    // We're using the global loader context instead of rendering our own spinner
-    return null;
+  // Render a loading placeholder only if we have no programs yet AND are loading
+  if (isLoading && userPrograms.length === 0) {
+    return (
+      <div className="h-full flex items-center justify-center">
+        <div className="text-gray-400">{t('common.loading')}</div>
+      </div>
+    );
   }
 
   if (userPrograms.length === 0) {
@@ -305,10 +291,8 @@ function ProgramsContent() {
       <div className="flex-1 overflow-y-auto px-4 py-6">
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 pb-8">
           {filteredAndSortedPrograms.map((program, index) => {
-            // Find the original index in userPrograms
-            const originalIndex = userPrograms.findIndex(p => 
-              p.createdAt === program.createdAt
-            );
+            // Find the original index in userPrograms using docId for reliable identification
+            const originalIndex = userPrograms.findIndex(p => p.docId === program.docId);
             
             // Get the first exercise program from the list
             const exerciseProgram = program.programs[0];

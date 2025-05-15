@@ -142,6 +142,10 @@ export function ExerciseProgramPage({
   const [selectionStep, setSelectionStep] = useState<
     'effective' | 'ineffective'
   >('effective');
+  // Add state to track if current date is in a future week
+  const [isInFutureWeek, setIsInFutureWeek] = useState(false);
+  // Add state to store the date when user can generate a new program
+  const [nextProgramDate, setNextProgramDate] = useState<Date | null>(null);
   // Add state to save feedback form scroll position
   const [feedbackScrollPosition, setFeedbackScrollPosition] = useState(0);
   const { answers, diagnosisData, generateFollowUpProgram } = useUser();
@@ -227,6 +231,7 @@ export function ExerciseProgramPage({
 
     // Get current date for comparison
     const currentDate = new Date();
+    const currentDayOfWeek = currentDate.getDay() || 7; // Convert Sunday (0) to 7
     const currentTimestamp = currentDate.getTime();
 
     // Get the current week's Monday and Sunday
@@ -339,7 +344,7 @@ export function ExerciseProgramPage({
         });
       }
 
-      // Scroll day into view
+      // Scroll day into view - but match by day.day value, not position
       const dayButton = document.querySelector(`[data-day="${currentDayOfWeek}"]`);
       if (dayButton && selectedWeekButton) {
         setTimeout(() => {
@@ -389,7 +394,9 @@ export function ExerciseProgramPage({
     if (expandedDays.length > 0) {
       const currentDayNumber = expandedDays[0];
       // Find the corresponding day in the new week
-      const dayExists = weekData.days.find((d) => d.day === currentDayNumber);
+      // Sort days by day.day to ensure chronological order before finding
+      const sortedDays = [...weekData.days].sort((a, b) => a.day - b.day);
+      const dayExists = sortedDays.find((d) => d.day === currentDayNumber);
 
       if (dayExists) {
         // Keep the same day expanded if it exists in the new week
@@ -641,6 +648,8 @@ export function ExerciseProgramPage({
           nextWeekDate={nextMonday}
           isFeedbackDay={true}
           previousExercises={previousExercises}
+          isFutureWeek={isInFutureWeek}
+          nextProgramDate={nextProgramDate}
         />
       );
     }
@@ -678,6 +687,61 @@ export function ExerciseProgramPage({
       </div>
     );
   };
+
+  // Determine if the current date is in a future week compared to the program
+  useEffect(() => {
+    if (!program?.program || !Array.isArray(program.program) || program.program.length === 0) {
+      return;
+    }
+    
+    // Get current date
+    const currentDate = new Date();
+    
+    // Find the latest week based on createdAt
+    const latestWeek = [...program.program].sort((a, b) => {
+      if (a.createdAt && b.createdAt) {
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      }
+      return b.week - a.week;
+    })[0];
+    
+    if (!latestWeek.createdAt) {
+      // If no createdAt, can't determine week
+      setIsInFutureWeek(false);
+      return;
+    }
+    
+    // Get the end date of the latest week
+    const latestWeekCreatedAt = new Date(latestWeek.createdAt);
+    const latestWeekEnd = getEndOfWeek(latestWeekCreatedAt);
+    
+    // Current date is in a future week if it's after the end of the latest week
+    const inFutureWeek = currentDate.getTime() > latestWeekEnd.getTime();
+    
+    // Store the next program date (end of latest week + 1 day)
+    const dayAfterProgramEnd = new Date(latestWeekEnd);
+    dayAfterProgramEnd.setDate(dayAfterProgramEnd.getDate() + 1);
+    setNextProgramDate(dayAfterProgramEnd);
+    
+    // Special logging for year boundary cases
+    const currentYear = currentDate.getFullYear();
+    const nextProgramYear = dayAfterProgramEnd.getFullYear();
+    const isYearBoundary = currentYear !== nextProgramYear;
+    
+    console.log('Checking if current date is in future week:', {
+      currentDate,
+      latestWeekCreatedAt,
+      latestWeekEnd,
+      dayAfterProgramEnd,
+      inFutureWeek,
+      currentYear,
+      nextProgramYear,
+      isYearBoundary,
+      currentWeek: getWeekNumber(currentDate),
+      nextProgramWeek: getWeekNumber(dayAfterProgramEnd)
+    });
+    setIsInFutureWeek(inFutureWeek);
+  }, [program]);
 
   // If loading or no program, just return null as we're using the global loader context
   if (isLoading || program === null || !Array.isArray(program.program)) {
@@ -726,6 +790,8 @@ export function ExerciseProgramPage({
         nextWeekDate={getNextMonday(new Date())}
         isFeedbackDay={true}
         previousExercises={getAllProgramExercises()}
+        isFutureWeek={isInFutureWeek}
+        nextProgramDate={nextProgramDate}
       />
     );
   }
@@ -1082,7 +1148,8 @@ export function ExerciseProgramPage({
                         {/* Day Tabs */}
                         <div className="overflow-x-auto scrollbar-hide mb-6">
                           <div className="flex space-x-2 min-w-max">
-                            {selectedWeekData.days.map((day, index) => (
+                            {/* Sort days by day.day to ensure chronological order */}
+                            {[...selectedWeekData.days].sort((a, b) => a.day - b.day).map((day) => (
                               <button
                                 key={day.day}
                                 data-day={day.day}
@@ -1094,7 +1161,7 @@ export function ExerciseProgramPage({
                                 }`}
                               >
                                 <span className="text-sm opacity-80 mb-1">
-                                  {getDayShortName(index + 1, t)}
+                                  {getDayShortName(day.day, t)}
                                 </span>
                                 {day.isRestDay ? (
                                   <span className="text-xs mt-1 opacity-80">
@@ -1117,9 +1184,8 @@ export function ExerciseProgramPage({
                           );
                           if (!day) return null;
 
-                          const dayIndex = selectedWeekData.days.findIndex(
-                            (d) => d.day === dayNumber
-                          );
+                          // Get the correct day index based on day.day, not array position
+                          const dayIndex = day.day - 1; // Subtract 1 since day.day is 1-based
 
                           return (
                             <ProgramDaySummaryComponent

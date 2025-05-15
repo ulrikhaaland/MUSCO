@@ -71,6 +71,7 @@ export interface Question {
   asked?: boolean;
   diagnosis?: string;
   programType?: ProgramType;
+  meta?: string;
 }
 
 export interface DiagnosisAssistantResponse {

@@ -3,6 +3,7 @@ import { Exercise, ProgramDay } from '@/app/types/program';
 import ExerciseCard from './ExerciseCard';
 import Chip from './Chip';
 import BodyPartFilter from './BodyPartFilter';
+import { useTranslation } from '@/app/i18n/TranslationContext';
 
 interface ProgramDayComponentProps {
   day: ProgramDay;
@@ -31,14 +32,11 @@ export function ProgramDayComponent({
   programTitle,
   onTitleClick,
 }: ProgramDayComponentProps) {
+  const { t } = useTranslation();
   // State to track removed body parts
   const [removedBodyParts, setRemovedBodyParts] = useState<string[]>([]);
   // State to track if title is being hovered
   const [isTitleHovered, setIsTitleHovered] = useState(false);
-  // State to track if activity badge is hovered
-  const [isActivityBadgeHovered, setIsActivityBadgeHovered] = useState(false);
-  // State to track if activity badge is pressed
-  const [isActivityBadgePressed, setIsActivityBadgePressed] = useState(false);
   // State to track viewport width for responsive adjustments
   const [isMobile, setIsMobile] = useState(false);
 
@@ -118,33 +116,15 @@ export function ProgramDayComponent({
           </div>
         )}
 
-        {/* Combined Activity/Duration Badge */}
+        {/* Combined Activity/Duration Badge - converted to non-interactive div */}
         <div className="mb-4">
-          <button
-            className={`inline-flex items-center px-4 py-2 rounded-xl bg-indigo-900/40 text-indigo-100 transition-all ${
-              isActivityBadgeHovered
-                ? 'bg-indigo-800/50 shadow-sm translate-y-[-2px]'
-                : ''
-            } ${
-              isActivityBadgePressed ? 'shadow-inner-sm' : ''
-            } hover:bg-indigo-800/50 hover:shadow-sm hover:translate-y-[-2px] active:translate-y-0 active:bg-indigo-800/60 active:shadow-inner-sm`}
-            onMouseEnter={() => setIsActivityBadgeHovered(true)}
-            onMouseLeave={() => setIsActivityBadgeHovered(false)}
-            onMouseDown={() => setIsActivityBadgePressed(true)}
-            onMouseUp={() => setIsActivityBadgePressed(false)}
-            onTouchStart={() => setIsActivityBadgePressed(true)}
-            onTouchEnd={() => setIsActivityBadgePressed(false)}
-          >
-            {day.isRestDay ? (
-              <span className="text-sm font-medium">Recovery</span>
-            ) : (
-              <span className="text-sm font-medium">Activity</span>
-            )}
+          <div className="inline-flex items-center px-4 py-2 rounded-xl bg-[#1a2130] text-[#f2f6ff] border border-[#2c3447]">
+            <span className="text-sm font-medium">{t('profile.fields.workoutDuration')}</span>
 
             {day.duration && (
               <>
-                <span className="mx-2 text-indigo-300">·</span>
-                <div className="flex items-center text-indigo-100">
+                <span className="mx-2 text-[#8a96b5]">·</span>
+                <div className="flex items-center text-[#f2f6ff]">
                   <svg
                     className="w-4 h-4 mr-1.5 opacity-90"
                     fill="none"
@@ -158,11 +138,11 @@ export function ProgramDayComponent({
                       d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
                     />
                   </svg>
-                  {day.duration} minutes
+                  {day.duration} {t('program.minutes')}
                 </div>
               </>
             )}
-          </button>
+          </div>
         </div>
 
         <p className="text-gray-50 leading-relaxed">{day.description}</p>
@@ -183,11 +163,10 @@ export function ProgramDayComponent({
         {day.isRestDay && filteredExercises && filteredExercises.length > 0 && (
           <div className="mb-8">
             <h4 className="text-indigo-300 font-medium">
-              Optional Recovery Activities
+              {t('program.optionalRecoveryActivities')}
             </h4>
             <p className="text-gray-300 text-sm mt-1">
-              These gentle exercises can be performed at home to aid recovery.
-              Listen to your body and only do what feels comfortable.
+              {t('program.recoveryMessage')}
             </p>
           </div>
         )}
@@ -221,8 +200,14 @@ export function ProgramDayComponent({
         ) : (
           <div className="py-8 text-center">
             <p className="text-gray-300">
-              No exercises available with the current filter.
+              {t('program.noExercises')}
             </p>
+            <button
+              onClick={() => setRemovedBodyParts([])}
+              className="mt-2 text-indigo-300 hover:text-indigo-200"
+            >
+              {t('program.resetFilters')}
+            </button>
           </div>
         )}
       </div>

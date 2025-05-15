@@ -58,7 +58,7 @@ export default function ExerciseSelectionBottomSheet({
   onSelectExercise,
   existingExercises = [],
 }: ExerciseSelectionBottomSheetProps) {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -92,8 +92,9 @@ export default function ExerciseSelectionBottomSheet({
           searchBodyParts.push('Calves');
         }
         
-        const allExercises = await loadExercisesFromJson(searchBodyParts, true, false);
-        console.log(`Loaded ${allExercises.length} exercises for body part: ${bodyPart}`);
+        // Pass the current locale to loadExercisesFromJson to get language-specific exercises
+        const allExercises = await loadExercisesFromJson(searchBodyParts, true, false, locale === 'nb');
+        console.log(`Loaded ${allExercises.length} exercises for body part: ${bodyPart} in locale: ${locale}`);
         
         // Filter to include only Musco exercises
         const muscoExercises = allExercises.filter(ex => 
@@ -205,7 +206,7 @@ export default function ExerciseSelectionBottomSheet({
     if (isOpen) {
       loadCategoryExercises();
     }
-  }, [isOpen, category, existingExercises]);
+  }, [isOpen, category, existingExercises, locale]);
 
   // Filter exercises based on search query
   const filteredExercises = exercises.filter(ex => {
@@ -230,6 +231,7 @@ export default function ExerciseSelectionBottomSheet({
       snapPoints={({ maxHeight }) => [maxHeight * 0.9]}
       defaultSnap={({ maxHeight }) => maxHeight * 0.9}
       expandOnContentDrag={false}
+      blocking={false}
       className="z-50 !bg-gray-900"
       header={
         <div className="px-4 pt-4 pb-2 !bg-gray-900 border-b border-gray-800">
