@@ -74,6 +74,16 @@ interface UserContextType {
 
 const UserContext = createContext<UserContextType>({} as UserContextType);
 
+// Utility: combine multiple ExerciseProgram objects into a single "merged" program array with sequential week numbers
+// Keeping it here (instead of a separate util file) for now to minimise the refactor footprint.
+const mergePrograms = (programs: ExerciseProgram[]): ExerciseProgram['program'] => {
+  const allWeeks = programs.flatMap((p) => p?.program || []);
+  return allWeeks.map((weekData, i) => ({
+    ...weekData,
+    week: i + 1, // renumber weeks sequentially starting at 1
+  }));
+};
+
 export function UserProvider({ children }: { children: ReactNode }) {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
@@ -253,18 +263,10 @@ export function UserProvider({ children }: { children: ReactNode }) {
             activeProgramIdRef.current = activeProgram.docId;
             setActiveProgram(activeProgram);
 
-            // Use the first program as the base and combine all program weeks
-            const allWeeks = activeProgram.programs.flatMap(
-              (p) => p.program || []
-            );
-            const renumberedWeeks = allWeeks.map((weekData, i) => ({
-              ...weekData,
-              week: i + 1, // Renumber weeks sequentially starting from 1
-            }));
-
+            // Build a combined program using helper
             const combinedProgram = {
-              ...activeProgram.programs[0], // Get basics from first program
-              program: renumberedWeeks,
+              ...activeProgram.programs[0],
+              program: mergePrograms(activeProgram.programs),
               docId: activeProgram.docId,
             };
 
@@ -298,18 +300,10 @@ export function UserProvider({ children }: { children: ReactNode }) {
           activeProgramIdRef.current = mostRecentProgram.docId;
           setActiveProgram(mostRecentProgram);
 
-          // Use the first program as the base and combine all program weeks
-          const allWeeks = mostRecentProgram.programs.flatMap(
-            (p) => p.program || []
-          );
-          const renumberedWeeks = allWeeks.map((weekData, i) => ({
-            ...weekData,
-            week: i + 1, // Renumber weeks sequentially starting from 1
-          }));
-
+          // Build a combined program using helper
           const combinedProgram = {
-            ...mostRecentProgram.programs[0], // Get basics from first program
-            program: renumberedWeeks,
+            ...mostRecentProgram.programs[0],
+            program: mergePrograms(mostRecentProgram.programs),
             docId: mostRecentProgram.docId,
           };
 
@@ -479,16 +473,10 @@ export function UserProvider({ children }: { children: ReactNode }) {
                     })
                   );
 
-                  // Use the first program as the base and combine all program weeks
-                  const allWeeks = programWeeks.flatMap((p) => p.program || []);
-                  const renumberedWeeks = allWeeks.map((weekData, i) => ({
-                    ...weekData,
-                    week: i + 1, // Renumber weeks sequentially starting from 1
-                  }));
-
+                  // Build a combined program using helper
                   const combinedProgram = {
                     ...programWeeks[0],
-                    program: renumberedWeeks,
+                    program: mergePrograms(programWeeks),
                     docId: programDoc.id,
                   };
 
@@ -823,17 +811,9 @@ export function UserProvider({ children }: { children: ReactNode }) {
         return;
       }
 
-      const allWeeks = selectedProgram.programs.flatMap(
-        (p) => p?.program || []
-      );
-      const renumberedWeeks = allWeeks.map((weekData, i) => ({
-        ...weekData,
-        week: i + 1, // Renumber weeks sequentially starting from 1
-      }));
-
       const combinedProgram = {
         ...selectedProgram.programs[0],
-        program: renumberedWeeks,
+        program: mergePrograms(selectedProgram.programs),
         docId: selectedProgram.docId,
       };
 
@@ -912,18 +892,10 @@ export function UserProvider({ children }: { children: ReactNode }) {
         };
         setActiveProgram(updatedSelectedProgram);
 
-        // Combine all program weeks into one program object and renumber them
-        const allWeeks = updatedSelectedProgram.programs.flatMap(
-          (p) => p.program || []
-        );
-        const renumberedWeeks = allWeeks.map((weekData, i) => ({
-          ...weekData,
-          week: i + 1, // Renumber weeks sequentially starting from 1
-        }));
-
+        // Build a combined program using helper
         const combinedProgram = {
           ...updatedSelectedProgram.programs[0],
-          program: renumberedWeeks,
+          program: mergePrograms(updatedSelectedProgram.programs),
           docId: updatedSelectedProgram.docId,
         };
 
