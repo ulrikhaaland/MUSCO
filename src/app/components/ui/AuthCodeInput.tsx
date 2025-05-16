@@ -152,8 +152,23 @@ export function AuthCodeInput() {
   const handleCodeDigitChange = (index: number, value: string) => {
     if (isLoading) return;
 
+    // If the user pasted or autofilled multiple digits (e.g. by tapping an OTP prompt)
     if (value.length > 1) {
-      value = value.charAt(value.length - 1);
+      const digits = value.replace(/\D/g, '').slice(0, 6);
+
+      if (digits.length) {
+        setCode(digits);
+
+        // Focus the appropriate field or validate immediately if complete
+        if (digits.length < 6) {
+          inputRefs[digits.length]?.current?.focus();
+        } else {
+          inputRefs[5]?.current?.focus();
+          // Auto-submit if code is complete after autofill
+          performCodeValidation(digits);
+        }
+      }
+      return;
     }
 
     if (!/^[0-9]*$/.test(value)) {
@@ -322,6 +337,7 @@ export function AuthCodeInput() {
               pattern="[0-9]*"
               maxLength={1}
               autoFocus={index === 0}
+              autoComplete="one-time-code"
               className="w-10 h-12 sm:w-12 sm:h-14 text-center text-2xl font-bold rounded-lg bg-gray-900/50 border border-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 disabled:opacity-50"
               value={code[index] || ''}
               onChange={(e) => handleCodeDigitChange(index, e.target.value)}
