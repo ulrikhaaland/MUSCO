@@ -10,6 +10,7 @@ import { useUser } from '@/app/context/UserContext';
 import { useLoader } from '@/app/context/LoaderContext';
 import { getStorage, ref, getDownloadURL } from 'firebase/storage';
 import { storage } from '@/app/firebase/config';
+import { useTranslation } from '@/app/i18n/TranslationContext';
 
 function ErrorDisplay({ error }: { error: Error }) {
   return (
@@ -83,6 +84,7 @@ export default function DayDetailPage() {
   const { user, error: authError } = useAuth();
   const { program, programStatus, userPrograms } = useUser();
   const { showLoader, hideLoader, isLoading } = useLoader();
+  const { t } = useTranslation();
   
   // Flag to track if we've shown the loader
   const loaderShown = useRef(false);
@@ -149,7 +151,15 @@ export default function DayDetailPage() {
               
               // 4. Set day data and name at the same time
               setDayData(day);
-              const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+              const days = [
+                t('days.monday'),
+                t('days.tuesday'),
+                t('days.wednesday'),
+                t('days.thursday'),
+                t('days.friday'),
+                t('days.saturday'),
+                t('days.sunday'),
+              ];
               setDayName(days[dayNumber - 1]);
               
               // 5. Mark data as loaded
@@ -214,6 +224,19 @@ export default function DayDetailPage() {
       router.push('/');
     }
   }, [user, program, programStatus, router]);
+
+  // Inject one-time global style for modal scroll lock
+  useEffect(() => {
+    if (typeof document !== 'undefined') {
+      const styleId = 'video-modal-scroll-lock';
+      if (!document.getElementById(styleId)) {
+        const style = document.createElement('style');
+        style.id = styleId;
+        style.textContent = `body.video-modal-open { overflow: hidden !important; touch-action: none; }`;
+        document.head.appendChild(style);
+      }
+    }
+  }, []);
 
   // Simplified exercise toggle without preloading
   const handleExerciseToggle = (exerciseName: string) => {

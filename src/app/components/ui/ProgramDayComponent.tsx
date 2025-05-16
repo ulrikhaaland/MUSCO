@@ -4,6 +4,7 @@ import ExerciseCard from './ExerciseCard';
 import Chip from './Chip';
 import BodyPartFilter from './BodyPartFilter';
 import { useTranslation } from '@/app/i18n/TranslationContext';
+import InfoBadge from './InfoBadge';
 
 interface ProgramDayComponentProps {
   day: ProgramDay;
@@ -82,7 +83,7 @@ export function ProgramDayComponent({
   return (
     <div className="h-full flex flex-col" onClick={onClick}>
       {/* Header section - Removed negative margins to prevent overflow */}
-      <div className="bg-gray-900/95 backdrop-blur-sm py-4">
+      <div className="bg-gray-900/95 backdrop-blur-sm py-4 sticky top-0 z-10">
         {programTitle && (
           <div className="mb-4">
             <button
@@ -116,33 +117,28 @@ export function ProgramDayComponent({
           </div>
         )}
 
-        {/* Combined Activity/Duration Badge - converted to non-interactive div */}
+        {/* Workout duration badge */}
         <div className="mb-4">
-          <div className="inline-flex items-center px-4 py-2 rounded-xl bg-[#1a2130] text-[#f2f6ff] border border-[#2c3447]">
-            <span className="text-sm font-medium">{t('profile.fields.workoutDuration')}</span>
-
-            {day.duration && (
-              <>
-                <span className="mx-2 text-[#8a96b5]">·</span>
-                <div className="flex items-center text-[#f2f6ff]">
-                  <svg
-                    className="w-4 h-4 mr-1.5 opacity-90"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={1.75}
-                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                  {day.duration} {t('program.minutes')}
-                </div>
-              </>
-            )}
-          </div>
+          <InfoBadge
+            label={t('profile.fields.workoutDuration')}
+            value={day.duration}
+            unit={t('program.minutes')}
+            icon={
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.75}
+                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+            }
+          />
         </div>
 
         <p className="text-gray-50 leading-relaxed">{day.description}</p>

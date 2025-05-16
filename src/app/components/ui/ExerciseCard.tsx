@@ -1,4 +1,4 @@
-import { ReactNode, useState, useEffect } from 'react';
+import React, { ReactNode, useState, useEffect } from 'react';
 import { Exercise } from '@/app/types/program';
 import Card from './Card';
 import Chip from './Chip';
@@ -35,6 +35,53 @@ export default function ExerciseCard({
   // Local UI state per exercise card
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
   const [showInstructions, setShowInstructions] = useState(false);
+
+  // Accessibility: detect user preference for reduced motion
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  const [isTouching, setIsTouching] = useState(false);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    setPrefersReducedMotion(mediaQuery.matches);
+
+    const handleChange = (e: MediaQueryListEvent) => {
+      setPrefersReducedMotion(e.matches);
+    };
+
+    mediaQuery.addEventListener('change', handleChange);
+    return () => mediaQuery.removeEventListener('change', handleChange);
+  }, []);
+
+  // Direct click handler
+  const handleClick = () => {
+    if (onToggle) {
+      onToggle();
+    }
+  };
+
+  // Handlers for touch feedback (mobile)
+  const handleTouchStart = () => {
+    if (!onToggle) return;
+    setIsTouching(true);
+    setTimeout(() => setIsTouching(false), 75);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (e.touches.length > 0) {
+      setIsTouching(false);
+    }
+  };
+
+  // Dynamic wrapper styles for interactive feedback
+  const interactiveWrapperClasses = `
+    rounded-xl overflow-hidden
+    transition-all duration-120 ease-out
+    ${onToggle ? 'outline outline-1 outline-indigo-500/20' : ''}
+    ${onToggle && !prefersReducedMotion ? 'hover:-translate-y-[3px] hover:shadow-[0_4px_12px_rgba(0,0,0,0.25)] hover:outline-indigo-500/60' : ''}
+    ${onToggle && prefersReducedMotion ? 'hover:outline-indigo-500/60' : ''}
+    ${isTouching && !prefersReducedMotion ? 'scale-[0.98]' : ''}
+    ${isTouching && prefersReducedMotion ? 'outline-indigo-500/60' : ''}
+  `;
 
   // Function to get the translated body part name
   const getTranslatedBodyPart = (bodyPart: string) => {
@@ -141,150 +188,169 @@ export default function ExerciseCard({
   const exerciseId = exercise.id || exercise.exerciseId || exercise.name;
 
   return (
-    <Card
-      key={exerciseId}
-      onClick={onToggle}
-      isClickable={!!onToggle}
-      title={
-        <span className={isMobile ? 'tracking-tighter' : 'tracking-tight'}>
-          {exercise.name}
-        </span>
-      }
-      tag={
-        <div className="flex items-center gap-2">
-          {exercise.bodyPart && (
-            <Chip
-              size="md"
-              className={`bg-transparent border ${exercise.warmup ? 'border-amber-600 text-[#f2f6ff]' : 'border-[#635bff] text-[#f2f6ff]'}`}
-            >
-              {getTranslatedBodyPart(exercise.bodyPart)}
-            </Chip>
-          )}
-          {onToggle && (
-            <svg
-              className={`w-4 h-4 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''} text-gray-400`}
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <polyline points="6 9 12 15 18 9"></polyline>
-            </svg>
-          )}
-        </div>
-      }
+    <div
+      className={interactiveWrapperClasses}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={() => setIsTouching(false)}
+      tabIndex={onToggle ? 0 : -1}
+      onKeyDown={(e) => {
+        if (!onToggle) return;
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          handleClick();
+        }
+      }}
     >
-      {isExpanded ? (
+      <Card
+        key={exerciseId}
+        onClick={handleClick}
+        isClickable={!!onToggle}
+        title={
+          <span className={isMobile ? 'tracking-tighter' : 'tracking-tight'}>
+            {exercise.name}
+          </span>
+        }
+        tag={
+          <div className="flex items-center gap-2">
+            {exercise.bodyPart && (
+              <Chip
+                size="md"
+                className={`bg-transparent border ${exercise.warmup ? 'border-amber-600 text-[#f2f6ff]' : 'border-[#635bff] text-[#f2f6ff]'}`}
+              >
+                {getTranslatedBodyPart(exercise.bodyPart)}
+              </Chip>
+            )}
+            {onToggle && (
+              <svg
+                className={`w-4 h-4 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''} text-gray-400`}
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            )}
+          </div>
+        }
+      >
+        {/* Metrics row – always visible */}
         <Card.Section>
-          {/* Exercise metrics row - now comes first */}
           {renderExerciseMetricsRow()}
+        </Card.Section>
 
-          {/* Exercise description */}
-          {exercise.description && (
-            <div className="text-gray-50 leading-relaxed mb-4">
-              {isDescriptionExpanded
-                ? exercise.description
-                : getTruncatedDescription(exercise.description)}
-              {exercise.description.length > 100 && (
-                <button
-                  className="ml-1 text-indigo-300 hover:text-indigo-200 text-sm font-medium"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setIsDescriptionExpanded((prev) => !prev);
-                  }}
-                >
-                  {isDescriptionExpanded ? t('program.seeLess') : t('program.seeMore')}
-                </button>
-              )}
-            </div>
-          )}
-
-          {exercise.modification && (
-            <p className="text-yellow-200/90 text-sm leading-relaxed mb-4">
-              <span className="font-medium">{t('program.modification')}</span>{' '}
-              {exercise.modification}
-            </p>
-          )}
-
-          {exercise.precaution && (
-            <p className="text-red-400/90 text-sm leading-relaxed mb-4">
-              <span className="font-medium">{t('program.precaution')}</span>{' '}
-              {exercise.precaution}
-            </p>
-          )}
-
-          {exercise.steps && exercise.steps.length > 0 && (
-            <div className="text-gray-300 text-sm leading-relaxed">
-              <div className="flex items-center">
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setShowInstructions((prev) => !prev);
-                  }}
-                  className="text-indigo-300 hover:text-indigo-200 text-sm font-medium inline-flex items-center"
-                >
-                  {showInstructions ? (
-                    <>
-                      <svg
-                        className="w-4 h-4 mr-1"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M5 15l7-7 7 7"
-                        />
-                      </svg>
-                      {t('program.hideInstructions')}
-                    </>
-                  ) : (
-                    <>
-                      <svg
-                        className="w-4 h-4 mr-1"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M19 9l-7 7-7-7"
-                        />
-                      </svg>
-                      {t('program.viewInstructions')}
-                    </>
+        {/* Collapsible content */}
+        <div
+          className={`transition-all duration-300 ease-in-out overflow-hidden ${
+            isExpanded ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'
+          }`}
+        >
+          {isExpanded && (
+            <Card.Section>
+              {/* Exercise description */}
+              {exercise.description && (
+                <div className="text-gray-50 leading-relaxed mb-4">
+                  {isDescriptionExpanded
+                    ? exercise.description
+                    : getTruncatedDescription(exercise.description)}
+                  {exercise.description.length > 100 && (
+                    <button
+                      className="ml-1 text-indigo-300 hover:text-indigo-200 text-sm font-medium"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setIsDescriptionExpanded((prev) => !prev);
+                      }}
+                    >
+                      {isDescriptionExpanded ? t('program.seeLess') : t('program.seeMore')}
+                    </button>
                   )}
-                </button>
-              </div>
-              {showInstructions && (
-                <div className="mt-3 pl-6 relative bg-gray-800/40 p-4 mx-2 rounded-r-xl">
-                  <div className="absolute left-0 top-0 bottom-0 w-[4px] bg-gradient-to-b from-indigo-700/80 via-indigo-700/50 to-indigo-700/20 rounded-full" />
-                  <ol className="list-decimal pl-5 space-y-2">
-                    {exercise.steps.map((step, index) => (
-                      <li key={index} className="leading-[1.4]">
-                        {step}
-                      </li>
-                    ))}
-                  </ol>
                 </div>
               )}
-            </div>
+
+              {exercise.modification && (
+                <p className="text-yellow-200/90 text-sm leading-relaxed mb-4">
+                  <span className="font-medium">{t('program.modification')}</span>{' '}
+                  {exercise.modification}
+                </p>
+              )}
+
+              {exercise.precaution && (
+                <p className="text-red-400/90 text-sm leading-relaxed mb-4">
+                  <span className="font-medium">{t('program.precaution')}</span>{' '}
+                  {exercise.precaution}
+                </p>
+              )}
+
+              {exercise.steps && exercise.steps.length > 0 && (
+                <div className="text-gray-300 text-sm leading-relaxed">
+                  <div className="flex items-center">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setShowInstructions((prev) => !prev);
+                      }}
+                      className="text-indigo-300 hover:text-indigo-200 text-sm font-medium inline-flex items-center"
+                    >
+                      {showInstructions ? (
+                        <>
+                          <svg
+                            className="w-4 h-4 mr-1"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M5 15l7-7 7 7"
+                            />
+                          </svg>
+                          {t('program.hideInstructions')}
+                        </>
+                      ) : (
+                        <>
+                          <svg
+                            className="w-4 h-4 mr-1"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M19 9l-7 7-7-7"
+                            />
+                          </svg>
+                          {t('program.viewInstructions')}
+                        </>
+                      )}
+                    </button>
+                  </div>
+                  {showInstructions && (
+                    <div className="mt-3 pl-6 relative bg-gray-800/40 p-4 mx-2 rounded-r-xl">
+                      <div className="absolute left-0 top-0 bottom-0 w-[4px] bg-gradient-to-b from-indigo-700/80 via-indigo-700/50 to-indigo-700/20 rounded-full" />
+                      <ol className="list-decimal pl-5 space-y-2">
+                        {exercise.steps.map((step, index) => (
+                          <li key={index} className="leading-[1.4]">
+                            {step}
+                          </li>
+                        ))}
+                      </ol>
+                    </div>
+                  )}
+                </div>
+              )}
+            </Card.Section>
           )}
-        </Card.Section>
-      ) : null}
-      
-      {/* Show metrics row at the bottom when collapsed */}
-      {!isExpanded && (
-        <Card.Section className="mt-auto">
-          {renderExerciseMetricsRow()}
-        </Card.Section>
-      )}
-    </Card>
+        </div>
+
+        {/* When collapsed nothing else is rendered */}
+      </Card>
+    </div>
   );
 }

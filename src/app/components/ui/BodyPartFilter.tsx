@@ -116,8 +116,9 @@ export function BodyPartFilter({
               <Chip
                 key={bodyPart}
                 onClick={() => toggleBodyPart(bodyPart)}
-                size="lg"
+                size="md"
                 variant={removedBodyParts.includes(bodyPart) ? 'inactive' : 'default'}
+                className={`bg-transparent border ${removedBodyParts.includes(bodyPart) ? 'border-gray-600 text-gray-400/80 line-through' : 'border-[#635bff] text-[#f2f6ff]'} transition-colors`}
                 icon={
                   removedBodyParts.includes(bodyPart) ? (
                     <svg
