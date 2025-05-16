@@ -93,7 +93,7 @@ export const LoaderProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     >
       <div
         ref={loaderRef}
-        className="loader-container fixed inset-0 z-50000 transition-opacity duration-300"
+        className="loader-container fixed inset-0 z-[50000] transition-opacity duration-300"
         style={{ 
           display: isVisible ? 'block' : 'none',
           opacity: isVisible ? 1 : 0,

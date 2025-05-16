@@ -590,49 +590,30 @@ FAILURE TO FOLLOW THE ABOVE INSTRUCTIONS EXACTLY WILL RESULT IN POOR USER EXPERI
           .collection('programs')
           .doc(context.programId);
 
-        // Set all other programs of the same type to inactive
-        const programType = context.diagnosisData.programType;
-        const userProgramsRef = adminDb
-          .collection('users')
-          .doc(context.userId)
-          .collection('programs');
+        // Atomically add the new week document and mark the parent program as Done
+        const batch = adminDb.batch();
 
-        // Query all programs with the same type
-        const sameTypeProgramsSnapshot = await userProgramsRef
-          .where('type', '==', programType)
-          .where('active', '==', true)
-          .get();
-
-        // Batch update to set all of them to inactive
-        if (!sameTypeProgramsSnapshot.empty) {
-          const batch = adminDb.batch();
-          sameTypeProgramsSnapshot.docs.forEach((doc) => {
-            batch.update(doc.ref, { active: false });
-          });
-          await batch.commit();
-          console.log(
-            `Set ${sameTypeProgramsSnapshot.size} ${programType} programs to inactive`
-          );
-        }
-
-        // Create a new document in the programs subcollection
-        await adminDb
+        // New week document reference (auto-ID)
+        const newWeekRef = adminDb
           .collection('users')
           .doc(context.userId)
           .collection('programs')
           .doc(context.programId)
           .collection('programs')
-          .add({
-            ...program,
-            createdAt: new Date().toISOString(),
-          });
+          .doc();
 
-        // Update the main program document status
-        await programRef.update({
+        batch.set(newWeekRef, {
+          ...program,
+          createdAt: new Date().toISOString(),
+        });
+
+        batch.update(programRef, {
           status: ProgramStatus.Done,
           updatedAt: new Date().toISOString(),
           active: true, // Set the new program as active
         });
+
+        await batch.commit();
 
         console.log('Successfully updated program document and set as active');
       } catch (error) {
@@ -803,49 +784,30 @@ export async function generateExerciseProgramWithModel(context: {
           .collection('programs')
           .doc(context.programId);
 
-        // Set all other programs of the same type to inactive
-        const programType = context.diagnosisData.programType;
-        const userProgramsRef = adminDb
-          .collection('users')
-          .doc(context.userId)
-          .collection('programs');
+        // Atomically add the new week document and mark the parent program as Done
+        const batch = adminDb.batch();
 
-        // Query all programs with the same type
-        const sameTypeProgramsSnapshot = await userProgramsRef
-          .where('type', '==', programType)
-          .where('active', '==', true)
-          .get();
-
-        // Batch update to set all of them to inactive
-        if (!sameTypeProgramsSnapshot.empty) {
-          const batch = adminDb.batch();
-          sameTypeProgramsSnapshot.docs.forEach((doc) => {
-            batch.update(doc.ref, { active: false });
-          });
-          await batch.commit();
-          console.log(
-            `Set ${sameTypeProgramsSnapshot.size} ${programType} programs to inactive`
-          );
-        }
-
-        // Create a new document in the programs subcollection
-        await adminDb
+        // New week document reference (auto-ID)
+        const newWeekRef = adminDb
           .collection('users')
           .doc(context.userId)
           .collection('programs')
           .doc(context.programId)
           .collection('programs')
-          .add({
-            ...program,
-            createdAt: new Date().toISOString(),
-          });
+          .doc();
 
-        // Update the main program document status
-        await programRef.update({
+        batch.set(newWeekRef, {
+          ...program,
+          createdAt: new Date().toISOString(),
+        });
+
+        batch.update(programRef, {
           status: ProgramStatus.Done,
           updatedAt: new Date().toISOString(),
           active: true, // Set the new program as active
         });
+
+        await batch.commit();
 
         console.log('Successfully updated program document and set as active');
       } catch (error) {

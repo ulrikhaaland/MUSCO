@@ -17,7 +17,6 @@ import {
   getDocs,
   query,
   orderBy,
-  limit,
   onSnapshot,
   where,
 } from 'firebase/firestore';
@@ -76,7 +75,9 @@ const UserContext = createContext<UserContextType>({} as UserContextType);
 
 // Utility: combine multiple ExerciseProgram objects into a single "merged" program array with sequential week numbers
 // Keeping it here (instead of a separate util file) for now to minimise the refactor footprint.
-const mergePrograms = (programs: ExerciseProgram[]): ExerciseProgram['program'] => {
+const mergePrograms = (
+  programs: ExerciseProgram[]
+): ExerciseProgram['program'] => {
   const allWeeks = programs.flatMap((p) => p?.program || []);
   return allWeeks.map((weekData, i) => ({
     ...weekData,
@@ -109,10 +110,25 @@ export function UserProvider({ children }: { children: ReactNode }) {
     diagnosis: DiagnosisAssistantResponse;
     answers: ExerciseQuestionnaireAnswers;
   } | null>(null);
-  const isMounted = useRef(false);
   const submissionInProgressRef = useRef(false);
   // Add a ref to track the currently active program ID
   const activeProgramIdRef = useRef<string | null>(null);
+
+  // Helper that wires all related state when a program becomes the current one
+  const prepareAndSetProgram = (userProgram: UserProgramWithId) => {
+    activeProgramIdRef.current = userProgram.docId;
+    setActiveProgram(userProgram);
+
+    const combinedProgram: ExerciseProgram = {
+      ...userProgram.programs[0],
+      program: mergePrograms(userProgram.programs),
+      docId: userProgram.docId,
+    } as ExerciseProgram & { docId: string };
+
+    setProgram(combinedProgram);
+    setAnswers(userProgram.questionnaire);
+    setDiagnosisData(userProgram.diagnosis);
+  };
 
   // Set up real-time listener for program status changes and latest program
   useEffect(() => {
@@ -120,6 +136,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
     let unsubscribe: (() => void) | null = null; // Initialize unsubscribe
 
     if (user) {
+      showGlobalLoader(true, t('program.loadingData'));
       // Show loader when starting to fetch data
 
       // Listen to all user programs
@@ -128,11 +145,6 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
       // Assign the unsubscribe function returned by onSnapshot
       unsubscribe = onSnapshot(q, async (snapshot) => {
-        console.log('*** SNAPSHOT LISTENER TRIGGERED ***');
-        console.log(
-          `Snapshot contains ${snapshot.docs.length} program documents`
-        );
-
         const programs: UserProgramWithId[] = [];
         let mostRecentStatus: ProgramStatus | null = null;
         let mostRecentProgram: UserProgramWithId | null = null;
@@ -215,10 +227,6 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
                 // If this program is active, store it separately
                 if (data.active === true) {
-                  console.log(`Found ACTIVE program with ID: ${doc.id}`);
-                  console.log(
-                    `Program type: ${data.type}, Created at: ${data.createdAt}`
-                  );
                   activeProgram = userProgram;
                 }
 
@@ -226,16 +234,10 @@ export function UserProvider({ children }: { children: ReactNode }) {
                 if (!mostRecentDate || updatedAt > mostRecentDate) {
                   mostRecentDate = updatedAt;
                   mostRecentProgram = userProgram;
-                  console.log(
-                    `Found most recent program with ID: ${doc.id}, updated: ${updatedAt}`
-                  );
                 }
               }
             } catch (error) {
-              console.error(
-                t('userContext.error.processingActiveProgram'),
-                error
-              );
+              // error captured but logging removed
             }
           }
         }
@@ -247,69 +249,28 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
         // First priority: Process active program if found
         if (activeProgram) {
-          console.log(
-            `*** PROCESSING ACTIVE PROGRAM ${activeProgram.docId} ***`
-          );
           setProgramStatus(ProgramStatus.Done);
 
-          // Check if this is the same program we already have active
-          if (activeProgramIdRef.current !== activeProgram.docId) {
-            console.log(
-              `Setting active program. Previous: ${activeProgramIdRef.current}, New: ${activeProgram.docId}`
-            );
-            console.log(
-              `Active program details: Type=${activeProgram.type}, Active=${activeProgram.active}`
-            );
-            activeProgramIdRef.current = activeProgram.docId;
-            setActiveProgram(activeProgram);
+          // Always refresh the program state in case new weeks were added
+          prepareAndSetProgram(activeProgram);
 
-            // Build a combined program using helper
-            const combinedProgram = {
-              ...activeProgram.programs[0],
-              program: mergePrograms(activeProgram.programs),
-              docId: activeProgram.docId,
-            };
-
-            // Set the program and mark loading as complete
-            setProgram(combinedProgram);
-            setAnswers(activeProgram.questionnaire);
-            setDiagnosisData(activeProgram.diagnosis);
-          } else {
-            console.log(
-              `Active program unchanged: ${activeProgramIdRef.current}`
-            );
+          // Navigate to /program only if we're not already there
+          if (
+            typeof window !== 'undefined' &&
+            !window.location.pathname.includes('/program')
+          ) {
+            router.push('/program');
           }
 
-          setIsLoading(false);
-          showGlobalLoader(false);
+          // 250 ms delay to ensure the program is loaded
+          setTimeout(() => {
+            setIsLoading(false);
+            showGlobalLoader(false);
+          }, 500);
         }
         // Second priority: If no active program was found but we have programs, load the most recent
-        else if (
-          mostRecentProgram &&
-          activeProgramIdRef.current !== mostRecentProgram.docId
-        ) {
-          console.log(
-            `*** NO ACTIVE PROGRAM - USING MOST RECENT: ${mostRecentProgram.docId} ***`
-          );
-          console.log(
-            `Most recent program details: Type=${mostRecentProgram.type}, Active=${mostRecentProgram.active}`
-          );
-          console.log(
-            `No active program found. Setting most recent program: ${mostRecentProgram.docId}`
-          );
-          activeProgramIdRef.current = mostRecentProgram.docId;
-          setActiveProgram(mostRecentProgram);
-
-          // Build a combined program using helper
-          const combinedProgram = {
-            ...mostRecentProgram.programs[0],
-            program: mergePrograms(mostRecentProgram.programs),
-            docId: mostRecentProgram.docId,
-          };
-
-          setProgram(combinedProgram);
-          setAnswers(mostRecentProgram.questionnaire);
-          setDiagnosisData(mostRecentProgram.diagnosis);
+        else if (mostRecentProgram) {
+          prepareAndSetProgram(mostRecentProgram);
           setIsLoading(false);
           showGlobalLoader(false);
         }
@@ -353,209 +314,11 @@ export function UserProvider({ children }: { children: ReactNode }) {
     };
   }, [user, authLoading, router, t, isNorwegian]); // Added isNorwegian to dependencies
 
-  // Fetch initial user data when user logs in
-  useEffect(() => {
-    // Skip the first render in development due to strict mode
-    if (process.env.NODE_ENV === 'development' && !isMounted.current) {
-      isMounted.current = true;
-      return;
-    }
-    // Don't start loading until auth is done
-    if (authLoading) return;
-
-    let isSubscribed = true;
-
-    // Safety timeout to ensure loading eventually completes
-    const safetyTimer = setTimeout(() => {
-      console.log(t('userContext.log.timeout'));
-      if (isSubscribed && programStatus !== ProgramStatus.Generating) {
-        setIsLoading(false);
-        showGlobalLoader(false);
-      }
-    }, 15000); // 15 seconds max loading time
-
-    async function fetchUserData() {
-      console.log('*** INITIAL DATA FETCH STARTED ***');
-      if (!user) {
-        console.log('No user found, resetting state');
-        setAnswers(null);
-        setDiagnosisData(null);
-        setProgramStatus(null);
-        setProgram(null);
-        setIsLoading(false);
-        showGlobalLoader(false);
-        return;
-      }
-
-      try {
-        // Check if any program is currently generating
-        const generatingProgramsRef = collection(
-          db,
-          `users/${user.uid}/programs`
-        );
-        const generatingQ = query(
-          generatingProgramsRef,
-          where('status', '==', ProgramStatus.Generating)
-        );
-        const generatingSnapshot = await getDocs(generatingQ);
-
-        if (!generatingSnapshot.empty && isSubscribed) {
-          console.log(
-            'Found program in GENERATING state, redirecting to program page'
-          );
-          setProgramStatus(ProgramStatus.Generating);
-          // Only navigate to program page if we're not already there
-          if (
-            typeof window !== 'undefined' &&
-            !window.location.pathname.includes('/program')
-          ) {
-            router.push('/program');
-          }
-          // Early return as we're now handling the generating state
-          // setIsLoading(false);
-          return;
-        }
-
-        // Fetch the most recent program document
-        const programsRef = collection(db, `users/${user.uid}/programs`);
-        const q = query(programsRef, orderBy('createdAt', 'desc'), limit(1));
-        const programsSnapshot = await getDocs(q);
-
-        // At this point, we've completed the program fetching process, so we can set isLoading to false
-        // but only if we're still subscribed
-        if (isSubscribed) {
-          if (!programsSnapshot.empty) {
-            const programDoc = programsSnapshot.docs[0];
-            const programData = programDoc.data();
-            console.log(
-              `Initial data fetch found program with ID: ${programDoc.id}`
-            );
-            console.log(
-              `Program data: Active=${programData.active}, Type=${programData.type}, Status=${programData.status}`
-            );
-
-            setAnswers(programData.questionnaire);
-            setDiagnosisData(programData.diagnosis);
-            setProgramStatus(programData.status);
-
-            // Only fetch the program if status is Done
-            if (programData.status === ProgramStatus.Done) {
-              console.log(`Program status is DONE, fetching program details`);
-
-              // Only proceed with setting the program if this program is active
-              // This prevents the race condition where we set an inactive program
-              // which then gets immediately replaced by the active program from the snapshot listener
-              if (programData.active === true) {
-                console.log(
-                  `Initial program is ACTIVE, will proceed with setting it`
-                );
-                const programsCollectionRef = collection(
-                  db,
-                  `users/${user.uid}/programs/${programDoc.id}/programs`
-                );
-                // Get all program documents in the subcollection
-                const allProgramsQuery = query(
-                  programsCollectionRef,
-                  orderBy('createdAt', 'desc')
-                );
-                const allProgramsSnapshot = await getDocs(allProgramsQuery);
-
-                if (!allProgramsSnapshot.empty) {
-                  console.log(
-                    `Found ${allProgramsSnapshot.docs.length} program sub-documents`
-                  );
-                  // Get all program weeks and enrich them
-                  const programWeeks = await Promise.all(
-                    allProgramsSnapshot.docs.map(async (doc) => {
-                      const program = doc.data() as ExerciseProgram;
-                      await enrichExercisesWithFullData(program, isNorwegian);
-                      return program;
-                    })
-                  );
-
-                  // Build a combined program using helper
-                  const combinedProgram = {
-                    ...programWeeks[0],
-                    program: mergePrograms(programWeeks),
-                    docId: programDoc.id,
-                  };
-
-                  // Avoid setting program if already set by onSnapshot listener
-                  if (activeProgramIdRef.current !== programDoc.id) {
-                    console.log(
-                      `fetchUserData: Setting program. Previous: ${activeProgramIdRef.current}, New: ${programDoc.id}`
-                    );
-                    console.log(
-                      `This program was not yet set by the snapshot listener`
-                    );
-                    activeProgramIdRef.current = programDoc.id;
-                    setProgram(combinedProgram);
-                  } else {
-                    console.log(
-                      `fetchUserData: Program already set to ${programDoc.id}, skipping update`
-                    );
-                  }
-                } else {
-                  setProgram(null);
-                }
-              } else {
-                console.log(
-                  `Initial program is NOT active, will let snapshot listener find the active program`
-                );
-                // Don't set program - we'll let the snapshot listener find and set the active program
-              }
-            } else {
-              setProgram(null);
-            }
-          } else {
-            setAnswers(null);
-            setDiagnosisData(null);
-            setProgramStatus(null);
-            setProgram(null);
-          }
-          if (
-            typeof window !== 'undefined' &&
-            window.location.pathname == '/'
-          ) {
-            // Keep isLoading true until program page sets it to false
-            setIsLoading(true);
-            showGlobalLoader(true, t('userContext.loading.programPage'));
-
-            // Navigate to program page, but don't set isLoading=false here
-            router.push('/program');
-            return;
-          }
-
-          // Only set isLoading to false after we've completed all program fetching
-          // setIsLoading(false);
-        }
-      } catch (error) {
-        console.error(t('userContext.error.fetchingUserData'), error);
-        if (isSubscribed) {
-          setIsLoading(false);
-          showGlobalLoader(false);
-        }
-      }
-    }
-
-    fetchUserData();
-
-    // Cleanup function
-    return () => {
-      isSubscribed = false;
-      clearTimeout(safetyTimer);
-      showGlobalLoader(false); // Ensure loader is hidden when component unmounts
-    };
-  }, [user, authLoading, router, t, isNorwegian]); // Added isNorwegian to dependencies
-
   // On initial load, check localStorage for pending questionnaire flag
   useEffect(() => {
     const hasPendingQuestionnaireFlag =
       window.localStorage.getItem('hasPendingQuestionnaire') === 'true';
-    console.log(
-      t('userContext.log.checkingQuestionnaire'),
-      hasPendingQuestionnaireFlag
-    );
+    // removed logging
 
     if (hasPendingQuestionnaireFlag && !pendingQuestionnaire) {
       // Extract from session storage if available
@@ -576,10 +339,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
           // Set the actual data from session storage
           setPendingQuestionnaire({ diagnosis, answers });
         } catch (e) {
-          console.error(
-            'Error parsing pending questionnaire from session storage:',
-            e
-          );
+          // error captured but logging removed
 
           // Set an empty placeholder so the UI shows login requirement
           setPendingQuestionnaire({
@@ -603,7 +363,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   ): Promise<{ requiresAuth?: boolean; programId?: string }> => {
     // Prevent duplicate submissions
     if (submissionInProgressRef.current) {
-      console.log(t('userContext.log.submissionInProgress'));
+      // removed logging
       return {};
     }
 
@@ -619,7 +379,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
         try {
           // Store in Firebase using the email
           await storePendingQuestionnaire(email, diagnosis, answers);
-          console.log(t('userContext.log.storedQuestionnaire'), email);
+          // removed logging
 
           // Set flag in localStorage to indicate pending questionnaire
           window.localStorage.setItem('hasPendingQuestionnaire', 'true');
@@ -635,7 +395,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
             JSON.stringify(answers)
           );
         } catch (error) {
-          console.error(t('userContext.error.storingQuestionnaire'), error);
+          // error captured but logging removed
         }
       } else {
         // Store in session storage as backup
@@ -692,7 +452,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
       submissionInProgressRef.current = false;
       return { programId };
     } catch (error) {
-      console.error(t('userContext.error.submittingQuestionnaire'), error);
+      // logging removed
       setProgramStatus(ProgramStatus.Error);
       submissionInProgressRef.current = false;
       throw error;
@@ -710,7 +470,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
       const handlePendingQuestionnaire = async () => {
         // Don't process if another submission is in progress
         if (submissionInProgressRef.current) {
-          console.log(t('userContext.log.skipAutomaticSubmission'));
+          // removed logging
           return;
         }
 
@@ -729,15 +489,12 @@ export function UserProvider({ children }: { children: ReactNode }) {
           }
           // Then try to get it from Firebase using email
           else if (pendingEmail) {
-            console.log(
-              t('userContext.log.checkingQuestionnaire'),
-              pendingEmail
-            );
+            // removed logging
             const storedQuestionnaire =
               await getPendingQuestionnaire(pendingEmail);
 
             if (storedQuestionnaire) {
-              console.log(t('userContext.log.foundQuestionnaire'));
+              // removed logging
               await onQuestionnaireSubmit(
                 storedQuestionnaire.diagnosis,
                 storedQuestionnaire.answers
@@ -746,11 +503,11 @@ export function UserProvider({ children }: { children: ReactNode }) {
               // Delete the pending questionnaire after submission
               await deletePendingQuestionnaire(pendingEmail);
             } else {
-              console.log(t('userContext.log.noQuestionnaire'), pendingEmail);
+              // no questionnaire found, logging removed
             }
           }
         } catch (error) {
-          console.error(t('userContext.error.processingQuestionnaire'), error);
+          // error captured but logging removed
         }
       };
 
@@ -766,7 +523,6 @@ export function UserProvider({ children }: { children: ReactNode }) {
   // Function to select a specific program from the userPrograms array
   const selectProgram = (index: number) => {
     showGlobalLoader(true, t('userContext.loading.program'));
-    console.log(`${t('userContext.log.selectingProgram')} ${index}`);
 
     // If user has program already, select it
     if (userPrograms && userPrograms.length > index && userPrograms[index]) {
@@ -778,163 +534,65 @@ export function UserProvider({ children }: { children: ReactNode }) {
         !Array.isArray(selectedProgram.programs) ||
         selectedProgram.programs.length === 0
       ) {
-        console.error(
-          'Invalid program data: programs array is missing or empty',
-          selectedProgram
-        );
+        // invalid data, logging removed
         return;
       }
 
       setActiveProgram(selectedProgram);
 
-      // Log program info for debugging
-      console.log(t('userContext.debug.selectedProgram'));
-      console.log(
-        t('userContext.debug.numberPrograms'),
-        selectedProgram.programs.length
-      );
-      selectedProgram.programs.forEach((p, i) => {
-        console.log(`Program ${i + 1} weeks:`, p?.program?.length || 0);
-        if (p?.program) {
-          p.program.forEach((w, j) =>
-            console.log(`Program ${i + 1} Week ${j + 1}:`, w?.week)
-          );
-        }
-      });
-
       // Make sure we have at least one valid program with program array
       if (!selectedProgram.programs[0]) {
-        console.error(
-          'First program in collection is missing',
-          selectedProgram
-        );
+        // missing program data, logging removed
         return;
       }
 
-      const combinedProgram = {
-        ...selectedProgram.programs[0],
-        program: mergePrograms(selectedProgram.programs),
-        docId: selectedProgram.docId,
-      };
-
-      console.log(t('userContext.debug.combinedProgram'));
-      console.log(
-        t('userContext.debug.totalWeeks'),
-        combinedProgram?.program?.length || 0
-      );
-      if (combinedProgram?.program) {
-        combinedProgram.program.forEach((w, i) =>
-          console.log(
-            `${t('userContext.debug.combinedWeek')} ${i + 1}:`,
-            w?.week
-          )
-        );
-      }
-
-      console.log(
-        `selectProgram: Setting program. Previous: ${activeProgramIdRef.current}, New: ${selectedProgram.docId}`
-      );
-      activeProgramIdRef.current = selectedProgram.docId;
-      setProgram(combinedProgram);
-      setIsLoading(false);
-
-      setAnswers(selectedProgram.questionnaire);
-      setDiagnosisData(selectedProgram.diagnosis);
-    } else {
-      console.error(
-        `Cannot select program at index ${index}: program not found`
-      );
+      prepareAndSetProgram(selectedProgram);
     }
     showGlobalLoader(false);
   };
 
-  // Function to toggle the active status of a program
+  // Toggle the active status of a program (optimistic UI, then Firestore)
   const toggleActiveProgram = (programIndex: number): Promise<void> => {
     if (!user) {
-      console.error(t('userContext.error.userLoggedIn'));
+      // removed logging
       return Promise.reject(new Error(t('userContext.error.userLoggedIn')));
     }
 
-    if (programIndex >= 0 && programIndex < userPrograms.length) {
-      const selectedProgram = userPrograms[programIndex];
-      const programType = selectedProgram.type;
-      const newActiveStatus = !selectedProgram.active;
-
-      // Create a new array with updated active status
-      const updatedPrograms = userPrograms.map((program, index) => {
-        // If we're activating a program and it's of the same type as selected program
-        if (newActiveStatus && program.type === programType) {
-          // Set it active if it's the selected program, inactive otherwise
-          return {
-            ...program,
-            active: index === programIndex,
-          };
-        }
-        // If we're deactivating and this is the selected program
-        else if (!newActiveStatus && index === programIndex) {
-          return {
-            ...program,
-            active: false,
-          };
-        }
-        // Otherwise leave the program unchanged
-        return program;
-      });
-
-      // For better responsiveness, update local state IMMEDIATELY
-      setUserPrograms(updatedPrograms);
-
-      // If we're setting the program to active, update the active program state
-      if (newActiveStatus) {
-        const updatedSelectedProgram = {
-          ...selectedProgram,
-          active: true,
-        };
-        setActiveProgram(updatedSelectedProgram);
-
-        // Build a combined program using helper
-        const combinedProgram = {
-          ...updatedSelectedProgram.programs[0],
-          program: mergePrograms(updatedSelectedProgram.programs),
-          docId: updatedSelectedProgram.docId,
-        };
-
-        console.log(
-          `toggleActiveProgram: Setting program. Previous: ${activeProgramIdRef.current}, New: ${updatedSelectedProgram.docId}`
-        );
-        activeProgramIdRef.current = updatedSelectedProgram.docId;
-        setProgram(combinedProgram);
-        setIsLoading(false);
-
-        setAnswers(updatedSelectedProgram.questionnaire);
-        setProgramStatus(ProgramStatus.Done);
-      }
-
-      // Update Firebase in the background (don't block the UI)
-      return updateActiveProgramStatus(
-        user.uid,
-        selectedProgram.docId,
-        programType,
-        newActiveStatus
-      )
-        .then(() => {
-          // Return void to satisfy the Promise<void> return type
-          return;
-        })
-        .catch((error) => {
-          console.error('Error updating program active status:', error);
-
-          // If Firebase update fails, revert the local state
-          const revertedPrograms = [...userPrograms]; // Use the original state
-          setUserPrograms(revertedPrograms);
-
-          throw error; // Re-throw the error so it can be caught by the caller
-        });
+    if (programIndex < 0 || programIndex >= userPrograms.length) {
+      return Promise.reject(
+        new Error(t('userContext.error.invalidProgramIndex'))
+      );
     }
 
-    return Promise.reject(
-      new Error(t('userContext.error.invalidProgramIndex'))
+    const selectedProgram = userPrograms[programIndex];
+    const newActiveStatus = !selectedProgram.active;
+
+    // Optimistically update local state
+    const updatedPrograms = userPrograms.map((p, idx) =>
+      idx === programIndex ? { ...p, active: newActiveStatus } : p
     );
+    setUserPrograms(updatedPrograms);
+
+    // If activated, immediately reflect in UI
+    if (newActiveStatus) {
+      const updatedSelected = { ...selectedProgram, active: true };
+      prepareAndSetProgram(updatedSelected);
+      setProgramStatus(ProgramStatus.Done);
+    }
+
+    // Persist change
+    return updateActiveProgramStatus(
+      user.uid,
+      selectedProgram.docId,
+      selectedProgram.type,
+      newActiveStatus
+    )
+      .then(() => undefined)
+      .catch((error) => {
+        // Revert local change on failure
+        setUserPrograms(userPrograms);
+        throw error;
+      });
   };
 
   const generateFollowUpProgram = async () => {
@@ -949,9 +607,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
         answers,
         diagnosisData,
         programStatus,
-        setProgramStatus: (status: ProgramStatus) => {
-          setProgramStatus(status);
-        },
+        setProgramStatus: (status: ProgramStatus) => setProgramStatus(status),
         program,
         userPrograms,
         activeProgram,

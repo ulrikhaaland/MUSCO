@@ -205,6 +205,10 @@ const translations = {
   'login.success': 'Vellykket innlogging!',
   'login.codeFailed': 'Ugyldig eller utløpt kode. Vennligst prøv igjen.',
   'login.back': 'Tilbake',
+  'login.resendCode': 'Send ny kode',
+  'login.codeResent': 'Ny kode sendt',
+  'login.codeResendFailed': 'Kunne ikke sende ny kode',
+  'login.resendIn': 'Sender ny kode om {{s}}s',
 
   // Navigation
   'nav.home': 'Hjem',
@@ -1023,6 +1027,17 @@ const translations = {
   'privacy.goBack': 'Gå tilbake',
   'privacy.policy.title': 'Personvernerklæring',
   'privacy.policy.lastUpdated': 'Sist oppdatert:',
+
+  // Partners
+  'partners.headline': 'Brukt av våre samarbeidspartnere',
+
+  // Questionnaire Auth
+  'qa.stepIndicator': 'Steg 3 av 3',
+  'qa.heading': 'Nesten i mål!',
+  'qa.subheading': 'Skriv inn e-posten din så lagrer vi svarene dine og sender deg en 6-sifret innloggingskode',
+  'qa.benefit.noPassword': 'Ingen passord nødvendig',
+  'qa.benefit.free': 'Helt gratis',
+  'qa.benefit.crossDevice': 'Tilgang til programmet på alle enheter',
 };
 
 export default translations;

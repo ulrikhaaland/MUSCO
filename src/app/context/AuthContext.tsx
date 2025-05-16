@@ -5,9 +5,6 @@ import {
   User,
   signOut,
   onAuthStateChanged,
-  sendSignInLinkToEmail,
-  isSignInWithEmailLink,
-  signInWithEmailLink,
   deleteUser,
 } from 'firebase/auth';
 import { auth, db, functions } from '../firebase/config';
@@ -62,133 +59,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [error, setError] = useState<Error | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const handledEmailLink = useRef(false);
-
-  // Handle email link sign-in first
-  useEffect(() => {
-    if (!isReady) {
-      return;
-    }
-
-    const handleEmailLink = async () => {
-      if (handledEmailLink.current) return;
-
-      try {
-        if (isSignInWithEmailLink(auth, href)) {
-          console.log('Valid email link detected');
-          handledEmailLink.current = true;
-          setLoading(true);
-          showGlobalLoader(true, t('auth.signingIn'));
-          setError(null);
-
-          let email = window.localStorage.getItem('emailForSignIn');
-          if (!email) {
-            email = window.prompt('Please provide your email for confirmation');
-          }
-
-          if (email) {
-            console.log('Attempting to sign in with email link...');
-            try {
-              const result = await signInWithEmailLink(auth, email, href);
-
-              if (result.user !== null) {
-                console.log('Sign in successful, creating user document...');
-                setUser(result.user);
-
-                // Create user document if it doesn't exist
-                const userRef = doc(db, `users/${result.user.uid}`);
-                await setDoc(userRef, {
-                  email: result.user.email,
-                  createdAt: new Date().toISOString(),
-                  updatedAt: new Date().toISOString(),
-                });
-
-                // Check if there's a pending questionnaire
-                const hasPendingQuestionnaire = window.localStorage.getItem(
-                  'hasPendingQuestionnaire'
-                );
-                if (hasPendingQuestionnaire) {
-                  console.log('Processing pending questionnaire...');
-                  try {
-                    // Get the pending questionnaire data
-                    const data = await getPendingQuestionnaire(email);
-
-                    if (data) {
-                      // Submit the questionnaire
-                      await submitQuestionnaire(
-                        result.user.uid,
-                        data.diagnosis,
-                        data.answers,
-                        undefined,
-                        () => {
-                          setLoading(false);
-                        }
-                      );
-
-                      // Delete the pending questionnaire
-                      await deletePendingQuestionnaire(email);
-                      console.log('Questionnaire processed successfully');
-                    } else {
-                      setLoading(false);
-                    }
-                  } catch (error) {
-                    console.error(
-                      'Error processing pending questionnaire:',
-                      error
-                    );
-                    handleAuthError(
-                      error,
-                      'Failed to process questionnaire',
-                      true
-                    );
-                    setLoading(false);
-                  }
-                } else {
-                  setLoading(false);
-                }
-              } else {
-                setLoading(false);
-              }
-
-              // Clean up localStorage
-              window.localStorage.removeItem('emailForSignIn');
-              window.localStorage.removeItem('hasPendingQuestionnaire');
-
-              // Clear the URL to remove the sign-in link
-              window.history.replaceState(null, '', window.location.pathname);
-
-              // If we're in the shared-link page, don't navigate since that component handles its own navigation
-              if (!window.location.pathname.includes('/auth/shared-link')) {
-                console.log('Auth success, redirecting to home page');
-
-                // Only hide loader after successful auth
-                hideLoader();
-                setLoading(false);
-
-                // Navigate to home
-                router.push('/');
-              }
-            } catch (error) {
-              console.error('Error signing in with email link:', error);
-              handleAuthError(error, 'Failed to sign in with email link', true);
-              setLoading(false);
-            }
-          } else {
-            setLoading(false);
-          }
-        } else {
-          // No email link, let auth state listener handle auth state
-          handledEmailLink.current = false;
-        }
-      } catch (error) {
-        console.error('Error in handleEmailLink:', error);
-        handleAuthError(error, 'Failed to handle email link', true);
-        setLoading(false);
-        showGlobalLoader(false);
-      }
-    };
-
-    handleEmailLink();
-  }, [href, isReady]);
 
   // Set up auth state listener after handling email link
   useEffect(() => {
@@ -461,16 +331,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const sendSignInLink = async (email: string) => {
+    // Now just send the one-time code e-mail via Cloud Function
     try {
       await sendCustomSignInLink(email);
-      // await sendSignInLinkToEmail(auth, email, actionCodeSettings);
     } catch (error) {
-      try {
-        await sendSignInLinkToEmail(auth, email, actionCodeSettings);
-      } catch (error) {
-        console.error('Error sending sign-in link:', error);
-        return handleAuthError(error, 'Failed to send sign-in link', false);
-      }
+      console.error('Error sending login code:', error);
+      return handleAuthError(error, 'Failed to send login code', false);
     }
   };
 

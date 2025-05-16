@@ -121,13 +121,10 @@ export const sendLoginEmail = functions.https.onCall(
       let emailTitle = ''; // Title used in <title> tag
       let tagline = '';
       let heading = '';
-      let buttonText = '';
       let expireText = '';
-      let troubleText = '';
       let footerText = '';
       let preheaderText = '';
       let codeLabel = '';
-      let codeNote = '';
       let codeInstructions = '';
 
       if (language === 'nb') {
@@ -135,13 +132,10 @@ export const sendLoginEmail = functions.https.onCall(
         emailTitle = isPwa ? 'Din innloggingskode til bodAI' : 'Logg inn på bodAI';
         tagline = 'Intelligent trening, uten friksjonen';
         heading = isPwa ? 'Din innloggingskode' : 'Magisk lenke-innlogging';
-        buttonText = 'Åpne bodAI';
         expireText = 'Koden utløper om 1 time.';
-        troubleText = 'Hvis knappen ikke virker, kopier og lim inn denne URL-en:';
         footerText = 'Du mottar denne e-posten fordi en bodAI-innlogging ble forespurt.<br />Ba du ikke om den? Slett denne meldingen og fortsett med dagen din.';
         preheaderText = isPwa ? 'din 6-sifret innloggingskode – utløper om 1 t.' : 'trykk for å logge inn – lenken utløper om 1 t.';
-        codeLabel = isPwa ? 'Skriv inn denne koden i appen' : 'PWA-brukere: Skriv inn denne koden i appen';
-        codeNote = isPwa ? 'Skriv inn denne koden når du blir bedt om det.' : 'Kun for PWA-bruk. Skriv inn denne koden når du blir bedt om det.';
+        codeLabel = 'Skriv inn denne koden i appen';
         codeInstructions = 'Gå tilbake til appen og skriv inn denne koden for å logge inn. Ikke del denne koden med andre.';
       } else {
         // Default to English
@@ -149,21 +143,15 @@ export const sendLoginEmail = functions.https.onCall(
         emailTitle = isPwa ? 'Your bodAI Login Code' : 'Sign In To bodAI';
         tagline = 'Intelligent Training, Minus The Friction';
         heading = isPwa ? 'Your Authentication Code' : 'Magic Link Sign‑In';
-        buttonText = 'Open bodAI';
         expireText = isPwa ? 'Code expires in 1 hour.' : 'Link expires in 1 hour.';
-        troubleText = 'If the button doesn\'t work, copy and paste this URL:';
         footerText = 'You\'re receiving this email because a bodAI sign‑in was requested.<br />Didn\'t request it? Delete this message and carry on.';
         preheaderText = isPwa ? 'your 6-digit login code – expires in 1h.' : 'tap to sign in instantly – link expires in 1h.';
-        codeLabel = isPwa ? 'Enter this code in the app' : 'PWA users: Enter this code in the app';
-        codeNote = isPwa ? 'Enter this code when prompted.' : 'For PWA use only. Enter this code when prompted.';
+        codeLabel = 'Enter this code in the app';
         codeInstructions = 'Return to the app and enter this code to sign in. Do not share this code with anyone.';
       }
 
-      // Create email template based on user type
-      let emailHtml = '';
-      if (isPwa) {
-        // PWA-specific email template without magic link
-        emailHtml = `
+      // Unified email template – always send code instructions, no magic link button
+      const emailHtml = `
 <!DOCTYPE html>
 <html lang="${language}" xmlns="http://www.w3.org/1999/xhtml">
   <head>
@@ -227,83 +215,7 @@ export const sendLoginEmail = functions.https.onCall(
     </table>
   </body>
 </html>
-        `;
-      } else {
-        // Regular email template with magic link for non-PWA users
-        emailHtml = `
-<!DOCTYPE html>
-<html lang="${language}" xmlns="http://www.w3.org/1999/xhtml">
-  <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="x-ua-compatible" content="ie=edge" />
-    <title>${emailTitle}</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="color-scheme" content="light dark" />
-    <!-- no fixed widths: scales clean on mobile -->
-  </head>
-  <body bgcolor="#0d0e14" style="margin:0;padding:0;background-color:#0d0e14 !important;color:#e4e7ec;font-family:'Inter',Helvetica,Arial,sans-serif;line-height:1.7;mso-line-height-rule:exactly;">
-    <!-- inbox preview text (hidden) -->
-    <span style="display:none;font-size:0;max-height:0;opacity:0;overflow:hidden;">${preheaderText}&nbsp;&nbsp;&nbsp;</span>
-
-    <table width="100%" cellpadding="0" cellspacing="0" role="presentation" bgcolor="#0d0e14" style="background-color:#0d0e14;border-collapse:collapse;">
-      <tr>
-        <td align="center" style="padding:16px;">
-          <!-- responsive card -->
-          <table width="100%" cellpadding="0" cellspacing="0" role="presentation" bgcolor="#16171e" style="max-width:520px;width:100%;background-color:#16171e;border-radius:12px;box-shadow:0 8px 28px rgba(0,0,0,0.6);border-collapse:collapse;">
-            <tr>
-              <td style="padding:32px 24px;text-align:center;">
-                <!-- logo -->
-                <h1 style="margin:0 0 16px;font-size:26px;font-weight:700;color:#fff;">
-                  bod<span style="color:#4f46e5;">AI</span>
-                </h1>
-                <!-- tagline -->
-                <p style="margin:0 0 28px;font-size:14px;color:#9a9fad;text-transform:uppercase;letter-spacing:.5px;">
-                  ${tagline}
-                </p>
-                <!-- heading -->
-                <h2 style="margin:0 0 28px;font-size:22px;font-weight:600;color:#fff;">
-                  ${heading}
-                </h2>
-
-                <!-- call-to-action -->
-                <a href="${link}" target="_blank" rel="noopener noreferrer" style="display:block;width:100%;max-width:280px;margin:0 auto 24px;padding:16px 24px;font-size:16px;font-weight:600;text-decoration:none;text-align:center;color:#fff;background-color:#4f46e5;border-radius:10px;">
-                  ${buttonText}
-                </a>
-
-                <!-- Auth code for PWA users -->
-                <div style="margin:24px 0;padding:20px;background-color:#1e1f2a;border-radius:10px;border:1px solid #4f46e5;">
-                  <p style="margin:0 0 12px;font-size:16px;color:#9a9fad;font-weight:500;">
-                    ${codeLabel}
-                  </p>
-                  <p style="margin:0;font-size:32px;font-weight:700;letter-spacing:5px;color:#fff;">
-                    ${code}
-                  </p>
-                  <p style="margin:12px 0 0;font-size:12px;color:#9a9fad;">
-                    ${codeNote}
-                  </p>
-                </div>
-
-                <!-- link expiry + fallback -->
-                <p style="margin:0 0 24px;font-size:13px;color:#cbd5e1;word-break:break-all;">
-                  ${expireText}<br />
-                  ${troubleText}<br />
-                  <a href="${link}" style="color:#4f46e5;text-decoration:none;">${link}</a>
-                </p>
-
-                <!-- footer -->
-                <p style="margin:0;font-size:11px;color:#8a8d9c;">
-                  ${footerText}
-                </p>
-              </td>
-            </tr>
-          </table>
-        </td>
-      </tr>
-    </table>
-  </body>
-</html>
-    `;
-      }
+      `;
 
       console.log(
         `Attempting to send email via Resend to ${email} in language: ${language}, isPwa: ${isPwa}`,

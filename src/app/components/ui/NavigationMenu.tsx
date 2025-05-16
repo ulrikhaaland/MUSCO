@@ -389,8 +389,7 @@ function NavigationMenuContent() {
               if (user) {
                 handleLogout();
               } else {
-                // Use window.location for a full page refresh to clear any stale state
-                window.location.href = '/login';
+                router.push('/login');
               }
             }}
             className="flex items-center justify-between w-full px-8 py-2 text-sm text-gray-300 hover:bg-gray-800 hover:text-white rounded-lg transition-colors duration-200"

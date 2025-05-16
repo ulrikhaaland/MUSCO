@@ -6,36 +6,27 @@ import { useTranslation } from '@/app/i18n';
 import Logo from '@/app/components/ui/Logo';
 import { AuthCodeInput } from '@/app/components/ui/AuthCodeInput';
 import { LoadingDots } from '@/app/components/ui/LoadingDots';
+import { useIsPwa } from '@/app/hooks/useIsPwa';
 
-export function AuthForm({ onSkip }: { onSkip: () => void }) {
+export function AuthForm({ onSkip }: { onSkip?: () => void }) {
   const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [emailSent, setEmailSent] = useState(false);
-  const [isPwa, setIsPwa] = useState(false);
-  const [showAuthCode, setShowAuthCode] = useState(false);
+  const isPwa = useIsPwa();
+  const [step, setStep] = useState<'email' | 'code'>('email');
   const { sendSignInLink } = useAuth();
 
-  // Detect if running as a PWA (standalone mode)
+  // If running as PWA and an email is stored locally, jump directly to code entry
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      // Check if running in standalone mode (PWA)
-      const isStandalone = 
-        window.matchMedia('(display-mode: standalone)').matches || 
-        (window.navigator as any).standalone ||
-        document.referrer.includes('android-app://');
-      
-      setIsPwa(isStandalone);
-      
-      // For PWA, if we have an email in localStorage already, go straight to auth code view
-      const storedEmail = window.localStorage.getItem('emailForSignIn');
-      if (isStandalone && storedEmail) {
-        setEmail(storedEmail);
-        setShowAuthCode(true);
-      }
+    if (!isPwa) return;
+
+    const storedEmail = window.localStorage.getItem('emailForSignIn');
+    if (storedEmail) {
+      setEmail(storedEmail);
+      setStep('code');
     }
-  }, []);
+  }, [isPwa]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,100 +37,30 @@ export function AuthForm({ onSkip }: { onSkip: () => void }) {
       await sendSignInLink(email);
       // Save the email locally to complete sign in after user clicks the link
       window.localStorage.setItem('emailForSignIn', email);
-      setEmailSent(true);
-      
-      // If in PWA mode, go directly to the code entry screen
-      if (isPwa) {
-        setShowAuthCode(true);
-      }
+      window.localStorage.setItem('codeRequestTimestamp', Date.now().toString());
+
+      setStep('code');
     } catch (error: any) {
       setError(error.message);
-      setEmailSent(false);
+      setStep('email'); // on error, go back to email step
     } finally {
       setLoading(false);
     }
   };
 
-  if (showAuthCode) {
+  if (step === 'code') {
     return (
       <div className="w-full max-w-md px-4 pb-6 overflow-hidden">
         <AuthCodeInput />
         
-        <div className="mt-4">
+        <div className="mt-6 text-center">
           <button
             type="button"
-            onClick={() => setShowAuthCode(false)}
-            className="w-full px-6 py-3 rounded-xl bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition-colors duration-200"
+            onClick={() => setStep('email')}
+            className="text-sm text-gray-400 hover:text-gray-300 underline underline-offset-4 transition-colors duration-200"
           >
             {t('auth.backToEmail')}
           </button>
-        </div>
-      </div>
-    );
-  }
-
-  if (emailSent && !showAuthCode) {
-    return (
-      <div className="w-full max-w-md space-y-8 px-4">
-        <div className="text-center">
-          <h2 className="text-3xl font-bold text-white">{t('auth.checkEmail')}</h2>
-          <p className="mt-4 text-gray-400">
-            {isPwa ? t('auth.sentLoginCode') : t('auth.sentLoginLink')} <span className="text-white">{email}</span>
-          </p>
-          <p className="mt-2 text-sm text-gray-400">
-            {isPwa 
-              ? t('auth.enterCodeToSignIn')
-              : t('auth.clickLinkToSignIn')
-            }
-          </p>
-        </div>
-
-        <div className="space-y-4">
-          <button
-            type="button"
-            onClick={() => setEmailSent(false)}
-            className="w-full px-6 py-3 rounded-xl bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition-colors duration-200"
-          >
-            {t('auth.useDifferentEmail')}
-          </button>
-          
-          {!isPwa && (
-            <button
-              type="button"
-              onClick={() => {
-                // Set a timestamp to remember that code entry was requested
-                window.localStorage.setItem('codeRequestTimestamp', Date.now().toString());
-                setShowAuthCode(true);
-              }}
-              className="w-full px-6 py-3 rounded-xl bg-indigo-700/30 text-indigo-300 hover:bg-indigo-700/40 hover:text-indigo-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition-colors duration-200"
-            >
-              {t('auth.alreadyHaveCode')}
-            </button>
-          )}
-            
-          {isPwa && (
-            <button
-              type="button"
-              onClick={() => {
-                // Set a timestamp to remember that code entry was requested
-                window.localStorage.setItem('codeRequestTimestamp', Date.now().toString());
-                setShowAuthCode(true);
-              }}
-              className="w-full px-6 py-3 rounded-xl bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition-colors duration-200"
-            >
-              {t('auth.alreadyHaveCode')}
-            </button>
-          )}
-          
-          {onSkip && (
-            <button
-              type="button"
-              onClick={onSkip}
-              className="w-full px-6 py-3 rounded-xl border border-gray-700 bg-transparent text-gray-400 hover:bg-gray-800 hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition-colors duration-200"
-            >
-              {t('auth.continueWithoutLogin')}
-            </button>
-          )}
         </div>
       </div>
     );
@@ -151,7 +72,7 @@ export function AuthForm({ onSkip }: { onSkip: () => void }) {
       <div className="text-center">
         <h2 className="text-3xl font-bold text-white">{t('auth.welcome')}</h2>
         <p className="mt-1 text-sm text-gray-400">
-          {isPwa ? t('auth.enterEmailForCode') : t('auth.enterEmailToStart')}
+          {t('auth.enterEmailForCode')}
         </p>
       </div>
 
@@ -189,27 +110,19 @@ export function AuthForm({ onSkip }: { onSkip: () => void }) {
                 <LoadingDots />
               </span>
             ) : (
-              isPwa ? t('auth.sendCode') : t('auth.sendLoginLink')
+              t('auth.sendCode')
             )}
           </button>
 
-          {isPwa && (
+          {onSkip && (
             <button
               type="button"
-              onClick={() => setShowAuthCode(true)}
+              onClick={onSkip}
               className="w-full px-6 py-3 rounded-xl bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition-colors duration-200"
             >
-              {t('auth.alreadyHaveCode')}
+              {t('auth.continueWithoutLogin')}
             </button>
           )}
-
-          <button
-            type="button"
-            onClick={onSkip}
-            className="w-full px-6 py-3 rounded-xl bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition-colors duration-200"
-          >
-            {t('auth.continueWithoutLogin')}
-          </button>
         </div>
       </form>
     </div>

@@ -53,7 +53,10 @@ export function ProgramFeedbackQuestionnaire({
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
   const [selectedCategoryForSheet, setSelectedCategoryForSheet] = useState('');
   const [allExistingExercises, setAllExistingExercises] = useState<Exercise[]>([]);
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
+  
+  // Enable certain actions when running in development ("debug") mode
+  const isDebugMode = process.env.NODE_ENV === 'development';
   
   // Process previousExercises to ensure they have an 'order' property
   const processedPreviousExercises = useMemo(() => {
@@ -510,13 +513,13 @@ export function ProgramFeedbackQuestionnaire({
             onClick={(e) => {
               e.stopPropagation();
               // If not in a future week, show toast instead of submitting
-              if (!isFutureWeek) {
+              if (!isFutureWeek && !isDebugMode) {
                 // Format the date if available
                 let message = t('programFeedback.button.waitUntilNextWeek');
                 
                 if (nextProgramDate) {
                   // Use Norwegian locale for date formatting
-                  const formattedDate = nextProgramDate.toLocaleDateString('nb-NO', {
+                  const formattedDate = nextProgramDate.toLocaleDateString(locale, {
                     weekday: 'long',
                     month: 'long', 
                     day: 'numeric'
@@ -560,11 +563,11 @@ export function ProgramFeedbackQuestionnaire({
             className={`px-6 py-3 rounded-xl text-white transition-colors duration-200 flex items-center justify-center
               ${isSubmitting 
                 ? 'bg-indigo-600/50 cursor-not-allowed opacity-50' 
-                : !isFutureWeek 
+                : (!isFutureWeek && !isDebugMode) 
                   ? 'bg-indigo-600/50 opacity-50 hover:bg-indigo-500/50'
                   : 'bg-indigo-600 hover:bg-indigo-500'
               }`}
-            title={!isFutureWeek ? t('programFeedback.button.disabledTooltip') : ''}
+            title={!isFutureWeek && !isDebugMode ? t('programFeedback.button.disabledTooltip') : ''}
           >
             {isSubmitting ? (
               <>

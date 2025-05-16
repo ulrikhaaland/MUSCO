@@ -223,6 +223,10 @@ const translations = {
   'login.success': 'Successfully signed in!',
   'login.codeFailed': 'Invalid or expired code. Please try again.',
   'login.back': 'Back',
+  'login.resendCode': 'Resend code',
+  'login.codeResent': 'New code sent',
+  'login.codeResendFailed': 'Failed to resend code',
+  'login.resendIn': 'Resend in {{s}}s',
   
   // Navigation
   'nav.home': 'Home',
@@ -635,6 +639,8 @@ const translations = {
   'programFeedback.button.back': 'Back',
   'programFeedback.button.generating': 'Generating Program',
   'programFeedback.button.generateNextWeek': 'Generate Next Week\'s Program',
+  'programFeedback.button.waitUntilNextWeek': 'You must complete this week\'s program before you can generate the next week\'s program.',
+  'programFeedback.button.waitUntilSpecificDate': 'You can generate the next week\'s program on {{date}}.',
 
   // Exercise Feedback Selector
   'exerciseFeedbackSelector.chip.new': 'New',
@@ -817,6 +823,17 @@ const translations = {
   'privacy.goBack': 'Go back',
   'privacy.policy.title': 'Privacy Policy',
   'privacy.policy.lastUpdated': 'Last updated:',
+
+  // Partners
+  'partners.headline': 'Trusted by our partners',
+
+  // Questionnaire Auth
+  'qa.stepIndicator': 'Step 3 of 3',
+  'qa.heading': 'Almost there!',
+  'qa.subheading': 'Enter your email so we can save your answers and send you the 6-digit login code',
+  'qa.benefit.noPassword': 'No password required',
+  'qa.benefit.free': 'Free of charge',
+  'qa.benefit.crossDevice': 'Access your program on any device',
 };
 
 export default translations; 
