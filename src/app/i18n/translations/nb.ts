@@ -208,7 +208,7 @@ const translations = {
   'login.resendCode': 'Send ny kode',
   'login.codeResent': 'Ny kode sendt',
   'login.codeResendFailed': 'Kunne ikke sende ny kode',
-  'login.resendIn': 'Sender ny kode om {{s}}s',
+  'login.resendIn': 'Du kan sende en ny kode om {{s}}s',
 
   // Navigation
   'nav.home': 'Hjem',

@@ -126,9 +126,26 @@ export function useChat() {
     streamPossiblyInterruptedRef.current = false; // Reset interruption flag
     isRefetchingRef.current = false; // Reset refetching flag
     setLastSendError(null); // Clear any send error on reset
-    createThread().then(({ threadId }) => {
-      threadIdRef.current = threadId;
-    });
+    // Immediately clear the thread reference so that no further messages are
+    // accidentally sent to the previous conversation while a new thread is
+    // being created.
+    threadIdRef.current = null;
+
+    // Request a brand-new thread from the backend and store its id once the
+    // request resolves. Any user message that is triggered before this promise
+    // settles will be queued because the threadIdRef is null, ensuring that
+    // no message can be appended to the old thread.
+    createThread()
+      .then(({ threadId }) => {
+        threadIdRef.current = threadId;
+
+        // Process any messages that may have been queued while the new thread
+        // was being created.
+        processNextMessage();
+      })
+      .catch((error) => {
+        console.error('Failed to create new chat thread:', error);
+      });
   };
 
   const processNextMessage = async () => {
@@ -153,6 +170,34 @@ export function useChat() {
       timestamp: new Date(),
     };
 
+    // If the thread is not yet ready (e.g., immediately after a reset), queue
+    // the message and return. Once the new thread id is obtained, queued
+    // messages will be processed by `processNextMessage` which is triggered
+    // in the `createThread` promise inside `resetChat`.
+    if (!threadIdRef.current) {
+      console.warn('Chat thread not ready yet, queuing message.');
+
+      messageQueueRef.current.push({
+        message: messageContent,
+        payload: {
+          ...chatPayload,
+          diagnosisAssistantResponse: assistantResponse,
+        },
+      });
+
+      // Store as last user message so that potential reconnection logic still
+      // works correctly.
+      lastUserMessageRef.current = {
+        messageContent,
+        chatPayload: {
+          ...chatPayload,
+          diagnosisAssistantResponse: assistantResponse,
+        },
+      };
+
+      return; // Exit until thread is ready
+    }
+    
     if (!isRefetch) {
       if (isLoading) {
         // Queue the message if loading (unless it's a refetch)
@@ -163,7 +208,7 @@ export function useChat() {
           message: messageContent,
           payload: {
             ...chatPayload,
-            diagnosisAssistantResponse: assistantResponse
+            diagnosisAssistantResponse: assistantResponse,
           },
         });
         return;

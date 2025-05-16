@@ -226,7 +226,7 @@ const translations = {
   'login.resendCode': 'Resend code',
   'login.codeResent': 'New code sent',
   'login.codeResendFailed': 'Failed to resend code',
-  'login.resendIn': 'Resend in {{s}}s',
+  'login.resendIn': 'You can resend a new code in {{s}}s',
   
   // Navigation
   'nav.home': 'Home',
