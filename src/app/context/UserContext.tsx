@@ -257,7 +257,8 @@ export function UserProvider({ children }: { children: ReactNode }) {
           // Navigate to /program only if we're not already there
           if (
             typeof window !== 'undefined' &&
-            !window.location.pathname.includes('/program')
+            !window.location.pathname.includes('/program') &&
+            !window.location.pathname.includes('/exercises')
           ) {
             router.push('/program');
           }
