@@ -289,10 +289,10 @@ const translations = {
   'chat.question.movement.meta': '2 simple motions',
   'chat.question.exercise.title': 'Build Program',
   'chat.question.exercise.text': 'Can you help me create an exercise program?',
-  'chat.question.exercise.meta': '5 min setup',
+  'chat.question.exercise.meta': '2 min setup',
   'chat.question.recovery.title': 'Plan Recovery',
   'chat.question.recovery.text': 'What\'s the best recovery program for my $part?',
-  'chat.question.recovery.meta': '5 min setup',
+  'chat.question.recovery.meta': '2 min setup',
   
   // Profile - Sections
   'profile.sections.general': 'General',
@@ -825,7 +825,7 @@ const translations = {
   'privacy.policy.lastUpdated': 'Last updated:',
 
   // Partners
-  'partners.headline': 'Trusted by our partners',
+  'partners.headline': 'Our partners',
 
   // Questionnaire Auth
   'qa.stepIndicator': 'Step 3 of 3',

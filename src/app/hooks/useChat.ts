@@ -34,6 +34,7 @@ export function useChat() {
   const messageQueueRef = useRef<
     { message: string; payload: Omit<ChatPayload, 'message'> }[]
   >([]);
+  const justResetRef = useRef<boolean>(false); // ADDED: Ref to track if reset just occurred
 
   // Refs to track the last message and stream state for reconnection
   const lastUserMessageRef = useRef<{
@@ -121,6 +122,9 @@ export function useChat() {
     setMessages([]);
     setFollowUpQuestions([]);
     setAssistantResponse(null);
+    justResetRef.current = true; // ADDED: Set the flag
+    // Log to confirm assistantResponse is intended to be null for the next send operation
+    console.log('[useChat - resetChat] assistantResponse set to null and justResetRef set to true. The next \'Value of assistantResponse (state) before capturing\' log should show null.');
     messageQueueRef.current = []; // Clear the queue on reset
     lastUserMessageRef.current = null; // Clear last message on reset
     streamPossiblyInterruptedRef.current = false; // Reset interruption flag
@@ -256,6 +260,16 @@ export function useChat() {
       });
     }
 
+    // Capture the assistantResponse from the previous turn *before* resetting it.
+    let previousTurnAssistantResponseFromState = assistantResponse; // Capture current state from hook
+
+    if (justResetRef.current) {
+      console.log('[useChat] First message after reset: Forcing previousTurnAssistantResponse to null.');
+      previousTurnAssistantResponseFromState = null;
+      justResetRef.current = false; // Clear the flag after using it once
+    }
+    console.log('[useChat] Effective previousTurnAssistantResponse (after considering reset flag):', JSON.stringify(previousTurnAssistantResponseFromState, null, 2)); // DEBUG
+
     // Reset state for the new/refetched response
     setFollowUpQuestions([]);
     setAssistantResponse(null); // Also reset previous assistant response data
@@ -269,8 +283,9 @@ export function useChat() {
         ...chatPayload,
         message: messageContent,
         language: locale,
-        diagnosisAssistantResponse: assistantResponse,
+        diagnosisAssistantResponse: previousTurnAssistantResponseFromState, // MODIFIED: Use the potentially overridden value
       };
+      console.log('[useChat] Final payload being sent to backend:', JSON.stringify(payload, null, 2)); // DEBUG
 
       if (isRefetch) {
         console.log("Refetch: Sending payload:", JSON.stringify(payload));
@@ -411,6 +426,7 @@ export function useChat() {
               const response = JSON.parse(
                 jsonContent
               ) as DiagnosisAssistantResponse;
+              console.log('[useChat] Parsed AI JSON response:', JSON.stringify(response, null, 2)); // DEBUG
               setAssistantResponse(response);
 
               if (

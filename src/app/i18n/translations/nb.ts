@@ -290,11 +290,11 @@ const translations = {
   'chat.question.exercise.title': 'Lag Program',
   'chat.question.exercise.text':
     'Kan du hjelpe meg med å lage et treningsprogram?',
-  'chat.question.exercise.meta': '5 min oppsett',
+  'chat.question.exercise.meta': '2 min oppsett',
   'chat.question.recovery.title': 'Planlegg Restitusjon',
   'chat.question.recovery.text':
     'Hva er det beste restitusjonsprogrammet for $part?',
-  'chat.question.recovery.meta': '5 min oppsett',
+  'chat.question.recovery.meta': '2 min oppsett',
 
   // Profile - Sections
   'profile.sections.general': 'Generelt',
@@ -1029,7 +1029,7 @@ const translations = {
   'privacy.policy.lastUpdated': 'Sist oppdatert:',
 
   // Partners
-  'partners.headline': 'Brukt av våre samarbeidspartnere',
+  'partners.headline': 'Våre samarbeidspartnere',
 
   // Questionnaire Auth
   'qa.stepIndicator': 'Steg 3 av 3',

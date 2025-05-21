@@ -83,7 +83,7 @@ export function ProgramDayComponent({
   return (
     <div className="h-full flex flex-col" onClick={onClick}>
       {/* Header section - Removed negative margins to prevent overflow */}
-      <div className="bg-gray-900/95 backdrop-blur-sm py-4 sticky top-0 z-10">
+      <div className="bg-gray-900/95 backdrop-blur-sm py-4">
         {programTitle && (
           <div className="mb-4">
             <button

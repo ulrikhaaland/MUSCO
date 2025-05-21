@@ -31,28 +31,99 @@ export async function streamChatCompletion({
   try {
     console.log(`[streamChatCompletion] Starting with model: ${modelName}`);
 
-    // Format previous messages for OpenAI chat completion
+    // Re-introduce historical messages
     const formattedMessages = formatMessagesForChatCompletion(messages);
 
     // Add the system message at the beginning
     formattedMessages.unshift({
-      role: 'system',
+      role: 'system' as const,
       content: systemMessage,
     });
 
-    // Add the new user message
+    // Construct the user message content
+    let userMessageContent = '';
+    if (typeof userMessage === 'string') {
+      userMessageContent = userMessage;
+    } else if (typeof userMessage === 'object' && userMessage !== null) {
+      // Prioritize userMessage.message if it exists (this is the actual typed text)
+      if (userMessage.message && typeof userMessage.message === 'string') {
+        userMessageContent = `User input: "${userMessage.message}"`;
+      } else {
+        // Fallback if .message isn't there, though ChatPayload expects it
+        userMessageContent = 'User input: (no direct text provided)';
+      }
+
+      if (
+        userMessage.diagnosisAssistantResponse &&
+        Object.keys(userMessage.diagnosisAssistantResponse).length > 0
+      ) {
+        // Append the structured context if it exists and is not empty
+        // Omit fields that are AI conclusions or UI constructs, not primary history data
+        const {
+          followUpQuestions,
+          targetAreas,
+          programType,
+          informationalInsights,
+          // assessmentComplete and redFlagsPresent might also be considered AI conclusions,
+          // but they can be useful for the AI to know its own previous state flags.
+          // Let's keep them for now unless they cause issues.
+          ...contextualInfo
+        } = userMessage.diagnosisAssistantResponse;
+        userMessageContent += `\n\n<<PREVIOUS_CONTEXT_JSON>>\n${JSON.stringify(contextualInfo, null, 2)}\n<<PREVIOUS_CONTEXT_JSON_END>>`;
+      }
+
+      // Add selected body group and part information
+      if (
+        userMessage.selectedBodyGroupName &&
+        typeof userMessage.selectedBodyGroupName === 'string'
+      ) {
+        userMessageContent += `\nSelected Body Group: ${userMessage.selectedBodyGroupName}`;
+      }
+      if (
+        userMessage.selectedBodyPart &&
+        typeof userMessage.selectedBodyPart === 'string' &&
+        userMessage.selectedBodyPart !== 'no body part of body group selected'
+      ) {
+        userMessageContent += `\nSelected Specific Body Part: ${userMessage.selectedBodyPart}`;
+      } else if (
+        userMessage.selectedBodyPart ===
+          'no body part of body group selected' &&
+        !userMessage.selectedBodyGroupName
+      ) {
+        // Only add this if group name is also missing, to avoid redundancy if group is present
+        userMessageContent += `\nSelected Specific Body Part: ${userMessage.selectedBodyPart}`;
+      }
+
+      if (
+        userMessage.bodyPartsInSelectedGroup &&
+        Array.isArray(userMessage.bodyPartsInSelectedGroup) &&
+        userMessage.bodyPartsInSelectedGroup.length > 0
+      ) {
+        userMessageContent += `\nBody Parts In Selected Group: [${userMessage.bodyPartsInSelectedGroup.join(', ')}]`;
+      }
+
+      if (userMessage.language && typeof userMessage.language === 'string') {
+        userMessageContent += `\nLanguage Preference: ${userMessage.language}`;
+      }
+    } else {
+      // Fallback for unexpected userMessage types
+      userMessageContent = JSON.stringify(userMessage);
+    }
+    console.log(
+      '[streamChatCompletion] Constructed user message content (for current turn):',
+      userMessageContent
+    );
+
+    // Add the new user message to the history
     formattedMessages.push({
-      role: 'user',
-      content:
-        typeof userMessage === 'string'
-          ? userMessage
-          : JSON.stringify(userMessage),
+      role: 'user' as const,
+      content: userMessageContent,
     });
 
     // Call OpenAI streaming chat completion
     const stream = await openai.chat.completions.create({
       model: modelName,
-      messages: formattedMessages,
+      messages: formattedMessages, // Use the full history + current message
       stream: true,
     });
 
@@ -787,6 +858,36 @@ export async function generateExerciseProgramWithModel(context: {
         // Atomically add the new week document and mark the parent program as Done
         const batch = adminDb.batch();
 
+        // Deactivate other programs of the same type
+        const programType = context.diagnosisData.programType;
+        if (programType) {
+          const otherActiveProgramsQuery = adminDb
+            .collection('users')
+            .doc(context.userId)
+            .collection('programs')
+            .where('active', '==', true)
+            .where('type', '==', programType);
+
+          const otherActiveProgramsSnapshot =
+            await otherActiveProgramsQuery.get();
+          otherActiveProgramsSnapshot.forEach((doc) => {
+            // Ensure we don't deactivate the program we are currently activating
+            if (doc.id !== context.programId) {
+              batch.update(doc.ref, {
+                active: false,
+                updatedAt: new Date().toISOString(),
+              });
+              console.log(
+                `Deactivating program ${doc.id} of type ${programType}`
+              );
+            }
+          });
+        } else {
+          console.warn(
+            'Program type not available, skipping deactivation of other programs.'
+          );
+        }
+
         // New week document reference (auto-ID)
         const newWeekRef = adminDb
           .collection('users')
@@ -874,7 +975,7 @@ export async function getChatCompletion({
   try {
     console.log(`[getChatCompletion] Starting with model: ${modelName}`);
 
-    // Format previous messages for OpenAI chat completion
+    // Re-introduce historical messages
     const formattedMessages = formatMessagesForChatCompletion(messages);
 
     // Add the system message at the beginning
@@ -883,19 +984,92 @@ export async function getChatCompletion({
       content: systemMessage,
     });
 
-    // Add the new user message
+    // Construct the user message content
+    let userMessageContent = '';
+    if (typeof userMessage === 'string') {
+      userMessageContent = userMessage;
+    } else if (typeof userMessage === 'object' && userMessage !== null) {
+      if (userMessage.message && typeof userMessage.message === 'string') {
+        userMessageContent = `User input: "${userMessage.message}"`;
+      } else {
+        userMessageContent = 'User input: (no direct text provided)';
+      }
+
+      if (
+        userMessage.diagnosisAssistantResponse &&
+        Object.keys(userMessage.diagnosisAssistantResponse).length > 0
+      ) {
+        // Append the structured context if it exists and is not empty
+        // Omit fields that are AI conclusions or UI constructs, not primary history data
+        const {
+          followUpQuestions,
+          targetAreas,
+          programType,
+          informationalInsights,
+          // assessmentComplete and redFlagsPresent might also be considered AI conclusions,
+          // but they can be useful for the AI to know its own previous state flags.
+          // Let's keep them for now unless they cause issues.
+          ...contextualInfo
+        } = userMessage.diagnosisAssistantResponse;
+        userMessageContent += `\n\n<<PREVIOUS_CONTEXT_JSON>>\n${JSON.stringify(contextualInfo, null, 2)}\n<<PREVIOUS_CONTEXT_JSON_END>>`;
+      }
+
+      // Add selected body group and part information
+      if (
+        userMessage.selectedBodyGroupName &&
+        typeof userMessage.selectedBodyGroupName === 'string'
+      ) {
+        userMessageContent += `\nSelected Body Group: ${userMessage.selectedBodyGroupName}`;
+      }
+      if (
+        userMessage.selectedBodyPart &&
+        typeof userMessage.selectedBodyPart === 'string' &&
+        userMessage.selectedBodyPart !== 'no body part of body group selected'
+      ) {
+        userMessageContent += `\nSelected Specific Body Part: ${userMessage.selectedBodyPart}`;
+      } else if (
+        userMessage.selectedBodyPart ===
+          'no body part of body group selected' &&
+        !userMessage.selectedBodyGroupName
+      ) {
+        // Only add this if group name is also missing, to avoid redundancy if group is present
+        userMessageContent += `\nSelected Specific Body Part: ${userMessage.selectedBodyPart}`;
+      }
+
+      if (
+        userMessage.bodyPartsInSelectedGroup &&
+        Array.isArray(userMessage.bodyPartsInSelectedGroup) &&
+        userMessage.bodyPartsInSelectedGroup.length > 0
+      ) {
+        userMessageContent += `\nBody Parts In Selected Group: [${userMessage.bodyPartsInSelectedGroup.join(', ')}]`;
+      }
+
+      if (userMessage.language && typeof userMessage.language === 'string') {
+        userMessageContent += `\nLanguage Preference: ${userMessage.language}`;
+      }
+    } else {
+      userMessageContent = JSON.stringify(userMessage);
+    }
+    console.log(
+      '[getChatCompletion] Constructed user message content (for current turn):',
+      userMessageContent
+    );
+
+    // Add the new user message to the history
     formattedMessages.push({
       role: 'user' as const,
-      content:
-        typeof userMessage === 'string'
-          ? userMessage
-          : JSON.stringify(userMessage),
+      content: userMessageContent,
     });
+
+    console.log(
+      '[getChatCompletion] Full formattedMessages (with history) being sent to OpenAI API:',
+      JSON.stringify(formattedMessages, null, 2)
+    );
 
     // Call OpenAI chat completion
     const response = await openai.chat.completions.create({
       model: modelName,
-      messages: formattedMessages,
+      messages: formattedMessages, // Use the full history + current message
     });
 
     return response.choices[0].message.content;

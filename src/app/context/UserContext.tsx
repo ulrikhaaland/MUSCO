@@ -91,6 +91,11 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const { setIsLoading: showGlobalLoader } = useLoader();
   const { t, locale } = useTranslation();
   const isNorwegian = locale === 'nb';
+
+  // Derive stable user identifiers for useEffect dependencies
+  const userId = user?.uid;
+  const isUserAuthenticated = !!user;
+
   const [answers, setAnswers] = useState<ExerciseQuestionnaireAnswers | null>(
     null
   );
@@ -135,12 +140,12 @@ export function UserProvider({ children }: { children: ReactNode }) {
     if (authLoading === undefined || authLoading === true) return;
     let unsubscribe: (() => void) | null = null; // Initialize unsubscribe
 
-    if (user) {
+    if (isUserAuthenticated && userId) { // Use derived values
       showGlobalLoader(true, t('program.loadingData'));
       // Show loader when starting to fetch data
 
       // Listen to all user programs
-      const programsRef = collection(db, `users/${user.uid}/programs`);
+      const programsRef = collection(db, `users/${userId}/programs`); // Use derived userId
       const q = query(programsRef, orderBy('createdAt', 'desc'));
 
       // Assign the unsubscribe function returned by onSnapshot
@@ -182,7 +187,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
             // Add all programs to the programs array for listing in UI
             const programsCollectionRef = collection(
               db,
-              `users/${user.uid}/programs/${doc.id}/programs`
+              `users/${userId}/programs/${doc.id}/programs`
             );
             const programQ = query(
               programsCollectionRef,
@@ -249,16 +254,20 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
         // First priority: Process active program if found
         if (activeProgram) {
+          const previousActiveProgramId = activeProgramIdRef.current; // Store previous ID
+
           setProgramStatus(ProgramStatus.Done);
 
           // Always refresh the program state in case new weeks were added
           prepareAndSetProgram(activeProgram);
 
-          // Navigate to /program only if we're not already there
+          // Navigate to /program only if we're not already there AND
+          // (it's the first time an active program is set OR the active program has changed meaningfully)
           if (
             typeof window !== 'undefined' &&
             !window.location.pathname.includes('/program') &&
-            !window.location.pathname.includes('/exercises')
+            !window.location.pathname.includes('/exercises') &&
+            (previousActiveProgramId === null || previousActiveProgramId !== activeProgram.docId)
           ) {
             router.push('/program');
           }
@@ -313,7 +322,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
       }
       showGlobalLoader(false); // Ensure loader is hidden when component unmounts
     };
-  }, [user, authLoading, router, t, isNorwegian]); // Added isNorwegian to dependencies
+  }, [userId, isUserAuthenticated, authLoading, router, t, isNorwegian]); // Updated dependencies
 
   // On initial load, check localStorage for pending questionnaire flag
   useEffect(() => {

@@ -752,33 +752,21 @@ export function ChatMessages({
       isProcessingClickRef.current = false;
     }, 1000); // 1 second debounce
     
-    // Process the click
-    if (question.generate && onQuestionClick) {
-      onQuestionClick(question);
-    } else {
-      // Clear any pending follow-up questions displayed in the UI
-      // This prevents follow-up questions from persisting when they should be cleared
-      if (isStreaming) {
-        // If we're in the middle of streaming, we need to manually clear
-        // the displayed follow-up questions to prevent them from
-        // reappearing after the next response
-        const questionContainer = questionsRef.current;
-        if (questionContainer) {
-          // Apply immediate visual feedback
-          questionContainer.style.opacity = '0';
-          questionContainer.style.transition = 'opacity 0.2s ease-out';
-          
-          // After a short delay to allow for animation
-          setTimeout(() => {
-            // Pass the selected question to the handler
-            onQuestionClick?.(question);
-          }, 200);
-        } else {
-          onQuestionClick?.(question);
-        }
-      } else {
-        // Normal flow when not streaming
-        onQuestionClick?.(question);
+    // Process the click by calling onQuestionClick immediately.
+    // This ensures the parent component is notified of the selection promptly.
+    onQuestionClick?.(question);
+
+    // After processing the click, handle UI changes.
+    // If it's not a "generate" question and we are currently streaming,
+    // fade out the question container for immediate visual feedback.
+    // The parent component will handle updating/clearing followUpQuestions
+    // as part of the new message cycle initiated by onQuestionClick.
+    if (!question.generate && isStreaming) {
+      const questionContainer = questionsRef.current;
+      if (questionContainer) {
+        // Apply immediate visual feedback by fading out
+        questionContainer.style.opacity = '0';
+        questionContainer.style.transition = 'opacity 0.2s ease-out';
       }
     }
   };
