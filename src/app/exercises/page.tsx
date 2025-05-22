@@ -8,6 +8,7 @@ import { getStorage, ref, getDownloadURL } from 'firebase/storage';
 import { storage } from '../firebase/config';
 import { searchYouTubeVideo } from '../utils/youtube';
 import Chip from '../components/ui/Chip';
+import { useTranslation } from '../i18n/TranslationContext';
 
 interface BodyPartExercises {
   [bodyPart: string]: Exercise[];
@@ -67,6 +68,7 @@ export default function AvailableExercisesPage() {
 
   // Refs for category sections to enable scrolling
   const categoryRefs = useRef<Record<string, HTMLElement | null>>({});
+  const { locale } = useTranslation();
 
   // Load exercises on component mount
   useEffect(() => {
@@ -76,7 +78,7 @@ export default function AvailableExercisesPage() {
         const bodyParts = Object.keys(exerciseFiles());
         
         // For the toggle feature, we need both Musco and original exercises
-        const loaded = await loadExercisesFromJson(bodyParts, true, false);
+        const loaded = await loadExercisesFromJson(bodyParts, true, false, locale === 'nb');
         
         // Separate Musco and original exercises
         const muscoExercises = loaded.filter(ex => 
@@ -425,7 +427,7 @@ export default function AvailableExercisesPage() {
       }
     };
     load();
-  }, [showMuscoExercises]);
+  }, [showMuscoExercises, locale]);
 
   // Update equipment data when toggling exercise source
   useEffect(() => {
