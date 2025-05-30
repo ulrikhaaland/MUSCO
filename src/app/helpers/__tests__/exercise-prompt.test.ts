@@ -621,20 +621,6 @@ describe('Equipment type coverage tests', () => {
     expect(result.exercisesPrompt).toMatch(/Kettle(bell)?/i);
   });
   
-  // Test medicine ball equipment - mark as skip if no Medicine Ball exercises found
-  test.skip('Medicine ball equipment should include medicine ball exercises', async () => {
-    const userInfo = createUserInfo({
-      exerciseModalities: 'Strength',
-      exerciseEnvironments: 'Custom',
-      equipment: ['Medicine Ball'], // Only medicine ball
-      targetAreas: ['Core', 'Chest', 'Full Body'],
-    });
-    
-    const result = await prepareExercisesPrompt(userInfo, undefined, true);
-    
-    // Should include medicine ball exercises
-    expect(result.exercisesPrompt).toMatch(/Medicine Ball/i);
-  });
   
   // Test combination of multiple specialty equipment - include TRX and Bands only, since those are present in the database
   test('Combination of specialty equipment should include exercises for all selected equipment', async () => {
