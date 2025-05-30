@@ -62,21 +62,14 @@ export default function ProgramPage() {
     }
   }, [isLoading, selectedProgram, programStatus, t, authLoading]);
 
-  // Update page title when program loads
+  // Update page title when program data changes
   useEffect(() => {
-    if (selectedProgram?.title && typeof document !== 'undefined') {
-      document.title = `${selectedProgram.title} | bodAI`;
-    } else if (typeof document !== 'undefined') {
-      document.title = t('program.pageTitle');
-    }
-  }, [selectedProgram, t]);
-
-  // Update page title with program title
-  useEffect(() => {
-    if (selectedProgram?.title) {
-      document.title = `${selectedProgram.title} | bodAI`;
-    } else {
-      document.title = t('program.defaultPageTitle');
+    if (typeof document !== 'undefined') {
+      if (selectedProgram?.title) {
+        document.title = `${selectedProgram.title} | bodAI`;
+      } else {
+        document.title = t('program.defaultPageTitle');
+      }
     }
   }, [selectedProgram?.title, t]);
 
