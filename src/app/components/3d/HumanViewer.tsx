@@ -14,6 +14,7 @@ import { Question } from '@/app/types';
 import { ExerciseQuestionnaireAnswers, ProgramType } from '@/app/shared/types';
 import { useApp } from '@/app/context/AppContext';
 import { useUser } from '@/app/context/UserContext';
+import { logAnalyticsEvent } from '@/app/utils/analytics';
 
 interface HumanViewerProps {
   gender: Gender;
@@ -164,6 +165,7 @@ export default function HumanViewer({
     const newGender: Gender = currentGender === 'male' ? 'female' : 'male';
     setTargetGender(newGender);
     setViewerUrl(getViewerUrl(newGender));
+    logAnalyticsEvent('switch_model', { gender: newGender });
 
     // Reset states
     resetValues();
@@ -185,6 +187,7 @@ export default function HumanViewer({
 
       isResettingRef.current = true;
       setIsResetting(true);
+      logAnalyticsEvent('reset_model');
 
       // Reset the context state
       if (shouldResetSelectionState == true) {
@@ -296,6 +299,7 @@ export default function HumanViewer({
     if (!human || isRotating || isResetting) return;
 
     setNeedsReset(true);
+    logAnalyticsEvent('rotate_model');
 
     setIsRotating(true);
     const startRotation = currentRotation % 360; // Normalize to 0-360
@@ -360,6 +364,7 @@ export default function HumanViewer({
 
   const handleQuestionClick = (question: Question) => {
     if (question.generate) {
+      logAnalyticsEvent('open_questionnaire', { from: 'question_click' });
       if (diagnosis) {
         diagnosis.followUpQuestions = [];
         diagnosis.programType = ProgramType.Exercise;
@@ -428,6 +433,7 @@ export default function HumanViewer({
       targetAreas: [],
     };
     setDiagnosis(newDiagnosis);
+    logAnalyticsEvent('open_questionnaire', { from: 'area_select' });
     setShowQuestionnaire(true);
   };
 
@@ -441,6 +447,7 @@ export default function HumanViewer({
     answers: ExerciseQuestionnaireAnswers
   ) => {
     diagnosis.timeFrame = '1 week';
+    logAnalyticsEvent('submit_questionnaire');
 
     try {
       const result = await onQuestionnaireSubmit(diagnosis, answers);
@@ -449,6 +456,9 @@ export default function HumanViewer({
         // Keep the questionnaire open, the auth form will be shown by the parent component
         return;
       }
+      logAnalyticsEvent('program_generation_started', {
+        programId: result.programId,
+      });
     } catch (error) {
       console.error('Error in questionnaire submission:', error);
       // Handle other errors appropriately

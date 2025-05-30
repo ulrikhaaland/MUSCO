@@ -21,6 +21,7 @@ import { toast } from '../components/ui/ToastProvider';
 import { httpsCallable } from 'firebase/functions';
 import { useTranslation } from '../i18n';
 import { useLoader } from './LoaderContext';
+import { logAnalyticsEvent } from '../utils/analytics';
 
 interface AuthContextType {
   user: ExtendedUser | null;
@@ -74,6 +75,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           'Auth state changed:',
           firebaseUser ? 'User logged in' : 'No user'
         );
+        if (firebaseUser) {
+          logAnalyticsEvent('login');
+        }
         if (firebaseUser) {
           try {
             // Fetch user profile data
@@ -234,6 +238,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       await deleteUser(auth.currentUser);
 
       toast.success('Your account has been successfully deleted');
+      logAnalyticsEvent('delete_account');
       return true;
     } catch (error: any) {
       console.error('Error deleting user account:', error);
@@ -259,6 +264,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   ) => {
     // Log the error for debugging
     console.error('Authentication error:', error);
+    logAnalyticsEvent('auth_error', { code: error?.code || 'unknown' });
 
     // Set the error state
     setError(error instanceof Error ? error : new Error(fallbackMessage));
@@ -334,6 +340,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Now just send the one-time code e-mail via Cloud Function
     try {
       await sendCustomSignInLink(email);
+      logAnalyticsEvent('send_login_link');
     } catch (error) {
       console.error('Error sending login code:', error);
       return handleAuthError(error, 'Failed to send login code', false);
@@ -380,6 +387,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       showGlobalLoader(true, 'Signing you out...');
       await signOut(auth);
+      logAnalyticsEvent('logout');
       setUser(null); // Optimistically set user to null
 
       // Clear authentication related localStorage items

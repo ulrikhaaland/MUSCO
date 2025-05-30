@@ -36,6 +36,7 @@ import { useRouter } from 'next/navigation';
 import { enrichExercisesWithFullData } from '@/app/services/exerciseProgramService';
 import { useLoader } from './LoaderContext';
 import { useTranslation } from '@/app/i18n/TranslationContext';
+import { logAnalyticsEvent } from '../utils/analytics';
 
 // Update UserProgram interface to include the document ID
 interface UserProgramWithId extends UserProgram {
@@ -389,7 +390,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
         try {
           // Store in Firebase using the email
           await storePendingQuestionnaire(email, diagnosis, answers);
-          // removed logging
+          logAnalyticsEvent('questionnaire_saved', { email });
 
           // Set flag in localStorage to indicate pending questionnaire
           window.localStorage.setItem('hasPendingQuestionnaire', 'true');
@@ -458,6 +459,10 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
       // Submit questionnaire and generate program
       const programId = await submitQuestionnaire(user.uid, diagnosis, answers);
+      logAnalyticsEvent('questionnaire_submitted', {
+        programType: diagnosis.programType,
+        programId,
+      });
 
       submissionInProgressRef.current = false;
       return { programId };
@@ -576,6 +581,10 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
     const selectedProgram = userPrograms[programIndex];
     const newActiveStatus = !selectedProgram.active;
+    logAnalyticsEvent('toggle_program', {
+      programId: selectedProgram.docId,
+      active: newActiveStatus,
+    });
 
     // Optimistically update local state
     const updatedPrograms = userPrograms.map((p, idx) =>
@@ -607,6 +616,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
   const generateFollowUpProgram = async () => {
     setProgramStatus(ProgramStatus.Generating);
+    logAnalyticsEvent('generate_follow_up');
     router.push('/program');
   };
 
