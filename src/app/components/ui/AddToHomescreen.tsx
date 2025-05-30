@@ -156,6 +156,8 @@ export default function AddToHomescreen() {
       }
     };
 
+    let timer: NodeJS.Timeout | null = null;
+
     // Only show prompt if not already in standalone mode
     if (!isInStandaloneMode) {
       console.log('Adding beforeinstallprompt event listener');
@@ -163,34 +165,28 @@ export default function AddToHomescreen() {
 
       // For iOS Safari, we'll show the prompt after a delay if they haven't seen it
       if (isIOS && hasPromptBeenShown !== 'true') {
-        // Delay showing iOS instructions to avoid interrupting initial app experience
         console.log('Setting timer for iOS prompt');
-        const timer = setTimeout(() => {
+        timer = setTimeout(() => {
           console.log('Timer fired - showing iOS prompt');
           setShowPrompt(true);
         }, 3000);
-        return () => clearTimeout(timer);
-      }
-
-      // For desktop browsers that don't support beforeinstallprompt, show manual instructions
-      if (isDesktopDevice && hasPromptBeenShown !== 'true') {
-        // Wait a moment before showing to avoid interrupting initial page load
+      } else if (isDesktopDevice && hasPromptBeenShown !== 'true') {
+        // For desktop browsers without beforeinstallprompt support
         console.log('Setting timer for desktop prompt');
-        const timer = setTimeout(() => {
+        timer = setTimeout(() => {
           console.log('Timer fired - showing desktop prompt');
           setShowPrompt(true);
         }, 3000);
-        return () => clearTimeout(timer);
-      }
-
-      // For development mode, show prompt regardless of events
-      if (process.env.NODE_ENV === 'development' && hasPromptBeenShown !== 'true') {
+      } else if (
+        process.env.NODE_ENV === 'development' &&
+        hasPromptBeenShown !== 'true'
+      ) {
+        // In development mode, always show the prompt after a short delay
         console.log('In development mode - forcing prompt to show after delay');
-        const timer = setTimeout(() => {
+        timer = setTimeout(() => {
           console.log('Development timer fired - showing prompt');
           setShowPrompt(true);
         }, 3000);
-        return () => clearTimeout(timer);
       }
     } else {
       console.log('App is in standalone mode, not showing prompt');
@@ -202,6 +198,9 @@ export default function AddToHomescreen() {
         'beforeinstallprompt',
         handleBeforeInstallPrompt
       );
+      if (timer) {
+        clearTimeout(timer);
+      }
     };
   }, []);
 
