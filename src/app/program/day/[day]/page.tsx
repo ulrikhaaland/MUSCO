@@ -11,7 +11,7 @@ import { useLoader } from '@/app/context/LoaderContext';
 import { getStorage, ref, getDownloadURL } from 'firebase/storage';
 import { storage } from '@/app/firebase/config';
 import { useTranslation } from '@/app/i18n/TranslationContext';
-import { logAnalyticsEvent } from '../../utils/analytics';
+import { logAnalyticsEvent } from '../../../utils/analytics';
 
 function ErrorDisplay({ error }: { error: Error }) {
   return (
