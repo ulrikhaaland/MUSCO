@@ -7,6 +7,7 @@ import { useUser } from '@/app/context/UserContext';
 import { useAuth } from '@/app/context/AuthContext';
 import { useLoader } from '@/app/context/LoaderContext';
 import AddToHomescreen from '@/app/components/ui/AddToHomescreen';
+import { logAnalyticsEvent } from '../utils/analytics';
 import {
   ProgramStatus,
   Exercise,
@@ -120,23 +121,27 @@ export default function ProgramPage() {
   };
 
   const handleToggleView = () => {
+    logAnalyticsEvent('open_calendar');
     router.push('/program/calendar');
   };
 
   const handleDaySelect = (day: ProgramDay, dayName: string) => {
     if (selectedProgram) {
+      logAnalyticsEvent('open_program_day', { day: day.day });
       router.push(
         `/program/day/${day.day}?programId=${encodeURIComponent(
           selectedProgram.createdAt.toString()
         )}`
       );
     } else {
+      logAnalyticsEvent('open_program_day', { day: day.day });
       router.push(`/program/day/${day.day}`);
     }
   };
 
   const handleExerciseVideoClick = async (exercise: Exercise) => {
     try {
+      logAnalyticsEvent('open_exercise_video', { exercise: exercise.name });
       setLoadingVideoExercise(exercise.name);
       // Construct a search query with the exercise name
       const searchQuery = `${exercise.name} exercise tutorial`;

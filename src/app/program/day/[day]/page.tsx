@@ -11,6 +11,7 @@ import { useLoader } from '@/app/context/LoaderContext';
 import { getStorage, ref, getDownloadURL } from 'firebase/storage';
 import { storage } from '@/app/firebase/config';
 import { useTranslation } from '@/app/i18n/TranslationContext';
+import { logAnalyticsEvent } from '../../utils/analytics';
 
 function ErrorDisplay({ error }: { error: Error }) {
   return (
@@ -161,9 +162,10 @@ export default function DayDetailPage() {
                 t('days.sunday'),
               ];
               setDayName(days[dayNumber - 1]);
-              
+
               // 5. Mark data as loaded
               setDataLoaded(true);
+              logAnalyticsEvent('view_program_day', { day: dayNumber });
             }
           }
         }
@@ -265,6 +267,8 @@ export default function DayDetailPage() {
   const handleVideoClick = async (exercise: Exercise) => {
     if (loadingVideoExercise === exercise.name) return;
 
+    logAnalyticsEvent('open_exercise_video', { exercise: exercise.name });
+
     // Find the index of the exercise in the day's exercises
     const exerciseIndex = dayData?.exercises.findIndex(ex => ex.name === exercise.name) ?? -1;
     setCurrentExerciseIndex(exerciseIndex);
@@ -328,6 +332,8 @@ export default function DayDetailPage() {
 
   const navigateToVideo = async (direction: 'next' | 'prev') => {
     if (!dayData?.exercises || currentExerciseIndex === -1) return;
+
+    logAnalyticsEvent('navigate_video', { direction });
     
     const totalExercises = dayData.exercises.length;
     let newIndex: number;
