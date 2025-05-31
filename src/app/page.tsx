@@ -12,6 +12,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { IntentionQuestion } from './components/ui/IntentionQuestion';
 import { ErrorDisplay } from './components/ui/ErrorDisplay';
 import { useTranslation } from './i18n';
+import LandingHero, { ViewerMode } from './components/ui/LandingHero';
 
 // Create a separate component for search params functionality
 function HomeContent() {
@@ -32,6 +33,8 @@ function HomeContent() {
   const [gender, setGender] = useState<Gender>(genderParam || 'male');
   const [intentionSelected, setIntentionSelected] = useState(false);
   const [shouldResetModel, setShouldResetModel] = useState(false);
+  const [showHero, setShowHero] = useState(!user && newParam !== 'true');
+  const [viewerMode, setViewerMode] = useState<ViewerMode>('full');
 
   // Set page title
   useEffect(() => {
@@ -88,6 +91,11 @@ function HomeContent() {
     [setIntention]
   );
 
+  const handleHeroSelect = useCallback((mode: ViewerMode) => {
+    setViewerMode(mode);
+    setShowHero(false);
+  }, []);
+
   // Show auth form if user is not logged in and not skipping auth
   // OR if we have pending questionnaire data and user is not logged in
   useEffect(() => {
@@ -109,6 +117,15 @@ function HomeContent() {
       setShowAuthForm(false);
     }
   }, [user, authLoading, skipAuth, pendingQuestionnaire, showAuthForm]);
+
+  // Show landing hero when user is not authenticated on the main page
+  useEffect(() => {
+    if (!user && newParam !== 'true' && !showAuthForm) {
+      setShowHero(true);
+    } else {
+      setShowHero(false);
+    }
+  }, [user, newParam, showAuthForm]);
 
   // Clear the pendingQuestionnaire flag in localStorage when user logs in
   useEffect(() => {
@@ -136,11 +153,14 @@ function HomeContent() {
       {/* Only render HumanViewer when not showing IntentionQuestion and not showing QuestionnaireAuthForm */}
       {!(newParam === 'true' && !intentionSelected) &&
         !(showAuthForm && pendingQuestionnaire) && (
-          <HumanViewer
-            gender={gender}
-            onGenderChange={handleGenderChange}
-            shouldResetModel={shouldResetModel}
-          />
+          <div className={showHero ? 'invisible h-0' : undefined}>
+            <HumanViewer
+              gender={gender}
+              onGenderChange={handleGenderChange}
+              shouldResetModel={shouldResetModel}
+              mode={viewerMode}
+            />
+          </div>
         )}
 
       {/* Conditionally overlay the auth form */}
@@ -160,6 +180,8 @@ function HomeContent() {
           }}
         />
       )}
+
+      {showHero && <LandingHero onSelect={handleHeroSelect} />}
     </div>
   );
 }

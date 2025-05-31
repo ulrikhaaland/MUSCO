@@ -16,16 +16,20 @@ import { useApp } from '@/app/context/AppContext';
 import { useUser } from '@/app/context/UserContext';
 import { logAnalyticsEvent } from '@/app/utils/analytics';
 
+type ViewerMode = 'full' | 'diagnose' | 'questionnaire';
+
 interface HumanViewerProps {
-  gender: Gender;
+  gender?: Gender;
   onGenderChange?: (gender: Gender) => void;
   shouldResetModel?: boolean;
+  mode?: ViewerMode;
 }
 
 export default function HumanViewer({
-  gender,
+  gender = 'male',
   onGenderChange,
   shouldResetModel = false,
+  mode = 'full',
 }: HumanViewerProps) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const {
