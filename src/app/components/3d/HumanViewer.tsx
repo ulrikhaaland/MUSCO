@@ -61,6 +61,7 @@ export default function HumanViewer({
   const [isResetting, setIsResetting] = useState(false);
   const { onQuestionnaireSubmit } = useUser();
   const [showQuestionnaire, setShowQuestionnaire] = useState(false);
+  const [containerHeight, setContainerHeight] = useState('100vh');
 
   useEffect(() => {
     const checkMobile = () => {
@@ -70,6 +71,14 @@ export default function HumanViewer({
     checkMobile();
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  useEffect(() => {
+    // Set the height to the initial window height to prevent layout shifts when keyboard appears
+    setContainerHeight(`${window.innerHeight}px`);
+    // Note: This doesn't dynamically update on window resize (e.g., orientation change)
+    // as that might reintroduce the keyboard issue. If resize handling is needed,
+    // it would require more sophisticated logic, possibly involving visualViewport API.
   }, []);
 
   const MODEL_IDS = {
@@ -569,7 +578,10 @@ export default function HumanViewer({
   }, []);
 
   return (
-    <div className="flex flex-col md:flex-row relative h-screen w-screen overflow-hidden">
+    <div
+      className="flex flex-col md:flex-row relative w-screen overflow-hidden"
+      style={{ height: containerHeight }}
+    >
       {/* Fullscreen overlay when dragging */}
       {isDragging && (
         <div className="fixed inset-0 z-50" style={{ cursor: 'ew-resize' }} />
