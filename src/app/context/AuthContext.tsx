@@ -77,8 +77,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         );
         if (firebaseUser) {
           logAnalyticsEvent('login');
-        }
-        if (firebaseUser) {
           try {
             // Fetch user profile data
             const profileData = await fetchUserProfile(firebaseUser.uid);
@@ -91,19 +89,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             setUser(extendedUser);
           } catch (error) {
             console.error('Error fetching user profile:', error);
-            setUser(firebaseUser as ExtendedUser);
+            setUser(firebaseUser as ExtendedUser); // Set user even if profile fetch fails
           }
-        } else {
+          setLoading(false); // Auth loading complete for logged-in user
+          // Global loader hiding for logged-in user based on path (existing logic)
+          if (window.location.pathname !== '/' && window.location.pathname !== '/program') {
+            showGlobalLoader(false);
+          }
+        } else { // No user is signed in
           setUser(null);
-        }
+          setLoading(false); // Auth context loading is done
+          showGlobalLoader(false); // Auth process is complete, hide global loader
 
-        setLoading(false);
-        // if route is not '/' show loader
-        if (window.location.pathname !== '/' && window.location.pathname !== '/program') {
-          showGlobalLoader(false);
+          // If not logged in, and not already on the home page, redirect to home.
+          if (typeof window !== 'undefined' && window.location.pathname !== '/') {
+            router.push('/');
+          }
         }
       },
-      (error) => {
+      (error) => { // onAuthStateChanged error
         console.error('Auth state change error:', error);
         handleAuthError(error, t('authContext.authenticationStateError'), false);
         setLoading(false);

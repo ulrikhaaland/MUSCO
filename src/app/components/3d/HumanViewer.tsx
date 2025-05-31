@@ -599,8 +599,13 @@ export default function HumanViewer({
 
   return (
     <div
-      className="flex flex-col md:flex-row relative w-screen overflow-hidden"
-      style={{ height: containerHeight }}
+      className="flex flex-col md:flex-row w-screen overflow-hidden"
+      style={{
+        height: containerHeight,
+        position: 'fixed',
+        top: '0px',
+        left: '0px',
+      }}
     >
       {/* Fullscreen overlay when dragging */}
       {isDragging && (
@@ -623,7 +628,7 @@ export default function HumanViewer({
         )}
         {/* Mobile: subtract 72px for controls, Desktop: full height */}
         <div
-          className="md:h-screen w-full relative"
+          className="md:h-screen w-full relative overflow-hidden"
           style={{ height: isMobile ? modelContainerHeight : '100dvh' }}
         >
           <iframe
