@@ -158,7 +158,7 @@ function HomeContent() {
               gender={gender}
               onGenderChange={handleGenderChange}
               shouldResetModel={shouldResetModel}
-              mode={viewerMode}
+              // mode={viewerMode}
             />
           </div>
         )}
