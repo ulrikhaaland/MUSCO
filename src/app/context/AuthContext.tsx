@@ -105,7 +105,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       },
       (error) => {
         console.error('Auth state change error:', error);
-        handleAuthError(error, 'Authentication state error', false);
+        handleAuthError(error, t('authContext.authenticationStateError'), false);
         setLoading(false);
         showGlobalLoader(false);
       }
@@ -154,12 +154,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
     } catch (error) {
       console.error('Error creating user document:', error);
-      return handleAuthError(error, 'Failed to create user document', false);
+      return handleAuthError(error, t('authContext.failedToCreateUserDocument'), false);
     }
   };
 
   const updateUserProfile = async (profileData: Partial<UserProfile>) => {
-    if (!user) throw new Error('No user is logged in');
+    if (!user) throw new Error(t('authContext.noUserLoggedIn'));
 
     try {
       const userDocRef = doc(db, 'users', user.uid);
@@ -190,7 +190,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
     } catch (error) {
       console.error('Error updating user profile:', error);
-      return handleAuthError(error, 'Failed to update user profile', false);
+      return handleAuthError(error, t('authContext.failedToUpdateUserProfile'), false);
     }
   };
 
@@ -201,7 +201,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return await fetchUserProfile(user.uid);
     } catch (error) {
       console.error('Error getting user profile:', error);
-      handleAuthError(error, 'Failed to get user profile', false);
+      handleAuthError(error, t('authContext.failedToGetUserProfile'), false);
       return null;
     }
   };
@@ -213,13 +213,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       console.log('User document deleted successfully');
     } catch (error) {
       console.error('Error deleting user document:', error);
-      return handleAuthError(error, 'Failed to delete user document', false);
+      return handleAuthError(error, t('authContext.failedToDeleteUserDocument'), false);
     }
   };
 
   const deleteUserAccount = async (): Promise<boolean> => {
     if (!auth.currentUser) {
-      toast.error('No user is logged in');
+      toast.error(t('authContext.noUserLoggedIn'));
       return false;
     }
 
@@ -237,7 +237,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // Then delete the authentication account
       await deleteUser(auth.currentUser);
 
-      toast.success('Your account has been successfully deleted');
+      toast.success(t('authContext.accountSuccessfullyDeleted'));
       logAnalyticsEvent('delete_account');
       return true;
     } catch (error: any) {
@@ -246,12 +246,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // Handle specific Firebase error codes
       if (error.code === 'auth/requires-recent-login') {
         toast.error(
-          'For security reasons, please log in again before deleting your account'
+          t('authContext.requiresRecentLogin')
         );
         return false;
       }
 
-      handleAuthError(error, 'Failed to delete account', false);
+      handleAuthError(error, t('authContext.failedToDeleteAccount'), false);
       return false;
     }
   };
@@ -284,8 +284,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       switch (error.code as string) {
         case 'auth/invalid-action-code':
           displayMessage = isPwa
-            ? 'This sign-in link has expired or already been used. Please use the 6-digit code that was sent to your email instead.'
-            : 'The sign-in link has expired or already been used. Please request a new sign-in link.';
+            ? t('authContext.linkExpiredOrUsedPWA')
+            : t('authContext.linkExpiredOrUsedWeb');
           // For PWA users with invalid link, redirect to code input page
           if (isPwa) {
             setTimeout(() => {
@@ -295,14 +295,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           break;
         case 'auth/user-disabled':
           displayMessage =
-            'Your account has been disabled. Please contact support.';
+            t('authContext.accountDisabled');
           break;
         case 'auth/user-not-found':
           displayMessage =
-            'User not found. Please check your email or sign up.';
+            t('authContext.userNotFound');
           break;
         case 'auth/too-many-requests':
-          displayMessage = 'Too many failed attempts. Please try again later.';
+          displayMessage = t('authContext.tooManyRequests');
           break;
         // Add other specific error codes as needed
       }
@@ -343,7 +343,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       logAnalyticsEvent('send_login_link');
     } catch (error) {
       console.error('Error sending login code:', error);
-      return handleAuthError(error, 'Failed to send login code', false);
+      return handleAuthError(error, t('authContext.failedToSendLoginCode'), false);
     }
   };
 
@@ -354,7 +354,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // Ensure functions is initialized before calling httpsCallable
       if (!functions) {
         console.error('Firebase Functions instance is not available.');
-        toast.error('Configuration error. Please try again later.');
+        toast.error(t('authContext.configurationError'));
         return;
       }
       const origin = window.location.origin; // Get current origin
@@ -372,7 +372,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } catch (error) {
       console.error('Error calling sendLoginEmail function:', error);
       // Use toast directly for user feedback
-      toast.error('Failed to send sign-in link. Please try again.');
+      toast.error(t('authContext.failedToSendSignInLink'));
       // Rethrow if you want calling code to be aware of the failure
       // throw error;
       // Or adapt handleAuthError if needed
@@ -385,7 +385,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // Mark the body as logging out to prevent issues
       document.body.classList.add('logging-out');
 
-      showGlobalLoader(true, 'Signing you out...');
+      showGlobalLoader(true, t('authContext.signingYouOut'));
       await signOut(auth);
       logAnalyticsEvent('logout');
       setUser(null); // Optimistically set user to null
@@ -412,7 +412,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       console.error('Error signing out:', error);
       hideLoader();
       document.body.classList.remove('logging-out');
-      return handleAuthError(error, 'Failed to sign out', false);
+      return handleAuthError(error, t('authContext.failedToSignOut'), false);
     }
   };
 

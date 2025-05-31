@@ -13,7 +13,7 @@ const appBaseUrlForNotifications = defineString('APP_BASE_URL_FOR_NOTIFICATIONS'
  * Runs every Monday at 00:01 Europe/Oslo time.
  */
 export const sendWeeklyProgramReminder = onSchedule(
-  {schedule: '0 * * * *', timeZone: 'Europe/Oslo'}, // Every hour
+  {schedule: '* * * * *', timeZone: 'Europe/Oslo'}, // Every minute
   async (_event: ScheduledEvent) => {
     const currentResendApiKey = resendApiKey.value();
     const currentEmailFromAddress = emailFromAddress.value();

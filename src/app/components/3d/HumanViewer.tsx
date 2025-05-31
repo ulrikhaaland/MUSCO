@@ -18,6 +18,10 @@ import { logAnalyticsEvent } from '@/app/utils/analytics';
 
 type ViewerMode = 'full' | 'diagnose' | 'questionnaire';
 
+const MODEL_IDS = {
+  male: '5tOV',
+  female: '5tOR',
+};
 interface HumanViewerProps {
   gender?: Gender;
   onGenderChange?: (gender: Gender) => void;
@@ -81,10 +85,22 @@ export default function HumanViewer({
     // it would require more sophisticated logic, possibly involving visualViewport API.
   }, []);
 
-  const MODEL_IDS = {
-    male: '5tOV',
-    female: '5tOR',
-  };
+  useEffect(() => {
+    if (isMobile) {
+      // Ensure containerHeight is a pixel value before using it for modelContainerHeight
+      if (containerHeight.endsWith('px')) {
+        setModelContainerHeight(containerHeight);
+      } else {
+        // Fallback if containerHeight isn't set to pixels yet by its own useEffect,
+        // directly use window.innerHeight for mobile model container.
+        setModelContainerHeight(`${window.innerHeight}px`);
+      }
+    } else {
+      // For desktop, md:h-screen on the iframe div and 100dvh in its style prop will handle height.
+      // Reset modelContainerHeight to a suitable default if it's not directly used for desktop.
+      setModelContainerHeight('100dvh');
+    }
+  }, [isMobile, containerHeight]);
 
   const {
     humanRef,
@@ -369,10 +385,14 @@ export default function HumanViewer({
   }, []); // Empty dependency array means this runs once after mount
 
   const handleBottomSheetHeight = (sheetHeight: number) => {
-    const newHeight = `calc(100dvh - ${sheetHeight}px)`;
-    if (newHeight !== modelContainerHeight) {
-      setModelContainerHeight(newHeight);
+    // Only adjust if on mobile and the main containerHeight is set to a fixed pixel value
+    if (isMobile && containerHeight.endsWith('px')) {
+      const newHeight = `calc(${containerHeight} - ${sheetHeight}px)`;
+      if (newHeight !== modelContainerHeight && sheetHeight >= 0) {
+        setModelContainerHeight(newHeight);
+      }
     }
+    // For non-mobile cases, the height is typically handled by '100dvh' or 'md:h-screen' directly in styles.
   };
 
   const handleQuestionClick = (question: Question) => {

@@ -305,8 +305,8 @@ function NavigationMenuContent() {
   return (
     <div className="fixed bottom-0 left-0 z-50 w-full border-t border-gray-800 bg-gray-900">
       {/* Hamburger button or login button when not logged in on home page */}
-      {!drawerOpen && (
-        user || pathname !== '/' ? (
+      {!drawerOpen &&
+        (user ? (
           <button
             onClick={() => setDrawerOpen(true)}
             className="fixed top-4 right-4 z-[70] p-2 rounded-lg bg-gray-800 text-white hover:bg-gray-700 transition-colors"
@@ -327,14 +327,19 @@ function NavigationMenuContent() {
             </svg>
           </button>
         ) : (
-          <button
-            onClick={() => router.push('/login')}
-            className="fixed top-4 right-4 z-[70] px-3 py-2 rounded-lg bg-gray-800 text-white hover:bg-gray-700 transition-colors"
-          >
-            {t('auth.signIn')}
-          </button>
-        )
-      )}
+          pathname !== '/login' && (
+            <button
+              onClick={() => {
+                const currentPath = pathname + searchParams.toString();
+                window.sessionStorage.setItem('previousPath', currentPath);
+                router.push('/login');
+              }}
+              className="fixed top-4 right-4 z-[70] px-3 py-2 rounded-lg bg-gray-800 text-white hover:bg-gray-700 transition-colors"
+            >
+              {t('auth.signIn')}
+            </button>
+          )
+        ))}
 
       {/* Drawer overlay */}
       {drawerOpen && (
@@ -398,6 +403,8 @@ function NavigationMenuContent() {
               if (user) {
                 handleLogout();
               } else {
+                const currentPath = pathname + searchParams.toString();
+                window.sessionStorage.setItem('previousPath', currentPath);
                 router.push('/login');
               }
             }}

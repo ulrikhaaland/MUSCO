@@ -284,6 +284,12 @@ export function UserProvider({ children }: { children: ReactNode }) {
           prepareAndSetProgram(mostRecentProgram);
           setIsLoading(false);
           showGlobalLoader(false);
+        } else {
+          // No active or most recent (status 'Done') program found.
+          // This covers cases like: user has no programs, or programs exist but none are active/Done.
+          // Ensure loaders are turned off as the initial loading/processing is complete.
+          setIsLoading(false);
+          showGlobalLoader(false);
         }
 
         // Set the program status if we found one

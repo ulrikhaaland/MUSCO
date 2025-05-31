@@ -1038,6 +1038,28 @@ const translations = {
   'qa.benefit.noPassword': 'Ingen passord nødvendig',
   'qa.benefit.free': 'Helt gratis',
   'qa.benefit.crossDevice': 'Tilgang til programmet på alle enheter',
+
+  // AuthContext translations
+  'authContext.authenticationStateError': 'Autentiseringstilstandsfeil',
+  'authContext.failedToCreateUserDocument': 'Kunne ikke opprette brukerdokument',
+  'authContext.noUserLoggedIn': 'Ingen bruker er logget inn',
+  'authContext.failedToUpdateUserProfile': 'Kunne ikke oppdatere brukerprofil',
+  'authContext.failedToGetUserProfile': 'Kunne ikke hente brukerprofil',
+  'authContext.failedToDeleteUserDocument': 'Kunne ikke slette brukerdokument',
+  'authContext.accountSuccessfullyDeleted': 'Kontoen din har blitt slettet',
+  'authContext.requiresRecentLogin': 'Av sikkerhetsgrunner må du logge inn på nytt før du sletter kontoen din',
+  'authContext.failedToDeleteAccount': 'Kunne ikke slette konto',
+  'authContext.linkExpiredOrUsedPWA': 'Denne påloggingslenken er utløpt eller allerede brukt. Bruk den 6-sifrede koden som ble sendt til e-posten din i stedet.',
+  'authContext.linkExpiredOrUsedWeb': 'Påloggingslenken er utløpt eller allerede brukt. Be om en ny påloggingslenke.',
+  'authContext.accountDisabled': 'Kontoen din er deaktivert. Ta kontakt med kundestøtte.',
+  'authContext.userNotFound': 'Bruker ikke funnet. Sjekk e-posten din eller registrer deg.',
+  'authContext.tooManyRequests': 'For mange mislykkede forsøk. Prøv igjen senere.',
+  'authContext.failedToSendLoginCode': 'Kunne ikke sende påloggingskode',
+  'authContext.firebaseFunctionsNotAvailable': 'Firebase Functions-instans er ikke tilgjengelig.',
+  'authContext.configurationError': 'Konfigurasjonsfeil. Prøv igjen senere.',
+  'authContext.failedToSendSignInLink': 'Kunne ikke sende påloggingslenke. Prøv igjen.',
+  'authContext.signingYouOut': 'Logger deg ut...',
+  'authContext.failedToSignOut': 'Kunne ikke logge ut'
 };
 
 export default translations;

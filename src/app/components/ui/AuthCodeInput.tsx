@@ -115,7 +115,13 @@ export function AuthCodeInput() {
 
       // Successfully signed in, redirect to home
       toast.success(t('login.success'));
-      router.push('/program');
+      const previousPath = window.sessionStorage.getItem('previousPath');
+      if (previousPath) {
+        router.push(previousPath);
+        window.sessionStorage.removeItem('previousPath'); // Clean up
+      } else {
+        router.push('/program');
+      }
     } catch (error: any) {
       console.error('Error validating code:', error);
 

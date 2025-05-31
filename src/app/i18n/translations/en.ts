@@ -834,6 +834,28 @@ const translations = {
   'qa.benefit.noPassword': 'No password required',
   'qa.benefit.free': 'Free of charge',
   'qa.benefit.crossDevice': 'Access your program on any device',
+
+  // AuthContext translations
+  'authContext.authenticationStateError': 'Authentication state error',
+  'authContext.failedToCreateUserDocument': 'Failed to create user document',
+  'authContext.noUserLoggedIn': 'No user is logged in',
+  'authContext.failedToUpdateUserProfile': 'Failed to update user profile',
+  'authContext.failedToGetUserProfile': 'Failed to get user profile',
+  'authContext.failedToDeleteUserDocument': 'Failed to delete user document',
+  'authContext.accountSuccessfullyDeleted': 'Your account has been successfully deleted',
+  'authContext.requiresRecentLogin': 'For security reasons, please log in again before deleting your account',
+  'authContext.failedToDeleteAccount': 'Failed to delete account',
+  'authContext.linkExpiredOrUsedPWA': 'This sign-in link has expired or already been used. Please use the 6-digit code that was sent to your email instead.',
+  'authContext.linkExpiredOrUsedWeb': 'The sign-in link has expired or already been used. Please request a new sign-in link.',
+  'authContext.accountDisabled': 'Your account has been disabled. Please contact support.',
+  'authContext.userNotFound': 'User not found. Please check your email or sign up.',
+  'authContext.tooManyRequests': 'Too many failed attempts. Please try again later.',
+  'authContext.failedToSendLoginCode': 'Failed to send login code',
+  'authContext.firebaseFunctionsNotAvailable': 'Firebase Functions instance is not available.',
+  'authContext.configurationError': 'Configuration error. Please try again later.',
+  'authContext.failedToSendSignInLink': 'Failed to send sign-in link. Please try again.',
+  'authContext.signingYouOut': 'Signing you out...',
+  'authContext.failedToSignOut': 'Failed to sign out'
 };
 
 export default translations; 
