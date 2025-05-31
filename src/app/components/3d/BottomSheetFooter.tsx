@@ -1,6 +1,5 @@
 import { RefObject } from 'react';
 import { Question } from '@/app/types';
-import { BottomSheetRef } from 'react-spring-bottom-sheet';
 import { useTranslation } from '@/app/i18n';
 
 interface BottomSheetFooterProps {

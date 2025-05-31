@@ -94,6 +94,8 @@ export default function MobileControls({
   const [message, setMessage] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { intention, selectedExerciseGroupsRef, fullBodyRef } = useApp();
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
+  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
 
   const {
     messages,
@@ -111,9 +113,17 @@ export default function MobileControls({
     selectedGroups: selectedGroups,
   });
 
-  // Get the actual viewport height accounting for mobile browser UI
+  // Get the actual viewport height accounting for mobile browser UI and keyboard
   const getViewportHeight = () => {
-    return window.innerHeight * 0.01 * 100; // Convert to dvh equivalent
+    if (typeof window === 'undefined') return 667; // fallback for SSR
+    
+    // Use Visual Viewport API if available (modern approach)
+    if (window.visualViewport) {
+      return window.visualViewport.height;
+    }
+    
+    // Fallback to window.innerHeight
+    return window.innerHeight;
   };
 
   useEffect(() => {
@@ -125,6 +135,83 @@ export default function MobileControls({
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
+
+  // Handle keyboard visibility using Visual Viewport API
+  useEffect(() => {
+    if (!isMobile || typeof window === 'undefined') {
+      return;
+    }
+
+    const handleViewportChange = () => {
+      const visualViewport = window.visualViewport;
+      const windowHeight = window.innerHeight;
+      const viewportHeight = visualViewport ? visualViewport.height : windowHeight;
+      
+      // Calculate keyboard height
+      const calculatedKeyboardHeight = windowHeight - viewportHeight;
+      const threshold = 150; // Minimum height to consider keyboard open
+      
+      const keyboardVisible = calculatedKeyboardHeight > threshold;
+      
+      setIsKeyboardVisible(keyboardVisible);
+      setKeyboardHeight(keyboardVisible ? calculatedKeyboardHeight : 0);
+      
+      // Log for debugging
+      console.log('MobileControls - Viewport change:', {
+        windowHeight,
+        viewportHeight,
+        keyboardHeight: calculatedKeyboardHeight,
+        keyboardVisible,
+        hasVisualViewport: !!window.visualViewport
+      });
+    };
+
+    // Use Visual Viewport API if available
+    if (window.visualViewport) {
+      // Listen to visual viewport changes
+      window.visualViewport.addEventListener('resize', handleViewportChange);
+      window.visualViewport.addEventListener('scroll', handleViewportChange);
+      
+      // Initial check
+      handleViewportChange();
+
+      return () => {
+        if (window.visualViewport) {
+          window.visualViewport.removeEventListener('resize', handleViewportChange);
+          window.visualViewport.removeEventListener('scroll', handleViewportChange);
+        }
+      };
+    } else {
+      // Fallback for browsers without Visual Viewport API
+      const initialHeight = window.innerHeight;
+      
+      const handleResize = () => {
+        const currentHeight = window.innerHeight;
+        const heightDiff = initialHeight - currentHeight;
+        const threshold = 150;
+        
+        const keyboardVisible = heightDiff > threshold;
+        setIsKeyboardVisible(keyboardVisible);
+        setKeyboardHeight(keyboardVisible ? heightDiff : 0);
+        
+        console.log('MobileControls - Fallback keyboard detection:', {
+          initialHeight,
+          currentHeight,
+          heightDiff,
+          keyboardVisible
+        });
+      };
+
+      window.addEventListener('resize', handleResize);
+      
+      // Initial check
+      handleResize();
+
+      return () => {
+        window.removeEventListener('resize', handleResize);
+      };
+    }
+  }, [isMobile]);
 
   useEffect(() => {
     const updateContentHeight = () => {
@@ -235,6 +322,13 @@ export default function MobileControls({
           if (contentHeight < snapPoint) {
             snapPoint = contentHeight;
           }
+
+          // If keyboard is visible, use a more conservative snap point
+          if (isKeyboardVisible) {
+            const viewportHeight = getViewportHeight();
+            snapPoint = Math.min(snapPoint, viewportHeight * 0.4);
+          }
+
           setTimeout(
             () => {
               if (sheetRef.current) {
@@ -253,7 +347,13 @@ export default function MobileControls({
         // First message is loading, expand to third snap point
         if (sheetRef.current) {
           const snapPoints = getSnapPoints();
-          const thirdPoint = snapPoints[2]; // viewportHeight * 0.78
+          let thirdPoint = snapPoints[2]; // viewportHeight * 0.78
+
+          // If keyboard is visible, use a smaller point
+          if (isKeyboardVisible) {
+            thirdPoint = Math.min(thirdPoint, getViewportHeight() * 0.5);
+          }
+
           setTimeout(() => {
             sheetRef.current.snapTo(() => thirdPoint);
           }, 200);
@@ -275,6 +375,7 @@ export default function MobileControls({
     followUpQuestions,
     contentHeight,
     userModifiedSheetHeight,
+    isKeyboardVisible,
   ]);
 
   // Update model height whenever sheet height changes
@@ -356,6 +457,17 @@ export default function MobileControls({
     let secondSnapPoint = viewportHeight * 0.4;
     if (messages.length === 0) {
       secondSnapPoint = contentHeight;
+    }
+
+    // When keyboard is visible, adjust snap points to be more conservative
+    if (isKeyboardVisible) {
+      // Use smaller percentages when keyboard is open to prevent covering input
+      return [
+        minHeight, 
+        Math.min(secondSnapPoint, viewportHeight * 0.3), 
+        viewportHeight * 0.5, 
+        viewportHeight * 0.7
+      ];
     }
 
     return [minHeight, secondSnapPoint, viewportHeight * 0.78, viewportHeight];
@@ -448,6 +560,37 @@ export default function MobileControls({
     }
   };
 
+  // Handle textarea focus for keyboard interaction
+  useEffect(() => {
+    const textarea = textareaRef.current;
+    if (!textarea || !isMobile) return;
+
+    const handleFocus = () => {
+      // When textarea gets focus, ensure bottom sheet is at appropriate height
+      if (sheetRef.current && isKeyboardVisible) {
+        const viewportHeight = getViewportHeight();
+        const targetHeight = Math.min(viewportHeight * 0.5, viewportHeight - 100);
+        
+        setTimeout(() => {
+          sheetRef.current?.snapTo(() => targetHeight);
+        }, 300); // Delay to allow keyboard animation
+      }
+    };
+
+    const handleBlur = () => {
+      // When textarea loses focus, we can allow normal snap behavior
+      // The keyboard visibility will be handled by the viewport change listener
+    };
+
+    textarea.addEventListener('focus', handleFocus);
+    textarea.addEventListener('blur', handleBlur);
+
+    return () => {
+      textarea.removeEventListener('focus', handleFocus);
+      textarea.removeEventListener('blur', handleBlur);
+    };
+  }, [isMobile, isKeyboardVisible]);
+
   return (
     <>
       {/* Mobile Controls - Positioned relative to bottom sheet */}
@@ -478,8 +621,6 @@ export default function MobileControls({
                 if (sheetRef.current) {
                   const currentHeight = sheetRef.current.height;
                   const snapPoints = getSnapPoints();
-                  const minHeight = Math.min(getViewportHeight() * 0.15, 72);
-
                   // Find next smaller snap point
                   const nextPoint = [...snapPoints]
                     .reverse()
