@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useState, useCallback, useEffect, useRef } from 'react';
+import { Suspense, useState, useCallback, useEffect } from 'react';
 import HumanViewer from './components/3d/HumanViewer';
 import { Gender } from './types';
 import { useApp, ProgramIntention } from './context/AppContext';

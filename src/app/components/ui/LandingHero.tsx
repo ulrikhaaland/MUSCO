@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { motion } from 'framer-motion'
 import PartnerLogos from '@/components/PartnerLogos'
 
 export type ViewerMode = 'full' | 'diagnose' | 'questionnaire'
@@ -46,26 +45,22 @@ export default function LandingHero({ onSelect }: { onSelect: (m: ViewerMode) =>
       <h1 className="mt-6 text-3xl font-bold text-white">relieve pain, rebuild strength</h1>
       <p className="text-gray-300 mb-6">custom rehab plan in under 2 minutes</p>
       <div className="flex gap-4 mb-4">
-        <motion.button
-          id="btn-diagnose"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
+        <button
+          data-id="btn-diagnose"
           onClick={() => onSelect('diagnose')}
-          className="px-4 py-2 bg-indigo-600 text-white rounded-md"
+          className="px-4 py-2 bg-indigo-600 text-white rounded-md transition-transform hover:scale-105 active:scale-95"
           aria-label="i have pain"
         >
           i have pain
-        </motion.button>
-        <motion.button
+        </button>
+        <button
           id="btn-workout"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
           onClick={() => onSelect('questionnaire')}
-          className="px-4 py-2 border border-white text-white rounded-md"
+          className="px-4 py-2 border border-white text-white rounded-md transition-transform hover:scale-105 active:scale-95"
           aria-label="just need a workout"
         >
           just need a workout
-        </motion.button>
+        </button>
       </div>
       <PartnerLogos />
       <div className="mt-4 flex items-center gap-2 text-sm text-white">

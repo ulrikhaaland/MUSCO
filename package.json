@@ -44,7 +44,6 @@
     "react-phone-number-input": "^3.4.12",
     "react-spring": "^8.0.27",
     "react-spring-bottom-sheet": "3.5.0-alpha.0",
-    "framer-motion": "^10.16.1",
     "resend": "^4.4.0",
     "server-only": "^0.0.1"
   },
