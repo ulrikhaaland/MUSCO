@@ -57,8 +57,6 @@ export default function HumanViewer({
   const [isResetting, setIsResetting] = useState(false);
   const { onQuestionnaireSubmit } = useUser();
   const [showQuestionnaire, setShowQuestionnaire] = useState(false);
-  const [keyboardHeight, setKeyboardHeight] = useState(0);
-  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -79,83 +77,6 @@ export default function HumanViewer({
       window.removeEventListener('resize', checkMobile);
     };
   }, []);
-
-  // Handle keyboard visibility using Visual Viewport API
-  useEffect(() => {
-    if (!isMobile || typeof window === 'undefined') {
-      return;
-    }
-
-    const handleViewportChange = () => {
-      const visualViewport = window.visualViewport;
-      const windowHeight = window.innerHeight;
-      const viewportHeight = visualViewport ? visualViewport.height : windowHeight;
-      
-      // Calculate keyboard height
-      const calculatedKeyboardHeight = windowHeight - viewportHeight;
-      const threshold = 150; // Minimum height to consider keyboard open
-      
-      const keyboardVisible = calculatedKeyboardHeight > threshold;
-      
-      setIsKeyboardVisible(keyboardVisible);
-      setKeyboardHeight(keyboardVisible ? calculatedKeyboardHeight : 0);
-      
-      // Log for debugging
-      console.log('Viewport change:', {
-        windowHeight,
-        viewportHeight,
-        keyboardHeight: calculatedKeyboardHeight,
-        keyboardVisible,
-        hasVisualViewport: !!window.visualViewport
-      });
-    };
-
-    // Use Visual Viewport API if available
-    if (window.visualViewport) {
-      // Listen to visual viewport changes
-      window.visualViewport.addEventListener('resize', handleViewportChange);
-      window.visualViewport.addEventListener('scroll', handleViewportChange);
-      
-      // Initial check
-      handleViewportChange();
-
-      return () => {
-        if (window.visualViewport) {
-          window.visualViewport.removeEventListener('resize', handleViewportChange);
-          window.visualViewport.removeEventListener('scroll', handleViewportChange);
-        }
-      };
-    } else {
-      // Fallback for browsers without Visual Viewport API
-      const initialHeight = window.innerHeight;
-      
-      const handleResize = () => {
-        const currentHeight = window.innerHeight;
-        const heightDiff = initialHeight - currentHeight;
-        const threshold = 150;
-        
-        const keyboardVisible = heightDiff > threshold;
-        setIsKeyboardVisible(keyboardVisible);
-        setKeyboardHeight(keyboardVisible ? heightDiff : 0);
-        
-        console.log('Fallback keyboard detection:', {
-          initialHeight,
-          currentHeight,
-          heightDiff,
-          keyboardVisible
-        });
-      };
-
-      window.addEventListener('resize', handleResize);
-      
-      // Initial check
-      handleResize();
-
-      return () => {
-        window.removeEventListener('resize', handleResize);
-      };
-    }
-  }, [isMobile]);
 
   const MODEL_IDS = {
     male: '5tOV',
@@ -445,16 +366,7 @@ export default function HumanViewer({
   }, []); // Empty dependency array means this runs once after mount
 
   const handleBottomSheetHeight = (sheetHeight: number) => {
-    let newHeight: string;
-    
-    if (isKeyboardVisible && keyboardHeight > 0) {
-      // When keyboard is visible, subtract both sheet height and keyboard height
-      newHeight = `calc(100dvh - ${sheetHeight}px - ${keyboardHeight}px)`;
-    } else {
-      // Normal case - just subtract sheet height
-      newHeight = `calc(100dvh - ${sheetHeight}px)`;
-    }
-    
+    const newHeight = `calc(100dvh - ${sheetHeight}px)`;
     if (newHeight !== modelContainerHeight) {
       setModelContainerHeight(newHeight);
     }

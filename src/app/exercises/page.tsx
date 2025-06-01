@@ -417,7 +417,10 @@ export default function AvailableExercisesPage() {
 
         // Get a sorted list of body parts for consistent display order
         const sortedBodyParts = Object.keys(grouped).sort();
-        console.log(`Sorted body parts: ${sortedBodyParts.join(', ')}`);
+        for (const bodyPart of sortedBodyParts) {
+          console.log(`Body part: ${bodyPart}`);
+          console.log(`Exercises: ${grouped[bodyPart].map(ex => ex.name).join(', ')}`);
+        }
 
         setExercisesByBodyPart(grouped);
       } catch (error) {
@@ -704,10 +707,140 @@ export default function AvailableExercisesPage() {
     return allEquipment.slice(0, 10);
   }, [allEquipment, showAllEquipment]);
 
+  // Write exercises to file function
+  const writeExercisesToFile = useCallback(() => {
+    try {
+      // Format the exercise data
+      let content = `Exercise Database Export - ${showMuscoExercises ? 'bodAI' : 'Other'} Exercises\n`;
+      content += `Generated: ${new Date().toISOString()}\n`;
+      content += `Total Categories: ${Object.keys(exercisesByBodyPart).length}\n`;
+      content += `Total Exercises: ${Object.values(exercisesByBodyPart).reduce((total, exercises) => total + exercises.length, 0)}\n\n`;
+      content += '='.repeat(80) + '\n\n';
+
+      // Sort body parts alphabetically for consistent output
+      const sortedBodyParts = Object.keys(exercisesByBodyPart).sort();
+      
+      sortedBodyParts.forEach((bodyPart, index) => {
+        const exercises = exercisesByBodyPart[bodyPart];
+        
+        content += `${index + 1}. ${bodyPart.toUpperCase()} (${exercises.length} exercises)\n`;
+        content += '-'.repeat(40) + '\n';
+        
+        exercises.forEach((exercise, exerciseIndex) => {
+          content += `  ${exerciseIndex + 1}. ${exercise.name}\n`;
+          if (exercise.id) content += `     ID: ${exercise.id}\n`;
+          if (exercise.muscles && exercise.muscles.length > 0) {
+            content += `     Muscles: ${exercise.muscles.join(', ')}\n`;
+          }
+          if (exercise.equipment && exercise.equipment.length > 0) {
+            content += `     Equipment: ${exercise.equipment.join(', ')}\n`;
+          }
+          if (exercise.difficulty) content += `     Difficulty: ${exercise.difficulty}\n`;
+          if (exercise.targetBodyParts && exercise.targetBodyParts.length > 0) {
+            content += `     Target Areas: ${exercise.targetBodyParts.join(', ')}\n`;
+          }
+          content += '\n';
+        });
+        
+        content += '\n';
+      });
+
+      // Create and download the file
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+      const filename = `exercises-${showMuscoExercises ? 'bodai' : 'other'}-${timestamp}.txt`;
+      
+      const blob = new Blob([content], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      
+      console.log(`Exercise data written to file: ${filename}`);
+      
+      // Also send to server API to write file on server side
+      fetch('/api/write-exercises', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          content,
+          filename,
+          exerciseSource: showMuscoExercises ? 'bodai' : 'other'
+        }),
+      }).catch(error => {
+        console.error('Error writing to server file:', error);
+      });
+
+    } catch (error) {
+      console.error('Error writing exercises to file:', error);
+    }
+  }, [exercisesByBodyPart, showMuscoExercises]);
+
+  // Write exercises in JSON format
+  const writeExercisesToJsonFile = useCallback(() => {
+    try {
+      const data = {
+        metadata: {
+          source: showMuscoExercises ? 'bodai' : 'other',
+          generatedAt: new Date().toISOString(),
+          totalCategories: Object.keys(exercisesByBodyPart).length,
+          totalExercises: Object.values(exercisesByBodyPart).reduce((total, exercises) => total + exercises.length, 0)
+        },
+        exercisesByBodyPart: exercisesByBodyPart
+      };
+
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+      const filename = `exercises-${showMuscoExercises ? 'bodai' : 'other'}-${timestamp}.json`;
+      
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      
+      console.log(`Exercise JSON data written to file: ${filename}`);
+    } catch (error) {
+      console.error('Error writing exercises JSON to file:', error);
+    }
+  }, [exercisesByBodyPart, showMuscoExercises]);
+
   return (
     <div className="w-full bg-gray-900 min-h-screen text-white">
       <div className="max-w-4xl mx-auto px-4 py-8 space-y-8">
         <h1 className="text-3xl font-bold text-center text-indigo-200 mb-8">Available Exercises</h1>
+        
+        {/* Export buttons */}
+        <div className="flex justify-center gap-4 mb-6">
+          <button
+            onClick={writeExercisesToFile}
+            className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors duration-200 flex items-center gap-2"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            Export as Text
+          </button>
+          <button
+            onClick={writeExercisesToJsonFile}
+            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors duration-200 flex items-center gap-2"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
+            </svg>
+            Export as JSON
+          </button>
+        </div>
         
         {/* Total exercise count */}
         <p className="text-center font-serif italic text-gray-400 mb-6">

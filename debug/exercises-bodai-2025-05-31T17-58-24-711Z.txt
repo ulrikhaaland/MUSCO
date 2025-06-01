@@ -1,0 +1,856 @@
+Exercise Database Export - bodAI Exercises
+Generated: 2025-05-31T17:58:24.711Z
+Total Categories: 17
+Total Exercises: 114
+
+================================================================================
+
+1. ABS (10 exercises)
+----------------------------------------
+  1. Dead Bug
+     ID: abs-20
+     Muscles: Abs
+     Equipment: Bodyweight
+     Difficulty: intermediate
+     Target Areas: Abs
+
+  2. Hengende Benløft
+     ID: abs-5
+     Muscles: Abs, Forearms
+     Equipment: Bodyweight
+     Difficulty: advanced
+     Target Areas: Abs
+
+  3. Hollow Body-Crunch med Armsveip
+     ID: abs-119
+     Muscles: Abs, Hip Flexors, Serratus Anterior, Core
+     Equipment: Bodyweight
+     Difficulty: beginner
+     Target Areas: Abs
+
+  4. Liggende Benløft med Hofteløft
+     ID: abs-22
+     Muscles: Abs
+     Equipment: Bodyweight
+     Difficulty: beginner
+     Target Areas: Abs
+
+  5. Mountain Climbers
+     ID: abs-122
+     Muscles: Abs, Hip Flexors, Shoulders, Quads, Core
+     Equipment: Bodyweight
+     Difficulty: intermediate
+     Target Areas: Abs, Cardio
+
+  6. Planke
+     ID: abs-6
+     Muscles: Abs, Lower Back
+     Equipment: Bodyweight
+     Difficulty: beginner
+     Target Areas: Abs
+
+  7. Planke til Push-up
+     ID: abs-120
+     Muscles: Abs, Shoulders, Triceps, Chest, Core
+     Equipment: Bodyweight
+     Difficulty: intermediate
+     Target Areas: Abs
+
+  8. Sit-up
+     ID: abs-9
+     Muscles: Abs
+     Equipment: Bodyweight
+     Difficulty: beginner
+     Target Areas: Abs
+
+  9. Spiderman-planke
+     ID: abs-121
+     Muscles: Abs, Obliques, Hip Flexors, Shoulders, Core
+     Equipment: Bodyweight
+     Difficulty: intermediate
+     Target Areas: Abs
+
+  10. Sykkel-Crunch (Abdominal Air Bike)
+     ID: abs-13
+     Muscles: Abs
+     Equipment: Bodyweight
+     Difficulty: beginner
+     Target Areas: Abs
+
+
+2. BICEPS (7 exercises)
+----------------------------------------
+  1. Bryststøttet Skrå Manualcurl
+     ID: biceps-78
+     Muscles: Biceps
+     Equipment: Dumbbell, Bench
+     Difficulty: beginner
+     Target Areas: Biceps
+
+  2. Enarms Liggende Skrå Manualcurl
+     ID: biceps-53
+     Muscles: Biceps
+     Equipment: Dumbbell
+     Difficulty: beginner
+     Target Areas: Biceps
+
+  3. EZ-Stangcurl
+     ID: biceps-10
+     Muscles: Biceps
+     Equipment: Barbell
+     Difficulty: beginner
+     Target Areas: Biceps
+
+  4. Sittende Manualcurl
+     ID: biceps-18
+     Muscles: Biceps
+     Equipment: Dumbbell
+     Difficulty: beginner
+     Target Areas: Biceps
+
+  5. Stående Hammercurl
+     ID: biceps-1
+     Muscles: Biceps, Forearms
+     Equipment: Dumbbell
+     Difficulty: beginner
+     Target Areas: Biceps
+
+  6. Stående Manualcurl
+     ID: biceps-2
+     Muscles: Biceps
+     Equipment: Dumbbell
+     Difficulty: beginner
+     Target Areas: Biceps
+
+  7. Stående Stangcurl
+     ID: biceps-4
+     Muscles: Biceps
+     Equipment: Barbell
+     Difficulty: beginner
+     Target Areas: Biceps
+
+
+3. CALVES (3 exercises)
+----------------------------------------
+  1. Ettbens Stående Tåhev Med Kroppsvekt
+     ID: calves-12
+     Muscles: Calves
+     Equipment: Bodyweight
+     Difficulty: beginner
+     Target Areas: Calves
+
+  2. Stående Tåhev Med Kroppsvekt
+     ID: calves-6
+     Muscles: Calves
+     Equipment: Bodyweight
+     Difficulty: beginner
+     Target Areas: Calves
+
+  3. Unilateral Eksentrisk Stående Tåhev Med Kroppsvekt
+     ID: calves-63
+     Muscles: Calves
+     Equipment: Bodyweight
+     Difficulty: intermediate
+     Target Areas: Calves
+
+
+4. CARDIO (10 exercises)
+----------------------------------------
+  1. 4×4 Intervalløping – Innendørs Tredemølle
+     ID: cardio-4
+     Muscles: Quadriceps, Hamstrings, Calves, Glutes, Core
+     Equipment: Treadmill, Running Shoes
+     Difficulty: intermediate
+     Target Areas: Cardio
+
+  2. 4×4 Intervalløping – Utendørs
+     ID: cardio-2
+     Muscles: Quadriceps, Hamstrings, Calves, Glutes, Core
+     Equipment: Running Shoes
+     Difficulty: intermediate
+     Target Areas: Cardio
+
+  3. 4×4 Intervallroing
+     ID: cardio-10
+     Muscles: Quadriceps, Hamstrings, Glutes, Core, Back, Shoulders, Arms
+     Equipment: Rowing Machine
+     Difficulty: intermediate
+     Target Areas: Cardio
+
+  4. 4×4 Intervallsykling – Innendørs Spinningsykkel
+     ID: cardio-8
+     Muscles: Quadriceps, Hamstrings, Calves, Glutes, Core
+     Equipment: Stationary Bike
+     Difficulty: intermediate
+     Target Areas: Cardio
+
+  5. 4×4 Intervallsykling – Utendørs
+     ID: cardio-6
+     Muscles: Quadriceps, Hamstrings, Calves, Glutes, Core
+     Equipment: Bicycle, Helmet
+     Difficulty: intermediate
+     Target Areas: Cardio
+
+  6. Sone 2 Løping – Innendørs Tredemølle
+     ID: cardio-3
+     Muscles: Quadriceps, Hamstrings, Calves, Glutes, Core
+     Equipment: Treadmill, Running Shoes
+     Difficulty: beginner
+     Target Areas: Cardio
+
+  7. Sone 2 Løping – Utendørs
+     ID: cardio-1
+     Muscles: Quadriceps, Hamstrings, Calves, Glutes, Core
+     Equipment: Running Shoes
+     Difficulty: beginner
+     Target Areas: Cardio
+
+  8. Sone 2 Roing
+     ID: cardio-9
+     Muscles: Quadriceps, Hamstrings, Glutes, Core, Back, Shoulders, Arms
+     Equipment: Rowing Machine
+     Difficulty: beginner
+     Target Areas: Cardio
+
+  9. Sone 2 Sykling – Innendørs Spinningsykkel
+     ID: cardio-7
+     Muscles: Quadriceps, Hamstrings, Calves, Glutes, Core
+     Equipment: Stationary Bike
+     Difficulty: beginner
+     Target Areas: Cardio
+
+  10. Sone 2 Sykling – Utendørs
+     ID: cardio-5
+     Muscles: Quadriceps, Hamstrings, Calves, Glutes, Core
+     Equipment: Bicycle, Helmet
+     Difficulty: beginner
+     Target Areas: Cardio
+
+
+5. CHEST (9 exercises)
+----------------------------------------
+  1. Armheving
+     ID: chest-18
+     Muscles: Chest, Abs, Shoulders, Triceps
+     Equipment: Bodyweight
+     Difficulty: beginner
+     Target Areas: Chest
+
+  2. Manualbenkpress
+     ID: chest-1
+     Muscles: Chest, Shoulders, Triceps
+     Equipment: Dumbbell
+     Difficulty: beginner
+     Target Areas: Chest
+
+  3. Maskinbenkpress (Hammer Strength)
+     ID: chest-11
+     Muscles: Chest, Shoulders, Triceps
+     Equipment: Machine
+     Difficulty: beginner
+     Target Areas: Chest
+
+  4. Skrå Manualbenkpress
+     ID: chest-3
+     Muscles: Chest, Shoulders, Triceps
+     Equipment: Dumbbell
+     Difficulty: beginner
+     Target Areas: Chest
+
+  5. Skrå Manualflyes
+     ID: chest-14
+     Muscles: Chest, Shoulders, Triceps
+     Equipment: Dumbbell
+     Difficulty: beginner
+     Target Areas: Chest
+
+  6. Stående Kabelflyes
+     ID: chest-10
+     Muscles: Chest, Shoulders, Triceps
+     Equipment: Cable
+     Difficulty: beginner
+     Target Areas: Chest
+
+  7. Stående Kabelflyes Høy-Til-Lav
+     ID: chest-22
+     Muscles: Chest, Shoulders, Triceps
+     Equipment: Cable
+     Difficulty: beginner
+     Target Areas: Chest
+
+  8. Stående Kabelflyes Lav-Til-Høy
+     ID: chest-16
+     Muscles: Chest, Shoulders, Triceps
+     Equipment: Cable
+     Difficulty: intermediate
+     Target Areas: Chest
+
+  9. Stangbenkpress
+     ID: chest-7
+     Muscles: Chest, Shoulders, Triceps
+     Equipment: Barbell
+     Difficulty: intermediate
+     Target Areas: Chest
+
+
+6. FOREARMS (2 exercises)
+----------------------------------------
+  1. Manual Håndleddscurl
+     ID: forearms-1
+     Muscles: Forearms, Grip
+     Equipment: Dumbbell, Bench
+     Difficulty: beginner
+     Target Areas: Forearms
+
+  2. Manual Håndleddsrotasjon
+     ID: forearms-2
+     Muscles: Forearms, Wrist Pronators, Wrist Supinators
+     Equipment: Dumbbell, Bench
+     Difficulty: beginner
+     Target Areas: Forearms
+
+
+7. GLUTES (6 exercises)
+----------------------------------------
+  1. Ettbens Hip-Thrust
+     ID: glutes-46
+     Muscles: Glutes, Hamstrings, Core
+     Equipment: Bench
+     Difficulty: intermediate
+     Target Areas: Glutes
+
+  2. Liggende Hofteabduksjon
+     ID: glutes-44
+     Muscles: Glutes, Hip Abductors
+     Equipment: Bodyweight
+     Difficulty: beginner
+     Target Areas: Glutes
+
+  3. Modifisert Sideplanke Med Hofteabduksjon
+     ID: glutes-45
+     Muscles: Glutes, Obliques, Hip Abductors, Core
+     Equipment: Bodyweight
+     Difficulty: beginner
+     Target Areas: Glutes, Core
+
+  4. Rygghev
+     ID: glutes-1
+     Muscles: Glutes, Hamstrings, Lower Back
+     Equipment: Bodyweight
+     Difficulty: beginner
+     Target Areas: Glutes
+
+  5. Setebro Med Kroppsvekt
+     ID: glutes-7
+     Muscles: Glutes, Abs, Hamstrings
+     Equipment: Bodyweight
+     Difficulty: beginner
+     Target Areas: Glutes
+
+  6. Stang-Setebro
+     ID: glutes-8
+     Muscles: Glutes, Abs, Hamstrings
+     Equipment: Barbell
+     Difficulty: intermediate
+     Target Areas: Glutes
+
+
+8. HAMSTRINGS (5 exercises)
+----------------------------------------
+  1. Ettbens Rumensk Markløft
+     ID: hamstrings-48
+     Muscles: Hamstrings, Glutes, Lower Back, Core, Calves
+     Equipment: Kettlebell, Dumbbell, Weight Plate, Barbell, Bodyweight
+     Difficulty: intermediate
+     Target Areas: Hamstrings
+
+  2. Konvensjonell Markløft
+     ID: hamstrings-2
+     Muscles: Hamstrings, Abs, Adductors, Calves, Forearms, Glutes, Hamstrings, Lats, Lower Back, Middle Back, Quads, Traps, Upper Back
+     Equipment: Barbell
+     Difficulty: intermediate
+     Target Areas: Hamstrings
+
+  3. Nordisk Hamstringscurl
+     ID: hamstrings-20
+     Muscles: Hamstrings, Glutes, Abs, Calves
+     Equipment: Bodyweight
+     Difficulty: advanced
+     Target Areas: Hamstrings
+
+  4. Rumensk Markløft (RDL)
+     ID: hamstrings-5
+     Muscles: Hamstrings, Abs, Forearms, Glutes, Lats, Lower Back, Traps, Upper Back
+     Equipment: Barbell
+     Difficulty: beginner
+     Target Areas: Hamstrings
+
+  5. Stivbeinsmarkløft
+     ID: hamstrings-34
+     Muscles: Hamstrings, Abs, Adductors, Calves, Forearms, Glutes, Lats, Lower Back, Quads, Traps, Upper Back
+     Equipment: Barbell
+     Difficulty: intermediate
+     Target Areas: Hamstrings
+
+
+9. LATS (3 exercises)
+----------------------------------------
+  1. Nedtrekk
+     ID: lats-1
+     Muscles: Lats, Abs, Biceps, Shoulders, Upper Back
+     Equipment: Cable
+     Difficulty: beginner
+     Target Areas: Lats
+
+  2. Pullup
+     ID: lats-6
+     Muscles: Lats, Abs, Biceps, Shoulders, Upper Back
+     Equipment: Bodyweight
+     Difficulty: beginner
+     Target Areas: Lats
+
+  3. Tau Strak Arm Nedtrekk
+     ID: lats-10
+     Muscles: Lats, Abs, Biceps, Shoulders, Upper Back
+     Equipment: Cable
+     Difficulty: beginner
+     Target Areas: Lats
+
+
+10. LOWER BACK (2 exercises)
+----------------------------------------
+  1. Superman-løft
+     ID: lower-back-1
+     Muscles: Lower Back, Glutes, Hamstrings, Upper Back
+     Equipment: Bodyweight
+     Difficulty: beginner
+     Target Areas: Lower Back
+
+  2. Svømmerløft I Mageleie
+     ID: lower-back-2
+     Muscles: Lower Back, Upper Back, Rear Deltoids, Rhomboids, Trapezius
+     Equipment: Bodyweight
+     Difficulty: beginner
+     Target Areas: Lower Back, Upper Back
+
+
+11. OBLIQUES (3 exercises)
+----------------------------------------
+  1. Renegade-Roing
+     ID: obliques-15
+     Muscles: Obliques, Core, Lats, Rhomboids, Glutes, Shoulders
+     Equipment: Dumbbell
+     Difficulty: intermediate
+     Target Areas: Obliques, Core, Back
+
+  2. Sideplanke Med Hoftedipp
+     ID: obliques-4
+     Muscles: Obliques, Abs
+     Equipment: Bodyweight
+     Difficulty: beginner
+     Target Areas: Obliques
+
+  3. Sideplanke Med Rotasjonsgjennomtrekk
+     ID: obliques-14
+     Muscles: Obliques, Core, Shoulders, Glutes, Back
+     Equipment: Bodyweight
+     Difficulty: intermediate
+     Target Areas: Core, Shoulders
+
+
+12. QUADS (11 exercises)
+----------------------------------------
+  1. Assistert Pistol­Knebøy
+     ID: quads-191
+     Muscles: Upper Legs, Abs, Adductors, Calves, Glutes, Hamstrings
+     Equipment: Bodyweight, TRX, Bands
+     Difficulty: intermediate
+     Target Areas: Upper Legs
+
+  2. Bein­ekstensjon
+     ID: quads-4
+     Muscles: Upper Legs
+     Equipment: Machine
+     Difficulty: beginner
+     Target Areas: Upper Legs
+
+  3. Beinpress
+     ID: quads-5
+     Muscles: Upper Legs, Abs, Adductors, Calves, Glutes, Hamstrings, Lower Back
+     Equipment: Machine
+     Difficulty: beginner
+     Target Areas: Upper Legs
+
+  4. Burpee
+     ID: quads-194
+     Muscles: Quads, Hamstrings, Glutes, Core, Chest, Shoulders
+     Equipment: Bodyweight
+     Difficulty: intermediate
+     Target Areas: Upper Legs, Cardio
+
+  5. Ettbens Box-Squat
+     ID: quads-192
+     Muscles: Quads, Glutes, Hamstrings, Core
+     Equipment: Bodyweight, Bench
+     Difficulty: intermediate
+     Target Areas: Upper Legs
+
+  6. Ettbens Knebøy Fra Benk
+     ID: quads-51
+     Muscles: Upper Legs, Abs, Adductors, Calves, Glutes, Hamstrings
+     Equipment: Bench
+     Difficulty: intermediate
+     Target Areas: Upper Legs
+
+  7. Kroppsvekt Bulgarsk Splittknebøy
+     ID: quads-186
+     Muscles: Upper Legs, Calves, Glutes, Hamstrings
+     Equipment: Bodyweight
+     Difficulty: beginner
+     Target Areas: Upper Legs
+
+  8. Kroppsvekt Knebøy
+     ID: quads-190
+     Muscles: Upper Legs, Glutes, Calves, Core
+     Equipment: Bodyweight
+     Difficulty: beginner
+     Target Areas: Upper Legs
+
+  9. Kroppsvekt Utfall
+     ID: quads-28
+     Muscles: Upper Legs, Abs, Adductors, Calves, Glutes, Hamstrings
+     Equipment: Bodyweight
+     Difficulty: beginner
+     Target Areas: Upper Legs
+
+  10. Stang Knebøy Bak
+     ID: quads-1
+     Muscles: Upper Legs, Calves, Glutes, Hamstrings, Lower Back
+     Equipment: Barbell
+     Difficulty: intermediate
+     Target Areas: Upper Legs
+
+  11. Veggsitt (Isometrisk Hold)
+     ID: quads-193
+     Muscles: Upper Legs, Glutes, Hamstrings, Core
+     Equipment: Bodyweight
+     Difficulty: beginner
+     Target Areas: Upper Legs
+
+
+13. SHOULDERS (19 exercises)
+----------------------------------------
+  1. Bånd Pull-Apart
+     ID: shoulders-30
+     Muscles: Shoulders, Traps, Upper Back
+     Equipment: Bands
+     Difficulty: beginner
+     Target Areas: Shoulders
+
+  2. Bånd Skulderfleksjon Med Bøyde Armer
+     ID: shoulders-179
+     Muscles: Shoulders, Rotator Cuff, Serratus Anterior, Trapezius, Upper Back
+     Equipment: Bands
+     Difficulty: beginner
+     Target Areas: Shoulders
+
+  3. Bånd Skulderfleksjon Med Strake Armer
+     ID: shoulders-90
+     Muscles: Shoulders, Rotator Cuff, Serratus Anterior, Trapezius, Upper Back, Core Stabilizers
+     Equipment: Bands
+     Difficulty: intermediate
+     Target Areas: Shoulders
+
+  4. Båndbasert Sideløft
+     ID: shoulders-39
+     Muscles: Shoulders, Traps, Upper Back
+     Equipment: Bands
+     Difficulty: beginner
+     Target Areas: Shoulders
+
+  5. Enarms Bånd Utadrotasjon
+     ID: shoulders-94
+     Muscles: Shoulders, Upper Back
+     Equipment: Bands
+     Difficulty: beginner
+     Target Areas: Shoulders
+
+  6. Frontløft Med Manualer, Nøytralt Grep
+     ID: shoulders-176
+     Muscles: Shoulders
+     Equipment: Dumbbell
+     Difficulty: beginner
+     Target Areas: Shoulders
+
+  7. Kabel Face Pull
+     ID: shoulders-10
+     Muscles: Shoulders, Traps, Upper Back
+     Equipment: Cable
+     Difficulty: beginner
+     Target Areas: Shoulders
+
+  8. Kabel Innadrotasjon
+     ID: shoulders-62
+     Muscles: Shoulders, Upper Back
+     Equipment: Cable
+     Difficulty: beginner
+     Target Areas: Shoulders
+
+  9. Kabel Omvendt Fly
+     ID: shoulders-13
+     Muscles: Shoulders, Upper Back, Traps
+     Equipment: Cable
+     Difficulty: beginner
+     Target Areas: Shoulders
+
+  10. Kabel Sideløft
+     ID: shoulders-16
+     Muscles: Shoulders
+     Equipment: Cable
+     Difficulty: beginner
+     Target Areas: Shoulders
+
+  11. Kabel Utadrotasjon
+     ID: shoulders-32
+     Muscles: Shoulders, Upper Back
+     Equipment: Machine
+     Difficulty: beginner
+     Target Areas: Shoulders
+
+  12. Militærpress (Overhead-Press)
+     ID: shoulders-2
+     Muscles: Shoulders, Abs, Traps, Triceps
+     Equipment: Barbell
+     Difficulty: intermediate
+     Target Areas: Shoulders
+
+  13. Modifisert Bånd Sideløft
+     ID: shoulders-178
+     Muscles: Shoulders, Upper Back
+     Equipment: Bands
+     Difficulty: beginner
+     Target Areas: Shoulders
+
+  14. Side­liggende Utadrotasjon Med Manual
+     ID: shoulders-180
+     Muscles: Shoulders, Rotator Cuff
+     Equipment: Dumbbell
+     Difficulty: beginner
+     Target Areas: Shoulders
+
+  15. Sideløft Med Manualer
+     ID: shoulders-1
+     Muscles: Shoulders
+     Equipment: Dumbbell
+     Difficulty: beginner
+     Target Areas: Shoulders
+
+  16. Sittende Arnold-Press
+     ID: shoulders-4
+     Muscles: Shoulders, Traps, Triceps
+     Equipment: Dumbbell
+     Difficulty: intermediate
+     Target Areas: Shoulders
+
+  17. Sittende Skulderpress
+     ID: shoulders-5
+     Muscles: Shoulders, Traps, Triceps
+     Equipment: Dumbbell
+     Difficulty: beginner
+     Target Areas: Shoulders
+
+  18. Skulderløft I Bue
+     ID: shoulders-177
+     Muscles: Shoulders, Upper Chest, Trapezius
+     Equipment: Dumbbell
+     Difficulty: intermediate
+     Target Areas: Shoulders
+
+  19. Stående Bånd Face Pull
+     ID: shoulders-78
+     Muscles: Shoulders, Abs, Upper Back
+     Equipment: Bands
+     Difficulty: intermediate
+     Target Areas: Shoulders
+
+
+14. TRAPS (0 exercises)
+----------------------------------------
+
+15. TRICEPS (6 exercises)
+----------------------------------------
+  1. Benkdips
+     ID: triceps-17
+     Muscles: Triceps, Shoulders
+     Equipment: Bodyweight
+     Difficulty: beginner
+     Target Areas: Triceps
+
+  2. Enarms Kabel-Triceps-Ekstensjon
+     ID: triceps-21
+     Muscles: Triceps
+     Equipment: Cable
+     Difficulty: beginner
+     Target Areas: Triceps
+
+  3. French Press
+     ID: triceps-11
+     Muscles: Triceps
+     Equipment: Barbell
+     Difficulty: beginner
+     Target Areas: Triceps
+
+  4. Manual Triceps-Ekstensjon På Flat Benk
+     ID: triceps-107
+     Muscles: Triceps
+     Equipment: Dumbbell, Bench
+     Difficulty: beginner
+     Target Areas: Triceps
+
+  5. Stående Over-Hode Tau-Ekstensjon Fra Lav Trinse
+     ID: triceps-23
+     Muscles: Triceps
+     Equipment: Cable
+     Difficulty: beginner
+     Target Areas: Triceps
+
+  6. Tau Triceps-Ekstensjon
+     ID: triceps-4
+     Muscles: Triceps
+     Equipment: Cable
+     Difficulty: beginner
+     Target Areas: Triceps
+
+
+16. UPPER BACK (7 exercises)
+----------------------------------------
+  1. Foroverbøyd Roing Med Omvendt Grep
+     ID: upper-back-14
+     Muscles: Upper Back, Biceps, Lats, Shoulders
+     Equipment: Barbell
+     Difficulty: intermediate
+     Target Areas: Upper Back
+
+  2. Høystående Båndroing
+     ID: upper-back-60
+     Muscles: Upper Back, Rear Deltoids, Rhomboids, Middle Trapezius, Biceps
+     Equipment: Bands
+     Difficulty: beginner
+     Target Areas: Upper Back
+
+  3. Omvendt Roing
+     ID: upper-back-16
+     Muscles: Upper Back, Biceps, Lats, Core
+     Equipment: Bodyweight, Barbell, Smith Machine, TRX, Rings
+     Difficulty: beginner
+     Target Areas: Upper Back
+
+  4. Sittende Enarms Nedtrekk Fra Gulv
+     ID: upper-back-61
+     Muscles: Lats, Teres Major, Biceps, Lower Trapezius, Rhomboids, Core
+     Equipment: Cable
+     Difficulty: beginner
+     Target Areas: Upper Back
+
+  5. Sittende Kabelroing
+     ID: upper-back-4
+     Muscles: Upper Back, Biceps, Lats, Shoulders
+     Equipment: Cable
+     Difficulty: beginner
+     Target Areas: Upper Back
+
+  6. Stangroing Stående Fremoverbøyd
+     ID: upper-back-3
+     Muscles: Upper Back, Abs, Biceps, Lats, Lower Back, Shoulders
+     Equipment: Barbell
+     Difficulty: beginner
+     Target Areas: Upper Back
+
+  7. Tripod-Hantelroing
+     ID: upper-back-8
+     Muscles: Upper Back, Abs, Biceps, Lats, Lower Back, Shoulders
+     Equipment: Dumbbell
+     Difficulty: beginner
+     Target Areas: Upper Back
+
+
+17. WARMUP (11 exercises)
+----------------------------------------
+  1. Armsirkler
+     ID: warmup-8
+     Muscles: Deltoids, Rotator Cuff, Upper Back
+     Equipment: Bodyweight
+     Difficulty: beginner
+     Target Areas: Warmup
+
+  2. Bekkentilt
+     ID: warmup-5
+     Muscles: Abs, Lower Back, Glutes
+     Equipment: Bodyweight
+     Difficulty: beginner
+     Target Areas: Warmup
+
+  3. Ellipsemaskin
+     ID: warmup-10
+     Muscles: Quadriceps, Hamstrings, Glutes, Calves, Shoulders, Arms, Core
+     Equipment: Elliptical Machine
+     Difficulty: beginner
+     Target Areas: Warmup
+
+  4. Hoppetau
+     ID: warmup-11
+     Muscles: Calves, Shoulders, Forearms, Core, Quadriceps
+     Equipment: Jump Rope
+     Difficulty: beginner
+     Target Areas: Warmup
+
+  5. Jogging på Stedet
+     ID: warmup-6
+     Muscles: Quadriceps, Hamstrings, Calves, Core
+     Equipment: Bodyweight
+     Difficulty: beginner
+     Target Areas: Warmup
+
+  6. Knebøy med Kroppsvekt
+     ID: warmup-4
+     Muscles: Quadriceps, Hamstrings, Glutes, Core
+     Equipment: Bodyweight
+     Difficulty: beginner
+     Target Areas: Warmup
+
+  7. Romaskin
+     ID: warmup-1
+     Muscles: Back, Shoulders, Arms, Core
+     Equipment: Rowing Machine
+     Difficulty: beginner
+     Target Areas: Warmup
+
+  8. Stående Rotasjon av Overkropp
+     ID: warmup-9
+     Muscles: Obliques, Erector Spinae, Core
+     Equipment: Bodyweight
+     Difficulty: beginner
+     Target Areas: Warmup
+
+  9. Stasjonær Sykkel
+     ID: warmup-2
+     Muscles: Quadriceps, Hamstrings, Calves
+     Equipment: Stationary Bike
+     Difficulty: beginner
+     Target Areas: Warmup
+
+  10. Tredemølle Gange/Jogg (5 ° stigning)
+     ID: warmup-3
+     Muscles: Quadriceps, Hamstrings, Calves, Glutes, Core
+     Equipment: Treadmill
+     Difficulty: beginner
+     Target Areas: Warmup
+
+  11. Veggpush-ups
+     ID: warmup-7
+     Muscles: Chest, Shoulders, Triceps, Core
+     Equipment: Bodyweight
+     Difficulty: beginner
+     Target Areas: Warmup
+
+

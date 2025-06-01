@@ -102,7 +102,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           showGlobalLoader(false); // Auth process is complete, hide global loader
 
           // If not logged in, and not already on the home page, redirect to home.
-          if (typeof window !== 'undefined' && window.location.pathname !== '/') {
+          if (typeof window !== 'undefined' && window.location.pathname !== '/' && window.location.pathname !== '/exercises') {
             router.push('/');
           }
         }
