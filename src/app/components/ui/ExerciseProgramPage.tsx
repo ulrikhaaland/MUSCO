@@ -1010,6 +1010,27 @@ export function ExerciseProgramPage({
                         // Find the highest week number to determine the next week number
                         const maxWeekNumber = Math.max(...uniqueWeeks.map(week => week.week));
                         const nextWeekNumber = maxWeekNumber + 1;
+                        
+                        // Calculate the next week's date range
+                        const latestWeek = uniqueWeeks.find(week => week.week === maxWeekNumber);
+                        let nextWeekStart: Date;
+                        let nextWeekEnd: Date;
+                        
+                        if (latestWeek?.createdAt) {
+                          // Calculate based on the latest week's end date
+                          const latestWeekCreatedAt = new Date(latestWeek.createdAt);
+                          const latestWeekEnd = getEndOfWeek(latestWeekCreatedAt);
+                          nextWeekStart = new Date(latestWeekEnd);
+                          nextWeekStart.setDate(nextWeekStart.getDate() + 1); // Day after latest week ends
+                          nextWeekStart = getStartOfWeek(nextWeekStart); // Ensure it's a Monday
+                          nextWeekEnd = getEndOfWeek(nextWeekStart);
+                        } else {
+                          // Fallback calculation
+                          nextWeekStart = new Date(currentDate.getTime() + maxWeekNumber * 7 * 24 * 60 * 60 * 1000);
+                          nextWeekStart = getStartOfWeek(nextWeekStart);
+                          nextWeekEnd = getEndOfWeek(nextWeekStart);
+                        }
+                        
                         return (
                           <button
                             data-week={nextWeekNumber}
@@ -1020,7 +1041,25 @@ export function ExerciseProgramPage({
                             }`}
                             onClick={() => handleWeekChange(nextWeekNumber)}
                           >
-                            {t('exerciseProgram.nextWeek')}
+                            {t('exerciseProgram.weekTab')}{' '}
+                            {getWeekNumber(nextWeekStart)}
+                            <span className="text-xs opacity-70 block">
+                              {(() => {
+                                // Format the dates with translated month names
+                                const startMonth = getMonthAbbreviation(nextWeekStart.getMonth(), t);
+                                const startDay = nextWeekStart.getDate();
+                                const endDay = nextWeekEnd.getDate();
+                                const endMonth = getMonthAbbreviation(nextWeekEnd.getMonth(), t);
+                                
+                                // If start and end are in the same month, use "Month Day-Day" format
+                                if (startMonth === endMonth) {
+                                  return `${startMonth} ${startDay}-${endDay}`;
+                                }
+                                
+                                // Otherwise, use "Month Day-Month Day" format
+                                return `${startMonth} ${startDay}-${endMonth} ${endDay}`;
+                              })()}
+                            </span>
                           </button>
                         );
                       })()}
