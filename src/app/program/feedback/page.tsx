@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ProgramFeedbackQuestionnaire } from '@/app/components/ui/ProgramFeedbackQuestionnaire';
 import { useUser } from '@/app/context/UserContext';
@@ -19,7 +19,7 @@ function getNextMonday(d: Date): Date {
   return result;
 }
 
-export default function FeedbackPage() {
+function FeedbackPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { t } = useTranslation();
@@ -167,5 +167,17 @@ export default function FeedbackPage() {
         nextProgramDate={null}
       />
     </div>
+  );
+}
+
+export default function FeedbackPage() {
+  return (
+    <Suspense fallback={
+      <div className="bg-gray-900 min-h-screen flex items-center justify-center">
+        <div className="text-gray-400 text-sm">Loading...</div>
+      </div>
+    }>
+      <FeedbackPageContent />
+    </Suspense>
   );
 } 
