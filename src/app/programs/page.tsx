@@ -1,21 +1,62 @@
 'use client';
 
-import { useState, Suspense, useEffect } from 'react';
+import { useState, Suspense } from 'react';
 import { useUser } from '@/app/context/UserContext';
+import { useAuth } from '@/app/context/AuthContext';
+import ConfirmationDialog from '@/app/components/ui/ConfirmationDialog';
 import { format } from 'date-fns';
 import { useRouter } from 'next/navigation';
-import { ProgramStatus, getBodyRegionFromParts } from '@/app/types/program';
 import { useTranslation } from '@/app/i18n/TranslationContext';
 import { nb, enUS } from 'date-fns/locale';
 
 function ProgramsContent() {
-  const { userPrograms, isLoading, selectProgram, toggleActiveProgram } = useUser();
+  const { userPrograms, isLoading, selectProgram, toggleActiveProgram } =
+    useUser();
+  const { deleteProgram } = useAuth();
   const router = useRouter();
   const { t, locale } = useTranslation();
   const [sortBy, setSortBy] = useState<'newest' | 'oldest'>('newest');
-  const [filterType, setFilterType] = useState<'all' | 'exercise' | 'recovery'>('all');
+  const [filterType, setFilterType] = useState<'all' | 'exercise' | 'recovery'>(
+    'all'
+  );
   // Track which program is being toggled to avoid flickering
-  const [pendingToggles, setPendingToggles] = useState<Record<string, boolean>>({});
+  const [pendingToggles, setPendingToggles] = useState<Record<string, boolean>>(
+    {}
+  );
+  
+  // Delete dialog state
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [programToDelete, setProgramToDelete] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  // Handle delete program
+  const handleDeleteProgram = (programId: string) => {
+    setProgramToDelete(programId);
+    setDeleteDialogOpen(true);
+  };
+
+  const confirmDeleteProgram = async () => {
+    if (!programToDelete) return;
+
+    setIsDeleting(true);
+    try {
+      const success = await deleteProgram(programToDelete);
+      if (success) {
+        setDeleteDialogOpen(false);
+        setProgramToDelete(null);
+        // The program list will automatically update due to the UserContext
+      }
+    } catch (error) {
+      console.error('Error deleting program:', error);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const cancelDelete = () => {
+    setDeleteDialogOpen(false);
+    setProgramToDelete(null);
+  };
 
   // Select date locale based on user's language
   const dateLocale = locale === 'nb' ? nb : enUS;
@@ -23,7 +64,7 @@ function ProgramsContent() {
   // Sort programs by date
   const filteredAndSortedPrograms = [...userPrograms]
     // Apply the type filter
-    .filter(program => {
+    .filter((program) => {
       if (filterType === 'all') return true;
       return program.type === filterType;
     })
@@ -35,7 +76,7 @@ function ProgramsContent() {
           ? b.updatedAt.getTime() - a.updatedAt.getTime()
           : a.updatedAt.getTime() - b.updatedAt.getTime();
       }
-      
+
       // If only one has updatedAt, prioritize it
       if (a.updatedAt && !b.updatedAt) {
         return sortBy === 'newest' ? -1 : 1; // a comes first for newest, last for oldest
@@ -43,7 +84,7 @@ function ProgramsContent() {
       if (!a.updatedAt && b.updatedAt) {
         return sortBy === 'newest' ? 1 : -1; // b comes first for newest, last for oldest
       }
-      
+
       // If neither has updatedAt, fall back to createdAt
       return sortBy === 'newest'
         ? new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
@@ -70,13 +111,13 @@ function ProgramsContent() {
 
     // Get the new toggle state
     const newToggleState = !program.active;
-    
+
     // Set pending toggle state for immediate UI feedback
     const newPendingToggles: Record<string, boolean> = {};
-    
+
     // If activating a program, mark all other programs of same type as inactive
     if (newToggleState) {
-      userPrograms.forEach(p => {
+      userPrograms.forEach((p) => {
         if (p.type === program.type) {
           // Mark active the selected program, inactive all others of same type
           newPendingToggles[p.docId] = p.docId === program.docId;
@@ -86,17 +127,16 @@ function ProgramsContent() {
       // Just toggling current program to inactive
       newPendingToggles[program.docId] = false;
     }
-    
+
     // Update pending toggles state for immediate UI feedback
     setPendingToggles(newPendingToggles);
-    
+
     // Toggle the program active state in the background
-    toggleActiveProgram(programIndex)
-      .catch(error => {
-        console.error('Error toggling program:', error);
-        // Revert all pending toggles on error
-        setPendingToggles({});
-      });
+    toggleActiveProgram(programIndex).catch((error) => {
+      console.error('Error toggling program:', error);
+      // Revert all pending toggles on error
+      setPendingToggles({});
+    });
   };
 
   // Navigate to home page to create a new program
@@ -116,11 +156,13 @@ function ProgramsContent() {
   if (userPrograms.length === 0) {
     return (
       <div className="h-full flex flex-col items-center justify-center p-8 text-white">
-        <h2 className="text-2xl font-semibold mb-4">{t('programs.noPrograms')}</h2>
+        <h2 className="text-2xl font-semibold mb-4">
+          {t('programs.noPrograms')}
+        </h2>
         <p className="text-gray-300 text-center max-w-md">
           {t('programs.noPrograms.message')}
         </p>
-        <button 
+        <button
           onClick={() => router.push('/')}
           className="mt-8 px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition-colors duration-200"
         >
@@ -139,19 +181,20 @@ function ProgramsContent() {
           {/* Title section */}
           <div className="flex items-center justify-between mb-4">
             <div className="w-10"></div>
-            <h1 className="text-app-title text-center text-white">{t('programs.title')}</h1>
+            <h1 className="text-app-title text-center text-white">
+              {t('programs.title')}
+            </h1>
             <div className="w-10"></div>
           </div>
-          
+
           {/* Filter and Sorting buttons */}
-          {/* 
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
             <div className="flex space-x-2">
               <button
                 onClick={() => setFilterType('all')}
                 className={`px-4 py-2 rounded-lg font-medium transition-colors duration-200 ${
-                  filterType === 'all' 
-                    ? 'bg-indigo-600 text-white' 
+                  filterType === 'all'
+                    ? 'bg-indigo-600 text-white'
                     : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white'
                 }`}
               >
@@ -160,8 +203,8 @@ function ProgramsContent() {
               <button
                 onClick={() => setFilterType('exercise')}
                 className={`px-4 py-2 rounded-lg font-medium transition-colors duration-200 ${
-                  filterType === 'exercise' 
-                    ? 'bg-indigo-600 text-white' 
+                  filterType === 'exercise'
+                    ? 'bg-indigo-600 text-white'
                     : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white'
                 }`}
               >
@@ -170,21 +213,21 @@ function ProgramsContent() {
               <button
                 onClick={() => setFilterType('recovery')}
                 className={`px-4 py-2 rounded-lg font-medium transition-colors duration-200 ${
-                  filterType === 'recovery' 
-                    ? 'bg-indigo-600 text-white' 
+                  filterType === 'recovery'
+                    ? 'bg-indigo-600 text-white'
                     : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white'
                 }`}
               >
                 {t('programs.filter.recovery')}
               </button>
             </div>
-            
+
             <div className="flex space-x-2">
               <button
                 onClick={() => setSortBy('newest')}
                 className={`px-4 py-2 rounded-lg font-medium transition-colors duration-200 ${
-                  sortBy === 'newest' 
-                    ? 'bg-indigo-600 text-white' 
+                  sortBy === 'newest'
+                    ? 'bg-indigo-600 text-white'
                     : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white'
                 }`}
               >
@@ -193,8 +236,8 @@ function ProgramsContent() {
               <button
                 onClick={() => setSortBy('oldest')}
                 className={`px-4 py-2 rounded-lg font-medium transition-colors duration-200 ${
-                  sortBy === 'oldest' 
-                    ? 'bg-indigo-600 text-white' 
+                  sortBy === 'oldest'
+                    ? 'bg-indigo-600 text-white'
                     : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white'
                 }`}
               >
@@ -202,7 +245,6 @@ function ProgramsContent() {
               </button>
             </div>
           </div>
-          */}
         </div>
 
         <div className="flex-1 flex items-center justify-center px-4 py-6">
@@ -221,12 +263,13 @@ function ProgramsContent() {
         {/* Title section */}
         <div className="flex items-center justify-between mb-4">
           <div className="w-10"></div>
-          <h1 className="text-app-title text-center text-white">{t('programs.title')}</h1>
+          <h1 className="text-app-title text-center text-white">
+            {t('programs.title')}
+          </h1>
           <div className="w-10"></div>
         </div>
-        
+
         {/* Filter and Sorting buttons */}
-        {/* 
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
           <div className="flex space-x-2">
             <button
@@ -284,7 +327,6 @@ function ProgramsContent() {
             </button>
           </div>
         </div>
-        */}
       </div>
 
       {/* Scrollable program list */}
@@ -292,13 +334,15 @@ function ProgramsContent() {
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 pb-8">
           {filteredAndSortedPrograms.map((program, index) => {
             // Find the original index in userPrograms using docId for reliable identification
-            const originalIndex = userPrograms.findIndex(p => p.docId === program.docId);
-            
+            const originalIndex = userPrograms.findIndex(
+              (p) => p.docId === program.docId
+            );
+
             // Get the first exercise program from the list
             const exerciseProgram = program.programs[0];
-            
+
             return (
-              <div 
+              <div
                 key={originalIndex}
                 onClick={() => handleProgramClick(originalIndex)}
                 className="relative bg-gray-800/50 rounded-xl overflow-hidden ring-1 ring-gray-700/50 transition-colors duration-200 hover:bg-gray-700/50 cursor-pointer group"
@@ -309,109 +353,192 @@ function ProgramsContent() {
                     <h2 className="text-xl font-medium text-white truncate pr-2">
                       {exerciseProgram.title || t('programs.defaultTitle')}
                     </h2>
-                
                   </div>
-                  
+
                   {/* Divider */}
                   <div className="border-t border-gray-700/50 my-3"></div>
-                  
+
                   {/* Key Program Statistics */}
                   <div className="flex justify-between items-center mb-4">
                     <div className="text-center">
                       <p className="text-xl font-semibold text-white">
                         {exerciseProgram.program?.length || 0}
                       </p>
-                      <p className="text-xs text-gray-400">{t('programs.stats.weeks')}</p>
+                      <p className="text-xs text-gray-400">
+                        {t('programs.stats.weeks')}
+                      </p>
                     </div>
-                    
+
                     <div className="text-center">
                       <p className="text-xl font-semibold text-white">
                         {exerciseProgram.program?.reduce((total, week) => {
-                          return total + week.days.reduce((dayTotal, day) => {
-                            return dayTotal + (day.isRestDay ? 0 : 1); // Count workout days
-                          }, 0);
+                          return (
+                            total +
+                            week.days.reduce((dayTotal, day) => {
+                              return dayTotal + (day.isRestDay ? 0 : 1); // Count workout days
+                            }, 0)
+                          );
                         }, 0) || 0}
                       </p>
-                      <p className="text-xs text-gray-400">{t('programs.stats.exerciseDays')}</p>
+                      <p className="text-xs text-gray-400">
+                        {t('programs.stats.exerciseDays')}
+                      </p>
                     </div>
-                    
+
                     <div className="text-center">
                       <p className="text-xl font-semibold text-white">
                         {exerciseProgram.program?.reduce((total, week) => {
-                          return total + week.days.reduce((dayTotal, day) => {
-                            return dayTotal + (day.isRestDay ? 1 : 0); // Count rest days
-                          }, 0);
+                          return (
+                            total +
+                            week.days.reduce((dayTotal, day) => {
+                              return dayTotal + (day.isRestDay ? 1 : 0); // Count rest days
+                            }, 0)
+                          );
                         }, 0) || 0}
                       </p>
-                      <p className="text-xs text-gray-400">{t('programs.stats.restDays')}</p>
+                      <p className="text-xs text-gray-400">
+                        {t('programs.stats.restDays')}
+                      </p>
                     </div>
                   </div>
-                  
+
                   {/* Target areas - only show if there are target areas */}
-                  {exerciseProgram.targetAreas && exerciseProgram.targetAreas.length > 0 && (
-                    <div className="mb-3">
-                      <p className="text-xs text-gray-400 mb-1">{t('programs.targetAreas')}</p>
-                      <div className="flex flex-wrap gap-1">
-                        {exerciseProgram.targetAreas.slice(0, 3).map((area, i) => (
-                          <span key={i} className="text-xs px-2 py-1 bg-gray-700/50 text-gray-300 rounded-full">
-                            {t(`program.bodyPart.${area.toLowerCase().replace(/\s+/g, '_')}`)}
-                          </span>
-                        ))}
-                        {exerciseProgram.targetAreas.length > 3 && (
-                          <span className="text-xs px-2 py-1 bg-gray-700/50 text-gray-300 rounded-full">
-                            {t('programs.targetAreas.more').replace('{count}', (exerciseProgram.targetAreas.length - 3).toString())}
-                          </span>
-                        )}
+                  {exerciseProgram.targetAreas &&
+                    exerciseProgram.targetAreas.length > 0 && (
+                      <div className="mb-3">
+                        <p className="text-xs text-gray-400 mb-1">
+                          {t('programs.targetAreas')}
+                        </p>
+                        <div className="flex flex-wrap gap-1">
+                          {exerciseProgram.targetAreas
+                            .slice(0, 3)
+                            .map((area, i) => (
+                              <span
+                                key={i}
+                                className="text-xs px-2 py-1 bg-gray-700/50 text-gray-300 rounded-full"
+                              >
+                                {t(
+                                  `program.bodyPart.${area.toLowerCase().replace(/\s+/g, '_')}`
+                                )}
+                              </span>
+                            ))}
+                          {exerciseProgram.targetAreas.length > 3 && (
+                            <span className="text-xs px-2 py-1 bg-gray-700/50 text-gray-300 rounded-full">
+                              {t('programs.targetAreas.more').replace(
+                                '{count}',
+                                (
+                                  exerciseProgram.targetAreas.length - 3
+                                ).toString()
+                              )}
+                            </span>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  )}
-                  
+                    )}
+
                   {/* Creation date and toggle switch */}
                   <div className="text-xs text-gray-400 pt-3 flex justify-between items-center">
-                    <span>{t('programs.created')} {
-                      program.createdAt 
+                    <span>
+                      {t('programs.created')}{' '}
+                      {program.createdAt
                         ? (() => {
-                            const formattedDate = format(new Date(program.createdAt), 'MMM d, yyyy', { locale: dateLocale });
+                            const formattedDate = format(
+                              new Date(program.createdAt),
+                              'MMM d, yyyy',
+                              { locale: dateLocale }
+                            );
                             // Capitalize the first letter of the month
-                            return formattedDate.charAt(0).toUpperCase() + formattedDate.slice(1);
+                            return (
+                              formattedDate.charAt(0).toUpperCase() +
+                              formattedDate.slice(1)
+                            );
                           })()
-                        : 'N/A'
-                    }</span>
-                    
-                    {/* Toggle switch */}
-                    <div className="flex items-center">
-                      <span className="text-xs mr-2">
-                        {pendingToggles[program.docId] !== undefined 
-                          ? (pendingToggles[program.docId] ? t('programs.status.active') : t('programs.status.inactive')) 
-                          : (program.active ? t('programs.status.active') : t('programs.status.inactive'))}
-                      </span>
+                        : 'N/A'}
+                    </span>
+
+                    {/* Delete button and Toggle switch */}
+                    <div className="flex items-center space-x-3">
+                      {/* Delete button */}
                       <button
-                        type="button" 
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation(); // Prevent card click
+                          e.preventDefault();
+                          handleDeleteProgram(program.docId);
+                        }}
+                        className="text-red-400 hover:text-red-300 transition-colors duration-200 p-1"
+                        aria-label={t('programs.deleteProgram')}
+                        title={t('programs.deleteProgram')}
+                      >
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                          />
+                        </svg>
+                      </button>
+
+                      <div className="flex items-center">
+                        <span className="text-xs mr-2">
+                          {pendingToggles[program.docId] !== undefined
+                            ? pendingToggles[program.docId]
+                              ? t('programs.status.active')
+                              : t('programs.status.inactive')
+                            : program.active
+                              ? t('programs.status.active')
+                              : t('programs.status.inactive')}
+                        </span>
+                      <button
+                        type="button"
                         onClick={(e) => {
                           e.stopPropagation(); // Prevent card click
                           e.preventDefault(); // Prevent any default behavior
                           handleToggleActive(e, originalIndex);
                         }}
                         className="relative inline-flex items-center cursor-pointer"
-                        aria-pressed={pendingToggles[program.docId] !== undefined 
-                          ? pendingToggles[program.docId] 
-                          : program.active}
-                        aria-label={program.active ? "Deactivate program" : "Activate program"}
+                        aria-pressed={
+                          pendingToggles[program.docId] !== undefined
+                            ? pendingToggles[program.docId]
+                            : program.active
+                        }
+                        aria-label={
+                          program.active
+                            ? 'Deactivate program'
+                            : 'Activate program'
+                        }
                       >
-                        <div className={`w-10 h-5 rounded-full relative ${
-                          pendingToggles[program.docId] !== undefined 
-                            ? (pendingToggles[program.docId] ? 'bg-green-600' : 'bg-gray-600 dark:bg-gray-700')
-                            : (program.active ? 'bg-green-600' : 'bg-gray-600 dark:bg-gray-700')
-                        }`}>
-                          <span 
+                        <div
+                          className={`w-10 h-5 rounded-full relative ${
+                            pendingToggles[program.docId] !== undefined
+                              ? pendingToggles[program.docId]
+                                ? 'bg-green-600'
+                                : 'bg-gray-600 dark:bg-gray-700'
+                              : program.active
+                                ? 'bg-green-600'
+                                : 'bg-gray-600 dark:bg-gray-700'
+                          }`}
+                        >
+                          <span
                             className={`absolute top-[2px] left-[2px] bg-white border border-gray-300 rounded-full h-4 w-4 transition-all ${
-                              pendingToggles[program.docId] !== undefined 
-                                ? (pendingToggles[program.docId] ? 'translate-x-5 bg-white border-white' : '')
-                                : (program.active ? 'translate-x-5 bg-white border-white' : '')
+                              pendingToggles[program.docId] !== undefined
+                                ? pendingToggles[program.docId]
+                                  ? 'translate-x-5 bg-white border-white'
+                                  : ''
+                                : program.active
+                                  ? 'translate-x-5 bg-white border-white'
+                                  : ''
                             }`}
                           ></span>
                         </div>
-                      </button>
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -427,10 +554,34 @@ function ProgramsContent() {
         className="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-indigo-600 text-white shadow-lg flex items-center justify-center hover:bg-indigo-500 transition-colors duration-200 z-50"
         aria-label={t('programs.createProgram')}
       >
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-8 w-8"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M12 4v16m8-8H4"
+          />
         </svg>
       </button>
+
+      {/* Delete Confirmation Dialog */}
+      <ConfirmationDialog
+        isOpen={deleteDialogOpen}
+        onClose={cancelDelete}
+        onConfirm={confirmDeleteProgram}
+        title={t('programs.deleteDialog.title')}
+        description={t('programs.deleteDialog.description')}
+        confirmText={t('programs.deleteDialog.confirm')}
+        cancelText={t('programs.deleteDialog.cancel')}
+        isLoading={isDeleting}
+        confirmButtonStyle="danger"
+      />
     </div>
   );
 }
@@ -443,4 +594,4 @@ export default function ProgramsPage() {
       </Suspense>
     </div>
   );
-} 
+}

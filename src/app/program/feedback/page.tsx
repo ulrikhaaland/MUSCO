@@ -1,0 +1,171 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { ProgramFeedbackQuestionnaire } from '@/app/components/ui/ProgramFeedbackQuestionnaire';
+import { useUser } from '@/app/context/UserContext';
+import { useAuth } from '@/app/context/AuthContext';
+import { submitProgramFeedback } from '@/app/services/programFeedbackService';
+import { ProgramFeedback } from '@/app/components/ui/ProgramFeedbackQuestionnaire';
+import { useTranslation } from '@/app/i18n';
+import { Exercise } from '@/app/types/program';
+
+// Helper function to get next Monday's date
+function getNextMonday(d: Date): Date {
+  const result = new Date(d);
+  const day = result.getDay();
+  const diff = day === 0 ? 1 : 8 - day; // if Sunday (0), add 1 day, otherwise add days until next Monday
+  result.setDate(result.getDate() + diff);
+  return result;
+}
+
+export default function FeedbackPage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const { t } = useTranslation();
+  const { user } = useAuth();
+  const { program, answers, diagnosisData, generateFollowUpProgram } = useUser();
+
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Check if user is authenticated and has a program
+  useEffect(() => {
+    if (!user) {
+      router.push('/login');
+      return;
+    }
+
+    if (!program) {
+      router.push('/program');
+      return;
+    }
+
+    setIsLoading(false);
+  }, [user, program, router]);
+
+  // Extract all unique exercises from the program
+  const getAllProgramExercises = (): Exercise[] => {
+    if (!program?.program) return [];
+
+    const uniqueExercises = new Map<string, Exercise>();
+
+    // Find the latest week based on createdAt date
+    const latestWeek = program.program.reduce((latest, current) => {
+      if (!latest.createdAt) return current;
+      if (!current.createdAt) return latest;
+      return new Date(current.createdAt) > new Date(latest.createdAt)
+        ? current
+        : latest;
+    }, program.program[0]);
+
+    // Only process exercises from the latest week
+    if (latestWeek) {
+      latestWeek.days.forEach((day) => {
+        if (day.exercises) {
+          day.exercises.forEach((exercise) => {
+            const exerciseId =
+              exercise.id || exercise.exerciseId || exercise.name;
+            if (exerciseId && !uniqueExercises.has(exerciseId)) {
+              uniqueExercises.set(exerciseId, exercise);
+            }
+          });
+        }
+      });
+    }
+
+    return Array.from(uniqueExercises.values());
+  };
+
+  // Function to handle feedback submission and program generation
+  const handleFeedbackSubmit = async (feedback: ProgramFeedback) => {
+    if (!user || !user.uid) {
+      console.error(t('exerciseProgram.feedback.error'));
+      return Promise.reject(new Error(t('exerciseProgram.feedback.error')));
+    }
+
+    try {
+      // Extract only the latest week from the program for the follow-up
+      const latestWeekNumber = Math.max(
+        ...(program?.program?.map((week) => week.week) || [0])
+      );
+      const latestWeek = program?.program?.find(
+        (week) => week.week === latestWeekNumber
+      );
+
+      // Create a new program object with only the latest week
+      const programWithLatestWeek = {
+        ...program,
+        program: latestWeek ? [latestWeek] : [],
+      };
+
+      // Submit feedback and generate new program
+      const newProgramId = await submitProgramFeedback(
+        user.uid,
+        programWithLatestWeek,
+        diagnosisData,
+        answers,
+        feedback
+      );
+
+      console.log(t('exerciseProgram.feedback.success'), newProgramId);
+
+      // Redirect to refresh program view
+      generateFollowUpProgram();
+
+      return Promise.resolve();
+    } catch (error) {
+      console.error(t('exerciseProgram.feedback.error.generating'), error);
+      return Promise.reject(error);
+    }
+  };
+
+  const handleFeedbackCancel = () => {
+    router.push('/program');
+  };
+
+  // Update page title
+  useEffect(() => {
+    if (typeof document !== 'undefined') {
+      document.title = `${t('programFeedback.pageTitle')} | BodAI`;
+    }
+  }, [t]);
+
+  if (isLoading) {
+    return (
+      <div className="bg-gray-900 min-h-screen flex items-center justify-center">
+        <div className="text-gray-400 text-sm">{t('common.loading')}</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="bg-gray-900 min-h-screen flex items-center justify-center">
+        <div className="text-red-400 text-sm">{error}</div>
+      </div>
+    );
+  }
+
+  if (!program) {
+    return (
+      <div className="bg-gray-900 min-h-screen flex items-center justify-center">
+        <div className="text-gray-400 text-sm">{t('program.noProgramFound')}</div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-gray-900 min-h-screen">
+      <ProgramFeedbackQuestionnaire
+        onSubmit={handleFeedbackSubmit}
+        onCancel={handleFeedbackCancel}
+        nextWeekDate={getNextMonday(new Date())}
+        isFeedbackDay={true}
+        previousExercises={getAllProgramExercises()}
+        isFutureWeek={true} // We only allow access to this page when eligible
+        nextProgramDate={null}
+      />
+    </div>
+  );
+} 

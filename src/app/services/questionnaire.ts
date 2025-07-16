@@ -6,6 +6,8 @@ import {
   collection,
   setDoc,
   serverTimestamp,
+  query,
+  getDocs,
 } from 'firebase/firestore';
 import { db } from '../firebase/config';
 import { DiagnosisAssistantResponse } from '../types';
@@ -77,8 +79,15 @@ export const submitQuestionnaire = async (
       }
     });
 
-    // Use sanitized questionnaire in the Firestore document
+    // Check if user already has existing programs
     const programsRef = collection(db, `users/${userId}/programs`);
+    const existingProgramsQuery = query(programsRef);
+    const existingProgramsSnapshot = await getDocs(existingProgramsQuery);
+    const hasExistingPrograms = !existingProgramsSnapshot.empty;
+    
+    console.log(`📊 User has ${existingProgramsSnapshot.size} existing programs when submitting questionnaire`);
+
+    // Use sanitized questionnaire in the Firestore document
     const docRef = await addDoc(programsRef, {
       diagnosis,
       questionnaire: sanitizedQuestionnaire,
@@ -86,8 +95,10 @@ export const submitQuestionnaire = async (
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
       type: diagnosis.programType,
-      active: true,
+      active: !hasExistingPrograms, // Only set as active if user has no existing programs
     });
+
+    console.log(`📋 New program created with active status: ${!hasExistingPrograms} (reason: ${hasExistingPrograms ? 'User has existing programs' : 'First program for user'})`);
 
     // Start program generation
     try {

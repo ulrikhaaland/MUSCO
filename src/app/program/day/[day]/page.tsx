@@ -212,9 +212,9 @@ export default function DayDetailPage() {
   // Update page title
   useEffect(() => {
     if (dayName && typeof document !== 'undefined') {
-      document.title = `${dayName} - Program | bodAI`;
+      document.title = `${dayName} - Program | BodAI`;
     } else if (typeof document !== 'undefined') {
-      document.title = 'Program Day | bodAI';
+      document.title = 'Program Day | BodAI';
     }
   }, [dayName]);
 

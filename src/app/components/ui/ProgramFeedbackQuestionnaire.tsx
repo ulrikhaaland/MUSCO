@@ -55,9 +55,6 @@ export function ProgramFeedbackQuestionnaire({
   const [allExistingExercises, setAllExistingExercises] = useState<Exercise[]>([]);
   const { t, locale } = useTranslation();
   
-  // Enable certain actions when running in development ("debug") mode
-  const isDebugMode = process.env.NODE_ENV === 'development';
-  
   // Process previousExercises to ensure they have an 'order' property
   const processedPreviousExercises = useMemo(() => {
     return previousExercises.map((exercise, index) => ({
@@ -510,64 +507,13 @@ export function ProgramFeedbackQuestionnaire({
           </button>
           <button
             type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              // If not in a future week, show toast instead of submitting
-              if (!isFutureWeek && !isDebugMode) {
-                // Format the date if available
-                let message = t('programFeedback.button.waitUntilNextWeek');
-                
-                if (nextProgramDate) {
-                  // Use Norwegian locale for date formatting
-                  const formattedDate = nextProgramDate.toLocaleDateString(locale, {
-                    weekday: 'long',
-                    month: 'long', 
-                    day: 'numeric'
-                  });
-                  
-                  message = t('programFeedback.button.waitUntilSpecificDate', {
-                    date: formattedDate
-                  });
-                }
-                
-                toast.custom(
-                  (toastObj) => (
-                    <div
-                      className={`${
-                        toastObj.visible ? 'animate-enter' : 'animate-leave'
-                      } max-w-md w-full bg-amber-600 shadow-lg rounded-lg pointer-events-auto flex ring-1 ring-black ring-opacity-5`}
-                    >
-                      <div className="flex-1 w-0 p-4">
-                        <div className="flex items-start">
-                          <div className="flex-shrink-0 pt-0.5">
-                            ⚠️
-                          </div>
-                          <div className="ml-3 flex-1">
-                            <p className="text-sm font-medium text-white">
-                              {message}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ),
-                  {
-                    duration: 4000,
-                  }
-                );
-                return;
-              }
-              handleSubmit(e);
-            }}
+            onClick={handleSubmit}
             disabled={isSubmitting}
             className={`px-6 py-3 rounded-xl text-white transition-colors duration-200 flex items-center justify-center
               ${isSubmitting 
                 ? 'bg-indigo-600/50 cursor-not-allowed opacity-50' 
-                : (!isFutureWeek && !isDebugMode) 
-                  ? 'bg-indigo-600/50 opacity-50 hover:bg-indigo-500/50'
-                  : 'bg-indigo-600 hover:bg-indigo-500'
+                : 'bg-indigo-600 hover:bg-indigo-500'
               }`}
-            title={!isFutureWeek && !isDebugMode ? t('programFeedback.button.disabledTooltip') : ''}
           >
             {isSubmitting ? (
               <>

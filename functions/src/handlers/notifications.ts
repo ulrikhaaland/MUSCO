@@ -36,24 +36,24 @@ export const sendWeeklyProgramReminder = onSchedule(
     // Email content based on user's request (English)
     // Norwegian translations provided for future use or adaptation
     const emailSubjectEn = 'Ready for your new program?';
-    const emailTitleEn = 'Your New bodAI Program';
+    const emailTitleEn = 'Your New BodAI Program';
     const taglineEn = 'Intelligent Training, Minus The Friction';
     const headingEn = 'Your new program is almost ready!';
     const bodyTextEn = 'Your personalized training program for the week is being prepared. Click the button below to view it once it\'s live.';
     const buttonTextEn = 'View Program';
-    const footerTextEn = 'You\'re receiving this because you\'re a bodAI user. You can manage your notification settings in the app.';
-    const preheaderTextEn = 'Your weekly bodAI program is nearly here!';
+    const footerTextEn = 'You\'re receiving this because you\'re a BodAI user. You can manage your notification settings in the app.';
+    const preheaderTextEn = 'Your weekly BodAI program is nearly here!';
 
     /*
     // Norwegian translations
     const emailSubjectNb = 'Klar for ditt nye program?';
-    const emailTitleNb = 'Ditt nye bodAI-program';
+    const emailTitleNb = 'Ditt nye BodAI-program';
     const taglineNb = 'Intelligent trening, uten friksjonen';
     const headingNb = 'Ditt nye program er snart klart!';
     const bodyTextNb = `Ditt personlige treningsprogram for uken forberedes. Klikk på knappen nedenfor for å se det så snart det er tilgjengelig.`;
     const buttonTextNb = 'Se Programmet';
-    const footerTextNb = "Du mottar denne e-posten fordi du er en bodAI-bruker. Administrer varslingsinnstillingene dine i appen.";
-    const preheaderTextNb = 'Ditt ukentlige bodAI-program er snart her!';
+    const footerTextNb = "Du mottar denne e-posten fordi du er en BodAI-bruker. Administrer varslingsinnstillingene dine i appen.";
+    const preheaderTextNb = 'Ditt ukentlige BodAI-program er snart her!';
     */
 
     // Using English as per user's prompt.

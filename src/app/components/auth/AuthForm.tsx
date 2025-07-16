@@ -2,13 +2,14 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/app/context/AuthContext';
+import { useUser } from '@/app/context/UserContext';
 import { useTranslation } from '@/app/i18n';
 import Logo from '@/app/components/ui/Logo';
 import { AuthCodeInput } from '@/app/components/ui/AuthCodeInput';
 import { LoadingDots } from '@/app/components/ui/LoadingDots';
 import { useIsPwa } from '@/app/hooks/useIsPwa';
 
-export function AuthForm({ onSkip }: { onSkip?: () => void }) {
+export function AuthForm({ onSkip, isSaveContext = false }: { onSkip?: () => void; isSaveContext?: boolean }) {
   const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
@@ -16,6 +17,7 @@ export function AuthForm({ onSkip }: { onSkip?: () => void }) {
   const isPwa = useIsPwa();
   const [step, setStep] = useState<'email' | 'code'>('email');
   const { sendSignInLink } = useAuth();
+  const { program } = useUser();
 
   // If running as PWA and an email is stored locally, jump directly to code entry
   useEffect(() => {
@@ -34,7 +36,13 @@ export function AuthForm({ onSkip }: { onSkip?: () => void }) {
     setLoading(true);
 
     try {
-      await sendSignInLink(email);
+      // If in save context and we have a program, pass it to sendSignInLink
+      if (isSaveContext && program) {
+        await sendSignInLink(email, program);
+      } else {
+        await sendSignInLink(email);
+      }
+      
       // Save the email locally to complete sign in after user clicks the link
       window.localStorage.setItem('emailForSignIn', email);
       window.localStorage.setItem('codeRequestTimestamp', Date.now().toString());
@@ -70,9 +78,14 @@ export function AuthForm({ onSkip }: { onSkip?: () => void }) {
     <div className="w-full max-w-md space-y-4 px-4 pb-6 overflow-hidden">
       <Logo variant="vertical" />
       <div className="text-center">
-        <h2 className="text-3xl font-bold text-white">{t('auth.welcome')}</h2>
+        <h2 className="text-3xl font-bold text-white">
+          {isSaveContext ? t('auth.saveProgram') : t('auth.welcome')}
+        </h2>
         <p className="mt-1 text-sm text-gray-400">
-          {t('auth.enterEmailForCode')}
+          {isSaveContext 
+            ? t('auth.saveDescription') 
+            : t('auth.enterEmailForCode')
+          }
         </p>
       </div>
 
@@ -110,7 +123,7 @@ export function AuthForm({ onSkip }: { onSkip?: () => void }) {
                 <LoadingDots />
               </span>
             ) : (
-              t('auth.sendCode')
+              isSaveContext ? t('auth.saveAndContinue') : t('auth.sendCode')
             )}
           </button>
 
@@ -120,7 +133,7 @@ export function AuthForm({ onSkip }: { onSkip?: () => void }) {
               onClick={onSkip}
               className="w-full px-6 py-3 rounded-xl bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition-colors duration-200"
             >
-              {t('auth.continueWithoutLogin')}
+              {isSaveContext ? t('auth.continueWithoutSaving') : t('auth.continueWithoutLogin')}
             </button>
           )}
         </div>

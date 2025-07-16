@@ -38,7 +38,7 @@ export default function Logo({ variant = 'horizontal' }: LogoProps) {
                 >
                   <Image
                     src="/img/logo_biceps.png"
-                    alt="bodAI Logo"
+                    alt="BodAI Logo"
                     fill
                     sizes="160px"
                     className="drop-shadow-[0_10px_8px_rgba(79,70,229,0.15)]"
@@ -97,7 +97,7 @@ export default function Logo({ variant = 'horizontal' }: LogoProps) {
           >
             <Image
               src="/img/logo_biceps.png"
-              alt="bodAI Logo"
+              alt="BodAI Logo"
               fill
               sizes={imageSize.sizes}
               priority

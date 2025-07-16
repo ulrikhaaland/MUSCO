@@ -711,7 +711,7 @@ export default function AvailableExercisesPage() {
   const writeExercisesToFile = useCallback(() => {
     try {
       // Format the exercise data
-      let content = `Exercise Database Export - ${showMuscoExercises ? 'bodAI' : 'Other'} Exercises\n`;
+      let content = `Exercise Database Export - ${showMuscoExercises ? 'BodAI' : 'Other'} Exercises\n`;
       content += `Generated: ${new Date().toISOString()}\n`;
       content += `Total Categories: ${Object.keys(exercisesByBodyPart).length}\n`;
       content += `Total Exercises: ${Object.values(exercisesByBodyPart).reduce((total, exercises) => total + exercises.length, 0)}\n\n`;
@@ -747,7 +747,7 @@ export default function AvailableExercisesPage() {
 
       // Create and download the file
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-      const filename = `exercises-${showMuscoExercises ? 'bodai' : 'other'}-${timestamp}.txt`;
+      const filename = `exercises-${showMuscoExercises ? 'BodAI' : 'other'}-${timestamp}.txt`;
       
       const blob = new Blob([content], { type: 'text/plain' });
       const url = URL.createObjectURL(blob);
@@ -771,7 +771,7 @@ export default function AvailableExercisesPage() {
         body: JSON.stringify({
           content,
           filename,
-          exerciseSource: showMuscoExercises ? 'bodai' : 'other'
+          exerciseSource: showMuscoExercises ? 'BodAI' : 'other'
         }),
       }).catch(error => {
         console.error('Error writing to server file:', error);
@@ -787,7 +787,7 @@ export default function AvailableExercisesPage() {
     try {
       const data = {
         metadata: {
-          source: showMuscoExercises ? 'bodai' : 'other',
+          source: showMuscoExercises ? 'BodAI' : 'other',
           generatedAt: new Date().toISOString(),
           totalCategories: Object.keys(exercisesByBodyPart).length,
           totalExercises: Object.values(exercisesByBodyPart).reduce((total, exercises) => total + exercises.length, 0)
@@ -796,7 +796,7 @@ export default function AvailableExercisesPage() {
       };
 
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-      const filename = `exercises-${showMuscoExercises ? 'bodai' : 'other'}-${timestamp}.json`;
+      const filename = `exercises-${showMuscoExercises ? 'BodAI' : 'other'}-${timestamp}.json`;
       
       const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
@@ -858,7 +858,7 @@ export default function AvailableExercisesPage() {
               }`}
               onClick={() => toggleExerciseSource(true)}
             >
-              bodAI Exercises
+              BodAI Exercises
             </button>
             <button
               className={`px-4 py-2 rounded-md font-medium transition-all ${
@@ -1030,7 +1030,7 @@ export default function AvailableExercisesPage() {
                         ))
                       ) : (
                         <div className="py-4 text-center text-gray-400">
-                          <p>No {showMuscoExercises ? 'bodAI' : 'other'} exercises available for {bodyPart}</p>
+                          <p>No {showMuscoExercises ? 'BodAI' : 'other'} exercises available for {bodyPart}</p>
                           <p className="text-sm mt-1">Try switching the exercise source using the toggle above</p>
                         </div>
                       )}

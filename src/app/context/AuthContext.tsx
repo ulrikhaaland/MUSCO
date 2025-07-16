@@ -1,12 +1,7 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState, useRef } from 'react';
-import {
-  User,
-  signOut,
-  onAuthStateChanged,
-  deleteUser,
-} from 'firebase/auth';
+import { User, signOut, onAuthStateChanged, deleteUser } from 'firebase/auth';
 import { auth, db, functions } from '../firebase/config';
 import { doc, setDoc, getDoc, deleteDoc } from 'firebase/firestore';
 import { useClientUrl } from '../hooks/useClientUrl';
@@ -17,6 +12,7 @@ import {
   submitQuestionnaire,
 } from '../services/questionnaire';
 import { ExtendedUser, UserProfile } from '../types/user';
+import { ExerciseProgram } from '../types/program';
 import { toast } from '../components/ui/ToastProvider';
 import { httpsCallable } from 'firebase/functions';
 import { useTranslation } from '../i18n';
@@ -28,27 +24,18 @@ interface AuthContextType {
   loading: boolean;
   error: Error | null;
   errorMessage: string | null;
-  sendSignInLink: (email: string) => Promise<void>;
+  sendSignInLink: (email: string, program?: ExerciseProgram) => Promise<void>;
+  sendAccountDeletionEmail: (email: string, redirectUrl: string) => Promise<void>;
   logOut: () => Promise<void>;
   createUserDoc: () => Promise<void>;
   updateUserProfile: (profileData: Partial<UserProfile>) => Promise<void>;
   getUserProfile: () => Promise<UserProfile | null>;
   deleteUserDoc: (uid: string) => Promise<void>;
   deleteUserAccount: () => Promise<boolean>;
+  deleteProgram: (programId: string) => Promise<boolean>;
 }
 
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
-
-const actionCodeSettings = {
-  // URL you want to redirect back to. The domain (www.example.com) for this
-  // URL must be in the authorized domains list in the Firebase Console.
-  url:
-    typeof window !== 'undefined'
-      ? window.location.origin
-      : 'http://localhost:3000',
-  // This must be true.
-  handleCodeInApp: true,
-};
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { href, isReady } = useClientUrl();
@@ -93,23 +80,41 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           }
           setLoading(false); // Auth loading complete for logged-in user
           // Global loader hiding for logged-in user based on path (existing logic)
-          if (window.location.pathname !== '/' && window.location.pathname !== '/program') {
+          if (
+            window.location.pathname !== '/' &&
+            window.location.pathname !== '/program'
+          ) {
             showGlobalLoader(false);
           }
-        } else { // No user is signed in
+        } else {
+          // No user is signed in
           setUser(null);
           setLoading(false); // Auth context loading is done
           showGlobalLoader(false); // Auth process is complete, hide global loader
 
           // If not logged in, and not already on the home page, redirect to home.
-          if (typeof window !== 'undefined' && window.location.pathname !== '/' && window.location.pathname !== '/exercises') {
+          // But skip if we're in the middle of an account deletion flow
+          const isAccountDeleting = typeof window !== 'undefined' && sessionStorage.getItem('accountDeleted');
+          
+          if (
+            typeof window !== 'undefined' &&
+            window.location.pathname !== '/' &&
+            window.location.pathname !== '/exercises' &&
+            !window.location.pathname.includes('/program/') &&
+            !isAccountDeleting
+          ) {
             router.push('/');
           }
         }
       },
-      (error) => { // onAuthStateChanged error
+      (error) => {
+        // onAuthStateChanged error
         console.error('Auth state change error:', error);
-        handleAuthError(error, t('authContext.authenticationStateError'), false);
+        handleAuthError(
+          error,
+          t('authContext.authenticationStateError'),
+          false
+        );
         setLoading(false);
         showGlobalLoader(false);
       }
@@ -140,9 +145,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return userDoc.data() as UserProfile;
       }
 
-      return null;
+      // User document doesn't exist, create it automatically
+      const newUserDoc = {
+        email: auth.currentUser?.email || '',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+
+      await setDoc(userDocRef, newUserDoc);
+      console.log('User document created automatically during login');
+      
+      return newUserDoc as UserProfile;
     } catch (error) {
-      console.error('Error fetching user profile:', error);
+      console.error('Error fetching/creating user profile:', error);
       return null;
     }
   };
@@ -158,7 +173,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
     } catch (error) {
       console.error('Error creating user document:', error);
-      return handleAuthError(error, t('authContext.failedToCreateUserDocument'), false);
+      return handleAuthError(
+        error,
+        t('authContext.failedToCreateUserDocument'),
+        false
+      );
     }
   };
 
@@ -194,7 +213,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
     } catch (error) {
       console.error('Error updating user profile:', error);
-      return handleAuthError(error, t('authContext.failedToUpdateUserProfile'), false);
+      return handleAuthError(
+        error,
+        t('authContext.failedToUpdateUserProfile'),
+        false
+      );
     }
   };
 
@@ -217,7 +240,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       console.log('User document deleted successfully');
     } catch (error) {
       console.error('Error deleting user document:', error);
-      return handleAuthError(error, t('authContext.failedToDeleteUserDocument'), false);
+      return handleAuthError(
+        error,
+        t('authContext.failedToDeleteUserDocument'),
+        false
+      );
     }
   };
 
@@ -239,6 +266,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       // Then delete the authentication account
+      console.log('🔥 Attempting to delete user authentication account...');
       await deleteUser(auth.currentUser);
 
       toast.success(t('authContext.accountSuccessfullyDeleted'));
@@ -249,13 +277,45 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       // Handle specific Firebase error codes
       if (error.code === 'auth/requires-recent-login') {
-        toast.error(
-          t('authContext.requiresRecentLogin')
-        );
-        return false;
+        console.log('🚨 Requires recent login error detected, throwing to privacy page...');
+        // Don't show toast here, let the privacy page handle the re-authentication flow
+        throw error; // Throw the error so the privacy page can catch it
       }
 
+      console.log('❌ Other error detected, handling with handleAuthError');
       handleAuthError(error, t('authContext.failedToDeleteAccount'), false);
+      return false;
+    }
+  };
+
+  const deleteProgram = async (programId: string): Promise<boolean> => {
+    if (!user) {
+      toast.error(t('authContext.noUserLoggedIn'));
+      return false;
+    }
+
+    try {
+      const deleteProgramFunction = httpsCallable(functions, 'deleteUserProgram');
+      await deleteProgramFunction({ programId });
+
+      toast.success(t('authContext.programDeletedSuccessfully'));
+      logAnalyticsEvent('delete_program', { programId });
+      return true;
+    } catch (error: any) {
+      console.error('Error deleting program:', error);
+
+      // Handle specific Firebase error codes
+      let errorMessage = t('authContext.failedToDeleteProgram');
+      
+      if (error.code === 'unauthenticated') {
+        errorMessage = t('authContext.mustBeLoggedInToDeleteProgram');
+      } else if (error.code === 'not-found') {
+        errorMessage = t('authContext.programNotFound');
+      } else if (error.code === 'permission-denied') {
+        errorMessage = t('authContext.notAuthorizedToDeleteProgram');
+      }
+
+      toast.error(errorMessage);
       return false;
     }
   };
@@ -298,12 +358,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           }
           break;
         case 'auth/user-disabled':
-          displayMessage =
-            t('authContext.accountDisabled');
+          displayMessage = t('authContext.accountDisabled');
           break;
         case 'auth/user-not-found':
-          displayMessage =
-            t('authContext.userNotFound');
+          displayMessage = t('authContext.userNotFound');
           break;
         case 'auth/too-many-requests':
           displayMessage = t('authContext.tooManyRequests');
@@ -340,47 +398,71 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const sendSignInLink = async (email: string) => {
-    // Now just send the one-time code e-mail via Cloud Function
+  const sendSignInLink = async (email: string, program?: ExerciseProgram) => {
+    // Check if running in standalone mode (PWA)
+    const isPwa =
+      typeof window !== 'undefined' &&
+      (window.matchMedia('(display-mode: standalone)').matches ||
+        (window.navigator as any).standalone ||
+        document.referrer.includes('android-app://'));
+
+    const origin = window.location.origin; // This should be the clean URL without query params
+    const sendLoginEmail = httpsCallable(functions, 'sendLoginEmail');
+    
+    const requestData: any = { 
+      email, 
+      origin, 
+      language: locale,
+      isPwa 
+    };
+    
+    // Include program data if provided
+    if (program) {
+      requestData.program = program;
+    }
+
     try {
-      await sendCustomSignInLink(email);
+      const result = await sendLoginEmail(requestData);
       logAnalyticsEvent('send_login_link');
     } catch (error) {
       console.error('Error sending login code:', error);
-      return handleAuthError(error, t('authContext.failedToSendLoginCode'), false);
+      return handleAuthError(
+        error,
+        t('authContext.failedToSendLoginCode'),
+        false
+      );
     }
   };
 
-  const sendCustomSignInLink = async (email: string) => {
-    // Store email locally for sign-in completion
-    window.localStorage.setItem('emailForSignIn', email);
+  const sendAccountDeletionEmail = async (email: string, redirectUrl: string) => {
+    // Check if running in standalone mode (PWA)
+    const isPwa =
+      typeof window !== 'undefined' &&
+      (window.matchMedia('(display-mode: standalone)').matches ||
+        (window.navigator as any).standalone ||
+        document.referrer.includes('android-app://'));
+
+    const origin = window.location.origin;
+    const sendLoginEmail = httpsCallable(functions, 'sendLoginEmail');
+    
+    const requestData = { 
+      email, 
+      origin, 
+      language: locale,
+      isPwa,
+      redirectUrl // Include the custom redirect URL for account deletion
+    };
+
     try {
-      // Ensure functions is initialized before calling httpsCallable
-      if (!functions) {
-        console.error('Firebase Functions instance is not available.');
-        toast.error(t('authContext.configurationError'));
-        return;
-      }
-      const origin = window.location.origin; // Get current origin
-      const sendLoginEmail = httpsCallable(functions, 'sendLoginEmail');
-
-      // Check if running in standalone mode (PWA)
-      const isPwa =
-        typeof window !== 'undefined' &&
-        (window.matchMedia('(display-mode: standalone)').matches ||
-          (window.navigator as any).standalone ||
-          document.referrer.includes('android-app://'));
-
-      // Pass email, origin, language, AND isPwa flag
-      await sendLoginEmail({ email, origin, language: locale, isPwa });
+      await sendLoginEmail(requestData);
+      logAnalyticsEvent('send_account_deletion_link');
     } catch (error) {
-      console.error('Error calling sendLoginEmail function:', error);
-      // Use toast directly for user feedback
-      toast.error(t('authContext.failedToSendSignInLink'));
-      // Rethrow if you want calling code to be aware of the failure
-      // throw error;
-      // Or adapt handleAuthError if needed
-      // return handleAuthError(error, 'Failed to send sign-in link', false);
+      console.error('Error sending account deletion email:', error);
+      return handleAuthError(
+        error,
+        t('authContext.failedToSendLoginCode'),
+        false
+      );
     }
   };
 
@@ -433,12 +515,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         error,
         errorMessage,
         sendSignInLink,
+        sendAccountDeletionEmail,
         logOut,
         createUserDoc,
         updateUserProfile,
         getUserProfile,
         deleteUserDoc,
         deleteUserAccount,
+        deleteProgram,
       }}
     >
       {children}

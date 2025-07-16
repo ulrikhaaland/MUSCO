@@ -2,13 +2,15 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { httpsCallable } from 'firebase/functions';
-import { functions, auth } from '@/app/firebase/config';
+import { functions, auth, db } from '@/app/firebase/config';
 import { signInWithEmailLink } from 'firebase/auth';
+import { collection, addDoc, query, getDocs } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
 import { toast } from './ToastProvider';
 import { useTranslation } from '@/app/i18n';
 import Logo from './Logo';
 import { LoadingDots } from './LoadingDots';
+import { ProgramType } from '@/app/shared/types';
 
 export function AuthCodeInput() {
   const [email, setEmail] = useState('');
@@ -96,34 +98,146 @@ export function AuthCodeInput() {
 
     setIsLoading(true);
     try {
+      console.log('🔍 Validating auth code...');
       // Call the Cloud Function to validate the code
       const validateAuthCode = httpsCallable(functions, 'validateAuthCode');
       const result = await validateAuthCode({ email, code: codeToValidate });
 
-      // Get the sign-in link from the result
-      const data = result.data as { link: string };
+      // Get the sign-in link and program data from the result
+      const data = result.data as { link: string; program?: any };
+      console.log('📥 Auth code validation result:', { 
+        hasLink: !!data?.link, 
+        hasProgram: !!data?.program,
+        programTitle: data?.program?.title,
+        programType: data?.program?.type
+      });
 
       if (!data || !data.link) {
         throw new Error('Invalid response from server');
       }
 
       // Use the link to sign in
-      await signInWithEmailLink(auth, email, data.link);
+      console.log('🔐 Signing in with email link...');
+      const userCredential = await signInWithEmailLink(auth, email, data.link);
+      const user = userCredential.user;
+      console.log('✅ User signed in successfully:', user.uid);
+
+      // If program data was provided, save it to the user's account
+      if (data.program && user) {
+        console.log('💾 Program data found, starting save process...');
+        console.log('📋 Program data:', {
+          title: data.program.title,
+          type: data.program.type,
+          targetAreas: data.program.targetAreas,
+          programLength: data.program.program?.length || 'unknown'
+        });
+        
+        try {
+          // Check if user already has existing programs
+          const programsRef = collection(db, `users/${user.uid}/programs`);
+          const existingProgramsQuery = query(programsRef);
+          const existingProgramsSnapshot = await getDocs(existingProgramsQuery);
+          const hasExistingPrograms = !existingProgramsSnapshot.empty;
+          
+          console.log(`📊 User has ${existingProgramsSnapshot.size} existing programs`);
+          
+          // Create a recovery program entry in the user's programs collection
+          console.log('📁 Creating program document in collection:', `users/${user.uid}/programs`);
+          
+          // Create a structured program document similar to other user programs
+          // Set active to false if user already has programs, true if this is their first program
+          const programDoc = {
+            diagnosis: {
+              programType: ProgramType.Recovery,
+              targetAreas: data.program.targetAreas || [],
+              title: data.program.title,
+            },
+            questionnaire: {
+              // Minimal questionnaire data for recovery program
+              age: '30_40', // Default age range
+              pastExercise: '2_3_times_per_week',
+              exerciseDays: 3,
+              targetAreas: data.program.targetAreas || [],
+              exerciseEnvironment: 'at_home',
+              workoutDuration: '30_45_minutes',
+              painAreas: [],
+              trainingType: 'at_home',
+            },
+            active: !hasExistingPrograms, // Only set as active if user has no existing programs
+            status: 'done',
+            type: ProgramType.Recovery,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          };
+
+          console.log('📄 Program document structure:', { 
+            ...programDoc, 
+            active: programDoc.active,
+            reason: hasExistingPrograms ? 'User has existing programs - setting as inactive' : 'First program for user - setting as active'
+          });
+          const programDocRef = await addDoc(programsRef, programDoc);
+          console.log('✅ Program document created with ID:', programDocRef.id);
+
+          // Now save the actual program data in the programs subcollection
+          const innerProgramsRef = collection(db, `users/${user.uid}/programs/${programDocRef.id}/programs`);
+          console.log('📁 Creating program data in subcollection:', `users/${user.uid}/programs/${programDocRef.id}/programs`);
+          
+          const programDataDoc = {
+            ...data.program,
+            createdAt: new Date(),
+          };
+          console.log('📊 Program data document:', {
+            title: programDataDoc.title,
+            type: programDataDoc.type,
+            programWeeks: programDataDoc.program?.length || 'unknown',
+            hasExercises: !!programDataDoc.program?.[0]?.days?.[0]?.exercises
+          });
+          
+          const innerProgramDocRef = await addDoc(innerProgramsRef, programDataDoc);
+          console.log('✅ Program data saved with ID:', innerProgramDocRef.id);
+          console.log('🎉 Recovery program successfully saved to user account!');
+
+          toast.success('Program saved to your account!');
+        } catch (error) {
+          console.error('❌ Error saving program:', error);
+          console.error('📋 Program data that failed to save:', data.program);
+          // Don't throw here - the login was successful, we just couldn't save the program
+          toast.error('Login successful, but there was an issue saving the program.');
+        }
+      } else {
+        console.log('ℹ️ No program data to save');
+        if (!data.program) console.log('   - No program data in response');
+        if (!user) console.log('   - No user object available');
+      }
 
       // Clean up localStorage
       window.localStorage.removeItem('hasPendingQuestionnaire');
 
-      // Successfully signed in, redirect to home
+      // Successfully signed in, redirect to appropriate page
+      console.log('🎯 Login successful, redirecting...');
       toast.success(t('login.success'));
+      
       const previousPath = window.sessionStorage.getItem('previousPath');
-      if (previousPath) {
+      const loginContext = window.sessionStorage.getItem('loginContext');
+      
+      // If user signed up to save a program, always redirect to /program
+      if (loginContext === 'saveProgram') {
+        console.log('🏠 Save context detected, redirecting to program page');
+        router.push('/program');
+      } else if (previousPath) {
+        console.log('🔄 Redirecting to previous path:', previousPath);
         router.push(previousPath);
-        window.sessionStorage.removeItem('previousPath'); // Clean up
       } else {
+        console.log('🏠 Redirecting to program page');
         router.push('/program');
       }
+      
+      // Clean up session storage
+      window.sessionStorage.removeItem('previousPath');
+      window.sessionStorage.removeItem('loginContext');
+      window.sessionStorage.removeItem('currentRecoveryProgram');
     } catch (error: any) {
-      console.error('Error validating code:', error);
+      console.error('❌ Error validating code:', error);
 
       let errorMessage = t('login.codeFailed');
       // Optionally map known Firebase error codes for clarity

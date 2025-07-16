@@ -21,6 +21,8 @@ interface RequestData {
   origin: string;
   language?: string; // Add optional language property
   isPwa?: boolean; // Add flag to indicate if user is on PWA
+  program?: unknown; // Add optional program data for saving
+  redirectUrl?: string; // Add optional custom redirect URL for special flows like account deletion
 }
 
 /**
@@ -49,6 +51,8 @@ export const sendLoginEmail = functions.https.onCall(
     const origin = request.data.origin;
     const language = request.data.language || 'en'; // Get language, default to 'en'
     const isPwa = request.data.isPwa || false; // Check if user is on PWA
+    const program = request.data.program; // Get program data if provided
+    const redirectUrl = request.data.redirectUrl; // Get custom redirect URL if provided
 
     // --- Validate Origin ---
     if (
@@ -76,7 +80,7 @@ export const sendLoginEmail = functions.https.onCall(
     const resend = new Resend(currentResendApiKey);
 
     const actionCodeSettings: admin.auth.ActionCodeSettings = {
-      url: `${origin}/`, // Use validated origin root from client
+      url: redirectUrl || `${origin}/`, // Use custom redirectUrl if provided, otherwise default to origin root
       handleCodeInApp: true,
       ...(currentDynamicLinkDomain && {
         dynamicLinkDomain: currentDynamicLinkDomain,
@@ -96,14 +100,27 @@ export const sendLoginEmail = functions.https.onCall(
       // Generate a 6-digit code for PWA users
       const code = crypto.randomInt(100000, 999999).toString();
 
-      // Store the code in Firestore with expiration (1 hour)
-      const expirationTime = Date.now() + 3600000; // 1 hour from now
-      await admin.firestore().collection('authCodes').doc(email).set({
+      // Store the code in Firestore with expiration (1 hour for login, 30 minutes for account deletion)
+      const expirationTime = Date.now() + (redirectUrl && redirectUrl.includes('deleteAccount=true') ? 1800000 : 3600000); // 30 minutes for deletion, 1 hour for login
+      const authCodeData: {
+        code: string;
+        link: string;
+        expirationTime: number;
+        used: boolean;
+        program?: unknown;
+      } = {
         code,
         link,
         expirationTime,
         used: false,
-      });
+      };
+
+      // Only include program data if it was provided
+      if (program) {
+        authCodeData.program = program;
+      }
+
+      await admin.firestore().collection('authCodes').doc(email).set(authCodeData);
 
       let emailSubject = '';
       let emailTitle = ''; // Title used in <title> tag
@@ -115,27 +132,57 @@ export const sendLoginEmail = functions.https.onCall(
       let codeLabel = '';
       let codeInstructions = '';
 
-      if (language === 'nb') {
-        emailSubject = isPwa ? 'Din innloggingskode til bodAI' : 'Logg inn på bodAI';
-        emailTitle = isPwa ? 'Din innloggingskode til bodAI' : 'Logg inn på bodAI';
-        tagline = 'Intelligent trening, uten friksjonen';
-        heading = isPwa ? 'Din innloggingskode' : 'Magisk lenke-innlogging';
-        expireText = 'Koden utløper om 1 time.';
-        footerText = 'Du mottar denne e-posten fordi en bodAI-innlogging ble forespurt.<br />Ba du ikke om den? Slett denne meldingen og fortsett med dagen din.';
-        preheaderText = isPwa ? 'din 6-sifret innloggingskode – utløper om 1 t.' : 'trykk for å logge inn – lenken utløper om 1 t.';
-        codeLabel = 'Skriv inn denne koden i appen';
-        codeInstructions = 'Gå tilbake til appen og skriv inn denne koden for å logge inn. Ikke del denne koden med andre.';
+      // Check if this is an account deletion email
+      const isAccountDeletion = redirectUrl && redirectUrl.includes('deleteAccount=true');
+
+      if (isAccountDeletion) {
+        // Custom content for account deletion emails
+        if (language === 'nb') {
+          emailSubject = 'Bekreft sletting av BodAI-konto';
+          emailTitle = 'Bekreft sletting av BodAI-konto';
+          tagline = 'Kontosletting krever bekreftelse';
+          heading = 'Bekreft kontosletting';
+          expireText = 'Koden utløper om 30 minutter.';
+          footerText = 'Du mottar denne e-posten fordi sletting av BodAI-kontoen din ble forespurt.<br />Ba du ikke om dette? Slett denne meldingen og kontoen din forblir aktiv.';
+          preheaderText = 'bekreft sletting av kontoen din – utløper om 30 min.';
+          codeLabel = 'Bekreftelseskode for sletting';
+          codeInstructions = 'For å slette kontoen din permanent, skriv inn denne koden på personvernsiden. Denne handlingen kan ikke angres.';
+        } else {
+          // Default to English
+          emailSubject = 'Confirm BodAI Account Deletion';
+          emailTitle = 'Confirm BodAI Account Deletion';
+          tagline = 'Account Deletion Requires Confirmation';
+          heading = 'Confirm Account Deletion';
+          expireText = 'Code expires in 30 minutes.';
+          footerText = 'You\'re receiving this email because deletion of your BodAI account was requested.<br />Didn\'t request this? Delete this message and your account will remain active.';
+          preheaderText = 'confirm deletion of your account – expires in 30 min.';
+          codeLabel = 'Account Deletion Confirmation Code';
+          codeInstructions = 'To permanently delete your account, enter this code on the privacy page. This action cannot be undone.';
+        }
       } else {
-        // Default to English
-        emailSubject = isPwa ? 'Your bodAI Login Code' : 'Sign In To bodAI';
-        emailTitle = isPwa ? 'Your bodAI Login Code' : 'Sign In To bodAI';
-        tagline = 'Intelligent Training, Minus The Friction';
-        heading = isPwa ? 'Your Authentication Code' : 'Magic Link Sign‑In';
-        expireText = isPwa ? 'Code expires in 1 hour.' : 'Link expires in 1 hour.';
-        footerText = 'You\'re receiving this email because a bodAI sign‑in was requested.<br />Didn\'t request it? Delete this message and carry on.';
-        preheaderText = isPwa ? 'your 6-digit login code – expires in 1h.' : 'tap to sign in instantly – link expires in 1h.';
-        codeLabel = 'Enter this code in the app';
-        codeInstructions = 'Return to the app and enter this code to sign in. Do not share this code with anyone.';
+        // Original login email content
+        if (language === 'nb') {
+          emailSubject = isPwa ? 'Din innloggingskode til BodAI' : 'Logg inn på BodAI';
+          emailTitle = isPwa ? 'Din innloggingskode til BodAI' : 'Logg inn på BodAI';
+          tagline = 'Intelligent trening, uten friksjonen';
+          heading = isPwa ? 'Din innloggingskode' : 'Magisk lenke-innlogging';
+          expireText = 'Koden utløper om 1 time.';
+          footerText = 'Du mottar denne e-posten fordi en BodAI-innlogging ble forespurt.<br />Ba du ikke om den? Slett denne meldingen og fortsett med dagen din.';
+          preheaderText = isPwa ? 'din 6-sifret innloggingskode – utløper om 1 t.' : 'trykk for å logge inn – lenken utløper om 1 t.';
+          codeLabel = 'Skriv inn denne koden i appen';
+          codeInstructions = 'Gå tilbake til appen og skriv inn denne koden for å logge inn. Ikke del denne koden med andre.';
+        } else {
+          // Default to English
+          emailSubject = isPwa ? 'Your BodAI Login Code' : 'Sign In To BodAI';
+          emailTitle = isPwa ? 'Your BodAI Login Code' : 'Sign In To BodAI';
+          tagline = 'Intelligent Training, Minus The Friction';
+          heading = isPwa ? 'Your Authentication Code' : 'Magic Link Sign‑In';
+          expireText = isPwa ? 'Code expires in 1 hour.' : 'Link expires in 1 hour.';
+          footerText = 'You\'re receiving this email because a BodAI sign‑in was requested.<br />Didn\'t request it? Delete this message and carry on.';
+          preheaderText = isPwa ? 'your 6-digit login code – expires in 1h.' : 'tap to sign in instantly – link expires in 1h.';
+          codeLabel = 'Enter this code in the app';
+          codeInstructions = 'Return to the app and enter this code to sign in. Do not share this code with anyone.';
+        }
       }
 
       // Unified email template – always send code instructions, no magic link button
@@ -179,17 +226,29 @@ export const sendLoginEmail = functions.https.onCall(
                 </p>
 
                 <!-- Auth code box - prominent for PWA -->
-                <div style="margin:24px 0;padding:24px;background-color:#1e1f2a;border-radius:10px;border:2px solid #4f46e5;">
+                <div style="margin:24px 0;padding:24px;background-color:#1e1f2a;border-radius:10px;border:2px solid ${isAccountDeletion ? '#dc2626' : '#4f46e5'};">
                   <p style="margin:0 0 12px;font-size:16px;color:#9a9fad;font-weight:500;">
                     ${codeLabel}
                   </p>
-                  <p style="margin:0;font-size:36px;font-weight:700;letter-spacing:8px;color:#fff;">
+                  <p style="margin:0;font-size:36px;font-weight:700;letter-spacing:8px;color:${isAccountDeletion ? '#fca5a5' : '#fff'};">
                     ${code}
                   </p>
                   <p style="margin:12px 0 0;font-size:14px;color:#9a9fad;">
                     ${expireText}
                   </p>
                 </div>
+
+                ${isAccountDeletion ? `
+                <!-- Warning message for account deletion -->
+                <div style="margin:24px 0;padding:16px;background-color:#7f1d1d;border-radius:8px;border:1px solid #dc2626;">
+                  <p style="margin:0;font-size:14px;color:#fca5a5;font-weight:600;text-align:center;">
+                    ⚠️ WARNING: This action cannot be undone
+                  </p>
+                  <p style="margin:8px 0 0;font-size:12px;color:#fecaca;text-align:center;">
+                    All your data will be permanently deleted
+                  </p>
+                </div>
+                ` : ''}
 
                 <!-- footer -->
                 <p style="margin:0;font-size:11px;color:#8a8d9c;">
@@ -318,8 +377,13 @@ export const validateAuthCode = functions.https.onCall(
         used: true,
       });
 
-      // Return the sign-in link
-      return {link: codeData.link};
+      // Return the sign-in link and program data if available
+      const returnData: {link: string; program?: unknown} = {link: codeData.link};
+      if (codeData?.program) {
+        returnData.program = codeData.program;
+      }
+
+      return returnData;
     } catch (error) {
       console.error('Error validating auth code:', error);
 

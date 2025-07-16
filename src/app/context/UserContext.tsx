@@ -32,11 +32,12 @@ import {
   deletePendingQuestionnaire,
 } from '@/app/services/questionnaire';
 import { updateActiveProgramStatus } from '@/app/services/program';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { enrichExercisesWithFullData } from '@/app/services/exerciseProgramService';
 import { useLoader } from './LoaderContext';
 import { useTranslation } from '@/app/i18n/TranslationContext';
 import { logAnalyticsEvent } from '../utils/analytics';
+import { getProgramBySlug } from '../../../public/data/programs/recovery';
 
 // Update UserProgram interface to include the document ID
 interface UserProgramWithId extends UserProgram {
@@ -89,6 +90,7 @@ const mergePrograms = (
 export function UserProvider({ children }: { children: ReactNode }) {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
   const { setIsLoading: showGlobalLoader } = useLoader();
   const { t, locale } = useTranslation();
   const isNorwegian = locale === 'nb';
@@ -136,9 +138,128 @@ export function UserProvider({ children }: { children: ReactNode }) {
     setDiagnosisData(userProgram.diagnosis);
   };
 
+  // Helper to set a recovery program as the current program
+  const setRecoveryProgram = async (recoveryProgram: ExerciseProgram) => {
+    try {
+      // Enrich the program with exercise data
+      await enrichExercisesWithFullData(recoveryProgram, isNorwegian);
+      
+      // Get today's date for the program start
+      const today = new Date();
+      const todayISO = today.toISOString();
+      
+      // Convert Date objects to ISO strings and update dates to start from today
+      const formattedProgram = {
+        ...recoveryProgram,
+        createdAt: todayISO, // Program starts today
+        program: recoveryProgram.program.map((week, weekIdx) => {
+          // Each week starts 7 days after the previous (Week 1 = today, Week 2 = +7 days, etc.)
+          const weekStartDate = new Date(today.getTime() + weekIdx * 7 * 24 * 60 * 60 * 1000);
+          return {
+            ...week,
+            createdAt: weekStartDate.toISOString()
+          };
+        })
+      };
+      
+      // Store in sessionStorage for persistence across navigation
+      window.sessionStorage.setItem('currentRecoveryProgram', JSON.stringify(formattedProgram));
+      
+      setProgram(formattedProgram as any);
+      setActiveProgram(null); // No user program for recovery programs
+      setProgramStatus(ProgramStatus.Done);
+      setAnswers(null);
+      setDiagnosisData(null);
+      setIsLoading(false);
+      showGlobalLoader(false);
+    } catch (error) {
+      console.error('Error enriching recovery program:', error);
+      setIsLoading(false);
+      showGlobalLoader(false);
+    }
+  };
+
+  // Check if current path is a recovery program
+  useEffect(() => {
+    if (pathname && pathname.startsWith('/program/')) {
+      const slug = pathname.replace('/program/', '');
+      
+      // Skip if it's a system path like 'day' or 'calendar'
+      if (slug && !['day', 'calendar'].includes(slug.split('/')[0])) {
+        const recoveryProgram = getProgramBySlug(slug);
+        
+        if (recoveryProgram) {
+          showGlobalLoader(true, t('program.loadingData'));
+          setRecoveryProgram(recoveryProgram);
+          return;
+        }
+      }
+    }
+    
+    // Check if we have a persisted recovery program in sessionStorage
+    // This handles the case where user navigated away (e.g., to login) but should keep the program
+    const persistedProgram = window.sessionStorage.getItem('currentRecoveryProgram');
+    if (persistedProgram) {
+      try {
+        const recoveryProgram = JSON.parse(persistedProgram);
+        console.log('Restoring recovery program from sessionStorage:', recoveryProgram.title);
+        setProgram(recoveryProgram);
+        setActiveProgram(null);
+        setProgramStatus(ProgramStatus.Done);
+        setAnswers(null);
+        setDiagnosisData(null);
+        setIsLoading(false);
+        showGlobalLoader(false);
+        return;
+      } catch (error) {
+        console.error('Error parsing persisted recovery program:', error);
+        window.sessionStorage.removeItem('currentRecoveryProgram');
+      }
+    }
+    
+    // If we reach here and we're on login page without a recovery program, 
+    // but user programs useEffect is blocked, we need to ensure loading states are handled
+    if (pathname === '/login') {
+      setIsLoading(false);
+      showGlobalLoader(false);
+    }
+  }, [pathname, isNorwegian, t]);
+
   // Set up real-time listener for program status changes and latest program
   useEffect(() => {
     if (authLoading === undefined || authLoading === true) return;
+    
+    // Check if we're on a recovery program path - if so, skip user program loading
+    if (pathname && pathname.startsWith('/program/')) {
+      const slug = pathname.replace('/program/', '');
+      if (slug && !['day', 'calendar'].includes(slug.split('/')[0])) {
+        const recoveryProgram = getProgramBySlug(slug);
+        if (recoveryProgram) {
+          // Recovery program is being handled by the separate useEffect
+          return;
+        }
+      }
+    }
+    
+    // Check if we're in a save context (login page with save intent)
+    const loginContext = window.sessionStorage.getItem('loginContext');
+    const isInSaveContext = loginContext === 'saveProgram' || pathname === '/login';
+    const hasPersistedRecovery = window.sessionStorage.getItem('currentRecoveryProgram');
+    
+    // If we're in save context and have a persisted recovery program, don't load user programs
+    // This prevents clearing the recovery program during the save flow
+    if (isInSaveContext && hasPersistedRecovery) {
+      console.log('🔒 Save context detected with recovery program - skipping user program loading');
+      return;
+    }
+    
+    // If not in save context and we have a persisted recovery program, clear it
+    // This ensures recovery programs don't persist when user navigates to regular user program areas
+    if (!isInSaveContext && hasPersistedRecovery) {
+      console.log('Clearing persisted recovery program - not in save context');
+      window.sessionStorage.removeItem('currentRecoveryProgram');
+    }
+    
     let unsubscribe: (() => void) | null = null; // Initialize unsubscribe
 
     if (isUserAuthenticated && userId) { // Use derived values
@@ -329,7 +450,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
       }
       showGlobalLoader(false); // Ensure loader is hidden when component unmounts
     };
-  }, [userId, isUserAuthenticated, authLoading, router, t, isNorwegian]); // Updated dependencies
+  }, [userId, isUserAuthenticated, authLoading, pathname, router, t, isNorwegian]); // Added pathname to dependencies
 
   // On initial load, check localStorage for pending questionnaire flag
   useEffect(() => {

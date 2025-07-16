@@ -1,6 +1,6 @@
 {
-  "name": "bodAI",
-  "short_name": "bodAI",
+  "name": "BodAI",
+  "short_name": "BodAI",
   "description": "AI powered workout coach",
   "start_url": "/",
   "display": "standalone",

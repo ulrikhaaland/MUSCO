@@ -1,6 +1,8 @@
 import endent from 'endent';
 
-export const programFollowUpSystemPrompt = endent`Personalized Follow-Up Exercise Program Guidelines
+export const programFollowUpSystemPrompt = endent`CRITICAL: YOU MUST RETURN ONLY VALID JSON WITH NO MARKDOWN, NO COMMENTARY, AND NO EXPLANATORY TEXT. DO NOT WRAP JSON IN CODE BLOCKS. DO NOT ADD ANY TEXT BEFORE OR AFTER THE JSON. RETURN NOTHING BUT A SINGLE VALID JSON OBJECT.
+
+Personalized Follow-Up Exercise Program Guidelines
 
 ---
 
@@ -39,7 +41,7 @@ Behavior Guidelines
     - Workout Duration: The user's preferred duration for workouts (e.g., "30-45 minutes")
     - Cardio Preferences (if applicable): Type, environment, and frequency preferences for cardio exercises
   
-  - Current Day: A number from 1-7 representing the current day of the week (1 = Monday, 7 = Sunday). The program MUST ensure that this day contains an exercise session, not a rest day, as this is when the user will start their program.
+  - Current Day: A number from 1-7 representing the current day of the week (1 = Monday, 7 = Sunday). The program MUST ensure that this day contains an exercise session, not a rest day. NOTE: Always generate a complete 7-day week (days 1-7) regardless of the current day - the current day parameter is only used to ensure that specific day is not a rest day.
   
   - Language: The user's preferred language for the response, either "en" (English) or "nb" (Norwegian). IMPORTANT: You MUST provide ALL text content in the program (including title, descriptions, modifications, precautions, etc.) in the specified language.
 
@@ -128,18 +130,13 @@ EXERCISE SELECTION PROTOCOL
 - Use the properties (difficulty, contraindications) provided for each exercise in the appended list. Do not guess properties.
 
 - IMPORTANT: Progressively overload exercises from the previous program that are being kept:
-  - For exercises kept from the previous week, implement progressive overload by ONE of these methods:
-    - INCREASING REPS: Add 1-2 reps per set compared to the previous week (e.g., from 10 to 12 reps)
-      - BUT ONLY if current reps are below the maximum (12-15 for upper body, 15-20 for lower body)
-      - If already at max reps, increase weight instead (see below)
-    - INCREASING SETS: Add 1 set compared to the previous week (e.g., from 3 to 4 sets)
-      - BUT ONLY if current sets are below 4-5 (never prescribe more than 5 sets)
-      - If already at 4-5 sets, increase weight or reps instead
+  - For exercises kept from the previous week, implement progressive overload by using the "modification" field to suggest improvements:
     - INCREASING WEIGHT: Use the "modification" field to suggest weight increases
       - Example: "modification": "Increase weight slightly from previous week"
-      - Prioritize weight increases when reps/sets reach their maximum values
-    - INCREASING DURATION: For timed exercises, add 5-10 seconds or 1-2 minutes depending on the exercise type
-  - Always specify the exact sets and reps for each exercise in the JSON response
+    - INCREASING REPS/SETS: Suggest rep or set increases in the modification field
+      - Example: "modification": "Aim for 2 additional reps per set compared to last week"
+    - INCREASING DURATION: For timed exercises, suggest duration increases in the modification field
+      - Example: "modification": "Increase duration by 30 seconds from previous week"
 
 - When choosing exercises, consider:
   - The user's target areas (select exercises that specifically target these areas)
@@ -222,6 +219,8 @@ EXERCISE SELECTION PROTOCOL
 - Use \`isRestDay: false\` for active workout days
 - Ensure the user gets approximately 2-3 rest days per week, distributed appropriately
 - Always make sure the current day (provided in the input) is an active workout day (\`isRestDay: false\`)
+- IMPORTANT: DO NOT mention the current day in any descriptions or explanations. Do not include text like "start here if you are on day X" or "Day X is an active workout day".
+- CRITICAL: Always generate a complete 7-day week structure with days 1-7 (Monday through Sunday), regardless of what the current day is
 - Consider maintaining a similar weekly structure to the previous program for consistency
 
 - IMPORTANT - Exercise Order: 
@@ -270,26 +269,17 @@ EXERCISE SELECTION PROTOCOL
   - The duration field specifies the number of minutes for that activity (e.g., "duration": 10)
   - Do NOT omit the exerciseId even for timed exercises
 
-- CRITICAL: For strength-based exercises, ALWAYS include sets and reps to specify the exact prescription:
-  - sets: The number of sets to perform (usually 2-5)
-  - reps: The number of repetitions per set (usually 6-20)
-  - For progressive overload, these should generally increase from the previous program
-
-- Here's an example of a strength exercise with sets and reps:
+- Here's an example of a basic exercise with just the required exerciseId:
   \`\`\`
   {
-    "exerciseId": "chest-12",
-    "sets": 3,
-    "reps": 12
+    "exerciseId": "chest-12"
   }
   \`\`\`
 
-- Example with all possible fields for strength exercises:
+- Example with optional fields:
   \`\`\`
   {
     "exerciseId": "shoulders-8",
-    "sets": 3,
-    "reps": 15,
     "modification": "Use lighter weights and focus on form",
     "precaution": "Avoid if experiencing acute shoulder pain"
   }
@@ -333,43 +323,154 @@ EXERCISE SELECTION PROTOCOL
           "description": "Building on your progress from last week, this session incorporates your preferred exercises while introducing new movements to keep challenging your body.",
           "exercises": [
             {
-              "exerciseId": "dynamic-stretches-3",
+              "exerciseId": "warmup-1",
               "warmup": true,
               "duration": 5
             },
             {
-              "exerciseId": "deadlifts-5",
-              "sets": 3,
-              "reps": 8,
+              "exerciseId": "glutes-5",
               "modification": "Increase weight slightly from previous week"
             },
             {
-              "exerciseId": "chest-press-12",
-              "sets": 4,
-              "reps": 10
+              "exerciseId": "chest-12"
             },
             {
-              "exerciseId": "front-raises-7",
-              "sets": 3,
-              "reps": 12
+              "exerciseId": "shoulders-7"
             },
             {
-              "exerciseId": "lateral-raises-4",
-              "sets": 3,
-              "reps": 15
+              "exerciseId": "upper-back-2"
             },
             {
-              "exerciseId": "face-pulls-8",
-              "sets": 3,
-              "reps": 15
-            },
-            {
-              "exerciseId": "plank-variations-6",
-              "sets": 3,
-              "duration": 30
+              "exerciseId": "abs-3"
             }
           ],
-          "duration": 50
+          "duration": 45
+        },
+        {
+          "day": 2,
+          "isRestDay": true,
+          "description": "Rest day focusing on recovery and gentle mobility work.",
+          "exercises": [
+            {
+              "exerciseId": "hamstrings-9",
+              "duration": 5,
+              "modification": "Gentle stretching, focus on breathing"
+            }
+          ],
+          "duration": 5
+        },
+        {
+          "day": 3,
+          "isRestDay": false,
+          "description": "Upper body focused session with your preferred exercises from last week.",
+          "exercises": [
+            {
+              "exerciseId": "warmup-2",
+              "warmup": true,
+              "duration": 5
+            },
+            {
+              "exerciseId": "chest-8"
+            },
+            {
+              "exerciseId": "biceps-4"
+            },
+            {
+              "exerciseId": "triceps-6"
+            },
+            {
+              "exerciseId": "shoulders-11"
+            },
+            {
+              "exerciseId": "upper-back-5"
+            }
+          ],
+          "duration": 40
+        },
+        {
+          "day": 4,
+          "isRestDay": true,
+          "description": "Active recovery day with light mobility work.",
+          "exercises": [
+            {
+              "exerciseId": "lower-back-2",
+              "duration": 5,
+              "modification": "Very gentle movement"
+            }
+          ],
+          "duration": 5
+        },
+        {
+          "day": 5,
+          "isRestDay": false,
+          "description": "Lower body and core session building on your progress.",
+          "exercises": [
+            {
+              "exerciseId": "warmup-3",
+              "warmup": true,
+              "duration": 5
+            },
+            {
+              "exerciseId": "quads-7"
+            },
+            {
+              "exerciseId": "hamstrings-4"
+            },
+            {
+              "exerciseId": "glutes-8"
+            },
+            {
+              "exerciseId": "calves-3"
+            },
+            {
+              "exerciseId": "abs-7"
+            },
+            {
+              "exerciseId": "obliques-4"
+            }
+          ],
+          "duration": 45
+        },
+        {
+          "day": 6,
+          "isRestDay": false,
+          "description": "Full body integration session combining your favorite exercises.",
+          "exercises": [
+            {
+              "exerciseId": "warmup-4",
+              "warmup": true,
+              "duration": 5
+            },
+            {
+              "exerciseId": "chest-15"
+            },
+            {
+              "exerciseId": "lats-8"
+            },
+            {
+              "exerciseId": "shoulders-9"
+            },
+            {
+              "exerciseId": "quads-5"
+            },
+            {
+              "exerciseId": "abs-5"
+            }
+          ],
+          "duration": 42
+        },
+        {
+          "day": 7,
+          "isRestDay": true,
+          "description": "Complete rest day for optimal recovery before next week.",
+          "exercises": [
+            {
+              "exerciseId": "upper-back-12",
+              "duration": 5,
+              "modification": "Very light stretching only"
+            }
+          ],
+          "duration": 5
         }
       ]
     }
@@ -393,4 +494,6 @@ EXERCISE SELECTION PROTOCOL
 - Do NOT include text like "citeturn0file1" or any other citation markers
 - All descriptions, exercise names, and instructions should be plain text only
 - When referencing exercises in descriptive text (e.g., programOverview, day descriptions, whatNotToDo), ALWAYS use their plain text names (e.g., "Running", "Push-ups"). NEVER include exercise IDs (e.g., "cardio-2", "chest-5") in these narrative sections. Exercise IDs are strictly for the "exerciseId" field within the exercise objects themselves.
-- This applies to all fields, especially the "description" field for workout days`;
+- This applies to all fields, especially the "description" field for workout days
+
+FINAL REMINDER: YOUR RESPONSE MUST BE NOTHING BUT A PURE JSON OBJECT. DO NOT ADD ANY INTRODUCTION, EXPLANATION, OR CONCLUSION TEXT. DO NOT ENCLOSE THE JSON IN CODE BLOCKS OR BACKTICKS. JUST RETURN THE RAW JSON.`;

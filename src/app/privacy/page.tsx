@@ -4,27 +4,31 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { 
   getAuth, 
-  sendSignInLinkToEmail, 
   isSignInWithEmailLink,
   signInWithEmailLink
 } from 'firebase/auth';
+import { httpsCallable } from 'firebase/functions';
 import { useAuth } from '../context/AuthContext';
 import { doc, getDoc } from 'firebase/firestore';
-import { db } from '../firebase/config';
+import { db, functions } from '../firebase/config';
 import { UserProfile } from '../types/user';
 import { toast } from '../components/ui/ToastProvider';
 import { useTranslation } from '../i18n/TranslationContext';
+import { VerificationCodeInput } from '../components/ui/VerificationCodeInput';
 
 export default function PrivacyPage() {
   const router = useRouter();
   const { t } = useTranslation();
-  const { user, loading: authLoading, deleteUserAccount } = useAuth();
+  const { user, loading: authLoading, deleteUserAccount, sendAccountDeletionEmail } = useAuth();
   const [verificationEmail, setVerificationEmail] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [exportData, setExportData] = useState<string | null>(null);
   const [showDataExport, setShowDataExport] = useState(false);
-  const [deleteAccountStep, setDeleteAccountStep] = useState<'initial' | 'email-sent' | null>(null);
+  const [deleteAccountStep, setDeleteAccountStep] = useState<'initial' | 'email-sent' | 'code-input' | null>(null);
+  const [authCode, setAuthCode] = useState('');
+  const [codeError, setCodeError] = useState<string | null>(null);
+  const [isAccountDeleting, setIsAccountDeleting] = useState(false); // Flag to prevent double navigation
   
   // Check if the user is returning from an email link for deletion
   const checkForDeletionLink = async () => {
@@ -33,33 +37,64 @@ export default function PrivacyPage() {
     const auth = getAuth();
     const currentUrl = window.location.href;
     
+    console.log('Checking for deletion link. Current URL:', currentUrl);
+    console.log('Is sign-in with email link?', isSignInWithEmailLink(auth, currentUrl));
+    
     // If user is coming back from a deletion confirmation email
     if (currentUrl.includes('?deleteAccount=true') && isSignInWithEmailLink(auth, currentUrl)) {
       // Check if we're in a delete account flow
       const isDeleteFlow = localStorage.getItem('isDeleteAccountFlow');
+      const storedEmail = localStorage.getItem('emailForSignIn');
+      
+      console.log('Delete flow detected. isDeleteFlow:', isDeleteFlow, 'storedEmail:', storedEmail);
       
       if (isDeleteFlow === 'true') {
         try {
           setIsLoading(true);
           
-          // Wait a moment for the AuthContext to complete the sign in
-          // The auth context will handle the sign-in portion
+          console.log('Starting email link sign-in for account deletion...');
+          
+          // First complete the sign-in with the email link
+          if (storedEmail) {
+            try {
+              await signInWithEmailLink(auth, storedEmail, currentUrl);
+              console.log('Email link sign-in completed successfully');
+            } catch (signInError: any) {
+              console.error('Error signing in with email link:', signInError);
+              setError(`Failed to authenticate: ${signInError.message}`);
+              setIsLoading(false);
+              return;
+            }
+          }
+          
+          // Wait a moment for the auth state to update
           setTimeout(async () => {
             try {
               // Clean up localStorage first
               localStorage.removeItem('emailForSignIn');
               localStorage.removeItem('isDeleteAccountFlow');
               
+              console.log('Attempting account deletion after re-authentication...');
+              
               // Now use the centralized account deletion function
               const success = await deleteUserAccount();
               
               if (success) {
-                // Add a slight delay before navigating away to allow toast to be seen
+                console.log('Account deletion successful, redirecting...');
+                setIsAccountDeleting(true); // Set flag to prevent AuthContext double navigation
+                
+                // Set a flag in sessionStorage to prevent AuthContext from also redirecting
+                sessionStorage.setItem('accountDeleted', 'true');
+                
+                // Use router navigation instead of window.location.href
                 setTimeout(() => {
-                  // Navigate to home page after successful deletion
-                  window.location.href = '/'; // Use direct navigation instead of router to force a full page reload
+                  router.push('/');
+                  // Clean up the flag after navigation
+                  sessionStorage.removeItem('accountDeleted');
                 }, 1500);
               } else {
+                console.error('Account deletion returned false');
+                setError('Account deletion failed. Please try again.');
                 setIsLoading(false);
               }
             } catch (err: any) {
@@ -118,58 +153,89 @@ export default function PrivacyPage() {
       
       try {
         // Try using the centralized deletion function
+        console.log('🔄 Calling deleteUserAccount from privacy page...');
         const success = await deleteUserAccount();
         
+        console.log('✅ deleteUserAccount returned:', success);
         if (success) {
           // Redirect after successful deletion
+          setIsAccountDeleting(true); // Set flag to prevent AuthContext double navigation
+          
+          // Set a flag in sessionStorage to prevent AuthContext from also redirecting
+          sessionStorage.setItem('accountDeleted', 'true');
+          
           setTimeout(() => {
-            window.location.href = '/'; // Use direct navigation instead of router
+            router.push('/');
+            // Clean up the flag after navigation
+            sessionStorage.removeItem('accountDeleted');
           }, 1500);
           return;
         }
       } catch (deleteErr: any) {
+        console.log('🎯 Caught error from deleteUserAccount:', deleteErr);
+        console.log('🎯 Error code:', deleteErr.code);
+        console.log('🎯 Error message:', deleteErr.message);
+        
         // If error is about requiring recent authentication, send a sign-in link
         if (deleteErr.code === 'auth/requires-recent-login') {
-          console.log('Re-authentication required, sending email link...');
+          console.log('✉️ Re-authentication required, sending email link...');
+          
+          try {
+            // Use the app's existing email infrastructure for account deletion re-authentication
+            const origin = typeof window !== 'undefined' ? window.location.origin : '';
+            
+            if (!origin) {
+              throw new Error('Unable to determine application URL');
+            }
+            
+            const redirectUrl = `${origin}/privacy?deleteAccount=true`;
+            
+            console.log('📧 Sending re-authentication email to:', user.email);
+            console.log('🔗 Redirect URL:', redirectUrl);
+            
+            // Send account deletion email using the app's existing email infrastructure
+            await sendAccountDeletionEmail(user.email, redirectUrl);
+            
+            console.log('✅ Re-authentication email sent successfully');
+            
+            // Store the email and flags for the deletion flow
+            localStorage.setItem('emailForSignIn', user.email);
+            localStorage.setItem('isDeleteAccountFlow', 'true');
+            
+            // Move to the code-input state to allow users to enter the code
+            setDeleteAccountStep('code-input');
+            setIsLoading(false);
+            return;
+            
+          } catch (emailErr: any) {
+            console.error('❌ Error sending re-authentication email:', emailErr);
+            
+            // Provide specific error messages for common issues
+            if (emailErr.code === 'auth/invalid-continue-uri') {
+              throw new Error('Email configuration error. Please contact support.');
+            } else if (emailErr.code === 'auth/unauthorized-continue-uri') {
+              throw new Error('Unauthorized redirect URL. Please contact support.');
+            } else {
+              throw new Error(`Failed to send re-authentication email: ${emailErr.message}`);
+            }
+          }
         } else {
+          console.log('❌ Non-reauth error, throwing:', deleteErr);
           throw deleteErr;
         }
       }
       
-      // If we reach here, we need to send a sign-in link for re-authentication
-      const origin = typeof window !== 'undefined' ? window.location.origin : '';
+      // This shouldn't be reached anymore since we modified deleteUserAccount to throw the error
+      throw new Error('Account deletion failed for unknown reason');
       
-      if (!origin) {
-        throw new Error('Unable to determine application URL');
-      }
-      
-      // Configure the action code settings with a fully qualified domain
-      const actionCodeSettings = {
-        // URL you want to redirect back to after sign-in
-        url: `${origin}/privacy?deleteAccount=true`,
-        handleCodeInApp: true,
-      };
-      
-      // Send sign-in link to the user's email
-      await sendSignInLinkToEmail(auth, user.email, actionCodeSettings);
-      
-      // Move to the email-sent state
-      setDeleteAccountStep('email-sent');
-      
-      // Store the email in localStorage - use the same key as AuthContext does
-      // This allows the existing email link handler to find it
-      localStorage.setItem('emailForSignIn', user.email);
-      
-      // Also store a flag to indicate this is for account deletion
-      localStorage.setItem('isDeleteAccountFlow', 'true');
     } catch (err: any) {
       console.error('Error initiating account deletion:', err);
       
       // Provide error message
       if (err.code === 'auth/too-many-requests') {
         setError('Too many attempts. Please try again later.');
-      } else if (err.code === 'auth/invalid-continue-uri') {
-        setError('Error with redirect URL. Please try again later or contact support.');
+      } else if (err.message?.includes('Email configuration error') || err.message?.includes('Unauthorized redirect URL')) {
+        setError(err.message);
       } else {
         setError(err instanceof Error ? err.message : 'An error occurred while preparing account deletion');
       }
@@ -233,6 +299,78 @@ export default function PrivacyPage() {
   const closeDeleteAccountDialog = () => {
     setDeleteAccountStep(null);
     setVerificationEmail('');
+    setAuthCode('');
+    setCodeError(null);
+  };
+
+  const handleCodeValidation = async (codeToValidate: string) => {
+    if (!user?.email || isLoading) return;
+
+    setIsLoading(true);
+    setCodeError(null);
+
+    try {
+      console.log('🔍 Validating account deletion code...');
+      
+      // Call the Cloud Function to validate the code
+      const validateAuthCode = httpsCallable(functions, 'validateAuthCode');
+      const result = await validateAuthCode({ email: user.email, code: codeToValidate });
+
+      // Get the sign-in link from the result
+      const data = result.data as { link: string };
+      console.log('📥 Code validation result:', { hasLink: !!data?.link });
+
+      if (!data || !data.link) {
+        throw new Error('Invalid response from server');
+      }
+
+      // Use the link to sign in for re-authentication
+      console.log('🔐 Re-authenticating with email link...');
+      const auth = getAuth();
+      await signInWithEmailLink(auth, user.email, data.link);
+      console.log('✅ Re-authentication successful');
+
+      // Clean up localStorage
+      localStorage.removeItem('emailForSignIn');
+      localStorage.removeItem('isDeleteAccountFlow');
+
+      // Now proceed with account deletion
+      console.log('🗑️ Proceeding with account deletion...');
+      const success = await deleteUserAccount();
+
+      if (success) {
+        console.log('✅ Account deletion successful, redirecting...');
+        setIsAccountDeleting(true); // Set flag to prevent AuthContext double navigation
+        
+        // Set a flag in sessionStorage to prevent AuthContext from also redirecting
+        sessionStorage.setItem('accountDeleted', 'true');
+        
+        // Use router navigation instead of window.location.href
+        setTimeout(() => {
+          router.push('/');
+          // Clean up the flag after navigation
+          sessionStorage.removeItem('accountDeleted');
+        }, 1500);
+      } else {
+        setCodeError('Account deletion failed. Please try again.');
+        setIsLoading(false);
+      }
+    } catch (err: any) {
+      console.error('❌ Error validating code:', err);
+      
+      if (err.code === 'not-found') {
+        setCodeError('Invalid or expired code. Please try again.');
+      } else if (err.code === 'already-exists') {
+        setCodeError('This code has already been used. Please request a new one.');
+      } else if (err.code === 'deadline-exceeded') {
+        setCodeError('This code has expired. Please request a new one.');
+      } else if (err.code === 'invalid-argument') {
+        setCodeError('Invalid code. Please check and try again.');
+      } else {
+        setCodeError('Failed to validate code. Please try again.');
+      }
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -457,12 +595,87 @@ export default function PrivacyPage() {
               {t('privacy.deleteAccount.emailSentNote')}
             </p>
             
-            <button
-              onClick={closeDeleteAccountDialog}
-              className="px-4 py-2 bg-gray-700 text-white rounded-lg w-full hover:bg-gray-600"
-            >
-              {t('privacy.deleteAccount.cancel')}
-            </button>
+            <div className="flex space-x-3">
+              <button
+                onClick={() => setDeleteAccountStep('code-input')}
+                className="px-4 py-2 bg-indigo-600 text-white rounded-lg flex-1 hover:bg-indigo-500"
+              >
+                Enter Code Instead
+              </button>
+              <button
+                onClick={closeDeleteAccountDialog}
+                className="px-4 py-2 bg-gray-700 text-white rounded-lg flex-1 hover:bg-gray-600"
+              >
+                {t('privacy.deleteAccount.cancel')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Code input dialog */}
+      {deleteAccountStep === 'code-input' && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/80 backdrop-blur-sm"
+          onClick={closeDeleteAccountDialog}
+        >
+          <div 
+            className="bg-gray-800 p-6 rounded-lg max-w-md w-full m-4 shadow-2xl border border-gray-700"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="text-center mb-4">
+              <svg className="w-16 h-16 text-indigo-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              </svg>
+            </div>
+            
+            <h3 className="text-xl font-bold text-white mb-4 text-center">Enter Verification Code</h3>
+            <p className="text-gray-300 mb-6 text-center">
+              Enter the 6-digit code from the email we sent to complete account deletion.
+            </p>
+            
+            {codeError && (
+              <div className="bg-red-900/50 border border-red-500 rounded-lg p-3 mb-4">
+                <p className="text-red-300 text-sm">{codeError}</p>
+              </div>
+            )}
+            
+            <VerificationCodeInput
+              value={authCode}
+              onChange={(value) => {
+                setAuthCode(value);
+                setCodeError(null);
+              }}
+              onSubmit={handleCodeValidation}
+              error={codeError}
+              isLoading={isLoading}
+              placeholder="Enter 6-digit code"
+              submitButtonText="Delete Account"
+              submitButtonLoadingText="Deleting Account..."
+              submitButtonVariant="danger"
+            />
+            
+            <div className="flex space-x-3 mt-4">
+              <button
+                type="button"
+                onClick={() => setDeleteAccountStep('email-sent')}
+                className="px-4 py-2 bg-gray-700 text-white rounded-xl flex-1 hover:bg-gray-600 transition-colors duration-200"
+              >
+                Back
+              </button>
+            </div>
+            
+            <div className="mt-4 text-center">
+              <button
+                onClick={() => {
+                  // Resend the email by going back to email-sent state
+                  setDeleteAccountStep('email-sent');
+                }}
+                className="text-indigo-400 hover:text-indigo-300 text-sm underline"
+              >
+                Didn&apos;t receive email? Click here to try again
+              </button>
+            </div>
           </div>
         </div>
       )}

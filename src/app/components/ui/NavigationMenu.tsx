@@ -304,7 +304,7 @@ function NavigationMenuContent() {
 
   return (
     <div className="fixed bottom-0 left-0 z-50 w-full border-t border-gray-800 bg-gray-900">
-      {/* Hamburger button or login button when not logged in on home page */}
+      {/* Hamburger button or login/save button when not logged in on home page */}
       {!drawerOpen &&
         (user ? (
           <button
@@ -330,13 +330,20 @@ function NavigationMenuContent() {
           pathname !== '/login' && (
             <button
               onClick={() => {
-                const currentPath = pathname + searchParams.toString();
+                const currentPath = pathname + (searchParams?.toString() ? `?${searchParams.toString()}` : '');
                 window.sessionStorage.setItem('previousPath', currentPath);
-                router.push('/login');
+                
+                // If on a program path, add context for saving
+                if (pathname.includes('/program/')) {
+                  window.sessionStorage.setItem('loginContext', 'saveProgram');
+                  router.push('/login?context=save');
+                } else {
+                  router.push('/login');
+                }
               }}
               className="fixed top-4 right-4 z-[70] px-3 py-2 rounded-lg bg-gray-800 text-white hover:bg-gray-700 transition-colors"
             >
-              {t('auth.signIn')}
+              {pathname.includes('/program/') ? t('common.save') : t('auth.signIn')}
             </button>
           )
         ))}
@@ -403,9 +410,16 @@ function NavigationMenuContent() {
               if (user) {
                 handleLogout();
               } else {
-                const currentPath = pathname + searchParams.toString();
+                const currentPath = pathname + (searchParams?.toString() ? `?${searchParams.toString()}` : '');
                 window.sessionStorage.setItem('previousPath', currentPath);
-                router.push('/login');
+                
+                // If on a program path, add context for saving
+                if (pathname.includes('/program/')) {
+                  window.sessionStorage.setItem('loginContext', 'saveProgram');
+                  router.push('/login?context=save');
+                } else {
+                  router.push('/login');
+                }
               }
             }}
             className="flex items-center justify-between w-full px-8 py-2 text-sm text-gray-300 hover:bg-gray-800 hover:text-white rounded-lg transition-colors duration-200"
@@ -424,7 +438,12 @@ function NavigationMenuContent() {
                   d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
                 />
               </svg>
-              {user ? t('auth.signOut') : t('auth.signIn')}
+              {user 
+                ? t('auth.signOut') 
+                : pathname.includes('/program/') 
+                  ? t('common.save') 
+                  : t('auth.signIn')
+              }
             </div>
             <svg
               className="w-4 h-4 text-gray-500"

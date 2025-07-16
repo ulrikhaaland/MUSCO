@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { ProgramDaySummaryComponent } from './ProgramDaySummaryComponent';
 import { ProgramType } from '@/app/shared/types';
 import {
@@ -7,16 +7,11 @@ import {
   ProgramDay,
   ProgramStatus,
 } from '@/app/types/program';
-import {
-  ProgramFeedbackQuestionnaire,
-  ProgramFeedback,
-} from './ProgramFeedbackQuestionnaire';
-import { submitProgramFeedback } from '@/app/services/programFeedbackService';
 import { useAuth } from '@/app/context/AuthContext';
-import { ExerciseSelectionPage } from './ExerciseSelectionPage';
 import { useUser } from '@/app/context/UserContext';
 import { useTranslation } from '@/app/i18n';
 import { useRouter } from 'next/navigation';
+import { toast } from './ToastProvider';
 
 // Updated interface to match the actual program structure
 
@@ -30,6 +25,7 @@ interface ExerciseProgramPageProps {
   onDaySelect: (day: ProgramDay, dayName: string) => void;
   isActive?: boolean;
   onOverviewVisibilityChange?: (visible: boolean) => void;
+  isCustomProgram?: boolean;
 }
 
 // Add styles to hide scrollbars while maintaining scroll functionality
@@ -106,16 +102,66 @@ const getStartOfWeek = (date: Date): Date => {
   return result;
 };
 
+// NEW COMPONENT: SignUpToContinueCard
+const SignUpToContinueCard = ({ 
+  t, 
+  router, 
+}: { 
+  t: (key: string) => string; 
+  router: ReturnType<typeof useRouter>;
+ }) => {
+  return (
+    <div className="bg-gray-800/50 rounded-xl overflow-hidden ring-1 ring-gray-700/50 p-8">
+      <div className="flex flex-col items-center justify-center text-center space-y-4">
+        <svg
+          className="w-12 h-12 text-indigo-400"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+          ></path>
+        </svg>
+        <h3 className="text-app-title text-white">
+          {t('exerciseProgram.signUp.title')}
+        </h3>
+        <p className="text-gray-300">
+          {t('exerciseProgram.signUp.description')}
+        </p>
+        <button
+          onClick={() => {
+            window.sessionStorage.setItem('previousPath', '/');
+            window.sessionStorage.setItem('loginContext', 'saveProgram');
+            router.push('/login?context=save'); 
+          }}
+          className="mt-4 px-6 py-3 rounded-xl bg-indigo-600 text-white hover:bg-indigo-500 transition-colors duration-200"
+        >
+          {t('exerciseProgram.signUp.button')}
+        </button>
+      </div>
+    </div>
+  );
+};
+
 // Create a reusable loading component - no longer needed as we're using the global loader context
 // This function is removed in favor of using the global loader context
 
 export function ExerciseProgramPage({
   program,
   isLoading,
+  onToggleView,
   dayName,
+  onVideoClick,
+  loadingVideoExercise,
   onDaySelect,
   isActive = false,
   onOverviewVisibilityChange,
+  isCustomProgram = false,
 }: ExerciseProgramPageProps) {
   // Get current date info
   const currentDate = new Date();
@@ -125,31 +171,13 @@ export function ExerciseProgramPage({
   const [selectedWeek, setSelectedWeek] = useState<number>(1);
   const [expandedDays, setExpandedDays] = useState<number[]>([]);
   const [showOverview, setShowOverview] = useState(true);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [showFeedbackQuestionnaire, setShowFeedbackQuestionnaire] =
-    useState(false);
   const { user } = useAuth();
-  const [showExerciseSelectionPage, setShowExerciseSelectionPage] =
-    useState(false);
-  const [selectedExercises, setSelectedExercises] = useState<{
-    effective: string[];
-    ineffective: string[];
-  }>({
-    effective: [],
-    ineffective: [],
-  });
-  // Add state to track which selection step to show
-  const [selectionStep, setSelectionStep] = useState<
-    'effective' | 'ineffective'
-  >('effective');
   // Add state to track if current date is in a future week
   const [isInFutureWeek, setIsInFutureWeek] = useState(false);
   // Add state to store the date when user can generate a new program
   const [nextProgramDate, setNextProgramDate] = useState<Date | null>(null);
-  // Add state to save feedback form scroll position
-  const [feedbackScrollPosition, setFeedbackScrollPosition] = useState(0);
   const { answers, diagnosisData, generateFollowUpProgram } = useUser();
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const router = useRouter();
 
   // Check if overview has been seen before
@@ -175,55 +203,13 @@ export function ExerciseProgramPage({
     }
   }, [showOverview, onOverviewVisibilityChange]);
 
-  // Check if today is the day for feedback (the same date as nextMonday)
-  useEffect(() => {
-    const checkFeedbackDay = () => {
-      const nextMonday = getNextMonday(new Date());
-      const today = new Date();
 
-      // Check if the dates match (ignoring time)
-      const todayStr = today.toDateString();
-      const nextMondayStr = nextMonday.toDateString();
-
-      // Set to show feedback questionnaire directly instead of exercise selection
-      setShowFeedbackQuestionnaire(todayStr === nextMondayStr);
-    };
-
-    checkFeedbackDay();
-  }, []);
 
   const handleCloseOverview = () => {
     setShowOverview(false);
   };
 
-  // Function to handle exercise selection
-  const handleExerciseSelection = (
-    effectiveExercises: string[],
-    ineffectiveExercises: string[]
-  ) => {
-    // Update the selected exercises
-    if (selectionStep === 'effective') {
-      setSelectedExercises((prev) => ({
-        ...prev,
-        effective: effectiveExercises,
-      }));
-    } else {
-      setSelectedExercises((prev) => ({
-        ...prev,
-        ineffective: ineffectiveExercises,
-      }));
-    }
 
-    // Return to the feedback form
-    setShowExerciseSelectionPage(false);
-    setShowFeedbackQuestionnaire(true);
-
-    // Restore feedback form scroll position using window
-    setTimeout(() => {
-      // Use window.scrollTo for page scroll restoration
-      window.scrollTo({ top: feedbackScrollPosition, behavior: 'instant' });
-    }, 0);
-  };
 
   // Set initial week and day when program loads
   useEffect(() => {
@@ -494,167 +480,13 @@ export function ExerciseProgramPage({
     return months[month];
   }
 
-  // Function to handle feedback submission and program generation
-  const handleFeedbackSubmit = async (feedback: ProgramFeedback) => {
-    if (!user || !user.uid) {
-      console.error(t('exerciseProgram.feedback.error'));
-      return Promise.reject(new Error(t('exerciseProgram.feedback.error')));
-    }
 
-    try {
-      // Extract only the latest week from the program for the follow-up
-      const latestWeekNumber = Math.max(
-        ...(program?.program?.map((week) => week.week) || [0])
-      );
-      const latestWeek = program?.program?.find(
-        (week) => week.week === latestWeekNumber
-      );
 
-      // Create a new program object with only the latest week
-      const programWithLatestWeek = {
-        ...program,
-        program: latestWeek ? [latestWeek] : [],
-      };
 
-      // Merge selected exercises with feedback data
-      const feedbackWithExercises = {
-        ...feedback,
-        mostEffectiveExercises: selectedExercises.effective,
-        leastEffectiveExercises: selectedExercises.ineffective,
-      };
-
-      // Submit feedback and generate new program with the specific assistant
-      const newProgramId = await submitProgramFeedback(
-        user.uid,
-        programWithLatestWeek,
-        diagnosisData,
-        answers,
-        feedbackWithExercises
-      );
-
-      console.log(t('exerciseProgram.feedback.success'), newProgramId);
-
-      // Redirect to refresh program view
-      generateFollowUpProgram();
-
-      return Promise.resolve();
-    } catch (error) {
-      console.error(t('exerciseProgram.feedback.error.generating'), error);
-      return Promise.reject(error);
-    }
-  };
-
-  const handleFeedbackCancel = () => {
-    // Always go back to the program page
-    setShowFeedbackQuestionnaire(false);
-    setShowExerciseSelectionPage(false);
-
-    // Reset scroll position
-    setTimeout(() => {
-      if (containerRef.current) {
-        containerRef.current.scrollTo({ top: 0, behavior: 'instant' });
-      }
-    }, 0);
-  };
-
-  // Extract all unique exercises from the program
-  const getAllProgramExercises = (): Exercise[] => {
-    if (!program?.program) return [];
-
-    const uniqueExercises = new Map<string, Exercise>();
-
-    // Find the latest week based on createdAt date
-    const latestWeek = program.program.reduce((latest, current) => {
-      if (!latest.createdAt) return current;
-      if (!current.createdAt) return latest;
-      return new Date(current.createdAt) > new Date(latest.createdAt)
-        ? current
-        : latest;
-    }, program.program[0]);
-
-    // Only process exercises from the latest week
-    if (latestWeek) {
-      latestWeek.days.forEach((day) => {
-        if (day.exercises) {
-          day.exercises.forEach((exercise) => {
-            const exerciseId =
-              exercise.id || exercise.exerciseId || exercise.name;
-            if (exerciseId && !uniqueExercises.has(exerciseId)) {
-              uniqueExercises.set(exerciseId, exercise);
-            }
-          });
-        }
-      });
-    }
-
-    return Array.from(uniqueExercises.values());
-  };
 
   // Render next week card function inside the component
   const renderNextWeekCard = () => {
-    const nextMonday = getNextMonday(new Date());
-    const previousExercises = getAllProgramExercises();
-
-    // Show the exercise selection page if user clicked on a field
-    if (showExerciseSelectionPage) {
-      // Filter exercises to prevent overlap between effective/ineffective selections
-      const filteredExercises = previousExercises.filter((exercise) => {
-        const exerciseId = exercise.id || exercise.exerciseId || exercise.name;
-        // For effective selection, filter out exercises already marked as ineffective
-        if (selectionStep === 'effective') {
-          return !selectedExercises.ineffective.includes(exerciseId);
-        }
-        // For ineffective selection, filter out exercises already marked as effective
-        return !selectedExercises.effective.includes(exerciseId);
-      });
-
-      return (
-        <ExerciseSelectionPage
-          previousExercises={filteredExercises}
-          onSave={(effective, ineffective) => {
-            if (selectionStep === 'effective') {
-              handleExerciseSelection(effective, selectedExercises.ineffective);
-            } else {
-              handleExerciseSelection(selectedExercises.effective, ineffective);
-            }
-          }}
-          onCancel={() => {
-            setShowExerciseSelectionPage(false);
-            setShowFeedbackQuestionnaire(true);
-
-            // Restore feedback form scroll position
-            setTimeout(() => {
-              if (containerRef.current) {
-                containerRef.current.scrollTo({
-                  top: feedbackScrollPosition,
-                  behavior: 'instant',
-                });
-              }
-            }, 0);
-          }}
-          initialStep={selectionStep}
-          initialEffectiveExercises={selectedExercises.effective}
-          initialIneffectiveExercises={selectedExercises.ineffective}
-        />
-      );
-    }
-
-    // Show the feedback form directly instead of starting with exercise selection
-    if (showFeedbackQuestionnaire) {
-      return (
-        <ProgramFeedbackQuestionnaire
-          onSubmit={handleFeedbackSubmit}
-          onCancel={handleFeedbackCancel}
-          nextWeekDate={nextMonday}
-          isFeedbackDay={true}
-          previousExercises={previousExercises}
-          isFutureWeek={isInFutureWeek}
-          nextProgramDate={nextProgramDate}
-        />
-      );
-    }
-
-    // Otherwise just show the "Coming Soon" card with a button to start feedback
+    // Show the "Coming Soon" card with a button to start feedback
     return (
       <div className="bg-gray-800/50 rounded-xl overflow-hidden ring-1 ring-gray-700/50 p-8">
         <div className="flex flex-col items-center justify-center text-center space-y-4">
@@ -678,7 +510,58 @@ export function ExerciseProgramPage({
             {t('exerciseProgram.nextWeekCard.description')}
           </p>
           <button
-            onClick={() => setShowFeedbackQuestionnaire(true)}
+            onClick={() => {
+              // Check if user is eligible to create a follow-up program
+              const isDebugMode = process.env.NODE_ENV === 'development';
+              
+              if (!isInFutureWeek && !isDebugMode) {
+                // Show toast message instead of navigating to feedback page
+                let message = t('programFeedback.button.waitUntilNextWeek');
+                
+                if (nextProgramDate) {
+                  const formattedDate = nextProgramDate.toLocaleDateString(locale, {
+                    weekday: 'long',
+                    month: 'long', 
+                    day: 'numeric'
+                  });
+                  
+                  message = t('programFeedback.button.waitUntilSpecificDate', {
+                    date: formattedDate
+                  });
+                }
+                
+                
+                toast.custom(
+                  (toastObj) => (
+                    <div
+                      className={`${
+                        toastObj.visible ? 'animate-enter' : 'animate-leave'
+                      } max-w-md w-full bg-amber-600 shadow-lg rounded-lg pointer-events-auto flex ring-1 ring-black ring-opacity-5`}
+                    >
+                      <div className="flex-1 w-0 p-4">
+                        <div className="flex items-start">
+                          <div className="flex-shrink-0 pt-0.5">
+                            ⚠️
+                          </div>
+                          <div className="ml-3 flex-1">
+                            <p className="text-sm font-medium text-white">
+                              {message}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ),
+                  {
+                    duration: 4000,
+                  }
+                );
+                return;
+              }
+              
+              // Navigate to feedback page
+              router.push('/program/feedback');
+            }}
             className="mt-4 px-6 py-3 rounded-xl bg-indigo-600 text-white hover:bg-indigo-500 transition-colors duration-200"
           >
             {t('exerciseProgram.nextWeekCard.button')}
@@ -748,53 +631,7 @@ export function ExerciseProgramPage({
     return null;
   }
 
-  // If showing exercise selection page, display that instead
-  if (showExerciseSelectionPage) {
-    return (
-      <ExerciseSelectionPage
-        previousExercises={getAllProgramExercises()}
-        onSave={(effective, ineffective) => {
-          if (selectionStep === 'effective') {
-            handleExerciseSelection(effective, selectedExercises.ineffective);
-          } else {
-            handleExerciseSelection(selectedExercises.effective, ineffective);
-          }
-        }}
-        onCancel={() => {
-          setShowExerciseSelectionPage(false);
-          setShowFeedbackQuestionnaire(true);
 
-          // Restore feedback form scroll position
-          setTimeout(() => {
-            if (containerRef.current) {
-              containerRef.current.scrollTo({
-                top: feedbackScrollPosition,
-                behavior: 'instant',
-              });
-            }
-          }, 0);
-        }}
-        initialStep={selectionStep}
-        initialEffectiveExercises={selectedExercises.effective}
-        initialIneffectiveExercises={selectedExercises.ineffective}
-      />
-    );
-  }
-
-  // If showing feedback questionnaire, display that instead
-  if (showFeedbackQuestionnaire) {
-    return (
-      <ProgramFeedbackQuestionnaire
-        onSubmit={handleFeedbackSubmit}
-        onCancel={handleFeedbackCancel}
-        nextWeekDate={getNextMonday(new Date())}
-        isFeedbackDay={true}
-        previousExercises={getAllProgramExercises()}
-        isFutureWeek={isInFutureWeek}
-        nextProgramDate={nextProgramDate}
-      />
-    );
-  }
 
   const selectedWeekData = program.program.find((w) => w.week === selectedWeek);
 
@@ -815,8 +652,8 @@ export function ExerciseProgramPage({
         <>
           <style>{scrollbarHideStyles}</style>
 
-          {/* Custom header with title only - hide when showing feedback or selection */}
-          {!showFeedbackQuestionnaire && !showExerciseSelectionPage && (
+          {/* Custom header with title only */}
+          {(
             <>
               <div className="py-3 px-4 flex items-center justify-between">
                 {/* Empty spacer with same width as menu button to balance the title */}
@@ -828,16 +665,18 @@ export function ExerciseProgramPage({
                         ? t('program.recoveryProgramTitle')
                         : t('program.exerciseProgramTitle'))}
                   </h1>
-                  {isActive ? (
-                    <div className="mt-1 px-2 py-0.5 bg-green-500/20 text-green-300 text-xs rounded-full flex items-center">
-                      <span className="w-2 h-2 rounded-full bg-green-400 mr-1"></span>
-                      {t('exerciseProgram.badge.active')}
-                    </div>
-                  ) : (
-                    <div className="mt-1 px-2 py-0.5 bg-gray-500/20 text-gray-300 text-xs rounded-full flex items-center">
-                      <span className="w-2 h-2 rounded-full bg-gray-400 mr-1"></span>
-                      {t('exerciseProgram.badge.inactive')}
-                    </div>
+                  {!isCustomProgram && (
+                    isActive ? (
+                      <div className="mt-1 px-2 py-0.5 bg-green-500/20 text-green-300 text-xs rounded-full flex items-center">
+                        <span className="w-2 h-2 rounded-full bg-green-400 mr-1"></span>
+                        {t('exerciseProgram.badge.active')}
+                      </div>
+                    ) : (
+                      <div className="mt-1 px-2 py-0.5 bg-gray-500/20 text-gray-300 text-xs rounded-full flex items-center">
+                        <span className="w-2 h-2 rounded-full bg-gray-400 mr-1"></span>
+                        {t('exerciseProgram.badge.inactive')}
+                      </div>
+                    )
                   )}
                 </div>
                 {/* Space for menu button */}
@@ -991,8 +830,8 @@ export function ExerciseProgramPage({
 
           <div className="flex-1">
             <div className="max-w-4xl mx-auto px-4">
-              {/* Program overview button - hide when showing feedback or selection */}
-              {!showFeedbackQuestionnaire && !showExerciseSelectionPage && (
+              {/* Program overview button */}
+              {(
                 <div className="text-center mb-4 space-y-2 mt-2">
                   <div className="flex justify-center mb-2">
                     <button
@@ -1018,8 +857,8 @@ export function ExerciseProgramPage({
                 </div>
               )}
 
-              {/* Only show Week/Day tabs if not showing feedback or exercise selection */}
-              {!showFeedbackQuestionnaire && !showExerciseSelectionPage && (
+              {/* Week/Day tabs */}
+              {(
                 <>
                   {/* Week Tabs */}
                   <div className="mb-6 overflow-x-auto scrollbar-hide">
@@ -1052,7 +891,55 @@ export function ExerciseProgramPage({
                             return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
                           }
                           return a.week - b.week;
-                        }).map(week => (
+                        }).map(week => {
+                          // START OF MODIFICATION FOR WEEK TAB
+                          if (isCustomProgram && !user && week.week > 1) {
+                            const isSelectedLockedWeek = selectedWeek === week.week;
+                            return (
+                              <button
+                                key={`${week.week}-lock`}
+                                data-week={week.week}
+                                onClick={() => handleWeekChange(week.week)} // Make it clickable
+                                className={`px-6 py-3 rounded-lg font-medium transition-colors duration-200 flex flex-col items-center text-center ${
+                                  isSelectedLockedWeek
+                                    ? 'bg-gray-700 text-gray-300 ring-1 ring-indigo-500/70' // Style for selected but locked
+                                    : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white' // Style for unselected locked
+                                }`}
+                              >
+                                <div> {/* Week Number */}
+                                  {t('exerciseProgram.weekTab')}{' '}
+                                  {week.createdAt
+                                    ? getWeekNumber(new Date(week.createdAt))
+                                    : getWeekNumber(
+                                        new Date(
+                                          currentDate.getTime() +
+                                            (week.week - 1) * 7 * 24 * 60 * 60 * 1000
+                                        )
+                                      )}
+                                </div>
+                                {week.createdAt && ( /* Date Range */
+                                  <span className="text-xs opacity-70 block">
+                                    {(() => {
+                                      const weekCreatedAt = new Date(week.createdAt);
+                                      const weekStart = getStartOfWeek(weekCreatedAt);
+                                      const weekEnd = getEndOfWeek(weekCreatedAt);
+                                      const startMonth = getMonthAbbreviation(weekStart.getMonth(), t);
+                                      const startDay = weekStart.getDate();
+                                      const endDay = weekEnd.getDate();
+                                      const endMonth = getMonthAbbreviation(weekEnd.getMonth(), t);
+                                      if (startMonth === endMonth) {
+                                        return `${startMonth} ${startDay}-${endDay}`;
+                                      }
+                                      return `${startMonth} ${startDay}-${endMonth} ${endDay}`;
+                                    })()}
+                                  </span>
+                                )}
+                              </button>
+                            );
+                          }
+                          // END OF MODIFICATION FOR WEEK TAB
+                          // Render normal week button (active or inactive based on selectedWeek)
+                          return (
                           <button
                             key={`${week.week}-${week.createdAt}`}
                             data-week={week.week}
@@ -1097,115 +984,142 @@ export function ExerciseProgramPage({
                               </span>
                             )}
                           </button>
-                        ));
+                          );
+                        });
                       })()}
-                      <button
-                        data-week={program.program.length + 1}
-                        className={`px-6 py-3 rounded-lg font-medium transition-colors duration-200 ${
-                          selectedWeek === program.program.length + 1
-                            ? 'bg-indigo-600 text-white'
-                            : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white'
-                        }`}
-                        onClick={() =>
-                          handleWeekChange(program.program.length + 1)
-                        }
-                      >
-                        {t('exerciseProgram.nextWeek')}
-                      </button>
+                      {(!isCustomProgram || (isCustomProgram && user)) && (() => {
+                        // Get unique week numbers using the same logic as week tabs
+                        const weeksByNumber = program.program.reduce((acc, week) => {
+                          if (!acc[week.week]) {
+                            acc[week.week] = [];
+                          }
+                          acc[week.week].push(week);
+                          return acc;
+                        }, {} as Record<number, typeof program.program>);
+                        
+                        const uniqueWeeks = Object.entries(weeksByNumber).map(([weekNum, weeks]) => {
+                          return weeks.sort((a, b) => {
+                            if (a.createdAt && b.createdAt) {
+                              return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+                            }
+                            return 0;
+                          })[0];
+                        });
+                        
+                        // Always show Next Week button when conditions are met
+                        // Find the highest week number to determine the next week number
+                        const maxWeekNumber = Math.max(...uniqueWeeks.map(week => week.week));
+                        const nextWeekNumber = maxWeekNumber + 1;
+                        return (
+                          <button
+                            data-week={nextWeekNumber}
+                            className={`px-6 py-3 rounded-lg font-medium transition-colors duration-200 ${
+                              selectedWeek === nextWeekNumber
+                                ? 'bg-indigo-600 text-white'
+                                : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white'
+                            }`}
+                            onClick={() => handleWeekChange(nextWeekNumber)}
+                          >
+                            {t('exerciseProgram.nextWeek')}
+                          </button>
+                        );
+                      })()}
                     </div>
                   </div>
                 </>
               )}
 
-              {/* Selected Week Content */}
-              {selectedWeek <= program.program.length &&
-              !showFeedbackQuestionnaire &&
-              !showExerciseSelectionPage ? (
-                <div className="space-y-4">
-                  {/* Get the latest version of the selected week */}
-                  {(() => {
-                    // Find all versions of the selected week
-                    const weeksWithSameNumber = program?.program.filter(w => w.week === selectedWeek);
-                    let selectedWeekData;
-                    
-                    if (weeksWithSameNumber.length > 1) {
-                      // Multiple versions - sort by createdAt descending and take the first one
-                      selectedWeekData = [...weeksWithSameNumber].sort((a, b) => {
-                        if (a.createdAt && b.createdAt) {
-                          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-                        }
-                        return 0; 
-                      })[0];
-                    } else {
-                      // Only one version - use it directly
-                      selectedWeekData = weeksWithSameNumber[0];
-                    }
-                    
-                    if (!selectedWeekData) return null;
-                    
-                    return (
-                      <>
-                        {/* Day Tabs */}
-                        <div className="overflow-x-auto scrollbar-hide mb-6">
-                          <div className="flex space-x-2 min-w-max">
-                            {/* Sort days by day.day to ensure chronological order */}
-                            {[...selectedWeekData.days].sort((a, b) => a.day - b.day).map((day) => (
-                              <button
-                                key={day.day}
-                                data-day={day.day}
-                                onClick={() => handleDayClick(day.day)}
-                                className={`px-6 py-3 rounded-lg font-medium transition-colors duration-200 flex flex-col items-center ${
-                                  expandedDays.includes(day.day)
-                                    ? 'bg-indigo-600 text-white'
-                                    : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white opacity-50'
-                                }`}
-                              >
-                                <span className="text-sm opacity-80 mb-1">
-                                  {getDayShortName(day.day, t)}
-                                </span>
-                                {day.isRestDay ? (
-                                  <span className="text-xs mt-1 opacity-80">
-                                    {t('exerciseProgram.day.rest')}
-                                  </span>
-                                ) : (
-                                  <span className="text-xs mt-1 opacity-80">
-                                    {t('calendar.workout')}
-                                  </span>
-                                )}
-                              </button>
-                            ))}
-                          </div>
-                        </div>
+              {/* Selected Week Content or SignUp Card or NextWeekCard */}
+              {(() => {
+                if (isCustomProgram && !user && selectedWeek > 1) {
+                  return <SignUpToContinueCard t={t} router={router} />;
+                }
 
-                        {/* Day Content */}
-                        {expandedDays.map((dayNumber) => {
-                          const day = selectedWeekData.days.find(
-                            (d) => d.day === dayNumber
-                          );
-                          if (!day) return null;
+                // Try to get the latest version of the selected week's data
+                const weeksWithSameNumber = program?.program?.filter(w => w.week === selectedWeek);
+                let currentSelectedWeekData;
+                if (weeksWithSameNumber && weeksWithSameNumber.length > 0) {
+                  if (weeksWithSameNumber.length > 1) {
+                    currentSelectedWeekData = [...weeksWithSameNumber].sort((a, b) => {
+                      if (a.createdAt && b.createdAt) {
+                        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+                      }
+                      return 0; 
+                    })[0];
+                  } else {
+                    currentSelectedWeekData = weeksWithSameNumber[0];
+                  }
+                }
 
-                          // Get the correct day index based on day.day, not array position
-                          const dayIndex = day.day - 1; // Subtract 1 since day.day is 1-based
-
-                          return (
-                            <ProgramDaySummaryComponent
+                if (currentSelectedWeekData) { 
+                  // This implies selectedWeek corresponds to available program data
+                  return (
+                    <>
+                      {/* Day Tabs */}
+                      <div className="overflow-x-auto scrollbar-hide mb-6">
+                        <div className="flex space-x-2 min-w-max">
+                          {/* Sort days by day.day to ensure chronological order */}
+                          {[...currentSelectedWeekData.days].sort((a, b) => a.day - b.day).map((day) => (
+                            <button
                               key={day.day}
-                              day={day}
-                              dayName={dayName(dayIndex + 1)}
-                              isHighlighted={day.day === 1}
-                              onClick={() =>
-                                handleDayDetailClick(day, dayName(dayIndex + 1))
-                              }
-                            />
-                          );
-                        })}
-                      </>
-                    );
-                  })()}
-                </div>
-              ) : (
-                renderNextWeekCard()
-              )}
+                              data-day={day.day}
+                              onClick={() => handleDayClick(day.day)}
+                              className={`px-6 py-3 rounded-lg font-medium transition-colors duration-200 flex flex-col items-center ${
+                                expandedDays.includes(day.day)
+                                  ? 'bg-indigo-600 text-white'
+                                  : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white opacity-50'
+                              }`}
+                            >
+                              <span className="text-sm opacity-80 mb-1">
+                                {getDayShortName(day.day, t)}
+                              </span>
+                              {day.isRestDay ? (
+                                <span className="text-xs mt-1 opacity-80">
+                                  {t('exerciseProgram.day.rest')}
+                                </span>
+                              ) : (
+                                <span className="text-xs mt-1 opacity-80">
+                                  {t('calendar.workout')}
+                                </span>
+                              )}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Day Content */}
+                      {expandedDays.map((dayNumber) => {
+                        const day = currentSelectedWeekData.days.find(
+                          (d) => d.day === dayNumber
+                        );
+                        if (!day) return null;
+
+                        // Get the correct day index based on day.day, not array position
+                        const dayIndex = day.day - 1; // Subtract 1 since day.day is 1-based
+
+                        return (
+                          <ProgramDaySummaryComponent
+                            key={day.day}
+                            day={day}
+                            dayName={dayName(dayIndex + 1)}
+                            isHighlighted={day.day === 1} // This might need adjustment based on context
+                            onClick={() =>
+                              handleDayDetailClick(day, dayName(dayIndex + 1))
+                            }
+                          />
+                        );
+                      })}
+                    </>
+                  );
+                } else if (selectedWeek > program.program.length) {
+                  // This case is for selectedWeek > program.program.length
+                  // AND it was NOT (isCustomProgram && !user && selectedWeek > 1)
+                  return renderNextWeekCard();
+                }
+                
+                // Fallback: if selectedWeek is within program.length but no data found for it
+                return null; 
+              })()}
             </div>
           </div>
         </>

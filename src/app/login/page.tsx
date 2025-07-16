@@ -1,11 +1,22 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { AuthForm } from '@/app/components/auth/AuthForm';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const [isSaveContext, setIsSaveContext] = useState(false);
+
+  useEffect(() => {
+    // Check URL parameter for save context
+    const context = searchParams?.get('context');
+    // Also check session storage
+    const loginContext = window.sessionStorage.getItem('loginContext');
+    
+    setIsSaveContext(context === 'save' || loginContext === 'saveProgram');
+  }, [searchParams]);
 
   const handleSkip = () => {
     router.push('/');
@@ -25,7 +36,7 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-      <AuthForm onSkip={handleSkip} />
+      <AuthForm onSkip={handleSkip} isSaveContext={isSaveContext} />
     </div>
   );
 } 

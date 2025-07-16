@@ -19,15 +19,24 @@ const translations = {
   // Program - Target Body Parts
   'program.bodyPart.neck': 'Nakke',
   'program.bodyPart.shoulders': 'Skuldre',
+  'program.bodyPart.shoulder': 'Skulder',
   'program.bodyPart.upper_arms': 'Overarmer',
   'program.bodyPart.forearms': 'Underarmer',
+  'program.bodyPart.elbow': 'Albue',
   'program.bodyPart.chest': 'Bryst',
   'program.bodyPart.abdomen': 'Mage',
+  'program.bodyPart.core': 'Kjerne',
   'program.bodyPart.upper_back': 'Øvre rygg',
   'program.bodyPart.lower_back': 'Korsrygg',
   'program.bodyPart.glutes': 'Setemuskulatur',
+  'program.bodyPart.hips': 'Hofter',
   'program.bodyPart.upper_legs': 'Lår',
+  'program.bodyPart.hamstring': 'Hamstring',
   'program.bodyPart.lower_legs': 'Legger',
+  'program.bodyPart.calves': 'Leggmuskler',
+  'program.bodyPart.knee': 'Kne',
+  'program.bodyPart.ankle': 'Ankel',
+  'program.bodyPart.foot': 'Fot',
 
   // Program - Equipment Access
   'program.equipment.large_gym': 'Stort treningssenter',
@@ -152,7 +161,7 @@ const translations = {
   'language.nb': 'Norsk',
 
   // Home page
-  'home.pageTitle': 'bodAI',
+  'home.pageTitle': 'BodAI',
   'home.male': 'Mann',
   'home.female': 'Kvinne',
   'home.loading': 'Laster',
@@ -163,33 +172,41 @@ const translations = {
   'auth.signInWithGoogle': 'Logg inn med Google',
   'auth.signInWithEmail': 'Logg inn med e-post',
   'auth.createAccount': 'Opprett konto',
+  'auth.welcome': 'Velkommen tilbake',
+  'auth.enterEmailForCode': 'Skriv inn e-postadressen din for å få en 6-sifret kode',
+  'auth.emailAddress': 'E-postadresse',
+  'auth.sendCode': 'Send kode',
+  'auth.continueWithoutLogin': 'Fortsett uten å logge inn',
+  'auth.saveProgram': 'Lagre ditt program',
+  'auth.saveDescription': 'Skriv inn e-postadressen din for å lagre dette programmet til kontoen din',
+  'auth.saveAndContinue': 'Lagre & fortsett',
+  'auth.continueWithoutSaving': 'Fortsett uten å lagre',
   'auth.signIn': 'Logg inn',
   'auth.signOut': 'Logg ut',
+  'auth.signing': 'Logger inn',
+  'auth.sending': 'Sender',
+  'auth.checkingLoginStatus': 'Sjekker påloggingsstatus',
+  'auth.accountDisabled': 'Kontoen din har blitt deaktivert',
+  'auth.userNotFound': 'Bruker ikke funnet',
+  'auth.tooManyRequests': 'For mange forespørsler. Vennligst prøv igjen senere.',
+  'auth.failedToSendCode': 'Kunne ikke sende kode',
+  'auth.backToEmail': 'Tilbake til e-post',
   'auth.checkEmail': 'Sjekk e-posten din',
   'auth.sentLoginLink': 'Vi har sendt en innloggingslenke til',
   'auth.clickLinkToSignIn': 'Klikk på lenken i e-posten for å logge inn',
   'auth.useDifferentEmail': 'Bruk en annen e-post',
-  'auth.continueWithoutLogin': 'Fortsett uten innlogging',
-  'auth.welcome': 'Velkommen til bodAI',
   'auth.enterEmailToStart': 'Skriv inn e-postadressen din for å komme i gang',
-  'auth.emailAddress': 'E-postadresse',
-  'auth.sending': 'Sender',
   'auth.sendLoginLink': 'Send innloggingslenke',
   'auth.useAuthCode': 'Bruk verifiseringskode i stedet',
   'auth.alreadyHaveCode': 'Jeg har allerede en verifiseringskode',
   'auth.codeLogin': 'Kodeautentisering',
   'auth.enterCodeFromEmail': 'Skriv inn 6-sifret kode fra e-posten din',
-  'auth.backToEmail': 'Tilbake til e-postinnlogging',
-  'auth.enterEmailForCode':
-    'Angi e-postadressen din for å motta en innloggingskode',
-  'auth.sendCode': 'Send innloggingskode',
   'auth.checkCode': 'Se etter 6-sifret kode i e-posten din',
   'auth.checkCodePwa': 'Vi har sendt en 6-sifret kode til e-posten din',
   'auth.sentLoginCode': 'Vi har sendt en innloggingskode til',
   'auth.enterCodeToSignIn': 'Skriv inn 6-sifret kode for å logge inn',
   'auth.codeSentTo': 'Kode sendt til',
   'auth.signingIn': 'Logger deg inn...',
-  'auth.checkingLoginStatus': 'Sjekker innloggingsstatus...',
 
   // Login form
   'login.email': 'E-post',
@@ -528,7 +545,6 @@ const translations = {
   'questionnaire.continue': 'Fortsett',
   'questionnaire.skipEquipment': 'Hopp over utstyr',
   'questionnaire.cancel': 'Avbryt',
-  'questionnaire.createProgram': 'Lag program',
   'questionnaire.selectedCardioType': 'Valgt kardiotype',
 
   // Program page translations
@@ -589,6 +605,11 @@ const translations = {
   'programs.created': 'Opprettet:',
   'programs.status.active': 'Aktiv',
   'programs.status.inactive': 'Inaktiv',
+  'programs.deleteProgram': 'Slett program',
+  'programs.deleteDialog.title': 'Slett Program',
+  'programs.deleteDialog.description': 'Er du sikker på at du vil slette dette programmet? Denne handlingen kan ikke angres.',
+  'programs.deleteDialog.confirm': 'Slett',
+  'programs.deleteDialog.cancel': 'Avbryt',
 
   // PWA Installation
   'pwa.addToHomescreen': 'Legg til på Hjem-skjermen',
@@ -788,6 +809,12 @@ const translations = {
   'exerciseProgram.feedback.success': 'Nytt program generert med ID:',
   'exerciseProgram.feedback.error.generating':
     'Feil ved generering av nytt program:',
+
+  // Sign Up Prompts for Custom Programs (should match keys in en.ts)
+  'exerciseProgram.signUp.unlockWeek': 'Logg inn for å se',
+  'exerciseProgram.signUp.title': 'Lås opp hele programmet',
+  'exerciseProgram.signUp.description': 'Registrer deg eller logg inn for å få tilgang til hele programmet og følge progresjonen din.',
+  'exerciseProgram.signUp.button': 'Registrer deg / Logg inn',
 
   // Month abbreviations
   'month.jan': 'Jan',
@@ -1059,7 +1086,12 @@ const translations = {
   'authContext.configurationError': 'Konfigurasjonsfeil. Prøv igjen senere.',
   'authContext.failedToSendSignInLink': 'Kunne ikke sende påloggingslenke. Prøv igjen.',
   'authContext.signingYouOut': 'Logger deg ut...',
-  'authContext.failedToSignOut': 'Kunne ikke logge ut'
+'authContext.failedToSignOut': 'Kunne ikke logge ut',
+'authContext.programDeletedSuccessfully': 'Program slettet',
+'authContext.failedToDeleteProgram': 'Kunne ikke slette program',
+'authContext.mustBeLoggedInToDeleteProgram': 'Du må være logget inn for å slette programmer',
+'authContext.programNotFound': 'Program ikke funnet',
+'authContext.notAuthorizedToDeleteProgram': 'Du har ikke tilgang til å slette dette programmet'
 };
 
 export default translations;

@@ -67,7 +67,7 @@ export default function ProgramPage() {
   useEffect(() => {
     if (typeof document !== 'undefined') {
       if (selectedProgram?.title) {
-        document.title = `${selectedProgram.title} | bodAI`;
+        document.title = `${selectedProgram.title} | BodAI`;
       } else {
         document.title = t('program.defaultPageTitle');
       }
@@ -258,6 +258,7 @@ export default function ProgramPage() {
               up.programs.some((p) => p.createdAt === selectedProgram.createdAt)
           )
         }
+        isCustomProgram={!!selectedProgram && !activeProgram}
         onOverviewVisibilityChange={(visible) => setIsOverviewVisible(visible)}
       />
       {renderVideoModal()}
