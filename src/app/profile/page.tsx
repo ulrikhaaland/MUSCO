@@ -11,8 +11,6 @@ import PhoneInput from 'react-phone-number-input';
 import 'react-phone-number-input/style.css';
 import {
   TARGET_BODY_PARTS,
-  UPPER_BODY_PARTS,
-  LOWER_BODY_PARTS,
   EXERCISE_ENVIRONMENTS,
   WORKOUT_DURATIONS,
   PAIN_BODY_PARTS,
@@ -162,26 +160,52 @@ export default function ProfilePage() {
     // Add function to check if a term is Norwegian
     const isNorwegianBodyPart = (term: string): boolean => {
       const norwegianTerms = [
-        'Øvre rygg', 'Korsrygg', 'Nakke', 'Bryst', 'Torso', 'Midtre rygg',
-        'Venstre skulder', 'Høyre skulder', 'Venstre overarm', 'Høyre overarm', 
-        'Venstre albue', 'Høyre albue', 'Venstre underarm', 'Høyre underarm',
-        'Venstre hånd', 'Høyre hånd', 'Bekken- og hofteregion', 'Venstre lår',
-        'Høyre lår', 'Venstre kne', 'Høyre kne', 'Venstre legg', 'Høyre legg',
-        'Venstre fot', 'Høyre fot', 'Upper Back', 'Lower Back',
+        'Øvre rygg',
+        'Korsrygg',
+        'Nakke',
+        'Bryst',
+        'Torso',
+        'Midtre rygg',
+        'Venstre skulder',
+        'Høyre skulder',
+        'Venstre overarm',
+        'Høyre overarm',
+        'Venstre albue',
+        'Høyre albue',
+        'Venstre underarm',
+        'Høyre underarm',
+        'Venstre hånd',
+        'Høyre hånd',
+        'Bekken- og hofteregion',
+        'Venstre lår',
+        'Høyre lår',
+        'Venstre kne',
+        'Høyre kne',
+        'Venstre legg',
+        'Høyre legg',
+        'Venstre fot',
+        'Høyre fot',
+        'Upper Back',
+        'Lower Back',
         // Diet related Norwegian terms
-        'kjøtteter', 'lavkarbo'
+        'kjøtteter',
+        'lavkarbo',
       ];
-      return norwegianTerms.includes(term) || 
-             norwegianTerms.some(norwegian => term.toLowerCase() === norwegian.toLowerCase());
+      return (
+        norwegianTerms.includes(term) ||
+        norwegianTerms.some(
+          (norwegian) => term.toLowerCase() === norwegian.toLowerCase()
+        )
+      );
     };
-    
+
     // If it's already a Norwegian term, don't try to find an English key or translate
     if (isNorwegianBodyPart(bodyPart)) {
       return bodyPart;
     }
-    
+
     // Try to get the English key for a translated body part
-    const englishKey = Object.keys(PAIN_BODY_PARTS).find(key => {
+    const englishKey = Object.keys(PAIN_BODY_PARTS).find((key) => {
       try {
         const translatedValue = t(`bodyParts.${key}`);
         return translatedValue === bodyPart;
@@ -190,11 +214,11 @@ export default function ProfilePage() {
         return false;
       }
     });
-    
+
     if (englishKey) {
       return englishKey; // Return English key if found
     }
-    
+
     // If we have an English key, get its translation
     if (PAIN_BODY_PARTS[bodyPart]) {
       try {
@@ -206,40 +230,13 @@ export default function ProfilePage() {
         // Translation not found, continue with original
       }
     }
-    
+
     return bodyPart; // Return original if no match found
   };
 
-  // Utility function to translate with fallback to formatted original text
-  const translateWithFallback = (key: string, originalText: string) => {
-    try {
-      const translated = t(key);
-      if (translated === key) {
-        // If the translation key is returned, it means no translation was found
-        // Format the original text by capitalizing words and adding spaces
-        return originalText
-          .replace(/([A-Z])/g, ' $1')
-          .replace(/^./, str => str.toUpperCase())
-          .trim();
-      }
-      return translated;
-    } catch (e) {
-      // Fallback to formatted text
-      return originalText
-        .replace(/([A-Z])/g, ' $1')
-        .replace(/^./, str => str.toUpperCase())
-        .trim();
-    }
-  };
-
-  const { user, loading: authLoading, logOut, updateUserProfile } = useAuth();
-  const {
-    activeProgram,
-    userPrograms,
-    answers: questionnaireAnswers,
-  } = useUser();
+  const { user, logOut, updateUserProfile } = useAuth();
+  const { userPrograms, answers: questionnaireAnswers } = useUser();
   const router = useRouter();
-  const { width, height } = useWindowDimensions();
 
   // Get translated constants
   const translatedTargetBodyParts = getTranslatedTargetBodyParts(t);
@@ -335,13 +332,19 @@ export default function ProfilePage() {
 
   useEffect(() => {
     // Log values for debugging translation issues
-    console.log("Profile debug values:");
-    console.log("Exercise modalities:", exerciseModalities);
-    console.log("Exercise environment:", exerciseEnvironments);
-    console.log("Workout duration:", workoutDuration);
-    console.log("Health goals:", healthGoals);
-    console.log("Painful areas:", painfulAreas);
-  }, [exerciseModalities, exerciseEnvironments, workoutDuration, healthGoals, painfulAreas]);
+    console.log('Profile debug values:');
+    console.log('Exercise modalities:', exerciseModalities);
+    console.log('Exercise environment:', exerciseEnvironments);
+    console.log('Workout duration:', workoutDuration);
+    console.log('Health goals:', healthGoals);
+    console.log('Painful areas:', painfulAreas);
+  }, [
+    exerciseModalities,
+    exerciseEnvironments,
+    workoutDuration,
+    healthGoals,
+    painfulAreas,
+  ]);
 
   // Auto-dismiss messages after 3 seconds
   useEffect(() => {
@@ -768,12 +771,14 @@ export default function ProfilePage() {
         }
 
         // Try to find the English key for a translated body part
-        const englishKey = Object.keys(PAIN_BODY_PARTS).find(key => {
+        const englishKey = Object.keys(PAIN_BODY_PARTS).find((key) => {
           try {
             const translatedValue = t(`bodyParts.${key}`);
-            return translatedValue === bodyPart || 
-                  translatedValue.toLowerCase() === bodyPart.toLowerCase() ||
-                  key.toLowerCase() === bodyPart.toLowerCase();
+            return (
+              translatedValue === bodyPart ||
+              translatedValue.toLowerCase() === bodyPart.toLowerCase() ||
+              key.toLowerCase() === bodyPart.toLowerCase()
+            );
           } catch (e) {
             return false;
           }
@@ -782,10 +787,10 @@ export default function ProfilePage() {
         // Map common Norwegian terms to English keys
         const norwegianToEnglish: Record<string, string> = {
           'Øvre rygg': 'upper_back',
-          'Korsrygg': 'lower_back',
-          'Nakke': 'neck',
-          'Bryst': 'chest',
-          'Torso': 'torso',
+          Korsrygg: 'lower_back',
+          Nakke: 'neck',
+          Bryst: 'chest',
+          Torso: 'torso',
           'Midtre rygg': 'middle_back',
           'Venstre skulder': 'left_shoulder',
           'Høyre skulder': 'right_shoulder',
@@ -805,7 +810,7 @@ export default function ProfilePage() {
           'Venstre legg': 'left_lower_leg',
           'Høyre legg': 'right_lower_leg',
           'Venstre fot': 'left_foot',
-          'Høyre fot': 'right_foot'
+          'Høyre fot': 'right_foot',
         };
 
         if (norwegianToEnglish[bodyPart]) {
@@ -822,9 +827,9 @@ export default function ProfilePage() {
           [t('profile.gender.male')]: 'male',
           [t('profile.gender.female')]: 'female',
           [t('profile.gender.nonBinary')]: 'non-binary',
-          [t('profile.gender.preferNotToSay')]: 'prefer-not-to-say'
+          [t('profile.gender.preferNotToSay')]: 'prefer-not-to-say',
         };
-        
+
         // Return English key if found, otherwise return original value (likely already English)
         return genderMap[genderValue] || genderValue;
       };
@@ -836,7 +841,7 @@ export default function ProfilePage() {
         for (const level of fitnessLevels) {
           if (level.name === levelValue) {
             // Find the English key for this fitness level
-            const englishKey = Object.keys(level).find(key => {
+            const englishKey = Object.keys(level).find((key) => {
               try {
                 // Try to find the original English key
                 return level.name === fitnessLevel;
@@ -847,15 +852,15 @@ export default function ProfilePage() {
             if (englishKey) return englishKey;
           }
         }
-        
+
         // Fallback mapping for common translations
         const fitnessMap: Record<string, string> = {
           [t('profile.beginner.name')]: 'Beginner',
           [t('profile.intermediate.name')]: 'Intermediate',
           [t('profile.advanced.name')]: 'Advanced',
-          [t('profile.elite.name')]: 'Elite'
+          [t('profile.elite.name')]: 'Elite',
         };
-        
+
         return fitnessMap[levelValue] || levelValue;
       };
 
@@ -864,7 +869,9 @@ export default function ProfilePage() {
         // Try to find the English key in planned frequency options
         for (const option of PLANNED_EXERCISE_FREQUENCY_OPTIONS) {
           try {
-            const translatedOption = t(`exerciseFrequency.${option.toLowerCase().replace(/\s+/g, '')}`);
+            const translatedOption = t(
+              `exerciseFrequency.${option.toLowerCase().replace(/\s+/g, '')}`
+            );
             if (translatedOption === freqValue) return option;
           } catch (e) {
             // Continue to next option
@@ -878,7 +885,9 @@ export default function ProfilePage() {
         // Try to find the English key in workout durations
         for (const duration of WORKOUT_DURATIONS) {
           try {
-            const translatedDuration = t(`workoutDurations.${duration.toLowerCase().replace(/\s+/g, '')}`);
+            const translatedDuration = t(
+              `workoutDurations.${duration.toLowerCase().replace(/\s+/g, '')}`
+            );
             if (translatedDuration === durationValue) return duration;
           } catch (e) {
             // Continue to next option
@@ -893,7 +902,9 @@ export default function ProfilePage() {
         for (const env of EXERCISE_ENVIRONMENTS) {
           try {
             const envKey = typeof env === 'string' ? env : env.toString();
-            const translatedEnv = t(`exerciseEnvironments.${envKey.toLowerCase().replace(/\s+/g, '')}`);
+            const translatedEnv = t(
+              `exerciseEnvironments.${envKey.toLowerCase().replace(/\s+/g, '')}`
+            );
             if (translatedEnv === envValue) return envKey;
           } catch (e) {
             // Continue to next option
@@ -907,8 +918,10 @@ export default function ProfilePage() {
         // Get translated and English health goals options
         const translatedOptions = getHealthGoalsOptions(t);
         // Create a direct English version by using a pass-through translation function
-        const englishOptions = getHealthGoalsOptions((key: string) => key.replace('profile.goals.', ''));
-        
+        const englishOptions = getHealthGoalsOptions((key: string) =>
+          key.replace('profile.goals.', '')
+        );
+
         // Create a map from translated options to English options
         const translationMap = new Map<string, string>();
         translatedOptions.forEach((translatedOption, i) => {
@@ -916,9 +929,9 @@ export default function ProfilePage() {
             translationMap.set(translatedOption, englishOptions[i]);
           }
         });
-        
+
         // Map each goal to its English version
-        return goals.map(goal => translationMap.get(goal) || goal);
+        return goals.map((goal) => translationMap.get(goal) || goal);
       };
 
       // Function to normalize dietary preferences to English values
@@ -926,8 +939,10 @@ export default function ProfilePage() {
         // Get translated and English dietary options
         const translatedOptions = getDietaryPreferencesOptions(t);
         // Create a direct English version by using a pass-through translation function
-        const englishOptions = getDietaryPreferencesOptions((key: string) => key.replace('profile.diet.', ''));
-        
+        const englishOptions = getDietaryPreferencesOptions((key: string) =>
+          key.replace('profile.diet.', '')
+        );
+
         // Create a map from translated options to English options
         const translationMap = new Map<string, string>();
         translatedOptions.forEach((translatedOption, i) => {
@@ -935,18 +950,18 @@ export default function ProfilePage() {
             translationMap.set(translatedOption, englishOptions[i]);
           }
         });
-        
+
         // Map each preference to its English version
-        return preferences.map(pref => translationMap.get(pref) || pref);
+        return preferences.map((pref) => translationMap.get(pref) || pref);
       };
 
       // Function to normalize target areas to English values
       const normalizeTargetAreas = (areas: string[]): string[] => {
         // Create a map of translated target body parts to English keys
         const targetBodyPartMap = new Map<string, string>();
-        
+
         // Fill the map with translations
-        Object.keys(TARGET_BODY_PARTS).forEach(key => {
+        Object.keys(TARGET_BODY_PARTS).forEach((key) => {
           try {
             const translated = t(`targetBodyParts.${key.toLowerCase()}`);
             targetBodyPartMap.set(translated, key);
@@ -954,9 +969,9 @@ export default function ProfilePage() {
             // Skip if translation fails
           }
         });
-        
+
         // For common body parts that might be in both lists
-        Object.keys(PAIN_BODY_PARTS).forEach(key => {
+        Object.keys(PAIN_BODY_PARTS).forEach((key) => {
           try {
             const translated = t(`bodyParts.${key}`);
             if (!targetBodyPartMap.has(translated)) {
@@ -966,37 +981,37 @@ export default function ProfilePage() {
             // Skip if translation fails
           }
         });
-        
+
         // Map Norwegian terms to English for target areas
         const norwegianToEnglish: Record<string, string> = {
-          'Overkropp': 'Upper Body',
-          'Underkropp': 'Lower Body',
-          'Armer': 'Arms',
-          'Ben': 'Legs',
-          'Rygg': 'Back',
-          'Skuldre': 'Shoulders',
-          'Bryst': 'Chest',
-          'Kjerne': 'Core'
+          Overkropp: 'Upper Body',
+          Underkropp: 'Lower Body',
+          Armer: 'Arms',
+          Ben: 'Legs',
+          Rygg: 'Back',
+          Skuldre: 'Shoulders',
+          Bryst: 'Chest',
+          Kjerne: 'Core',
         };
-        
+
         // Normalize each area
-        return areas.map(area => {
+        return areas.map((area) => {
           // Check if it's a Norwegian term with direct mapping
           if (norwegianToEnglish[area]) {
             return norwegianToEnglish[area];
           }
-          
+
           // Check if we have a mapping for this translated term
           if (targetBodyPartMap.has(area)) {
             return targetBodyPartMap.get(area) || area;
           }
-          
+
           // Try to find in TARGET_BODY_PARTS directly
-          const targetMatch = Object.keys(TARGET_BODY_PARTS).find(key => 
-            key.toLowerCase() === area.toLowerCase()
+          const targetMatch = Object.keys(TARGET_BODY_PARTS).find(
+            (key) => key.toLowerCase() === area.toLowerCase()
           );
           if (targetMatch) return targetMatch;
-          
+
           // Return original if no match found
           return area;
         });
@@ -1025,7 +1040,9 @@ export default function ProfilePage() {
         timeAvailability,
         dietaryPreferences: normalizeDietaryPreferences(dietaryPreferences),
         // For painfulAreas, convert all to English keys for consistent storage
-        painfulAreas: updatedPainfulAreas.map(area => getEnglishBodyPartKey(area)),
+        painfulAreas: updatedPainfulAreas.map((area) =>
+          getEnglishBodyPartKey(area)
+        ),
         healthGoals: normalizeHealthGoals(healthGoals),
         targetAreas: normalizeTargetAreas(targetAreas),
       };
@@ -1033,7 +1050,8 @@ export default function ProfilePage() {
       // Add exercise environments with priority logic
       if (exerciseEnvironments) {
         // Use user's selected value if available, but normalize to English
-        profileData.exerciseEnvironments = normalizeExerciseEnvironment(exerciseEnvironments);
+        profileData.exerciseEnvironments =
+          normalizeExerciseEnvironment(exerciseEnvironments);
       } else if (activeExerciseProgram?.questionnaire?.exerciseEnvironments) {
         // Prioritize exercise program environments
         const exerciseEnvs =
@@ -1169,7 +1187,9 @@ export default function ProfilePage() {
 
         // Next check recovery programs for painful areas
         const recoveryAreas = getPainfulAreasFromRecoveryPrograms();
-        recoveryAreas.forEach((area) => uniquePainfulAreas.add(normalizeBodyPartName(area, t)));
+        recoveryAreas.forEach((area) =>
+          uniquePainfulAreas.add(normalizeBodyPartName(area, t))
+        );
 
         // Finally check other questionnaires
         for (const questionnaireData of questionnaires) {
@@ -1491,124 +1511,164 @@ export default function ProfilePage() {
   };
 
   // Utility component to format displayed values
-  const ProfileValueDisplay = ({ value, translationPrefix, fallback = 'profile.notSet' }) => {
+  const ProfileValueDisplay = ({
+    value,
+    translationPrefix,
+    fallback = 'profile.notSet',
+  }) => {
     if (!value || (Array.isArray(value) && value.length === 0)) {
       return <>{t(fallback)}</>;
     }
 
     // Manual Norwegian translations for body parts
     const norwegianBodyParts: Record<string, string> = {
-      'upper_back': 'Øvre rygg',
-      'upperBack': 'Øvre rygg',
-      'lower_back': 'Korsrygg',
-      'lowerBack': 'Korsrygg',
-      'middle_back': 'Midtre rygg',
-      'middleBack': 'Midtre rygg',
-      'neck': 'Nakke',
-      'chest': 'Bryst',
-      'torso': 'Torso',
-      'left_shoulder': 'Venstre skulder',
-      'leftShoulder': 'Venstre skulder',
-      'right_shoulder': 'Høyre skulder',
-      'rightShoulder': 'Høyre skulder',
-      'left_upper_arm': 'Venstre overarm',
-      'leftUpperArm': 'Venstre overarm',
-      'right_upper_arm': 'Høyre overarm',
-      'rightUpperArm': 'Høyre overarm',
-      'left_elbow': 'Venstre albue',
-      'leftElbow': 'Venstre albue',
-      'right_elbow': 'Høyre albue',
-      'rightElbow': 'Høyre albue',
-      'left_forearm': 'Venstre underarm',
-      'leftForearm': 'Venstre underarm',
-      'right_forearm': 'Høyre underarm',
-      'rightForearm': 'Høyre underarm',
-      'left_hand': 'Venstre hånd',
-      'leftHand': 'Venstre hånd',
-      'right_hand': 'Høyre hånd',
-      'rightHand': 'Høyre hånd',
-      'pelvis_and_hip_region': 'Bekken- og hofteregion',
-      'pelvisAndHipRegion': 'Bekken- og hofteregion',
-      'left_thigh': 'Venstre lår',
-      'leftThigh': 'Venstre lår',
-      'right_thigh': 'Høyre lår',
-      'rightThigh': 'Høyre lår',
-      'left_knee': 'Venstre kne',
-      'leftKnee': 'Venstre kne',
-      'right_knee': 'Høyre kne',
-      'rightKnee': 'Høyre kne',
-      'left_lower_leg': 'Venstre legg',
-      'leftLowerLeg': 'Venstre legg',
-      'right_lower_leg': 'Høyre legg',
-      'rightLowerLeg': 'Høyre legg',
-      'left_foot': 'Venstre fot',
-      'leftFoot': 'Venstre fot',
-      'right_foot': 'Høyre fot',
-      'rightFoot': 'Høyre fot'
+      upper_back: 'Øvre rygg',
+      upperBack: 'Øvre rygg',
+      lower_back: 'Korsrygg',
+      lowerBack: 'Korsrygg',
+      middle_back: 'Midtre rygg',
+      middleBack: 'Midtre rygg',
+      neck: 'Nakke',
+      chest: 'Bryst',
+      torso: 'Torso',
+      left_shoulder: 'Venstre skulder',
+      leftShoulder: 'Venstre skulder',
+      right_shoulder: 'Høyre skulder',
+      rightShoulder: 'Høyre skulder',
+      left_upper_arm: 'Venstre overarm',
+      leftUpperArm: 'Venstre overarm',
+      right_upper_arm: 'Høyre overarm',
+      rightUpperArm: 'Høyre overarm',
+      left_elbow: 'Venstre albue',
+      leftElbow: 'Venstre albue',
+      right_elbow: 'Høyre albue',
+      rightElbow: 'Høyre albue',
+      left_forearm: 'Venstre underarm',
+      leftForearm: 'Venstre underarm',
+      right_forearm: 'Høyre underarm',
+      rightForearm: 'Høyre underarm',
+      left_hand: 'Venstre hånd',
+      leftHand: 'Venstre hånd',
+      right_hand: 'Høyre hånd',
+      rightHand: 'Høyre hånd',
+      pelvis_and_hip_region: 'Bekken- og hofteregion',
+      pelvisAndHipRegion: 'Bekken- og hofteregion',
+      left_thigh: 'Venstre lår',
+      leftThigh: 'Venstre lår',
+      right_thigh: 'Høyre lår',
+      rightThigh: 'Høyre lår',
+      left_knee: 'Venstre kne',
+      leftKnee: 'Venstre kne',
+      right_knee: 'Høyre kne',
+      rightKnee: 'Høyre kne',
+      left_lower_leg: 'Venstre legg',
+      leftLowerLeg: 'Venstre legg',
+      right_lower_leg: 'Høyre legg',
+      rightLowerLeg: 'Høyre legg',
+      left_foot: 'Venstre fot',
+      leftFoot: 'Venstre fot',
+      right_foot: 'Høyre fot',
+      rightFoot: 'Høyre fot',
     };
-    
+
     // Map English stored values to translation keys for common dietary preferences
     const dietaryTranslationMap: Record<string, string> = {
-      'noSpecificDiet': 'profile.diet.noSpecificDiet',
-      'vegetarian': 'profile.diet.vegetarian',
-      'vegan': 'profile.diet.vegan',
-      'pescatarian': 'profile.diet.pescatarian',
-      'paleo': 'profile.diet.paleo',
-      'keto': 'profile.diet.keto',
-      'carnivore': 'profile.diet.carnivore',
-      'lowCarb': 'profile.diet.lowCarb',
-      'lowFat': 'profile.diet.lowFat',
-      'glutenFree': 'profile.diet.glutenFree',
-      'dairyFree': 'profile.diet.dairyFree',
-      'mediterranean': 'profile.diet.mediterranean',
-      'intermittentFasting': 'profile.diet.intermittentFasting',
+      noSpecificDiet: 'profile.diet.noSpecificDiet',
+      vegetarian: 'profile.diet.vegetarian',
+      vegan: 'profile.diet.vegan',
+      pescatarian: 'profile.diet.pescatarian',
+      paleo: 'profile.diet.paleo',
+      keto: 'profile.diet.keto',
+      carnivore: 'profile.diet.carnivore',
+      lowCarb: 'profile.diet.lowCarb',
+      lowFat: 'profile.diet.lowFat',
+      glutenFree: 'profile.diet.glutenFree',
+      dairyFree: 'profile.diet.dairyFree',
+      mediterranean: 'profile.diet.mediterranean',
+      intermittentFasting: 'profile.diet.intermittentFasting',
     };
-    
+
     // Map for body parts with underscores
     const bodyPartMap: Record<string, string> = {
-      'upper_back': 'bodyParts.upperBack',
-      'lower_back': 'bodyParts.lowerBack',
-      'middle_back': 'bodyParts.middleBack',
-      'left_shoulder': 'bodyParts.leftShoulder',
-      'right_shoulder': 'bodyParts.rightShoulder',
-      'left_upper_arm': 'bodyParts.leftUpperArm',
-      'right_upper_arm': 'bodyParts.rightUpperArm',
-      'left_elbow': 'bodyParts.leftElbow',
-      'right_elbow': 'bodyParts.rightElbow',
-      'left_forearm': 'bodyParts.leftForearm',
-      'right_forearm': 'bodyParts.rightForearm',
-      'left_hand': 'bodyParts.leftHand',
-      'right_hand': 'bodyParts.rightHand',
-      'left_thigh': 'bodyParts.leftThigh',
-      'right_thigh': 'bodyParts.rightThigh',
-      'left_knee': 'bodyParts.leftKnee',
-      'right_knee': 'bodyParts.rightKnee',
-      'left_lower_leg': 'bodyParts.leftLowerLeg',
-      'right_lower_leg': 'bodyParts.rightLowerLeg',
-      'left_foot': 'bodyParts.leftFoot',
-      'right_foot': 'bodyParts.rightFoot',
-      'pelvis_and_hip_region': 'bodyParts.pelvisAndHipRegion'
+      upper_back: 'bodyParts.upperBack',
+      lower_back: 'bodyParts.lowerBack',
+      middle_back: 'bodyParts.middleBack',
+      left_shoulder: 'bodyParts.leftShoulder',
+      right_shoulder: 'bodyParts.rightShoulder',
+      left_upper_arm: 'bodyParts.leftUpperArm',
+      right_upper_arm: 'bodyParts.rightUpperArm',
+      left_elbow: 'bodyParts.leftElbow',
+      right_elbow: 'bodyParts.rightElbow',
+      left_forearm: 'bodyParts.leftForearm',
+      right_forearm: 'bodyParts.rightForearm',
+      left_hand: 'bodyParts.leftHand',
+      right_hand: 'bodyParts.rightHand',
+      left_thigh: 'bodyParts.leftThigh',
+      right_thigh: 'bodyParts.rightThigh',
+      left_knee: 'bodyParts.leftKnee',
+      right_knee: 'bodyParts.rightKnee',
+      left_lower_leg: 'bodyParts.leftLowerLeg',
+      right_lower_leg: 'bodyParts.rightLowerLeg',
+      left_foot: 'bodyParts.leftFoot',
+      right_foot: 'bodyParts.rightFoot',
+      pelvis_and_hip_region: 'bodyParts.pelvisAndHipRegion',
     };
-    
+
     // Skip translation attempt for Norwegian terms
     const isNorwegianTerm = (term) => {
       // List of Norwegian words/terms that shouldn't be translated
       const norwegianTerms = [
-        'Øvre rygg', 'Korsrygg', 'Nakke', 'Bryst', 'Torso', 'Midtre rygg',
-        'Venstre skulder', 'Høyre skulder', 'Venstre overarm', 'Høyre overarm', 
-        'Venstre albue', 'Høyre albue', 'Venstre underarm', 'Høyre underarm',
-        'Venstre hånd', 'Høyre hånd', 'Bekken- og hofteregion', 'Venstre lår',
-        'Høyre lår', 'Venstre kne', 'Høyre kne', 'Venstre legg', 'Høyre legg',
-        'Venstre fot', 'Høyre fot', 'Upper Back', 'Lower Back',
+        'Øvre rygg',
+        'Korsrygg',
+        'Nakke',
+        'Bryst',
+        'Torso',
+        'Midtre rygg',
+        'Venstre skulder',
+        'Høyre skulder',
+        'Venstre overarm',
+        'Høyre overarm',
+        'Venstre albue',
+        'Høyre albue',
+        'Venstre underarm',
+        'Høyre underarm',
+        'Venstre hånd',
+        'Høyre hånd',
+        'Bekken- og hofteregion',
+        'Venstre lår',
+        'Høyre lår',
+        'Venstre kne',
+        'Høyre kne',
+        'Venstre legg',
+        'Høyre legg',
+        'Venstre fot',
+        'Høyre fot',
+        'Upper Back',
+        'Lower Back',
         // Diet related Norwegian terms
-        'kjøtteter', 'lavkarbo', 'Ingen spesifikk diett', 'Vegetarianer', 'Veganer',
-        'Pescetarianer', 'Paleo', 'Keto', 'Lavkarbo', 'Lavfett', 'Glutenfri',
-        'Melkefri', 'Middelhavskost', 'Intermitterende fasting'
+        'kjøtteter',
+        'lavkarbo',
+        'Ingen spesifikk diett',
+        'Vegetarianer',
+        'Veganer',
+        'Pescetarianer',
+        'Paleo',
+        'Keto',
+        'Lavkarbo',
+        'Lavfett',
+        'Glutenfri',
+        'Melkefri',
+        'Middelhavskost',
+        'Intermitterende fasting',
       ];
-      return norwegianTerms.includes(term) || 
-             norwegianTerms.some(norwegian => term.toLowerCase() === norwegian.toLowerCase());
+      return (
+        norwegianTerms.includes(term) ||
+        norwegianTerms.some(
+          (norwegian) => term.toLowerCase() === norwegian.toLowerCase()
+        )
+      );
     };
-    
+
     // Translation helper that tries multiple approaches
     const translateTerm = (term) => {
       // Skip translation for Norwegian terms
@@ -1617,10 +1677,11 @@ export default function ProfilePage() {
       }
 
       // Check current locale
-      const isNorwegian = typeof window !== 'undefined' && 
-                          window.localStorage && 
-                          window.localStorage.getItem('i18nextLng') === 'nb';
-      
+      const isNorwegian =
+        typeof window !== 'undefined' &&
+        window.localStorage &&
+        window.localStorage.getItem('i18nextLng') === 'nb';
+
       // Special handling for body parts in Norwegian locale
       if (translationPrefix === 'bodyParts' && isNorwegian) {
         // First try the direct Norwegian mapping
@@ -1628,14 +1689,14 @@ export default function ProfilePage() {
         if (norwegianBodyParts[normalizedTerm]) {
           return norwegianBodyParts[normalizedTerm];
         }
-        
+
         // For camelCase, try converting to underscore format first
         const underscored = term.replace(/([A-Z])/g, '_$1').toLowerCase();
         if (norwegianBodyParts[underscored]) {
           return norwegianBodyParts[underscored];
         }
       }
-      
+
       // Special handling for body parts with underscores
       if (translationPrefix === 'bodyParts' && term.includes('_')) {
         // Check if we have a direct mapping
@@ -1653,9 +1714,11 @@ export default function ProfilePage() {
             // Continue to other methods if this fails
           }
         }
-        
+
         // Try converting underscores to camelCase
-        const camelCased = term.replace(/_([a-z])/g, (match, letter) => letter.toUpperCase());
+        const camelCased = term.replace(/_([a-z])/g, (match, letter) =>
+          letter.toUpperCase()
+        );
         try {
           const translatedCamel = t(`${translationPrefix}.${camelCased}`);
           if (translatedCamel !== `${translationPrefix}.${camelCased}`) {
@@ -1668,7 +1731,7 @@ export default function ProfilePage() {
           }
           // Continue to other methods if this fails
         }
-        
+
         // If we're in Norwegian, try to find any matching entry
         if (isNorwegian) {
           // Look for close matches by removing underscores
@@ -1679,20 +1742,21 @@ export default function ProfilePage() {
             }
           }
         }
-        
+
         // Format the underscored term to be more readable
-        return term.split('_').map(word => 
-          word.charAt(0).toUpperCase() + word.slice(1)
-        ).join(' ');
+        return term
+          .split('_')
+          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(' ');
       }
-      
+
       // For dietary preferences, try direct mapping
       if (translationPrefix === 'profile.diet') {
         // Try to find a match in our dietary mapping
         const dietKey = Object.keys(dietaryTranslationMap).find(
-          key => key.toLowerCase() === term.toLowerCase()
+          (key) => key.toLowerCase() === term.toLowerCase()
         );
-        
+
         if (dietKey) {
           try {
             const translated = t(dietaryTranslationMap[dietKey]);
@@ -1704,7 +1768,7 @@ export default function ProfilePage() {
           }
         }
       }
-      
+
       // Try with original format
       try {
         const translatedDirect = t(`${translationPrefix}.${term}`);
@@ -1714,7 +1778,7 @@ export default function ProfilePage() {
       } catch (e) {
         // Continue to other methods if this fails
       }
-      
+
       // Try with lowercase and no spaces
       try {
         const formattedKey = `${translationPrefix}.${term.toLowerCase().replace(/\s+/g, '').replace(/-/g, '')}`;
@@ -1725,11 +1789,14 @@ export default function ProfilePage() {
       } catch (e) {
         // Continue to other methods if this fails
       }
-      
+
       // Return formatted original if all translation attempts fail
-      return term.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase()).trim();
+      return term
+        .replace(/([A-Z])/g, ' $1')
+        .replace(/^./, (str) => str.toUpperCase())
+        .trim();
     };
-    
+
     // Handle array values
     if (Array.isArray(value)) {
       return (
@@ -1743,7 +1810,7 @@ export default function ProfilePage() {
         </>
       );
     }
-    
+
     // Handle single string value
     return <>{translateTerm(value)}</>;
   };
@@ -2206,7 +2273,9 @@ export default function ProfilePage() {
                             className="text-white cursor-pointer hover:text-indigo-400 transition-colors text-left"
                             onClick={() => handleEdit('userHeight')}
                           >
-                            {userHeight ? `${userHeight} cm` : t('profile.notSet')}
+                            {userHeight
+                              ? `${userHeight} cm`
+                              : t('profile.notSet')}
                           </p>
                         )}
                       </div>
@@ -2252,18 +2321,30 @@ export default function ProfilePage() {
                             onChange={(e) => setGender(e.target.value)}
                             className="w-full bg-gray-700 border border-gray-600 rounded-lg py-2 px-3 text-white"
                           >
-                            <option value="">{t('profile.selectGender')}</option>
-                            <option value="male">{t('profile.gender.male')}</option>
-                            <option value="female">{t('profile.gender.female')}</option>
-                            <option value="non-binary">{t('profile.gender.nonBinary')}</option>
-                            <option value="prefer-not-to-say">{t('profile.gender.preferNotToSay')}</option>
+                            <option value="">
+                              {t('profile.selectGender')}
+                            </option>
+                            <option value="male">
+                              {t('profile.gender.male')}
+                            </option>
+                            <option value="female">
+                              {t('profile.gender.female')}
+                            </option>
+                            <option value="non-binary">
+                              {t('profile.gender.nonBinary')}
+                            </option>
+                            <option value="prefer-not-to-say">
+                              {t('profile.gender.preferNotToSay')}
+                            </option>
                           </select>
                         ) : (
                           <p
                             className="text-white cursor-pointer hover:text-indigo-400 transition-colors text-left capitalize"
                             onClick={() => handleEdit('gender')}
                           >
-                            {gender ? t(`profile.gender.${gender.replace(/-/g, '')}`) : t('profile.notSet')}
+                            {gender
+                              ? t(`profile.gender.${gender.replace(/-/g, '')}`)
+                              : t('profile.notSet')}
                           </p>
                         )}
                       </div>
@@ -2397,7 +2478,9 @@ export default function ProfilePage() {
                             }
                             className="w-full bg-gray-700 border border-gray-600 rounded-lg py-2 px-3 text-white"
                           >
-                            <option value="">{t('profile.selectFrequency')}</option>
+                            <option value="">
+                              {t('profile.selectFrequency')}
+                            </option>
                             {translatedPlannedFrequencyOptions.map(
                               (frequency) => (
                                 <option key={frequency} value={frequency}>
@@ -2483,9 +2566,14 @@ export default function ProfilePage() {
                             className="text-white cursor-pointer hover:text-indigo-400 transition-colors text-left capitalize"
                             onClick={() => handleEdit('exerciseModalities')}
                           >
-                            {exerciseModalities.length > 0
-                              ? <ProfileValueDisplay value={exerciseModalities} translationPrefix="profile.modality" />
-                              : t('profile.notSet')}
+                            {exerciseModalities.length > 0 ? (
+                              <ProfileValueDisplay
+                                value={exerciseModalities}
+                                translationPrefix="profile.modality"
+                              />
+                            ) : (
+                              t('profile.notSet')
+                            )}
                           </p>
                         )}
                       </div>
@@ -2535,9 +2623,14 @@ export default function ProfilePage() {
                             className="text-white cursor-pointer hover:text-indigo-400 transition-colors text-left"
                             onClick={() => handleEdit('workoutDuration')}
                           >
-                            {workoutDuration 
-                              ? <ProfileValueDisplay value={workoutDuration} translationPrefix="profile.duration" />
-                              : t('profile.notSet')}
+                            {workoutDuration ? (
+                              <ProfileValueDisplay
+                                value={workoutDuration}
+                                translationPrefix="profile.duration"
+                              />
+                            ) : (
+                              t('profile.notSet')
+                            )}
                           </p>
                         )}
                       </div>
@@ -2552,79 +2645,105 @@ export default function ProfilePage() {
                             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                               {dietaryPreferencesOptions.map((diet) => {
                                 // Create a translation helper to map between UI language and English storage values
-                                const getDietEnglishKey = (displayValue: string): string => {
+                                const getDietEnglishKey = (
+                                  displayValue: string
+                                ): string => {
                                   if (!displayValue) return '';
-                                  
+
                                   // Normalize the displayed value
-                                  const normalizedDisplay = displayValue.toLowerCase().replace(/\s+/g, '');
-                                  
+                                  const normalizedDisplay = displayValue
+                                    .toLowerCase()
+                                    .replace(/\s+/g, '');
+
                                   // Special cases with spaces that might exist in the data
                                   const specialCases: Record<string, string> = {
                                     'low carb': 'lowCarb',
                                     'low fat': 'lowFat',
                                     'gluten free': 'glutenFree',
                                     'dairy free': 'dairyFree',
-                                    'intermittent fasting': 'intermittentFasting',
-                                    'no specific diet': 'noSpecificDiet'
+                                    'intermittent fasting':
+                                      'intermittentFasting',
+                                    'no specific diet': 'noSpecificDiet',
                                   };
-                                  
+
                                   // Check if it's a special case with spaces
-                                  if (specialCases[displayValue.toLowerCase()]) {
-                                    return specialCases[displayValue.toLowerCase()];
+                                  if (
+                                    specialCases[displayValue.toLowerCase()]
+                                  ) {
+                                    return specialCases[
+                                      displayValue.toLowerCase()
+                                    ];
                                   }
-                                  
+
                                   // Map of displayed values (in any language) to English storage keys
-                                  const displayToEnglish: Record<string, string> = {
+                                  const displayToEnglish: Record<
+                                    string,
+                                    string
+                                  > = {
                                     // Norwegian display values to English keys
-                                    'ingenspesifikkdiett': 'noSpecificDiet',
-                                    'vegetarianer': 'vegetarian',
-                                    'veganer': 'vegan',
-                                    'pescetarianer': 'pescatarian',
-                                    'paleo': 'paleo',
-                                    'keto': 'keto',
-                                    'kjøtteter': 'carnivore',
-                                    'lavkarbo': 'lowCarb',
-                                    'lavfett': 'lowFat',
-                                    'glutenfri': 'glutenFree',
-                                    'melkefri': 'dairyFree',
-                                    'middelhavskost': 'mediterranean',
-                                    'intermitterendefasting': 'intermittentFasting',
-                                    
+                                    ingenspesifikkdiett: 'noSpecificDiet',
+                                    vegetarianer: 'vegetarian',
+                                    veganer: 'vegan',
+                                    pescetarianer: 'pescatarian',
+                                    paleo: 'paleo',
+                                    keto: 'keto',
+                                    kjøtteter: 'carnivore',
+                                    lavkarbo: 'lowCarb',
+                                    lavfett: 'lowFat',
+                                    glutenfri: 'glutenFree',
+                                    melkefri: 'dairyFree',
+                                    middelhavskost: 'mediterranean',
+                                    intermitterendefasting:
+                                      'intermittentFasting',
+
                                     // English display values to English keys (for consistency)
-                                    'nospecificdiett': 'noSpecificDiet',
-                                    'vegetarian': 'vegetarian',
-                                    'vegan': 'vegan',
-                                    'pescatarian': 'pescatarian',
-                                    'carnivore': 'carnivore',
-                                    'lowcarb': 'lowCarb',
-                                    'lowfat': 'lowFat',
-                                    'glutenfree': 'glutenFree',
-                                    'dairyfree': 'dairyFree',
-                                    'mediterranean': 'mediterranean',
-                                    'intermittentfasting': 'intermittentFasting'
+                                    nospecificdiett: 'noSpecificDiet',
+                                    vegetarian: 'vegetarian',
+                                    vegan: 'vegan',
+                                    pescatarian: 'pescatarian',
+                                    carnivore: 'carnivore',
+                                    lowcarb: 'lowCarb',
+                                    lowfat: 'lowFat',
+                                    glutenfree: 'glutenFree',
+                                    dairyfree: 'dairyFree',
+                                    mediterranean: 'mediterranean',
+                                    intermittentfasting: 'intermittentFasting',
                                   };
-                                  
-                                  return displayToEnglish[normalizedDisplay] || displayValue;
+
+                                  return (
+                                    displayToEnglish[normalizedDisplay] ||
+                                    displayValue
+                                  );
                                 };
-                                
+
                                 // Get the English equivalent of this displayed diet option
                                 const englishKey = getDietEnglishKey(diet);
-                                
+
                                 // Check if this option is selected by comparing with stored values
-                                const isSelected = dietaryPreferences.some(pref => {
-                                  // Get the English key for the stored preference
-                                  const normalizedPref = pref.toLowerCase().replace(/\s+/g, '');
-                                  const prefEnglishKey = normalizedPref === 'lowcarb' || normalizedPref === 'low carb' 
-                                    ? 'lowCarb'  // Special case for Low Carb
-                                    : normalizedPref === 'kjøtteter' || normalizedPref === 'carnivore'
-                                    ? 'carnivore'  // Special case for carnivore
-                                    : getDietEnglishKey(pref);
-                                  
-                                  // Compare keys in a case-insensitive way
-                                  return prefEnglishKey.toLowerCase() === englishKey.toLowerCase() ||
-                                         pref.toLowerCase() === diet.toLowerCase();
-                                });
-                                
+                                const isSelected = dietaryPreferences.some(
+                                  (pref) => {
+                                    // Get the English key for the stored preference
+                                    const normalizedPref = pref
+                                      .toLowerCase()
+                                      .replace(/\s+/g, '');
+                                    const prefEnglishKey =
+                                      normalizedPref === 'lowcarb' ||
+                                      normalizedPref === 'low carb'
+                                        ? 'lowCarb' // Special case for Low Carb
+                                        : normalizedPref === 'kjøtteter' ||
+                                            normalizedPref === 'carnivore'
+                                          ? 'carnivore' // Special case for carnivore
+                                          : getDietEnglishKey(pref);
+
+                                    // Compare keys in a case-insensitive way
+                                    return (
+                                      prefEnglishKey.toLowerCase() ===
+                                        englishKey.toLowerCase() ||
+                                      pref.toLowerCase() === diet.toLowerCase()
+                                    );
+                                  }
+                                );
+
                                 return (
                                   <label
                                     key={diet}
@@ -2637,19 +2756,22 @@ export default function ProfilePage() {
                                       checked={isSelected}
                                       onChange={(e) => {
                                         // Always store the English version in the state
-                                        const englishValue = getDietEnglishKey(diet);
-                                        
+                                        const englishValue =
+                                          getDietEnglishKey(diet);
+
                                         if (e.target.checked) {
                                           // Add to selection - use the English key if available
                                           setDietaryPreferences([
                                             ...dietaryPreferences,
-                                            englishValue
+                                            englishValue,
                                           ]);
                                         } else {
                                           // Remove from selection - remove both translated and English versions
                                           setDietaryPreferences(
                                             dietaryPreferences.filter(
-                                              (item) => item.toLowerCase() !== englishValue.toLowerCase()
+                                              (item) =>
+                                                item.toLowerCase() !==
+                                                englishValue.toLowerCase()
                                             )
                                           );
                                         }
@@ -2674,7 +2796,9 @@ export default function ProfilePage() {
                                 <input
                                   type="text"
                                   id="custom-diet"
-                                  placeholder={t('profile.fields.enterCustomDiet')}
+                                  placeholder={t(
+                                    'profile.fields.enterCustomDiet'
+                                  )}
                                   className="flex-1 bg-gray-700 border border-gray-600 rounded-lg py-2 px-3 text-white"
                                   onKeyDown={(e) => {
                                     if (
@@ -2736,65 +2860,101 @@ export default function ProfilePage() {
                                 <div className="flex flex-wrap gap-2">
                                   {dietaryPreferences.map((diet, index) => {
                                     // Enhanced function to translate diet names properly
-                                    const translateDietName = (dietName: string): string => {
+                                    const translateDietName = (
+                                      dietName: string
+                                    ): string => {
                                       if (!dietName) return '';
-                                      
+
                                       // Handle capitalization and spacing variants
                                       const lowerCased = dietName.toLowerCase();
-                                      const normalized = lowerCased.replace(/\s+/g, '');
-                                      
+                                      const normalized = lowerCased.replace(
+                                        /\s+/g,
+                                        ''
+                                      );
+
                                       // Special cases with spaces
-                                      const spacedValues: Record<string, string> = {
+                                      const spacedValues: Record<
+                                        string,
+                                        string
+                                      > = {
                                         'low carb': t('profile.diet.lowCarb'),
                                         'low fat': t('profile.diet.lowFat'),
-                                        'gluten free': t('profile.diet.glutenFree'),
-                                        'dairy free': t('profile.diet.dairyFree'),
-                                        'no specific diet': t('profile.diet.noSpecificDiet'),
-                                        'intermittent fasting': t('profile.diet.intermittentFasting')
+                                        'gluten free': t(
+                                          'profile.diet.glutenFree'
+                                        ),
+                                        'dairy free': t(
+                                          'profile.diet.dairyFree'
+                                        ),
+                                        'no specific diet': t(
+                                          'profile.diet.noSpecificDiet'
+                                        ),
+                                        'intermittent fasting': t(
+                                          'profile.diet.intermittentFasting'
+                                        ),
                                       };
-                                      
+
                                       // Check for direct matches with spaces
                                       if (spacedValues[lowerCased]) {
                                         return spacedValues[lowerCased];
                                       }
-                                      
-                                      // Direct mapping for common diet names 
-                                      const dietMappings: Record<string, string> = {
+
+                                      // Direct mapping for common diet names
+                                      const dietMappings: Record<
+                                        string,
+                                        string
+                                      > = {
                                         // English values
-                                        'nospecificdiett': t('profile.diet.noSpecificDiet'),
-                                        'intermittent fasting': t('profile.diet.intermittentFasting'),
-                                        
+                                        nospecificdiett: t(
+                                          'profile.diet.noSpecificDiet'
+                                        ),
+                                        'intermittent fasting': t(
+                                          'profile.diet.intermittentFasting'
+                                        ),
+
                                         // Norwegian variants (just in case)
-                                        'kjøtteter': t('profile.diet.carnivore'),
-                                        'lavkarbo': t('profile.diet.lowCarb'),
-                                        'lavfett': t('profile.diet.lowFat'),
-                                        'glutenfri': t('profile.diet.glutenFree'),
-                                        'melkefri': t('profile.diet.dairyFree'),
-                                        'middelhavskost': t('profile.diet.mediterranean'),
-                                        'intermitterende fasting': t('profile.diet.intermittentFasting'),
-                                        'ingen spesifikk diett': t('profile.diet.noSpecificDiet')
+                                        kjøtteter: t('profile.diet.carnivore'),
+                                        lavkarbo: t('profile.diet.lowCarb'),
+                                        lavfett: t('profile.diet.lowFat'),
+                                        glutenfri: t('profile.diet.glutenFree'),
+                                        melkefri: t('profile.diet.dairyFree'),
+                                        middelhavskost: t(
+                                          'profile.diet.mediterranean'
+                                        ),
+                                        'intermitterende fasting': t(
+                                          'profile.diet.intermittentFasting'
+                                        ),
+                                        'ingen spesifikk diett': t(
+                                          'profile.diet.noSpecificDiet'
+                                        ),
                                       };
-                                      
+
                                       // First check the direct mapping with the lowercase original
                                       if (dietMappings[lowerCased]) {
                                         return dietMappings[lowerCased];
                                       }
-                                      
+
                                       // Then check with the normalized version (no spaces)
                                       if (dietMappings[normalized]) {
                                         return dietMappings[normalized];
                                       }
-                                      
+
                                       // If all else fails, just format the original value nicely
-                                      return dietName.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase()).trim();
+                                      return dietName
+                                        .replace(/([A-Z])/g, ' $1')
+                                        .replace(/^./, (str) =>
+                                          str.toUpperCase()
+                                        )
+                                        .trim();
                                     };
-                                    
+
                                     return (
                                       <div
                                         key={index}
                                         className="flex items-center bg-indigo-500/20 border border-indigo-500 rounded-lg px-3 py-1"
                                       >
-                                        <span className="text-white">{translateDietName(diet)}</span>
+                                        <span className="text-white">
+                                          {translateDietName(diet)}
+                                        </span>
                                         <button
                                           onClick={() => {
                                             setDietaryPreferences(
@@ -2830,9 +2990,14 @@ export default function ProfilePage() {
                             className="text-white cursor-pointer hover:text-indigo-400 transition-colors text-left"
                             onClick={() => handleEdit('dietaryPreferences')}
                           >
-                            {dietaryPreferences.length > 0
-                              ? <ProfileValueDisplay value={dietaryPreferences} translationPrefix="profile.diet" />
-                              : t('profile.notSet')}
+                            {dietaryPreferences.length > 0 ? (
+                              <ProfileValueDisplay
+                                value={dietaryPreferences}
+                                translationPrefix="profile.diet"
+                              />
+                            ) : (
+                              t('profile.notSet')
+                            )}
                           </p>
                         )}
                       </div>
@@ -2913,7 +3078,9 @@ export default function ProfilePage() {
                               )
                             }
                             className="w-full bg-gray-700 border border-gray-600 rounded-lg py-2 px-3 text-white resize-none h-20"
-                            placeholder={t('profile.separateWithCommas.medicalConditions')}
+                            placeholder={t(
+                              'profile.separateWithCommas.medicalConditions'
+                            )}
                           />
                         ) : (
                           <p
@@ -2944,7 +3111,9 @@ export default function ProfilePage() {
                               )
                             }
                             className="w-full bg-gray-700 border border-gray-600 rounded-lg py-2 px-3 text-white resize-none h-20"
-                            placeholder={t('profile.separateWithCommas.medications')}
+                            placeholder={t(
+                              'profile.separateWithCommas.medications'
+                            )}
                           />
                         ) : (
                           <p
@@ -2975,14 +3144,18 @@ export default function ProfilePage() {
                               )
                             }
                             className="w-full bg-gray-700 border border-gray-600 rounded-lg py-2 px-3 text-white resize-none h-20"
-                            placeholder={t('profile.separateWithCommas.injuries')}
+                            placeholder={t(
+                              'profile.separateWithCommas.injuries'
+                            )}
                           />
                         ) : (
                           <p
                             className="text-white cursor-pointer hover:text-indigo-400 transition-colors text-left"
                             onClick={() => handleEdit('injuries')}
                           >
-                            {injuries.length > 0 ? injuries.join(', ') : t('profile.noneSet')}
+                            {injuries.length > 0
+                              ? injuries.join(', ')
+                              : t('profile.noneSet')}
                           </p>
                         )}
                       </div>
@@ -3017,9 +3190,13 @@ export default function ProfilePage() {
                             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                               {translatedPainBodyParts.map((part) => {
                                 // Function to convert body part display names to storage keys
-                                const getBodyPartKey = (displayName: string): string => {
+                                const getBodyPartKey = (
+                                  displayName: string
+                                ): string => {
                                   // First try to find a direct match in PAIN_BODY_PARTS
-                                  const directKey = Object.keys(PAIN_BODY_PARTS).find(key => {
+                                  const directKey = Object.keys(
+                                    PAIN_BODY_PARTS
+                                  ).find((key) => {
                                     try {
                                       const translated = t(`bodyParts.${key}`);
                                       return translated === displayName;
@@ -3027,39 +3204,46 @@ export default function ProfilePage() {
                                       return false;
                                     }
                                   });
-                                  
+
                                   if (directKey) return directKey;
-                                  
+
                                   // Try camelCase to underscore conversion for common body parts
-                                  const underscoreMap: Record<string, string> = {
-                                    'upperBack': 'upper_back',
-                                    'lowerBack': 'lower_back',
-                                    'middleBack': 'middle_back',
-                                    'leftShoulder': 'left_shoulder',
-                                    'rightShoulder': 'right_shoulder',
-                                    'leftUpperArm': 'left_upper_arm',
-                                    'rightUpperArm': 'right_upper_arm',
-                                    'leftElbow': 'left_elbow',
-                                    'rightElbow': 'right_elbow',
-                                    'leftForearm': 'left_forearm',
-                                    'rightForearm': 'right_forearm',
-                                    'leftHand': 'left_hand',
-                                    'rightHand': 'right_hand',
-                                    'pelvisAndHipRegion': 'pelvis_and_hip_region',
-                                    'leftThigh': 'left_thigh',
-                                    'rightThigh': 'right_thigh',
-                                    'leftKnee': 'left_knee',
-                                    'rightKnee': 'right_knee',
-                                    'leftLowerLeg': 'left_lower_leg',
-                                    'rightLowerLeg': 'right_lower_leg',
-                                    'leftFoot': 'left_foot',
-                                    'rightFoot': 'right_foot'
-                                  };
-                                  
+                                  const underscoreMap: Record<string, string> =
+                                    {
+                                      upperBack: 'upper_back',
+                                      lowerBack: 'lower_back',
+                                      middleBack: 'middle_back',
+                                      leftShoulder: 'left_shoulder',
+                                      rightShoulder: 'right_shoulder',
+                                      leftUpperArm: 'left_upper_arm',
+                                      rightUpperArm: 'right_upper_arm',
+                                      leftElbow: 'left_elbow',
+                                      rightElbow: 'right_elbow',
+                                      leftForearm: 'left_forearm',
+                                      rightForearm: 'right_forearm',
+                                      leftHand: 'left_hand',
+                                      rightHand: 'right_hand',
+                                      pelvisAndHipRegion:
+                                        'pelvis_and_hip_region',
+                                      leftThigh: 'left_thigh',
+                                      rightThigh: 'right_thigh',
+                                      leftKnee: 'left_knee',
+                                      rightKnee: 'right_knee',
+                                      leftLowerLeg: 'left_lower_leg',
+                                      rightLowerLeg: 'right_lower_leg',
+                                      leftFoot: 'left_foot',
+                                      rightFoot: 'right_foot',
+                                    };
+
                                   // Try to find camelCase equivalent first
-                                  for (const [camelKey, underscoreKey] of Object.entries(underscoreMap)) {
+                                  for (const [
+                                    camelKey,
+                                    underscoreKey,
+                                  ] of Object.entries(underscoreMap)) {
                                     try {
-                                      const translated = t(`bodyParts.${camelKey}`);
+                                      const translated = t(
+                                        `bodyParts.${camelKey}`
+                                      );
                                       if (translated === displayName) {
                                         return underscoreKey;
                                       }
@@ -3067,14 +3251,17 @@ export default function ProfilePage() {
                                       // Continue to next key
                                     }
                                   }
-                                  
+
                                   // Norwegian to English mapping
-                                  const norwegianToEnglish: Record<string, string> = {
+                                  const norwegianToEnglish: Record<
+                                    string,
+                                    string
+                                  > = {
                                     'Øvre rygg': 'upper_back',
-                                    'Korsrygg': 'lower_back',
-                                    'Nakke': 'neck',
-                                    'Bryst': 'chest',
-                                    'Torso': 'torso',
+                                    Korsrygg: 'lower_back',
+                                    Nakke: 'neck',
+                                    Bryst: 'chest',
+                                    Torso: 'torso',
                                     'Midtre rygg': 'middle_back',
                                     'Venstre skulder': 'left_shoulder',
                                     'Høyre skulder': 'right_shoulder',
@@ -3086,7 +3273,8 @@ export default function ProfilePage() {
                                     'Høyre underarm': 'right_forearm',
                                     'Venstre hånd': 'left_hand',
                                     'Høyre hånd': 'right_hand',
-                                    'Bekken- og hofteregion': 'pelvis_and_hip_region',
+                                    'Bekken- og hofteregion':
+                                      'pelvis_and_hip_region',
                                     'Venstre lår': 'left_thigh',
                                     'Høyre lår': 'right_thigh',
                                     'Venstre kne': 'left_knee',
@@ -3094,106 +3282,228 @@ export default function ProfilePage() {
                                     'Venstre legg': 'left_lower_leg',
                                     'Høyre legg': 'right_lower_leg',
                                     'Venstre fot': 'left_foot',
-                                    'Høyre fot': 'right_foot'
+                                    'Høyre fot': 'right_foot',
                                   };
-                                  
+
                                   // Check for Norwegian term
                                   if (norwegianToEnglish[displayName]) {
                                     return norwegianToEnglish[displayName];
                                   }
-                                  
+
                                   // Fallback to the display name as the key
                                   return displayName;
                                 };
-                                
+
                                 // Function to check if a body part is selected
-                                const isBodyPartSelected = (displayName: string): boolean => {
+                                const isBodyPartSelected = (
+                                  displayName: string
+                                ): boolean => {
                                   if (painfulAreas.length === 0) return false;
-                                  
+
                                   // First check direct match with display name
-                                  if (painfulAreas.includes(displayName)) return true;
-                                  
+                                  if (painfulAreas.includes(displayName))
+                                    return true;
+
                                   // Normalize display name for case-insensitive comparison
-                                  const normalizedDisplayName = displayName.toLowerCase();
-                                  if (painfulAreas.some(area => area.toLowerCase() === normalizedDisplayName)) return true;
-                                  
+                                  const normalizedDisplayName =
+                                    displayName.toLowerCase();
+                                  if (
+                                    painfulAreas.some(
+                                      (area) =>
+                                        area.toLowerCase() ===
+                                        normalizedDisplayName
+                                    )
+                                  )
+                                    return true;
+
                                   // Handle special cases for body parts with spaces
-                                  const spaceToUnderscore: Record<string, string[]> = {
-                                    'upper back': ['upper_back', 'upperback', 'upperBack'], 
-                                    'lower back': ['lower_back', 'lowerback', 'lowerBack'],
-                                    'middle back': ['middle_back', 'middleback', 'middleBack'],
-                                    'left shoulder': ['left_shoulder', 'leftshoulder', 'leftShoulder'],
-                                    'right shoulder': ['right_shoulder', 'rightshoulder', 'rightShoulder'],
-                                    'left upper arm': ['left_upper_arm', 'leftupperarm', 'leftUpperArm'],
-                                    'right upper arm': ['right_upper_arm', 'rightupperarm', 'rightUpperArm'],
-                                    'left elbow': ['left_elbow', 'leftelbow', 'leftElbow'],
-                                    'right elbow': ['right_elbow', 'rightelbow', 'rightElbow'],
-                                    'left forearm': ['left_forearm', 'leftforearm', 'leftForearm'],
-                                    'right forearm': ['right_forearm', 'rightforearm', 'rightForearm'],
-                                    'left hand': ['left_hand', 'lefthand', 'leftHand'],
-                                    'right hand': ['right_hand', 'righthand', 'rightHand'],
-                                    'pelvis and hip region': ['pelvis_and_hip_region', 'pelvisandhipregion', 'pelvisAndHipRegion'],
-                                    'left thigh': ['left_thigh', 'leftthigh', 'leftThigh'],
-                                    'right thigh': ['right_thigh', 'rightthigh', 'rightThigh'],
-                                    'left knee': ['left_knee', 'leftknee', 'leftKnee'],
-                                    'right knee': ['right_knee', 'rightknee', 'rightKnee'],
-                                    'left lower leg': ['left_lower_leg', 'leftlowerleg', 'leftLowerLeg'],
-                                    'right lower leg': ['right_lower_leg', 'rightlowerleg', 'rightLowerLeg'],
-                                    'left foot': ['left_foot', 'leftfoot', 'leftFoot'],
-                                    'right foot': ['right_foot', 'rightfoot', 'rightFoot']
+                                  const spaceToUnderscore: Record<
+                                    string,
+                                    string[]
+                                  > = {
+                                    'upper back': [
+                                      'upper_back',
+                                      'upperback',
+                                      'upperBack',
+                                    ],
+                                    'lower back': [
+                                      'lower_back',
+                                      'lowerback',
+                                      'lowerBack',
+                                    ],
+                                    'middle back': [
+                                      'middle_back',
+                                      'middleback',
+                                      'middleBack',
+                                    ],
+                                    'left shoulder': [
+                                      'left_shoulder',
+                                      'leftshoulder',
+                                      'leftShoulder',
+                                    ],
+                                    'right shoulder': [
+                                      'right_shoulder',
+                                      'rightshoulder',
+                                      'rightShoulder',
+                                    ],
+                                    'left upper arm': [
+                                      'left_upper_arm',
+                                      'leftupperarm',
+                                      'leftUpperArm',
+                                    ],
+                                    'right upper arm': [
+                                      'right_upper_arm',
+                                      'rightupperarm',
+                                      'rightUpperArm',
+                                    ],
+                                    'left elbow': [
+                                      'left_elbow',
+                                      'leftelbow',
+                                      'leftElbow',
+                                    ],
+                                    'right elbow': [
+                                      'right_elbow',
+                                      'rightelbow',
+                                      'rightElbow',
+                                    ],
+                                    'left forearm': [
+                                      'left_forearm',
+                                      'leftforearm',
+                                      'leftForearm',
+                                    ],
+                                    'right forearm': [
+                                      'right_forearm',
+                                      'rightforearm',
+                                      'rightForearm',
+                                    ],
+                                    'left hand': [
+                                      'left_hand',
+                                      'lefthand',
+                                      'leftHand',
+                                    ],
+                                    'right hand': [
+                                      'right_hand',
+                                      'righthand',
+                                      'rightHand',
+                                    ],
+                                    'pelvis and hip region': [
+                                      'pelvis_and_hip_region',
+                                      'pelvisandhipregion',
+                                      'pelvisAndHipRegion',
+                                    ],
+                                    'left thigh': [
+                                      'left_thigh',
+                                      'leftthigh',
+                                      'leftThigh',
+                                    ],
+                                    'right thigh': [
+                                      'right_thigh',
+                                      'rightthigh',
+                                      'rightThigh',
+                                    ],
+                                    'left knee': [
+                                      'left_knee',
+                                      'leftknee',
+                                      'leftKnee',
+                                    ],
+                                    'right knee': [
+                                      'right_knee',
+                                      'rightknee',
+                                      'rightKnee',
+                                    ],
+                                    'left lower leg': [
+                                      'left_lower_leg',
+                                      'leftlowerleg',
+                                      'leftLowerLeg',
+                                    ],
+                                    'right lower leg': [
+                                      'right_lower_leg',
+                                      'rightlowerleg',
+                                      'rightLowerLeg',
+                                    ],
+                                    'left foot': [
+                                      'left_foot',
+                                      'leftfoot',
+                                      'leftFoot',
+                                    ],
+                                    'right foot': [
+                                      'right_foot',
+                                      'rightfoot',
+                                      'rightFoot',
+                                    ],
                                   };
 
-                                  // Check common variations with spaces vs underscores 
-                                  const key = Object.keys(spaceToUnderscore).find(k => 
-                                    k.toLowerCase() === normalizedDisplayName
+                                  // Check common variations with spaces vs underscores
+                                  const key = Object.keys(
+                                    spaceToUnderscore
+                                  ).find(
+                                    (k) =>
+                                      k.toLowerCase() === normalizedDisplayName
                                   );
-                                  
+
                                   if (key) {
                                     const variations = spaceToUnderscore[key];
-                                    return painfulAreas.some(area => 
-                                      variations.includes(area) || 
-                                      variations.includes(area.toLowerCase())
+                                    return painfulAreas.some(
+                                      (area) =>
+                                        variations.includes(area) ||
+                                        variations.includes(area.toLowerCase())
                                     );
                                   }
-                                  
+
                                   // Get the storage key for this display name
-                                  const storageKey = getBodyPartKey(displayName);
-                                  
+                                  const storageKey =
+                                    getBodyPartKey(displayName);
+
                                   // Check if the storage key is in painfulAreas
-                                  if (painfulAreas.some(area => 
-                                    area === storageKey || 
-                                    area.toLowerCase() === storageKey.toLowerCase()
-                                  )) {
+                                  if (
+                                    painfulAreas.some(
+                                      (area) =>
+                                        area === storageKey ||
+                                        area.toLowerCase() ===
+                                          storageKey.toLowerCase()
+                                    )
+                                  ) {
                                     return true;
                                   }
-                                  
+
                                   // Try converting display name format
                                   // From "Upper back" to "upper_back" or from "Upper Back" to "upper_back"
-                                  const wordsToUnderscore = displayName.toLowerCase().replace(/\s+/g, '_');
-                                  if (painfulAreas.some(area => 
-                                    area === wordsToUnderscore || 
-                                    area.toLowerCase() === wordsToUnderscore
-                                  )) {
+                                  const wordsToUnderscore = displayName
+                                    .toLowerCase()
+                                    .replace(/\s+/g, '_');
+                                  if (
+                                    painfulAreas.some(
+                                      (area) =>
+                                        area === wordsToUnderscore ||
+                                        area.toLowerCase() === wordsToUnderscore
+                                    )
+                                  ) {
                                     return true;
                                   }
-                                  
+
                                   // From "Upper back" to "upperBack"
-                                  const wordsToCamel = displayName.toLowerCase().replace(/\s+(.)/g, (_, char) => 
-                                    char.toUpperCase()
-                                  );
-                                  if (painfulAreas.some(area => 
-                                    area === wordsToCamel || 
-                                    area.toLowerCase() === wordsToCamel.toLowerCase()
-                                  )) {
+                                  const wordsToCamel = displayName
+                                    .toLowerCase()
+                                    .replace(/\s+(.)/g, (_, char) =>
+                                      char.toUpperCase()
+                                    );
+                                  if (
+                                    painfulAreas.some(
+                                      (area) =>
+                                        area === wordsToCamel ||
+                                        area.toLowerCase() ===
+                                          wordsToCamel.toLowerCase()
+                                    )
+                                  ) {
                                     return true;
                                   }
-                                  
+
                                   return false;
                                 };
-                                
+
                                 // Check if this body part is selected
                                 const isSelected = isBodyPartSelected(part);
-                                
+
                                 return (
                                   <label
                                     key={part}
@@ -3207,29 +3517,41 @@ export default function ProfilePage() {
                                         let newPainfulAreas;
                                         if (e.target.checked) {
                                           // When selecting, store the English key with proper format
-                                          const englishKey = getBodyPartKey(part);
-                                          newPainfulAreas = [...painfulAreas, englishKey];
+                                          const englishKey =
+                                            getBodyPartKey(part);
+                                          newPainfulAreas = [
+                                            ...painfulAreas,
+                                            englishKey,
+                                          ];
                                         } else {
                                           // When deselecting, remove any variation of this body part
-                                          const storageKey = getBodyPartKey(part);
-                                          newPainfulAreas = painfulAreas.filter(area => {
-                                            // Remove direct match with display name
-                                            if (area === part) return false;
-                                            
-                                            // Remove match with storage key
-                                            if (area === storageKey) return false;
-                                            
-                                            // Remove camelCase variations
-                                            const camelCase = storageKey.replace(/_([a-z])/g, 
-                                              (match, letter) => letter.toUpperCase()
-                                            );
-                                            if (area === camelCase) return false;
-                                            
-                                            // Keep other areas
-                                            return true;
-                                          });
+                                          const storageKey =
+                                            getBodyPartKey(part);
+                                          newPainfulAreas = painfulAreas.filter(
+                                            (area) => {
+                                              // Remove direct match with display name
+                                              if (area === part) return false;
+
+                                              // Remove match with storage key
+                                              if (area === storageKey)
+                                                return false;
+
+                                              // Remove camelCase variations
+                                              const camelCase =
+                                                storageKey.replace(
+                                                  /_([a-z])/g,
+                                                  (match, letter) =>
+                                                    letter.toUpperCase()
+                                                );
+                                              if (area === camelCase)
+                                                return false;
+
+                                              // Keep other areas
+                                              return true;
+                                            }
+                                          );
                                         }
-                                        
+
                                         setPainfulAreas(newPainfulAreas);
                                       }}
                                       className="peer sr-only"
@@ -3257,9 +3579,15 @@ export default function ProfilePage() {
                             className="text-white cursor-pointer hover:text-indigo-400 transition-colors text-left"
                             onClick={() => handleEdit('painfulAreas')}
                           >
-                            {painfulAreas.length > 0
-                              ? <ProfileValueDisplay value={painfulAreas} translationPrefix="bodyParts" fallback="profile.fields.noPainAreas" />
-                              : t('profile.fields.noPainAreas')}
+                            {painfulAreas.length > 0 ? (
+                              <ProfileValueDisplay
+                                value={painfulAreas}
+                                translationPrefix="bodyParts"
+                                fallback="profile.fields.noPainAreas"
+                              />
+                            ) : (
+                              t('profile.fields.noPainAreas')
+                            )}
                           </p>
                         )}
                       </div>
@@ -3281,7 +3609,9 @@ export default function ProfilePage() {
                               )
                             }
                             className="w-full bg-gray-700 border border-gray-600 rounded-lg py-2 px-3 text-white resize-none h-20"
-                            placeholder={t('profile.separateWithCommas.familyHistory')}
+                            placeholder={t(
+                              'profile.separateWithCommas.familyHistory'
+                            )}
                           />
                         ) : (
                           <p
@@ -3305,7 +3635,9 @@ export default function ProfilePage() {
             {/* Only show these sections when not in edit mode */}
             {!isEditing && (
               <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-xl ring-1 ring-gray-700/50 p-6">
-                <h3 className="text-lg font-medium text-white mb-4">{t('profile.account')}</h3>
+                <h3 className="text-lg font-medium text-white mb-4">
+                  {t('profile.account')}
+                </h3>
                 <div className="space-y-4">
                   <button
                     onClick={() => router.push('/privacy')}

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { useTranslation } from '@/app/i18n'; // Corrected import path
+  
 interface MuscleLoaderProps {
   fullScreen?: boolean;
   baseColor?: string; // static outline colour
@@ -16,10 +16,9 @@ export default function MuscleLoader({
   baseColor = '#94a3b8', // slate-400 (was #4b5563/slate-600)
   pulseColor = '#6366f1', // indigo-500
   onRetry,
-  message, // Default message will be set using useTranslation
+  message = null, // Default message will be set using useTranslation
   submessage,
 }: MuscleLoaderProps) {
-  const { t } = useTranslation(); // Added useTranslation hook
   const svgRef = useRef<SVGSVGElement>(null);
   const [dotFrame, setDotFrame] = useState(0); // 0,1,2 for "·","··","···"
   const [showRetry, setShowRetry] = useState(false);
@@ -91,7 +90,7 @@ export default function MuscleLoader({
     return () => clearTimeout(t);
   }, []);
 
-  const defaultMessage = message || t('home.initializing'); // Use translated default message
+  const defaultMessage = message || null; // Use translated default message
 
   // Log message changes to help debugging
   useEffect(() => {

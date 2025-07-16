@@ -987,7 +987,7 @@ export function ExerciseProgramPage({
                           );
                         });
                       })()}
-                      {(!isCustomProgram || (isCustomProgram && user)) && (() => {
+                      {!isCustomProgram && (() => {
                         // Get unique week numbers using the same logic as week tabs
                         const weeksByNumber = program.program.reduce((acc, week) => {
                           if (!acc[week.week]) {

@@ -450,7 +450,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
       }
       showGlobalLoader(false); // Ensure loader is hidden when component unmounts
     };
-  }, [userId, isUserAuthenticated, authLoading, pathname, router, t, isNorwegian]); // Added pathname to dependencies
+  }, [userId, isUserAuthenticated, authLoading, isNorwegian]); // Added pathname to dependencies
 
   // On initial load, check localStorage for pending questionnaire flag
   useEffect(() => {
