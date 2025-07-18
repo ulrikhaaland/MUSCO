@@ -184,20 +184,20 @@ export const rehabPrograms: ExerciseProgram[] = [
   // 1. Low‑Back Pain (non‑specific mechanical)
   // -----------------------------------------------------------------
   {
-    title: 'Low‑Back Pain Relief & Strength',
+    title: 'Lower Back Pain Relief & Strength',
     timeFrame: '4 weeks',
     programOverview:
-      'This 4‑week program is designed to help you recover from non‑specific mechanical low‑back pain through targeted movement, strength, and control. You’ll follow a structured plan with three sessions per week, starting with pain relief and gentle core activation. As you progress, the focus shifts to hip and glute strength, and finally to hinge mechanics that support real-world movements like bending, lifting, and sitting. Active recovery and mobility work are built into your rest days to support healing without overloading your back.',
+      'This evidence-based 4‑week lower back rehabilitation program systematically addresses the root causes of mechanical low‑back pain through progressive therapeutic exercise. You\'ll begin with gentle spinal stabilization using dead bugs and bird dogs to reactivate deep core muscles, then advance through targeted glute strengthening with bridges and clamshells, and finally master hip hinge patterns with goblet squats and Romanian deadlifts. Each 20-30 minute session is precisely structured to reduce pain while building the muscular foundation needed to prevent future episodes, with active recovery days featuring targeted stretches and mobility work.',
     timeFrameExplanation:
-      'In Week 1, you’ll focus on regaining spinal mobility and reactivating your deep core muscles. Weeks 2 and 3 are about building endurance in your trunk and glutes—key for long-term support and pain reduction. By Week 4, you’ll begin integrating hip-hinge patterns and functional strength to prepare for everyday activities and a return to more dynamic movement.',
+      'Week 1 establishes spinal control and pain relief through dead bug variations, bird dog holds, and gentle pelvic tilts that reactivate your deep core stabilizers without aggravating sensitive tissues. Week 2 introduces hip mobility with hip flexor stretches and targeted glute activation through clamshells and single-leg bridges to address common muscle imbalances contributing to back pain. Week 3 builds functional strength with goblet squats, Romanian deadlifts, and side planks that teach proper hip hinge mechanics while challenging your core in multiple planes. Week 4 integrates complex movement patterns like sumo deadlifts and Turkish get-ups that prepare your body for real-world lifting demands and dynamic activities.',
     afterTimeFrame: {
       expectedOutcome:
-        'By the end of the program, you should be able to sit, walk, bend, and lift light loads with minimal or no discomfort (pain ≤ 1/10). Your core and hips will feel stronger and more stable, and you’ll have more control over your movement.',
+        'You\'ll experience substantial reduction in daily back pain (targeting 0-2/10 pain levels), dramatically improved confidence when bending and lifting objects, and enhanced core endurance for prolonged sitting or standing activities. Your hip flexors will demonstrate improved mobility, glutes will be significantly stronger and more reactive during movement, and you\'ll have mastered the fundamental hip hinge pattern essential for safe lifting mechanics. Most importantly, you\'ll possess a comprehensive toolkit of therapeutic exercises proven to maintain spinal health and prevent future pain episodes.',
       nextSteps:
-        'From here, you can move into a general strength plan or a sport‑specific progression. Start adding resistance to your hinge and squat movements, and consider integrating light carries, sled pushes, or step-ups to keep building resilience and capacity.',
+        'Maintain your therapeutic gains by performing the Week 4 exercise routine 2-3 times weekly as your baseline maintenance program. Gradually progress to heavier deadlift variations and loaded carries as tolerated, while incorporating cardiovascular activities like walking or swimming for overall spinal health. Implement regular movement breaks every 30-45 minutes during prolonged sitting, and use the rest day mobility exercises as your permanent daily movement routine. Consider advancing to sport-specific training or general strength programming once you can perform all Week 4 exercises pain-free with perfect form.',
     },
     whatNotToDo:
-      'Avoid exercises that involve loaded spinal flexion (like sit-ups or toes-to-bar) or deep rotation when your pain is above 2/10. Try not to stay in one position—especially sitting—for more than 30–45 minutes without a short movement break. If your symptoms worsen or start to radiate down your leg, reach out to a qualified health provider before continuing.',
+      'Never push through sharp, shooting, or worsening pain—this may indicate nerve involvement requiring immediate medical evaluation. Avoid explosive movements, heavy bilateral lifting above 50% body weight, or prolonged forward bending for the first 2 weeks while inflammatory processes resolve. Don\'t skip the rest day mobility work as it prevents stiffness and maintains progress between training sessions. Resist prolonged sitting without movement breaks, avoid sleeping positions that increase morning stiffness, and don\'t abandon the program early when pain decreases—completing all 4 weeks builds resilience against future episodes. Most critically, avoid loaded spinal flexion exercises like sit-ups or aggressive rotational movements when pain exceeds 2/10.',
 
     program: [1, 2, 3, 4].map((wk) => {
       const weekIdx = wk - 1;
@@ -283,60 +283,6 @@ export const rehabPrograms: ExerciseProgram[] = [
               exerciseId: 'abs-6',
               sets: 3,
               duration: 40,
-              restBetweenSets: 60,
-            },
-            {
-              exerciseId: 'abs-20',
-              sets: 3,
-              repetitions: 10,
-              restBetweenSets: 60,
-            },
-            {
-              exerciseId: 'glutes-7',
-              sets: 3,
-              repetitions: 15,
-              restBetweenSets: 60,
-            },
-            {
-              exerciseId: 'glutes-1',
-              sets: 3,
-              repetitions: 12,
-              restBetweenSets: 60,
-            },
-            {
-              exerciseId: 'hamstrings-48',
-              sets: 3,
-              repetitions: 10,
-              restBetweenSets: 60,
-            },
-            {
-              exerciseId: 'lower-back-2',
-              sets: 2,
-              repetitions: 15,
-              restBetweenSets: 60,
-              modification:
-                'Combine with 60s diaphragmatic breathing post-set.',
-            },
-          ],
-          [
-            {
-              exerciseId: 'warmup-9',
-              sets: 2,
-              repetitions: 12,
-              restBetweenSets: 30,
-              warmup: true,
-            },
-            {
-              exerciseId: 'warmup-5',
-              sets: 1,
-              repetitions: 20,
-              restBetweenSets: 30,
-              warmup: true,
-            },
-            {
-              exerciseId: 'abs-6',
-              sets: 3,
-              duration: 45,
               restBetweenSets: 60,
             },
             {
@@ -2036,9 +1982,9 @@ export const rehabPrograms: ExerciseProgram[] = [
 export const programSlugs: Record<string, string> = {
   runnersknee: "Runner's Knee Rehab Roadmap",
   'runners-knee': "Runner's Knee Rehab Roadmap",
-  lowback: 'Low‑Back Pain Relief & Strength',
-  'low-back': 'Low‑Back Pain Relief & Strength',
-  'lower-back': 'Low‑Back Pain Relief & Strength',
+  lowback: 'Lower Back Pain Relief & Strength',
+  'low-back': 'Lower Back Pain Relief & Strength',
+  'lower-back': 'Lower Back Pain Relief & Strength',
   shoulder: 'Shoulder Impingement Rehab',
   'shoulder-impingement': 'Shoulder Impingement Rehab',
   ankle: 'Ankle‑Sprain Rehab Roadmap',

@@ -564,13 +564,9 @@ FAILURE TO FOLLOW THE ABOVE INSTRUCTIONS EXACTLY WILL RESULT IN POOR USER EXPERI
     try {
       program = JSON.parse(rawContent) as ExerciseProgram;
 
-      // Add createdAt timestamp to each program week
+      // Add createdAt timestamp to the program
       const currentDate = new Date().toISOString();
-      if (program.program && Array.isArray(program.program)) {
-        program.program.forEach((week) => {
-          week.createdAt = currentDate;
-        });
-      }
+      program.createdAt = new Date(currentDate);
 
       // Log extracted exercises from the response for verification
       console.log(
@@ -579,21 +575,19 @@ FAILURE TO FOLLOW THE ABOVE INSTRUCTIONS EXACTLY WILL RESULT IN POOR USER EXPERI
 
       // Collect all exercise IDs from the response
       const includedExerciseIds = new Set<string>();
-      if (program.program && Array.isArray(program.program)) {
-        program.program.forEach((week) => {
-          week.days.forEach((day) => {
-            if (
-              !day.isRestDay &&
-              day.exercises &&
-              Array.isArray(day.exercises)
-            ) {
-              day.exercises.forEach((exercise) => {
-                if (exercise.exerciseId) {
-                  includedExerciseIds.add(exercise.exerciseId);
-                }
-              });
-            }
-          });
+      if (program.days && Array.isArray(program.days)) {
+        program.days.forEach((day) => {
+          if (
+            !day.isRestDay &&
+            day.exercises &&
+            Array.isArray(day.exercises)
+          ) {
+            day.exercises.forEach((exercise) => {
+              if (exercise.exerciseId) {
+                includedExerciseIds.add(exercise.exerciseId);
+              }
+            });
+          }
         });
       }
 
@@ -648,8 +642,7 @@ FAILURE TO FOLLOW THE ABOVE INSTRUCTIONS EXACTLY WILL RESULT IN POOR USER EXPERI
       );
     }
 
-    // Add program type and target areas to the response
-    program.type = context.diagnosisData.programType;
+    // Add target areas to the response (type is now at UserProgram level)
     program.targetAreas = context.userInfo.targetAreas;
 
     // If we have a userId and programId, update the program document
@@ -664,6 +657,9 @@ FAILURE TO FOLLOW THE ABOVE INSTRUCTIONS EXACTLY WILL RESULT IN POOR USER EXPERI
         // Atomically add the new week document and mark the parent program as Done
         const batch = adminDb.batch();
 
+        // Extract fields that belong to UserProgram level vs weekly program level
+        const { timeFrame, title, days, ...programMetadata } = program as any;
+
         // New week document reference (auto-ID)
         const newWeekRef = adminDb
           .collection('users')
@@ -673,16 +669,29 @@ FAILURE TO FOLLOW THE ABOVE INSTRUCTIONS EXACTLY WILL RESULT IN POOR USER EXPERI
           .collection('programs')
           .doc();
 
+        // Save the weekly program data (days array and other program metadata)
         batch.set(newWeekRef, {
-          ...program,
+          days: days || [],
+          ...programMetadata,
           createdAt: new Date().toISOString(),
         });
 
-        batch.update(programRef, {
+        // Update the parent document with UserProgram-level fields
+        const userProgramUpdates: any = {
           status: ProgramStatus.Done,
           updatedAt: new Date().toISOString(),
           active: true, // Set the new program as active
-        });
+        };
+
+        // Add timeFrame and title if they exist in the LLM response
+        if (timeFrame) {
+          userProgramUpdates.timeFrame = timeFrame;
+        }
+        if (title) {
+          userProgramUpdates.title = title;
+        }
+
+        batch.update(programRef, userProgramUpdates);
 
         await batch.commit();
 
@@ -824,13 +833,9 @@ export async function generateExerciseProgramWithModel(context: {
     try {
       program = JSON.parse(rawContent) as ExerciseProgram;
 
-      // Add createdAt timestamp to each program week
+      // Add createdAt timestamp to the program
       const currentDate = new Date().toISOString();
-      if (program.program && Array.isArray(program.program)) {
-        program.program.forEach((week) => {
-          week.createdAt = currentDate;
-        });
-      }
+      program.createdAt = new Date(currentDate);
     } catch (parseError) {
       console.error('JSON parse error:', parseError);
       console.error(
@@ -842,8 +847,7 @@ export async function generateExerciseProgramWithModel(context: {
       );
     }
 
-    // Add program type and target areas to the response
-    program.type = context.diagnosisData.programType;
+    // Add target areas to the response (type is now at UserProgram level)
     program.targetAreas = context.userInfo.targetAreas;
 
     // If we have a userId and programId, update the program document
@@ -888,6 +892,9 @@ export async function generateExerciseProgramWithModel(context: {
           );
         }
 
+        // Extract fields that belong to UserProgram level vs weekly program level
+        const { timeFrame, title, days, ...programMetadata } = program as any;
+
         // New week document reference (auto-ID)
         const newWeekRef = adminDb
           .collection('users')
@@ -897,16 +904,29 @@ export async function generateExerciseProgramWithModel(context: {
           .collection('programs')
           .doc();
 
+        // Save the weekly program data (days array and other program metadata)
         batch.set(newWeekRef, {
-          ...program,
+          days: days || [],
+          ...programMetadata,
           createdAt: new Date().toISOString(),
         });
 
-        batch.update(programRef, {
+        // Update the parent document with UserProgram-level fields
+        const userProgramUpdates: any = {
           status: ProgramStatus.Done,
           updatedAt: new Date().toISOString(),
           active: true, // Set the new program as active
-        });
+        };
+
+        // Add timeFrame and title if they exist in the LLM response
+        if (timeFrame) {
+          userProgramUpdates.timeFrame = timeFrame;
+        }
+        if (title) {
+          userProgramUpdates.title = title;
+        }
+
+        batch.update(programRef, userProgramUpdates);
 
         await batch.commit();
 

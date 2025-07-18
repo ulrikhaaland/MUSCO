@@ -50,18 +50,9 @@ function FeedbackPageContent() {
 
     const uniqueExercises = new Map<string, Exercise>();
 
-    // Find the latest week based on createdAt date
-    const latestWeek = program.program.reduce((latest, current) => {
-      if (!latest.createdAt) return current;
-      if (!current.createdAt) return latest;
-      return new Date(current.createdAt) > new Date(latest.createdAt)
-        ? current
-        : latest;
-    }, program.program[0]);
-
-    // Only process exercises from the latest week
-    if (latestWeek) {
-      latestWeek.days.forEach((day) => {
+    // Process exercises from the current program
+    if (program?.days) {
+      program.days.forEach((day) => {
         if (day.exercises) {
           day.exercises.forEach((exercise) => {
             const exerciseId =

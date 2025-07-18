@@ -546,6 +546,7 @@ const translations = {
   'questionnaire.skipEquipment': 'Hopp over utstyr',
   'questionnaire.cancel': 'Avbryt',
   'questionnaire.selectedCardioType': 'Valgt kardiotype',
+  'questionnaire.createProgram': 'Opprett program',
 
   // Program page translations
   'program.loading': 'Laster program',

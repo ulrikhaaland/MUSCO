@@ -9,17 +9,17 @@ import { useTranslation } from '@/app/i18n/TranslationContext';
 
 export default function CalendarPage() {
   const router = useRouter();
-  const { program, userPrograms } = useUser();
+  const { program, activeProgram, userPrograms } = useUser();
   const { t } = useTranslation();
 
   // Update page title
   useEffect(() => {
-    if (program?.title && typeof document !== 'undefined') {
-      document.title = `${program.title} - ${t('calendar.title')} | MUSCO`;
+    if (activeProgram?.title && typeof document !== 'undefined') {
+      document.title = `${activeProgram.title} - ${t('calendar.title')} | MUSCO`;
     } else if (typeof document !== 'undefined') {
       document.title = t('calendar.programCalendarTitle');
     }
-  }, [program, t]);
+  }, [activeProgram, t]);
 
   const getDayName = (dayOfWeek: number): string => {
     const days = [

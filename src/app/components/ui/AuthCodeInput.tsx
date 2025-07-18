@@ -129,7 +129,7 @@ export function AuthCodeInput() {
           title: data.program.title,
           type: data.program.type,
           targetAreas: data.program.targetAreas,
-          programLength: data.program.program?.length || 'unknown'
+          daysCount: data.program.days?.length || 'unknown'
         });
         
         try {
@@ -189,8 +189,8 @@ export function AuthCodeInput() {
           console.log('📊 Program data document:', {
             title: programDataDoc.title,
             type: programDataDoc.type,
-            programWeeks: programDataDoc.program?.length || 'unknown',
-            hasExercises: !!programDataDoc.program?.[0]?.days?.[0]?.exercises
+            programDays: programDataDoc.days?.length || 'unknown',
+            hasExercises: !!programDataDoc.days?.[0]?.exercises
           });
           
           const innerProgramDocRef = await addDoc(innerProgramsRef, programDataDoc);

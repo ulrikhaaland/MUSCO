@@ -243,10 +243,7 @@ EXERCISE SELECTION PROTOCOL
     "nextSteps": "After completing this program, consider following up with a healthcare professional for further guidance."
   },
   "whatNotToDo": "Avoid heavy lifting, excessive bending, and movements that cause sharp pain in the lower back.",
-  "program": [
-    {
-      "week": 1,
-      "days": [
+  "days": [
         {
           "day": 1,
           "isRestDay": false,
@@ -357,8 +354,6 @@ EXERCISE SELECTION PROTOCOL
           "duration": 15
         }
       ]
-    }
-  ]
 }
 \`\`\`
 

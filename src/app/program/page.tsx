@@ -66,13 +66,13 @@ export default function ProgramPage() {
   // Update page title when program data changes
   useEffect(() => {
     if (typeof document !== 'undefined') {
-      if (selectedProgram?.title) {
-        document.title = `${selectedProgram.title} | BodAI`;
+      if (activeProgram?.title) {
+        document.title = `${activeProgram.title} | BodAI`;
       } else {
         document.title = t('program.defaultPageTitle');
       }
     }
-  }, [selectedProgram?.title, t]);
+  }, [activeProgram?.title, t]);
 
   // Effect to change theme color when video modal is open
   useEffect(() => {
@@ -244,6 +244,9 @@ export default function ProgramPage() {
     <>
       <ExerciseProgramPage
         program={selectedProgram}
+        title={activeProgram?.title}
+        type={activeProgram?.type}
+        timeFrame={activeProgram?.timeFrame}
         isLoading={isLoading}
         onToggleView={handleToggleView}
         dayName={getDayName}

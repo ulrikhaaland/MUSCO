@@ -260,13 +260,6 @@ export interface ProgramDay {
   duration?: number;
 }
 
-export interface ProgramWeek {
-  week: number;
-  differenceReason?: string;
-  days: ProgramDay[];
-  createdAt: string;
-}
-
 export interface AfterTimeFrame {
   expectedOutcome: string;
   nextSteps: string;
@@ -274,13 +267,10 @@ export interface AfterTimeFrame {
 
 export interface ExerciseProgram {
   programOverview: string;
-  title: string;
-  timeFrame: string;
   timeFrameExplanation: string;
   afterTimeFrame: AfterTimeFrame;
   whatNotToDo: string;
-  program: ProgramWeek[];
-  type: ProgramType;
+  days: ProgramDay[];
   createdAt: Date;
   targetAreas: string[];
   bodyParts: string[];
@@ -295,6 +285,8 @@ export interface UserProgram {
   createdAt: string;
   updatedAt: Date;
   type: ProgramType;
+  timeFrame?: string;
+  title: string;
 }
 
 export type TargetBodyPart = (typeof TARGET_BODY_PARTS)[number];

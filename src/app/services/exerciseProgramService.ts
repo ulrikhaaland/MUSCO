@@ -471,7 +471,7 @@ export const enrichExercisesWithFullData = async (
   program: ExerciseProgram,
   useNorwegian: boolean = false
 ): Promise<void> => {
-  if (!program.program) return;
+  if (!program.days) return;
 
   // First, collect all unique target areas from the program
   const targetAreas = new Set<string>();
@@ -561,20 +561,18 @@ export const enrichExercisesWithFullData = async (
   };
 
   // Collect all unique body parts from exercise IDs and track missing IDs
-  for (const week of program.program) {
-    for (const day of week.days) {
-      if (day.exercises) {
-        day.exercises.forEach((exercise) => {
-          // Check for either id or exerciseId
-          const exerciseIdentifier = exercise.id || exercise.exerciseId;
-          if (exerciseIdentifier) {
-            const bodyPart = extractBodyPartFromId(exerciseIdentifier);
-            if (bodyPart && Object.keys(exerciseFiles(useNorwegian)).includes(bodyPart)) {
-              targetAreas.add(bodyPart);
-            }
+  for (const day of program.days) {
+    if (day.exercises) {
+      day.exercises.forEach((exercise) => {
+        // Check for either id or exerciseId
+        const exerciseIdentifier = exercise.id || exercise.exerciseId;
+        if (exerciseIdentifier) {
+          const bodyPart = extractBodyPartFromId(exerciseIdentifier);
+          if (bodyPart && Object.keys(exerciseFiles(useNorwegian)).includes(bodyPart)) {
+            targetAreas.add(bodyPart);
           }
-        });
-      }
+        }
+      });
     }
   }
 
@@ -583,16 +581,14 @@ export const enrichExercisesWithFullData = async (
   await loadExercisesFromJson(Array.from(targetAreas), true, true, useNorwegian);
 
   // Check which IDs are still missing after loading musco exercises
-  for (const week of program.program) {
-    for (const day of week.days) {
-      if (day.exercises) {
-        day.exercises.forEach((exercise) => {
-          const exerciseId = exercise.id || exercise.exerciseId;
-          if (exerciseId && !exerciseCache[exerciseId]) {
-            missingIds.add(exerciseId);
-          }
-        });
-      }
+  for (const day of program.days) {
+    if (day.exercises) {
+      day.exercises.forEach((exercise) => {
+        const exerciseId = exercise.id || exercise.exerciseId;
+        if (exerciseId && !exerciseCache[exerciseId]) {
+          missingIds.add(exerciseId);
+        }
+      });
     }
   }
 
@@ -602,11 +598,10 @@ export const enrichExercisesWithFullData = async (
   }
 
   // Now enrich the exercises using the loaded cache
-  for (const week of program.program) {
-    for (const day of week.days) {
-      if (day.exercises) {
-        const enrichedExercises = await Promise.all(
-          day.exercises.map(async (exercise) => {
+  for (const day of program.days) {
+    if (day.exercises) {
+      const enrichedExercises = await Promise.all(
+        day.exercises.map(async (exercise) => {
             // Check if exercise can be found by either id or exerciseId
             const exerciseId = exercise.id || exercise.exerciseId;
 
@@ -669,8 +664,7 @@ export const enrichExercisesWithFullData = async (
             };
           })
         );
-        day.exercises = enrichedExercises;
-      }
+      day.exercises = enrichedExercises;
     }
   }
 };

@@ -83,7 +83,7 @@ export default function DayDetailPage() {
   
   // Access context data
   const { user, error: authError } = useAuth();
-  const { program, programStatus, userPrograms } = useUser();
+  const { program, programStatus, userPrograms, activeProgram } = useUser();
   const { showLoader, hideLoader, isLoading } = useLoader();
   const { t } = useTranslation();
   
@@ -119,18 +119,28 @@ export default function DayDetailPage() {
         
         // 1. Determine which program to use
         let programToUse = program;
+        let programTitle = activeProgram?.title || 'Exercise Program';
+        
         if (typeof window !== 'undefined' && userPrograms) {
           const queryParams = new URLSearchParams(window.location.search);
           const programId = queryParams.get('programId');
           
           if (programId) {
-            // Find the specific program by its createdAt value
-            const foundProgram = userPrograms
-              .flatMap(up => up.programs)
-              .find(p => p.createdAt.toString() === programId);
+            // Find the UserProgram that contains the specific program by its createdAt value
+            const foundUserProgram = userPrograms.find(up => 
+              up.programs.some(p => p.createdAt.toString() === programId)
+            );
+            
+            if (foundUserProgram) {
+              // Get the specific ExerciseProgram
+              const foundProgram = foundUserProgram.programs.find(p => 
+                p.createdAt.toString() === programId
+              );
               
-            if (foundProgram) {
-              programToUse = foundProgram;
+              if (foundProgram) {
+                programToUse = foundProgram;
+                programTitle = foundUserProgram.title; // Preserve the title from UserProgram
+              }
             }
           }
         }
@@ -138,35 +148,32 @@ export default function DayDetailPage() {
         // Skip further processing if component unmounted
         if (!mounted) return;
         
-        // 2. Set the selected program immediately
-        setSelectedProgram(programToUse);
+        // 2. Set the selected program immediately with the preserved title
+        setSelectedProgram(programToUse ? { ...programToUse, title: programTitle } : null);
         
         // 3. Find the day data if program is available
-        if (programToUse?.program && !isNaN(dayNumber)) {
-          const currentWeek = programToUse.program[0];
-          if (currentWeek) {
-            const day = currentWeek.days.find(d => d.day === dayNumber);
-            if (day) {
-              // Skip if component unmounted
-              if (!mounted) return;
-              
-              // 4. Set day data and name at the same time
-              setDayData(day);
-              const days = [
-                t('days.monday'),
-                t('days.tuesday'),
-                t('days.wednesday'),
-                t('days.thursday'),
-                t('days.friday'),
-                t('days.saturday'),
-                t('days.sunday'),
-              ];
-              setDayName(days[dayNumber - 1]);
+        if (programToUse?.days && !isNaN(dayNumber)) {
+          const day = programToUse.days.find(d => d.day === dayNumber);
+          if (day) {
+            // Skip if component unmounted
+            if (!mounted) return;
+            
+            // 4. Set day data and name at the same time
+            setDayData(day);
+            const days = [
+              t('days.monday'),
+              t('days.tuesday'),
+              t('days.wednesday'),
+              t('days.thursday'),
+              t('days.friday'),
+              t('days.saturday'),
+              t('days.sunday'),
+            ];
+            setDayName(days[dayNumber - 1]);
 
-              // 5. Mark data as loaded
-              setDataLoaded(true);
-              logAnalyticsEvent('view_program_day', { day: dayNumber });
-            }
+            // 5. Mark data as loaded
+            setDataLoaded(true);
+            logAnalyticsEvent('view_program_day', { day: dayNumber });
           }
         }
         

@@ -573,6 +573,7 @@ const translations = {
   'questionnaire.skipEquipment': 'Skip equipment',
   'questionnaire.cancel': 'Cancel',
   'questionnaire.selectedCardioType': 'Selected cardio type',
+  'questionnaire.createProgram': 'Create Program',
 
   // Program page translations
   'program.loading': 'Loading program',

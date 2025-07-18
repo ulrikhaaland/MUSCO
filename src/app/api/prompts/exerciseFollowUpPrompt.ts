@@ -313,10 +313,7 @@ EXERCISE SELECTION PROTOCOL
     "nextSteps": "Your feedback is invaluable for further refining your program. As you complete this week's workouts, note which exercises you'd like to keep, remove, or add for next week's program."
   },
   "whatNotToDo": "Avoid exercises that cause pain beyond normal muscle fatigue. If you experience sharp pain, modify or skip that exercise and provide feedback for next week's adjustments.",
-  "program": [
-    {
-      "week": 2,
-      "days": [
+  "days": [
         {
           "day": 1,
           "isRestDay": false,
@@ -473,8 +470,6 @@ EXERCISE SELECTION PROTOCOL
           "duration": 5
         }
       ]
-    }
-  ]
 }
 \`\`\`
 

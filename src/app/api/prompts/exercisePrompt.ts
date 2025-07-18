@@ -276,7 +276,7 @@ EXERCISE SELECTION PROTOCOL
     - expectedOutcome: What the user can expect after completing the program (e.g., reduced pain, improved mobility)
     - nextSteps: A persuasive message encouraging the user to follow the program consistently and return for feedback. This should highlight how their input will improve future routines and emphasize the importance of completing the full program. Example: "This program is designed for your goals. Focus on completing it this week while noting how each session feels. Your input will ensure that next week's program is even more effective. Let's get started on building a program tailored just for you."
   - whatNotToDo: Activities to avoid to prevent injury
-  - program: A structured array with weekly and daily workout plans
+  - days: A flat array containing the 7-day workout plan (days 1-7)
    
 - CRITICAL: For each exercise, you MUST include ONLY the following fields:
   1. "exerciseId" (REQUIRED): The exact ID from the exercise database (e.g., "abs-1" or "warmup-1")
@@ -342,122 +342,173 @@ EXERCISE SELECTION PROTOCOL
     "nextSteps": "This program is tailored to your goals. Focus on completing it this week and take notes on how each session feels. Your feedback will help refine the next week's routine to be even more effective."
   },
   "whatNotToDo": "Avoid jerky or fast movements, improper lifting form, and any exercises that cause sharp pain. If discomfort occurs, pause and modify the exercise or consult a professional.",
-  "program": [
+  "days": [
     {
-      "week": 1,
-      "days": [
+      "day": 1,
+      "isRestDay": false,
+      "description": "This workout focuses on strength and mobility, targeting the full body with emphasis on controlled movement.",
+      "exercises": [
         {
-          "day": 1,
-          "isRestDay": false,
-          "description": "This workout focuses on strength and mobility, targeting the full body with emphasis on controlled movement.",
-          "exercises": [
-            {
-              "exerciseId": "warmup-1",
-              "modification": "Keep the pace light to prepare your body",
-              "warmup": true
-            },
-            {
-              "exerciseId": "glutes-5",
-              "modification": "Use lighter weights or a resistance band if needed."
-            },
-            {
-              "exerciseId": "quads-3"
-            },
-            {
-              "exerciseId": "hamstrings-8",
-              "modification": "Use body weight only if balance is a concern."
-            },
-            {
-              "exerciseId": "chest-12"
-            },
-            {
-              "exerciseId": "shoulders-7"
-            },
-            {
-              "exerciseId": "upper-back-2",
-              "modification": "Perform on knees if full position is too challenging."
-            },
-            {
-              "exerciseId": "abs-3"
-            }
-          ],
-          "duration": 48
+          "exerciseId": "warmup-1",
+          "modification": "Keep the pace light to prepare your body",
+          "warmup": true
         },
         {
-          "day": 2,
-          "isRestDay": true,
-          "description": "Rest Day. Focus on gentle mobility, hydration, and allowing your muscles to recover from yesterday's workout.",
-          "exercises": [
-            {
-              "exerciseId": "hamstrings-9",
-              "duration": 5,
-              "modification": "Hold each stretch for 30 seconds, focus on breathing deeply"
-            },
-            {
-              "exerciseId": "lower-back-4",
-              "duration": 5,
-              "modification": "Move slowly and gently, avoid any positions that cause discomfort"
-            }
-          ],
-          "duration": 10
+          "exerciseId": "glutes-5",
+          "modification": "Use lighter weights or a resistance band if needed."
         },
         {
-          "day": 3,
-          "isRestDay": false,
-          "description": "This workout includes alternative strength and mobility exercises for variety and to target different muscle groups.",
-          "exercises": [
-            {
-              "exerciseId": "warmup-4",
-              "warmup": true
-            },
-            {
-              "exerciseId": "quads-2",
-              "modification": "Use a lighter barbell or perform bodyweight squats as needed."
-            },
-            {
-              "exerciseId": "glutes-7",
-              "modification": "Limit depth or range of motion if balance is an issue."
-            },
-            {
-              "exerciseId": "lats-11",
-              "modification": "Use an assisted pull-up machine or resistance bands for support."
-            },
-            {
-              "exerciseId": "chest-5",
-              "modification": "Perform knee push-ups or incline push-ups if needed."
-            },
-            {
-              "exerciseId": "traps-4"
-            },
-            {
-              "exerciseId": "obliques-9",
-              "precaution": "Avoid if experiencing lower back pain"
-            },
-            {
-              "exerciseId": "abs-6"
-            }
-          ],
-          "duration": 51
+          "exerciseId": "quads-3"
         },
         {
-          "day": 4,
-          "isRestDay": true,
-          "description": "Rest Day. Focus on gentle recovery and improving flexibility to prepare for your next workout session.",
-          "exercises": [
-            {
-              "exerciseId": "lower-back-2",
-              "duration": 5,
-              "modification": "Focus on gentle movement and breathing"
-            },
-            {
-              "exerciseId": "hamstrings-5",
-              "duration": 5,
-              "modification": "Gentle stretching, avoid pushing to the point of discomfort"
-            }
-          ],
-          "duration": 10
+          "exerciseId": "hamstrings-8",
+          "modification": "Use body weight only if balance is a concern."
+        },
+        {
+          "exerciseId": "chest-12"
+        },
+        {
+          "exerciseId": "shoulders-7"
+        },
+        {
+          "exerciseId": "upper-back-2",
+          "modification": "Perform on knees if full position is too challenging."
+        },
+        {
+          "exerciseId": "abs-3"
         }
-      ]
+      ],
+      "duration": 48
+    },
+    {
+      "day": 2,
+      "isRestDay": true,
+      "description": "Rest Day. Focus on gentle mobility, hydration, and allowing your muscles to recover from yesterday's workout.",
+      "exercises": [
+        {
+          "exerciseId": "hamstrings-9",
+          "duration": 5,
+          "modification": "Hold each stretch for 30 seconds, focus on breathing deeply"
+        },
+        {
+          "exerciseId": "lower-back-4",
+          "duration": 5,
+          "modification": "Move slowly and gently, avoid any positions that cause discomfort"
+        }
+      ],
+      "duration": 10
+    },
+    {
+      "day": 3,
+      "isRestDay": false,
+      "description": "This workout includes alternative strength and mobility exercises for variety and to target different muscle groups.",
+      "exercises": [
+        {
+          "exerciseId": "warmup-4",
+          "warmup": true
+        },
+        {
+          "exerciseId": "quads-2",
+          "modification": "Use a lighter barbell or perform bodyweight squats as needed."
+        },
+        {
+          "exerciseId": "glutes-7",
+          "modification": "Limit depth or range of motion if balance is an issue."
+        },
+        {
+          "exerciseId": "lats-11",
+          "modification": "Use an assisted pull-up machine or resistance bands for support."
+        },
+        {
+          "exerciseId": "chest-5",
+          "modification": "Perform knee push-ups or incline push-ups if needed."
+        },
+        {
+          "exerciseId": "traps-4"
+        },
+        {
+          "exerciseId": "obliques-9",
+          "precaution": "Avoid if experiencing lower back pain"
+        },
+        {
+          "exerciseId": "abs-6"
+        }
+      ],
+      "duration": 51
+    },
+    {
+      "day": 4,
+      "isRestDay": true,
+      "description": "Rest Day. Focus on gentle recovery and improving flexibility to prepare for your next workout session.",
+      "exercises": [
+        {
+          "exerciseId": "lower-back-2",
+          "duration": 5,
+          "modification": "Focus on gentle movement and breathing"
+        },
+        {
+          "exerciseId": "hamstrings-5",
+          "duration": 5,
+          "modification": "Gentle stretching, avoid pushing to the point of discomfort"
+        }
+      ],
+      "duration": 10
+    },
+    {
+      "day": 5,
+      "isRestDay": false,
+      "description": "Another full-body strength workout with different exercise variations.",
+      "exercises": [
+        {
+          "exerciseId": "warmup-2",
+          "warmup": true
+        },
+        {
+          "exerciseId": "chest-8"
+        },
+        {
+          "exerciseId": "lats-5"
+        },
+        {
+          "exerciseId": "shoulders-12"
+        },
+        {
+          "exerciseId": "biceps-4"
+        },
+        {
+          "exerciseId": "triceps-6"
+        },
+        {
+          "exerciseId": "quads-8"
+        },
+        {
+          "exerciseId": "hamstrings-12"
+        },
+        {
+          "exerciseId": "abs-8"
+        }
+      ],
+      "duration": 52
+    },
+    {
+      "day": 6,
+      "isRestDay": true,
+      "description": "Rest Day. Focus on recovery and preparing for the next week.",
+      "exercises": [
+        {
+          "exerciseId": "shoulders-15",
+          "duration": 5,
+          "modification": "Gentle stretching for shoulder mobility"
+        }
+      ],
+      "duration": 5
+    },
+    {
+      "day": 7,
+      "isRestDay": true,
+      "description": "Complete rest day. Focus on hydration, nutrition, and mental recovery.",
+      "exercises": [],
+      "duration": 0
     }
   ]
 }

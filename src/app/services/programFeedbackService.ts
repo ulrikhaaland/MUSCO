@@ -80,7 +80,7 @@ export const submitProgramFeedback = async (
             feedback: feedback,
             userId: userId,
             programId: programId,
-            previousProgram: currentProgram.program || [], // Pass the program data
+            previousProgram: currentProgram || null, // Pass the program data
             language: userLanguage, // Pass the user's language preference
           },
         }),

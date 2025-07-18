@@ -13,6 +13,7 @@ interface ExerciseProgramCalendarProps {
 interface ProgramDayWithSource {
   day: ProgramDay;
   program: ExerciseProgram;
+  userProgram: any; // Will contain the UserProgram with title
   dayOfWeek: number;
 }
 
@@ -26,15 +27,14 @@ export function ExerciseProgramCalendar({
   const { userPrograms } = useUser();
   const { t } = useTranslation();
 
-  // Get all active programs from userPrograms
-  const activePrograms = userPrograms
-    .filter((up) => up.active)
-    .flatMap((up) => up.programs);
+  // Get all active user programs
+  const activeUserPrograms = userPrograms.filter((up) => up.active);
 
   const getDayProgram = (date: Date): ProgramDayWithSource[] => {
     const result: ProgramDayWithSource[] = [];
 
-    for (const activeProgram of activePrograms) {
+    for (const userProgram of activeUserPrograms) {
+      for (const activeProgram of userProgram.programs) {
       // Get the day of week (1 = Monday, 7 = Sunday)
       const dayOfWeek = date.getDay() === 0 ? 7 : date.getDay();
 
@@ -65,30 +65,27 @@ export function ExerciseProgramCalendar({
           (7 * 24 * 60 * 60 * 1000)
       );
 
-      // If the date is before program start week or after program end, skip this program
-      if (weekDiff < 0 || weekDiff >= activeProgram.program.length) {
+      // Since each program now represents one week, we check if this is the right week
+      // If weekDiff is not 0, this program doesn't apply to this date
+      if (weekDiff !== 0) {
         continue;
       }
 
-      // Get the program week
-      const programWeek = activeProgram.program[weekDiff];
-      if (!programWeek) continue;
-
       // Find the matching day in the week
-      const day = programWeek.days.find((d) => d.day === dayOfWeek);
+      const day = activeProgram.days.find((d) => d.day === dayOfWeek);
       if (!day) continue;
 
       // Add this program day to the result
       result.push({
         day: {
           ...day,
-          description: programWeek.differenceReason
-            ? `${day.description}\n\nWeek ${programWeek.week} changes: ${programWeek.differenceReason}`
-            : day.description,
+          description: day.description,
         },
         program: activeProgram,
+        userProgram,
         dayOfWeek,
       });
+      }
     }
 
     return result;
@@ -359,7 +356,7 @@ export function ExerciseProgramCalendar({
                       )
                   : undefined
               }
-              programTitle={programDay.program.title || 'Program'}
+              programTitle={programDay.userProgram.title || 'Program'}
               isCalendarView={true}
             />
           </div>

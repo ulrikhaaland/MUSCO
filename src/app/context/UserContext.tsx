@@ -18,7 +18,6 @@ import {
   query,
   orderBy,
   onSnapshot,
-  where,
 } from 'firebase/firestore';
 import {
   ProgramStatus,
@@ -75,16 +74,12 @@ interface UserContextType {
 
 const UserContext = createContext<UserContextType>({} as UserContextType);
 
-// Utility: combine multiple ExerciseProgram objects into a single "merged" program array with sequential week numbers
-// Keeping it here (instead of a separate util file) for now to minimise the refactor footprint.
+// Utility: combine multiple ExerciseProgram objects into a single "merged" days array
+// Each ExerciseProgram now represents one week, so we just need to combine their days arrays
 const mergePrograms = (
   programs: ExerciseProgram[]
-): ExerciseProgram['program'] => {
-  const allWeeks = programs.flatMap((p) => p?.program || []);
-  return allWeeks.map((weekData, i) => ({
-    ...weekData,
-    week: i + 1, // renumber weeks sequentially starting at 1
-  }));
+): ExerciseProgram['days'] => {
+  return programs.flatMap((p) => p?.days || []);
 };
 
 export function UserProvider({ children }: { children: ReactNode }) {
@@ -129,7 +124,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
     const combinedProgram: ExerciseProgram = {
       ...userProgram.programs[0],
-      program: mergePrograms(userProgram.programs),
+      days: mergePrograms(userProgram.programs),
       docId: userProgram.docId,
     } as ExerciseProgram & { docId: string };
 
@@ -152,14 +147,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
       const formattedProgram = {
         ...recoveryProgram,
         createdAt: todayISO, // Program starts today
-        program: recoveryProgram.program.map((week, weekIdx) => {
-          // Each week starts 7 days after the previous (Week 1 = today, Week 2 = +7 days, etc.)
-          const weekStartDate = new Date(today.getTime() + weekIdx * 7 * 24 * 60 * 60 * 1000);
-          return {
-            ...week,
-            createdAt: weekStartDate.toISOString()
-          };
-        })
+        days: recoveryProgram.days || []
       };
       
       // Store in sessionStorage for persistence across navigation
@@ -346,6 +334,8 @@ export function UserProvider({ children }: { children: ReactNode }) {
                         : new Date().toISOString(),
                   updatedAt: updatedAt,
                   type: data.type,
+                  title: data.title || 'Exercise Program',
+                  timeFrame: data.timeFrame,
                   docId: doc.id,
                 };
 

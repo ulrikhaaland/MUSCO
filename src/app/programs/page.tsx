@@ -351,7 +351,7 @@ function ProgramsContent() {
                   {/* Program title and type */}
                   <div className="flex justify-between items-start mb-3">
                     <h2 className="text-xl font-medium text-white truncate pr-2">
-                      {exerciseProgram.title || t('programs.defaultTitle')}
+                      {program.title || t('programs.defaultTitle')}
                     </h2>
                   </div>
 
@@ -362,7 +362,7 @@ function ProgramsContent() {
                   <div className="flex justify-between items-center mb-4">
                     <div className="text-center">
                       <p className="text-xl font-semibold text-white">
-                        {exerciseProgram.program?.length || 0}
+                        1
                       </p>
                       <p className="text-xs text-gray-400">
                         {t('programs.stats.weeks')}
@@ -371,13 +371,8 @@ function ProgramsContent() {
 
                     <div className="text-center">
                       <p className="text-xl font-semibold text-white">
-                        {exerciseProgram.program?.reduce((total, week) => {
-                          return (
-                            total +
-                            week.days.reduce((dayTotal, day) => {
-                              return dayTotal + (day.isRestDay ? 0 : 1); // Count workout days
-                            }, 0)
-                          );
+                        {exerciseProgram.days?.reduce((total, day) => {
+                          return total + (day.isRestDay ? 0 : 1); // Count workout days
                         }, 0) || 0}
                       </p>
                       <p className="text-xs text-gray-400">
@@ -387,13 +382,8 @@ function ProgramsContent() {
 
                     <div className="text-center">
                       <p className="text-xl font-semibold text-white">
-                        {exerciseProgram.program?.reduce((total, week) => {
-                          return (
-                            total +
-                            week.days.reduce((dayTotal, day) => {
-                              return dayTotal + (day.isRestDay ? 1 : 0); // Count rest days
-                            }, 0)
-                          );
+                        {exerciseProgram.days?.reduce((total, day) => {
+                          return total + (day.isRestDay ? 1 : 0); // Count rest days
                         }, 0) || 0}
                       </p>
                       <p className="text-xs text-gray-400">

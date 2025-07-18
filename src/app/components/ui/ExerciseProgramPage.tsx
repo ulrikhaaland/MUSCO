@@ -17,6 +17,9 @@ import { toast } from './ToastProvider';
 
 interface ExerciseProgramPageProps {
   program: ExerciseProgram;
+  title?: string;
+  type?: ProgramType;
+  timeFrame?: string;
   isLoading: boolean;
   onToggleView: () => void;
   dayName: (day: number) => string;
@@ -153,6 +156,9 @@ const SignUpToContinueCard = ({
 
 export function ExerciseProgramPage({
   program,
+  title,
+  type,
+  timeFrame,
   isLoading,
   onToggleView,
   dayName,
@@ -182,7 +188,7 @@ export function ExerciseProgramPage({
 
   // Check if overview has been seen before
   useEffect(() => {
-    if (!program?.program) return;
+    if (!program?.days) return;
 
     const programId = `program-${program.createdAt}`;
     const hasSeenOverview = localStorage.getItem(programId);
@@ -213,207 +219,50 @@ export function ExerciseProgramPage({
 
   // Set initial week and day when program loads
   useEffect(() => {
-    if (!program?.program || !Array.isArray(program.program)) return;
+    if (!program?.days || !Array.isArray(program.days)) return;
 
     // Get current date for comparison
     const currentDate = new Date();
     const currentDayOfWeek = currentDate.getDay() || 7; // Convert Sunday (0) to 7
-    const currentTimestamp = currentDate.getTime();
 
-    // Get the current week's Monday and Sunday
-    const currentWeekStart = getStartOfWeek(currentDate);
-    const currentWeekEnd = getEndOfWeek(currentDate);
-
-    // Sort weeks by createdAt date for consistent processing (earliest to latest)
-    const sortedWeeks = [...program.program].sort((a, b) => {
-      if (a.createdAt && b.createdAt) {
-        return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
-      }
-      return a.week - b.week;
-    });
-
-    // Group weeks by week number to handle multiple programs for the same week
-    const weeksByNumber = sortedWeeks.reduce((acc, week) => {
-      if (!acc[week.week]) {
-        acc[week.week] = [];
-      }
-      acc[week.week].push(week);
-      return acc;
-    }, {} as Record<number, typeof sortedWeeks>);
-
-    // For each group, sort by createdAt and keep only the latest
-    const latestWeeksByNumber = Object.entries(weeksByNumber).reduce((acc, [weekNum, weeks]) => {
-      // Sort by createdAt descending (latest first)
-      const sortedByCreatedAt = [...weeks].sort((a, b) => {
-        if (a.createdAt && b.createdAt) {
-          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-        }
-        return 0;
-      });
-      
-      // Keep only the latest week for each week number
-      acc[parseInt(weekNum)] = sortedByCreatedAt[0];
-      return acc;
-    }, {} as Record<number, (typeof sortedWeeks)[0]>);
-
-    // Create a new array of weeks that contains only the latest version of each week
-    const deduplicatedWeeks = Object.values(latestWeeksByNumber).sort((a, b) => {
-      if (a.createdAt && b.createdAt) {
-        return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
-      }
-      return a.week - b.week;
-    });
-
-    // Default to the most recent week (last in the sorted array)
-    let weekToSelect = deduplicatedWeeks.length > 0 ? deduplicatedWeeks[deduplicatedWeeks.length - 1].week : 1;
-    let foundMatch = false;
-    
-    // Try to find the week that contains today's date - SEARCH IN REVERSE (newest first)
-    // Create a copy of deduplicatedWeeks sorted newest first
-    const newestFirstWeeks = [...deduplicatedWeeks].sort((a, b) => {
-      if (a.createdAt && b.createdAt) {
-        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-      }
-      return b.week - a.week;
-    });
-    
-    // Now search through weeks newest to oldest
-    for (const week of newestFirstWeeks) {
-      if (week.createdAt) {
-        const weekCreatedAt = new Date(week.createdAt);
-        const weekStartDate = getStartOfWeek(weekCreatedAt);
-        const weekEndDate = getEndOfWeek(weekCreatedAt);
-
-        // Check if current date falls within this week's time range
-        // or if current week overlaps with program week
-        const isCurrentDateInWeekRange =
-          currentTimestamp >= weekStartDate.getTime() &&
-          currentTimestamp <= weekEndDate.getTime();
-
-        const doWeeksOverlap =
-          currentWeekStart.getTime() <= weekEndDate.getTime() &&
-          currentWeekEnd.getTime() >= weekStartDate.getTime();
-
-        if (isCurrentDateInWeekRange || doWeeksOverlap) {
-          weekToSelect = week.week;
-          foundMatch = true;
-          break;
-        }
-      }
-    }
-
-    // If no direct match found, use the most recent week (already set as default)
-    setSelectedWeek(weekToSelect);
+    // Since each ExerciseProgram now represents one week, always set to week 1
+    setSelectedWeek(1);
     setExpandedDays([currentDayOfWeek]);
 
-    // Scroll the selected week button into view with a short delay to ensure rendering is complete
+    // Scroll day into view
     setTimeout(() => {
-      // Scroll to the last/latest week button first to ensure the scroll area shows the most recent weeks
-      const weekButtons = document.querySelectorAll('[data-week]');
-      const lastWeekButton = weekButtons[weekButtons.length - 1];
-      
-      if (lastWeekButton) {
-        lastWeekButton.scrollIntoView({
-          behavior: 'instant',
-          block: 'nearest',
-          inline: 'end'
-        });
-      }
-      
-      // Then scroll to the selected week button
-      const selectedWeekButton = document.querySelector(`[data-week="${weekToSelect}"]`);
-      if (selectedWeekButton) {
-        selectedWeekButton.scrollIntoView({
+      const dayButton = document.querySelector(`[data-day="${currentDayOfWeek}"]`);
+      if (dayButton) {
+        dayButton.scrollIntoView({
           behavior: 'smooth',
           block: 'nearest',
           inline: 'center'
         });
       }
-
-      // Scroll day into view - but match by day.day value, not position
-      const dayButton = document.querySelector(`[data-day="${currentDayOfWeek}"]`);
-      if (dayButton && selectedWeekButton) {
-        setTimeout(() => {
-          dayButton.scrollIntoView({
-            behavior: 'smooth',
-            block: 'nearest',
-            inline: 'center'
-          });
-        }, 100);
-      }
     }, 100);
-  }, [program, currentDayOfWeek]);
+  }, [program]);
 
   const handleWeekChange = (weekNumber: number) => {
     setSelectedWeek(weekNumber);
 
-    // If it's the next week (beyond program length), clear expanded days
-    if (weekNumber > program.program.length) {
+    // Since each ExerciseProgram now represents one week, weekNumber > 1 means beyond this program
+    if (weekNumber > 1) {
       setExpandedDays([]);
       return;
     }
-
-    // Find the selected week data - but make sure we get the latest version of that week
-    const weeksWithSameNumber = program?.program.filter(w => w.week === weekNumber);
-    let weekData;
-    
-    if (weeksWithSameNumber.length > 1) {
-      // Multiple versions - sort by createdAt descending and take the first one
-      weekData = [...weeksWithSameNumber].sort((a, b) => {
-        if (a.createdAt && b.createdAt) {
-          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-        }
-        return 0; 
-      })[0];
-    } else {
-      // Only one version - use it directly
-      weekData = weeksWithSameNumber[0];
-    }
-    
-    if (!weekData) return;
 
     // Get current date info for default day selection
     const currentDate = new Date();
     const currentDayOfWeek = currentDate.getDay() || 7; // Convert Sunday (0) to 7
 
-    // If we have expanded days, try to keep the same day expanded in the new week
-    if (expandedDays.length > 0) {
-      const currentDayNumber = expandedDays[0];
-      // Find the corresponding day in the new week
-      // Sort days by day.day to ensure chronological order before finding
-      const sortedDays = [...weekData.days].sort((a, b) => a.day - b.day);
-      const dayExists = sortedDays.find((d) => d.day === currentDayNumber);
+    // Set expanded day to current day of week
+    setExpandedDays([currentDayOfWeek]);
 
-      if (dayExists) {
-        // Keep the same day expanded if it exists in the new week
-        setExpandedDays([currentDayNumber]);
-      } else {
-        // If the day doesn't exist in the new week, expand the current day of the week
-        setExpandedDays([currentDayOfWeek]);
-      }
-    } else {
-      // If no day was expanded, expand the current day of the week
-      setExpandedDays([currentDayOfWeek]);
-    }
-
-    // Scroll the selected week button into view using element.scrollIntoView
+    // Scroll towards the bottom
     setTimeout(() => {
-      const weekButton = document.querySelector(`[data-week="${weekNumber}"]`);
-      if (weekButton) {
-        weekButton.scrollIntoView({
-          behavior: 'smooth',
-          block: 'nearest',
-          inline: 'center',
-        });
-      }
-
-      // Scroll towards the bottom after week potentially scrolled into view
-      // Use window scroll
-      setTimeout(() => {
-        const targetY = document.body.scrollHeight * 0.8; // Scroll 80% down
-        window.scrollTo({ top: targetY, behavior: 'smooth' });
-      }, 150); // Delay slightly after element scroll
-    }, 0);
+      const targetY = document.body.scrollHeight * 0.8; // Scroll 80% down
+      window.scrollTo({ top: targetY, behavior: 'smooth' });
+    }, 150);
   };
 
   const handleDayClick = (dayNumber: number) => {
@@ -573,67 +422,42 @@ export function ExerciseProgramPage({
 
   // Determine if the current date is in a future week compared to the program
   useEffect(() => {
-    if (!program?.program || !Array.isArray(program.program) || program.program.length === 0) {
+    if (!program?.days || !Array.isArray(program.days) || program.days.length === 0) {
       return;
     }
     
     // Get current date
     const currentDate = new Date();
     
-    // Find the latest week based on createdAt
-    const latestWeek = [...program.program].sort((a, b) => {
-      if (a.createdAt && b.createdAt) {
-        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-      }
-      return b.week - a.week;
-    })[0];
-    
-    if (!latestWeek.createdAt) {
+    // Since each program now represents one week, use the program's createdAt
+    if (!program.createdAt) {
       // If no createdAt, can't determine week
       setIsInFutureWeek(false);
       return;
     }
     
-    // Get the end date of the latest week
-    const latestWeekCreatedAt = new Date(latestWeek.createdAt);
-    const latestWeekEnd = getEndOfWeek(latestWeekCreatedAt);
+    // Get the end date of this week
+    const programCreatedAt = new Date(program.createdAt);
+    const programWeekEnd = getEndOfWeek(programCreatedAt);
     
-    // Current date is in a future week if it's after the end of the latest week
-    const inFutureWeek = currentDate.getTime() > latestWeekEnd.getTime();
+    // Current date is in a future week if it's after the end of this week
+    const inFutureWeek = currentDate.getTime() > programWeekEnd.getTime();
     
-    // Store the next program date (end of latest week + 1 day)
-    const dayAfterProgramEnd = new Date(latestWeekEnd);
+    // Store the next program date (end of this week + 1 day)
+    const dayAfterProgramEnd = new Date(programWeekEnd);
     dayAfterProgramEnd.setDate(dayAfterProgramEnd.getDate() + 1);
     setNextProgramDate(dayAfterProgramEnd);
     
-    // Special logging for year boundary cases
-    const currentYear = currentDate.getFullYear();
-    const nextProgramYear = dayAfterProgramEnd.getFullYear();
-    const isYearBoundary = currentYear !== nextProgramYear;
-    
-    console.log('Checking if current date is in future week:', {
-      currentDate,
-      latestWeekCreatedAt,
-      latestWeekEnd,
-      dayAfterProgramEnd,
-      inFutureWeek,
-      currentYear,
-      nextProgramYear,
-      isYearBoundary,
-      currentWeek: getWeekNumber(currentDate),
-      nextProgramWeek: getWeekNumber(dayAfterProgramEnd)
-    });
     setIsInFutureWeek(inFutureWeek);
   }, [program]);
 
   // If loading or no program, just return null as we're using the global loader context
-  if (isLoading || program === null || !Array.isArray(program.program)) {
+  if (isLoading || program === null || !Array.isArray(program.days)) {
     return null;
   }
 
-
-
-  const selectedWeekData = program.program.find((w) => w.week === selectedWeek);
+  // Since each program now represents one week, we just use the program's days directly
+  const selectedWeekData = selectedWeek === 1 ? { days: program.days } : null;
 
   return (
     <div
@@ -660,8 +484,8 @@ export function ExerciseProgramPage({
                 <div className="w-10"></div>
                 <div className="flex flex-col items-center">
                   <h1 className="text-app-title text-center">
-                    {program.title ||
-                      (program.type === ProgramType.Recovery
+                    {title ||
+                      (type === ProgramType.Recovery
                         ? t('program.recoveryProgramTitle')
                         : t('program.exerciseProgramTitle'))}
                   </h1>
@@ -693,13 +517,13 @@ export function ExerciseProgramPage({
                 <div className="p-8 pb-0">
                   <div className="text-center">
                     <h2 className="text-3xl font-bold text-white tracking-tight">
-                      {program.title ||
-                        (program.type === ProgramType.Exercise
+                      {title ||
+                        (type === ProgramType.Exercise
                           ? t('program.yourExerciseProgramTitle')
                           : t('program.yourRecoveryProgramTitle'))}
                     </h2>
                     <p className="mt-4 text-lg text-gray-400">
-                      {program.type === ProgramType.Exercise
+                      {type === ProgramType.Exercise
                         ? t('exerciseProgram.overview.title.exercise')
                         : t('exerciseProgram.overview.title.recovery')}
                     </p>
@@ -712,7 +536,7 @@ export function ExerciseProgramPage({
                     {program.programOverview}
                   </p>
 
-                  {program.timeFrame && program.timeFrameExplanation && (
+                  {timeFrame && program.timeFrameExplanation && (
                     <div className="border-t border-gray-700/50 pt-6">
                       <h3 className="flex items-center text-lg font-semibold text-white mb-3">
                         <svg
@@ -728,7 +552,7 @@ export function ExerciseProgramPage({
                             d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
                           />
                         </svg>
-                        {t('exerciseProgram.overview.programDuration')} {program.timeFrame}
+                        {t('exerciseProgram.overview.programDuration')} {timeFrame}
                       </h3>
                       <p className="text-gray-300 leading-relaxed">
                         {program.timeFrameExplanation}
@@ -860,209 +684,96 @@ export function ExerciseProgramPage({
               {/* Week/Day tabs */}
               {(
                 <>
-                  {/* Week Tabs */}
+                  {/* Week Tabs - Simplified since each program is one week */}
                   <div className="mb-6 overflow-x-auto scrollbar-hide">
                     <div className="flex space-x-2 min-w-max">
-                      {/* Group weeks by week number and use only the latest version of each week */}
-                      {(() => {
-                        // Group weeks by their week number
-                        const weeksByNumber = program.program.reduce((acc, week) => {
-                          if (!acc[week.week]) {
-                            acc[week.week] = [];
-                          }
-                          acc[week.week].push(week);
-                          return acc;
-                        }, {} as Record<number, typeof program.program>);
-                        
-                        // For each group, get only the latest version by createdAt
-                        const uniqueWeeks = Object.entries(weeksByNumber).map(([weekNum, weeks]) => {
-                          // Sort by createdAt descending (latest first)
-                          return weeks.sort((a, b) => {
-                            if (a.createdAt && b.createdAt) {
-                              return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-                            }
-                            return 0;
-                          })[0]; // Take the first (latest) one
-                        });
-                        
-                        // Sort unique weeks by createdAt ascending (earliest to latest)
-                        return uniqueWeeks.sort((a, b) => {
-                          if (a.createdAt && b.createdAt) {
-                            return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
-                          }
-                          return a.week - b.week;
-                        }).map(week => {
-                          // START OF MODIFICATION FOR WEEK TAB
-                          if (isCustomProgram && !user && week.week > 1) {
-                            const isSelectedLockedWeek = selectedWeek === week.week;
-                            return (
-                              <button
-                                key={`${week.week}-lock`}
-                                data-week={week.week}
-                                onClick={() => handleWeekChange(week.week)} // Make it clickable
-                                className={`px-6 py-3 rounded-lg font-medium transition-colors duration-200 flex flex-col items-center text-center ${
-                                  isSelectedLockedWeek
-                                    ? 'bg-gray-700 text-gray-300 ring-1 ring-indigo-500/70' // Style for selected but locked
-                                    : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white' // Style for unselected locked
-                                }`}
-                              >
-                                <div> {/* Week Number */}
-                                  {t('exerciseProgram.weekTab')}{' '}
-                                  {week.createdAt
-                                    ? getWeekNumber(new Date(week.createdAt))
-                                    : getWeekNumber(
-                                        new Date(
-                                          currentDate.getTime() +
-                                            (week.week - 1) * 7 * 24 * 60 * 60 * 1000
-                                        )
-                                      )}
-                                </div>
-                                {week.createdAt && ( /* Date Range */
-                                  <span className="text-xs opacity-70 block">
-                                    {(() => {
-                                      const weekCreatedAt = new Date(week.createdAt);
-                                      const weekStart = getStartOfWeek(weekCreatedAt);
-                                      const weekEnd = getEndOfWeek(weekCreatedAt);
-                                      const startMonth = getMonthAbbreviation(weekStart.getMonth(), t);
-                                      const startDay = weekStart.getDate();
-                                      const endDay = weekEnd.getDate();
-                                      const endMonth = getMonthAbbreviation(weekEnd.getMonth(), t);
-                                      if (startMonth === endMonth) {
-                                        return `${startMonth} ${startDay}-${endDay}`;
-                                      }
-                                      return `${startMonth} ${startDay}-${endMonth} ${endDay}`;
-                                    })()}
-                                  </span>
-                                )}
-                              </button>
-                            );
-                          }
-                          // END OF MODIFICATION FOR WEEK TAB
-                          // Render normal week button (active or inactive based on selectedWeek)
-                          return (
-                          <button
-                            key={`${week.week}-${week.createdAt}`}
-                            data-week={week.week}
-                            onClick={() => handleWeekChange(week.week)}
-                            className={`px-6 py-3 rounded-lg font-medium transition-colors duration-200 ${
-                              selectedWeek === week.week
-                                ? 'bg-indigo-600 text-white'
-                                : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white'
-                            }`}
-                          >
-                            {t('exerciseProgram.weekTab')}{' '}
-                            {week.createdAt
-                              ? getWeekNumber(new Date(week.createdAt))
-                              : getWeekNumber(
-                                  new Date(
-                                    currentDate.getTime() +
-                                      (week.week - 1) * 7 * 24 * 60 * 60 * 1000
-                                  )
-                                )}
-                            {week.createdAt && (
-                              <span className="text-xs opacity-70 block">
-                                {(() => {
-                                  // Calculate week start (Monday) and end (Sunday) dates
-                                  const weekCreatedAt = new Date(week.createdAt);
-                                  const weekStart = getStartOfWeek(weekCreatedAt);
-                                  const weekEnd = getEndOfWeek(weekCreatedAt);
-                                  
-                                  // Format the dates with translated month names
-                                  const startMonth = getMonthAbbreviation(weekStart.getMonth(), t);
-                                  const startDay = weekStart.getDate();
-                                  const endDay = weekEnd.getDate();
-                                  const endMonth = getMonthAbbreviation(weekEnd.getMonth(), t);
-                                  
-                                  // If start and end are in the same month, use "Month Day-Day" format
-                                  if (startMonth === endMonth) {
-                                    return `${startMonth} ${startDay}-${endDay}`;
-                                  }
-                                  
-                                  // Otherwise, use "Month Day-Month Day" format
-                                  return `${startMonth} ${startDay}-${endMonth} ${endDay}`;
-                                })()}
-                              </span>
-                            )}
-                          </button>
-                          );
-                        });
-                      })()}
-                      {!isCustomProgram && (() => {
-                        // Get unique week numbers using the same logic as week tabs
-                        const weeksByNumber = program.program.reduce((acc, week) => {
-                          if (!acc[week.week]) {
-                            acc[week.week] = [];
-                          }
-                          acc[week.week].push(week);
-                          return acc;
-                        }, {} as Record<number, typeof program.program>);
-                        
-                        const uniqueWeeks = Object.entries(weeksByNumber).map(([weekNum, weeks]) => {
-                          return weeks.sort((a, b) => {
-                            if (a.createdAt && b.createdAt) {
-                              return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-                            }
-                            return 0;
-                          })[0];
-                        });
-                        
-                        // Always show Next Week button when conditions are met
-                        // Find the highest week number to determine the next week number
-                        const maxWeekNumber = Math.max(...uniqueWeeks.map(week => week.week));
-                        const nextWeekNumber = maxWeekNumber + 1;
-                        
-                        // Calculate the next week's date range
-                        const latestWeek = uniqueWeeks.find(week => week.week === maxWeekNumber);
-                        let nextWeekStart: Date;
-                        let nextWeekEnd: Date;
-                        
-                        if (latestWeek?.createdAt) {
-                          // Calculate based on the latest week's end date
-                          const latestWeekCreatedAt = new Date(latestWeek.createdAt);
-                          const latestWeekEnd = getEndOfWeek(latestWeekCreatedAt);
-                          nextWeekStart = new Date(latestWeekEnd);
-                          nextWeekStart.setDate(nextWeekStart.getDate() + 1); // Day after latest week ends
-                          nextWeekStart = getStartOfWeek(nextWeekStart); // Ensure it's a Monday
-                          nextWeekEnd = getEndOfWeek(nextWeekStart);
-                        } else {
-                          // Fallback calculation
-                          nextWeekStart = new Date(currentDate.getTime() + maxWeekNumber * 7 * 24 * 60 * 60 * 1000);
-                          nextWeekStart = getStartOfWeek(nextWeekStart);
-                          nextWeekEnd = getEndOfWeek(nextWeekStart);
-                        }
-                        
-                        return (
-                          <button
-                            data-week={nextWeekNumber}
-                            className={`px-6 py-3 rounded-lg font-medium transition-colors duration-200 ${
-                              selectedWeek === nextWeekNumber
-                                ? 'bg-indigo-600 text-white'
-                                : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white'
-                            }`}
-                            onClick={() => handleWeekChange(nextWeekNumber)}
-                          >
-                            {t('exerciseProgram.weekTab')}{' '}
-                            {getWeekNumber(nextWeekStart)}
-                            <span className="text-xs opacity-70 block">
-                              {(() => {
-                                // Format the dates with translated month names
-                                const startMonth = getMonthAbbreviation(nextWeekStart.getMonth(), t);
-                                const startDay = nextWeekStart.getDate();
-                                const endDay = nextWeekEnd.getDate();
-                                const endMonth = getMonthAbbreviation(nextWeekEnd.getMonth(), t);
-                                
-                                // If start and end are in the same month, use "Month Day-Day" format
-                                if (startMonth === endMonth) {
-                                  return `${startMonth} ${startDay}-${endDay}`;
-                                }
-                                
-                                // Otherwise, use "Month Day-Month Day" format
-                                return `${startMonth} ${startDay}-${endMonth} ${endDay}`;
-                              })()}
-                            </span>
-                          </button>
-                        );
-                      })()}
+                      {/* Current week tab */}
+                      <button
+                        key="week-1"
+                        data-week={1}
+                        onClick={() => handleWeekChange(1)}
+                        className={`px-6 py-3 rounded-lg font-medium transition-colors duration-200 ${
+                          selectedWeek === 1
+                            ? 'bg-indigo-600 text-white'
+                            : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white'
+                        }`}
+                      >
+                        {t('exerciseProgram.weekTab')}{' '}
+                        {program.createdAt
+                          ? getWeekNumber(new Date(program.createdAt))
+                          : getWeekNumber(currentDate)}
+                        {program.createdAt && (
+                          <span className="text-xs opacity-70 block">
+                            {(() => {
+                              // Calculate week start (Monday) and end (Sunday) dates
+                              const weekCreatedAt = new Date(program.createdAt);
+                              const weekStart = getStartOfWeek(weekCreatedAt);
+                              const weekEnd = getEndOfWeek(weekCreatedAt);
+                              
+                              // Format the dates with translated month names
+                              const startMonth = getMonthAbbreviation(weekStart.getMonth(), t);
+                              const startDay = weekStart.getDate();
+                              const endDay = weekEnd.getDate();
+                              const endMonth = getMonthAbbreviation(weekEnd.getMonth(), t);
+                              
+                              // If start and end are in the same month, use "Month Day-Day" format
+                              if (startMonth === endMonth) {
+                                return `${startMonth} ${startDay}-${endDay}`;
+                              }
+                              
+                              // Otherwise, use "Month Day-Month Day" format
+                              return `${startMonth} ${startDay}-${endMonth} ${endDay}`;
+                            })()}
+                          </span>
+                        )}
+                      </button>
+                      
+                      {/* Next week button for non-custom programs */}
+                      {!isCustomProgram && (
+                        <button
+                          data-week={2}
+                          className={`px-6 py-3 rounded-lg font-medium transition-colors duration-200 ${
+                            selectedWeek === 2
+                              ? 'bg-indigo-600 text-white'
+                              : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white'
+                          }`}
+                          onClick={() => handleWeekChange(2)}
+                        >
+                          {t('exerciseProgram.weekTab')}{' '}
+                          {program.createdAt ? getWeekNumber(new Date(program.createdAt)) + 1 : getWeekNumber(currentDate) + 1}
+                          <span className="text-xs opacity-70 block">
+                            {(() => {
+                              // Calculate next week's date range
+                              const nextWeekStart = program.createdAt 
+                                ? (() => {
+                                    const weekEnd = getEndOfWeek(new Date(program.createdAt));
+                                    const nextWeekStart = new Date(weekEnd);
+                                    nextWeekStart.setDate(nextWeekStart.getDate() + 1);
+                                    return getStartOfWeek(nextWeekStart);
+                                  })()
+                                : (() => {
+                                    const nextWeek = new Date(currentDate.getTime() + 7 * 24 * 60 * 60 * 1000);
+                                    return getStartOfWeek(nextWeek);
+                                  })();
+                              const nextWeekEnd = getEndOfWeek(nextWeekStart);
+                              
+                              // Format the dates with translated month names
+                              const startMonth = getMonthAbbreviation(nextWeekStart.getMonth(), t);
+                              const startDay = nextWeekStart.getDate();
+                              const endDay = nextWeekEnd.getDate();
+                              const endMonth = getMonthAbbreviation(nextWeekEnd.getMonth(), t);
+                              
+                              // If start and end are in the same month, use "Month Day-Day" format
+                              if (startMonth === endMonth) {
+                                return `${startMonth} ${startDay}-${endDay}`;
+                              }
+                              
+                              // Otherwise, use "Month Day-Month Day" format
+                              return `${startMonth} ${startDay}-${endMonth} ${endDay}`;
+                            })()}
+                          </span>
+                        </button>
+                      )}
                     </div>
                   </div>
                 </>
@@ -1074,31 +785,15 @@ export function ExerciseProgramPage({
                   return <SignUpToContinueCard t={t} router={router} />;
                 }
 
-                // Try to get the latest version of the selected week's data
-                const weeksWithSameNumber = program?.program?.filter(w => w.week === selectedWeek);
-                let currentSelectedWeekData;
-                if (weeksWithSameNumber && weeksWithSameNumber.length > 0) {
-                  if (weeksWithSameNumber.length > 1) {
-                    currentSelectedWeekData = [...weeksWithSameNumber].sort((a, b) => {
-                      if (a.createdAt && b.createdAt) {
-                        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-                      }
-                      return 0; 
-                    })[0];
-                  } else {
-                    currentSelectedWeekData = weeksWithSameNumber[0];
-                  }
-                }
-
-                if (currentSelectedWeekData) { 
-                  // This implies selectedWeek corresponds to available program data
+                if (selectedWeek === 1 && selectedWeekData) { 
+                  // Show the current week's content
                   return (
                     <>
                       {/* Day Tabs */}
                       <div className="overflow-x-auto scrollbar-hide mb-6">
                         <div className="flex space-x-2 min-w-max">
                           {/* Sort days by day.day to ensure chronological order */}
-                          {[...currentSelectedWeekData.days].sort((a, b) => a.day - b.day).map((day) => (
+                          {[...selectedWeekData.days].sort((a, b) => a.day - b.day).map((day) => (
                             <button
                               key={day.day}
                               data-day={day.day}
@@ -1128,7 +823,7 @@ export function ExerciseProgramPage({
 
                       {/* Day Content */}
                       {expandedDays.map((dayNumber) => {
-                        const day = currentSelectedWeekData.days.find(
+                        const day = selectedWeekData.days.find(
                           (d) => d.day === dayNumber
                         );
                         if (!day) return null;
@@ -1150,13 +845,12 @@ export function ExerciseProgramPage({
                       })}
                     </>
                   );
-                } else if (selectedWeek > program.program.length) {
-                  // This case is for selectedWeek > program.program.length
-                  // AND it was NOT (isCustomProgram && !user && selectedWeek > 1)
+                } else if (selectedWeek > 1) {
+                  // This case is for selectedWeek > 1 (beyond this single week program)
                   return renderNextWeekCard();
                 }
                 
-                // Fallback: if selectedWeek is within program.length but no data found for it
+                // Fallback
                 return null; 
               })()}
             </div>
