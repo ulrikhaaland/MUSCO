@@ -7,7 +7,6 @@
 //   light optional drills for mobility/recovery.
 // ------------------------------------------------------------
 
-import { ProgramType } from '@/app/shared/types';
 import { ExerciseProgram } from '@/app/types/program';
 
 // ------------------------------------------------------------
@@ -184,8 +183,6 @@ export const rehabPrograms: ExerciseProgram[] = [
   // 1. Low‑Back Pain (non‑specific mechanical)
   // -----------------------------------------------------------------
   {
-    title: 'Lower Back Pain Relief & Strength',
-    timeFrame: '4 weeks',
     programOverview:
       'This evidence-based 4‑week lower back rehabilitation program systematically addresses the root causes of mechanical low‑back pain through progressive therapeutic exercise. You\'ll begin with gentle spinal stabilization using dead bugs and bird dogs to reactivate deep core muscles, then advance through targeted glute strengthening with bridges and clamshells, and finally master hip hinge patterns with goblet squats and Romanian deadlifts. Each 20-30 minute session is precisely structured to reduce pain while building the muscular foundation needed to prevent future episodes, with active recovery days featuring targeted stretches and mobility work.',
     timeFrameExplanation:
@@ -394,13 +391,10 @@ export const rehabPrograms: ExerciseProgram[] = [
       ];
 
       return {
-        week: wk,
-        differenceReason: weekTitles[weekIdx],
-        createdAt: `2025-05-${31 - weekIdx * 7}T00:00:00Z`,
+        createdAt: new Date(`2025-05-${31 - weekIdx * 7}T00:00:00Z`),
         days: daysArr,
       };
     }),
-    type: ProgramType.Recovery,
     createdAt: new Date('2025-05-31T00:00:00Z'),
     targetAreas: ['lower back'],
     bodyParts: ['Lower Back'],
@@ -410,8 +404,6 @@ export const rehabPrograms: ExerciseProgram[] = [
   // 2. Runner's Knee (patellofemoral pain)
   // -----------------------------------------------------------------
   {
-    title: "Runner's Knee Rehab – Week 1: De‑load & Control",
-    timeFrame: 'Week 1',
     programOverview:
       'Week 1 focuses on calming irritation and re‑establishing basic knee control. You\'ll use low‑impact movements and hip activation drills while inflammation settles.',
     timeFrameExplanation:
@@ -424,9 +416,7 @@ export const rehabPrograms: ExerciseProgram[] = [
     },
     whatNotToDo:
       'Avoid downhill running or deep knee bends. Do not push through sharp pain.',
-    week: 1,
-    differenceReason: 'De‑load & Control',
-    createdAt: '2025-05-31T00:00:00Z',
+    createdAt: new Date('2025-05-31T00:00:00Z'),
     days: [
       {
         day: 1,
@@ -472,13 +462,10 @@ export const rehabPrograms: ExerciseProgram[] = [
       createRunnersKneeRestDay(6),
       createRunnersKneeRestDay(7),
     ],
-    type: ProgramType.Recovery,
     targetAreas: ['knee'],
     bodyParts: ['Knee'],
   },
   {
-    title: "Runner's Knee Rehab – Week 2: Controlled Loading",
-    timeFrame: 'Week 2',
     programOverview:
       'Week 2 introduces bodyweight squats and lunges to build tolerance for single‑leg loading and improve alignment.',
     timeFrameExplanation:
@@ -491,9 +478,7 @@ export const rehabPrograms: ExerciseProgram[] = [
     },
     whatNotToDo:
       'Hold off on running or weighted squats if discomfort persists.',
-    week: 2,
-    differenceReason: 'Controlled Loading (add single‑leg)',
-    createdAt: '2025-05-24T00:00:00Z',
+    createdAt: new Date('2025-05-24T00:00:00Z'),
     days: [
       {
         day: 1,
@@ -539,13 +524,10 @@ export const rehabPrograms: ExerciseProgram[] = [
       createRunnersKneeRestDay(6),
       createRunnersKneeRestDay(7),
     ],
-    type: ProgramType.Recovery,
     targetAreas: ['knee'],
     bodyParts: ['Knee'],
   },
   {
-    title: "Runner's Knee Rehab – Week 3: Return‑to‑Run Intro",
-    timeFrame: 'Week 3',
     programOverview:
       'Week 3 adds step‑downs and Bulgarian split squats to build single‑leg strength for jogging.',
     timeFrameExplanation:
@@ -558,9 +540,7 @@ export const rehabPrograms: ExerciseProgram[] = [
     },
     whatNotToDo:
       'Avoid sudden mileage increases or high‑impact drills this week.',
-    week: 3,
-    differenceReason: 'Return‑to‑Run (introduce Bulgarians)',
-    createdAt: '2025-05-17T00:00:00Z',
+    createdAt: new Date('2025-05-17T00:00:00Z'),
     days: [
       {
         day: 1,
@@ -606,13 +586,10 @@ export const rehabPrograms: ExerciseProgram[] = [
       createRunnersKneeRestDay(6),
       createRunnersKneeRestDay(7),
     ],
-    type: ProgramType.Recovery,
     targetAreas: ['knee'],
     bodyParts: ['Knee'],
   },
   {
-    title: "Runner's Knee Rehab – Week 4: Mileage Progression",
-    timeFrame: 'Week 4',
     programOverview:
       'Week 4 gradually increases running distance while maintaining single‑leg strength work to keep the knee resilient.',
     timeFrameExplanation:
@@ -625,9 +602,7 @@ export const rehabPrograms: ExerciseProgram[] = [
     },
     whatNotToDo:
       'Avoid sudden spikes in distance or speed that cause knee soreness.',
-    week: 4,
-    differenceReason: 'Return‑to‑Run (progress mileage)',
-    createdAt: '2025-05-10T00:00:00Z',
+    createdAt: new Date('2025-05-10T00:00:00Z'),
     days: [
       {
         day: 1,
@@ -673,7 +648,6 @@ export const rehabPrograms: ExerciseProgram[] = [
       createRunnersKneeRestDay(6),
       createRunnersKneeRestDay(7),
     ],
-    type: ProgramType.Recovery,
     targetAreas: ['knee'],
     bodyParts: ['Knee'],
   },
@@ -682,8 +656,6 @@ export const rehabPrograms: ExerciseProgram[] = [
   // 3. Shoulder Impingement / Rotator‑Cuff Pain
   // -----------------------------------------------------------------
   {
-    title: 'Shoulder Impingement Rehab',
-    timeFrame: '4 weeks',
     programOverview:
       'This 4‑week shoulder rehab program is designed to help you recover from shoulder impingement and rotator cuff pain by restoring control, stability, and strength. You’ll train three days per week with focused, low-load exercises that reinforce healthy shoulder movement. The plan gradually introduces overhead activity as your symptoms improve. Recovery days are included to support circulation, promote mobility, and maintain progress without overuse.',
     timeFrameExplanation:
@@ -878,14 +850,11 @@ export const rehabPrograms: ExerciseProgram[] = [
       ];
 
       return {
-        week: wk,
-        differenceReason: weekTitles[weekIdx],
-        createdAt: `2025-05-${31 - weekIdx * 7}T00:00:00Z`,
+        createdAt: new Date(`2025-05-${31 - weekIdx * 7}T00:00:00Z`),
         days: daysArr,
       };
     }),
 
-    type: ProgramType.Recovery,
     createdAt: new Date('2025-05-29T00:00:00Z'),
     targetAreas: ['shoulder'],
     bodyParts: ['Shoulder'],
@@ -896,8 +865,6 @@ export const rehabPrograms: ExerciseProgram[] = [
   // -----------------------------------------------------------------
 
   {
-    title: 'Ankle‑Sprain Rehab Roadmap',
-    timeFrame: '4 weeks',
     programOverview:
       'This 4‑week program helps you recover from a mild to moderate lateral ankle sprain by restoring range of motion, rebuilding calf strength, and improving balance and stability. You’ll train three times per week with short, progressive sessions that evolve from basic mobility to dynamic control. On rest days, you’ll use light drills to reduce swelling, promote healing, and keep your ankle moving safely.',
     timeFrameExplanation:
@@ -1021,14 +988,11 @@ export const rehabPrograms: ExerciseProgram[] = [
       ];
 
       return {
-        week: wk,
-        differenceReason: weekTitles[weekIdx],
-        createdAt: `2025-05-${31 - weekIdx * 7}T00:00:00Z`,
+        createdAt: new Date(`2025-05-${31 - weekIdx * 7}T00:00:00Z`),
         days: daysArr,
       };
     }),
 
-    type: ProgramType.Recovery,
     createdAt: new Date('2025-05-28T00:00:00Z'),
     targetAreas: ['ankle'],
     bodyParts: ['Ankle'],
@@ -1038,8 +1002,6 @@ export const rehabPrograms: ExerciseProgram[] = [
   // 5. Tennis Elbow (lateral epicondylitis)
   // -----------------------------------------------------------------
   {
-    title: 'Tennis Elbow 4‑Week Fix',
-    timeFrame: '4 weeks',
     programOverview:
       'This 4‑week program helps you recover from lateral epicondylitis (tennis elbow) by reducing pain, reintroducing movement, and rebuilding strength in your wrist, forearm, and grip. You’ll train three times per week using short, progressive sessions. Each workout is designed to improve tendon health without flaring symptoms. On rest days, you’ll perform light mobility work to keep the area moving and support tissue healing.',
     timeFrameExplanation:
@@ -1155,24 +1117,19 @@ export const rehabPrograms: ExerciseProgram[] = [
       ];
 
       return {
-        week: wk,
-        differenceReason: weekTitles[weekIdx],
-        createdAt: `2025-05-${31 - weekIdx * 7}T00:00:00Z`,
+        createdAt: new Date(`2025-05-${31 - weekIdx * 7}T00:00:00Z`),
         days: daysArr,
       };
     }),
 
-    type: ProgramType.Recovery,
     createdAt: new Date('2025-05-27T00:00:00Z'),
     targetAreas: ['elbow'],
     bodyParts: ['Elbow'],
   },
 
   {
-    title: 'Tech Neck Rehab',
     programOverview:
       'This 4‑week program helps you relieve neck and upper trapezius tension caused by prolonged screen time, forward head posture, or stress. You’ll train three days per week using short, focused sessions that target posture, shoulder control, and deep neck flexor endurance. Active recovery days keep your upper spine mobile and relaxed without adding load.',
-    timeFrame: '4 weeks',
     timeFrameExplanation:
       'In Week 1, you’ll start with gentle mobility and scapular control drills to open the chest and activate supporting muscles. Week 2 adds low-load strength work for the upper back and rotator cuff. In Week 3, you’ll reinforce postural endurance through higher volume and static holds. Week 4 helps you integrate better alignment into everyday movement.',
     afterTimeFrame: {
@@ -1356,23 +1313,18 @@ export const rehabPrograms: ExerciseProgram[] = [
       ];
 
       return {
-        week: wk,
-        differenceReason: weekTitles[weekIdx],
-        createdAt: `2025-06-${2 - weekIdx * 7}T00:00:00Z`,
+        createdAt: new Date(`2025-06-${2 - weekIdx * 7}T00:00:00Z`),
         days: daysArr,
       };
     }),
 
-    type: ProgramType.Recovery,
     createdAt: new Date('2025-06-02T00:00:00Z'),
     targetAreas: ['neck', 'upper traps', 'posture'],
     bodyParts: ['Neck', 'Shoulders', 'Upper Back'],
   },
   {
-    title: 'Plantar Fasciitis Rehab',
     programOverview:
       'This 4‑week plantar fasciitis program is designed to relieve heel pain, rebuild arch control, and improve your foot’s ability to absorb impact. You’ll train three days per week with progressive sessions targeting the calves, ankle stability, and plantar tissue load tolerance. On rest days, you’ll perform low-intensity mobility work and foot drills to promote healing without overloading the plantar fascia.',
-    timeFrame: '4 weeks',
     timeFrameExplanation:
       'In Week 1, you’ll focus on light calf activation and gentle stretching to reduce tension through the foot arch. Week 2 introduces eccentric calf loading and toe activation. Week 3 builds on single-leg control and midfoot strength. By Week 4, you’ll increase functional loading so you can walk or jog pain-free and prepare for a return to daily movement or sport.',
     afterTimeFrame: {
@@ -1526,23 +1478,18 @@ export const rehabPrograms: ExerciseProgram[] = [
       ];
 
       return {
-        week: wk,
-        differenceReason: weekTitles[weekIdx],
-        createdAt: `2025-06-${2 - weekIdx * 7}T00:00:00Z`,
+        createdAt: new Date(`2025-06-${2 - weekIdx * 7}T00:00:00Z`),
         days: daysArr,
       };
     }),
 
-    type: ProgramType.Recovery,
     createdAt: new Date('2025-06-02T00:00:00Z'),
     targetAreas: ['foot', 'heel', 'arch'],
     bodyParts: ['Foot', 'Calves'],
   },
   {
-    title: 'Hamstring Strain: Return-to-Run Plan',
     programOverview:
       'This 4‑week program helps you safely recover from a mild to moderate hamstring strain and rebuild strength, control, and running tolerance. Each session uses progressive isometric, eccentric, and functional movements tailored for hamstring healing. You’ll train three days per week, with rest days focused on circulation and neural mobility to accelerate tissue repair without risking re-injury.',
-    timeFrame: '4 weeks',
     timeFrameExplanation:
       'In Week 1, you’ll restore baseline mobility and pain-free isometric contraction. Week 2 adds eccentric loading to support tendon and fascial healing. Week 3 integrates single-leg control and trunk-pelvis coordination. By Week 4, you’ll return to light running and dynamic movement with confidence.',
     afterTimeFrame: {
@@ -1700,24 +1647,19 @@ export const rehabPrograms: ExerciseProgram[] = [
       ];
 
       return {
-        week: wk,
-        differenceReason: weekTitles[weekIdx],
-        createdAt: `2025-06-${2 - weekIdx * 7}T00:00:00Z`,
+        createdAt: new Date(`2025-06-${2 - weekIdx * 7}T00:00:00Z`),
         days: daysArr,
       };
     }),
 
-    type: ProgramType.Recovery,
     createdAt: new Date('2025-06-02T00:00:00Z'),
     targetAreas: ['hamstring'],
     bodyParts: ['Hamstring', 'Glutes'],
   },
   {
-    title: '4‑Week Upper Back & Core Reset',
     programOverview:
       'This 4‑week program helps you correct poor posture, reduce rounded shoulders, and build a stronger upper back and core. You’ll train three times per week with targeted exercises to open the chest, activate scapular stabilizers, and reinforce spinal alignment. On rest days, you’ll focus on mobility and low-load control to keep your posture improving without overtraining.',
 
-    timeFrame: '4 weeks',
 
     timeFrameExplanation:
       'In Week 1, you’ll work on posture awareness and mobility of the thoracic spine and shoulders. Week 2 introduces controlled pulling and shoulder blade activation. Week 3 adds time-under-tension and stability work for endurance. Week 4 integrates core and full-body posture control, helping you sit, stand, and move upright with less effort.',
@@ -1892,24 +1834,19 @@ export const rehabPrograms: ExerciseProgram[] = [
       ];
 
       return {
-        week: wk,
-        differenceReason: weekTitles[weekIdx],
-        createdAt: `2025-06-${2 - weekIdx * 7}T00:00:00Z`,
+        createdAt: new Date(`2025-06-${2 - weekIdx * 7}T00:00:00Z`),
         days: daysArr,
       };
     }),
 
-    type: ProgramType.Recovery,
     createdAt: new Date('2025-06-02T00:00:00Z'),
     targetAreas: ['posture', 'upper back', 'core'],
     bodyParts: ['Upper Back', 'Shoulders', 'Core'],
   },
   {
-    title: 'Core Stability Starter Plan',
     programOverview:
       'This 4‑week beginner core program helps you activate and strengthen the deep muscles that stabilize your spine and pelvis. It’s ideal if you’ve had back pain, feel unstable during exercise, or want to build a strong foundation before lifting heavier. You’ll train three times per week using low-impact, bodyweight-based exercises. Rest days include light movement to promote recovery and reinforce motor control.',
 
-    timeFrame: '4 weeks',
 
     timeFrameExplanation:
       'In Week 1, you’ll focus on reactivating your deep core muscles and practicing control in simple positions. Week 2 adds time under tension and limb coordination. In Week 3, you’ll incorporate balance, anti-rotation, and lateral core engagement. Week 4 transitions to longer holds and multi-planar control to prepare you for more advanced training.',
@@ -2064,14 +2001,11 @@ export const rehabPrograms: ExerciseProgram[] = [
       ];
 
       return {
-        week: wk,
-        differenceReason: weekTitles[weekIdx],
-        createdAt: `2025-06-${2 - weekIdx * 7}T00:00:00Z`,
+        createdAt: new Date(`2025-06-${2 - weekIdx * 7}T00:00:00Z`),
         days: daysArr,
       };
     }),
 
-    type: ProgramType.Recovery,
     createdAt: new Date('2025-06-02T00:00:00Z'),
     targetAreas: ['core', 'pelvis', 'low back'],
     bodyParts: ['Core', 'Lower Back', 'Hips'],
@@ -2079,38 +2013,35 @@ export const rehabPrograms: ExerciseProgram[] = [
 ];
 
 // URL slug mapping for direct program access
-export const programSlugs: Record<string, string> = {
-  runnersknee: "Runner's Knee Rehab Roadmap",
-  'runners-knee': "Runner's Knee Rehab Roadmap",
-  lowback: 'Lower Back Pain Relief & Strength',
-  'low-back': 'Lower Back Pain Relief & Strength',
-  'lower-back': 'Lower Back Pain Relief & Strength',
-  shoulder: 'Shoulder Impingement Rehab',
-  'shoulder-impingement': 'Shoulder Impingement Rehab',
-  ankle: 'Ankle‑Sprain Rehab Roadmap',
-  'ankle-sprain': 'Ankle‑Sprain Rehab Roadmap',
-  'tennis-elbow': 'Tennis Elbow 4‑Week Fix',
-  elbow: 'Tennis Elbow 4‑Week Fix',
-  techneck: 'Tech Neck Rehab',
-  'plantar-fasciitis': 'Plantar Fasciitis Rehab',
-  plantarfasciitis: 'Plantar Fasciitis Rehab',
-  plantar: 'Plantar Fasciitis Rehab',
-  'hamstring-strain': 'Hamstring Strain: Return-to-Run Plan',
-  hamstring: 'Hamstring Strain: Return-to-Run Plan',
-  'upper-back-core': '4‑Week Upper Back & Core Reset',
-  upperbackcore: '4‑Week Upper Back & Core Reset',
-  'core-stability': 'Core Stability Starter Plan',
-  corestability: 'Core Stability Starter Plan',
+export const programSlugs: Record<string, number> = {
+  runnersknee: 1,
+  'runners-knee': 1,
+  lowback: 0,
+  'low-back': 0,
+  'lower-back': 0,
+  shoulder: 5,
+  'shoulder-impingement': 5,
+  ankle: 6,
+  'ankle-sprain': 6,
+  'tennis-elbow': 7,
+  elbow: 7,
+  techneck: 8,
+  'plantar-fasciitis': 9,
+  plantarfasciitis: 9,
+  plantar: 9,
+  'hamstring-strain': 10,
+  hamstring: 10,
+  'upper-back-core': 11,
+  upperbackcore: 11,
+  'core-stability': 12,
+  corestability: 12,
 };
 
 // Function to get program by URL slug
 export const getProgramBySlug = (slug: string): ExerciseProgram | null => {
-  const programTitle = programSlugs[slug.toLowerCase()];
-  if (!programTitle) return null;
-
-  return (
-    rehabPrograms.find((program) => program.title === programTitle) || null
-  );
+  const index = programSlugs[slug.toLowerCase()];
+  if (typeof index !== 'number') return null;
+  return rehabPrograms[index] || null;
 };
 
 // Function to get all available program slugs
