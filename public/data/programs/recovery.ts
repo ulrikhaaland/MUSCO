@@ -657,205 +657,258 @@ export const rehabPrograms: ExerciseProgram[] = [
   // -----------------------------------------------------------------
   {
     programOverview:
-      'This 4‑week shoulder rehab program is designed to help you recover from shoulder impingement and rotator cuff pain by restoring control, stability, and strength. You’ll train three days per week with focused, low-load exercises that reinforce healthy shoulder movement. The plan gradually introduces overhead activity as your symptoms improve. Recovery days are included to support circulation, promote mobility, and maintain progress without overuse.',
+      'Week 1 focuses on restoring pain‑free range of motion and scapular control using gentle band work.',
     timeFrameExplanation:
-      'Weeks 1 and 2 are focused on restoring pain-free range of motion, scapular control, and rotator cuff activation using bands and bodyweight. In Week 3, you’ll start integrating light pulling movements and vertical pressing as tolerated. By Week 4, the program helps you transition to overhead strength training with dumbbells, so you can confidently return to lifting, training, or throwing.',
+      'Reduce impingement symptoms and build basic stability so you can increase endurance next week.',
     afterTimeFrame: {
       expectedOutcome:
-        'By the end of the program, you should have full pain-free range of motion in your shoulder and be able to press light weights (e.g. 5 kg dumbbells) overhead without discomfort.',
+        'Pinching should decrease and you should lift your arm more comfortably.',
       nextSteps:
-        'You’re ready to build overhead strength through progressive loading. If your goals include return to sport or high-rep work (e.g. CrossFit, tennis, volleyball), continue training with a focus on external rotation strength, overhead stability, and eccentric control.',
+        'If pain stays below 2/10, advance to Week 2 for higher‑rep cuff work.',
     },
     whatNotToDo:
-      'Avoid pushing into sharp or pinching pain, especially at end ranges of shoulder flexion or internal rotation. Skip overhead barbell movements and dips during the first 3 weeks. If your pain increases or spreads down the arm, ease off and consider consulting a physio.',
-
-    program: [1, 2, 3, 4].map((wk) => {
-      const weekIdx = wk - 1;
-      const weekTitles = [
-        'Pain‑Free Range & Control',
-        'Build Cuff Endurance',
-        'Add Pulling & Light Press',
-        'Overhead Strength Transition',
-      ];
-
-      const sessionExercises = (
-        [
-          [
-            {
-              exerciseId: 'warmup-8',
-              sets: 2,
-              repetitions: 20,
-              restBetweenSets: 30,
-              warmup: true,
-            },
-            {
-              exerciseId: 'shoulders-30',
-              sets: 2,
-              repetitions: 15,
-              restBetweenSets: 45,
-              warmup: true,
-            },
-            {
-              exerciseId: 'shoulders-94',
-              sets: 3,
-              repetitions: 12,
-              restBetweenSets: 60,
-            },
-            {
-              exerciseId: 'shoulders-179',
-              sets: 3,
-              repetitions: 12,
-              restBetweenSets: 60,
-            },
-            {
-              exerciseId: 'shoulders-78',
-              sets: 3,
-              repetitions: 15,
-              restBetweenSets: 60,
-            },
-          ],
-          [
-            {
-              exerciseId: 'warmup-8',
-              sets: 2,
-              repetitions: 20,
-              restBetweenSets: 30,
-              warmup: true,
-            },
-            {
-              exerciseId: 'shoulders-30',
-              sets: 2,
-              repetitions: 15,
-              restBetweenSets: 45,
-              warmup: true,
-            },
-            {
-              exerciseId: 'shoulders-94',
-              sets: 3,
-              repetitions: 15,
-              restBetweenSets: 60,
-            },
-            {
-              exerciseId: 'shoulders-179',
-              sets: 3,
-              repetitions: 15,
-              restBetweenSets: 60,
-            },
-            {
-              exerciseId: 'shoulders-78',
-              sets: 3,
-              repetitions: 18,
-              restBetweenSets: 60,
-            },
-          ],
-          [
-            {
-              exerciseId: 'warmup-8',
-              sets: 2,
-              repetitions: 20,
-              restBetweenSets: 30,
-              warmup: true,
-            },
-            {
-              exerciseId: 'shoulders-30',
-              sets: 2,
-              repetitions: 15,
-              restBetweenSets: 45,
-              warmup: true,
-            },
-            {
-              exerciseId: 'shoulders-94',
-              sets: 3,
-              repetitions: 15,
-              restBetweenSets: 60,
-            },
-            {
-              exerciseId: 'shoulders-179',
-              sets: 3,
-              repetitions: 15,
-              restBetweenSets: 60,
-            },
-            {
-              exerciseId: 'shoulders-78',
-              sets: 3,
-              repetitions: 18,
-              restBetweenSets: 60,
-            },
-            {
-              exerciseId: 'shoulders-5',
-              sets: 3,
-              repetitions: 10,
-              restBetweenSets: 60,
-            },
-          ],
-          [
-            {
-              exerciseId: 'warmup-8',
-              sets: 2,
-              repetitions: 20,
-              restBetweenSets: 30,
-              warmup: true,
-            },
-            {
-              exerciseId: 'shoulders-30',
-              sets: 2,
-              repetitions: 15,
-              restBetweenSets: 45,
-              warmup: true,
-            },
-            {
-              exerciseId: 'shoulders-94',
-              sets: 3,
-              repetitions: 15,
-              restBetweenSets: 60,
-            },
-            {
-              exerciseId: 'shoulders-179',
-              sets: 3,
-              repetitions: 15,
-              restBetweenSets: 60,
-            },
-            {
-              exerciseId: 'shoulders-78',
-              sets: 3,
-              repetitions: 18,
-              restBetweenSets: 60,
-            },
-            {
-              exerciseId: 'shoulders-5',
-              sets: 3,
-              repetitions: 12,
-              restBetweenSets: 60,
-            },
-          ],
-        ] as const
-      )[weekIdx];
-
-      const trainingDay = (dayNumber: number) => ({
-        day: dayNumber,
-        description: weekTitles[weekIdx],
+      'Avoid sharp pain and heavy overhead lifting.',
+    createdAt: new Date('2025-05-29T00:00:00Z'),
+    days: [
+      {
+        day: 1,
+        description: 'Pain‑Free Range & Control',
         isRestDay: false,
         duration: 30,
-        exercises: sessionExercises,
-      });
+        exercises: [
+          { exerciseId: 'warmup-8', sets: 2, repetitions: 20, restBetweenSets: 30, warmup: true },
+          { exerciseId: 'shoulders-30', sets: 2, repetitions: 15, restBetweenSets: 45, warmup: true },
+          { exerciseId: 'shoulders-94', sets: 3, repetitions: 12, restBetweenSets: 60 },
+          { exerciseId: 'shoulders-179', sets: 3, repetitions: 12, restBetweenSets: 60 },
+          { exerciseId: 'shoulders-78', sets: 3, repetitions: 15, restBetweenSets: 60 },
+        ],
+      },
+      createShoulderRestDay(2),
+      {
+        day: 3,
+        description: 'Pain‑Free Range & Control',
+        isRestDay: false,
+        duration: 30,
+        exercises: [
+          { exerciseId: 'warmup-8', sets: 2, repetitions: 20, restBetweenSets: 30, warmup: true },
+          { exerciseId: 'shoulders-30', sets: 2, repetitions: 15, restBetweenSets: 45, warmup: true },
+          { exerciseId: 'shoulders-94', sets: 3, repetitions: 12, restBetweenSets: 60 },
+          { exerciseId: 'shoulders-179', sets: 3, repetitions: 12, restBetweenSets: 60 },
+          { exerciseId: 'shoulders-78', sets: 3, repetitions: 15, restBetweenSets: 60 },
+        ],
+      },
+      createShoulderRestDay(4),
+      {
+        day: 5,
+        description: 'Pain‑Free Range & Control',
+        isRestDay: false,
+        duration: 30,
+        exercises: [
+          { exerciseId: 'warmup-8', sets: 2, repetitions: 20, restBetweenSets: 30, warmup: true },
+          { exerciseId: 'shoulders-30', sets: 2, repetitions: 15, restBetweenSets: 45, warmup: true },
+          { exerciseId: 'shoulders-94', sets: 3, repetitions: 12, restBetweenSets: 60 },
+          { exerciseId: 'shoulders-179', sets: 3, repetitions: 12, restBetweenSets: 60 },
+          { exerciseId: 'shoulders-78', sets: 3, repetitions: 15, restBetweenSets: 60 },
+        ],
+      },
+      createShoulderRestDay(6),
+      createShoulderRestDay(7),
+    ],
+    targetAreas: ['shoulder'],
+    bodyParts: ['Shoulder'],
+  },
 
-      const daysArr = [
-        trainingDay(1),
-        createShoulderRestDay(2),
-        trainingDay(3),
-        createShoulderRestDay(4),
-        trainingDay(5),
-        createShoulderRestDay(6),
-        createShoulderRestDay(7),
-      ];
+  {
+    programOverview:
+      'Week 2 builds rotator cuff endurance with more repetitions and longer holds while keeping movements pain free.',
+    timeFrameExplanation:
+      'The added volume strengthens your shoulder so you can tolerate pulling and pressing soon.',
+    afterTimeFrame: {
+      expectedOutcome:
+        'You should feel steadier with less fatigue during daily tasks.',
+      nextSteps:
+        'Proceed to Week 3 to introduce light rows and presses if comfortable.',
+    },
+    whatNotToDo:
+      'Don’t rush overhead work if it provokes discomfort.',
+    createdAt: new Date('2025-05-22T00:00:00Z'),
+    days: [
+      {
+        day: 1,
+        description: 'Build Cuff Endurance',
+        isRestDay: false,
+        duration: 30,
+        exercises: [
+          { exerciseId: 'warmup-8', sets: 2, repetitions: 20, restBetweenSets: 30, warmup: true },
+          { exerciseId: 'shoulders-30', sets: 2, repetitions: 15, restBetweenSets: 45, warmup: true },
+          { exerciseId: 'shoulders-94', sets: 3, repetitions: 15, restBetweenSets: 60 },
+          { exerciseId: 'shoulders-179', sets: 3, repetitions: 15, restBetweenSets: 60 },
+          { exerciseId: 'shoulders-78', sets: 3, repetitions: 18, restBetweenSets: 60 },
+        ],
+      },
+      createShoulderRestDay(2),
+      {
+        day: 3,
+        description: 'Build Cuff Endurance',
+        isRestDay: false,
+        duration: 30,
+        exercises: [
+          { exerciseId: 'warmup-8', sets: 2, repetitions: 20, restBetweenSets: 30, warmup: true },
+          { exerciseId: 'shoulders-30', sets: 2, repetitions: 15, restBetweenSets: 45, warmup: true },
+          { exerciseId: 'shoulders-94', sets: 3, repetitions: 15, restBetweenSets: 60 },
+          { exerciseId: 'shoulders-179', sets: 3, repetitions: 15, restBetweenSets: 60 },
+          { exerciseId: 'shoulders-78', sets: 3, repetitions: 18, restBetweenSets: 60 },
+        ],
+      },
+      createShoulderRestDay(4),
+      {
+        day: 5,
+        description: 'Build Cuff Endurance',
+        isRestDay: false,
+        duration: 30,
+        exercises: [
+          { exerciseId: 'warmup-8', sets: 2, repetitions: 20, restBetweenSets: 30, warmup: true },
+          { exerciseId: 'shoulders-30', sets: 2, repetitions: 15, restBetweenSets: 45, warmup: true },
+          { exerciseId: 'shoulders-94', sets: 3, repetitions: 15, restBetweenSets: 60 },
+          { exerciseId: 'shoulders-179', sets: 3, repetitions: 15, restBetweenSets: 60 },
+          { exerciseId: 'shoulders-78', sets: 3, repetitions: 18, restBetweenSets: 60 },
+        ],
+      },
+      createShoulderRestDay(6),
+      createShoulderRestDay(7),
+    ],
+    targetAreas: ['shoulder'],
+    bodyParts: ['Shoulder'],
+  },
 
-      return {
-        createdAt: new Date(`2025-05-${31 - weekIdx * 7}T00:00:00Z`),
-        days: daysArr,
-      };
-    }),
+  {
+    programOverview:
+      'Week 3 introduces light pulling movements and vertical pressing within a comfortable range.',
+    timeFrameExplanation:
+      'These exercises start rebuilding strength and coordination for overhead activities.',
+    afterTimeFrame: {
+      expectedOutcome:
+        'Light rows and presses should feel controlled with minimal irritation.',
+      nextSteps:
+        'Increase resistance slightly in Week 4 if pain free.',
+    },
+    whatNotToDo:
+      'Avoid heavy or fast overhead pressing.',
+    createdAt: new Date('2025-05-15T00:00:00Z'),
+    days: [
+      {
+        day: 1,
+        description: 'Add Pulling & Light Press',
+        isRestDay: false,
+        duration: 30,
+        exercises: [
+          { exerciseId: 'warmup-8', sets: 2, repetitions: 20, restBetweenSets: 30, warmup: true },
+          { exerciseId: 'shoulders-30', sets: 2, repetitions: 15, restBetweenSets: 45, warmup: true },
+          { exerciseId: 'shoulders-94', sets: 3, repetitions: 15, restBetweenSets: 60 },
+          { exerciseId: 'shoulders-179', sets: 3, repetitions: 15, restBetweenSets: 60 },
+          { exerciseId: 'shoulders-78', sets: 3, repetitions: 18, restBetweenSets: 60 },
+          { exerciseId: 'shoulders-5', sets: 3, repetitions: 10, restBetweenSets: 60 },
+        ],
+      },
+      createShoulderRestDay(2),
+      {
+        day: 3,
+        description: 'Add Pulling & Light Press',
+        isRestDay: false,
+        duration: 30,
+        exercises: [
+          { exerciseId: 'warmup-8', sets: 2, repetitions: 20, restBetweenSets: 30, warmup: true },
+          { exerciseId: 'shoulders-30', sets: 2, repetitions: 15, restBetweenSets: 45, warmup: true },
+          { exerciseId: 'shoulders-94', sets: 3, repetitions: 15, restBetweenSets: 60 },
+          { exerciseId: 'shoulders-179', sets: 3, repetitions: 15, restBetweenSets: 60 },
+          { exerciseId: 'shoulders-78', sets: 3, repetitions: 18, restBetweenSets: 60 },
+          { exerciseId: 'shoulders-5', sets: 3, repetitions: 10, restBetweenSets: 60 },
+        ],
+      },
+      createShoulderRestDay(4),
+      {
+        day: 5,
+        description: 'Add Pulling & Light Press',
+        isRestDay: false,
+        duration: 30,
+        exercises: [
+          { exerciseId: 'warmup-8', sets: 2, repetitions: 20, restBetweenSets: 30, warmup: true },
+          { exerciseId: 'shoulders-30', sets: 2, repetitions: 15, restBetweenSets: 45, warmup: true },
+          { exerciseId: 'shoulders-94', sets: 3, repetitions: 15, restBetweenSets: 60 },
+          { exerciseId: 'shoulders-179', sets: 3, repetitions: 15, restBetweenSets: 60 },
+          { exerciseId: 'shoulders-78', sets: 3, repetitions: 18, restBetweenSets: 60 },
+          { exerciseId: 'shoulders-5', sets: 3, repetitions: 10, restBetweenSets: 60 },
+        ],
+      },
+      createShoulderRestDay(6),
+      createShoulderRestDay(7),
+    ],
+    targetAreas: ['shoulder'],
+    bodyParts: ['Shoulder'],
+  },
 
-    createdAt: new Date('2025-05-29T00:00:00Z'),
+  {
+    programOverview:
+      'Week 4 transitions you to overhead strength work with dumbbells and full-range control.',
+    timeFrameExplanation:
+      'We slightly increase resistance to prepare you for regular training or sport.',
+    afterTimeFrame: {
+      expectedOutcome:
+        'You should have full pain-free motion and confidence pressing light weights overhead.',
+      nextSteps:
+        'Maintain rotator cuff work weekly and continue progressive loading.',
+    },
+    whatNotToDo:
+      'Do not ignore pain or push too quickly into heavy loads.',
+    createdAt: new Date('2025-05-08T00:00:00Z'),
+    days: [
+      {
+        day: 1,
+        description: 'Overhead Strength Transition',
+        isRestDay: false,
+        duration: 30,
+        exercises: [
+          { exerciseId: 'warmup-8', sets: 2, repetitions: 20, restBetweenSets: 30, warmup: true },
+          { exerciseId: 'shoulders-30', sets: 2, repetitions: 15, restBetweenSets: 45, warmup: true },
+          { exerciseId: 'shoulders-94', sets: 3, repetitions: 15, restBetweenSets: 60 },
+          { exerciseId: 'shoulders-179', sets: 3, repetitions: 15, restBetweenSets: 60 },
+          { exerciseId: 'shoulders-78', sets: 3, repetitions: 18, restBetweenSets: 60 },
+          { exerciseId: 'shoulders-5', sets: 3, repetitions: 12, restBetweenSets: 60 },
+        ],
+      },
+      createShoulderRestDay(2),
+      {
+        day: 3,
+        description: 'Overhead Strength Transition',
+        isRestDay: false,
+        duration: 30,
+        exercises: [
+          { exerciseId: 'warmup-8', sets: 2, repetitions: 20, restBetweenSets: 30, warmup: true },
+          { exerciseId: 'shoulders-30', sets: 2, repetitions: 15, restBetweenSets: 45, warmup: true },
+          { exerciseId: 'shoulders-94', sets: 3, repetitions: 15, restBetweenSets: 60 },
+          { exerciseId: 'shoulders-179', sets: 3, repetitions: 15, restBetweenSets: 60 },
+          { exerciseId: 'shoulders-78', sets: 3, repetitions: 18, restBetweenSets: 60 },
+          { exerciseId: 'shoulders-5', sets: 3, repetitions: 12, restBetweenSets: 60 },
+        ],
+      },
+      createShoulderRestDay(4),
+      {
+        day: 5,
+        description: 'Overhead Strength Transition',
+        isRestDay: false,
+        duration: 30,
+        exercises: [
+          { exerciseId: 'warmup-8', sets: 2, repetitions: 20, restBetweenSets: 30, warmup: true },
+          { exerciseId: 'shoulders-30', sets: 2, repetitions: 15, restBetweenSets: 45, warmup: true },
+          { exerciseId: 'shoulders-94', sets: 3, repetitions: 15, restBetweenSets: 60 },
+          { exerciseId: 'shoulders-179', sets: 3, repetitions: 15, restBetweenSets: 60 },
+          { exerciseId: 'shoulders-78', sets: 3, repetitions: 18, restBetweenSets: 60 },
+          { exerciseId: 'shoulders-5', sets: 3, repetitions: 12, restBetweenSets: 60 },
+        ],
+      },
+      createShoulderRestDay(6),
+      createShoulderRestDay(7),
+    ],
     targetAreas: ['shoulder'],
     bodyParts: ['Shoulder'],
   },
@@ -2021,20 +2074,20 @@ export const programSlugs: Record<string, number> = {
   'lower-back': 0,
   shoulder: 5,
   'shoulder-impingement': 5,
-  ankle: 6,
-  'ankle-sprain': 6,
-  'tennis-elbow': 7,
-  elbow: 7,
-  techneck: 8,
-  'plantar-fasciitis': 9,
-  plantarfasciitis: 9,
-  plantar: 9,
-  'hamstring-strain': 10,
-  hamstring: 10,
-  'upper-back-core': 11,
-  upperbackcore: 11,
-  'core-stability': 12,
-  corestability: 12,
+  ankle: 9,
+  'ankle-sprain': 9,
+  'tennis-elbow': 10,
+  elbow: 10,
+  techneck: 11,
+  'plantar-fasciitis': 12,
+  plantarfasciitis: 12,
+  plantar: 12,
+  'hamstring-strain': 13,
+  hamstring: 13,
+  'upper-back-core': 14,
+  upperbackcore: 14,
+  'core-stability': 15,
+  corestability: 15,
 };
 
 // Function to get program by URL slug
