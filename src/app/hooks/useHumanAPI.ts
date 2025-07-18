@@ -15,6 +15,7 @@ import {
   getGenderedId,
 } from '../utils/anatomyHelpers';
 import { ProgramIntention, useApp } from '../context/AppContext';
+import { loadHumanSdk } from '../../utils/loadHumanSdk';
 
 interface CameraPosition {
   position: {
@@ -146,23 +147,11 @@ export function useHumanAPI({
   // Function to check if camera has moved
 
   useEffect(() => {
-    let script: HTMLScriptElement | null = null;
+    if (typeof window === 'undefined') return;
+
     let isInitialized = false;
 
-    const initializeViewer = () => {
-      if (!window.HumanAPI) {
-        script = document.createElement('script');
-        script.src =
-          'https://developer.biodigital.com/builds/api/human-api-3.0.0.min.js';
-        script.async = true;
-        script.onload = setupHumanAPI;
-        document.body.appendChild(script);
-      } else {
-        setupHumanAPI();
-      }
-    };
-
-    const setupHumanAPI = () => {
+    const setupHumanAPI = async () => {
       try {
         // Clean up existing instance if it exists
         if (humanRef.current) {
@@ -180,7 +169,8 @@ export function useHumanAPI({
           ? { x: 0, y: 0, z: -50 } // More zoomed out for mobile
           : { x: 0, y: 0, z: -25 };
 
-        const human = new window.HumanAPI(elementId, {
+        const HumanAPI = await loadHumanSdk();
+        const human = new HumanAPI(elementId, {
           camera: {
             position: cameraPosition,
           },
@@ -188,6 +178,7 @@ export function useHumanAPI({
 
         // Set the ref using context's setter
         setHumanRef(human);
+        isInitialized = true;
 
         // Set up event listeners
         human.on('human.ready', () => {
@@ -219,13 +210,10 @@ export function useHumanAPI({
       }
     };
 
-    initializeViewer();
+    setupHumanAPI();
 
     return () => {
       if (!isInitialized) {
-        if (script) {
-          document.body.removeChild(script);
-        }
         setIsReady(false);
         humanRef.current = null;
       }
