@@ -410,170 +410,270 @@ export const rehabPrograms: ExerciseProgram[] = [
   // 2. Runner's Knee (patellofemoral pain)
   // -----------------------------------------------------------------
   {
-    title: "Runner's Knee Rehab Roadmap",
-    timeFrame: '4 weeks',
+    title: "Runner's Knee Rehab – Week 1: De‑load & Control",
+    timeFrame: 'Week 1',
     programOverview:
-      'This 4‑week rehab plan is designed to help you recover from runner’s knee (patellofemoral pain syndrome) by building balanced strength and improving movement control. You’ll train three days per week with a focus on quad endurance, hip stability, and progressive single-leg loading. Each session is short and manageable, with optional low-impact drills on rest days to support recovery and keep your body moving.',
+      'Week 1 focuses on calming irritation and re‑establishing basic knee control. You\'ll use low‑impact movements and hip activation drills while inflammation settles.',
     timeFrameExplanation:
-      'In Week 1, you’ll back off painful loading and start activating key support muscles around your hips and knees. Week 2 introduces controlled loading through bodyweight squats and lunges. In Weeks 3 and 4, you’ll add single-leg strength and gradually reintroduce jogging so you can return to running with more confidence and less pain.',
+      'Back off painful loading and practice gentle range‑of‑motion plus glute activation. This sets the stage for controlled loading next week.',
     afterTimeFrame: {
       expectedOutcome:
-        'By the end of Week 4, you should be able to jog for 20 minutes without pain and perform squats, step-downs, or stairs with control and confidence.',
+        'Pain levels should start decreasing and stairs will feel easier.',
       nextSteps:
-        'If things feel good, you can start increasing your running distance and intensity by ~10 % per week. Consider adding plyometric drills (like skips and bounding) or progressing to sport‑specific exercises if you’re returning to competition or trail running.',
+        'If discomfort stays below 3/10, move on to controlled bodyweight loading in Week 2.',
     },
     whatNotToDo:
-      'Avoid downhill running, deep knee bends under load, or anything that spikes your pain above 3/10. If pain persists for more than 24 hours after activity, scale back slightly and allow more recovery between sessions.',
-    program: [1, 2, 3, 4].map((wk) => {
-      const weekIdx = wk - 1;
-      const weekTitles = [
-        'De‑load & Control',
-        'Controlled Loading (add single‑leg)',
-        'Return‑to‑Run (introduce Bulgarians)',
-        'Return‑to‑Run (progress mileage)',
-      ];
-
-      const sessionExercises = (
-        [
-          [
-            { exerciseId: 'warmup-6', duration: 300, warmup: true },
-            {
-              exerciseId: 'glutes-44',
-              sets: 3,
-              repetitions: 15,
-              restBetweenSets: 60,
-            },
-            {
-              exerciseId: 'glutes-45',
-              sets: 3,
-              repetitions: 10,
-              restBetweenSets: 60,
-            },
-            {
-              exerciseId: 'quads-193',
-              sets: 3,
-              duration: 30,
-              restBetweenSets: 60,
-            },
-            {
-              exerciseId: 'quads-190',
-              sets: 3,
-              repetitions: 12,
-              restBetweenSets: 60,
-            },
-          ],
-          [
-            { exerciseId: 'warmup-6', duration: 300, warmup: true },
-            {
-              exerciseId: 'glutes-44',
-              sets: 3,
-              repetitions: 15,
-              restBetweenSets: 60,
-            },
-            {
-              exerciseId: 'glutes-45',
-              sets: 3,
-              repetitions: 10,
-              restBetweenSets: 60,
-            },
-            {
-              exerciseId: 'quads-190',
-              sets: 3,
-              repetitions: 15,
-              restBetweenSets: 60,
-            },
-            {
-              exerciseId: 'quads-28',
-              sets: 3,
-              repetitions: 10,
-              restBetweenSets: 60,
-            },
-          ],
-          [
-            { exerciseId: 'warmup-6', duration: 300, warmup: true },
-            {
-              exerciseId: 'glutes-44',
-              sets: 3,
-              repetitions: 15,
-              restBetweenSets: 60,
-            },
-            {
-              exerciseId: 'glutes-45',
-              sets: 3,
-              repetitions: 10,
-              restBetweenSets: 60,
-            },
-            {
-              exerciseId: 'quads-28',
-              sets: 3,
-              repetitions: 10,
-              restBetweenSets: 60,
-            },
-            {
-              exerciseId: 'quads-186',
-              sets: 3,
-              repetitions: 8,
-              restBetweenSets: 60,
-            },
-          ],
-          [
-            { exerciseId: 'warmup-6', duration: 300, warmup: true },
-            {
-              exerciseId: 'glutes-44',
-              sets: 3,
-              repetitions: 15,
-              restBetweenSets: 60,
-            },
-            {
-              exerciseId: 'glutes-45',
-              sets: 3,
-              repetitions: 10,
-              restBetweenSets: 60,
-            },
-            {
-              exerciseId: 'quads-28',
-              sets: 3,
-              repetitions: 10,
-              restBetweenSets: 60,
-            },
-            {
-              exerciseId: 'quads-186',
-              sets: 3,
-              repetitions: 10,
-              restBetweenSets: 60,
-            },
-          ],
-        ] as const
-      )[weekIdx];
-
-      const trainingDay = (dayNumber: number) => ({
-        day: dayNumber,
-        description: weekTitles[weekIdx],
+      'Avoid downhill running or deep knee bends. Do not push through sharp pain.',
+    week: 1,
+    differenceReason: 'De‑load & Control',
+    createdAt: '2025-05-31T00:00:00Z',
+    days: [
+      {
+        day: 1,
+        description: 'De‑load & Control',
         isRestDay: false,
         duration: 35,
-        exercises: sessionExercises,
-      });
-
-      const daysArr = [
-        trainingDay(1),
-        createRunnersKneeRestDay(2),
-        trainingDay(3),
-        createRunnersKneeRestDay(4),
-        trainingDay(5),
-        createRunnersKneeRestDay(6),
-        createRunnersKneeRestDay(7),
-      ];
-
-      return {
-        week: wk,
-        differenceReason: weekTitles[weekIdx],
-        createdAt: `2025-05-${31 - weekIdx * 7}T00:00:00Z`,
-        days: daysArr,
-      };
-    }),
-
+        exercises: [
+          { exerciseId: 'warmup-6', duration: 300, warmup: true },
+          { exerciseId: 'glutes-44', sets: 3, repetitions: 15, restBetweenSets: 60 },
+          { exerciseId: 'glutes-45', sets: 3, repetitions: 10, restBetweenSets: 60 },
+          { exerciseId: 'quads-193', sets: 3, duration: 30, restBetweenSets: 60 },
+          { exerciseId: 'quads-190', sets: 3, repetitions: 12, restBetweenSets: 60 },
+        ],
+      },
+      createRunnersKneeRestDay(2),
+      {
+        day: 3,
+        description: 'De‑load & Control',
+        isRestDay: false,
+        duration: 35,
+        exercises: [
+          { exerciseId: 'warmup-6', duration: 300, warmup: true },
+          { exerciseId: 'glutes-44', sets: 3, repetitions: 15, restBetweenSets: 60 },
+          { exerciseId: 'glutes-45', sets: 3, repetitions: 10, restBetweenSets: 60 },
+          { exerciseId: 'quads-193', sets: 3, duration: 30, restBetweenSets: 60 },
+          { exerciseId: 'quads-190', sets: 3, repetitions: 12, restBetweenSets: 60 },
+        ],
+      },
+      createRunnersKneeRestDay(4),
+      {
+        day: 5,
+        description: 'De‑load & Control',
+        isRestDay: false,
+        duration: 35,
+        exercises: [
+          { exerciseId: 'warmup-6', duration: 300, warmup: true },
+          { exerciseId: 'glutes-44', sets: 3, repetitions: 15, restBetweenSets: 60 },
+          { exerciseId: 'glutes-45', sets: 3, repetitions: 10, restBetweenSets: 60 },
+          { exerciseId: 'quads-193', sets: 3, duration: 30, restBetweenSets: 60 },
+          { exerciseId: 'quads-190', sets: 3, repetitions: 12, restBetweenSets: 60 },
+        ],
+      },
+      createRunnersKneeRestDay(6),
+      createRunnersKneeRestDay(7),
+    ],
     type: ProgramType.Recovery,
-    createdAt: new Date('2025-05-30T00:00:00Z'),
+    targetAreas: ['knee'],
+    bodyParts: ['Knee'],
+  },
+  {
+    title: "Runner's Knee Rehab – Week 2: Controlled Loading",
+    timeFrame: 'Week 2',
+    programOverview:
+      'Week 2 introduces bodyweight squats and lunges to build tolerance for single‑leg loading and improve alignment.',
+    timeFrameExplanation:
+      'With pain calming down, you\'ll progress to controlled movements focusing on hip stability and proper knee tracking.',
+    afterTimeFrame: {
+      expectedOutcome:
+        'Single‑leg work should feel smoother and squats more comfortable.',
+      nextSteps:
+        'Continue to keep pain under control so jogging can be added in Week 3.',
+    },
+    whatNotToDo:
+      'Hold off on running or weighted squats if discomfort persists.',
+    week: 2,
+    differenceReason: 'Controlled Loading (add single‑leg)',
+    createdAt: '2025-05-24T00:00:00Z',
+    days: [
+      {
+        day: 1,
+        description: 'Controlled Loading (add single‑leg)',
+        isRestDay: false,
+        duration: 35,
+        exercises: [
+          { exerciseId: 'warmup-6', duration: 300, warmup: true },
+          { exerciseId: 'glutes-44', sets: 3, repetitions: 15, restBetweenSets: 60 },
+          { exerciseId: 'glutes-45', sets: 3, repetitions: 10, restBetweenSets: 60 },
+          { exerciseId: 'quads-190', sets: 3, repetitions: 15, restBetweenSets: 60 },
+          { exerciseId: 'quads-28', sets: 3, repetitions: 10, restBetweenSets: 60 },
+        ],
+      },
+      createRunnersKneeRestDay(2),
+      {
+        day: 3,
+        description: 'Controlled Loading (add single‑leg)',
+        isRestDay: false,
+        duration: 35,
+        exercises: [
+          { exerciseId: 'warmup-6', duration: 300, warmup: true },
+          { exerciseId: 'glutes-44', sets: 3, repetitions: 15, restBetweenSets: 60 },
+          { exerciseId: 'glutes-45', sets: 3, repetitions: 10, restBetweenSets: 60 },
+          { exerciseId: 'quads-190', sets: 3, repetitions: 15, restBetweenSets: 60 },
+          { exerciseId: 'quads-28', sets: 3, repetitions: 10, restBetweenSets: 60 },
+        ],
+      },
+      createRunnersKneeRestDay(4),
+      {
+        day: 5,
+        description: 'Controlled Loading (add single‑leg)',
+        isRestDay: false,
+        duration: 35,
+        exercises: [
+          { exerciseId: 'warmup-6', duration: 300, warmup: true },
+          { exerciseId: 'glutes-44', sets: 3, repetitions: 15, restBetweenSets: 60 },
+          { exerciseId: 'glutes-45', sets: 3, repetitions: 10, restBetweenSets: 60 },
+          { exerciseId: 'quads-190', sets: 3, repetitions: 15, restBetweenSets: 60 },
+          { exerciseId: 'quads-28', sets: 3, repetitions: 10, restBetweenSets: 60 },
+        ],
+      },
+      createRunnersKneeRestDay(6),
+      createRunnersKneeRestDay(7),
+    ],
+    type: ProgramType.Recovery,
+    targetAreas: ['knee'],
+    bodyParts: ['Knee'],
+  },
+  {
+    title: "Runner's Knee Rehab – Week 3: Return‑to‑Run Intro",
+    timeFrame: 'Week 3',
+    programOverview:
+      'Week 3 adds step‑downs and Bulgarian split squats to build single‑leg strength for jogging.',
+    timeFrameExplanation:
+      'These movements improve eccentric control and hip stability so you can tolerate gentle running.',
+    afterTimeFrame: {
+      expectedOutcome:
+        'Bulgarian split squats and step‑downs should be comfortable with minimal soreness.',
+      nextSteps:
+        'Begin short jog intervals during Week 4 while keeping pain below 3/10.',
+    },
+    whatNotToDo:
+      'Avoid sudden mileage increases or high‑impact drills this week.',
+    week: 3,
+    differenceReason: 'Return‑to‑Run (introduce Bulgarians)',
+    createdAt: '2025-05-17T00:00:00Z',
+    days: [
+      {
+        day: 1,
+        description: 'Return‑to‑Run (introduce Bulgarians)',
+        isRestDay: false,
+        duration: 35,
+        exercises: [
+          { exerciseId: 'warmup-6', duration: 300, warmup: true },
+          { exerciseId: 'glutes-44', sets: 3, repetitions: 15, restBetweenSets: 60 },
+          { exerciseId: 'glutes-45', sets: 3, repetitions: 10, restBetweenSets: 60 },
+          { exerciseId: 'quads-28', sets: 3, repetitions: 10, restBetweenSets: 60 },
+          { exerciseId: 'quads-186', sets: 3, repetitions: 8, restBetweenSets: 60 },
+        ],
+      },
+      createRunnersKneeRestDay(2),
+      {
+        day: 3,
+        description: 'Return‑to‑Run (introduce Bulgarians)',
+        isRestDay: false,
+        duration: 35,
+        exercises: [
+          { exerciseId: 'warmup-6', duration: 300, warmup: true },
+          { exerciseId: 'glutes-44', sets: 3, repetitions: 15, restBetweenSets: 60 },
+          { exerciseId: 'glutes-45', sets: 3, repetitions: 10, restBetweenSets: 60 },
+          { exerciseId: 'quads-28', sets: 3, repetitions: 10, restBetweenSets: 60 },
+          { exerciseId: 'quads-186', sets: 3, repetitions: 8, restBetweenSets: 60 },
+        ],
+      },
+      createRunnersKneeRestDay(4),
+      {
+        day: 5,
+        description: 'Return‑to‑Run (introduce Bulgarians)',
+        isRestDay: false,
+        duration: 35,
+        exercises: [
+          { exerciseId: 'warmup-6', duration: 300, warmup: true },
+          { exerciseId: 'glutes-44', sets: 3, repetitions: 15, restBetweenSets: 60 },
+          { exerciseId: 'glutes-45', sets: 3, repetitions: 10, restBetweenSets: 60 },
+          { exerciseId: 'quads-28', sets: 3, repetitions: 10, restBetweenSets: 60 },
+          { exerciseId: 'quads-186', sets: 3, repetitions: 8, restBetweenSets: 60 },
+        ],
+      },
+      createRunnersKneeRestDay(6),
+      createRunnersKneeRestDay(7),
+    ],
+    type: ProgramType.Recovery,
+    targetAreas: ['knee'],
+    bodyParts: ['Knee'],
+  },
+  {
+    title: "Runner's Knee Rehab – Week 4: Mileage Progression",
+    timeFrame: 'Week 4',
+    programOverview:
+      'Week 4 gradually increases running distance while maintaining single‑leg strength work to keep the knee resilient.',
+    timeFrameExplanation:
+      'Extend your jog intervals and monitor knee response. Strength sessions remain to reinforce control.',
+    afterTimeFrame: {
+      expectedOutcome:
+        'You should comfortably jog for about 20 minutes without pain.',
+      nextSteps:
+        'Keep building mileage by roughly 10 % per week and progress to normal training loads.',
+    },
+    whatNotToDo:
+      'Avoid sudden spikes in distance or speed that cause knee soreness.',
+    week: 4,
+    differenceReason: 'Return‑to‑Run (progress mileage)',
+    createdAt: '2025-05-10T00:00:00Z',
+    days: [
+      {
+        day: 1,
+        description: 'Return‑to‑Run (progress mileage)',
+        isRestDay: false,
+        duration: 35,
+        exercises: [
+          { exerciseId: 'warmup-6', duration: 300, warmup: true },
+          { exerciseId: 'glutes-44', sets: 3, repetitions: 15, restBetweenSets: 60 },
+          { exerciseId: 'glutes-45', sets: 3, repetitions: 10, restBetweenSets: 60 },
+          { exerciseId: 'quads-28', sets: 3, repetitions: 10, restBetweenSets: 60 },
+          { exerciseId: 'quads-186', sets: 3, repetitions: 10, restBetweenSets: 60 },
+        ],
+      },
+      createRunnersKneeRestDay(2),
+      {
+        day: 3,
+        description: 'Return‑to‑Run (progress mileage)',
+        isRestDay: false,
+        duration: 35,
+        exercises: [
+          { exerciseId: 'warmup-6', duration: 300, warmup: true },
+          { exerciseId: 'glutes-44', sets: 3, repetitions: 15, restBetweenSets: 60 },
+          { exerciseId: 'glutes-45', sets: 3, repetitions: 10, restBetweenSets: 60 },
+          { exerciseId: 'quads-28', sets: 3, repetitions: 10, restBetweenSets: 60 },
+          { exerciseId: 'quads-186', sets: 3, repetitions: 10, restBetweenSets: 60 },
+        ],
+      },
+      createRunnersKneeRestDay(4),
+      {
+        day: 5,
+        description: 'Return‑to‑Run (progress mileage)',
+        isRestDay: false,
+        duration: 35,
+        exercises: [
+          { exerciseId: 'warmup-6', duration: 300, warmup: true },
+          { exerciseId: 'glutes-44', sets: 3, repetitions: 15, restBetweenSets: 60 },
+          { exerciseId: 'glutes-45', sets: 3, repetitions: 10, restBetweenSets: 60 },
+          { exerciseId: 'quads-28', sets: 3, repetitions: 10, restBetweenSets: 60 },
+          { exerciseId: 'quads-186', sets: 3, repetitions: 10, restBetweenSets: 60 },
+        ],
+      },
+      createRunnersKneeRestDay(6),
+      createRunnersKneeRestDay(7),
+    ],
+    type: ProgramType.Recovery,
     targetAreas: ['knee'],
     bodyParts: ['Knee'],
   },
