@@ -919,134 +919,237 @@ export const rehabPrograms: ExerciseProgram[] = [
 
   {
     programOverview:
-      'This 4‑week program helps you recover from a mild to moderate lateral ankle sprain by restoring range of motion, rebuilding calf strength, and improving balance and stability. You’ll train three times per week with short, progressive sessions that evolve from basic mobility to dynamic control. On rest days, you’ll use light drills to reduce swelling, promote healing, and keep your ankle moving safely.',
+      'Week 1 focuses on gentle mobility and swelling control to restore pain-free motion.',
     timeFrameExplanation:
-      'In Week 1, you’ll focus on gentle mobility and swelling control with basic movement and light calf work. Week 2 introduces more strength work and targets the muscles that stabilize your ankle. In Week 3, you’ll add single-leg balance and proprioceptive drills to improve coordination. By Week 4, you’ll begin reintroducing jogging and dynamic movement to prepare for return to sport or daily activities.',
+      'Use light range-of-motion drills and calf pumps to reduce inflammation. This prepares you for strength work next week.',
     afterTimeFrame: {
       expectedOutcome:
-        'By the end of this program, you should be able to walk, balance on one leg with your eyes closed, and jog for 10 minutes without pain or instability.',
+        'Swelling should be decreasing and walking should feel easier with minimal discomfort.',
       nextSteps:
-        'From here, you can progress into jumping and cutting drills, trail running, or light sport-specific training. If you’re returning to competitive athletics, make sure to add plyometrics and change-of-direction work under guidance.',
+        'If movement feels comfortable, progress to Week 2 to begin rebuilding strength.',
     },
     whatNotToDo:
       'Avoid lateral movements, deep ankle flexion under load, or unstable surfaces until you’ve completed Week 3. If your ankle swells or becomes painful after a session, scale back the intensity or volume for a few days.',
-    program: [1, 2, 3, 4].map((wk) => {
-      const weekIdx = wk - 1;
-      const weekTitles = [
-        'Acute Recovery (mobility & swelling)',
-        'Strength Return (calf & glute)',
-        'Balance & Proprioception',
-        'Return to Jog & Dynamic Loading',
-      ];
-
-      const sessionExercises = (
-        [
-          [
-            { exerciseId: 'warmup-6', duration: 300, warmup: true },
-            {
-              exerciseId: 'calves-6',
-              sets: 3,
-              repetitions: 15,
-              restBetweenSets: 60,
-            },
-            {
-              exerciseId: 'glutes-44',
-              sets: 2,
-              repetitions: 15,
-              restBetweenSets: 60,
-            },
-          ],
-          [
-            { exerciseId: 'warmup-6', duration: 300, warmup: true },
-            {
-              exerciseId: 'calves-6',
-              sets: 3,
-              repetitions: 15,
-              restBetweenSets: 60,
-            },
-            {
-              exerciseId: 'calves-63',
-              sets: 3,
-              repetitions: 12,
-              restBetweenSets: 60,
-            },
-            {
-              exerciseId: 'glutes-44',
-              sets: 2,
-              repetitions: 15,
-              restBetweenSets: 60,
-            },
-          ],
-          [
-            { exerciseId: 'warmup-6', duration: 300, warmup: true },
-            {
-              exerciseId: 'calves-12',
-              sets: 3,
-              repetitions: 10,
-              restBetweenSets: 60,
-            },
-            {
-              exerciseId: 'calves-63',
-              sets: 3,
-              repetitions: 12,
-              restBetweenSets: 60,
-            },
-            {
-              exerciseId: 'glutes-44',
-              sets: 2,
-              repetitions: 15,
-              restBetweenSets: 60,
-            },
-          ],
-          [
-            { exerciseId: 'warmup-6', duration: 180, warmup: true },
-            {
-              exerciseId: 'calves-12',
-              sets: 3,
-              repetitions: 10,
-              restBetweenSets: 60,
-            },
-            {
-              exerciseId: 'calves-63',
-              sets: 3,
-              repetitions: 12,
-              restBetweenSets: 60,
-            },
-            {
-              exerciseId: 'glutes-44',
-              sets: 2,
-              repetitions: 15,
-              restBetweenSets: 60,
-            },
-          ],
-        ] as const
-      )[weekIdx];
-
-      const trainingDay = (dayNumber: number) => ({
-        day: dayNumber,
-        description: weekTitles[weekIdx],
+    createdAt: new Date('2025-05-31T00:00:00Z'),
+    days: [
+      {
+        day: 1,
+        description: 'Acute Recovery (mobility & swelling)',
         isRestDay: false,
         duration: 25,
-        exercises: sessionExercises,
-      });
+        exercises: [
+          { exerciseId: 'warmup-6', duration: 300, warmup: true },
+          { exerciseId: 'calves-6', sets: 3, repetitions: 15, restBetweenSets: 60 },
+          { exerciseId: 'glutes-44', sets: 2, repetitions: 15, restBetweenSets: 60 },
+        ],
+      },
+      createAnkleRestDay(2),
+      {
+        day: 3,
+        description: 'Acute Recovery (mobility & swelling)',
+        isRestDay: false,
+        duration: 25,
+        exercises: [
+          { exerciseId: 'warmup-6', duration: 300, warmup: true },
+          { exerciseId: 'calves-6', sets: 3, repetitions: 15, restBetweenSets: 60 },
+          { exerciseId: 'glutes-44', sets: 2, repetitions: 15, restBetweenSets: 60 },
+        ],
+      },
+      createAnkleRestDay(4),
+      {
+        day: 5,
+        description: 'Acute Recovery (mobility & swelling)',
+        isRestDay: false,
+        duration: 25,
+        exercises: [
+          { exerciseId: 'warmup-6', duration: 300, warmup: true },
+          { exerciseId: 'calves-6', sets: 3, repetitions: 15, restBetweenSets: 60 },
+          { exerciseId: 'glutes-44', sets: 2, repetitions: 15, restBetweenSets: 60 },
+        ],
+      },
+      createAnkleRestDay(6),
+      createAnkleRestDay(7),
+    ],
+    targetAreas: ['ankle'],
+    bodyParts: ['Ankle'],
+  },
 
-      const daysArr = [
-        trainingDay(1),
-        createAnkleRestDay(2),
-        trainingDay(3),
-        createAnkleRestDay(4),
-        trainingDay(5),
-        createAnkleRestDay(6),
-        createAnkleRestDay(7),
-      ];
+  {
+    programOverview:
+      'Week 2 introduces more strength work for the calf and supporting muscles.',
+    timeFrameExplanation:
+      'You will progress loading to build stability while continuing to manage swelling.',
+    afterTimeFrame: {
+      expectedOutcome:
+        'Calf strength and control should improve with little to no swelling after sessions.',
+      nextSteps:
+        'Move on to Week 3 to challenge your balance and proprioception.',
+    },
+    whatNotToDo:
+      'Avoid lateral movements, deep ankle flexion under load, or unstable surfaces until you’ve completed Week 3. If your ankle swells or becomes painful after a session, scale back the intensity or volume for a few days.',
+    createdAt: new Date('2025-05-24T00:00:00Z'),
+    days: [
+      {
+        day: 1,
+        description: 'Strength Return (calf & glute)',
+        isRestDay: false,
+        duration: 25,
+        exercises: [
+          { exerciseId: 'warmup-6', duration: 300, warmup: true },
+          { exerciseId: 'calves-6', sets: 3, repetitions: 15, restBetweenSets: 60 },
+          { exerciseId: 'calves-63', sets: 3, repetitions: 12, restBetweenSets: 60 },
+          { exerciseId: 'glutes-44', sets: 2, repetitions: 15, restBetweenSets: 60 },
+        ],
+      },
+      createAnkleRestDay(2),
+      {
+        day: 3,
+        description: 'Strength Return (calf & glute)',
+        isRestDay: false,
+        duration: 25,
+        exercises: [
+          { exerciseId: 'warmup-6', duration: 300, warmup: true },
+          { exerciseId: 'calves-6', sets: 3, repetitions: 15, restBetweenSets: 60 },
+          { exerciseId: 'calves-63', sets: 3, repetitions: 12, restBetweenSets: 60 },
+          { exerciseId: 'glutes-44', sets: 2, repetitions: 15, restBetweenSets: 60 },
+        ],
+      },
+      createAnkleRestDay(4),
+      {
+        day: 5,
+        description: 'Strength Return (calf & glute)',
+        isRestDay: false,
+        duration: 25,
+        exercises: [
+          { exerciseId: 'warmup-6', duration: 300, warmup: true },
+          { exerciseId: 'calves-6', sets: 3, repetitions: 15, restBetweenSets: 60 },
+          { exerciseId: 'calves-63', sets: 3, repetitions: 12, restBetweenSets: 60 },
+          { exerciseId: 'glutes-44', sets: 2, repetitions: 15, restBetweenSets: 60 },
+        ],
+      },
+      createAnkleRestDay(6),
+      createAnkleRestDay(7),
+    ],
+    targetAreas: ['ankle'],
+    bodyParts: ['Ankle'],
+  },
 
-      return {
-        createdAt: new Date(`2025-05-${31 - weekIdx * 7}T00:00:00Z`),
-        days: daysArr,
-      };
-    }),
+  {
+    programOverview:
+      'Week 3 adds single-leg balance and proprioceptive drills to improve coordination.',
+    timeFrameExplanation:
+      'Building balance prepares you for the dynamic loading introduced in Week 4.',
+    afterTimeFrame: {
+      expectedOutcome:
+        'You should feel steady standing on one leg and notice better ankle control.',
+      nextSteps:
+        'If you can balance comfortably, progress to Week 4 and begin light jogging.',
+    },
+    whatNotToDo:
+      'Avoid lateral movements, deep ankle flexion under load, or unstable surfaces until you’ve completed Week 3. If your ankle swells or becomes painful after a session, scale back the intensity or volume for a few days.',
+    createdAt: new Date('2025-05-17T00:00:00Z'),
+    days: [
+      {
+        day: 1,
+        description: 'Balance & Proprioception',
+        isRestDay: false,
+        duration: 25,
+        exercises: [
+          { exerciseId: 'warmup-6', duration: 300, warmup: true },
+          { exerciseId: 'calves-12', sets: 3, repetitions: 10, restBetweenSets: 60 },
+          { exerciseId: 'calves-63', sets: 3, repetitions: 12, restBetweenSets: 60 },
+          { exerciseId: 'glutes-44', sets: 2, repetitions: 15, restBetweenSets: 60 },
+        ],
+      },
+      createAnkleRestDay(2),
+      {
+        day: 3,
+        description: 'Balance & Proprioception',
+        isRestDay: false,
+        duration: 25,
+        exercises: [
+          { exerciseId: 'warmup-6', duration: 300, warmup: true },
+          { exerciseId: 'calves-12', sets: 3, repetitions: 10, restBetweenSets: 60 },
+          { exerciseId: 'calves-63', sets: 3, repetitions: 12, restBetweenSets: 60 },
+          { exerciseId: 'glutes-44', sets: 2, repetitions: 15, restBetweenSets: 60 },
+        ],
+      },
+      createAnkleRestDay(4),
+      {
+        day: 5,
+        description: 'Balance & Proprioception',
+        isRestDay: false,
+        duration: 25,
+        exercises: [
+          { exerciseId: 'warmup-6', duration: 300, warmup: true },
+          { exerciseId: 'calves-12', sets: 3, repetitions: 10, restBetweenSets: 60 },
+          { exerciseId: 'calves-63', sets: 3, repetitions: 12, restBetweenSets: 60 },
+          { exerciseId: 'glutes-44', sets: 2, repetitions: 15, restBetweenSets: 60 },
+        ],
+      },
+      createAnkleRestDay(6),
+      createAnkleRestDay(7),
+    ],
+    targetAreas: ['ankle'],
+    bodyParts: ['Ankle'],
+  },
 
-    createdAt: new Date('2025-05-28T00:00:00Z'),
+  {
+    programOverview:
+      'Week 4 reintroduces jogging and dynamic movements to prepare for full activity.',
+    timeFrameExplanation:
+      'You will continue strengthening while adding light running to transition back to sport or daily tasks.',
+    afterTimeFrame: {
+      expectedOutcome:
+        'You should be able to jog for around 10 minutes without pain or instability.',
+      nextSteps:
+        'Gradually build mileage or return to sport, adding plyometrics as tolerated.',
+    },
+    whatNotToDo:
+      'Avoid lateral movements, deep ankle flexion under load, or unstable surfaces until you’ve completed Week 3. If your ankle swells or becomes painful after a session, scale back the intensity or volume for a few days.',
+    createdAt: new Date('2025-05-10T00:00:00Z'),
+    days: [
+      {
+        day: 1,
+        description: 'Return to Jog & Dynamic Loading',
+        isRestDay: false,
+        duration: 25,
+        exercises: [
+          { exerciseId: 'warmup-6', duration: 180, warmup: true },
+          { exerciseId: 'calves-12', sets: 3, repetitions: 10, restBetweenSets: 60 },
+          { exerciseId: 'calves-63', sets: 3, repetitions: 12, restBetweenSets: 60 },
+          { exerciseId: 'glutes-44', sets: 2, repetitions: 15, restBetweenSets: 60 },
+        ],
+      },
+      createAnkleRestDay(2),
+      {
+        day: 3,
+        description: 'Return to Jog & Dynamic Loading',
+        isRestDay: false,
+        duration: 25,
+        exercises: [
+          { exerciseId: 'warmup-6', duration: 180, warmup: true },
+          { exerciseId: 'calves-12', sets: 3, repetitions: 10, restBetweenSets: 60 },
+          { exerciseId: 'calves-63', sets: 3, repetitions: 12, restBetweenSets: 60 },
+          { exerciseId: 'glutes-44', sets: 2, repetitions: 15, restBetweenSets: 60 },
+        ],
+      },
+      createAnkleRestDay(4),
+      {
+        day: 5,
+        description: 'Return to Jog & Dynamic Loading',
+        isRestDay: false,
+        duration: 25,
+        exercises: [
+          { exerciseId: 'warmup-6', duration: 180, warmup: true },
+          { exerciseId: 'calves-12', sets: 3, repetitions: 10, restBetweenSets: 60 },
+          { exerciseId: 'calves-63', sets: 3, repetitions: 12, restBetweenSets: 60 },
+          { exerciseId: 'glutes-44', sets: 2, repetitions: 15, restBetweenSets: 60 },
+        ],
+      },
+      createAnkleRestDay(6),
+      createAnkleRestDay(7),
+    ],
     targetAreas: ['ankle'],
     bodyParts: ['Ankle'],
   },
@@ -2076,18 +2179,18 @@ export const programSlugs: Record<string, number> = {
   'shoulder-impingement': 5,
   ankle: 9,
   'ankle-sprain': 9,
-  'tennis-elbow': 10,
-  elbow: 10,
-  techneck: 11,
-  'plantar-fasciitis': 12,
-  plantarfasciitis: 12,
-  plantar: 12,
-  'hamstring-strain': 13,
-  hamstring: 13,
-  'upper-back-core': 14,
-  upperbackcore: 14,
-  'core-stability': 15,
-  corestability: 15,
+  'tennis-elbow': 13,
+  elbow: 13,
+  techneck: 14,
+  'plantar-fasciitis': 15,
+  plantarfasciitis: 15,
+  plantar: 15,
+  'hamstring-strain': 16,
+  hamstring: 16,
+  'upper-back-core': 17,
+  upperbackcore: 17,
+  'core-stability': 18,
+  corestability: 18,
 };
 
 // Function to get program by URL slug
