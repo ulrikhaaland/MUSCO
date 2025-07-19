@@ -275,6 +275,7 @@ export interface ExerciseProgram {
   targetAreas: string[];
   bodyParts: string[];
   docId?: string;
+  title?: string;
 }
 
 export interface UserProgram {

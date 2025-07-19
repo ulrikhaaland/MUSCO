@@ -7,7 +7,7 @@
 //   light optional drills for mobility/recovery.
 // ------------------------------------------------------------
 
-import { ExerciseProgram } from '@/app/types/program';
+import { ExerciseProgram } from '../../../src/app/types/program';
 
 // ------------------------------------------------------------
 // Rest‑Day Templates for BodAI Rehab Programs
@@ -178,6 +178,166 @@ const createTennisElbowRestDay = (day: number): any => ({
   ],
 });
 
+/* ---------------- Hamstring Strain ---------------- */
+const createHamstringRestDay = (day: number): any => ({
+  day,
+  description:
+    'Rest day. Gentle mobility and circulation work for healing and neural gliding.',
+  isRestDay: true,
+  duration: 15,
+  exercises: [
+    {
+      exerciseId: 'warmup-6',
+      duration: 90,
+      warmup: true,
+      modification: 'March in place or jog lightly with relaxed form.',
+    },
+    {
+      exerciseId: 'glutes-7',
+      sets: 1,
+      repetitions: 15,
+      restBetweenSets: 45,
+      modification: 'Bodyweight bridge; pause at top for 1 second.',
+    },
+    {
+      exerciseId: 'hamstrings-48',
+      sets: 1,
+      repetitions: 8,
+      restBetweenSets: 45,
+      modification: 'Use no added weight. Control the descent.',
+    },
+  ],
+});
+
+/* ---------------- Posture ---------------- */
+const createPostureRestDay = (day: number): any => ({
+  day,
+  isRestDay: true,
+  duration: 15,
+  description:
+    'Rest day. Gentle thoracic mobility and postural activation to maintain upright awareness.',
+  exercises: [
+    {
+      exerciseId: 'warmup-8',
+      sets: 1,
+      repetitions: 20,
+      restBetweenSets: 30,
+      modification: 'Slow, smooth shoulder circles. Pause at the back.',
+      warmup: true,
+    },
+    {
+      exerciseId: 'shoulders-30',
+      sets: 1,
+      repetitions: 15,
+      restBetweenSets: 45,
+      modification: 'Light tension band. Focus on posture and breath.',
+    },
+    {
+      exerciseId: 'warmup-9',
+      sets: 1,
+      repetitions: 12,
+      restBetweenSets: 30,
+      modification: 'Rotate only to a comfortable range. Don\'t force it.',
+    },
+  ],
+});
+
+/* ---------------- Tech Neck ---------------- */
+const createTechNeckRestDay = (day: number): any => ({
+  day,
+  isRestDay: true,
+  duration: 12,
+  description:
+    'Rest day. Gentle neck and shoulder mobility to maintain progress without overworking.',
+  exercises: [
+    {
+      exerciseId: 'warmup-8',
+      sets: 1,
+      repetitions: 10,
+      restBetweenSets: 30,
+      modification: 'Small, slow circles. Focus on relaxed shoulders.',
+      warmup: true,
+    },
+    {
+      exerciseId: 'shoulders-30',
+      sets: 1,
+      repetitions: 8,
+      restBetweenSets: 45,
+      modification: 'Very light tension. Pause and breathe at the squeeze.',
+    },
+    {
+      exerciseId: 'warmup-9',
+      sets: 1,
+      repetitions: 8,
+      restBetweenSets: 30,
+      modification: 'Gentle rotation, keep head neutral.',
+    },
+  ],
+});
+
+/* ---------------- Plantar Fasciitis ---------------- */
+const createPlantarRestDay = (day: number): any => ({
+  day,
+  isRestDay: true,
+  duration: 10,
+  description:
+    'Rest day. Light foot mobility and calf stretches to support healing.',
+  exercises: [
+    {
+      exerciseId: 'warmup-6',
+      duration: 90,
+      warmup: true,
+      modification: 'March gently in place, focus on foot contact.',
+    },
+    {
+      exerciseId: 'calves-6',
+      sets: 1,
+      repetitions: 10,
+      restBetweenSets: 30,
+      modification: 'Light heel raises, control the descent.',
+    },
+    {
+      exerciseId: 'glutes-44',
+      sets: 1,
+      repetitions: 10,
+      restBetweenSets: 30,
+      modification: 'Keep movements slow and controlled.',
+    },
+  ],
+});
+
+/* ---------------- Core Stability ---------------- */
+const createCoreRestDay = (day: number): any => ({
+  day,
+  isRestDay: true,
+  duration: 12,
+  description:
+    'Rest day. Light activation to promote blood flow and reinforce core engagement.',
+  exercises: [
+    {
+      exerciseId: 'glutes-7',
+      sets: 1,
+      repetitions: 15,
+      restBetweenSets: 45,
+      modification: 'Hold 1s at top, focus on breath and core tension.',
+    },
+    {
+      exerciseId: 'abs-20',
+      sets: 1,
+      repetitions: 8,
+      restBetweenSets: 45,
+      modification: 'Slow, controlled movement; keep lower back flat.',
+    },
+    {
+      exerciseId: 'warmup-9',
+      sets: 1,
+      repetitions: 10,
+      restBetweenSets: 30,
+      modification: 'Rotate gently through comfortable range.',
+    },
+  ],
+});
+
 export const rehabPrograms: ExerciseProgram[] = [
   // -----------------------------------------------------------------
   // 1. Low‑Back Pain (non‑specific mechanical)
@@ -195,207 +355,238 @@ export const rehabPrograms: ExerciseProgram[] = [
     },
     whatNotToDo:
       'Never push through sharp, shooting, or worsening pain—this may indicate nerve involvement requiring immediate medical evaluation. Avoid explosive movements, heavy bilateral lifting above 50% body weight, or prolonged forward bending for the first 2 weeks while inflammatory processes resolve. Don\'t skip the rest day mobility work as it prevents stiffness and maintains progress between training sessions. Resist prolonged sitting without movement breaks, avoid sleeping positions that increase morning stiffness, and don\'t abandon the program early when pain decreases—completing all 4 weeks builds resilience against future episodes. Most critically, avoid loaded spinal flexion exercises like sit-ups or aggressive rotational movements when pain exceeds 2/10.',
-
-    program: [1, 2, 3, 4].map((wk) => {
-      const weekIdx = wk - 1;
-      const weekTitles = [
-        'Relief & Mobility',
-        'Foundational Strength (progress loads/eccentrics)',
-        'Foundational Strength (increase volume/load)',
-        'Return‑to‑Activity (introduce loaded hinge)',
-      ];
-
-      const sessionExercises = (
-        [
-          [
-            {
-              exerciseId: 'warmup-9',
-              sets: 2,
-              repetitions: 10,
-              restBetweenSets: 30,
-              warmup: true,
-            },
-            {
-              exerciseId: 'warmup-5',
-              sets: 1,
-              repetitions: 15,
-              restBetweenSets: 30,
-              warmup: true,
-            },
-            {
-              exerciseId: 'abs-6', // Plank first
-              sets: 3,
-              duration: 30,
-              restBetweenSets: 60,
-            },
-            {
-              exerciseId: 'abs-20', // Dead Bug
-              sets: 3,
-              repetitions: 8,
-              restBetweenSets: 60,
-            },
-            {
-              exerciseId: 'glutes-7',
-              sets: 3,
-              repetitions: 12,
-              restBetweenSets: 60,
-            },
-            {
-              exerciseId: 'glutes-1',
-              sets: 3,
-              repetitions: 10,
-              restBetweenSets: 60,
-            },
-            {
-              exerciseId: 'hamstrings-48',
-              sets: 3,
-              repetitions: 8,
-              restBetweenSets: 60,
-            },
-            {
-              exerciseId: 'lower-back-2',
-              sets: 2,
-              repetitions: 12,
-              restBetweenSets: 60,
-              modification:
-                'Combine with 60s diaphragmatic breathing post-set.',
-            },
-          ],
-          [
-            {
-              exerciseId: 'warmup-9',
-              sets: 2,
-              repetitions: 12,
-              restBetweenSets: 30,
-              warmup: true,
-            },
-            {
-              exerciseId: 'warmup-5',
-              sets: 1,
-              repetitions: 20,
-              restBetweenSets: 30,
-              warmup: true,
-            },
-            {
-              exerciseId: 'abs-6',
-              sets: 3,
-              duration: 40,
-              restBetweenSets: 60,
-            },
-            {
-              exerciseId: 'abs-20',
-              sets: 3,
-              repetitions: 10,
-              restBetweenSets: 60,
-            },
-            {
-              exerciseId: 'glutes-7',
-              sets: 3,
-              repetitions: 15,
-              restBetweenSets: 60,
-            },
-            {
-              exerciseId: 'glutes-1',
-              sets: 3,
-              repetitions: 12,
-              restBetweenSets: 60,
-            },
-            {
-              exerciseId: 'hamstrings-48',
-              sets: 3,
-              repetitions: 10,
-              restBetweenSets: 60,
-            },
-            {
-              exerciseId: 'lower-back-2',
-              sets: 2,
-              repetitions: 15,
-              restBetweenSets: 60,
-              modification:
-                'Combine with 60s diaphragmatic breathing post-set.',
-            },
-          ],
-          [
-            {
-              exerciseId: 'warmup-9',
-              sets: 2,
-              repetitions: 12,
-              restBetweenSets: 30,
-              warmup: true,
-            },
-            {
-              exerciseId: 'warmup-5',
-              sets: 1,
-              repetitions: 20,
-              restBetweenSets: 30,
-              warmup: true,
-            },
-            {
-              exerciseId: 'abs-6',
-              sets: 3,
-              duration: 45,
-              restBetweenSets: 60,
-            },
-            {
-              exerciseId: 'abs-20',
-              sets: 3,
-              repetitions: 10,
-              restBetweenSets: 60,
-            },
-            {
-              exerciseId: 'glutes-46', // switch to single-leg hip thrust
-              sets: 3,
-              repetitions: 8,
-              restBetweenSets: 60,
-            },
-            {
-              exerciseId: 'glutes-1',
-              sets: 3,
-              repetitions: 12,
-              restBetweenSets: 60,
-            },
-            {
-              exerciseId: 'hamstrings-48',
-              sets: 3,
-              repetitions: 12,
-              restBetweenSets: 90, // extended rest for higher intensity
-            },
-            {
-              exerciseId: 'lower-back-2',
-              sets: 2,
-              repetitions: 15,
-              restBetweenSets: 60,
-              modification:
-                'Combine with 60s diaphragmatic breathing post-set.',
-            },
-          ],
-        ] as const
-      )[weekIdx];
-
-      const trainingDay = (dayNumber: number) => ({
-        day: dayNumber,
-        description: weekTitles[weekIdx],
+    createdAt: new Date('2025-05-31T00:00:00Z'),
+    days: [
+      {
+        day: 1,
+        description: 'Relief & Mobility',
         isRestDay: false,
         duration: 40,
-        exercises: sessionExercises,
-      });
+        exercises: [
+          { exerciseId: 'abs-20', sets: 3, repetitions: 8, restBetweenSets: 60 },
+          { exerciseId: 'abs-6', sets: 3, duration: 30, restBetweenSets: 60 },
+          { exerciseId: 'glutes-7', sets: 2, repetitions: 12, restBetweenSets: 60 },
+          { exerciseId: 'abs-46', sets: 2, repetitions: 10, restBetweenSets: 60 },
+        ],
+      },
+      createLowBackRestDay(2),
+      {
+        day: 3,
+        description: 'Relief & Mobility',
+        isRestDay: false,
+        duration: 40,
+        exercises: [
+          { exerciseId: 'abs-20', sets: 3, repetitions: 8, restBetweenSets: 60 },
+          { exerciseId: 'abs-6', sets: 3, duration: 30, restBetweenSets: 60 },
+          { exerciseId: 'glutes-7', sets: 2, repetitions: 12, restBetweenSets: 60 },
+          { exerciseId: 'abs-46', sets: 2, repetitions: 10, restBetweenSets: 60 },
+        ],
+      },
+      createLowBackRestDay(4),
+      {
+        day: 5,
+        description: 'Relief & Mobility',
+        isRestDay: false,
+        duration: 40,
+        exercises: [
+          { exerciseId: 'abs-20', sets: 3, repetitions: 8, restBetweenSets: 60 },
+          { exerciseId: 'abs-6', sets: 3, duration: 30, restBetweenSets: 60 },
+          { exerciseId: 'glutes-7', sets: 2, repetitions: 12, restBetweenSets: 60 },
+          { exerciseId: 'abs-46', sets: 2, repetitions: 10, restBetweenSets: 60 },
+        ],
+      },
+      createLowBackRestDay(6),
+      createLowBackRestDay(7),
+    ],
+    targetAreas: ['lower back'],
+    bodyParts: ['Lower Back'],
+  },
 
-      const daysArr = [
-        trainingDay(1),
-        createLowBackRestDay(2),
-        trainingDay(3),
-        createLowBackRestDay(4),
-        trainingDay(5),
-        createLowBackRestDay(6),
-        createLowBackRestDay(7),
-      ];
+  // WEEK 2
+  {
+    programOverview:
+      'Week 2 introduces hip mobility with targeted glute activation to address muscle imbalances.',
+    timeFrameExplanation:
+      'Build foundational strength through progressive loading and eccentric control.',
+    afterTimeFrame: {
+      expectedOutcome:
+        'Improved hip mobility and stronger glute activation patterns.',
+      nextSteps:
+        'Progress to Week 3 for functional strength and hip hinge patterns.',
+    },
+    whatNotToDo:
+      'Never push through sharp pain or avoid explosive movements during early healing.',
+    createdAt: new Date('2025-05-24T00:00:00Z'),
+    days: [
+      {
+        day: 1,
+        description: 'Foundational Strength (progress loads/eccentrics)',
+        isRestDay: false,
+        duration: 40,
+        exercises: [
+          { exerciseId: 'abs-20', sets: 3, repetitions: 10, restBetweenSets: 60 },
+          { exerciseId: 'glutes-7', sets: 3, repetitions: 15, restBetweenSets: 60 },
+          { exerciseId: 'glutes-1', sets: 3, repetitions: 15, restBetweenSets: 60 },
+          { exerciseId: 'hamstrings-48', sets: 2, repetitions: 8, restBetweenSets: 90 },
+        ],
+      },
+      createLowBackRestDay(2),
+      {
+        day: 3,
+        description: 'Foundational Strength (progress loads/eccentrics)',
+        isRestDay: false,
+        duration: 40,
+        exercises: [
+          { exerciseId: 'abs-20', sets: 3, repetitions: 10, restBetweenSets: 60 },
+          { exerciseId: 'glutes-7', sets: 3, repetitions: 15, restBetweenSets: 60 },
+          { exerciseId: 'glutes-1', sets: 3, repetitions: 15, restBetweenSets: 60 },
+          { exerciseId: 'hamstrings-48', sets: 2, repetitions: 8, restBetweenSets: 90 },
+        ],
+      },
+      createLowBackRestDay(4),
+      {
+        day: 5,
+        description: 'Foundational Strength (progress loads/eccentrics)',
+        isRestDay: false,
+        duration: 40,
+        exercises: [
+          { exerciseId: 'abs-20', sets: 3, repetitions: 10, restBetweenSets: 60 },
+          { exerciseId: 'glutes-7', sets: 3, repetitions: 15, restBetweenSets: 60 },
+          { exerciseId: 'glutes-1', sets: 3, repetitions: 15, restBetweenSets: 60 },
+          { exerciseId: 'hamstrings-48', sets: 2, repetitions: 8, restBetweenSets: 90 },
+        ],
+      },
+      createLowBackRestDay(6),
+      createLowBackRestDay(7),
+    ],
+    targetAreas: ['lower back'],
+    bodyParts: ['Lower Back'],
+  },
 
-      return {
-        createdAt: new Date(`2025-05-${31 - weekIdx * 7}T00:00:00Z`),
-        days: daysArr,
-      };
-    }),
-    createdAt: new Date('2025-05-31T00:00:00Z'),
+  // WEEK 3
+  {
+    programOverview:
+      'Week 3 builds functional strength with squats and side planks that challenge core in multiple planes.',
+    timeFrameExplanation:
+      'Learn proper hip hinge mechanics while increasing training volume and load.',
+    afterTimeFrame: {
+      expectedOutcome:
+        'Mastered hip hinge patterns and improved core endurance in multiple planes.',
+      nextSteps:
+        'Progress to Week 4 for complex movement integration and return to activity.',
+    },
+    whatNotToDo:
+      'Never push through sharp pain or avoid explosive movements during early healing.',
+    createdAt: new Date('2025-05-17T00:00:00Z'),
+    days: [
+      {
+        day: 1,
+        description: 'Foundational Strength (increase volume/load)',
+        isRestDay: false,
+        duration: 40,
+        exercises: [
+          { exerciseId: 'quads-87', sets: 3, repetitions: 10, restBetweenSets: 60 },
+          { exerciseId: 'hamstrings-48', sets: 3, repetitions: 10, restBetweenSets: 90 },
+          { exerciseId: 'obliques-4', sets: 3, repetitions: 10, restBetweenSets: 60 },
+          { exerciseId: 'glutes-46', sets: 3, repetitions: 8, restBetweenSets: 60 },
+        ],
+      },
+      createLowBackRestDay(2),
+      {
+        day: 3,
+        description: 'Foundational Strength (increase volume/load)',
+        isRestDay: false,
+        duration: 40,
+        exercises: [
+          { exerciseId: 'quads-87', sets: 3, repetitions: 10, restBetweenSets: 60 },
+          { exerciseId: 'hamstrings-48', sets: 3, repetitions: 10, restBetweenSets: 90 },
+          { exerciseId: 'obliques-4', sets: 3, repetitions: 10, restBetweenSets: 60 },
+          { exerciseId: 'glutes-46', sets: 3, repetitions: 8, restBetweenSets: 60 },
+        ],
+      },
+      createLowBackRestDay(4),
+      {
+        day: 5,
+        description: 'Foundational Strength (increase volume/load)',
+        isRestDay: false,
+        duration: 40,
+        exercises: [
+          { exerciseId: 'quads-87', sets: 3, repetitions: 10, restBetweenSets: 60 },
+          { exerciseId: 'hamstrings-48', sets: 3, repetitions: 10, restBetweenSets: 90 },
+          { exerciseId: 'obliques-4', sets: 3, repetitions: 10, restBetweenSets: 60 },
+          { exerciseId: 'glutes-46', sets: 3, repetitions: 8, restBetweenSets: 60 },
+        ],
+      },
+      createLowBackRestDay(6),
+      createLowBackRestDay(7),
+    ],
+    targetAreas: ['lower back'],
+    bodyParts: ['Lower Back'],
+  },
+
+  // WEEK 4
+  {
+    programOverview:
+      'Week 4 integrates complex movement patterns to prepare for real-world lifting demands.',
+    timeFrameExplanation:
+      'Advanced loaded hinge patterns and movement integration for return to full activity.',
+    afterTimeFrame: {
+      expectedOutcome:
+        'Substantial reduction in daily back pain and confidence with bending and lifting.',
+      nextSteps:
+        'Maintain gains with Week 4 exercises 2-3 times weekly and progress to heavier movements.',
+    },
+    whatNotToDo:
+      'Never push through sharp pain or avoid explosive movements during early healing.',
+    createdAt: new Date('2025-05-10T00:00:00Z'),
+    days: [
+      {
+        day: 1,
+        description: 'Return‑to‑Activity (introduce loaded hinge)',
+        isRestDay: false,
+        duration: 40,
+        exercises: [
+          { exerciseId: 'quads-87', sets: 3, repetitions: 12, restBetweenSets: 60 },
+          { exerciseId: 'abs-20', sets: 3, repetitions: 10, restBetweenSets: 60 },
+          { exerciseId: 'glutes-46', sets: 3, repetitions: 8, restBetweenSets: 60 },
+          { exerciseId: 'glutes-1', sets: 3, repetitions: 12, restBetweenSets: 60 },
+          { exerciseId: 'hamstrings-48', sets: 3, repetitions: 12, restBetweenSets: 90 },
+          { exerciseId: 'lower-back-2', sets: 2, repetitions: 15, restBetweenSets: 60, modification: 'Combine with 60s diaphragmatic breathing post-set.' },
+        ],
+      },
+      createLowBackRestDay(2),
+      {
+        day: 3,
+        description: 'Return‑to‑Activity (introduce loaded hinge)',
+        isRestDay: false,
+        duration: 40,
+        exercises: [
+          { exerciseId: 'quads-87', sets: 3, repetitions: 12, restBetweenSets: 60 },
+          { exerciseId: 'abs-20', sets: 3, repetitions: 10, restBetweenSets: 60 },
+          { exerciseId: 'glutes-46', sets: 3, repetitions: 8, restBetweenSets: 60 },
+          { exerciseId: 'glutes-1', sets: 3, repetitions: 12, restBetweenSets: 60 },
+          { exerciseId: 'hamstrings-48', sets: 3, repetitions: 12, restBetweenSets: 90 },
+          { exerciseId: 'lower-back-2', sets: 2, repetitions: 15, restBetweenSets: 60, modification: 'Combine with 60s diaphragmatic breathing post-set.' },
+        ],
+      },
+      createLowBackRestDay(4),
+      {
+        day: 5,
+        description: 'Return‑to‑Activity (introduce loaded hinge)',
+        isRestDay: false,
+        duration: 40,
+        exercises: [
+          { exerciseId: 'quads-87', sets: 3, repetitions: 12, restBetweenSets: 60 },
+          { exerciseId: 'abs-20', sets: 3, repetitions: 10, restBetweenSets: 60 },
+          { exerciseId: 'glutes-46', sets: 3, repetitions: 8, restBetweenSets: 60 },
+          { exerciseId: 'glutes-1', sets: 3, repetitions: 12, restBetweenSets: 60 },
+          { exerciseId: 'hamstrings-48', sets: 3, repetitions: 12, restBetweenSets: 90 },
+          { exerciseId: 'lower-back-2', sets: 2, repetitions: 15, restBetweenSets: 60, modification: 'Combine with 60s diaphragmatic breathing post-set.' },
+        ],
+      },
+      createLowBackRestDay(6),
+      createLowBackRestDay(7),
+    ],
     targetAreas: ['lower back'],
     bodyParts: ['Lower Back'],
   },
@@ -730,7 +921,7 @@ export const rehabPrograms: ExerciseProgram[] = [
         'Proceed to Week 3 to introduce light rows and presses if comfortable.',
     },
     whatNotToDo:
-      'Don’t rush overhead work if it provokes discomfort.',
+      'Don\'t rush overhead work if it provokes discomfort.',
     createdAt: new Date('2025-05-22T00:00:00Z'),
     days: [
       {
@@ -929,7 +1120,7 @@ export const rehabPrograms: ExerciseProgram[] = [
         'If movement feels comfortable, progress to Week 2 to begin rebuilding strength.',
     },
     whatNotToDo:
-      'Avoid lateral movements, deep ankle flexion under load, or unstable surfaces until you’ve completed Week 3. If your ankle swells or becomes painful after a session, scale back the intensity or volume for a few days.',
+      'Avoid lateral movements, deep ankle flexion under load, or unstable surfaces until you\'ve completed Week 3. If your ankle swells or becomes painful after a session, scale back the intensity or volume for a few days.',
     createdAt: new Date('2025-05-31T00:00:00Z'),
     days: [
       {
@@ -986,7 +1177,7 @@ export const rehabPrograms: ExerciseProgram[] = [
         'Move on to Week 3 to challenge your balance and proprioception.',
     },
     whatNotToDo:
-      'Avoid lateral movements, deep ankle flexion under load, or unstable surfaces until you’ve completed Week 3. If your ankle swells or becomes painful after a session, scale back the intensity or volume for a few days.',
+      'Avoid lateral movements, deep ankle flexion under load, or unstable surfaces until you\'ve completed Week 3. If your ankle swells or becomes painful after a session, scale back the intensity or volume for a few days.',
     createdAt: new Date('2025-05-24T00:00:00Z'),
     days: [
       {
@@ -1046,7 +1237,7 @@ export const rehabPrograms: ExerciseProgram[] = [
         'If you can balance comfortably, progress to Week 4 and begin light jogging.',
     },
     whatNotToDo:
-      'Avoid lateral movements, deep ankle flexion under load, or unstable surfaces until you’ve completed Week 3. If your ankle swells or becomes painful after a session, scale back the intensity or volume for a few days.',
+      'Avoid lateral movements, deep ankle flexion under load, or unstable surfaces until you\'ve completed Week 3. If your ankle swells or becomes painful after a session, scale back the intensity or volume for a few days.',
     createdAt: new Date('2025-05-17T00:00:00Z'),
     days: [
       {
@@ -1106,7 +1297,7 @@ export const rehabPrograms: ExerciseProgram[] = [
         'Gradually build mileage or return to sport, adding plyometrics as tolerated.',
     },
     whatNotToDo:
-      'Avoid lateral movements, deep ankle flexion under load, or unstable surfaces until you’ve completed Week 3. If your ankle swells or becomes painful after a session, scale back the intensity or volume for a few days.',
+      'Avoid lateral movements, deep ankle flexion under load, or unstable surfaces until you\'ve completed Week 3. If your ankle swells or becomes painful after a session, scale back the intensity or volume for a few days.',
     createdAt: new Date('2025-05-10T00:00:00Z'),
     days: [
       {
@@ -1324,7 +1515,7 @@ export const rehabPrograms: ExerciseProgram[] = [
 
   {
     programOverview:
-      'Week 4 integrates functional loading so you’re ready for everyday tasks and sport.',
+      'Week 4 integrates functional loading so you\'re ready for everyday tasks and sport.',
     timeFrameExplanation:
       'Compound movements and carries reinforce strength gains made in the previous weeks.',
     afterTimeFrame: {
@@ -1378,922 +1569,1280 @@ export const rehabPrograms: ExerciseProgram[] = [
     targetAreas: ['elbow'],
     bodyParts: ['Elbow'],
   },
-
+  // -----------------------------------------------------------------
+  // 6. Tech Neck
+  // -----------------------------------------------------------------
   {
     programOverview:
-      'This 4‑week program helps you relieve neck and upper trapezius tension caused by prolonged screen time, forward head posture, or stress. You’ll train three days per week using short, focused sessions that target posture, shoulder control, and deep neck flexor endurance. Active recovery days keep your upper spine mobile and relaxed without adding load.',
+      'Week 1 focuses on gentle mobility and scapular awareness to reduce immediate tension.',
     timeFrameExplanation:
-      'In Week 1, you’ll start with gentle mobility and scapular control drills to open the chest and activate supporting muscles. Week 2 adds low-load strength work for the upper back and rotator cuff. In Week 3, you’ll reinforce postural endurance through higher volume and static holds. Week 4 helps you integrate better alignment into everyday movement.',
+      'Start with light movements to open the chest and activate supporting muscles around your neck and shoulders.',
     afterTimeFrame: {
       expectedOutcome:
-        'By the end of the plan, you should feel significantly less neck and shoulder tension, better upright posture, and improved awareness of head and scapular positioning during work or daily life.',
+        'Neck and shoulder tension should start decreasing with better postural awareness.',
       nextSteps:
-        'To maintain your progress, continue using one mobility drill per day and train your upper back at least twice per week. For strength gains, transition to resistance bands, cables, or dumbbells using rows and face pulls.',
+        'If symptoms improve, progress to Week 2 for targeted strengthening work.',
     },
     whatNotToDo:
-      'Avoid shrug-based or trap-dominant exercises (like upright rows or heavy shoulder shrugs), and don’t force end-range neck stretches into pain. If you feel numbness, dizziness, or radiating pain down the arms, stop immediately and consult a medical professional.',
-    program: [1, 2, 3, 4].map((wk) => {
-      const weekIdx = wk - 1;
-      const weekTitles = [
-        'Mobility & Awareness',
-        'Scapular Strength & Cuff Activation',
-        'Postural Endurance & Volume',
-        'Integration & Habit Anchoring',
-      ];
-
-      const sessionExercises = (
-        [
-          [
-            {
-              exerciseId: 'warmup-8',
-              sets: 2,
-              repetitions: 15,
-              restBetweenSets: 30,
-              warmup: true,
-            },
-            {
-              exerciseId: 'shoulders-30',
-              sets: 2,
-              repetitions: 12,
-              restBetweenSets: 45,
-            },
-            {
-              exerciseId: 'warmup-9',
-              sets: 2,
-              repetitions: 10,
-              restBetweenSets: 30,
-            },
-            {
-              exerciseId: 'shoulders-94',
-              sets: 2,
-              repetitions: 10,
-              restBetweenSets: 45,
-            },
-          ],
-          [
-            {
-              exerciseId: 'warmup-8',
-              sets: 2,
-              repetitions: 20,
-              restBetweenSets: 30,
-              warmup: true,
-            },
-            {
-              exerciseId: 'shoulders-30',
-              sets: 3,
-              repetitions: 15,
-              restBetweenSets: 45,
-            },
-            {
-              exerciseId: 'upper-back-60',
-              sets: 3,
-              repetitions: 15,
-              restBetweenSets: 60,
-            },
-            {
-              exerciseId: 'shoulders-94',
-              sets: 3,
-              repetitions: 12,
-              restBetweenSets: 45,
-            },
-          ],
-          [
-            {
-              exerciseId: 'warmup-8',
-              sets: 2,
-              repetitions: 20,
-              restBetweenSets: 30,
-              warmup: true,
-            },
-            {
-              exerciseId: 'shoulders-78',
-              sets: 3,
-              repetitions: 15,
-              restBetweenSets: 60,
-            },
-            {
-              exerciseId: 'obliques-4',
-              sets: 2,
-              repetitions: 12,
-              restBetweenSets: 60,
-            },
-            {
-              exerciseId: 'upper-back-60',
-              sets: 3,
-              repetitions: 18,
-              restBetweenSets: 60,
-            },
-          ],
-          [
-            {
-              exerciseId: 'warmup-8',
-              sets: 2,
-              repetitions: 20,
-              restBetweenSets: 30,
-              warmup: true,
-            },
-            {
-              exerciseId: 'shoulders-30',
-              sets: 3,
-              repetitions: 15,
-              restBetweenSets: 45,
-            },
-            {
-              exerciseId: 'shoulders-94',
-              sets: 3,
-              repetitions: 12,
-              restBetweenSets: 45,
-            },
-            {
-              exerciseId: 'warmup-9',
-              sets: 2,
-              repetitions: 12,
-              restBetweenSets: 30,
-            },
-          ],
-        ] as const
-      )[weekIdx];
-
-      const trainingDay = (dayNumber: number) => ({
-        day: dayNumber,
-        description: weekTitles[weekIdx],
+      'Avoid shrug-based or trap-dominant exercises. Don\'t force end-range neck stretches into pain.',
+    createdAt: new Date('2025-06-02T00:00:00Z'),
+    days: [
+      {
+        day: 1,
+        description: 'Mobility & Awareness',
         isRestDay: false,
         duration: 25,
-        exercises: sessionExercises,
-      });
-
-      const createTechNeckRestDay = (day: number): any => ({
-        day,
-        isRestDay: true,
-        duration: 15,
-        description:
-          'Rest day. Gentle shoulder and neck mobility to reduce tension and improve circulation.',
         exercises: [
-          {
-            exerciseId: 'warmup-8', // Armsirkler
-            sets: 1,
-            repetitions: 20,
-            restBetweenSets: 30,
-            modification: 'Use small-to-large circles, slow pace.',
-            warmup: true,
-          },
-          {
-            exerciseId: 'shoulders-30', // Band pull-apart
-            sets: 1,
-            repetitions: 15,
-            restBetweenSets: 45,
-            modification: 'Focus on posture, don’t shrug shoulders.',
-          },
-          {
-            exerciseId: 'warmup-9', // Rotasjon av Overkropp
-            sets: 1,
-            repetitions: 12,
-            restBetweenSets: 30,
-            modification: 'Move slowly; stop short of discomfort.',
-          },
+          { exerciseId: 'warmup-8', sets: 2, repetitions: 15, restBetweenSets: 30, warmup: true },
+          { exerciseId: 'shoulders-30', sets: 2, repetitions: 12, restBetweenSets: 45 },
+          { exerciseId: 'warmup-9', sets: 2, repetitions: 10, restBetweenSets: 30 },
+          { exerciseId: 'shoulders-94', sets: 2, repetitions: 10, restBetweenSets: 45 },
         ],
-      });
-
-      const daysArr = [
-        trainingDay(1),
-        createTechNeckRestDay(2),
-        trainingDay(3),
-        createTechNeckRestDay(4),
-        trainingDay(5),
-        createTechNeckRestDay(6),
-        createTechNeckRestDay(7),
-      ];
-
-      return {
-        createdAt: new Date(`2025-06-${2 - weekIdx * 7}T00:00:00Z`),
-        days: daysArr,
-      };
-    }),
-
-    createdAt: new Date('2025-06-02T00:00:00Z'),
+      },
+      createTechNeckRestDay(2),
+      {
+        day: 3,
+        description: 'Mobility & Awareness',
+        isRestDay: false,
+        duration: 25,
+        exercises: [
+          { exerciseId: 'warmup-8', sets: 2, repetitions: 15, restBetweenSets: 30, warmup: true },
+          { exerciseId: 'shoulders-30', sets: 2, repetitions: 12, restBetweenSets: 45 },
+          { exerciseId: 'warmup-9', sets: 2, repetitions: 10, restBetweenSets: 30 },
+          { exerciseId: 'shoulders-94', sets: 2, repetitions: 10, restBetweenSets: 45 },
+        ],
+      },
+      createTechNeckRestDay(4),
+      {
+        day: 5,
+        description: 'Mobility & Awareness',
+        isRestDay: false,
+        duration: 25,
+        exercises: [
+          { exerciseId: 'warmup-8', sets: 2, repetitions: 15, restBetweenSets: 30, warmup: true },
+          { exerciseId: 'shoulders-30', sets: 2, repetitions: 12, restBetweenSets: 45 },
+          { exerciseId: 'warmup-9', sets: 2, repetitions: 10, restBetweenSets: 30 },
+          { exerciseId: 'shoulders-94', sets: 2, repetitions: 10, restBetweenSets: 45 },
+        ],
+      },
+      createTechNeckRestDay(6),
+      createTechNeckRestDay(7),
+    ],
     targetAreas: ['neck', 'upper traps', 'posture'],
     bodyParts: ['Neck', 'Shoulders', 'Upper Back'],
   },
+
   {
     programOverview:
-      'This 4‑week plantar fasciitis program is designed to relieve heel pain, rebuild arch control, and improve your foot’s ability to absorb impact. You’ll train three days per week with progressive sessions targeting the calves, ankle stability, and plantar tissue load tolerance. On rest days, you’ll perform low-intensity mobility work and foot drills to promote healing without overloading the plantar fascia.',
+      'Week 2 adds low-load strength work for the upper back and rotator cuff to build endurance.',
     timeFrameExplanation:
-      'In Week 1, you’ll focus on light calf activation and gentle stretching to reduce tension through the foot arch. Week 2 introduces eccentric calf loading and toe activation. Week 3 builds on single-leg control and midfoot strength. By Week 4, you’ll increase functional loading so you can walk or jog pain-free and prepare for a return to daily movement or sport.',
+      'Targeted strengthening helps support better posture and reduces strain on the neck.',
     afterTimeFrame: {
       expectedOutcome:
-        'By the end of the plan, you should be able to walk briskly and stand for extended periods without heel pain. You’ll also have stronger foot control and better load distribution when moving.',
+        'Your upper back should feel stronger and neck fatigue should be reduced.',
       nextSteps:
-        'Keep training your calves and toes twice per week, and use arch-strengthening drills regularly. If you’re returning to running or hiking, progress gradually with surface variety and pacing, and avoid sudden increases in mileage.',
+        'Continue to Week 3 for higher volume endurance training.',
     },
     whatNotToDo:
-      'Avoid barefoot walking on hard floors early in the program, and don’t push through sharp or stabbing heel pain. Limit long static stretches of the plantar fascia—loading is better than passive pulling. If pain spikes above 3/10 for over 24 hours, reduce intensity.',
-    program: [1, 2, 3, 4].map((wk) => {
-      const weekIdx = wk - 1;
-      const weekTitles = [
-        'Light Load & Arch Activation',
-        'Eccentric Calf & Toe Control',
-        'Balance & Midfoot Strength',
-        'Function & Return to Impact',
-      ];
-
-      const sessionExercises = (
-        [
-          [
-            { exerciseId: 'warmup-6', duration: 180, warmup: true },
-            {
-              exerciseId: 'calves-6',
-              sets: 3,
-              repetitions: 15,
-              restBetweenSets: 60,
-            },
-            {
-              exerciseId: 'glutes-44',
-              sets: 2,
-              repetitions: 15,
-              restBetweenSets: 45,
-            },
-            // Add: towel curls or toe splay (custom exercise integration placeholder)
-          ],
-          [
-            { exerciseId: 'warmup-6', duration: 180, warmup: true },
-            {
-              exerciseId: 'calves-63',
-              sets: 3,
-              repetitions: 12,
-              restBetweenSets: 60,
-            },
-            {
-              exerciseId: 'calves-6',
-              sets: 2,
-              repetitions: 15,
-              restBetweenSets: 45,
-            },
-            {
-              exerciseId: 'glutes-44',
-              sets: 2,
-              repetitions: 15,
-              restBetweenSets: 45,
-            },
-          ],
-          [
-            { exerciseId: 'warmup-6', duration: 180, warmup: true },
-            {
-              exerciseId: 'calves-12',
-              sets: 3,
-              repetitions: 10,
-              restBetweenSets: 60,
-            },
-            {
-              exerciseId: 'calves-63',
-              sets: 3,
-              repetitions: 12,
-              restBetweenSets: 60,
-            },
-            {
-              exerciseId: 'glutes-44',
-              sets: 2,
-              repetitions: 15,
-              restBetweenSets: 45,
-            },
-          ],
-          [
-            { exerciseId: 'warmup-6', duration: 180, warmup: true },
-            {
-              exerciseId: 'calves-12',
-              sets: 3,
-              repetitions: 12,
-              restBetweenSets: 60,
-            },
-            {
-              exerciseId: 'calves-63',
-              sets: 3,
-              repetitions: 12,
-              restBetweenSets: 60,
-            },
-            {
-              exerciseId: 'glutes-44',
-              sets: 2,
-              repetitions: 15,
-              restBetweenSets: 45,
-            },
-          ],
-        ] as const
-      )[weekIdx];
-
-      const trainingDay = (dayNumber: number) => ({
-        day: dayNumber,
-        description: weekTitles[weekIdx],
+      'Avoid shrug-based or trap-dominant exercises. Don\'t force end-range neck stretches into pain.',
+    createdAt: new Date('2025-05-26T00:00:00Z'),
+    days: [
+      {
+        day: 1,
+        description: 'Scapular Strength & Cuff Activation',
         isRestDay: false,
         duration: 25,
-        exercises: sessionExercises,
-      });
-
-      const createPlantarRestDay = (day: number): any => ({
-        day,
-        isRestDay: true,
-        duration: 12,
-        description:
-          'Rest day. Light ankle mobility and foot circulation work to promote healing without stress.',
         exercises: [
-          {
-            exerciseId: 'warmup-6',
-            duration: 60,
-            warmup: true,
-            modification: 'Jog lightly in place or march slowly for 60 sec.',
-          },
-          {
-            exerciseId: 'calves-6',
-            sets: 1,
-            repetitions: 15,
-            restBetweenSets: 45,
-            modification:
-              'Both legs together, full heel raise and slow return.',
-          },
-          {
-            exerciseId: 'calves-12',
-            sets: 1,
-            repetitions: 8,
-            restBetweenSets: 60,
-            modification: 'Use wall or chair support for balance.',
-          },
+          { exerciseId: 'warmup-8', sets: 2, repetitions: 20, restBetweenSets: 30, warmup: true },
+          { exerciseId: 'shoulders-30', sets: 3, repetitions: 15, restBetweenSets: 45 },
+          { exerciseId: 'upper-back-60', sets: 3, repetitions: 15, restBetweenSets: 60 },
+          { exerciseId: 'shoulders-94', sets: 3, repetitions: 12, restBetweenSets: 45 },
         ],
-      });
+      },
+      createTechNeckRestDay(2),
+      {
+        day: 3,
+        description: 'Scapular Strength & Cuff Activation',
+        isRestDay: false,
+        duration: 25,
+        exercises: [
+          { exerciseId: 'warmup-8', sets: 2, repetitions: 20, restBetweenSets: 30, warmup: true },
+          { exerciseId: 'shoulders-30', sets: 3, repetitions: 15, restBetweenSets: 45 },
+          { exerciseId: 'upper-back-60', sets: 3, repetitions: 15, restBetweenSets: 60 },
+          { exerciseId: 'shoulders-94', sets: 3, repetitions: 12, restBetweenSets: 45 },
+        ],
+      },
+      createTechNeckRestDay(4),
+      {
+        day: 5,
+        description: 'Scapular Strength & Cuff Activation',
+        isRestDay: false,
+        duration: 25,
+        exercises: [
+          { exerciseId: 'warmup-8', sets: 2, repetitions: 20, restBetweenSets: 30, warmup: true },
+          { exerciseId: 'shoulders-30', sets: 3, repetitions: 15, restBetweenSets: 45 },
+          { exerciseId: 'upper-back-60', sets: 3, repetitions: 15, restBetweenSets: 60 },
+          { exerciseId: 'shoulders-94', sets: 3, repetitions: 12, restBetweenSets: 45 },
+        ],
+      },
+      createTechNeckRestDay(6),
+      createTechNeckRestDay(7),
+    ],
+    targetAreas: ['neck', 'upper traps', 'posture'],
+    bodyParts: ['Neck', 'Shoulders', 'Upper Back'],
+  },
 
-      const daysArr = [
-        trainingDay(1),
-        createPlantarRestDay(2),
-        trainingDay(3),
-        createPlantarRestDay(4),
-        trainingDay(5),
-        createPlantarRestDay(6),
-        createPlantarRestDay(7),
-      ];
+  {
+    programOverview:
+      'Week 3 reinforces postural endurance through higher volume and static holds.',
+    timeFrameExplanation:
+      'Increased training volume builds the endurance needed to maintain good posture throughout the day.',
+    afterTimeFrame: {
+      expectedOutcome:
+        'You should hold good posture longer with less effort and fatigue.',
+      nextSteps:
+        'Move to Week 4 to integrate these gains into daily movement patterns.',
+    },
+    whatNotToDo:
+      'Avoid shrug-based or trap-dominant exercises. Don\'t force end-range neck stretches into pain.',
+    createdAt: new Date('2025-05-19T00:00:00Z'),
+    days: [
+      {
+        day: 1,
+        description: 'Postural Endurance & Volume',
+        isRestDay: false,
+        duration: 25,
+        exercises: [
+          { exerciseId: 'warmup-8', sets: 2, repetitions: 20, restBetweenSets: 30, warmup: true },
+          { exerciseId: 'shoulders-78', sets: 3, repetitions: 15, restBetweenSets: 60 },
+          { exerciseId: 'obliques-4', sets: 2, repetitions: 12, restBetweenSets: 60 },
+          { exerciseId: 'upper-back-60', sets: 3, repetitions: 18, restBetweenSets: 60 },
+        ],
+      },
+      createTechNeckRestDay(2),
+      {
+        day: 3,
+        description: 'Postural Endurance & Volume',
+        isRestDay: false,
+        duration: 25,
+        exercises: [
+          { exerciseId: 'warmup-8', sets: 2, repetitions: 20, restBetweenSets: 30, warmup: true },
+          { exerciseId: 'shoulders-78', sets: 3, repetitions: 15, restBetweenSets: 60 },
+          { exerciseId: 'obliques-4', sets: 2, repetitions: 12, restBetweenSets: 60 },
+          { exerciseId: 'upper-back-60', sets: 3, repetitions: 18, restBetweenSets: 60 },
+        ],
+      },
+      createTechNeckRestDay(4),
+      {
+        day: 5,
+        description: 'Postural Endurance & Volume',
+        isRestDay: false,
+        duration: 25,
+        exercises: [
+          { exerciseId: 'warmup-8', sets: 2, repetitions: 20, restBetweenSets: 30, warmup: true },
+          { exerciseId: 'shoulders-78', sets: 3, repetitions: 15, restBetweenSets: 60 },
+          { exerciseId: 'obliques-4', sets: 2, repetitions: 12, restBetweenSets: 60 },
+          { exerciseId: 'upper-back-60', sets: 3, repetitions: 18, restBetweenSets: 60 },
+        ],
+      },
+      createTechNeckRestDay(6),
+      createTechNeckRestDay(7),
+    ],
+    targetAreas: ['neck', 'upper traps', 'posture'],
+    bodyParts: ['Neck', 'Shoulders', 'Upper Back'],
+  },
 
-      return {
-        createdAt: new Date(`2025-06-${2 - weekIdx * 7}T00:00:00Z`),
-        days: daysArr,
-      };
-    }),
+  {
+    programOverview:
+      'Week 4 helps you integrate better alignment into everyday movement and work habits.',
+    timeFrameExplanation:
+      'Focus on building lasting habits and maintaining your postural improvements in daily life.',
+    afterTimeFrame: {
+      expectedOutcome:
+        'You should feel significantly less neck tension with improved posture awareness throughout the day.',
+      nextSteps:
+        'Continue one mobility drill daily and train upper back twice weekly for maintenance.',
+    },
+    whatNotToDo:
+      'Avoid shrug-based or trap-dominant exercises. Don\'t force end-range neck stretches into pain.',
+    createdAt: new Date('2025-05-12T00:00:00Z'),
+    days: [
+      {
+        day: 1,
+        description: 'Integration & Habit Anchoring',
+        isRestDay: false,
+        duration: 25,
+        exercises: [
+          { exerciseId: 'warmup-8', sets: 2, repetitions: 20, restBetweenSets: 30, warmup: true },
+          { exerciseId: 'shoulders-30', sets: 3, repetitions: 15, restBetweenSets: 45 },
+          { exerciseId: 'shoulders-94', sets: 3, repetitions: 12, restBetweenSets: 45 },
+          { exerciseId: 'warmup-9', sets: 2, repetitions: 12, restBetweenSets: 30 },
+        ],
+      },
+      createTechNeckRestDay(2),
+      {
+        day: 3,
+        description: 'Integration & Habit Anchoring',
+        isRestDay: false,
+        duration: 25,
+        exercises: [
+          { exerciseId: 'warmup-8', sets: 2, repetitions: 20, restBetweenSets: 30, warmup: true },
+          { exerciseId: 'shoulders-30', sets: 3, repetitions: 15, restBetweenSets: 45 },
+          { exerciseId: 'shoulders-94', sets: 3, repetitions: 12, restBetweenSets: 45 },
+          { exerciseId: 'warmup-9', sets: 2, repetitions: 12, restBetweenSets: 30 },
+        ],
+      },
+      createTechNeckRestDay(4),
+      {
+        day: 5,
+        description: 'Integration & Habit Anchoring',
+        isRestDay: false,
+        duration: 25,
+        exercises: [
+          { exerciseId: 'warmup-8', sets: 2, repetitions: 20, restBetweenSets: 30, warmup: true },
+          { exerciseId: 'shoulders-30', sets: 3, repetitions: 15, restBetweenSets: 45 },
+          { exerciseId: 'shoulders-94', sets: 3, repetitions: 12, restBetweenSets: 45 },
+          { exerciseId: 'warmup-9', sets: 2, repetitions: 12, restBetweenSets: 30 },
+        ],
+      },
+      createTechNeckRestDay(6),
+      createTechNeckRestDay(7),
+    ],
+    targetAreas: ['neck', 'upper traps', 'posture'],
+    bodyParts: ['Neck', 'Shoulders', 'Upper Back'],
+  },
 
+  // -----------------------------------------------------------------
+  // 7. Plantar Fasciitis
+  // -----------------------------------------------------------------
+  {
+    programOverview:
+      'Week 1 focuses on light calf activation and gentle stretching to reduce tension through the foot arch.',
+    timeFrameExplanation:
+      'Start with gentle exercises to calm inflammation and begin activating supporting muscles.',
+    afterTimeFrame: {
+      expectedOutcome:
+        'Heel pain should start decreasing and morning stiffness should be more manageable.',
+      nextSteps:
+        'If symptoms improve, progress to Week 2 for eccentric calf loading.',
+    },
+    whatNotToDo:
+      'Avoid barefoot walking on hard floors and don\'t push through sharp heel pain.',
     createdAt: new Date('2025-06-02T00:00:00Z'),
+    days: [
+      {
+        day: 1,
+        description: 'Light Load & Arch Activation',
+        isRestDay: false,
+        duration: 25,
+        exercises: [
+          { exerciseId: 'warmup-6', duration: 180, warmup: true },
+          { exerciseId: 'calves-6', sets: 3, repetitions: 15, restBetweenSets: 60 },
+          { exerciseId: 'glutes-44', sets: 2, repetitions: 15, restBetweenSets: 45 },
+        ],
+      },
+      createPlantarRestDay(2),
+      {
+        day: 3,
+        description: 'Light Load & Arch Activation',
+        isRestDay: false,
+        duration: 25,
+        exercises: [
+          { exerciseId: 'warmup-6', duration: 180, warmup: true },
+          { exerciseId: 'calves-6', sets: 3, repetitions: 15, restBetweenSets: 60 },
+          { exerciseId: 'glutes-44', sets: 2, repetitions: 15, restBetweenSets: 45 },
+        ],
+      },
+      createPlantarRestDay(4),
+      {
+        day: 5,
+        description: 'Light Load & Arch Activation',
+        isRestDay: false,
+        duration: 25,
+        exercises: [
+          { exerciseId: 'warmup-6', duration: 180, warmup: true },
+          { exerciseId: 'calves-6', sets: 3, repetitions: 15, restBetweenSets: 60 },
+          { exerciseId: 'glutes-44', sets: 2, repetitions: 15, restBetweenSets: 45 },
+        ],
+      },
+      createPlantarRestDay(6),
+      createPlantarRestDay(7),
+    ],
     targetAreas: ['foot', 'heel', 'arch'],
     bodyParts: ['Foot', 'Calves'],
   },
+
   {
     programOverview:
-      'This 4‑week program helps you safely recover from a mild to moderate hamstring strain and rebuild strength, control, and running tolerance. Each session uses progressive isometric, eccentric, and functional movements tailored for hamstring healing. You’ll train three days per week, with rest days focused on circulation and neural mobility to accelerate tissue repair without risking re-injury.',
+      'Week 2 introduces eccentric calf loading and toe activation to stimulate tissue healing.',
     timeFrameExplanation:
-      'In Week 1, you’ll restore baseline mobility and pain-free isometric contraction. Week 2 adds eccentric loading to support tendon and fascial healing. Week 3 integrates single-leg control and trunk-pelvis coordination. By Week 4, you’ll return to light running and dynamic movement with confidence.',
+      'Controlled loading helps rebuild strength while promoting plantar fascia recovery.',
     afterTimeFrame: {
       expectedOutcome:
-        'You should be able to jog without pain, tolerate hamstring loading during hip hinge and lunge patterns, and perform eccentric hamstring work (e.g. Nordic curls) with good control.',
+        'Walking should feel easier and calf strength should start improving.',
       nextSteps:
-        'You can now increase running intensity, begin sprint drills, or return to dynamic sports. Maintain weekly hamstring strength (especially eccentric-focused) to reduce reinjury risk. Sprint progression and agility work are appropriate if pain-free.',
+        'Continue to Week 3 for single-leg balance and midfoot strengthening.',
     },
     whatNotToDo:
-      'Avoid overstretching, ballistic hamstring drills, and rapid acceleration or sprinting during the first three weeks. If sharp pain occurs mid-exercise, stop and scale back. Pain above 3/10 the next day means the load may be too high.',
-    program: [1, 2, 3, 4].map((wk) => {
-      const weekIdx = wk - 1;
-      const weekTitles = [
-        'Isometric Activation & Mobility',
-        'Introduce Eccentric Loading',
-        'Single-Leg Control & Hinge Strength',
-        'Return to Jog & Light Dynamic Work',
-      ];
+      'Avoid barefoot walking on hard floors and don\'t push through sharp heel pain.',
+    createdAt: new Date('2025-05-26T00:00:00Z'),
+    days: [
+      {
+        day: 1,
+        description: 'Eccentric Calf & Toe Control',
+        isRestDay: false,
+        duration: 25,
+        exercises: [
+          { exerciseId: 'warmup-6', duration: 180, warmup: true },
+          { exerciseId: 'calves-63', sets: 3, repetitions: 12, restBetweenSets: 60 },
+          { exerciseId: 'calves-6', sets: 2, repetitions: 15, restBetweenSets: 45 },
+          { exerciseId: 'glutes-44', sets: 2, repetitions: 15, restBetweenSets: 45 },
+        ],
+      },
+      createPlantarRestDay(2),
+      {
+        day: 3,
+        description: 'Eccentric Calf & Toe Control',
+        isRestDay: false,
+        duration: 25,
+        exercises: [
+          { exerciseId: 'warmup-6', duration: 180, warmup: true },
+          { exerciseId: 'calves-63', sets: 3, repetitions: 12, restBetweenSets: 60 },
+          { exerciseId: 'calves-6', sets: 2, repetitions: 15, restBetweenSets: 45 },
+          { exerciseId: 'glutes-44', sets: 2, repetitions: 15, restBetweenSets: 45 },
+        ],
+      },
+      createPlantarRestDay(4),
+      {
+        day: 5,
+        description: 'Eccentric Calf & Toe Control',
+        isRestDay: false,
+        duration: 25,
+        exercises: [
+          { exerciseId: 'warmup-6', duration: 180, warmup: true },
+          { exerciseId: 'calves-63', sets: 3, repetitions: 12, restBetweenSets: 60 },
+          { exerciseId: 'calves-6', sets: 2, repetitions: 15, restBetweenSets: 45 },
+          { exerciseId: 'glutes-44', sets: 2, repetitions: 15, restBetweenSets: 45 },
+        ],
+      },
+      createPlantarRestDay(6),
+      createPlantarRestDay(7),
+    ],
+    targetAreas: ['foot', 'heel', 'arch'],
+    bodyParts: ['Foot', 'Calves'],
+  },
 
-      const sessionExercises = (
-        [
-          [
-            { exerciseId: 'warmup-6', duration: 180, warmup: true },
-            {
-              exerciseId: 'glutes-7',
-              sets: 3,
-              repetitions: 15,
-              restBetweenSets: 60,
-            },
-            {
-              exerciseId: 'hamstrings-48',
-              sets: 3,
-              repetitions: 8,
-              restBetweenSets: 60,
-            },
-            {
-              exerciseId: 'glutes-1',
-              sets: 2,
-              repetitions: 12,
-              restBetweenSets: 60,
-            },
-          ],
-          [
-            { exerciseId: 'warmup-6', duration: 180, warmup: true },
-            {
-              exerciseId: 'hamstrings-34',
-              sets: 3,
-              repetitions: 10,
-              restBetweenSets: 60,
-            },
-            {
-              exerciseId: 'glutes-7',
-              sets: 3,
-              repetitions: 15,
-              restBetweenSets: 60,
-            },
-            {
-              exerciseId: 'hamstrings-20',
-              sets: 2,
-              repetitions: 5,
-              restBetweenSets: 90,
-            },
-          ],
-          [
-            { exerciseId: 'warmup-6', duration: 180, warmup: true },
-            {
-              exerciseId: 'hamstrings-48',
-              sets: 3,
-              repetitions: 10,
-              restBetweenSets: 60,
-            },
-            {
-              exerciseId: 'glutes-46',
-              sets: 3,
-              repetitions: 8,
-              restBetweenSets: 60,
-            },
-            {
-              exerciseId: 'hamstrings-20',
-              sets: 2,
-              repetitions: 6,
-              restBetweenSets: 90,
-            },
-          ],
-          [
-            { exerciseId: 'cardio-1', duration: 600, warmup: true }, // 10 min jog
-            {
-              exerciseId: 'hamstrings-48',
-              sets: 3,
-              repetitions: 12,
-              restBetweenSets: 60,
-            },
-            {
-              exerciseId: 'glutes-46',
-              sets: 3,
-              repetitions: 10,
-              restBetweenSets: 60,
-            },
-            {
-              exerciseId: 'hamstrings-20',
-              sets: 2,
-              repetitions: 8,
-              restBetweenSets: 90,
-            },
-          ],
-        ] as const
-      )[weekIdx];
+  {
+    programOverview:
+      'Week 3 builds single-leg control and midfoot strength to improve stability.',
+    timeFrameExplanation:
+      'Single-leg work challenges the foot and ankle to prepare for dynamic activities.',
+    afterTimeFrame: {
+      expectedOutcome:
+        'Balance should improve and you should feel more stable when walking on uneven surfaces.',
+      nextSteps:
+        'Progress to Week 4 to increase functional loading and prepare for impact activities.',
+    },
+    whatNotToDo:
+      'Avoid barefoot walking on hard floors and don\'t push through sharp heel pain.',
+    createdAt: new Date('2025-05-19T00:00:00Z'),
+    days: [
+      {
+        day: 1,
+        description: 'Balance & Midfoot Strength',
+        isRestDay: false,
+        duration: 25,
+        exercises: [
+          { exerciseId: 'warmup-6', duration: 180, warmup: true },
+          { exerciseId: 'calves-12', sets: 3, repetitions: 10, restBetweenSets: 60 },
+          { exerciseId: 'calves-63', sets: 3, repetitions: 12, restBetweenSets: 60 },
+          { exerciseId: 'glutes-44', sets: 2, repetitions: 15, restBetweenSets: 45 },
+        ],
+      },
+      createPlantarRestDay(2),
+      {
+        day: 3,
+        description: 'Balance & Midfoot Strength',
+        isRestDay: false,
+        duration: 25,
+        exercises: [
+          { exerciseId: 'warmup-6', duration: 180, warmup: true },
+          { exerciseId: 'calves-12', sets: 3, repetitions: 10, restBetweenSets: 60 },
+          { exerciseId: 'calves-63', sets: 3, repetitions: 12, restBetweenSets: 60 },
+          { exerciseId: 'glutes-44', sets: 2, repetitions: 15, restBetweenSets: 45 },
+        ],
+      },
+      createPlantarRestDay(4),
+      {
+        day: 5,
+        description: 'Balance & Midfoot Strength',
+        isRestDay: false,
+        duration: 25,
+        exercises: [
+          { exerciseId: 'warmup-6', duration: 180, warmup: true },
+          { exerciseId: 'calves-12', sets: 3, repetitions: 10, restBetweenSets: 60 },
+          { exerciseId: 'calves-63', sets: 3, repetitions: 12, restBetweenSets: 60 },
+          { exerciseId: 'glutes-44', sets: 2, repetitions: 15, restBetweenSets: 45 },
+        ],
+      },
+      createPlantarRestDay(6),
+      createPlantarRestDay(7),
+    ],
+    targetAreas: ['foot', 'heel', 'arch'],
+    bodyParts: ['Foot', 'Calves'],
+  },
 
-      const trainingDay = (dayNumber: number) => ({
-        day: dayNumber,
-        description: weekTitles[weekIdx],
+  {
+    programOverview:
+      'Week 4 increases functional loading so you can walk or jog pain-free and return to impact activities.',
+    timeFrameExplanation:
+      'Progressive loading prepares your foot for the demands of daily movement and sport.',
+    afterTimeFrame: {
+      expectedOutcome:
+        'You should be able to walk briskly and stand for extended periods without heel pain.',
+      nextSteps:
+        'Keep training calves twice weekly and progress gradually to running or hiking.',
+    },
+    whatNotToDo:
+      'Avoid barefoot walking on hard floors and don\'t push through sharp heel pain.',
+    createdAt: new Date('2025-05-12T00:00:00Z'),
+    days: [
+      {
+        day: 1,
+        description: 'Function & Return to Impact',
+        isRestDay: false,
+        duration: 25,
+        exercises: [
+          { exerciseId: 'warmup-6', duration: 180, warmup: true },
+          { exerciseId: 'calves-12', sets: 3, repetitions: 12, restBetweenSets: 60 },
+          { exerciseId: 'calves-63', sets: 3, repetitions: 12, restBetweenSets: 60 },
+          { exerciseId: 'glutes-44', sets: 2, repetitions: 15, restBetweenSets: 45 },
+        ],
+      },
+      createPlantarRestDay(2),
+      {
+        day: 3,
+        description: 'Function & Return to Impact',
+        isRestDay: false,
+        duration: 25,
+        exercises: [
+          { exerciseId: 'warmup-6', duration: 180, warmup: true },
+          { exerciseId: 'calves-12', sets: 3, repetitions: 12, restBetweenSets: 60 },
+          { exerciseId: 'calves-63', sets: 3, repetitions: 12, restBetweenSets: 60 },
+          { exerciseId: 'glutes-44', sets: 2, repetitions: 15, restBetweenSets: 45 },
+        ],
+      },
+      createPlantarRestDay(4),
+      {
+        day: 5,
+        description: 'Function & Return to Impact',
+        isRestDay: false,
+        duration: 25,
+        exercises: [
+          { exerciseId: 'warmup-6', duration: 180, warmup: true },
+          { exerciseId: 'calves-12', sets: 3, repetitions: 12, restBetweenSets: 60 },
+          { exerciseId: 'calves-63', sets: 3, repetitions: 12, restBetweenSets: 60 },
+          { exerciseId: 'glutes-44', sets: 2, repetitions: 15, restBetweenSets: 45 },
+        ],
+      },
+      createPlantarRestDay(6),
+      createPlantarRestDay(7),
+    ],
+    targetAreas: ['foot', 'heel', 'arch'],
+    bodyParts: ['Foot', 'Calves'],
+  },
+  // -----------------------------------------------------------------
+  // 8. Hamstring Strain
+  // -----------------------------------------------------------------
+  {
+    programOverview:
+      'Week 1 focuses on restoring baseline mobility and pain-free isometric hamstring contraction.',
+    timeFrameExplanation:
+      'Start with gentle movements to reduce inflammation and begin activating hamstring muscles safely.',
+    afterTimeFrame: {
+      expectedOutcome:
+        'Hamstring tightness should decrease and walking should feel more comfortable.',
+      nextSteps:
+        'If pain stays manageable, progress to Week 2 for eccentric loading.',
+    },
+    whatNotToDo:
+      'Avoid overstretching and ballistic movements. Stop if sharp pain occurs.',
+    createdAt: new Date('2025-06-02T00:00:00Z'),
+    days: [
+      {
+        day: 1,
+        description: 'Isometric Activation & Mobility',
         isRestDay: false,
         duration: 30,
-        exercises: sessionExercises,
-      });
-
-      const createHamstringRestDay = (day: number): any => ({
-        day,
-        isRestDay: true,
-        duration: 15,
-        description:
-          'Rest day. Gentle mobility and circulation work for healing and neural gliding.',
         exercises: [
-          {
-            exerciseId: 'warmup-6',
-            duration: 90,
-            warmup: true,
-            modification: 'March in place or jog lightly with relaxed form.',
-          },
-          {
-            exerciseId: 'glutes-7',
-            sets: 1,
-            repetitions: 15,
-            restBetweenSets: 45,
-            modification: 'Bodyweight bridge; pause at top for 1 second.',
-          },
-          {
-            exerciseId: 'hamstrings-48',
-            sets: 1,
-            repetitions: 8,
-            restBetweenSets: 45,
-            modification: 'Use no added weight. Control the descent.',
-          },
+          { exerciseId: 'warmup-6', duration: 180, warmup: true },
+          { exerciseId: 'glutes-7', sets: 3, repetitions: 15, restBetweenSets: 60 },
+          { exerciseId: 'hamstrings-48', sets: 3, repetitions: 8, restBetweenSets: 60 },
+          { exerciseId: 'glutes-1', sets: 2, repetitions: 12, restBetweenSets: 60 },
         ],
-      });
-
-      const daysArr = [
-        trainingDay(1),
-        createHamstringRestDay(2),
-        trainingDay(3),
-        createHamstringRestDay(4),
-        trainingDay(5),
-        createHamstringRestDay(6),
-        createHamstringRestDay(7),
-      ];
-
-      return {
-        createdAt: new Date(`2025-06-${2 - weekIdx * 7}T00:00:00Z`),
-        days: daysArr,
-      };
-    }),
-
-    createdAt: new Date('2025-06-02T00:00:00Z'),
+      },
+      createHamstringRestDay(2),
+      {
+        day: 3,
+        description: 'Isometric Activation & Mobility',
+        isRestDay: false,
+        duration: 30,
+        exercises: [
+          { exerciseId: 'warmup-6', duration: 180, warmup: true },
+          { exerciseId: 'glutes-7', sets: 3, repetitions: 15, restBetweenSets: 60 },
+          { exerciseId: 'hamstrings-48', sets: 3, repetitions: 8, restBetweenSets: 60 },
+          { exerciseId: 'glutes-1', sets: 2, repetitions: 12, restBetweenSets: 60 },
+        ],
+      },
+      createHamstringRestDay(4),
+      {
+        day: 5,
+        description: 'Isometric Activation & Mobility',
+        isRestDay: false,
+        duration: 30,
+        exercises: [
+          { exerciseId: 'warmup-6', duration: 180, warmup: true },
+          { exerciseId: 'glutes-7', sets: 3, repetitions: 15, restBetweenSets: 60 },
+          { exerciseId: 'hamstrings-48', sets: 3, repetitions: 8, restBetweenSets: 60 },
+          { exerciseId: 'glutes-1', sets: 2, repetitions: 12, restBetweenSets: 60 },
+        ],
+      },
+      createHamstringRestDay(6),
+      createHamstringRestDay(7),
+    ],
     targetAreas: ['hamstring'],
     bodyParts: ['Hamstring', 'Glutes'],
   },
+
   {
     programOverview:
-      'This 4‑week program helps you correct poor posture, reduce rounded shoulders, and build a stronger upper back and core. You’ll train three times per week with targeted exercises to open the chest, activate scapular stabilizers, and reinforce spinal alignment. On rest days, you’ll focus on mobility and low-load control to keep your posture improving without overtraining.',
-
-
+      'Week 2 introduces eccentric loading to support tendon and fascial healing.',
     timeFrameExplanation:
-      'In Week 1, you’ll work on posture awareness and mobility of the thoracic spine and shoulders. Week 2 introduces controlled pulling and shoulder blade activation. Week 3 adds time-under-tension and stability work for endurance. Week 4 integrates core and full-body posture control, helping you sit, stand, and move upright with less effort.',
-
+      'Controlled eccentric movements help rebuild hamstring strength while promoting tissue repair.',
     afterTimeFrame: {
       expectedOutcome:
-        'You should notice visibly better posture, reduced shoulder fatigue or tightness, and more control during sitting, walking, or standing. You’ll feel more open through your chest and stronger in your upper back.',
+        'Hamstring strength should start improving and daily activities should feel easier.',
       nextSteps:
-        'To maintain your progress, keep training your upper back twice per week and do short mobility drills daily. Add resistance (bands, cables, dumbbells) to continue strengthening your scapular and thoracic support systems.',
+        'Continue to Week 3 for single-leg control and hip hinge strengthening.',
     },
-
     whatNotToDo:
-      'Avoid heavy pressing, prolonged slouching, or overhead work that causes fatigue before Week 3. If you feel numbness, pinching, or neck pain, stop and regress to lighter scapular drills.',
-
-    program: [1, 2, 3, 4].map((wk) => {
-      const weekIdx = wk - 1;
-      const weekTitles = [
-        'Posture Awareness & Mobility',
-        'Scapular Control & Pull Strength',
-        'Endurance & Time Under Tension',
-        'Core-Integrated Posture Training',
-      ];
-
-      const sessionExercises = (
-        [
-          [
-            {
-              exerciseId: 'warmup-9',
-              sets: 2,
-              repetitions: 10,
-              restBetweenSets: 30,
-              warmup: true,
-            },
-            {
-              exerciseId: 'warmup-8',
-              sets: 2,
-              repetitions: 15,
-              restBetweenSets: 30,
-              warmup: true,
-            },
-            {
-              exerciseId: 'shoulders-30',
-              sets: 2,
-              repetitions: 12,
-              restBetweenSets: 45,
-            },
-            {
-              exerciseId: 'upper-back-60',
-              sets: 2,
-              repetitions: 15,
-              restBetweenSets: 60,
-            },
-          ],
-          [
-            {
-              exerciseId: 'warmup-8',
-              sets: 2,
-              repetitions: 15,
-              restBetweenSets: 30,
-              warmup: true,
-            },
-            {
-              exerciseId: 'shoulders-94',
-              sets: 3,
-              repetitions: 12,
-              restBetweenSets: 60,
-            },
-            {
-              exerciseId: 'upper-back-3',
-              sets: 3,
-              repetitions: 10,
-              restBetweenSets: 60,
-            },
-            {
-              exerciseId: 'obliques-4',
-              sets: 2,
-              repetitions: 10,
-              restBetweenSets: 60,
-            },
-          ],
-          [
-            {
-              exerciseId: 'shoulders-78',
-              sets: 3,
-              repetitions: 15,
-              restBetweenSets: 60,
-            },
-            {
-              exerciseId: 'upper-back-8',
-              sets: 3,
-              repetitions: 10,
-              restBetweenSets: 60,
-            },
-            {
-              exerciseId: 'obliques-14',
-              sets: 2,
-              repetitions: 10,
-              restBetweenSets: 60,
-            },
-          ],
-          [
-            {
-              exerciseId: 'shoulders-30',
-              sets: 3,
-              repetitions: 15,
-              restBetweenSets: 60,
-            },
-            {
-              exerciseId: 'upper-back-60',
-              sets: 3,
-              repetitions: 15,
-              restBetweenSets: 60,
-            },
-            {
-              exerciseId: 'obliques-4',
-              sets: 2,
-              repetitions: 12,
-              restBetweenSets: 60,
-            },
-          ],
-        ] as const
-      )[weekIdx];
-
-      const trainingDay = (dayNumber: number) => ({
-        day: dayNumber,
-        description: weekTitles[weekIdx],
+      'Avoid overstretching and ballistic movements. Stop if sharp pain occurs.',
+    createdAt: new Date('2025-05-26T00:00:00Z'),
+    days: [
+      {
+        day: 1,
+        description: 'Introduce Eccentric Loading',
         isRestDay: false,
         duration: 30,
-        exercises: sessionExercises,
-      });
-
-      const createPostureRestDay = (day: number): any => ({
-        day,
-        isRestDay: true,
-        duration: 15,
-        description:
-          'Rest day. Gentle thoracic mobility and postural activation to maintain upright awareness.',
         exercises: [
-          {
-            exerciseId: 'warmup-8',
-            sets: 1,
-            repetitions: 20,
-            restBetweenSets: 30,
-            modification: 'Slow, smooth shoulder circles. Pause at the back.',
-            warmup: true,
-          },
-          {
-            exerciseId: 'shoulders-30',
-            sets: 1,
-            repetitions: 15,
-            restBetweenSets: 45,
-            modification: 'Light tension band. Focus on posture and breath.',
-          },
-          {
-            exerciseId: 'warmup-9',
-            sets: 1,
-            repetitions: 12,
-            restBetweenSets: 30,
-            modification: 'Rotate only to a comfortable range. Don’t force it.',
-          },
+          { exerciseId: 'warmup-6', duration: 180, warmup: true },
+          { exerciseId: 'hamstrings-34', sets: 3, repetitions: 10, restBetweenSets: 60 },
+          { exerciseId: 'glutes-7', sets: 3, repetitions: 15, restBetweenSets: 60 },
+          { exerciseId: 'hamstrings-20', sets: 2, repetitions: 5, restBetweenSets: 90 },
         ],
-      });
+      },
+      createHamstringRestDay(2),
+      {
+        day: 3,
+        description: 'Introduce Eccentric Loading',
+        isRestDay: false,
+        duration: 30,
+        exercises: [
+          { exerciseId: 'warmup-6', duration: 180, warmup: true },
+          { exerciseId: 'hamstrings-34', sets: 3, repetitions: 10, restBetweenSets: 60 },
+          { exerciseId: 'glutes-7', sets: 3, repetitions: 15, restBetweenSets: 60 },
+          { exerciseId: 'hamstrings-20', sets: 2, repetitions: 5, restBetweenSets: 90 },
+        ],
+      },
+      createHamstringRestDay(4),
+      {
+        day: 5,
+        description: 'Introduce Eccentric Loading',
+        isRestDay: false,
+        duration: 30,
+        exercises: [
+          { exerciseId: 'warmup-6', duration: 180, warmup: true },
+          { exerciseId: 'hamstrings-34', sets: 3, repetitions: 10, restBetweenSets: 60 },
+          { exerciseId: 'glutes-7', sets: 3, repetitions: 15, restBetweenSets: 60 },
+          { exerciseId: 'hamstrings-20', sets: 2, repetitions: 5, restBetweenSets: 90 },
+        ],
+      },
+      createHamstringRestDay(6),
+      createHamstringRestDay(7),
+    ],
+    targetAreas: ['hamstring'],
+    bodyParts: ['Hamstring', 'Glutes'],
+  },
 
-      const daysArr = [
-        trainingDay(1),
-        createPostureRestDay(2),
-        trainingDay(3),
-        createPostureRestDay(4),
-        trainingDay(5),
-        createPostureRestDay(6),
-        createPostureRestDay(7),
-      ];
+  {
+    programOverview:
+      'Week 3 integrates single-leg control and trunk-pelvis coordination for functional movement.',
+    timeFrameExplanation:
+      'Single-leg exercises challenge stability and prepare you for dynamic activities.',
+    afterTimeFrame: {
+      expectedOutcome:
+        'Single-leg movements should feel more controlled and hamstring loading should be comfortable.',
+      nextSteps:
+        'Progress to Week 4 to begin light running and dynamic movement patterns.',
+    },
+    whatNotToDo:
+      'Avoid overstretching and ballistic movements. Stop if sharp pain occurs.',
+    createdAt: new Date('2025-05-19T00:00:00Z'),
+    days: [
+      {
+        day: 1,
+        description: 'Single-Leg Control & Hinge Strength',
+        isRestDay: false,
+        duration: 30,
+        exercises: [
+          { exerciseId: 'warmup-6', duration: 180, warmup: true },
+          { exerciseId: 'hamstrings-48', sets: 3, repetitions: 10, restBetweenSets: 60 },
+          { exerciseId: 'glutes-46', sets: 3, repetitions: 8, restBetweenSets: 60 },
+          { exerciseId: 'hamstrings-20', sets: 2, repetitions: 6, restBetweenSets: 90 },
+        ],
+      },
+      createHamstringRestDay(2),
+      {
+        day: 3,
+        description: 'Single-Leg Control & Hinge Strength',
+        isRestDay: false,
+        duration: 30,
+        exercises: [
+          { exerciseId: 'warmup-6', duration: 180, warmup: true },
+          { exerciseId: 'hamstrings-48', sets: 3, repetitions: 10, restBetweenSets: 60 },
+          { exerciseId: 'glutes-46', sets: 3, repetitions: 8, restBetweenSets: 60 },
+          { exerciseId: 'hamstrings-20', sets: 2, repetitions: 6, restBetweenSets: 90 },
+        ],
+      },
+      createHamstringRestDay(4),
+      {
+        day: 5,
+        description: 'Single-Leg Control & Hinge Strength',
+        isRestDay: false,
+        duration: 30,
+        exercises: [
+          { exerciseId: 'warmup-6', duration: 180, warmup: true },
+          { exerciseId: 'hamstrings-48', sets: 3, repetitions: 10, restBetweenSets: 60 },
+          { exerciseId: 'glutes-46', sets: 3, repetitions: 8, restBetweenSets: 60 },
+          { exerciseId: 'hamstrings-20', sets: 2, repetitions: 6, restBetweenSets: 90 },
+        ],
+      },
+      createHamstringRestDay(6),
+      createHamstringRestDay(7),
+    ],
+    targetAreas: ['hamstring'],
+    bodyParts: ['Hamstring', 'Glutes'],
+  },
 
-      return {
-        createdAt: new Date(`2025-06-${2 - weekIdx * 7}T00:00:00Z`),
-        days: daysArr,
-      };
-    }),
-
+  {
+    programOverview:
+      'Week 4 returns you to light running and dynamic movement with confidence.',
+    timeFrameExplanation:
+      'Progressive jogging and dynamic exercises prepare you for full return to sport and activity.',
+    afterTimeFrame: {
+      expectedOutcome:
+        'You should jog pain-free and tolerate hamstring loading during hip hinge patterns.',
+      nextSteps:
+        'Begin progressive running intensity and maintain weekly hamstring strengthening.',
+    },
+    whatNotToDo:
+      'Avoid overstretching and ballistic movements. Stop if sharp pain occurs.',
+    createdAt: new Date('2025-05-12T00:00:00Z'),
+    days: [
+      {
+        day: 1,
+        description: 'Return to Jog & Light Dynamic Work',
+        isRestDay: false,
+        duration: 30,
+        exercises: [
+          { exerciseId: 'cardio-1', duration: 600, warmup: true },
+          { exerciseId: 'hamstrings-48', sets: 3, repetitions: 12, restBetweenSets: 60 },
+          { exerciseId: 'glutes-46', sets: 3, repetitions: 10, restBetweenSets: 60 },
+          { exerciseId: 'hamstrings-20', sets: 2, repetitions: 8, restBetweenSets: 90 },
+        ],
+      },
+      createHamstringRestDay(2),
+      {
+        day: 3,
+        description: 'Return to Jog & Light Dynamic Work',
+        isRestDay: false,
+        duration: 30,
+        exercises: [
+          { exerciseId: 'cardio-1', duration: 600, warmup: true },
+          { exerciseId: 'hamstrings-48', sets: 3, repetitions: 12, restBetweenSets: 60 },
+          { exerciseId: 'glutes-46', sets: 3, repetitions: 10, restBetweenSets: 60 },
+          { exerciseId: 'hamstrings-20', sets: 2, repetitions: 8, restBetweenSets: 90 },
+        ],
+      },
+      createHamstringRestDay(4),
+      {
+        day: 5,
+        description: 'Return to Jog & Light Dynamic Work',
+        isRestDay: false,
+        duration: 30,
+        exercises: [
+          { exerciseId: 'cardio-1', duration: 600, warmup: true },
+          { exerciseId: 'hamstrings-48', sets: 3, repetitions: 12, restBetweenSets: 60 },
+          { exerciseId: 'glutes-46', sets: 3, repetitions: 10, restBetweenSets: 60 },
+          { exerciseId: 'hamstrings-20', sets: 2, repetitions: 8, restBetweenSets: 90 },
+        ],
+      },
+      createHamstringRestDay(6),
+      createHamstringRestDay(7),
+    ],
+    targetAreas: ['hamstring'],
+    bodyParts: ['Hamstring', 'Glutes'],
+  },
+  // -----------------------------------------------------------------
+  // 9. Upper Back & Core Reset (Posture) 
+  // -----------------------------------------------------------------
+  {
+    programOverview:
+      "This comprehensive 4‑week upper back and core reset program systematically addresses postural dysfunction through thoracic mobility restoration, posterior chain strengthening, and core stabilization. You'll begin with gentle spinal mobility and postural awareness exercises to counteract chronic forward positioning and rounded shoulders, advance through targeted pulling movements and scapular activation to rebuild upper back strength, then progress to integrated core and postural endurance training that maintains proper alignment during daily activities. The final week emphasizes habit formation and long-term postural strategies to ensure lasting improvements. Each 30-minute session targets the specific muscle imbalances caused by prolonged sitting and computer work while building the strength and awareness needed for optimal posture.",
+    timeFrameExplanation:
+      'Week 1 establishes thoracic spine mobility and basic postural awareness through gentle extension exercises, shoulder blade activation, and breathing pattern correction to counteract forward head and rounded shoulder positioning. Week 2 introduces targeted pulling movements and posterior chain strengthening to rebuild the muscles that support proper spinal alignment. Week 3 progresses to integrated core and upper back endurance training that maintains postural improvements during prolonged activities and daily demands. Week 4 focuses on advanced postural control, habit integration, and workplace optimization to ensure lasting improvements in spinal health and function.',
+    afterTimeFrame: {
+      expectedOutcome:
+        "You'll experience substantial reduction in upper back pain and tension during prolonged sitting (targeting 0-1/10 during 8-hour work days), dramatically improved thoracic spine mobility and shoulder blade control, and enhanced core endurance for maintaining proper posture throughout long activities. Your posterior chain will be significantly strengthened, breathing patterns will be optimized, and you'll have mastered workplace ergonomics and movement habits that prevent postural decline. Most importantly, you'll have developed automatic postural correction reflexes and understand how to maintain spinal health in modern sedentary environments.",
+      nextSteps:
+        'Continue the Week 4 postural strengthening routine daily as your permanent maintenance program, focusing on morning activation and evening tension release. Implement regular movement breaks every 30-45 minutes during prolonged sitting with specific thoracic and shoulder exercises. Maintain optimal workspace ergonomics and continue weekly posterior chain strengthening to counteract daily postural stresses. Consider monthly postural assessments and advanced exercises as your strength and awareness improve.',
+    },
+    whatNotToDo:
+      "Never ignore severe upper back pain with radiating symptoms into the arms or persistent headaches—this may indicate nerve impingement or cervical dysfunction requiring medical evaluation. Avoid returning to prolonged slouching positions or neglecting the movement breaks that are essential for maintaining improvements. Don't skip the core strengthening components as they provide the foundation for all postural improvements. Resist using back supports long-term as they can promote muscle weakness, and avoid heavy lifting without proper spinal mechanics during the initial weeks. Most critically, don't ignore the lifestyle factors like workspace setup, stress management, and sleep position that contribute to postural dysfunction.",
     createdAt: new Date('2025-06-02T00:00:00Z'),
+    days: [
+      {
+        day: 1,
+        description: 'Posture Awareness & Mobility',
+        isRestDay: false,
+        duration: 30,
+        exercises: [
+          { exerciseId: 'warmup-9', sets: 2, repetitions: 10, restBetweenSets: 30, warmup: true },
+          { exerciseId: 'warmup-8', sets: 2, repetitions: 15, restBetweenSets: 30, warmup: true },
+          { exerciseId: 'shoulders-30', sets: 2, repetitions: 12, restBetweenSets: 45 },
+          { exerciseId: 'upper-back-60', sets: 2, repetitions: 15, restBetweenSets: 60 },
+        ],
+      },
+      createPostureRestDay(2),
+      {
+        day: 3,
+        description: 'Posture Awareness & Mobility',
+        isRestDay: false,
+        duration: 30,
+        exercises: [
+          { exerciseId: 'warmup-9', sets: 2, repetitions: 10, restBetweenSets: 30, warmup: true },
+          { exerciseId: 'warmup-8', sets: 2, repetitions: 15, restBetweenSets: 30, warmup: true },
+          { exerciseId: 'shoulders-30', sets: 2, repetitions: 12, restBetweenSets: 45 },
+          { exerciseId: 'upper-back-60', sets: 2, repetitions: 15, restBetweenSets: 60 },
+        ],
+      },
+      createPostureRestDay(4),
+      {
+        day: 5,
+        description: 'Posture Awareness & Mobility',
+        isRestDay: false,
+        duration: 30,
+        exercises: [
+          { exerciseId: 'warmup-9', sets: 2, repetitions: 10, restBetweenSets: 30, warmup: true },
+          { exerciseId: 'warmup-8', sets: 2, repetitions: 15, restBetweenSets: 30, warmup: true },
+          { exerciseId: 'shoulders-30', sets: 2, repetitions: 12, restBetweenSets: 45 },
+          { exerciseId: 'upper-back-60', sets: 2, repetitions: 15, restBetweenSets: 60 },
+        ],
+      },
+      createPostureRestDay(6),
+      createPostureRestDay(7),
+    ],
     targetAreas: ['posture', 'upper back', 'core'],
     bodyParts: ['Upper Back', 'Shoulders', 'Core'],
   },
+
   {
     programOverview:
-      'This 4‑week beginner core program helps you activate and strengthen the deep muscles that stabilize your spine and pelvis. It’s ideal if you’ve had back pain, feel unstable during exercise, or want to build a strong foundation before lifting heavier. You’ll train three times per week using low-impact, bodyweight-based exercises. Rest days include light movement to promote recovery and reinforce motor control.',
-
-
+      'Week 2 introduces controlled pulling and shoulder blade activation.',
     timeFrameExplanation:
-      'In Week 1, you’ll focus on reactivating your deep core muscles and practicing control in simple positions. Week 2 adds time under tension and limb coordination. In Week 3, you’ll incorporate balance, anti-rotation, and lateral core engagement. Week 4 transitions to longer holds and multi-planar control to prepare you for more advanced training.',
-
+      'Build scapular control and strengthen the muscles that support good posture.',
     afterTimeFrame: {
       expectedOutcome:
-        'You should feel more stable and supported in your core, with better posture, easier balance, and improved control during daily movements. If you’ve had back pain, your baseline tolerance should also improve.',
+        'Better shoulder blade control and reduced upper back tension.',
       nextSteps:
-        'You can move into progressive resistance training, Pilates, or heavier compound lifts. Keep at least 1–2 core sessions per week for maintenance, especially if you sit for long periods or train regularly.',
+        'Continue to Week 3 for endurance and time-under-tension training.',
     },
-
     whatNotToDo:
-      'Avoid high-rep sit-ups, weighted spinal flexion, or long planks with poor form. If you feel pain in your back, hips, or neck during an exercise, stop and regress. Focus on control over intensity.',
+      'Avoid heavy pressing and prolonged slouching during the early stages.',
+    createdAt: new Date('2025-05-26T00:00:00Z'),
+    days: [
+      {
+        day: 1,
+        description: 'Scapular Control & Pull Strength',
+        isRestDay: false,
+        duration: 30,
+        exercises: [
+          { exerciseId: 'warmup-8', sets: 2, repetitions: 15, restBetweenSets: 30, warmup: true },
+          { exerciseId: 'shoulders-94', sets: 3, repetitions: 12, restBetweenSets: 60 },
+          { exerciseId: 'upper-back-3', sets: 3, repetitions: 10, restBetweenSets: 60 },
+          { exerciseId: 'obliques-4', sets: 2, repetitions: 10, restBetweenSets: 60 },
+        ],
+      },
+      createPostureRestDay(2),
+      {
+        day: 3,
+        description: 'Scapular Control & Pull Strength',
+        isRestDay: false,
+        duration: 30,
+        exercises: [
+          { exerciseId: 'warmup-8', sets: 2, repetitions: 15, restBetweenSets: 30, warmup: true },
+          { exerciseId: 'shoulders-94', sets: 3, repetitions: 12, restBetweenSets: 60 },
+          { exerciseId: 'upper-back-3', sets: 3, repetitions: 10, restBetweenSets: 60 },
+          { exerciseId: 'obliques-4', sets: 2, repetitions: 10, restBetweenSets: 60 },
+        ],
+      },
+      createPostureRestDay(4),
+      {
+        day: 5,
+        description: 'Scapular Control & Pull Strength',
+        isRestDay: false,
+        duration: 30,
+        exercises: [
+          { exerciseId: 'warmup-8', sets: 2, repetitions: 15, restBetweenSets: 30, warmup: true },
+          { exerciseId: 'shoulders-94', sets: 3, repetitions: 12, restBetweenSets: 60 },
+          { exerciseId: 'upper-back-3', sets: 3, repetitions: 10, restBetweenSets: 60 },
+          { exerciseId: 'obliques-4', sets: 2, repetitions: 10, restBetweenSets: 60 },
+        ],
+      },
+      createPostureRestDay(6),
+      createPostureRestDay(7),
+    ],
+    targetAreas: ['posture', 'upper back', 'core'],
+    bodyParts: ['Upper Back', 'Shoulders', 'Core'],
+  },
 
-    program: [1, 2, 3, 4].map((wk) => {
-      const weekIdx = wk - 1;
-      const weekTitles = [
-        'Activation & Control',
-        'Time Under Tension & Movement',
-        'Stability & Balance Challenges',
-        'Multi-Planar Core Integration',
-      ];
+  {
+    programOverview:
+      'Week 3 adds time-under-tension and stability work for endurance.',
+    timeFrameExplanation:
+      'Challenge your postural muscles with longer holds and stability exercises.',
+    afterTimeFrame: {
+      expectedOutcome:
+        'Improved postural endurance and strength for maintaining good alignment.',
+      nextSteps:
+        'Progress to Week 4 for core-integrated posture training.',
+    },
+    whatNotToDo:
+      'Avoid heavy pressing and prolonged slouching during the early stages.',
+    createdAt: new Date('2025-05-19T00:00:00Z'),
+    days: [
+      {
+        day: 1,
+        description: 'Endurance & Time Under Tension',
+        isRestDay: false,
+        duration: 30,
+        exercises: [
+          { exerciseId: 'shoulders-78', sets: 3, repetitions: 15, restBetweenSets: 60 },
+          { exerciseId: 'upper-back-8', sets: 3, repetitions: 10, restBetweenSets: 60 },
+          { exerciseId: 'obliques-14', sets: 2, repetitions: 10, restBetweenSets: 60 },
+        ],
+      },
+      createPostureRestDay(2),
+      {
+        day: 3,
+        description: 'Endurance & Time Under Tension',
+        isRestDay: false,
+        duration: 30,
+        exercises: [
+          { exerciseId: 'shoulders-78', sets: 3, repetitions: 15, restBetweenSets: 60 },
+          { exerciseId: 'upper-back-8', sets: 3, repetitions: 10, restBetweenSets: 60 },
+          { exerciseId: 'obliques-14', sets: 2, repetitions: 10, restBetweenSets: 60 },
+        ],
+      },
+      createPostureRestDay(4),
+      {
+        day: 5,
+        description: 'Endurance & Time Under Tension',
+        isRestDay: false,
+        duration: 30,
+        exercises: [
+          { exerciseId: 'shoulders-78', sets: 3, repetitions: 15, restBetweenSets: 60 },
+          { exerciseId: 'upper-back-8', sets: 3, repetitions: 10, restBetweenSets: 60 },
+          { exerciseId: 'obliques-14', sets: 2, repetitions: 10, restBetweenSets: 60 },
+        ],
+      },
+      createPostureRestDay(6),
+      createPostureRestDay(7),
+    ],
+    targetAreas: ['posture', 'upper back', 'core'],
+    bodyParts: ['Upper Back', 'Shoulders', 'Core'],
+  },
 
-      const sessionExercises = (
-        [
-          [
-            {
-              exerciseId: 'abs-20',
-              sets: 3,
-              repetitions: 8,
-              restBetweenSets: 60,
-            }, // Dead Bug
-            { exerciseId: 'abs-6', sets: 3, duration: 30, restBetweenSets: 60 }, // Plank
-            {
-              exerciseId: 'glutes-7',
-              sets: 2,
-              repetitions: 12,
-              restBetweenSets: 60,
-            }, // Setebro
-          ],
-          [
-            {
-              exerciseId: 'abs-20',
-              sets: 3,
-              repetitions: 10,
-              restBetweenSets: 60,
-            },
-            { exerciseId: 'abs-6', sets: 3, duration: 40, restBetweenSets: 60 },
-            {
-              exerciseId: 'glutes-7',
-              sets: 3,
-              repetitions: 15,
-              restBetweenSets: 60,
-            },
-            {
-              exerciseId: 'obliques-4',
-              sets: 2,
-              repetitions: 10,
-              restBetweenSets: 60,
-            },
-          ],
-          [
-            {
-              exerciseId: 'abs-121',
-              sets: 3,
-              repetitions: 10,
-              restBetweenSets: 60,
-            }, // Spiderman plank
-            {
-              exerciseId: 'obliques-14',
-              sets: 2,
-              repetitions: 10,
-              restBetweenSets: 60,
-            }, // Sideplanke rotasjon
-            {
-              exerciseId: 'glutes-45',
-              sets: 2,
-              repetitions: 10,
-              restBetweenSets: 60,
-            },
-          ],
-          [
-            {
-              exerciseId: 'abs-121',
-              sets: 3,
-              repetitions: 12,
-              restBetweenSets: 60,
-            },
-            {
-              exerciseId: 'abs-120',
-              sets: 2,
-              repetitions: 10,
-              restBetweenSets: 60,
-            }, // Planke til Push-up
-            {
-              exerciseId: 'obliques-14',
-              sets: 2,
-              repetitions: 12,
-              restBetweenSets: 60,
-            },
-          ],
-        ] as const
-      )[weekIdx];
-
-      const trainingDay = (dayNumber: number) => ({
-        day: dayNumber,
-        description: weekTitles[weekIdx],
+  {
+    programOverview:
+      'Week 4 integrates core and full-body posture control for daily function.',
+    timeFrameExplanation:
+      'Combine all elements for comprehensive postural control and strength.',
+    afterTimeFrame: {
+      expectedOutcome:
+        'Visibly better posture and reduced shoulder fatigue during daily activities.',
+      nextSteps:
+        'Maintain progress with upper back training twice per week and daily mobility.',
+    },
+    whatNotToDo:
+      'Avoid heavy pressing and prolonged slouching during the early stages.',
+    createdAt: new Date('2025-05-12T00:00:00Z'),
+    days: [
+      {
+        day: 1,
+        description: 'Core-Integrated Posture Training',
+        isRestDay: false,
+        duration: 30,
+        exercises: [
+          { exerciseId: 'shoulders-30', sets: 3, repetitions: 15, restBetweenSets: 60 },
+          { exerciseId: 'upper-back-60', sets: 3, repetitions: 15, restBetweenSets: 60 },
+          { exerciseId: 'obliques-4', sets: 2, repetitions: 12, restBetweenSets: 60 },
+        ],
+      },
+      createPostureRestDay(2),
+      {
+        day: 3,
+        description: 'Core-Integrated Posture Training',
+        isRestDay: false,
+        duration: 30,
+        exercises: [
+          { exerciseId: 'shoulders-30', sets: 3, repetitions: 15, restBetweenSets: 60 },
+          { exerciseId: 'upper-back-60', sets: 3, repetitions: 15, restBetweenSets: 60 },
+          { exerciseId: 'obliques-4', sets: 2, repetitions: 12, restBetweenSets: 60 },
+        ],
+      },
+      createPostureRestDay(4),
+      {
+        day: 5,
+        description: 'Core-Integrated Posture Training',
+        isRestDay: false,
+        duration: 30,
+        exercises: [
+          { exerciseId: 'shoulders-30', sets: 3, repetitions: 15, restBetweenSets: 60 },
+          { exerciseId: 'upper-back-60', sets: 3, repetitions: 15, restBetweenSets: 60 },
+          { exerciseId: 'obliques-4', sets: 2, repetitions: 12, restBetweenSets: 60 },
+        ],
+      },
+      createPostureRestDay(6),
+      createPostureRestDay(7),
+    ],
+    targetAreas: ['posture', 'upper back', 'core'],
+    bodyParts: ['Upper Back', 'Shoulders', 'Core'],
+  },
+  // -----------------------------------------------------------------
+  // 10. Core Stability
+  // -----------------------------------------------------------------
+  {
+    programOverview:
+      'Week 1 focuses on reactivating your deep core muscles and practicing control.',
+    timeFrameExplanation:
+      'Begin with basic core stabilization exercises to build foundational strength.',
+    afterTimeFrame: {
+      expectedOutcome:
+        'Improved core activation and better control in basic positions.',
+      nextSteps:
+        'Progress to Week 2 for time under tension and movement coordination.',
+    },
+    whatNotToDo:
+      'Avoid high-rep sit-ups and long planks with poor form.',
+    createdAt: new Date('2025-06-02T00:00:00Z'),
+    days: [
+      {
+        day: 1,
+        description: 'Activation & Control',
         isRestDay: false,
         duration: 25,
-        exercises: sessionExercises,
-      });
-
-      const createCoreRestDay = (day: number): any => ({
-        day,
-        isRestDay: true,
-        duration: 12,
-        description:
-          'Rest day. Light activation to promote blood flow and reinforce core engagement.',
         exercises: [
-          {
-            exerciseId: 'glutes-7',
-            sets: 1,
-            repetitions: 15,
-            restBetweenSets: 45,
-            modification: 'Hold 1s at top, focus on breath and core tension.',
-          },
-          {
-            exerciseId: 'abs-20',
-            sets: 1,
-            repetitions: 8,
-            restBetweenSets: 45,
-            modification: 'Slow, controlled movement; keep lower back flat.',
-          },
-          {
-            exerciseId: 'warmup-9',
-            sets: 1,
-            repetitions: 10,
-            restBetweenSets: 30,
-            modification: 'Rotate gently through comfortable range.',
-          },
+          { exerciseId: 'abs-20', sets: 3, repetitions: 8, restBetweenSets: 60 },
+          { exerciseId: 'abs-6', sets: 3, duration: 30, restBetweenSets: 60 },
+          { exerciseId: 'glutes-7', sets: 2, repetitions: 12, restBetweenSets: 60 },
         ],
-      });
+      },
+      createCoreRestDay(2),
+      {
+        day: 3,
+        description: 'Activation & Control',
+        isRestDay: false,
+        duration: 25,
+        exercises: [
+          { exerciseId: 'abs-20', sets: 3, repetitions: 8, restBetweenSets: 60 },
+          { exerciseId: 'abs-6', sets: 3, duration: 30, restBetweenSets: 60 },
+          { exerciseId: 'glutes-7', sets: 2, repetitions: 12, restBetweenSets: 60 },
+        ],
+      },
+      createCoreRestDay(4),
+      {
+        day: 5,
+        description: 'Activation & Control',
+        isRestDay: false,
+        duration: 25,
+        exercises: [
+          { exerciseId: 'abs-20', sets: 3, repetitions: 8, restBetweenSets: 60 },
+          { exerciseId: 'abs-6', sets: 3, duration: 30, restBetweenSets: 60 },
+          { exerciseId: 'glutes-7', sets: 2, repetitions: 12, restBetweenSets: 60 },
+        ],
+      },
+      createCoreRestDay(6),
+      createCoreRestDay(7),
+    ],
+    targetAreas: ['core', 'pelvis', 'low back'],
+    bodyParts: ['Core', 'Lower Back', 'Hips'],
+  },
 
-      const daysArr = [
-        trainingDay(1),
-        createCoreRestDay(2),
-        trainingDay(3),
-        createCoreRestDay(4),
-        trainingDay(5),
-        createCoreRestDay(6),
-        createCoreRestDay(7),
-      ];
+  {
+    programOverview:
+      'Week 2 adds time under tension and limb coordination.',
+    timeFrameExplanation:
+      'Challenge your core stability with longer holds and coordinated movements.',
+    afterTimeFrame: {
+      expectedOutcome:
+        'Improved core endurance and better stability during movement.',
+      nextSteps:
+        'Continue to Week 3 for balance and anti-rotation challenges.',
+    },
+    whatNotToDo:
+      'Avoid high-rep sit-ups and long planks with poor form.',
+    createdAt: new Date('2025-05-26T00:00:00Z'),
+    days: [
+      {
+        day: 1,
+        description: 'Time Under Tension & Movement',
+        isRestDay: false,
+        duration: 25,
+        exercises: [
+          { exerciseId: 'abs-20', sets: 3, repetitions: 10, restBetweenSets: 60 },
+          { exerciseId: 'abs-6', sets: 3, duration: 40, restBetweenSets: 60 },
+          { exerciseId: 'glutes-7', sets: 3, repetitions: 15, restBetweenSets: 60 },
+          { exerciseId: 'obliques-4', sets: 2, repetitions: 10, restBetweenSets: 60 },
+        ],
+      },
+      createCoreRestDay(2),
+      {
+        day: 3,
+        description: 'Time Under Tension & Movement',
+        isRestDay: false,
+        duration: 25,
+        exercises: [
+          { exerciseId: 'abs-20', sets: 3, repetitions: 10, restBetweenSets: 60 },
+          { exerciseId: 'abs-6', sets: 3, duration: 40, restBetweenSets: 60 },
+          { exerciseId: 'glutes-7', sets: 3, repetitions: 15, restBetweenSets: 60 },
+          { exerciseId: 'obliques-4', sets: 2, repetitions: 10, restBetweenSets: 60 },
+        ],
+      },
+      createCoreRestDay(4),
+      {
+        day: 5,
+        description: 'Time Under Tension & Movement',
+        isRestDay: false,
+        duration: 25,
+        exercises: [
+          { exerciseId: 'abs-20', sets: 3, repetitions: 10, restBetweenSets: 60 },
+          { exerciseId: 'abs-6', sets: 3, duration: 40, restBetweenSets: 60 },
+          { exerciseId: 'glutes-7', sets: 3, repetitions: 15, restBetweenSets: 60 },
+          { exerciseId: 'obliques-4', sets: 2, repetitions: 10, restBetweenSets: 60 },
+        ],
+      },
+      createCoreRestDay(6),
+      createCoreRestDay(7),
+    ],
+    targetAreas: ['core', 'pelvis', 'low back'],
+    bodyParts: ['Core', 'Lower Back', 'Hips'],
+  },
 
-      return {
-        createdAt: new Date(`2025-06-${2 - weekIdx * 7}T00:00:00Z`),
-        days: daysArr,
-      };
-    }),
+  {
+    programOverview:
+      'Week 3 incorporates balance, anti-rotation, and lateral core engagement.',
+    timeFrameExplanation:
+      'Challenge your core with stability exercises and multi-directional control.',
+    afterTimeFrame: {
+      expectedOutcome:
+        'Better balance and control in challenging positions.',
+      nextSteps:
+        'Progress to Week 4 for multi-planar core integration.',
+    },
+    whatNotToDo:
+      'Avoid high-rep sit-ups and long planks with poor form.',
+    createdAt: new Date('2025-05-19T00:00:00Z'),
+    days: [
+      {
+        day: 1,
+        description: 'Stability & Balance Challenges',
+        isRestDay: false,
+        duration: 25,
+        exercises: [
+          { exerciseId: 'abs-121', sets: 3, repetitions: 10, restBetweenSets: 60 },
+          { exerciseId: 'obliques-14', sets: 2, repetitions: 10, restBetweenSets: 60 },
+          { exerciseId: 'glutes-45', sets: 2, repetitions: 10, restBetweenSets: 60 },
+        ],
+      },
+      createCoreRestDay(2),
+      {
+        day: 3,
+        description: 'Stability & Balance Challenges',
+        isRestDay: false,
+        duration: 25,
+        exercises: [
+          { exerciseId: 'abs-121', sets: 3, repetitions: 10, restBetweenSets: 60 },
+          { exerciseId: 'obliques-14', sets: 2, repetitions: 10, restBetweenSets: 60 },
+          { exerciseId: 'glutes-45', sets: 2, repetitions: 10, restBetweenSets: 60 },
+        ],
+      },
+      createCoreRestDay(4),
+      {
+        day: 5,
+        description: 'Stability & Balance Challenges',
+        isRestDay: false,
+        duration: 25,
+        exercises: [
+          { exerciseId: 'abs-121', sets: 3, repetitions: 10, restBetweenSets: 60 },
+          { exerciseId: 'obliques-14', sets: 2, repetitions: 10, restBetweenSets: 60 },
+          { exerciseId: 'glutes-45', sets: 2, repetitions: 10, restBetweenSets: 60 },
+        ],
+      },
+      createCoreRestDay(6),
+      createCoreRestDay(7),
+    ],
+    targetAreas: ['core', 'pelvis', 'low back'],
+    bodyParts: ['Core', 'Lower Back', 'Hips'],
+  },
 
-    createdAt: new Date('2025-06-02T00:00:00Z'),
+  {
+    programOverview:
+      'Week 4 transitions to longer holds and multi-planar control.',
+    timeFrameExplanation:
+      'Master advanced core stability for preparation to more demanding training.',
+    afterTimeFrame: {
+      expectedOutcome:
+        'Strong, stable core with better posture and movement control.',
+      nextSteps:
+        'Progress to resistance training or maintain with 1-2 core sessions weekly.',
+    },
+    whatNotToDo:
+      'Avoid high-rep sit-ups and long planks with poor form.',
+    createdAt: new Date('2025-05-12T00:00:00Z'),
+    days: [
+      {
+        day: 1,
+        description: 'Multi-Planar Core Integration',
+        isRestDay: false,
+        duration: 25,
+        exercises: [
+          { exerciseId: 'abs-121', sets: 3, repetitions: 12, restBetweenSets: 60 },
+          { exerciseId: 'abs-120', sets: 2, repetitions: 10, restBetweenSets: 60 },
+          { exerciseId: 'obliques-14', sets: 2, repetitions: 12, restBetweenSets: 60 },
+        ],
+      },
+      createCoreRestDay(2),
+      {
+        day: 3,
+        description: 'Multi-Planar Core Integration',
+        isRestDay: false,
+        duration: 25,
+        exercises: [
+          { exerciseId: 'abs-121', sets: 3, repetitions: 12, restBetweenSets: 60 },
+          { exerciseId: 'abs-120', sets: 2, repetitions: 10, restBetweenSets: 60 },
+          { exerciseId: 'obliques-14', sets: 2, repetitions: 12, restBetweenSets: 60 },
+        ],
+      },
+      createCoreRestDay(4),
+      {
+        day: 5,
+        description: 'Multi-Planar Core Integration',
+        isRestDay: false,
+        duration: 25,
+        exercises: [
+          { exerciseId: 'abs-121', sets: 3, repetitions: 12, restBetweenSets: 60 },
+          { exerciseId: 'abs-120', sets: 2, repetitions: 10, restBetweenSets: 60 },
+          { exerciseId: 'obliques-14', sets: 2, repetitions: 12, restBetweenSets: 60 },
+        ],
+      },
+      createCoreRestDay(6),
+      createCoreRestDay(7),
+    ],
     targetAreas: ['core', 'pelvis', 'low back'],
     bodyParts: ['Core', 'Lower Back', 'Hips'],
   },
 ];
 
-// URL slug mapping for direct program access
+// URL slug mapping for direct program access - maps to the starting index of each 4-week sequence
 export const programSlugs: Record<string, number> = {
-  runnersknee: 1,
-  'runners-knee': 1,
+  // Low Back: indices 0-3 (4 weeks)
   lowback: 0,
   'low-back': 0,
   'lower-back': 0,
-  shoulder: 5,
-  'shoulder-impingement': 5,
-  ankle: 9,
-  'ankle-sprain': 9,
-  'tennis-elbow': 13,
-  elbow: 13,
-  techneck: 17,
-  'plantar-fasciitis': 18,
-  plantarfasciitis: 18,
-  plantar: 18,
-  'hamstring-strain': 19,
-  hamstring: 19,
-  'upper-back-core': 20,
-  upperbackcore: 20,
-  'core-stability': 21,
-  corestability: 21,
+  
+  // Runner's Knee: indices 4-7 (4 weeks)
+  runnersknee: 4,
+  'runners-knee': 4,
+  
+  // Shoulder: indices 8-11 (4 weeks)
+  shoulder: 8,
+  'shoulder-impingement': 8,
+  
+  // Ankle: indices 12-15 (4 weeks)
+  ankle: 12,
+  'ankle-sprain': 12,
+  
+  // Tennis Elbow: indices 16-19 (4 weeks)
+  'tennis-elbow': 16,
+  elbow: 16,
+  
+  // Tech Neck: indices 20-23 (4 weeks)
+  techneck: 20,
+  
+  // Plantar Fasciitis: indices 24-27 (4 weeks)
+  'plantar-fasciitis': 24,
+  plantarfasciitis: 24,
+  plantar: 24,
+  
+  // Hamstring: indices 28-31 (4 weeks)
+  'hamstring-strain': 28,
+  hamstring: 28,
+  
+  // Upper Back & Core: indices 32-35 (4 weeks)
+  'upper-back-core': 32,
+  upperbackcore: 32,
+  
+  // Core Stability: indices 36-39 (4 weeks)
+  'core-stability': 36,
+  corestability: 36,
 };
 
-// Function to get program by URL slug
+// Function to get program by URL slug - combines all 4 weeks into a single 28-day program
 export const getProgramBySlug = (slug: string): ExerciseProgram | null => {
-  const index = programSlugs[slug.toLowerCase()];
-  if (typeof index !== 'number') return null;
-  return rehabPrograms[index] || null;
+  const baseIndex = programSlugs[slug.toLowerCase()];
+  if (typeof baseIndex !== 'number') return null;
+  
+  // Get all 4 weeks for this condition
+  const week1 = rehabPrograms[baseIndex];
+  const week2 = rehabPrograms[baseIndex + 1];
+  const week3 = rehabPrograms[baseIndex + 2];
+  const week4 = rehabPrograms[baseIndex + 3];
+  
+  if (!week1 || !week2 || !week3 || !week4) return null;
+  
+  // Combine all days from all 4 weeks, renumbering them 1-28
+  const allDays = [
+    // Week 1: days 1-7
+    ...week1.days.map((day, index) => ({ ...day, day: index + 1 })),
+    // Week 2: days 8-14
+    ...week2.days.map((day, index) => ({ ...day, day: index + 8 })),
+    // Week 3: days 15-21
+    ...week3.days.map((day, index) => ({ ...day, day: index + 15 })),
+    // Week 4: days 22-28
+    ...week4.days.map((day, index) => ({ ...day, day: index + 22 }))
+  ];
+  
+  // Return the combined program using week1 as the base
+  return {
+    ...week1,
+    days: allDays,
+    // Use the most comprehensive overview from week1
+    programOverview: week1.programOverview,
+    timeFrameExplanation: week1.timeFrameExplanation,
+    afterTimeFrame: week1.afterTimeFrame,
+    whatNotToDo: week1.whatNotToDo
+  };
 };
 
 // Function to get all available program slugs

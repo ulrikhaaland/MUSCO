@@ -46,7 +46,7 @@ function FeedbackPageContent() {
 
   // Extract all unique exercises from the program
   const getAllProgramExercises = (): Exercise[] => {
-    if (!program?.program) return [];
+    if (!program) return [];
 
     const uniqueExercises = new Map<string, Exercise>();
 
