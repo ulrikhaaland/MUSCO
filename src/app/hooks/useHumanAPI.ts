@@ -15,6 +15,7 @@ import {
   getGenderedId,
 } from '../utils/anatomyHelpers';
 import { ProgramIntention, useApp } from '../context/AppContext';
+import { loadHumanSdk } from '../utils/loadHumanSdk';
 
 interface CameraPosition {
   position: {
@@ -146,19 +147,14 @@ export function useHumanAPI({
   // Function to check if camera has moved
 
   useEffect(() => {
-    let script: HTMLScriptElement | null = null;
     let isInitialized = false;
 
-    const initializeViewer = () => {
-      if (!window.HumanAPI) {
-        script = document.createElement('script');
-        script.src =
-          'https://developer.biodigital.com/builds/api/human-api-3.0.0.min.js';
-        script.async = true;
-        script.onload = setupHumanAPI;
-        document.body.appendChild(script);
-      } else {
+    const initializeViewer = async () => {
+      try {
+        await loadHumanSdk();
         setupHumanAPI();
+      } catch (error) {
+        console.error('Failed to load Human SDK:', error);
       }
     };
 
@@ -223,9 +219,6 @@ export function useHumanAPI({
 
     return () => {
       if (!isInitialized) {
-        if (script) {
-          document.body.removeChild(script);
-        }
         setIsReady(false);
         humanRef.current = null;
       }
