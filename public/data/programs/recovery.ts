@@ -1159,126 +1159,222 @@ export const rehabPrograms: ExerciseProgram[] = [
   // -----------------------------------------------------------------
   {
     programOverview:
-      'This 4‑week program helps you recover from lateral epicondylitis (tennis elbow) by reducing pain, reintroducing movement, and rebuilding strength in your wrist, forearm, and grip. You’ll train three times per week using short, progressive sessions. Each workout is designed to improve tendon health without flaring symptoms. On rest days, you’ll perform light mobility work to keep the area moving and support tissue healing.',
+      'Week 1 introduces isometric pain modulation to calm symptoms and build tolerance to light loading.',
     timeFrameExplanation:
-      'In Week 1, you’ll begin with isometric holds to manage pain and restore a tolerance to light loading. Week 2 adds slow, controlled eccentric exercises to stimulate tendon repair. Week 3 brings in forearm rotation and grip-focused drills to address function. By Week 4, you’ll integrate compound forearm loading and build readiness for everyday lifting, typing, and training.',
+      'Use pain‑free holds and gentle mobility to stimulate healing without aggravating the tendon.',
     afterTimeFrame: {
       expectedOutcome:
-        'By the end of the program, you should be able to grip, lift, or type without discomfort, and perform wrist extension movements with minimal to no pain.',
+        'Pain should start easing and light gripping will feel less irritating.',
       nextSteps:
-        'Start integrating progressive loading with dumbbells, resistance bands, or cables. If you’re returning to sports like tennis or climbing, add controlled plyometric and impact drills. For desk work, include grip endurance and postural correction in your long-term routine.',
+        'If discomfort stays below 3/10, progress to Week 2 for controlled eccentric work.',
     },
     whatNotToDo:
       'Avoid jerky or fast-loaded movements, especially wrist extension or gripping under fatigue. If pain spikes above 3/10 or lingers into the next day, reduce your load or reps. Stop any exercise that causes sharp, radiating pain down the arm.',
-    program: [1, 2, 3, 4].map((wk) => {
-      const weekIdx = wk - 1;
-      const weekTitles = [
-        'Isometric Pain Modulation',
-        'Introduce Eccentric Loading',
-        'Forearm Control + Grip Strength',
-        'Functional Loading & Carryover',
-      ];
-
-      const sessionExercises = (
-        [
-          [
-            {
-              exerciseId: 'forearms-2',
-              sets: 2,
-              repetitions: 15,
-              restBetweenSets: 45,
-              warmup: true,
-            },
-            {
-              exerciseId: 'forearms-1',
-              sets: 5,
-              duration: 45,
-              restBetweenSets: 60,
-            },
-          ],
-          [
-            {
-              exerciseId: 'forearms-2',
-              sets: 2,
-              repetitions: 15,
-              restBetweenSets: 45,
-              warmup: true,
-            },
-            {
-              exerciseId: 'forearms-1',
-              sets: 3,
-              repetitions: 15,
-              restBetweenSets: 60,
-            },
-          ],
-          [
-            {
-              exerciseId: 'forearms-2',
-              sets: 3,
-              repetitions: 12,
-              restBetweenSets: 45,
-            },
-            {
-              exerciseId: 'forearms-1',
-              sets: 3,
-              repetitions: 15,
-              restBetweenSets: 60,
-            },
-            {
-              exerciseId: 'biceps-1',
-              sets: 2,
-              repetitions: 15,
-              restBetweenSets: 60,
-            },
-          ],
-          [
-            {
-              exerciseId: 'forearms-2',
-              sets: 3,
-              repetitions: 12,
-              restBetweenSets: 45,
-            },
-            {
-              exerciseId: 'forearms-1',
-              sets: 3,
-              repetitions: 15,
-              restBetweenSets: 60,
-            },
-            {
-              exerciseId: 'biceps-1',
-              sets: 2,
-              repetitions: 15,
-              restBetweenSets: 60,
-            },
-          ],
-        ] as const
-      )[weekIdx];
-
-      const trainingDay = (dayNumber: number) => ({
-        day: dayNumber,
-        description: weekTitles[weekIdx],
+    createdAt: new Date('2025-05-31T00:00:00Z'),
+    days: [
+      {
+        day: 1,
+        description: 'Isometric Pain Modulation',
         isRestDay: false,
         duration: 25,
-        exercises: sessionExercises,
-      });
+        exercises: [
+          { exerciseId: 'forearms-2', sets: 2, repetitions: 15, restBetweenSets: 45, warmup: true },
+          { exerciseId: 'forearms-1', sets: 5, duration: 45, restBetweenSets: 60 },
+        ],
+      },
+      createTennisElbowRestDay(2),
+      {
+        day: 3,
+        description: 'Isometric Pain Modulation',
+        isRestDay: false,
+        duration: 25,
+        exercises: [
+          { exerciseId: 'forearms-2', sets: 2, repetitions: 15, restBetweenSets: 45, warmup: true },
+          { exerciseId: 'forearms-1', sets: 5, duration: 45, restBetweenSets: 60 },
+        ],
+      },
+      createTennisElbowRestDay(4),
+      {
+        day: 5,
+        description: 'Isometric Pain Modulation',
+        isRestDay: false,
+        duration: 25,
+        exercises: [
+          { exerciseId: 'forearms-2', sets: 2, repetitions: 15, restBetweenSets: 45, warmup: true },
+          { exerciseId: 'forearms-1', sets: 5, duration: 45, restBetweenSets: 60 },
+        ],
+      },
+      createTennisElbowRestDay(6),
+      createTennisElbowRestDay(7),
+    ],
+    targetAreas: ['elbow'],
+    bodyParts: ['Elbow'],
+  },
 
-      const daysArr = [
-        trainingDay(1),
-        createTennisElbowRestDay(2),
-        trainingDay(3),
-        createTennisElbowRestDay(4),
-        trainingDay(5),
-        createTennisElbowRestDay(6),
-        createTennisElbowRestDay(7),
-      ];
+  {
+    programOverview:
+      'Week 2 introduces slow eccentric loading to promote tendon repair and strength.',
+    timeFrameExplanation:
+      'Controlled lowering exercises build resilience while keeping intensity moderate.',
+    afterTimeFrame: {
+      expectedOutcome:
+        'Forearm soreness should diminish and daily tasks become easier.',
+      nextSteps:
+        'Move on to Week 3 to add rotation and grip‑focused drills.',
+    },
+    whatNotToDo:
+      'Avoid jerky or fast-loaded movements, especially wrist extension or gripping under fatigue. If pain spikes above 3/10 or lingers into the next day, reduce your load or reps. Stop any exercise that causes sharp, radiating pain down the arm.',
+    createdAt: new Date('2025-05-24T00:00:00Z'),
+    days: [
+      {
+        day: 1,
+        description: 'Introduce Eccentric Loading',
+        isRestDay: false,
+        duration: 25,
+        exercises: [
+          { exerciseId: 'forearms-2', sets: 2, repetitions: 15, restBetweenSets: 45, warmup: true },
+          { exerciseId: 'forearms-1', sets: 3, repetitions: 15, restBetweenSets: 60 },
+        ],
+      },
+      createTennisElbowRestDay(2),
+      {
+        day: 3,
+        description: 'Introduce Eccentric Loading',
+        isRestDay: false,
+        duration: 25,
+        exercises: [
+          { exerciseId: 'forearms-2', sets: 2, repetitions: 15, restBetweenSets: 45, warmup: true },
+          { exerciseId: 'forearms-1', sets: 3, repetitions: 15, restBetweenSets: 60 },
+        ],
+      },
+      createTennisElbowRestDay(4),
+      {
+        day: 5,
+        description: 'Introduce Eccentric Loading',
+        isRestDay: false,
+        duration: 25,
+        exercises: [
+          { exerciseId: 'forearms-2', sets: 2, repetitions: 15, restBetweenSets: 45, warmup: true },
+          { exerciseId: 'forearms-1', sets: 3, repetitions: 15, restBetweenSets: 60 },
+        ],
+      },
+      createTennisElbowRestDay(6),
+      createTennisElbowRestDay(7),
+    ],
+    targetAreas: ['elbow'],
+    bodyParts: ['Elbow'],
+  },
 
-      return {
-        createdAt: new Date(`2025-05-${31 - weekIdx * 7}T00:00:00Z`),
-        days: daysArr,
-      };
-    }),
+  {
+    programOverview:
+      'Week 3 builds forearm control and grip strength through rotation and endurance work.',
+    timeFrameExplanation:
+      'These movements enhance coordination and prepare you for functional tasks.',
+    afterTimeFrame: {
+      expectedOutcome:
+        'Rotation drills and grip exercises should feel smoother with better stamina.',
+      nextSteps:
+        'Advance to Week 4 to integrate compound loading for daily activities.',
+    },
+    whatNotToDo:
+      'Avoid jerky or fast-loaded movements, especially wrist extension or gripping under fatigue. If pain spikes above 3/10 or lingers into the next day, reduce your load or reps. Stop any exercise that causes sharp, radiating pain down the arm.',
+    createdAt: new Date('2025-05-17T00:00:00Z'),
+    days: [
+      {
+        day: 1,
+        description: 'Forearm Control + Grip Strength',
+        isRestDay: false,
+        duration: 25,
+        exercises: [
+          { exerciseId: 'forearms-2', sets: 3, repetitions: 12, restBetweenSets: 45 },
+          { exerciseId: 'forearms-1', sets: 3, repetitions: 15, restBetweenSets: 60 },
+          { exerciseId: 'biceps-1', sets: 2, repetitions: 15, restBetweenSets: 60 },
+        ],
+      },
+      createTennisElbowRestDay(2),
+      {
+        day: 3,
+        description: 'Forearm Control + Grip Strength',
+        isRestDay: false,
+        duration: 25,
+        exercises: [
+          { exerciseId: 'forearms-2', sets: 3, repetitions: 12, restBetweenSets: 45 },
+          { exerciseId: 'forearms-1', sets: 3, repetitions: 15, restBetweenSets: 60 },
+          { exerciseId: 'biceps-1', sets: 2, repetitions: 15, restBetweenSets: 60 },
+        ],
+      },
+      createTennisElbowRestDay(4),
+      {
+        day: 5,
+        description: 'Forearm Control + Grip Strength',
+        isRestDay: false,
+        duration: 25,
+        exercises: [
+          { exerciseId: 'forearms-2', sets: 3, repetitions: 12, restBetweenSets: 45 },
+          { exerciseId: 'forearms-1', sets: 3, repetitions: 15, restBetweenSets: 60 },
+          { exerciseId: 'biceps-1', sets: 2, repetitions: 15, restBetweenSets: 60 },
+        ],
+      },
+      createTennisElbowRestDay(6),
+      createTennisElbowRestDay(7),
+    ],
+    targetAreas: ['elbow'],
+    bodyParts: ['Elbow'],
+  },
 
-    createdAt: new Date('2025-05-27T00:00:00Z'),
+  {
+    programOverview:
+      'Week 4 integrates functional loading so you’re ready for everyday tasks and sport.',
+    timeFrameExplanation:
+      'Compound movements and carries reinforce strength gains made in the previous weeks.',
+    afterTimeFrame: {
+      expectedOutcome:
+        'You should grip, lift, or type pain‑free with confident wrist extension.',
+      nextSteps:
+        'Transition to progressive strength work or sport‑specific training as tolerated.',
+    },
+    whatNotToDo:
+      'Avoid jerky or fast-loaded movements, especially wrist extension or gripping under fatigue. If pain spikes above 3/10 or lingers into the next day, reduce your load or reps. Stop any exercise that causes sharp, radiating pain down the arm.',
+    createdAt: new Date('2025-05-10T00:00:00Z'),
+    days: [
+      {
+        day: 1,
+        description: 'Functional Loading & Carryover',
+        isRestDay: false,
+        duration: 25,
+        exercises: [
+          { exerciseId: 'forearms-2', sets: 3, repetitions: 12, restBetweenSets: 45 },
+          { exerciseId: 'forearms-1', sets: 3, repetitions: 15, restBetweenSets: 60 },
+          { exerciseId: 'biceps-1', sets: 2, repetitions: 15, restBetweenSets: 60 },
+        ],
+      },
+      createTennisElbowRestDay(2),
+      {
+        day: 3,
+        description: 'Functional Loading & Carryover',
+        isRestDay: false,
+        duration: 25,
+        exercises: [
+          { exerciseId: 'forearms-2', sets: 3, repetitions: 12, restBetweenSets: 45 },
+          { exerciseId: 'forearms-1', sets: 3, repetitions: 15, restBetweenSets: 60 },
+          { exerciseId: 'biceps-1', sets: 2, repetitions: 15, restBetweenSets: 60 },
+        ],
+      },
+      createTennisElbowRestDay(4),
+      {
+        day: 5,
+        description: 'Functional Loading & Carryover',
+        isRestDay: false,
+        duration: 25,
+        exercises: [
+          { exerciseId: 'forearms-2', sets: 3, repetitions: 12, restBetweenSets: 45 },
+          { exerciseId: 'forearms-1', sets: 3, repetitions: 15, restBetweenSets: 60 },
+          { exerciseId: 'biceps-1', sets: 2, repetitions: 15, restBetweenSets: 60 },
+        ],
+      },
+      createTennisElbowRestDay(6),
+      createTennisElbowRestDay(7),
+    ],
     targetAreas: ['elbow'],
     bodyParts: ['Elbow'],
   },
@@ -2181,16 +2277,16 @@ export const programSlugs: Record<string, number> = {
   'ankle-sprain': 9,
   'tennis-elbow': 13,
   elbow: 13,
-  techneck: 14,
-  'plantar-fasciitis': 15,
-  plantarfasciitis: 15,
-  plantar: 15,
-  'hamstring-strain': 16,
-  hamstring: 16,
-  'upper-back-core': 17,
-  upperbackcore: 17,
-  'core-stability': 18,
-  corestability: 18,
+  techneck: 17,
+  'plantar-fasciitis': 18,
+  plantarfasciitis: 18,
+  plantar: 18,
+  'hamstring-strain': 19,
+  hamstring: 19,
+  'upper-back-core': 20,
+  upperbackcore: 20,
+  'core-stability': 21,
+  corestability: 21,
 };
 
 // Function to get program by URL slug
