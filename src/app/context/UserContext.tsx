@@ -36,7 +36,7 @@ import { enrichExercisesWithFullData } from '@/app/services/exerciseProgramServi
 import { useLoader } from './LoaderContext';
 import { useTranslation } from '@/app/i18n/TranslationContext';
 import { logAnalyticsEvent } from '../utils/analytics';
-import { getProgramBySlug } from '../../../public/data/programs/recovery';
+import { getProgramBySlug, getUserProgramBySlug } from '../../../public/data/programs/recovery';
 
 // Update UserProgram interface to include the document ID
 interface UserProgramWithId extends UserProgram {
@@ -134,30 +134,32 @@ export function UserProvider({ children }: { children: ReactNode }) {
   };
 
   // Helper to set a recovery program as the current program
-  const setRecoveryProgram = async (recoveryProgram: ExerciseProgram) => {
+  const setRecoveryProgram = async (slug: string) => {
     try {
-      // Enrich the program with exercise data
-      await enrichExercisesWithFullData(recoveryProgram, isNorwegian);
-      
-      // Get today's date for the program start
-      const today = new Date();
-      const todayISO = today.toISOString();
-      
-      // Convert Date objects to ISO strings and update dates to start from today
-      const formattedProgram = {
-        ...recoveryProgram,
-        createdAt: todayISO, // Program starts today
-        days: recoveryProgram.days || []
-      };
-      
+      // Get the complete UserProgram object with tailored diagnosis and questionnaire
+      const userProgram = getUserProgramBySlug(slug);
+      if (!userProgram) {
+        console.error('Recovery program not found for slug:', slug);
+        setIsLoading(false);
+        showGlobalLoader(false);
+        return;
+      }
+
+      // Enrich all week programs with exercise data
+      for (const weekProgram of userProgram.programs) {
+        await enrichExercisesWithFullData(weekProgram, isNorwegian);
+      }
+
       // Store in sessionStorage for persistence across navigation
-      window.sessionStorage.setItem('currentRecoveryProgram', JSON.stringify(formattedProgram));
+      window.sessionStorage.setItem('currentRecoveryProgram', JSON.stringify({
+        userProgram,
+        formattedProgram: userProgram.programs[0] // Keep the first week as the display program
+      }));
+
+      // Use the existing prepareAndSetProgram helper to set up the program properly
+      prepareAndSetProgram(userProgram as UserProgramWithId);
       
-      setProgram(formattedProgram as any);
-      setActiveProgram(null); // No user program for recovery programs
       setProgramStatus(ProgramStatus.Done);
-      setAnswers(null);
-      setDiagnosisData(null);
       setIsLoading(false);
       showGlobalLoader(false);
     } catch (error) {
@@ -178,7 +180,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
         
         if (recoveryProgram) {
           showGlobalLoader(true, t('program.loadingData'));
-          setRecoveryProgram(recoveryProgram);
+          setRecoveryProgram(slug);
           return;
         }
       }
@@ -189,13 +191,35 @@ export function UserProvider({ children }: { children: ReactNode }) {
     const persistedProgram = window.sessionStorage.getItem('currentRecoveryProgram');
     if (persistedProgram) {
       try {
-        const recoveryProgram = JSON.parse(persistedProgram);
-        console.log('Restoring recovery program from sessionStorage:', recoveryProgram.title);
-        setProgram(recoveryProgram);
-        setActiveProgram(null);
+        const persistedData = JSON.parse(persistedProgram);
+        
+        // Handle both old format (just ExerciseProgram) and new format (with UserProgram)
+        if (persistedData.userProgram && persistedData.formattedProgram) {
+          // New format - use the UserProgram structure
+          console.log('Restoring recovery program from sessionStorage:', persistedData.userProgram.title);
+          
+          // Convert string dates back to Date objects
+          const userProgram: UserProgramWithId = {
+            ...persistedData.userProgram,
+            createdAt: persistedData.userProgram.createdAt,
+            updatedAt: new Date(persistedData.userProgram.updatedAt),
+            programs: persistedData.userProgram.programs.map((prog: any) => ({
+              ...prog,
+              createdAt: new Date(prog.createdAt)
+            }))
+          };
+          
+          prepareAndSetProgram(userProgram);
+        } else {
+          // Old format - treat as direct ExerciseProgram
+          console.log('Restoring legacy recovery program from sessionStorage:', persistedData.title);
+          setProgram(persistedData);
+          setActiveProgram(null);
+          setAnswers(null);
+          setDiagnosisData(null);
+        }
+        
         setProgramStatus(ProgramStatus.Done);
-        setAnswers(null);
-        setDiagnosisData(null);
         setIsLoading(false);
         showGlobalLoader(false);
         return;

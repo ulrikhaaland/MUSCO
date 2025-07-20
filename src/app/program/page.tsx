@@ -14,6 +14,7 @@ import {
   ProgramDay,
   ExerciseProgram,
 } from '@/app/types/program';
+import { ProgramType } from '@/app/shared/types';
 import { searchYouTubeVideo } from '@/app/utils/youtube';
 import { ErrorDisplay } from '@/app/components/ui/ErrorDisplay';
 import { useTranslation } from '@/app/i18n';
@@ -261,7 +262,7 @@ export default function ProgramPage() {
               up.programs.some((p) => p.createdAt === selectedProgram.createdAt)
           )
         }
-        isCustomProgram={!!selectedProgram && !activeProgram}
+        isCustomProgram={!!selectedProgram && activeProgram?.type === ProgramType.Recovery}
         onOverviewVisibilityChange={(visible) => setIsOverviewVisible(visible)}
       />
       {renderVideoModal()}

@@ -16,6 +16,7 @@ import {
 } from '../utils/anatomyHelpers';
 import { ProgramIntention, useApp } from '../context/AppContext';
 import { loadHumanSdk } from '../utils/loadHumanSdk';
+import { diffSelect } from '../utils/selectionDelta';
 
 interface CameraPosition {
   position: {
@@ -82,6 +83,7 @@ export function useHumanAPI({
   const lastPickTimeRef = useRef<number>(0);
   const PICK_RATE_LIMIT = 500; // ms between allowed picks
   const isPickRateLimitedRef = useRef<boolean>(false);
+  const prevSelection = useRef<Record<string, boolean>>({});
 
   const [currentGender, setCurrentGender] = useState<Gender>(initialGender);
   const [needsReset, setNeedsReset] = useState(false);
@@ -317,10 +319,12 @@ export function useHumanAPI({
       programmaticSelectionIdRef.current = lowerBackId;
 
       // Select the lower back
+      prevSelection.current = {};
       humanRef.current?.send('scene.selectObjects', {
         [lowerBackId]: true,
         replace: true,
       });
+      prevSelection.current[lowerBackId] = true;
 
       // Clear any pending onObjectSelected event
       pendingObjectSelectedEventRef.current = null;
@@ -630,11 +634,13 @@ export function useHumanAPI({
             true
           );
 
+        const fullSelectionMap = { ...selectionMap, ...deselectionMap };
+        prevSelection.current = {};
         humanRef.current?.send('scene.selectObjects', {
-          ...selectionMap,
-          ...deselectionMap,
+          ...fullSelectionMap,
           replace: true,
         });
+        Object.assign(prevSelection.current, fullSelectionMap);
 
         if (!isXrayEnabledRef.current) {
           humanRef.current?.send('scene.enableXray', () => {});
@@ -728,10 +734,14 @@ export function useHumanAPI({
       const finalSelectMap = {
         ...selectionMap,
         ...deselectionMap,
-        replace: true,
       };
 
-      humanRef.current?.send('scene.selectObjects', finalSelectMap);
+      prevSelection.current = {};
+      humanRef.current?.send('scene.selectObjects', {
+        ...finalSelectMap,
+        replace: true,
+      });
+      Object.assign(prevSelection.current, finalSelectMap);
 
       // Store the group in ref
       previousSelectedPartGroupRef.current = group;
@@ -850,10 +860,15 @@ export function useHumanAPI({
           );
 
         if (hasSelectedPartOfSelectedGroup) {
-          humanRef.current?.send('scene.selectObjects', {
-            [selectedId]: true,
-            replace: false,
-          });
+          const selectionMap = { [selectedId]: true };
+          const delta = diffSelect(prevSelection.current, selectionMap);
+          if (Object.keys(delta).length) {
+            humanRef.current?.send('scene.selectObjects', {
+              ...delta,
+              replace: false,
+            });
+            Object.assign(prevSelection.current, delta);
+          }
           if (!isXrayEnabledRef.current) {
             humanRef.current?.send('scene.enableXray', () => {});
             isXrayEnabledRef.current = true;
@@ -907,9 +922,16 @@ export function useHumanAPI({
           ...deselectionMap,
           replace: true,
         });
-        humanRef.current?.send('scene.selectObjects', {
-          [selectedId]: false,
-        });
+        const newSelectionMap = { ...prevSelection.current };
+        delete newSelectionMap[selectedId];
+        const delta = diffSelect(prevSelection.current, newSelectionMap);
+        if (Object.keys(delta).length) {
+          humanRef.current?.send('scene.selectObjects', {
+            ...delta,
+            replace: false,
+          });
+          Object.assign(prevSelection.current, delta);
+        }
       }
 
       // Store the group in ref
@@ -1007,11 +1029,32 @@ export function useHumanAPI({
       disableSelectionHandlerRef.current = true;
     }
 
-    // Send the selection command
-    humanRef.current.send('scene.selectObjects', {
-      ...selectionMap,
-      ...options,
-    });
+    // Check if this is a replace operation
+    const isReplace = (options as any)?.replace === true;
+    
+    if (isReplace) {
+      // Full reset - clear previous selection tracking
+      prevSelection.current = {};
+      // Send the selection command with replace
+      humanRef.current.send('scene.selectObjects', {
+        ...selectionMap,
+        ...options,
+      });
+      // Update tracking with new selection
+      Object.assign(prevSelection.current, selectionMap);
+    } else {
+      // Use delta selection
+      const delta = diffSelect(prevSelection.current, selectionMap);
+      if (Object.keys(delta).length) {
+        humanRef.current.send('scene.selectObjects', {
+          ...delta,
+          replace: false,
+          ...options,
+        });
+        // Update tracking with delta changes
+        Object.assign(prevSelection.current, delta);
+      }
+    }
 
     // Re-enable the handler after a short delay
     setTimeout(() => {

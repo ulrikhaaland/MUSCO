@@ -225,13 +225,24 @@ export function ExerciseProgramPage({
     const currentDate = new Date();
     const currentDayOfWeek = currentDate.getDay() || 7; // Convert Sunday (0) to 7
 
-    // Since each ExerciseProgram now represents one week, always set to week 1
-    setSelectedWeek(1);
-    setExpandedDays([currentDayOfWeek]);
+    // Check if this is a 4-week custom program (28 days)
+    const is4WeekProgram = isCustomProgram && program.days.length === 28;
+    
+    if (is4WeekProgram) {
+      // For 4-week programs, start with week 1
+      setSelectedWeek(1);
+      // Set expanded day to day 1 of week 1 (Monday)
+      setExpandedDays([1]);
+    } else {
+      // For regular programs, use existing logic
+      setSelectedWeek(1);
+      setExpandedDays([currentDayOfWeek]);
+    }
 
     // Scroll day into view
     setTimeout(() => {
-      const dayButton = document.querySelector(`[data-day="${currentDayOfWeek}"]`);
+      const dayToScrollTo = is4WeekProgram ? 1 : currentDayOfWeek;
+      const dayButton = document.querySelector(`[data-day="${dayToScrollTo}"]`);
       if (dayButton) {
         dayButton.scrollIntoView({
           behavior: 'smooth',
@@ -240,23 +251,37 @@ export function ExerciseProgramPage({
         });
       }
     }, 100);
-  }, [program]);
+  }, [program, isCustomProgram]);
 
   const handleWeekChange = (weekNumber: number) => {
     setSelectedWeek(weekNumber);
 
-    // Since each ExerciseProgram now represents one week, weekNumber > 1 means beyond this program
-    if (weekNumber > 1) {
-      setExpandedDays([]);
-      return;
+    // Check if this is a 4-week custom program
+    const is4WeekProgram = isCustomProgram && program?.days?.length === 28;
+    
+    if (is4WeekProgram) {
+      // For 4-week programs, handle weeks 1-4
+      if (weekNumber >= 1 && weekNumber <= 4) {
+        // Set expanded day to day 1 of the selected week (Monday)
+        setExpandedDays([1]);
+      } else {
+        setExpandedDays([]);
+        return;
+      }
+    } else {
+      // Existing logic for regular programs
+      if (weekNumber > 1) {
+        setExpandedDays([]);
+        return;
+      }
+
+      // Get current date info for default day selection
+      const currentDate = new Date();
+      const currentDayOfWeek = currentDate.getDay() || 7; // Convert Sunday (0) to 7
+
+      // Set expanded day to current day of week
+      setExpandedDays([currentDayOfWeek]);
     }
-
-    // Get current date info for default day selection
-    const currentDate = new Date();
-    const currentDayOfWeek = currentDate.getDay() || 7; // Convert Sunday (0) to 7
-
-    // Set expanded day to current day of week
-    setExpandedDays([currentDayOfWeek]);
 
     // Scroll towards the bottom
     setTimeout(() => {
@@ -456,8 +481,29 @@ export function ExerciseProgramPage({
     return null;
   }
 
-  // Since each program now represents one week, we just use the program's days directly
-  const selectedWeekData = selectedWeek === 1 ? { days: program.days } : null;
+  // Handle 4-week custom programs vs regular programs
+  const is4WeekProgram = isCustomProgram && program.days.length === 28;
+  let selectedWeekData = null;
+
+  if (is4WeekProgram) {
+    // For 4-week programs, group days into weeks and show the selected week
+    if (selectedWeek >= 1 && selectedWeek <= 4) {
+      const startDayIndex = (selectedWeek - 1) * 7;
+      const endDayIndex = startDayIndex + 7;
+      const weekDays = program.days.slice(startDayIndex, endDayIndex);
+      
+      // Re-number days 1-7 for display
+      const renumberedDays = weekDays.map((day, index) => ({
+        ...day,
+        day: index + 1
+      }));
+      
+      selectedWeekData = { days: renumberedDays };
+    }
+  } else {
+    // For regular programs, use existing logic
+    selectedWeekData = selectedWeek === 1 ? { days: program.days } : null;
+  }
 
   return (
     <div
@@ -684,95 +730,144 @@ export function ExerciseProgramPage({
               {/* Week/Day tabs */}
               {(
                 <>
-                  {/* Week Tabs - Simplified since each program is one week */}
+                  {/* Week Tabs */}
                   <div className="mb-6 overflow-x-auto scrollbar-hide">
                     <div className="flex space-x-2 min-w-max">
-                      {/* Current week tab */}
-                      <button
-                        key="week-1"
-                        data-week={1}
-                        onClick={() => handleWeekChange(1)}
-                        className={`px-6 py-3 rounded-lg font-medium transition-colors duration-200 ${
-                          selectedWeek === 1
-                            ? 'bg-indigo-600 text-white'
-                            : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white'
-                        }`}
-                      >
-                        {t('exerciseProgram.weekTab')}{' '}
-                        {program.createdAt
-                          ? getWeekNumber(new Date(program.createdAt))
-                          : getWeekNumber(currentDate)}
-                        {program.createdAt && (
-                          <span className="text-xs opacity-70 block">
-                            {(() => {
-                              // Calculate week start (Monday) and end (Sunday) dates
-                              const weekCreatedAt = new Date(program.createdAt);
-                              const weekStart = getStartOfWeek(weekCreatedAt);
-                              const weekEnd = getEndOfWeek(weekCreatedAt);
-                              
-                              // Format the dates with translated month names
-                              const startMonth = getMonthAbbreviation(weekStart.getMonth(), t);
-                              const startDay = weekStart.getDate();
-                              const endDay = weekEnd.getDate();
-                              const endMonth = getMonthAbbreviation(weekEnd.getMonth(), t);
-                              
-                              // If start and end are in the same month, use "Month Day-Day" format
-                              if (startMonth === endMonth) {
-                                return `${startMonth} ${startDay}-${endDay}`;
-                              }
-                              
-                              // Otherwise, use "Month Day-Month Day" format
-                              return `${startMonth} ${startDay}-${endMonth} ${endDay}`;
-                            })()}
-                          </span>
-                        )}
-                      </button>
-                      
-                      {/* Next week button for non-custom programs */}
-                      {!isCustomProgram && (
-                        <button
-                          data-week={2}
-                          className={`px-6 py-3 rounded-lg font-medium transition-colors duration-200 ${
-                            selectedWeek === 2
-                              ? 'bg-indigo-600 text-white'
-                              : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white'
-                          }`}
-                          onClick={() => handleWeekChange(2)}
-                        >
-                          {t('exerciseProgram.weekTab')}{' '}
-                          {program.createdAt ? getWeekNumber(new Date(program.createdAt)) + 1 : getWeekNumber(currentDate) + 1}
-                          <span className="text-xs opacity-70 block">
-                            {(() => {
-                              // Calculate next week's date range
-                              const nextWeekStart = program.createdAt 
-                                ? (() => {
-                                    const weekEnd = getEndOfWeek(new Date(program.createdAt));
-                                    const nextWeekStart = new Date(weekEnd);
-                                    nextWeekStart.setDate(nextWeekStart.getDate() + 1);
-                                    return getStartOfWeek(nextWeekStart);
-                                  })()
-                                : (() => {
-                                    const nextWeek = new Date(currentDate.getTime() + 7 * 24 * 60 * 60 * 1000);
-                                    return getStartOfWeek(nextWeek);
-                                  })();
-                              const nextWeekEnd = getEndOfWeek(nextWeekStart);
-                              
-                              // Format the dates with translated month names
-                              const startMonth = getMonthAbbreviation(nextWeekStart.getMonth(), t);
-                              const startDay = nextWeekStart.getDate();
-                              const endDay = nextWeekEnd.getDate();
-                              const endMonth = getMonthAbbreviation(nextWeekEnd.getMonth(), t);
-                              
-                              // If start and end are in the same month, use "Month Day-Day" format
-                              if (startMonth === endMonth) {
-                                return `${startMonth} ${startDay}-${endDay}`;
-                              }
-                              
-                              // Otherwise, use "Month Day-Month Day" format
-                              return `${startMonth} ${startDay}-${endMonth} ${endDay}`;
-                            })()}
-                          </span>
-                        </button>
+                      {is4WeekProgram ? (
+                        // For 4-week custom programs, show weeks 1-4 with actual dates
+                        [1, 2, 3, 4].map((weekNumber) => (
+                          <button
+                            key={`week-${weekNumber}`}
+                            data-week={weekNumber}
+                            onClick={() => handleWeekChange(weekNumber)}
+                            className={`px-6 py-3 rounded-lg font-medium transition-colors duration-200 ${
+                              selectedWeek === weekNumber
+                                ? 'bg-indigo-600 text-white'
+                                : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white'
+                            }`}
+                          >
+                            {t('exerciseProgram.weekTab')} {weekNumber}
+                            {program.createdAt && (
+                              <span className="text-xs opacity-70 block">
+                                {(() => {
+                                  // Calculate week start for this specific week number
+                                  const programStart = new Date(program.createdAt);
+                                  const weekStartDate = new Date(programStart);
+                                  weekStartDate.setDate(programStart.getDate() + ((weekNumber - 1) * 7));
+                                  
+                                  // Get start of week (Monday) and end of week (Sunday) for this week
+                                  const weekStart = getStartOfWeek(weekStartDate);
+                                  const weekEnd = getEndOfWeek(weekStartDate);
+                                  
+                                  // Format the dates with translated month names
+                                  const startMonth = getMonthAbbreviation(weekStart.getMonth(), t);
+                                  const startDay = weekStart.getDate();
+                                  const endDay = weekEnd.getDate();
+                                  const endMonth = getMonthAbbreviation(weekEnd.getMonth(), t);
+                                  
+                                  // If start and end are in the same month, use "Month Day-Day" format
+                                  if (startMonth === endMonth) {
+                                    return `${startMonth} ${startDay}-${endDay}`;
+                                  }
+                                  
+                                  // Otherwise, use "Month Day-Month Day" format
+                                  return `${startMonth} ${startDay}-${endMonth} ${endDay}`;
+                                })()}
+                              </span>
+                            )}
+                          </button>
+                        ))
+                      ) : (
+                        // For regular programs, show original week tabs
+                        <>
+                          {/* Current week tab */}
+                          <button
+                            key="week-1"
+                            data-week={1}
+                            onClick={() => handleWeekChange(1)}
+                            className={`px-6 py-3 rounded-lg font-medium transition-colors duration-200 ${
+                              selectedWeek === 1
+                                ? 'bg-indigo-600 text-white'
+                                : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white'
+                            }`}
+                          >
+                            {t('exerciseProgram.weekTab')}{' '}
+                            {program.createdAt
+                              ? getWeekNumber(new Date(program.createdAt))
+                              : getWeekNumber(currentDate)}
+                            {program.createdAt && (
+                              <span className="text-xs opacity-70 block">
+                                {(() => {
+                                  // Calculate week start (Monday) and end (Sunday) dates
+                                  const weekCreatedAt = new Date(program.createdAt);
+                                  const weekStart = getStartOfWeek(weekCreatedAt);
+                                  const weekEnd = getEndOfWeek(weekCreatedAt);
+                                  
+                                  // Format the dates with translated month names
+                                  const startMonth = getMonthAbbreviation(weekStart.getMonth(), t);
+                                  const startDay = weekStart.getDate();
+                                  const endDay = weekEnd.getDate();
+                                  const endMonth = getMonthAbbreviation(weekEnd.getMonth(), t);
+                                  
+                                  // If start and end are in the same month, use "Month Day-Day" format
+                                  if (startMonth === endMonth) {
+                                    return `${startMonth} ${startDay}-${endDay}`;
+                                  }
+                                  
+                                  // Otherwise, use "Month Day-Month Day" format
+                                  return `${startMonth} ${startDay}-${endMonth} ${endDay}`;
+                                })()}
+                              </span>
+                            )}
+                          </button>
+                          
+                          {/* Next week button for non-custom programs */}
+                          {!isCustomProgram && (
+                            <button
+                              data-week={2}
+                              className={`px-6 py-3 rounded-lg font-medium transition-colors duration-200 ${
+                                selectedWeek === 2
+                                  ? 'bg-indigo-600 text-white'
+                                  : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white'
+                              }`}
+                              onClick={() => handleWeekChange(2)}
+                            >
+                              {t('exerciseProgram.weekTab')}{' '}
+                              {program.createdAt ? getWeekNumber(new Date(program.createdAt)) + 1 : getWeekNumber(currentDate) + 1}
+                              <span className="text-xs opacity-70 block">
+                                {(() => {
+                                  // Calculate next week's date range
+                                  const nextWeekStart = program.createdAt 
+                                    ? (() => {
+                                        const weekEnd = getEndOfWeek(new Date(program.createdAt));
+                                        const nextWeekStart = new Date(weekEnd);
+                                        nextWeekStart.setDate(nextWeekStart.getDate() + 1);
+                                        return getStartOfWeek(nextWeekStart);
+                                      })()
+                                    : (() => {
+                                        const nextWeek = new Date(currentDate.getTime() + 7 * 24 * 60 * 60 * 1000);
+                                        return getStartOfWeek(nextWeek);
+                                      })();
+                                  const nextWeekEnd = getEndOfWeek(nextWeekStart);
+                                  
+                                  // Format the dates with translated month names
+                                  const startMonth = getMonthAbbreviation(nextWeekStart.getMonth(), t);
+                                  const startDay = nextWeekStart.getDate();
+                                  const endDay = nextWeekEnd.getDate();
+                                  const endMonth = getMonthAbbreviation(nextWeekEnd.getMonth(), t);
+                                  
+                                  // If start and end are in the same month, use "Month Day-Day" format
+                                  if (startMonth === endMonth) {
+                                    return `${startMonth} ${startDay}-${endDay}`;
+                                  }
+                                  
+                                  // Otherwise, use "Month Day-Month Day" format
+                                  return `${startMonth} ${startDay}-${endMonth} ${endDay}`;
+                                })()}
+                              </span>
+                            </button>
+                          )}
+                        </>
                       )}
                     </div>
                   </div>
@@ -785,8 +880,9 @@ export function ExerciseProgramPage({
                   return <SignUpToContinueCard t={t} router={router} />;
                 }
 
-                if (selectedWeek === 1 && selectedWeekData) { 
-                  // Show the current week's content
+                // For 4-week programs, show content for any valid week (1-4)
+                if (is4WeekProgram && selectedWeek >= 1 && selectedWeek <= 4 && selectedWeekData) {
+                  // Show the selected week's content
                   return (
                     <>
                       {/* Day Tabs */}
@@ -845,7 +941,67 @@ export function ExerciseProgramPage({
                       })}
                     </>
                   );
-                } else if (selectedWeek > 1) {
+                } else if (selectedWeek === 1 && selectedWeekData && !is4WeekProgram) {
+                  // Show regular program content (single week)
+                  return (
+                    <>
+                      {/* Day Tabs */}
+                      <div className="overflow-x-auto scrollbar-hide mb-6">
+                        <div className="flex space-x-2 min-w-max">
+                          {/* Sort days by day.day to ensure chronological order */}
+                          {[...selectedWeekData.days].sort((a, b) => a.day - b.day).map((day) => (
+                            <button
+                              key={day.day}
+                              data-day={day.day}
+                              onClick={() => handleDayClick(day.day)}
+                              className={`px-6 py-3 rounded-lg font-medium transition-colors duration-200 flex flex-col items-center ${
+                                expandedDays.includes(day.day)
+                                  ? 'bg-indigo-600 text-white'
+                                  : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white opacity-50'
+                              }`}
+                            >
+                              <span className="text-sm opacity-80 mb-1">
+                                {getDayShortName(day.day, t)}
+                              </span>
+                              {day.isRestDay ? (
+                                <span className="text-xs mt-1 opacity-80">
+                                  {t('exerciseProgram.day.rest')}
+                                </span>
+                              ) : (
+                                <span className="text-xs mt-1 opacity-80">
+                                  {t('calendar.workout')}
+                                </span>
+                              )}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Day Content */}
+                      {expandedDays.map((dayNumber) => {
+                        const day = selectedWeekData.days.find(
+                          (d) => d.day === dayNumber
+                        );
+                        if (!day) return null;
+
+                        // Get the correct day index based on day.day, not array position
+                        const dayIndex = day.day - 1; // Subtract 1 since day.day is 1-based
+
+                        return (
+                          <ProgramDaySummaryComponent
+                            key={day.day}
+                            day={day}
+                            dayName={dayName(dayIndex + 1)}
+                            isHighlighted={day.day === 1} // This might need adjustment based on context
+                            onClick={() =>
+                              handleDayDetailClick(day, dayName(dayIndex + 1))
+                            }
+                          />
+                        );
+                      })}
+                    </>
+                  );
+                } else if (selectedWeek > 1 && !is4WeekProgram) {
                   // This case is for selectedWeek > 1 (beyond this single week program)
                   return renderNextWeekCard();
                 }

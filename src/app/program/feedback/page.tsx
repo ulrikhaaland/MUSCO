@@ -76,24 +76,14 @@ function FeedbackPageContent() {
     }
 
     try {
-      // Extract only the latest week from the program for the follow-up
-      const latestWeekNumber = Math.max(
-        ...(program?.program?.map((week) => week.week) || [0])
-      );
-      const latestWeek = program?.program?.find(
-        (week) => week.week === latestWeekNumber
-      );
-
-      // Create a new program object with only the latest week
-      const programWithLatestWeek = {
-        ...program,
-        program: latestWeek ? [latestWeek] : [],
-      };
+      // For custom 4-week programs, use the entire program since it's already structured correctly
+      // For regular programs, use the program as-is
+      const programForFeedback = program;
 
       // Submit feedback and generate new program
       const newProgramId = await submitProgramFeedback(
         user.uid,
-        programWithLatestWeek,
+        programForFeedback,
         diagnosisData,
         answers,
         feedback

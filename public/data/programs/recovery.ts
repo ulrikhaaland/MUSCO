@@ -8,6 +8,8 @@
 // ------------------------------------------------------------
 
 import { ExerciseProgram } from '../../../src/app/types/program';
+import { DiagnosisAssistantResponse } from '../../../src/app/types';
+import { ExerciseQuestionnaireAnswers, ProgramType } from '../../../src/app/shared/types';
 
 // ------------------------------------------------------------
 // Rest‑Day Templates for BodAI Rehab Programs
@@ -2848,4 +2850,505 @@ export const getProgramBySlug = (slug: string): ExerciseProgram | null => {
 // Function to get all available program slugs
 export const getAvailableSlugs = (): string[] => {
   return Object.keys(programSlugs);
+};
+
+// Create tailored UserProgram objects for each recovery program
+export const getUserProgramBySlug = (slug: string): {
+  programs: ExerciseProgram[];
+  diagnosis: DiagnosisAssistantResponse;
+  questionnaire: ExerciseQuestionnaireAnswers;
+  active: boolean;
+  createdAt: string;
+  updatedAt: Date;
+  type: ProgramType;
+  timeFrame: string;
+  title: string;
+  docId: string;
+} | null => {
+  // Get the 4 separate week programs instead of the combined 28-day program
+  const baseIndex = programSlugs[slug.toLowerCase()];
+  if (typeof baseIndex !== 'number') return null;
+  
+  // Get all 4 weeks for this condition as separate programs
+  const week1 = rehabPrograms[baseIndex];
+  const week2 = rehabPrograms[baseIndex + 1];
+  const week3 = rehabPrograms[baseIndex + 2];
+  const week4 = rehabPrograms[baseIndex + 3];
+  
+  if (!week1 || !week2 || !week3 || !week4) return null;
+
+  const today = new Date();
+  const normalizedSlug = slug.toLowerCase();
+
+  // Update each week's createdAt to today so dates display correctly
+  const updatedWeekPrograms = [
+    { ...week1, createdAt: today },
+    { ...week2, createdAt: today },
+    { ...week3, createdAt: today },
+    { ...week4, createdAt: today }
+  ];
+
+  // Create specific diagnosis and questionnaire for each program type
+  if (normalizedSlug.includes('lowback') || normalizedSlug.includes('low-back') || normalizedSlug.includes('lower-back')) {
+    return {
+      programs: updatedWeekPrograms,
+      diagnosis: {
+        diagnosis: 'Lower Back Pain',
+        painfulAreas: ['Lower Back'],
+        informationalInsights: 'Lower back pain is one of the most common musculoskeletal complaints. This program focuses on strengthening core muscles, improving spinal mobility, and addressing postural dysfunction to reduce pain and prevent recurrence.',
+        onset: 'gradual',
+        painScale: 5,
+        mechanismOfInjury: 'posture',
+        aggravatingFactors: 'Prolonged sitting, bending forward, lifting',
+        relievingFactors: 'Rest, gentle movement, heat therapy',
+        priorInjury: 'unknown',
+        painPattern: 'activity-dependent',
+        painLocation: 'Lower lumbar region',
+        painCharacter: 'dull',
+        assessmentComplete: true,
+        redFlagsPresent: false,
+        avoidActivities: ['Heavy lifting', 'Prolonged sitting', 'High-impact activities'],
+        recoveryGoals: ['Reduce pain', 'Improve mobility', 'Strengthen core', 'Prevent future episodes'],
+        timeFrame: '4 weeks',
+        followUpQuestions: [],
+        programType: ProgramType.Recovery,
+        targetAreas: ['Lower Back', 'Core']
+      },
+      questionnaire: {
+        age: '30-40',
+        lastYearsExerciseFrequency: '1-2 times per week',
+        numberOfActivityDays: '3',
+        generallyPainfulAreas: ['Lower Back'],
+        exerciseEnvironments: 'at_home',
+        workoutDuration: '20-30 minutes',
+        targetAreas: ['Lower Back', 'Core'],
+        experienceLevel: 'beginner',
+        equipment: ['bodyweight', 'resistance_bands']
+      },
+      active: true,
+      createdAt: today.toISOString(),
+      updatedAt: today,
+      type: ProgramType.Recovery,
+      timeFrame: '4 weeks',
+      title: 'Lower Back Pain Recovery',
+      docId: `recovery-lowback-${Date.now()}`
+    };
+  }
+
+  if (normalizedSlug.includes('runners') || normalizedSlug.includes('knee')) {
+    return {
+      programs: updatedWeekPrograms,
+      diagnosis: {
+        diagnosis: 'Patellofemoral Pain Syndrome (Runner\'s Knee)',
+        painfulAreas: ['Knee'],
+        informationalInsights: 'Runner\'s knee is characterized by pain around or behind the kneecap. This program focuses on strengthening the quadriceps, glutes, and hip muscles while improving flexibility and movement patterns.',
+        onset: 'gradual',
+        painScale: 4,
+        mechanismOfInjury: 'overuse',
+        aggravatingFactors: 'Running, stairs, prolonged sitting',
+        relievingFactors: 'Rest, ice, gentle stretching',
+        priorInjury: 'no',
+        painPattern: 'activity-dependent',
+        painLocation: 'Around or behind kneecap',
+        painCharacter: 'aching',
+        assessmentComplete: true,
+        redFlagsPresent: false,
+        avoidActivities: ['Running', 'Jumping', 'Deep squats'],
+        recoveryGoals: ['Reduce knee pain', 'Strengthen supporting muscles', 'Improve movement patterns', 'Return to running'],
+        timeFrame: '4 weeks',
+        followUpQuestions: [],
+        programType: ProgramType.Recovery,
+        targetAreas: ['Knee', 'Quadriceps', 'Glutes']
+      },
+      questionnaire: {
+        age: '25-35',
+        lastYearsExerciseFrequency: '3-4 times per week',
+        numberOfActivityDays: '4',
+        generallyPainfulAreas: ['Knee'],
+        exerciseEnvironments: 'at_home',
+        workoutDuration: '30-45 minutes',
+        targetAreas: ['Knee', 'Quadriceps', 'Glutes'],
+        experienceLevel: 'intermediate',
+        equipment: ['bodyweight', 'resistance_bands']
+      },
+      active: true,
+      createdAt: today.toISOString(),
+      updatedAt: today,
+      type: ProgramType.Recovery,
+      timeFrame: '4 weeks',
+      title: 'Patellofemoral Pain Syndrome Recovery',
+      docId: `recovery-runnersknee-${Date.now()}`
+    };
+  }
+
+  if (normalizedSlug.includes('shoulder')) {
+    return {
+      programs: updatedWeekPrograms,
+      diagnosis: {
+        diagnosis: 'Shoulder Impingement Syndrome',
+        painfulAreas: ['Shoulder'],
+        informationalInsights: 'Shoulder impingement occurs when soft tissues are compressed during shoulder movements. This program focuses on strengthening the rotator cuff, improving posture, and restoring normal shoulder mechanics.',
+        onset: 'gradual',
+        painScale: 5,
+        mechanismOfInjury: 'overuse',
+        aggravatingFactors: 'Overhead activities, reaching behind back, sleeping on affected side',
+        relievingFactors: 'Rest, avoiding overhead movements, ice',
+        priorInjury: 'unknown',
+        painPattern: 'activity-dependent',
+        painLocation: 'Top and front of shoulder',
+        painCharacter: 'sharp',
+        assessmentComplete: true,
+        redFlagsPresent: false,
+        avoidActivities: ['Overhead lifting', 'Throwing motions', 'Sleeping on affected side'],
+        recoveryGoals: ['Reduce shoulder pain', 'Improve range of motion', 'Strengthen rotator cuff', 'Restore normal function'],
+        timeFrame: '4 weeks',
+        followUpQuestions: [],
+        programType: ProgramType.Recovery,
+        targetAreas: ['Shoulder', 'Rotator Cuff']
+      },
+      questionnaire: {
+        age: '35-45',
+        lastYearsExerciseFrequency: '2-3 times per week',
+        numberOfActivityDays: '3',
+        generallyPainfulAreas: ['Shoulder'],
+        exerciseEnvironments: 'at_home',
+        workoutDuration: '25-35 minutes',
+        targetAreas: ['Shoulder', 'Rotator Cuff'],
+        experienceLevel: 'beginner',
+        equipment: ['resistance_bands', 'light_weights']
+      },
+      active: true,
+      createdAt: today.toISOString(),
+      updatedAt: today,
+      type: ProgramType.Recovery,
+      timeFrame: '4 weeks',
+      title: 'Shoulder Impingement Recovery',
+      docId: `recovery-shoulder-${Date.now()}`
+    };
+  }
+
+  if (normalizedSlug.includes('ankle')) {
+    return {
+      programs: updatedWeekPrograms,
+      diagnosis: {
+        diagnosis: 'Ankle Sprain Recovery',
+        painfulAreas: ['Ankle'],
+        informationalInsights: 'Ankle sprains are common injuries that require proper rehabilitation to prevent re-injury. This program focuses on restoring range of motion, strength, balance, and proprioception.',
+        onset: 'acute',
+        painScale: 4,
+        mechanismOfInjury: 'trauma',
+        aggravatingFactors: 'Walking on uneven surfaces, weight bearing, lateral movements',
+        relievingFactors: 'Rest, elevation, ice, compression',
+        priorInjury: 'unknown',
+        painPattern: 'activity-dependent',
+        painLocation: 'Lateral ankle',
+        painCharacter: 'sharp',
+        assessmentComplete: true,
+        redFlagsPresent: false,
+        avoidActivities: ['Running', 'Jumping', 'Sports with cutting movements'],
+        recoveryGoals: ['Reduce swelling and pain', 'Restore range of motion', 'Improve balance', 'Return to activities'],
+        timeFrame: '4 weeks',
+        followUpQuestions: [],
+        programType: ProgramType.Recovery,
+        targetAreas: ['Ankle', 'Calf']
+      },
+      questionnaire: {
+        age: '20-30',
+        lastYearsExerciseFrequency: '3-4 times per week',
+        numberOfActivityDays: '4',
+        generallyPainfulAreas: ['Ankle'],
+        exerciseEnvironments: 'at_home',
+        workoutDuration: '20-30 minutes',
+        targetAreas: ['Ankle', 'Calf'],
+        experienceLevel: 'intermediate',
+        equipment: ['bodyweight', 'resistance_bands']
+      },
+      active: true,
+      createdAt: today.toISOString(),
+      updatedAt: today,
+      type: ProgramType.Recovery,
+      timeFrame: '4 weeks',
+      title: 'Ankle Sprain Recovery',
+      docId: `recovery-ankle-${Date.now()}`
+    };
+  }
+
+  if (normalizedSlug.includes('tennis') || normalizedSlug.includes('elbow')) {
+    return {
+      programs: updatedWeekPrograms,
+      diagnosis: {
+        diagnosis: 'Lateral Epicondylitis (Tennis Elbow)',
+        painfulAreas: ['Elbow', 'Forearm'],
+        informationalInsights: 'Tennis elbow is caused by overuse of the extensor muscles of the forearm. This program focuses on eccentric strengthening, progressive loading, and addressing contributing factors.',
+        onset: 'gradual',
+        painScale: 5,
+        mechanismOfInjury: 'overuse',
+        aggravatingFactors: 'Gripping, lifting, computer use, racquet sports',
+        relievingFactors: 'Rest, ice, avoiding aggravating activities',
+        priorInjury: 'no',
+        painPattern: 'activity-dependent',
+        painLocation: 'Lateral elbow',
+        painCharacter: 'aching',
+        assessmentComplete: true,
+        redFlagsPresent: false,
+        avoidActivities: ['Heavy gripping', 'Racquet sports', 'Repetitive wrist extension'],
+        recoveryGoals: ['Reduce elbow pain', 'Improve grip strength', 'Return to activities', 'Prevent recurrence'],
+        timeFrame: '4 weeks',
+        followUpQuestions: [],
+        programType: ProgramType.Recovery,
+        targetAreas: ['Elbow', 'Forearm', 'Wrist']
+      },
+      questionnaire: {
+        age: '35-50',
+        lastYearsExerciseFrequency: '2-3 times per week',
+        numberOfActivityDays: '3',
+        generallyPainfulAreas: ['Elbow', 'Forearm'],
+        exerciseEnvironments: 'at_home',
+        workoutDuration: '20-30 minutes',
+        targetAreas: ['Elbow', 'Forearm', 'Wrist'],
+        experienceLevel: 'beginner',
+        equipment: ['light_weights', 'resistance_bands']
+      },
+      active: true,
+      createdAt: today.toISOString(),
+      updatedAt: today,
+      type: ProgramType.Recovery,
+      timeFrame: '4 weeks',
+      title: 'Lateral Epicondylitis Recovery',
+      docId: `recovery-tennis-elbow-${Date.now()}`
+    };
+  }
+
+  if (normalizedSlug.includes('techneck') || normalizedSlug.includes('tech-neck')) {
+    return {
+      programs: updatedWeekPrograms,
+      diagnosis: {
+        diagnosis: 'Tech Neck (Cervical Strain)',
+        painfulAreas: ['Neck', 'Upper Back'],
+        informationalInsights: 'Tech neck results from prolonged forward head posture during device use. This program addresses postural dysfunction, strengthens deep neck flexors, and improves upper back mobility.',
+        onset: 'gradual',
+        painScale: 4,
+        mechanismOfInjury: 'posture',
+        aggravatingFactors: 'Computer work, phone use, poor posture, stress',
+        relievingFactors: 'Posture breaks, gentle stretching, heat',
+        priorInjury: 'unknown',
+        painPattern: 'constant',
+        painLocation: 'Back of neck and upper shoulders',
+        painCharacter: 'tight',
+        assessmentComplete: true,
+        redFlagsPresent: false,
+        avoidActivities: ['Prolonged computer use without breaks', 'Looking down at phone for extended periods'],
+        recoveryGoals: ['Reduce neck pain', 'Improve posture', 'Increase mobility', 'Prevent future episodes'],
+        timeFrame: '4 weeks',
+        followUpQuestions: [],
+        programType: ProgramType.Recovery,
+        targetAreas: ['Neck', 'Upper Back', 'Shoulders']
+      },
+      questionnaire: {
+        age: '25-40',
+        lastYearsExerciseFrequency: '1-2 times per week',
+        numberOfActivityDays: '3',
+        generallyPainfulAreas: ['Neck', 'Upper Back'],
+        exerciseEnvironments: 'at_home',
+        workoutDuration: '15-25 minutes',
+        targetAreas: ['Neck', 'Upper Back', 'Shoulders'],
+        experienceLevel: 'beginner',
+        equipment: ['bodyweight']
+      },
+      active: true,
+      createdAt: today.toISOString(),
+      updatedAt: today,
+      type: ProgramType.Recovery,
+      timeFrame: '4 weeks',
+      title: 'Tech Neck (Cervical Strain) Recovery',
+      docId: `recovery-techneck-${Date.now()}`
+    };
+  }
+
+  if (normalizedSlug.includes('plantar')) {
+    return {
+      programs: updatedWeekPrograms,
+      diagnosis: {
+        diagnosis: 'Plantar Fasciitis',
+        painfulAreas: ['Foot'],
+        informationalInsights: 'Plantar fasciitis involves inflammation of the plantar fascia, causing heel pain. This program focuses on stretching, strengthening, and addressing biomechanical factors.',
+        onset: 'gradual',
+        painScale: 6,
+        mechanismOfInjury: 'overuse',
+        aggravatingFactors: 'First steps in morning, prolonged standing, walking barefoot',
+        relievingFactors: 'Rest, ice, supportive footwear, stretching',
+        priorInjury: 'no',
+        painPattern: 'activity-dependent',
+        painLocation: 'Bottom of heel',
+        painCharacter: 'sharp',
+        assessmentComplete: true,
+        redFlagsPresent: false,
+        avoidActivities: ['Running on hard surfaces', 'Walking barefoot', 'High-impact activities'],
+        recoveryGoals: ['Reduce heel pain', 'Improve foot flexibility', 'Strengthen supporting muscles', 'Return to walking/running'],
+        timeFrame: '4 weeks',
+        followUpQuestions: [],
+        programType: ProgramType.Recovery,
+        targetAreas: ['Foot', 'Calf', 'Ankle']
+      },
+      questionnaire: {
+        age: '40-55',
+        lastYearsExerciseFrequency: '2-3 times per week',
+        numberOfActivityDays: '3',
+        generallyPainfulAreas: ['Foot'],
+        exerciseEnvironments: 'at_home',
+        workoutDuration: '15-25 minutes',
+        targetAreas: ['Foot', 'Calf', 'Ankle'],
+        experienceLevel: 'beginner',
+        equipment: ['bodyweight', 'tennis_ball']
+      },
+      active: true,
+      createdAt: today.toISOString(),
+      updatedAt: today,
+      type: ProgramType.Recovery,
+      timeFrame: '4 weeks',
+      title: 'Plantar Fasciitis Recovery',
+      docId: `recovery-plantar-${Date.now()}`
+    };
+  }
+
+  if (normalizedSlug.includes('hamstring')) {
+    return {
+      programs: updatedWeekPrograms,
+      diagnosis: {
+        diagnosis: 'Hamstring Strain',
+        painfulAreas: ['Hamstring'],
+        informationalInsights: 'Hamstring strains are common in athletes and active individuals. This program focuses on progressive strengthening, flexibility, and functional movement patterns to prevent re-injury.',
+        onset: 'acute',
+        painScale: 5,
+        mechanismOfInjury: 'trauma',
+        aggravatingFactors: 'Running, stretching, bending forward',
+        relievingFactors: 'Rest, ice, gentle movement',
+        priorInjury: 'unknown',
+        painPattern: 'activity-dependent',
+        painLocation: 'Back of thigh',
+        painCharacter: 'sharp',
+        assessmentComplete: true,
+        redFlagsPresent: false,
+        avoidActivities: ['Sprinting', 'Aggressive stretching', 'High-intensity leg exercises'],
+        recoveryGoals: ['Reduce pain and inflammation', 'Restore flexibility', 'Progressive strengthening', 'Return to sport'],
+        timeFrame: '4 weeks',
+        followUpQuestions: [],
+        programType: ProgramType.Recovery,
+        targetAreas: ['Hamstring', 'Glutes']
+      },
+      questionnaire: {
+        age: '20-35',
+        lastYearsExerciseFrequency: '4-5 times per week',
+        numberOfActivityDays: '5',
+        generallyPainfulAreas: ['Hamstring'],
+        exerciseEnvironments: 'at_home',
+        workoutDuration: '30-40 minutes',
+        targetAreas: ['Hamstring', 'Glutes'],
+        experienceLevel: 'intermediate',
+        equipment: ['bodyweight', 'resistance_bands']
+      },
+      active: true,
+      createdAt: today.toISOString(),
+      updatedAt: today,
+      type: ProgramType.Recovery,
+      timeFrame: '4 weeks',
+      title: 'Hamstring Strain Recovery',
+      docId: `recovery-hamstring-${Date.now()}`
+    };
+  }
+
+  if (normalizedSlug.includes('upper-back') || normalizedSlug.includes('upperback')) {
+    return {
+      programs: updatedWeekPrograms,
+      diagnosis: {
+        diagnosis: 'Upper Back & Core Dysfunction',
+        painfulAreas: ['Upper Back', 'Core'],
+        informationalInsights: 'Upper back pain often results from poor posture and weak core muscles. This program strengthens the thoracic spine, improves posture, and builds core stability.',
+        onset: 'gradual',
+        painScale: 4,
+        mechanismOfInjury: 'posture',
+        aggravatingFactors: 'Desk work, poor posture, stress, heavy lifting',
+        relievingFactors: 'Movement, stretching, posture correction',
+        priorInjury: 'unknown',
+        painPattern: 'constant',
+        painLocation: 'Between shoulder blades',
+        painCharacter: 'tight',
+        assessmentComplete: true,
+        redFlagsPresent: false,
+        avoidActivities: ['Prolonged slouching', 'Heavy overhead lifting', 'Poor lifting mechanics'],
+        recoveryGoals: ['Reduce upper back tension', 'Improve posture', 'Strengthen core', 'Increase mobility'],
+        timeFrame: '4 weeks',
+        followUpQuestions: [],
+        programType: ProgramType.Recovery,
+        targetAreas: ['Upper Back', 'Core', 'Shoulders']
+      },
+      questionnaire: {
+        age: '30-45',
+        lastYearsExerciseFrequency: '1-2 times per week',
+        numberOfActivityDays: '3',
+        generallyPainfulAreas: ['Upper Back'],
+        exerciseEnvironments: 'at_home',
+        workoutDuration: '25-35 minutes',
+        targetAreas: ['Upper Back', 'Core', 'Shoulders'],
+        experienceLevel: 'beginner',
+        equipment: ['bodyweight', 'resistance_bands']
+      },
+      active: true,
+      createdAt: today.toISOString(),
+      updatedAt: today,
+      type: ProgramType.Recovery,
+      timeFrame: '4 weeks',
+      title: 'Upper Back & Core Dysfunction Recovery',
+      docId: `recovery-upperback-${Date.now()}`
+    };
+  }
+
+  if (normalizedSlug.includes('core')) {
+    return {
+      programs: updatedWeekPrograms,
+      diagnosis: {
+        diagnosis: 'Core Instability',
+        painfulAreas: ['Core', 'Lower Back'],
+        informationalInsights: 'Core instability can lead to lower back pain and poor movement patterns. This program focuses on deep core strengthening, spinal stabilization, and functional movement.',
+        onset: 'gradual',
+        painScale: 3,
+        mechanismOfInjury: 'posture',
+        aggravatingFactors: 'Poor posture, weak core muscles, sedentary lifestyle',
+        relievingFactors: 'Core strengthening, proper posture, regular movement',
+        priorInjury: 'unknown',
+        painPattern: 'activity-dependent',
+        painLocation: 'Lower back and abdominal region',
+        painCharacter: 'dull',
+        assessmentComplete: true,
+        redFlagsPresent: false,
+        avoidActivities: ['Heavy lifting with poor form', 'Prolonged sitting', 'High-impact activities without proper preparation'],
+        recoveryGoals: ['Improve core stability', 'Reduce back pain', 'Better movement patterns', 'Injury prevention'],
+        timeFrame: '4 weeks',
+        followUpQuestions: [],
+        programType: ProgramType.Recovery,
+        targetAreas: ['Core', 'Lower Back']
+      },
+      questionnaire: {
+        age: '25-40',
+        lastYearsExerciseFrequency: '1-2 times per week',
+        numberOfActivityDays: '3',
+        generallyPainfulAreas: ['Core', 'Lower Back'],
+        exerciseEnvironments: 'at_home',
+        workoutDuration: '20-30 minutes',
+        targetAreas: ['Core', 'Lower Back'],
+        experienceLevel: 'beginner',
+        equipment: ['bodyweight']
+      },
+      active: true,
+      createdAt: today.toISOString(),
+      updatedAt: today,
+      type: ProgramType.Recovery,
+      timeFrame: '4 weeks',
+      title: 'Core Instability Recovery',
+      docId: `recovery-core-${Date.now()}`
+    };
+  }
+
+  // Fallback for any unmatched slugs
+  return null;
 };

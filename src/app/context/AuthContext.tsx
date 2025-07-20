@@ -418,7 +418,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     
     // Include program data if provided
     if (program) {
-      requestData.program = program;
+      // Check if we have a recovery program stored in sessionStorage with UserProgram structure
+      const recoveryProgramData = window.sessionStorage.getItem('currentRecoveryProgram');
+      if (recoveryProgramData) {
+        try {
+          const parsed = JSON.parse(recoveryProgramData);
+          // If we have the new UserProgram structure, use that
+          if (parsed.userProgram) {
+            requestData.program = parsed.userProgram;
+          } else {
+            // Fallback to the simple program structure
+            requestData.program = program;
+          }
+        } catch (error) {
+          console.error('Error parsing recovery program data:', error);
+          requestData.program = program;
+        }
+      } else {
+        // Regular program (not recovery)
+        requestData.program = program;
+      }
     }
 
     try {
