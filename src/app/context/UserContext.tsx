@@ -126,6 +126,8 @@ export function UserProvider({ children }: { children: ReactNode }) {
       ...userProgram.programs[0],
       days: mergePrograms(userProgram.programs),
       docId: userProgram.docId,
+      // Ensure createdAt is properly set for date calculations
+      createdAt: userProgram.programs[0]?.createdAt || new Date(),
     } as ExerciseProgram & { docId: string };
 
     setProgram(combinedProgram);
@@ -334,7 +336,16 @@ export function UserProvider({ children }: { children: ReactNode }) {
               if (!programSnapshot.empty) {
                 const exercisePrograms = await Promise.all(
                   programSnapshot.docs.map(async (programDoc) => {
-                    const program = programDoc.data() as ExerciseProgram;
+                    const programData = programDoc.data();
+                    const program = programData as ExerciseProgram;
+                    
+                    // Convert Firestore Timestamp to JavaScript Date
+                    if (programData.createdAt && typeof (programData.createdAt as any).toDate === 'function') {
+                      program.createdAt = (programData.createdAt as any).toDate();
+                    } else if (typeof programData.createdAt === 'string') {
+                      program.createdAt = new Date(programData.createdAt);
+                    }
+                    
                     await enrichExercisesWithFullData(program, isNorwegian);
                     return program;
                   })

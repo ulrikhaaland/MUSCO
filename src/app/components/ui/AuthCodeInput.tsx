@@ -209,18 +209,26 @@ export function AuthCodeInput() {
             // For recovery programs, save each week as a separate document
             console.log('💾 Saving recovery program with', data.program.programs.length, 'weeks');
             
+            const baseDate = new Date();
+            
             for (let i = 0; i < data.program.programs.length; i++) {
               const weekProgram = data.program.programs[i];
+              
+              // Set progressive dates: Week 1 = today, Week 2 = today + 7 days, etc.
+              const weekDate = new Date(baseDate);
+              weekDate.setDate(baseDate.getDate() + (i * 7));
+              
               const programDataDoc = {
                 ...weekProgram,
-                createdAt: new Date(),
+                createdAt: weekDate,
               };
               
               console.log(`📊 Week ${i + 1} program data:`, {
                 title: programDataDoc.title,
                 type: programDataDoc.type,
                 programDays: programDataDoc.days?.length || 'unknown',
-                hasExercises: !!programDataDoc.days?.[0]?.exercises
+                hasExercises: !!programDataDoc.days?.[0]?.exercises,
+                createdAt: weekDate.toISOString()
               });
               
               const innerProgramDocRef = await addDoc(innerProgramsRef, programDataDoc);
