@@ -55,9 +55,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     console.log('Setting up auth state listener...');
     showGlobalLoader(true, t('auth.checkingLoginStatus'));
 
-    const unsubscribe = onAuthStateChanged(
-      auth,
-      async (firebaseUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      try {
         console.log(
           'Auth state changed:',
           firebaseUser ? 'User logged in' : 'No user'
@@ -106,8 +105,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             router.push('/');
           }
         }
-      },
-      (error) => {
+      } catch (error) {
         // onAuthStateChanged error
         console.error('Auth state change error:', error);
         handleAuthError(
@@ -118,7 +116,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setLoading(false);
         showGlobalLoader(false);
       }
-    );
+    });
 
     // Safety timeout: ensure loading state is eventually set to false
     // even if auth operations take too long or fail silently
@@ -295,8 +293,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     try {
-      const deleteProgramFunction = httpsCallable(functions, 'deleteUserProgram');
-      await deleteProgramFunction({ programId });
+      // Delete the program document directly from Firestore
+      const programDocRef = doc(db, 'users', user.uid, 'programs', programId);
+      await deleteDoc(programDocRef);
 
       toast.success(t('authContext.programDeletedSuccessfully'));
       logAnalyticsEvent('delete_program', { programId });
@@ -304,15 +303,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } catch (error: any) {
       console.error('Error deleting program:', error);
 
-      // Handle specific Firebase error codes
+      // Handle Firestore error codes
       let errorMessage = t('authContext.failedToDeleteProgram');
       
-      if (error.code === 'unauthenticated') {
-        errorMessage = t('authContext.mustBeLoggedInToDeleteProgram');
+      if (error.code === 'permission-denied') {
+        errorMessage = t('authContext.notAuthorizedToDeleteProgram');
       } else if (error.code === 'not-found') {
         errorMessage = t('authContext.programNotFound');
-      } else if (error.code === 'permission-denied') {
-        errorMessage = t('authContext.notAuthorizedToDeleteProgram');
       }
 
       toast.error(errorMessage);

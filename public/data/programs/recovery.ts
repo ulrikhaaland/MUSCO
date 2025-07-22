@@ -24,161 +24,299 @@ import { ExerciseQuestionnaireAnswers, ProgramType } from '../../../src/app/shar
 // ------------------------------------------------------------
 
 /* ---------------- Low‑Back Pain ---------------- */
-const createLowBackRestDay = (day: number): any => ({
-  day,
-  description:
-    'Rest day. Gentle spinal mobility and diaphragmatic breathing to reduce stiffness.',
-  isRestDay: true,
-  duration: 15,
-  exercises: [
-    {
-      exerciseId: 'warmup-9', // Stående Rotasjon av Overkropp
-      duration: 300, // 5 minutes in seconds
-      modification: 'Keep torso tall; rotate only to a comfortable range.',
-      warmup: true,
-    },
-    {
-      exerciseId: 'warmup-5', // Bekkentilt
-      duration: 300, // 5 minutes in seconds
-      modification: 'Engage core lightly; avoid lumbar pain.',
-      warmup: true,
-    },
-    {
-      exerciseId: 'lower-back-1', // Superman-løft (very low reps)
-      sets: 1,
-      repetitions: 8,
-      restBetweenSets: 45,
-      modification: 'Lift only to the point where tension is felt, not pain.',
-    },
-  ],
-});
+const createLowBackRestDay = (day: number): any => {
+  const base = {
+    day,
+    isRestDay: true,
+    duration: 15
+  };
+
+  if (day <= 7) {
+    // WEEK 1: Foundational mobility and diaphragm control
+    return {
+      ...base,
+      description: 'Rest day. Gentle spinal mobility and diaphragmatic breathing to reduce stiffness.',
+      exercises: [
+        { exerciseId: 'warmup-9', duration: 300, warmup: true, modification: 'Keep torso tall; rotate only to a comfortable range.' },
+        { exerciseId: 'warmup-5', duration: 300, warmup: true, modification: 'Engage core lightly; avoid lumbar pain.' },
+        { exerciseId: 'lower-back-1', sets: 1, repetitions: 8, restBetweenSets: 45, modification: 'Lift only to the point where tension is felt, not pain.' }
+      ]
+    };
+  }
+
+  if (day <= 14) {
+    // WEEK 2: Add hip stability and core tension hold
+    return {
+      ...base,
+      description: 'Rest day. Add light glute and core coordination to support spinal alignment.',
+      exercises: [
+        { exerciseId: 'warmup-5', duration: 300, warmup: true, modification: 'Pelvic tilt with breath coordination.' },
+        { exerciseId: 'glutes-7', sets: 1, repetitions: 15, restBetweenSets: 45, modification: 'Bodyweight bridge; pause 1s at top.' },
+        { exerciseId: 'lower-back-1', sets: 1, repetitions: 10, restBetweenSets: 45, modification: 'Controlled extension, no pain.' }
+      ]
+    };
+  }
+
+  if (day <= 21) {
+    // WEEK 3: Add oblique anti-rotation for control
+    return {
+      ...base,
+      description: 'Rest day. Reinforce deep core and oblique control while maintaining spinal neutrality.',
+      exercises: [
+        { exerciseId: 'obliques-4', sets: 1, repetitions: 10, restBetweenSets: 45, modification: 'Slow controlled movement; avoid trunk shifting.' },
+        { exerciseId: 'glutes-7', sets: 1, repetitions: 20, restBetweenSets: 45, modification: 'Add 2s pause at top of each rep.' },
+        { exerciseId: 'lower-back-1', sets: 1, repetitions: 10, restBetweenSets: 45, modification: 'Limit range if tension increases.' }
+      ]
+    };
+  }
+
+  // WEEK 4: Breathing under load + trunk endurance
+  return {
+    ...base,
+    description: 'Rest day. Integrate breathing with movement and reinforce core-endurance patterns.',
+    exercises: [
+      { exerciseId: 'abs-20', sets: 1, repetitions: 10, restBetweenSets: 45, modification: 'Exhale during lift, keep lumbar spine neutral.' },
+      { exerciseId: 'glutes-7', sets: 2, repetitions: 15, restBetweenSets: 45, modification: 'Hold 1s, avoid hyperextension.' },
+      { exerciseId: 'lower-back-1', sets: 2, repetitions: 8, restBetweenSets: 45, modification: 'Light lift, pause, and controlled lower.' }
+    ]
+  };
+};
 
 /* ---------------- Runner's Knee ---------------- */
-const createRunnersKneeRestDay = (day: number): any => ({
-  day,
-  description:
-    'Rest day. Light quad/hip mobility to maintain blood flow without stressing the knee joint.',
-  isRestDay: true,
-  duration: 15,
-  exercises: [
-    {
-      exerciseId: 'warmup-3', // Treadmill Walk
-      duration: 300, // 5 minutes in seconds
-      modification: 'Walk at 5 % incline, easy pace, no pain.',
-      warmup: true,
-    },
-    {
-      exerciseId: 'glutes-44', // Liggende Hofteabduksjon
-      sets: 2,
-      repetitions: 12,
-      restBetweenSets: 45,
-      modification: 'Pause 1 s at the top; keep pelvis stable.',
-    },
-    {
-      exerciseId: 'quads-193', // Veggsitt (isometric, short)
-      sets: 1,
-      duration: 30,
-      restBetweenSets: 60,
-      modification: 'Hold shallow angle (≤ 60° knee flexion).',
-    },
-  ],
-});
+const createRunnersKneeRestDay = (day: number): any => {
+  const base = {
+    day,
+    isRestDay: true,
+    duration: 15
+  };
+
+  if (day <= 7) {
+    // WEEK 1: Circulation + basic isometric control
+    return {
+      ...base,
+      description: 'Rest day. Light quad/hip mobility to maintain blood flow without stressing the knee joint.',
+      exercises: [
+        { exerciseId: 'warmup-3', duration: 300, warmup: true, modification: 'Walk at 5% incline, easy pace, no pain.' },
+        { exerciseId: 'glutes-44', sets: 2, repetitions: 12, restBetweenSets: 45, modification: 'Pause 1s at the top; keep pelvis stable.' },
+        { exerciseId: 'quads-193', sets: 1, duration: 30, restBetweenSets: 60, modification: 'Hold shallow angle (≤ 60° knee flexion).' }
+      ]
+    };
+  }
+
+  if (day <= 14) {
+    // WEEK 2: Add reps and posterior chain balance
+    return {
+      ...base,
+      description: 'Rest day. Add posterior chain support to improve knee control without loading the joint.',
+      exercises: [
+        { exerciseId: 'warmup-3', duration: 300, warmup: true, modification: 'Walk at incline or light uphill if available.' },
+        { exerciseId: 'glutes-44', sets: 2, repetitions: 15, restBetweenSets: 45, modification: 'Controlled tempo, no pelvic tilt.' },
+        { exerciseId: 'glutes-7', sets: 1, repetitions: 12, restBetweenSets: 45, modification: 'Bodyweight glute bridge, pause 1s at top.' }
+      ]
+    };
+  }
+
+  if (day <= 21) {
+    // WEEK 3: Add balance challenge + eccentric emphasis
+    return {
+      ...base,
+      description: 'Rest day. Improve balance and hip control while continuing to offload the knee.',
+      exercises: [
+        { exerciseId: 'warmup-3', duration: 300, warmup: true, modification: 'Maintain steady breathing, easy pace.' },
+        { exerciseId: 'glutes-45', sets: 2, repetitions: 10, restBetweenSets: 45, modification: 'Pause 1s at top; control descent.' },
+        { exerciseId: 'glutes-7', sets: 1, repetitions: 15, restBetweenSets: 45, modification: 'Controlled tempo; focus on symmetry.' }
+      ]
+    };
+  }
+
+  // WEEK 4: Reinforce glute patterning and reintroduce wall sit
+  return {
+    ...base,
+    description: 'Rest day. Reinforce posterior support and tolerance for static quad activation.',
+    exercises: [
+      { exerciseId: 'glutes-44', sets: 2, repetitions: 15, restBetweenSets: 45, modification: 'Slow and stable reps.' },
+      { exerciseId: 'glutes-7', sets: 1, repetitions: 15, restBetweenSets: 45, modification: 'Hold 1s at top, breathe out on lift.' },
+      { exerciseId: 'quads-193', sets: 1, duration: 40, restBetweenSets: 60, modification: 'Wall sit at 45–60°; stop if knee discomfort.' }
+    ]
+  };
+};
 
 /* ---------------- Shoulder Impingement ---------------- */
-const createShoulderRestDay = (day: number): any => ({
-  day,
-  description:
-    'Rest day. Scapular mobility and low‑load cuff activation for circulation.',
-  isRestDay: true,
-  duration: 15,
-  exercises: [
-    {
-      exerciseId: 'warmup-8', // Armsirkler
-      sets: 2,
-      repetitions: 15,
-      restBetweenSets: 30,
-      modification: 'Small circles → medium; stay below pain threshold.',
-      warmup: true,
-    },
-    {
-      exerciseId: 'shoulders-30', // Bånd Pull‑Apart
-      sets: 2,
-      repetitions: 12,
-      restBetweenSets: 45,
-      modification: 'Use light band; focus on scapular squeeze.',
-    },
-    {
-      exerciseId: 'shoulders-94', // Enarms Bånd Utadrotasjon
-      sets: 2,
-      repetitions: 10,
-      restBetweenSets: 45,
-      modification: 'Elbow tucked to side; slow tempo.',
-    },
-  ],
-});
+const createShoulderRestDay = (day: number): any => {
+  const base = {
+    day,
+    isRestDay: true,
+    duration: 15
+  };
+
+  if (day <= 7) {
+    // WEEK 1: Basic scapular mobility and cuff circulation
+    return {
+      ...base,
+      description: 'Rest day. Scapular mobility and low-load cuff activation for circulation.',
+      exercises: [
+        { exerciseId: 'warmup-8', sets: 2, repetitions: 15, restBetweenSets: 30, warmup: true, modification: 'Small circles → medium; stay below pain threshold.' },
+        { exerciseId: 'shoulders-30', sets: 2, repetitions: 12, restBetweenSets: 45, modification: 'Use light band; focus on scapular squeeze.' },
+        { exerciseId: 'shoulders-94', sets: 2, repetitions: 10, restBetweenSets: 45, modification: 'Elbow tucked to side; slow tempo.' }
+      ]
+    };
+  }
+
+  if (day <= 14) {
+    // WEEK 2: Slightly increased volume, focus on control
+    return {
+      ...base,
+      description: 'Rest day. Build shoulder control with higher rep scapular and cuff movements.',
+      exercises: [
+        { exerciseId: 'warmup-8', sets: 2, repetitions: 20, restBetweenSets: 30, warmup: true, modification: 'Controlled, full-range circles.' },
+        { exerciseId: 'shoulders-30', sets: 2, repetitions: 15, restBetweenSets: 45, modification: 'Pause 1s at full retraction.' },
+        { exerciseId: 'shoulders-94', sets: 2, repetitions: 12, restBetweenSets: 45, modification: 'Keep band tension consistent throughout.' }
+      ]
+    };
+  }
+
+  if (day <= 21) {
+    // WEEK 3: Add shoulder flexion patterning (safe range)
+    return {
+      ...base,
+      description: 'Rest day. Introduce gentle shoulder flexion to promote functional mobility.',
+      exercises: [
+        { exerciseId: 'shoulders-179', sets: 1, repetitions: 8, restBetweenSets: 45, modification: 'Banded shoulder flexion; lift only to eye level.' },
+        { exerciseId: 'shoulders-30', sets: 2, repetitions: 15, restBetweenSets: 45, modification: 'Scapular control; avoid shrugging.' },
+        { exerciseId: 'shoulders-94', sets: 2, repetitions: 10, restBetweenSets: 45, modification: 'Slow, pain-free external rotation.' }
+      ]
+    };
+  }
+
+  // WEEK 4: Reinforce control with higher rep and small load tolerance
+  return {
+    ...base,
+    description: 'Rest day. Strengthen shoulder stabilizers and reinforce safe movement patterns.',
+    exercises: [
+      { exerciseId: 'shoulders-94', sets: 2, repetitions: 12, restBetweenSets: 45, modification: 'Perform with tempo: 2s out, 2s back.' },
+      { exerciseId: 'shoulders-30', sets: 2, repetitions: 18, restBetweenSets: 45, modification: 'Squeeze at end range, no compensatory shrug.' },
+      { exerciseId: 'warmup-8', sets: 2, repetitions: 15, restBetweenSets: 30, warmup: true, modification: 'Finish with smooth scapular circles.' }
+    ]
+  };
+};
 
 /* ---------------- Lateral Ankle Sprain ---------------- */
-const createAnkleRestDay = (day: number): any => ({
-  day,
-  description:
-    'Rest day. Gentle range of motion and calf pump to assist lymph drainage.',
-  isRestDay: true,
-  duration: 15,
-  exercises: [
-    {
-      exerciseId: 'warmup-6', // Jogging in Place (home-friendly)
-      duration: 60, // 1 minute in seconds
-      modification: 'Light jogging in place, focus on ankle mobility.',
-      warmup: true,
-    },
-    {
-      exerciseId: 'calves-6', // Stående Tåhev BW
-      sets: 2,
-      repetitions: 12,
-      restBetweenSets: 45,
-      modification: 'Both legs; slow up‑down, support as needed.',
-    },
-    {
-      exerciseId: 'calves-12', // Ettbens Tåhev (optional balance)
-      sets: 1,
-      repetitions: 8,
-      restBetweenSets: 60,
-      modification: 'Add wall support if unstable.',
-    },
-  ],
-});
+const createAnkleRestDay = (day: number): any => {
+  const base = {
+    day,
+    isRestDay: true,
+    duration: 15
+  };
+
+  if (day <= 7) {
+    // WEEK 1: Gentle mobility and circulation
+    return {
+      ...base,
+      description: 'Rest day. Gentle range of motion and calf pump to assist lymph drainage.',
+      exercises: [
+        { exerciseId: 'warmup-6', duration: 60, warmup: true, modification: 'Light jogging in place, focus on ankle mobility.' },
+        { exerciseId: 'calves-6', sets: 2, repetitions: 12, restBetweenSets: 45, modification: 'Both legs; slow up-down, support as needed.' },
+        { exerciseId: 'calves-12', sets: 1, repetitions: 8, restBetweenSets: 60, modification: 'Add wall support if unstable.' }
+      ]
+    };
+  }
+
+  if (day <= 14) {
+    // WEEK 2: More volume and proprioceptive cueing
+    return {
+      ...base,
+      description: 'Rest day. Increase calf control and begin rebuilding joint awareness.',
+      exercises: [
+        { exerciseId: 'warmup-6', duration: 90, warmup: true, modification: 'March in place; full-foot contact, quiet landings.' },
+        { exerciseId: 'calves-12', sets: 2, repetitions: 10, restBetweenSets: 45, modification: 'Use wall support; pause 1s at top.' },
+        { exerciseId: 'calves-6', sets: 1, repetitions: 15, restBetweenSets: 45, modification: 'Smooth tempo, both legs.' }
+      ]
+    };
+  }
+
+  if (day <= 21) {
+    // WEEK 3: Emphasize single-leg control and time-under-tension
+    return {
+      ...base,
+      description: 'Rest day. Reinforce ankle control with unilateral loading and balance prep.',
+      exercises: [
+        { exerciseId: 'calves-12', sets: 2, repetitions: 10, restBetweenSets: 60, modification: 'Balance focus; add finger support only if needed.' },
+        { exerciseId: 'glutes-44', sets: 1, repetitions: 12, restBetweenSets: 45, modification: 'Isolate hip abduction; keep pelvis stable.' },
+        { exerciseId: 'warmup-6', duration: 60, warmup: true, modification: 'Jog or march in place to finish; no heel strike.' }
+      ]
+    };
+  }
+
+  // WEEK 4: Slight increase in challenge, reinforce stability
+  return {
+    ...base,
+    description: 'Rest day. Improve single-leg stability and ankle control for walking and return to activity.',
+    exercises: [
+      { exerciseId: 'calves-12', sets: 2, repetitions: 12, restBetweenSets: 60, modification: 'Use slow tempo. Focus on balance.' },
+      { exerciseId: 'calves-6', sets: 2, repetitions: 15, restBetweenSets: 45, modification: 'Double-leg raise with strong control.' },
+      { exerciseId: 'glutes-44', sets: 1, repetitions: 15, restBetweenSets: 45, modification: 'Pause 1s at top. Maintain posture.' }
+    ]
+  };
+};
 
 /* ---------------- Tennis Elbow ---------------- */
-const createTennisElbowRestDay = (day: number): any => ({
-  day,
-  description:
-    'Rest day. Low‑load wrist mobility and gentle neural glide to reduce elbow tension.',
-  isRestDay: true,
-  duration: 12,
-  exercises: [
-    {
-      exerciseId: 'forearms-2', // Manual Håndleddsrotasjon
-      sets: 2,
-      repetitions: 15,
-      restBetweenSets: 30,
-      modification: 'Rotate through pain‑free range only.',
-    },
-    {
-      exerciseId: 'warmup-8', // Armsirkler (open kinetic‑chain circulation)
-      sets: 1,
-      repetitions: 20,
-      restBetweenSets: 30,
-      warmup: true,
-    },
-    {
-      exerciseId: 'biceps-1', // Stående Hammercurl (very light)
-      sets: 1,
-      repetitions: 12,
-      restBetweenSets: 45,
-      modification: 'Use 0.5 kg or no weight; focus on controlled lowering.',
-    },
-  ],
-});
+const createTennisElbowRestDay = (day: number): any => {
+  const base = {
+    day,
+    isRestDay: true,
+    duration: 12
+  };
+
+  if (day <= 7) {
+    // WEEK 1: Forearm mobility and low-load circulation
+    return {
+      ...base,
+      description: 'Rest day. Low-load wrist mobility and gentle neural glide to reduce elbow tension.',
+      exercises: [
+        { exerciseId: 'forearms-2', sets: 2, repetitions: 15, restBetweenSets: 30, modification: 'Rotate through pain-free range only.' },
+        { exerciseId: 'warmup-8', sets: 1, repetitions: 20, restBetweenSets: 30, warmup: true },
+        { exerciseId: 'biceps-1', sets: 1, repetitions: 12, restBetweenSets: 45, modification: 'Use 0.5 kg or no weight; focus on controlled lowering.' }
+      ]
+    };
+  }
+
+  if (day <= 14) {
+    // WEEK 2: Add tempo cue and control
+    return {
+      ...base,
+      description: 'Rest day. Increase control with slightly higher reps and slow eccentric emphasis.',
+      exercises: [
+        { exerciseId: 'forearms-2', sets: 2, repetitions: 18, restBetweenSets: 30, modification: 'Slow down rotation tempo; keep range pain-free.' },
+        { exerciseId: 'biceps-1', sets: 2, repetitions: 10, restBetweenSets: 45, modification: 'Lower slowly for 3s per rep.' },
+        { exerciseId: 'warmup-8', sets: 1, repetitions: 25, restBetweenSets: 30, warmup: true }
+      ]
+    };
+  }
+
+  if (day <= 21) {
+    // WEEK 3: Introduce low-volume isometric hold
+    return {
+      ...base,
+      description: 'Rest day. Reinforce tendon loading tolerance with a light isometric hold.',
+      exercises: [
+        { exerciseId: 'forearms-2', sets: 2, repetitions: 15, restBetweenSets: 30, modification: 'Pause 1s at end range.' },
+        { exerciseId: 'forearms-1', sets: 1, duration: 30, restBetweenSets: 45, modification: 'Gentle static wrist extension; stop if painful.' },
+        { exerciseId: 'biceps-1', sets: 2, repetitions: 12, restBetweenSets: 45 }
+      ]
+    };
+  }
+
+  // WEEK 4: Add light grip endurance challenge
+  return {
+    ...base,
+    description: 'Rest day. Improve endurance with higher-rep grip work and rotation control.',
+    exercises: [
+      { exerciseId: 'forearms-2', sets: 2, repetitions: 20, restBetweenSets: 30, modification: 'Smooth, continuous motion through full pain-free range.' },
+      { exerciseId: 'forearms-1', sets: 2, repetitions: 15, restBetweenSets: 45, modification: 'Use very light load or towel grip; controlled tempo.' },
+      { exerciseId: 'biceps-1', sets: 1, repetitions: 15, restBetweenSets: 45, modification: 'Stay relaxed in shoulder; focus on wrist position.' }
+    ]
+  };
+};
 
 /* ---------------- Hamstring Strain ---------------- */
 const createHamstringRestDay = (day: number): any => ({
@@ -245,100 +383,182 @@ const createPostureRestDay = (day: number): any => ({
 });
 
 /* ---------------- Tech Neck ---------------- */
-const createTechNeckRestDay = (day: number): any => ({
-  day,
-  isRestDay: true,
-  duration: 12,
-  description:
-    'Rest day. Gentle neck and shoulder mobility to maintain progress without overworking.',
-  exercises: [
-    {
-      exerciseId: 'warmup-8',
-      sets: 1,
-      repetitions: 10,
-      restBetweenSets: 30,
-      modification: 'Small, slow circles. Focus on relaxed shoulders.',
-      warmup: true,
-    },
-    {
-      exerciseId: 'shoulders-30',
-      sets: 1,
-      repetitions: 8,
-      restBetweenSets: 45,
-      modification: 'Very light tension. Pause and breathe at the squeeze.',
-    },
-    {
-      exerciseId: 'warmup-9',
-      sets: 1,
-      repetitions: 8,
-      restBetweenSets: 30,
-      modification: 'Gentle rotation, keep head neutral.',
-    },
-  ],
-});
+const createTechNeckRestDay = (day: number): any => {
+  const base = {
+    day,
+    isRestDay: true,
+    duration: 12
+  };
+
+  if (day <= 7) {
+    // WEEK 1
+    return {
+      ...base,
+      description: 'Rest day. Gentle neck and shoulder mobility to maintain progress without overworking.',
+      exercises: [
+        { exerciseId: 'warmup-8', sets: 1, repetitions: 10, restBetweenSets: 30, modification: 'Small, slow circles. Focus on relaxed shoulders.', warmup: true },
+        { exerciseId: 'shoulders-30', sets: 1, repetitions: 8, restBetweenSets: 45, modification: 'Very light tension. Pause and breathe at the squeeze.' },
+        { exerciseId: 'warmup-9', sets: 1, repetitions: 8, restBetweenSets: 30, modification: 'Gentle rotation, keep head neutral.' }
+      ]
+    };
+  }
+
+  if (day <= 14) {
+    // WEEK 2
+    return {
+      ...base,
+      description: 'Rest day. Reinforce shoulder control and introduce spinal dissociation for postural support.',
+      exercises: [
+        { exerciseId: 'warmup-8', sets: 1, repetitions: 15, restBetweenSets: 30, modification: 'Relax shoulders; increase range slightly.', warmup: true },
+        { exerciseId: 'shoulders-30', sets: 2, repetitions: 12, restBetweenSets: 45, modification: 'Control the squeeze; keep neck neutral.' },
+        { exerciseId: 'warmup-5', sets: 1, repetitions: 12, restBetweenSets: 30, modification: 'Pelvic tilt with light core engagement.' }
+      ]
+    };
+  }
+
+  if (day <= 21) {
+    // WEEK 3
+    return {
+      ...base,
+      description: 'Rest day. Build scapular control and add flexion patterning without neck strain.',
+      exercises: [
+        { exerciseId: 'shoulders-179', sets: 1, repetitions: 8, restBetweenSets: 45, modification: 'Lift only to shoulder height with light band tension.' },
+        { exerciseId: 'shoulders-30', sets: 2, repetitions: 12, restBetweenSets: 45, modification: 'Squeeze shoulder blades together gently.' },
+        { exerciseId: 'warmup-9', sets: 1, repetitions: 12, restBetweenSets: 30, modification: 'Slow and mindful spinal rotation.' }
+      ]
+    };
+  }
+
+  // WEEK 4 (day 22+)
+  return {
+    ...base,
+    description: 'Rest day. Light rotator cuff activation and posture control to reinforce recovery gains.',
+    exercises: [
+      { exerciseId: 'shoulders-94', sets: 2, repetitions: 10, restBetweenSets: 45, modification: 'Slow external rotation with elbow tucked to side.' },
+      { exerciseId: 'shoulders-30', sets: 2, repetitions: 15, restBetweenSets: 45, modification: 'Add brief pause at full retraction.' },
+      { exerciseId: 'warmup-9', sets: 1, repetitions: 10, restBetweenSets: 30, modification: 'Keep chest tall, rotate gently.' }
+    ]
+  };
+};
 
 /* ---------------- Plantar Fasciitis ---------------- */
-const createPlantarRestDay = (day: number): any => ({
-  day,
-  isRestDay: true,
-  duration: 10,
-  description:
-    'Rest day. Light foot mobility and calf stretches to support healing.',
-  exercises: [
-    {
-      exerciseId: 'warmup-6',
-      duration: 90,
-      warmup: true,
-      modification: 'March gently in place, focus on foot contact.',
-    },
-    {
-      exerciseId: 'calves-6',
-      sets: 1,
-      repetitions: 10,
-      restBetweenSets: 30,
-      modification: 'Light heel raises, control the descent.',
-    },
-    {
-      exerciseId: 'glutes-44',
-      sets: 1,
-      repetitions: 10,
-      restBetweenSets: 30,
-      modification: 'Keep movements slow and controlled.',
-    },
-  ],
-});
+const createPlantarRestDay = (day: number): any => {
+  const base = {
+    day,
+    isRestDay: true,
+    duration: 10
+  };
+
+  if (day <= 7) {
+    // WEEK 1: Basic mobility and light calf activation
+    return {
+      ...base,
+      description: 'Rest day. Light foot mobility and calf stretches to support healing.',
+      exercises: [
+        { exerciseId: 'warmup-6', duration: 90, warmup: true, modification: 'March gently in place, focus on foot contact.' },
+        { exerciseId: 'calves-6', sets: 1, repetitions: 10, restBetweenSets: 30, modification: 'Light heel raises, control the descent.' },
+        { exerciseId: 'glutes-44', sets: 1, repetitions: 10, restBetweenSets: 30, modification: 'Keep movements slow and controlled.' }
+      ]
+    };
+  }
+
+  if (day <= 14) {
+    // WEEK 2: Add volume and reinforce eccentric control
+    return {
+      ...base,
+      description: 'Rest day. Reinforce calf control and introduce light arch stability.',
+      exercises: [
+        { exerciseId: 'warmup-6', duration: 90, warmup: true, modification: 'March in place with full foot roll-through.' },
+        { exerciseId: 'calves-6', sets: 2, repetitions: 12, restBetweenSets: 45, modification: 'Use slow eccentric lowering.' },
+        { exerciseId: 'glutes-44', sets: 1, repetitions: 12, restBetweenSets: 30, modification: 'Engage glutes fully; no rotation.' }
+      ]
+    };
+  }
+
+  if (day <= 21) {
+    // WEEK 3: Add unilateral balance
+    return {
+      ...base,
+      description: 'Rest day. Challenge ankle control and foot arch through unilateral work.',
+      exercises: [
+        { exerciseId: 'warmup-6', duration: 90, warmup: true, modification: 'Light jog in place, no heel impact.' },
+        { exerciseId: 'calves-12', sets: 1, repetitions: 8, restBetweenSets: 60, modification: 'Single-leg heel raise; use support if needed.' },
+        { exerciseId: 'glutes-44', sets: 2, repetitions: 12, restBetweenSets: 30, modification: 'Pause at top, keep pelvis stable.' }
+      ]
+    };
+  }
+
+  // WEEK 4: Increase control, reinforce strength
+  return {
+    ...base,
+    duration: 12,
+    description: 'Rest day. Improve foot strength and maintain calf endurance with controlled loading.',
+    exercises: [
+      { exerciseId: 'calves-63', sets: 2, repetitions: 10, restBetweenSets: 60, modification: 'Use slow lowering; moderate tempo up.' },
+      { exerciseId: 'calves-6', sets: 2, repetitions: 12, restBetweenSets: 45, modification: 'Double-leg raise with longer pause at top.' },
+      { exerciseId: 'glutes-44', sets: 2, repetitions: 12, restBetweenSets: 30, modification: 'Slow reps, squeeze glutes at top.' }
+    ]
+  };
+};
 
 /* ---------------- Core Stability ---------------- */
-const createCoreRestDay = (day: number): any => ({
-  day,
-  isRestDay: true,
-  duration: 12,
-  description:
-    'Rest day. Light activation to promote blood flow and reinforce core engagement.',
-  exercises: [
-    {
-      exerciseId: 'glutes-7',
-      sets: 1,
-      repetitions: 15,
-      restBetweenSets: 45,
-      modification: 'Hold 1s at top, focus on breath and core tension.',
-    },
-    {
-      exerciseId: 'abs-20',
-      sets: 1,
-      repetitions: 8,
-      restBetweenSets: 45,
-      modification: 'Slow, controlled movement; keep lower back flat.',
-    },
-    {
-      exerciseId: 'warmup-9',
-      sets: 1,
-      repetitions: 10,
-      restBetweenSets: 30,
-      modification: 'Rotate gently through comfortable range.',
-    },
-  ],
-});
+const createCoreRestDay = (day: number): any => {
+  const base = {
+    day,
+    isRestDay: true,
+    duration: 12
+  };
+
+  if (day <= 7) {
+    // WEEK 1: Basic glute and trunk activation
+    return {
+      ...base,
+      description: 'Rest day. Gentle activation for the glutes and trunk to promote circulation and postural control.',
+      exercises: [
+        { exerciseId: 'glutes-7', sets: 1, repetitions: 15, restBetweenSets: 45, modification: 'Hold 1s at top, focus on breath and core tension.' },
+        { exerciseId: 'abs-20', sets: 1, repetitions: 8, restBetweenSets: 45, modification: 'Slow and controlled; keep lower back in contact with floor.' },
+        { exerciseId: 'warmup-9', sets: 1, repetitions: 10, restBetweenSets: 30, warmup: true, modification: 'Rotate gently through comfortable range.' }
+      ]
+    };
+  }
+
+  if (day <= 14) {
+    // WEEK 2: Introduce anti-rotation (obliques) and longer hold
+    return {
+      ...base,
+      description: 'Rest day. Light anti-rotation and core control to improve deep stabilizer endurance.',
+      exercises: [
+        { exerciseId: 'glutes-7', sets: 1, repetitions: 15, restBetweenSets: 45, modification: 'Hold each rep for 2s at top.' },
+        { exerciseId: 'obliques-4', sets: 1, repetitions: 8, restBetweenSets: 45, modification: 'Maintain symmetry, slow tempo.' },
+        { exerciseId: 'abs-6', sets: 1, duration: 30, restBetweenSets: 30, modification: 'Brace core during each marching movement.', warmup: true }
+      ]
+    };
+  }
+
+  if (day <= 21) {
+    // WEEK 3: Add balance & lateral challenge
+    return {
+      ...base,
+      description: 'Rest day. Introduce lateral control and balance to challenge trunk stability.',
+      exercises: [
+        { exerciseId: 'abs-121', sets: 1, repetitions: 10, restBetweenSets: 45, modification: 'Slow tempo, avoid wobbling.' },
+        { exerciseId: 'glutes-45', sets: 1, repetitions: 10, restBetweenSets: 45, modification: 'Engage core throughout.' },
+        { exerciseId: 'warmup-9', sets: 1, repetitions: 12, restBetweenSets: 30, warmup: true, modification: 'Slow spinal rotation.' }
+      ]
+    };
+  }
+
+  // WEEK 4: More volume on anti-rotation + deep core endurance
+  return {
+    ...base,
+    description: 'Rest day. Reinforce anti-rotation control and increase endurance for deep core.',
+    exercises: [
+      { exerciseId: 'obliques-4', sets: 2, repetitions: 10, restBetweenSets: 45, modification: 'Resist rotation throughout full range.' },
+      { exerciseId: 'abs-20', sets: 1, repetitions: 10, restBetweenSets: 45, modification: 'Focus on breath and bracing.' },
+      { exerciseId: 'abs-6', sets: 1, duration: 40, restBetweenSets: 30, warmup: true, modification: 'Controlled marching, avoid spine movement.' }
+    ]
+  };
+};
 
 export const rehabPrograms: ExerciseProgram[] = [
   // -----------------------------------------------------------------

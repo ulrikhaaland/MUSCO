@@ -80,6 +80,7 @@ interface UserContextType {
   selectProgram: (programIndex: number) => void;
   toggleActiveProgram: (programIndex: number) => Promise<void>;
   generateFollowUpProgram: () => Promise<void>;
+  loadUserPrograms: () => Promise<void>;
 }
 
 const UserContext = createContext<UserContextType>({} as UserContextType);
@@ -235,12 +236,9 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
   // Set up real-time listener for program status changes and latest program
   useEffect(() => {
-    console.log('🔍 UserContext main useEffect - auth state:', { authLoading, userId, isUserAuthenticated });
-    
     // Only wait for auth loading if we don't have a user yet
     // If we have a user but authLoading is stuck, proceed anyway
     if (authLoading === true && !user) {
-      console.log('🔍 Early return due to auth loading (no user yet)');
       return;
     }
     
@@ -255,22 +253,15 @@ export function UserProvider({ children }: { children: ReactNode }) {
       }
     }
     
-    // Debug: Check current session storage state
+    // Check if we're in a save context (recovery program save flow)
     const loginContext = window.sessionStorage.getItem('loginContext');
     const hasPersistedRecovery = hasRecoveryProgramInSession();
-    console.log('🔍 UserContext debug:', { 
-      loginContext, 
-      hasPersistedRecovery, 
-      pathname,
-      userId: !!userId,
-      isUserAuthenticated 
-    });
     
-    // Temporarily removed save context check to debug
-    // if (loginContext === 'saveProgram' && hasPersistedRecovery) {
-    //   console.log('🔒 Save context detected with recovery program - skipping user program loading');
-    //   return;
-    // }
+    // If we have a recovery program in session AND save context, don't load user programs
+    // This prevents clearing the recovery program during the save flow
+    if (loginContext === 'saveProgram' && hasPersistedRecovery) {
+      return;
+    }
     
     let unsubscribe: (() => void) | null = null; // Initialize unsubscribe
 
@@ -309,6 +300,9 @@ export function UserProvider({ children }: { children: ReactNode }) {
         }
 
         // First collect all programs
+        let mostRecentActiveProgram: UserProgramWithId | null = null;
+        let mostRecentActiveDate: Date | null = null;
+        
         for (const doc of snapshot.docs) {
           const data = doc.data();
 
@@ -330,8 +324,6 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
             try {
               const programSnapshot = await getDocs(programQ);
-              
-
 
               if (!programSnapshot.empty) {
                 const exercisePrograms = await Promise.all(
@@ -377,22 +369,28 @@ export function UserProvider({ children }: { children: ReactNode }) {
                 // Add to programs array
                 programs.push(userProgram);
 
-                // If this program is active, store it separately
+                // Track most recent active program (not just any active program)
                 if (data.active === true) {
-                  activeProgram = userProgram;
+                  if (!mostRecentActiveDate || updatedAt > mostRecentActiveDate) {
+                    mostRecentActiveDate = updatedAt;
+                    mostRecentActiveProgram = userProgram;
+                  }
                 }
 
-                // Track most recent program
+                // Track most recent program overall
                 if (!mostRecentDate || updatedAt > mostRecentDate) {
                   mostRecentDate = updatedAt;
                   mostRecentProgram = userProgram;
                 }
               }
             } catch (error) {
-              // error captured but logging removed
+              // Error processing program - skip it
             }
           }
         }
+        
+        // Use the most recent active program instead of just any active program
+        activeProgram = mostRecentActiveProgram;
 
         // Set all programs regardless of which is active
         if (programs.length > 0) {
@@ -772,6 +770,85 @@ export function UserProvider({ children }: { children: ReactNode }) {
     router.push('/program');
   };
 
+  const loadUserPrograms = async () => {
+    if (!userId || !isUserAuthenticated) return;
+    
+    showGlobalLoader(true, t('program.loadingData'));
+    
+    try {
+      const programsRef = collection(db, `users/${userId}/programs`);
+      const q = query(programsRef, orderBy('createdAt', 'desc'));
+      const snapshot = await getDocs(q);
+      
+      const programs: UserProgramWithId[] = [];
+      
+      for (const doc of snapshot.docs) {
+        const data = doc.data();
+        
+        if (data.status === ProgramStatus.Done) {
+          const programsCollectionRef = collection(db, `users/${userId}/programs/${doc.id}/programs`);
+          const programQ = query(programsCollectionRef, orderBy('createdAt', 'asc'));
+          
+          try {
+            const programSnapshot = await getDocs(programQ);
+            
+            if (!programSnapshot.empty) {
+              const exercisePrograms = await Promise.all(
+                programSnapshot.docs.map(async (programDoc) => {
+                  const programData = programDoc.data();
+                  const program = programData as ExerciseProgram;
+                  
+                  if (programData.createdAt && typeof (programData.createdAt as any).toDate === 'function') {
+                    program.createdAt = (programData.createdAt as any).toDate();
+                  } else if (typeof programData.createdAt === 'string') {
+                    program.createdAt = new Date(programData.createdAt);
+                  }
+                  
+                  await enrichExercisesWithFullData(program, isNorwegian);
+                  return program;
+                })
+              );
+
+              const updatedAt = data.updatedAt ? new Date(data.updatedAt) : new Date(data.createdAt);
+
+              const userProgram: UserProgramWithId = {
+                programs: exercisePrograms,
+                diagnosis: data.diagnosis,
+                questionnaire: data.questionnaire,
+                active: data.active ?? false,
+                createdAt: data.createdAt && typeof data.createdAt.toDate === 'function'
+                  ? data.createdAt.toDate().toISOString()
+                  : typeof data.createdAt === 'string' ? data.createdAt : new Date().toISOString(),
+                updatedAt: updatedAt,
+                type: data.type,
+                title: data.title || 'Exercise Program',
+                timeFrame: data.timeFrame,
+                docId: doc.id,
+              };
+
+              programs.push(userProgram);
+            }
+          } catch (error) {
+            console.error('Error processing program', doc.id, ':', error);
+          }
+        }
+      }
+      
+      setUserPrograms(programs);
+      
+      // Find and set active program
+      const activeProgram = programs.find(p => p.active);
+      if (activeProgram) {
+        prepareAndSetProgram(activeProgram);
+      }
+      
+    } catch (error) {
+      console.error('Error loading user programs:', error);
+    } finally {
+      showGlobalLoader(false);
+    }
+  };
+
   return (
     <UserContext.Provider
       value={{
@@ -790,6 +867,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
         selectProgram,
         toggleActiveProgram,
         generateFollowUpProgram,
+        loadUserPrograms,
       }}
     >
       {children}

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, Suspense } from 'react';
+import { useState, Suspense, useEffect } from 'react';
 import { useUser } from '@/app/context/UserContext';
 import { useAuth } from '@/app/context/AuthContext';
 import ConfirmationDialog from '@/app/components/ui/ConfirmationDialog';
@@ -10,7 +10,7 @@ import { useTranslation } from '@/app/i18n/TranslationContext';
 import { nb, enUS } from 'date-fns/locale';
 
 function ProgramsContent() {
-  const { userPrograms, isLoading, selectProgram, toggleActiveProgram } =
+  const { userPrograms, isLoading, selectProgram, toggleActiveProgram, loadUserPrograms } =
     useUser();
   const { deleteProgram } = useAuth();
   const router = useRouter();
@@ -28,6 +28,13 @@ function ProgramsContent() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [programToDelete, setProgramToDelete] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  // Load programs if empty (fixes the architectural issue)
+  useEffect(() => {
+    if (!isLoading && userPrograms.length === 0) {
+      loadUserPrograms();
+    }
+  }, [isLoading, userPrograms.length, loadUserPrograms]);
 
   // Handle delete program
   const handleDeleteProgram = (programId: string) => {
