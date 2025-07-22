@@ -600,6 +600,7 @@ const translations = {
   'calendar.noProgramForThisDay': 'No program for this day',
   'calendar.workout': 'Workout',
   'calendar.rest': 'Rest',
+  'calendar.today': 'Today',
   'calendar.weekdays.mon': 'Mon',
   'calendar.weekdays.tue': 'Tue',
   'calendar.weekdays.wed': 'Wed',
@@ -821,6 +822,8 @@ const translations = {
     'Personalized for your fitness goals',
   'exerciseProgram.overview.title.recovery':
     'Personalized for your recovery journey',
+  'exerciseProgram.overview.objective': 'Objective',
+  'exerciseProgram.overview.keyMoves': 'Key Moves',
   'exerciseProgram.overview.programDuration': 'Program Duration:',
   'exerciseProgram.overview.whatNotToDo': 'What Not To Do',
   'exerciseProgram.overview.expectedOutcome': 'Expected Outcome',
@@ -839,6 +842,7 @@ const translations = {
   'exerciseProgram.signUp.description':
     'Sign up or log in to access the complete program and track your progress.',
   'exerciseProgram.signUp.button': 'Sign Up / Log In',
+  'exerciseProgram.signUp.saveProgram': 'Save program',
 
   // Month abbreviations
   'month.jan': 'Jan',

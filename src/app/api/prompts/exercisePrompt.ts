@@ -272,6 +272,7 @@ EXERCISE SELECTION PROTOCOL
 - The program JSON object should include the following key elements:
   - title: A concise name for the program (3-6 words, referencing target areas)
   - programOverview: A description of the program's purpose and goals
+  - summary: A concise one-line description (8-12 words) of the program's main focus for quick reference
   - afterTimeFrame: Expected outcomes and next steps after completion
     - expectedOutcome: What the user can expect after completing the program (e.g., reduced pain, improved mobility)
     - nextSteps: A persuasive message encouraging the user to follow the program consistently and return for feedback. This should highlight how their input will improve future routines and emphasize the importance of completing the full program. Example: "This program is designed for your goals. Focus on completing it this week while noting how each session feels. Your input will ensure that next week's program is even more effective. Let's get started on building a program tailored just for you."
@@ -337,6 +338,7 @@ EXERCISE SELECTION PROTOCOL
 {
   "title": "Full Body Strength",
   "programOverview": "This program is designed to help you build full-body strength, improve mobility, and enhance overall fitness while addressing any specific pain points or restrictions you may have.",
+  "summary": "Build strength and mobility with balanced full-body training",
   "afterTimeFrame": {
     "expectedOutcome": "You should feel stronger, more mobile, and experience reduced pain or discomfort in your target areas.",
     "nextSteps": "This program is tailored to your goals. Focus on completing it this week and take notes on how each session feels. Your feedback will help refine the next week's routine to be even more effective."

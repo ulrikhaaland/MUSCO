@@ -3,6 +3,7 @@ import { Exercise } from '@/app/types/program';
 import Card from './Card';
 import Chip from './Chip';
 import { useTranslation } from '@/app/i18n/TranslationContext';
+import { ChevronDown, PlayIcon, ArrowUp, ArrowDown, SpinnerIcon } from '../icons';
 
 interface ExerciseCardProps {
   exercise: Exercise;
@@ -155,29 +156,9 @@ export default function ExerciseCard({
           const exerciseIdentifier =
             exercise.name || exercise.id || exercise.exerciseId;
           return loadingVideoExercise === exerciseIdentifier ? (
-            <div
-              className={`${compact ? 'w-3.5 h-3.5' : 'w-4 h-4'} border-t-2 border-white rounded-full animate-spin`}
-            />
+            <SpinnerIcon size={compact ? 'sm' : 'md'} />
           ) : (
-            <svg
-              className={`${compact ? 'w-3.5 h-3.5' : 'w-4 h-4'} opacity-85`}
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={1.75}
-                d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
-              />
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={1.75}
-                d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
+            <PlayIcon size={compact ? 'sm' : 'md'} />
           );
         })()}
         <span>{t('program.watchVideo')}</span>
@@ -222,17 +203,10 @@ export default function ExerciseCard({
               </Chip>
             )}
             {onToggle && (
-              <svg
-                className={`w-4 h-4 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''} text-gray-400`}
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <polyline points="6 9 12 15 18 9"></polyline>
-              </svg>
+              <ChevronDown 
+                className="text-gray-400" 
+                isRotated={isExpanded}
+              />
             )}
           </div>
         }
@@ -296,36 +270,12 @@ export default function ExerciseCard({
                     >
                       {showInstructions ? (
                         <>
-                          <svg
-                            className="w-4 h-4 mr-1"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth="2"
-                              d="M5 15l7-7 7 7"
-                            />
-                          </svg>
+                          <ArrowUp className="mr-1" />
                           {t('program.hideInstructions')}
                         </>
                       ) : (
                         <>
-                          <svg
-                            className="w-4 h-4 mr-1"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth="2"
-                              d="M19 9l-7 7-7-7"
-                            />
-                          </svg>
+                          <ArrowDown className="mr-1" />
                           {t('program.viewInstructions')}
                         </>
                       )}

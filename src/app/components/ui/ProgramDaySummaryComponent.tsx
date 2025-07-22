@@ -147,8 +147,8 @@ export function ProgramDaySummaryComponent({
             </div>
           )}
 
-          <div className="h-1 mb-3"></div>
-          <p className="text-gray-300 text-sm mb-4 text-opacity-70">{day.description}</p>
+          <div className="h-1 mb-1"></div>
+          <p className="text-white text-sm mb-4">{day.description}</p>
 
           {/* Exercise breakdown */}
           <div className="space-y-2">
@@ -278,8 +278,8 @@ export function ProgramDaySummaryComponent({
             </div>
           )}
 
-          <div className="h-1 mb-3"></div>
-          <p className="text-gray-300 text-sm mb-4 text-opacity-70">{day.description}</p>
+          <div className="h-1 mb-1"></div>
+          <p className="text-white text-sm mb-4">{day.description}</p>
 
           {/* Exercise breakdown */}
           <div className="space-y-2">

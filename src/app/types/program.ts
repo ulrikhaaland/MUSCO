@@ -267,6 +267,7 @@ export interface AfterTimeFrame {
 
 export interface ExerciseProgram {
   programOverview: string;
+  summary: string;
   timeFrameExplanation: string;
   afterTimeFrame: AfterTimeFrame;
   whatNotToDo: string;

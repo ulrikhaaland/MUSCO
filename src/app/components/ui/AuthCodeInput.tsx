@@ -11,6 +11,9 @@ import { useTranslation } from '@/app/i18n';
 import Logo from './Logo';
 import { LoadingDots } from './LoadingDots';
 import { ProgramType } from '@/app/shared/types';
+import { saveRecoveryProgramToAccount, getRecoveryProgramFromSession, clearRecoveryProgramFromSession } from '@/app/services/recoveryProgramService';
+
+
 
 export function AuthCodeInput() {
   const [email, setEmail] = useState('');
@@ -133,125 +136,7 @@ export function AuthCodeInput() {
         });
         
         try {
-          // Check if user already has existing programs
-          const programsRef = collection(db, `users/${user.uid}/programs`);
-          const existingProgramsQuery = query(programsRef);
-          const existingProgramsSnapshot = await getDocs(existingProgramsQuery);
-          const hasExistingPrograms = !existingProgramsSnapshot.empty;
-          
-          console.log(`📊 User has ${existingProgramsSnapshot.size} existing programs`);
-          
-          // Create a recovery program entry in the user's programs collection
-          console.log('📁 Creating program document in collection:', `users/${user.uid}/programs`);
-          
-          // Create a structured program document similar to other user programs
-          // Set active to false if user already has programs, true if this is their first program
-          
-          // Check if this is the new UserProgram structure with diagnosis/questionnaire
-          const isNewUserProgramStructure = data.program.diagnosis && data.program.questionnaire;
-          
-          const programDoc = {
-            diagnosis: isNewUserProgramStructure ? data.program.diagnosis : {
-              diagnosis: data.program.title || 'Recovery Program',
-              painfulAreas: data.program.targetAreas || [],
-              informationalInsights: data.program.programOverview || null,
-              onset: 'gradual',
-              painScale: 5,
-              mechanismOfInjury: 'overuse',
-              aggravatingFactors: null,
-              relievingFactors: null,
-              priorInjury: 'unknown',
-              painPattern: 'activity-dependent',
-              painLocation: null,
-              painCharacter: 'dull',
-              assessmentComplete: true,
-              redFlagsPresent: false,
-              avoidActivities: [],
-              recoveryGoals: ['reduce pain', 'improve mobility', 'prevent future injury'],
-              timeFrame: '4 weeks',
-              followUpQuestions: [],
-              programType: ProgramType.Recovery,
-              targetAreas: data.program.targetAreas || []
-            },
-            questionnaire: isNewUserProgramStructure ? data.program.questionnaire : {
-              // Minimal questionnaire data for recovery program
-              age: '30_40', // Default age range
-              pastExercise: '2_3_times_per_week',
-              exerciseDays: 3,
-              targetAreas: data.program.targetAreas || [],
-              exerciseEnvironment: 'at_home',
-              workoutDuration: '30_45_minutes',
-              painAreas: [],
-              trainingType: 'at_home',
-            },
-            active: !hasExistingPrograms, // Only set as active if user has no existing programs
-            status: 'done',
-            type: ProgramType.Recovery,
-            title: isNewUserProgramStructure ? data.program.title : (data.program.title || 'Recovery Program'),
-            timeFrame: isNewUserProgramStructure ? data.program.timeFrame : '4 weeks',
-            createdAt: new Date(),
-            updatedAt: new Date(),
-          };
-
-          console.log('📄 Program document structure:', { 
-            ...programDoc, 
-            active: programDoc.active,
-            reason: hasExistingPrograms ? 'User has existing programs - setting as inactive' : 'First program for user - setting as active'
-          });
-          const programDocRef = await addDoc(programsRef, programDoc);
-          console.log('✅ Program document created with ID:', programDocRef.id);
-
-          // Now save the actual program data in the programs subcollection
-          const innerProgramsRef = collection(db, `users/${user.uid}/programs/${programDocRef.id}/programs`);
-          console.log('📁 Creating program data in subcollection:', `users/${user.uid}/programs/${programDocRef.id}/programs`);
-          
-          if (isNewUserProgramStructure) {
-            // For recovery programs, save each week as a separate document
-            console.log('💾 Saving recovery program with', data.program.programs.length, 'weeks');
-            
-            const baseDate = new Date();
-            
-            for (let i = 0; i < data.program.programs.length; i++) {
-              const weekProgram = data.program.programs[i];
-              
-              // Set progressive dates: Week 1 = today, Week 2 = today + 7 days, etc.
-              const weekDate = new Date(baseDate);
-              weekDate.setDate(baseDate.getDate() + (i * 7));
-              
-              const programDataDoc = {
-                ...weekProgram,
-                createdAt: weekDate,
-              };
-              
-              console.log(`📊 Week ${i + 1} program data:`, {
-                title: programDataDoc.title,
-                type: programDataDoc.type,
-                programDays: programDataDoc.days?.length || 'unknown',
-                hasExercises: !!programDataDoc.days?.[0]?.exercises,
-                createdAt: weekDate.toISOString()
-              });
-              
-              const innerProgramDocRef = await addDoc(innerProgramsRef, programDataDoc);
-              console.log(`✅ Week ${i + 1} saved with ID:`, innerProgramDocRef.id);
-            }
-          } else {
-            // For regular programs, save the single program
-            const programDataDoc = {
-              ...data.program,
-              createdAt: new Date(),
-            };
-            console.log('📊 Regular program data document:', {
-              title: programDataDoc.title,
-              type: programDataDoc.type,
-              programDays: programDataDoc.days?.length || 'unknown',
-              hasExercises: !!programDataDoc.days?.[0]?.exercises
-            });
-            
-            const innerProgramDocRef = await addDoc(innerProgramsRef, programDataDoc);
-            console.log('✅ Program data saved with ID:', innerProgramDocRef.id);
-          }
-          console.log('🎉 Recovery program successfully saved to user account!');
-
+          await saveRecoveryProgramToAccount(user, data.program);
           toast.success('Program saved to your account!');
         } catch (error) {
           console.error('❌ Error saving program:', error);
@@ -290,7 +175,7 @@ export function AuthCodeInput() {
       // Clean up session storage
       window.sessionStorage.removeItem('previousPath');
       window.sessionStorage.removeItem('loginContext');
-      window.sessionStorage.removeItem('currentRecoveryProgram');
+      clearRecoveryProgramFromSession();
     } catch (error: any) {
       console.error('❌ Error validating code:', error);
 

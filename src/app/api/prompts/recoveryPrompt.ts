@@ -199,6 +199,8 @@ EXERCISE SELECTION PROTOCOL
   - Reference the diagnosis or painful areas where appropriate
   - Examples: "Neck Strain Recovery Plan", "Lower Back Pain Relief", "Shoulder Mobility Restoration"
 
+- Include a summary field that provides a concise one-line description (8-12 words) of the program's main recovery focus for quick reference
+
 - CRITICAL: For each exercise, you MUST include the following fields:
   1. "exerciseId" (REQUIRED): The exact ID from the appended exercise database list (e.g., "shoulders-8")
   2. "warmup" (OPTIONAL): Set to true only for warmup exercises
@@ -236,6 +238,7 @@ EXERCISE SELECTION PROTOCOL
 {
   "title": "Lower Back Pain Recovery",
   "programOverview": "This program is designed to help you recover from lower back pain by improving mobility, reducing discomfort, and strengthening supporting muscles over the course of one week.",
+  "summary": "Gentle recovery exercises to reduce back pain and improve mobility",
   "timeFrame": "1 week",
   "timeFrameExplanation": "This one-week program introduces key recovery techniques. After completing it, you may repeat it or seek a follow-up assessment.",
   "afterTimeFrame": {

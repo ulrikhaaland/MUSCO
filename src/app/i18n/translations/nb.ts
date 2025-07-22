@@ -575,6 +575,7 @@ const translations = {
   'calendar.noProgramForThisDay': 'Ingen program for denne dagen',
   'calendar.workout': 'Trening',
   'calendar.rest': 'Hvile',
+  'calendar.today': 'I dag',
   'calendar.weekdays.mon': 'Man',
   'calendar.weekdays.tue': 'Tir',
   'calendar.weekdays.wed': 'Ons',
@@ -797,6 +798,8 @@ const translations = {
     'Personlig tilpasset for dine treningsmål',
   'exerciseProgram.overview.title.recovery':
     'Personlig tilpasset for din restitusjon',
+  'exerciseProgram.overview.objective': 'Mål',
+  'exerciseProgram.overview.keyMoves': 'Viktige øvelser',
   'exerciseProgram.overview.programDuration': 'Programvarighet:',
   'exerciseProgram.overview.whatNotToDo': 'Hva man ikke bør gjøre',
   'exerciseProgram.overview.expectedOutcome': 'Forventet resultat',
@@ -816,6 +819,7 @@ const translations = {
   'exerciseProgram.signUp.title': 'Lås opp hele programmet',
   'exerciseProgram.signUp.description': 'Registrer deg eller logg inn for å få tilgang til hele programmet og følge progresjonen din.',
   'exerciseProgram.signUp.button': 'Registrer deg / Logg inn',
+  'exerciseProgram.signUp.saveProgram': 'Lagre program',
 
   // Month abbreviations
   'month.jan': 'Jan',

@@ -5,6 +5,7 @@ import Chip from './Chip';
 import BodyPartFilter from './BodyPartFilter';
 import { useTranslation } from '@/app/i18n/TranslationContext';
 import InfoBadge from './InfoBadge';
+import { TextButton } from './TextButton';
 
 interface ProgramDayComponentProps {
   day: ProgramDay;
@@ -198,12 +199,12 @@ export function ProgramDayComponent({
             <p className="text-gray-300">
               {t('program.noExercises')}
             </p>
-            <button
+            <TextButton
               onClick={() => setRemovedBodyParts([])}
-              className="mt-2 text-indigo-300 hover:text-indigo-200"
+              className="mt-2"
             >
               {t('program.resetFilters')}
-            </button>
+            </TextButton>
           </div>
         )}
       </div>

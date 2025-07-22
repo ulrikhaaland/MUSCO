@@ -36,7 +36,17 @@ import { enrichExercisesWithFullData } from '@/app/services/exerciseProgramServi
 import { useLoader } from './LoaderContext';
 import { useTranslation } from '@/app/i18n/TranslationContext';
 import { logAnalyticsEvent } from '../utils/analytics';
-import { getProgramBySlug, getUserProgramBySlug } from '../../../public/data/programs/recovery';
+
+import { 
+  loadRecoveryProgram, 
+  isRecoveryProgramSlug, 
+  clearRecoveryProgramFromSession,
+  hasRecoveryProgramInSession,
+  getRecoveryProgramFromSession,
+  extractRecoveryProgramSlug 
+} from '../services/recoveryProgramService';
+
+
 
 // Update UserProgram interface to include the document ID
 interface UserProgramWithId extends UserProgram {
@@ -74,13 +84,8 @@ interface UserContextType {
 
 const UserContext = createContext<UserContextType>({} as UserContextType);
 
-// Utility: combine multiple ExerciseProgram objects into a single "merged" days array
-// Each ExerciseProgram now represents one week, so we just need to combine their days arrays
-const mergePrograms = (
-  programs: ExerciseProgram[]
-): ExerciseProgram['days'] => {
-  return programs.flatMap((p) => p?.days || []);
-};
+// Note: Removed mergePrograms function as it was causing duplicate days
+// User programs and recovery programs should use the same structure
 
 export function UserProvider({ children }: { children: ReactNode }) {
   const { user, loading: authLoading } = useAuth();
@@ -122,15 +127,15 @@ export function UserProvider({ children }: { children: ReactNode }) {
     activeProgramIdRef.current = userProgram.docId;
     setActiveProgram(userProgram);
 
-    const combinedProgram: ExerciseProgram = {
-      ...userProgram.programs[0],
-      days: mergePrograms(userProgram.programs),
+    // Use the first program (Week 1) as the primary program for display
+    // but keep the full programs array in userProgram for multi-week support
+    const primaryProgram: ExerciseProgram = {
+      ...userProgram.programs[0], // Week 1 metadata and date
       docId: userProgram.docId,
-      // Ensure createdAt is properly set for date calculations
       createdAt: userProgram.programs[0]?.createdAt || new Date(),
     } as ExerciseProgram & { docId: string };
 
-    setProgram(combinedProgram);
+    setProgram(primaryProgram);
     setAnswers(userProgram.questionnaire);
     setDiagnosisData(userProgram.diagnosis);
   };
@@ -138,34 +143,22 @@ export function UserProvider({ children }: { children: ReactNode }) {
   // Helper to set a recovery program as the current program
   const setRecoveryProgram = async (slug: string) => {
     try {
-      // Get the complete UserProgram object with tailored diagnosis and questionnaire
-      const userProgram = getUserProgramBySlug(slug);
-      if (!userProgram) {
+      const sessionData = await loadRecoveryProgram(slug, isNorwegian);
+      if (!sessionData) {
         console.error('Recovery program not found for slug:', slug);
         setIsLoading(false);
         showGlobalLoader(false);
         return;
       }
 
-      // Enrich all week programs with exercise data
-      for (const weekProgram of userProgram.programs) {
-        await enrichExercisesWithFullData(weekProgram, isNorwegian);
-      }
-
-      // Store in sessionStorage for persistence across navigation
-      window.sessionStorage.setItem('currentRecoveryProgram', JSON.stringify({
-        userProgram,
-        formattedProgram: userProgram.programs[0] // Keep the first week as the display program
-      }));
-
       // Use the existing prepareAndSetProgram helper to set up the program properly
-      prepareAndSetProgram(userProgram as UserProgramWithId);
+      prepareAndSetProgram(sessionData.userProgram as UserProgramWithId);
       
       setProgramStatus(ProgramStatus.Done);
       setIsLoading(false);
       showGlobalLoader(false);
     } catch (error) {
-      console.error('Error enriching recovery program:', error);
+      console.error('Error loading recovery program:', error);
       setIsLoading(false);
       showGlobalLoader(false);
     }
@@ -178,9 +171,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
       
       // Skip if it's a system path like 'day' or 'calendar'
       if (slug && !['day', 'calendar'].includes(slug.split('/')[0])) {
-        const recoveryProgram = getProgramBySlug(slug);
-        
-        if (recoveryProgram) {
+        if (isRecoveryProgramSlug(slug)) {
           showGlobalLoader(true, t('program.loadingData'));
           setRecoveryProgram(slug);
           return;
@@ -190,44 +181,31 @@ export function UserProvider({ children }: { children: ReactNode }) {
     
     // Check if we have a persisted recovery program in sessionStorage
     // This handles the case where user navigated away (e.g., to login) but should keep the program
-    const persistedProgram = window.sessionStorage.getItem('currentRecoveryProgram');
-    if (persistedProgram) {
+    const sessionData = getRecoveryProgramFromSession();
+    if (sessionData) {
       try {
-        const persistedData = JSON.parse(persistedProgram);
+        console.log('Restoring recovery program from sessionStorage:', sessionData.userProgram.title);
         
-        // Handle both old format (just ExerciseProgram) and new format (with UserProgram)
-        if (persistedData.userProgram && persistedData.formattedProgram) {
-          // New format - use the UserProgram structure
-          console.log('Restoring recovery program from sessionStorage:', persistedData.userProgram.title);
-          
-          // Convert string dates back to Date objects
-          const userProgram: UserProgramWithId = {
-            ...persistedData.userProgram,
-            createdAt: persistedData.userProgram.createdAt,
-            updatedAt: new Date(persistedData.userProgram.updatedAt),
-            programs: persistedData.userProgram.programs.map((prog: any) => ({
-              ...prog,
-              createdAt: new Date(prog.createdAt)
-            }))
-          };
-          
-          prepareAndSetProgram(userProgram);
-        } else {
-          // Old format - treat as direct ExerciseProgram
-          console.log('Restoring legacy recovery program from sessionStorage:', persistedData.title);
-          setProgram(persistedData);
-          setActiveProgram(null);
-          setAnswers(null);
-          setDiagnosisData(null);
-        }
+        // Convert string dates back to Date objects
+        const userProgram: UserProgramWithId = {
+          ...sessionData.userProgram,
+          docId: 'temp-recovery-program', // Temporary ID for unsaved recovery programs
+          createdAt: sessionData.userProgram.createdAt,
+          updatedAt: new Date(sessionData.userProgram.updatedAt),
+          programs: sessionData.userProgram.programs.map((prog: any) => ({
+            ...prog,
+            createdAt: new Date(prog.createdAt)
+          }))
+        };
         
+        prepareAndSetProgram(userProgram);
         setProgramStatus(ProgramStatus.Done);
         setIsLoading(false);
         showGlobalLoader(false);
         return;
       } catch (error) {
-        console.error('Error parsing persisted recovery program:', error);
-        window.sessionStorage.removeItem('currentRecoveryProgram');
+        console.error('Error restoring recovery program from session:', error);
+        clearRecoveryProgramFromSession();
       }
     }
     
@@ -239,40 +217,60 @@ export function UserProvider({ children }: { children: ReactNode }) {
     }
   }, [pathname, isNorwegian, t]);
 
+  // Check for save context and handle recovery program clearing
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
+    const loginContext = window.sessionStorage.getItem('loginContext');
+    const isInSaveContext = loginContext === 'saveProgram' || pathname === '/login';
+    const hasPersistedRecovery = hasRecoveryProgramInSession();
+    
+    // If not in save context and we have a persisted recovery program, clear it
+    // This ensures recovery programs don't persist when user navigates to regular user program areas
+    if (!isInSaveContext && hasPersistedRecovery) {
+      console.log('Clearing persisted recovery program - not in save context');
+      clearRecoveryProgramFromSession();
+    }
+  }, [pathname]);
+
   // Set up real-time listener for program status changes and latest program
   useEffect(() => {
-    if (authLoading === undefined || authLoading === true) return;
+    console.log('🔍 UserContext main useEffect - auth state:', { authLoading, userId, isUserAuthenticated });
+    
+    // Only wait for auth loading if we don't have a user yet
+    // If we have a user but authLoading is stuck, proceed anyway
+    if (authLoading === true && !user) {
+      console.log('🔍 Early return due to auth loading (no user yet)');
+      return;
+    }
     
     // Check if we're on a recovery program path - if so, skip user program loading
     if (pathname && pathname.startsWith('/program/')) {
       const slug = pathname.replace('/program/', '');
       if (slug && !['day', 'calendar'].includes(slug.split('/')[0])) {
-        const recoveryProgram = getProgramBySlug(slug);
-        if (recoveryProgram) {
+        if (isRecoveryProgramSlug(slug)) {
           // Recovery program is being handled by the separate useEffect
           return;
         }
       }
     }
     
-    // Check if we're in a save context (login page with save intent)
+    // Debug: Check current session storage state
     const loginContext = window.sessionStorage.getItem('loginContext');
-    const isInSaveContext = loginContext === 'saveProgram' || pathname === '/login';
-    const hasPersistedRecovery = window.sessionStorage.getItem('currentRecoveryProgram');
+    const hasPersistedRecovery = hasRecoveryProgramInSession();
+    console.log('🔍 UserContext debug:', { 
+      loginContext, 
+      hasPersistedRecovery, 
+      pathname,
+      userId: !!userId,
+      isUserAuthenticated 
+    });
     
-    // If we're in save context and have a persisted recovery program, don't load user programs
-    // This prevents clearing the recovery program during the save flow
-    if (isInSaveContext && hasPersistedRecovery) {
-      console.log('🔒 Save context detected with recovery program - skipping user program loading');
-      return;
-    }
-    
-    // If not in save context and we have a persisted recovery program, clear it
-    // This ensures recovery programs don't persist when user navigates to regular user program areas
-    if (!isInSaveContext && hasPersistedRecovery) {
-      console.log('Clearing persisted recovery program - not in save context');
-      window.sessionStorage.removeItem('currentRecoveryProgram');
-    }
+    // Temporarily removed save context check to debug
+    // if (loginContext === 'saveProgram' && hasPersistedRecovery) {
+    //   console.log('🔒 Save context detected with recovery program - skipping user program loading');
+    //   return;
+    // }
     
     let unsubscribe: (() => void) | null = null; // Initialize unsubscribe
 
@@ -327,11 +325,13 @@ export function UserProvider({ children }: { children: ReactNode }) {
             );
             const programQ = query(
               programsCollectionRef,
-              orderBy('createdAt', 'desc')
+              orderBy('createdAt', 'asc') // Changed to ascending so Week 1 comes first
             );
 
             try {
               const programSnapshot = await getDocs(programQ);
+              
+
 
               if (!programSnapshot.empty) {
                 const exercisePrograms = await Promise.all(
@@ -475,7 +475,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
       }
       showGlobalLoader(false); // Ensure loader is hidden when component unmounts
     };
-  }, [userId, isUserAuthenticated, authLoading, isNorwegian]); // Added pathname to dependencies
+  }, [userId, isUserAuthenticated, authLoading, isNorwegian]);
 
   // On initial load, check localStorage for pending questionnaire flag
   useEffect(() => {

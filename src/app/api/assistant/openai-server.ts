@@ -6,6 +6,7 @@ import { ProgramStatus, ExerciseProgram, Exercise } from '@/app/types/program';
 import { loadServerExercises } from '@/app/services/server-exercises';
 import { ProgramFeedback } from '@/app/components/ui/ProgramFeedbackQuestionnaire';
 import { prepareExercisesPrompt } from '@/app/helpers/exercise-prompt';
+import { getNextMonday } from '@/app/utils/dateutils';
 
 // Initialize OpenAI client
 const openai = new OpenAI({
@@ -561,12 +562,14 @@ FAILURE TO FOLLOW THE ABOVE INSTRUCTIONS EXACTLY WILL RESULT IN POOR USER EXPERI
 
     // Parse the response as JSON
     let program: ExerciseProgram;
+    // Calculate next Monday date for follow-up programs
+    const nextMondayDate = getNextMonday();
+    
     try {
       program = JSON.parse(rawContent) as ExerciseProgram;
 
-      // Add createdAt timestamp to the program
-      const currentDate = new Date().toISOString();
-      program.createdAt = new Date(currentDate);
+      // Add createdAt timestamp to the program - set to Monday of next week for follow-up programs
+      program.createdAt = nextMondayDate;
 
       // Log extracted exercises from the response for verification
       console.log(
@@ -670,10 +673,11 @@ FAILURE TO FOLLOW THE ABOVE INSTRUCTIONS EXACTLY WILL RESULT IN POOR USER EXPERI
           .doc();
 
         // Save the weekly program data (days array and other program metadata)
+        // Use the same next Monday date for consistency
         batch.set(newWeekRef, {
           days: days || [],
           ...programMetadata,
-          createdAt: new Date().toISOString(),
+          createdAt: nextMondayDate.toISOString(),
         });
 
         // Update the parent document with UserProgram-level fields

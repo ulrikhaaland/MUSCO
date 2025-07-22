@@ -3,6 +3,8 @@ import type { ExerciseProgram, ProgramDay } from '@/app/types/program';
 import { ProgramDaySummaryComponent } from './ProgramDaySummaryComponent';
 import { useUser } from '@/app/context/UserContext';
 import { useTranslation } from '@/app/i18n/TranslationContext';
+import { TextButton } from './TextButton';
+import { getStartOfWeek, getDayOfWeekMondayFirst, addDays } from '@/app/utils/dateutils';
 
 interface ExerciseProgramCalendarProps {
   program: ExerciseProgram; // This will still be the initially selected program
@@ -35,29 +37,21 @@ export function ExerciseProgramCalendar({
 
     for (const userProgram of activeUserPrograms) {
       for (const activeProgram of userProgram.programs) {
-      // Get the day of week (1 = Monday, 7 = Sunday)
-      const dayOfWeek = date.getDay() === 0 ? 7 : date.getDay();
+      // Get the day of week (1 = Monday, 7 = Sunday) using standardized utility
+      const dayOfWeek = getDayOfWeekMondayFirst(date);
 
       // Convert createdAt to Date if it's not already
       const programStartDate = new Date(activeProgram.createdAt);
 
-      // Find the start of the week containing the program start date
-      const programWeekStart = new Date(programStartDate);
-      const programStartDayOfWeek =
-        programStartDate.getDay() === 0 ? 7 : programStartDate.getDay();
-      programWeekStart.setDate(
-        programStartDate.getDate() - (programStartDayOfWeek - 1)
-      );
-      programWeekStart.setHours(0, 0, 0, 0);
+      // Find the start of the week containing the program start date using standardized utility
+      const programWeekStart = getStartOfWeek(programStartDate);
 
       // Reset time part of the check date for accurate comparison
       const checkDate = new Date(date);
       checkDate.setHours(0, 0, 0, 0);
 
-      // Find the start of the week for the check date
-      const checkWeekStart = new Date(checkDate);
-      checkWeekStart.setDate(checkDate.getDate() - (dayOfWeek - 1));
-      checkWeekStart.setHours(0, 0, 0, 0);
+      // Find the start of the week for the check date using standardized utility
+      const checkWeekStart = getStartOfWeek(checkDate);
 
       // Calculate the difference in weeks from the program start week
       const weekDiff = Math.floor(
@@ -101,6 +95,15 @@ export function ExerciseProgramCalendar({
     setSelectedDate(newDate);
   };
 
+  const goToCurrentDay = () => {
+    setSelectedDate(new Date());
+  };
+
+  const isCurrentDay = () => {
+    const today = new Date();
+    return selectedDate.toDateString() === today.toDateString();
+  };
+
   const renderHeader = () => {
     const monthYear = selectedDate.toLocaleString('default', {
       month: 'long',
@@ -115,6 +118,14 @@ export function ExerciseProgramCalendar({
         >
           {monthYear}
         </button>
+        
+        <TextButton 
+          onClick={goToCurrentDay}
+          disabled={isCurrentDay()}
+        >
+          {t('calendar.today')}
+        </TextButton>
+
         <div className="flex space-x-4">
           <button
             onClick={() => handleMonthChange(-1)}
@@ -189,13 +200,8 @@ export function ExerciseProgramCalendar({
       selectedDate.getMonth() + 1,
       0
     );
-    const startDate = new Date(firstDay);
-    // Adjust to start from Monday
-    let dayOfWeek = startDate.getDay();
-    // Convert Sunday (0) to 7 for easier calculation
-    if (dayOfWeek === 0) dayOfWeek = 7;
-    // Move back to the first Monday
-    startDate.setDate(startDate.getDate() - (dayOfWeek - 1));
+    // Get the Monday of the week containing the first day of the month
+    const startDate = getStartOfWeek(firstDay);
 
     const weeks = [];
     const today = new Date();
@@ -217,7 +223,8 @@ export function ExerciseProgramCalendar({
           isSelected: date.toDateString() === selectedDate.toDateString(),
           isProgramDay,
         });
-        startDate.setDate(startDate.getDate() + 1);
+        const nextDate = addDays(startDate, 1);
+        startDate.setTime(nextDate.getTime());
       }
       weeks.push(currentWeek);
 

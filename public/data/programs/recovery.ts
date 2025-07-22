@@ -346,17 +346,18 @@ export const rehabPrograms: ExerciseProgram[] = [
   // -----------------------------------------------------------------
   {
     programOverview:
-      'This evidence-based 4‑week lower back rehabilitation program systematically addresses the root causes of mechanical low‑back pain through progressive therapeutic exercise. You\'ll begin with gentle spinal stabilization using dead bugs and bird dogs to reactivate deep core muscles, then advance through targeted glute strengthening with bridges and clamshells, and finally master hip hinge patterns with goblet squats and Romanian deadlifts. Each 20-30 minute session is precisely structured to reduce pain while building the muscular foundation needed to prevent future episodes, with active recovery days featuring targeted stretches and mobility work.',
+      'Week 1 focuses on gentle spinal stabilization and core reactivation for pain relief.',
+    summary: 'Gentle spinal stabilization and pain relief with core reactivation',
     timeFrameExplanation:
-      'Week 1 establishes spinal control and pain relief through dead bug variations, bird dog holds, and gentle pelvic tilts that reactivate your deep core stabilizers without aggravating sensitive tissues. Week 2 introduces hip mobility with hip flexor stretches and targeted glute activation through clamshells and single-leg bridges to address common muscle imbalances contributing to back pain. Week 3 builds functional strength with goblet squats, Romanian deadlifts, and side planks that teach proper hip hinge mechanics while challenging your core in multiple planes. Week 4 integrates complex movement patterns like sumo deadlifts and Turkish get-ups that prepare your body for real-world lifting demands and dynamic activities.',
+      'Start with basic spinal control exercises and core activation to reduce pain and establish foundation.',
     afterTimeFrame: {
       expectedOutcome:
-        'You\'ll experience substantial reduction in daily back pain (targeting 0-2/10 pain levels), dramatically improved confidence when bending and lifting objects, and enhanced core endurance for prolonged sitting or standing activities. Your hip flexors will demonstrate improved mobility, glutes will be significantly stronger and more reactive during movement, and you\'ll have mastered the fundamental hip hinge pattern essential for safe lifting mechanics. Most importantly, you\'ll possess a comprehensive toolkit of therapeutic exercises proven to maintain spinal health and prevent future pain episodes.',
+        'Reduced daily back pain and improved confidence with basic movements.',
       nextSteps:
-        'Maintain your therapeutic gains by performing the Week 4 exercise routine 2-3 times weekly as your baseline maintenance program. Gradually progress to heavier deadlift variations and loaded carries as tolerated, while incorporating cardiovascular activities like walking or swimming for overall spinal health. Implement regular movement breaks every 30-45 minutes during prolonged sitting, and use the rest day mobility exercises as your permanent daily movement routine. Consider advancing to sport-specific training or general strength programming once you can perform all Week 4 exercises pain-free with perfect form.',
+        'Progress to Week 2 for hip mobility and targeted glute activation.',
     },
     whatNotToDo:
-      'Never push through sharp, shooting, or worsening pain—this may indicate nerve involvement requiring immediate medical evaluation. Avoid explosive movements, heavy bilateral lifting above 50% body weight, or prolonged forward bending for the first 2 weeks while inflammatory processes resolve. Don\'t skip the rest day mobility work as it prevents stiffness and maintains progress between training sessions. Resist prolonged sitting without movement breaks, avoid sleeping positions that increase morning stiffness, and don\'t abandon the program early when pain decreases—completing all 4 weeks builds resilience against future episodes. Most critically, avoid loaded spinal flexion exercises like sit-ups or aggressive rotational movements when pain exceeds 2/10.',
+      'Never push through sharp pain or avoid explosive movements during early healing.',
     createdAt: new Date('2025-05-31T00:00:00Z'),
     days: [
       {
@@ -408,6 +409,7 @@ export const rehabPrograms: ExerciseProgram[] = [
   {
     programOverview:
       'Week 2 introduces hip mobility with targeted glute activation to address muscle imbalances.',
+    summary: 'Hip mobility and glute activation for muscle balance',
     timeFrameExplanation:
       'Build foundational strength through progressive loading and eccentric control.',
     afterTimeFrame: {
@@ -469,6 +471,7 @@ export const rehabPrograms: ExerciseProgram[] = [
   {
     programOverview:
       'Week 3 builds functional strength with squats and side planks that challenge core in multiple planes.',
+    summary: 'Functional strength with squats and multi-plane core work',
     timeFrameExplanation:
       'Learn proper hip hinge mechanics while increasing training volume and load.',
     afterTimeFrame: {
@@ -530,6 +533,7 @@ export const rehabPrograms: ExerciseProgram[] = [
   {
     programOverview:
       'Week 4 integrates complex movement patterns to prepare for real-world lifting demands.',
+    summary: 'Complex movement patterns for real-world lifting demands',
     timeFrameExplanation:
       'Advanced loaded hinge patterns and movement integration for return to full activity.',
     afterTimeFrame: {
@@ -598,7 +602,8 @@ export const rehabPrograms: ExerciseProgram[] = [
   // -----------------------------------------------------------------
   {
     programOverview:
-      'Week 1 focuses on calming irritation and re‑establishing basic knee control. You\'ll use low‑impact movements and hip activation drills while inflammation settles.',
+      'Week 1 focuses on calming knee irritation and re‑establishing basic control.',
+    summary: 'Calming knee irritation with low-impact movements and control',
     timeFrameExplanation:
       'Back off painful loading and practice gentle range‑of‑motion plus glute activation. This sets the stage for controlled loading next week.',
     afterTimeFrame: {
@@ -661,6 +666,7 @@ export const rehabPrograms: ExerciseProgram[] = [
   {
     programOverview:
       'Week 2 introduces bodyweight squats and lunges to build tolerance for single‑leg loading and improve alignment.',
+    summary: 'Bodyweight squats and lunges for single-leg loading tolerance',
     timeFrameExplanation:
       'With pain calming down, you\'ll progress to controlled movements focusing on hip stability and proper knee tracking.',
     afterTimeFrame: {
@@ -723,6 +729,7 @@ export const rehabPrograms: ExerciseProgram[] = [
   {
     programOverview:
       'Week 3 adds step‑downs and Bulgarian split squats to build single‑leg strength for jogging.',
+    summary: 'Step-downs and Bulgarian squats for single-leg jogging strength',
     timeFrameExplanation:
       'These movements improve eccentric control and hip stability so you can tolerate gentle running.',
     afterTimeFrame: {
@@ -785,6 +792,7 @@ export const rehabPrograms: ExerciseProgram[] = [
   {
     programOverview:
       'Week 4 gradually increases running distance while maintaining single‑leg strength work to keep the knee resilient.',
+    summary: 'Gradually increasing running distance with strength maintenance',
     timeFrameExplanation:
       'Extend your jog intervals and monitor knee response. Strength sessions remain to reinforce control.',
     afterTimeFrame: {
@@ -851,6 +859,7 @@ export const rehabPrograms: ExerciseProgram[] = [
   {
     programOverview:
       'Week 1 focuses on restoring pain‑free range of motion and scapular control using gentle band work.',
+    summary: 'Pain-free range of motion and scapular control with bands',
     timeFrameExplanation:
       'Reduce impingement symptoms and build basic stability so you can increase endurance next week.',
     afterTimeFrame: {
@@ -914,6 +923,7 @@ export const rehabPrograms: ExerciseProgram[] = [
   {
     programOverview:
       'Week 2 builds rotator cuff endurance with more repetitions and longer holds while keeping movements pain free.',
+    summary: 'Building rotator cuff endurance with increased repetitions',
     timeFrameExplanation:
       'The added volume strengthens your shoulder so you can tolerate pulling and pressing soon.',
     afterTimeFrame: {
@@ -977,6 +987,7 @@ export const rehabPrograms: ExerciseProgram[] = [
   {
     programOverview:
       'Week 3 introduces light pulling movements and vertical pressing within a comfortable range.',
+    summary: 'Light pulling movements and controlled vertical pressing',
     timeFrameExplanation:
       'These exercises start rebuilding strength and coordination for overhead activities.',
     afterTimeFrame: {
@@ -1043,6 +1054,7 @@ export const rehabPrograms: ExerciseProgram[] = [
   {
     programOverview:
       'Week 4 transitions you to overhead strength work with dumbbells and full-range control.',
+    summary: 'Overhead strength work with dumbbells and full-range control',
     timeFrameExplanation:
       'We slightly increase resistance to prepare you for regular training or sport.',
     afterTimeFrame: {
@@ -1113,6 +1125,7 @@ export const rehabPrograms: ExerciseProgram[] = [
   {
     programOverview:
       'Week 1 focuses on gentle mobility and swelling control to restore pain-free motion.',
+    summary: 'Acute recovery with mobility and swelling control',
     timeFrameExplanation:
       'Use light range-of-motion drills and calf pumps to reduce inflammation. This prepares you for strength work next week.',
     afterTimeFrame: {
@@ -1170,6 +1183,7 @@ export const rehabPrograms: ExerciseProgram[] = [
   {
     programOverview:
       'Week 2 introduces more strength work for the calf and supporting muscles.',
+    summary: 'Strength building for calf and supporting muscles',
     timeFrameExplanation:
       'You will progress loading to build stability while continuing to manage swelling.',
     afterTimeFrame: {
@@ -1230,6 +1244,7 @@ export const rehabPrograms: ExerciseProgram[] = [
   {
     programOverview:
       'Week 3 adds single-leg balance and proprioceptive drills to improve coordination.',
+    summary: 'Balance and proprioceptive coordination training',
     timeFrameExplanation:
       'Building balance prepares you for the dynamic loading introduced in Week 4.',
     afterTimeFrame: {
@@ -1290,6 +1305,7 @@ export const rehabPrograms: ExerciseProgram[] = [
   {
     programOverview:
       'Week 4 reintroduces jogging and dynamic movements to prepare for full activity.',
+    summary: 'Return to running and dynamic activity preparation',
     timeFrameExplanation:
       'You will continue strengthening while adding light running to transition back to sport or daily tasks.',
     afterTimeFrame: {
@@ -1353,6 +1369,7 @@ export const rehabPrograms: ExerciseProgram[] = [
   {
     programOverview:
       'Week 1 introduces isometric pain modulation to calm symptoms and build tolerance to light loading.',
+    summary: 'Isometric pain modulation and tolerance building',
     timeFrameExplanation:
       'Use pain‑free holds and gentle mobility to stimulate healing without aggravating the tendon.',
     afterTimeFrame: {
@@ -1407,6 +1424,7 @@ export const rehabPrograms: ExerciseProgram[] = [
   {
     programOverview:
       'Week 2 introduces slow eccentric loading to promote tendon repair and strength.',
+    summary: 'Eccentric loading for tendon repair and strength',
     timeFrameExplanation:
       'Controlled lowering exercises build resilience while keeping intensity moderate.',
     afterTimeFrame: {
@@ -1461,6 +1479,7 @@ export const rehabPrograms: ExerciseProgram[] = [
   {
     programOverview:
       'Week 3 builds forearm control and grip strength through rotation and endurance work.',
+    summary: 'Forearm control and grip strength development',
     timeFrameExplanation:
       'These movements enhance coordination and prepare you for functional tasks.',
     afterTimeFrame: {
@@ -1518,6 +1537,7 @@ export const rehabPrograms: ExerciseProgram[] = [
   {
     programOverview:
       'Week 4 integrates functional loading so you\'re ready for everyday tasks and sport.',
+    summary: 'Functional integration for daily tasks and sport',
     timeFrameExplanation:
       'Compound movements and carries reinforce strength gains made in the previous weeks.',
     afterTimeFrame: {
@@ -1577,6 +1597,7 @@ export const rehabPrograms: ExerciseProgram[] = [
   {
     programOverview:
       'Week 1 focuses on gentle mobility and scapular awareness to reduce immediate tension.',
+    summary: 'Mobility and scapular awareness for tension relief',
     timeFrameExplanation:
       'Start with light movements to open the chest and activate supporting muscles around your neck and shoulders.',
     afterTimeFrame: {
@@ -1637,6 +1658,7 @@ export const rehabPrograms: ExerciseProgram[] = [
   {
     programOverview:
       'Week 2 adds low-load strength work for the upper back and rotator cuff to build endurance.',
+    summary: 'Upper back and rotator cuff strengthening',
     timeFrameExplanation:
       'Targeted strengthening helps support better posture and reduces strain on the neck.',
     afterTimeFrame: {
@@ -1697,6 +1719,7 @@ export const rehabPrograms: ExerciseProgram[] = [
   {
     programOverview:
       'Week 3 reinforces postural endurance through higher volume and static holds.',
+    summary: 'Postural endurance with higher volume training',
     timeFrameExplanation:
       'Increased training volume builds the endurance needed to maintain good posture throughout the day.',
     afterTimeFrame: {
@@ -1757,6 +1780,7 @@ export const rehabPrograms: ExerciseProgram[] = [
   {
     programOverview:
       'Week 4 helps you integrate better alignment into everyday movement and work habits.',
+    summary: 'Alignment integration and habit formation',
     timeFrameExplanation:
       'Focus on building lasting habits and maintaining your postural improvements in daily life.',
     afterTimeFrame: {
@@ -1820,6 +1844,7 @@ export const rehabPrograms: ExerciseProgram[] = [
   {
     programOverview:
       'Week 1 focuses on light calf activation and gentle stretching to reduce tension through the foot arch.',
+    summary: 'Light calf activation and arch tension relief',
     timeFrameExplanation:
       'Start with gentle exercises to calm inflammation and begin activating supporting muscles.',
     afterTimeFrame: {
@@ -1877,6 +1902,7 @@ export const rehabPrograms: ExerciseProgram[] = [
   {
     programOverview:
       'Week 2 introduces eccentric calf loading and toe activation to stimulate tissue healing.',
+    summary: 'Eccentric loading and tissue healing stimulation',
     timeFrameExplanation:
       'Controlled loading helps rebuild strength while promoting plantar fascia recovery.',
     afterTimeFrame: {
@@ -1937,6 +1963,7 @@ export const rehabPrograms: ExerciseProgram[] = [
   {
     programOverview:
       'Week 3 builds single-leg control and midfoot strength to improve stability.',
+    summary: 'Single-leg control and midfoot strengthening',
     timeFrameExplanation:
       'Single-leg work challenges the foot and ankle to prepare for dynamic activities.',
     afterTimeFrame: {
@@ -1997,6 +2024,7 @@ export const rehabPrograms: ExerciseProgram[] = [
   {
     programOverview:
       'Week 4 increases functional loading so you can walk or jog pain-free and return to impact activities.',
+    summary: 'Functional loading for pain-free walking and impact activities',
     timeFrameExplanation:
       'Progressive loading prepares your foot for the demands of daily movement and sport.',
     afterTimeFrame: {
@@ -2059,6 +2087,7 @@ export const rehabPrograms: ExerciseProgram[] = [
   {
     programOverview:
       'Week 1 focuses on restoring baseline mobility and pain-free isometric hamstring contraction.',
+    summary: 'Baseline mobility and pain-free muscle activation',
     timeFrameExplanation:
       'Start with gentle movements to reduce inflammation and begin activating hamstring muscles safely.',
     afterTimeFrame: {
@@ -2119,6 +2148,7 @@ export const rehabPrograms: ExerciseProgram[] = [
   {
     programOverview:
       'Week 2 introduces eccentric loading to support tendon and fascial healing.',
+    summary: 'Eccentric loading for tissue healing and strength',
     timeFrameExplanation:
       'Controlled eccentric movements help rebuild hamstring strength while promoting tissue repair.',
     afterTimeFrame: {
@@ -2179,6 +2209,7 @@ export const rehabPrograms: ExerciseProgram[] = [
   {
     programOverview:
       'Week 3 integrates single-leg control and trunk-pelvis coordination for functional movement.',
+    summary: 'Single-leg control and functional movement integration',
     timeFrameExplanation:
       'Single-leg exercises challenge stability and prepare you for dynamic activities.',
     afterTimeFrame: {
@@ -2239,6 +2270,7 @@ export const rehabPrograms: ExerciseProgram[] = [
   {
     programOverview:
       'Week 4 returns you to light running and dynamic movement with confidence.',
+    summary: 'Return to running and dynamic movement patterns',
     timeFrameExplanation:
       'Progressive jogging and dynamic exercises prepare you for full return to sport and activity.',
     afterTimeFrame: {
@@ -2300,17 +2332,18 @@ export const rehabPrograms: ExerciseProgram[] = [
   // -----------------------------------------------------------------
   {
     programOverview:
-      "This comprehensive 4‑week upper back and core reset program systematically addresses postural dysfunction through thoracic mobility restoration, posterior chain strengthening, and core stabilization. You'll begin with gentle spinal mobility and postural awareness exercises to counteract chronic forward positioning and rounded shoulders, advance through targeted pulling movements and scapular activation to rebuild upper back strength, then progress to integrated core and postural endurance training that maintains proper alignment during daily activities. The final week emphasizes habit formation and long-term postural strategies to ensure lasting improvements. Each 30-minute session targets the specific muscle imbalances caused by prolonged sitting and computer work while building the strength and awareness needed for optimal posture.",
+      'Week 1 focuses on gentle spinal mobility and basic postural awareness to counteract forward positioning.',
+    summary: 'Comprehensive postural reset with mobility and strengthening',
     timeFrameExplanation:
-      'Week 1 establishes thoracic spine mobility and basic postural awareness through gentle extension exercises, shoulder blade activation, and breathing pattern correction to counteract forward head and rounded shoulder positioning. Week 2 introduces targeted pulling movements and posterior chain strengthening to rebuild the muscles that support proper spinal alignment. Week 3 progresses to integrated core and upper back endurance training that maintains postural improvements during prolonged activities and daily demands. Week 4 focuses on advanced postural control, habit integration, and workplace optimization to ensure lasting improvements in spinal health and function.',
+      'Start with gentle extension exercises and breathing pattern correction for postural improvement.',
     afterTimeFrame: {
       expectedOutcome:
-        "You'll experience substantial reduction in upper back pain and tension during prolonged sitting (targeting 0-1/10 during 8-hour work days), dramatically improved thoracic spine mobility and shoulder blade control, and enhanced core endurance for maintaining proper posture throughout long activities. Your posterior chain will be significantly strengthened, breathing patterns will be optimized, and you'll have mastered workplace ergonomics and movement habits that prevent postural decline. Most importantly, you'll have developed automatic postural correction reflexes and understand how to maintain spinal health in modern sedentary environments.",
+        'Reduced upper back tension and improved postural awareness during daily activities.',
       nextSteps:
-        'Continue the Week 4 postural strengthening routine daily as your permanent maintenance program, focusing on morning activation and evening tension release. Implement regular movement breaks every 30-45 minutes during prolonged sitting with specific thoracic and shoulder exercises. Maintain optimal workspace ergonomics and continue weekly posterior chain strengthening to counteract daily postural stresses. Consider monthly postural assessments and advanced exercises as your strength and awareness improve.',
+        'Progress to Week 2 for targeted pulling movements and posterior chain strengthening.',
     },
     whatNotToDo:
-      "Never ignore severe upper back pain with radiating symptoms into the arms or persistent headaches—this may indicate nerve impingement or cervical dysfunction requiring medical evaluation. Avoid returning to prolonged slouching positions or neglecting the movement breaks that are essential for maintaining improvements. Don't skip the core strengthening components as they provide the foundation for all postural improvements. Resist using back supports long-term as they can promote muscle weakness, and avoid heavy lifting without proper spinal mechanics during the initial weeks. Most critically, don't ignore the lifestyle factors like workspace setup, stress management, and sleep position that contribute to postural dysfunction.",
+      'Avoid heavy pressing and prolonged slouching during the early stages.',
     createdAt: new Date('2025-06-02T00:00:00Z'),
     days: [
       {
@@ -2361,6 +2394,7 @@ export const rehabPrograms: ExerciseProgram[] = [
   {
     programOverview:
       'Week 2 introduces controlled pulling and shoulder blade activation.',
+    summary: 'Controlled pulling and scapular strengthening',
     timeFrameExplanation:
       'Build scapular control and strengthen the muscles that support good posture.',
     afterTimeFrame: {
@@ -2421,6 +2455,7 @@ export const rehabPrograms: ExerciseProgram[] = [
   {
     programOverview:
       'Week 3 adds time-under-tension and stability work for endurance.',
+    summary: 'Endurance building with time-under-tension work',
     timeFrameExplanation:
       'Challenge your postural muscles with longer holds and stability exercises.',
     afterTimeFrame: {
@@ -2478,6 +2513,7 @@ export const rehabPrograms: ExerciseProgram[] = [
   {
     programOverview:
       'Week 4 integrates core and full-body posture control for daily function.',
+    summary: 'Integrated core and full-body postural control',
     timeFrameExplanation:
       'Combine all elements for comprehensive postural control and strength.',
     afterTimeFrame: {
@@ -2537,6 +2573,7 @@ export const rehabPrograms: ExerciseProgram[] = [
   {
     programOverview:
       'Week 1 focuses on reactivating your deep core muscles and practicing control.',
+    summary: 'Deep core activation and control foundation',
     timeFrameExplanation:
       'Begin with basic core stabilization exercises to build foundational strength.',
     afterTimeFrame: {
@@ -2594,6 +2631,7 @@ export const rehabPrograms: ExerciseProgram[] = [
   {
     programOverview:
       'Week 2 adds time under tension and limb coordination.',
+    summary: 'Core endurance with coordinated movement challenges',
     timeFrameExplanation:
       'Challenge your core stability with longer holds and coordinated movements.',
     afterTimeFrame: {
@@ -2654,6 +2692,7 @@ export const rehabPrograms: ExerciseProgram[] = [
   {
     programOverview:
       'Week 3 incorporates balance, anti-rotation, and lateral core engagement.',
+    summary: 'Advanced stability with multi-directional core control',
     timeFrameExplanation:
       'Challenge your core with stability exercises and multi-directional control.',
     afterTimeFrame: {
@@ -2711,6 +2750,7 @@ export const rehabPrograms: ExerciseProgram[] = [
   {
     programOverview:
       'Week 4 transitions to longer holds and multi-planar control.',
+    summary: 'Advanced multi-planar core mastery',
     timeFrameExplanation:
       'Master advanced core stability for preparation to more demanding training.',
     afterTimeFrame: {
