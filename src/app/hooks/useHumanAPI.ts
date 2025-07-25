@@ -17,6 +17,7 @@ import {
 import { ProgramIntention, useApp } from '../context/AppContext';
 import { loadHumanSdk } from '../utils/loadHumanSdk';
 import { diffSelect } from '../utils/selectionDelta';
+import { throttle } from '../utils/throttle';
 
 interface CameraPosition {
   position: {
@@ -196,11 +197,10 @@ export function useHumanAPI({
             initialCameraRef.current = camera;
           });
 
-          human.on('camera.updated', (event) => {
-            if (!isResettingRef.current) {
-              setNeedsReset(true);
-            }
+          const onCam = throttle(() => {
+            if (!isResettingRef.current) setNeedsReset(true);
           });
+          human.on('camera.updated', onCam);
 
           human.on('scene.objectsSelected', onObjectSelected);
 

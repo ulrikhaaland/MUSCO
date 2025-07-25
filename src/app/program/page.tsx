@@ -42,12 +42,32 @@ export default function ProgramPage() {
 
   const isLoading = (authLoading || userLoading) && !program;
 
-  // Always use the combined program with all weeks
+  // Always use the most recently created active program
   useEffect(() => {
-    if (program) {
+    // If we have multiple active programs, prioritize the most recently created one
+    if (userPrograms && userPrograms.length > 0) {
+      const activePrograms = userPrograms.filter(p => p.active);
+      
+      if (activePrograms.length > 1) {
+        // Multiple active programs - pick the most recently created one
+        const mostRecentActive = activePrograms.reduce((most, current) => {
+          const mostDate = new Date(most.updatedAt || most.createdAt);
+          const currentDate = new Date(current.updatedAt || current.createdAt);
+          return currentDate > mostDate ? current : most;
+        });
+        
+        // Use the first program (week 1) from the most recent active program
+        if (mostRecentActive.programs && mostRecentActive.programs[0]) {
+          setSelectedProgram(mostRecentActive.programs[0]);
+        }
+      } else if (program) {
+        // Single active program or fallback to UserContext program
+        setSelectedProgram(program);
+      }
+    } else if (program) {
       setSelectedProgram(program);
     }
-  }, [program]);
+  }, [program, userPrograms]);
 
   // Control the loader visibility based on loading states
   useEffect(() => {

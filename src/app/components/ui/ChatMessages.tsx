@@ -46,6 +46,7 @@ export function ChatMessages({
   const [chatContainerHeight, setChatContainerHeight] = useState(0);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const [clickedQuestions, setClickedQuestions] = useState<Set<string>>(new Set());
+  const [keepSpacer, setKeepSpacer] = useState(false);
   const touchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const lastMessageContentRef = useRef<string>('');
   const lastMessageIdRef = useRef<string>('');
@@ -589,6 +590,11 @@ export function ChatMessages({
     // Check if this is a user message
     const isNewUserMessage = lastMessage?.role === 'user' && isNewMessage;
 
+    // Spacer management: remove spacer when new user message is sent
+    if (isNewUserMessage) {
+      setKeepSpacer(false);
+    }
+
     // ALWAYS scroll for user messages, regardless of disableAutoScroll setting
     if (isNewUserMessage) {
       // Force scroll for user messages
@@ -770,6 +776,25 @@ export function ChatMessages({
       }
     }
   };
+
+  // Initialize loading ref on mount
+  useEffect(() => {
+    initialLoadingRef.current = isLoading;
+  }, []); // Only run once on mount
+
+  // Effect to track loading state changes and manage spacer
+  useEffect(() => {
+    // If we just finished loading (response completed), keep the spacer visible
+    const wasLoading = initialLoadingRef.current;
+    
+    if (wasLoading && !isLoading && messages.length > 0) {
+      // Response just completed - keep spacer until next user message
+      setKeepSpacer(true);
+    }
+    
+    // Update the loading state ref
+    initialLoadingRef.current = isLoading;
+  }, [isLoading, messages.length]);
 
   // Effect to track streaming state changes
   useEffect(() => {
@@ -1055,11 +1080,11 @@ export function ChatMessages({
           )}
 
           {/* 
-            Loading message spacer - rendered ONLY during active loading or streaming
+            Loading message spacer - rendered during loading/streaming and kept until next user message
             - Uses dynamic height calculation that adjusts based on content
-            - Completely removed after streaming completes
+            - Maintained after response completion to prevent visual jumping
           */}
-          {isLoading && (needsResponsePlaceholder || isStreaming) && (
+          {(isLoading && (needsResponsePlaceholder || isStreaming)) || keepSpacer ? (
             <div
               className="block w-full overflow-hidden"
               style={{
@@ -1072,10 +1097,10 @@ export function ChatMessages({
             >
               <LoadingMessage
                 containerHeight={availableHeight}
-                visible={needsResponsePlaceholder && !isStreaming}
+                visible={needsResponsePlaceholder && !isStreaming && !keepSpacer}
               />
             </div>
-          )}
+          ) : null}
         </div>
       </div>
 

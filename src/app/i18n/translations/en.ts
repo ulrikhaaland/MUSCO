@@ -4,6 +4,7 @@ const translations = {
   // Common elements
   'common.loading': 'Loading',
   'common.save': 'Save',
+  'common.saving': 'Saving...',
   'common.cancel': 'Cancel',
   'common.ok': 'OK',
   'common.error': 'An error occurred',
@@ -37,6 +38,9 @@ const translations = {
   'program.bodyPart.knee': 'Knee',
   'program.bodyPart.ankle': 'Ankle',
   'program.bodyPart.foot': 'Foot',
+  'program.bodyPart.traps': 'Traps',
+  'program.bodyPart.upper_traps': 'Upper traps',
+  'program.bodyPart.posture': 'Posture',
 
   // Program - Equipment Access
   'program.equipment.large_gym': 'Large gym',
@@ -90,6 +94,7 @@ const translations = {
   'program.exercises': 'exercises',
   'program.optionalRecoveryActivity': 'optional recovery activity',
   'program.optionalRecoveryActivities': 'optional recovery activities',
+  'program.dayAccessibility': 'Day {{day}} accessibility information',
 
   // Profile separators
   'profile.separateWithCommas.medicalConditions':

@@ -160,7 +160,7 @@ export function ProgramDayComponent({
         {day.isRestDay && filteredExercises && filteredExercises.length > 0 && (
           <div className="mb-8">
             <h4 className="text-indigo-300 font-medium">
-              {t('program.optionalRecoveryActivities')}
+              {t('program.optionalRecoveryActivities').charAt(0).toUpperCase() + t('program.optionalRecoveryActivities').slice(1)}
             </h4>
             <p className="text-gray-300 text-sm mt-1">
               {t('program.recoveryMessage')}

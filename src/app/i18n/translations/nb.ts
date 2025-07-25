@@ -4,6 +4,7 @@ const translations = {
   // Common elements
   'common.loading': 'Laster',
   'common.save': 'Lagre',
+  'common.saving': 'Lagrer...',
   'common.cancel': 'Avbryt',
   'common.ok': 'OK',
   'common.error': 'Det oppstod en feil',
@@ -37,6 +38,9 @@ const translations = {
   'program.bodyPart.knee': 'Kne',
   'program.bodyPart.ankle': 'Ankel',
   'program.bodyPart.foot': 'Fot',
+  'program.bodyPart.traps': 'Trapesmuskel',
+  'program.bodyPart.upper_traps': 'Øvre trapesmuskel',
+  'program.bodyPart.posture': 'Holdning',
 
   // Program - Equipment Access
   'program.equipment.large_gym': 'Stort treningssenter',
@@ -449,6 +453,7 @@ const translations = {
   'program.modification': 'Modifikasjon:',
   'program.precaution': 'Forholdsregel:',
   'program.rest': '{{seconds}}s hvile',
+  'program.dayAccessibility': 'Tilgjengelighetsinformasjon for dag {{day}}',
 
   bottomSheet: {
     minimize: 'Minimer',
@@ -559,6 +564,11 @@ const translations = {
   'program.defaultPageTitle': 'Program | MUSCO',
   'program.optionalRecoveryActivity': 'valgfri restitusjons øvelse',
   'program.optionalRecoveryActivities': 'valgfrie restitusjons øvelser',
+  'program.workout': 'Trening',
+  'program.exercise': 'øvelse',
+  'program.exercises': 'øvelser',
+  'program.warmup': 'oppvarming',
+  'program.noDuration': 'Ingen varighet',
 
   // Days of the week
   'days.monday': 'Mandag',

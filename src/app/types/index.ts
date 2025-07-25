@@ -75,45 +75,30 @@ export interface Question {
 }
 
 export interface DiagnosisAssistantResponse {
-  // The diagnosis of the user, e.g. 'neck strain'
-  diagnosis: string | null;
-  // The areas of the body that are painful, e.g. ['neck', 'left shoulder']
-  painfulAreas: string[];
-  // Informational insights about the user's condition
+  /* 7-Q core + optional fields */
   informationalInsights: string | null;
-  // When symptoms began (acute / gradual / unknown)
-  onset: string | null;
-  // Pain intensity on scale of 0-10
-  painScale: number | null;
-  // How the issue developed (trauma / overuse / posture / unknown)
-  mechanismOfInjury: string | null;
-  // What makes symptoms worse
-  aggravatingFactors: string | null;
-  // What makes symptoms better
-  relievingFactors: string | null;
-  // Previous similar issues (yes/no)
-  priorInjury: string | null;
-  // How the pain occurs (constant, intermittent, activity-dependent)
-  painPattern: string | null;
-  // Specific area within the selected body part
+  painfulAreas: string[];
+  onset: 'acute' | 'gradual' | 'unknown' | null;
   painLocation: string | null;
-  // Type of pain (sharp, dull, achy, burning, etc.)
+  painScale: number | null;                     // 0-10
   painCharacter: string | null;
-  // Whether assessment is complete
+  aggravatingFactors: string[];                 // array
+  relievingFactors: string[];                   // array
+  painPattern: 'constant' | 'intermittent' | 'activity-dependent' | null;
+  priorInjury?: 'yes' | 'no' | null;
+  mechanismOfInjury?: 'trauma' | 'overuse' | 'posture' | 'unknown' | null;
+
+  /* state flags */
   assessmentComplete: boolean;
-  // Whether red flags are present
   redFlagsPresent: boolean;
-  // The activities the user should avoid, e.g. ['running', 'lifting weights']
+
+  /* program scaffolding */
+  diagnosis: string | null;
+  timeFrame: string | null;                     // null until set
+  programType: 'exercise' | 'recovery';
   avoidActivities: string[];
-  // The goals of the user, e.g. ['reduce pain', 'improve mobility']
-  recoveryGoals: string[];
-  // The time frame of the user's recovery, or exercise program, e.g. '4-6 weeks'
-  // after this time frame, the program will be completed, and the user needs check in and get a new program
-  timeFrame: string;
-  // The follow-up questions to ask the user, e.g. ['Do you have any pain in your neck?', 'Do you have any pain in your shoulder?']
-  followUpQuestions: Question[];
-  // The type of program the user is getting, e.g. 'exercise' or 'recovery'
-  programType: ProgramType;
-  // The areas of the body that are targeted by the program, e.g. ['neck', 'left shoulder']
   targetAreas: string[];
+
+  /* UI */
+  followUpQuestions: Question[];
 }

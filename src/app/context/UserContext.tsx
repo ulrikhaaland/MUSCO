@@ -236,9 +236,12 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
   // Set up real-time listener for program status changes and latest program
   useEffect(() => {
+    console.log('🔍 UserContext main useEffect - auth state:', { authLoading, userId, isUserAuthenticated });
+    
     // Only wait for auth loading if we don't have a user yet
     // If we have a user but authLoading is stuck, proceed anyway
     if (authLoading === true && !user) {
+      console.log('🔍 Early return due to auth loading (no user yet)');
       return;
     }
     
@@ -253,15 +256,22 @@ export function UserProvider({ children }: { children: ReactNode }) {
       }
     }
     
-    // Check if we're in a save context (recovery program save flow)
+    // Debug: Check current session storage state
     const loginContext = window.sessionStorage.getItem('loginContext');
     const hasPersistedRecovery = hasRecoveryProgramInSession();
+    console.log('🔍 UserContext debug:', { 
+      loginContext, 
+      hasPersistedRecovery, 
+      pathname,
+      userId: !!userId,
+      isUserAuthenticated 
+    });
     
-    // If we have a recovery program in session AND save context, don't load user programs
-    // This prevents clearing the recovery program during the save flow
-    if (loginContext === 'saveProgram' && hasPersistedRecovery) {
-      return;
-    }
+    // Temporarily removed save context check to debug
+    // if (loginContext === 'saveProgram' && hasPersistedRecovery) {
+    //   console.log('🔒 Save context detected with recovery program - skipping user program loading');
+    //   return;
+    // }
     
     let unsubscribe: (() => void) | null = null; // Initialize unsubscribe
 
@@ -300,9 +310,6 @@ export function UserProvider({ children }: { children: ReactNode }) {
         }
 
         // First collect all programs
-        let mostRecentActiveProgram: UserProgramWithId | null = null;
-        let mostRecentActiveDate: Date | null = null;
-        
         for (const doc of snapshot.docs) {
           const data = doc.data();
 
@@ -324,6 +331,8 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
             try {
               const programSnapshot = await getDocs(programQ);
+              
+
 
               if (!programSnapshot.empty) {
                 const exercisePrograms = await Promise.all(
@@ -343,22 +352,26 @@ export function UserProvider({ children }: { children: ReactNode }) {
                   })
                 );
 
+                // Parse createdAt consistently
+                const createdAt = data.createdAt && typeof data.createdAt.toDate === 'function'
+                  ? data.createdAt.toDate()
+                  : typeof data.createdAt === 'string'
+                    ? new Date(data.createdAt)
+                    : new Date();
+
+                // Parse updatedAt consistently  
                 const updatedAt = data.updatedAt
-                  ? new Date(data.updatedAt)
-                  : new Date(data.createdAt);
+                  ? (typeof data.updatedAt.toDate === 'function' 
+                      ? data.updatedAt.toDate() 
+                      : new Date(data.updatedAt))
+                  : createdAt;
 
                 const userProgram: UserProgramWithId = {
                   programs: exercisePrograms,
                   diagnosis: data.diagnosis,
                   questionnaire: data.questionnaire,
                   active: data.active ?? false,
-                  createdAt:
-                    data.createdAt &&
-                    typeof data.createdAt.toDate === 'function'
-                      ? data.createdAt.toDate().toISOString()
-                      : typeof data.createdAt === 'string'
-                        ? data.createdAt
-                        : new Date().toISOString(),
+                  createdAt: createdAt.toISOString(),
                   updatedAt: updatedAt,
                   type: data.type,
                   title: data.title || 'Exercise Program',
@@ -369,42 +382,55 @@ export function UserProvider({ children }: { children: ReactNode }) {
                 // Add to programs array
                 programs.push(userProgram);
 
-                // Track most recent active program (not just any active program)
-                if (data.active === true) {
-                  if (!mostRecentActiveDate || updatedAt > mostRecentActiveDate) {
-                    mostRecentActiveDate = updatedAt;
-                    mostRecentActiveProgram = userProgram;
-                  }
-                }
-
-                // Track most recent program overall
-                if (!mostRecentDate || updatedAt > mostRecentDate) {
+                // Track most recent program by updatedAt (for newly created programs)
+                // Use updatedAt for comparison since it reflects the latest changes
+                if (!mostRecentDate || updatedAt.getTime() > mostRecentDate.getTime()) {
                   mostRecentDate = updatedAt;
                   mostRecentProgram = userProgram;
                 }
+
+                // If this program is active, store it separately
+                if (data.active === true) {
+                  activeProgram = userProgram;
+                }
               }
             } catch (error) {
-              // Error processing program - skip it
+              // error captured but logging removed
             }
           }
         }
-        
-        // Use the most recent active program instead of just any active program
-        activeProgram = mostRecentActiveProgram;
 
         // Set all programs regardless of which is active
         if (programs.length > 0) {
           setUserPrograms(programs);
         }
 
-        // First priority: Process active program if found
-        if (activeProgram) {
+        // Determine which program to display: prioritize the most recent active program
+        let programToDisplay: UserProgramWithId | null = null;
+        
+        if (activeProgram && mostRecentProgram) {
+          // If we have both active and most recent, compare their dates
+          const activeDate = new Date(activeProgram.updatedAt || activeProgram.createdAt);
+          const recentDate = new Date(mostRecentProgram.updatedAt || mostRecentProgram.createdAt);
+          
+          // Use the most recent one, but prefer active if dates are very close (within 1 second)
+          if (Math.abs(activeDate.getTime() - recentDate.getTime()) < 1000) {
+            programToDisplay = activeProgram;
+          } else {
+            programToDisplay = activeDate.getTime() > recentDate.getTime() ? activeProgram : mostRecentProgram;
+          }
+        } else {
+          // Fallback to whichever one we have
+          programToDisplay = activeProgram || mostRecentProgram;
+        }
+
+        if (programToDisplay) {
           const previousActiveProgramId = activeProgramIdRef.current; // Store previous ID
 
           setProgramStatus(ProgramStatus.Done);
 
           // Always refresh the program state in case new weeks were added
-          prepareAndSetProgram(activeProgram);
+          prepareAndSetProgram(programToDisplay);
 
           // Navigate to /program only if we're not already there AND
           // (it's the first time an active program is set OR the active program has changed meaningfully)
@@ -412,7 +438,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
             typeof window !== 'undefined' &&
             !window.location.pathname.includes('/program') &&
             !window.location.pathname.includes('/exercises') &&
-            (previousActiveProgramId === null || previousActiveProgramId !== activeProgram.docId)
+            (previousActiveProgramId === null || previousActiveProgramId !== programToDisplay.docId)
           ) {
             router.push('/program');
           }
@@ -422,12 +448,6 @@ export function UserProvider({ children }: { children: ReactNode }) {
             setIsLoading(false);
             showGlobalLoader(false);
           }, 500);
-        }
-        // Second priority: If no active program was found but we have programs, load the most recent
-        else if (mostRecentProgram) {
-          prepareAndSetProgram(mostRecentProgram);
-          setIsLoading(false);
-          showGlobalLoader(false);
         } else {
           // No active or most recent (status 'Done') program found.
           // This covers cases like: user has no programs, or programs exist but none are active/Done.
@@ -781,6 +801,8 @@ export function UserProvider({ children }: { children: ReactNode }) {
       const snapshot = await getDocs(q);
       
       const programs: UserProgramWithId[] = [];
+      let mostRecentActiveProgram: UserProgramWithId | null = null;
+      let mostRecentActiveDate: Date | null = null;
       
       for (const doc of snapshot.docs) {
         const data = doc.data();
@@ -809,16 +831,26 @@ export function UserProvider({ children }: { children: ReactNode }) {
                 })
               );
 
-              const updatedAt = data.updatedAt ? new Date(data.updatedAt) : new Date(data.createdAt);
+              // Parse createdAt consistently
+              const createdAt = data.createdAt && typeof data.createdAt.toDate === 'function'
+                ? data.createdAt.toDate()
+                : typeof data.createdAt === 'string'
+                  ? new Date(data.createdAt)
+                  : new Date();
+
+              // Parse updatedAt consistently  
+              const updatedAt = data.updatedAt
+                ? (typeof data.updatedAt.toDate === 'function' 
+                    ? data.updatedAt.toDate() 
+                    : new Date(data.updatedAt))
+                : createdAt;
 
               const userProgram: UserProgramWithId = {
                 programs: exercisePrograms,
                 diagnosis: data.diagnosis,
                 questionnaire: data.questionnaire,
                 active: data.active ?? false,
-                createdAt: data.createdAt && typeof data.createdAt.toDate === 'function'
-                  ? data.createdAt.toDate().toISOString()
-                  : typeof data.createdAt === 'string' ? data.createdAt : new Date().toISOString(),
+                createdAt: createdAt.toISOString(),
                 updatedAt: updatedAt,
                 type: data.type,
                 title: data.title || 'Exercise Program',
@@ -827,6 +859,14 @@ export function UserProvider({ children }: { children: ReactNode }) {
               };
 
               programs.push(userProgram);
+
+              // Track most recent active program
+              if (data.active === true) {
+                if (!mostRecentActiveDate || updatedAt.getTime() > mostRecentActiveDate.getTime()) {
+                  mostRecentActiveDate = updatedAt;
+                  mostRecentActiveProgram = userProgram;
+                }
+              }
             }
           } catch (error) {
             console.error('Error processing program', doc.id, ':', error);
@@ -836,10 +876,10 @@ export function UserProvider({ children }: { children: ReactNode }) {
       
       setUserPrograms(programs);
       
-      // Find and set active program
-      const activeProgram = programs.find(p => p.active);
-      if (activeProgram) {
-        prepareAndSetProgram(activeProgram);
+      // Set the most recent active program
+      if (mostRecentActiveProgram) {
+        prepareAndSetProgram(mostRecentActiveProgram);
+        setProgramStatus(ProgramStatus.Done);
       }
       
     } catch (error) {

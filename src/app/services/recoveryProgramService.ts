@@ -1,4 +1,4 @@
-import { collection, addDoc, getDocs, query } from 'firebase/firestore';
+import { collection, addDoc, getDocs, query, doc, updateDoc, where } from 'firebase/firestore';
 import { db } from '../firebase/config';
 import {
   getProgramBySlug,
@@ -179,21 +179,29 @@ export const saveRecoveryProgramToAccount = async (
       throw new Error('User not authenticated');
     }
 
-    // Check if user has existing programs
+    // Check for existing recovery programs and deactivate them
     const programsRef = collection(db, `users/${user.uid}/programs`);
-    const existingProgramsQuery = query(programsRef);
-    const existingProgramsSnapshot = await getDocs(existingProgramsQuery);
-    const hasExistingPrograms = !existingProgramsSnapshot.empty;
+    const existingRecoveryQuery = query(programsRef, where('type', '==', ProgramType.Recovery));
+    const existingRecoverySnapshot = await getDocs(existingRecoveryQuery);
 
     console.log(
-      `📊 User has ${existingProgramsSnapshot.size} existing programs`
+      `📊 User has ${existingRecoverySnapshot.size} existing recovery programs`
     );
 
-    // Create main program document
+    // Deactivate all existing recovery programs
+    const deactivationPromises = existingRecoverySnapshot.docs.map(async (docSnapshot) => {
+      const docRef = doc(db, `users/${user.uid}/programs`, docSnapshot.id);
+      await updateDoc(docRef, { active: false, updatedAt: new Date() });
+      console.log(`🔄 Deactivated recovery program: ${docSnapshot.id}`);
+    });
+
+    await Promise.all(deactivationPromises);
+
+    // Create main program document (always active for recovery programs)
     const programDoc = {
       diagnosis: recoveryData.diagnosis,
       questionnaire: recoveryData.questionnaire,
-      active: !hasExistingPrograms, // Only set as active if user has no existing programs
+      active: true, // Recovery programs are always set to active when saved
       status: 'done',
       type: ProgramType.Recovery,
       title: recoveryData.title,
@@ -204,9 +212,7 @@ export const saveRecoveryProgramToAccount = async (
 
     console.log('📄 Creating recovery program document:', {
       ...programDoc,
-      reason: hasExistingPrograms
-        ? 'User has existing programs - setting as inactive'
-        : 'First program for user - setting as active',
+      reason: 'Recovery program - setting as active and deactivating other recovery programs',
     });
 
     const programDocRef = await addDoc(programsRef, programDoc);
@@ -396,18 +402,13 @@ export const createMinimalRecoveryProgram = (
       mechanismOfInjury: 'overuse',
       aggravatingFactors: null,
       relievingFactors: null,
-      priorInjury: 'unknown',
+      priorInjury: 'no',
       painPattern: 'activity-dependent',
       painLocation: null,
       painCharacter: 'dull',
       assessmentComplete: true,
       redFlagsPresent: false,
       avoidActivities: [],
-      recoveryGoals: [
-        'reduce pain',
-        'improve mobility',
-        'prevent future injury',
-      ],
       timeFrame: '4 weeks',
       followUpQuestions: [],
       programType: ProgramType.Recovery,

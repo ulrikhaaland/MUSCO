@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, Suspense, useEffect } from 'react';
+import { useState, Suspense, useEffect, useRef } from 'react';
 import { useUser } from '@/app/context/UserContext';
 import { useAuth } from '@/app/context/AuthContext';
 import ConfirmationDialog from '@/app/components/ui/ConfirmationDialog';
@@ -23,18 +23,30 @@ function ProgramsContent() {
   const [pendingToggles, setPendingToggles] = useState<Record<string, boolean>>(
     {}
   );
+  // Track locally deleted programs for immediate UI updates
+  const [deletedPrograms, setDeletedPrograms] = useState<Set<string>>(new Set());
   
   // Delete dialog state
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [programToDelete, setProgramToDelete] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  // Load programs if empty (fixes the architectural issue)
+  // Track if we've attempted to load programs to prevent infinite loops
+  const hasAttemptedLoad = useRef(false);
+
+  // Load programs if empty (only once)
   useEffect(() => {
-    if (!isLoading && userPrograms.length === 0) {
+    if (!isLoading && userPrograms.length === 0 && !hasAttemptedLoad.current) {
+      hasAttemptedLoad.current = true;
       loadUserPrograms();
     }
+    // Reset the flag if we successfully have programs
+    if (userPrograms.length > 0) {
+      hasAttemptedLoad.current = false;
+    }
   }, [isLoading, userPrograms.length, loadUserPrograms]);
+
+
 
   // Handle delete program
   const handleDeleteProgram = (programId: string) => {
@@ -49,9 +61,10 @@ function ProgramsContent() {
     try {
       const success = await deleteProgram(programToDelete);
       if (success) {
+        // Immediately remove from local state for instant UI update
+        setDeletedPrograms(prev => new Set(prev).add(programToDelete));
         setDeleteDialogOpen(false);
         setProgramToDelete(null);
-        // The program list will automatically update due to the UserContext
       }
     } catch (error) {
       console.error('Error deleting program:', error);
@@ -70,6 +83,8 @@ function ProgramsContent() {
 
   // Sort programs by date
   const filteredAndSortedPrograms = [...userPrograms]
+    // Filter out locally deleted programs first
+    .filter((program) => !deletedPrograms.has(program.docId))
     // Apply the type filter
     .filter((program) => {
       if (filterType === 'all') return true;

@@ -456,6 +456,61 @@ export function ExerciseQuestionnaire({
   const [strengthEquipment, setStrengthEquipment] = useState<string[]>([]);
   const [cardioEquipment, setCardioEquipment] = useState<string[]>([]);
   
+  // Auto-select cardio equipment when indoor cardio is chosen with custom environment
+  useEffect(() => {
+    const shouldPreSelectCardioEquipment = 
+      answers.cardioType && 
+      answers.cardioEnvironment === 'Inside' && 
+      answers.exerciseEnvironments === 'Custom';
+    
+    if (shouldPreSelectCardioEquipment) {
+      let equipmentToPreSelect: string[] = [];
+      
+      // Map cardio type to equipment
+      if (answers.cardioType === 'Running') {
+        equipmentToPreSelect = ['Treadmill'];
+      } else if (answers.cardioType === 'Cycling') {
+        equipmentToPreSelect = ['Exercise Bike'];
+      } else if (answers.cardioType === 'Rowing') {
+        equipmentToPreSelect = ['Rowing Machine'];
+      }
+      
+      if (equipmentToPreSelect.length > 0) {
+        console.log(`Pre-selecting cardio equipment for ${answers.cardioType}:`, equipmentToPreSelect);
+        
+        // Update cardio equipment state
+        setCardioEquipment(prev => {
+          const newEquipment = [...new Set([...prev, ...equipmentToPreSelect])];
+          console.log('Updated cardio equipment:', newEquipment);
+          return newEquipment;
+        });
+        
+        // If currently viewing cardio category, update selected equipment
+        if (selectedEquipmentCategory === 'Cardio') {
+          setSelectedCustomEquipment(prev => {
+            const newSelection = [...new Set([...prev, ...equipmentToPreSelect])];
+            console.log('Updated current selection for cardio category:', newSelection);
+            return newSelection;
+          });
+        }
+        
+        // Switch to cardio category if not already there
+        if (!selectedEquipmentCategory || selectedEquipmentCategory !== 'Cardio') {
+          console.log('Switching to Cardio equipment category');
+          setSelectedEquipmentCategory('Cardio');
+          setSelectedCustomEquipment(equipmentToPreSelect);
+        }
+        
+        // Update the combined equipment in answers
+        const updatedCombinedEquipment = [...new Set([...strengthEquipment, ...cardioEquipment, ...equipmentToPreSelect])];
+        setAnswers(prev => ({
+          ...prev,
+          equipment: updatedCombinedEquipment
+        }));
+      }
+    }
+  }, [answers.cardioType, answers.cardioEnvironment, answers.exerciseEnvironments, selectedEquipmentCategory, strengthEquipment, cardioEquipment]);
+  
   // Modify handleInputChange to handle custom equipment selection
   const handleInputChange = (
     field: keyof ExerciseQuestionnaireAnswers,
@@ -2132,6 +2187,22 @@ export function ExerciseQuestionnaire({
                     {/* Show custom equipment selection if Custom is selected */}
                     {answers.exerciseEnvironments === 'Custom' && editingField === 'exerciseEnvironments' && (
                       <div className="mt-6 pt-4 border-t border-gray-700/30">
+                        {/* Show auto-selection message if cardio equipment was pre-selected */}
+                        {answers.cardioType && answers.cardioEnvironment === 'Inside' && selectedEquipmentCategory === 'Cardio' && (
+                          <div className="mb-4 p-3 rounded-lg bg-blue-500/10 ring-1 ring-blue-500/20">
+                            <div className="flex items-start">
+                              <svg className="w-5 h-5 text-blue-400 mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                              </svg>
+                                                             <p className="text-blue-300 text-sm">
+                                 We&apos;ve pre-selected {answers.cardioType === 'Running' ? 'Treadmill' : 
+                                                     answers.cardioType === 'Cycling' ? 'Exercise Bike' : 
+                                                     'Rowing Machine'} for your indoor {answers.cardioType.toLowerCase()} workouts. You can unselect it if you prefer other options.
+                               </p>
+                            </div>
+                          </div>
+                        )}
+                        
                         <CustomEquipmentSelection
                           selectedCategory={selectedEquipmentCategory}
                           selectedEquipment={selectedCustomEquipment}

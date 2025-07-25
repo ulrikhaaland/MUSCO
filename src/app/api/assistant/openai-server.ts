@@ -783,6 +783,7 @@ export async function generateExerciseProgramWithModel(context: {
     console.log(
       `Prepared exercise prompt with ${exerciseCount} total exercises`
     );
+    console.log(exercisesPrompt);
 
     // Import the program system prompt
     const { programSystemPrompt } = await import('../prompts/exercisePrompt');

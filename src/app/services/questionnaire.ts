@@ -25,8 +25,9 @@ async function generateProgram(
 ) {
   try {
     // Get user's language preference
-    const userLanguage: Locale = typeof window !== 'undefined' ? getSavedLocalePreference() : 'en';
-    
+    const userLanguage: Locale =
+      typeof window !== 'undefined' ? getSavedLocalePreference() : 'en';
+
     const response = await fetch('/api/assistant', {
       method: 'POST',
       headers: {
@@ -66,14 +67,14 @@ export const submitQuestionnaire = async (
   try {
     // Create a sanitized copy of the questionnaire to ensure no undefined values
     const sanitizedQuestionnaire = { ...questionnaire };
-    
+
     // Replace undefined with null for modalitySplit and other potentially undefined fields
     if (sanitizedQuestionnaire.modalitySplit === undefined) {
       sanitizedQuestionnaire.modalitySplit = null;
     }
-    
+
     // Check for any other undefined values and convert them to null
-    Object.keys(sanitizedQuestionnaire).forEach(key => {
+    Object.keys(sanitizedQuestionnaire).forEach((key) => {
       if (sanitizedQuestionnaire[key] === undefined) {
         sanitizedQuestionnaire[key] = null;
       }
@@ -84,8 +85,10 @@ export const submitQuestionnaire = async (
     const existingProgramsQuery = query(programsRef);
     const existingProgramsSnapshot = await getDocs(existingProgramsQuery);
     const hasExistingPrograms = !existingProgramsSnapshot.empty;
-    
-    console.log(`📊 User has ${existingProgramsSnapshot.size} existing programs when submitting questionnaire`);
+
+    console.log(
+      `📊 User has ${existingProgramsSnapshot.size} existing programs when submitting questionnaire`
+    );
 
     // Use sanitized questionnaire in the Firestore document
     const docRef = await addDoc(programsRef, {
@@ -98,7 +101,9 @@ export const submitQuestionnaire = async (
       active: !hasExistingPrograms, // Only set as active if user has no existing programs
     });
 
-    console.log(`📋 New program created with active status: ${!hasExistingPrograms} (reason: ${hasExistingPrograms ? 'User has existing programs' : 'First program for user'})`);
+    console.log(
+      `📋 New program created with active status: ${!hasExistingPrograms} (reason: ${hasExistingPrograms ? 'User has existing programs' : 'First program for user'})`
+    );
 
     // Start program generation
     try {
@@ -150,14 +155,14 @@ export async function storePendingQuestionnaire(
 ) {
   // Create a sanitized copy of the answers to ensure no undefined values
   const sanitizedAnswers = { ...answers };
-  
+
   // Replace undefined with null for modalitySplit and other potentially undefined fields
   if (sanitizedAnswers.modalitySplit === undefined) {
     sanitizedAnswers.modalitySplit = null;
   }
-  
+
   // Check for any other undefined values and convert them to null
-  Object.keys(sanitizedAnswers).forEach(key => {
+  Object.keys(sanitizedAnswers).forEach((key) => {
     if (sanitizedAnswers[key] === undefined) {
       sanitizedAnswers[key] = null;
     }

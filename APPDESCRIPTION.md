@@ -11,14 +11,29 @@ The app's purpose is to make it easy and accessible for people to learn how to f
 - Users can zoom, pan, and click on different parts of the model.
 - Clicking on a specific part of the musculoskeletal model zooms in on that part and reveals a pop-up box.
 
-#### Chat
-- Contains several options related to the selected body part (same for all body parts):
+#### Chat Interface
+The chat system provides an intelligent, contextual conversation experience:
+
+**Initial Options**
+- When a body part is selected, users see several quick-start options:
   1. **Learn more** (about this part)
   2. **I have an issue** (with this part)
-  3. Placeholder (lorem ipsum)
-  4. Placeholder (lorem ipsum)
-- A chat text field is always available at the bottom.
-- The pop-up grows as more options are selected or as chat progresses, scrolling to the bottom upon adding new content.
+  3. Additional contextual options based on the selected body part
+
+**Interactive Chat Features**
+- **Streaming Responses**: Real-time message streaming provides immediate feedback
+- **Follow-up Questions**: After each response, the system presents relevant quick-reply buttons for common follow-up questions
+- **Free-form Input**: A text field at the bottom allows users to ask any custom question
+- **Auto-scrolling**: Chat automatically scrolls to keep new content visible
+- **Error Handling**: Connection issues are handled gracefully with retry options
+- **Mobile Optimization**: Touch-friendly interface with smooth animations
+
+**Chat Behavior**
+- Messages appear with smooth animations and proper spacing
+- Follow-up questions are presented as easy-to-tap buttons
+- The interface maintains spacing consistency to prevent visual jumping
+- Users can scroll through message history while new content auto-scrolls
+- Loading states provide clear feedback during response generation
 
 ---
 
@@ -30,19 +45,64 @@ The app's purpose is to make it easy and accessible for people to learn how to f
   - Determine appropriate next steps when an option is clicked.
 
 #### Example Workflow
-1. The user selects the bicep on the model and clicks the "Learn more" option.
-2. The LLM queries information about the bicep.
-3. The LLM provides basic information and/or follow-up questions, such as:
-   - How to train the bicep?
-   - What is the function of the bicep?
-   - Why are the biceps important?
+1. **Selection**: User selects the bicep on the 3D model
+2. **Initial Options**: Chat popup appears with quick-start options like "Learn more" and "I have an issue"
+3. **User Action**: User clicks "Learn more" about the bicep
+4. **Streaming Response**: LLM begins streaming contextual information about the bicep in real-time
+5. **Follow-up Questions**: After the response completes, quick-reply buttons appear with relevant options:
+   - "How to train the bicep?"
+   - "What is the function of the bicep?"
+   - "Why are the biceps important?"
+   - "Show me bicep exercises"
+6. **Continued Interaction**: User can either click a quick-reply button or type a custom question
+7. **Program Generation**: If appropriate, the LLM may offer to generate a personalized exercise or recovery program
 
 ---
 
 ## Exercise/Recovery Program
-- During chat, the LLM may ask if the user wants an exercise or recovery program for the selected body part.
-- If the user opts in, the LLM asks additional questions (e.g., age, exercise frequency).
-- The generated program will be displayed appropriately within the app.
+The app can generate personalized exercise and recovery programs based on user needs:
+
+**Program Generation Process**
+- During chat, the LLM may identify opportunities to offer customized programs
+- Users can explicitly request programs through follow-up questions or direct input
+- The system asks qualifying questions to personalize the program:
+  - Age and fitness level
+  - Exercise frequency and experience
+  - Specific issues or goals
+  - Available equipment
+  - Time constraints
+
+**Program Features**
+- **Structured Programs**: Multi-day programs with progressive difficulty
+- **Exercise Database**: Access to comprehensive exercise library with proper form instructions
+- **Recovery Focus**: Specialized programs for injury recovery and pain management
+- **Contextual Recommendations**: Programs tailored to the specific body part selected
+- **Integration**: Programs are seamlessly integrated into the chat experience
+
+---
+
+## Technical Implementation
+
+### Chat System Architecture
+The chat system is built with modern React patterns for optimal performance and user experience:
+
+**Components**
+- **ChatMessages**: Core message rendering and interaction handling
+- **PartPopup**: Desktop chat container with input controls
+- **Mobile Integration**: Optimized for mobile bottom sheets and touch interactions
+
+**Key Features**
+- **Real-time Streaming**: WebSocket-like streaming for immediate response feedback
+- **State Management**: Efficient state handling for messages, loading states, and user interactions
+- **Auto-scroll Intelligence**: Smart scrolling that respects user behavior while maintaining usability
+- **Responsive Design**: Seamless experience across desktop and mobile devices
+- **Performance Optimized**: Virtualized rendering and efficient re-render patterns
+
+**User Experience Enhancements**
+- **Smooth Animations**: Carefully crafted transitions and micro-interactions
+- **Visual Feedback**: Loading states, typing indicators, and error handling
+- **Touch Optimization**: Mobile-first design with touch-friendly interface elements
+- **Accessibility**: Screen reader support and keyboard navigation
 
 ---
 

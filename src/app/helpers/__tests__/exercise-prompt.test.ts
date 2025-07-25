@@ -514,7 +514,7 @@ describe('Equipment type coverage tests', () => {
     const multiEquipmentMatches = exercisePrompt.match(/"equipment": \[.*?"Barbell".*?\]/g) || [];
     
     // For any matches that include Barbell, make sure they include multiple equipment options
-    multiEquipmentMatches.forEach(match => {
+    multiEquipmentMatches.forEach((match: string) => {
       // The equipment array should have multiple items (not just Barbell)
       const equipmentString = match.split(':')[1].trim();
       const parsedEquipment = JSON.parse(equipmentString);
@@ -744,5 +744,102 @@ describe('Exercise count validation tests', () => {
     
     // Since we always add bodyweight as a fallback, we should have warmup exercises
     expect(result.exercisesPrompt).toMatch(/"bodyPart": "Warmup"/);
+  });
+}); 
+
+// Add test for specific user scenario that should return cycling exercises
+describe('Specific user scenario tests', () => {
+  // Helper function to extract cardio section
+  const extractCardioSection = (prompt: string) => {
+    const cardioSectionMatch = prompt.match(/"bodyPart": "Cardio",\s*"exercises": \[([\s\S]*?)\]/);
+    return cardioSectionMatch ? cardioSectionMatch[1] : '';
+  };
+
+  test('User with cardio-only cycling preference should return cycling exercises', async () => {
+    const userInfo = createUserInfo({
+      age: '20-30',
+      lastYearsExerciseFrequency: '2-3 times per week',
+      numberOfActivityDays: '4 days per week',
+      generallyPainfulAreas: ['Left shoulder'],
+      exerciseModalities: 'Cardio',
+      cardioEnvironment: 'Inside',
+      cardioType: 'Cycling',
+      exerciseEnvironments: '', // Empty string as provided
+      workoutDuration: '45-60 minutes',
+      targetAreas: [], // Empty array as provided
+      modalitySplit: null,
+    });
+    
+    const result = await prepareExercisesPrompt(userInfo);
+    
+    // Extract cardio section for specific checks
+    const cardioSection = extractCardioSection(result.exercisesPrompt);
+    
+    // Verify cardio section exists
+    expect(result.exercisesPrompt).toMatch(/"bodyPart": "Cardio"/);
+    
+    // Should include cycling/bike exercises
+    expect(cardioSection).toMatch(/Cycling|Bike/i);
+    
+    // Should NOT include other cardio types
+    expect(cardioSection).not.toMatch(/Running|Treadmill/i);
+    expect(cardioSection).not.toMatch(/Rowing/i);
+    
+    // Should only include indoor exercises
+    expect(cardioSection).not.toMatch(/Outdoor|Outside/i);
+    
+    // Should have at least one exercise
+    expect(result.exerciseCount).toBeGreaterThan(0);
+    
+    // Should include cycling exercises (the main issue being tested)
+    expect(cardioSection).toMatch(/Zone 2 Cycling|4x4 Interval Cycling/i);
+  });
+
+  test('Both modalities with indoor running and custom equipment (no treadmill) should still include running exercises', async () => {
+    const userInfo = createUserInfo({
+      age: '25-35',
+      lastYearsExerciseFrequency: '3-4 times per week',
+      numberOfActivityDays: '5 days per week',
+      generallyPainfulAreas: [],
+      exerciseModalities: 'Both',
+      cardioType: 'Running',
+      cardioEnvironment: 'Inside',
+      exerciseEnvironments: 'Custom',
+      modalitySplit: 'even',
+      cardioDays: 2,
+      strengthDays: 3,
+      targetAreas: ['Chest', 'Upper Back'], 
+      equipment: ['Dumbbell', 'Bench'], // No treadmill selected
+      workoutDuration: '45-60 minutes',
+    });
+    
+    const result = await prepareExercisesPrompt(userInfo);
+    
+    // Extract cardio section for specific checks
+    const cardioSection = extractCardioSection(result.exercisesPrompt);
+    
+    // Verify cardio section exists
+    expect(result.exercisesPrompt).toMatch(/"bodyPart": "Cardio"/);
+    
+    // Should include indoor running exercises despite no treadmill equipment
+    expect(cardioSection).toMatch(/Running.*Indoor|Indoor.*Running|Treadmill/i);
+    
+    // Should NOT include outdoor running
+    expect(cardioSection).not.toMatch(/Outdoor|Outside/i);
+    
+    // Should NOT include other cardio types
+    expect(cardioSection).not.toMatch(/Cycling|Bike/i);
+    expect(cardioSection).not.toMatch(/Rowing/i);
+    
+    // Should also include strength exercises
+    expect(result.exercisesPrompt).toMatch(/"bodyPart": "Chest"/);
+    expect(result.exercisesPrompt).toMatch(/"bodyPart": "Upper Back"/);
+    
+    // Should have exercises despite not having treadmill equipment
+    expect(result.exerciseCount).toBeGreaterThan(0);
+    
+    // Verify we have both cardio and strength exercises
+    const chestExercises = result.exercisesPrompt.match(/"bodyPart": "Chest"[\s\S]*?exercises": \[([\s\S]*?)\]/)?.[1] || '';
+    expect(chestExercises.trim()).not.toBe('');
   });
 }); 

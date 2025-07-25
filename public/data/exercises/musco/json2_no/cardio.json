@@ -299,7 +299,7 @@
     },
     {
       "id": "cardio-7",
-      "name": "Sone 2 Sykling – Innendørs Spinningsykkel",
+      "name": "Sone 2 Sykling – Innendørs",
       "description": "Sone 2-trening på spinningsykkel er en kontrollert innendørs kondisjonsøkt på 60–70 % av makspuls. Denne moderat intensive økten bygger aerob utholdenhet, forbedrer fettforbrenning og øker kardiovaskulær effektivitet uten belastning på leddene. Den kontrollerte innendørs settingen gir presis styring av motstand og kadens for å holde ønsket pulssone.",
       "targetBodyParts": ["Cardio"],
       "exerciseType": ["cardio", "endurance"],

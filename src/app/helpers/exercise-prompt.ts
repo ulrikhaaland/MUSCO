@@ -82,8 +82,14 @@ export async function prepareExercisesPrompt(
   // Add bodyweight as a fallback option
   equipment.push('bodyweight');
 
-  // Prepare body parts to load, always include warmups
-  const bodyPartsToLoad = [...targetAreas, 'Warmup'];
+  // Prepare body parts to load - only include warmups for strength training
+  const isCardioOnly = exerciseModalities.toLowerCase() === 'cardio';
+  const bodyPartsToLoad = [...targetAreas];
+  
+  // Only include warmups if we're doing strength training or have target areas (not cardio-only)
+  if (!isCardioOnly && (targetAreas.length > 0 || exerciseModalities.toLowerCase().includes('strength') || exerciseModalities.toLowerCase().includes('both'))) {
+    bodyPartsToLoad.push('Warmup');
+  }
 
   // Keep cardio separate so we can load it without equipment filtering
   // Check for 'Both' or 'Cardio' in any case
@@ -102,21 +108,23 @@ export async function prepareExercisesPrompt(
 
   // Load strength and warmup exercises with equipment filtering
   let availableExercises: Exercise[] = [];
-  if (exerciseEnvironment.toLowerCase() === 'custom') {
-    availableExercises = await loadServerExercises({
-      bodyParts: bodyPartsToLoad,
-      includeOriginals: false,
-      onlyLoadMissingOriginals: true,
-      equipment: equipment,
-      includeBodyweightWarmups: true, // Include bodyweight warmups for custom environment
-    });
-  } else {
-    availableExercises = await loadServerExercises({
-      bodyParts: bodyPartsToLoad,
-      includeOriginals: false,
-      onlyLoadMissingOriginals: true,
-      includeBodyweightWarmups: false, // Don't include bodyweight warmups for non-custom environments
-    });
+  if (bodyPartsToLoad.length > 0) {
+    if (exerciseEnvironment.toLowerCase() === 'custom') {
+      availableExercises = await loadServerExercises({
+        bodyParts: bodyPartsToLoad,
+        includeOriginals: false,
+        onlyLoadMissingOriginals: true,
+        equipment: equipment,
+        includeBodyweightWarmups: true, // Include bodyweight warmups for custom environment
+      });
+    } else {
+      availableExercises = await loadServerExercises({
+        bodyParts: bodyPartsToLoad,
+        includeOriginals: false,
+        onlyLoadMissingOriginals: true,
+        includeBodyweightWarmups: false, // Don't include bodyweight warmups for non-custom environments
+      });
+    }
   }
 
   // Load cardio exercises separately without equipment filtering if needed
@@ -278,9 +286,13 @@ export async function prepareExercisesPrompt(
         // Check if user has the required equipment for this exercise
         let hasRequiredEquipment = true;
         
-        // Skip equipment checking for Large Gym - assume all necessary equipment is available
-        // Only check equipment requirements for non-Large Gym environments
-        if (exerciseEnvironment !== 'Large Gym' && environment.includes('indoor')) {
+        // Skip equipment checking for cardio exercises in Custom mode to allow more flexibility
+        // Users should be able to do indoor cardio even without specific equipment
+        const skipCardioEquipmentCheck = true; // Allow cardio exercises regardless of equipment
+        
+        // Skip equipment checking for Large Gym or empty exerciseEnvironment - assume all necessary equipment is available
+        // Only check equipment requirements for Custom environments (but skip for cardio)
+        if (exerciseEnvironment === 'Custom' && environment.includes('indoor') && !skipCardioEquipmentCheck) {
           // Get the required equipment for this exercise (if any)
           if (exerciseEquipment.length > 0) {
             // Check specific equipment needs based on equipment array, not just names
