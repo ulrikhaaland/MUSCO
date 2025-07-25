@@ -29,7 +29,6 @@ function ProgramsContent() {
   // Delete dialog state
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [programToDelete, setProgramToDelete] = useState<string | null>(null);
-  const [isDeleting, setIsDeleting] = useState(false);
 
   // Track if we've attempted to load programs to prevent infinite loops
   const hasAttemptedLoad = useRef(false);
@@ -57,19 +56,32 @@ function ProgramsContent() {
   const confirmDeleteProgram = async () => {
     if (!programToDelete) return;
 
-    setIsDeleting(true);
+    // Optimistic UI update - remove immediately
+    setDeletedPrograms(prev => new Set(prev).add(programToDelete));
+    setDeleteDialogOpen(false);
+    const programIdToDelete = programToDelete;
+    setProgramToDelete(null);
+
+    // Delete in background
     try {
-      const success = await deleteProgram(programToDelete);
-      if (success) {
-        // Immediately remove from local state for instant UI update
-        setDeletedPrograms(prev => new Set(prev).add(programToDelete));
-        setDeleteDialogOpen(false);
-        setProgramToDelete(null);
+      const success = await deleteProgram(programIdToDelete);
+      if (!success) {
+        // Revert on failure
+        setDeletedPrograms(prev => {
+          const newSet = new Set(prev);
+          newSet.delete(programIdToDelete);
+          return newSet;
+        });
+        console.error('Failed to delete program');
       }
     } catch (error) {
+      // Revert on error
+      setDeletedPrograms(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(programIdToDelete);
+        return newSet;
+      });
       console.error('Error deleting program:', error);
-    } finally {
-      setIsDeleting(false);
     }
   };
 
@@ -591,7 +603,6 @@ function ProgramsContent() {
         description={t('programs.deleteDialog.description')}
         confirmText={t('programs.deleteDialog.confirm')}
         cancelText={t('programs.deleteDialog.cancel')}
-        isLoading={isDeleting}
         confirmButtonStyle="danger"
       />
     </div>

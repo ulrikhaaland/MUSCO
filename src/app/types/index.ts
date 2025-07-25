@@ -80,10 +80,10 @@ export interface DiagnosisAssistantResponse {
   painfulAreas: string[];
   onset: 'acute' | 'gradual' | 'unknown' | null;
   painLocation: string | null;
-  painScale: number | null;                     // 0-10
+  painScale: number | null; // 0-10
   painCharacter: string | null;
-  aggravatingFactors: string[];                 // array
-  relievingFactors: string[];                   // array
+  aggravatingFactors: string[]; // array
+  relievingFactors: string[]; // array
   painPattern: 'constant' | 'intermittent' | 'activity-dependent' | null;
   priorInjury?: 'yes' | 'no' | null;
   mechanismOfInjury?: 'trauma' | 'overuse' | 'posture' | 'unknown' | null;
@@ -94,11 +94,11 @@ export interface DiagnosisAssistantResponse {
 
   /* program scaffolding */
   diagnosis: string | null;
-  timeFrame: string | null;                     // null until set
-  programType: 'exercise' | 'recovery';
+  timeFrame: string | null; // null until set
   avoidActivities: string[];
   targetAreas: string[];
-
   /* UI */
   followUpQuestions: Question[];
+  // The type of program the user is getting, e.g. 'exercise' or 'recovery'
+  programType: ProgramType;
 }
