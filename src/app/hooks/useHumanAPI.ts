@@ -469,7 +469,6 @@ export function useHumanAPI({
       }
       return;
     }
-    selectedPartIdRef.current = null;
     const objects = Object.keys(event);
 
     const selectedId = objects[0];
@@ -478,6 +477,14 @@ export function useHumanAPI({
     const isDeselection = Object.values(event).every(
       (value) => value === false
     );
+
+    // Update selectedPartIdRef after knowing deselection status
+    if (isDeselection) {
+      // Preserve previously stored part id for potential reset branch
+      // Do not clear until after potential reset handling
+    } else {
+      selectedPartIdRef.current = selectedId;
+    }
 
     // DEBUG LOG – trace selection state in None intention
     console.debug('[None] onObjectSelected', {
@@ -488,8 +495,6 @@ export function useHumanAPI({
       previousGroup: previousSelectedPartGroupRef.current?.id,
       isXray: isXrayEnabledRef.current,
     });
-
-    if (!isDeselection) selectedPartIdRef.current = selectedId;
 
     if (objects.length > 1) {
       return;
