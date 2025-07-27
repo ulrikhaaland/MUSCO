@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ExerciseProgramPage } from '@/app/components/ui/ExerciseProgramPage';
 import { useUser } from '@/app/context/UserContext';
@@ -19,7 +19,7 @@ import { searchYouTubeVideo } from '@/app/utils/youtube';
 import { ErrorDisplay } from '@/app/components/ui/ErrorDisplay';
 import { useTranslation } from '@/app/i18n';
 
-export default function ProgramPage() {
+function ProgramPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { t } = useTranslation();
@@ -303,5 +303,13 @@ export default function ProgramPage() {
       {renderVideoModal()}
       {!isOverviewVisible && <AddToHomescreen />}
     </>
+  );
+}
+
+export default function ProgramPage() {
+  return (
+    <Suspense fallback={null}>
+      <ProgramPageContent />
+    </Suspense>
   );
 }

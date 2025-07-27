@@ -45,10 +45,14 @@ export function ChatMessages({
   const [availableHeight, setAvailableHeight] = useState(0);
   const [chatContainerHeight, setChatContainerHeight] = useState(0);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
-  const [clickedQuestions, setClickedQuestions] = useState<Set<string>>(new Set());
+  const [clickedQuestions, setClickedQuestions] = useState<Set<string>>(
+    new Set()
+  );
   const [keepSpacer, setKeepSpacer] = useState(false);
   const [targetSpacerHeight, setTargetSpacerHeight] = useState(0);
-  const [visibleQuestions, setVisibleQuestions] = useState<Set<string>>(new Set());
+  const [visibleQuestions, setVisibleQuestions] = useState<Set<string>>(
+    new Set()
+  );
   const touchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const lastMessageContentRef = useRef<string>('');
   const lastMessageIdRef = useRef<string>('');
@@ -67,11 +71,11 @@ export function ChatMessages({
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
     setPrefersReducedMotion(mediaQuery.matches);
-    
+
     const handleChange = (event: MediaQueryListEvent) => {
       setPrefersReducedMotion(event.matches);
     };
-    
+
     mediaQuery.addEventListener('change', handleChange);
     return () => {
       mediaQuery.removeEventListener('change', handleChange);
@@ -264,8 +268,6 @@ export function ChatMessages({
         hasHadTouchRef.current = true; // Mark that we've had a real touch
         resetTouchState();
       }
-
-
     };
 
     // Check initial position
@@ -408,7 +410,9 @@ export function ChatMessages({
     if (disableAutoScroll) {
       followUpQuestionsRef.current = [...followUpQuestions];
       // Show all questions immediately if auto-scroll is disabled
-      const allQuestionIds = new Set(followUpQuestions.map(q => q.title || q.question));
+      const allQuestionIds = new Set(
+        followUpQuestions.map((q) => q.title || q.question)
+      );
       setVisibleQuestions(allQuestionIds);
       return;
     }
@@ -425,13 +429,13 @@ export function ChatMessages({
     if (hasNewQuestions) {
       // Clear previous questions
       setVisibleQuestions(new Set());
-      
+
       // Add questions with staggered delays
       followUpQuestions.forEach((question, index) => {
         const questionId = question.title || question.question;
         setTimeout(() => {
-          setVisibleQuestions(prev => new Set([...prev, questionId]));
-          
+          setVisibleQuestions((prev) => new Set([...prev, questionId]));
+
           // Questions animation complete
         }, index * 150); // 150ms delay between each question
       });
@@ -508,8 +512,6 @@ export function ChatMessages({
       hasHadTouchRef.current = true;
       resetTouchState();
     }
-
-
 
     onScroll?.(e);
   };
@@ -681,13 +683,14 @@ export function ChatMessages({
 
       // Responsive minimum height (15% of container, min 100px)
       const minHeight = Math.max(100, chatContainerHeight * 0.15);
-      
+
       // Adaptive multiplier based on content density
       const hasQuestions = showFollowUps && followUpQuestions.length > 0;
-      const multiplier = hasQuestions && followUpQuestions.length > 3 ? 0.5 : 0.7;
-      
+      const multiplier =
+        hasQuestions && followUpQuestions.length > 3 ? 0.5 : 0.7;
+
       const calculatedHeight = Math.max(height * multiplier, minHeight);
-      
+
       // Prevent excess spacer when content already fills container
       let finalHeight = calculatedHeight;
       if (keepSpacer && messagesRef.current) {
@@ -699,51 +702,42 @@ export function ChatMessages({
             contentHeight += element.offsetHeight;
           }
         });
-        
+
         // If content already exceeds container height, reduce spacer gradually
         if (contentHeight > chatContainerHeight) {
           const excess = contentHeight - chatContainerHeight;
           // Reduce spacer by 60% of the excess, but keep at least 30% of original spacer
           const reduction = Math.min(excess * 0.6, calculatedHeight * 0.7);
-          finalHeight = Math.max(calculatedHeight - reduction, calculatedHeight * 0.3);
-          
-
+          finalHeight = Math.max(
+            calculatedHeight - reduction,
+            calculatedHeight * 0.3
+          );
         }
       }
-      
 
-      
       // Track viewport position changes to detect jumping
       if (finalHeight !== availableHeight && messagesRef.current) {
         const container = messagesRef.current;
         const beforeScrollTop = container.scrollTop;
         const beforeScrollHeight = container.scrollHeight;
-        
-        console.log('🔍 [Viewport Track] Before spacer change:', {
-          scrollTop: beforeScrollTop,
-          scrollHeight: beforeScrollHeight,
-          oldSpacerHeight: availableHeight,
-          newSpacerHeight: finalHeight,
-          heightDiff: finalHeight - availableHeight
-        });
-        
+
         // Set new height
         setTargetSpacerHeight(finalHeight);
         setAvailableHeight(finalHeight);
-        
+
         // Check for viewport jump after a short delay
         setTimeout(() => {
           const afterScrollTop = container.scrollTop;
           const afterScrollHeight = container.scrollHeight;
           const scrollDiff = afterScrollTop - beforeScrollTop;
           const heightDiff = afterScrollHeight - beforeScrollHeight;
-          
+
           if (Math.abs(scrollDiff) > 5) {
             console.warn('⚠️ [Viewport Jump] Detected:', {
               scrollTopChange: scrollDiff,
               scrollHeightChange: heightDiff,
               beforePosition: beforeScrollTop,
-              afterPosition: afterScrollTop
+              afterPosition: afterScrollTop,
             });
           }
         }, 100);
@@ -788,9 +782,11 @@ export function ChatMessages({
   // Add touch animation and scrollbar styles
   useEffect(() => {
     const styleEl = document.createElement('style');
-    
+
     const styles = `
-      ${isMobile ? `
+      ${
+        isMobile
+          ? `
         @media (pointer: coarse) {
           .follow-up-question-btn:active {
             transform: scale(0.99) translateY(-2px);
@@ -814,12 +810,14 @@ export function ChatMessages({
             }
           }
         }
-      ` : ''}
+      `
+          : ''
+      }
     `;
-    
+
     styleEl.innerHTML = styles;
     document.head.appendChild(styleEl);
-    
+
     return () => {
       document.head.removeChild(styleEl);
     };
@@ -829,33 +827,33 @@ export function ChatMessages({
   const handleQuestionSelect = (question: Question) => {
     // Get unique identifier for this question
     const questionId = question.title || question.question;
-    
+
     // Prevent double-clicking/tapping the same question
     if (isProcessingClickRef.current || clickedQuestions.has(questionId)) {
       return;
     }
-    
+
     // Immediately mark as processing to prevent double clicks
     isProcessingClickRef.current = true;
-    
+
     // Add to clicked questions set
-    setClickedQuestions(prev => {
+    setClickedQuestions((prev) => {
       const newSet = new Set(prev);
       newSet.add(questionId);
       return newSet;
     });
-    
+
     // Clear any previous timeout if it exists
     if (clickTimeoutRef.current) {
       window.clearTimeout(clickTimeoutRef.current);
     }
-    
+
     // Set a timeout to reset the processing flag after a delay
     // This prevents accidental double-clicks but allows clicking different questions
     clickTimeoutRef.current = window.setTimeout(() => {
       isProcessingClickRef.current = false;
     }, 1000); // 1 second debounce
-    
+
     // Process the click by calling onQuestionClick immediately.
     // This ensures the parent component is notified of the selection promptly.
     onQuestionClick?.(question);
@@ -880,18 +878,16 @@ export function ChatMessages({
     initialLoadingRef.current = isLoading;
   }, []); // Only run once on mount
 
-
-
   // Effect to track loading state changes and manage spacer
   useEffect(() => {
     // If we just finished loading (response completed), keep the spacer visible
     const wasLoading = initialLoadingRef.current;
-    
+
     if (wasLoading && !isLoading && messages.length > 0) {
       // Response just completed - keep spacer until next user message
       setKeepSpacer(true);
     }
-    
+
     // Update the loading state ref
     initialLoadingRef.current = isLoading;
   }, [isLoading, messages.length]);
@@ -899,11 +895,11 @@ export function ChatMessages({
   // Effect to track streaming state changes
   useEffect(() => {
     // If we just finished streaming, make sure to check if we need to clear any stale UI
-    const isCurrentlyStreaming = 
-      isLoading && 
-      messages.length > 0 && 
+    const isCurrentlyStreaming =
+      isLoading &&
+      messages.length > 0 &&
       messages[messages.length - 1].role === 'assistant';
-    
+
     // Detect when streaming ends
     if (wasStreamingRef.current && !isCurrentlyStreaming) {
       // Streaming just ended - if we have any pending questions in the UI
@@ -912,7 +908,7 @@ export function ChatMessages({
         questionsRef.current.style.opacity = '0';
       }
     }
-    
+
     // Update ref for next check
     wasStreamingRef.current = isCurrentlyStreaming;
   }, [isLoading, messages, followUpQuestions]);
@@ -923,8 +919,6 @@ export function ChatMessages({
     // as the previous questions have already been processed
     setClickedQuestions(new Set());
   }, [messages.length]);
-
-
 
   return (
     <div
@@ -1057,9 +1051,7 @@ export function ChatMessages({
                     className="flex-none"
                     ref={streamMessageRef}
                   >
-                    <div
-                      className={`px-4 py-2 rounded-lg bg-gray-800 mr-4`}
-                    >
+                    <div className={`px-4 py-2 rounded-lg bg-gray-800 mr-4`}>
                       <div className="prose prose-invert max-w-none prose-p:my-2 prose-pre:my-0 prose-pre:leading-none prose-strong:text-white prose-strong:font-semibold">
                         <ReactMarkdown
                           className="text-base leading-relaxed"
@@ -1122,11 +1114,11 @@ export function ChatMessages({
 
           {/* Follow-up questions - with vertical spacing from assistant message */}
           {showFollowUps && (
-            <div 
-              ref={questionsRef} 
-              className="mt-[12px]" 
+            <div
+              ref={questionsRef}
+              className="mt-[12px]"
               style={{
-                transition: 'opacity 0.2s ease-out'
+                transition: 'opacity 0.2s ease-out',
               }}
             >
               <div className="space-y-[10px]">
@@ -1134,7 +1126,7 @@ export function ChatMessages({
                   const questionId = question.title || question.question;
                   const isClicked = clickedQuestions.has(questionId);
                   const isVisible = visibleQuestions.has(questionId);
-                  
+
                   return (
                     <button
                       key={questionId}
@@ -1154,25 +1146,35 @@ export function ChatMessages({
                         ${isClicked ? 'opacity-50 pointer-events-none' : ''}
                         ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
                       style={{
-                        transitionDelay: isVisible ? `${index * 50}ms` : '0ms'
+                        transitionDelay: isVisible ? `${index * 50}ms` : '0ms',
                       }}
                     >
                       <div className="flex items-start">
                         {/* Arrow icon */}
-                        <svg 
-                          width="20" 
-                          height="20" 
-                          viewBox="0 0 24 24" 
-                          fill="none" 
+                        <svg
+                          width="20"
+                          height="20"
+                          viewBox="0 0 24 24"
+                          fill="none"
                           xmlns="http://www.w3.org/2000/svg"
                           className={`mr-2 text-[#635bff] transform transition-transform duration-[90ms] mt-[2px] ${prefersReducedMotion ? '' : 'group-hover:translate-x-[6px]'}`}
                         >
-                          <path d="M7 17L17 7M17 7H7M17 7V17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                          <path
+                            d="M7 17L17 7M17 7H7M17 7V17"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
                         </svg>
-                        
+
                         <div className="flex-1">
-                          <div className={`${!question.title ? 'text-[#c8cbff]' : 'font-medium text-[#c8cbff] capitalize'}`}>
-                            {question.title ? question.title.toLowerCase() : question.question}
+                          <div
+                            className={`${!question.title ? 'text-[#c8cbff]' : 'font-medium text-[#c8cbff] capitalize'}`}
+                          >
+                            {question.title
+                              ? question.title.toLowerCase()
+                              : question.question}
                           </div>
                           {question.meta && (
                             <div className="text-sm text-[#c8cbff] opacity-75 mt-1">
@@ -1199,7 +1201,8 @@ export function ChatMessages({
             - Maintained after response completion to prevent visual jumping
             - Now with smooth transitions and subtle visual feedback
           */}
-          {(isLoading && (needsResponsePlaceholder || isStreaming)) || keepSpacer ? (
+          {(isLoading && (needsResponsePlaceholder || isStreaming)) ||
+          keepSpacer ? (
             <div
               ref={spacerRef}
               className="block w-full overflow-hidden transition-all duration-300 ease-out"
@@ -1213,7 +1216,9 @@ export function ChatMessages({
             >
               <LoadingMessage
                 containerHeight={availableHeight}
-                visible={needsResponsePlaceholder && !isStreaming && !keepSpacer}
+                visible={
+                  needsResponsePlaceholder && !isStreaming && !keepSpacer
+                }
               />
             </div>
           ) : null}

@@ -276,14 +276,11 @@ export function useHumanAPI({
     const pickedId = event.objectId;
     if (!pickedId) return;
 
-    // Only process latissimus_dorsi and gluteus muscles
-    if (
-      !pickedId.includes('latissimus_dorsi') &&
-      !pickedId.includes('gluteus')
-    ) {
-      console.log('Not handling in onObjectPicked - not latissimus/gluteus');
-      return;
-    }
+    // Previously we only processed latissimus dorsi and gluteus picks to prevent accidental selections.
+    // However, this blocked valid selections for other body parts (e.g., abdomen muscles).
+    // We now allow all muscle picks to pass through. Special handling for the lower back is
+    // still applied further below using position checks. If needed, narrow this with a more
+    // generic exclusion list rather than hard-coding two muscles.
 
     const pos = event.position;
     if (!pos) {
