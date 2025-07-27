@@ -232,7 +232,7 @@ export function ExerciseQuestionnaire({
         if (groupId.includes('upper_arm')) return 'Upper Arms' as const;
         if (groupId.includes('forearm')) return 'Forearms' as const;
         if (groupId.includes('chest')) return 'Chest' as const;
-        if (groupId.includes('torso')) return 'Abdomen' as const;
+        if (groupId.includes('abdomen')) return 'Abdomen' as const;
         if (groupId.includes('back')) return 'Upper Back' as const;
         if (groupId.includes('pelvis')) return 'Lower Back' as const;
         if (groupId.includes('glutes')) return 'Glutes' as const;

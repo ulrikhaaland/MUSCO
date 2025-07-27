@@ -14,7 +14,7 @@ export const m_upperBack: ExerciseGroup = {
       equipment: ['Barbell'],
       steps: [
         'Assume a standing position while holding the bar using a double overhand grip.',
-        'Hinge forward until your torso is roughly parallel with the floor (or slightly above) and then begin the movement by driving the elbows behind the body while retracting the shoulder blades.',
+        'Hinge forward until your abdomen is roughly parallel with the floor (or slightly above) and then begin the movement by driving the elbows behind the body while retracting the shoulder blades.',
         'Pull the bar towards your belly button until it touches your body and then slowly lower the bar back to the starting position under control.',
         'Repeat for the desired number of repetitions.',
       ],
@@ -76,7 +76,7 @@ export const m_upperBack: ExerciseGroup = {
         'Repeat for desired reps.',
       ],
       tips: [
-        'Your back must remain straight at all times. Your torso should be kept still throughout the entire set.',
+        'Your back must remain straight at all times. Your abdomen should be kept still throughout the entire set.',
         'Don"t let your shoulders hunch over when your arms are extended.',
         'Use the back muscles to move the weight - do not lean forward and use momentum to swing the weight back.',
         'Pausing and squeezing at the top of the movement for a 1-2 count will increase intensity and results.',
@@ -349,7 +349,7 @@ export const m_upperBack: ExerciseGroup = {
       steps: [
         'Attach a single handle to a high cable pulley and sit on the floor facing it.',
         'Grasp the handle with one hand, arm extended overhead with tension on the cable.',
-        'Keeping your torso upright, pull the handle down by driving your elbow towards your side.',
+        'Keeping your abdomen upright, pull the handle down by driving your elbow towards your side.',
         'Squeeze your lat at the bottom of the movement.',
         'Slowly control the return to the starting position.',
         'Complete reps on one side, then switch.',

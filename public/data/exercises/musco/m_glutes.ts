@@ -13,7 +13,7 @@ export const m_glutes: ExerciseGroup = {
       difficulty: 'beginner',
       equipment: ['Bodyweight'],
       steps: [
-        'Start in a supine position on the floor with your arms at a 45 degree angle relative to your torso.',
+        'Start in a supine position on the floor with your arms at a 45 degree angle relative to your abdomen.',
         'Bridge your hips up by squeezing your glutes and driving your heels into the floor.',
         'Lower your hips back to the starting position and repeat for the desired number of repetitions.',
       ],

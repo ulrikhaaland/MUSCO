@@ -456,7 +456,7 @@ export const m_quads: ExerciseGroup = {
         'Sit on the edge of a box or bench with feet flat on the floor.',
         'Extend one leg straight out in front, keeping the heel off the ground.',
         'Plant the foot of the supporting leg firmly on the floor, close to the bench.',
-        'Lean your torso slightly forward, keeping your back straight and core engaged.',
+        'Lean your abdomen slightly forward, keeping your back straight and core engaged.',
         'Drive through the heel of the supporting leg to stand up fully, maintaining balance.',
         'Once standing, slowly and controllably lower yourself back to the seated starting position.',
         'Ensure the non-working foot remains off the ground throughout the movement.',

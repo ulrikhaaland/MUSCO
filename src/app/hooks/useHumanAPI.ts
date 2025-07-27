@@ -477,12 +477,20 @@ export function useHumanAPI({
 
     const selectedId = objects[0];
 
-    // console.log('selectedId', event);
-
     // Check for deselection (all values are false)
     const isDeselection = Object.values(event).every(
       (value) => value === false
     );
+
+    // DEBUG LOG – trace selection state in None intention
+    console.debug('[None] onObjectSelected', {
+      selectedId,
+      isDeselection,
+      selectedPartIdRef: selectedPartIdRef.current,
+      selectedPartRef: selectedPartRef.current?.objectId,
+      previousGroup: previousSelectedPartGroupRef.current?.id,
+      isXray: isXrayEnabledRef.current,
+    });
 
     if (!isDeselection) selectedPartIdRef.current = selectedId;
 
@@ -602,6 +610,12 @@ export function useHumanAPI({
       } else {
         // set timeout 50ms
         setTimeout(() => {
+          console.debug('[None] Potential group reset branch', {
+            isDeselection,
+            inXray: isXrayEnabledRef.current,
+            clickedId: selectedId,
+            currentSelectedPart: selectedPartRef.current?.objectId,
+          });
           if (
             isDeselection &&
             isXrayEnabledRef.current &&
@@ -609,6 +623,7 @@ export function useHumanAPI({
             previousSelectedPartGroupRef.current &&
             selectedPartIdRef.current
           ) {
+            console.debug('[None] Resetting to group view');
             setSelectedPart(null);
             selectedPartRef.current = null;
             selectionEventRef.current = null;

@@ -125,6 +125,8 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
   // Helper that wires all related state when a program becomes the current one
   const prepareAndSetProgram = (userProgram: UserProgramWithId) => {
+    console.log('🔧 Setting program:', userProgram.title, '(', userProgram.docId, ')');
+
     activeProgramIdRef.current = userProgram.docId;
     setActiveProgram(userProgram);
 
@@ -427,6 +429,8 @@ export function UserProvider({ children }: { children: ReactNode }) {
         if (programToDisplay) {
           const previousActiveProgramId = activeProgramIdRef.current; // Store previous ID
 
+          console.log('🔄 Auto-selected program:', programToDisplay.title);
+
           setProgramStatus(ProgramStatus.Done);
 
           // Always refresh the program state in case new weeks were added
@@ -707,6 +711,8 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
   // Function to select a specific program from the userPrograms array
   const selectProgram = (index: number) => {
+    console.log('👆 selectProgram called with index:', index, '- selecting:', userPrograms[index]?.title);
+
     showGlobalLoader(true, t('userContext.loading.program'));
 
     // If user has program already, select it
@@ -719,7 +725,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
         !Array.isArray(selectedProgram.programs) ||
         selectedProgram.programs.length === 0
       ) {
-        // invalid data, logging removed
+        console.error('❌ Invalid program data - no programs array');
         return;
       }
 
@@ -727,11 +733,13 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
       // Make sure we have at least one valid program with program array
       if (!selectedProgram.programs[0]) {
-        // missing program data, logging removed
+        console.error('❌ Missing program data - no programs[0]');
         return;
       }
 
       prepareAndSetProgram(selectedProgram);
+    } else {
+      console.error('❌ Invalid index or no programs available:', { index, userProgramsLength: userPrograms?.length });
     }
     showGlobalLoader(false);
   };

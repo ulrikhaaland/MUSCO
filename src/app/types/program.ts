@@ -157,7 +157,7 @@ export const PAIN_BODY_PARTS = [
   'Left Hand',
   'Right Hand',
   'Chest',
-  'Torso',
+  'Abdomen',
   'Upper Back',
   'Middle Back',
   'Lower Back',

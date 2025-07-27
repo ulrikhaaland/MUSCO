@@ -95,14 +95,6 @@ export async function streamChatCompletion({
         userMessageContent += `\nSelected Specific Body Part: ${userMessage.selectedBodyPart}`;
       }
 
-      if (
-        userMessage.bodyPartsInSelectedGroup &&
-        Array.isArray(userMessage.bodyPartsInSelectedGroup) &&
-        userMessage.bodyPartsInSelectedGroup.length > 0
-      ) {
-        userMessageContent += `\nBody Parts In Selected Group: [${userMessage.bodyPartsInSelectedGroup.join(', ')}]`;
-      }
-
       if (userMessage.language && typeof userMessage.language === 'string') {
         userMessageContent += `\nLanguage Preference: ${userMessage.language}`;
       }
@@ -128,13 +120,17 @@ export async function streamChatCompletion({
       stream: true,
     });
 
+    console.log('[streamChatCompletion] Stream object created, starting to process chunks...');
+    
     let streamEnded = false;
+    let fullContent = ''; // Accumulate the full response content
 
     // Process the streaming response
     for await (const chunk of stream) {
       try {
         const content = chunk.choices[0]?.delta?.content || '';
         if (content) {
+          fullContent += content; // Accumulate content
           onContent(content);
         }
       } catch (error) {
@@ -149,6 +145,8 @@ export async function streamChatCompletion({
     }
 
     console.log('[streamChatCompletion] Stream completed successfully');
+    console.log('[streamChatCompletion] Full accumulated response content:');
+    console.log(fullContent);
   } catch (error) {
     console.error('[streamChatCompletion] Error in stream:', error);
     throw error;
@@ -564,7 +562,7 @@ FAILURE TO FOLLOW THE ABOVE INSTRUCTIONS EXACTLY WILL RESULT IN POOR USER EXPERI
     let program: ExerciseProgram;
     // Calculate next Monday date for follow-up programs
     const nextMondayDate = getNextMonday();
-    
+
     try {
       program = JSON.parse(rawContent) as ExerciseProgram;
 
@@ -580,11 +578,7 @@ FAILURE TO FOLLOW THE ABOVE INSTRUCTIONS EXACTLY WILL RESULT IN POOR USER EXPERI
       const includedExerciseIds = new Set<string>();
       if (program.days && Array.isArray(program.days)) {
         program.days.forEach((day) => {
-          if (
-            !day.isRestDay &&
-            day.exercises &&
-            Array.isArray(day.exercises)
-          ) {
+          if (!day.isRestDay && day.exercises && Array.isArray(day.exercises)) {
             day.exercises.forEach((exercise) => {
               if (exercise.exerciseId) {
                 includedExerciseIds.add(exercise.exerciseId);
@@ -1096,6 +1090,10 @@ export async function getChatCompletion({
       model: modelName,
       messages: formattedMessages, // Use the full history + current message
     });
+
+    console.log('[getChatCompletion] Full raw response from OpenAI:');
+    console.log(JSON.stringify(response, null, 2));
+    console.log('[getChatCompletion] Response content:', response.choices[0].message.content);
 
     return response.choices[0].message.content;
   } catch (error) {

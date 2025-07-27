@@ -126,10 +126,13 @@ function ProgramsContent() {
     });
 
   const handleProgramClick = (programIndex: number) => {
-    // Select the program in context
-    selectProgram(programIndex);
-    // Navigate to the program page
-    router.push('/program');
+    const program = userPrograms[programIndex];
+    if (!program) return;
+    
+    console.log('📋 Program clicked:', program.title);
+    
+    // Navigate to program page with the program ID
+    router.push(`/program?id=${encodeURIComponent(program.docId)}`);
   };
 
   // Handle toggling active status with improved responsiveness

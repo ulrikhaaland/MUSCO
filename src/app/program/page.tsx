@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { ExerciseProgramPage } from '@/app/components/ui/ExerciseProgramPage';
 import { useUser } from '@/app/context/UserContext';
 import { useAuth } from '@/app/context/AuthContext';
@@ -21,6 +21,7 @@ import { useTranslation } from '@/app/i18n';
 
 export default function ProgramPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { t } = useTranslation();
   const { user, loading: authLoading, error: authError } = useAuth();
   const {
@@ -29,6 +30,7 @@ export default function ProgramPage() {
     isLoading: userLoading,
     programStatus,
     userPrograms,
+    selectProgram,
   } = useUser();
   const { showLoader, hideLoader, isLoading: loaderLoading } = useLoader();
   const [error, setError] = useState<Error | null>(null);
@@ -39,35 +41,48 @@ export default function ProgramPage() {
   const [selectedProgram, setSelectedProgram] =
     useState<ExerciseProgram | null>(null);
   const [isOverviewVisible, setIsOverviewVisible] = useState(false);
+  const [hasProcessedUrlParam, setHasProcessedUrlParam] = useState(false);
 
   const isLoading = (authLoading || userLoading) && !program;
 
-  // Always use the most recently created active program
+  // Handle program selection based on URL params (only once)
   useEffect(() => {
-    // If we have multiple active programs, prioritize the most recently created one
-    if (userPrograms && userPrograms.length > 0) {
-      const activePrograms = userPrograms.filter(p => p.active);
+    const programId = searchParams.get('id');
+    
+    if (programId && userPrograms.length > 0 && !hasProcessedUrlParam) {
+      // Look up program by ID from URL parameter
+      const programIndex = userPrograms.findIndex(p => p.docId === programId);
       
-      if (activePrograms.length > 1) {
-        // Multiple active programs - pick the most recently created one
-        const mostRecentActive = activePrograms.reduce((most, current) => {
-          const mostDate = new Date(most.updatedAt || most.createdAt);
-          const currentDate = new Date(current.updatedAt || current.createdAt);
-          return currentDate > mostDate ? current : most;
-        });
-        
-        // Use the first program (week 1) from the most recent active program
-        if (mostRecentActive.programs && mostRecentActive.programs[0]) {
-          setSelectedProgram(mostRecentActive.programs[0]);
-        }
-      } else if (program) {
-        // Single active program or fallback to UserContext program
-        setSelectedProgram(program);
+      if (programIndex !== -1) {
+        console.log('📱 Loading program by ID:', userPrograms[programIndex].title);
+        selectProgram(programIndex);
+        setHasProcessedUrlParam(true);
+        return;
+      } else {
+        console.warn('📱 Program not found for ID:', programId);
+        setHasProcessedUrlParam(true);
       }
-    } else if (program) {
+    }
+    
+    // Reset flag when URL changes to a different program ID
+    if (programId && hasProcessedUrlParam) {
+      const currentActiveId = activeProgram?.docId;
+      if (currentActiveId !== programId) {
+        setHasProcessedUrlParam(false);
+      }
+    }
+  }, [searchParams, userPrograms, hasProcessedUrlParam, selectProgram, activeProgram?.docId]);
+
+  // Separate effect for setting the selected program from UserContext
+  useEffect(() => {
+    if (program && !searchParams.get('id')) {
+      console.log('📱 Using default program:', activeProgram?.title);
+      setSelectedProgram(program);
+    } else if (program && hasProcessedUrlParam) {
+      // Update selected program after URL-based selection has been processed
       setSelectedProgram(program);
     }
-  }, [program, userPrograms]);
+  }, [program, activeProgram?.title, searchParams, hasProcessedUrlParam]);
 
   // Control the loader visibility based on loading states
   useEffect(() => {

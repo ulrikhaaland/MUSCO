@@ -47,6 +47,8 @@ export function ChatMessages({
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const [clickedQuestions, setClickedQuestions] = useState<Set<string>>(new Set());
   const [keepSpacer, setKeepSpacer] = useState(false);
+  const [targetSpacerHeight, setTargetSpacerHeight] = useState(0);
+  const [visibleQuestions, setVisibleQuestions] = useState<Set<string>>(new Set());
   const touchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const lastMessageContentRef = useRef<string>('');
   const lastMessageIdRef = useRef<string>('');
@@ -56,6 +58,7 @@ export function ChatMessages({
   const chatViewRef = useRef<HTMLDivElement>(null);
   const streamMessageRef = useRef<HTMLDivElement>(null);
   const questionsRef = useRef<HTMLDivElement>(null);
+  const spacerRef = useRef<HTMLDivElement>(null);
   const wasStreamingRef = useRef<boolean>(false);
   const clickTimeoutRef = useRef<number | null>(null);
   const isProcessingClickRef = useRef<boolean>(false);
@@ -261,6 +264,8 @@ export function ChatMessages({
         hasHadTouchRef.current = true; // Mark that we've had a real touch
         resetTouchState();
       }
+
+
     };
 
     // Check initial position
@@ -395,12 +400,16 @@ export function ChatMessages({
     // Skip empty arrays
     if (followUpQuestions.length === 0) {
       followUpQuestionsRef.current = [];
+      setVisibleQuestions(new Set());
       return;
     }
 
     // Skip auto-scrolling if disabled
     if (disableAutoScroll) {
       followUpQuestionsRef.current = [...followUpQuestions];
+      // Show all questions immediately if auto-scroll is disabled
+      const allQuestionIds = new Set(followUpQuestions.map(q => q.title || q.question));
+      setVisibleQuestions(allQuestionIds);
       return;
     }
 
@@ -411,6 +420,22 @@ export function ChatMessages({
         (oldQ) => oldQ.title === newQ.title
       );
     });
+
+    // Stagger question animations when new questions appear
+    if (hasNewQuestions) {
+      // Clear previous questions
+      setVisibleQuestions(new Set());
+      
+      // Add questions with staggered delays
+      followUpQuestions.forEach((question, index) => {
+        const questionId = question.title || question.question;
+        setTimeout(() => {
+          setVisibleQuestions(prev => new Set([...prev, questionId]));
+          
+          // Questions animation complete
+        }, index * 150); // 150ms delay between each question
+      });
+    }
 
     // Always scroll when follow-up questions appear or change unless user has explicitly scrolled
     if (hasNewQuestions) {
@@ -483,6 +508,8 @@ export function ChatMessages({
       hasHadTouchRef.current = true;
       resetTouchState();
     }
+
+
 
     onScroll?.(e);
   };
@@ -628,7 +655,7 @@ export function ChatMessages({
     scrollToBottom(true);
   };
 
-  // Calculate available height for loading message
+  // Calculate available height for loading message with smooth transitions
   useEffect(() => {
     const calculateAvailableHeight = () => {
       // Start with full container height
@@ -652,11 +679,79 @@ export function ChatMessages({
         setQuestionsHeight(0);
       }
 
-      // Ensure minimum height and set result
-      const minHeight = 100; // Minimum height in pixels
-      const calculatedHeight = Math.max(height * 0.7, minHeight);
-      setAvailableHeight(calculatedHeight);
-      console.log('[ChatMessages] Calculated availableHeight:', calculatedHeight); // DEBUG PRINT
+      // Responsive minimum height (15% of container, min 100px)
+      const minHeight = Math.max(100, chatContainerHeight * 0.15);
+      
+      // Adaptive multiplier based on content density
+      const hasQuestions = showFollowUps && followUpQuestions.length > 0;
+      const multiplier = hasQuestions && followUpQuestions.length > 3 ? 0.5 : 0.7;
+      
+      const calculatedHeight = Math.max(height * multiplier, minHeight);
+      
+      // Prevent excess spacer when content already fills container
+      let finalHeight = calculatedHeight;
+      if (keepSpacer && messagesRef.current) {
+        // Calculate actual content height (excluding any existing spacer)
+        let contentHeight = 0;
+        Array.from(messagesRef.current.children).forEach((child) => {
+          const element = child as HTMLElement;
+          if (element !== spacerRef.current) {
+            contentHeight += element.offsetHeight;
+          }
+        });
+        
+        // If content already exceeds container height, reduce spacer gradually
+        if (contentHeight > chatContainerHeight) {
+          const excess = contentHeight - chatContainerHeight;
+          // Reduce spacer by 60% of the excess, but keep at least 30% of original spacer
+          const reduction = Math.min(excess * 0.6, calculatedHeight * 0.7);
+          finalHeight = Math.max(calculatedHeight - reduction, calculatedHeight * 0.3);
+          
+
+        }
+      }
+      
+
+      
+      // Track viewport position changes to detect jumping
+      if (finalHeight !== availableHeight && messagesRef.current) {
+        const container = messagesRef.current;
+        const beforeScrollTop = container.scrollTop;
+        const beforeScrollHeight = container.scrollHeight;
+        
+        console.log('🔍 [Viewport Track] Before spacer change:', {
+          scrollTop: beforeScrollTop,
+          scrollHeight: beforeScrollHeight,
+          oldSpacerHeight: availableHeight,
+          newSpacerHeight: finalHeight,
+          heightDiff: finalHeight - availableHeight
+        });
+        
+        // Set new height
+        setTargetSpacerHeight(finalHeight);
+        setAvailableHeight(finalHeight);
+        
+        // Check for viewport jump after a short delay
+        setTimeout(() => {
+          const afterScrollTop = container.scrollTop;
+          const afterScrollHeight = container.scrollHeight;
+          const scrollDiff = afterScrollTop - beforeScrollTop;
+          const heightDiff = afterScrollHeight - beforeScrollHeight;
+          
+          if (Math.abs(scrollDiff) > 5) {
+            console.warn('⚠️ [Viewport Jump] Detected:', {
+              scrollTopChange: scrollDiff,
+              scrollHeightChange: heightDiff,
+              beforePosition: beforeScrollTop,
+              afterPosition: afterScrollTop
+            });
+          }
+        }, 100);
+      } else {
+        // Set target height for smooth animation
+        setTargetSpacerHeight(finalHeight);
+        setAvailableHeight(finalHeight);
+      }
     };
 
     // Calculate on initial render and when dependencies change
@@ -685,16 +780,17 @@ export function ChatMessages({
     chatContainerHeight,
     isStreaming,
     showFollowUps,
-    messages,
-    followUpQuestions,
+    messages.length, // Only react to message count changes, not content
+    followUpQuestions.length, // Only react to question count changes
+    keepSpacer,
   ]);
 
-  // Add touch animation style for quick-reply buttons on mobile
+  // Add touch animation and scrollbar styles
   useEffect(() => {
-    // Add a style element to handle mobile touch animations
-    if (isMobile) {
-      const styleEl = document.createElement('style');
-      styleEl.innerHTML = `
+    const styleEl = document.createElement('style');
+    
+    const styles = `
+      ${isMobile ? `
         @media (pointer: coarse) {
           .follow-up-question-btn:active {
             transform: scale(0.99) translateY(-2px);
@@ -718,13 +814,15 @@ export function ChatMessages({
             }
           }
         }
-      `;
-      document.head.appendChild(styleEl);
-      
-      return () => {
-        document.head.removeChild(styleEl);
-      };
-    }
+      ` : ''}
+    `;
+    
+    styleEl.innerHTML = styles;
+    document.head.appendChild(styleEl);
+    
+    return () => {
+      document.head.removeChild(styleEl);
+    };
   }, [isMobile]);
 
   // Handle question selection with additional cleanup and debounce
@@ -782,6 +880,8 @@ export function ChatMessages({
     initialLoadingRef.current = isLoading;
   }, []); // Only run once on mount
 
+
+
   // Effect to track loading state changes and manage spacer
   useEffect(() => {
     // If we just finished loading (response completed), keep the spacer visible
@@ -823,6 +923,8 @@ export function ChatMessages({
     // as the previous questions have already been processed
     setClickedQuestions(new Set());
   }, [messages.length]);
+
+
 
   return (
     <div
@@ -1020,11 +1122,18 @@ export function ChatMessages({
 
           {/* Follow-up questions - with vertical spacing from assistant message */}
           {showFollowUps && (
-            <div ref={questionsRef} className="mt-[12px]" style={{transition: 'opacity 0.2s ease-out'}}>
+            <div 
+              ref={questionsRef} 
+              className="mt-[12px]" 
+              style={{
+                transition: 'opacity 0.2s ease-out'
+              }}
+            >
               <div className="space-y-[10px]">
-                {followUpQuestions.map((question) => {
+                {followUpQuestions.map((question, index) => {
                   const questionId = question.title || question.question;
                   const isClicked = clickedQuestions.has(questionId);
+                  const isVisible = visibleQuestions.has(questionId);
                   
                   return (
                     <button
@@ -1034,14 +1143,19 @@ export function ChatMessages({
                       data-quick-reply
                       role="button"
                       disabled={isClicked}
-                      className={`follow-up-question-btn w-full min-h-[48px] text-left px-4 py-3 pb-4 rounded-lg transition duration-75 cursor-pointer
+                      className={`follow-up-question-btn w-full min-h-[48px] text-left px-4 py-3 pb-4 rounded-lg cursor-pointer
                         bg-[rgba(99,91,255,0.12)] border border-[rgba(99,91,255,0.35)] text-[#c8cbff] font-medium
                         hover:border-[rgba(99,91,255,0.5)] focus:border-[rgba(99,91,255,0.5)] active:border-[rgba(99,91,255,0.5)]
                         hover:shadow-[0_4px_12px_rgba(0,0,0,0.25)] focus:shadow-[0_4px_12px_rgba(0,0,0,0.25)] active:shadow-[0_4px_16px_rgba(0,0,0,0.3)]
                         hover:bg-gradient-to-r hover:from-indigo-900/80 hover:to-indigo-800/80
                         hover:-translate-y-[2px] active:-translate-y-[2px] active:shadow-[0_4px_16px_rgba(0,0,0,0.3)]
-                        group ${prefersReducedMotion ? '' : 'motion-safe:hover:-translate-y-[2px] motion-safe:active:scale-[0.99]'}
-                        ${isClicked ? 'opacity-50 pointer-events-none' : ''}`}
+                        group transition-all duration-300 ease-out
+                        ${prefersReducedMotion ? '' : 'motion-safe:hover:-translate-y-[2px] motion-safe:active:scale-[0.99]'}
+                        ${isClicked ? 'opacity-50 pointer-events-none' : ''}
+                        ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
+                      style={{
+                        transitionDelay: isVisible ? `${index * 50}ms` : '0ms'
+                      }}
                     >
                       <div className="flex items-start">
                         {/* Arrow icon */}
@@ -1083,15 +1197,17 @@ export function ChatMessages({
             Loading message spacer - rendered during loading/streaming and kept until next user message
             - Uses dynamic height calculation that adjusts based on content
             - Maintained after response completion to prevent visual jumping
+            - Now with smooth transitions and subtle visual feedback
           */}
           {(isLoading && (needsResponsePlaceholder || isStreaming)) || keepSpacer ? (
             <div
-              className="block w-full overflow-hidden"
+              ref={spacerRef}
+              className="block w-full overflow-hidden transition-all duration-300 ease-out"
               style={{
                 height: `${availableHeight}px`,
                 position: 'relative',
                 borderRadius: '8px',
-                overflow: 'hidden', // Keep overflow hidden on the parent
+                overflow: 'hidden',
                 marginTop: '0',
               }}
             >

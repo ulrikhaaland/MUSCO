@@ -15,7 +15,7 @@ export const m_lats: ExerciseGroup = {
       steps: [
         'Attach a wide grip handle to the lat pulldown machine and assume a seated position.',
         'Grasp the handle with a pronated grip (double overhand) and initiate the movement by depressing the shoulder blade and then flexing the elbow while extending the shoulder.',
-        'Pull the handle towards your body until the elbows are in line with your torso and then slowly lower the handle back to the starting position under control.',
+        'Pull the handle towards your body until the elbows are in line with your abdomen and then slowly lower the handle back to the starting position under control.',
         'Repeat for the desired number of repetitions.',
       ],
       tips: [

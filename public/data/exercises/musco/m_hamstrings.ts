@@ -14,7 +14,7 @@ export const m_hamstrings: ExerciseGroup = {
       equipment: ['Barbell'],
       steps: [
         'Position the bar over the top of your shoelaces and assume a hip width stance.',
-        'Push your hips back and hinge forward until your torso is nearly parallel with the floor.',
+        'Push your hips back and hinge forward until your abdomen is nearly parallel with the floor.',
         'Reach down and grasp the bar using a shoulder width, double overhand grip.',
         'Inhale and pull up slightly on the bar while allowing your hips to drop in a seesaw fashion. This phenomenon is commonly referred to as “pulling the slack out of the bar”.',
         'As you drop the hips and pull up on the bar, set the lats (imagine you’re trying to squeeze oranges in your armpits) and ensure your armpits are positioned directly over the bar.',

@@ -17,12 +17,12 @@ export const m_abs: ExerciseGroup = {
         'Pause for a second, and slowly lower your legs back to the starting position.',
         'Repeat for desired reps.',
         'Speed is so important with the hanging leg raise. If you swing your legs, you"re using momentum and your abs will not benefit much from the exercise.',
-        'Do not allow your body to swing. Keep your torso as still and controlled as possible.',
+        'Do not allow your body to swing. Keep your abdomen as still and controlled as possible.',
         'Advanced lifters can add weight by holding a dumbbell between the feet.',
       ],
       tips: [
         'Speed is so important with the hanging leg raise. If you swing your legs, you"re using momentum and your abs will not benefit much from the exercise.',
-        'Do not allow your body to swing. Keep your torso as still and controlled as possible.',
+        'Do not allow your body to swing. Keep your abdomen as still and controlled as possible.',
         'Advanced lifters can add weight by holding a dumbbell between the feet.',
       ],
       contraindications: [
@@ -105,7 +105,7 @@ export const m_abs: ExerciseGroup = {
       steps: [
         'Lay supine in a relaxed position with your knees up and hands across your chest.',
         'Exhale and squeeze your abs as you curl your upper body off the floor.',
-        'Once your torso is perpendicular to the floor, slowly lower yourself back to the starting position.',
+        'Once your abdomen is perpendicular to the floor, slowly lower yourself back to the starting position.',
         'Complete for the assigned number of repetitions.',
       ],
       tips: [

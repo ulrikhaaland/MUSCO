@@ -43,7 +43,7 @@ const createLowBackRestDay = (day: number): any => {
   if (day <= 7) {
     // WEEK 1: Foundational mobility and diaphragm control
     const exercises = [
-      { exerciseId: 'warmup-9', duration: 300, warmup: true, modification: 'Keep torso tall; rotate only to a comfortable range.' },
+      { exerciseId: 'warmup-9', duration: 300, warmup: true, modification: 'Keep abdomen tall; rotate only to a comfortable range.' },
       { exerciseId: 'warmup-5', duration: 300, warmup: true, modification: 'Engage core lightly; avoid lumbar pain.' },
       { exerciseId: 'lower-back-1', sets: 1, repetitions: 8, restBetweenSets: 45, modification: 'Lift only to the point where tension is felt, not pain.' }
     ];

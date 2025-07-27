@@ -371,14 +371,14 @@ export const m_shoulders: ExerciseGroup = {
       equipment: ['Machine'],
       steps: [
         'Position a cable just above waist height and attach a handle.',
-        'Hinge from the elbow and bring the forearm up to 90 degrees while keeping the upper arm tight to the torso.',
+        'Hinge from the elbow and bring the forearm up to 90 degrees while keeping the upper arm tight to the abdomen.',
         'Externally rotate the shoulder by pulling the handle across your body away from your test while ensuring the hand doesn’t drop.',
         'Slowly lower the handle back to the starting position under control.',
         'Repeat for the desired number of repetitions.',
       ],
       tips: [
         'Don’t worry about the weight, focus on the actual activation of the specific muscle groups.',
-        'Ensure the elbow doesn’t leave the torso and the hand doesn’t drop as you complete the movement.',
+        'Ensure the elbow doesn’t leave the abdomen and the hand doesn’t drop as you complete the movement.',
         'As you externally rotate at the shoulder, ensure the shoulder blade doesn’t move.',
       ],
       contraindications: [
@@ -462,14 +462,14 @@ export const m_shoulders: ExerciseGroup = {
       equipment: ['Cable'],
       steps: [
         'Position a cable just above waist height and attach a handle.',
-        'Hinge from the elbow and bring the forearm up to 90 degrees while keeping the upper arm tight to the torso.',
+        'Hinge from the elbow and bring the forearm up to 90 degrees while keeping the upper arm tight to the abdomen.',
         'Internally rotate the shoulder by pulling the handle across your body towards your chest while ensuring the hand doesn’t drop.',
         'Slowly lower the handle back to the starting position under control.',
         'Repeat for the desired number of repetitions.',
       ],
       tips: [
         'Don’t worry about the weight, focus on the actual activation of the specific muscle groups.',
-        'Ensure the elbow doesn’t leave the torso and the hand doesn’t drop as you complete the movement.',
+        'Ensure the elbow doesn’t leave the abdomen and the hand doesn’t drop as you complete the movement.',
         'Internal rotation is overused in most lifters due to high pressings volumes so this would be a poor choice if you’re already experiencing shoulder pain.',
         'As you internally rotate at the shoulder, ensure the shoulder blade doesn’t move.',
       ],
@@ -557,7 +557,7 @@ export const m_shoulders: ExerciseGroup = {
       equipment: ['Bands'],
       steps: [
         'Assume a standing position with your elbow flexed to 90 degrees while holding a band anchored to a sturdy object.',
-        'Rotate your hand away from your body while keeping your elbow tight to your torso.',
+        'Rotate your hand away from your body while keeping your elbow tight to your abdomen.',
         'Slowly lower the band back to the starting position under control.',
         'Repeat for the desired number of repetitions.',
       ],

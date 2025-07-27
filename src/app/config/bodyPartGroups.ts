@@ -17147,10 +17147,10 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
       'thorax',
     ],
   },
-  torso: {
-    id: 'torso',
+  abdomen: {
+    id: 'abdomen',
     zoomId: 'muscular_system-muscles_of_abdomen_ID',
-    name: 'Torso',
+    name: 'Abdomen',
     deselectIds: [],
     selectIds: [
       'muscular_system-muscles_of_abdomen_ID',
@@ -17570,7 +17570,7 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
     ],
     keywords: [
       'abdominal',
-      'torso',
+      'abdomen',
       'trunk',
       'belly',
       'abdomen',
