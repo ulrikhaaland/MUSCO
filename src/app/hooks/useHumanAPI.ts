@@ -288,14 +288,16 @@ export function useHumanAPI({
       return;
     }
 
-    // Check if it's likely a lower back position
-    const isLikelyLowerBack = pos.y < 111 && pos.y > 100;
-    console.log(
-      'onObjectPicked - isLikelyLowerBack:',
+    // A click around y-axis 100-111 from the BACK should trigger lower-back handling.
+    // Use pos.z < 0 as a cheap back-side heuristic (works in default coordinate system).
+    const isBackSide = pos.z < 0;
+    const isLikelyLowerBack = isBackSide && pos.y < 111 && pos.y > 100;
+    console.debug('onObjectPicked', {
       isLikelyLowerBack,
-      'pos.y:',
-      pos.y
-    );
+      posY: pos.y,
+      posZ: pos.z,
+      pickedId,
+    });
 
     // Set flag for object selected to check
     isLowerBackPickRef.current = isLikelyLowerBack;
