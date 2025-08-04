@@ -262,9 +262,12 @@ export function useHumanAPI({
       isPickRateLimitedRef.current = true;
 
       // Reset the rate limit flag after the timeout expires
-      setTimeout(() => {
-        isPickRateLimitedRef.current = false;
-      }, PICK_RATE_LIMIT - (now - lastPickTimeRef.current));
+      setTimeout(
+        () => {
+          isPickRateLimitedRef.current = false;
+        },
+        PICK_RATE_LIMIT - (now - lastPickTimeRef.current)
+      );
 
       return;
     }
@@ -339,9 +342,10 @@ export function useHumanAPI({
   function onObjectSelected(event: any) {
     if (event.mode === 'query') return;
 
+    console.debug('[DBG] onObjectSelected', event);
+
     // If we're rate limited, process immediately
     if (isPickRateLimitedRef.current) {
-      console.log('Processing immediately - pick is rate limited');
       processObjectSelected(event);
       return;
     }
@@ -382,14 +386,6 @@ export function useHumanAPI({
         isPelvisSelected ||
         isPickRateLimitedRef.current
       ) {
-        console.log(
-          'Processing selection immediately:',
-          notSpecialMuscle
-            ? 'not special muscle'
-            : isPelvisSelected
-            ? 'pelvis already selected'
-            : 'pick is rate limited'
-        );
         processObjectSelected(event);
         return;
       }
@@ -475,33 +471,18 @@ export function useHumanAPI({
 
     const selectedId = objects[0];
 
-    // Ignore non-object events (BioDigital sometimes fires a 'position' entry)
-    if (selectedId === 'position') {
-      return;
-    }
-
     // Check for deselection (all values are false)
     const isDeselection = Object.values(event).every(
       (value) => value === false
     );
 
     // Update selectedPartIdRef after knowing deselection status
-    if (isDeselection || selectedId === 'position') {
+    if (isDeselection) {
       // Preserve previously stored part id for potential reset branch
       // Do not clear until after potential reset handling
     } else {
       selectedPartIdRef.current = selectedId;
     }
-
-    // DEBUG LOG – trace selection state in None intention
-    console.debug('[None] onObjectSelected', {
-      selectedId,
-      isDeselection,
-      selectedPartIdRef: selectedPartIdRef.current,
-      selectedPartRef: selectedPartRef.current?.objectId,
-      previousGroup: previousSelectedPartGroupRef.current?.id,
-      isXray: isXrayEnabledRef.current,
-    });
 
     if (objects.length > 1) {
       return;
@@ -509,6 +490,63 @@ export function useHumanAPI({
 
     // If not in current group, proceed with group selection
     const group = getPartGroup(selectedId);
+
+    // Special-case: if the clicked part belongs to shoulder or back master groups, highlight ONLY that part.
+    const specialGroupIds = new Set([
+      'left_shoulder',
+      'right_shoulder',
+      'back',
+    ]);
+    const selectedNeutralId = getNeutralId(selectedId);
+
+    const isShoulderBackPart = Object.values(bodyPartGroups).some(
+      (g) =>
+        specialGroupIds.has(g.id) &&
+        g.parts.some((p) => p.objectId === selectedNeutralId)
+    );
+
+    if (group && isShoulderBackPart) {
+      // Ensure X-ray is on for clarity
+      if (!isXrayEnabledRef.current) {
+        humanRef.current?.send('scene.enableXray', () => {});
+        isXrayEnabledRef.current = true;
+      }
+
+
+
+      // Update state – keep grouping info but point to the individual part
+      setSelectedGroup(group, true);
+
+      const partMeta = group.parts.find(
+        (p) => p.objectId === selectedNeutralId
+      );
+      const groupPart: AnatomyPart = {
+        objectId: selectedId,
+        name: partMeta?.name ?? 'Selected Part',
+        description: partMeta ? `${partMeta.name} area` : 'Selected area',
+        available: true,
+        shown: true,
+        selected: true,
+        parent: '',
+        children: [],
+        group: group.name,
+      };
+
+      selectedPartRef.current = groupPart;
+      setSelectedPart(groupPart);
+
+      // Zoom exactly to the clicked object
+      onZoom?.(getGenderedId(selectedId, currentGender));
+
+      // Track selection & group for future deselection logic
+      previousSelectedPartGroupRef.current = group;
+      prevSelection.current = { [selectedId]: true };
+
+
+
+      // Exit early – skip standard grouping logic
+      return;
+    }
 
     if (group) {
       // Get the current gender value directly from state
@@ -564,74 +602,6 @@ export function useHumanAPI({
 
       const selectedIdNeutral = getNeutralId(selectedId);
 
-      // --- SPECIAL CASE FOR SHOULDER/BACK/NECK GROUPS ---
-      // When a group is already visually selected but previousSelectedPartGroupRef is not yet populated
-      // (e.g., immediate click on deltoid after selecting shoulder), BioDigital may send a normal
-      // selection event with the part still marked as selected in the original map, resulting in no
-      // visual change.  If there is *no* currently selected part yet, treat ANY click on a member
-      // of the current group as an intent to focus that part.
-
-      console.debug('[None] Shoulder check vars', {
-        isDeselection,
-        selectedPartPresent: !!selectedPartRef.current,
-        prevGroup: previousSelectedPartGroupRef.current?.id,
-        currentGroup: group.id,
-      });
-
-      const shoulderLikeGroups = ['left_shoulder', 'right_shoulder', 'back', 'neck'];
-
-      if (
-        isDeselection &&
-        !selectedPartRef.current &&
-        previousSelectedPartGroupRef.current?.id === group.id
-      ) {
-        // Force-only the clicked part selected
-        // Build a deselection map for all other IDs in the group, keep only the clicked one
-        const deselectOthers = createSelectionMap(
-          group.selectIds.filter(
-            (id) => getGenderedId(id, gender) !== selectedId
-          ),
-          gender,
-          false
-        );
-
-        const finalMap = { ...deselectOthers, [selectedId]: true };
-        safeSelectObjects(finalMap, { replace: true }, true);
-
-        const part = group.parts.find((p) => p.objectId === selectedIdNeutral);
-        if (part) {
-          const groupPart: AnatomyPart = {
-            objectId: selectedId,
-            name: part.name,
-            description: `${part.name} area`,
-            available: true,
-            shown: true,
-            selected: true,
-            parent: '',
-            children: [],
-            group: group.name,
-          };
-
-          selectedPartRef.current = groupPart;
-          setSelectedPart(groupPart);
-          selectedPartIdRef.current = selectedId;
-
-          if (!isXrayEnabledRef.current) {
-            humanRef.current?.send('scene.enableXray', () => {});
-            isXrayEnabledRef.current = true;
-          }
-
-          onZoom?.(selectedId);
-
-          console.debug('[None] Shoulder special-case promoted part', selectedId);
-
-          // Ensure group tracking
-          previousSelectedPartGroupRef.current = group;
-
-          return;
-        }
-      }
-
       const isPartOfPreviousGroup =
         previousSelectedPartGroupRef.current?.parts.some(
           (part) => part.objectId === selectedIdNeutral
@@ -640,8 +610,7 @@ export function useHumanAPI({
       if (
         previousSelectedPartGroupRef.current &&
         !isDeselection &&
-        isPartOfPreviousGroup &&
-        selectedPartRef.current?.objectId !== selectedId
+        isPartOfPreviousGroup
       ) {
         const hasSelectedPartOfSelectedGroup =
           previousSelectedPartGroupRef.current.parts.some(
@@ -673,7 +642,7 @@ export function useHumanAPI({
             group: group.name,
           };
 
-          // Force select only this part regardless of BioDigital event state
+          // Send selection and update state with a small delay to prevent race conditions
           safeSelectObjects({ [selectedId]: true }, { replace: true }, true);
 
           // Update selected part
@@ -944,6 +913,7 @@ export function useHumanAPI({
 
       if (
         previousSelectedPartGroupRef.current &&
+        !isDeselection &&
         isPartOfPreviousGroup
       ) {
         const hasSelectedPartOfSelectedGroup =
@@ -1123,7 +1093,7 @@ export function useHumanAPI({
 
     // Check if this is a replace operation
     const isReplace = (options as any)?.replace === true;
-    
+
     if (isReplace) {
       // Full reset - clear previous selection tracking
       prevSelection.current = {};
