@@ -15,9 +15,26 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
     id: 'neck',
     name: 'Neck',
     zoomId: 'muscular_system-muscles_of_head_and_neck_ID',
-    selectIds: ['muscular_system-muscles_of_head_and_neck_ID'],
+    selectIds: [
+      'muscular_system-muscles_of_head_and_neck_ID',
+      'muscular_system-platysma_ID',
+      'connective_tissue-ligamentum_nuchae_ID',
+      'skeletal_system-bones_of_head_ID',
+      'connective_tissue-connective_tissue_of_head_and_throat_ID',
+    ],
     deselectIds: [],
     parts: [
+
+      {
+        objectId: 'muscular_system-muscles_of_head_and_neck_ID',
+        name: 'Muscles of head and neck',
+        description: '',
+        available: true,
+        shown: true,
+        selected: false,
+        parent: '',
+        children: [],
+      },
       {
         objectId: 'muscular_system-muscles_of_head_ID',
         name: 'Muscles of head',
@@ -17560,7 +17577,7 @@ export const bodyPartGroups: { [key: string]: BodyPartGroup } = {
       // 'connective_tissue-anterior_longitudinal_ligament_ID',
       // 'skeletal_system-cervical_vertebrae_ID',
       // 'skeletal_system-thoracic_vertebrae_ID',
-
+      
       // 'muscular_system-right_latissimus_dorsi_ID',
       // 'muscular_system-left_latissimus_dorsi_ID',
       // 'muscular_system-right_trapezius_ID',
