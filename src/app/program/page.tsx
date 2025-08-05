@@ -19,7 +19,11 @@ import { searchYouTubeVideo } from '@/app/utils/youtube';
 import { ErrorDisplay } from '@/app/components/ui/ErrorDisplay';
 import { useTranslation } from '@/app/i18n';
 
-function ProgramPageContent() {
+function ProgramPageContent({
+  isCustomProgram,
+}: {
+  isCustomProgram?: boolean;
+}) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { t } = useTranslation();
@@ -48,13 +52,16 @@ function ProgramPageContent() {
   // Handle program selection based on URL params (only once)
   useEffect(() => {
     const programId = searchParams.get('id');
-    
+
     if (programId && userPrograms.length > 0 && !hasProcessedUrlParam) {
       // Look up program by ID from URL parameter
-      const programIndex = userPrograms.findIndex(p => p.docId === programId);
-      
+      const programIndex = userPrograms.findIndex((p) => p.docId === programId);
+
       if (programIndex !== -1) {
-        console.log('📱 Loading program by ID:', userPrograms[programIndex].title);
+        console.log(
+          '📱 Loading program by ID:',
+          userPrograms[programIndex].title
+        );
         selectProgram(programIndex);
         setHasProcessedUrlParam(true);
         return;
@@ -63,7 +70,7 @@ function ProgramPageContent() {
         setHasProcessedUrlParam(true);
       }
     }
-    
+
     // Reset flag when URL changes to a different program ID
     if (programId && hasProcessedUrlParam) {
       const currentActiveId = activeProgram?.docId;
@@ -71,7 +78,13 @@ function ProgramPageContent() {
         setHasProcessedUrlParam(false);
       }
     }
-  }, [searchParams, userPrograms, hasProcessedUrlParam, selectProgram, activeProgram?.docId]);
+  }, [
+    searchParams,
+    userPrograms,
+    hasProcessedUrlParam,
+    selectProgram,
+    activeProgram?.docId,
+  ]);
 
   // Separate effect for setting the selected program from UserContext
   useEffect(() => {
@@ -202,21 +215,21 @@ function ProgramPageContent() {
     if (!videoUrl) return null;
 
     // Use a modified YouTube URL that forces the native controls with autoplay
-    const enhancedVideoUrl = videoUrl.includes('?') 
-      ? `${videoUrl}&playsinline=1&controls=1&enablejsapi=1&modestbranding=1&showinfo=0&iv_load_policy=3&autoplay=1&mute=0` 
+    const enhancedVideoUrl = videoUrl.includes('?')
+      ? `${videoUrl}&playsinline=1&controls=1&enablejsapi=1&modestbranding=1&showinfo=0&iv_load_policy=3&autoplay=1&mute=0`
       : `${videoUrl}?playsinline=1&controls=1&enablejsapi=1&modestbranding=1&showinfo=0&iv_load_policy=3&autoplay=1&mute=0`;
 
     return (
       <>
         <div className="fixed inset-0 z-50 bg-black">
           <div className="absolute inset-0 flex items-center justify-center">
-            <div 
+            <div
               className="w-full h-full max-w-3xl max-h-[60vh] mx-4"
-              style={{ 
+              style={{
                 position: 'relative',
-                paddingBottom: '56.25%', /* 16:9 Aspect Ratio */
+                paddingBottom: '56.25%' /* 16:9 Aspect Ratio */,
                 paddingTop: '25px',
-                height: 0
+                height: 0,
               }}
             >
               <iframe
@@ -227,7 +240,7 @@ function ProgramPageContent() {
                   left: 0,
                   width: '100%',
                   height: '100%',
-                  border: 'none'
+                  border: 'none',
                 }}
                 title={t('program.exerciseVideoTitle')}
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -297,7 +310,7 @@ function ProgramPageContent() {
               up.programs.some((p) => p.createdAt === selectedProgram.createdAt)
           )
         }
-        isCustomProgram={!!selectedProgram && activeProgram?.type === ProgramType.Recovery}
+        isCustomProgram={isCustomProgram}
         onOverviewVisibilityChange={(visible) => setIsOverviewVisible(visible)}
       />
       {renderVideoModal()}
@@ -306,10 +319,14 @@ function ProgramPageContent() {
   );
 }
 
-export default function ProgramPage() {
+export default function ProgramPage({
+  isCustomProgram,
+}: {
+  isCustomProgram?: boolean;
+}) {
   return (
     <Suspense fallback={null}>
-      <ProgramPageContent />
+      <ProgramPageContent isCustomProgram={isCustomProgram} />
     </Suspense>
   );
 }

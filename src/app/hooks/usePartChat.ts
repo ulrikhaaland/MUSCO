@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect, useState, useCallback } from 'react';
 import { useChat } from './useChat';
 import { AnatomyPart } from '../types/human';
 import { Question } from '../types';
@@ -20,10 +20,10 @@ const getInitialQuestionsTemplate = (): Question[] => [
     meta: t('chat.question.painSource.meta'),
   },
   {
-    title: t('chat.question.movement.title'),
-    question: t('chat.question.movement.text'),
+    title: t('chat.question.explore.title'),
+    question: t('chat.question.explore.text'),
     asked: false,
-    meta: t('chat.question.movement.meta'),
+    meta: t('chat.question.explore.meta'),
   },
   {
     title: t('chat.question.exercise.title'),
@@ -57,11 +57,12 @@ function getInitialQuestions(name?: string, intention?: string, translationFunc?
       question.programType = ProgramType.Recovery;
     }
     
-    // Always replace the $part placeholder with the part name
-    return {
-      ...question,
-      question: question.question.replace('$part', name.toLowerCase()),
-    };
+      // Always replace the $part placeholder with the part name
+  return {
+    ...question,
+    question: question.question.replace('$part', name.toLowerCase()),
+    meta: question.meta?.replace('$part', name.toLowerCase()),
+  };
   });
 
   return questions;
@@ -101,6 +102,7 @@ export function usePartChat({
   });
 
   const [previousQuestions, setPreviousQuestions] = useState<Question[]>([]);
+  const [chatMode, setChatMode] = useState<'diagnosis' | 'explore'>('diagnosis');
 
   // Update the questions when part changes
   useEffect(() => {
@@ -125,23 +127,57 @@ export function usePartChat({
     }
   }, [chatFollowUpQuestions]);
 
-  const handleOptionClick = (question: Question) => {
-    // Store the current questions before sending the new message
-    const prevQuestions = [...previousQuestions, ...localFollowUpQuestions];
-    setPreviousQuestions(prevQuestions);
-    
-    // Immediately clear follow-up questions to prevent stale questions from appearing
+  const switchHandledRef = useRef(false);
+
+  const handleOptionClick = useCallback((question: Question) => {
+    // Decide which assistant should handle the next turn.
+    // Prefer explicit programType flag from the backend. Fallback to heuristics on the title text.
+    const programTypeRaw = (question as any).programType as string | undefined;
+    const titleLower = (question.title || '').toLowerCase();
+
+    let nextMode: 'diagnosis' | 'explore' = chatMode;
+
+    const isDiagnosisOption =
+      programTypeRaw === 'diagnosis' ||
+      titleLower.includes('pain') ||
+      titleLower.includes('diagnosis');
+
+    const isExploreOption = titleLower.includes('explore');
+
+    if (isDiagnosisOption) {
+      nextMode = 'diagnosis';
+    } else if (isExploreOption) {
+      nextMode = 'explore';
+    }
+
+    setChatMode(nextMode);
+
+    // Merge previous and current follow-up options, de-duplicating by question text
+    const merged = [...previousQuestions, ...localFollowUpQuestions];
+    const seen = new Set<string>();
+    const deduped = merged.filter((q) => {
+      if (!q.question) return false;
+      const key = q.question.trim().toLowerCase();
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+    setPreviousQuestions(deduped);
+
+    // Immediately clear follow-up questions to prevent stale ones from flashing
     setLocalFollowUpQuestions([]);
 
     sendChatMessage(question.question, {
+      mode: nextMode,
       userPreferences,
       selectedBodyPart: selectedPart || undefined,
-      selectedBodyGroupName: selectedGroups[0] ? translateBodyPartGroupName(selectedGroups[0], t) : '',
-      bodyPartsInSelectedGroup:
-        selectedGroups[0]?.parts.map((part) => part.name) || [],
-      previousQuestions: prevQuestions,
+      selectedBodyGroupName: selectedGroups[0]
+        ? translateBodyPartGroupName(selectedGroups[0], t)
+        : '',
+      bodyPartsInSelectedGroup: selectedGroups[0]?.parts.map((part) => part.name) || [],
+      previousQuestions: deduped,
     });
-  };
+  }, [chatMode, previousQuestions, localFollowUpQuestions, userPreferences, selectedPart, selectedGroups, t, sendChatMessage]);
 
   const getGroupDisplayName = (): string => {
     if (selectedGroups.length === 0) {
@@ -164,6 +200,20 @@ export function usePartChat({
     }
     return translatePartDirectionPrefix(selectedPart, t);
   };
+
+  // Effect to handle automatic switch to diagnosis
+  useEffect(() => {
+    if (assistantResponse?.switchToDiagnosis && !switchHandledRef.current) {
+      // The exploration assistant signalled that we should offer a pain-assessment switch.
+      // Show the "Find Pain" follow-up option but wait for the user to click it.
+      switchHandledRef.current = true;
+      // Replace local follow-ups with the ones coming from the assistant (they include Find Pain)
+      if (assistantResponse.followUpQuestions?.length) {
+        setLocalFollowUpQuestions(assistantResponse.followUpQuestions);
+      }
+      // Do NOT auto-send; user must click the option explicitly.
+    }
+  }, [assistantResponse, selectedPart, selectedGroups, t, handleOptionClick]);
 
   return {
     messages,

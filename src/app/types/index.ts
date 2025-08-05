@@ -62,6 +62,7 @@ export interface ChatPayload {
   previousQuestions?: Question[];
   language?: string; // User's preferred language (en/nb)
   diagnosisAssistantResponse?: DiagnosisAssistantResponse; // Current diagnostic information
+  mode?: 'diagnosis' | 'explore'; // chat mode
 }
 
 export interface Question {
@@ -101,4 +102,5 @@ export interface DiagnosisAssistantResponse {
   followUpQuestions: Question[];
   // The type of program the user is getting, e.g. 'exercise' or 'recovery'
   programType: ProgramType;
+  switchToDiagnosis?: boolean;
 }

@@ -711,7 +711,7 @@ export function ExerciseProgramPage({
                         (() => {
                           const totalWeeks =
                             hasMultipleWeeks && activeProgram?.programs
-                              ? activeProgram.programs.length
+                              ? activeProgram.programs.length + (isCustomProgram ? 0 : 1) // Add placeholder only for user programs
                               : 4; // Default to 4 for custom programs
                           return Array.from(
                             { length: totalWeeks },
@@ -728,7 +728,7 @@ export function ExerciseProgramPage({
                                 : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white'
                             }`}
                           >
-                            <div className="flex flex-col items-start">
+                            <div className="flex flex-col items-center justify-center text-center">
                               {t('exerciseProgram.weekTab')}{' '}
                               {(() => {
                                 // Calculate the actual ISO week number for this week
@@ -737,13 +737,31 @@ export function ExerciseProgramPage({
                                   activeProgram?.programs
                                 ) {
                                   // For user programs, use the specific week's createdAt
-                                  const weekProgram =
-                                    activeProgram.programs[weekNumber - 1];
-                                  return weekProgram?.createdAt
-                                    ? getWeekNumber(
-                                        new Date(weekProgram.createdAt)
-                                      )
-                                    : weekNumber;
+                                  const totalExistingWeeks = activeProgram.programs.length;
+                                  const isPlaceholder = weekNumber > totalExistingWeeks;
+
+                                  if (!isPlaceholder) {
+                                    const weekProgram =
+                                      activeProgram.programs[weekNumber - 1];
+                                    return weekProgram?.createdAt
+                                      ? getWeekNumber(
+                                          new Date(weekProgram.createdAt)
+                                        )
+                                      : weekNumber;
+                                  }
+
+                                  // Placeholder week: calculate based on the week after the last program
+                                  const lastCreatedAt = activeProgram.programs[totalExistingWeeks - 1]?.createdAt;
+                                  const lastWeekStartRaw = lastCreatedAt ? new Date(lastCreatedAt) : new Date();
+                                  let placeholderStart = getStartOfWeek(lastWeekStartRaw);
+                                  const currentWeekStart = getStartOfWeek(currentDate);
+                                  // Advance in 1-week steps until we reach or pass the current calendar week
+                                  do {
+                                    placeholderStart = addDays(placeholderStart, 7);
+                                  } while (placeholderStart < currentWeekStart);
+                                  // If there are multiple placeholder tabs (rare), advance further
+                                  placeholderStart = addDays(placeholderStart, 7 * (weekNumber - totalExistingWeeks - 1));
+                                  return getWeekNumber(placeholderStart);
                                 } else if (program.createdAt) {
                                   // For custom programs, calculate based on program start + week offset
                                   const programStart = new Date(
@@ -766,9 +784,26 @@ export function ExerciseProgramPage({
                                   activeProgram?.programs
                                 ) {
                                   // For user programs, use the specific week's createdAt
-                                  const weekProgram =
-                                    activeProgram.programs[weekNumber - 1];
-                                  weekDate = weekProgram?.createdAt;
+                                  const totalExistingWeeks = activeProgram.programs.length;
+                                  const isPlaceholder = weekNumber > totalExistingWeeks;
+
+                                  if (!isPlaceholder) {
+                                    const weekProgram =
+                                      activeProgram.programs[weekNumber - 1];
+                                    weekDate = weekProgram?.createdAt
+                                      ? new Date(weekProgram.createdAt)
+                                      : undefined;
+                                  } else {
+                                    const lastCreatedAt2 = activeProgram.programs[totalExistingWeeks - 1]?.createdAt;
+                                    const lastWeekStartRaw2 = lastCreatedAt2 ? new Date(lastCreatedAt2) : new Date();
+                                    let placeholderStart2 = getStartOfWeek(lastWeekStartRaw2);
+                                    const currentWeekStart2 = getStartOfWeek(currentDate);
+                                    do {
+                                      placeholderStart2 = addDays(placeholderStart2, 7);
+                                    } while (placeholderStart2 < currentWeekStart2);
+                                    placeholderStart2 = addDays(placeholderStart2, 7 * (weekNumber - totalExistingWeeks - 1));
+                                    weekDate = placeholderStart2;
+                                  }
                                 } else if (program.createdAt) {
                                   // For custom programs, calculate based on program start + week offset
                                   const programStart = new Date(
@@ -830,7 +865,7 @@ export function ExerciseProgramPage({
                                 : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white'
                             }`}
                           >
-                            <div className="flex flex-col items-start">
+                            <div className="flex flex-col items-center justify-center text-center">
                               {t('exerciseProgram.weekTab')}{' '}
                               {program.createdAt
                                 ? getWeekNumber(new Date(program.createdAt))
@@ -882,37 +917,48 @@ export function ExerciseProgramPage({
                               }`}
                               onClick={() => handleWeekChange(2)}
                             >
-                              <div className="flex flex-col items-start">
+                              <div className="flex flex-col items-center justify-center text-center">
                                 {t('exerciseProgram.weekTab')}{' '}
-                                {program.createdAt
-                                  ? getWeekNumber(new Date(program.createdAt)) +
-                                    1
-                                  : getWeekNumber(currentDate) + 1}
+                                {(() => {
+                                  // Determine which week should be generated next
+                                  const nextWeekStart = (() => {
+                                    const currentWeekStart = getStartOfWeek(currentDate);
+                                    const isSameWeek = (date: Date) =>
+                                      getStartOfWeek(date).getTime() === currentWeekStart.getTime();
+
+                                    let hasProgramThisWeek = false;
+                                    if (activeProgram?.programs?.length) {
+                                      hasProgramThisWeek = activeProgram.programs.some((p) =>
+                                        p.createdAt ? isSameWeek(new Date(p.createdAt)) : false
+                                      );
+                                    } else if (program.createdAt) {
+                                      hasProgramThisWeek = isSameWeek(new Date(program.createdAt));
+                                    }
+
+                                    return hasProgramThisWeek ? addDays(currentWeekStart, 7) : currentWeekStart;
+                                  })();
+
+                                  return getWeekNumber(nextWeekStart);
+                                })()}
                                 <span className="text-xs opacity-70 block">
                                   {(() => {
-                                    // Calculate next week's date range
-                                    const nextWeekStart = program.createdAt
-                                      ? (() => {
-                                          const weekEnd = getEndOfWeek(
-                                            new Date(program.createdAt)
-                                          );
-                                          const nextWeekStart = new Date(
-                                            weekEnd
-                                          );
-                                          nextWeekStart.setDate(
-                                            nextWeekStart.getDate() + 1
-                                          );
-                                          return getStartOfWeek(nextWeekStart);
-                                        })()
-                                      : (() => {
-                                          const nextWeek = new Date(
-                                            currentDate.getTime() +
-                                              7 * 24 * 60 * 60 * 1000
-                                          );
-                                          return getStartOfWeek(nextWeek);
-                                        })();
-                                    const nextWeekEnd =
-                                      getEndOfWeek(nextWeekStart);
+                                    const nextWeekStart = (() => {
+                                      const currentWeekStart = getStartOfWeek(currentDate);
+                                      const isSameWeek = (date: Date) =>
+                                        getStartOfWeek(date).getTime() === currentWeekStart.getTime();
+
+                                      let hasProgramThisWeek = false;
+                                      if (activeProgram?.programs?.length) {
+                                        hasProgramThisWeek = activeProgram.programs.some((p) =>
+                                          p.createdAt ? isSameWeek(new Date(p.createdAt)) : false
+                                        );
+                                      } else if (program.createdAt) {
+                                        hasProgramThisWeek = isSameWeek(new Date(program.createdAt));
+                                      }
+
+                                      return hasProgramThisWeek ? addDays(currentWeekStart, 7) : currentWeekStart;
+                                    })();
+                                    const nextWeekEnd = getEndOfWeek(nextWeekStart);
 
                                     // Format the dates with translated month names
                                     const startMonth = getMonthAbbreviation(
@@ -926,12 +972,10 @@ export function ExerciseProgramPage({
                                       t
                                     );
 
-                                    // If start and end are in the same month, use "Month Day-Day" format
                                     if (startMonth === endMonth) {
                                       return `${startMonth} ${startDay}-${endDay}`;
                                     }
 
-                                    // Otherwise, use "Month Day-Month Day" format
                                     return `${startMonth} ${startDay}-${endMonth} ${endDay}`;
                                   })()}
                                 </span>

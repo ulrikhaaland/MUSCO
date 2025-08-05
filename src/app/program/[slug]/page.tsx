@@ -13,5 +13,5 @@ export async function generateStaticParams() {
 // Dynamic route for recovery programs
 // This will handle paths like /program/runnersknee, /program/shoulder, etc.
 export default function DynamicProgramPage() {
-  return <ProgramPage />;
+  return <ProgramPage isCustomProgram={true} />;
 } 

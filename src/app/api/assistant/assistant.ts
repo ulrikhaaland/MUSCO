@@ -62,6 +62,7 @@ export async function sendMessage(
     bodyPartsInSelectedGroup: payload.bodyPartsInSelectedGroup,
     language: payload.language,
     diagnosisAssistantResponse: payload.diagnosisAssistantResponse,
+    mode: payload.mode,
     previousQuestions: payload.previousQuestions
   };
   console.log('[assistant.ts - sendMessage] Transformed payload (to backend API):', JSON.stringify(transformedPayload, null, 2)); // DEBUG

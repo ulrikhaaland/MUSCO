@@ -14,6 +14,9 @@ import {
 import { OpenAIMessage } from '@/app/types';
 import { ProgramStatus } from '@/app/types/program';
 import { chatSystemPrompt } from '@/app/api/prompts/chatPrompt';
+import { exploreSystemPrompt } from '@/app/api/prompts/explorePrompt';
+import { getOrCreateExploreAssistant, streamExploreResponse } from '@/app/api/assistant/explore-assistant';
+import { runAssistant } from '@/app/api/assistant/openai-server';
 
 // Initialize OpenAI client
 const openai = new OpenAI({
@@ -54,8 +57,8 @@ export async function POST(request: Request) {
         // Get message history first (for conversation context)
         const previousMessages = await getMessages(threadId);
         
-        // Set up system message with our chat prompt
-        const systemMessage = chatSystemPrompt;
+        // Choose system prompt based on chat mode
+        const systemMessage = payload?.mode === 'explore' ? exploreSystemPrompt : chatSystemPrompt;
         
         // Store the new message in the thread for future reference
         const preStreamStartTime = performance.now();
@@ -89,8 +92,22 @@ export async function POST(request: Request) {
                   `[API Route] Calling streamChatCompletion... Time since stream start: ${callOpenAIStreamStartTime - streamStartTime} ms`
                 );
 
-                // Stream using chat completions instead of assistant API
-                await streamChatCompletion({
+                if (payload?.mode === 'explore') {
+                  const exploreAssistantId = await getOrCreateExploreAssistant();
+                  await streamExploreResponse(threadId, exploreAssistantId, (content) => {
+                    const openaiStreamChunkReceivedTime = performance.now();
+                    if (!firstChunkSent) {
+                      console.log(`[API Route] First chunk RECEIVED from Explore stream. +${openaiStreamChunkReceivedTime - callOpenAIStreamStartTime} ms`);
+                    }
+                    const chunk = encoder.encode(`data: ${JSON.stringify({ content })}\n\n`);
+                    controller.enqueue(chunk);
+                    if (!firstChunkSent) {
+                      firstChunkSent = true;
+                    }
+                  });
+                } else {
+                  // Stream using chat completions for diagnosis assistant
+                  await streamChatCompletion({
                   threadId,
                   messages: previousMessages,
                   systemMessage,
@@ -117,6 +134,7 @@ export async function POST(request: Request) {
                     }
                   },
                 });
+                }
 
                 const streamFinishedTime = performance.now();
                 console.log(
@@ -147,8 +165,12 @@ export async function POST(request: Request) {
 
         // For non-streaming responses, use chat completions synchronously
         try {
-          // Get completion from chat model
-          const assistantResponse = await getChatCompletion({
+          if (payload?.mode === 'explore') {
+            const exploreAssistantId = await getOrCreateExploreAssistant();
+            await runAssistant(threadId, exploreAssistantId);
+          } else {
+            // Get completion from chat model
+            const assistantResponse = await getChatCompletion({
             threadId,
             messages: previousMessages,
             systemMessage,
@@ -161,8 +183,11 @@ export async function POST(request: Request) {
             role: 'assistant',
             content: assistantResponse || '',
           });
-          
           // Return updated messages
+          const messages = await getMessages(threadId);
+          return NextResponse.json({ messages: messages as OpenAIMessage[] });
+          }
+          // After if/else, for explore path fetch updated messages and return
           const messages = await getMessages(threadId);
           return NextResponse.json({ messages: messages as OpenAIMessage[] });
         } catch (error) {

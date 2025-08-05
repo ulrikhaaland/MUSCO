@@ -308,6 +308,9 @@ const translations = {
   'chat.question.movement.text':
     'Kan du guide meg gjennom noen bevegelser for å sjekke om det er et problem med $part?',
   'chat.question.movement.meta': '2 enkle bevegelser',
+  'chat.question.explore.title': 'Utforsk',
+  'chat.question.explore.meta': 'Lær mer om $part',
+  'chat.question.explore.text': 'Kan du fortelle meg mer om $part?',
   'chat.question.exercise.title': 'Lag Program',
   'chat.question.exercise.text':
     'Kan du hjelpe meg med å lage et treningsprogram?',

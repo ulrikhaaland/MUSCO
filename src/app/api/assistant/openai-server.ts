@@ -6,7 +6,7 @@ import { ProgramStatus, ExerciseProgram, Exercise } from '@/app/types/program';
 import { loadServerExercises } from '@/app/services/server-exercises';
 import { ProgramFeedback } from '@/app/components/ui/ProgramFeedbackQuestionnaire';
 import { prepareExercisesPrompt } from '@/app/helpers/exercise-prompt';
-import { getNextMonday } from '@/app/utils/dateutils';
+import { getStartOfWeek, addDays } from '@/app/utils/dateutils';
 
 // Initialize OpenAI client
 const openai = new OpenAI({
@@ -346,6 +346,7 @@ export async function generateFollowUpExerciseProgram(context: {
   programId?: string;
   previousProgram?: ExerciseProgram;
   language?: string;
+  desiredCreatedAt?: string;
 }) {
   try {
     // If we have a userId and programId, update the program status to Generating
@@ -560,14 +561,36 @@ FAILURE TO FOLLOW THE ABOVE INSTRUCTIONS EXACTLY WILL RESULT IN POOR USER EXPERI
 
     // Parse the response as JSON
     let program: ExerciseProgram;
-    // Calculate next Monday date for follow-up programs
-    const nextMondayDate = getNextMonday();
+    // Determine the correct start date for the follow-up program (always non-past)
+    const nextProgramDate = (() => {
+      if (context.desiredCreatedAt) {
+        return new Date(context.desiredCreatedAt);
+      }
+
+      const currentWeekStart = getStartOfWeek(new Date());
+
+      if (context.previousProgram?.createdAt) {
+        const prevWeekStart = getStartOfWeek(new Date(context.previousProgram.createdAt));
+        const candidate = addDays(prevWeekStart, 7);
+        return candidate < currentWeekStart ? currentWeekStart : candidate;
+      }
+      return currentWeekStart;
+    })();
+
+    // Convert to UTC Monday 00:00 immediately so it can be reused later in the function
+    const nextProgramDateUTC = new Date(
+      Date.UTC(
+        nextProgramDate.getFullYear(),
+        nextProgramDate.getMonth(),
+        nextProgramDate.getDate()
+      )
+    );
 
     try {
       program = JSON.parse(rawContent) as ExerciseProgram;
 
-      // Add createdAt timestamp to the program - set to Monday of next week for follow-up programs
-      program.createdAt = nextMondayDate;
+      // Add createdAt timestamp to the program
+      program.createdAt = nextProgramDateUTC;
 
       // Log extracted exercises from the response for verification
       console.log(
@@ -671,7 +694,7 @@ FAILURE TO FOLLOW THE ABOVE INSTRUCTIONS EXACTLY WILL RESULT IN POOR USER EXPERI
         batch.set(newWeekRef, {
           days: days || [],
           ...programMetadata,
-          createdAt: nextMondayDate.toISOString(),
+          createdAt: nextProgramDateUTC.toISOString(),
         });
 
         // Update the parent document with UserProgram-level fields

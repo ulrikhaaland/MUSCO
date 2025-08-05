@@ -12,6 +12,7 @@ import { ProgramStatus, ExerciseProgram } from '@/app/types/program';
 import { ProgramFeedback } from '../components/ui/ProgramFeedbackQuestionnaire';
 import { Locale } from '../i18n/translations';
 import { getSavedLocalePreference } from '../i18n/utils';
+import { getStartOfWeek, addDays } from '@/app/utils/dateutils';
 
 // Extended ExerciseQuestionnaireAnswers to include feedback fields
 interface FeedbackEnhancedQuestionnaire extends ExerciseQuestionnaireAnswers {
@@ -81,6 +82,13 @@ export const submitProgramFeedback = async (
             userId: userId,
             programId: programId,
             previousProgram: currentProgram || null, // Pass the program data
+            desiredCreatedAt: (() => {
+              const currentWeekStart = getStartOfWeek(new Date());
+              const prevWeekStart = currentProgram.createdAt ? getStartOfWeek(new Date(currentProgram.createdAt)) : null;
+              const candidate = prevWeekStart ? addDays(prevWeekStart, 7) : currentWeekStart;
+              const desired = candidate < currentWeekStart ? currentWeekStart : candidate;
+              return new Date(Date.UTC(desired.getFullYear(), desired.getMonth(), desired.getDate())).toISOString();
+            })(),
             language: userLanguage, // Pass the user's language preference
           },
         }),
