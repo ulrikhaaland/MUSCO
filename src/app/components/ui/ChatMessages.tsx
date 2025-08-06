@@ -667,7 +667,7 @@ export function ChatMessages({
     const calculateAvailableHeight = () => {
       // Calculate spacer height to position user message near the top of container
       // Target: position user message about 60-80px from top (right below header)
-      const targetTopPadding = 24; // Distance from top of container
+      const targetTopPadding = 20; // Distance from top of container
       
       // Start with full container height and subtract what will be visible
       let spacerHeight = chatContainerHeight - targetTopPadding;
@@ -690,12 +690,14 @@ export function ChatMessages({
         streamHeight = lastKnownStreamHeightRef.current;
         setStreamMessageHeight(streamHeight);
         spacerHeight -= streamHeight;
-        console.log(`🔧 Using stored stream height: ${streamHeight}px (ref is gone)`);
+        console.log(`🔧 Using stored stream height: ${streamHeight}px (ref is gone) - streaming=${isStreaming} keepSpacer=${keepSpacer}`);
       }
       // Reset when no assistant message
       else {
+        // Reset stored height when user sends a new message (clean slate)
         if (!lastIsAssistant) {
-          lastKnownStreamHeightRef.current = 0; // Reset when new conversation starts
+          lastKnownStreamHeightRef.current = 0;
+          console.log(`🔄 Resetting stored stream height - new message cycle`);
         }
         setStreamMessageHeight(0);
       }
