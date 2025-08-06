@@ -135,20 +135,22 @@ export function usePartChat({
     const programTypeRaw = (question as any).programType as string | undefined;
     const titleLower = (question.title || '').toLowerCase();
 
-    // Default to exploration unless we positively detect a diagnosis option.
-    let nextMode: 'diagnosis' | 'explore' = 'explore';
+    let nextMode: 'diagnosis' | 'explore' = chatMode;
+
+    // Localised titles
+    const exploreTitleLower = t('chat.question.explore.title').toLowerCase();
+    const painTitleLower = t('chat.question.painSource.title').toLowerCase();
 
     const isDiagnosisOption =
       programTypeRaw === 'diagnosis' ||
+      titleLower === painTitleLower ||
       titleLower.includes('pain') ||
       titleLower.includes('diagnosis');
 
-    // Support translated "Explore" label via i18n key
-    const exploreTitle = (typeof t === 'function' ? t('chat.question.explore.title') : 'explore').toLowerCase();
     const isExploreOption =
-      programTypeRaw === 'explore' ||
+      titleLower === exploreTitleLower ||
       titleLower.includes('explore') ||
-      titleLower === exploreTitle;
+      titleLower.includes('utforsk');
 
     if (isDiagnosisOption) {
       nextMode = 'diagnosis';
