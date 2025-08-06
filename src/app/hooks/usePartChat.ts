@@ -18,6 +18,7 @@ const getInitialQuestionsTemplate = (): Question[] => [
     question: t('chat.question.painSource.text'),
     asked: false,
     meta: t('chat.question.painSource.meta'),
+    chatMode: 'diagnosis',
   },
   {
     title: t('chat.question.explore.title'),
@@ -132,7 +133,7 @@ export function usePartChat({
   const handleOptionClick = useCallback((question: Question) => {
     // Decide which assistant should handle the next turn.
     // Prefer explicit programType flag from the backend. Fallback to heuristics on the title text.
-    const programTypeRaw = (question as any).programType as string | undefined;
+    const programTypeRaw = (question as any).chatMode as string | undefined;
     const titleLower = (question.title || '').toLowerCase();
 
     let nextMode: 'diagnosis' | 'explore' = chatMode;
@@ -142,10 +143,7 @@ export function usePartChat({
     const painTitleLower = t('chat.question.painSource.title').toLowerCase();
 
     const isDiagnosisOption =
-      programTypeRaw === 'diagnosis' ||
-      titleLower === painTitleLower ||
-      titleLower.includes('pain') ||
-      titleLower.includes('diagnosis');
+      programTypeRaw === 'diagnosis';
 
     const isExploreOption =
       titleLower === exploreTitleLower ||

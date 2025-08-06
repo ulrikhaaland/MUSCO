@@ -52,7 +52,6 @@ export async function sendMessage(
   payload: ChatPayload,
   onStream?: (content: string, payload?: ChatPayload) => void
 ): Promise<MessagesResponse> {
-  console.log('[assistant.ts - sendMessage] Received payload (from useChat):', JSON.stringify(payload, null, 2)); // DEBUG
   const transformedPayload = {
     message: payload.message,
     userPreferences: payload.userPreferences,
@@ -65,7 +64,6 @@ export async function sendMessage(
     mode: payload.mode,
     previousQuestions: payload.previousQuestions
   };
-  console.log('[assistant.ts - sendMessage] Transformed payload (to backend API):', JSON.stringify(transformedPayload, null, 2)); // DEBUG
 
   // Start both requests in parallel
   const startTime = performance.now(); // Record start time

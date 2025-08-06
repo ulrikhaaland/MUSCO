@@ -14,41 +14,27 @@ export function LoadingMessage({
   const MIN_GROUPS = 1;
   const MAX_GROUPS = 8;
 
-  // Calculate how many complete shimmer groups can fit in the container height
-  const calculateFittingGroups = () => {
-    if (!containerHeight || containerHeight < 150) {
-      return 2; // Default for small containers
-    }
-
-    // Reserve space for padding
-    const availableHeight = containerHeight - PADDING_TOP - PADDING_BOTTOM;
-    const possibleGroups = Math.floor(availableHeight / SHIMMER_GROUP_HEIGHT);
-
-    return Math.max(MIN_GROUPS, Math.min(possibleGroups, MAX_GROUPS));
-  };
-
-  const shimmerRowCount = calculateFittingGroups();
+  // Always show exactly 2 paragraphs of shimmer for consistent, compact loading state
+  const shimmerRowCount = 2;
   return (
     <div
-      className={`${visible ? 'bg-gray-800' : 'bg-transparent'} w-full h-full transition-colors duration-200 ${absolute ? 'absolute top-0 left-0 z-10' : ''}`}
+      className={`w-full h-full ${absolute ? 'absolute top-0 left-0 z-10' : ''}`}
       style={{
-        borderRadius: 'inherit', // Inherit border radius from parent
         display: 'flex',
         flexDirection: 'column',
       }}
     >
-      {/* Main content area with padding */}
+      {/* Compact shimmer content - only as tall as needed */}
       <div
+        className={`${visible ? 'bg-gray-800' : 'bg-transparent'} transition-colors duration-200 w-full`}
         style={{
+          borderRadius: '8px',
           padding: '16px',
           paddingBottom: '20px',
-          flex: '1 1 auto',
-          display: 'flex',
-          flexDirection: 'column',
         }}
       >
         {/* Shimmer groups container */}
-        <div className="flex-grow">
+        <div>
           {Array.from({ length: shimmerRowCount }).map((_, groupIndex) => (
             <div
               key={`group-${groupIndex}`}
@@ -79,6 +65,9 @@ export function LoadingMessage({
           ))}
         </div>
       </div>
+      
+      {/* Transparent spacer to fill remaining height */}
+      <div className="flex-1" />
 
       <style jsx>{`
         .shimmer {

@@ -72,6 +72,7 @@ export interface Question {
   asked?: boolean;
   diagnosis?: string;
   programType?: ProgramType;
+  chatMode?: 'diagnosis' | 'explore';
   meta?: string;
 }
 

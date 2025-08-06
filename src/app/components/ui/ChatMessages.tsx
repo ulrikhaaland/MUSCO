@@ -66,6 +66,8 @@ export function ChatMessages({
   const wasStreamingRef = useRef<boolean>(false);
   const clickTimeoutRef = useRef<number | null>(null);
   const isProcessingClickRef = useRef<boolean>(false);
+  const lastLogRef = useRef<any>(null);
+  const lastKnownStreamHeightRef = useRef<number>(0);
 
   // Check if user prefers reduced motion
   useEffect(() => {
@@ -418,10 +420,13 @@ export function ChatMessages({
     }
 
     // Deep check if questions have changed (not just count)
+    const getQId = (q: Question) => q.title || q.question;
+
+    // Detect if any truly new question (by id) arrived
     const hasNewQuestions = followUpQuestions.some((newQ) => {
-      // If we can't find this question title in the previous questions, it's new
+      const newId = getQId(newQ);
       return !followUpQuestionsRef.current.some(
-        (oldQ) => oldQ.title === newQ.title
+        (oldQ) => getQId(oldQ) === newId
       );
     });
 
@@ -660,59 +665,109 @@ export function ChatMessages({
   // Calculate available height for loading message with smooth transitions
   useEffect(() => {
     const calculateAvailableHeight = () => {
-      // Start with full container height
-      let height = chatContainerHeight;
+      // Calculate spacer height to position user message near the top of container
+      // Target: position user message about 60-80px from top (right below header)
+      const targetTopPadding = 24; // Distance from top of container
+      
+      // Start with full container height and subtract what will be visible
+      let spacerHeight = chatContainerHeight - targetTopPadding;
 
-      // Subtract stream message height if it exists and is visible
-      if (streamMessageRef.current && isStreaming) {
-        const streamHeight = streamMessageRef.current.offsetHeight;
+      // Subtract stream message height if it exists (whether streaming or completed)
+      let streamHeight = 0;
+      const hasStreamRef = !!streamMessageRef.current;
+      const hasMessages = messages.length > 0;
+      const lastIsAssistant = messages[messages.length - 1]?.role === 'assistant';
+      
+      // If we have a stream ref, measure and store the height
+      if (hasStreamRef && hasMessages && lastIsAssistant) {
+        streamHeight = streamMessageRef.current.offsetHeight;
+        lastKnownStreamHeightRef.current = streamHeight; // Store for when ref goes away
         setStreamMessageHeight(streamHeight);
-        height -= streamHeight;
-      } else {
+        spacerHeight -= streamHeight;
+      } 
+      // If no ref but we have an assistant message, use last known height
+      else if (!hasStreamRef && hasMessages && lastIsAssistant && lastKnownStreamHeightRef.current > 0) {
+        streamHeight = lastKnownStreamHeightRef.current;
+        setStreamMessageHeight(streamHeight);
+        spacerHeight -= streamHeight;
+        console.log(`🔧 Using stored stream height: ${streamHeight}px (ref is gone)`);
+      }
+      // Reset when no assistant message
+      else {
+        if (!lastIsAssistant) {
+          lastKnownStreamHeightRef.current = 0; // Reset when new conversation starts
+        }
         setStreamMessageHeight(0);
       }
 
       // Subtract questions height if they exist
+      let questionsHeight = 0;
       if (questionsRef.current && showFollowUps) {
-        const qHeight = questionsRef.current.offsetHeight;
-        setQuestionsHeight(qHeight);
-        height -= qHeight;
+        questionsHeight = questionsRef.current.offsetHeight;
+        setQuestionsHeight(questionsHeight);
+        spacerHeight -= questionsHeight;
       } else {
         setQuestionsHeight(0);
       }
 
-      // Responsive minimum height (15% of container, min 100px)
-      const minHeight = Math.max(100, chatContainerHeight * 0.15);
+      // Estimate user message height (typical message is around 50-60px)
+      const estimatedUserMessageHeight = 60;
+      spacerHeight -= estimatedUserMessageHeight;
 
-      // Adaptive multiplier based on content density
-      const hasQuestions = showFollowUps && followUpQuestions.length > 0;
-      const multiplier =
-        hasQuestions && followUpQuestions.length > 3 ? 0.5 : 0.7;
+      // Ensure minimum spacer height
+      const minHeight = Math.max(50, chatContainerHeight * 0.1);
+      let calculatedHeight = Math.max(spacerHeight, minHeight);
 
-      const calculatedHeight = Math.max(height * multiplier, minHeight);
-
-      // Prevent excess spacer when content already fills container
-      let finalHeight = calculatedHeight;
+      // When keepSpacer is true (after completion), check if content actually needs the spacer
+      let actualContentHeight = 0;
       if (keepSpacer && messagesRef.current) {
-        // Calculate actual content height (excluding any existing spacer)
-        let contentHeight = 0;
+        // Calculate actual content height (excluding spacer)
         Array.from(messagesRef.current.children).forEach((child) => {
           const element = child as HTMLElement;
           if (element !== spacerRef.current) {
-            contentHeight += element.offsetHeight;
+            actualContentHeight += element.offsetHeight;
           }
         });
 
-        // If content already exceeds container height, reduce spacer gradually
-        if (contentHeight > chatContainerHeight) {
-          const excess = contentHeight - chatContainerHeight;
-          // Reduce spacer by 60% of the excess, but keep at least 30% of original spacer
-          const reduction = Math.min(excess * 0.6, calculatedHeight * 0.7);
-          finalHeight = Math.max(
-            calculatedHeight - reduction,
-            calculatedHeight * 0.3
-          );
+        // If content fits within container with some margin, minimize spacer to prevent extra scroll space
+        const marginBuffer = 50; // Allow some breathing room
+        const availableSpace = chatContainerHeight - marginBuffer;
+        
+        if (actualContentHeight <= availableSpace) {
+          calculatedHeight = 0; // Remove spacer completely when content fits comfortably
         }
+      }
+
+      const finalHeight = calculatedHeight;
+
+      // Smart logging - only log when values change significantly
+      const currentLog = {
+        chatContainerHeight,
+        isStreaming,
+        keepSpacer,
+        showFollowUps,
+        followUpQuestionsCount: followUpQuestions.length,
+        streamHeight,
+        questionsHeight,
+        actualContentHeight,
+        finalHeight,
+        availableHeight
+      };
+
+      const shouldLog = !lastLogRef.current || 
+        Object.keys(currentLog).some(key => {
+          const current = currentLog[key as keyof typeof currentLog];
+          const previous = lastLogRef.current?.[key];
+          return Math.abs(Number(current) - Number(previous)) > 5 || current !== previous;
+        });
+
+      if (shouldLog) {
+        const diff = finalHeight - availableHeight;
+        console.log(`🔧 SPACER CHANGED: container=${chatContainerHeight} streaming=${isStreaming} keepSpacer=${keepSpacer} showFollowUps=${showFollowUps}`);
+        console.log(`   Questions: count=${followUpQuestions.length} height=${questionsHeight}px`);
+        console.log(`   Stream: height=${streamHeight}px | Content: ${actualContentHeight}px`);
+        console.log(`   Spacer: ${availableHeight}px → ${finalHeight}px (${diff > 0 ? '+' : ''}${diff}px)`);
+        lastLogRef.current = currentLog;
       }
 
       // Track viewport position changes to detect jumping
@@ -774,9 +829,11 @@ export function ChatMessages({
     chatContainerHeight,
     isStreaming,
     showFollowUps,
-    messages.length, // Only react to message count changes, not content
-    followUpQuestions.length, // Only react to question count changes
+    messages.length, // React to message count changes
+    followUpQuestions.length, // React to question count changes
     keepSpacer,
+    // Also react to streaming content changes to shrink spacer dynamically
+    isStreaming ? messages[messages.length - 1]?.content : null,
   ]);
 
   // Add touch animation and scrollbar styles
@@ -919,6 +976,18 @@ export function ChatMessages({
     // as the previous questions have already been processed
     setClickedQuestions(new Set());
   }, [messages.length]);
+
+  // Log follow-up questions changes to debug spacer issues
+  useEffect(() => {
+    if (followUpQuestions.length > 0) {
+      console.log('❓ FOLLOW-UP QUESTIONS APPEARED:', {
+        count: followUpQuestions.length,
+        showFollowUps,
+        keepSpacer,
+        isStreaming
+      });
+    }
+  }, [followUpQuestions.length, showFollowUps]);
 
   return (
     <div

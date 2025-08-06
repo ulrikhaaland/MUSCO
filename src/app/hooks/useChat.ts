@@ -268,7 +268,6 @@ export function useChat() {
       previousTurnAssistantResponseFromState = null;
       justResetRef.current = false; // Clear the flag after using it once
     }
-    console.log('[useChat] Effective previousTurnAssistantResponse (after considering reset flag):', JSON.stringify(previousTurnAssistantResponseFromState, null, 2)); // DEBUG
 
     // Reset state for the new/refetched response
     setFollowUpQuestions([]);
@@ -285,7 +284,6 @@ export function useChat() {
         language: locale,
         diagnosisAssistantResponse: previousTurnAssistantResponseFromState, // MODIFIED: Use the potentially overridden value
       };
-      console.log('[useChat] Final payload being sent to backend:', JSON.stringify(payload, null, 2)); // DEBUG
 
       if (isRefetch) {
         console.log("Refetch: Sending payload:", JSON.stringify(payload));
@@ -426,7 +424,6 @@ export function useChat() {
               const response = JSON.parse(
                 jsonContent
               ) as DiagnosisAssistantResponse;
-              console.log('[useChat] Parsed AI JSON response:', JSON.stringify(response, null, 2)); // DEBUG
               setAssistantResponse(response);
 
               if (
