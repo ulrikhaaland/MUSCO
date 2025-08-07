@@ -687,21 +687,27 @@ export function ChatMessages({
   // Calculate available height for loading message with smooth transitions
   useEffect(() => {
     const calculateAvailableHeight = () => {
-      // During keepSpacer period, don't recalculate to prevent jumps
+      // During keepSpacer period, only recalculate if container height changed
       if (keepSpacer && availableHeight > 0) {
-        console.log(`🔒 SPACER LOCKED: keeping height=${availableHeight}px during keepSpacer period`);
-        return;
+        // Calculate what the spacer height should be with current container height
+        const estimatedUserMessageHeight = 60;
+        const expectedSpacerHeight = chatContainerHeight - estimatedUserMessageHeight;
+        
+        // If the expected height matches current height (within 10px tolerance), skip recalculation
+        if (Math.abs(expectedSpacerHeight - availableHeight) < 10) {
+          console.log(`🔒 SPACER LOCKED: keeping height=${availableHeight}px (container unchanged)`);
+          return;
+        }
+        
+        console.log(`🔄 SPACER RECALIBRATING: container height changed from ${availableHeight + 60}px to ${chatContainerHeight}px`);
       }
-      // Calculate spacer height to position user message near the top of container
-      // Target: position user message about 20px from top (right below header)
-      const targetTopPadding = 20; // Distance from top of container
-      
+      // Calculate spacer height to position user message at the very top of viewport
       // Estimate user message height (typical message is around 50-60px)
       const estimatedUserMessageHeight = 60;
       
-      // Start with full container height and subtract what will be visible
-      // Subtract user message height so it remains visible at the top
-      const spacerHeight = chatContainerHeight - targetTopPadding - estimatedUserMessageHeight;
+      // Spacer height = full container minus user message height
+      // This pushes the user message to the very top of the visible area
+      const spacerHeight = chatContainerHeight - estimatedUserMessageHeight;
 
       // With stack layout, we don't subtract stream height from spacer
       // The message will grow above the fixed spacer
@@ -1021,7 +1027,7 @@ export function ChatMessages({
         ref={messagesRef}
         onScroll={handleDesktopScroll}
         onTouchStart={handleReactTouchStart}
-        className="flex-1 overflow-y-auto scroll-smooth"
+        className={`flex-1 scroll-smooth ${isMobile ? 'overflow-y-visible' : 'overflow-y-auto'}`}
       >
         {messages.length === 0 && !part && !groups && !isMobile && (
           <div className="h-full flex items-center justify-center text-gray-400">
@@ -1203,7 +1209,7 @@ export function ChatMessages({
           {(isLoading && (needsResponsePlaceholder || isStreaming)) ||
           keepSpacer ? (
             <div
-              className="relative mt-4"
+              className="relative"
             >
               {/* Fixed spacer at bottom of stack */}
               <div

@@ -107,6 +107,17 @@ iframe {
 [data-rsbs-header] {
   background: rgb(17, 24, 39) !important; /* bg-gray-900 */
   z-index: 4 !important;
+  position: relative !important;
+}
+
+[data-rsbs-header]::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 1rem; /* px-4 */
+  right: 1rem; /* px-4 */
+  height: 1px;
+  background: rgb(55, 65, 81) !important; /* border-gray-700 */
 }
 
 [data-rsbs-footer] {
