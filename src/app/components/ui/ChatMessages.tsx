@@ -690,7 +690,7 @@ export function ChatMessages({
       // During keepSpacer period, only recalculate if container height changed
       if (keepSpacer && availableHeight > 0) {
         // Calculate what the spacer height should be with current container height
-        const estimatedUserMessageHeight = 60;
+        const estimatedUserMessageHeight = 20;
         const expectedSpacerHeight = chatContainerHeight - estimatedUserMessageHeight;
         
         // If the expected height matches current height (within 10px tolerance), skip recalculation
@@ -702,11 +702,11 @@ export function ChatMessages({
         console.log(`🔄 SPACER RECALIBRATING: container height changed from ${availableHeight + 60}px to ${chatContainerHeight}px`);
       }
       // Calculate spacer height to position user message at the very top of viewport
-      // Estimate user message height (typical message is around 50-60px)
-      const estimatedUserMessageHeight = 60;
+      // Use smaller reserved space so spacer is bigger and pushes content higher
+      const estimatedUserMessageHeight = 20; // Reduced to make spacer bigger
       
-      // Spacer height = full container minus user message height
-      // This pushes the user message to the very top of the visible area
+      // Spacer height = full container minus minimal space for user message
+      // Bigger spacer pushes the user message higher to the top
       const spacerHeight = chatContainerHeight - estimatedUserMessageHeight;
 
       // With stack layout, we don't subtract stream height from spacer
@@ -1109,7 +1109,7 @@ export function ChatMessages({
                       )}
                     </div>
                   ) : (
-                    <div className="text-base">{msg.content}</div>
+                    <div className="text-base break-words whitespace-pre-wrap">{msg.content}</div>
                   )}
                 </div>
               </div>
@@ -1235,7 +1235,7 @@ export function ChatMessages({
                   return (
                     <div key={`current-user-${msg.id}`} className="flex-none mb-4">
                       <div className="px-4 py-2 rounded-lg bg-indigo-600 ml-8">
-                        <div className="text-base">{msg.content}</div>
+                        <div className="text-base break-words whitespace-pre-wrap">{msg.content}</div>
                       </div>
                     </div>
                   );
