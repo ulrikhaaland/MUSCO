@@ -4,6 +4,7 @@ import {
   useState,
   useEffect,
   useRef,
+  useCallback,
   RefAttributes,
   ComponentType,
 } from 'react';
@@ -88,7 +89,7 @@ export default function MobileControls({
   const sheetRef = useRef<BottomSheetRef>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const [headerHeight, setHeaderHeight] = useState(0);
-  const [footerHeight, setFooterHeight] = useState(0);
+  const [, setFooterHeight] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const [controlsBottom, setControlsBottom] = useState('5rem');
   const [message, setMessage] = useState('');
@@ -277,12 +278,48 @@ export default function MobileControls({
     userModifiedSheetHeight,
   ]);
 
-  // Update model height whenever sheet height changes
-  const updateModelHeight = (sheetHeight: number) => {
-    if (onHeightChange) {
+  // Track if keyboard is likely open based on viewport changes
+  const [keyboardOpen, setKeyboardOpen] = useState(false);
+  const initialViewportHeightRef = useRef<number | null>(null);
+  const lastViewportHeightRef = useRef<number | null>(null);
+
+  // Update model height whenever sheet height changes, but only if keyboard isn't affecting viewport
+  const updateModelHeight = useCallback((sheetHeight: number) => {
+    if (onHeightChange && !keyboardOpen) {
       onHeightChange(sheetHeight);
     }
-  };
+  }, [onHeightChange, keyboardOpen]);
+
+  // Detect keyboard open/close based on viewport height changes
+  useEffect(() => {
+    const handleResize = () => {
+      const currentHeight = window.innerHeight;
+      
+      // Capture initial height
+      if (initialViewportHeightRef.current === null) {
+        initialViewportHeightRef.current = currentHeight;
+        lastViewportHeightRef.current = currentHeight;
+        return;
+      }
+
+      // Detect significant viewport height change (likely keyboard)
+      const heightDiff = Math.abs(currentHeight - initialViewportHeightRef.current);
+      const isKeyboardLikelyOpen = heightDiff > 150; // Threshold for keyboard detection
+      
+      if (isKeyboardLikelyOpen !== keyboardOpen) {
+        setKeyboardOpen(isKeyboardLikelyOpen);
+      }
+      
+      lastViewportHeightRef.current = currentHeight;
+    };
+
+    window.addEventListener('resize', handleResize);
+    handleResize(); // Initial call
+    
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [keyboardOpen]);
 
   useEffect(() => {
     // Track bottom sheet height changes
@@ -610,7 +647,7 @@ export default function MobileControls({
             }
           }
         }}
-        onSpringEnd={(event) => {
+        onSpringEnd={() => {
           if (sheetRef.current) {
             const currentHeight = sheetRef.current.height;
 

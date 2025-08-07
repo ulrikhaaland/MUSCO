@@ -69,13 +69,9 @@ export function BottomSheetFooter({
                 handleSendMessage();
               }
             }}
-            onFocus={(e) => {
+            onFocus={() => {
               // Prevent viewport jumping on mobile when keyboard appears
-              if (window.innerWidth < 768) {
-                setTimeout(() => {
-                  e.target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }, 300);
-              }
+              // Remove scrollIntoView as it causes the model viewer to jump
             }}
             rows={1}
             placeholder={placeholderText}

@@ -50,6 +50,7 @@ export default function HumanViewer({
   const rotationAnimationRef = useRef<number | null>(null);
   const [targetGender, setTargetGender] = useState<Gender | null>(null);
   const [modelContainerHeight, setModelContainerHeight] = useState('100vh');
+  const [initialViewportHeight, setInitialViewportHeight] = useState<number | null>(null);
   const [diagnosis, setDiagnosis] = useState<DiagnosisAssistantResponse | null>(
     null
   );
@@ -63,20 +64,29 @@ export default function HumanViewer({
       setIsMobile(window.innerWidth < 768); // md breakpoint
     };
 
+    // Capture initial viewport height to prevent keyboard-induced jumping
+    const captureInitialViewport = () => {
+      if (initialViewportHeight === null) {
+        setInitialViewportHeight(window.innerHeight);
+      }
+    };
+
     // Initial check with a small delay to ensure hydration is complete
     const timeoutId = setTimeout(() => {
       checkMobile();
+      captureInitialViewport();
     }, 100);
 
     // Also check immediately for immediate feedback
     checkMobile();
+    captureInitialViewport();
     
     window.addEventListener('resize', checkMobile);
     return () => {
       clearTimeout(timeoutId);
       window.removeEventListener('resize', checkMobile);
     };
-  }, []);
+  }, [initialViewportHeight]);
 
   const MODEL_IDS = {
     male: '5tOV',
@@ -366,10 +376,18 @@ export default function HumanViewer({
   }, []); // Empty dependency array means this runs once after mount
 
   const handleBottomSheetHeight = (sheetHeight: number) => {
-    // Use 100vh instead of 100dvh to prevent jumping when keyboard appears
-    const newHeight = `calc(100vh - ${sheetHeight}px)`;
-    if (newHeight !== modelContainerHeight) {
-      setModelContainerHeight(newHeight);
+    // Use initial viewport height to prevent jumping when keyboard appears
+    if (initialViewportHeight) {
+      const newHeight = `calc(${initialViewportHeight}px - ${sheetHeight}px)`;
+      if (newHeight !== modelContainerHeight) {
+        setModelContainerHeight(newHeight);
+      }
+    } else {
+      // Fallback to 100vh if initial height not captured yet
+      const newHeight = `calc(100vh - ${sheetHeight}px)`;
+      if (newHeight !== modelContainerHeight) {
+        setModelContainerHeight(newHeight);
+      }
     }
   };
 
