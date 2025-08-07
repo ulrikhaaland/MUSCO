@@ -88,6 +88,39 @@ export default function HumanViewer({
       }
     };
 
+    // For testing: simulate keyboard on focus/blur events
+    const handleInputFocus = (e: Event) => {
+      console.log('Focus detected on:', e.target);
+      if (window.innerWidth < 768) {
+        console.log('Setting keyboard open to true');
+        setIsKeyboardOpen(true);
+      }
+    };
+
+    const handleInputBlur = (e: Event) => {
+      console.log('Blur detected on:', e.target);
+      if (window.innerWidth < 768) {
+        console.log('Setting keyboard open to false');
+        setIsKeyboardOpen(false);
+      }
+    };
+
+    // Add focus/blur listeners using event delegation for better reliability
+    const handleDocumentFocus = (e: Event) => {
+      if (e.target && (e.target as HTMLElement).tagName === 'TEXTAREA') {
+        handleInputFocus(e);
+      }
+    };
+
+    const handleDocumentBlur = (e: Event) => {
+      if (e.target && (e.target as HTMLElement).tagName === 'TEXTAREA') {
+        handleInputBlur(e);
+      }
+    };
+
+    document.addEventListener('focusin', handleDocumentFocus, true);
+    document.addEventListener('focusout', handleDocumentBlur, true);
+
     // Initial check with a small delay to ensure hydration is complete
     const timeoutId = setTimeout(() => {
       checkMobile();
@@ -102,6 +135,10 @@ export default function HumanViewer({
     return () => {
       clearTimeout(timeoutId);
       window.removeEventListener('resize', handleResize);
+      
+      // Cleanup focus/blur listeners
+      document.removeEventListener('focusin', handleDocumentFocus, true);
+      document.removeEventListener('focusout', handleDocumentBlur, true);
     };
   }, [isKeyboardOpen]);
 
@@ -793,6 +830,13 @@ export default function HumanViewer({
           onDiagnosis={setDiagnosis}
           isKeyboardOpen={isKeyboardOpen}
         />
+      )}
+
+      {/* Debug indicator for keyboard state (remove after testing) */}
+      {isMobile && (
+        <div className="fixed top-4 left-4 z-50 bg-red-500 text-white px-2 py-1 rounded text-xs">
+          Keyboard: {isKeyboardOpen ? 'OPEN' : 'CLOSED'}
+        </div>
       )}
 
       {/* Combined Overlay Container */}
