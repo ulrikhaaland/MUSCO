@@ -50,8 +50,7 @@ export default function HumanViewer({
   const rotationAnimationRef = useRef<number | null>(null);
   const [targetGender, setTargetGender] = useState<Gender | null>(null);
   const [modelContainerHeight, setModelContainerHeight] = useState('100dvh');
-  const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
-  const initialViewportHeightRef = useRef<number | null>(null);
+  // Removed keyboard detection - keeping human viewer completely fixed instead
   const [diagnosis, setDiagnosis] = useState<DiagnosisAssistantResponse | null>(
     null
   );
@@ -65,112 +64,22 @@ export default function HumanViewer({
       setIsMobile(window.innerWidth < 768); // md breakpoint
     };
 
-    // Capture initial viewport height for keyboard detection
-    const captureInitialHeight = () => {
-      if (initialViewportHeightRef.current === null) {
-        initialViewportHeightRef.current = window.innerHeight;
-      }
-    };
-
-    // Aggressive keyboard detection
-    const handleResize = () => {
-      checkMobile();
-      
-      if (initialViewportHeightRef.current && window.innerWidth < 768) {
-        const currentHeight = window.innerHeight;
-        const heightDiff = initialViewportHeightRef.current - currentHeight;
-        const keyboardThreshold = 150; // pixels
-        
-        const keyboardIsOpen = heightDiff > keyboardThreshold;
-        if (keyboardIsOpen !== isKeyboardOpen) {
-          setIsKeyboardOpen(keyboardIsOpen);
-        }
-      }
-    };
-
-    // For testing: simulate keyboard on focus/blur events
-    const handleInputFocus = (e: Event) => {
-      console.log('Focus detected on:', e.target);
-      if (window.innerWidth < 768) {
-        console.log('Setting keyboard open to true');
-        setIsKeyboardOpen(true);
-      }
-    };
-
-    const handleInputBlur = (e: Event) => {
-      console.log('Blur detected on:', e.target);
-      if (window.innerWidth < 768) {
-        console.log('Setting keyboard open to false');
-        setIsKeyboardOpen(false);
-      }
-    };
-
-    // Add focus/blur listeners using event delegation for better reliability
-    const handleDocumentFocus = (e: Event) => {
-      if (e.target && (e.target as HTMLElement).tagName === 'TEXTAREA') {
-        handleInputFocus(e);
-      }
-    };
-
-    const handleDocumentBlur = (e: Event) => {
-      if (e.target && (e.target as HTMLElement).tagName === 'TEXTAREA') {
-        handleInputBlur(e);
-      }
-    };
-
-    document.addEventListener('focusin', handleDocumentFocus, true);
-    document.addEventListener('focusout', handleDocumentBlur, true);
-
     // Initial check with a small delay to ensure hydration is complete
     const timeoutId = setTimeout(() => {
       checkMobile();
-      captureInitialHeight();
     }, 100);
 
     // Also check immediately for immediate feedback
     checkMobile();
-    captureInitialHeight();
     
-    window.addEventListener('resize', handleResize);
+    window.addEventListener('resize', checkMobile);
     return () => {
       clearTimeout(timeoutId);
-      window.removeEventListener('resize', handleResize);
-      
-      // Cleanup focus/blur listeners
-      document.removeEventListener('focusin', handleDocumentFocus, true);
-      document.removeEventListener('focusout', handleDocumentBlur, true);
+      window.removeEventListener('resize', checkMobile);
     };
-  }, [isKeyboardOpen]);
+  }, []);
 
-  // HACK: Only lock body scroll when keyboard is open on desktop mobile view (testing)
-  // Don't lock on real mobile devices as it prevents input from being visible
-  useEffect(() => {
-    // Only apply scroll lock if this is desktop mobile view (for testing)
-    const isDesktopMobileView = isMobile && window.navigator.userAgent.indexOf('Mobile') === -1;
-    
-    if (isDesktopMobileView && isKeyboardOpen) {
-      // Store original scroll position
-      const originalScrollY = window.scrollY;
-      const originalScrollX = window.scrollX;
-      
-      // Lock the scroll position
-      document.body.style.position = 'fixed';
-      document.body.style.top = `-${originalScrollY}px`;
-      document.body.style.left = `-${originalScrollX}px`;
-      document.body.style.width = '100%';
-      document.body.style.height = '100%';
-      
-      return () => {
-        // Restore scroll position
-        document.body.style.position = '';
-        document.body.style.top = '';
-        document.body.style.left = '';
-        document.body.style.width = '';
-        document.body.style.height = '';
-        window.scrollTo(originalScrollX, originalScrollY);
-      };
-    }
-  }, [isMobile, isKeyboardOpen]);
+  // Removed keyboard-related body scroll lock - using fixed positioning instead
 
   const MODEL_IDS = {
     male: '5tOV',
@@ -460,22 +369,10 @@ export default function HumanViewer({
   }, []); // Empty dependency array means this runs once after mount
 
   const handleBottomSheetHeight = (sheetHeight: number) => {
-    // HACK: Ignore height changes when keyboard is open to prevent model jumping
-    if (isKeyboardOpen) {
-      return;
-    }
-    
-    // Use initial viewport height if available to maintain consistency
-    if (initialViewportHeightRef.current && isMobile) {
-      const newHeight = `calc(${initialViewportHeightRef.current}px - ${sheetHeight}px)`;
-      if (newHeight !== modelContainerHeight) {
-        setModelContainerHeight(newHeight);
-      }
-    } else {
-      const newHeight = `calc(100dvh - ${sheetHeight}px)`;
-      if (newHeight !== modelContainerHeight) {
-        setModelContainerHeight(newHeight);
-      }
+    // Adjust model height based on bottom sheet height (but ignore keyboard changes)
+    const newHeight = `calc(100dvh - ${sheetHeight}px)`;
+    if (newHeight !== modelContainerHeight) {
+      setModelContainerHeight(newHeight);
     }
   };
 
@@ -686,9 +583,9 @@ export default function HumanViewer({
         <div className="fixed inset-0 z-50" style={{ cursor: 'ew-resize' }} />
       )}
 
-      {/* Model Viewer Container */}
+      {/* Model Viewer Container - Fixed positioning on mobile */}
       <div
-        className={`flex-1 relative bg-black flex flex-col ${isMobile ? 'mobile-model-container' : ''}`}
+        className={`flex-1 relative bg-black flex flex-col ${isMobile ? 'human-viewer-container' : ''}`}
         style={{ minWidth: `${minChatWidth}px` }}
       >
         {isChangingModel && (
@@ -700,12 +597,10 @@ export default function HumanViewer({
             </div>
           </div>
         )}
-        {/* Mobile: subtract 72px for controls, Desktop: full height */}
+        {/* Model container - responds to bottom sheet height but not keyboard */}
         <div
-          className={`md:h-screen w-full relative ${isMobile ? 'mobile-viewport-stable' : ''}`}
-          style={{ 
-            height: isMobile ? (isKeyboardOpen ? `${initialViewportHeightRef.current}px` : modelContainerHeight) : '100dvh' 
-          }}
+          className="md:h-screen w-full relative"
+          style={{ height: isMobile ? modelContainerHeight : '100dvh' }}
         >
           <iframe
             id="myViewer"
@@ -832,15 +727,7 @@ export default function HumanViewer({
           onQuestionClick={handleQuestionClick}
           hideBottomSheet={showQuestionnaire}
           onDiagnosis={setDiagnosis}
-          isKeyboardOpen={isKeyboardOpen}
         />
-      )}
-
-      {/* Debug indicator for keyboard state (remove after testing) */}
-      {isMobile && (
-        <div className="fixed top-4 left-4 z-50 bg-red-500 text-white px-2 py-1 rounded text-xs">
-          Keyboard: {isKeyboardOpen ? 'OPEN' : 'CLOSED'}
-        </div>
       )}
 
       {/* Combined Overlay Container */}

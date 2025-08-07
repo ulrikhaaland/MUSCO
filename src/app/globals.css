@@ -93,31 +93,18 @@ iframe {
   }
 }
 
-/* Prevent viewport jumping on mobile keyboard */
-.mobile-model-container {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 100vh;
-  height: 100dvh;
-  overflow: hidden;
-}
-
+/* Human viewer responsive to bottom sheet but stable against keyboard */
 @media (max-width: 768px) {
-  .mobile-model-container {
-    /* Force height to be stable regardless of keyboard */
-    height: 100vh !important;
-    min-height: 100vh !important;
-    max-height: 100vh !important;
+  .human-viewer-container {
+    /* Use normal positioning so it responds to bottom sheet height */
+    position: relative;
   }
   
-  /* Prevent iOS Safari from changing viewport units */
+  /* Prevent iOS Safari viewport changes during keyboard events */
   @supports (-webkit-touch-callout: none) {
-    .mobile-model-container {
-      height: -webkit-fill-available !important;
-      min-height: -webkit-fill-available !important;
-      max-height: -webkit-fill-available !important;
+    .human-viewer-container .model-iframe {
+      /* Stable height calculation */
+      height: -webkit-fill-available;
     }
   }
 }

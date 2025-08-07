@@ -52,7 +52,6 @@ interface MobileControlsProps {
   onDiagnosis: (response: DiagnosisAssistantResponse) => void;
   hideBottomSheet?: boolean;
   onAreasSelected: () => void;
-  isKeyboardOpen: boolean;
 }
 
 // Use BottomSheet directly
@@ -76,7 +75,6 @@ export default function MobileControls({
   onDiagnosis,
   hideBottomSheet,
   onAreasSelected,
-  isKeyboardOpen,
 }: MobileControlsProps) {
   const { t } = useTranslation();
   const [isMobile, setIsMobile] = useState(false);
@@ -87,9 +85,6 @@ export default function MobileControls({
     SnapPoint.MINIMIZED
   );
   const previousSnapPointRef = useRef<SnapPoint>(SnapPoint.MINIMIZED);
-  const preKeyboardSnapPointRef = useRef<SnapPoint>(SnapPoint.MINIMIZED);
-  const preKeyboardHeightRef = useRef<number>(0);
-  const keyboardTriggeredFullRef = useRef<boolean>(false);
   const sheetRef = useRef<BottomSheetRef>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const [headerHeight, setHeaderHeight] = useState(0);
@@ -233,8 +228,7 @@ export default function MobileControls({
         loadingComplete &&
         hasContent &&
         getSnapPointIndex(currentSnapPoint) < 2 &&
-        !hasInitiallyExpanded.current &&
-        !isKeyboardOpen
+        !hasInitiallyExpanded.current
       ) {
         if (sheetRef.current) {
           const snapPoints = getSnapPoints();
@@ -286,10 +280,9 @@ export default function MobileControls({
     followUpQuestions,
     contentHeight,
     userModifiedSheetHeight,
-    isKeyboardOpen,
   ]);
 
-  // Update model height whenever sheet height changes
+  // Update model height whenever sheet height changes (but not due to keyboard)
   const updateModelHeight = (sheetHeight: number) => {
     if (onHeightChange) {
       onHeightChange(sheetHeight);
@@ -373,66 +366,7 @@ export default function MobileControls({
     return [minHeight, secondSnapPoint, viewportHeight * 0.78, viewportHeight];
   };
 
-  // Handle keyboard expansion/collapse of bottom sheet
-  useEffect(() => {
-    if (!sheetRef.current) return;
-    
-    console.log('Keyboard effect triggered:', {
-      isKeyboardOpen,
-      currentSnapPoint,
-      keyboardTriggered: keyboardTriggeredFullRef.current,
-      preKeyboardSnapPoint: preKeyboardSnapPointRef.current
-    });
-
-    if (isKeyboardOpen) {
-      // Only store previous state if we haven't stored it yet for this keyboard session
-      if (!keyboardTriggeredFullRef.current) {
-        preKeyboardSnapPointRef.current = currentSnapPoint;
-        preKeyboardHeightRef.current = sheetRef.current.height; // Store actual height
-        console.log('Stored previous snap point:', currentSnapPoint, 'height:', preKeyboardHeightRef.current);
-      }
-      
-      // Expand to full height when keyboard opens
-      if (currentSnapPoint !== SnapPoint.FULL) {
-        const snapPoints = getSnapPoints();
-        const fullHeight = snapPoints[SnapPoint.FULL];
-        if (fullHeight) {
-          console.log('Expanding to full height from:', currentSnapPoint);
-          sheetRef.current.snapTo(fullHeight);
-          setCurrentSnapPoint(SnapPoint.FULL);
-          keyboardTriggeredFullRef.current = true; // Mark as keyboard-triggered
-        }
-      } else {
-        // Already at full height, but mark as keyboard session if not already marked
-        if (!keyboardTriggeredFullRef.current) {
-          keyboardTriggeredFullRef.current = true;
-          console.log('Already at full height, marking as keyboard triggered');
-        }
-      }
-    } else {
-      // Restore to previous state when keyboard closes (only if keyboard triggered the session)
-      if (keyboardTriggeredFullRef.current) {
-        const previousSnapPoint = preKeyboardSnapPointRef.current;
-        const previousHeight = preKeyboardHeightRef.current;
-        
-        console.log('Restoring from keyboard close. Previous:', previousSnapPoint, 'Height:', previousHeight, 'Current:', currentSnapPoint);
-        
-        // Use the stored height directly instead of recalculating snap points
-        if (previousHeight > 0) {
-          sheetRef.current.snapTo(previousHeight);
-          setCurrentSnapPoint(previousSnapPoint);
-          console.log('Restored to stored height:', previousHeight, 'snap point:', previousSnapPoint);
-        } else {
-          console.log('Skipped restoration - no stored height');
-        }
-      } else {
-        console.log('Skipped restoration - not keyboard triggered');
-      }
-      
-      // Reset the keyboard trigger flag
-      keyboardTriggeredFullRef.current = false;
-    }
-  }, [isKeyboardOpen, currentSnapPoint, getSnapPoints]);
+  // Removed all keyboard detection logic - keeping things simple
 
   // Track height changes only during drag or animation
   useEffect(() => {
