@@ -49,7 +49,7 @@ export default function HumanViewer({
   const [currentRotation, setCurrentRotation] = useState(0);
   const rotationAnimationRef = useRef<number | null>(null);
   const [targetGender, setTargetGender] = useState<Gender | null>(null);
-  const [modelContainerHeight, setModelContainerHeight] = useState('100dvh');
+  const [modelContainerHeight, setModelContainerHeight] = useState('100vh');
   const [diagnosis, setDiagnosis] = useState<DiagnosisAssistantResponse | null>(
     null
   );
@@ -366,7 +366,8 @@ export default function HumanViewer({
   }, []); // Empty dependency array means this runs once after mount
 
   const handleBottomSheetHeight = (sheetHeight: number) => {
-    const newHeight = `calc(100dvh - ${sheetHeight}px)`;
+    // Use 100vh instead of 100dvh to prevent jumping when keyboard appears
+    const newHeight = `calc(100vh - ${sheetHeight}px)`;
     if (newHeight !== modelContainerHeight) {
       setModelContainerHeight(newHeight);
     }
@@ -596,7 +597,7 @@ export default function HumanViewer({
         {/* Mobile: subtract 72px for controls, Desktop: full height */}
         <div
           className="md:h-screen w-full relative"
-          style={{ height: isMobile ? modelContainerHeight : '100dvh' }}
+          style={{ height: isMobile ? modelContainerHeight : '100vh' }}
         >
           <iframe
             id="myViewer"

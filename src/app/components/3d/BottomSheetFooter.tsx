@@ -69,6 +69,14 @@ export function BottomSheetFooter({
                 handleSendMessage();
               }
             }}
+            onFocus={(e) => {
+              // Prevent viewport jumping on mobile when keyboard appears
+              if (window.innerWidth < 768) {
+                setTimeout(() => {
+                  e.target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 300);
+              }
+            }}
             rows={1}
             placeholder={placeholderText}
             className="w-full bg-gray-800 rounded-lg px-4 py-3 pr-12 focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"

@@ -555,7 +555,7 @@ export default function MobileControls({
 
       {/* Bottom Sheet */}
       <BottomSheetBase
-        className={`!bg-gray-900 [&>*]:!bg-gray-900 relative h-[100dvh] ${
+        className={`!bg-gray-900 [&>*]:!bg-gray-900 relative h-[100vh] ${
           hideBottomSheet ? 'pointer-events-none opacity-0' : ''
         }`}
         ref={sheetRef}
