@@ -49,8 +49,9 @@ export default function HumanViewer({
   const [currentRotation, setCurrentRotation] = useState(0);
   const rotationAnimationRef = useRef<number | null>(null);
   const [targetGender, setTargetGender] = useState<Gender | null>(null);
-  const [modelContainerHeight, setModelContainerHeight] = useState('100vh');
-  const [initialViewportHeight, setInitialViewportHeight] = useState<number | null>(null);
+  const [modelContainerHeight, setModelContainerHeight] = useState('100dvh');
+  const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
+  const initialViewportHeightRef = useRef<number | null>(null);
   const [diagnosis, setDiagnosis] = useState<DiagnosisAssistantResponse | null>(
     null
   );
@@ -64,29 +65,71 @@ export default function HumanViewer({
       setIsMobile(window.innerWidth < 768); // md breakpoint
     };
 
-    // Capture initial viewport height to prevent keyboard-induced jumping
-    const captureInitialViewport = () => {
-      if (initialViewportHeight === null) {
-        setInitialViewportHeight(window.innerHeight);
+    // Capture initial viewport height for keyboard detection
+    const captureInitialHeight = () => {
+      if (initialViewportHeightRef.current === null) {
+        initialViewportHeightRef.current = window.innerHeight;
+      }
+    };
+
+    // Aggressive keyboard detection
+    const handleResize = () => {
+      checkMobile();
+      
+      if (initialViewportHeightRef.current && window.innerWidth < 768) {
+        const currentHeight = window.innerHeight;
+        const heightDiff = initialViewportHeightRef.current - currentHeight;
+        const keyboardThreshold = 150; // pixels
+        
+        const keyboardIsOpen = heightDiff > keyboardThreshold;
+        if (keyboardIsOpen !== isKeyboardOpen) {
+          setIsKeyboardOpen(keyboardIsOpen);
+        }
       }
     };
 
     // Initial check with a small delay to ensure hydration is complete
     const timeoutId = setTimeout(() => {
       checkMobile();
-      captureInitialViewport();
+      captureInitialHeight();
     }, 100);
 
     // Also check immediately for immediate feedback
     checkMobile();
-    captureInitialViewport();
+    captureInitialHeight();
     
-    window.addEventListener('resize', checkMobile);
+    window.addEventListener('resize', handleResize);
     return () => {
       clearTimeout(timeoutId);
-      window.removeEventListener('resize', checkMobile);
+      window.removeEventListener('resize', handleResize);
     };
-  }, [initialViewportHeight]);
+  }, [isKeyboardOpen]);
+
+  // HACK: Lock body scroll when keyboard is open to prevent viewport jumping
+  useEffect(() => {
+    if (isMobile && isKeyboardOpen) {
+      // Store original scroll position
+      const originalScrollY = window.scrollY;
+      const originalScrollX = window.scrollX;
+      
+      // Lock the scroll position
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${originalScrollY}px`;
+      document.body.style.left = `-${originalScrollX}px`;
+      document.body.style.width = '100%';
+      document.body.style.height = '100%';
+      
+      return () => {
+        // Restore scroll position
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.left = '';
+        document.body.style.width = '';
+        document.body.style.height = '';
+        window.scrollTo(originalScrollX, originalScrollY);
+      };
+    }
+  }, [isMobile, isKeyboardOpen]);
 
   const MODEL_IDS = {
     male: '5tOV',
@@ -376,15 +419,19 @@ export default function HumanViewer({
   }, []); // Empty dependency array means this runs once after mount
 
   const handleBottomSheetHeight = (sheetHeight: number) => {
-    // Use initial viewport height to prevent jumping when keyboard appears
-    if (initialViewportHeight) {
-      const newHeight = `calc(${initialViewportHeight}px - ${sheetHeight}px)`;
+    // HACK: Ignore height changes when keyboard is open to prevent model jumping
+    if (isKeyboardOpen) {
+      return;
+    }
+    
+    // Use initial viewport height if available to maintain consistency
+    if (initialViewportHeightRef.current && isMobile) {
+      const newHeight = `calc(${initialViewportHeightRef.current}px - ${sheetHeight}px)`;
       if (newHeight !== modelContainerHeight) {
         setModelContainerHeight(newHeight);
       }
     } else {
-      // Fallback to 100vh if initial height not captured yet
-      const newHeight = `calc(100vh - ${sheetHeight}px)`;
+      const newHeight = `calc(100dvh - ${sheetHeight}px)`;
       if (newHeight !== modelContainerHeight) {
         setModelContainerHeight(newHeight);
       }
@@ -600,7 +647,7 @@ export default function HumanViewer({
 
       {/* Model Viewer Container */}
       <div
-        className="flex-1 relative bg-black flex flex-col"
+        className={`flex-1 relative bg-black flex flex-col ${isMobile ? 'mobile-model-container' : ''}`}
         style={{ minWidth: `${minChatWidth}px` }}
       >
         {isChangingModel && (
@@ -614,8 +661,10 @@ export default function HumanViewer({
         )}
         {/* Mobile: subtract 72px for controls, Desktop: full height */}
         <div
-          className="md:h-screen w-full relative"
-          style={{ height: isMobile ? modelContainerHeight : '100vh' }}
+          className={`md:h-screen w-full relative ${isMobile ? 'mobile-viewport-stable' : ''}`}
+          style={{ 
+            height: isMobile ? (isKeyboardOpen ? `${initialViewportHeightRef.current}px` : modelContainerHeight) : '100dvh' 
+          }}
         >
           <iframe
             id="myViewer"

@@ -1210,9 +1210,6 @@ export function ChatMessages({
           keepSpacer ? (
             <div
               className="relative"
-              style={{
-                minHeight: `${availableHeight}px`,
-              }}
             >
               {/* Fixed spacer at bottom of stack */}
               <div

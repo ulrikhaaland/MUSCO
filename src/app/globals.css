@@ -82,6 +82,46 @@ iframe {
   width: 100%;
 }
 
+/* Mobile viewport stability hacks */
+@supports (-webkit-touch-callout: none) {
+  /* iOS Safari specific fixes */
+  .mobile-viewport-stable {
+    height: 100vh;
+    height: -webkit-fill-available;
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+  }
+}
+
+/* Prevent viewport jumping on mobile keyboard */
+.mobile-model-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+@media (max-width: 768px) {
+  .mobile-model-container {
+    /* Force height to be stable regardless of keyboard */
+    height: 100vh !important;
+    min-height: 100vh !important;
+    max-height: 100vh !important;
+  }
+  
+  /* Prevent iOS Safari from changing viewport units */
+  @supports (-webkit-touch-callout: none) {
+    .mobile-model-container {
+      height: -webkit-fill-available !important;
+      min-height: -webkit-fill-available !important;
+      max-height: -webkit-fill-available !important;
+    }
+  }
+}
+
 /* Bottom sheet custom styles */
 [data-rsbs-overlay] {
   background: rgb(17, 24, 39) !important; /* bg-gray-900 */

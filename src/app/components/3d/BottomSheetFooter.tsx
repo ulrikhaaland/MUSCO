@@ -69,9 +69,26 @@ export function BottomSheetFooter({
                 handleSendMessage();
               }
             }}
-            onFocus={() => {
-              // Prevent viewport jumping on mobile when keyboard appears
-              // Remove scrollIntoView as it causes the model viewer to jump
+            onFocus={(e) => {
+              // HACK: Prevent any scrolling behavior that might cause model jumping
+              e.preventDefault();
+              
+              // Prevent the default focus scroll behavior
+              if (window.innerWidth < 768) {
+                // Store original scroll position
+                const originalScrollY = window.scrollY;
+                const originalScrollX = window.scrollX;
+                
+                // Restore scroll position after any potential viewport changes
+                setTimeout(() => {
+                  window.scrollTo(originalScrollX, originalScrollY);
+                }, 0);
+                
+                // Also prevent any delayed scrollIntoView calls
+                setTimeout(() => {
+                  window.scrollTo(originalScrollX, originalScrollY);
+                }, 100);
+              }
             }}
             rows={1}
             placeholder={placeholderText}
