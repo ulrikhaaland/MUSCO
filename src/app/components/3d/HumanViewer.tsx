@@ -378,14 +378,14 @@ export default function HumanViewer({
   }, []); // Empty dependency array means this runs once after mount
 
   const handleBottomSheetHeight = (sheetHeight: number) => {
-    // Use fixed viewport height to prevent keyboard-induced jumping
+    // Use fixed viewport height for mobile to prevent keyboard issues
     if (fixedViewportHeight && isMobile) {
       const newHeight = `calc(${fixedViewportHeight}px - ${sheetHeight}px)`;
       if (newHeight !== modelContainerHeight) {
         setModelContainerHeight(newHeight);
       }
     } else {
-      // Fallback for desktop or before viewport height is captured
+      // Desktop or fallback behavior
       const newHeight = `calc(100dvh - ${sheetHeight}px)`;
       if (newHeight !== modelContainerHeight) {
         setModelContainerHeight(newHeight);
@@ -614,9 +614,9 @@ export default function HumanViewer({
             </div>
           </div>
         )}
-        {/* Model container - responds to bottom sheet height but not keyboard */}
+        {/* Model container - responds to bottom sheet but uses stable viewport height */}
         <div
-          className="md:h-screen w-full relative"
+          className={`md:h-screen w-full relative ${isMobile ? 'model-container' : ''}`}
           style={{ height: isMobile ? modelContainerHeight : '100dvh' }}
         >
           <iframe

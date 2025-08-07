@@ -93,17 +93,22 @@ iframe {
   }
 }
 
-/* Human viewer responsive to bottom sheet but stable against keyboard */
+/* Human viewer stable positioning - immune to keyboard but responsive to bottom sheet */
 @media (max-width: 768px) {
   .human-viewer-container {
-    /* Use normal positioning so it responds to bottom sheet height */
     position: relative;
   }
   
-  /* Prevent iOS Safari viewport changes during keyboard events */
+  /* Force stable viewport units that don't change with keyboard */
+  .human-viewer-container .model-container {
+    /* Use the largest available viewport to prevent keyboard jumping */
+    height: 100vh;
+    height: 100lvh; /* Large viewport height - ignores keyboard */
+  }
+  
+  /* iOS Safari fallback */
   @supports (-webkit-touch-callout: none) {
-    .human-viewer-container .model-iframe {
-      /* Stable height calculation */
+    .human-viewer-container .model-container {
       height: -webkit-fill-available;
     }
   }
