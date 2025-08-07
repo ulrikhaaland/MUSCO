@@ -94,6 +94,8 @@ export default function MobileControls({
   const [message, setMessage] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { intention, selectedExerciseGroupsRef, fullBodyRef } = useApp();
+  const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
+  const stableViewportHeight = useRef<number>(0);
 
   const {
     messages,
@@ -113,7 +115,11 @@ export default function MobileControls({
 
   // Get the actual viewport height accounting for mobile browser UI
   const getViewportHeight = () => {
-    return window.innerHeight * 0.01 * 100; // Convert to dvh equivalent
+    // Use stable viewport height when keyboard is open to prevent bottom sheet resizing
+    if (isKeyboardOpen && stableViewportHeight.current > 0) {
+      return stableViewportHeight.current;
+    }
+    return window.innerHeight;
   };
 
   useEffect(() => {
@@ -125,6 +131,43 @@ export default function MobileControls({
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
+
+  // Add keyboard detection for MobileControls
+  useEffect(() => {
+    if (typeof window === 'undefined' || !isMobile) return;
+
+    const handleVisualViewportChange = () => {
+      if (window.visualViewport) {
+        const currentHeight = window.visualViewport.height;
+        
+        // Set initial stable height if not set
+        if (stableViewportHeight.current === 0) {
+          stableViewportHeight.current = currentHeight;
+        }
+        
+        // Detect if keyboard is open (significant height reduction)
+        const heightDifference = stableViewportHeight.current - currentHeight;
+        const keyboardThreshold = 150; // pixels
+        setIsKeyboardOpen(heightDifference > keyboardThreshold);
+      }
+    };
+
+    // Set initial visual viewport height
+    if (window.visualViewport) {
+      const initialHeight = window.visualViewport.height;
+      stableViewportHeight.current = initialHeight;
+      window.visualViewport.addEventListener('resize', handleVisualViewportChange);
+    } else {
+      // Fallback for browsers without visual viewport support
+      stableViewportHeight.current = window.innerHeight;
+    }
+
+    return () => {
+      if (window.visualViewport) {
+        window.visualViewport.removeEventListener('resize', handleVisualViewportChange);
+      }
+    };
+  }, [isMobile]);
 
   useEffect(() => {
     const updateContentHeight = () => {
@@ -610,7 +653,7 @@ export default function MobileControls({
             }
           }
         }}
-        onSpringEnd={(event) => {
+        onSpringEnd={() => {
           if (sheetRef.current) {
             const currentHeight = sheetRef.current.height;
 
@@ -711,3 +754,5 @@ export default function MobileControls({
     </>
   );
 }
+
+

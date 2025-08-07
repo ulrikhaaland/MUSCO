@@ -411,3 +411,29 @@ iframe {
 .marquee-container {
   overflow: hidden;
 }
+
+/* Custom scrollbar styling for chat messages */
+.chat-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.chat-scrollbar::-webkit-scrollbar-track {
+  background: rgba(55, 65, 81, 0.3); /* Semi-transparent gray-700 */
+  border-radius: 3px;
+}
+
+.chat-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.6); /* Semi-transparent white */
+  border-radius: 3px;
+  transition: background 0.2s ease;
+}
+
+.chat-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.8); /* More opaque white on hover */
+}
+
+/* Firefox scrollbar styling */
+.chat-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.6) rgba(55, 65, 81, 0.3);
+}

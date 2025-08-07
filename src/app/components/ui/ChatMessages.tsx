@@ -5,6 +5,91 @@ import { LoadingMessage } from './LoadingMessage';
 import { BodyPartGroup } from '@/app/config/bodyPartGroups';
 import { AnatomyPart } from '@/app/types/human';
 
+// Follow-up Questions Component
+interface FollowUpQuestionsProps {
+  questions: Question[];
+  clickedQuestions: Set<string>;
+  visibleQuestions: Set<string>;
+  prefersReducedMotion: boolean;
+  onQuestionClick: (question: Question) => void;
+}
+
+function FollowUpQuestions({
+  questions,
+  clickedQuestions,
+  visibleQuestions,
+  prefersReducedMotion,
+  onQuestionClick,
+}: FollowUpQuestionsProps) {
+  return (
+    <div className="space-y-[10px]">
+      {questions.map((question, index) => {
+        const questionId = question.title || question.question;
+        const isClicked = clickedQuestions.has(questionId);
+        const isVisible = visibleQuestions.has(questionId);
+
+        return (
+          <button
+            key={questionId}
+            onClick={() => onQuestionClick(question)}
+            aria-label={questionId}
+            data-quick-reply
+            role="button"
+            disabled={isClicked}
+            className={`follow-up-question-btn w-full min-h-[48px] text-left px-4 py-3 pb-4 rounded-lg cursor-pointer
+              bg-[rgba(99,91,255,0.12)] border border-[rgba(99,91,255,0.35)] text-[#c8cbff] font-medium
+              hover:border-[rgba(99,91,255,0.5)] focus:border-[rgba(99,91,255,0.5)] active:border-[rgba(99,91,255,0.5)]
+              hover:shadow-[0_4px_12px_rgba(0,0,0,0.25)] focus:shadow-[0_4px_12px_rgba(0,0,0,0.25)] active:shadow-[0_4px_16px_rgba(0,0,0,0.3)]
+              hover:bg-gradient-to-r hover:from-indigo-900/80 hover:to-indigo-800/80
+              hover:-translate-y-[2px] active:-translate-y-[2px] active:shadow-[0_4px_16px_rgba(0,0,0,0.3)]
+              group transition-all duration-300 ease-out
+              ${prefersReducedMotion ? '' : 'motion-safe:hover:-translate-y-[2px] motion-safe:active:scale-[0.99]'}
+              ${isClicked ? 'opacity-50 pointer-events-none' : ''}
+              ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
+            style={{
+              transitionDelay: isVisible ? `${index * 50}ms` : '0ms',
+            }}
+          >
+            <div className="flex items-start">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                className={`mr-2 text-[#635bff] transform transition-transform duration-[90ms] mt-[2px] ${prefersReducedMotion ? '' : 'group-hover:translate-x-[6px]'}`}
+              >
+                <path
+                  d="M7 17L17 7M17 7H7M17 7V17"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+              <div className="flex-1">
+                <div className={`${!question.title ? 'text-[#c8cbff]' : 'font-medium text-[#c8cbff] capitalize'}`}>
+                  {question.title ? question.title.toLowerCase() : question.question}
+                </div>
+                {question.meta && (
+                  <div className="text-sm text-[#c8cbff] opacity-75 mt-1">
+                    {question.meta}
+                  </div>
+                )}
+                {question.title && !question.meta && (
+                  <div className="text-sm text-gray-400">
+                    {question.question}
+                  </div>
+                )}
+              </div>
+            </div>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 interface ChatMessagesProps {
   messages: ChatMessage[];
   messagesRef: RefObject<HTMLDivElement | null>;
@@ -13,7 +98,7 @@ interface ChatMessagesProps {
   followUpQuestions?: Question[];
   onQuestionClick?: (question: Question) => void;
   onScroll?: (event: React.UIEvent<HTMLDivElement>) => void;
-  onUserScroll?: (hasScrolled: boolean) => void;
+
   part?: AnatomyPart;
   groups?: BodyPartGroup[];
   isMobile?: boolean;
@@ -30,7 +115,7 @@ export function ChatMessages({
   followUpQuestions = [],
   onQuestionClick,
   onScroll,
-  onUserScroll,
+
   part,
   groups,
   isMobile = false,
@@ -40,17 +125,16 @@ export function ChatMessages({
 }: ChatMessagesProps) {
   const [showScrollButton, setShowScrollButton] = useState(false);
   const [userTouched, setUserTouched] = useState(false);
-  const [streamMessageHeight, setStreamMessageHeight] = useState(0);
-  const [questionsHeight, setQuestionsHeight] = useState(0);
+
   const [availableHeight, setAvailableHeight] = useState(0);
   const [chatContainerHeight, setChatContainerHeight] = useState(0);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
-  const [actualContentHeight, setActualContentHeight] = useState(0);
+
   const [clickedQuestions, setClickedQuestions] = useState<Set<string>>(
     new Set()
   );
   const [keepSpacer, setKeepSpacer] = useState(false);
-  const [targetSpacerHeight, setTargetSpacerHeight] = useState(0);
+
   const [visibleQuestions, setVisibleQuestions] = useState<Set<string>>(
     new Set()
   );
@@ -59,7 +143,7 @@ export function ChatMessages({
   const lastMessageIdRef = useRef<string>('');
   const hasHadTouchRef = useRef<boolean>(false);
   const initialLoadingRef = useRef<boolean>(true);
-  const loadingTransitionTimerRef = useRef<NodeJS.Timeout | null>(null);
+
   const chatViewRef = useRef<HTMLDivElement>(null);
   const streamMessageRef = useRef<HTMLDivElement>(null);
   const questionsRef = useRef<HTMLDivElement>(null);
@@ -67,7 +151,7 @@ export function ChatMessages({
   const wasStreamingRef = useRef<boolean>(false);
   const clickTimeoutRef = useRef<number | null>(null);
   const isProcessingClickRef = useRef<boolean>(false);
-  const lastLogRef = useRef<any>(null);
+
   const lastKnownStreamHeightRef = useRef<number>(0);
   const stackContentRef = useRef<HTMLDivElement>(null);
 
@@ -98,7 +182,7 @@ export function ChatMessages({
         setUserTouched(false);
       }, 5000); // Reset after 5 seconds of no touch
     }
-  }, [userTouched]);
+  }, []);
 
   // Handle touch events to detect user interaction for DOM events
   const handleDOMInteraction = (e: Event) => {
@@ -135,7 +219,7 @@ export function ChatMessages({
         resetTouchState();
       }
     },
-    [resetTouchState, userTouched]
+    [resetTouchState]
   );
 
   // Clean up timeout on unmount
@@ -145,7 +229,7 @@ export function ChatMessages({
         clearTimeout(touchTimeoutRef.current);
       }
     };
-  }, [userTouched]);
+  }, []);
 
   // Add effect to prevent wheel events from propagating to parent components
   useEffect(() => {
@@ -315,7 +399,6 @@ export function ChatMessages({
     isMobile,
     messagesRef,
     resetTouchState,
-    userTouched,
     updateScrollButtonVisibility,
   ]);
 
@@ -325,45 +408,21 @@ export function ChatMessages({
     if (disableAutoScroll && !forceScroll) return;
 
     try {
-      // Flag to prevent double scrolling attempts
-      let scrollAttempted = false;
+      const container = isMobile 
+        ? document.querySelector('[data-rsbs-scroll]')
+        : messagesRef.current;
 
-      // For mobile view
-      if (isMobile) {
-        const mobileContainer = document.querySelector('[data-rsbs-scroll]');
-
-        if (mobileContainer) {
-          // Initial scroll attempt with animation
-          mobileContainer.scrollTo({
-            top: mobileContainer.scrollHeight,
-            behavior: 'smooth',
-          });
-          scrollAttempted = true;
-
-          // Use just one backup attempt with a delay
-          setTimeout(() => {
-            if (mobileContainer) {
-              // Direct property assignment for more reliable scroll
-              mobileContainer.scrollTop = mobileContainer.scrollHeight;
-              updateScrollButtonVisibility(mobileContainer);
-            }
-          }, 300);
-        }
-      }
-      // For desktop view
-      else if (messagesRef.current) {
-        // Simple scrollTo works fine on desktop
-        messagesRef.current.scrollTo({
-          top: messagesRef.current.scrollHeight,
+      if (container) {
+        container.scrollTo({
+          top: container.scrollHeight,
           behavior: 'smooth',
         });
-        scrollAttempted = true;
 
-        // Just to be safe, set scroll directly after animation starts
+        // Backup scroll attempt
         setTimeout(() => {
-          if (messagesRef.current) {
-            messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
-            updateScrollButtonVisibility(messagesRef.current);
+          if (container) {
+            container.scrollTop = container.scrollHeight;
+            updateScrollButtonVisibility(container);
           }
         }, 300);
       }
@@ -399,10 +458,10 @@ export function ChatMessages({
       // Try to make follow-ups visible by directly scrolling to them
       try {
         followUpsContainer.scrollIntoView({ behavior: 'smooth', block: 'end' });
-      } catch (e) {
-        // Fallback to general scrollToBottom if direct scroll fails
-        setTimeout(scrollToBottom, 50);
-      }
+              } catch {
+          // Fallback to general scrollToBottom if direct scroll fails
+          setTimeout(scrollToBottom, 50);
+        }
     } else {
       // If container not found, use regular scroll to bottom
       scrollToBottom();
@@ -473,7 +532,7 @@ export function ChatMessages({
         ensureFollowUpQuestionsVisible();
 
         // Create an observer to watch for DOM changes in the follow-up questions area
-        followUpObserverRef.current = new MutationObserver((mutations) => {
+        followUpObserverRef.current = new MutationObserver(() => {
           // When DOM changes detected, ensure questions are visible
           ensureFollowUpQuestionsVisible();
 
@@ -697,11 +756,8 @@ export function ChatMessages({
         
         // If the expected height matches current height (within 10px tolerance), skip recalculation
         if (Math.abs(expectedSpacerHeight - availableHeight) < 10) {
-          console.log(`🔒 SPACER LOCKED: keeping height=${availableHeight}px (container unchanged)`);
           return;
         }
-        
-        console.log(`🔄 SPACER RECALIBRATING: container height changed from ${availableHeight + 60}px to ${chatContainerHeight}px`);
       }
       // Calculate spacer height to position user message at the very top of viewport
       // Use smaller reserved space so spacer is bigger and pushes content higher
@@ -718,32 +774,18 @@ export function ChatMessages({
       const hasMessages = messages.length > 0;
       const lastIsAssistant = messages[messages.length - 1]?.role === 'assistant';
       
-      // Still track stream height for logging purposes
+      // Track stream height for reference
       if (hasStreamRef && hasMessages && lastIsAssistant) {
         streamHeight = streamMessageRef.current.offsetHeight;
         lastKnownStreamHeightRef.current = streamHeight;
-        setStreamMessageHeight(streamHeight);
       } 
       else if (!hasStreamRef && hasMessages && lastIsAssistant && lastKnownStreamHeightRef.current > 0) {
         streamHeight = lastKnownStreamHeightRef.current;
-        setStreamMessageHeight(streamHeight);
-        console.log(`🔧 Using stored stream height: ${streamHeight}px (ref is gone) - streaming=${isStreaming} keepSpacer=${keepSpacer}`);
       }
       else {
         if (!lastIsAssistant) {
           lastKnownStreamHeightRef.current = 0;
-          console.log(`🔄 Resetting stored stream height - new message cycle`);
         }
-        setStreamMessageHeight(0);
-      }
-
-      // Track questions height for logging, but don't subtract from spacer
-      let questionsHeight = 0;
-      if (questionsRef.current && showFollowUps) {
-        questionsHeight = questionsRef.current.offsetHeight;
-        setQuestionsHeight(questionsHeight);
-      } else {
-        setQuestionsHeight(0);
       }
 
       // With stack layout, user message height is already accounted for in spacer calculation
@@ -774,65 +816,10 @@ export function ChatMessages({
 
       const finalHeight = calculatedHeight;
 
-      // Smart logging - only log when values change significantly
-      const currentLog = {
-        chatContainerHeight,
-        isStreaming,
-        keepSpacer,
-        showFollowUps,
-        followUpQuestionsCount: followUpQuestions.length,
-        streamHeight,
-        questionsHeight,
-        actualContentHeight,
-        finalHeight,
-        availableHeight
-      };
 
-      const shouldLog = !lastLogRef.current || 
-        Object.keys(currentLog).some(key => {
-          const current = currentLog[key as keyof typeof currentLog];
-          const previous = lastLogRef.current?.[key];
-          return Math.abs(Number(current) - Number(previous)) > 5 || current !== previous;
-        });
 
-      if (shouldLog) {
-        const diff = finalHeight - availableHeight;
-        console.log(`🔧 SPACER CHANGED: container=${chatContainerHeight} streaming=${isStreaming} keepSpacer=${keepSpacer} showFollowUps=${showFollowUps}`);
-        console.log(`   Questions: count=${followUpQuestions.length} height=${questionsHeight}px`);
-        console.log(`   Stream: height=${streamHeight}px | Content: ${actualContentHeight}px`);
-        console.log(`   Spacer: ${availableHeight}px → ${finalHeight}px (${diff > 0 ? '+' : ''}${diff}px)`);
-        lastLogRef.current = currentLog;
-      }
-
-      // Track viewport position changes to detect jumping
-      if (finalHeight !== availableHeight && messagesRef.current) {
-        const container = messagesRef.current;
-        const beforeScrollTop = container.scrollTop;
-        const beforeScrollHeight = container.scrollHeight;
-
-        // Set new height
-        setAvailableHeight(finalHeight);
-
-        // Check for viewport jump after a short delay
-        setTimeout(() => {
-          const afterScrollTop = container.scrollTop;
-          const afterScrollHeight = container.scrollHeight;
-          const scrollDiff = afterScrollTop - beforeScrollTop;
-          const heightDiff = afterScrollHeight - beforeScrollHeight;
-
-          if (Math.abs(scrollDiff) > 5) {
-            console.warn('⚠️ [Viewport Jump] Detected:', {
-              scrollTopChange: scrollDiff,
-              scrollHeightChange: heightDiff,
-              beforePosition: beforeScrollTop,
-              afterPosition: afterScrollTop,
-            });
-          }
-        }, 100);
-      } else {
-        // Set height for smooth animation
-        setAvailableHeight(finalHeight);
-      }
+      // Set height for smooth animation
+      setAvailableHeight(finalHeight);
     };
 
     // Calculate on initial render and when dependencies change
@@ -1008,17 +995,7 @@ export function ChatMessages({
     setClickedQuestions(new Set());
   }, [messages.length]);
 
-  // Log follow-up questions changes to debug spacer issues
-  useEffect(() => {
-    if (followUpQuestions.length > 0) {
-      console.log('❓ FOLLOW-UP QUESTIONS APPEARED:', {
-        count: followUpQuestions.length,
-        showFollowUps,
-        keepSpacer,
-        isStreaming
-      });
-    }
-  }, [followUpQuestions.length, showFollowUps]);
+
 
   // Effect to measure actual content height and grow spacer if needed
   useEffect(() => {
@@ -1034,23 +1011,20 @@ export function ChatMessages({
         totalContentHeight += element.offsetHeight;
       });
       
-      setActualContentHeight(totalContentHeight);
+
       
       // Only grow spacer if content significantly exceeds current spacer height
       // Use a threshold to avoid constant micro-adjustments
       const threshold = 50; // Only grow if content is 50px+ larger than spacer
       const overage = totalContentHeight - availableHeight;
       
-      console.log(`📏 CONTENT MEASUREMENT: totalContent=${totalContentHeight}px, spacer=${availableHeight}px, overage=${overage}px`);
-      
-             if (overage > threshold) {
-         // Only apply reduction if content has actually outgrown the original container
-         // This prevents unnecessary reduction when content fits within intended bounds
-         const offsetReduction = totalContentHeight > chatContainerHeight ? 150 : 0;
-         const newSpacerHeight = Math.max(totalContentHeight - offsetReduction, availableHeight);
-         console.log(`🔄 GROWING SPACER: ${availableHeight}px → ${newSpacerHeight}px (content outgrown container: ${totalContentHeight > chatContainerHeight}, reduced by ${offsetReduction}px)`);
-         setAvailableHeight(newSpacerHeight);
-       }
+            if (overage > threshold) {
+        // Only apply reduction if content has actually outgrown the original container
+        // This prevents unnecessary reduction when content fits within intended bounds
+        const offsetReduction = totalContentHeight > chatContainerHeight ? 150 : 0;
+        const newSpacerHeight = Math.max(totalContentHeight - offsetReduction, availableHeight);
+        setAvailableHeight(newSpacerHeight);
+      }
     };
 
     // Measure on content changes
@@ -1080,7 +1054,7 @@ export function ChatMessages({
         ref={messagesRef}
         onScroll={handleDesktopScroll}
         onTouchStart={handleReactTouchStart}
-        className={`flex-1 scroll-smooth ${isMobile ? 'overflow-y-visible' : 'overflow-y-auto'}`}
+        className={`flex-1 scroll-smooth chat-scrollbar ${isMobile ? 'overflow-y-visible' : 'overflow-y-auto pr-2'}`}
       >
         {messages.length === 0 && !part && !groups && !isMobile && (
           <div className="h-full flex items-center justify-center text-gray-400">
@@ -1180,77 +1154,13 @@ export function ChatMessages({
                 transition: 'opacity 0.2s ease-out',
               }}
             >
-              <div className="space-y-[10px]">
-                {followUpQuestions.map((question, index) => {
-                  const questionId = question.title || question.question;
-                  const isClicked = clickedQuestions.has(questionId);
-                  const isVisible = visibleQuestions.has(questionId);
-
-                  return (
-                    <button
-                      key={questionId}
-                      onClick={() => handleQuestionSelect(question)}
-                      aria-label={questionId}
-                      data-quick-reply
-                      role="button"
-                      disabled={isClicked}
-                      className={`follow-up-question-btn w-full min-h-[48px] text-left px-4 py-3 pb-4 rounded-lg cursor-pointer
-                        bg-[rgba(99,91,255,0.12)] border border-[rgba(99,91,255,0.35)] text-[#c8cbff] font-medium
-                        hover:border-[rgba(99,91,255,0.5)] focus:border-[rgba(99,91,255,0.5)] active:border-[rgba(99,91,255,0.5)]
-                        hover:shadow-[0_4px_12px_rgba(0,0,0,0.25)] focus:shadow-[0_4px_12px_rgba(0,0,0,0.25)] active:shadow-[0_4px_16px_rgba(0,0,0,0.3)]
-                        hover:bg-gradient-to-r hover:from-indigo-900/80 hover:to-indigo-800/80
-                        hover:-translate-y-[2px] active:-translate-y-[2px] active:shadow-[0_4px_16px_rgba(0,0,0,0.3)]
-                        group transition-all duration-300 ease-out
-                        ${prefersReducedMotion ? '' : 'motion-safe:hover:-translate-y-[2px] motion-safe:active:scale-[0.99]'}
-                        ${isClicked ? 'opacity-50 pointer-events-none' : ''}
-                        ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
-                      style={{
-                        transitionDelay: isVisible ? `${index * 50}ms` : '0ms',
-                      }}
-                    >
-                      <div className="flex items-start">
-                        {/* Arrow icon */}
-                        <svg
-                          width="20"
-                          height="20"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                          className={`mr-2 text-[#635bff] transform transition-transform duration-[90ms] mt-[2px] ${prefersReducedMotion ? '' : 'group-hover:translate-x-[6px]'}`}
-                        >
-                          <path
-                            d="M7 17L17 7M17 7H7M17 7V17"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
-
-                        <div className="flex-1">
-                          <div
-                            className={`${!question.title ? 'text-[#c8cbff]' : 'font-medium text-[#c8cbff] capitalize'}`}
-                          >
-                            {question.title
-                              ? question.title.toLowerCase()
-                              : question.question}
-                          </div>
-                          {question.meta && (
-                            <div className="text-sm text-[#c8cbff] opacity-75 mt-1">
-                              {question.meta}
-                            </div>
-                          )}
-                          {question.title && !question.meta && (
-                            <div className="text-sm text-gray-400">
-                              {question.question}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
+              <FollowUpQuestions
+                questions={followUpQuestions}
+                clickedQuestions={clickedQuestions}
+                visibleQuestions={visibleQuestions}
+                prefersReducedMotion={prefersReducedMotion}
+                onQuestionClick={handleQuestionSelect}
+              />
             </div>
           )}
 
@@ -1372,77 +1282,13 @@ export function ChatMessages({
                       transition: 'opacity 0.2s ease-out',
                     }}
                   >
-                    <div className="space-y-[10px]">
-                      {followUpQuestions.map((question, index) => {
-                        const questionId = question.title || question.question;
-                        const isClicked = clickedQuestions.has(questionId);
-                        const isVisible = visibleQuestions.has(questionId);
-
-                        return (
-                          <button
-                            key={questionId}
-                            onClick={() => handleQuestionSelect(question)}
-                            aria-label={questionId}
-                            data-quick-reply
-                            role="button"
-                            disabled={isClicked}
-                            className={`follow-up-question-btn w-full min-h-[48px] text-left px-4 py-3 pb-4 rounded-lg cursor-pointer
-                              bg-[rgba(99,91,255,0.12)] border border-[rgba(99,91,255,0.35)] text-[#c8cbff] font-medium
-                              hover:border-[rgba(99,91,255,0.5)] focus:border-[rgba(99,91,255,0.5)] active:border-[rgba(99,91,255,0.5)]
-                              hover:shadow-[0_4px_12px_rgba(0,0,0,0.25)] focus:shadow-[0_4px_12px_rgba(0,0,0,0.25)] active:shadow-[0_4px_16px_rgba(0,0,0,0.3)]
-                              hover:bg-gradient-to-r hover:from-indigo-900/80 hover:to-indigo-800/80
-                              hover:-translate-y-[2px] active:-translate-y-[2px] active:shadow-[0_4px_16px_rgba(0,0,0,0.3)]
-                              group transition-all duration-300 ease-out
-                              ${prefersReducedMotion ? '' : 'motion-safe:hover:-translate-y-[2px] motion-safe:active:scale-[0.99]'}
-                              ${isClicked ? 'opacity-50 pointer-events-none' : ''}
-                              ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
-                            style={{
-                              transitionDelay: isVisible ? `${index * 50}ms` : '0ms',
-                            }}
-                          >
-                            <div className="flex items-start">
-                              {/* Arrow icon */}
-                              <svg
-                                width="20"
-                                height="20"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                                className={`mr-2 text-[#635bff] transform transition-transform duration-[90ms] mt-[2px] ${prefersReducedMotion ? '' : 'group-hover:translate-x-[6px]'}`}
-                              >
-                                <path
-                                  d="M7 17L17 7M17 7H7M17 7V17"
-                                  stroke="currentColor"
-                                  strokeWidth="2"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                />
-                              </svg>
-
-                              <div className="flex-1">
-                                <div
-                                  className={`${!question.title ? 'text-[#c8cbff]' : 'font-medium text-[#c8cbff] capitalize'}`}
-                                >
-                                  {question.title
-                                    ? question.title.toLowerCase()
-                                    : question.question}
-                                </div>
-                                {question.meta && (
-                                  <div className="text-sm text-[#c8cbff] opacity-75 mt-1">
-                                    {question.meta}
-                                  </div>
-                                )}
-                                {question.title && !question.meta && (
-                                  <div className="text-sm text-gray-400">
-                                    {question.question}
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                          </button>
-                        );
-                      })}
-                    </div>
+                    <FollowUpQuestions
+                      questions={followUpQuestions}
+                      clickedQuestions={clickedQuestions}
+                      visibleQuestions={visibleQuestions}
+                      prefersReducedMotion={prefersReducedMotion}
+                      onQuestionClick={handleQuestionSelect}
+                    />
                   </div>
                 )}
 
