@@ -4,19 +4,17 @@ import {
   getOrCreateAssistant,
   createThread,
   addMessage,
-  streamRunResponse,
   getMessages,
   generateExerciseProgramWithModel,
   generateFollowUpExerciseProgram,
   streamChatCompletion,
   getChatCompletion,
+  runAssistant,
 } from '@/app/api/assistant/openai-server';
 import { OpenAIMessage } from '@/app/types';
 import { ProgramStatus } from '@/app/types/program';
 import { chatSystemPrompt } from '@/app/api/prompts/chatPrompt';
-import { exploreSystemPrompt } from '@/app/api/prompts/explorePrompt';
 import { getOrCreateExploreAssistant, streamExploreResponse } from '@/app/api/assistant/explore-assistant';
-import { runAssistant } from '@/app/api/assistant/openai-server';
 
 // Initialize OpenAI client
 const openai = new OpenAI({
@@ -57,8 +55,9 @@ export async function POST(request: Request) {
         // Get message history first (for conversation context)
         const previousMessages = await getMessages(threadId);
         
-        // Choose system prompt based on chat mode
-        const systemMessage = payload?.mode === 'explore' ? exploreSystemPrompt : chatSystemPrompt;
+        // For explore mode, use dedicated assistant (no system prompt needed)
+        // For other modes, use chat completion with system prompt
+        const systemMessage = payload?.mode === 'explore' ? null : chatSystemPrompt;
         
         // Store the new message in the thread for future reference
         const preStreamStartTime = performance.now();
@@ -166,10 +165,11 @@ export async function POST(request: Request) {
         // For non-streaming responses, use chat completions synchronously
         try {
           if (payload?.mode === 'explore') {
+            // Use dedicated assistant (system prompt already built-in)
             const exploreAssistantId = await getOrCreateExploreAssistant();
             await runAssistant(threadId, exploreAssistantId);
           } else {
-            // Get completion from chat model
+            // Get completion from chat model with system prompt
             const assistantResponse = await getChatCompletion({
             threadId,
             messages: previousMessages,

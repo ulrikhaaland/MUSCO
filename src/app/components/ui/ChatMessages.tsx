@@ -214,9 +214,14 @@ export function ChatMessages({
         return index === messages.length - 1 || index === messages.length - 2;
       }
 
+      // If we're keeping the spacer (after streaming completes), still consider it current turn
+      if (keepSpacer && messages[messages.length - 1].role === 'assistant') {
+        return index === messages.length - 1 || index === messages.length - 2;
+      }
+
       return false;
     },
-    [messages, isLoading]
+    [messages, isLoading, keepSpacer]
   );
 
   // Check if this is the last user message before an assistant response
@@ -234,9 +239,14 @@ export function ChatMessages({
         return index === messages.length - 2 && messages[index].role === 'user';
       }
 
+      // If we're keeping the spacer (after streaming completes), the previous message is still the last user message
+      if (keepSpacer && messages[messages.length - 1].role === 'assistant') {
+        return index === messages.length - 2 && messages[index].role === 'user';
+      }
+
       return false;
     },
-    [messages, isLoading]
+    [messages, isLoading, keepSpacer]
   );
 
   // Set up scroll event listeners and handle initial scroll position
@@ -624,10 +634,7 @@ export function ChatMessages({
     // Check if this is a user message
     const isNewUserMessage = lastMessage?.role === 'user' && isNewMessage;
 
-    // Spacer management: remove spacer when new user message is sent
-    if (isNewUserMessage) {
-      setKeepSpacer(false);
-    }
+    // Note: Spacer management moved to separate useEffect to avoid setState during render
 
     // ALWAYS scroll for user messages, regardless of disableAutoScroll setting
     if (isNewUserMessage) {
@@ -662,39 +669,59 @@ export function ChatMessages({
     scrollToBottom(true);
   };
 
+  // Separate effect for spacer management to avoid setState during render
+  useEffect(() => {
+    if (messages.length === 0) return;
+
+    const lastMessage = messages[messages.length - 1];
+    const lastMessageId = lastMessage?.id || '';
+    const isNewMessage = lastMessageId !== lastMessageIdRef.current;
+    const isNewUserMessage = lastMessage?.role === 'user' && isNewMessage;
+
+    // Remove spacer when new user message is sent
+    if (isNewUserMessage) {
+      setKeepSpacer(false);
+    }
+  }, [messages]);
+
   // Calculate available height for loading message with smooth transitions
   useEffect(() => {
     const calculateAvailableHeight = () => {
+      // During keepSpacer period, don't recalculate to prevent jumps
+      if (keepSpacer && availableHeight > 0) {
+        console.log(`🔒 SPACER LOCKED: keeping height=${availableHeight}px during keepSpacer period`);
+        return;
+      }
       // Calculate spacer height to position user message near the top of container
-      // Target: position user message about 60-80px from top (right below header)
+      // Target: position user message about 20px from top (right below header)
       const targetTopPadding = 20; // Distance from top of container
       
+      // Estimate user message height (typical message is around 50-60px)
+      const estimatedUserMessageHeight = 60;
+      
       // Start with full container height and subtract what will be visible
-      let spacerHeight = chatContainerHeight - targetTopPadding;
+      // Subtract user message height so it remains visible at the top
+      const spacerHeight = chatContainerHeight - targetTopPadding - estimatedUserMessageHeight;
 
-      // Subtract stream message height if it exists (whether streaming or completed)
+      // With stack layout, we don't subtract stream height from spacer
+      // The message will grow above the fixed spacer
       let streamHeight = 0;
       const hasStreamRef = !!streamMessageRef.current;
       const hasMessages = messages.length > 0;
       const lastIsAssistant = messages[messages.length - 1]?.role === 'assistant';
       
-      // If we have a stream ref, measure and store the height
+      // Still track stream height for logging purposes
       if (hasStreamRef && hasMessages && lastIsAssistant) {
         streamHeight = streamMessageRef.current.offsetHeight;
-        lastKnownStreamHeightRef.current = streamHeight; // Store for when ref goes away
+        lastKnownStreamHeightRef.current = streamHeight;
         setStreamMessageHeight(streamHeight);
-        spacerHeight -= streamHeight;
       } 
-      // If no ref but we have an assistant message, use last known height
       else if (!hasStreamRef && hasMessages && lastIsAssistant && lastKnownStreamHeightRef.current > 0) {
         streamHeight = lastKnownStreamHeightRef.current;
         setStreamMessageHeight(streamHeight);
-        spacerHeight -= streamHeight;
         console.log(`🔧 Using stored stream height: ${streamHeight}px (ref is gone) - streaming=${isStreaming} keepSpacer=${keepSpacer}`);
       }
-      // Reset when no assistant message
       else {
-        // Reset stored height when user sends a new message (clean slate)
         if (!lastIsAssistant) {
           lastKnownStreamHeightRef.current = 0;
           console.log(`🔄 Resetting stored stream height - new message cycle`);
@@ -702,19 +729,16 @@ export function ChatMessages({
         setStreamMessageHeight(0);
       }
 
-      // Subtract questions height if they exist
+      // Track questions height for logging, but don't subtract from spacer
       let questionsHeight = 0;
       if (questionsRef.current && showFollowUps) {
         questionsHeight = questionsRef.current.offsetHeight;
         setQuestionsHeight(questionsHeight);
-        spacerHeight -= questionsHeight;
       } else {
         setQuestionsHeight(0);
       }
 
-      // Estimate user message height (typical message is around 50-60px)
-      const estimatedUserMessageHeight = 60;
-      spacerHeight -= estimatedUserMessageHeight;
+      // With stack layout, user message height is already accounted for in spacer calculation
 
       // Ensure minimum spacer height
       const minHeight = Math.max(50, chatContainerHeight * 0.1);
@@ -779,7 +803,6 @@ export function ChatMessages({
         const beforeScrollHeight = container.scrollHeight;
 
         // Set new height
-        setTargetSpacerHeight(finalHeight);
         setAvailableHeight(finalHeight);
 
         // Check for viewport jump after a short delay
@@ -799,8 +822,7 @@ export function ChatMessages({
           }
         }, 100);
       } else {
-        // Set target height for smooth animation
-        setTargetSpacerHeight(finalHeight);
+        // Set height for smooth animation
         setAvailableHeight(finalHeight);
       }
     };
@@ -829,12 +851,11 @@ export function ChatMessages({
     };
   }, [
     chatContainerHeight,
+    keepSpacer,
     isStreaming,
     showFollowUps,
-    messages.length, // React to message count changes
-    followUpQuestions.length, // React to question count changes
-    keepSpacer,
-    // Also react to streaming content changes to shrink spacer dynamically
+    messages.length,
+    followUpQuestions.length,
     isStreaming ? messages[messages.length - 1]?.content : null,
   ]);
 
@@ -1089,102 +1110,10 @@ export function ChatMessages({
             );
           })}
 
-          {/* Current turn with flex layout */}
-          {messages.length > 0 && (
-            <>
-              {/* User message at top */}
-              {messages.map((msg, index) => {
-                if (!isLastUserMessage(index)) return null;
+          {/* Current turn messages are now rendered in the stack layout below */}
 
-                // Remove mb-4 when followed by a streaming response
-                const isFollowedByStreaming =
-                  isStreaming &&
-                  messages.length > 0 &&
-                  messages[messages.length - 1].role === 'assistant';
-
-                return (
-                  <div key={`current-user-${msg.id}`} className="flex-none">
-                    <div
-                      className={`px-4 py-2 rounded-lg bg-indigo-600 ml-8 ${isFollowedByStreaming ? '' : 'mb-4'}`}
-                    >
-                      <div className="text-base">{msg.content}</div>
-                    </div>
-                  </div>
-                );
-              })}
-
-              {/* Assistant streaming message - placed immediately after user message */}
-              {isStreaming &&
-                messages.length > 0 &&
-                messages[messages.length - 1].role === 'assistant' && (
-                  <div
-                    key={`streaming-${messages[messages.length - 1].id}`}
-                    className="flex-none"
-                    ref={streamMessageRef}
-                  >
-                    <div className={`px-4 py-2 rounded-lg bg-gray-800 mr-4`}>
-                      <div className="prose prose-invert max-w-none prose-p:my-2 prose-pre:my-0 prose-pre:leading-none prose-strong:text-white prose-strong:font-semibold">
-                        <ReactMarkdown
-                          className="text-base leading-relaxed"
-                          components={{
-                            ul: ({ children }) => (
-                              <ul className="list-none">
-                                {children as React.ReactNode}
-                              </ul>
-                            ),
-                          }}
-                        >
-                          {messages[messages.length - 1].content}
-                        </ReactMarkdown>
-
-                        {/* Show error message if stream error occurred */}
-                        {streamError && (
-                          <div className="mt-2">
-                            <div className="text-sm text-red-400">
-                              Note: This message was interrupted due to
-                              connection issues.
-                            </div>
-                            {onResend && (
-                              <div className="mt-3">
-                                <button
-                                  onClick={() => {
-                                    const userMsg = findUserMessageBeforeError(
-                                      messages.length - 1
-                                    );
-                                    if (userMsg) {
-                                      handleResend(userMsg);
-                                    }
-                                  }}
-                                  className="px-3 py-1 bg-indigo-700 hover:bg-indigo-600 text-white text-sm rounded-md flex items-center gap-1 transition-colors duration-200"
-                                  disabled={isLoading}
-                                >
-                                  <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    className="h-4 w-4"
-                                    viewBox="0 0 20 20"
-                                    fill="currentColor"
-                                  >
-                                    <path
-                                      fillRule="evenodd"
-                                      d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
-                                      clipRule="evenodd"
-                                    />
-                                  </svg>
-                                  {isLoading ? 'Sending...' : 'Try Again'}
-                                </button>
-                              </div>
-                            )}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                )}
-            </>
-          )}
-
-          {/* Follow-up questions - with vertical spacing from assistant message */}
-          {showFollowUps && (
+          {/* Initial follow-up questions (before any conversation) */}
+          {showFollowUps && !isLoading && !keepSpacer && (
             <div
               ref={questionsRef}
               className="mt-[12px]"
@@ -1267,30 +1196,204 @@ export function ChatMessages({
           )}
 
           {/* 
-            Loading message spacer - rendered during loading/streaming and kept until next user message
-            - Uses dynamic height calculation that adjusts based on content
-            - Maintained after response completion to prevent visual jumping
-            - Now with smooth transitions and subtle visual feedback
+            Loading message spacer - stack-based layout where content grows above fixed spacer
+            - Fixed spacer height pushes message to top
+            - Message content grows above spacer without affecting spacer height
           */}
           {(isLoading && (needsResponsePlaceholder || isStreaming)) ||
           keepSpacer ? (
             <div
-              ref={spacerRef}
-              className="block w-full overflow-hidden transition-all duration-300 ease-out"
-              style={{
-                height: `${availableHeight}px`,
-                position: 'relative',
-                borderRadius: '8px',
-                overflow: 'hidden',
-                marginTop: '0',
-              }}
+              className="relative mt-4"
             >
-              <LoadingMessage
-                containerHeight={availableHeight}
-                visible={
-                  needsResponsePlaceholder && !isStreaming && !keepSpacer
-                }
+              {/* Fixed spacer at bottom of stack */}
+              <div
+                ref={spacerRef}
+                className="block w-full transition-all duration-300 ease-out"
+                style={{
+                  height: `${availableHeight}px`,
+                  borderRadius: '8px',
+                }}
               />
+              
+              {/* Message content positioned at top of stack */}
+              <div
+                className="absolute top-0 left-0 right-0 flex flex-col"
+                style={{
+                  height: `${availableHeight}px`,
+                }}
+              >
+                {/* User message at top of stack */}
+                {messages.map((msg, index) => {
+                  if (!isLastUserMessage(index)) return null;
+
+                  return (
+                    <div key={`current-user-${msg.id}`} className="flex-none mb-4">
+                      <div className="px-4 py-2 rounded-lg bg-indigo-600 ml-8">
+                        <div className="text-base">{msg.content}</div>
+                      </div>
+                    </div>
+                  );
+                })}
+
+                {/* Assistant streaming message in stack */}
+                {(isStreaming || keepSpacer) &&
+                  messages.length > 0 &&
+                  messages[messages.length - 1].role === 'assistant' && (
+                    <div
+                      key={`streaming-${messages[messages.length - 1].id}`}
+                      className="flex-none"
+                      ref={streamMessageRef}
+                    >
+                      <div className="px-4 py-2 rounded-lg bg-gray-800 mr-4">
+                        <div className="prose prose-invert max-w-none prose-p:my-2 prose-pre:my-0 prose-pre:leading-none prose-strong:text-white prose-strong:font-semibold">
+                          <ReactMarkdown
+                            className="text-base leading-relaxed"
+                            components={{
+                              ul: ({ children }) => (
+                                <ul className="list-none">
+                                  {children as React.ReactNode}
+                                </ul>
+                              ),
+                            }}
+                          >
+                            {messages[messages.length - 1].content}
+                          </ReactMarkdown>
+
+                          {/* Show error message if stream error occurred */}
+                          {streamError && (
+                            <div className="mt-2">
+                              <div className="text-sm text-red-400">
+                                Note: This message was interrupted due to
+                                connection issues.
+                              </div>
+                              {onResend && (
+                                <div className="mt-3">
+                                  <button
+                                    onClick={() => {
+                                      const userMsg = findUserMessageBeforeError(
+                                        messages.length - 1
+                                      );
+                                      if (userMsg) {
+                                        handleResend(userMsg);
+                                      }
+                                    }}
+                                    className="px-3 py-1 bg-indigo-700 hover:bg-indigo-600 text-white text-sm rounded-md flex items-center gap-1 transition-colors duration-200"
+                                    disabled={isLoading}
+                                  >
+                                    <svg
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      className="h-4 w-4"
+                                      viewBox="0 0 20 20"
+                                      fill="currentColor"
+                                    >
+                                      <path
+                                        fillRule="evenodd"
+                                        d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
+                                        clipRule="evenodd"
+                                      />
+                                    </svg>
+                                    {isLoading ? 'Sending...' : 'Try Again'}
+                                  </button>
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                {/* Follow-up questions in stack (during active conversation) */}
+                {showFollowUps && (isLoading || keepSpacer) && (
+                  <div
+                    ref={questionsRef}
+                    className="mt-[12px]"
+                    style={{
+                      transition: 'opacity 0.2s ease-out',
+                    }}
+                  >
+                    <div className="space-y-[10px]">
+                      {followUpQuestions.map((question, index) => {
+                        const questionId = question.title || question.question;
+                        const isClicked = clickedQuestions.has(questionId);
+                        const isVisible = visibleQuestions.has(questionId);
+
+                        return (
+                          <button
+                            key={questionId}
+                            onClick={() => handleQuestionSelect(question)}
+                            aria-label={questionId}
+                            data-quick-reply
+                            role="button"
+                            disabled={isClicked}
+                            className={`follow-up-question-btn w-full min-h-[48px] text-left px-4 py-3 pb-4 rounded-lg cursor-pointer
+                              bg-[rgba(99,91,255,0.12)] border border-[rgba(99,91,255,0.35)] text-[#c8cbff] font-medium
+                              hover:border-[rgba(99,91,255,0.5)] focus:border-[rgba(99,91,255,0.5)] active:border-[rgba(99,91,255,0.5)]
+                              hover:shadow-[0_4px_12px_rgba(0,0,0,0.25)] focus:shadow-[0_4px_12px_rgba(0,0,0,0.25)] active:shadow-[0_4px_16px_rgba(0,0,0,0.3)]
+                              hover:bg-gradient-to-r hover:from-indigo-900/80 hover:to-indigo-800/80
+                              hover:-translate-y-[2px] active:-translate-y-[2px] active:shadow-[0_4px_16px_rgba(0,0,0,0.3)]
+                              group transition-all duration-300 ease-out
+                              ${prefersReducedMotion ? '' : 'motion-safe:hover:-translate-y-[2px] motion-safe:active:scale-[0.99]'}
+                              ${isClicked ? 'opacity-50 pointer-events-none' : ''}
+                              ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
+                            style={{
+                              transitionDelay: isVisible ? `${index * 50}ms` : '0ms',
+                            }}
+                          >
+                            <div className="flex items-start">
+                              {/* Arrow icon */}
+                              <svg
+                                width="20"
+                                height="20"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                                className={`mr-2 text-[#635bff] transform transition-transform duration-[90ms] mt-[2px] ${prefersReducedMotion ? '' : 'group-hover:translate-x-[6px]'}`}
+                              >
+                                <path
+                                  d="M7 17L17 7M17 7H7M17 7V17"
+                                  stroke="currentColor"
+                                  strokeWidth="2"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                />
+                              </svg>
+
+                              <div className="flex-1">
+                                <div
+                                  className={`${!question.title ? 'text-[#c8cbff]' : 'font-medium text-[#c8cbff] capitalize'}`}
+                                >
+                                  {question.title
+                                    ? question.title.toLowerCase()
+                                    : question.question}
+                                </div>
+                                {question.meta && (
+                                  <div className="text-sm text-[#c8cbff] opacity-75 mt-1">
+                                    {question.meta}
+                                  </div>
+                                )}
+                                {question.title && !question.meta && (
+                                  <div className="text-sm text-gray-400">
+                                    {question.question}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {/* Loading message for when waiting for response */}
+                <LoadingMessage
+                  containerHeight={availableHeight}
+                  visible={
+                    needsResponsePlaceholder && !isStreaming
+                  }
+                />
+              </div>
             </div>
           ) : null}
         </div>

@@ -15,22 +15,29 @@ export async function getOrCreateExploreAssistant(): Promise<string> {
   const cachedId = process.env.EXPLORE_ASSISTANT_ID;
   if (cachedId) {
     try {
-      // Verify it exists
+      // Verify it exists and return cached ID
       await openai.beta.assistants.retrieve(cachedId);
+      console.log('[ExploreAssistant] Using cached assistant:', cachedId);
       return cachedId;
-    } catch (e) {
-      console.warn('[ExploreAssistant] EXPLORE_ASSISTANT_ID not found, will create new assistant');
+    } catch {
+      console.warn('[ExploreAssistant] EXPLORE_ASSISTANT_ID not found, creating new assistant');
     }
   }
 
-  const assistant = await openai.beta.assistants.create({
-    name: 'Musco Explore Assistant',
-    instructions: exploreSystemPrompt,
-    model: 'gpt-4.1',
-    tools: [],
-  });
+  try {
+    const assistant = await openai.beta.assistants.create({
+      name: 'Musco Explore Assistant',
+      instructions: exploreSystemPrompt,
+      model: 'gpt-4.1',
+      tools: [],
+    });
 
-  return assistant.id;
+    console.log('[ExploreAssistant] Created new assistant:', assistant.id);
+    return assistant.id;
+  } catch (error) {
+    console.error('[ExploreAssistant] Failed to create assistant:', error);
+    throw new Error('Failed to create explore assistant');
+  }
 }
 
 export async function createExploreThread() {
