@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState, useCallback, useEffect } from 'react';
+import { useRef, useState, useCallback, useEffect, useMemo } from 'react';
 import { DiagnosisAssistantResponse, Gender } from '../../types';
 import PartPopup from '../ui/PartPopup';
 import { useHumanAPI } from '@/app/hooks/useHumanAPI';
@@ -50,7 +50,8 @@ export default function HumanViewer({
   const rotationAnimationRef = useRef<number | null>(null);
   const [targetGender, setTargetGender] = useState<Gender | null>(null);
   const [modelContainerHeight, setModelContainerHeight] = useState('100dvh');
-  const [fixedViewportHeight, setFixedViewportHeight] = useState<number | null>(null);
+  const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
+  const initialViewportHeight = useRef<number>(0);
   const [diagnosis, setDiagnosis] = useState<DiagnosisAssistantResponse | null>(
     null
   );
@@ -64,36 +65,57 @@ export default function HumanViewer({
       setIsMobile(window.innerWidth < 768); // md breakpoint
     };
 
-    // Capture initial viewport height to use as fixed reference
-    const captureViewportHeight = () => {
-      if (fixedViewportHeight === null) {
-        setFixedViewportHeight(window.innerHeight);
-      }
-    };
-
     // Initial check with a small delay to ensure hydration is complete
     const timeoutId = setTimeout(() => {
       checkMobile();
-      captureViewportHeight();
     }, 100);
 
     // Also check immediately for immediate feedback
     checkMobile();
-    captureViewportHeight();
     
     window.addEventListener('resize', checkMobile);
     return () => {
       clearTimeout(timeoutId);
       window.removeEventListener('resize', checkMobile);
     };
-  }, [fixedViewportHeight]);
+  }, []);
 
-  // Removed keyboard-related body scroll lock - using fixed positioning instead
+  // Handle visual viewport changes to prevent model jumping when keyboard appears
+  useEffect(() => {
+    if (typeof window === 'undefined' || !isMobile) return;
 
-  const MODEL_IDS = {
+    const handleVisualViewportChange = () => {
+      if (window.visualViewport) {
+        const currentHeight = window.visualViewport.height;
+        
+        // Detect if keyboard is open (significant height reduction)
+        const heightDifference = initialViewportHeight.current - currentHeight;
+        const keyboardThreshold = 150; // pixels
+        setIsKeyboardOpen(heightDifference > keyboardThreshold);
+      }
+    };
+
+    // Set initial visual viewport height
+    if (window.visualViewport) {
+      const initialHeight = window.visualViewport.height;
+      initialViewportHeight.current = initialHeight;
+      window.visualViewport.addEventListener('resize', handleVisualViewportChange);
+    } else {
+      // Fallback for browsers without visual viewport support
+      initialViewportHeight.current = window.innerHeight;
+    }
+
+    return () => {
+      if (window.visualViewport) {
+        window.visualViewport.removeEventListener('resize', handleVisualViewportChange);
+      }
+    };
+  }, [isMobile]);
+
+  const MODEL_IDS = useMemo(() => ({
     male: '5tOV',
     female: '5tOR',
-  };
+  }), []);
 
   const {
     humanRef,
@@ -180,7 +202,7 @@ export default function HumanViewer({
     setSelectedGroup(null, false);
     lastSelectedIdRef.current = null;
     setNeedsReset(false);
-  }, [setSelectedGroup, setSelectedPart, setNeedsReset]);
+  }, [setSelectedGroup, setSelectedPart, setNeedsReset, previousSelectedPartGroupRef]);
 
   const handleSwitchModel = useCallback(() => {
     setIsChangingModel(true);
@@ -271,13 +293,13 @@ export default function HumanViewer({
         }
       }
     },
-    [isResettingRef, setNeedsReset, isReady, humanRef, resetSelectionState]
+    [isResettingRef, humanRef, resetSelectionState, initialCameraRef, resetValues]
   );
 
   // Update reset button state when parts are selected
   useEffect(() => {
     setNeedsReset(selectedGroups.length > 0 || needsReset);
-  }, [selectedGroups, needsReset]);
+  }, [selectedGroups, needsReset, setNeedsReset]);
 
   const startDragging = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
@@ -355,7 +377,7 @@ export default function HumanViewer({
         rotationAnimationRef.current = null;
       }
     };
-  }, [isRotating, currentRotation, isResetting]);
+  }, [isRotating, currentRotation, isResetting, humanRef, setNeedsReset]);
 
   // Clean up animation on unmount
   useEffect(() => {
@@ -378,14 +400,18 @@ export default function HumanViewer({
   }, []); // Empty dependency array means this runs once after mount
 
   const handleBottomSheetHeight = (sheetHeight: number) => {
-    // Use fixed viewport height for mobile to prevent keyboard issues
-    if (fixedViewportHeight && isMobile) {
-      const newHeight = `calc(${fixedViewportHeight}px - ${sheetHeight}px)`;
+    if (isMobile) {
+      // When keyboard is open, use the initial viewport height to prevent jumping
+      // When keyboard is closed, use current window height for normal responsiveness
+      const referenceHeight = isKeyboardOpen 
+        ? initialViewportHeight.current 
+        : window.innerHeight;
+      
+      const newHeight = `${referenceHeight - sheetHeight}px`;
       if (newHeight !== modelContainerHeight) {
         setModelContainerHeight(newHeight);
       }
     } else {
-      // Desktop or fallback behavior
       const newHeight = `calc(100dvh - ${sheetHeight}px)`;
       if (newHeight !== modelContainerHeight) {
         setModelContainerHeight(newHeight);
@@ -594,15 +620,15 @@ export default function HumanViewer({
   }, []);
 
   return (
-    <div className="flex flex-col md:flex-row relative h-screen w-screen overflow-hidden">
+    <div className={`flex flex-col md:flex-row relative h-screen w-screen overflow-hidden ${isMobile ? 'mobile-human-viewer' : ''}`}>
       {/* Fullscreen overlay when dragging */}
       {isDragging && (
         <div className="fixed inset-0 z-50" style={{ cursor: 'ew-resize' }} />
       )}
 
-      {/* Model Viewer Container - Fixed positioning on mobile */}
+      {/* Model Viewer Container */}
       <div
-        className={`flex-1 relative bg-black flex flex-col ${isMobile ? 'human-viewer-container' : ''}`}
+        className="flex-1 relative bg-black flex flex-col"
         style={{ minWidth: `${minChatWidth}px` }}
       >
         {isChangingModel && (
@@ -614,10 +640,12 @@ export default function HumanViewer({
             </div>
           </div>
         )}
-        {/* Model container - responds to bottom sheet but uses stable viewport height */}
+        {/* Mobile: subtract 72px for controls, Desktop: full height */}
         <div
-          className={`md:h-screen w-full relative ${isMobile ? 'model-container' : ''}`}
-          style={{ height: isMobile ? modelContainerHeight : '100dvh' }}
+          className={`md:h-screen w-full relative ${isMobile ? 'mobile-model-container' : ''}`}
+          style={{ 
+            height: isMobile ? modelContainerHeight : '100dvh'
+          }}
         >
           <iframe
             id="myViewer"

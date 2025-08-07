@@ -785,10 +785,7 @@ export function ChatMessages({
         questionsHeight,
         actualContentHeight,
         finalHeight,
-        availableHeight,
-        spacerHeight,
-        calculatedHeight,
-        minHeight: Math.max(50, chatContainerHeight * 0.1)
+        availableHeight
       };
 
       const shouldLog = !lastLogRef.current || 
@@ -800,15 +797,10 @@ export function ChatMessages({
 
       if (shouldLog) {
         const diff = finalHeight - availableHeight;
-        console.log(`🔧 MAIN SPACER CALCULATION:`);
-        console.log(`   Container: ${chatContainerHeight}px | Streaming: ${isStreaming} | KeepSpacer: ${keepSpacer}`);
+        console.log(`🔧 SPACER CHANGED: container=${chatContainerHeight} streaming=${isStreaming} keepSpacer=${keepSpacer} showFollowUps=${showFollowUps}`);
         console.log(`   Questions: count=${followUpQuestions.length} height=${questionsHeight}px`);
         console.log(`   Stream: height=${streamHeight}px | Content: ${actualContentHeight}px`);
-        console.log(`   Initial spacer calculation: ${spacerHeight}px (container - 20px)`);
-        console.log(`   Min height constraint: ${Math.max(50, chatContainerHeight * 0.1)}px`);
-        console.log(`   Calculated height: ${calculatedHeight}px`);
-        console.log(`   Final spacer: ${availableHeight}px → ${finalHeight}px (${diff > 0 ? '+' : ''}${diff}px)`);
-        console.log(`🔧 END MAIN CALCULATION\n`);
+        console.log(`   Spacer: ${availableHeight}px → ${finalHeight}px (${diff > 0 ? '+' : ''}${diff}px)`);
         lastLogRef.current = currentLog;
       }
 
@@ -1035,20 +1027,11 @@ export function ChatMessages({
       
       const contentElement = stackContentRef.current;
       
-      console.log(`🔍 SPACER DEBUG START:`);
-      console.log(`  - Container scrollHeight: ${contentElement.scrollHeight}px`);
-      console.log(`  - Container offsetHeight: ${contentElement.offsetHeight}px`);
-      console.log(`  - Container clientHeight: ${contentElement.clientHeight}px`);
-      console.log(`  - Current availableHeight: ${availableHeight}px`);
-      console.log(`  - Children count: ${contentElement.children.length}`);
-      
       // Measure the actual visible content by summing up child elements
       let totalContentHeight = 0;
-      Array.from(contentElement.children).forEach((child, index) => {
+      Array.from(contentElement.children).forEach((child) => {
         const element = child as HTMLElement;
-        const height = element.offsetHeight;
-        totalContentHeight += height;
-        console.log(`    Child ${index}: ${element.tagName} - ${height}px (class: ${element.className})`);
+        totalContentHeight += element.offsetHeight;
       });
       
       setActualContentHeight(totalContentHeight);
@@ -1058,21 +1041,16 @@ export function ChatMessages({
       const threshold = 50; // Only grow if content is 50px+ larger than spacer
       const overage = totalContentHeight - availableHeight;
       
-      console.log(`📏 MEASUREMENT SUMMARY:`);
-      console.log(`  - Total content height: ${totalContentHeight}px`);
-      console.log(`  - Current spacer height: ${availableHeight}px`);
-      console.log(`  - Overage: ${overage}px`);
-      console.log(`  - Threshold: ${threshold}px`);
-      console.log(`  - Will grow: ${overage > threshold}`);
+      console.log(`📏 CONTENT MEASUREMENT: totalContent=${totalContentHeight}px, spacer=${availableHeight}px, overage=${overage}px`);
       
-      if (overage > threshold) {
-        // Set spacer to exactly match content height
-        const newSpacerHeight = totalContentHeight;
-        console.log(`🔄 GROWING SPACER: ${availableHeight}px → ${newSpacerHeight}px (diff: +${newSpacerHeight - availableHeight}px)`);
-        setAvailableHeight(newSpacerHeight);
-      }
-      
-      console.log(`🔍 SPACER DEBUG END\n`);
+             if (overage > threshold) {
+         // Only apply reduction if content has actually outgrown the original container
+         // This prevents unnecessary reduction when content fits within intended bounds
+         const offsetReduction = totalContentHeight > chatContainerHeight ? 150 : 0;
+         const newSpacerHeight = Math.max(totalContentHeight - offsetReduction, availableHeight);
+         console.log(`🔄 GROWING SPACER: ${availableHeight}px → ${newSpacerHeight}px (content outgrown container: ${totalContentHeight > chatContainerHeight}, reduced by ${offsetReduction}px)`);
+         setAvailableHeight(newSpacerHeight);
+       }
     };
 
     // Measure on content changes

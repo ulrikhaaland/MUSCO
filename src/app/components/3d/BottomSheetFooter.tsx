@@ -69,13 +69,9 @@ export function BottomSheetFooter({
                 handleSendMessage();
               }
             }}
-            onFocus={(e) => {
-              // Simple approach: let mobile handle focus naturally
-              if (window.innerWidth < 768) {
-                setTimeout(() => {
-                  e.target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }, 300);
-              }
+            onFocus={() => {
+              // On mobile, we rely on the visual viewport API and CSS fixes
+              // to prevent the model from jumping, so no special handling needed here
             }}
             rows={1}
             placeholder={placeholderText}

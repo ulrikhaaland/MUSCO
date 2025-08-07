@@ -126,7 +126,6 @@ export default function MobileControls({
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-
   useEffect(() => {
     const updateContentHeight = () => {
       // Get the overlay element (main bottom sheet container)
@@ -231,8 +230,7 @@ export default function MobileControls({
         !hasInitiallyExpanded.current
       ) {
         if (sheetRef.current) {
-          const snapPoints = getSnapPoints();
-          let snapPoint = snapPoints[2]; // Use EXPANDED (78%) instead of PREVIEW (40%)
+          let snapPoint = getSnapPoints()[1];
 
           if (contentHeight < snapPoint) {
             snapPoint = contentHeight;
@@ -240,11 +238,8 @@ export default function MobileControls({
           setTimeout(
             () => {
               if (sheetRef.current) {
-                console.log('Auto-expanding to EXPANDED height:', snapPoint);
                 sheetRef.current.snapTo(({ maxHeight }) => snapPoint);
                 hasInitiallyExpanded.current = true;
-                // Explicitly set the snap point to EXPANDED
-                setCurrentSnapPoint(SnapPoint.EXPANDED);
               }
             },
             intention === ProgramIntention.Exercise ? 1000 : 300
@@ -282,7 +277,7 @@ export default function MobileControls({
     userModifiedSheetHeight,
   ]);
 
-  // Update model height whenever sheet height changes (but not due to keyboard)
+  // Update model height whenever sheet height changes
   const updateModelHeight = (sheetHeight: number) => {
     if (onHeightChange) {
       onHeightChange(sheetHeight);
@@ -365,8 +360,6 @@ export default function MobileControls({
 
     return [minHeight, secondSnapPoint, viewportHeight * 0.78, viewportHeight];
   };
-
-  // Removed all keyboard detection logic - keeping things simple
 
   // Track height changes only during drag or animation
   useEffect(() => {

@@ -31,6 +31,19 @@ body.video-modal-open
   display: none !important;
 }
 
+/* Mobile viewport stability for keyboard appearance */
+@media (max-width: 767px) {
+  .mobile-human-viewer {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .mobile-model-container {
+    position: relative;
+    overflow: hidden;
+  }
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -80,38 +93,6 @@ iframe {
   overflow: hidden;
   height: 100%;
   width: 100%;
-}
-
-/* Mobile viewport stability hacks */
-@supports (-webkit-touch-callout: none) {
-  /* iOS Safari specific fixes */
-  .mobile-viewport-stable {
-    height: 100vh;
-    height: -webkit-fill-available;
-    min-height: 100vh;
-    min-height: -webkit-fill-available;
-  }
-}
-
-/* Human viewer stable positioning - immune to keyboard but responsive to bottom sheet */
-@media (max-width: 768px) {
-  .human-viewer-container {
-    position: relative;
-  }
-  
-  /* Force stable viewport units that don't change with keyboard */
-  .human-viewer-container .model-container {
-    /* Use the largest available viewport to prevent keyboard jumping */
-    height: 100vh;
-    height: 100lvh; /* Large viewport height - ignores keyboard */
-  }
-  
-  /* iOS Safari fallback */
-  @supports (-webkit-touch-callout: none) {
-    .human-viewer-container .model-container {
-      height: -webkit-fill-available;
-    }
-  }
 }
 
 /* Bottom sheet custom styles */
