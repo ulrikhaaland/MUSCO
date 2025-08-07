@@ -70,24 +70,24 @@ export function BottomSheetFooter({
               }
             }}
             onFocus={(e) => {
-              // HACK: Prevent any scrolling behavior that might cause model jumping
-              e.preventDefault();
+              // Only prevent scrolling on desktop mobile view (for testing)
+              // Allow natural mobile behavior on real devices
+              const isRealMobile = window.navigator.userAgent.indexOf('Mobile') !== -1;
               
-              // Prevent the default focus scroll behavior
-              if (window.innerWidth < 768) {
-                // Store original scroll position
+              if (window.innerWidth < 768 && isRealMobile) {
+                // On real mobile devices, allow natural scroll behavior
+                setTimeout(() => {
+                  e.target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 300);
+              } else if (window.innerWidth < 768) {
+                // On desktop mobile view, prevent scrolling for testing
+                e.preventDefault();
                 const originalScrollY = window.scrollY;
                 const originalScrollX = window.scrollX;
                 
-                // Restore scroll position after any potential viewport changes
                 setTimeout(() => {
                   window.scrollTo(originalScrollX, originalScrollY);
                 }, 0);
-                
-                // Also prevent any delayed scrollIntoView calls
-                setTimeout(() => {
-                  window.scrollTo(originalScrollX, originalScrollY);
-                }, 100);
               }
             }}
             rows={1}

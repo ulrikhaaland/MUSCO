@@ -142,9 +142,13 @@ export default function HumanViewer({
     };
   }, [isKeyboardOpen]);
 
-  // HACK: Lock body scroll when keyboard is open to prevent viewport jumping
+  // HACK: Only lock body scroll when keyboard is open on desktop mobile view (testing)
+  // Don't lock on real mobile devices as it prevents input from being visible
   useEffect(() => {
-    if (isMobile && isKeyboardOpen) {
+    // Only apply scroll lock if this is desktop mobile view (for testing)
+    const isDesktopMobileView = isMobile && window.navigator.userAgent.indexOf('Mobile') === -1;
+    
+    if (isDesktopMobileView && isKeyboardOpen) {
       // Store original scroll position
       const originalScrollY = window.scrollY;
       const originalScrollX = window.scrollX;
