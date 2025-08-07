@@ -57,6 +57,7 @@ export default function HumanViewer({
   const [isResetting, setIsResetting] = useState(false);
   const { onQuestionnaireSubmit } = useUser();
   const [showQuestionnaire, setShowQuestionnaire] = useState(false);
+  const [viewerKey, setViewerKey] = useState<number>(0);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -77,6 +78,35 @@ export default function HumanViewer({
       window.removeEventListener('resize', checkMobile);
     };
   }, []);
+
+  // iOS Safari repaint fix: force-remount the iframe when the keyboard closes
+  useEffect(() => {
+    if (!isMobile || typeof window === 'undefined' || !window.visualViewport) {
+      return;
+    }
+
+    const visualViewport = window.visualViewport;
+    let lastHeight = visualViewport.height;
+    let keyboardWasOpen = false;
+
+    const handleVvResize = () => {
+      const currentHeight = visualViewport.height;
+      const nearFull = currentHeight >= window.innerHeight - 20; // keyboard likely closed
+      const isOpen = currentHeight < window.innerHeight - 80; // heuristic
+
+      if (nearFull && keyboardWasOpen) {
+        // Force repaint/remount to avoid blank area over the viewer after second toggle
+        setViewerKey((k) => k + 1);
+        setTimeout(() => setViewerKey((k) => k + 1), 50);
+      }
+
+      keyboardWasOpen = isOpen;
+      lastHeight = currentHeight;
+    };
+
+    visualViewport.addEventListener('resize', handleVvResize);
+    return () => visualViewport.removeEventListener('resize', handleVvResize);
+  }, [isMobile]);
 
   const MODEL_IDS = {
     male: '5tOV',
@@ -603,6 +633,7 @@ export default function HumanViewer({
             left: 0,
             right: 0,
             overscrollBehavior: isMobile ? 'none' : undefined,
+            transform: 'translateZ(0)',
             zIndex: 0,
           }}
         >
@@ -611,6 +642,7 @@ export default function HumanViewer({
             ref={iframeRef}
             src={viewerUrl}
             className="absolute inset-0 w-full h-full border-0 bg-black"
+            key={viewerKey}
             allow="fullscreen"
             allowFullScreen
             onLoad={() => {
