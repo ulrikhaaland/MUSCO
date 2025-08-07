@@ -45,6 +45,7 @@ export function ChatMessages({
   const [availableHeight, setAvailableHeight] = useState(0);
   const [chatContainerHeight, setChatContainerHeight] = useState(0);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  const [actualContentHeight, setActualContentHeight] = useState(0);
   const [clickedQuestions, setClickedQuestions] = useState<Set<string>>(
     new Set()
   );
@@ -68,6 +69,7 @@ export function ChatMessages({
   const isProcessingClickRef = useRef<boolean>(false);
   const lastLogRef = useRef<any>(null);
   const lastKnownStreamHeightRef = useRef<number>(0);
+  const stackContentRef = useRef<HTMLDivElement>(null);
 
   // Check if user prefers reduced motion
   useEffect(() => {
@@ -1018,6 +1020,42 @@ export function ChatMessages({
     }
   }, [followUpQuestions.length, showFollowUps]);
 
+  // Effect to measure actual content height and grow spacer if needed
+  useEffect(() => {
+    const measureContentHeight = () => {
+      if (!stackContentRef.current) return;
+      
+      const contentElement = stackContentRef.current;
+      const measuredHeight = contentElement.scrollHeight;
+      
+      setActualContentHeight(measuredHeight);
+      
+      // If content exceeds the calculated spacer height, grow the spacer
+      if (measuredHeight > availableHeight) {
+        const newSpacerHeight = measuredHeight + 20; // Add some padding
+        console.log(`🔄 GROWING SPACER: content=${measuredHeight}px > spacer=${availableHeight}px, new spacer=${newSpacerHeight}px`);
+        setAvailableHeight(newSpacerHeight);
+      }
+    };
+
+    // Measure on content changes
+    measureContentHeight();
+
+    // Set up a resize observer to detect content changes
+    const resizeObserver = new ResizeObserver(() => {
+      measureContentHeight();
+    });
+
+    if (stackContentRef.current) {
+      resizeObserver.observe(stackContentRef.current);
+    }
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, [availableHeight, isStreaming, messages.length, followUpQuestions.length, 
+      isStreaming ? messages[messages.length - 1]?.content : null]);
+
   return (
     <div
       className="flex-1 flex flex-col overflow-hidden relative"
@@ -1223,6 +1261,7 @@ export function ChatMessages({
               
               {/* Message content positioned at top of stack */}
               <div
+                ref={stackContentRef}
                 className="absolute top-0 left-0 right-0 flex flex-col"
                 style={{
                   minHeight: `${availableHeight}px`,

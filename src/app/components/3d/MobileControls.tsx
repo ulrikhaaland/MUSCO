@@ -52,6 +52,7 @@ interface MobileControlsProps {
   onDiagnosis: (response: DiagnosisAssistantResponse) => void;
   hideBottomSheet?: boolean;
   onAreasSelected: () => void;
+  isKeyboardOpen: boolean;
 }
 
 // Use BottomSheet directly
@@ -75,6 +76,7 @@ export default function MobileControls({
   onDiagnosis,
   hideBottomSheet,
   onAreasSelected,
+  isKeyboardOpen,
 }: MobileControlsProps) {
   const { t } = useTranslation();
   const [isMobile, setIsMobile] = useState(false);
@@ -85,6 +87,7 @@ export default function MobileControls({
     SnapPoint.MINIMIZED
   );
   const previousSnapPointRef = useRef<SnapPoint>(SnapPoint.MINIMIZED);
+  const preKeyboardSnapPointRef = useRef<SnapPoint>(SnapPoint.MINIMIZED);
   const sheetRef = useRef<BottomSheetRef>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const [headerHeight, setHeaderHeight] = useState(0);
@@ -125,6 +128,7 @@ export default function MobileControls({
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
+
 
   useEffect(() => {
     const updateContentHeight = () => {
@@ -227,7 +231,8 @@ export default function MobileControls({
         loadingComplete &&
         hasContent &&
         getSnapPointIndex(currentSnapPoint) < 2 &&
-        !hasInitiallyExpanded.current
+        !hasInitiallyExpanded.current &&
+        !isKeyboardOpen
       ) {
         if (sheetRef.current) {
           let snapPoint = getSnapPoints()[1];
@@ -275,6 +280,7 @@ export default function MobileControls({
     followUpQuestions,
     contentHeight,
     userModifiedSheetHeight,
+    isKeyboardOpen,
   ]);
 
   // Update model height whenever sheet height changes
@@ -360,6 +366,39 @@ export default function MobileControls({
 
     return [minHeight, secondSnapPoint, viewportHeight * 0.78, viewportHeight];
   };
+
+  // Handle keyboard expansion/collapse of bottom sheet
+  useEffect(() => {
+    if (!sheetRef.current) return;
+
+    if (isKeyboardOpen) {
+      // Store current snap point before expanding (only if not already stored)
+      if (preKeyboardSnapPointRef.current === currentSnapPoint || preKeyboardSnapPointRef.current === SnapPoint.MINIMIZED) {
+        preKeyboardSnapPointRef.current = currentSnapPoint;
+      }
+      
+      // Expand to full height when keyboard opens
+      if (currentSnapPoint !== SnapPoint.FULL) {
+        const snapPoints = getSnapPoints();
+        const fullHeight = snapPoints[SnapPoint.FULL];
+        if (fullHeight) {
+          sheetRef.current.snapTo(fullHeight);
+          setCurrentSnapPoint(SnapPoint.FULL);
+        }
+      }
+    } else {
+      // Restore previous snap point when keyboard closes
+      const previousSnapPoint = preKeyboardSnapPointRef.current;
+      if (previousSnapPoint !== SnapPoint.FULL && currentSnapPoint === SnapPoint.FULL) {
+        const snapPoints = getSnapPoints();
+        const restoreHeight = snapPoints[previousSnapPoint];
+        if (restoreHeight) {
+          sheetRef.current.snapTo(restoreHeight);
+          setCurrentSnapPoint(previousSnapPoint);
+        }
+      }
+    }
+  }, [isKeyboardOpen, currentSnapPoint, getSnapPoints]);
 
   // Track height changes only during drag or animation
   useEffect(() => {

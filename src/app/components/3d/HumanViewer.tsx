@@ -791,6 +791,7 @@ export default function HumanViewer({
           onQuestionClick={handleQuestionClick}
           hideBottomSheet={showQuestionnaire}
           onDiagnosis={setDiagnosis}
+          isKeyboardOpen={isKeyboardOpen}
         />
       )}
 
