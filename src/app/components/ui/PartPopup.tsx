@@ -137,7 +137,6 @@ export default function PartPopup({
         followUpQuestions={followUpQuestions}
         onQuestionClick={handleQuestionSelect}
         onScroll={handleScroll}
-        onUserScroll={handleUserScroll}
         part={part}
         groups={groups}
         onResend={handleResendMessage}
