@@ -23,25 +23,13 @@ body {
   background-color: rgb(var(--background-rgb));
   color: rgb(var(--foreground-rgb));
   height: 100%;
+  overscroll-behavior-y: none;
 }
 
 /* Hide navigation menu when video modal is open */
 body.video-modal-open
   .fixed.bottom-0.left-0.z-50.w-full.border-t.border-gray-800.bg-gray-900 {
   display: none !important;
-}
-
-/* Mobile viewport stability for keyboard appearance */
-@media (max-width: 767px) {
-  .mobile-human-viewer {
-    position: relative;
-    overflow: hidden;
-  }
-  
-  .mobile-model-container {
-    position: relative;
-    overflow: hidden;
-  }
 }
 
 * {
@@ -410,30 +398,4 @@ iframe {
 
 .marquee-container {
   overflow: hidden;
-}
-
-/* Custom scrollbar styling for chat messages */
-.chat-scrollbar::-webkit-scrollbar {
-  width: 6px;
-}
-
-.chat-scrollbar::-webkit-scrollbar-track {
-  background: rgba(55, 65, 81, 0.3); /* Semi-transparent gray-700 */
-  border-radius: 3px;
-}
-
-.chat-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.6); /* Semi-transparent white */
-  border-radius: 3px;
-  transition: background 0.2s ease;
-}
-
-.chat-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.8); /* More opaque white on hover */
-}
-
-/* Firefox scrollbar styling */
-.chat-scrollbar {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.6) rgba(55, 65, 81, 0.3);
 }

@@ -69,10 +69,6 @@ export function BottomSheetFooter({
                 handleSendMessage();
               }
             }}
-            onFocus={() => {
-              // On mobile, we rely on the visual viewport API and CSS fixes
-              // to prevent the model from jumping, so no special handling needed here
-            }}
             rows={1}
             placeholder={placeholderText}
             className="w-full bg-gray-800 rounded-lg px-4 py-3 pr-12 focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"

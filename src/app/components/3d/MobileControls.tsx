@@ -94,8 +94,6 @@ export default function MobileControls({
   const [message, setMessage] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { intention, selectedExerciseGroupsRef, fullBodyRef } = useApp();
-  const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
-  const stableViewportHeight = useRef<number>(0);
 
   const {
     messages,
@@ -113,13 +111,16 @@ export default function MobileControls({
     selectedGroups: selectedGroups,
   });
 
-  // Get the actual viewport height accounting for mobile browser UI
-  const getViewportHeight = () => {
-    // Use stable viewport height when keyboard is open to prevent bottom sheet resizing
-    if (isKeyboardOpen && stableViewportHeight.current > 0) {
-      return stableViewportHeight.current;
+  // Use the largest, stable viewport height captured at mount to avoid keyboard-induced jumps
+  const initialViewportHeightRef = useRef<number>(0);
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      initialViewportHeightRef.current = window.innerHeight;
     }
-    return window.innerHeight;
+  }, []);
+
+  const getViewportHeight = () => {
+    return initialViewportHeightRef.current || window.innerHeight;
   };
 
   useEffect(() => {
@@ -132,42 +133,6 @@ export default function MobileControls({
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Add keyboard detection for MobileControls
-  useEffect(() => {
-    if (typeof window === 'undefined' || !isMobile) return;
-
-    const handleVisualViewportChange = () => {
-      if (window.visualViewport) {
-        const currentHeight = window.visualViewport.height;
-        
-        // Set initial stable height if not set
-        if (stableViewportHeight.current === 0) {
-          stableViewportHeight.current = currentHeight;
-        }
-        
-        // Detect if keyboard is open (significant height reduction)
-        const heightDifference = stableViewportHeight.current - currentHeight;
-        const keyboardThreshold = 150; // pixels
-        setIsKeyboardOpen(heightDifference > keyboardThreshold);
-      }
-    };
-
-    // Set initial visual viewport height
-    if (window.visualViewport) {
-      const initialHeight = window.visualViewport.height;
-      stableViewportHeight.current = initialHeight;
-      window.visualViewport.addEventListener('resize', handleVisualViewportChange);
-    } else {
-      // Fallback for browsers without visual viewport support
-      stableViewportHeight.current = window.innerHeight;
-    }
-
-    return () => {
-      if (window.visualViewport) {
-        window.visualViewport.removeEventListener('resize', handleVisualViewportChange);
-      }
-    };
-  }, [isMobile]);
 
   useEffect(() => {
     const updateContentHeight = () => {
@@ -273,7 +238,8 @@ export default function MobileControls({
         !hasInitiallyExpanded.current
       ) {
         if (sheetRef.current) {
-          let snapPoint = getSnapPoints()[1];
+          const snapPoints = getSnapPoints();
+          let snapPoint = snapPoints[2]; // Use EXPANDED (78%) instead of PREVIEW (40%)
 
           if (contentHeight < snapPoint) {
             snapPoint = contentHeight;
@@ -281,8 +247,11 @@ export default function MobileControls({
           setTimeout(
             () => {
               if (sheetRef.current) {
+                console.log('Auto-expanding to EXPANDED height:', snapPoint);
                 sheetRef.current.snapTo(({ maxHeight }) => snapPoint);
                 hasInitiallyExpanded.current = true;
+                // Explicitly set the snap point to EXPANDED
+                setCurrentSnapPoint(SnapPoint.EXPANDED);
               }
             },
             intention === ProgramIntention.Exercise ? 1000 : 300
@@ -320,7 +289,7 @@ export default function MobileControls({
     userModifiedSheetHeight,
   ]);
 
-  // Update model height whenever sheet height changes
+  // Update model height whenever sheet height changes (but not due to keyboard)
   const updateModelHeight = (sheetHeight: number) => {
     if (onHeightChange) {
       onHeightChange(sheetHeight);
@@ -403,6 +372,8 @@ export default function MobileControls({
 
     return [minHeight, secondSnapPoint, viewportHeight * 0.78, viewportHeight];
   };
+
+  // Removed all keyboard detection logic - keeping things simple
 
   // Track height changes only during drag or animation
   useEffect(() => {
@@ -653,7 +624,7 @@ export default function MobileControls({
             }
           }
         }}
-        onSpringEnd={() => {
+        onSpringEnd={(event) => {
           if (sheetRef.current) {
             const currentHeight = sheetRef.current.height;
 
@@ -754,5 +725,3 @@ export default function MobileControls({
     </>
   );
 }
-
-
