@@ -50,7 +50,7 @@ export default function HumanViewer({
   const rotationAnimationRef = useRef<number | null>(null);
   const [targetGender, setTargetGender] = useState<Gender | null>(null);
   const [modelContainerHeight, setModelContainerHeight] = useState('100dvh');
-  // Removed keyboard detection - keeping human viewer completely fixed instead
+  const [fixedViewportHeight, setFixedViewportHeight] = useState<number | null>(null);
   const [diagnosis, setDiagnosis] = useState<DiagnosisAssistantResponse | null>(
     null
   );
@@ -64,20 +64,29 @@ export default function HumanViewer({
       setIsMobile(window.innerWidth < 768); // md breakpoint
     };
 
+    // Capture initial viewport height to use as fixed reference
+    const captureViewportHeight = () => {
+      if (fixedViewportHeight === null) {
+        setFixedViewportHeight(window.innerHeight);
+      }
+    };
+
     // Initial check with a small delay to ensure hydration is complete
     const timeoutId = setTimeout(() => {
       checkMobile();
+      captureViewportHeight();
     }, 100);
 
     // Also check immediately for immediate feedback
     checkMobile();
+    captureViewportHeight();
     
     window.addEventListener('resize', checkMobile);
     return () => {
       clearTimeout(timeoutId);
       window.removeEventListener('resize', checkMobile);
     };
-  }, []);
+  }, [fixedViewportHeight]);
 
   // Removed keyboard-related body scroll lock - using fixed positioning instead
 
@@ -369,10 +378,18 @@ export default function HumanViewer({
   }, []); // Empty dependency array means this runs once after mount
 
   const handleBottomSheetHeight = (sheetHeight: number) => {
-    // Adjust model height based on bottom sheet height (but ignore keyboard changes)
-    const newHeight = `calc(100dvh - ${sheetHeight}px)`;
-    if (newHeight !== modelContainerHeight) {
-      setModelContainerHeight(newHeight);
+    // Use fixed viewport height to prevent keyboard-induced jumping
+    if (fixedViewportHeight && isMobile) {
+      const newHeight = `calc(${fixedViewportHeight}px - ${sheetHeight}px)`;
+      if (newHeight !== modelContainerHeight) {
+        setModelContainerHeight(newHeight);
+      }
+    } else {
+      // Fallback for desktop or before viewport height is captured
+      const newHeight = `calc(100dvh - ${sheetHeight}px)`;
+      if (newHeight !== modelContainerHeight) {
+        setModelContainerHeight(newHeight);
+      }
     }
   };
 
