@@ -34,6 +34,14 @@ export interface UserProfile {
   // Metadata
   createdAt?: string;
   updatedAt?: string;
+
+  // Subscription (Stripe)
+  isSubscriber?: boolean; // quick gate
+  subscriptionStatus?: 'active' | 'trialing' | 'past_due' | 'canceled' | 'unpaid' | string;
+  subscriptionPlan?: 'monthly' | 'annual' | string;
+  stripeCustomerId?: string;
+  stripeSubscriptionId?: string;
+  currentPeriodEnd?: string; // ISO date
 }
 
 export interface ExtendedUser extends FirebaseUser {

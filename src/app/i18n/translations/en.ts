@@ -1037,6 +1037,11 @@ const translations = {
   'landing.hero.reviewsAria': 'Read customer reviews',
 
   // Landing page
+  'landing.nav.how': 'How it works',
+  'landing.nav.programs': 'Programs',
+  'landing.nav.why': 'Why',
+  'landing.nav.pricing': 'Pricing',
+  'landing.nav.faq': 'FAQ',
   'landing.how.title': 'How it works',
   'landing.how.step1': 'Select body area & chat briefly',
   'landing.how.step2': '7 questions + safety red flags',
@@ -1078,6 +1083,7 @@ const translations = {
   'landing.pricing.monthlyPrice': '$9 / month',
   'landing.pricing.annualPrice': '$79 / year',
   'landing.pricing.note': 'No commitment. Cancel anytime.',
+  'landing.pricing.try': 'Try free',
 
   'landing.faq.title': 'FAQ',
   'landing.faq.q1': 'Do I need an account to start?',

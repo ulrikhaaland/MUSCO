@@ -2,12 +2,7 @@ import { useState, useEffect } from 'react';
 import { ProgramDaySummaryComponent } from './ProgramDaySummaryComponent';
 import { WeekOverview } from './WeekOverview';
 import { ProgramType } from '../../../../shared/types';
-import {
-  Exercise,
-  ExerciseProgram,
-  ProgramDay,
-  ProgramStatus,
-} from '@/app/types/program';
+import { Exercise, ExerciseProgram, ProgramDay } from '@/app/types/program';
 import { useAuth } from '@/app/context/AuthContext';
 import { useUser } from '@/app/context/UserContext';
 import { useTranslation } from '@/app/i18n';
@@ -22,12 +17,9 @@ import {
   addDays,
 } from '@/app/utils/dateutils';
 import {
-  isRecoveryProgramPath,
-  hasRecoveryProgramInSession,
   isViewingCustomRecoveryProgram,
   getRecoveryProgramFromSession,
   saveRecoveryProgramToAccount,
-  createMinimalRecoveryProgram,
   clearRecoveryProgramFromSession,
 } from '../../services/recoveryProgramService';
 
@@ -241,7 +233,7 @@ export function ExerciseProgramPage({
         });
       }
     }, 100);
-  }, [program, isCustomProgram, activeProgram, currentDayOfWeek]);
+  }, [program, isCustomProgram, activeProgram, currentDayOfWeek, expandedDays, isViewingCustomProgram]);
 
   const handleWeekChange = (weekNumber: number) => {
     setSelectedWeek(weekNumber);
@@ -361,6 +353,17 @@ export function ExerciseProgramPage({
 
   // Render next week card function inside the component
   const renderNextWeekCard = () => {
+    const isUserSubscribed = () => {
+      const profile = user?.profile;
+      if (!profile) return false;
+      if (profile.isSubscriber) return true;
+      const status = profile.subscriptionStatus;
+      const active = status === 'active' || status === 'trialing';
+      if (!active) return false;
+      if (!profile.currentPeriodEnd) return active;
+      return new Date(profile.currentPeriodEnd).getTime() > Date.now();
+    };
+
     // Show the "Coming Soon" card with a button to start feedback
     return (
       <div className="bg-gray-800/50 rounded-xl overflow-hidden ring-1 ring-gray-700/50 p-8">
@@ -386,6 +389,12 @@ export function ExerciseProgramPage({
           </p>
           <button
             onClick={() => {
+              // Require subscription to generate follow-up
+              if (!user || !isUserSubscribed()) {
+                router.push('/subscribe');
+                return;
+              }
+
               // Check if user is eligible to create a follow-up program
               const isDebugMode = process.env.NODE_ENV === 'development';
 

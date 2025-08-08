@@ -14,6 +14,7 @@ This document provides a high-level summary of the MUSCO repository and pointers
 - **Hooks** – Custom React hooks live in `src/app/hooks` and encapsulate stateful logic such as chat streaming, Human API integration, and tutorial controls.
 - **Services** – Core domain logic resides in `src/app/services`, covering program generation, questionnaire handling, and feedback collection.
 - **Utilities** – Stateless helpers are found in `src/app/utils`.
+- **Billing** – Stripe integration lives under `src/app/api/subscribe` (checkout + webhook) and `src/app/lib/stripe.ts`. User subscription state is stored in Firestore `users` docs and mirrored on the client via `AuthContext`.
 - **Firebase Functions** – Backend functions under `functions/` provide authentication helpers and other server-side tasks.
 - **Data & Scripts** – Exercise template data lives in `public/data`. The `scripts/` folder contains scrapers and conversion utilities for that data.
 

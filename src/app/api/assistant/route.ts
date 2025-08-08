@@ -15,6 +15,7 @@ import { OpenAIMessage } from '@/app/types';
 import { ProgramStatus } from '@/app/types/program';
 import { chatSystemPrompt } from '@/app/api/prompts/chatPrompt';
 import { getOrCreateExploreAssistant, streamExploreResponse } from '@/app/api/assistant/explore-assistant';
+import { adminDb } from '@/app/firebase/admin';
 
 // Initialize OpenAI client
 const openai = new OpenAI({
@@ -22,7 +23,7 @@ const openai = new OpenAI({
 });
 
 export async function POST(request: Request) {
-  const handlerStartTime = performance.now();
+  const handlerStartTime = Date.now();
   console.log(`[API Route] POST /api/assistant received.`);
   try {
     const { action, threadId, payload, stream } = await request.json();
@@ -40,7 +41,7 @@ export async function POST(request: Request) {
       }
 
       case 'send_message': {
-        const sendMessageStartTime = performance.now();
+        const sendMessageStartTime = Date.now();
         console.log(
           `[API Route] Action: send_message started. Stream: ${stream}. Time since handler start: ${sendMessageStartTime - handlerStartTime} ms`
         );
@@ -74,19 +75,19 @@ export async function POST(request: Request) {
           // Set up streaming response
           const encoder = new TextEncoder();
           let firstChunkSent = false;
-          const streamSetupTime = performance.now();
+          const streamSetupTime = Date.now();
           console.log(
             `[API Route] Starting stream setup. Time since send_message start: ${streamSetupTime - sendMessageStartTime} ms`
           );
 
           const customReadable = new ReadableStream({
             async start(controller) {
-              const streamStartTime = performance.now();
+              const streamStartTime = Date.now();
               console.log(
                 `[API Route] ReadableStream start() called. Time since stream setup: ${streamStartTime - streamSetupTime} ms`
               );
               try {
-                const callOpenAIStreamStartTime = performance.now();
+                const callOpenAIStreamStartTime = Date.now();
                 console.log(
                   `[API Route] Calling streamChatCompletion... Time since stream start: ${callOpenAIStreamStartTime - streamStartTime} ms`
                 );
@@ -94,7 +95,7 @@ export async function POST(request: Request) {
                 if (payload?.mode === 'explore') {
                   const exploreAssistantId = await getOrCreateExploreAssistant();
                   await streamExploreResponse(threadId, exploreAssistantId, (content) => {
-                    const openaiStreamChunkReceivedTime = performance.now();
+                    const openaiStreamChunkReceivedTime = Date.now();
                     if (!firstChunkSent) {
                       console.log(`[API Route] First chunk RECEIVED from Explore stream. +${openaiStreamChunkReceivedTime - callOpenAIStreamStartTime} ms`);
                     }
@@ -113,7 +114,7 @@ export async function POST(request: Request) {
                   userMessage: payload,
                   modelName: 'gpt-5-nano',
                   onContent: (content) => {
-                    const openaiStreamChunkReceivedTime = performance.now();
+                     const openaiStreamChunkReceivedTime = Date.now();
                     if (!firstChunkSent) {
                       console.log(
                         `[API Route] First chunk RECEIVED from OpenAI stream. Time since calling streamChatCompletion: ${openaiStreamChunkReceivedTime - callOpenAIStreamStartTime} ms`
@@ -125,7 +126,7 @@ export async function POST(request: Request) {
                     );
                     controller.enqueue(chunk);
                     if (!firstChunkSent) {
-                      const firstChunkSentTime = performance.now();
+                       const firstChunkSentTime = Date.now();
                       console.log(
                         `[API Route] First chunk ENQUEUED to client response. Time since receiving from OpenAI: ${firstChunkSentTime - openaiStreamChunkReceivedTime} ms`
                       );
@@ -135,7 +136,7 @@ export async function POST(request: Request) {
                 });
                 }
 
-                const streamFinishedTime = performance.now();
+                const streamFinishedTime = Date.now();
                 console.log(
                   `[API Route] streamChatCompletion finished. Total stream duration: ${streamFinishedTime - callOpenAIStreamStartTime} ms`
                 );
@@ -149,7 +150,7 @@ export async function POST(request: Request) {
             },
           });
 
-          const returnResponseTime = performance.now();
+          const returnResponseTime = Date.now();
           console.log(
             `[API Route] Returning streaming response object. Time since stream setup: ${returnResponseTime - streamSetupTime} ms`
           );
@@ -253,6 +254,37 @@ export async function POST(request: Request) {
         }
 
         try {
+          // Server-side subscription enforcement
+          if (!payload.userId) {
+            return NextResponse.json(
+              { error: 'Unauthorized' },
+              { status: 401 }
+            );
+          }
+
+          try {
+            const userDoc = await adminDb.collection('users').doc(payload.userId).get();
+            const data = userDoc.exists ? (userDoc.data() as any) : null;
+            const status = data?.subscriptionStatus;
+            const isSubscriber = data?.isSubscriber === true || status === 'active' || status === 'trialing';
+            let withinPeriod = true;
+            if (data?.currentPeriodEnd) {
+              withinPeriod = new Date(data.currentPeriodEnd).getTime() > Date.now();
+            }
+            if (!isSubscriber || !withinPeriod) {
+              return NextResponse.json(
+                { error: 'Subscription required' },
+                { status: 402 } // Payment required
+              );
+            }
+          } catch (subErr) {
+            console.error('Subscription check failed:', subErr);
+            return NextResponse.json(
+              { error: 'Subscription verification failed' },
+              { status: 500 }
+            );
+          }
+
           const program = await generateFollowUpExerciseProgram({
             diagnosisData: payload.diagnosisData,
             userInfo: payload.userInfo,
@@ -283,7 +315,7 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
     }
   } catch (error) {
-    const errorTime = performance.now();
+    const errorTime = Date.now();
     console.error(
       `[API Route] Error in assistant API: ${error}. Time since handler start: ${errorTime - handlerStartTime} ms`
     );

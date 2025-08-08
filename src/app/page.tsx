@@ -96,6 +96,10 @@ export default function LandingPage() {
   const demoRef = useRef<HTMLDivElement | null>(null);
   const pricingRef = useRef<HTMLDivElement | null>(null);
   const faqRef = useRef<HTMLDivElement | null>(null);
+  const [currentSection, setCurrentSection] = useState<'how'|'programs'|'why'|'demo'|'pricing'|'faq'|'top'>('top');
+  const [demoTapCount, setDemoTapCount] = useState(0);
+  const [demoTyping, setDemoTyping] = useState(false);
+  const SHOW_PRICING = true;
 
   // Soft-redirect signed-in users to /app (delay ~800ms), always show Open app
   useEffect(() => {
@@ -121,13 +125,15 @@ export default function LandingPage() {
       [programsRef.current, 'programs'],
       [whyRef.current, 'why'],
       [demoRef.current, 'demo'],
-      [pricingRef.current, 'pricing'],
+      [SHOW_PRICING ? pricingRef.current : null, 'pricing'],
       [faqRef.current, 'faq'],
     ];
     const observer = new IntersectionObserver((list) => {
       list.forEach((i) => {
         if (i.isIntersecting) {
           logAnalyticsEvent('landing_section_view', { id: i.target.getAttribute('data-id') });
+          const id = i.target.getAttribute('data-id') as any;
+          setCurrentSection(id);
         }
       });
     }, { threshold: 0.4 });
@@ -138,7 +144,7 @@ export default function LandingPage() {
       }
     });
     return () => observer.disconnect();
-  }, []);
+  }, [SHOW_PRICING]);
 
   const scrollTo = (ref: React.RefObject<HTMLDivElement>) => ref.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
@@ -151,11 +157,13 @@ export default function LandingPage() {
             <Logo />
           </button>
           <nav className="hidden md:flex items-center gap-6 text-gray-300">
-            <button onClick={() => scrollTo(howRef)} className="hover:text-white focus:outline-none focus:ring-2 focus:ring-white/30">{t('landing.nav.how')}</button>
-            <button onClick={() => scrollTo(programsRef)} className="hover:text-white focus:outline-none focus:ring-2 focus:ring-white/30">{t('landing.nav.programs')}</button>
-            <button onClick={() => scrollTo(whyRef)} className="hover:text-white focus:outline-none focus:ring-2 focus:ring-white/30">{t('landing.nav.why')}</button>
-            <button onClick={() => scrollTo(pricingRef)} className="hover:text-white focus:outline-none focus:ring-2 focus:ring-white/30">{t('landing.nav.pricing')}</button>
-            <button onClick={() => scrollTo(faqRef)} className="hover:text-white focus:outline-none focus:ring-2 focus:ring-white/30">{t('landing.nav.faq')}</button>
+            <button onClick={() => scrollTo(howRef)} className={`hover:text-white focus:outline-none focus:ring-2 focus:ring-white/30 ${currentSection==='how'?'text-white':''}`}>{t('landing.nav.how')}</button>
+            <button onClick={() => scrollTo(programsRef)} className={`hover:text-white focus:outline-none focus:ring-2 focus:ring-white/30 ${currentSection==='programs'?'text-white':''}`}>{t('landing.nav.programs')}</button>
+            <button onClick={() => scrollTo(whyRef)} className={`hover:text-white focus:outline-none focus:ring-2 focus:ring-white/30 ${currentSection==='why'?'text-white':''}`}>{t('landing.nav.why')}</button>
+            {SHOW_PRICING && (
+              <button onClick={() => scrollTo(pricingRef)} className={`hover:text-white focus:outline-none focus:ring-2 focus:ring-white/30 ${currentSection==='pricing'?'text-white':''}`}>{t('landing.nav.pricing')}</button>
+            )}
+            <button onClick={() => scrollTo(faqRef)} className={`hover:text-white focus:outline-none focus:ring-2 focus:ring-white/30 ${currentSection==='faq'?'text-white':''}`}>{t('landing.nav.faq')}</button>
           </nav>
           <div className="flex items-center gap-3">
             {!user && (
@@ -246,30 +254,38 @@ export default function LandingPage() {
       <section ref={demoRef} className="mx-auto max-w-3xl px-6 py-16 md:py-24">
         <h2 className="text-white text-2xl font-semibold mb-4">{t("landing.demo.title")}</h2>
         <div className="rounded-xl p-5 border border-white/15 bg-[#141922] text-gray-200">
-          <p className="mb-3 min-h-[80px]">{t("landing.demo.chat")}</p>
+          <div className="mb-3 min-h-[80px]">
+            <p>{t("landing.demo.chat")}</p>
+            {demoTyping && (
+              <div className="mt-2 h-4 w-24 bg-white/10 rounded animate-pulse" aria-hidden />
+            )}
+          </div>
           <div className="flex gap-2 flex-wrap">
             {[1, 2, 3].map((step) => (
               <button
                 key={step}
                 className="px-3 py-1 bg-gray-700 rounded-md hover:bg-gray-600"
-                onClick={() => logAnalyticsEvent("fake_demo_interaction", { step })}
+                onClick={() => { setDemoTapCount((c)=>c+1); setDemoTyping(true); setTimeout(()=>setDemoTyping(false), 350); logAnalyticsEvent("fake_demo_interaction", { step }); }}
               >
                 {t(`landing.demo.quick${step}`)}
               </button>
             ))}
           </div>
-          <div className="mt-4">
-            <button
-              className="px-5 py-3 bg-indigo-600 text-white rounded-md hover:bg-indigo-500"
-              onClick={() => goAppWith(ProgramIntention.Recovery)}
-            >
-              {t("landing.demo.cta")}
-            </button>
-          </div>
+          {demoTapCount >= 2 && (
+            <div className="mt-4">
+              <button
+                className="px-5 py-3 bg-indigo-600 text-white rounded-md hover:bg-indigo-500"
+                onClick={() => goAppWith(ProgramIntention.Recovery)}
+              >
+                {t("landing.demo.cta")}
+              </button>
+            </div>
+          )}
         </div>
       </section>
 
       {/* Pricing */}
+      {SHOW_PRICING && (
       <section ref={pricingRef} className="mx-auto max-w-3xl px-6 py-16 md:py-24">
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-white text-2xl font-semibold">{t("landing.pricing.title")}</h2>
@@ -295,6 +311,7 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
+      )}
 
       {/* FAQ */}
       <section ref={faqRef} className="mx-auto max-w-3xl px-6 py-16 md:py-24">

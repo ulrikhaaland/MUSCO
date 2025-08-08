@@ -1120,6 +1120,11 @@ const translations = {
   'landing.hero.reviewsAria': 'Les kundeanmeldelser',
 
   // Landing page
+  'landing.nav.how': 'Slik fungerer det',
+  'landing.nav.programs': 'Programmer',
+  'landing.nav.why': 'Hvorfor',
+  'landing.nav.pricing': 'Pris',
+  'landing.nav.faq': 'FAQ',
   'landing.how.title': 'Slik fungerer det',
   'landing.how.step1': 'Velg område og chat kort',
   'landing.how.step2': '7 spørsmål + sikkerhetsvarsler',
@@ -1161,6 +1166,7 @@ const translations = {
   'landing.pricing.monthlyPrice': '99 kr / mnd',
   'landing.pricing.annualPrice': '899 kr / år',
   'landing.pricing.note': 'Ingen bindingstid. Kan avsluttes når som helst.',
+  'landing.pricing.try': 'Prøv gratis',
 
   'landing.faq.title': 'FAQ',
   'landing.faq.q1': 'Trenger jeg konto for å starte?',
