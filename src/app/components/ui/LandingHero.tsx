@@ -73,58 +73,55 @@ export default function LandingHero({ onSelect }: { onSelect: (m: ViewerMode) =>
         </div>
         {/* Media: fanned stack */}
         <div className="order-1 md:order-2">
-          <div ref={containerRef} className="relative h-[320px] sm:h-[360px] md:h-[420px]">
+          <div ref={containerRef} className="relative h-[360px] sm:h-[420px] md:h-[460px]">
             {/* Radial glow */}
             <div className="pointer-events-none absolute inset-0 [background:radial-gradient(60%_60%_at_50%_50%,rgba(255,255,255,0.08)_0%,transparent_70%)]" />
 
             {/* Back surface: Select area */}
             <div
-              className="absolute left-1/2 top-1/2 w-[78%] sm:w-[75%] md:w-[70%] -translate-x-1/2 -translate-y-1/2 rounded-xl border border-white/15 shadow-[0_20px_60px_rgba(0,0,0,0.35)] overflow-hidden"
+              className="absolute left-1/2 top-1/2 w-[78%] sm:w-[75%] md:w-[70%] aspect-video -translate-x-1/2 -translate-y-1/2 rounded-xl border border-white/15 shadow-[0_20px_60px_rgba(0,0,0,0.35)] overflow-hidden relative bg-[#141922]"
               style={{
                 transform: `translate(calc(-50% + ${prefersReducedMotion ? 0 : offset.x * -0.3}px), calc(-50% + ${prefersReducedMotion ? 0 : offset.y * -0.3}px)) rotate(-10deg) scale(0.94)`
               }}
             >
-              <Image
-                src="/landingpage/images/hero-select.webp"
+              <img
+                src="/landingpage/select_area.png"
                 alt={t('landing.hero.alt.select')}
-                fill
-                priority
-                sizes="(max-width: 768px) 75vw, 40vw"
-                className="object-cover"
+                className="absolute inset-0 h-full w-full object-cover"
+                loading="eager"
+                decoding="async"
               />
             </div>
 
             {/* Middle surface: Answer questions */}
             <div
-              className="absolute left-1/2 top-1/2 w-[84%] sm:w-[80%] md:w-[76%] -translate-x-1/2 -translate-y-1/2 rounded-xl border border-white/15 shadow-[0_18px_50px_rgba(0,0,0,0.35)] overflow-hidden"
+              className="absolute left-1/2 top-1/2 w-[84%] sm:w-[80%] md:w-[76%] aspect-video -translate-x-1/2 -translate-y-1/2 rounded-xl border border-white/15 shadow-[0_18px_50px_rgba(0,0,0,0.35)] overflow-hidden relative bg-[#141922]"
               style={{
                 transform: `translate(calc(-50% + ${prefersReducedMotion ? 0 : offset.x * 0.2}px), calc(-50% + ${prefersReducedMotion ? 0 : offset.y * 0.2}px)) rotate(8deg) scale(0.97)`
               }}
             >
-              <Image
-                src="/landingpage/images/hero-chat.webp"
+              <img
+                src="/landingpage/answer_questions.png"
                 alt={t('landing.hero.alt.chat')}
-                fill
-                priority
-                sizes="(max-width: 768px) 80vw, 45vw"
-                className="object-cover"
+                className="absolute inset-0 h-full w-full object-cover"
+                loading="eager"
+                decoding="async"
               />
             </div>
 
             {/* Front surface: Your plan */}
             <div
-              className="absolute left-1/2 top-1/2 w-[90%] sm:w-[86%] md:w-[82%] -translate-x-1/2 -translate-y-1/2 rounded-xl border border-white/15 shadow-[0_16px_44px_rgba(0,0,0,0.35)] overflow-hidden"
+              className="absolute left-1/2 top-1/2 w-[90%] sm:w-[86%] md:w-[82%] aspect-video -translate-x-1/2 -translate-y-1/2 rounded-xl border border-white/15 shadow-[0_16px_44px_rgba(0,0,0,0.35)] overflow-hidden relative bg-[#141922]"
               style={{
                 transform: `translate(calc(-50% + ${prefersReducedMotion ? 0 : offset.x * 0.5}px), calc(-50% + ${prefersReducedMotion ? 0 : offset.y * 0.5}px)) rotate(-6deg) scale(1)`
               }}
             >
-              <Image
-                src="/landingpage/images/hero-plan.webp"
+              <img
+                src="/landingpage/your_plan.png"
                 alt={t('landing.hero.alt.plan')}
-                fill
-                priority
-                sizes="(max-width: 768px) 86vw, 50vw"
-                className="object-cover"
+                className="absolute inset-0 h-full w-full object-cover"
+                loading="eager"
+                decoding="async"
               />
             </div>
           </div>
