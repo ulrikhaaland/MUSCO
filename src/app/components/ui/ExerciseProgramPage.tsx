@@ -233,7 +233,7 @@ export function ExerciseProgramPage({
         });
       }
     }, 100);
-  }, [program, isCustomProgram, activeProgram, currentDayOfWeek, expandedDays, isViewingCustomProgram]);
+  }, [program, isCustomProgram, activeProgram, currentDayOfWeek]);
 
   const handleWeekChange = (weekNumber: number) => {
     setSelectedWeek(weekNumber);
@@ -360,8 +360,10 @@ export function ExerciseProgramPage({
       const status = profile.subscriptionStatus;
       const active = status === 'active' || status === 'trialing';
       if (!active) return false;
-      if (!profile.currentPeriodEnd) return active;
-      return new Date(profile.currentPeriodEnd).getTime() > Date.now();
+      if (profile.currentPeriodEnd) {
+        return new Date(profile.currentPeriodEnd).getTime() > Date.now();
+      }
+      return true;
     };
 
     // Show the "Coming Soon" card with a button to start feedback
@@ -389,12 +391,11 @@ export function ExerciseProgramPage({
           </p>
           <button
             onClick={() => {
-              // Require subscription to generate follow-up
-              if (!user || !isUserSubscribed()) {
+              // Subscription gate first
+              if (!isUserSubscribed()) {
                 router.push('/subscribe');
                 return;
               }
-
               // Check if user is eligible to create a follow-up program
               const isDebugMode = process.env.NODE_ENV === 'development';
 

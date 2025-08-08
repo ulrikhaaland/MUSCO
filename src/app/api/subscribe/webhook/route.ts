@@ -10,11 +10,7 @@ export async function POST(request: Request) {
   const body = await request.text();
   let event: any;
   try {
-    event = stripe.webhooks.constructEvent(
-      body,
-      signature,
-      process.env.STRIPE_WEBHOOK_SECRET as string
-    );
+    event = stripe.webhooks.constructEvent(body, signature, process.env.STRIPE_WEBHOOK_SECRET as string);
   } catch (err) {
     console.error('Webhook signature verification failed.', err);
     return new NextResponse('Bad signature', { status: 400 });
@@ -45,16 +41,9 @@ export async function POST(request: Request) {
         const sub = event.data.object as any;
         const customerId = sub.customer as string;
         const status = sub.status as string;
-        const currentPeriodEnd = sub.current_period_end
-          ? new Date(sub.current_period_end * 1000).toISOString()
-          : undefined;
+        const currentPeriodEnd = sub.current_period_end ? new Date(sub.current_period_end * 1000).toISOString() : undefined;
 
-        // Lookup user by stripeCustomerId
-        const snap = await adminDb
-          .collection('users')
-          .where('stripeCustomerId', '==', customerId)
-          .limit(1)
-          .get();
+        const snap = await adminDb.collection('users').where('stripeCustomerId', '==', customerId).limit(1).get();
         if (!snap.empty) {
           const doc = snap.docs[0];
           await doc.ref.set(

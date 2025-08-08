@@ -36,7 +36,7 @@ export interface UserProfile {
   updatedAt?: string;
 
   // Subscription (Stripe)
-  isSubscriber?: boolean; // quick gate
+  isSubscriber?: boolean;
   subscriptionStatus?: 'active' | 'trialing' | 'past_due' | 'canceled' | 'unpaid' | string;
   subscriptionPlan?: 'monthly' | 'annual' | string;
   stripeCustomerId?: string;

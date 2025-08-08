@@ -126,11 +126,6 @@
       /assistant/ – AI assistant API endpoints
       /debug/ – Debug and development API routes
       /prompts/ – AI prompt management endpoints
-      /subscribe/ – Stripe subscription API (checkout and webhook)
-        /checkout/
-          route.ts – Create Stripe Checkout session for monthly/annual plans
-        /webhook/
-          route.ts – Stripe webhook to sync subscription status to Firestore
       /templates/ – Template management API routes
       /write-exercises/ – Exercise creation API endpoints
       /youtube/ – YouTube integration API endpoints
@@ -151,7 +146,6 @@
     /hooks/ – Custom React hooks
     /i18n/ – Internationalization and localization
     /lib/ – Third-party library configurations and wrappers
-      stripe.ts – Stripe SDK init and price constants
     /login/ – Login page and authentication flow
     /privacy/ – Privacy-related pages
     /privacy-policy/ – Privacy policy page
@@ -162,8 +156,6 @@
       /[slug]/ – Dynamic program detail pages
       /calendar/ – Program calendar and scheduling
       /day/ – Daily program view and management
-      /feedback/
-        page.tsx – Program feedback collection and follow-up generation (subscribers only)
     /programs/ – Program management and display
     /scripts/ – Client-side utility scripts
     /services/ – API service layer and data fetching
@@ -172,7 +164,7 @@
       human.ts – Human body and anatomy type definitions
       index.ts – Main type exports and shared interfaces
       program.ts – Program and workout type definitions
-      user.ts – User and profile type definitions (includes subscription fields)
+      user.ts – User and profile type definitions
     /utils/ – Utility functions and helpers
   /components/
     PartnerLogos.tsx – Partner company logos display component 

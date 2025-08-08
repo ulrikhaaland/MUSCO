@@ -75,24 +75,6 @@ function FeedbackPageContent() {
       return Promise.reject(new Error(t('exerciseProgram.feedback.error')));
     }
 
-    // Subscription gate: only subscribers can generate follow-up
-    const isSubscribed = (() => {
-      const profile = user.profile;
-      if (!profile) return false;
-      if (profile.isSubscriber) return true;
-      const status = profile.subscriptionStatus;
-      const active = status === 'active' || status === 'trialing';
-      if (!active) return false;
-      if (!profile.currentPeriodEnd) return active;
-      return new Date(profile.currentPeriodEnd).getTime() > Date.now();
-    })();
-
-    if (!isSubscribed) {
-      // Redirect to subscribe page
-      router.push('/subscribe');
-      return Promise.reject(new Error('subscription_required'));
-    }
-
     try {
       // For custom 4-week programs, use the entire program since it's already structured correctly
       // For regular programs, use the program as-is

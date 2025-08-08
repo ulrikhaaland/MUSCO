@@ -45,8 +45,8 @@
     "react-spring": "^8.0.27",
     "react-spring-bottom-sheet": "3.5.0-alpha.0",
     "resend": "^4.4.0",
-    "stripe": "^16.6.0",
-    "server-only": "^0.0.1"
+    "server-only": "^0.0.1",
+    "stripe": "^16.6.0"
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
