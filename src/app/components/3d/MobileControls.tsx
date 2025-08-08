@@ -120,6 +120,11 @@ export default function MobileControls({
   }, []);
 
   const getViewportHeight = () => {
+    // Use 100svh which is stable across keyboard toggles on modern iOS
+    if (typeof window !== 'undefined' && (window as any).CSS?.supports?.('height', '100svh')) {
+      // Approximate svh via visualViewport when available
+      return window.visualViewport?.height || window.innerHeight;
+    }
     return initialViewportHeightRef.current || window.innerHeight;
   };
 

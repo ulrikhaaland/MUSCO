@@ -51,7 +51,7 @@ export default function HumanViewer({
   const viewerWrapperRef = useRef<HTMLDivElement | null>(null);
   const [supportsKeyboardEnv, setSupportsKeyboardEnv] = useState(false);
   const [targetGender, setTargetGender] = useState<Gender | null>(null);
-  const [modelContainerHeight, setModelContainerHeight] = useState('100lvh');
+  const [modelContainerHeight, setModelContainerHeight] = useState('100svh');
   const [diagnosis, setDiagnosis] = useState<DiagnosisAssistantResponse | null>(
     null
   );
@@ -594,13 +594,7 @@ export default function HumanViewer({
   return (
     <div
       className="flex flex-col md:flex-row relative w-screen overflow-hidden"
-      style={{
-        height: isMobile
-          ? supportsKeyboardEnv
-            ? 'calc(100svh - env(keyboard-inset-height, 0px))'
-            : '100dvh'
-          : undefined,
-      }}
+      style={{ height: isMobile ? '100svh' : undefined }}
     >
       {/* Fullscreen overlay when dragging */}
       {isDragging && (
@@ -625,7 +619,7 @@ export default function HumanViewer({
         <div
           className="md:h-screen w-full"
           style={{
-            height: isMobile ? modelContainerHeight : '100dvh',
+            height: isMobile ? '100svh' : '100dvh',
             position: 'relative',
             top: 0,
             left: 0,
