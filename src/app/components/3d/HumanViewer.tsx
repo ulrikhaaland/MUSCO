@@ -382,12 +382,9 @@ export default function HumanViewer({
   }, []); // Empty dependency array means this runs once after mount
 
   const handleBottomSheetHeight = (sheetHeight: number) => {
-    const base = supportsKeyboardEnv
-      ? 'calc(100svh - env(keyboard-inset-height, 0px))'
-      : '100dvh';
-    const newHeight = `calc(${base} - ${sheetHeight}px)`;
-    if (newHeight !== modelContainerHeight) {
-      setModelContainerHeight(newHeight);
+    // Drive a CSS var to avoid React state reflows
+    if (typeof document !== 'undefined') {
+      document.documentElement.style.setProperty('--sheet-height', `${sheetHeight}px`);
     }
   };
 
@@ -619,7 +616,7 @@ export default function HumanViewer({
         <div
           className="md:h-screen w-full"
           style={{
-            height: isMobile ? '100svh' : '100dvh',
+            height: isMobile ? 'calc(100svh - var(--sheet-height))' : '100dvh',
             position: 'relative',
             top: 0,
             left: 0,

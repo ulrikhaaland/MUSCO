@@ -19,7 +19,7 @@ export async function streamChatCompletion({
   messages,
   systemMessage,
   userMessage,
-  modelName = 'gpt-5',
+  modelName = 'gpt-5-nano',
   onContent,
 }: {
   threadId: string;
@@ -1006,7 +1006,7 @@ export async function getChatCompletion({
   messages,
   systemMessage,
   userMessage,
-  modelName = 'gpt-5',
+  modelName = 'gpt-5-nano',
 }: {
   threadId: string;
   messages: any[];

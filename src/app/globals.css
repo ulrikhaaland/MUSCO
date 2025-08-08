@@ -26,6 +26,11 @@ body {
   overscroll-behavior-y: none;
 }
 
+/* CSS variable used to subtract bottom sheet height from the viewer without reflow */
+:root {
+  --sheet-height: 0px;
+}
+
 /* Hide navigation menu when video modal is open */
 body.video-modal-open
   .fixed.bottom-0.left-0.z-50.w-full.border-t.border-gray-800.bg-gray-900 {
