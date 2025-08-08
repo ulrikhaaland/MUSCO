@@ -222,33 +222,34 @@ export default function LandingPage() {
         <h2 className="text-white text-2xl font-semibold mb-4">{t("landing.programs.title")}</h2>
         <div className="grid gap-6 md:gap-8 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
           {[
-            { key: 'lower_back', img: '/bodyparts/lower_back.png' },
-            { key: 'runners_knee', img: '/bodyparts/knees.png' },
-            { key: 'shoulder_pain', img: '/bodyparts/shoulders.png' },
-            { key: 'tech_neck', img: '/bodyparts/neck.png' },
-            { key: 'ankle_sprain', img: '/bodyparts/feet.png' },
-            { key: 'plantar_fasciitis', img: '/bodyparts/feet.png' },
-            { key: 'tennis_elbow', img: '/bodyparts/elbows.png' },
-            { key: 'hamstring_strain', img: '/bodyparts/upper_legs_behind.png' },
-            { key: 'upper_back_core', img: '/bodyparts/upper_back_and_core.png' },
-            { key: 'core_stability', img: '/bodyparts/abdomen.png' },
-          ].map(({ key, img }) => (
+            { key: 'lower_back', slug: 'lower-back', img: '/bodyparts/lower_back.png' },
+            { key: 'runners_knee', slug: 'runners-knee', img: '/bodyparts/knees.png' },
+            { key: 'shoulder_pain', slug: 'shoulder', img: '/bodyparts/shoulders.png' },
+            { key: 'tech_neck', slug: 'tech-neck', img: '/bodyparts/neck.png' },
+            { key: 'ankle_sprain', slug: 'ankle-sprain', img: '/bodyparts/feet.png' },
+            { key: 'plantar_fasciitis', slug: 'plantar-fasciitis', img: '/bodyparts/feet.png' },
+            { key: 'tennis_elbow', slug: 'tennis-elbow', img: '/bodyparts/elbows.png' },
+            { key: 'hamstring_strain', slug: 'hamstring', img: '/bodyparts/upper_legs_behind.png' },
+            { key: 'upper_back_core', slug: 'upper-back-core', img: '/bodyparts/upper_back_and_core.png' },
+            { key: 'core_stability', slug: 'core-stability', img: '/bodyparts/abdomen.png' },
+            { key: 'shin_splints', slug: 'shin-splints', img: '/bodyparts/shin.png' },
+          ].map(({ key, slug, img }) => (
             <button
               key={key}
-              className="text-left rounded-xl border border-white/15 bg-[#141922] text-gray-200 hover:-translate-y-0.5 hover:border-white/25 transition will-change-transform focus:outline-none focus:ring-2 focus:ring-indigo-500 overflow-hidden"
+              className="group text-left rounded-xl overflow-hidden bg-[#141922] ring-1 ring-white/12 shadow-lg hover:shadow-xl hover:translate-y-[-1px] transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
               onClick={() => {
                 logAnalyticsEvent("program_card_open", { condition: key });
-                setModalOpen(key);
+                router.push(`/program/${slug}`);
               }}
             >
-              <div className="flex items-stretch min-h-[88px]">
+              <div className="flex items-stretch min-h-[96px]">
                 {/* Image pane hugging the left border, inherits rounded-l-xl */}
                 <div className="w-20 sm:w-24 md:w-28 bg-[#0E1116] border-r border-white/10 flex items-center justify-center">
-                  <img src={img} alt="" className="h-full w-full object-contain p-1" />
+                  <img src={img} alt="" className="h-full w-full object-contain p-1 group-hover:scale-105 transition-transform duration-200" />
                 </div>
                 <div className="p-5 flex-1">
-                  <div className="text-white font-medium mb-1">{t(`landing.programs.${key}`)}</div>
-                  <div className="text-sm">{t("landing.programs.sampleWeek")}</div>
+                  <div className="text-white font-medium mb-1 tracking-tight">{t(`landing.programs.${key}`)}</div>
+                  <div className="text-[13px] text-white/80">4‑week plan • guided exercises</div>
                 </div>
               </div>
             </button>

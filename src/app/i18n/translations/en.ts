@@ -1064,6 +1064,7 @@ const translations = {
   'landing.programs.hamstring_strain': 'Hamstring strain',
   'landing.programs.upper_back_core': 'Upper back & core',
   'landing.programs.core_stability': 'Core stability',
+  'landing.programs.shin_splints': 'Shin splints',
   'landing.programs.sampleWeek': 'See a sample week',
 
   'landing.why.title': 'Why it works',

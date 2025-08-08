@@ -155,7 +155,7 @@ export default function RootLayout({
               <AppProvider>
                 <ToastProvider>
                   <RouteChangeListener />
-                  <SafeAreaPWA>
+                  <SafeAreaPWA>git a
                     <SafeArea className="h-full">
                       <div className="flex-1">{children}</div>
                       {/* Do not render bottom drawer nav on marketing landing */}

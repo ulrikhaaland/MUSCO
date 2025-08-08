@@ -1147,6 +1147,7 @@ const translations = {
   'landing.programs.hamstring_strain': 'Hamstringskade',
   'landing.programs.upper_back_core': 'Øvre rygg & kjerne',
   'landing.programs.core_stability': 'Kjernestabilitet',
+  'landing.programs.shin_splints': 'Beinbetennelse (skinnebein)',
   'landing.programs.sampleWeek': 'Se en eksempeluke',
 
   'landing.why.title': 'Hvorfor det fungerer',
