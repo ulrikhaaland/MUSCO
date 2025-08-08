@@ -729,7 +729,7 @@ export default function HumanViewer({
         </div>
       </div>
 
-      {/* Mobile Controls */}
+      Mobile Controls
       {isMobile && (
         <MobileControls
           onAreasSelected={handleAreasSelected}

@@ -1121,6 +1121,8 @@ const translations = {
   'landing.hero.alt.select': 'Steg 1: Velg område på 3D-modellen med raske valg synlige',
   'landing.hero.alt.chat': 'Steg 2: Svar på et kort diagnose-spørsmål med tre hurtigsvar',
   'landing.hero.alt.plan': 'Steg 3: Programdag med uke og tre øvelser',
+  'landing.hero.ariaStack': 'Skjermbilder for tre steg: velg område, svar på spørsmål, se planen',
+  'landing.hero.caption': 'Velg → Svar → Plan',
 
   // Landing page
   'landing.nav.how': 'Slik fungerer det',

@@ -61,7 +61,7 @@ import Logo from "./components/ui/Logo";
           </button>
         </div>
         <div className="text-gray-200 text-sm space-y-2">
-          <p className="font-medium">Week overview</p>
+          <p className="font-medium">Week 1 • Day 1 • 20 min: Mobility & activation</p>
           <p>Mon: Mobility & stability</p>
           <p>Tue: Strength — key lifts</p>
           <p>Wed: Active recovery</p>
@@ -221,17 +221,36 @@ export default function LandingPage() {
       <section ref={programsRef} className="mx-auto max-w-6xl px-6 py-16 md:py-24">
         <h2 className="text-white text-2xl font-semibold mb-4">{t("landing.programs.title")}</h2>
         <div className="grid gap-6 md:gap-8 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
-          {["lower_back", "runners_knee", "shoulder_pain", "tech_neck", "ankle_sprain", "plantar_fasciitis", "tennis_elbow", "hamstring_strain", "upper_back_core", "core_stability"].map((c) => (
+          {[
+            { key: 'lower_back', img: '/bodyparts/lower_back.png' },
+            { key: 'runners_knee', img: '/bodyparts/knees.png' },
+            { key: 'shoulder_pain', img: '/bodyparts/shoulders.png' },
+            { key: 'tech_neck', img: '/bodyparts/neck.png' },
+            { key: 'ankle_sprain', img: '/bodyparts/feet.png' },
+            { key: 'plantar_fasciitis', img: '/bodyparts/feet.png' },
+            { key: 'tennis_elbow', img: '/bodyparts/elbows.png' },
+            { key: 'hamstring_strain', img: '/bodyparts/upper_legs_behind.png' },
+            { key: 'upper_back_core', img: '/bodyparts/upper_back_and_core.png' },
+            { key: 'core_stability', img: '/bodyparts/abdomen.png' },
+          ].map(({ key, img }) => (
             <button
-              key={c}
-              className="text-left rounded-xl p-5 border border-white/15 bg-[#141922] text-gray-200 hover:-translate-y-0.5 hover:border-white/25 transition will-change-transform focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              key={key}
+              className="text-left rounded-xl border border-white/15 bg-[#141922] text-gray-200 hover:-translate-y-0.5 hover:border-white/25 transition will-change-transform focus:outline-none focus:ring-2 focus:ring-indigo-500 overflow-hidden"
               onClick={() => {
-                logAnalyticsEvent("program_card_open", { condition: c });
-                setModalOpen(c);
+                logAnalyticsEvent("program_card_open", { condition: key });
+                setModalOpen(key);
               }}
             >
-              <div className="text-white font-medium mb-1">{t(`landing.programs.${c}`)}</div>
-              <div className="text-sm">{t("landing.programs.sampleWeek")}</div>
+              <div className="flex items-stretch min-h-[88px]">
+                {/* Image pane hugging the left border, inherits rounded-l-xl */}
+                <div className="w-20 sm:w-24 md:w-28 bg-[#0E1116] border-r border-white/10 flex items-center justify-center">
+                  <img src={img} alt="" className="h-full w-full object-contain p-1" />
+                </div>
+                <div className="p-5 flex-1">
+                  <div className="text-white font-medium mb-1">{t(`landing.programs.${key}`)}</div>
+                  <div className="text-sm">{t("landing.programs.sampleWeek")}</div>
+                </div>
+              </div>
             </button>
           ))}
         </div>

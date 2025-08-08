@@ -1038,6 +1038,8 @@ const translations = {
   'landing.hero.alt.select': 'Step 1: Select area on the 3D model with quick-start chips visible',
   'landing.hero.alt.chat': 'Step 2: Answer a short diagnosis question with three quick-replies',
   'landing.hero.alt.plan': 'Step 3: Program day snapshot showing week and three exercises',
+  'landing.hero.ariaStack': 'Three-step product screenshots: select area, answer questions, see your plan',
+  'landing.hero.caption': 'Select → Answer → Plan',
 
   // Landing page
   'landing.nav.how': 'How it works',

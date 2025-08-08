@@ -2,8 +2,8 @@
 
 import PartnerLogos from '@/components/PartnerLogos'
 import { useTranslation } from '@/app/i18n'
-import Image from 'next/image'
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { logAnalyticsEvent } from '@/app/utils/analytics'
 
 export type ViewerMode = 'full' | 'diagnose' | 'questionnaire'
 
@@ -11,22 +11,56 @@ export default function LandingHero({ onSelect }: { onSelect: (m: ViewerMode) =>
   const { t } = useTranslation();
   const containerRef = useRef<HTMLDivElement | null>(null)
   const [offset, setOffset] = useState({ x: 0, y: 0 })
+  const [bp, setBp] = useState<'mobile'|'tablet'|'desktop'>(() => {
+    if (typeof window === 'undefined') return 'desktop'
+    const w = window.innerWidth
+    if (w >= 1024) return 'desktop'
+    if (w >= 768) return 'tablet'
+    return 'mobile'
+  })
   const prefersReducedMotion = useMemo(() => (
     typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
   ), [])
+  const isCoarsePointer = useMemo(() => (
+    typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches
+  ), [])
+
+  const imgBase = bp === 'mobile' ? '/landingpage/mobile' : '/landingpage/desktop'
+  const path = (name: string) => `${imgBase}/${name}.png`
 
   useEffect(() => {
-    if (prefersReducedMotion) return
+    if (typeof window === 'undefined') return
+    const onResize = () => {
+      const w = window.innerWidth
+      const next: 'mobile'|'tablet'|'desktop' = w >= 1024 ? 'desktop' : w >= 768 ? 'tablet' : 'mobile'
+      setBp(next)
+    }
+    onResize()
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [])
+
+  // subtle parallax (disabled on reduced-motion and coarse pointers)
+  useEffect(() => {
+    if (prefersReducedMotion || isCoarsePointer) return
     const handleMove = (e: MouseEvent) => {
       if (!containerRef.current) return
       const rect = containerRef.current.getBoundingClientRect()
-      const rx = ((e.clientX - rect.left) / rect.width - 0.5) * 8 // max 4px either dir
-      const ry = ((e.clientY - rect.top) / rect.height - 0.5) * 8
+      const rx = ((e.clientX - rect.left) / rect.width - 0.5) * 4
+      const ry = ((e.clientY - rect.top) / rect.height - 0.5) * 4
       setOffset({ x: rx, y: ry })
     }
     window.addEventListener('mousemove', handleMove)
     return () => window.removeEventListener('mousemove', handleMove)
-  }, [prefersReducedMotion])
+  }, [prefersReducedMotion, isCoarsePointer])
+
+  // analytics: hero surface view + cta impressions
+  useEffect(() => {
+    const surfaces = 3
+    logAnalyticsEvent('hero_surface_view', { surfaces, breakpoint: bp })
+    logAnalyticsEvent('cta_impression', { cta: 'diagnose', viewport: bp })
+    logAnalyticsEvent('cta_impression', { cta: 'workout', viewport: bp })
+  }, [bp])
 
   return (
     <div className="w-full">
@@ -56,7 +90,7 @@ export default function LandingHero({ onSelect }: { onSelect: (m: ViewerMode) =>
             </button>
           </div>
           {/* Trust row */}
-          <div className="mt-6 flex flex-col sm:flex-row sm:items-center gap-3 text-gray-300">
+          <div className="mt-6 flex flex-col sm:flex-row sm:items-center gap-3 text-gray-300 relative z-20">
             <div className="opacity-80 grayscale">
               <PartnerLogos />
             </div>
@@ -73,19 +107,24 @@ export default function LandingHero({ onSelect }: { onSelect: (m: ViewerMode) =>
         </div>
         {/* Media: fanned stack */}
         <div className="order-1 md:order-2">
-          <div ref={containerRef} className="relative h-[360px] sm:h-[420px] md:h-[460px]">
+          <div
+            ref={containerRef}
+            aria-label={t('landing.hero.ariaStack')}
+            className="relative z-0 h-[380px] md:h-[420px] lg:h-[460px] pointer-events-none"
+          >
             {/* Radial glow */}
-            <div className="pointer-events-none absolute inset-0 [background:radial-gradient(60%_60%_at_50%_50%,rgba(255,255,255,0.08)_0%,transparent_70%)]" />
+            <div className="pointer-events-none absolute inset-0 [background:radial-gradient(60%_60%_at_50%_50%,rgba(255,255,255,0.06)_0%,transparent_70%)]" />
 
             {/* Back surface: Select area */}
             <div
-              className="absolute left-1/2 top-1/2 w-[78%] sm:w-[75%] md:w-[70%] aspect-video -translate-x-1/2 -translate-y-1/2 rounded-xl border border-white/15 shadow-[0_20px_60px_rgba(0,0,0,0.35)] overflow-hidden relative bg-[#141922]"
+              className="absolute left-1/2 top-1/2 w-[70%] md:w-[68%] lg:w-[66%] aspect-video -translate-x-1/2 -translate-y-1/2 rounded-xl border overflow-hidden relative bg-[#141922] shadow-[0_18px_48px_rgba(0,0,0,0.34)]"
               style={{
-                transform: `translate(calc(-50% + ${prefersReducedMotion ? 0 : offset.x * -0.3}px), calc(-50% + ${prefersReducedMotion ? 0 : offset.y * -0.3}px)) rotate(-10deg) scale(0.94)`
+                transform: `translate(calc(-50% + ${prefersReducedMotion || isCoarsePointer ? 0 : offset.x * -0.3}px), calc(-50% + ${prefersReducedMotion || isCoarsePointer ? 0 : offset.y * -0.3}px)) rotate(-10deg) scale(0.94)`,
+                borderColor: 'rgba(255,255,255,0.12)'
               }}
             >
               <img
-                src="/landingpage/select_area.png"
+                src={path('select_area')}
                 alt={t('landing.hero.alt.select')}
                 className="absolute inset-0 h-full w-full object-cover"
                 loading="eager"
@@ -95,13 +134,14 @@ export default function LandingHero({ onSelect }: { onSelect: (m: ViewerMode) =>
 
             {/* Middle surface: Answer questions */}
             <div
-              className="absolute left-1/2 top-1/2 w-[84%] sm:w-[80%] md:w-[76%] aspect-video -translate-x-1/2 -translate-y-1/2 rounded-xl border border-white/15 shadow-[0_18px_50px_rgba(0,0,0,0.35)] overflow-hidden relative bg-[#141922]"
+              className="absolute left-1/2 top-1/2 w-[78%] md:w-[74%] lg:w-[72%] aspect-video -translate-x-1/2 -translate-y-1/2 rounded-xl border overflow-hidden relative bg-[#141922] shadow-[0_16px_44px_rgba(0,0,0,0.34)]"
               style={{
-                transform: `translate(calc(-50% + ${prefersReducedMotion ? 0 : offset.x * 0.2}px), calc(-50% + ${prefersReducedMotion ? 0 : offset.y * 0.2}px)) rotate(8deg) scale(0.97)`
+                transform: `translate(calc(-50% + ${prefersReducedMotion || isCoarsePointer ? 0 : offset.x * 0.2}px), calc(-50% + ${prefersReducedMotion || isCoarsePointer ? 0 : offset.y * 0.2}px)) rotate(8deg) scale(0.97)`,
+                borderColor: 'rgba(255,255,255,0.12)'
               }}
             >
               <img
-                src="/landingpage/answer_questions.png"
+                src={path('answer_questions')}
                 alt={t('landing.hero.alt.chat')}
                 className="absolute inset-0 h-full w-full object-cover"
                 loading="eager"
@@ -111,19 +151,23 @@ export default function LandingHero({ onSelect }: { onSelect: (m: ViewerMode) =>
 
             {/* Front surface: Your plan */}
             <div
-              className="absolute left-1/2 top-1/2 w-[90%] sm:w-[86%] md:w-[82%] aspect-video -translate-x-1/2 -translate-y-1/2 rounded-xl border border-white/15 shadow-[0_16px_44px_rgba(0,0,0,0.35)] overflow-hidden relative bg-[#141922]"
+              className="absolute left-1/2 top-1/2 w-[86%] md:w-[80%] lg:w-[78%] aspect-video -translate-x-1/2 -translate-y-1/2 rounded-xl border overflow-hidden relative bg-[#141922] shadow-[0_12px_36px_rgba(0,0,0,0.32)]"
               style={{
-                transform: `translate(calc(-50% + ${prefersReducedMotion ? 0 : offset.x * 0.5}px), calc(-50% + ${prefersReducedMotion ? 0 : offset.y * 0.5}px)) rotate(-6deg) scale(1)`
+                transform: `translate(calc(-50% + ${prefersReducedMotion || isCoarsePointer ? 0 : offset.x * 0.5}px), calc(-50% + ${prefersReducedMotion || isCoarsePointer ? 0 : offset.y * 0.5}px)) rotate(-6deg) scale(1)`,
+                borderColor: 'rgba(255,255,255,0.14)'
               }}
             >
               <img
-                src="/landingpage/your_plan.png"
+                src={path('your_plan')}
                 alt={t('landing.hero.alt.plan')}
                 className="absolute inset-0 h-full w-full object-cover"
                 loading="eager"
                 decoding="async"
               />
             </div>
+
+            {/* Mobile caption */}
+            {/* no caption on mobile since we now mirror desktop visuals */}
           </div>
         </div>
       </div>
