@@ -1136,7 +1136,7 @@ const translations = {
   'landing.how.step3': 'Få din plan',
   'landing.how.cta': 'Start diagnose',
 
-  'landing.programs.title': 'Programmer vi dekker',
+  'landing.programs.title': 'Få hjelp med vanlige skader',
   'landing.programs.lower_back': 'Smerter i korsrygg',
   'landing.programs.runners_knee': 'Løperkne',
   'landing.programs.shoulder_pain': 'Skuldersmerter',
@@ -1148,6 +1148,9 @@ const translations = {
   'landing.programs.upper_back_core': 'Øvre rygg & kjerne',
   'landing.programs.core_stability': 'Kjernestabilitet',
   'landing.programs.shin_splints': 'Beinbetennelse (skinnebein)',
+  'landing.programs.meta.4weeks': '4 uker',
+  'landing.programs.meta.3xweek': '3×/uke',
+  'landing.programs.meta.20to30min': '20–30 min',
   'landing.programs.sampleWeek': 'Se en eksempeluke',
 
   'landing.why.title': 'Hvorfor det fungerer',

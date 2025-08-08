@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "./context/AuthContext";
 import { useApp, ProgramIntention } from "./context/AppContext";
 import { useTranslation } from "./i18n";
+import { getProgramBySlug, localizeProgramDayDescriptions } from "../../public/data/programs/recovery";
 import LandingHero from "./components/ui/LandingHero";
 import LanguageSwitcher from "./components/ui/LanguageSwitcher";
 import { logAnalyticsEvent } from "./utils/analytics";
@@ -86,10 +87,24 @@ import Logo from "./components/ui/Logo";
 export default function LandingPage() {
   const { user } = useAuth();
   const { setIntention } = useApp();
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const router = useRouter();
   const [modalOpen, setModalOpen] = useState<null | string>(null);
   const [pricingAnnual, setPricingAnnual] = useState(true);
+  const [showAllPrograms, setShowAllPrograms] = useState(false);
+  const programSummaries: Record<string, string> = {
+    'lower-back': 'Stabilize core and restore lumbar mobility; posture and hinge control.',
+    'runners-knee': 'Reduce patellofemoral load; hip strength + cadence / landing tweaks.',
+    'shoulder': 'Scapular control and rotator cuff capacity; overhead tolerance.',
+    'tech-neck': 'Cervical mobility with deep neck flexor strength; posture hygiene.',
+    'ankle-sprain': 'Ankle mobility + balance; progressive return to loading and impact.',
+    'plantar-fasciitis': 'Foot intrinsics and calf capacity; morning stiffness relief.',
+    'tennis-elbow': 'Eccentric wrist/forearm loading; grip strength and tissue tolerance.',
+    'hamstring': 'Posterior chain strength; hinge mechanics and eccentric capacity.',
+    'upper-back-core': 'Thoracic mobility + trunk strength; postural endurance.',
+    'core-stability': 'Anti-rotation and bracing skills for daily and sport demands.',
+    'shin-splints': 'Deload impact; ankle/calf mobility and isometric capacity in week 1.',
+  };
   const howRef = useRef<HTMLDivElement | null>(null);
   const programsRef = useRef<HTMLDivElement | null>(null);
   const whyRef = useRef<HTMLDivElement | null>(null);
@@ -147,6 +162,48 @@ export default function LandingPage() {
   }, [SHOW_PRICING]);
 
   const scrollTo = (ref: React.RefObject<HTMLDivElement>) => ref.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  // Program cards data and ordering by approximate commonality
+  const programCardsBase = [
+    { key: 'lower_back', slug: 'lower-back', img: '/bodyparts/lower_back.png' },
+    { key: 'shoulder_pain', slug: 'shoulder', img: '/bodyparts/shoulders.png' },
+    { key: 'runners_knee', slug: 'runners-knee', img: '/bodyparts/knees.png' },
+    { key: 'ankle_sprain', slug: 'ankle-sprain', img: '/bodyparts/feet.png' },
+    { key: 'plantar_fasciitis', slug: 'plantar-fasciitis', img: '/bodyparts/feet.png' },
+    { key: 'tech_neck', slug: 'techneck', img: '/bodyparts/neck.png' },
+    { key: 'hamstring_strain', slug: 'hamstring', img: '/bodyparts/upper_legs_behind.png' },
+    { key: 'upper_back_core', slug: 'upper-back-core', img: '/bodyparts/upper_back_and_core.png' },
+    { key: 'core_stability', slug: 'core-stability', img: '/bodyparts/abdomen.png' },
+    { key: 'tennis_elbow', slug: 'tennis-elbow', img: '/bodyparts/elbows.png' },
+    { key: 'shin_splints', slug: 'shin-splints', img: '/bodyparts/shin.png' },
+  ];
+  // Pull short summaries from source programs for sync; fallback to local mapping
+  const programCards = programCardsBase.map(({ key, slug, img }) => {
+    let summary = programSummaries[slug as keyof typeof programSummaries];
+    const base = getProgramBySlug(slug);
+    if (base) {
+      const localized = locale === 'nb' ? localizeProgramDayDescriptions(base, 'nb') : base;
+      if (localized?.summary) summary = localized.summary as string;
+    }
+    return { key, slug, img, summary } as { key: string; slug: string; img: string; summary: string };
+  });
+  const commonalityRank: Record<string, number> = {
+    'lower-back': 1,
+    'shoulder': 2,
+    'runners-knee': 3,
+    'ankle-sprain': 4,
+    'plantar-fasciitis': 5,
+    'techneck': 6,
+    'hamstring': 7,
+    'upper-back-core': 8,
+    'core-stability': 9,
+    'tennis-elbow': 10,
+    'shin-splints': 11,
+  };
+  const sortedPrograms = [...programCards].sort(
+    (a, b) => (commonalityRank[a.slug] ?? 999) - (commonalityRank[b.slug] ?? 999)
+  );
+  const visiblePrograms = showAllPrograms ? sortedPrograms : sortedPrograms.slice(0, 6);
 
   return (
     <div className="min-h-screen bg-[#0E1116]">
@@ -220,41 +277,46 @@ export default function LandingPage() {
       {/* Programs we cover */}
       <section ref={programsRef} className="mx-auto max-w-6xl px-6 py-16 md:py-24">
         <h2 className="text-white text-2xl font-semibold mb-4">{t("landing.programs.title")}</h2>
-        <div className="grid gap-6 md:gap-8 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
-          {[
-            { key: 'lower_back', slug: 'lower-back', img: '/bodyparts/lower_back.png' },
-            { key: 'runners_knee', slug: 'runners-knee', img: '/bodyparts/knees.png' },
-            { key: 'shoulder_pain', slug: 'shoulder', img: '/bodyparts/shoulders.png' },
-            { key: 'tech_neck', slug: 'tech-neck', img: '/bodyparts/neck.png' },
-            { key: 'ankle_sprain', slug: 'ankle-sprain', img: '/bodyparts/feet.png' },
-            { key: 'plantar_fasciitis', slug: 'plantar-fasciitis', img: '/bodyparts/feet.png' },
-            { key: 'tennis_elbow', slug: 'tennis-elbow', img: '/bodyparts/elbows.png' },
-            { key: 'hamstring_strain', slug: 'hamstring', img: '/bodyparts/upper_legs_behind.png' },
-            { key: 'upper_back_core', slug: 'upper-back-core', img: '/bodyparts/upper_back_and_core.png' },
-            { key: 'core_stability', slug: 'core-stability', img: '/bodyparts/abdomen.png' },
-            { key: 'shin_splints', slug: 'shin-splints', img: '/bodyparts/shin.png' },
-          ].map(({ key, slug, img }) => (
+        <div className="grid gap-6 md:gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 items-stretch">
+          {visiblePrograms.map(({ key, slug, img }) => (
             <button
               key={key}
-              className="group text-left rounded-xl overflow-hidden bg-[#141922] ring-1 ring-white/12 shadow-lg hover:shadow-xl hover:translate-y-[-1px] transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="group h-full text-left rounded-xl overflow-hidden bg-[#141922] ring-1 ring-white/12 shadow-lg hover:shadow-xl hover:translate-y-[-1px] transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
               onClick={() => {
                 logAnalyticsEvent("program_card_open", { condition: key });
                 router.push(`/program/${slug}`);
               }}
             >
-              <div className="flex items-stretch min-h-[96px]">
+              <div className="flex h-full items-stretch min-h-[88px]">
                 {/* Image pane hugging the left border, inherits rounded-l-xl */}
-                <div className="w-20 sm:w-24 md:w-28 bg-[#0E1116] border-r border-white/10 flex items-center justify-center">
-                  <img src={img} alt="" className="h-full w-full object-contain p-1 group-hover:scale-105 transition-transform duration-200" />
+                <div className="w-24 sm:w-28 md:w-32 xl:w-36 h-full bg-[#0E1116] border-r border-white/10 overflow-hidden">
+                  <img src={img} alt="" className="h-full w-full object-cover object-top" />
                 </div>
-                <div className="p-5 flex-1">
-                  <div className="text-white font-medium mb-1 tracking-tight">{t(`landing.programs.${key}`)}</div>
-                  <div className="text-[13px] text-white/80">4‑week plan • guided exercises</div>
+                <div className="p-4 flex-1 flex flex-col justify-start">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="text-white font-medium tracking-tight">{t(`landing.programs.${key}`)}</div>
+                    <svg className="mt-1 h-4 w-4 text-white/40 group-hover:text-white/70 transition-colors flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M9 18l6-6-6-6" />
+                    </svg>
+                  </div>
+                  <div className="text-[12px] text-white/75 mt-1">
+                    {programSummaries[slug] || programSummaries[slug] || programCards.find(p=>p.slug===slug)?.summary || 'Personalized plan with progressive weekly focus.'}
+                  </div>
                 </div>
               </div>
             </button>
           ))}
         </div>
+        {sortedPrograms.length > 6 && (
+          <div className="mt-4">
+            <button
+              onClick={() => setShowAllPrograms((v) => !v)}
+              className="px-5 py-3 bg-gray-800 text-white rounded-md hover:bg-gray-700"
+            >
+              {showAllPrograms ? t('program.seeLess') : t('program.seeMore')}
+            </button>
+          </div>
+        )}
       </section>
 
       {/* Why it works */}

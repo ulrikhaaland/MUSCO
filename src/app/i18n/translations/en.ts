@@ -1053,7 +1053,7 @@ const translations = {
   'landing.how.step3': 'Get your plan',
   'landing.how.cta': 'Start diagnosis',
 
-  'landing.programs.title': 'Programs we cover',
+  'landing.programs.title': 'Get help with common injuries',
   'landing.programs.lower_back': 'Lower back pain',
   'landing.programs.runners_knee': "Runner's knee",
   'landing.programs.shoulder_pain': 'Shoulder pain',
@@ -1065,6 +1065,9 @@ const translations = {
   'landing.programs.upper_back_core': 'Upper back & core',
   'landing.programs.core_stability': 'Core stability',
   'landing.programs.shin_splints': 'Shin splints',
+  'landing.programs.meta.4weeks': '4 weeks',
+  'landing.programs.meta.3xweek': '3×/week',
+  'landing.programs.meta.20to30min': '20–30 min',
   'landing.programs.sampleWeek': 'See a sample week',
 
   'landing.why.title': 'Why it works',
