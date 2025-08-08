@@ -48,6 +48,7 @@ export default function HumanViewer({
   const [isRotating, setIsRotating] = useState(false);
   const [currentRotation, setCurrentRotation] = useState(0);
   const rotationAnimationRef = useRef<number | null>(null);
+  const viewerWrapperRef = useRef<HTMLDivElement | null>(null);
   const [targetGender, setTargetGender] = useState<Gender | null>(null);
   const [modelContainerHeight, setModelContainerHeight] = useState('100lvh');
   const [diagnosis, setDiagnosis] = useState<DiagnosisAssistantResponse | null>(
@@ -96,6 +97,35 @@ export default function HumanViewer({
       window.removeEventListener('orientationchange', setVvh as any);
       window.visualViewport?.removeEventListener('resize', setVvh as any);
       window.visualViewport?.removeEventListener('scroll', setVvh as any);
+    };
+  }, []);
+
+  // iOS Safari paint nudge: flip transform briefly to force repaint without remounting
+  useEffect(() => {
+    if (typeof window === 'undefined' || !window.visualViewport) return;
+    let raf1: number | null = null;
+    let raf2: number | null = null;
+    const nudge = () => {
+      const el = viewerWrapperRef.current;
+      if (!el) return;
+      el.style.willChange = 'transform';
+      el.style.transform = 'translateZ(0.001px)';
+      raf1 = requestAnimationFrame(() => {
+        el.style.transform = 'translateZ(0)';
+        raf2 = requestAnimationFrame(() => {
+          el.style.willChange = 'auto';
+        });
+      });
+    };
+    const onVVResize = () => {
+      // Debounce slightly via rAF; multiple resizes happen during keyboard animation
+      nudge();
+    };
+    window.visualViewport.addEventListener('resize', onVVResize);
+    return () => {
+      window.visualViewport?.removeEventListener('resize', onVVResize);
+      if (raf1) cancelAnimationFrame(raf1);
+      if (raf2) cancelAnimationFrame(raf2);
     };
   }, []);
 
@@ -626,6 +656,7 @@ export default function HumanViewer({
             overscrollBehavior: isMobile ? 'none' : undefined,
             zIndex: 0,
           }}
+          ref={viewerWrapperRef}
         >
           <iframe
             id="myViewer"
