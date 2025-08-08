@@ -1027,6 +1027,65 @@ const translations = {
   'authContext.programNotFound': 'Program not found',
   'authContext.notAuthorizedToDeleteProgram':
     'You are not authorized to delete this program',
+
+  // Landing hero
+  'landing.hero.title': 'Relieve Pain, Rebuild Strength',
+  'landing.hero.subtitle': 'Custom rehab plan in under 2 minutes.',
+  'landing.hero.ctaPain': 'I have pain',
+  'landing.hero.ctaWorkout': 'Just need a workout',
+  'landing.hero.reviews': 'reviews',
+  'landing.hero.reviewsAria': 'Read customer reviews',
+
+  // Landing page
+  'landing.how.title': 'How it works',
+  'landing.how.step1': 'Select body area & chat briefly',
+  'landing.how.step2': '7 questions + safety red flags',
+  'landing.how.step3': 'Get your plan',
+  'landing.how.cta': 'Start diagnosis',
+
+  'landing.programs.title': 'Programs we cover',
+  'landing.programs.lower_back': 'Lower back pain',
+  'landing.programs.runners_knee': "Runner's knee",
+  'landing.programs.shoulder_pain': 'Shoulder pain',
+  'landing.programs.tech_neck': 'Tech neck',
+  'landing.programs.ankle_sprain': 'Ankle sprain',
+  'landing.programs.plantar_fasciitis': 'Plantar fasciitis',
+  'landing.programs.tennis_elbow': 'Tennis elbow',
+  'landing.programs.hamstring_strain': 'Hamstring strain',
+  'landing.programs.upper_back_core': 'Upper back & core',
+  'landing.programs.core_stability': 'Core stability',
+  'landing.programs.sampleWeek': 'See a sample week',
+
+  'landing.why.title': 'Why it works',
+  'landing.why.digitalTwin': 'Digital twin anatomy with precise targeting',
+  'landing.why.dualAssistants': 'Dual assistants: anatomy + coach',
+  'landing.why.personalization': 'Personalized by history, time and equipment',
+  'landing.why.safety': 'Safety checks and red-flag screening',
+  'landing.why.speed': 'Under 2 minutes to your first plan',
+  'landing.why.disclaimer': 'This is not medical advice. Consult a clinician for diagnosis.',
+
+  'landing.demo.title': 'Try a quick demo',
+  'landing.demo.chat': 'Canned example conversation (no account needed):',
+  'landing.demo.quick1': 'It hurts to bend',
+  'landing.demo.quick2': 'I have limited time',
+  'landing.demo.quick3': 'Prefer home workouts',
+  'landing.demo.cta': 'Get my plan',
+
+  'landing.pricing.title': 'Pricing',
+  'landing.pricing.toggle': 'Toggle annual billing',
+  'landing.pricing.monthly': 'Monthly',
+  'landing.pricing.annual': 'Annual',
+  'landing.pricing.monthlyPrice': '$9 / month',
+  'landing.pricing.annualPrice': '$79 / year',
+  'landing.pricing.note': 'No commitment. Cancel anytime.',
+
+  'landing.faq.title': 'FAQ',
+  'landing.faq.q1': 'Do I need an account to start?',
+  'landing.faq.a1': 'No. You can create a plan first and sign in later only to save it.',
+  'landing.faq.q2': 'Is this safe if I have pain?',
+  'landing.faq.a2': 'We screen for red flags and advise caution. For medical concerns, see a clinician.',
+
+  'landing.footer.openApp': 'Open app'
 };
 
 export default translations;

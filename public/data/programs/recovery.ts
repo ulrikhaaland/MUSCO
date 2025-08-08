@@ -9,8 +9,435 @@
 
 import { ExerciseProgram } from '../../../src/app/types/program';
 import { DiagnosisAssistantResponse } from '../../../src/app/types';
-import { ExerciseQuestionnaireAnswers, ProgramType } from '../../../src/app/shared/types';
-import { calculateExerciseDuration, calculateDayDuration } from '../../../src/app/helpers/duration-calculation';
+import { ExerciseQuestionnaireAnswers, ProgramType } from '../../../shared/types';
+import { calculateDayDuration } from '../../../src/app/helpers/duration-calculation';
+
+// Locale-aware helpers (descriptions only)
+// We intentionally only localize ProgramDay.description strings per request.
+// Diagnosis, questionnaire and other metadata remain unchanged.
+export const localizeProgramDayDescriptions = (
+  program: ExerciseProgram,
+  locale: 'en' | 'nb'
+): ExerciseProgram => {
+  if (locale !== 'nb') return program;
+
+  // Minimal phrase mapping for common workout day descriptions
+  const dayTitleMap: Record<string, string> = {
+    'Relief & Mobility': 'Lindring og mobilitet',
+    'Hinge + Glute Strength (progress eccentrics)': 'Hoftebøy + setestyrke (øk eksentrisk belastning)',
+    'Functional Strength (squat + anti-rotation)': 'Funksjonell styrke (knebøy + anti-rotasjon)',
+    'Return‑to‑Activity (loaded hinge)': 'Tilbake til aktivitet (belastet hoftebøy)',
+    'De‑load & Control': 'Avlasting og kontroll',
+    'Controlled Loading (add single‑leg)': 'Kontrollert belastning (legg til ettbeinsarbeid)',
+    'Return‑to‑Run Prep (add Bulgarians + step‑downs)': 'Forberedelse til løping (Bulgarske splittknebøy + step-down)',
+    'Return‑to‑Run (progress mileage)': 'Tilbake til løping (øk distanse)',
+    'Pain‑Free Range & Control': 'Smertefri bevegelse og kontroll',
+    'Add Pulling & Light Press': 'Legg til roing og lett press',
+    'Overhead Strength Transition': 'Overgang til press over hodet',
+    'Acute Recovery (mobility & swelling)': 'Akutt restitusjon (mobilitet og hevelse)',
+    'Strength Return (calf & glute)': 'Styrketilbakekomst (legg og sete)',
+    'Balance & Proprioception': 'Balanse og propriosepsjon',
+    'Return‑to‑Jog (dynamic loading)': 'Tilbake til lett jogg (dynamisk belastning)',
+    'Isometric Pain Modulation': 'Isometrisk smertedemping',
+    'Introduce Eccentric Loading': 'Introduser eksentrisk belastning',
+    'Forearm Control + Grip Strength': 'Underarmskontroll + grepstyrke',
+    'Functional Loading & Carryover': 'Funksjonell belastning og overføring',
+    'Mobility & Awareness': 'Mobilitet og bevissthet',
+    'Scapular Strength & Cuff Activation': 'Skulderbladstyrke og rotatorcuff-aktivering',
+    'Postural Endurance & Volume': 'Holdningsutholdenhet og volum',
+    'Integration & Habit Anchoring': 'Integrasjon og vaneetablering',
+    'Light Load & Arch Activation': 'Lett belastning og fotbueaktivering',
+    'Eccentric Calf & Toe Control': 'Eksentrisk legg + tåkontroll',
+    'Balance & Midfoot Strength': 'Balanse og midtfotsstyrke',
+    'Function & Return‑to‑Impact': 'Funksjon og tilbake til belastning',
+    'Function & Return to Impact': 'Funksjon og tilbake til belastning',
+    'Isometric Activation & Mobility': 'Isometrisk aktivering og mobilitet',
+    'Single-Leg Control & Hinge Strength': 'Ettbeinskontroll og hoftebøystyrke',
+    'Return‑to‑Jog (light dynamic work)': 'Tilbake til lett jogg (lett dynamikk)',
+    'Posture Awareness & Mobility': 'Holdningsbevissthet og mobilitet',
+    'Scapular Control & Pull Strength': 'Skulderbladskontroll og trekkstyrke',
+    'Endurance & Time Under Tension': 'Utholdenhet og tid under spenning',
+    'Posture Integration (core + upper back)': 'Holdningsintegrasjon (kjerne + øvre rygg)',
+    'Activation & Control': 'Aktivering og kontroll',
+    'Time Under Tension & Movement': 'Tid under spenning og bevegelse',
+    'Stability & Balance Challenges': 'Stabilitet og balanseutfordringer',
+    'Multi-Planar Core Integration': 'Multiplanar kjerneintegrasjon',
+  };
+
+  // Rest day description mappings across all programs/weeks
+  const restDayMap: Record<string, string> = {
+    'Rest day. Gentle spinal mobility and diaphragmatic breathing to reduce stiffness.': 'Hviledag. Skånsom ryggmobilitet og diafragmapust for å redusere stivhet.',
+    'Rest day. Add light glute and core coordination to support spinal alignment.': 'Hviledag. Lett sete- og kjernesamspill for å støtte nøytral ryggrad.',
+    'Rest day. Reinforce deep core and oblique control while maintaining spinal neutrality.': 'Hviledag. Forsterk dyp kjerne og skrå magemuskler med nøytral rygg.',
+    'Rest day. Integrate breathing with movement and reinforce core-endurance patterns.': 'Hviledag. Integrer pust med bevegelse og bygg kjerneutholdenhet.',
+
+    'Rest day. Light quad/hip mobility to maintain blood flow without stressing the knee joint.': 'Hviledag. Lett mobilitet for lår/hofte for blodsirkulasjon uten knestress.',
+    'Rest day. Add posterior chain support to improve knee control without loading the joint.': 'Hviledag. Styrk baksidekjeden for bedre kne-kontroll uten leddbelastning.',
+    'Rest day. Improve balance and hip control while continuing to offload the knee.': 'Hviledag. Bedre balanse og hoftekontroll samtidig som kneet avlastes.',
+    'Rest day. Reinforce posterior support and tolerance for static quad activation.': 'Hviledag. Forsterk bakside-støtte og toleranse for statisk lårarbeid.',
+
+    'Rest day. Scapular mobility and low-load cuff activation for circulation.': 'Hviledag. Skulderbladmobilitet og lett rotatorcuff-aktivering for sirkulasjon.',
+    'Rest day. Build shoulder control with higher rep scapular and cuff movements.': 'Hviledag. Øk skulderkontroll med flere repetisjoner for skulderblad og cuff.',
+    'Rest day. Introduce gentle shoulder flexion to promote functional mobility.': 'Hviledag. Innfør skånsom skulderfleksjon for funksjonell mobilitet.',
+    'Rest day. Strengthen shoulder stabilizers and reinforce safe movement patterns.': 'Hviledag. Styrk skulderstabilisatorer og sikre trygge bevegelsesmønstre.',
+
+    'Rest day. Gentle range of motion and calf pump to assist lymph drainage.': 'Hviledag. Skånsomt bevegelsesutslag og leggpumpe for lymfedrenasje.',
+    'Rest day. Increase calf control and begin rebuilding joint awareness.': 'Hviledag. Øk kontroll i leggen og bygg opp leddsans.',
+    'Rest day. Reinforce ankle control with unilateral loading and balance prep.': 'Hviledag. Forsterk ankelkontroll med ettbeinsbelastning og balanseforberedelse.',
+    'Rest day. Improve single-leg stability and ankle control for walking and return to activity.': 'Hviledag. Bedre ettbeinsstabilitet og ankelkontroll for gange og aktivitet.',
+
+    'Rest day. Low-load wrist mobility and gentle neural glide to reduce elbow tension.': 'Hviledag. Lett håndleddmobilitet og skånsom nerveglidning for mindre albuetensjon.',
+    'Rest day. Increase control with slightly higher reps and slow eccentric emphasis.': 'Hviledag. Øk kontroll med litt flere repetisjoner og rolig eksentrisk fokus.',
+    'Rest day. Reinforce tendon loading tolerance with a light isometric hold.': 'Hviledag. Forsterk sene-toleranse med lett isometrisk hold.',
+    'Rest day. Improve endurance with higher-rep grip work and rotation control.': 'Hviledag. Bedre utholdenhet med flere grep-reps og rotasjonskontroll.',
+
+    'Rest day. Gentle neck and shoulder mobility to maintain progress without overworking.': 'Hviledag. Skånsom nakke- og skuldermobilitet for å vedlikeholde fremgang.',
+    'Rest day. Reinforce shoulder control and introduce spinal dissociation for postural support.': 'Hviledag. Forsterk skulderkontroll og introduser spinal dissosiasjon for holdning.',
+    'Rest day. Build scapular control and add flexion patterning without neck strain.': 'Hviledag. Bygg skulderbladskontroll og legg til fleksjonsmønstre uten nakkestress.',
+    'Rest day. Light rotator cuff activation and posture control to reinforce recovery gains.': 'Hviledag. Lett rotatorcuff-aktivering og holdningskontroll for varig effekt.',
+
+    'Rest day. Light foot mobility and calf stretches to support healing.': 'Hviledag. Lett fotmobilitet og leggstrekk for å støtte tilheling.',
+    'Rest day. Reinforce calf control and introduce light arch stability.': 'Hviledag. Forsterk leggkontroll og innfør lett fotbue-stabilitet.',
+    'Rest day. Challenge ankle control and foot arch through unilateral work.': 'Hviledag. Utfordre ankelkontroll og fotbue med ettbeinsarbeid.',
+    'Rest day. Improve foot strength and maintain calf endurance with controlled loading.': 'Hviledag. Bedre fotstyrke og vedlikehold legg-utholdenhet med kontrollert belastning.',
+
+    'Rest day. Gentle activation for the glutes and trunk to promote circulation and postural control.': 'Hviledag. Skånsom aktivering av sete og kjerne for sirkulasjon og holdningskontroll.',
+    'Rest day. Light anti-rotation and core control to improve deep stabilizer endurance.': 'Hviledag. Lett anti-rotasjon og kjernestyring for dype stabilisatorer.',
+    'Rest day. Introduce lateral control and balance to challenge trunk stability.': 'Hviledag. Innfør lateral kontroll og balanse for å utfordre kjernestabilitet.',
+    'Rest day. Reinforce anti-rotation control and increase endurance for deep core.': 'Hviledag. Forsterk anti-rotasjon og øk utholdenheten i dyp kjerne.',
+  };
+
+  // Weekly summary mapping (short strings)
+  const summaryMap: Record<string, string> = {
+    'Calm pain; rebuild neutral spine and glute activation': 'Demp smerte; gjenoppbygg nøytral rygg og seteaktivering',
+    'Hinge mechanics + glute strength; controlled hamstring eccentrics': 'Hoftebøyteknikk + setestyrke; kontrollerte hamstrings-eksentriker',
+    'Functional lower‑body strength + anti‑rotation core': 'Funksjonell underkroppsstyrke + anti-rotasjonskjerne',
+    'Loaded hinge confidence; core endurance for daily lifting': 'Trygghet i belastet hoftebøy; kjerneutholdenhet for daglige løft',
+
+    'De‑load knee; build hip control and quad tolerance': 'Avlast kneet; bygg hoftekontroll og lårtoleranse',
+    'Controlled squats/lunges; better alignment and tolerance': 'Kontrollerte knebøy/utfall; bedre sporing og toleranse',
+    'Eccentric quad control + single‑leg strength': 'Eksentrisk lårkontroll + ettbeinsstyrke',
+    'Return‑to‑run with strength maintenance': 'Tilbake til løping med styrkevedlikehold',
+
+    'Scapular control + cuff activation, pain‑free range': 'Skulderbladskontroll + cuff-aktivering, smertefri bevegelse',
+    'Cuff endurance and scapular retraction volume': 'Cuff-utholdenhet og volum i retraksjon',
+    'Introduce row + safe‑range press; keep cuff volume': 'Innfør roing + trygg press; behold cuff-volum',
+    'Progress overhead strength with stable scapular mechanics': 'Fremdrift i press over hodet med stabile skulderblad',
+
+    'Circulation + gentle ROM; ankle feels safer': 'Sirkulasjon + skånsom bevegelighet; ankelen føles tryggere',
+    'Calf strength + hip control for ankle stability': 'Leggstyrke + hoftekontroll for ankelstabilitet',
+    'Single‑leg control + proprioception': 'Ettbeinskontroll + propriosepsjon',
+    'Return‑to‑jog while keeping ankle strong': 'Tilbake til lett jogg med sterk ankel',
+
+    'Isometric analgesia + gentle forearm rotation': 'Isometrisk smertelindring + skånsom underarmsrotasjon',
+    'Add slow eccentrics; keep pain modest': 'Legg til langsomme eksentriker; hold smerte lav',
+    'Rotation capacity + light grip endurance': 'Rotasjonskapasitet + lett grep-utholdenhet',
+    'Functional loading and return to tasks': 'Funksjonell belastning og tilbake til oppgaver',
+
+    'Mobility + scapular activation to unload neck': 'Mobilitet + skulderblad-aktivering for å avlaste nakken',
+    'Row volume + cuff endurance for posture': 'Ro-volum + cuff-utholdenhet for holdning',
+    'Higher volume + anti‑rotation endurance': 'Høyere volum + anti-rotasjonsutholdenhet',
+    'Integrate posture into daily movement + maintain strength': 'Integrer holdning i hverdagen + vedlikehold styrke',
+
+    'Calm heel pain; start calf activation': 'Demp hælsmerte; start leggaktivering',
+    'Eccentric calf loading + arch support': 'Eksentrisk legg-belastning + fotbue-støtte',
+    'Balance + midfoot control': 'Balanse + midtfotskontroll',
+    'Functional loading; return to brisk walking': 'Funksjonell belastning; tilbake til rask gange',
+
+    'Mobility + pain‑free isometric activation': 'Mobilitet + smertefri isometrisk aktivering',
+    'Introduce eccentrics for tissue capacity': 'Introduser eksentriker for vevstoleranse',
+    'Single‑leg hinge + coordination': 'Ettbeins hoftebøy + koordinasjon',
+    'Return‑to‑jog + maintain eccentrics': 'Tilbake til lett jogg + vedlikehold eksentriker',
+
+    'Comprehensive postural reset with mobility and strengthening': 'Helhetlig holdningsreset med mobilitet og styrke',
+    'Controlled pulling and scapular strengthening': 'Kontrollert trekk og skulderbladsstyrke',
+    'Endurance building with time-under-tension work': 'Bygg utholdenhet med tid-under-spenning',
+    'Integrated core and full-body postural control': 'Integrert kjerne og helkroppskontroll for holdning',
+
+    'Deep core activation and control foundation': 'Dyp kjerneaktivering og kontrollgrunnlag',
+    'Core endurance with coordinated movement challenges': 'Kjerneutholdenhet med koordinerte utfordringer',
+    'Advanced stability with multi-directional core control': 'Avansert stabilitet med flerveis kjerne-kontroll',
+    'Advanced multi-planar core mastery': 'Avansert multiplanar kjernemestring',
+  };
+
+  // Per-week narrative fields (long blocks)
+  const overviewMap: Record<string, string> = {
+    // Lower Back
+    'Week 1 restores spinal neutrality and deep-core control with Dead Bug, Plank, and Glute Bridge to calm symptoms.': 'Uke 1 gjenoppretter nøytral rygg og dyp kjerne-kontroll med Dead Bug, Planke og Seteløft for å dempe symptomer.',
+    "Week 2 grooves the hip hinge and progresses glute work; introduce hamstring eccentrics (e.g., single‑leg RDL pattern).": 'Uke 2 finpusser hoftebøy og øker setearbeid; introduserer eksentrisk hamstrings (f.eks. ettbeins RDL-mønster).',
+    'Week 3 adds functional strength—squats, hinge work, and anti‑rotation (Side Plank) with steady load.': 'Uke 3 legger til funksjonell styrke—knebøy, hoftebøy og anti‑rotasjon (sideplanke) med jevn belastning.',
+    'Week 4 integrates loaded hinge, core endurance, and glute strength for return‑to‑activity.': 'Uke 4 integrerer belastet hoftebøy, kjerneutholdenhet og setestyrke for retur til aktivitet.',
+    // Runner's Knee
+    "Week 1 reduces patellofemoral irritation with hip abduction (glute med), wall sits, and incline walking.": 'Uke 1 reduserer patellofemoral irritasjon med hofteabduksjon (glute med), veggsitt og gange i motbakke.',
+    'Week 2 adds bodyweight squats and lunges to improve single‑leg control and knee tracking.': 'Uke 2 legger til knebøy og utfall med kroppsvekt for bedre ettbeinskontroll og knesporing.',
+    'Week 3 builds eccentric control (step‑downs) and single‑leg strength (Bulgarian split squats).': 'Uke 3 bygger eksentrisk kontroll (step‑downs) og ettbeinsstyrke (bulgarske splittknebøy).',
+    'Week 4 layers gradual jog mileage onto maintained single‑leg strength for resilient knees.': 'Uke 4 øker joggedistanse gradvis samtidig som ettbeinsstyrke vedlikeholdes for robuste knær.',
+    // Shoulder
+    'Week 1 restores pain‑free shoulder motion via band pull‑aparts and external rotations with scapular control.': 'Uke 1 gjenoppretter smertefri skulderbevegelse med strikk-drag og utadrotasjon med skulderbladskontroll.',
+    'Week 2 builds cuff endurance with higher reps/holds while keeping motion pain‑free.': 'Uke 2 bygger cuff‑utholdenhet med flere repetisjoner/hold og smertefri bevegelse.',
+    'Week 3 adds light rows and controlled vertical press while maintaining cuff work.': 'Uke 3 legger til lette roinger og kontrollert vertikal press samtidig som cuff‑arbeid opprettholdes.',
+    'Week 4 progresses to dumbbell overhead strength with full‑range control and stable scapulae.': 'Uke 4 går videre til manual-press over hodet med full kontroll og stabile skulderblad.',
+    // Ankle
+    'Week 1 restores pain‑free ankle motion with light jogging in place and double‑leg calf raises to manage swelling.': 'Uke 1 gjenoppretter smertefri ankelbevegelse med lett jogging på stedet og tåhev med begge bein for å håndtere hevelse.',
+    'Week 2 adds calf strength (double‑leg + eccentric single‑leg) and hip abduction for ankle control.': 'Uke 2 legger til leggstyrke (dobbel + eksentrisk ettbeins) og hofteabduksjon for ankelkontroll.',
+    'Week 3 emphasizes single‑leg control and balance with unilateral raises and hip abduction.': 'Uke 3 vektlegger ettbeinskontroll og balanse med unilateral tåhev og hofteabduksjon.',
+    'Week 4 reintroduces short jog bouts while maintaining calf strength and hip control.': 'Uke 4 gjeninnfører korte joggebolker samtidig som leggstyrke og hoftekontroll vedlikeholdes.',
+    // Tennis Elbow
+    'Week 1 uses isometric wrist extension and light rotation to calm symptoms and load the tendon safely.': 'Uke 1 bruker isometrisk håndleddsstrekk og lett rotasjon for å roe symptomer og belaste sene trygt.',
+    'Week 2 adds slow eccentrics for tendon remodeling while maintaining pain‑free rotation.': 'Uke 2 legger til langsomme eksentriker for senetilpasning, med fortsatt smertefri rotasjon.',
+    'Week 3 increases wrist rotation control and introduces light grip endurance (hammer curls).': 'Uke 3 øker kontroll i håndleddsrotasjon og introduserer lett grep‑utholdenhet (hammercurls).',
+    'Week 4 integrates functional loading so daily tasks and sport prep feel natural and pain‑free.': 'Uke 4 integrerer funksjonell belastning slik at daglige oppgaver og idrettsforberedelse kjennes naturlig og smertefri.',
+    // Tech Neck
+    'Week 1 reduces neck/upper‑back tension with arm circles, band pull‑aparts, trunk rotation, and gentle cuff work.': 'Uke 1 reduserer spenning i nakke/øvre rygg med armerundinger, strikk-drag, rotasjon og skånsomt cuff‑arbeid.',
+    'Week 2 builds upper‑back endurance with band rows and cuff work to support posture.': 'Uke 2 bygger øvre rygg‑utholdenhet med strikkroing og cuff‑arbeid for bedre holdning.',
+    'Week 3 raises volume and adds anti‑rotation for lasting postural endurance.': 'Uke 3 øker volum og legger til anti‑rotasjon for varig holdningsutholdenhet.',
+    'Week 4 anchors alignment into daily habits while maintaining upper‑back/cuff strength.': 'Uke 4 forankrer holdning i daglige vaner og vedlikeholder øvre rygg/cuff‑styrke.',
+    // Plantar Fasciitis
+    'Week 1 reduces heel pain with calf pumps and gentle walking tolerance; keep loads sub‑symptomatic.': 'Uke 1 demper hælsmerte med leggpumpe og skånsom gangtoleranse; hold belastning under symptomnivå.',
+    'Week 2 adds calf eccentrics and toe control to stimulate tissue remodeling.': 'Uke 2 legger til eksentrisk legg og tåkontroll for vevsremodellering.',
+    'Week 3 builds single‑leg control and midfoot strength to prep for longer walks.': 'Uke 3 bygger ettbeinskontroll og midtfotsstyrke som forberedelse til lengre turer.',
+    'Week 4 increases functional loading for brisk walking and early return to impact.': 'Uke 4 øker funksjonell belastning for rask gange og tidlig retur til støt.',
+    // Hamstring
+    'Week 1 restores mobility and introduces pain‑free hamstring isometrics and bridges.': 'Uke 1 gjenoppretter mobilitet og introduserer smertefrie hamstrings‑isometrier og broer.',
+    'Week 2 adds eccentric hamstring work (RDL/Nordic regressions) with steady glute volume.': 'Uke 2 legger til eksentrisk hamstrings (RDL/Nordic regresjoner) med jevnt setearbeid.',
+    'Week 3 emphasizes single‑leg hip hinge and trunk‑pelvis coordination.': 'Uke 3 vektlegger ettbeins hoftebøy og koordinasjon mellom kjerne og bekken.',
+    'Week 4 reintroduces short jog bouts while maintaining eccentric work and hip strength.': 'Uke 4 gjeninnfører korte joggebolker samtidig som eksentrisk arbeid og hoftestyrke vedlikeholdes.',
+    // Upper Back & Core Reset
+    'Week 1 focuses on gentle spinal mobility and basic postural awareness to counteract forward positioning.': 'Uke 1 fokuserer på skånsom ryggmobilitet og grunnleggende holdningsbevissthet for å motvirke fremoverposisjonering.',
+    'Week 2 introduces controlled pulling and shoulder blade activation.': 'Uke 2 introduserer kontrollert trekk og skulderbladaktivering.',
+    'Week 3 adds time-under-tension and stability work for endurance.': 'Uke 3 legger til tid‑under‑spenning og stabilitetsarbeid for utholdenhet.',
+    'Week 4 integrates core and full-body posture control for daily function.': 'Uke 4 integrerer kjerne og helkroppskontroll av holdning for daglig funksjon.',
+    // Core Stability
+    'Week 1 focuses on reactivating your deep core muscles and practicing control.': 'Uke 1 fokuserer på reaktivering av dype kjernemuskler og kontroll.',
+    'Week 2 adds time under tension and limb coordination.': 'Uke 2 legger til tid under spenning og koordinasjon.',
+    'Week 3 incorporates balance, anti-rotation, and lateral core engagement.': 'Uke 3 inkluderer balanse, anti‑rotasjon og lateral kjernemuskulatur.',
+    'Week 4 transitions to longer holds and multi-planar control.': 'Uke 4 går over til lengre hold og multiplanar kontroll.',
+  };
+
+  const timeframeMap: Record<string, string> = {
+    // Lower Back
+    'Anti‑extension core (Dead Bug, Plank) and glute bridging reduce lumbar load and re‑train positioning for daily moves.': 'Anti‑ekstensjon kjerne (Dead Bug, Planke) og seteløft reduserer belastning på korsrygg og gjenlærer posisjonering til hverdagsbevegelser.',
+    'Single‑leg and hinge variations load hips—not spine—while building time‑under‑tension safely.': 'Ettbeins- og hoftebøyvarianter belaster hofter—ikke rygg—og bygger tid under spenning trygt.',
+    'Progress volume/load while keeping spine neutral; oblique work resists unwanted trunk motion.': 'Øk volum/belastning med nøytral rygg; skrå magemuskler motstår uønsket bevegelse i overkroppen.',
+    'Gradually increase load on hinge and trunk while maintaining neutral mechanics.': 'Øk gradvis belastning på hoftebøy og kjerne med nøytral mekanikk.',
+    // Runner's Knee
+    'Glute med activation (Side‑lying Abduction), quad isometrics (Wall Sit), and walking keep load knee‑friendly.': 'Glute med‑aktivering (sideliggende abduksjon), lår‑isometrisk (veggsitt) og gange holder belastning knevennlig.',
+    'Hip‑dominant cues + slow tempo reinforce patella tracking without irritating compressive angles.': 'Hoftedominante signaler + rolig tempo styrker patellasporing uten å irritere kompresjonsvinkler.',
+    'Emphasize slow lowering and hip stability to prep for return‑to‑run.': 'Vektlegg langsom senking og hofte-stabilitet for å forberede retur til løp.',
+    'Progress intervals conservatively while keeping hip/quad work to protect the patellofemoral joint.': 'Øk intervaller konservativt og oppretthold hofte/lårarbeid for å beskytte PF‑leddet.',
+    // Shoulder
+    'Band Pull‑Apart (shoulders‑30) + External Rotation (shoulders‑94) build upward rotation and cuff endurance.': 'Strikk-drag (shoulders‑30) + utadrotasjon (shoulders‑94) bygger oppadrotasjon og cuff‑utholdenhet.',
+    'Progress band ER (shoulders‑94) + pull‑aparts (shoulders‑30) to prep for pressing/pulling.': 'Øk strikk‑ER (shoulders‑94) + pull‑aparts (shoulders‑30) som forberedelse til press/trekk.',
+    'Combine band ER, pull‑aparts, and light press to restore coordinated overhead control.': 'Kombiner strikk‑ER, pull‑aparts og lett press for koordinert kontroll over hodet.',
+    'Slight load increases on cuff + press patterns prepare for normal training.': 'Små belastningsøkninger på cuff + pressmønstre forbereder normal trening.',
+    // Ankle
+    'Jog in place (warmup‑6) and calf pumps (calves‑6) aid lymph flow and restore tolerance.': 'Jogging på stedet (warmup‑6) og legg‑pumpe (calves‑6) bedrer lymfeflyt og toleranse.',
+    'Calves‑6 + Calves‑63 build tendon tolerance; glute med work improves stance stability.': 'Calves‑6 + Calves‑63 bygger senetoleranse; glute med‑arbeid bedrer standstabilitet.',
+    'Single‑leg calf work (calves‑12) + glute med build ankle strategy for uneven ground.': 'Ettbeins tåhev (calves‑12) + glute med bygger ankelstrategi for ujevnt underlag.',
+    'Alternate easy jog/walk and sustain calf work to protect the ankle under impact.': 'Veksle lett jogg/gange og oppretthold leggarbeid for å beskytte ankelen ved støt.',
+    // Tennis Elbow
+    'Wrist isometrics (forearms‑1) and light rotations (forearms‑2) reduce pain sensitivity and start capacity.': 'Håndleddsisometrier (forearms‑1) og lette rotasjoner (forearms‑2) reduserer smertesensitivitet og bygger kapasitet.',
+    'Eccentric wrist extension builds capacity; rotation stays light and controlled.': 'Eksentrisk håndleddsstrekk bygger kapasitet; rotasjon forblir lett og kontrollert.',
+    'Controlled rotation with gradual time‑under‑tension supports return to function.': 'Kontrollert rotasjon med gradvis tid under spenning støtter retur til funksjon.',
+    'Blend rotation, wrist work, and light compound tasks to finish rehab.': 'Bland rotasjon, håndleddstrening og lette sammensatte oppgaver for å fullføre rehab.',
+    // Tech Neck
+    'Arm Circles (warmup‑8), Band Pull‑Apart, Trunk Rotation (warmup‑9), and ER build posture without strain.': 'Armrullinger (warmup‑8), strikk‑pull‑apart, rotasjon (warmup‑9) og utadrotasjon bygger holdning uten belastning.',
+    'High standing band row (upper‑back‑60) + band ER (shoulders‑94) reduce neck reliance on traps.': 'Høy stående strikk‑roing (upper‑back‑60) + strikk‑ER (shoulders‑94) reduserer nakkebelastning på trapezius.',
+    'Face‑pull/rows + oblique work reinforce thoracic extension and rib cage alignment.': 'Face‑pull/roing + skrå mage styrker thorakal ekstensjon og ribbekasse‑justering.',
+    'Short, frequent posture breaks + 2x/week rows/ER keep gains sticky.': 'Korte, hyppige holdningspauser + roing/ER 2x/uke gjør fremgangen varig.',
+    // Plantar Fasciitis
+    'Double‑leg calf raises and easy marching restore blood flow without irritating the fascia.': 'Tåhev med begge bein og lett marsj gjenoppretter blodtilførsel uten å irritere fascien.',
+    'Calves‑63 eccentrics improve tendon/fascia capacity; maintain low‑pain walking.': 'Eksentrisk Calves‑63 bedrer sene/fascie‑kapasitet; oppretthold lavsmertende gange.',
+    'Single‑leg calf raises and hip abduction reinforce arch support and gait stability.': 'Ettbeins tåhev og hofteabduksjon forsterker fotbue og gangstabilitet.',
+    'Sustain eccentrics and add volume to tolerate longer, faster walks.': 'Vedlikehold eksentriker og øk volum for å tåle lengre, raskere turer.',
+    // Hamstring
+    'Glute bridges and single‑leg RDL patterning (short ROM) engage posterior chain without flare‑ups.': 'Setebro og ettbeins RDL‑mønster (kort ROM) aktiverer baksidekjeden uten oppbluss.',
+    'Slow eccentrics build resilience; volume kept modest to avoid setbacks.': 'Langsomme eksentriker bygger robusthet; moderat volum for å unngå tilbakeslag.',
+    'Single‑leg RDL and hip thrust variants improve symmetry and control for daily tasks.': 'Ettbeins RDL og hip thrust‑varianter bedrer symmetri og kontroll i hverdagen.',
+    'Keep eccentrics and hinge strength while adding conservative jog volume.': 'Behold eksentriker og hoftebøy‑styrke mens joggevolum økes forsiktig.',
+    // Upper Back & Core Reset
+    'Start with gentle extension exercises and breathing pattern correction for postural improvement.': 'Start med skånsom ekstensjon og pustemønster‑korreksjon for bedre holdning.',
+    'Build scapular control and strengthen the muscles that support good posture.': 'Bygg skulderbladskontroll og styrk musklene som støtter god holdning.',
+    'Challenge your postural muscles with longer holds and stability exercises.': 'Utfordre holdningsmuskler med lengre hold og stabilitetsøvelser.',
+    'Combine all elements for comprehensive postural control and strength.': 'Kombiner alt for helhetlig holdningskontroll og styrke.',
+    // Core Stability
+    'Begin with basic core stabilization exercises to build foundational strength.': 'Start med grunnleggende kjernestabilisering for å bygge grunnstyrke.',
+    'Challenge your core stability with longer holds and coordinated movements.': 'Utfordre kjernestabilitet med lengre hold og koordinerte bevegelser.',
+    'Challenge your core with stability exercises and multi-directional control.': 'Utfordre kjernen med stabilitetsøvelser og flerveis kontroll.',
+    'Master advanced core stability for preparation to more demanding training.': 'Mestre avansert kjernestabilitet som forberedelse til mer krevende trening.',
+  };
+
+  const expectedMap: Record<string, string> = {
+    // Lower Back
+    'Less morning stiffness; easier sit‑to‑stand and bend within pain‑free range.': 'Mindre morgenstivhet; lettere å reise seg og bøye innen smertefri grense.',
+    'More confident hip hinging and lifting light loads with stable trunk.': 'Mer trygg hoftebøy og løft av lette vekter med stabil kjerne.',
+    'Stronger, pain‑tolerant hinge/squat patterns and improved trunk endurance.': 'Sterkere, mer smerte‑tolerante hoftebøy/knebøy‑mønstre og bedre kjerneutholdenhet.',
+    'Comfort with routine bending/lifting; minimal flare‑ups at daily loads.': 'Komfort ved daglige bøy/løft; minimale oppbluss ved daglig belastning.',
+    // Runner's Knee
+    'Less front‑of‑knee pain; easier stairs and sit‑to‑stand at low loads.': 'Mindre framsidesmerter i kne; enklere trapper og oppreisning ved lav belastning.',
+    'Smoother single‑leg mechanics; improved tolerance to sit‑to‑stand and stairs.': 'Glattere ettbeinsmekanikk; bedre toleranse for oppreisning og trapper.',
+    'Comfortable step‑downs and Bulgarians; stairs feel stable.': 'Komfortable step‑downs og bulgarske; trapper føles stabile.',
+    'Comfortable 15–20 min jogs with stable knees and minimal soreness.': 'Komfortable 15–20 min joggeturer med stabile knær og minimal ømhet.',
+    // Shoulder
+    'Less pinching; easier shoulder elevation within a comfortable range.': 'Mindre klemming; lettere skulderløft innen komfortabelt område.',
+    'Better overhead tolerance and less fatigue with daily reaching.': 'Bedre toleranse over hodet og mindre tretthet ved daglige løft.',
+    'Controlled rows/presses with minimal irritation; posture feels steadier.': 'Kontrollerte roinger/presser med minimal irritasjon; holdning føles stødigere.',
+    'Pain‑free overhead motion and confidence pressing light‑moderate loads.': 'Smertefri bevegelse over hodet og trygghet med lette/moderate press.',
+    // Ankle
+    'Less swelling; calmer walking and easy stairs.': 'Mindre hevelse; roligere gange og enkle trapper.',
+    'Stronger push‑off and better control on stairs with minimal swelling.': 'Sterkere fraspark og bedre kontroll i trapper med minimal hevelse.',
+    'Steadier single‑leg balance; confident gait on small irregularities.': 'Stødigere ettbeinsbalanse; trygg gange på små ujevnheter.',
+    'Comfortable 8–12 min jogs with stable foot strike and minimal swelling.': 'Komfortable 8–12 min joggeturer med stabil fotisett og minimal hevelse.',
+    // Tennis Elbow
+    'Lower resting pain; easier light grip/typing and daily tasks.': 'Lavere hvilesmerte; lettere lett grep/tasting og daglige oppgaver.',
+    'Improved tolerance to gripping and lifting light objects.': 'Bedre toleranse for grep og løft av lette gjenstander.',
+    'Smoother rotation; light carries and household tasks feel fine.': 'Glattere rotasjon; lette bæringer og husarbeid føles fint.',
+    'Grip, lift, and type pain‑free with confident wrist extension.': 'Grep, løft og tasting smertefritt med trygg håndleddsstrekk.',
+    // Tech Neck
+    'Less neck tightness; better ability to sit tall without fatigue.': 'Mindre nakkestivhet; bedre evne til å sitte oppreist uten å bli sliten.',
+    'Stronger mid‑back; longer screen time with less neck fatigue.': 'Sterkere midtrygg; lengre skjermtid med mindre nakkeslitasje.',
+    'Able to hold upright posture longer with minimal neck tightness.': 'Kan holde oppreist holdning lenger med minimal nakkespenn.',
+    'Noticeably less neck tension; posture holds automatically longer.': 'Merkbart mindre nakkespenning; holdningen holder seg lenger automatisk.',
+    // Plantar Fasciitis
+    'Lower morning pain; easier first steps and short walks.': 'Lavere morgensmerte; enklere første skritt og korte turer.',
+    'Smoother walking and improved push‑off with less heel soreness.': 'Glattere gange og bedre fraspark med mindre ømhet i hælen.',
+    'Better balance; longer walks with minimal morning stiffness.': 'Bedre balanse; lengre turer med minimal morgenstivhet.',
+    'Brisk walks and long stands are comfortable with minimal flare‑ups.': 'Rask gange og lang ståtid er komfortabelt med minimale oppbluss.',
+    // Hamstring
+    'Less tightness; comfortable walking and gentle hip hinge.': 'Mindre stramhet; komfortabel gange og skånsom hoftebøy.',
+    'Improved tolerance to bending and light picking tasks.': 'Bedre toleranse for bøying og lette løft.',
+    'Controlled single‑leg loading; reduced fear with bending/lifting.': 'Kontrollert ettbeinsbelastning; mindre frykt for bøying/løft.',
+    'Pain‑free short jogs; confident hinge under daily loads.': 'Smertefrie korte joggeturer; trygg hoftebøy ved daglig belastning.',
+    // Upper Back & Core Reset
+    'Reduced upper back tension and improved postural awareness during daily activities.': 'Redusert spenning i øvre rygg og bedre holdningsbevissthet i hverdagen.',
+    'Better shoulder blade control and reduced upper back tension.': 'Bedre skulderbladskontroll og mindre spenning i øvre rygg.',
+    'Improved postural endurance and strength for maintaining good alignment.': 'Bedre holdningsutholdenhet og styrke for god justering.',
+    'Visibly better posture and reduced shoulder fatigue during daily activities.': 'Synlig bedre holdning og mindre skuldertretthet i hverdagen.',
+    // Core Stability
+    'Improved core activation and better control in basic positions.': 'Bedre kjerneaktivering og kontroll i grunnposisjoner.',
+    'Improved core endurance and better stability during movement.': 'Bedre kjerneutholdenhet og stabilitet under bevegelse.',
+    'Better balance and control in challenging positions.': 'Bedre balanse og kontroll i krevende posisjoner.',
+    'Strong, stable core with better posture and movement control.': 'Sterk, stabil kjerne med bedre holdning og bevegelseskontroll.',
+  };
+
+  const nextStepsMap: Record<string, string> = {
+    // Lower Back
+    'Add hip‑hinge patterning and gentle hamstring loading in Week 2.': 'Legg til hoftebøy‑mønster og skånsom hamstrings‑belastning i uke 2.',
+    'Advance volume and integrate squats/anti‑rotation work in Week 3.': 'Øk volum og integrer knebøy/anti‑rotasjon i uke 3.',
+    'Integrate more complex patterns and mild loaded hinge in Week 4.': 'Integrer mer komplekse mønstre og lett belastet hoftebøy i uke 4.',
+    'Maintain 2–3x/week; progress hinge load and overall volume as tolerated.': 'Vedlikehold 2–3x/uke; øk hoftebøy‑belastning og totalvolum etter toleranse.',
+    // Runner's Knee
+    "Add controlled squats/lunges in Week 2 if pain ≤3/10.": 'Legg til kontrollerte knebøy/utfall i uke 2 hvis smerte ≤3/10.',
+    'Introduce step‑downs and Bulgarians in Week 3.': 'Introduser step‑downs og bulgarske i uke 3.',
+    'Start jog intervals in Week 4 if pain ≤3/10 during/after.': 'Start joggeintervaller i uke 4 hvis smerte ≤3/10 under/etter.',
+    'Build mileage ~10%/week and reintroduce speed only if pain‑free.': 'Øk distanse ~10%/uke og reintroduser fart kun hvis smertefri.',
+    // Shoulder
+    'Increase reps/holds and add light flexion work in Week 2.': 'Øk reps/hold og legg til lett fleksjon i uke 2.',
+    'Add light rows and safe‑range pressing in Week 3.': 'Legg til lette roinger og trygg press i uke 3.',
+    'Increase resistance and range in Week 4 if pain‑free.': 'Øk motstand og bevegelsesutslag i uke 4 hvis smertefri.',
+    'Keep weekly cuff work; progress dumbbell loads gradually.': 'Behold ukentlig cuff‑arbeid; øk manual‑belastning gradvis.',
+    // Ankle
+    'Begin strength return with double‑/eccentric raises in Week 2.': 'Start styrketilbakekomst med dobbel/eksentrisk tåhev i uke 2.',
+    'Add single‑leg control and balance in Week 3.': 'Legg til ettbeinskontroll og balanse i uke 3.',
+    'Reintroduce light jogging in Week 4.': 'Gjeninnfør lett jogging i uke 4.',
+    'Build volume conservatively; add gentle plyos only if fully pain‑free.': 'Bygg volum konservativt; legg til skånsomme plyos kun hvis helt smertefri.',
+    // Tennis Elbow
+    'Introduce slow eccentrics in Week 2 if pain ≤3/10.': 'Introduser langsomme eksentriker i uke 2 hvis smerte ≤3/10.',
+    'Add rotation volume and light hammer curls in Week 3.': 'Legg til rotasjonsvolum og lette hammercurls i uke 3.',
+    'Integrate compound loading and carryover in Week 4.': 'Integrer sammensatt belastning og overføring i uke 4.',
+    'Progress to normal strength work; maintain rotation/ER weekly.': 'Gå videre til normal styrketrening; vedlikehold rotasjon/ER ukentlig.',
+    // Tech Neck
+    'Add upper‑back row volume and longer ER sets in Week 2.': 'Legg til mer ro‑volum for øvre rygg og lengre ER‑sett i uke 2.',
+    'Increase endurance and add anti‑rotation in Week 3.': 'Øk utholdenhet og legg til anti‑rotasjon i uke 3.',
+    'Integrate habits and maintain 2x/week strength in Week 4.': 'Integrer vaner og vedlikehold styrke 2x/uke i uke 4.',
+    'Maintain 2x/week rows/ER and 1 daily mobility drill.': 'Vedlikehold ro/ER 2x/uke og én daglig mobilitetsøvelse.',
+    // Plantar Fasciitis
+    'Add calf eccentrics in Week 2 if pain ≤3/10.': 'Legg til eksentrisk legg i uke 2 hvis smerte ≤3/10.',
+    'Progress to balance and midfoot strength in Week 3.': 'Gå videre til balanse og midtfotsstyrke i uke 3.',
+    'Increase functional loading in Week 4.': 'Øk funksjonell belastning i uke 4.',
+    'Maintain calves 2x/week; ramp to light jog/hike as pain allows.': 'Vedlikehold legg 2x/uke; øk til lett jogg/tur etter toleranse.',
+    // Hamstring
+    'Add controlled eccentrics in Week 2.': 'Legg til kontrollerte eksentriker i uke 2.',
+    'Progress to single‑leg control in Week 3.': 'Gå videre til ettbeinskontroll i uke 3.',
+    'Introduce light jog intervals in Week 4 if pain ≤3/10.': 'Introduser lette joggeintervaller i uke 4 hvis smerte ≤3/10.',
+    'Build run distance gradually; keep weekly hamstring eccentrics.': 'Bygg løpedistanse gradvis; behold ukentlig hamstrings‑eksentriker.',
+    // Upper Back & Core Reset
+    'Progress to Week 2 for targeted pulling movements and posterior chain strengthening.': 'Gå videre til uke 2 for målrettede trekk og styrking av baksidekjeden.',
+    'Continue to Week 3 for endurance and time-under-tension training.': 'Fortsett til uke 3 for utholdenhet og tid‑under‑spenning.',
+    'Progress to Week 4 for core-integrated posture training.': 'Gå videre til uke 4 for kjerneintegrert holdningstrening.',
+    'Maintain progress with upper back training twice per week and daily mobility.': 'Vedlikehold fremgangen med øvre rygg 2x/uke og daglig mobilitet.',
+    // Core Stability
+    'Progress to Week 2 for time under tension and movement coordination.': 'Gå videre til uke 2 for tid under spenning og bevegelser.',
+    'Continue to Week 3 for balance and anti-rotation challenges.': 'Fortsett til uke 3 for balanse og anti‑rotasjon.',
+    'Progress to Week 4 for multi-planar core integration.': 'Gå videre til uke 4 for multiplanar kjerneintegrasjon.',
+    'Progress to resistance training or maintain with 1-2 core sessions weekly.': 'Gå videre til styrketrening eller vedlikehold med 1–2 kjerneøkter ukentlig.',
+  };
+
+  const notToDoMap: Record<string, string> = {
+    // Lower Back
+    'No breath‑holding, end‑range spine flexion/extension, or ballistic work; stop with sharp pain.': 'Ingen pusteholding, ytterposisjon i fleksjon/ekstensjon eller ballistisk arbeid; stopp ved skarp smerte.',
+    'No loaded spinal flexion, jerky tempo, or pushing past a 3/10 pain; keep reps smooth.': 'Ingen belastet ryggfleksjon, rykkete tempo eller over 3/10 smerte; hold repene jevne.',
+    'No heavy spinal compression, twisting into pain, or fast range changes; quality over load.': 'Ingen tung ryggkompresjon, vridning inn i smerte eller raske bevegelsesendringer; kvalitet foran belastning.',
+    'No max‑effort singles, forced end‑range extension, or pain‑provoking reps; prioritize form.': 'Ingen maks‑enkeltløft, tvunget ytterstilling i ekstensjon eller smerteprovoserende reps; prioriter teknikk.',
+    // Runner's Knee
+    'No downhill running, deep knee flexion under pain, or plyometrics; avoid kneecap compression positions.': 'Ingen nedoverbakke‑løping, dyp knefleksjon med smerte eller plyometrikk; unngå kneskål‑kompresjon.',
+    'No fast depth changes, twisting under load, or knee‑in collapse; keep pain ≤3/10.': 'Ingen raske dybdeendringer, vridning under belastning eller kne‑inn kollaps; hold smerte ≤3/10.',
+    'No sharp downhill runs, plyos, or volume spikes; keep mechanics crisp.': 'Ingen skarpe nedoverbakker, plyos eller volumtopper; hold teknikken ren.',
+    'No rapid mileage/speed spikes or downhill repeats; stop if pain rises >3/10.': 'Ingen raske distanse/fart‑økninger eller nedoverbakke‑repetisjoner; stopp hvis smerte >3/10.',
+    // Shoulder
+    'No forced overhead range, shrugging into pain, or heavy press variations.': 'Ingen tvunget bevegelse over hodet, skuldertrekk inn i smerte eller tunge pressvarianter.',
+    'No end‑range pain, fast tempos, or kipping/ballistic reps.': 'Ingen smerte i ytterstilling, raske tempo eller kipping/ballistiske reps.',
+    'No grinding overhead reps, forced end‑range, or shrug‑dominant patterns.': 'Ingen "grinding" over hodet, tvunget ytterstilling eller skuldertrekk‑dominans.',
+    'No rapid load jumps or pressing through pain; maintain clean tempo.': 'Ingen raske belastningshopp eller press gjennom smerte; hold jevnt tempo.',
+    // Ankle
+    'No cutting, unstable surfaces, or forced deep dorsiflexion; stop if swelling spikes.': 'Ingen retningsendringer, ustøtt underlag eller tvunget dyp dorsalfleksjon; stopp ved økt hevelse.',
+    'No plyos, cutting, or high‑impact; keep tempo slow and pain ≤3/10.': 'Ingen plyos, retningsendringer eller høy‑impact; hold rolig tempo og smerte ≤3/10.',
+    'No cutting, explosive direction changes, or painful ranges.': 'Ingen retningsendringer, eksplosive bevegelser eller smertefulle utslag.',
+    'No sharp cutting or long downhill runs; stop if swelling/pain increases.': 'Ingen skarpe retningsendringer eller lange nedoverbakker; stopp ved økt smerte/hevelse.',
+    // Tennis Elbow
+    'No fast grip work, heavy carries, or jerky wrist extension; stop if sharp/radiating pain.': 'Ikke raskt grep, tunge bæringer eller rykkvis håndleddsstrekk; stopp ved skarp/utstrålende smerte.',
+    'No jerky or fast‑loaded movements, especially wrist extension or gripping under fatigue. If pain >3/10 or lingers next day, reduce load or reps. Stop any exercise with sharp, radiating pain down the arm.': 'Ingen rykkvise eller raskt belastede bevegelser, særlig håndleddsstrekk eller grep under tretthet. Ved smerte >3/10 eller vedvarende neste dag, reduser belastning eller reps. Stopp ved skarp/utstrålende smerte nedover armen.',
+    // Tech Neck
+    'No shrug‑dominant lifts, forced end‑range neck stretches, or painful ranges.': 'Ingen løft dominert av skuldertrekk, tvungne nakkestrekk i ytterstilling eller smertefulle utslag.',
+    'No ballistic reps; avoid forcing end‑range cervical motion.': 'Ingen ballistiske reps; unngå tvunget bevegelse i nakken ytterstilling.',
+    'No long static slouching without breaks; skip shrug‑dominant work.': 'Ingen langvarig statisk krumming uten pauser; unngå skuldertrekk‑dominert arbeid.',
+    // Plantar Fasciitis
+    'No barefoot walking on hard floors; do not push through sharp heel pain.': 'Ikke gå barbeint på harde gulv; ikke press gjennom skarp hælsmerte.',
+    // Hamstring
+    'No overstretching or ballistic movements; stop if sharp pain occurs.': 'Ingen overstrekk eller ballistiske bevegelser; stopp ved skarp smerte.',
+  };
+
+  const updatedDays = program.days.map((d) => {
+    const original = d.description?.trim();
+    if (d.isRestDay) {
+      const mappedRest = (original && restDayMap[original]) || 'Hviledag';
+      return { ...d, description: mappedRest };
+    }
+    const mapped = (original && dayTitleMap[original]) || d.description;
+    return { ...d, description: mapped };
+  });
+
+  // Also localize the short weekly summary if available
+  const localizedSummary = summaryMap[program.summary?.trim()] || program.summary;
+  const localizedOverview = overviewMap[program.programOverview?.trim()] || program.programOverview;
+  const localizedTimeframe = timeframeMap[program.timeFrameExplanation?.trim()] || program.timeFrameExplanation;
+  const localizedExpected = expectedMap[program.afterTimeFrame?.expectedOutcome?.trim()] || program.afterTimeFrame?.expectedOutcome;
+  const localizedNext = nextStepsMap[program.afterTimeFrame?.nextSteps?.trim()] || program.afterTimeFrame?.nextSteps;
+  const localizedNotToDo = notToDoMap[program.whatNotToDo?.trim()] || program.whatNotToDo;
+
+  return {
+    ...program,
+    days: updatedDays,
+    summary: localizedSummary,
+    programOverview: localizedOverview,
+    timeFrameExplanation: localizedTimeframe,
+    afterTimeFrame: {
+      expectedOutcome: localizedExpected || program.afterTimeFrame.expectedOutcome,
+      nextSteps: localizedNext || program.afterTimeFrame.nextSteps,
+    },
+    whatNotToDo: localizedNotToDo,
+  };
+};
 
 // Helper function to create workout days with computed durations
 const createWorkoutDay = (day: number, description: string, exercises: any[]) => ({
@@ -667,22 +1094,277 @@ const createCoreRestDay = (day: number): any => {
 
 export const rehabPrograms: ExerciseProgram[] = [
   // -----------------------------------------------------------------
+  // 0. Medial Tibial Stress Syndrome (Shin Splints)
+  // -----------------------------------------------------------------
+  {
+    programOverview:
+      'Week 1 calms tibial stress with impact deload, ankle/calf mobility, and isometric calf holds.',
+    summary: 'Deload impact; mobility + isometric calf capacity',
+    timeFrameExplanation:
+      'Replace running with Zone 2 cycling/rowing; use gentle ankle mobility and static calf work to reduce pain.',
+    afterTimeFrame: {
+      expectedOutcome: 'Lower tibial soreness; pain‑free walking and stairs.',
+      nextSteps: 'Add eccentric calf work and introduce foot intrinsic activation in Week 2.',
+    },
+    whatNotToDo:
+      'No running/jumping or hard‑surface mileage; stop if sharp tibial pain.',
+    createdAt: new Date('2025-06-02T00:00:00Z'),
+    days: [
+      createWorkoutDay(1, 'Deload & Mobility (ankle/calf)', [
+        { exerciseId: 'cardio-7', duration: 1200, warmup: true },
+        { exerciseId: 'calves-6', sets: 3, repetitions: 15, restBetweenSets: 45 },
+        { exerciseId: 'calves-12', sets: 2, repetitions: 10, restBetweenSets: 60 },
+        { exerciseId: 'warmup-6', duration: 90, warmup: true },
+      ]),
+      {
+        day: 2,
+        isRestDay: true,
+        description: 'Rest day. Gentle ankle mobility and light calf pumps to reduce tibial irritation.',
+        exercises: [
+          { exerciseId: 'warmup-6', duration: 60, warmup: true },
+          { exerciseId: 'calves-6', sets: 1, repetitions: 12, restBetweenSets: 45 },
+        ],
+        duration: calculateDayDuration([
+          { exerciseId: 'warmup-6', duration: 60, warmup: true },
+          { exerciseId: 'calves-6', sets: 1, repetitions: 12, restBetweenSets: 45 },
+        ]),
+      },
+      createWorkoutDay(3, 'Isometric Calf Capacity', [
+        { exerciseId: 'calves-6', sets: 3, repetitions: 20, restBetweenSets: 45 },
+        { exerciseId: 'calves-12', sets: 2, repetitions: 10, restBetweenSets: 60 },
+        { exerciseId: 'cardio-9', duration: 900, warmup: true },
+      ]),
+      {
+        day: 4,
+        isRestDay: true,
+        description: 'Rest day. Short walk on soft surface; avoid hills. Gentle calf stretch if pain‑free.',
+        exercises: [],
+        duration: 10,
+      },
+      createWorkoutDay(5, 'Deload & Mobility (ankle/calf)', [
+        { exerciseId: 'cardio-7', duration: 1200, warmup: true },
+        { exerciseId: 'calves-6', sets: 3, repetitions: 15, restBetweenSets: 45 },
+        { exerciseId: 'calves-12', sets: 2, repetitions: 10, restBetweenSets: 60 },
+        { exerciseId: 'warmup-6', duration: 90, warmup: true },
+      ]),
+      {
+        day: 6,
+        isRestDay: true,
+        description: 'Rest day. Gentle foot intrinsic activation (toe spread) and ankle circles.',
+        exercises: [],
+        duration: 10,
+      },
+      {
+        day: 7,
+        isRestDay: true,
+        description: 'Rest day. Avoid impact; light cycling optional if fully pain‑free.',
+        exercises: [],
+        duration: 10,
+      },
+    ],
+    targetAreas: ['shin'],
+    bodyParts: ['Shin', 'Calves'],
+  },
+  {
+    programOverview:
+      'Week 2 adds eccentric calf loading, foot intrinsics, and cadence cues to reduce tibial load.',
+    summary: 'Eccentric calf + foot control; cadence awareness',
+    timeFrameExplanation:
+      'Calves‑63 eccentrics and toe control remodel tissue; practice walk cadence 165–175 spm on flats.',
+    afterTimeFrame: {
+      expectedOutcome: 'Improved walking tolerance; less soreness post‑activity.',
+      nextSteps: 'Begin walk‑jog intervals and soft‑surface progressions in Week 3.',
+    },
+    whatNotToDo:
+      'No hills, speed work, or hard‑surface mileage; keep pain ≤3/10.',
+    createdAt: new Date('2025-05-26T00:00:00Z'),
+    days: [
+      createWorkoutDay(1, 'Eccentric Calf & Toe Control', [
+        { exerciseId: 'calves-63', sets: 3, repetitions: 10, restBetweenSets: 90 },
+        { exerciseId: 'calves-6', sets: 2, repetitions: 12, restBetweenSets: 60 },
+        { exerciseId: 'cardio-5', duration: 1200, warmup: true },
+      ]),
+      {
+        day: 2,
+        isRestDay: true,
+        description: 'Rest day. Short cadence‑focused walk on soft surface (≤10 min); light calf pumps.',
+        exercises: [],
+        duration: 10,
+      },
+      createWorkoutDay(3, 'Foot Intrinsics + Eccentric Calf', [
+        { exerciseId: 'calves-63', sets: 3, repetitions: 10, restBetweenSets: 90 },
+        { exerciseId: 'calves-12', sets: 2, repetitions: 8, restBetweenSets: 60 },
+        { exerciseId: 'cardio-9', duration: 900, warmup: true },
+      ]),
+      {
+        day: 4,
+        isRestDay: true,
+        description: 'Rest day. Gentle ankle circles; optional 10–15 min cycling Zone 2.',
+        exercises: [],
+        duration: 15,
+      },
+      createWorkoutDay(5, 'Eccentric Calf & Toe Control', [
+        { exerciseId: 'calves-63', sets: 3, repetitions: 12, restBetweenSets: 90 },
+        { exerciseId: 'calves-6', sets: 2, repetitions: 12, restBetweenSets: 60 },
+        { exerciseId: 'cardio-7', duration: 1200, warmup: true },
+      ]),
+      {
+        day: 6,
+        isRestDay: true,
+        description: 'Rest day. Soft‑tissue work as tolerated; avoid poking tender tibia.',
+        exercises: [],
+        duration: 10,
+      },
+      {
+        day: 7,
+        isRestDay: true,
+        description: 'Rest day. Optional 10 min soft‑surface walk if fully pain‑free next morning.',
+        exercises: [],
+        duration: 10,
+      },
+    ],
+    targetAreas: ['shin'],
+    bodyParts: ['Shin', 'Calves', 'Foot'],
+  },
+  {
+    programOverview:
+      'Week 3 introduces walk‑jog intervals on soft surfaces while maintaining eccentric calf strength.',
+    summary: 'Walk‑jog return; maintain eccentrics',
+    timeFrameExplanation:
+      'Use 1:1 walk‑jog (60s/60s) x 10–12 on grass/track; keep cadence high and stride short.',
+    afterTimeFrame: {
+      expectedOutcome: 'Comfortable short jog intervals; minimal next‑day tibial tenderness.',
+      nextSteps: 'Progress interval ratio and total time in Week 4.',
+    },
+    whatNotToDo:
+      'No spikes in weekly volume; avoid hills, sprints, and hard surfaces.',
+    createdAt: new Date('2025-05-19T00:00:00Z'),
+    days: [
+      createWorkoutDay(1, 'Walk‑Jog Intervals (soft surface)', [
+        { exerciseId: 'cardio-1', duration: 1200, warmup: true },
+        { exerciseId: 'calves-63', sets: 2, repetitions: 10, restBetweenSets: 90 },
+        { exerciseId: 'calves-12', sets: 2, repetitions: 8, restBetweenSets: 60 },
+      ]),
+      {
+        day: 2,
+        isRestDay: true,
+        description: 'Rest day. Easy cycling 10–15 min or rest; check morning pain (≤2/10).',
+        exercises: [],
+        duration: 15,
+      },
+      createWorkoutDay(3, 'Walk‑Jog Intervals (soft surface)', [
+        { exerciseId: 'cardio-1', duration: 1200, warmup: true },
+        { exerciseId: 'calves-63', sets: 2, repetitions: 10, restBetweenSets: 90 },
+        { exerciseId: 'calves-6', sets: 2, repetitions: 12, restBetweenSets: 60 },
+      ]),
+      {
+        day: 4,
+        isRestDay: true,
+        description: 'Rest day. Foot intrinsic drills and ankle mobility only if pain‑free.',
+        exercises: [],
+        duration: 10,
+      },
+      createWorkoutDay(5, 'Walk‑Jog Intervals (soft surface)', [
+        { exerciseId: 'cardio-1', duration: 1200, warmup: true },
+        { exerciseId: 'calves-63', sets: 2, repetitions: 12, restBetweenSets: 90 },
+        { exerciseId: 'calves-12', sets: 2, repetitions: 8, restBetweenSets: 60 },
+      ]),
+      {
+        day: 6,
+        isRestDay: true,
+        description: 'Rest day. Optional 10 min walk; avoid pain >2/10 next morning.',
+        exercises: [],
+        duration: 10,
+      },
+      {
+        day: 7,
+        isRestDay: true,
+        description: 'Rest day. Reflect on symptoms; keep notes on surface, shoes, cadence.',
+        exercises: [],
+        duration: 10,
+      },
+    ],
+    targetAreas: ['shin'],
+    bodyParts: ['Shin', 'Calves', 'Foot'],
+  },
+  {
+    programOverview:
+      'Week 4 progresses jog volume and reintroduces gentle inclines while preserving calf strength.',
+    summary: 'Progress jog volume; gentle incline; keep strength',
+    timeFrameExplanation:
+      'Move to 2:1 jog:walk (120s/60s) x 8–10 on track/grass; add short 2–3% incline walks only if pain‑free.',
+    afterTimeFrame: {
+      expectedOutcome: 'Able to jog 15–20 min continuously on soft surface with minimal soreness.',
+      nextSteps: 'Increase weekly run time by ~10% and reintroduce road gradually as tolerated.',
+    },
+    whatNotToDo:
+      'No speed work, downhill running, or rapid surface changes; keep pain ≤3/10.',
+    createdAt: new Date('2025-05-12T00:00:00Z'),
+    days: [
+      createWorkoutDay(1, 'Walk‑Jog Progression (2:1)', [
+        { exerciseId: 'cardio-1', duration: 1500, warmup: true },
+        { exerciseId: 'calves-63', sets: 2, repetitions: 12, restBetweenSets: 90 },
+        { exerciseId: 'calves-6', sets: 2, repetitions: 15, restBetweenSets: 60 },
+      ]),
+      {
+        day: 2,
+        isRestDay: true,
+        description: 'Rest day. Optional short incline walk ≤5 min if pain‑free next morning.',
+        exercises: [],
+        duration: 10,
+      },
+      createWorkoutDay(3, 'Walk‑Jog Progression (2:1)', [
+        { exerciseId: 'cardio-1', duration: 1500, warmup: true },
+        { exerciseId: 'calves-63', sets: 2, repetitions: 12, restBetweenSets: 90 },
+        { exerciseId: 'calves-12', sets: 2, repetitions: 8, restBetweenSets: 60 },
+      ]),
+      {
+        day: 4,
+        isRestDay: true,
+        description: 'Rest day. Gentle mobility and soft‑tissue; avoid tibial tenderness.',
+        exercises: [],
+        duration: 10,
+      },
+      createWorkoutDay(5, 'Walk‑Jog Progression (2:1)', [
+        { exerciseId: 'cardio-1', duration: 1500, warmup: true },
+        { exerciseId: 'calves-63', sets: 2, repetitions: 12, restBetweenSets: 90 },
+        { exerciseId: 'calves-6', sets: 2, repetitions: 15, restBetweenSets: 60 },
+      ]),
+      {
+        day: 6,
+        isRestDay: true,
+        description: 'Rest day. Optional technique check: short stride, high cadence, mid‑foot strike.',
+        exercises: [],
+        duration: 10,
+      },
+      {
+        day: 7,
+        isRestDay: true,
+        description: 'Rest day. Prepare plan to transition off soft surfaces gradually next month.',
+        exercises: [],
+        duration: 10,
+      },
+    ],
+    targetAreas: ['shin'],
+    bodyParts: ['Shin', 'Calves', 'Foot'],
+  },
+  // -----------------------------------------------------------------
   // 1. Low‑Back Pain (non‑specific mechanical)
   // -----------------------------------------------------------------
   {
     programOverview:
-      'Week 1 focuses on gentle spinal stabilization and core reactivation for pain relief.',
-    summary: 'Gentle spinal stabilization and pain relief with core reactivation',
+      'Week 1 restores spinal neutrality and deep-core control with Dead Bug, Plank, and Glute Bridge to calm symptoms.',
+    summary: 'Calm pain; rebuild neutral spine and glute activation',
     timeFrameExplanation:
-      'Start with basic spinal control exercises and core activation to reduce pain and establish foundation.',
+      'Anti‑extension core (Dead Bug, Plank) and glute bridging reduce lumbar load and re‑train positioning for daily moves.',
     afterTimeFrame: {
       expectedOutcome:
-        'Reduced daily back pain and improved confidence with basic movements.',
+        'Less morning stiffness; easier sit‑to‑stand and bend within pain‑free range.',
       nextSteps:
-        'Progress to Week 2 for hip mobility and targeted glute activation.',
+        'Add hip‑hinge patterning and gentle hamstring loading in Week 2.',
     },
     whatNotToDo:
-      'Never push through sharp pain or avoid explosive movements during early healing.',
+      'No breath‑holding, end‑range spine flexion/extension, or ballistic work; stop with sharp pain.',
     createdAt: new Date('2025-05-31T00:00:00Z'),
     days: [
       {
@@ -748,23 +1430,23 @@ export const rehabPrograms: ExerciseProgram[] = [
   // WEEK 2
   {
     programOverview:
-      'Week 2 introduces hip mobility with targeted glute activation to address muscle imbalances.',
-    summary: 'Hip mobility and glute activation for muscle balance',
+      'Week 2 grooves the hip hinge and progresses glute work; introduce hamstring eccentrics (e.g., single‑leg RDL pattern).',
+    summary: 'Hinge mechanics + glute strength; controlled hamstring eccentrics',
     timeFrameExplanation:
-      'Build foundational strength through progressive loading and eccentric control.',
+      'Single‑leg and hinge variations load hips—not spine—while building time‑under‑tension safely.',
     afterTimeFrame: {
       expectedOutcome:
-        'Improved hip mobility and stronger glute activation patterns.',
+        'More confident hip hinging and lifting light loads with stable trunk.',
       nextSteps:
-        'Progress to Week 3 for functional strength and hip hinge patterns.',
+        'Advance volume and integrate squats/anti‑rotation work in Week 3.',
     },
     whatNotToDo:
-      'Never push through sharp pain or avoid explosive movements during early healing.',
+      'No loaded spinal flexion, jerky tempo, or pushing past a 3/10 pain; keep reps smooth.',
     createdAt: new Date('2025-05-24T00:00:00Z'),
     days: [
       {
         day: 1,
-        description: 'Foundational Strength (progress loads/eccentrics)',
+        description: 'Hinge + Glute Strength (progress eccentrics)',
         isRestDay: false,
         exercises: [
           { exerciseId: 'abs-20', sets: 3, repetitions: 10, restBetweenSets: 60 },
@@ -780,14 +1462,14 @@ export const rehabPrograms: ExerciseProgram[] = [
         ]),
       },
       createLowBackRestDay(2),
-      createWorkoutDay(3, 'Foundational Strength (progress loads/eccentrics)', [
+      createWorkoutDay(3, 'Hinge + Glute Strength (progress eccentrics)', [
         { exerciseId: 'abs-20', sets: 3, repetitions: 10, restBetweenSets: 60 },
         { exerciseId: 'glutes-7', sets: 3, repetitions: 15, restBetweenSets: 60 },
         { exerciseId: 'glutes-1', sets: 3, repetitions: 15, restBetweenSets: 60 },
         { exerciseId: 'hamstrings-48', sets: 2, repetitions: 8, restBetweenSets: 90 },
       ]),
       createLowBackRestDay(4),
-      createWorkoutDay(5, 'Foundational Strength (progress loads/eccentrics)', [
+      createWorkoutDay(5, 'Hinge + Glute Strength (progress eccentrics)', [
         { exerciseId: 'abs-20', sets: 3, repetitions: 10, restBetweenSets: 60 },
         { exerciseId: 'glutes-7', sets: 3, repetitions: 15, restBetweenSets: 60 },
         { exerciseId: 'glutes-1', sets: 3, repetitions: 15, restBetweenSets: 60 },
@@ -803,35 +1485,35 @@ export const rehabPrograms: ExerciseProgram[] = [
   // WEEK 3
   {
     programOverview:
-      'Week 3 builds functional strength with squats and side planks that challenge core in multiple planes.',
-    summary: 'Functional strength with squats and multi-plane core work',
+      'Week 3 adds functional strength—squats, hinge work, and anti‑rotation (Side Plank) with steady load.',
+    summary: 'Functional lower‑body strength + anti‑rotation core',
     timeFrameExplanation:
-      'Learn proper hip hinge mechanics while increasing training volume and load.',
+      'Progress volume/load while keeping spine neutral; oblique work resists unwanted trunk motion.',
     afterTimeFrame: {
       expectedOutcome:
-        'Mastered hip hinge patterns and improved core endurance in multiple planes.',
+        'Stronger, pain‑tolerant hinge/squat patterns and improved trunk endurance.',
       nextSteps:
-        'Progress to Week 4 for complex movement integration and return to activity.',
+        'Integrate more complex patterns and mild loaded hinge in Week 4.',
     },
     whatNotToDo:
-      'Never push through sharp pain or avoid explosive movements during early healing.',
+      'No heavy spinal compression, twisting into pain, or fast range changes; quality over load.',
     createdAt: new Date('2025-05-17T00:00:00Z'),
     days: [
-      createWorkoutDay(1, 'Foundational Strength (increase volume/load)', [
+      createWorkoutDay(1, 'Functional Strength (squat + anti-rotation)', [
         { exerciseId: 'quads-87', sets: 3, repetitions: 10, restBetweenSets: 60 },
         { exerciseId: 'hamstrings-48', sets: 3, repetitions: 10, restBetweenSets: 90 },
         { exerciseId: 'obliques-4', sets: 3, repetitions: 10, restBetweenSets: 60 },
         { exerciseId: 'glutes-46', sets: 3, repetitions: 8, restBetweenSets: 60 },
       ]),
       createLowBackRestDay(2),
-      createWorkoutDay(3, 'Foundational Strength (increase volume/load)', [
+      createWorkoutDay(3, 'Functional Strength (squat + anti-rotation)', [
         { exerciseId: 'quads-87', sets: 3, repetitions: 10, restBetweenSets: 60 },
         { exerciseId: 'hamstrings-48', sets: 3, repetitions: 10, restBetweenSets: 90 },
         { exerciseId: 'obliques-4', sets: 3, repetitions: 10, restBetweenSets: 60 },
         { exerciseId: 'glutes-46', sets: 3, repetitions: 8, restBetweenSets: 60 },
       ]),
       createLowBackRestDay(4),
-      createWorkoutDay(5, 'Foundational Strength (increase volume/load)', [
+      createWorkoutDay(5, 'Functional Strength (squat + anti-rotation)', [
         { exerciseId: 'quads-87', sets: 3, repetitions: 10, restBetweenSets: 60 },
         { exerciseId: 'hamstrings-48', sets: 3, repetitions: 10, restBetweenSets: 90 },
         { exerciseId: 'obliques-4', sets: 3, repetitions: 10, restBetweenSets: 60 },
@@ -847,21 +1529,21 @@ export const rehabPrograms: ExerciseProgram[] = [
   // WEEK 4
   {
     programOverview:
-      'Week 4 integrates complex movement patterns to prepare for real-world lifting demands.',
-    summary: 'Complex movement patterns for real-world lifting demands',
+      'Week 4 integrates loaded hinge, core endurance, and glute strength for return‑to‑activity.',
+    summary: 'Loaded hinge confidence; core endurance for daily lifting',
     timeFrameExplanation:
-      'Advanced loaded hinge patterns and movement integration for return to full activity.',
+      'Gradually increase load on hinge and trunk while maintaining neutral mechanics.',
     afterTimeFrame: {
       expectedOutcome:
-        'Substantial reduction in daily back pain and confidence with bending and lifting.',
+        'Comfort with routine bending/lifting; minimal flare‑ups at daily loads.',
       nextSteps:
-        'Maintain gains with Week 4 exercises 2-3 times weekly and progress to heavier movements.',
+        'Maintain 2–3x/week; progress hinge load and overall volume as tolerated.',
     },
     whatNotToDo:
-      'Never push through sharp pain or avoid explosive movements during early healing.',
+      'No max‑effort singles, forced end‑range extension, or pain‑provoking reps; prioritize form.',
     createdAt: new Date('2025-05-10T00:00:00Z'),
     days: [
-      createWorkoutDay(1, 'Return‑to‑Activity (introduce loaded hinge)', [
+      createWorkoutDay(1, 'Return‑to‑Activity (loaded hinge)', [
         { exerciseId: 'quads-87', sets: 3, repetitions: 12, restBetweenSets: 60 },
         { exerciseId: 'abs-20', sets: 3, repetitions: 10, restBetweenSets: 60 },
         { exerciseId: 'glutes-46', sets: 3, repetitions: 8, restBetweenSets: 60 },
@@ -870,7 +1552,7 @@ export const rehabPrograms: ExerciseProgram[] = [
         { exerciseId: 'lower-back-2', sets: 2, repetitions: 15, restBetweenSets: 60, modification: 'Combine with 60s diaphragmatic breathing post-set.' },
       ]),
       createLowBackRestDay(2),
-      createWorkoutDay(3, 'Return‑to‑Activity (introduce loaded hinge)', [
+      createWorkoutDay(3, 'Return‑to‑Activity (loaded hinge)', [
         { exerciseId: 'quads-87', sets: 3, repetitions: 12, restBetweenSets: 60 },
         { exerciseId: 'abs-20', sets: 3, repetitions: 10, restBetweenSets: 60 },
         { exerciseId: 'glutes-46', sets: 3, repetitions: 8, restBetweenSets: 60 },
@@ -879,7 +1561,7 @@ export const rehabPrograms: ExerciseProgram[] = [
         { exerciseId: 'lower-back-2', sets: 2, repetitions: 15, restBetweenSets: 60, modification: 'Combine with 60s diaphragmatic breathing post-set.' },
       ]),
       createLowBackRestDay(4),
-      createWorkoutDay(5, 'Return‑to‑Activity (introduce loaded hinge)', [
+      createWorkoutDay(5, 'Return‑to‑Activity (loaded hinge)', [
         { exerciseId: 'quads-87', sets: 3, repetitions: 12, restBetweenSets: 60 },
         { exerciseId: 'abs-20', sets: 3, repetitions: 10, restBetweenSets: 60 },
         { exerciseId: 'glutes-46', sets: 3, repetitions: 8, restBetweenSets: 60 },
@@ -899,18 +1581,18 @@ export const rehabPrograms: ExerciseProgram[] = [
   // -----------------------------------------------------------------
   {
     programOverview:
-      'Week 1 focuses on calming knee irritation and re‑establishing basic control.',
-    summary: 'Calming knee irritation with low-impact movements and control',
+      'Week 1 reduces patellofemoral irritation with hip abduction (glute med), wall sits, and incline walking.',
+    summary: 'De‑load knee; build hip control and quad tolerance',
     timeFrameExplanation:
-      'Back off painful loading and practice gentle range‑of‑motion plus glute activation. This sets the stage for controlled loading next week.',
+      'Glute med activation (Side‑lying Abduction), quad isometrics (Wall Sit), and walking keep load knee‑friendly.',
     afterTimeFrame: {
       expectedOutcome:
-        'Pain levels should start decreasing and stairs will feel easier.',
+        'Less front‑of‑knee pain; easier stairs and sit‑to‑stand at low loads.',
       nextSteps:
-        'If discomfort stays below 3/10, move on to controlled bodyweight loading in Week 2.',
+        'Add controlled squats/lunges in Week 2 if pain ≤3/10.',
     },
     whatNotToDo:
-      'Avoid downhill running or deep knee bends. Do not push through sharp pain.',
+      'No downhill running, deep knee flexion under pain, or plyometrics; avoid kneecap compression positions.',
     createdAt: new Date('2025-05-31T00:00:00Z'),
     days: [
       createWorkoutDay(1, 'De‑load & Control', [
@@ -944,18 +1626,18 @@ export const rehabPrograms: ExerciseProgram[] = [
   },
   {
     programOverview:
-      'Week 2 introduces bodyweight squats and lunges to build tolerance for single‑leg loading and improve alignment.',
-    summary: 'Bodyweight squats and lunges for single-leg loading tolerance',
+      'Week 2 adds bodyweight squats and lunges to improve single‑leg control and knee tracking.',
+    summary: 'Controlled squats/lunges; better alignment and tolerance',
     timeFrameExplanation:
-      'With pain calming down, you\'ll progress to controlled movements focusing on hip stability and proper knee tracking.',
+      'Hip‑dominant cues + slow tempo reinforce patella tracking without irritating compressive angles.',
     afterTimeFrame: {
       expectedOutcome:
-        'Single‑leg work should feel smoother and squats more comfortable.',
+        'Smoother single‑leg mechanics; improved tolerance to sit‑to‑stand and stairs.',
       nextSteps:
-        'Continue to keep pain under control so jogging can be added in Week 3.',
+        'Introduce step‑downs and Bulgarians in Week 3.',
     },
     whatNotToDo:
-      'Hold off on running or weighted squats if discomfort persists.',
+      'No fast depth changes, twisting under load, or knee‑in collapse; keep pain ≤3/10.',
     createdAt: new Date('2025-05-24T00:00:00Z'),
     days: [
       createWorkoutDay(1, 'Controlled Loading (add single‑leg)', [
@@ -989,21 +1671,21 @@ export const rehabPrograms: ExerciseProgram[] = [
   },
   {
     programOverview:
-      'Week 3 adds step‑downs and Bulgarian split squats to build single‑leg strength for jogging.',
-    summary: 'Step-downs and Bulgarian squats for single-leg jogging strength',
+      'Week 3 builds eccentric control (step‑downs) and single‑leg strength (Bulgarian split squats).',
+    summary: 'Eccentric quad control + single‑leg strength',
     timeFrameExplanation:
-      'These movements improve eccentric control and hip stability so you can tolerate gentle running.',
+      'Emphasize slow lowering and hip stability to prep for return‑to‑run.',
     afterTimeFrame: {
       expectedOutcome:
-        'Bulgarian split squats and step‑downs should be comfortable with minimal soreness.',
+        'Comfortable step‑downs and Bulgarians; stairs feel stable.',
       nextSteps:
-        'Begin short jog intervals during Week 4 while keeping pain below 3/10.',
+        'Start jog intervals in Week 4 if pain ≤3/10 during/after.',
     },
     whatNotToDo:
-      'Avoid sudden mileage increases or high‑impact drills this week.',
+      'No sharp downhill runs, plyos, or volume spikes; keep mechanics crisp.',
     createdAt: new Date('2025-05-17T00:00:00Z'),
     days: [
-      createWorkoutDay(1, 'Return‑to‑Run (introduce Bulgarians)', [
+      createWorkoutDay(1, 'Return‑to‑Run Prep (add Bulgarians + step‑downs)', [
         { exerciseId: 'warmup-6', duration: 300, warmup: true },
         { exerciseId: 'glutes-44', sets: 3, repetitions: 15, restBetweenSets: 60 },
         { exerciseId: 'glutes-45', sets: 3, repetitions: 10, restBetweenSets: 60 },
@@ -1011,7 +1693,7 @@ export const rehabPrograms: ExerciseProgram[] = [
         { exerciseId: 'quads-186', sets: 3, repetitions: 8, restBetweenSets: 60 },
       ]),
       createRunnersKneeRestDay(2),
-      createWorkoutDay(3, 'Return‑to‑Run (introduce Bulgarians)', [
+      createWorkoutDay(3, 'Return‑to‑Run Prep (add Bulgarians + step‑downs)', [
         { exerciseId: 'warmup-6', duration: 300, warmup: true },
         { exerciseId: 'glutes-44', sets: 3, repetitions: 15, restBetweenSets: 60 },
         { exerciseId: 'glutes-45', sets: 3, repetitions: 10, restBetweenSets: 60 },
@@ -1019,7 +1701,7 @@ export const rehabPrograms: ExerciseProgram[] = [
         { exerciseId: 'quads-186', sets: 3, repetitions: 8, restBetweenSets: 60 },
       ]),
       createRunnersKneeRestDay(4),
-      createWorkoutDay(5, 'Return‑to‑Run (introduce Bulgarians)', [
+      createWorkoutDay(5, 'Return‑to‑Run Prep (add Bulgarians + step‑downs)', [
         { exerciseId: 'warmup-6', duration: 300, warmup: true },
         { exerciseId: 'glutes-44', sets: 3, repetitions: 15, restBetweenSets: 60 },
         { exerciseId: 'glutes-45', sets: 3, repetitions: 10, restBetweenSets: 60 },
@@ -1034,18 +1716,18 @@ export const rehabPrograms: ExerciseProgram[] = [
   },
   {
     programOverview:
-      'Week 4 gradually increases running distance while maintaining single‑leg strength work to keep the knee resilient.',
-    summary: 'Gradually increasing running distance with strength maintenance',
+      'Week 4 layers gradual jog mileage onto maintained single‑leg strength for resilient knees.',
+    summary: 'Return‑to‑run with strength maintenance',
     timeFrameExplanation:
-      'Extend your jog intervals and monitor knee response. Strength sessions remain to reinforce control.',
+      'Progress intervals conservatively while keeping hip/quad work to protect the patellofemoral joint.',
     afterTimeFrame: {
       expectedOutcome:
-        'You should comfortably jog for about 20 minutes without pain.',
+        'Comfortable 15–20 min jogs with stable knees and minimal soreness.',
       nextSteps:
-        'Keep building mileage by roughly 10 % per week and progress to normal training loads.',
+        'Build mileage ~10%/week and reintroduce speed only if pain‑free.',
     },
     whatNotToDo:
-      'Avoid sudden spikes in distance or speed that cause knee soreness.',
+      'No rapid mileage/speed spikes or downhill repeats; stop if pain rises >3/10.',
     createdAt: new Date('2025-05-10T00:00:00Z'),
     days: [
       createWorkoutDay(1, 'Return‑to‑Run (progress mileage)', [
@@ -1083,18 +1765,18 @@ export const rehabPrograms: ExerciseProgram[] = [
   // -----------------------------------------------------------------
   {
     programOverview:
-      'Week 1 focuses on restoring pain‑free range of motion and scapular control using gentle band work.',
-    summary: 'Pain-free range of motion and scapular control with bands',
+      'Week 1 restores pain‑free shoulder motion via band pull‑aparts and external rotations with scapular control.',
+    summary: 'Scapular control + cuff activation, pain‑free range',
     timeFrameExplanation:
-      'Reduce impingement symptoms and build basic stability so you can increase endurance next week.',
+      'Band Pull‑Apart (shoulders‑30) + External Rotation (shoulders‑94) build upward rotation and cuff endurance.',
     afterTimeFrame: {
       expectedOutcome:
-        'Pinching should decrease and you should lift your arm more comfortably.',
+        'Less pinching; easier shoulder elevation within a comfortable range.',
       nextSteps:
-        'If pain stays below 2/10, advance to Week 2 for higher‑rep cuff work.',
+        'Increase reps/holds and add light flexion work in Week 2.',
     },
     whatNotToDo:
-      'Avoid sharp pain and heavy overhead lifting.',
+      'No forced overhead range, shrugging into pain, or heavy press variations.',
     createdAt: new Date('2025-05-29T00:00:00Z'),
     days: [
       createWorkoutDay(1, 'Pain‑Free Range & Control', [
@@ -1135,18 +1817,18 @@ export const rehabPrograms: ExerciseProgram[] = [
 
   {
     programOverview:
-      'Week 2 builds rotator cuff endurance with more repetitions and longer holds while keeping movements pain free.',
-    summary: 'Building rotator cuff endurance with increased repetitions',
+      'Week 2 builds cuff endurance with higher reps/holds while keeping motion pain‑free.',
+    summary: 'Cuff endurance and scapular retraction volume',
     timeFrameExplanation:
-      'The added volume strengthens your shoulder so you can tolerate pulling and pressing soon.',
+      'Progress band ER (shoulders‑94) + pull‑aparts (shoulders‑30) to prep for pressing/pulling.',
     afterTimeFrame: {
       expectedOutcome:
-        'You should feel steadier with less fatigue during daily tasks.',
+        'Better overhead tolerance and less fatigue with daily reaching.',
       nextSteps:
-        'Proceed to Week 3 to introduce light rows and presses if comfortable.',
+        'Add light rows and safe‑range pressing in Week 3.',
     },
     whatNotToDo:
-      'Don\'t rush overhead work if it provokes discomfort.',
+      'No end‑range pain, fast tempos, or kipping/ballistic reps.',
     createdAt: new Date('2025-05-22T00:00:00Z'),
     days: [
       createWorkoutDay(1, 'Build Cuff Endurance', [
@@ -1181,18 +1863,18 @@ export const rehabPrograms: ExerciseProgram[] = [
 
   {
     programOverview:
-      'Week 3 introduces light pulling movements and vertical pressing within a comfortable range.',
-    summary: 'Light pulling movements and controlled vertical pressing',
+      'Week 3 adds light rows and controlled vertical press while maintaining cuff work.',
+    summary: 'Introduce row + safe‑range press; keep cuff volume',
     timeFrameExplanation:
-      'These exercises start rebuilding strength and coordination for overhead activities.',
+      'Combine band ER, pull‑aparts, and light press to restore coordinated overhead control.',
     afterTimeFrame: {
       expectedOutcome:
-        'Light rows and presses should feel controlled with minimal irritation.',
+        'Controlled rows/presses with minimal irritation; posture feels steadier.',
       nextSteps:
-        'Increase resistance slightly in Week 4 if pain free.',
+        'Increase resistance and range in Week 4 if pain‑free.',
     },
     whatNotToDo:
-      'Avoid heavy or fast overhead pressing.',
+      'No grinding overhead reps, forced end‑range, or shrug‑dominant patterns.',
     createdAt: new Date('2025-05-15T00:00:00Z'),
     days: [
       createWorkoutDay(1, 'Add Pulling & Light Press', [
@@ -1236,18 +1918,18 @@ export const rehabPrograms: ExerciseProgram[] = [
 
   {
     programOverview:
-      'Week 4 transitions you to overhead strength work with dumbbells and full-range control.',
-    summary: 'Overhead strength work with dumbbells and full-range control',
+      'Week 4 progresses to dumbbell overhead strength with full‑range control and stable scapulae.',
+    summary: 'Progress overhead strength with stable scapular mechanics',
     timeFrameExplanation:
-      'We slightly increase resistance to prepare you for regular training or sport.',
+      'Slight load increases on cuff + press patterns prepare for normal training.',
     afterTimeFrame: {
       expectedOutcome:
-        'You should have full pain-free motion and confidence pressing light weights overhead.',
+        'Pain‑free overhead motion and confidence pressing light‑moderate loads.',
       nextSteps:
-        'Maintain rotator cuff work weekly and continue progressive loading.',
+        'Keep weekly cuff work; progress dumbbell loads gradually.',
     },
     whatNotToDo:
-      'Do not ignore pain or push too quickly into heavy loads.',
+      'No rapid load jumps or pressing through pain; maintain clean tempo.',
     createdAt: new Date('2025-05-08T00:00:00Z'),
     days: [
       createWorkoutDay(1, 'Overhead Strength Transition', [
@@ -1289,18 +1971,18 @@ export const rehabPrograms: ExerciseProgram[] = [
 
   {
     programOverview:
-      'Week 1 focuses on gentle mobility and swelling control to restore pain-free motion.',
-    summary: 'Acute recovery with mobility and swelling control',
+      'Week 1 restores pain‑free ankle motion with light jogging in place and double‑leg calf raises to manage swelling.',
+    summary: 'Circulation + gentle ROM; ankle feels safer',
     timeFrameExplanation:
-      'Use light range-of-motion drills and calf pumps to reduce inflammation. This prepares you for strength work next week.',
+      'Jog in place (warmup‑6) and calf pumps (calves‑6) aid lymph flow and restore tolerance.',
     afterTimeFrame: {
       expectedOutcome:
-        'Swelling should be decreasing and walking should feel easier with minimal discomfort.',
+        'Less swelling; calmer walking and easy stairs.',
       nextSteps:
-        'If movement feels comfortable, progress to Week 2 to begin rebuilding strength.',
+        'Begin strength return with double‑/eccentric raises in Week 2.',
     },
     whatNotToDo:
-      'Avoid lateral movements, deep ankle flexion under load, or unstable surfaces until you\'ve completed Week 3. If your ankle swells or becomes painful after a session, scale back the intensity or volume for a few days.',
+      'No cutting, unstable surfaces, or forced deep dorsiflexion; stop if swelling spikes.',
     createdAt: new Date('2025-05-31T00:00:00Z'),
     days: [
       createWorkoutDay(1, 'Acute Recovery (mobility & swelling)', [
@@ -1335,18 +2017,18 @@ export const rehabPrograms: ExerciseProgram[] = [
 
   {
     programOverview:
-      'Week 2 introduces more strength work for the calf and supporting muscles.',
-    summary: 'Strength building for calf and supporting muscles',
+      'Week 2 adds calf strength (double‑leg + eccentric single‑leg) and hip abduction for ankle control.',
+    summary: 'Calf strength + hip control for ankle stability',
     timeFrameExplanation:
-      'You will progress loading to build stability while continuing to manage swelling.',
+      'Calves‑6 + Calves‑63 build tendon tolerance; glute med work improves stance stability.',
     afterTimeFrame: {
       expectedOutcome:
-        'Calf strength and control should improve with little to no swelling after sessions.',
+        'Stronger push‑off and better control on stairs with minimal swelling.',
       nextSteps:
-        'Move on to Week 3 to challenge your balance and proprioception.',
+        'Add single‑leg control and balance in Week 3.',
     },
     whatNotToDo:
-      'Avoid lateral movements, deep ankle flexion under load, or unstable surfaces until you\'ve completed Week 3. If your ankle swells or becomes painful after a session, scale back the intensity or volume for a few days.',
+      'No plyos, cutting, or high‑impact; keep tempo slow and pain ≤3/10.',
     createdAt: new Date('2025-05-24T00:00:00Z'),
     days: [
       createWorkoutDay(1, 'Strength Return (calf & glute)', [
@@ -1378,18 +2060,18 @@ export const rehabPrograms: ExerciseProgram[] = [
 
   {
     programOverview:
-      'Week 3 adds single-leg balance and proprioceptive drills to improve coordination.',
-    summary: 'Balance and proprioceptive coordination training',
+      'Week 3 emphasizes single‑leg control and balance with unilateral raises and hip abduction.',
+    summary: 'Single‑leg control + proprioception',
     timeFrameExplanation:
-      'Building balance prepares you for the dynamic loading introduced in Week 4.',
+      'Single‑leg calf work (calves‑12) + glute med build ankle strategy for uneven ground.',
     afterTimeFrame: {
       expectedOutcome:
-        'You should feel steady standing on one leg and notice better ankle control.',
+        'Steadier single‑leg balance; confident gait on small irregularities.',
       nextSteps:
-        'If you can balance comfortably, progress to Week 4 and begin light jogging.',
+        'Reintroduce light jogging in Week 4.',
     },
     whatNotToDo:
-      'Avoid lateral movements, deep ankle flexion under load, or unstable surfaces until you\'ve completed Week 3. If your ankle swells or becomes painful after a session, scale back the intensity or volume for a few days.',
+      'No cutting, explosive direction changes, or painful ranges.',
     createdAt: new Date('2025-05-17T00:00:00Z'),
     days: [
       createWorkoutDay(1, 'Balance & Proprioception', [
@@ -1427,35 +2109,35 @@ export const rehabPrograms: ExerciseProgram[] = [
 
   {
     programOverview:
-      'Week 4 reintroduces jogging and dynamic movements to prepare for full activity.',
-    summary: 'Return to running and dynamic activity preparation',
+      'Week 4 reintroduces short jog bouts while maintaining calf strength and hip control.',
+    summary: 'Return‑to‑jog while keeping ankle strong',
     timeFrameExplanation:
-      'You will continue strengthening while adding light running to transition back to sport or daily tasks.',
+      'Alternate easy jog/walk and sustain calf work to protect the ankle under impact.',
     afterTimeFrame: {
       expectedOutcome:
-        'You should be able to jog for around 10 minutes without pain or instability.',
+        'Comfortable 8–12 min jogs with stable foot strike and minimal swelling.',
       nextSteps:
-        'Gradually build mileage or return to sport, adding plyometrics as tolerated.',
+        'Build volume conservatively; add gentle plyos only if fully pain‑free.',
     },
     whatNotToDo:
-      'Avoid lateral movements, deep ankle flexion under load, or unstable surfaces until you\'ve completed Week 3. If your ankle swells or becomes painful after a session, scale back the intensity or volume for a few days.',
+      'No sharp cutting or long downhill runs; stop if swelling/pain increases.',
     createdAt: new Date('2025-05-10T00:00:00Z'),
     days: [
-      createWorkoutDay(1, 'Return to Jog & Dynamic Loading', [
+      createWorkoutDay(1, 'Return‑to‑Jog (dynamic loading)', [
         { exerciseId: 'warmup-6', duration: 180, warmup: true },
         { exerciseId: 'calves-12', sets: 3, repetitions: 10, restBetweenSets: 60 },
         { exerciseId: 'calves-63', sets: 3, repetitions: 12, restBetweenSets: 60 },
         { exerciseId: 'glutes-44', sets: 2, repetitions: 15, restBetweenSets: 60 },
       ]),
         createAnkleRestDay(2),
-      createWorkoutDay(3, 'Return to Jog & Dynamic Loading', [
+      createWorkoutDay(3, 'Return‑to‑Jog (dynamic loading)', [
         { exerciseId: 'warmup-6', duration: 180, warmup: true },
         { exerciseId: 'calves-12', sets: 3, repetitions: 10, restBetweenSets: 60 },
         { exerciseId: 'calves-63', sets: 3, repetitions: 12, restBetweenSets: 60 },
         { exerciseId: 'glutes-44', sets: 2, repetitions: 15, restBetweenSets: 60 },
       ]),
         createAnkleRestDay(4),
-      createWorkoutDay(5, 'Return to Jog & Dynamic Loading', [
+      createWorkoutDay(5, 'Return‑to‑Jog (dynamic loading)', [
         { exerciseId: 'warmup-6', duration: 180, warmup: true },
         { exerciseId: 'calves-12', sets: 3, repetitions: 10, restBetweenSets: 60 },
         { exerciseId: 'calves-63', sets: 3, repetitions: 12, restBetweenSets: 60 },
@@ -1473,18 +2155,18 @@ export const rehabPrograms: ExerciseProgram[] = [
   // -----------------------------------------------------------------
   {
     programOverview:
-      'Week 1 introduces isometric pain modulation to calm symptoms and build tolerance to light loading.',
-    summary: 'Isometric pain modulation and tolerance building',
+      'Week 1 uses isometric wrist extension and light rotation to calm symptoms and load the tendon safely.',
+    summary: 'Isometric analgesia + gentle forearm rotation',
     timeFrameExplanation:
-      'Use pain‑free holds and gentle mobility to stimulate healing without aggravating the tendon.',
+      'Wrist isometrics (forearms‑1) and light rotations (forearms‑2) reduce pain sensitivity and start capacity.',
     afterTimeFrame: {
       expectedOutcome:
-        'Pain should start easing and light gripping will feel less irritating.',
+        'Lower resting pain; easier light grip/typing and daily tasks.',
       nextSteps:
-        'If discomfort stays below 3/10, progress to Week 2 for controlled eccentric work.',
+        'Introduce slow eccentrics in Week 2 if pain ≤3/10.',
     },
     whatNotToDo:
-      'Avoid jerky or fast-loaded movements, especially wrist extension or gripping under fatigue. If pain spikes above 3/10 or lingers into the next day, reduce your load or reps. Stop any exercise that causes sharp, radiating pain down the arm.',
+      'No fast grip work, heavy carries, or jerky wrist extension; stop if sharp/radiating pain.',
     createdAt: new Date('2025-05-31T00:00:00Z'),
     days: [
       createWorkoutDay(1, 'Isometric Pain Modulation', [
@@ -1510,18 +2192,18 @@ export const rehabPrograms: ExerciseProgram[] = [
 
   {
     programOverview:
-      'Week 2 introduces slow eccentric loading to promote tendon repair and strength.',
-    summary: 'Eccentric loading for tendon repair and strength',
+      'Week 2 adds slow eccentrics for tendon remodeling while maintaining pain‑free rotation.',
+    summary: 'Add slow eccentrics; keep pain modest',
     timeFrameExplanation:
-      'Controlled lowering exercises build resilience while keeping intensity moderate.',
+      'Eccentric wrist extension builds capacity; rotation stays light and controlled.',
     afterTimeFrame: {
       expectedOutcome:
-        'Forearm soreness should diminish and daily tasks become easier.',
+        'Improved tolerance to gripping and lifting light objects.',
       nextSteps:
-        'Move on to Week 3 to add rotation and grip‑focused drills.',
+        'Add rotation volume and light hammer curls in Week 3.',
     },
     whatNotToDo:
-      'Avoid jerky or fast-loaded movements, especially wrist extension or gripping under fatigue. If pain spikes above 3/10 or lingers into the next day, reduce your load or reps. Stop any exercise that causes sharp, radiating pain down the arm.',
+      'No jerky or fast‑loaded movements, especially wrist extension or gripping under fatigue. If pain >3/10 or lingers next day, reduce load or reps. Stop any exercise with sharp, radiating pain down the arm.',
     createdAt: new Date('2025-05-24T00:00:00Z'),
     days: [
       {
@@ -1559,18 +2241,18 @@ export const rehabPrograms: ExerciseProgram[] = [
 
   {
     programOverview:
-      'Week 3 builds forearm control and grip strength through rotation and endurance work.',
-    summary: 'Forearm control and grip strength development',
+      'Week 3 increases wrist rotation control and introduces light grip endurance (hammer curls).',
+    summary: 'Rotation capacity + light grip endurance',
     timeFrameExplanation:
-      'These movements enhance coordination and prepare you for functional tasks.',
+      'Controlled rotation with gradual time‑under‑tension supports return to function.',
     afterTimeFrame: {
       expectedOutcome:
-        'Rotation drills and grip exercises should feel smoother with better stamina.',
+        'Smoother rotation; light carries and household tasks feel fine.',
       nextSteps:
-        'Advance to Week 4 to integrate compound loading for daily activities.',
+        'Integrate compound loading and carryover in Week 4.',
     },
     whatNotToDo:
-      'Avoid jerky or fast-loaded movements, especially wrist extension or gripping under fatigue. If pain spikes above 3/10 or lingers into the next day, reduce your load or reps. Stop any exercise that causes sharp, radiating pain down the arm.',
+      'No jerky or fast‑loaded movements, especially wrist extension or gripping under fatigue. If pain >3/10 or lingers next day, reduce load or reps. Stop any exercise with sharp, radiating pain down the arm.',
     createdAt: new Date('2025-05-17T00:00:00Z'),
     days: [
       createWorkoutDay(1, 'Forearm Control + Grip Strength', [
@@ -1599,18 +2281,18 @@ export const rehabPrograms: ExerciseProgram[] = [
 
   {
     programOverview:
-      'Week 4 integrates functional loading so you\'re ready for everyday tasks and sport.',
-    summary: 'Functional integration for daily tasks and sport',
+      'Week 4 integrates functional loading so daily tasks and sport prep feel natural and pain‑free.',
+    summary: 'Functional loading and return to tasks',
     timeFrameExplanation:
-      'Compound movements and carries reinforce strength gains made in the previous weeks.',
+      'Blend rotation, wrist work, and light compound tasks to finish rehab.',
     afterTimeFrame: {
       expectedOutcome:
-        'You should grip, lift, or type pain‑free with confident wrist extension.',
+        'Grip, lift, and type pain‑free with confident wrist extension.',
       nextSteps:
-        'Transition to progressive strength work or sport‑specific training as tolerated.',
+        'Progress to normal strength work; maintain rotation/ER weekly.',
     },
     whatNotToDo:
-      'Avoid jerky or fast-loaded movements, especially wrist extension or gripping under fatigue. If pain spikes above 3/10 or lingers into the next day, reduce your load or reps. Stop any exercise that causes sharp, radiating pain down the arm.',
+      'No jerky or fast‑loaded movements, especially wrist extension or gripping under fatigue. If pain >3/10 or lingers next day, reduce load or reps. Stop any exercise with sharp, radiating pain down the arm.',
     createdAt: new Date('2025-05-10T00:00:00Z'),
     days: [
       createWorkoutDay(1, 'Functional Loading & Carryover', [
@@ -1641,18 +2323,18 @@ export const rehabPrograms: ExerciseProgram[] = [
   // -----------------------------------------------------------------
   {
     programOverview:
-      'Week 1 focuses on gentle mobility and scapular awareness to reduce immediate tension.',
-    summary: 'Mobility and scapular awareness for tension relief',
+      'Week 1 reduces neck/upper‑back tension with arm circles, band pull‑aparts, trunk rotation, and gentle cuff work.',
+    summary: 'Mobility + scapular activation to unload neck',
     timeFrameExplanation:
-      'Start with light movements to open the chest and activate supporting muscles around your neck and shoulders.',
+      'Arm Circles (warmup‑8), Band Pull‑Apart, Trunk Rotation (warmup‑9), and ER build posture without strain.',
     afterTimeFrame: {
       expectedOutcome:
-        'Neck and shoulder tension should start decreasing with better postural awareness.',
+        'Less neck tightness; better ability to sit tall without fatigue.',
       nextSteps:
-        'If symptoms improve, progress to Week 2 for targeted strengthening work.',
+        'Add upper‑back row volume and longer ER sets in Week 2.',
     },
     whatNotToDo:
-      'Avoid shrug-based or trap-dominant exercises. Don\'t force end-range neck stretches into pain.',
+      'No shrug‑dominant lifts, forced end‑range neck stretches, or painful ranges.',
     createdAt: new Date('2025-06-02T00:00:00Z'),
     days: [
       createWorkoutDay(1, 'Mobility & Awareness', [
@@ -1684,18 +2366,18 @@ export const rehabPrograms: ExerciseProgram[] = [
 
   {
     programOverview:
-      'Week 2 adds low-load strength work for the upper back and rotator cuff to build endurance.',
-    summary: 'Upper back and rotator cuff strengthening',
+      'Week 2 builds upper‑back endurance with band rows and cuff work to support posture.',
+    summary: 'Row volume + cuff endurance for posture',
     timeFrameExplanation:
-      'Targeted strengthening helps support better posture and reduces strain on the neck.',
+      'High standing band row (upper‑back‑60) + band ER (shoulders‑94) reduce neck reliance on traps.',
     afterTimeFrame: {
       expectedOutcome:
-        'Your upper back should feel stronger and neck fatigue should be reduced.',
+        'Stronger mid‑back; longer screen time with less neck fatigue.',
       nextSteps:
-        'Continue to Week 3 for higher volume endurance training.',
+        'Increase endurance and add anti‑rotation in Week 3.',
     },
     whatNotToDo:
-      'Avoid shrug-based or trap-dominant exercises. Don\'t force end-range neck stretches into pain.',
+      'No heavy shrugs, fast reps, or neck cranking; keep scapulae down/back.',
     createdAt: new Date('2025-05-26T00:00:00Z'),
     days: [
       {
@@ -1745,18 +2427,18 @@ export const rehabPrograms: ExerciseProgram[] = [
 
   {
     programOverview:
-      'Week 3 reinforces postural endurance through higher volume and static holds.',
-    summary: 'Postural endurance with higher volume training',
+      'Week 3 raises volume and adds anti‑rotation for lasting postural endurance.',
+    summary: 'Higher volume + anti‑rotation endurance',
     timeFrameExplanation:
-      'Increased training volume builds the endurance needed to maintain good posture throughout the day.',
+      'Face‑pull/rows + oblique work reinforce thoracic extension and rib cage alignment.',
     afterTimeFrame: {
       expectedOutcome:
-        'You should hold good posture longer with less effort and fatigue.',
+        'Able to hold upright posture longer with minimal neck tightness.',
       nextSteps:
-        'Move to Week 4 to integrate these gains into daily movement patterns.',
+        'Integrate habits and maintain 2x/week strength in Week 4.',
     },
     whatNotToDo:
-      'Avoid shrug-based or trap-dominant exercises. Don\'t force end-range neck stretches into pain.',
+      'No ballistic reps; avoid forcing end‑range cervical motion.',
     createdAt: new Date('2025-05-19T00:00:00Z'),
     days: [
       {
@@ -1806,18 +2488,18 @@ export const rehabPrograms: ExerciseProgram[] = [
 
   {
     programOverview:
-      'Week 4 helps you integrate better alignment into everyday movement and work habits.',
-    summary: 'Alignment integration and habit formation',
+      'Week 4 anchors alignment into daily habits while maintaining upper‑back/cuff strength.',
+    summary: 'Integrate posture into daily movement + maintain strength',
     timeFrameExplanation:
-      'Focus on building lasting habits and maintaining your postural improvements in daily life.',
+      'Short, frequent posture breaks + 2x/week rows/ER keep gains sticky.',
     afterTimeFrame: {
       expectedOutcome:
-        'You should feel significantly less neck tension with improved posture awareness throughout the day.',
+        'Noticeably less neck tension; posture holds automatically longer.',
       nextSteps:
-        'Continue one mobility drill daily and train upper back twice weekly for maintenance.',
+        'Maintain 2x/week rows/ER and 1 daily mobility drill.',
     },
     whatNotToDo:
-      'Avoid shrug-based or trap-dominant exercises. Don\'t force end-range neck stretches into pain.',
+      'No long static slouching without breaks; skip shrug‑dominant work.',
     createdAt: new Date('2025-05-12T00:00:00Z'),
     days: [
       {
@@ -1870,18 +2552,18 @@ export const rehabPrograms: ExerciseProgram[] = [
   // -----------------------------------------------------------------
   {
     programOverview:
-      'Week 1 focuses on light calf activation and gentle stretching to reduce tension through the foot arch.',
-    summary: 'Light calf activation and arch tension relief',
+      'Week 1 reduces heel pain with calf pumps and gentle walking tolerance; keep loads sub‑symptomatic.',
+    summary: 'Calm heel pain; start calf activation',
     timeFrameExplanation:
-      'Start with gentle exercises to calm inflammation and begin activating supporting muscles.',
+      'Double‑leg calf raises and easy marching restore blood flow without irritating the fascia.',
     afterTimeFrame: {
       expectedOutcome:
-        'Heel pain should start decreasing and morning stiffness should be more manageable.',
+        'Lower morning pain; easier first steps and short walks.',
       nextSteps:
-        'If symptoms improve, progress to Week 2 for eccentric calf loading.',
+        'Add calf eccentrics in Week 2 if pain ≤3/10.',
     },
     whatNotToDo:
-      'Avoid barefoot walking on hard floors and don\'t push through sharp heel pain.',
+      'No barefoot walking on hard floors; do not push through sharp heel pain.',
     createdAt: new Date('2025-06-02T00:00:00Z'),
     days: [
       createWorkoutDay(1, 'Light Load & Arch Activation', [
@@ -1910,18 +2592,18 @@ export const rehabPrograms: ExerciseProgram[] = [
 
   {
     programOverview:
-      'Week 2 introduces eccentric calf loading and toe activation to stimulate tissue healing.',
-    summary: 'Eccentric loading and tissue healing stimulation',
+      'Week 2 adds calf eccentrics and toe control to stimulate tissue remodeling.',
+    summary: 'Eccentric calf loading + arch support',
     timeFrameExplanation:
-      'Controlled loading helps rebuild strength while promoting plantar fascia recovery.',
+      'Calves‑63 eccentrics improve tendon/fascia capacity; maintain low‑pain walking.',
     afterTimeFrame: {
       expectedOutcome:
-        'Walking should feel easier and calf strength should start improving.',
+        'Smoother walking and improved push‑off with less heel soreness.',
       nextSteps:
-        'Continue to Week 3 for single-leg balance and midfoot strengthening.',
+        'Progress to balance and midfoot strength in Week 3.',
     },
     whatNotToDo:
-      'Avoid barefoot walking on hard floors and don\'t push through sharp heel pain.',
+      'No barefoot walking on hard floors; do not push through sharp heel pain.',
     createdAt: new Date('2025-05-26T00:00:00Z'),
     days: [
       createWorkoutDay(1, 'Eccentric Calf & Toe Control', [
@@ -1953,18 +2635,18 @@ export const rehabPrograms: ExerciseProgram[] = [
 
   {
     programOverview:
-      'Week 3 builds single-leg control and midfoot strength to improve stability.',
-    summary: 'Single-leg control and midfoot strengthening',
+      'Week 3 builds single‑leg control and midfoot strength to prep for longer walks.',
+    summary: 'Balance + midfoot control',
     timeFrameExplanation:
-      'Single-leg work challenges the foot and ankle to prepare for dynamic activities.',
+      'Single‑leg calf raises and hip abduction reinforce arch support and gait stability.',
     afterTimeFrame: {
       expectedOutcome:
-        'Balance should improve and you should feel more stable when walking on uneven surfaces.',
+        'Better balance; longer walks with minimal morning stiffness.',
       nextSteps:
-        'Progress to Week 4 to increase functional loading and prepare for impact activities.',
+        'Increase functional loading in Week 4.',
     },
     whatNotToDo:
-      'Avoid barefoot walking on hard floors and don\'t push through sharp heel pain.',
+      'No barefoot walking on hard floors; do not push through sharp heel pain.',
     createdAt: new Date('2025-05-19T00:00:00Z'),
     days: [
       createWorkoutDay(1, 'Balance & Midfoot Strength', [
@@ -1996,21 +2678,21 @@ export const rehabPrograms: ExerciseProgram[] = [
 
   {
     programOverview:
-      'Week 4 increases functional loading so you can walk or jog pain-free and return to impact activities.',
-    summary: 'Functional loading for pain-free walking and impact activities',
+      'Week 4 increases functional loading for brisk walking and early return to impact.',
+    summary: 'Functional loading; return to brisk walking',
     timeFrameExplanation:
-      'Progressive loading prepares your foot for the demands of daily movement and sport.',
+      'Sustain eccentrics and add volume to tolerate longer, faster walks.',
     afterTimeFrame: {
       expectedOutcome:
-        'You should be able to walk briskly and stand for extended periods without heel pain.',
+        'Brisk walks and long stands are comfortable with minimal flare‑ups.',
       nextSteps:
-        'Keep training calves twice weekly and progress gradually to running or hiking.',
+        'Maintain calves 2x/week; ramp to light jog/hike as pain allows.',
     },
     whatNotToDo:
-      'Avoid barefoot walking on hard floors and don\'t push through sharp heel pain.',
+      'No barefoot walking on hard floors; do not push through sharp heel pain.',
     createdAt: new Date('2025-05-12T00:00:00Z'),
     days: [
-      createWorkoutDay(1, 'Function & Return to Impact', [
+      createWorkoutDay(1, 'Function & Return‑to‑Impact', [
         { exerciseId: 'warmup-6', duration: 180, warmup: true },
         { exerciseId: 'calves-12', sets: 3, repetitions: 12, restBetweenSets: 60 },
         { exerciseId: 'calves-63', sets: 3, repetitions: 12, restBetweenSets: 60 },
@@ -2030,7 +2712,7 @@ export const rehabPrograms: ExerciseProgram[] = [
         ],
       },
       createPlantarRestDay(4),
-      createWorkoutDay(5, 'Function & Return to Impact', [
+      createWorkoutDay(5, 'Function & Return‑to‑Impact', [
         { exerciseId: 'warmup-6', duration: 180, warmup: true },
         { exerciseId: 'calves-12', sets: 3, repetitions: 12, restBetweenSets: 60 },
         { exerciseId: 'calves-63', sets: 3, repetitions: 12, restBetweenSets: 60 },
@@ -2047,18 +2729,18 @@ export const rehabPrograms: ExerciseProgram[] = [
   // -----------------------------------------------------------------
   {
     programOverview:
-      'Week 1 focuses on restoring baseline mobility and pain-free isometric hamstring contraction.',
-    summary: 'Baseline mobility and pain-free muscle activation',
+      'Week 1 restores mobility and introduces pain‑free hamstring isometrics and bridges.',
+    summary: 'Mobility + pain‑free isometric activation',
     timeFrameExplanation:
-      'Start with gentle movements to reduce inflammation and begin activating hamstring muscles safely.',
+      'Glute bridges and single‑leg RDL patterning (short ROM) engage posterior chain without flare‑ups.',
     afterTimeFrame: {
       expectedOutcome:
-        'Hamstring tightness should decrease and walking should feel more comfortable.',
+        'Less tightness; comfortable walking and gentle hip hinge.',
       nextSteps:
-        'If pain stays manageable, progress to Week 2 for eccentric loading.',
+        'Add controlled eccentrics in Week 2.',
     },
     whatNotToDo:
-      'Avoid overstretching and ballistic movements. Stop if sharp pain occurs.',
+      'No overstretching or ballistic movements; stop if sharp pain occurs.',
     createdAt: new Date('2025-06-02T00:00:00Z'),
     days: [
       createWorkoutDay(1, 'Isometric Activation & Mobility', [
@@ -2090,18 +2772,18 @@ export const rehabPrograms: ExerciseProgram[] = [
 
   {
     programOverview:
-      'Week 2 introduces eccentric loading to support tendon and fascial healing.',
-    summary: 'Eccentric loading for tissue healing and strength',
+      'Week 2 adds eccentric hamstring work (RDL/Nordic regressions) with steady glute volume.',
+    summary: 'Introduce eccentrics for tissue capacity',
     timeFrameExplanation:
-      'Controlled eccentric movements help rebuild hamstring strength while promoting tissue repair.',
+      'Slow eccentrics build resilience; volume kept modest to avoid setbacks.',
     afterTimeFrame: {
       expectedOutcome:
-        'Hamstring strength should start improving and daily activities should feel easier.',
+        'Improved tolerance to bending and light picking tasks.',
       nextSteps:
-        'Continue to Week 3 for single-leg control and hip hinge strengthening.',
+        'Progress to single‑leg control in Week 3.',
     },
     whatNotToDo:
-      'Avoid overstretching and ballistic movements. Stop if sharp pain occurs.',
+      'No overstretching or ballistic movements; stop if sharp pain occurs.',
     createdAt: new Date('2025-05-26T00:00:00Z'),
     days: [
       createWorkoutDay(1, 'Introduce Eccentric Loading', [
@@ -2133,18 +2815,18 @@ export const rehabPrograms: ExerciseProgram[] = [
 
   {
     programOverview:
-      'Week 3 integrates single-leg control and trunk-pelvis coordination for functional movement.',
-    summary: 'Single-leg control and functional movement integration',
+      'Week 3 emphasizes single‑leg hip hinge and trunk‑pelvis coordination.',
+    summary: 'Single‑leg hinge + coordination',
     timeFrameExplanation:
-      'Single-leg exercises challenge stability and prepare you for dynamic activities.',
+      'Single‑leg RDL and hip thrust variants improve symmetry and control for daily tasks.',
     afterTimeFrame: {
       expectedOutcome:
-        'Single-leg movements should feel more controlled and hamstring loading should be comfortable.',
+        'Controlled single‑leg loading; reduced fear with bending/lifting.',
       nextSteps:
-        'Progress to Week 4 to begin light running and dynamic movement patterns.',
+        'Introduce light jog intervals in Week 4 if pain ≤3/10.',
     },
     whatNotToDo:
-      'Avoid overstretching and ballistic movements. Stop if sharp pain occurs.',
+      'No overstretching or ballistic movements; stop if sharp pain occurs.',
     createdAt: new Date('2025-05-19T00:00:00Z'),
     days: [
       createWorkoutDay(1, 'Single-Leg Control & Hinge Strength', [
@@ -2176,35 +2858,35 @@ export const rehabPrograms: ExerciseProgram[] = [
 
   {
     programOverview:
-      'Week 4 returns you to light running and dynamic movement with confidence.',
-    summary: 'Return to running and dynamic movement patterns',
+      'Week 4 reintroduces short jog bouts while maintaining eccentric work and hip strength.',
+    summary: 'Return‑to‑jog + maintain eccentrics',
     timeFrameExplanation:
-      'Progressive jogging and dynamic exercises prepare you for full return to sport and activity.',
+      'Keep eccentrics and hinge strength while adding conservative jog volume.',
     afterTimeFrame: {
       expectedOutcome:
-        'You should jog pain-free and tolerate hamstring loading during hip hinge patterns.',
+        'Pain‑free short jogs; confident hinge under daily loads.',
       nextSteps:
-        'Begin progressive running intensity and maintain weekly hamstring strengthening.',
+        'Build run distance gradually; keep weekly hamstring eccentrics.',
     },
     whatNotToDo:
-      'Avoid overstretching and ballistic movements. Stop if sharp pain occurs.',
+      'No overstretching or ballistic movements; stop if sharp pain occurs.',
     createdAt: new Date('2025-05-12T00:00:00Z'),
     days: [
-      createWorkoutDay(1, 'Return to Jog & Light Dynamic Work', [
+      createWorkoutDay(1, 'Return‑to‑Jog (light dynamic work)', [
         { exerciseId: 'cardio-1', duration: 600, warmup: true },
         { exerciseId: 'hamstrings-48', sets: 3, repetitions: 12, restBetweenSets: 60 },
         { exerciseId: 'glutes-46', sets: 3, repetitions: 10, restBetweenSets: 60 },
         { exerciseId: 'hamstrings-20', sets: 2, repetitions: 8, restBetweenSets: 90 },
       ]),
       createHamstringRestDay(2),
-      createWorkoutDay(3, 'Return to Jog & Light Dynamic Work', [
+      createWorkoutDay(3, 'Return‑to‑Jog (light dynamic work)', [
         { exerciseId: 'cardio-1', duration: 600, warmup: true },
         { exerciseId: 'hamstrings-48', sets: 3, repetitions: 12, restBetweenSets: 60 },
         { exerciseId: 'glutes-46', sets: 3, repetitions: 10, restBetweenSets: 60 },
         { exerciseId: 'hamstrings-20', sets: 2, repetitions: 8, restBetweenSets: 90 },
       ]),
       createHamstringRestDay(4),
-      createWorkoutDay(5, 'Return to Jog & Light Dynamic Work', [
+      createWorkoutDay(5, 'Return‑to‑Jog (light dynamic work)', [
         { exerciseId: 'cardio-1', duration: 600, warmup: true },
         { exerciseId: 'hamstrings-48', sets: 3, repetitions: 12, restBetweenSets: 60 },
         { exerciseId: 'glutes-46', sets: 3, repetitions: 10, restBetweenSets: 60 },
@@ -2232,7 +2914,7 @@ export const rehabPrograms: ExerciseProgram[] = [
         'Progress to Week 2 for targeted pulling movements and posterior chain strengthening.',
     },
     whatNotToDo:
-      'Avoid heavy pressing and prolonged slouching during the early stages.',
+      'No heavy pressing or prolonged slouching during the early stages.',
     createdAt: new Date('2025-06-02T00:00:00Z'),
     days: [
       createWorkoutDay(1, 'Posture Awareness & Mobility', [
@@ -2275,7 +2957,7 @@ export const rehabPrograms: ExerciseProgram[] = [
         'Continue to Week 3 for endurance and time-under-tension training.',
     },
     whatNotToDo:
-      'Avoid heavy pressing and prolonged slouching during the early stages.',
+      'No heavy pressing or prolonged slouching during the early stages.',
     createdAt: new Date('2025-05-26T00:00:00Z'),
     days: [
       createWorkoutDay(1, 'Scapular Control & Pull Strength', [
@@ -2318,7 +3000,7 @@ export const rehabPrograms: ExerciseProgram[] = [
         'Progress to Week 4 for core-integrated posture training.',
     },
     whatNotToDo:
-      'Avoid heavy pressing and prolonged slouching during the early stages.',
+      'No heavy pressing or prolonged slouching during the early stages.',
     createdAt: new Date('2025-05-19T00:00:00Z'),
     days: [
       createWorkoutDay(1, 'Endurance & Time Under Tension', [
@@ -2358,22 +3040,22 @@ export const rehabPrograms: ExerciseProgram[] = [
         'Maintain progress with upper back training twice per week and daily mobility.',
     },
     whatNotToDo:
-      'Avoid heavy pressing and prolonged slouching during the early stages.',
+      'No heavy pressing or prolonged slouching during the early stages.',
     createdAt: new Date('2025-05-12T00:00:00Z'),
     days: [
-      createWorkoutDay(1, 'Core-Integrated Posture Training', [
+      createWorkoutDay(1, 'Posture Integration (core + upper back)', [
         { exerciseId: 'shoulders-30', sets: 3, repetitions: 15, restBetweenSets: 60 },
         { exerciseId: 'upper-back-60', sets: 3, repetitions: 15, restBetweenSets: 60 },
         { exerciseId: 'obliques-4', sets: 2, repetitions: 12, restBetweenSets: 60 },
       ]),
       createPostureRestDay(2),
-      createWorkoutDay(3, 'Core-Integrated Posture Training', [
+      createWorkoutDay(3, 'Posture Integration (core + upper back)', [
         { exerciseId: 'shoulders-30', sets: 3, repetitions: 15, restBetweenSets: 60 },
         { exerciseId: 'upper-back-60', sets: 3, repetitions: 15, restBetweenSets: 60 },
         { exerciseId: 'obliques-4', sets: 2, repetitions: 12, restBetweenSets: 60 },
       ]),
       createPostureRestDay(4),
-      createWorkoutDay(5, 'Core-Integrated Posture Training', [
+      createWorkoutDay(5, 'Posture Integration (core + upper back)', [
         { exerciseId: 'shoulders-30', sets: 3, repetitions: 15, restBetweenSets: 60 },
         { exerciseId: 'upper-back-60', sets: 3, repetitions: 15, restBetweenSets: 60 },
         { exerciseId: 'obliques-4', sets: 2, repetitions: 12, restBetweenSets: 60 },
@@ -2400,7 +3082,7 @@ export const rehabPrograms: ExerciseProgram[] = [
         'Progress to Week 2 for time under tension and movement coordination.',
     },
     whatNotToDo:
-      'Avoid high-rep sit-ups and long planks with poor form.',
+      'No high‑rep sit‑ups or long planks with poor form.',
     createdAt: new Date('2025-06-02T00:00:00Z'),
     days: [
       createWorkoutDay(1, 'Activation & Control', [
@@ -2440,7 +3122,7 @@ export const rehabPrograms: ExerciseProgram[] = [
         'Continue to Week 3 for balance and anti-rotation challenges.',
     },
     whatNotToDo:
-      'Avoid high-rep sit-ups and long planks with poor form.',
+      'No high‑rep sit‑ups or long planks with poor form.',
     createdAt: new Date('2025-05-26T00:00:00Z'),
     days: [
       createWorkoutDay(1, 'Time Under Tension & Movement', [
@@ -2483,7 +3165,7 @@ export const rehabPrograms: ExerciseProgram[] = [
         'Progress to Week 4 for multi-planar core integration.',
     },
     whatNotToDo:
-      'Avoid high-rep sit-ups and long planks with poor form.',
+      'No high‑rep sit‑ups or long planks with poor form.',
     createdAt: new Date('2025-05-19T00:00:00Z'),
     days: [
       createWorkoutDay(1, 'Stability & Balance Challenges', [
@@ -2523,7 +3205,7 @@ export const rehabPrograms: ExerciseProgram[] = [
         'Progress to resistance training or maintain with 1-2 core sessions weekly.',
     },
     whatNotToDo:
-      'Avoid high-rep sit-ups and long planks with poor form.',
+      'No high‑rep sit‑ups or long planks with poor form.',
     createdAt: new Date('2025-05-12T00:00:00Z'),
     days: [
       createWorkoutDay(1, 'Multi-Planar Core Integration', [
@@ -2553,6 +3235,7 @@ export const rehabPrograms: ExerciseProgram[] = [
 
 // URL slug mapping for direct program access - maps to the starting index of each 4-week sequence
 export const programSlugs: Record<string, number> = {
+  'shin-splints': 0,
   // Low Back: indices 0-3 (4 weeks)
   lowback: 0,
   'low-back': 0,
@@ -2716,6 +3399,56 @@ export const getUserProgramBySlug = (slug: string): {
       timeFrame: '4 weeks',
       title: 'Lower Back Pain Recovery',
       docId: `recovery-lowback-${Date.now()}`
+    };
+  }
+
+  if (
+    normalizedSlug.includes('shin') ||
+    normalizedSlug.includes('shin-splints') ||
+    normalizedSlug.includes('mtss')
+  ) {
+    return {
+      programs: updatedWeekPrograms,
+      diagnosis: {
+        diagnosis: 'Medial Tibial Stress Syndrome (Shin Splints)',
+        painfulAreas: ['Shin'],
+        informationalInsights:
+          'Shin splints arise from repetitive tibial loading. This plan deloads impact, restores calf/foot capacity, and re‑introduces running with cadence and surface control.',
+        onset: 'gradual',
+        painScale: 4,
+        mechanismOfInjury: 'overuse',
+        aggravatingFactors: ['Running', 'Hard surfaces', 'Rapid mileage increase'],
+        relievingFactors: ['Impact deload', 'Soft surfaces', 'Eccentric calf work'],
+        priorInjury: 'no',
+        painPattern: 'activity-dependent',
+        painLocation: 'Medial tibia',
+        painCharacter: 'aching',
+        assessmentComplete: true,
+        redFlagsPresent: false,
+        avoidActivities: ['Downhill running', 'Sprints', 'Hard-surface mileage spikes'],
+        timeFrame: '4 weeks',
+        followUpQuestions: [],
+        programType: ProgramType.Recovery,
+        targetAreas: ['Shin', 'Calves', 'Foot']
+      },
+      questionnaire: {
+        age: '20-40',
+        lastYearsExerciseFrequency: '2-3 times per week',
+        numberOfActivityDays: '3',
+        generallyPainfulAreas: ['Shin'],
+        exerciseEnvironments: 'both',
+        workoutDuration: '20-30 minutes',
+        targetAreas: ['Shin', 'Calves', 'Foot'],
+        experienceLevel: 'beginner',
+        equipment: ['bodyweight', 'stationary_bike']
+      },
+      active: true,
+      createdAt: today.toISOString(),
+      updatedAt: today,
+      type: ProgramType.Recovery,
+      timeFrame: '4 weeks',
+      title: 'Shin Splints (MTSS) Recovery',
+      docId: `recovery-shin-splints-${Date.now()}`
     };
   }
 

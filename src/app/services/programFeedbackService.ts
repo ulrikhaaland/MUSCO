@@ -7,7 +7,7 @@ import {
 } from 'firebase/firestore';
 import { db } from '@/app/firebase/config';
 import { DiagnosisAssistantResponse } from '@/app/types';
-import { ExerciseQuestionnaireAnswers, ProgramType } from '@/app/shared/types';
+import { ExerciseQuestionnaireAnswers, ProgramType } from '../../../shared/types';
 import { ProgramStatus, ExerciseProgram } from '@/app/types/program';
 import { ProgramFeedback } from '../components/ui/ProgramFeedbackQuestionnaire';
 import { Locale } from '../i18n/translations';

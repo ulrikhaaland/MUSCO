@@ -1109,7 +1109,66 @@ const translations = {
 'authContext.failedToDeleteProgram': 'Kunne ikke slette program',
 'authContext.mustBeLoggedInToDeleteProgram': 'Du må være logget inn for å slette programmer',
 'authContext.programNotFound': 'Program ikke funnet',
-'authContext.notAuthorizedToDeleteProgram': 'Du har ikke tilgang til å slette dette programmet'
+  'authContext.notAuthorizedToDeleteProgram': 'Du har ikke tilgang til å slette dette programmet',
+
+  // Landing hero
+  'landing.hero.title': 'Lindre smerte, bygg styrke',
+  'landing.hero.subtitle': 'Tilpasset rehabplan på under 2 minutter.',
+  'landing.hero.ctaPain': 'Jeg har smerter',
+  'landing.hero.ctaWorkout': 'Trenger bare en økt',
+  'landing.hero.reviews': 'anmeldelser',
+  'landing.hero.reviewsAria': 'Les kundeanmeldelser',
+
+  // Landing page
+  'landing.how.title': 'Slik fungerer det',
+  'landing.how.step1': 'Velg område og chat kort',
+  'landing.how.step2': '7 spørsmål + sikkerhetsvarsler',
+  'landing.how.step3': 'Få din plan',
+  'landing.how.cta': 'Start diagnose',
+
+  'landing.programs.title': 'Programmer vi dekker',
+  'landing.programs.lower_back': 'Smerter i korsrygg',
+  'landing.programs.runners_knee': 'Løperkne',
+  'landing.programs.shoulder_pain': 'Skuldersmerter',
+  'landing.programs.tech_neck': 'Teknologi-nakke',
+  'landing.programs.ankle_sprain': 'Ankelforstuing',
+  'landing.programs.plantar_fasciitis': 'Plantar fasciitt',
+  'landing.programs.tennis_elbow': 'Tennisalbue',
+  'landing.programs.hamstring_strain': 'Hamstringskade',
+  'landing.programs.upper_back_core': 'Øvre rygg & kjerne',
+  'landing.programs.core_stability': 'Kjernestabilitet',
+  'landing.programs.sampleWeek': 'Se en eksempeluke',
+
+  'landing.why.title': 'Hvorfor det fungerer',
+  'landing.why.digitalTwin': 'Digital tvilling-anatomi med presis målretting',
+  'landing.why.dualAssistants': 'To assistenter: anatomi + coach',
+  'landing.why.personalization': 'Personlig tilpasset etter historikk, tid og utstyr',
+  'landing.why.safety': 'Sikkerhetssjekk og røde flagg',
+  'landing.why.speed': 'Under 2 minutter til første plan',
+  'landing.why.disclaimer': 'Dette er ikke medisinsk rådgivning. Kontakt kliniker ved bekymring.',
+
+  'landing.demo.title': 'Prøv en rask demo',
+  'landing.demo.chat': 'Forhåndsvist eksempel (ingen konto kreves):',
+  'landing.demo.quick1': 'Det gjør vondt å bøye seg',
+  'landing.demo.quick2': 'Jeg har lite tid',
+  'landing.demo.quick3': 'Foretrekker hjemmetrening',
+  'landing.demo.cta': 'Få min plan',
+
+  'landing.pricing.title': 'Pris',
+  'landing.pricing.toggle': 'Bytt til årlig fakturering',
+  'landing.pricing.monthly': 'Månedlig',
+  'landing.pricing.annual': 'Årlig',
+  'landing.pricing.monthlyPrice': '99 kr / mnd',
+  'landing.pricing.annualPrice': '899 kr / år',
+  'landing.pricing.note': 'Ingen bindingstid. Kan avsluttes når som helst.',
+
+  'landing.faq.title': 'FAQ',
+  'landing.faq.q1': 'Trenger jeg konto for å starte?',
+  'landing.faq.a1': 'Nei. Du kan lage en plan først og logge inn senere kun for å lagre.',
+  'landing.faq.q2': 'Er dette trygt hvis jeg har smerter?',
+  'landing.faq.a2': 'Vi screener for røde flagg og råder til forsiktighet. Oppsøk kliniker ved behov.',
+
+  'landing.footer.openApp': 'Åpne app'
 };
 
 export default translations;

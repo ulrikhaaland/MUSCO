@@ -1,6 +1,6 @@
 import OpenAI from 'openai';
 import { ChatPayload, DiagnosisAssistantResponse } from '../../types';
-import { ExerciseQuestionnaireAnswers, ProgramType } from '@/app/shared/types';
+import { ExerciseQuestionnaireAnswers, ProgramType } from '../../../../shared/types';
 import { adminDb } from '@/app/firebase/admin';
 import { ProgramStatus, ExerciseProgram, Exercise } from '@/app/types/program';
 import { loadServerExercises } from '@/app/services/server-exercises';

@@ -9,7 +9,7 @@
 
 import { ExerciseProgram } from '../../../src/app/types/program';
 import { DiagnosisAssistantResponse } from '../../../src/app/types';
-import { ExerciseQuestionnaireAnswers, ProgramType } from '../../../src/app/shared/types';
+import { ExerciseQuestionnaireAnswers, ProgramType } from '../../../shared/types';
 import { calculateExerciseDuration, calculateDayDuration } from '../../../src/app/helpers/duration-calculation';
 
 // Helper function to create workout days with computed durations

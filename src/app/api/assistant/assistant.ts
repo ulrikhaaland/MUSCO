@@ -1,4 +1,4 @@
-import { ExerciseQuestionnaireAnswers } from '@/app/shared/types';
+import { ExerciseQuestionnaireAnswers } from '../../../../shared/types';
 import {
   OpenAIMessage,
   ChatPayload,

@@ -11,7 +11,7 @@ import {
 } from 'firebase/firestore';
 import { db } from '../firebase/config';
 import { DiagnosisAssistantResponse } from '../types';
-import { ExerciseQuestionnaireAnswers } from '../shared/types';
+import { ExerciseQuestionnaireAnswers } from '../../../shared/types';
 import { ProgramStatus } from '../types/program';
 import { Locale } from '../i18n/translations';
 import { getSavedLocalePreference } from '../i18n/utils';

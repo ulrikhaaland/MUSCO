@@ -1,6 +1,6 @@
 import { collection, query, where, getDocs, updateDoc, doc } from 'firebase/firestore';
 import { db } from '../firebase/config';
-import { ProgramType } from '../shared/types';
+import { ProgramType } from '../../../shared/types';
 
 /**
  * Updates the active status of programs in Firebase

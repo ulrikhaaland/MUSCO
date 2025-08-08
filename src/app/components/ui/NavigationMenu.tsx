@@ -3,14 +3,12 @@
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/app/context/AuthContext';
 import { useUser } from '@/app/context/UserContext';
-import { useApp } from '@/app/context/AppContext';
 import { useState, useEffect, useRef, Suspense } from 'react';
-import { ProgramStatus } from '@/app/types/program';
 import { useTranslation } from '@/app/i18n';
-import { useLoader } from '@/app/context/LoaderContext';
 import LanguageSwitcher from './LanguageSwitcher';
 import DevMobileNavBar from './DevMobileNavBar';
 import Logo from './Logo';
+import { logAnalyticsEvent } from '@/app/utils/analytics';
 
 // Create a separate component that uses the search params
 function NavigationMenuContent() {
@@ -19,9 +17,9 @@ function NavigationMenuContent() {
   const searchParams = useSearchParams();
   const { user, logOut } = useAuth();
   const { program } = useUser();
-  const { completeReset } = useApp();
   const { t } = useTranslation();
-  const [showUserMenu, setShowUserMenu] = useState(false);
+  // local menu state (not currently rendered as a dropdown)
+  const [, setShowUserMenu] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const drawerRef = useRef<HTMLDivElement>(null);
   const [showDevNavBar, setShowDevNavBar] = useState(false);
@@ -131,7 +129,7 @@ function NavigationMenuContent() {
   const navItems = [
     {
       name: t('nav.explore'),
-      path: '/',
+      path: '/app',
       icon: (
         <svg
           className="w-6 h-6"
@@ -230,11 +228,11 @@ function NavigationMenuContent() {
     },
   ];
 
-  const isActive = (path: string, name: string) => {
+  const isActive = (path: string) => {
     // Get the base path and any query parameters
     const currentBasePath = pathname;
-    const currentParams = searchParams?.toString() || '';
-    const pathWithoutQuery = path.split('?')[0];
+    // const currentParams = searchParams?.toString() || '';
+    // const pathWithoutQuery = path.split('?')[0];
 
     // Check for exact matches first (most specific routes)
     if (
@@ -267,10 +265,9 @@ function NavigationMenuContent() {
       return true;
     }
 
-    // Home is active in these cases:
-    // 1. On exact home route
-    if (path === '/') {
-      return currentBasePath === '/';
+    // Explore (now /app) is active on /app
+    if (path === '/app') {
+      return currentBasePath === '/app';
     }
 
     // If none of the specific cases match, no match
@@ -279,6 +276,9 @@ function NavigationMenuContent() {
 
   const handleNavigation = (path: string, disabled: boolean = false) => {
     if (!disabled) {
+      // lightweight analytics
+      const target = path === '/app' ? 'app' : path.replace(/^\//, '');
+      try { logAnalyticsEvent('nav_click', { target }); } catch {}
       router.push(path);
       setDrawerOpen(false);
       setShowUserMenu(false);
@@ -335,8 +335,10 @@ function NavigationMenuContent() {
                 
                 if (pathname.includes('/program/')) {
                   window.sessionStorage.setItem('loginContext', 'saveProgram');
+                  logAnalyticsEvent('nav_click', { target: 'signin' });
                   router.push('/login?context=save');
                 } else {
+                  logAnalyticsEvent('nav_click', { target: 'signin' });
                   router.push('/login');
                 }
               }}
@@ -376,7 +378,7 @@ function NavigationMenuContent() {
                   key={item.name}
                   onClick={() => handleNavigation(item.path, item.disabled)}
                   className={`flex items-center w-full px-4 py-3 rounded-lg transition-colors duration-200 ${
-                    isActive(item.path, item.name)
+                    isActive(item.path)
                       ? 'text-white bg-indigo-900/70 font-medium'
                       : item.disabled
                         ? 'text-gray-400 cursor-not-allowed'

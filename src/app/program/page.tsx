@@ -14,7 +14,7 @@ import {
   ProgramDay,
   ExerciseProgram,
 } from '@/app/types/program';
-import { ProgramType } from '@/app/shared/types';
+import { ProgramType } from '../../../shared/types';
 import { searchYouTubeVideo } from '@/app/utils/youtube';
 import { ErrorDisplay } from '@/app/components/ui/ErrorDisplay';
 import { useTranslation } from '@/app/i18n';

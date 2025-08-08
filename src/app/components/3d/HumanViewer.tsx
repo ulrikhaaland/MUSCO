@@ -11,7 +11,7 @@ import FemaleIcon from '@mui/icons-material/Female';
 import MobileControls from './MobileControls';
 import { ExerciseQuestionnaire } from '../ui/ExerciseQuestionnaire';
 import { Question } from '@/app/types';
-import { ExerciseQuestionnaireAnswers, ProgramType } from '@/app/shared/types';
+import { ExerciseQuestionnaireAnswers, ProgramType } from '../../../../shared/types';
 import { useApp } from '@/app/context/AppContext';
 import { useUser } from '@/app/context/UserContext';
 import { logAnalyticsEvent } from '@/app/utils/analytics';

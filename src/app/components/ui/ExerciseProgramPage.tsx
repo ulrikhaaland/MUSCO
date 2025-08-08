@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ProgramDaySummaryComponent } from './ProgramDaySummaryComponent';
 import { WeekOverview } from './WeekOverview';
-import { ProgramType } from '@/app/shared/types';
+import { ProgramType } from '../../../../shared/types';
 import {
   Exercise,
   ExerciseProgram,

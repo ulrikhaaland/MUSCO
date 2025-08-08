@@ -1,4 +1,4 @@
-import { ProgramType } from '../shared/types';
+import { ProgramType } from '../../../shared/types';
 import { AnatomyPart } from './human';
 
 export type Gender = 'male' | 'female';

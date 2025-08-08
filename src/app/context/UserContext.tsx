@@ -8,7 +8,7 @@ import {
   ReactNode,
   useRef,
 } from 'react';
-import { ExerciseQuestionnaireAnswers, ProgramType } from '@/app/shared/types';
+import { ExerciseQuestionnaireAnswers, ProgramType } from '../../../shared/types';
 import { DiagnosisAssistantResponse } from '@/app/types';
 import { useAuth } from './AuthContext';
 import { db } from '@/app/firebase/config';

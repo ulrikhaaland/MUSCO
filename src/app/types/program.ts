@@ -1,4 +1,4 @@
-import { ProgramType, ExerciseQuestionnaireAnswers } from '../shared/types';
+import { ProgramType, ExerciseQuestionnaireAnswers } from '../../../shared/types';
 import { DiagnosisAssistantResponse } from '../types';
 
 export enum ProgramStatus {

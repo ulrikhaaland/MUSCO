@@ -4,7 +4,7 @@ import { AnatomyPart } from '../types/human';
 import { Question } from '../types';
 import { BodyPartGroup } from '../config/bodyPartGroups';
 import { ProgramIntention, useApp } from '../context/AppContext';
-import { ProgramType } from '../shared/types';
+import { ProgramType } from '../../../shared/types';
 import { useTranslation } from '../i18n';
 import { translateBodyPartGroupName, translatePartDirectionPrefix } from '../utils/bodyPartTranslation';
 

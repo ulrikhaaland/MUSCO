@@ -1,4 +1,4 @@
-import { ExerciseQuestionnaireAnswers } from '@/app/shared/types';
+import { ExerciseQuestionnaireAnswers } from '../../../shared/types';
 import { Exercise } from '@/app/types/program';
 import { loadServerExercises } from '@/app/services/server-exercises';
 

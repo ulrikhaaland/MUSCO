@@ -1,198 +1,333 @@
-'use client';
+"use client";
 
-import { Suspense, useState, useCallback, useEffect } from 'react';
-import HumanViewer from './components/3d/HumanViewer';
-import { Gender } from './types';
-import { useApp, ProgramIntention } from './context/AppContext';
-import { useAuth } from './context/AuthContext';
-import { useUser } from './context/UserContext';
-import { QuestionnaireAuthForm } from './components/auth/QuestionnaireAuthForm';
-import { ErrorBoundary } from './components/ErrorBoundary';
-import { useSearchParams, useRouter } from 'next/navigation';
-import { IntentionQuestion } from './components/ui/IntentionQuestion';
-import { ErrorDisplay } from './components/ui/ErrorDisplay';
-import { useTranslation } from './i18n';
-import LandingHero, { ViewerMode } from './components/ui/LandingHero';
+import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "./context/AuthContext";
+import { useApp, ProgramIntention } from "./context/AppContext";
+import { useTranslation } from "./i18n";
+import LandingHero from "./components/ui/LandingHero";
+import LanguageSwitcher from "./components/ui/LanguageSwitcher";
+import { logAnalyticsEvent } from "./utils/analytics";
+import Logo from "./components/ui/Logo";
 
-// Create a separate component for search params functionality
-function HomeContent() {
-  const {
-    intention,
-    setIntention,
-    skipAuth,
-    completeReset,
-  } = useApp();
-  const { user, loading: authLoading, error: authError } = useAuth();
-  const { pendingQuestionnaire } = useUser();
-  const { t } = useTranslation();
-  const [showAuthForm, setShowAuthForm] = useState(false);
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const genderParam = searchParams?.get('gender') as Gender;
-  const newParam = searchParams?.get('new');
-  const [gender, setGender] = useState<Gender>(genderParam || 'male');
-  const [intentionSelected, setIntentionSelected] = useState(false);
-  const [shouldResetModel, setShouldResetModel] = useState(false);
-  const [showHero, setShowHero] = useState(!user && newParam !== 'true');
-  const [viewerMode, setViewerMode] = useState<ViewerMode>('full');
+  function ProgramPreviewModal({
+  isOpen,
+  onClose,
+  title,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  title: string;
+}) {
+  const dialogRef = useRef<HTMLDivElement | null>(null);
 
-  // Set page title
   useEffect(() => {
-    if (typeof document !== 'undefined') {
-      document.title = t('home.pageTitle');
-    }
-  }, [t]);
+    if (!isOpen) return;
+    const prev = document.activeElement as HTMLElement | null;
+    dialogRef.current?.focus();
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      prev?.focus?.();
+    };
+  }, [isOpen, onClose]);
 
-  // Reset intention to None when navigating to home page if not already None
-  useEffect(() => {
-    // Only reset if we're not explicitly creating a new program
-    if (newParam !== 'true' && intention !== ProgramIntention.None) {
-      completeReset();
-      setShouldResetModel(true);
-
-      // Reset the flag after a short delay
-      const timer = setTimeout(() => {
-        setShouldResetModel(false);
-      }, 500);
-
-      return () => clearTimeout(timer);
-    }
-  }, [completeReset, newParam, intention]);
-
-  // Update gender when URL param changes
-  useEffect(() => {
-    if (genderParam && (genderParam === 'male' || genderParam === 'female')) {
-      setGender(genderParam);
-    }
-  }, [genderParam]);
-
-  const handleGenderChange = useCallback(
-    (newGender: Gender) => {
-      setGender(newGender);
-      // Update URL without reloading the page
-      const params = new URLSearchParams(searchParams?.toString() || '');
-      params.set('gender', newGender);
-
-      // Preserve the new=true parameter if it exists
-      if (newParam === 'true' && !params.has('new')) {
-        params.set('new', 'true');
-      }
-
-      router.push(`/?${params.toString()}`, { scroll: false });
-    },
-    [router, searchParams, newParam]
-  );
-
-  const handleIntentionSelect = useCallback(
-    (selectedIntention: ProgramIntention) => {
-      setIntention(selectedIntention);
-      setIntentionSelected(true);
-    },
-    [setIntention]
-  );
-
-  const handleHeroSelect = useCallback((mode: ViewerMode) => {
-    setViewerMode(mode);
-    setShowHero(false);
-  }, []);
-
-  // Show auth form if user is not logged in and not skipping auth
-  // OR if we have pending questionnaire data and user is not logged in
-  useEffect(() => {
-    const hasPendingQuestionnaire = Boolean(pendingQuestionnaire);
-    const hasPendingQuestionnaireFlag =
-      typeof window !== 'undefined' &&
-      window.localStorage.getItem('hasPendingQuestionnaire') === 'true';
-
-    if (
-      // Show auth if there's pending questionnaire data (high priority)
-      (hasPendingQuestionnaire && !user) ||
-      // Also show auth if there's a flag in localStorage
-      (hasPendingQuestionnaireFlag && !user) ||
-      // Or show auth if user is not logged in and not explicitly skipping auth
-      (!user && !authLoading && !skipAuth)
-    ) {
-      setShowAuthForm(true);
-    } else {
-      setShowAuthForm(false);
-    }
-  }, [user, authLoading, skipAuth, pendingQuestionnaire, showAuthForm]);
-
-  // Show landing hero when user is not authenticated on the main page
-  useEffect(() => {
-    if (!user && newParam !== 'true' && !showAuthForm) {
-      setShowHero(true);
-    } else {
-      setShowHero(false);
-    }
-  }, [user, newParam, showAuthForm]);
-
-  // Clear the pendingQuestionnaire flag in localStorage when user logs in
-  useEffect(() => {
-    if (user && typeof window !== 'undefined') {
-      // If user is logged in, we can clear the flag since it's no longer needed
-      window.localStorage.removeItem('hasPendingQuestionnaire');
-    }
-  }, [user]);
-
-  // Reset intentionSelected whenever newParam is 'true' or URL params change
-  useEffect(() => {
-    // Check if we're on the create program page (new=true)
-    if (newParam === 'true') {
-      console.log('Resetting intention selection - new param detected');
-      setIntentionSelected(false);
-    }
-  }, [newParam, searchParams]); // searchParams helps detect any change to the URL params
-
-  if (authError) {
-    return <ErrorDisplay error={authError} />;
-  }
-
+  if (!isOpen) return null;
   return (
-    <div className="h-full">
-      {/* Only render HumanViewer when not showing IntentionQuestion and not showing QuestionnaireAuthForm */}
-      {!(newParam === 'true' && !intentionSelected) &&
-        !(showAuthForm && pendingQuestionnaire) && (
-          <div className={showHero ? 'invisible h-0' : undefined}>
-            <HumanViewer
-              gender={gender}
-              onGenderChange={handleGenderChange}
-              shouldResetModel={shouldResetModel}
-              // mode={viewerMode}
-            />
-          </div>
-        )}
-
-      {/* Conditionally overlay the auth form */}
-      {showAuthForm && pendingQuestionnaire && (
-        <div className="fixed inset-0 bg-gray-900/95 backdrop-blur-sm z-50 flex items-center justify-center">
-          <div className="max-w-lg w-full mx-4">
-            <QuestionnaireAuthForm />
-          </div>
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label={title}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70"
+      onClick={onClose}
+    >
+      <div
+        ref={dialogRef}
+        tabIndex={-1}
+        className="bg-gray-900 border border-gray-700 rounded-xl max-w-xl w-full m-4 p-4 focus:outline-none"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-white text-lg font-semibold">{title}</h3>
+          <button
+            className="text-gray-300 hover:text-white"
+            onClick={onClose}
+            aria-label="Close"
+          >
+            ✕
+          </button>
         </div>
-      )}
-
-      {newParam === 'true' && !intentionSelected && (
-        <IntentionQuestion
-          onSelect={(selectedIntention) => {
-            console.log('Intention selected:', selectedIntention);
-            handleIntentionSelect(selectedIntention);
-          }}
-        />
-      )}
-
-      {showHero && <LandingHero onSelect={handleHeroSelect} />}
+        <div className="text-gray-200 text-sm space-y-2">
+          <p className="font-medium">Week overview</p>
+          <p>Mon: Mobility & stability</p>
+          <p>Tue: Strength — key lifts</p>
+          <p>Wed: Active recovery</p>
+          <p>Thu: Strength — accessories</p>
+          <p>Fri: Conditioning</p>
+          <p>Sat: Optional walk + stretch</p>
+          <p>Sun: Rest</p>
+          <hr className="my-3 border-white/10" />
+          <p className="font-medium">Sample exercises</p>
+          <ul className="list-disc pl-5">
+            <li>Dead bug — core control</li>
+            <li>Hip hinge — patterning</li>
+            <li>Glute bridge — activation</li>
+          </ul>
+          <p className="text-gray-400 mt-2">Follow the plan gently and stop if symptoms worsen.</p>
+        </div>
+      </div>
     </div>
   );
 }
 
-// Main component that wraps the HomeContent with suspense
-export default function Home() {
+export default function LandingPage() {
+  const { user } = useAuth();
+  const { setIntention } = useApp();
+  const { t } = useTranslation();
+  const router = useRouter();
+  const [modalOpen, setModalOpen] = useState<null | string>(null);
+  const [pricingAnnual, setPricingAnnual] = useState(true);
+  const howRef = useRef<HTMLDivElement | null>(null);
+  const programsRef = useRef<HTMLDivElement | null>(null);
+  const whyRef = useRef<HTMLDivElement | null>(null);
+  const demoRef = useRef<HTMLDivElement | null>(null);
+  const pricingRef = useRef<HTMLDivElement | null>(null);
+  const faqRef = useRef<HTMLDivElement | null>(null);
+
+  // Soft-redirect signed-in users to /app (delay ~800ms), always show Open app
+  useEffect(() => {
+    if (!user) return;
+    const id = setTimeout(() => router.replace('/app'), 800);
+    return () => clearTimeout(id);
+  }, [user, router]);
+
+  useEffect(() => {
+    if (typeof document !== "undefined") document.title = t("home.pageTitle");
+  }, [t]);
+
+  const goAppWith = (target: ProgramIntention) => {
+    setIntention(target);
+    const intentionParam = target === ProgramIntention.Exercise ? "exercise" : "recovery";
+    router.push(`/app?new=true&intention=${intentionParam}`);
+  };
+
+  // Observe section views
+  useEffect(() => {
+    const entries: Array<[Element | null, string]> = [
+      [howRef.current, 'how'],
+      [programsRef.current, 'programs'],
+      [whyRef.current, 'why'],
+      [demoRef.current, 'demo'],
+      [pricingRef.current, 'pricing'],
+      [faqRef.current, 'faq'],
+    ];
+    const observer = new IntersectionObserver((list) => {
+      list.forEach((i) => {
+        if (i.isIntersecting) {
+          logAnalyticsEvent('landing_section_view', { id: i.target.getAttribute('data-id') });
+        }
+      });
+    }, { threshold: 0.4 });
+    entries.forEach(([el, id]) => {
+      if (el) {
+        el.setAttribute('data-id', id);
+        observer.observe(el);
+      }
+    });
+    return () => observer.disconnect();
+  }, []);
+
+  const scrollTo = (ref: React.RefObject<HTMLDivElement>) => ref.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
   return (
-    <ErrorBoundary>
-      <Suspense fallback={null}>
-        <HomeContent />
-      </Suspense>
-    </ErrorBoundary>
+    <div className="min-h-screen bg-[#0E1116]">
+      {/* Top Nav (landing only) */}
+      <header className="sticky top-0 z-40 backdrop-blur supports-[backdrop-filter]:bg-gray-900/60 border-b border-white/10">
+        <div className="mx-auto max-w-6xl px-6 py-3 flex items-center justify-between">
+          <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} aria-label="Home">
+            <Logo />
+          </button>
+          <nav className="hidden md:flex items-center gap-6 text-gray-300">
+            <button onClick={() => scrollTo(howRef)} className="hover:text-white focus:outline-none focus:ring-2 focus:ring-white/30">{t('landing.nav.how')}</button>
+            <button onClick={() => scrollTo(programsRef)} className="hover:text-white focus:outline-none focus:ring-2 focus:ring-white/30">{t('landing.nav.programs')}</button>
+            <button onClick={() => scrollTo(whyRef)} className="hover:text-white focus:outline-none focus:ring-2 focus:ring-white/30">{t('landing.nav.why')}</button>
+            <button onClick={() => scrollTo(pricingRef)} className="hover:text-white focus:outline-none focus:ring-2 focus:ring-white/30">{t('landing.nav.pricing')}</button>
+            <button onClick={() => scrollTo(faqRef)} className="hover:text-white focus:outline-none focus:ring-2 focus:ring-white/30">{t('landing.nav.faq')}</button>
+          </nav>
+          <div className="flex items-center gap-3">
+            {!user && (
+              <button onClick={() => { logAnalyticsEvent('nav_click', { target: 'signin' }); router.push('/login'); }} className="px-3 py-2 rounded-md text-sm text-white/90 hover:text-white border border-white/20">
+                {t('auth.signIn')}
+              </button>
+            )}
+            <button onClick={() => { logAnalyticsEvent('open_app_from_landing'); router.push('/app'); }} className="px-3 py-2 rounded-md text-sm bg-gray-800 text-white hover:bg-gray-700">
+              {t('landing.footer.openApp')}
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* Hero */}
+      <section className="mx-auto max-w-6xl px-6 pt-16 md:pt-24 pb-16 md:pb-24 min-h-[72vh] flex items-center">
+        <LandingHero
+          onSelect={(mode) => {
+            if (mode === "diagnose") {
+              logAnalyticsEvent("hero_cta_click", { cta: "diagnose" });
+              goAppWith(ProgramIntention.Recovery);
+            } else {
+              logAnalyticsEvent("hero_cta_click", { cta: "workout" });
+              goAppWith(ProgramIntention.Exercise);
+            }
+          }}
+        />
+      </section>
+
+      {/* How it works */}
+      <section ref={howRef} className="mx-auto max-w-6xl px-6 py-16 md:py-24">
+        <h2 className="text-white text-2xl font-semibold mb-4">{t("landing.how.title")}</h2>
+        <ol className="grid gap-6 md:gap-8 grid-cols-1 md:grid-cols-3 text-gray-200">
+          {[t('landing.how.step1'), t('landing.how.step2'), t('landing.how.step3')].map((txt, idx) => (
+            <li key={idx} className="rounded-xl p-5 border border-white/15 bg-[#141922]">
+              <div className="text-sm text-white/70 mb-2">Step {idx + 1}</div>
+              <div className="text-white font-medium">{txt}</div>
+            </li>
+          ))}
+        </ol>
+        <div className="mt-4">
+          <button
+            onClick={() => {
+              logAnalyticsEvent("start_diagnosis_from_section");
+              goAppWith(ProgramIntention.Recovery);
+            }}
+            className="px-5 py-3 bg-indigo-600 text-white rounded-md hover:bg-indigo-500"
+          >
+            {t("landing.how.cta")}
+          </button>
+        </div>
+      </section>
+
+      {/* Programs we cover */}
+      <section ref={programsRef} className="mx-auto max-w-6xl px-6 py-16 md:py-24">
+        <h2 className="text-white text-2xl font-semibold mb-4">{t("landing.programs.title")}</h2>
+        <div className="grid gap-6 md:gap-8 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
+          {["lower_back", "runners_knee", "shoulder_pain", "tech_neck", "ankle_sprain", "plantar_fasciitis", "tennis_elbow", "hamstring_strain", "upper_back_core", "core_stability"].map((c) => (
+            <button
+              key={c}
+              className="text-left rounded-xl p-5 border border-white/15 bg-[#141922] text-gray-200 hover:-translate-y-0.5 hover:border-white/25 transition will-change-transform focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              onClick={() => {
+                logAnalyticsEvent("program_card_open", { condition: c });
+                setModalOpen(c);
+              }}
+            >
+              <div className="text-white font-medium mb-1">{t(`landing.programs.${c}`)}</div>
+              <div className="text-sm">{t("landing.programs.sampleWeek")}</div>
+            </button>
+          ))}
+        </div>
+      </section>
+
+      {/* Why it works */}
+      <section ref={whyRef} className="mx-auto max-w-6xl px-6 py-16 md:py-24">
+        <h2 className="text-white text-2xl font-semibold mb-4">{t("landing.why.title")}</h2>
+        <ul className="grid gap-2 md:grid-cols-2 text-gray-200 list-disc pl-5">
+          <li>{t("landing.why.digitalTwin")}</li>
+          <li>{t("landing.why.dualAssistants")}</li>
+          <li>{t("landing.why.personalization")}</li>
+          <li>{t("landing.why.safety")}</li>
+          <li>{t("landing.why.speed")}</li>
+        </ul>
+        <p className="text-xs text-gray-400 mt-3">{t("landing.why.disclaimer")}</p>
+      </section>
+
+      {/* Optional fake demo */}
+      <section ref={demoRef} className="mx-auto max-w-3xl px-6 py-16 md:py-24">
+        <h2 className="text-white text-2xl font-semibold mb-4">{t("landing.demo.title")}</h2>
+        <div className="rounded-xl p-5 border border-white/15 bg-[#141922] text-gray-200">
+          <p className="mb-3 min-h-[80px]">{t("landing.demo.chat")}</p>
+          <div className="flex gap-2 flex-wrap">
+            {[1, 2, 3].map((step) => (
+              <button
+                key={step}
+                className="px-3 py-1 bg-gray-700 rounded-md hover:bg-gray-600"
+                onClick={() => logAnalyticsEvent("fake_demo_interaction", { step })}
+              >
+                {t(`landing.demo.quick${step}`)}
+              </button>
+            ))}
+          </div>
+          <div className="mt-4">
+            <button
+              className="px-5 py-3 bg-indigo-600 text-white rounded-md hover:bg-indigo-500"
+              onClick={() => goAppWith(ProgramIntention.Recovery)}
+            >
+              {t("landing.demo.cta")}
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* Pricing */}
+      <section ref={pricingRef} className="mx-auto max-w-3xl px-6 py-16 md:py-24">
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-white text-2xl font-semibold">{t("landing.pricing.title")}</h2>
+          <label className="text-gray-200 text-sm flex items-center gap-2">
+            {t("landing.pricing.monthly")}
+            <input
+              type="checkbox"
+              aria-label={t("landing.pricing.toggle")}
+              checked={pricingAnnual}
+              onChange={(e) => setPricingAnnual(e.target.checked)}
+              className="accent-indigo-600"
+            />
+            {t("landing.pricing.annual")}
+          </label>
+        </div>
+        <div className="rounded-xl p-5 border border-white/15 bg-[#141922] text-gray-200">
+          <p className="text-3xl font-bold text-white">
+            {pricingAnnual ? t("landing.pricing.annualPrice") : t("landing.pricing.monthlyPrice")}
+          </p>
+          <p className="text-sm mt-1">{t("landing.pricing.note")}</p>
+          <div className="mt-4">
+            <button onClick={() => router.push('/app?new=true')} className="px-5 py-3 bg-indigo-600 text-white rounded-md hover:bg-indigo-500">{t('landing.pricing.try')}</button>
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section ref={faqRef} className="mx-auto max-w-3xl px-6 py-16 md:py-24">
+        <h2 className="text-white text-2xl font-semibold mb-4">{t("landing.faq.title")}</h2>
+        <details className="rounded-xl p-4 border border-white/15 bg-[#141922] text-gray-200 mb-2">
+          <summary className="cursor-pointer">{t("landing.faq.q1")}</summary>
+          <p className="mt-2 text-sm">{t("landing.faq.a1")}</p>
+        </details>
+        <details className="rounded-xl p-4 border border-white/15 bg-[#141922] text-gray-200 mb-2">
+          <summary className="cursor-pointer">{t("landing.faq.q2")}</summary>
+          <p className="mt-2 text-sm">{t("landing.faq.a2")}</p>
+        </details>
+      </section>
+
+      {/* Footer */}
+      <footer className="px-6 py-10 border-t border-white/10 text-gray-300">
+        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+          <LanguageSwitcher showFullNames />
+          <button
+            onClick={() => { logAnalyticsEvent('open_app_from_landing'); router.push("/app"); }}
+            className="px-4 py-2 bg-gray-800 rounded-md hover:bg-gray-700"
+          >
+            {t("landing.footer.openApp")}
+          </button>
+        </div>
+      </footer>
+
+      {/* Program modal */}
+      <ProgramPreviewModal
+        isOpen={modalOpen !== null}
+        onClose={() => setModalOpen(null)}
+        title={modalOpen ? t(`landing.programs.${modalOpen}`) : ""}
+      />
+    </div>
   );
 }

@@ -10,7 +10,7 @@ import { toast } from './ToastProvider';
 import { useTranslation } from '@/app/i18n';
 import Logo from './Logo';
 import { LoadingDots } from './LoadingDots';
-import { ProgramType } from '@/app/shared/types';
+import { ProgramType } from '../../../../shared/types';
 import { saveRecoveryProgramToAccount, getRecoveryProgramFromSession, clearRecoveryProgramFromSession } from '@/app/services/recoveryProgramService';
 
 

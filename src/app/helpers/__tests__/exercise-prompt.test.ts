@@ -14,7 +14,7 @@
  */
 import { describe, expect, test } from '@jest/globals';
 import { shouldIncludeIntervals, prepareExercisesPrompt } from '../exercise-prompt';
-import { ExerciseQuestionnaireAnswers } from '@/app/shared/types';
+import { ExerciseQuestionnaireAnswers } from '../../../../shared/types';
 
 // Common user info to reuse in tests
 const createUserInfo = (overrides: Partial<ExerciseQuestionnaireAnswers> = {}): ExerciseQuestionnaireAnswers => {

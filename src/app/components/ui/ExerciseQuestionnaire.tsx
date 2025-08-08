@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, ReactNode } from 'react';
 import { TopBar } from './TopBar';
-import { ExerciseQuestionnaireAnswers, ProgramType } from '@/app/shared/types';
+import { ExerciseQuestionnaireAnswers, ProgramType } from '../../../../shared/types';
 import { BodyPartGroup } from '@/app/config/bodyPartGroups';
 import { 
   TARGET_BODY_PARTS, 

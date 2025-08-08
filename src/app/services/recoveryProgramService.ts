@@ -1,16 +1,17 @@
 import { collection, addDoc, getDocs, query, doc, updateDoc, where } from 'firebase/firestore';
 import { db } from '../firebase/config';
-import {
+import { 
   getProgramBySlug,
   getUserProgramBySlug,
   getAvailableSlugs,
   programSlugs,
+  localizeProgramDayDescriptions,
 } from '../../../public/data/programs/recovery';
 
 import { getCurrentWeekMonday, addWeeks } from '../utils/dateutils';
 import { enrichExercisesWithFullData } from './exerciseProgramService';
 import { ExerciseProgram, UserProgram } from '../types/program';
-import { ProgramType } from '../shared/types';
+import { ProgramType } from '../../../shared/types';
 import { User } from 'firebase/auth';
 
 export interface RecoveryProgramSessionData {
@@ -67,7 +68,7 @@ export const formatRecoveryProgram = async (
     const baseDate = getCurrentWeekMonday();
 
     for (let i = 0; i < userProgram.programs.length; i++) {
-      const weekProgram = userProgram.programs[i];
+      let weekProgram = userProgram.programs[i];
 
       // Set progressive dates: Week 1 = current week's Monday, Week 2 = next week's Monday, etc.
       const weekDate = addWeeks(baseDate, i);
@@ -75,6 +76,12 @@ export const formatRecoveryProgram = async (
 
       // Enrich with exercise data
       await enrichExercisesWithFullData(weekProgram, isNorwegian);
+
+      // Localize only the day descriptions if Norwegian
+      if (isNorwegian) {
+        weekProgram = localizeProgramDayDescriptions(weekProgram, 'nb');
+        userProgram.programs[i] = weekProgram;
+      }
     }
 
     return userProgram;

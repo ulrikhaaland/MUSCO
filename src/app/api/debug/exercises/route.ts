@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prepareExercisesPrompt } from '@/app/helpers/exercise-prompt';
-import { ExerciseQuestionnaireAnswers } from '@/app/shared/types';
+import { ExerciseQuestionnaireAnswers } from '../../../../../shared/types';
 
 export async function POST(request: NextRequest) {
   try {

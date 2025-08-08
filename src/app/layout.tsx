@@ -1,6 +1,6 @@
 'use client';
 
-import localFont from 'next/font/local';
+// import localFont from 'next/font/local';
 import './globals.css';
 import { useEffect, useState } from 'react';
 import { getAnalytics } from 'firebase/analytics';
@@ -158,7 +158,10 @@ export default function RootLayout({
                   <SafeAreaPWA>
                     <SafeArea className="h-full">
                       <div className="flex-1">{children}</div>
-                      <NavigationMenu />
+                      {/* Do not render bottom drawer nav on marketing landing */}
+                      {typeof window !== 'undefined' && window.location.pathname !== '/' && (
+                        <NavigationMenu />
+                      )}
                     </SafeArea>
                   </SafeAreaPWA>
                 </ToastProvider>
