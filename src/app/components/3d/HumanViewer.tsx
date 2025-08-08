@@ -49,6 +49,7 @@ export default function HumanViewer({
   const [currentRotation, setCurrentRotation] = useState(0);
   const rotationAnimationRef = useRef<number | null>(null);
   const viewerWrapperRef = useRef<HTMLDivElement | null>(null);
+  const [supportsKeyboardEnv, setSupportsKeyboardEnv] = useState(false);
   const [targetGender, setTargetGender] = useState<Gender | null>(null);
   const [modelContainerHeight, setModelContainerHeight] = useState('100lvh');
   const [diagnosis, setDiagnosis] = useState<DiagnosisAssistantResponse | null>(
@@ -79,55 +80,19 @@ export default function HumanViewer({
     };
   }, []);
 
-  // Maintain a CSS var --vvh that equals visualViewport.height (fallback to innerHeight)
+  // Detect support for stable viewport and keyboard inset env var
   useEffect(() => {
     if (typeof window === 'undefined') return;
-
-    const setVvh = () => {
-      const h = window.visualViewport?.height ?? window.innerHeight;
-      document.documentElement.style.setProperty('--vvh', `${h}px`);
-    };
-    setVvh();
-    window.addEventListener('resize', setVvh, { passive: true });
-    window.addEventListener('orientationchange', setVvh, { passive: true });
-    window.visualViewport?.addEventListener('resize', setVvh, { passive: true } as any);
-    window.visualViewport?.addEventListener('scroll', setVvh, { passive: true } as any);
-    return () => {
-      window.removeEventListener('resize', setVvh as any);
-      window.removeEventListener('orientationchange', setVvh as any);
-      window.visualViewport?.removeEventListener('resize', setVvh as any);
-      window.visualViewport?.removeEventListener('scroll', setVvh as any);
-    };
+    const supports =
+      typeof (window as any).CSS !== 'undefined' &&
+      (window as any).CSS.supports?.(
+        'height',
+        'calc(100svh - env(keyboard-inset-height, 0px))'
+      );
+    setSupportsKeyboardEnv(Boolean(supports));
   }, []);
 
-  // iOS Safari paint nudge: flip transform briefly to force repaint without remounting
-  useEffect(() => {
-    if (typeof window === 'undefined' || !window.visualViewport) return;
-    let raf1: number | null = null;
-    let raf2: number | null = null;
-    const nudge = () => {
-      const el = viewerWrapperRef.current;
-      if (!el) return;
-      el.style.willChange = 'transform';
-      el.style.transform = 'translateZ(0.001px)';
-      raf1 = requestAnimationFrame(() => {
-        el.style.transform = 'translateZ(0)';
-        raf2 = requestAnimationFrame(() => {
-          el.style.willChange = 'auto';
-        });
-      });
-    };
-    const onVVResize = () => {
-      // Debounce slightly via rAF; multiple resizes happen during keyboard animation
-      nudge();
-    };
-    window.visualViewport.addEventListener('resize', onVVResize);
-    return () => {
-      window.visualViewport?.removeEventListener('resize', onVVResize);
-      if (raf1) cancelAnimationFrame(raf1);
-      if (raf2) cancelAnimationFrame(raf2);
-    };
-  }, []);
+  // Remove previous paint nudge; use stable viewport strategy only
 
   const MODEL_IDS = {
     male: '5tOV',
@@ -417,7 +382,10 @@ export default function HumanViewer({
   }, []); // Empty dependency array means this runs once after mount
 
   const handleBottomSheetHeight = (sheetHeight: number) => {
-    const newHeight = `calc(var(--vvh, 100vh) - ${sheetHeight}px)`;
+    const base = supportsKeyboardEnv
+      ? 'calc(100svh - env(keyboard-inset-height, 0px))'
+      : '100dvh';
+    const newHeight = `calc(${base} - ${sheetHeight}px)`;
     if (newHeight !== modelContainerHeight) {
       setModelContainerHeight(newHeight);
     }
@@ -624,7 +592,16 @@ export default function HumanViewer({
   }, []);
 
   return (
-    <div className="flex flex-col md:flex-row relative w-screen overflow-hidden" style={{ height: isMobile ? 'var(--vvh, 100vh)' : undefined }}>
+    <div
+      className="flex flex-col md:flex-row relative w-screen overflow-hidden"
+      style={{
+        height: isMobile
+          ? supportsKeyboardEnv
+            ? 'calc(100svh - env(keyboard-inset-height, 0px))'
+            : '100dvh'
+          : undefined,
+      }}
+    >
       {/* Fullscreen overlay when dragging */}
       {isDragging && (
         <div className="fixed inset-0 z-50" style={{ cursor: 'ew-resize' }} />

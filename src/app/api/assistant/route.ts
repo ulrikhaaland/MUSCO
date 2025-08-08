@@ -111,7 +111,7 @@ export async function POST(request: Request) {
                   messages: previousMessages,
                   systemMessage,
                   userMessage: payload,
-                  modelName: 'gpt-4.1',
+                  modelName: 'gpt-5',
                   onContent: (content) => {
                     const openaiStreamChunkReceivedTime = performance.now();
                     if (!firstChunkSent) {
@@ -175,7 +175,7 @@ export async function POST(request: Request) {
             messages: previousMessages,
             systemMessage,
             userMessage: payload,
-            modelName: 'gpt-4.1',
+            modelName: 'gpt-5',
           });
           
           // Add assistant response to thread for history tracking

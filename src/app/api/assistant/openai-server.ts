@@ -19,7 +19,7 @@ export async function streamChatCompletion({
   messages,
   systemMessage,
   userMessage,
-  modelName = 'gpt-4.1',
+  modelName = 'gpt-5',
   onContent,
 }: {
   threadId: string;
@@ -533,7 +533,7 @@ FAILURE TO FOLLOW THE ABOVE INSTRUCTIONS EXACTLY WILL RESULT IN POOR USER EXPERI
 
     // Call the OpenAI chat completion API
     const response = await openai.chat.completions.create({
-      model: 'gpt-4.1', // Using a capable model for handling complex JSON output
+      model: 'gpt-5', // Using a capable model for handling complex JSON output
       messages: [
         {
           role: 'system',
@@ -824,7 +824,7 @@ export async function generateExerciseProgramWithModel(context: {
 
     // Call the OpenAI chat completion API
     const response = await openai.chat.completions.create({
-      model: 'gpt-4.1', // Using a capable model for handling complex JSON output
+      model: 'gpt-5', // Using a capable model for handling complex JSON output
       messages: [
         {
           role: 'system',
@@ -1006,7 +1006,7 @@ export async function getChatCompletion({
   messages,
   systemMessage,
   userMessage,
-  modelName = 'gpt-4.1',
+  modelName = 'gpt-5',
 }: {
   threadId: string;
   messages: any[];
