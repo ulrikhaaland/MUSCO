@@ -19,7 +19,7 @@ export async function streamChatCompletion({
   messages,
   systemMessage,
   userMessage,
-  modelName = 'gpt-5-nano',
+  modelName = 'gpt-5-mini',
   onContent,
 }: {
   threadId: string;
@@ -113,38 +113,44 @@ export async function streamChatCompletion({
       content: userMessageContent,
     });
 
-    // Call OpenAI streaming chat completion
-    const stream = await openai.chat.completions.create({
+    // Call OpenAI Responses API (streaming) with minimal reasoning effort
+    const stream = await openai.responses.stream({
       model: modelName,
-      messages: formattedMessages, // Use the full history + current message
-      stream: true,
+      reasoning: { effort: 'minimal' } as any,
+      input: formattedMessages,
     });
 
-    console.log('[streamChatCompletion] Stream object created, starting to process chunks...');
-    
-    let streamEnded = false;
-    let fullContent = ''; // Accumulate the full response content
+    console.log('[streamChatCompletion] Responses stream created, processing...');
 
-    // Process the streaming response
-    for await (const chunk of stream) {
-      try {
-        const content = chunk.choices[0]?.delta?.content || '';
-        if (content) {
-          fullContent += content; // Accumulate content
-          onContent(content);
+    let streamEnded = false;
+    let fullContent = '';
+
+    stream
+      .on('response.output_text.delta', (event: any) => {
+        try {
+          const delta = event?.delta ?? event?.output_text_delta ?? '';
+          if (typeof delta === 'string' && delta) {
+            fullContent += delta;
+            onContent(delta);
+          }
+        } catch (err) {
+          if (!streamEnded) {
+            console.error('[streamChatCompletion] Error in output_text.delta handler:', err);
+            streamEnded = true;
+          }
         }
-      } catch (error) {
+      })
+      .on('error', (error: any) => {
         if (!streamEnded) {
-          console.error(
-            '[streamChatCompletion] Error processing chunk:',
-            error
-          );
+          console.error('[streamChatCompletion] Stream error:', error);
           streamEnded = true;
         }
-      }
-    }
+      })
+      .on('response.completed', () => {
+        console.log('[streamChatCompletion] Responses stream completed successfully');
+      });
 
-    console.log('[streamChatCompletion] Stream completed successfully');
+    await stream.done();
     console.log('[streamChatCompletion] Full accumulated response content:');
     console.log(fullContent);
   } catch (error) {
@@ -1006,7 +1012,7 @@ export async function getChatCompletion({
   messages,
   systemMessage,
   userMessage,
-  modelName = 'gpt-5-nano',
+  modelName = 'gpt-5-mini',
 }: {
   threadId: string;
   messages: any[];
@@ -1108,17 +1114,24 @@ export async function getChatCompletion({
       JSON.stringify(formattedMessages, null, 2)
     );
 
-    // Call OpenAI chat completion
-    const response = await openai.chat.completions.create({
+    // Call OpenAI Responses API with minimal reasoning effort
+    const response = await openai.responses.create({
       model: modelName,
-      messages: formattedMessages, // Use the full history + current message
+      reasoning: { effort: 'minimal' } as any,
+      input: formattedMessages,
     });
 
-    console.log('[getChatCompletion] Full raw response from OpenAI:');
-    console.log(JSON.stringify(response, null, 2));
-    console.log('[getChatCompletion] Response content:', response.choices[0].message.content);
+    // Prefer SDK convenience if available
+    const outputText: string | undefined = (response as any).output_text;
+    if (outputText && typeof outputText === 'string') {
+      console.log('[getChatCompletion] Extracted output_text length:', outputText.length);
+      return outputText;
+    }
 
-    return response.choices[0].message.content;
+    // Fallback to first text segment
+    const firstText = (response as any)?.output?.[0]?.content?.[0]?.text?.value;
+    console.log('[getChatCompletion] Fallback first text length:', firstText?.length ?? 0);
+    return firstText ?? '';
   } catch (error) {
     console.error('[getChatCompletion] Error:', error);
     throw error;

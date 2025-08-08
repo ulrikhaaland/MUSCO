@@ -28,7 +28,7 @@ export async function getOrCreateExploreAssistant(): Promise<string> {
     const assistant = await openai.beta.assistants.create({
       name: 'Musco Explore Assistant',
       instructions: exploreSystemPrompt,
-      model: 'gpt-5-nano',
+      model: 'gpt-4.1-mini',
       tools: [],
     });
 

@@ -7,7 +7,7 @@ import { useState } from 'react';
 export default function SubscribePage() {
   const { user } = useAuth();
   const router = useRouter();
-  const [loadingPlan, setLoadingPlan] = useState<'monthly' | 'annual' | null>(null);
+  const [loadingPlan, setLoadingPlan] = useState<'monthly' | 'annual' | 'ulrik' | null>(null);
 
   const startCheckout = async (plan: 'monthly' | 'annual' | 'ulrik') => {
     if (!user?.uid) {
