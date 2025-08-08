@@ -35,6 +35,38 @@ When a body part is selected, users see three primary quick-start options:
 - **Error Handling**: Connection issues handled gracefully with retry options
 - **Mobile Optimization**: Touch-friendly interface with smooth animations
 
+---
+
+## Pricing & Access
+
+### Free
+- Explore assistant access with a daily message cap (see Limits below)
+- Generate the first week program from the assessment
+- Exercise library, videos, and day-by-day view
+- Program calendar & progress
+- No follow-up program generation (gated)
+
+### Premium (Subscription)
+- Weekly follow-up programs tailored from your feedback
+- Higher model limits with priority access for faster responses
+- Full exercise library with modifications and safety notes
+- Calendar & progress across multiple weeks
+- Multi-language content (EN/NB) across all text and UI
+- Cancel anytime
+
+---
+
+## Access Control & Limits
+
+The app enforces simple, transparent rules:
+- Follow-up generation: Premium only. Non-paying users are prompted to subscribe when attempting to generate the next week.
+- Chat/model interactions (Free): Daily message cap (default: 20 messages/day), aggregated and automatically throttled when exceeded.
+- Chat/model interactions (Premium): Significantly higher limits and priority queueing (no daily cap for normal use; fair-use protections apply).
+- Logging and analytics: Only high-signal checkpoints are logged (see Logging rules), with no PII.
+
+> Implementation notes
+> - Gating is enforced both client-side (navigation) and server-side where applicable (API route checks), using user subscription status in Firestore: `isSubscriber`, `subscriptionStatus`, and `currentPeriodEnd`.
+> - Webhooks from Stripe (`customer.subscription.*` and `checkout.session.completed`) update these fields automatically, so access reflects the latest billing state without manual intervention.
 **Chat Behavior**
 - **Concise Communication**: Bullet-point responses, no filler words or redundant acknowledgments
 - **Progressive Disclosure**: Follow-up questions build naturally on previous responses

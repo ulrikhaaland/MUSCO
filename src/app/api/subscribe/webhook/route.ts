@@ -29,6 +29,7 @@ export async function POST(request: Request) {
               stripeSubscriptionId: subscriptionId,
               subscriptionStatus: 'active',
               isSubscriber: true,
+              currentPeriodEnd: undefined,
             },
             { merge: true }
           );

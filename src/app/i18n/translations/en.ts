@@ -1035,6 +1035,9 @@ const translations = {
   'landing.hero.ctaWorkout': 'Just need a workout',
   'landing.hero.reviews': 'reviews',
   'landing.hero.reviewsAria': 'Read customer reviews',
+  'landing.hero.alt.select': 'Step 1: Select area on the 3D model with quick-start chips visible',
+  'landing.hero.alt.chat': 'Step 2: Answer a short diagnosis question with three quick-replies',
+  'landing.hero.alt.plan': 'Step 3: Program day snapshot showing week and three exercises',
 
   // Landing page
   'landing.nav.how': 'How it works',

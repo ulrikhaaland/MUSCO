@@ -98,6 +98,16 @@ export function useHumanAPI({
   const expectingProgrammaticSelectionRef = useRef<boolean>(false);
   const programmaticSelectionIdRef = useRef<string | null>(null);
 
+  // Zoom helper – only do zooms on mobile
+  const zoomIfMobile = useCallback(
+    (objectId?: string) => {
+      if (typeof window !== 'undefined' && window.innerWidth < 768) {
+        onZoom?.(objectId);
+      }
+    },
+    [onZoom]
+  );
+
   // Add a function to reset the model state
   const resetModel = useCallback((resetSelectionState: boolean = false) => {
     if (!humanRef.current || isResettingRef.current) return;
@@ -535,8 +545,8 @@ export function useHumanAPI({
       selectedPartRef.current = groupPart;
       setSelectedPart(groupPart);
 
-      // Zoom exactly to the clicked object
-      onZoom?.(getGenderedId(selectedId, currentGender));
+      // Zoom exactly to the clicked object (mobile only)
+      zoomIfMobile(getGenderedId(selectedId, currentGender));
 
       // Track selection & group for future deselection logic
       previousSelectedPartGroupRef.current = group;
@@ -649,8 +659,8 @@ export function useHumanAPI({
           selectedPartRef.current = groupPart;
           setSelectedPart(groupPart);
 
-          // Zoom to the part
-          onZoom?.(selectedId);
+          // Zoom to the part (mobile only)
+          zoomIfMobile(selectedId);
 
           return;
         }
@@ -675,7 +685,7 @@ export function useHumanAPI({
             selectedPartRef.current = null;
             selectionEventRef.current = null;
             isXrayEnabledRef.current = false;
-            onZoom?.(getGenderedId(group.zoomId, gender));
+            zoomIfMobile(getGenderedId(group.zoomId, gender));
             return;
           } else {
             // humanRef.current?.send('scene.enableXray', () => {});
@@ -713,7 +723,7 @@ export function useHumanAPI({
       // Store the group in ref
       previousSelectedPartGroupRef.current = group;
       if (!selectedPartRef.current)
-        onZoom?.(getGenderedId(group.zoomId, gender));
+        zoomIfMobile(getGenderedId(group.zoomId, gender));
     }
 
     // Clear the stored event
@@ -954,7 +964,7 @@ export function useHumanAPI({
 
           selectedPartRef.current = groupPart;
           setSelectedPart(groupPart);
-          onZoom?.(selectedId);
+          zoomIfMobile(selectedId);
         }
       } else {
         // set timeout 50ms
@@ -972,7 +982,7 @@ export function useHumanAPI({
             selectedPartRef.current = null;
             selectionEventRef.current = null;
             isXrayEnabledRef.current = false;
-            onZoom?.(getGenderedId(group.zoomId, gender));
+            zoomIfMobile(getGenderedId(group.zoomId, gender));
             return;
           }
         }, 100);
@@ -999,7 +1009,7 @@ export function useHumanAPI({
       // Store the group in ref
       previousSelectedPartGroupRef.current = group;
       if (!selectedPartRef.current)
-        onZoom?.(getGenderedId(group.zoomId, gender));
+        zoomIfMobile(getGenderedId(group.zoomId, gender));
     }
 
     // Clear the stored event

@@ -539,7 +539,7 @@ FAILURE TO FOLLOW THE ABOVE INSTRUCTIONS EXACTLY WILL RESULT IN POOR USER EXPERI
 
     // Call the OpenAI chat completion API
     const response = await openai.chat.completions.create({
-      model: 'gpt-5', // Using a capable model for handling complex JSON output
+      model: 'gpt-5-mini', // Using a capable model for handling complex JSON output
       messages: [
         {
           role: 'system',
@@ -829,7 +829,7 @@ export async function generateExerciseProgramWithModel(context: {
 
     // Call the OpenAI chat completion API
     const response = await openai.chat.completions.create({
-      model: 'gpt-5', // Using a capable model for handling complex JSON output
+      model: 'gpt-5-mini', // Using a capable model for handling complex JSON output
       messages: [
         {
           role: 'system',
