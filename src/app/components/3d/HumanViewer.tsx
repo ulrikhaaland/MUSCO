@@ -57,7 +57,6 @@ export default function HumanViewer({
   const [isResetting, setIsResetting] = useState(false);
   const { onQuestionnaireSubmit } = useUser();
   const [showQuestionnaire, setShowQuestionnaire] = useState(false);
-  const [viewerKey, setViewerKey] = useState<number>(0);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -79,34 +78,26 @@ export default function HumanViewer({
     };
   }, []);
 
-  // iOS Safari repaint fix: force-remount the iframe when the keyboard closes
+  // Maintain a CSS var --vvh that equals visualViewport.height (fallback to innerHeight)
   useEffect(() => {
-    if (!isMobile || typeof window === 'undefined' || !window.visualViewport) {
-      return;
-    }
+    if (typeof window === 'undefined') return;
 
-    const visualViewport = window.visualViewport;
-    let lastHeight = visualViewport.height;
-    let keyboardWasOpen = false;
-
-    const handleVvResize = () => {
-      const currentHeight = visualViewport.height;
-      const nearFull = currentHeight >= window.innerHeight - 20; // keyboard likely closed
-      const isOpen = currentHeight < window.innerHeight - 80; // heuristic
-
-      if (nearFull && keyboardWasOpen) {
-        // Force repaint/remount to avoid blank area over the viewer after second toggle
-        setViewerKey((k) => k + 1);
-        setTimeout(() => setViewerKey((k) => k + 1), 50);
-      }
-
-      keyboardWasOpen = isOpen;
-      lastHeight = currentHeight;
+    const setVvh = () => {
+      const h = window.visualViewport?.height ?? window.innerHeight;
+      document.documentElement.style.setProperty('--vvh', `${h}px`);
     };
-
-    visualViewport.addEventListener('resize', handleVvResize);
-    return () => visualViewport.removeEventListener('resize', handleVvResize);
-  }, [isMobile]);
+    setVvh();
+    window.addEventListener('resize', setVvh, { passive: true });
+    window.addEventListener('orientationchange', setVvh, { passive: true });
+    window.visualViewport?.addEventListener('resize', setVvh, { passive: true } as any);
+    window.visualViewport?.addEventListener('scroll', setVvh, { passive: true } as any);
+    return () => {
+      window.removeEventListener('resize', setVvh as any);
+      window.removeEventListener('orientationchange', setVvh as any);
+      window.visualViewport?.removeEventListener('resize', setVvh as any);
+      window.visualViewport?.removeEventListener('scroll', setVvh as any);
+    };
+  }, []);
 
   const MODEL_IDS = {
     male: '5tOV',
@@ -396,7 +387,7 @@ export default function HumanViewer({
   }, []); // Empty dependency array means this runs once after mount
 
   const handleBottomSheetHeight = (sheetHeight: number) => {
-    const newHeight = `calc(100lvh - ${sheetHeight}px)`;
+    const newHeight = `calc(var(--vvh, 100vh) - ${sheetHeight}px)`;
     if (newHeight !== modelContainerHeight) {
       setModelContainerHeight(newHeight);
     }
@@ -603,7 +594,7 @@ export default function HumanViewer({
   }, []);
 
   return (
-    <div className="flex flex-col md:flex-row relative h-screen w-screen overflow-hidden">
+    <div className="flex flex-col md:flex-row relative w-screen overflow-hidden" style={{ height: isMobile ? 'var(--vvh, 100vh)' : undefined }}>
       {/* Fullscreen overlay when dragging */}
       {isDragging && (
         <div className="fixed inset-0 z-50" style={{ cursor: 'ew-resize' }} />
@@ -623,17 +614,16 @@ export default function HumanViewer({
             </div>
           </div>
         )}
-        {/* Mobile: keep fixed position and stable height; Desktop: full height */}
+        {/* Mobile: stable visual viewport height; Desktop: full height */}
         <div
           className="md:h-screen w-full"
           style={{
             height: isMobile ? modelContainerHeight : '100dvh',
-            position: isMobile ? 'fixed' : 'relative',
+            position: 'relative',
             top: 0,
             left: 0,
             right: 0,
             overscrollBehavior: isMobile ? 'none' : undefined,
-            transform: 'translateZ(0)',
             zIndex: 0,
           }}
         >
@@ -642,7 +632,6 @@ export default function HumanViewer({
             ref={iframeRef}
             src={viewerUrl}
             className="absolute inset-0 w-full h-full border-0 bg-black"
-            key={viewerKey}
             allow="fullscreen"
             allowFullScreen
             onLoad={() => {
