@@ -551,7 +551,6 @@ FAILURE TO FOLLOW THE ABOVE INSTRUCTIONS EXACTLY WILL RESULT IN POOR USER EXPERI
         },
       ],
       response_format: { type: 'json_object' },
-      temperature: 0.7,
     });
 
     // Extract the content from the response
@@ -842,7 +841,6 @@ export async function generateExerciseProgramWithModel(context: {
         },
       ],
       response_format: { type: 'json_object' },
-      temperature: 0.7,
     });
 
     // Extract the content from the response
