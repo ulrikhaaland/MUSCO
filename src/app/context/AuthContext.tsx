@@ -456,17 +456,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     }
 
-    try {
-      const result = await sendLoginEmail(requestData);
-      logAnalyticsEvent('send_login_link');
-    } catch (error) {
-      console.error('Error sending login code:', error);
-      return handleAuthError(
-        error,
-        t('authContext.failedToSendLoginCode'),
-        false
-      );
-    }
+    // Optimistic fire-and-forget: do not await the network call
+    sendLoginEmail(requestData)
+      .then(() => {
+        logAnalyticsEvent('send_login_link');
+      })
+      .catch((error) => {
+        console.error('Error sending login code:', error);
+        handleAuthError(
+          error,
+          t('authContext.failedToSendLoginCode'),
+          false
+        );
+      });
   };
 
   const sendAccountDeletionEmail = async (email: string, redirectUrl: string) => {
@@ -488,17 +490,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       redirectUrl // Include the custom redirect URL for account deletion
     };
 
-    try {
-      await sendLoginEmail(requestData);
-      logAnalyticsEvent('send_account_deletion_link');
-    } catch (error) {
-      console.error('Error sending account deletion email:', error);
-      return handleAuthError(
-        error,
-        t('authContext.failedToSendLoginCode'),
-        false
-      );
-    }
+    // Optimistic fire-and-forget: do not await the network call
+    sendLoginEmail(requestData)
+      .then(() => {
+        logAnalyticsEvent('send_account_deletion_link');
+      })
+      .catch((error) => {
+        console.error('Error sending account deletion email:', error);
+        handleAuthError(
+          error,
+          t('authContext.failedToSendLoginCode'),
+          false
+        );
+      });
   };
 
   const logOut = async () => {

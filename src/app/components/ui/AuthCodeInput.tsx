@@ -295,41 +295,38 @@ export function AuthCodeInput() {
     performCodeValidation(digits);
   };
 
-  const handleResendCode = async () => {
+  const handleResendCode = () => {
     if (resendCooldown > 0) return;
 
-    try {
-      setIsLoading(true);
-      setErrorMsg(null);
+    setErrorMsg(null);
 
-      if (!functions) {
-        toast.error('Konfigurasjonsfeil. Prøv igjen senere.');
-        return;
-      }
+    if (!functions) {
+      toast.error('Konfigurasjonsfeil. Prøv igjen senere.');
+      return;
+    }
 
-      const sendLoginEmail = httpsCallable(functions, 'sendLoginEmail');
+    const sendLoginEmail = httpsCallable(functions, 'sendLoginEmail');
 
-      // Detect PWA like in useIsPwa (small duplication to avoid extra import)
-      const isPwa =
-        window.matchMedia('(display-mode: standalone)').matches ||
-        (window.navigator as any).standalone ||
-        document.referrer.includes('android-app://');
+    // Detect PWA like in useIsPwa (small duplication to avoid extra import)
+    const isPwa =
+      window.matchMedia('(display-mode: standalone)').matches ||
+      (window.navigator as any).standalone ||
+      document.referrer.includes('android-app://');
 
-      await sendLoginEmail({
-        email,
-        origin: window.location.origin,
-        language: locale,
-        isPwa,
-      });
+    // Optimistic UI: assume email is sent successfully
+    toast.success(t('login.codeResent'));
+    setResendCooldown(30);
 
-      toast.success(t('login.codeResent'));
-      setResendCooldown(30);
-    } catch (error) {
+    // Fire-and-forget; surface errors if they occur
+    sendLoginEmail({
+      email,
+      origin: window.location.origin,
+      language: locale,
+      isPwa,
+    }).catch((error) => {
       console.error('Error resending code:', error);
       toast.error(t('login.codeResendFailed'));
-    } finally {
-      setIsLoading(false);
-    }
+    });
   };
 
   if (step === 'email') {

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef } from 'react';
 
 interface VerificationCodeInputProps {
   value: string;
@@ -29,17 +29,87 @@ export function VerificationCodeInput({
   maxLength = 6,
   autoFocus = true,
 }: VerificationCodeInputProps) {
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const inputValue = e.target.value.replace(/\D/g, ''); // Only allow digits
-    if (inputValue.length <= maxLength) {
-      onChange(inputValue);
+  const inputRefs = [
+    useRef<HTMLInputElement>(null),
+    useRef<HTMLInputElement>(null),
+    useRef<HTMLInputElement>(null),
+    useRef<HTMLInputElement>(null),
+    useRef<HTMLInputElement>(null),
+    useRef<HTMLInputElement>(null),
+  ];
+
+  const handleDigitChange = (index: number, digit: string) => {
+    if (isLoading) return;
+    if (!/^\d?$/.test(digit)) return;
+
+    const current = value.padEnd(maxLength, ' ').split('');
+    current[index] = digit || '';
+    const nextValue = current.join('').replace(/\s+/g, '').slice(0, maxLength);
+    onChange(nextValue);
+
+    if (digit && index < maxLength - 1) {
+      inputRefs[index + 1].current?.focus();
+    }
+
+    if (nextValue.length === maxLength) {
+      onSubmit(nextValue);
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (isLoading) {
+      e.preventDefault();
+      return;
+    }
+    if (e.key === 'Backspace') {
+      if (index > 0 && !value[index]) {
+        inputRefs[index - 1].current?.focus();
+      }
+    }
+  };
+
+  const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    if (isLoading) return;
     e.preventDefault();
-    if (value.length === maxLength && !isLoading) {
-      onSubmit(value);
+    const pasted = e.clipboardData.getData('text');
+    if (!pasted) return;
+    const digits = pasted.replace(/\D/g, '').slice(0, maxLength);
+    if (!digits) return;
+    onChange(digits);
+    if (digits.length === maxLength) {
+      inputRefs[maxLength - 1]?.current?.focus();
+      onSubmit(digits);
+    } else {
+      inputRefs[digits.length]?.current?.focus();
+    }
+  };
+
+  const handleBeforeInput = (
+    index: number,
+    e: React.FormEvent<HTMLInputElement>
+  ) => {
+    if (isLoading) return;
+    const native = e.nativeEvent as unknown as { data?: string; inputType?: string };
+    const incoming = native?.data ?? '';
+    const inputType = native?.inputType ?? '';
+
+    const isBulkInsert =
+      (incoming && incoming.length > 1) ||
+      inputType === 'insertFromPaste' ||
+      inputType === 'insertReplacementText';
+
+    if (!isBulkInsert) return;
+
+    const digits = (incoming || '').replace(/\D/g, '').slice(0, maxLength);
+    if (!digits) return;
+
+    e.preventDefault();
+    onChange(digits);
+    if (digits.length === maxLength) {
+      inputRefs[maxLength - 1]?.current?.focus();
+      onSubmit(digits);
+    } else {
+      inputRefs[digits.length]?.current?.focus();
     }
   };
 
@@ -49,23 +119,40 @@ export function VerificationCodeInput({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        if (value.length === maxLength && !isLoading) onSubmit(value);
+      }}
+      className="space-y-4"
+    >
       {error && (
         <div className="bg-red-900/50 border border-red-500 rounded-lg p-3">
           <p className="text-red-300 text-sm">{error}</p>
         </div>
       )}
 
-      <div>
-        <input
-          type="text"
-          value={value}
-          onChange={handleInputChange}
-          placeholder={placeholder}
-          className="w-full px-4 py-3 rounded-xl bg-gray-900/50 border border-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          maxLength={maxLength}
-          autoFocus={autoFocus}
-        />
+      <div className="flex justify-center space-x-2 sm:space-x-4">
+        {[...Array(maxLength)].map((_, index) => (
+          <input
+            key={index}
+            ref={inputRefs[index]}
+            type="text"
+            inputMode="numeric"
+            pattern="[0-9]*"
+            maxLength={1}
+            autoFocus={autoFocus && index === 0}
+            autoComplete="one-time-code"
+            className="w-10 h-12 sm:w-12 sm:h-14 text-center text-2xl font-bold rounded-lg bg-gray-900/50 border border-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 disabled:opacity-50"
+            value={value[index] || ''}
+            onChange={(e) => handleDigitChange(index, e.target.value)}
+            onKeyDown={(e) => handleKeyDown(index, e)}
+            onBeforeInput={(e) => handleBeforeInput(index, e)}
+            onPaste={handlePaste}
+            readOnly={isLoading}
+            disabled={isLoading}
+          />
+        ))}
       </div>
 
       <button

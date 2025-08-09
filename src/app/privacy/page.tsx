@@ -25,10 +25,10 @@ export default function PrivacyPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [exportData, setExportData] = useState<string | null>(null);
   const [showDataExport, setShowDataExport] = useState(false);
-  const [deleteAccountStep, setDeleteAccountStep] = useState<'initial' | 'email-sent' | 'code-input' | null>(null);
+  const [deleteAccountStep, setDeleteAccountStep] = useState<'initial' | 'code-input' | null>(null);
   const [authCode, setAuthCode] = useState('');
   const [codeError, setCodeError] = useState<string | null>(null);
-  const [isAccountDeleting, setIsAccountDeleting] = useState(false); // Flag to prevent double navigation
+  // Account deletion flow does not need a local deleting flag; sessionStorage is used for coordination
   
   // Check if the user is returning from an email link for deletion
   const checkForDeletionLink = async () => {
@@ -81,7 +81,6 @@ export default function PrivacyPage() {
               
               if (success) {
                 console.log('Account deletion successful, redirecting...');
-                setIsAccountDeleting(true); // Set flag to prevent AuthContext double navigation
                 
                 // Set a flag in sessionStorage to prevent AuthContext from also redirecting
                 sessionStorage.setItem('accountDeleted', 'true');
@@ -117,6 +116,7 @@ export default function PrivacyPage() {
     if (typeof window !== 'undefined') {
       checkForDeletionLink();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   
   if (authLoading || !user) {
@@ -159,7 +159,7 @@ export default function PrivacyPage() {
         console.log('✅ deleteUserAccount returned:', success);
         if (success) {
           // Redirect after successful deletion
-          setIsAccountDeleting(true); // Set flag to prevent AuthContext double navigation
+          // mark in sessionStorage; see below
           
           // Set a flag in sessionStorage to prevent AuthContext from also redirecting
           sessionStorage.setItem('accountDeleted', 'true');
@@ -340,7 +340,6 @@ export default function PrivacyPage() {
 
       if (success) {
         console.log('✅ Account deletion successful, redirecting...');
-        setIsAccountDeleting(true); // Set flag to prevent AuthContext double navigation
         
         // Set a flag in sessionStorage to prevent AuthContext from also redirecting
         sessionStorage.setItem('accountDeleted', 'true');
@@ -571,47 +570,7 @@ export default function PrivacyPage() {
         </div>
       )}
       
-      {/* Email sent confirmation */}
-      {deleteAccountStep === 'email-sent' && (
-        <div 
-          className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/80 backdrop-blur-sm"
-          onClick={closeDeleteAccountDialog}
-        >
-          <div 
-            className="bg-gray-800 p-6 rounded-lg max-w-md w-full m-4 shadow-2xl border border-gray-700"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="text-center mb-4">
-              <svg className="w-16 h-16 text-green-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 19v-8.93a2 2 0 01.89-1.664l7-4.666a2 2 0 012.22 0l7 4.666A2 2 0 0121 10.07V19M3 19a2 2 0 002 2h14a2 2 0 002-2M3 19l6.75-4.5M21 19l-6.75-4.5M3 10l6.75 4.5M21 10l-6.75 4.5m0 0l-1.14.76a2 2 0 01-2.22 0l-1.14-.76" />
-              </svg>
-            </div>
-            
-            <h3 className="text-xl font-bold text-white mb-4 text-center">{t('privacy.deleteAccount.emailSent')}</h3>
-            <p className="text-gray-300 mb-4">
-              {t('privacy.deleteAccount.emailSentDescription')}
-            </p>
-            <p className="text-gray-400 mb-6 text-sm">
-              {t('privacy.deleteAccount.emailSentNote')}
-            </p>
-            
-            <div className="flex space-x-3">
-              <button
-                onClick={() => setDeleteAccountStep('code-input')}
-                className="px-4 py-2 bg-indigo-600 text-white rounded-lg flex-1 hover:bg-indigo-500"
-              >
-                Enter Code Instead
-              </button>
-              <button
-                onClick={closeDeleteAccountDialog}
-                className="px-4 py-2 bg-gray-700 text-white rounded-lg flex-1 hover:bg-gray-600"
-              >
-                {t('privacy.deleteAccount.cancel')}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Email sent confirmation dialog removed: flow goes directly to code input */}
 
       {/* Code input dialog */}
       {deleteAccountStep === 'code-input' && (
@@ -658,18 +617,30 @@ export default function PrivacyPage() {
             <div className="flex space-x-3 mt-4">
               <button
                 type="button"
-                onClick={() => setDeleteAccountStep('email-sent')}
+                onClick={closeDeleteAccountDialog}
                 className="px-4 py-2 bg-gray-700 text-white rounded-xl flex-1 hover:bg-gray-600 transition-colors duration-200"
               >
-                Back
+                Cancel
               </button>
             </div>
             
             <div className="mt-4 text-center">
               <button
-                onClick={() => {
-                  // Resend the email by going back to email-sent state
-                  setDeleteAccountStep('email-sent');
+                onClick={async () => {
+                  if (!user?.email) return;
+                  try {
+                    setIsLoading(true);
+                    const origin = typeof window !== 'undefined' ? window.location.origin : '';
+                    const redirectUrl = `${origin}/privacy?deleteAccount=true`;
+                    await sendAccountDeletionEmail(user.email, redirectUrl);
+                    localStorage.setItem('emailForSignIn', user.email);
+                    localStorage.setItem('isDeleteAccountFlow', 'true');
+                    toast.success('Verification email resent');
+                  } catch {
+                    toast.error('Failed to resend email');
+                  } finally {
+                    setIsLoading(false);
+                  }
                 }}
                 className="text-indigo-400 hover:text-indigo-300 text-sm underline"
               >

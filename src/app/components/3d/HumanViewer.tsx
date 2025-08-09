@@ -4,10 +4,7 @@ import { useRef, useState, useCallback, useEffect } from 'react';
 import { DiagnosisAssistantResponse, Gender } from '../../types';
 import PartPopup from '../ui/PartPopup';
 import { useHumanAPI } from '@/app/hooks/useHumanAPI';
-import RestartAltIcon from '@mui/icons-material/RestartAlt';
-import CropRotateIcon from '@mui/icons-material/CropRotate';
-import MaleIcon from '@mui/icons-material/Male';
-import FemaleIcon from '@mui/icons-material/Female';
+import DesktopControls from './DesktopControls';
 import MobileControls from './MobileControls';
 import { ExerciseQuestionnaire } from '../ui/ExerciseQuestionnaire';
 import { Question } from '@/app/types';
@@ -641,63 +638,18 @@ export default function HumanViewer({
 
         {/* Controls - Desktop */}
         {!showQuestionnaire && (
-          <div
-            className="absolute bottom-6 right-6 md:flex space-x-4 hidden"
-            style={{ zIndex: 1000 }}
-          >
-            <button
-              onClick={handleRotate}
-              disabled={isRotating || isResetting || !isReady}
-              className={`bg-indigo-600/80 hover:bg-indigo-500/80 text-white px-4 py-2 rounded-lg shadow-lg transition-colors duration-200 flex items-center space-x-2 ${
-                isRotating || isResetting || !isReady
-                  ? 'opacity-50 cursor-not-allowed'
-                  : ''
-              }`}
-            >
-              <CropRotateIcon
-                className={`h-5 w-5 ${isRotating ? 'animate-spin' : ''}`}
-              />
-              <span>{isRotating ? 'Rotating...' : 'Rotate Model'}</span>
-            </button>
-            <button
-              onClick={() => handleReset(true)}
-              disabled={
-                isResetting || (!needsReset && selectedGroups.length === 0)
-              }
-              className={`bg-indigo-600/80 hover:bg-indigo-500/80 text-white px-4 py-2 rounded-lg shadow-lg transition-colors duration-200 flex items-center space-x-2 ${
-                isResetting || (!needsReset && selectedGroups.length === 0)
-                  ? 'opacity-50 cursor-not-allowed'
-                  : ''
-              }`}
-            >
-              <RestartAltIcon
-                className={`h-5 w-5 ${isResetting ? 'animate-spin' : ''}`}
-              />
-              <span>{isResetting ? 'Resetting...' : 'Reset View'}</span>
-            </button>
-            <button
-              onClick={() => handleSwitchModel()}
-              disabled={isChangingModel}
-              className={`bg-indigo-600/80 hover:bg-indigo-500/80 text-white px-4 py-2 rounded-lg shadow-lg transition-colors duration-200 flex items-center space-x-2 ${
-                isChangingModel ? 'opacity-50 cursor-not-allowed' : ''
-              }`}
-            >
-              {currentGender === 'male' ? (
-                <MaleIcon
-                  className={`h-5 w-5 ${isChangingModel ? 'animate-spin' : ''}`}
-                />
-              ) : (
-                <FemaleIcon
-                  className={`h-5 w-5 ${isChangingModel ? 'animate-spin' : ''}`}
-                />
-              )}
-              <span>
-                {isChangingModel
-                  ? 'Loading...'
-                  : `Switch to ${currentGender === 'male' ? 'Female' : 'Male'}`}
-              </span>
-            </button>
-          </div>
+          <DesktopControls
+            isRotating={isRotating}
+            isResetting={isResetting}
+            isReady={isReady}
+            needsReset={needsReset}
+            hasSelection={selectedGroups.length > 0}
+            currentGender={currentGender}
+            isChangingModel={isChangingModel}
+            onRotate={handleRotate}
+            onReset={() => handleReset(true)}
+            onSwitchModel={handleSwitchModel}
+          />
         )}
       </div>
 

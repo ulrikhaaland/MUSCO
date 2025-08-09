@@ -134,6 +134,14 @@
       ErrorBoundary.tsx – React error boundary component
       RouteChangeListener.tsx – Navigation event handler component
       /3d/ – 3D visualization components
+        BottomSheetFooter.tsx – Footer actions for mobile bottom sheet
+        BottomSheetHeader.tsx – Header for mobile bottom sheet
+        ControlsTour.tsx – Guided controls tour overlay
+        DesktopControls.tsx – Desktop-only rotate/reset/switch controls
+        ExerciseFooter.tsx – Exercise view footer controls
+        HumanViewer.tsx – BioDigital Human iframe host and interaction logic
+        MobileControlButtons.tsx – Compact buttons for mobile controls
+        MobileControls.tsx – Mobile bottom sheet controller
       /auth/ – Authentication-related components
       /ui/ – Reusable UI component library
     /config/ – Application configuration files

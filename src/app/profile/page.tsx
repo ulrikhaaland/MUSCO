@@ -3639,6 +3639,76 @@ export default function ProfilePage() {
                   {t('profile.account')}
                 </h3>
                 <div className="space-y-4">
+                  {/* Subscription Card */}
+                  <div className="rounded-xl ring-1 ring-gray-700/50 bg-gray-900/40 p-4">
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <div className="text-white font-medium">Subscription</div>
+                        <div className="text-sm text-gray-300 mt-1">
+                          {(() => {
+                            const status = user?.profile?.subscriptionStatus;
+                            const isActive =
+                              user?.profile?.isSubscriber === true ||
+                              status === 'active' ||
+                              status === 'trialing';
+                            const until = user?.profile?.currentPeriodEnd
+                              ? new Date(user.profile.currentPeriodEnd).toLocaleDateString()
+                              : null;
+                            if (isActive) {
+                              return until
+                                ? `Active · Renews on ${until}`
+                                : 'Active';
+                            }
+                            if (status) return `Status: ${status}`;
+                            return 'No active subscription';
+                          })()}
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={async () => {
+                            if (!user?.uid) return;
+                            try {
+                              const res = await fetch('/api/subscribe/portal', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ uid: user.uid }),
+                              });
+                              const data = await res.json();
+                              if (!res.ok) throw new Error(data?.error || 'Portal error');
+                              window.location.href = data.url;
+                            } catch (e) {
+                              console.error('Portal error', e);
+                            }
+                          }}
+                          className="px-3 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-white text-sm"
+                        >
+                          Manage
+                        </button>
+                        <button
+                          onClick={() => {
+                            // Send to subscribe page if no active subscription
+                            if (
+                              !(user?.profile?.isSubscriber ||
+                                user?.profile?.subscriptionStatus === 'active' ||
+                                user?.profile?.subscriptionStatus === 'trialing')
+                            ) {
+                              router.push('/subscribe');
+                            } else {
+                              router.push('/program/feedback');
+                            }
+                          }}
+                          className="px-3 py-2 bg-indigo-600 hover:bg-indigo-500 rounded-lg text-white text-sm"
+                        >
+                          {user?.profile?.isSubscriber ||
+                          user?.profile?.subscriptionStatus === 'active' ||
+                          user?.profile?.subscriptionStatus === 'trialing'
+                            ? 'Start Feedback'
+                            : 'Subscribe'}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
                   <button
                     onClick={() => router.push('/privacy')}
                     className="px-4 py-3 bg-gray-700 text-white rounded-lg hover:bg-gray-600 w-full flex items-center justify-between"
