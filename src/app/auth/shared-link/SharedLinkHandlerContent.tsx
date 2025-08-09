@@ -51,9 +51,8 @@ export default function SharedLinkHandlerContent() {
             // Important: Set loading to false before navigation
             setIsLoading(false);
 
-            // Redirect to home page - ensure this executes
-            console.log('Sign-in successful, redirecting to home page');
-            router.push('/');
+            // Redirect to app page
+            router.push('/app');
           } catch (authError: any) {
             console.error('Error signing in with email link:', authError);
             

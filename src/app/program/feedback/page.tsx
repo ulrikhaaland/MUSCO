@@ -21,7 +21,6 @@ function getNextMonday(d: Date): Date {
 
 function FeedbackPageContent() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const { t } = useTranslation();
   const { user, loading: authLoading } = useAuth();
   const { program, answers, diagnosisData, generateFollowUpProgram, isLoading: userLoading } = useUser();

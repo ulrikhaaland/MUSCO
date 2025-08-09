@@ -436,10 +436,16 @@ export function UserProvider({ children }: { children: ReactNode }) {
           // Always refresh the program state in case new weeks were added
           prepareAndSetProgram(programToDisplay);
 
-          // Navigate to /program only if we're not already there AND
-          // (it's the first time an active program is set OR the active program has changed meaningfully)
+          // Navigate to /program only if explicitly in a program context
+          // Avoid redirecting generic sign-ins to /program
+          const loginContext =
+            typeof window !== 'undefined'
+              ? window.sessionStorage.getItem('loginContext')
+              : null;
+          const isProgramFlow = loginContext === 'saveProgram';
           if (
             typeof window !== 'undefined' &&
+            isProgramFlow &&
             !window.location.pathname.includes('/program') &&
             !window.location.pathname.includes('/exercises') &&
             (previousActiveProgramId === null || previousActiveProgramId !== programToDisplay.docId)

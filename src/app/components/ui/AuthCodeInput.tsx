@@ -136,13 +136,13 @@ export function AuthCodeInput() {
       const previousPath = window.sessionStorage.getItem('previousPath');
       const loginContext = window.sessionStorage.getItem('loginContext');
       
-      // If user signed up to save a program, always redirect to /program
+      // If user signed up to save a program, go to /program, else prefer previous path, otherwise /app
       if (loginContext === 'saveProgram') {
         router.push('/program');
       } else if (previousPath) {
         router.push(previousPath);
       } else {
-        router.push('/program');
+        router.push('/app');
       }
       
       // Clean up session storage

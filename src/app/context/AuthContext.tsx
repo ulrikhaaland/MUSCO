@@ -292,7 +292,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       logAnalyticsEvent('delete_account');
       return true;
     } catch (error: any) {
-      console.error('Error deleting user account:', error);
 
       // Handle specific Firebase error codes
       if (error.code === 'auth/requires-recent-login') {
@@ -301,7 +300,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         throw error; // Throw the error so the privacy page can catch it
       }
 
-      console.log('❌ Other error detected, handling with handleAuthError');
       handleAuthError(error, t('authContext.failedToDeleteAccount'), false);
       return false;
     }
