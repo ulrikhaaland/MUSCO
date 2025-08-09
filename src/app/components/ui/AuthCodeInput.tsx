@@ -2,16 +2,14 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { httpsCallable } from 'firebase/functions';
-import { functions, auth, db } from '@/app/firebase/config';
+import { functions, auth } from '@/app/firebase/config';
 import { signInWithEmailLink } from 'firebase/auth';
-import { collection, addDoc, query, getDocs } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
 import { toast } from './ToastProvider';
 import { useTranslation } from '@/app/i18n';
 import Logo from './Logo';
 import { LoadingDots } from './LoadingDots';
-import { ProgramType } from '../../../../shared/types';
-import { saveRecoveryProgramToAccount, getRecoveryProgramFromSession, clearRecoveryProgramFromSession } from '@/app/services/recoveryProgramService';
+import { saveRecoveryProgramToAccount, clearRecoveryProgramFromSession } from '@/app/services/recoveryProgramService';
 
 
 
@@ -101,40 +99,23 @@ export function AuthCodeInput() {
 
     setIsLoading(true);
     try {
-      console.log('🔍 Validating auth code...');
       // Call the Cloud Function to validate the code
       const validateAuthCode = httpsCallable(functions, 'validateAuthCode');
       const result = await validateAuthCode({ email, code: codeToValidate });
 
       // Get the sign-in link and program data from the result
       const data = result.data as { link: string; program?: any };
-      console.log('📥 Auth code validation result:', { 
-        hasLink: !!data?.link, 
-        hasProgram: !!data?.program,
-        programTitle: data?.program?.title,
-        programType: data?.program?.type
-      });
 
       if (!data || !data.link) {
         throw new Error('Invalid response from server');
       }
 
       // Use the link to sign in
-      console.log('🔐 Signing in with email link...');
       const userCredential = await signInWithEmailLink(auth, email, data.link);
       const user = userCredential.user;
-      console.log('✅ User signed in successfully:', user.uid);
 
       // If program data was provided, save it to the user's account
       if (data.program && user) {
-        console.log('💾 Program data found, starting save process...');
-        console.log('📋 Program data:', {
-          title: data.program.title,
-          type: data.program.type,
-          targetAreas: data.program.targetAreas,
-          daysCount: data.program.days?.length || 'unknown'
-        });
-        
         try {
           await saveRecoveryProgramToAccount(user, data.program);
           toast.success('Program saved to your account!');
@@ -144,17 +125,12 @@ export function AuthCodeInput() {
           // Don't throw here - the login was successful, we just couldn't save the program
           toast.error('Login successful, but there was an issue saving the program.');
         }
-      } else {
-        console.log('ℹ️ No program data to save');
-        if (!data.program) console.log('   - No program data in response');
-        if (!user) console.log('   - No user object available');
       }
 
       // Clean up localStorage
       window.localStorage.removeItem('hasPendingQuestionnaire');
 
       // Successfully signed in, redirect to appropriate page
-      console.log('🎯 Login successful, redirecting...');
       toast.success(t('login.success'));
       
       const previousPath = window.sessionStorage.getItem('previousPath');
@@ -162,13 +138,10 @@ export function AuthCodeInput() {
       
       // If user signed up to save a program, always redirect to /program
       if (loginContext === 'saveProgram') {
-        console.log('🏠 Save context detected, redirecting to program page');
         router.push('/program');
       } else if (previousPath) {
-        console.log('🔄 Redirecting to previous path:', previousPath);
         router.push(previousPath);
       } else {
-        console.log('🏠 Redirecting to program page');
         router.push('/program');
       }
       
@@ -290,6 +263,38 @@ export function AuthCodeInput() {
     }
   };
 
+  // Handle iOS OTP autofill (keyboard "Code from Mail/SMS"): capture before maxlength truncates
+  const handleBeforeInput = (
+    index: number,
+    e: React.FormEvent<HTMLInputElement>
+  ) => {
+    if (isLoading) return;
+    const native = e.nativeEvent as unknown as { data?: string; inputType?: string };
+    const incoming = native?.data ?? '';
+    const inputType = native?.inputType ?? '';
+
+    const isBulkInsert =
+      (incoming && incoming.length > 1) ||
+      inputType === 'insertFromPaste' ||
+      inputType === 'insertReplacementText';
+
+    if (!isBulkInsert) return;
+
+    const digits = (incoming || '').replace(/\D/g, '').slice(0, 6);
+    if (!digits) return;
+
+    e.preventDefault();
+    setCode(digits);
+
+    if (digits.length < 6) {
+      inputRefs[digits.length]?.current?.focus();
+      return;
+    }
+
+    inputRefs[5]?.current?.focus();
+    performCodeValidation(digits);
+  };
+
   const handleResendCode = async () => {
     if (resendCooldown > 0) return;
 
@@ -402,6 +407,7 @@ export function AuthCodeInput() {
               value={code[index] || ''}
               onChange={(e) => handleCodeDigitChange(index, e.target.value)}
               onKeyDown={(e) => handleKeyDown(index, e)}
+              onBeforeInput={(e) => handleBeforeInput(index, e)}
               onPaste={handlePaste}
               readOnly={isLoading}
               disabled={isLoading}

@@ -23,14 +23,17 @@ function FeedbackPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { t } = useTranslation();
-  const { user } = useAuth();
-  const { program, answers, diagnosisData, generateFollowUpProgram } = useUser();
+  const { user, loading: authLoading } = useAuth();
+  const { program, answers, diagnosisData, generateFollowUpProgram, isLoading: userLoading } = useUser();
 
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   // Check if user is authenticated and has a program
   useEffect(() => {
+    // Wait for auth and user program loading to settle to avoid premature redirect
+    if (authLoading || userLoading) return;
+
     if (!user) {
       router.push('/login');
       return;
@@ -42,7 +45,7 @@ function FeedbackPageContent() {
     }
 
     setIsLoading(false);
-  }, [user, program, router]);
+  }, [authLoading, userLoading, user, program, router]);
 
   // Extract all unique exercises from the program
   const getAllProgramExercises = (): Exercise[] => {

@@ -16,7 +16,7 @@ import { ToastProvider } from './components/ui/ToastProvider';
 import { I18nWrapper } from './i18n/setup';
 import { isSignInWithEmailLink } from 'firebase/auth';
 import { auth } from './firebase/config';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { SafeAreaPWA } from './components/ui/SafeAreaPWA';
 
 // const geistSans = localFont({
@@ -36,6 +36,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const router = useRouter();
+  const pathname = usePathname();
   const [isMounted, setIsMounted] = useState(false);
 
   // Handle mounting to prevent hydration mismatch
@@ -178,10 +179,7 @@ export default function RootLayout({
                       <SafeArea className="h-full">
                         <div className="flex-1">{children}</div>
                         {/* Do not render bottom drawer nav on marketing landing */}
-                        {typeof window !== 'undefined' &&
-                          window.location.pathname !== '/' && (
-                            <NavigationMenu />
-                          )}
+                        {pathname !== '/' && <NavigationMenu />}
                       </SafeArea>
                     </SafeAreaPWA>
                   </ToastProvider>

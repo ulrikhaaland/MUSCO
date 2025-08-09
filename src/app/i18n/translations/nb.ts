@@ -826,6 +826,7 @@ const translations = {
   'exerciseProgram.feedback.success': 'Nytt program generert med ID:',
   'exerciseProgram.feedback.error.generating':
     'Feil ved generering av nytt program:',
+  'programFeedback.pageTitle': 'Programtilbakemelding',
 
   // Sign Up Prompts for Custom Programs (should match keys in en.ts)
   'exerciseProgram.signUp.unlockWeek': 'Logg inn for å se',

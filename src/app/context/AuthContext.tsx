@@ -3,7 +3,7 @@
 import { createContext, useContext, useEffect, useState, useRef } from 'react';
 import { User, signOut, onAuthStateChanged, deleteUser } from 'firebase/auth';
 import { auth, db, functions } from '../firebase/config';
-import { doc, setDoc, getDoc, deleteDoc } from 'firebase/firestore';
+import { doc, setDoc, getDoc, deleteDoc, onSnapshot } from 'firebase/firestore';
 import { useClientUrl } from '../hooks/useClientUrl';
 import { useRouter } from 'next/navigation';
 import {
@@ -47,6 +47,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [error, setError] = useState<Error | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const handledEmailLink = useRef(false);
+  const profileUnsubscribeRef = useRef<null | (() => void)>(null);
 
   // Set up auth state listener after handling email link
   useEffect(() => {
@@ -73,6 +74,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             } as ExtendedUser;
 
             setUser(extendedUser);
+
+            // Live subscription to user profile for real-time subscription status
+            try {
+              // Clean up any previous listener
+              profileUnsubscribeRef.current?.();
+              profileUnsubscribeRef.current = onSnapshot(
+                doc(db, 'users', firebaseUser.uid),
+                (snapshot) => {
+                  const data = snapshot.exists() ? (snapshot.data() as any) : null;
+                  setUser((prev) => (prev ? { ...prev, profile: data || prev.profile } as ExtendedUser : prev));
+                }
+              );
+            } catch (e) {
+              console.error('Failed to subscribe to user profile changes', e);
+            }
           } catch (error) {
             console.error('Error fetching user profile:', error);
             setUser(firebaseUser as ExtendedUser); // Set user even if profile fetch fails
@@ -88,6 +104,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         } else {
           // No user is signed in
           setUser(null);
+          // Clean up profile listener
+          profileUnsubscribeRef.current?.();
+          profileUnsubscribeRef.current = null;
           setLoading(false); // Auth context loading is done
           showGlobalLoader(false); // Auth process is complete, hide global loader
 
@@ -130,6 +149,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       unsubscribe();
       clearTimeout(safetyTimer);
       showGlobalLoader(false);
+      profileUnsubscribeRef.current?.();
+      profileUnsubscribeRef.current = null;
     };
   }, [isReady]);
 

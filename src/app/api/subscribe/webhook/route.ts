@@ -29,7 +29,6 @@ export async function POST(request: Request) {
               stripeSubscriptionId: subscriptionId,
               subscriptionStatus: 'active',
               isSubscriber: true,
-              currentPeriodEnd: undefined,
             },
             { merge: true }
           );
@@ -44,18 +43,34 @@ export async function POST(request: Request) {
         const status = sub.status as string;
         const currentPeriodEnd = sub.current_period_end ? new Date(sub.current_period_end * 1000).toISOString() : undefined;
 
-        const snap = await adminDb.collection('users').where('stripeCustomerId', '==', customerId).limit(1).get();
-        if (!snap.empty) {
-          const doc = snap.docs[0];
-          await doc.ref.set(
-            {
-              subscriptionStatus: status,
-              isSubscriber: status === 'active' || status === 'trialing',
-              currentPeriodEnd,
-              stripeSubscriptionId: sub.id,
-            },
-            { merge: true }
-          );
+        // Try by stripeCustomerId
+        let userDocRef = null as FirebaseFirestore.DocumentReference | null;
+        const byCustomer = await adminDb.collection('users').where('stripeCustomerId', '==', customerId).limit(1).get();
+        if (!byCustomer.empty) {
+          userDocRef = byCustomer.docs[0].ref;
+        } else {
+          // Fallback by customer email if available
+          try {
+            const customer = await stripe.customers.retrieve(customerId);
+            const email = (customer as any)?.email as string | undefined;
+            if (email) {
+              const byEmail = await adminDb.collection('users').where('email', '==', email).limit(1).get();
+              if (!byEmail.empty) {
+                userDocRef = byEmail.docs[0].ref;
+                await userDocRef.set({ stripeCustomerId: customerId }, { merge: true });
+              }
+            }
+          } catch {}
+        }
+
+        if (userDocRef) {
+          const update: Record<string, any> = {
+            subscriptionStatus: status,
+            isSubscriber: status === 'active' || status === 'trialing',
+            stripeSubscriptionId: sub.id,
+          };
+          if (currentPeriodEnd) update.currentPeriodEnd = currentPeriodEnd;
+          await userDocRef.set(update, { merge: true });
         }
         break;
       }

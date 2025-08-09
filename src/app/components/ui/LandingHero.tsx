@@ -110,14 +110,14 @@ export default function LandingHero({ onSelect }: { onSelect: (m: ViewerMode) =>
           <div
             ref={containerRef}
             aria-label={t('landing.hero.ariaStack')}
-            className="relative z-0 h-[380px] md:h-[420px] lg:h-[460px] pointer-events-none"
+            className="relative z-0 h-[460px] md:h-[520px] lg:h-[580px] pointer-events-none"
           >
             {/* Radial glow */}
             <div className="pointer-events-none absolute inset-0 [background:radial-gradient(60%_60%_at_50%_50%,rgba(255,255,255,0.06)_0%,transparent_70%)]" />
 
             {/* Back surface: Select area */}
             <div
-              className="absolute left-1/2 top-1/2 w-[70%] md:w-[68%] lg:w-[66%] aspect-video -translate-x-1/2 -translate-y-1/2 rounded-xl border overflow-hidden relative bg-[#141922] shadow-[0_18px_48px_rgba(0,0,0,0.34)]"
+              className="absolute left-1/2 top-[45%] w-[80%] md:w-[76%] lg:w-[74%] aspect-video -translate-x-1/2 -translate-y-1/2 rounded-xl border overflow-hidden relative bg-[#141922] shadow-[0_18px_48px_rgba(0,0,0,0.34)]"
               style={{
                 transform: `translate(calc(-50% + ${prefersReducedMotion || isCoarsePointer ? 0 : offset.x * -0.3}px), calc(-50% + ${prefersReducedMotion || isCoarsePointer ? 0 : offset.y * -0.3}px)) rotate(-10deg) scale(0.94)`,
                 borderColor: 'rgba(255,255,255,0.12)'
@@ -134,7 +134,7 @@ export default function LandingHero({ onSelect }: { onSelect: (m: ViewerMode) =>
 
             {/* Middle surface: Answer questions */}
             <div
-              className="absolute left-1/2 top-1/2 w-[78%] md:w-[74%] lg:w-[72%] aspect-video -translate-x-1/2 -translate-y-1/2 rounded-xl border overflow-hidden relative bg-[#141922] shadow-[0_16px_44px_rgba(0,0,0,0.34)]"
+              className="absolute left-1/2 top-[45%] w-[88%] md:w-[84%] lg:w-[82%] aspect-video -translate-x-1/2 -translate-y-1/2 rounded-xl border overflow-hidden relative bg-[#141922] shadow-[0_16px_44px_rgba(0,0,0,0.34)]"
               style={{
                 transform: `translate(calc(-50% + ${prefersReducedMotion || isCoarsePointer ? 0 : offset.x * 0.2}px), calc(-50% + ${prefersReducedMotion || isCoarsePointer ? 0 : offset.y * 0.2}px)) rotate(8deg) scale(0.97)`,
                 borderColor: 'rgba(255,255,255,0.12)'
@@ -151,7 +151,7 @@ export default function LandingHero({ onSelect }: { onSelect: (m: ViewerMode) =>
 
             {/* Front surface: Your plan */}
             <div
-              className="absolute left-1/2 top-1/2 w-[86%] md:w-[80%] lg:w-[78%] aspect-video -translate-x-1/2 -translate-y-1/2 rounded-xl border overflow-hidden relative bg-[#141922] shadow-[0_12px_36px_rgba(0,0,0,0.32)]"
+              className="absolute left-1/2 top-[45%] w-[96%] md:w-[90%] lg:w-[88%] aspect-video -translate-x-1/2 -translate-y-1/2 rounded-xl border overflow-hidden relative bg-[#141922] shadow-[0_12px_36px_rgba(0,0,0,0.32)]"
               style={{
                 transform: `translate(calc(-50% + ${prefersReducedMotion || isCoarsePointer ? 0 : offset.x * 0.5}px), calc(-50% + ${prefersReducedMotion || isCoarsePointer ? 0 : offset.y * 0.5}px)) rotate(-6deg) scale(1)`,
                 borderColor: 'rgba(255,255,255,0.14)'

@@ -750,6 +750,7 @@ const translations = {
     "You must complete this week's program before you can generate the next week's program.",
   'programFeedback.button.waitUntilSpecificDate':
     "You can generate the next week's program on {{date}}.",
+  'programFeedback.pageTitle': 'Program Feedback',
 
   // Exercise Feedback Selector
   'exerciseFeedbackSelector.chip.new': 'New',
