@@ -45,16 +45,19 @@ export default function RootLayout({
 
   useEffect(() => {
     if (!isMounted) return;
-    
+
     // Only initialize analytics in production and on the client side
     if (process.env.NODE_ENV === 'production') {
       getAnalytics(app);
     }
-    
+
     // Force Android Chrome navigation bar color
     if (/Android/i.test(navigator.userAgent)) {
-      document.documentElement.style.setProperty('--navigation-bar-color', '#111827');
-      
+      document.documentElement.style.setProperty(
+        '--navigation-bar-color',
+        '#111827'
+      );
+
       // Try to use Android Chrome's theme-color API if available
       const metaThemeColor = document.querySelector('meta[name=theme-color]');
       if (metaThemeColor) {
@@ -66,43 +69,48 @@ export default function RootLayout({
   // Handle email sign-in links when opened in browser
   useEffect(() => {
     if (!isMounted) return;
-    
+
     const currentUrl = window.location.href;
 
     // Check if this is a sign-in link
     if (isSignInWithEmailLink(auth, currentUrl)) {
       // Get the email from localStorage
       const email = window.localStorage.getItem('emailForSignIn');
-      
+
       // Check if we're in a standalone PWA
-      const isPwa = window.matchMedia('(display-mode: standalone)').matches || 
-                   (window.navigator as any).standalone ||
-                   document.referrer.includes('android-app://');
-      
+      const isPwa =
+        window.matchMedia('(display-mode: standalone)').matches ||
+        (window.navigator as any).standalone ||
+        document.referrer.includes('android-app://');
+
       // Check if we're already in the shared link handler page
-      const isInSharedLinkHandler = window.location.pathname.includes('/auth/shared-link');
-      
+      const isInSharedLinkHandler =
+        window.location.pathname.includes('/auth/shared-link');
+
       // Don't interfere if we're already in the shared link handler
       if (isInSharedLinkHandler) {
         console.log('Already in shared link handler, not redirecting');
         return;
       }
-      
+
       if (email) {
         try {
           // If we're in PWA, handle it internally
           if (isPwa) {
             // Let the AuthContext handle the sign-in
             console.log('In PWA mode, letting AuthContext handle sign-in');
-          } 
+          }
           // If we're in browser but came from mobile, redirect to code page
           else if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
             // Create a redirect to the auth code input page with a flag to show code input
             console.log('Mobile browser detected, redirecting to code input');
-            
+
             // Set the flag to show code input instead of email input
-            window.localStorage.setItem('codeRequestTimestamp', Date.now().toString());
-            
+            window.localStorage.setItem(
+              'codeRequestTimestamp',
+              Date.now().toString()
+            );
+
             // Redirect to login page with code input showing
             router.push('/login?showcode=true');
           }
@@ -131,44 +139,56 @@ export default function RootLayout({
         <link rel="manifest" href="/manifest.json" />
         {/* Primary theme color meta tags */}
         <meta name="theme-color" content="#111827" />
-        <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#111827" />
-        <meta name="theme-color" media="(prefers-color-scheme: light)" content="#111827" />
-        
+        <meta
+          name="theme-color"
+          media="(prefers-color-scheme: dark)"
+          content="#111827"
+        />
+        <meta
+          name="theme-color"
+          media="(prefers-color-scheme: light)"
+          content="#111827"
+        />
+
         {/* Android Chrome specific */}
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="navigation-bar-color" content="#111827" />
-        
+
         {/* iOS specific */}
         <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta
+          name="apple-mobile-web-app-status-bar-style"
+          content="black-translucent"
+        />
         <meta name="apple-mobile-web-app-title" content="Musco" />
         <link rel="apple-touch-icon" href="/img/logo_biceps.png" />
         <script src="/sw-register.js" defer></script>
-        
+
         {/* Force Android Chrome navigation bar color - handled in useEffect to prevent hydration mismatch */}
       </head>
       <body className="bg-gray-900">
         <I18nWrapper>
-        <LoaderProvider>
-          <AuthProvider>
-            <UserProvider>
-              <AppProvider>
-                <ToastProvider>
-                  <RouteChangeListener />
-                  <SafeAreaPWA>git a
-                    <SafeArea className="h-full">
-                      <div className="flex-1">{children}</div>
-                      {/* Do not render bottom drawer nav on marketing landing */}
-                      {typeof window !== 'undefined' && window.location.pathname !== '/' && (
-                        <NavigationMenu />
-                      )}
-                    </SafeArea>
-                  </SafeAreaPWA>
-                </ToastProvider>
-              </AppProvider>
-            </UserProvider>
-          </AuthProvider>
-        </LoaderProvider>
+          <LoaderProvider>
+            <AuthProvider>
+              <UserProvider>
+                <AppProvider>
+                  <ToastProvider>
+                    <RouteChangeListener />
+                    <SafeAreaPWA>
+                      <SafeArea className="h-full">
+                        <div className="flex-1">{children}</div>
+                        {/* Do not render bottom drawer nav on marketing landing */}
+                        {typeof window !== 'undefined' &&
+                          window.location.pathname !== '/' && (
+                            <NavigationMenu />
+                          )}
+                      </SafeArea>
+                    </SafeAreaPWA>
+                  </ToastProvider>
+                </AppProvider>
+              </UserProvider>
+            </AuthProvider>
+          </LoaderProvider>
         </I18nWrapper>
       </body>
     </html>
