@@ -301,6 +301,8 @@ export function UserProvider({ children }: { children: ReactNode }) {
         // If a program is being generated, set status and redirect to program page
         if (hasGeneratingProgram) {
           setProgramStatus(ProgramStatus.Generating);
+          // Force-show loader during this handoff so user sees progress
+          showGlobalLoader(true, t('program.creating'), t('program.waitMessage'));
           // Only navigate to program page if we're not already there
           if (
             typeof window !== 'undefined' &&
@@ -617,6 +619,9 @@ export function UserProvider({ children }: { children: ReactNode }) {
       // Set program status to generating after clearing program state
       setProgramStatus(ProgramStatus.Generating);
 
+      // Ensure loader is visible immediately during redirect/suspense gap
+      showGlobalLoader(true, t('program.creating'), t('program.waitMessage'));
+
       // Clear pending questionnaire data to prevent duplicate submissions
       window.localStorage.removeItem('hasPendingQuestionnaire');
       window.localStorage.removeItem('pendingQuestionnaireEmail');
@@ -800,6 +805,8 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
   const generateFollowUpProgram = async () => {
     setProgramStatus(ProgramStatus.Generating);
+    // Show loader immediately to avoid any blank state before ProgramPage mounts
+    showGlobalLoader(true, t('program.creating'), t('program.waitMessage'));
     logAnalyticsEvent('generate_follow_up');
     router.push('/program');
   };

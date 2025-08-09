@@ -8,14 +8,13 @@ import { doc, getDoc } from 'firebase/firestore';
 
 export default function SubscribeSuccessPage() {
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   const [statusText, setStatusText] = useState('Finalizing your subscription…');
 
   useEffect(() => {
-    if (!user?.uid) {
-      router.replace('/login');
-      return;
-    }
+    // Wait for auth to settle before deciding anything
+    if (loading) return;
+    if (!user?.uid) return; // don't kick to login; let user arrive after redirect
 
     let cancelled = false;
     let attempts = 0;
@@ -47,7 +46,7 @@ export default function SubscribeSuccessPage() {
       cancelled = true;
       clearTimeout(t);
     };
-  }, [user, router]);
+  }, [user, loading, router]);
 
   return (
     <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center p-6">

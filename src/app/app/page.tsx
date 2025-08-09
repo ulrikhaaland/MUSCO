@@ -126,7 +126,7 @@ function AppContent() {
       </div>
 
       {showAuthForm && pendingQuestionnaire && (
-        <div className="fixed inset-0 bg-gray-900/95 backdrop-blur-sm z-50 flex items-center justify-center">
+        <div className="fixed inset-0 bg-gray-900/95 backdrop-blur-sm z-[70] flex items-center justify-center">
           <div className="max-w-lg w-full mx-4">
             <QuestionnaireAuthForm />
           </div>

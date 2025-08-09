@@ -35,6 +35,15 @@ export default function SubscribePage() {
     }
   };
 
+  const isFounderEligible = () => {
+    const email = user?.email?.toLowerCase() || '';
+    return (
+      email === 'ulrikhaaland2@gmail.com' ||
+      email === 'ulrikhaland@gmail.com' ||
+      email.includes('hopstock')
+    );
+  };
+
   return (
     <div className="min-h-screen bg-gray-900 text-white px-6 py-10">
       <div className="mx-auto max-w-5xl">
@@ -107,7 +116,7 @@ export default function SubscribePage() {
               </div>
             </div>
 
-            {user?.email && (user.email === 'ulrikhaaland2@gmail.com' || user.email === 'ulrikhaland@gmail.com') && (
+            {isFounderEligible() && (
               <div className="bg-amber-900/50 rounded-2xl ring-1 ring-amber-700/50 p-6">
                 <div className="flex items-baseline justify-between">
                   <div>
