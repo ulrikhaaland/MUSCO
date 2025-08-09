@@ -140,11 +140,12 @@ export default function LandingPage() {
   // Soft-redirect signed-in users to /app (delay ~800ms), always show Open app
   useEffect(() => {
     if (authLoading || userLoading) return;
-
-    if (program) {
-      router.replace('/program');
-    } else {
-      router.replace('/app');
+    if (user) {
+      if (program) {
+        router.replace('/program');
+      } else {
+        router.replace('/app');
+      }
     }
   }, [user, router, authLoading, userLoading, program]);
 

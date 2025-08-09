@@ -67,6 +67,12 @@ The app enforces simple, transparent rules:
 > Implementation notes
 > - Gating is enforced both client-side (navigation) and server-side where applicable (API route checks), using user subscription status in Firestore: `isSubscriber`, `subscriptionStatus`, and `currentPeriodEnd`.
 > - Webhooks from Stripe (`customer.subscription.*` and `checkout.session.completed`) update these fields automatically, so access reflects the latest billing state without manual intervention.
+
+### Subscription UX Flow
+- Subscribe page: Dedicated page presenting benefits and pricing, with Monthly and Annual options. Email is prefilled when available.
+- Success page: After checkout, the app briefly confirms and redirects to the feedback page once the subscription is recorded.
+- Manage subscription: From Profile → Subscription card, users can open the Stripe Billing Portal to update payment method, view invoices, or cancel.
+- Gating: If a non‑subscriber tries to generate a follow‑up, they’re routed to Subscribe. Subscribers proceed to the Feedback flow.
 **Chat Behavior**
 - **Concise Communication**: Bullet-point responses, no filler words or redundant acknowledgments
 - **Progressive Disclosure**: Follow-up questions build naturally on previous responses
