@@ -30,6 +30,7 @@ interface AuthContextType {
   createUserDoc: () => Promise<void>;
   updateUserProfile: (profileData: Partial<UserProfile>) => Promise<void>;
   getUserProfile: () => Promise<UserProfile | null>;
+  refreshUserProfile: () => Promise<void>;
   deleteUserDoc: (uid: string) => Promise<void>;
   deleteUserAccount: () => Promise<boolean>;
   deleteProgram: (programId: string) => Promise<boolean>;
@@ -249,6 +250,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       console.error('Error getting user profile:', error);
       handleAuthError(error, t('authContext.failedToGetUserProfile'), false);
       return null;
+    }
+  };
+
+  const refreshUserProfile = async (): Promise<void> => {
+    if (!user) return;
+
+    try {
+      const profileData = await fetchUserProfile(user.uid);
+      setUser((prev) =>
+        prev ? ({ ...prev, profile: profileData || prev.profile } as ExtendedUser) : prev
+      );
+    } catch (error) {
+      console.error('Error refreshing user profile:', error);
     }
   };
 
@@ -559,6 +573,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         createUserDoc,
         updateUserProfile,
         getUserProfile,
+        refreshUserProfile,
         deleteUserDoc,
         deleteUserAccount,
         deleteProgram,
