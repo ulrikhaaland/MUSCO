@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/app/context/AuthContext';
 import { db } from '@/app/firebase/config';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDocFromServer } from 'firebase/firestore';
 
 export default function SubscribeSuccessPage() {
   const router = useRouter();
@@ -22,7 +22,8 @@ export default function SubscribeSuccessPage() {
     const check = async () => {
       attempts += 1;
       try {
-        const snap = await getDoc(doc(db, 'users', user.uid));
+        // Force a server read to ensure we get the latest subscription data
+        const snap = await getDocFromServer(doc(db, 'users', user.uid));
         const data = snap.exists() ? (snap.data() as any) : null;
         const active = data?.isSubscriber === true || data?.subscriptionStatus === 'active' || data?.subscriptionStatus === 'trialing';
         if (active && !cancelled) {
