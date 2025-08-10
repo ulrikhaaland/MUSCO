@@ -8,27 +8,18 @@ import { useAuth } from '../context/AuthContext';
 import { useUser } from '../context/UserContext';
 import { QuestionnaireAuthForm } from '../components/auth/QuestionnaireAuthForm';
 import { ErrorBoundary } from '../components/ErrorBoundary';
-import { useSearchParams, useRouter } from 'next/navigation';
 import { IntentionQuestion } from '../components/ui/IntentionQuestion';
 import { ErrorDisplay } from '../components/ui/ErrorDisplay';
 import { useTranslation } from '../i18n';
 
 // The full application experience (moved from root to /app)
 function AppContent() {
-  const { intention, setIntention, skipAuth, completeReset } = useApp();
+  const { setIntention, skipAuth, completeReset } = useApp();
   const { user, loading: authLoading, error: authError } = useAuth();
   const { pendingQuestionnaire } = useUser();
   const { t } = useTranslation();
   const [showAuthForm, setShowAuthForm] = useState(false);
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const genderParam = searchParams?.get('gender') as Gender;
-  const newParam = searchParams?.get('new');
-  const handedOffIntention = searchParams?.get('intention') as
-    | 'exercise'
-    | 'recovery'
-    | null;
-  const [gender, setGender] = useState<Gender>(genderParam || 'male');
+  const [gender, setGender] = useState<Gender>('male');
   const [intentionSelected, setIntentionSelected] = useState(false);
   const [shouldResetModel, setShouldResetModel] = useState(false);
 
@@ -39,53 +30,17 @@ function AppContent() {
     }
   }, [t]);
 
-  // Reset when not creating a new program
+  // Reset to a clean state on mount
   useEffect(() => {
-    if (newParam !== 'true' && intention !== ProgramIntention.None) {
-      completeReset();
-      setShouldResetModel(true);
-      const timer = setTimeout(() => setShouldResetModel(false), 500);
-      return () => clearTimeout(timer);
-    }
-  }, [completeReset, newParam, intention]);
+    completeReset();
+    setShouldResetModel(true);
+    const timer = setTimeout(() => setShouldResetModel(false), 500);
+    return () => clearTimeout(timer);
+  }, [completeReset]);
 
-  // Accept intention handoff via query or existing context to skip extra click
-  useEffect(() => {
-    if (newParam === 'true' && !intentionSelected) {
-      // If intention provided in query, set it
-      if (handedOffIntention === 'exercise') {
-        setIntention(ProgramIntention.Exercise);
-        setIntentionSelected(true);
-      } else if (handedOffIntention === 'recovery') {
-        setIntention(ProgramIntention.Recovery);
-        setIntentionSelected(true);
-      } else if (
-        intention === ProgramIntention.Exercise ||
-        intention === ProgramIntention.Recovery
-      ) {
-        // Use intention already present in context (e.g., from landing CTA)
-        setIntentionSelected(true);
-      }
-    }
-  }, [newParam, handedOffIntention, intention, intentionSelected, setIntention]);
-
-  // Update gender when URL param changes
-  useEffect(() => {
-    if (genderParam && (genderParam === 'male' || genderParam === 'female')) {
-      setGender(genderParam);
-    }
-  }, [genderParam]);
-
-  const handleGenderChange = useCallback(
-    (newGender: Gender) => {
-      setGender(newGender);
-      const params = new URLSearchParams(searchParams?.toString() || '');
-      params.set('gender', newGender);
-      if (newParam === 'true' && !params.has('new')) params.set('new', 'true');
-      router.push(`/app?${params.toString()}`, { scroll: false });
-    },
-    [router, searchParams, newParam]
-  );
+  const handleGenderChange = useCallback((newGender: Gender) => {
+    setGender(newGender);
+  }, []);
 
   const handleIntentionSelect = useCallback(
     (selectedIntention: ProgramIntention) => {
@@ -133,7 +88,7 @@ function AppContent() {
         </div>
       )}
 
-      {newParam === 'true' && !intentionSelected && (
+      {!intentionSelected && (
         <IntentionQuestion
           onSelect={(selectedIntention) => {
             handleIntentionSelect(selectedIntention);

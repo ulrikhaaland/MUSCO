@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from './context/AuthContext';
-import { useApp, ProgramIntention } from './context/AppContext';
 import { useTranslation } from './i18n';
 import {
   getProgramBySlug,
@@ -95,7 +94,6 @@ function ProgramPreviewModal({
 export default function LandingPage() {
   const { user, loading: authLoading } = useAuth();
   const { program, isLoading: userLoading } = useUser();
-  const { setIntention } = useApp();
   const { t, locale } = useTranslation();
   const router = useRouter();
   const [modalOpen, setModalOpen] = useState<null | string>(null);
@@ -153,11 +151,8 @@ export default function LandingPage() {
     if (typeof document !== 'undefined') document.title = t('home.pageTitle');
   }, [t]);
 
-  const goAppWith = (target: ProgramIntention) => {
-    setIntention(target);
-    const intentionParam =
-      target === ProgramIntention.Exercise ? 'exercise' : 'recovery';
-    router.push(`/app?new=true&intention=${intentionParam}`);
+  const goApp = () => {
+    router.push('/app');
   };
 
   // Observe section views
@@ -339,10 +334,10 @@ export default function LandingPage() {
           onSelect={(mode) => {
             if (mode === 'diagnose') {
               logAnalyticsEvent('hero_cta_click', { cta: 'diagnose' });
-              goAppWith(ProgramIntention.Recovery);
+              goApp();
             } else {
               logAnalyticsEvent('hero_cta_click', { cta: 'workout' });
-              goAppWith(ProgramIntention.Exercise);
+              goApp();
             }
           }}
         />
@@ -372,7 +367,7 @@ export default function LandingPage() {
           <button
             onClick={() => {
               logAnalyticsEvent('start_diagnosis_from_section');
-              goAppWith(ProgramIntention.Recovery);
+              goApp();
             }}
             className="px-5 py-3 bg-indigo-600 text-white rounded-md hover:bg-indigo-500"
           >
@@ -500,7 +495,7 @@ export default function LandingPage() {
             <div className="mt-4">
               <button
                 className="px-5 py-3 bg-indigo-600 text-white rounded-md hover:bg-indigo-500"
-                onClick={() => goAppWith(ProgramIntention.Recovery)}
+                onClick={() => goApp()}
               >
                 {t('landing.demo.cta')}
               </button>
@@ -540,7 +535,7 @@ export default function LandingPage() {
             <p className="text-sm mt-1">{t('landing.pricing.note')}</p>
             <div className="mt-4">
               <button
-                onClick={() => router.push('/app?new=true')}
+                onClick={() => router.push('/app')}
                 className="px-5 py-3 bg-indigo-600 text-white rounded-md hover:bg-indigo-500"
               >
                 {t('landing.pricing.try')}
