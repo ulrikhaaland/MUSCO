@@ -1,11 +1,11 @@
 'use client';
 
-import { useEffect } from 'react';
+import { Suspense, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/app/context/AuthContext';
 import { useLoader } from '@/app/context/LoaderContext';
 
-export default function SubscribeSuccessPage() {
+function SubscribeSuccessContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const sessionId = searchParams.get('session_id');
@@ -48,5 +48,13 @@ export default function SubscribeSuccessPage() {
   }, [loading, user, sessionId, router, refreshUserProfile, showLoader, hideLoader]);
 
   return null;
+}
+
+export default function SubscribeSuccessPage() {
+  return (
+    <Suspense fallback={null}>
+      <SubscribeSuccessContent />
+    </Suspense>
+  );
 }
 
