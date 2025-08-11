@@ -62,6 +62,24 @@ export function ProgramDayComponent({
   });
   }, [day.exercises, removedBodyParts]);
 
+  // Auto-expand the single exercise when only one is available
+  const hasAutoExpandedRef = useRef(false);
+  useEffect(() => {
+    if (hasAutoExpandedRef.current) return;
+    if (!onExerciseToggle) return; // controlled by parent; if no handler we already expand all
+    const onlyOne = Array.isArray(filteredExercises) && filteredExercises.length === 1;
+    if (!onlyOne) return;
+    const soleExercise = filteredExercises[0];
+    if (!soleExercise) return;
+    const isAlreadyExpanded = Array.isArray(expandedExercises)
+      ? expandedExercises.includes(soleExercise.name)
+      : false;
+    if (!isAlreadyExpanded) {
+      onExerciseToggle(soleExercise.name);
+    }
+    hasAutoExpandedRef.current = true;
+  }, [filteredExercises, expandedExercises, onExerciseToggle]);
+
   // Handle body part filter changes
   const handleBodyPartFilterChange = (newRemovedBodyParts: string[]) => {
     setRemovedBodyParts(newRemovedBodyParts);
