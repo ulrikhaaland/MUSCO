@@ -24,6 +24,11 @@ export default function SubscribeSuccessPage() {
       try {
         const snap = await getDoc(doc(db, 'users', user.uid));
         const data = snap.exists() ? (snap.data() as any) : null;
+        console.log('success_poll attempt=' + attempts, {
+          isSubscriber: data?.isSubscriber,
+          status: data?.subscriptionStatus,
+          periodEnd: data?.currentPeriodEnd,
+        });
         const active = data?.isSubscriber === true || data?.subscriptionStatus === 'active' || data?.subscriptionStatus === 'trialing';
         if (active && !cancelled) {
           router.replace('/program/feedback');

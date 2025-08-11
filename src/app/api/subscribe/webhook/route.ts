@@ -10,7 +10,9 @@ export async function POST(request: Request) {
   const body = await request.text();
   let event: any;
   try {
+    console.log('event=webhook_received step=construct body_len=' + body.length);
     event = stripe.webhooks.constructEvent(body, signature, process.env.STRIPE_WEBHOOK_SECRET as string);
+    console.log('event=webhook_constructed type=' + event.type);
   } catch (err) {
     console.error('Webhook signature verification failed.', err);
     return new NextResponse('Bad signature', { status: 400 });
@@ -22,6 +24,7 @@ export async function POST(request: Request) {
         const session = event.data.object as any;
         const uid = session.metadata?.uid;
         const subscriptionId = session.subscription as string;
+        console.log(`event=checkout_session_completed uid=${uid || 'none'} customer=${session.customer || 'none'} sub=${subscriptionId || 'none'}`);
         if (uid) {
           await adminDb.collection('users').doc(uid).set(
             {
@@ -32,6 +35,7 @@ export async function POST(request: Request) {
             },
             { merge: true }
           );
+          console.log(`event=user_updated uid=${uid} field=isSubscriber value=true`);
         }
         break;
       }
@@ -58,6 +62,7 @@ export async function POST(request: Request) {
               if (!byEmail.empty) {
                 userDocRef = byEmail.docs[0].ref;
                 await userDocRef.set({ stripeCustomerId: customerId }, { merge: true });
+                console.log(`event=linked_customer_by_email email=${email} uid=${byEmail.docs[0].id}`);
               }
             }
           } catch {}
@@ -71,6 +76,7 @@ export async function POST(request: Request) {
           };
           if (currentPeriodEnd) update.currentPeriodEnd = currentPeriodEnd;
           await userDocRef.set(update, { merge: true });
+          console.log(`event=subscription_sync customer=${customerId} status=${status} currentPeriodEnd=${currentPeriodEnd || 'none'}`);
         }
         break;
       }
