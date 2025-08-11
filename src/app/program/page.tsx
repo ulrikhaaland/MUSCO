@@ -14,10 +14,11 @@ import {
   ProgramDay,
   ExerciseProgram,
 } from '@/app/types/program';
-import { ProgramType } from '../../../shared/types';
+// import { ProgramType } from '../../../shared/types';
 import { searchYouTubeVideo } from '@/app/utils/youtube';
 import { ErrorDisplay } from '@/app/components/ui/ErrorDisplay';
 import { useTranslation } from '@/app/i18n';
+import { LoadingMessage } from '@/app/components/ui/LoadingMessage';
 
 function ProgramPageContent({
   isCustomProgram,
@@ -27,7 +28,7 @@ function ProgramPageContent({
   const router = useRouter();
   const searchParams = useSearchParams();
   const { t } = useTranslation();
-  const { user, loading: authLoading, error: authError } = useAuth();
+  const { loading: authLoading, error: authError } = useAuth();
   const {
     program,
     activeProgram,
@@ -36,8 +37,8 @@ function ProgramPageContent({
     userPrograms,
     selectProgram,
   } = useUser();
-  const { showLoader, hideLoader, isLoading: loaderLoading } = useLoader();
-  const [error, setError] = useState<Error | null>(null);
+  const { hideLoader } = useLoader();
+  const [error] = useState<Error | null>(null);
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [loadingVideoExercise, setLoadingVideoExercise] = useState<
     string | null
@@ -97,20 +98,11 @@ function ProgramPageContent({
     }
   }, [program, activeProgram?.title, searchParams, hasProcessedUrlParam]);
 
-  // Control the loader visibility based on loading states
+  // Do not block the app with the global loader on the program page.
+  // Hide the global loader and use on-page shimmers instead.
   useEffect(() => {
-    if (programStatus === ProgramStatus.Generating) {
-      showLoader(t('program.creating'), t('program.waitMessage'));
-    } else if (isLoading) {
-      if (!selectedProgram) {
-        showLoader(t('program.loadingData'));
-      } else {
-        showLoader(t('program.loading'));
-      }
-    } else {
-      hideLoader();
-    }
-  }, [isLoading, selectedProgram, programStatus, t, authLoading]);
+    hideLoader();
+  }, [isLoading, selectedProgram, programStatus, hideLoader]);
 
   // Update page title when program data changes
   useEffect(() => {
@@ -174,7 +166,7 @@ function ProgramPageContent({
     router.push('/program/calendar');
   };
 
-  const handleDaySelect = (day: ProgramDay, dayName: string) => {
+  const handleDaySelect = (day: ProgramDay) => {
     if (selectedProgram) {
       logAnalyticsEvent('open_program_day', { day: day.day });
       router.push(
@@ -279,15 +271,7 @@ function ProgramPageContent({
     return <ErrorDisplay error={error || authError} />;
   }
 
-  // We don't need these loader returns anymore as loader visibility is managed by effect
-  // Instead, let's render nothing if we're loading
-  if (
-    isLoading ||
-    !selectedProgram ||
-    programStatus === ProgramStatus.Generating
-  ) {
-    return null;
-  }
+
 
   return (
     <>
@@ -297,6 +281,7 @@ function ProgramPageContent({
         type={activeProgram?.type}
         timeFrame={activeProgram?.timeFrame}
         isLoading={isLoading}
+        shimmer={programStatus === ProgramStatus.Generating}
         onToggleView={handleToggleView}
         dayName={getDayName}
         onVideoClick={handleExerciseVideoClick}

@@ -1,6 +1,6 @@
 import { ProgramDay } from '@/app/types/program';
 import Chip from './Chip';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useTranslation } from '@/app/i18n/TranslationContext';
 
 interface ProgramDaySummaryComponentProps {
@@ -11,6 +11,9 @@ interface ProgramDaySummaryComponentProps {
   programTitle?: string;
   isCalendarView?: boolean;
   isHighlighted?: boolean;
+  shimmer?: boolean;
+  autoNavigateIfEmpty?: boolean;
+  autoNavigateOnShimmer?: boolean;
 }
 
 export function ProgramDaySummaryComponent({
@@ -21,6 +24,9 @@ export function ProgramDaySummaryComponent({
   programTitle,
   isCalendarView = false,
   isHighlighted = false,
+  shimmer = false,
+  autoNavigateIfEmpty = false,
+  autoNavigateOnShimmer = false,
 }: ProgramDaySummaryComponentProps) {
   const { t } = useTranslation();
   // Calculate exercise statistics
@@ -82,6 +88,18 @@ export function ProgramDaySummaryComponent({
     min-h-[44px] px-6 py-4
   `;
 
+  // If configured, navigate automatically when content is empty or when shimmer is real
+  const hasNavigatedRef = useRef(false);
+  useEffect(() => {
+    if (hasNavigatedRef.current) return;
+    const noExercises = !day.exercises || day.exercises.length === 0;
+    const shouldNavigate = (autoNavigateIfEmpty && noExercises) || (autoNavigateOnShimmer && shimmer);
+    if (shouldNavigate && onClick) {
+      hasNavigatedRef.current = true;
+      onClick();
+    }
+  }, [autoNavigateIfEmpty, autoNavigateOnShimmer, shimmer, day.exercises, onClick]);
+
   return (
     <div>
       {onClick ? (
@@ -104,8 +122,12 @@ export function ProgramDaySummaryComponent({
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center justify-between w-full">
               <div className="flex items-center gap-3">
-                <h3 className="text-app-title text-white">{dayName}</h3>
-                {day.isRestDay ? (
+                <h3 className="text-app-title text-white">
+                  {shimmer ? <span className="shimmer bg-gray-700 h-5 w-24 inline-block rounded" /> : dayName}
+                </h3>
+                {shimmer ? (
+                  <span className="shimmer inline-block h-5 w-20 bg-gray-700 rounded-full" />
+                ) : day.isRestDay ? (
                   <Chip variant="highlight" size="sm">
                     {t('calendar.rest')}
                   </Chip>
@@ -116,7 +138,10 @@ export function ProgramDaySummaryComponent({
                 )}
               </div>
               <div className="flex items-center gap-6">
-                {day.duration !== undefined && day.duration > 0 && (
+                {shimmer ? (
+                  <div className="shimmer w-24 h-4 bg-gray-700 rounded" />
+                ) : (
+                  day.duration !== undefined && day.duration > 0 && (
                   <div className="flex items-center text-gray-400">
                     <svg
                       className="w-4 h-4 mr-1.5"
@@ -135,7 +160,7 @@ export function ProgramDaySummaryComponent({
                       ? t('program.noDuration')
                       : `${day.duration} ${t('program.minutes')}`}
                   </div>
-                )}
+                ))}
                 <span className={`text-2xl text-indigo-400/60 hover:text-indigo-400/90 transition-opacity w-5 h-5 flex items-center cursor-pointer`}>›</span>
               </div>
             </div>
@@ -148,13 +173,21 @@ export function ProgramDaySummaryComponent({
           )}
 
           <div className="h-1 mb-1"></div>
-          <p className="text-white text-sm mb-4">{day.description}</p>
+          <p className="text-white text-sm mb-4">
+            {shimmer ? (
+              <span className="shimmer inline-block bg-gray-700 h-4 w-3/4 rounded" />
+            ) : (
+              day.description
+            )}
+          </p>
 
           {/* Exercise breakdown */}
           <div className="space-y-2">
             {/* Exercise count and type breakdown */}
             <div className="flex flex-wrap gap-3">
-              {totalExercises > 0 && (
+              {shimmer ? (
+                <div className="shimmer w-1/3 h-4 bg-gray-700 rounded" />
+              ) : totalExercises > 0 && (
                 <div className="flex items-center text-gray-400 text-sm">
                   <svg
                     className="w-4 h-4 mr-1.5 text-indigo-400/80"
@@ -174,7 +207,9 @@ export function ProgramDaySummaryComponent({
                     : `${totalExercises} ${totalExercises === 1 ? t('program.exercise') : t('program.exercises')}`}
                 </div>
               )}
-              {warmupExercises > 0 && (
+              {shimmer ? (
+                <div className="shimmer w-24 h-4 bg-gray-700 rounded" />
+              ) : warmupExercises > 0 && (
                 <div className="flex items-center text-gray-400 text-sm">
                   <svg
                     className="w-4 h-4 mr-1.5 text-amber-600"
@@ -195,7 +230,18 @@ export function ProgramDaySummaryComponent({
             </div>
 
             {/* List all exercises */}
-            {day.exercises?.length > 0 && (
+            {shimmer ? (
+              <div className="mt-3 space-y-2">
+                {Array.from({ length: 4 }).map((_, idx) => (
+                  <div key={idx} className="flex items-center text-sm text-gray-400">
+                    <span className="w-4 h-4 mr-2 flex items-center justify-center">
+                      <span className="shimmer inline-block bg-gray-700 w-3 h-3 rounded-sm" />
+                    </span>
+                    <span className="shimmer inline-block bg-gray-700 h-4 w-1/2 rounded" />
+                  </div>
+                ))}
+              </div>
+            ) : day.exercises?.length > 0 && (
               <div className="mt-3 space-y-1">
                 {day.exercises?.map((exercise, index) => (
                   <div
@@ -236,8 +282,12 @@ export function ProgramDaySummaryComponent({
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center justify-between w-full">
               <div className="flex items-center gap-3">
-                <h3 className="text-app-title text-white">{dayName}</h3>
-                {day.isRestDay ? (
+                <h3 className="text-app-title text-white">
+                  {shimmer ? <span className="shimmer bg-gray-700 h-5 w-24 inline-block rounded" /> : dayName}
+                </h3>
+                {shimmer ? (
+                  <span className="shimmer inline-block h-5 w-20 bg-gray-700 rounded-full" />
+                ) : day.isRestDay ? (
                   <Chip variant="highlight" size="sm">
                     {t('program.rest')}
                   </Chip>
@@ -248,7 +298,10 @@ export function ProgramDaySummaryComponent({
                 )}
               </div>
               <div className="flex items-center gap-6">
-                {day.duration !== undefined && day.duration > 0 && (
+                {shimmer ? (
+                  <div className="shimmer w-24 h-4 bg-gray-700 rounded" />
+                ) : (
+                  day.duration !== undefined && day.duration > 0 && (
                   <div className="flex items-center text-gray-400">
                     <svg
                       className="w-4 h-4 mr-1.5"
@@ -267,7 +320,7 @@ export function ProgramDaySummaryComponent({
                       ? t('program.noDuration')
                       : `${day.duration} ${t('program.minutes')}`}
                   </div>
-                )}
+                ))}
               </div>
             </div>
           </div>
@@ -279,13 +332,21 @@ export function ProgramDaySummaryComponent({
           )}
 
           <div className="h-1 mb-1"></div>
-          <p className="text-white text-sm mb-4">{day.description}</p>
+          <p className="text-white text-sm mb-4">
+            {shimmer ? (
+              <span className="shimmer inline-block bg-gray-700 h-4 w-3/4 rounded" />
+            ) : (
+              day.description
+            )}
+          </p>
 
           {/* Exercise breakdown */}
           <div className="space-y-2">
             {/* Exercise count and type breakdown */}
             <div className="flex flex-wrap gap-3">
-              {totalExercises > 0 && (
+              {shimmer ? (
+                <div className="shimmer w-1/3 h-4 bg-gray-700 rounded" />
+              ) : totalExercises > 0 && (
                 <div className="flex items-center text-gray-400 text-sm">
                   <svg
                     className="w-4 h-4 mr-1.5 text-indigo-400/80"
@@ -305,7 +366,9 @@ export function ProgramDaySummaryComponent({
                     : `${totalExercises} ${totalExercises === 1 ? t('program.exercise') : t('program.exercises')}`}
                 </div>
               )}
-              {warmupExercises > 0 && (
+              {shimmer ? (
+                <div className="shimmer w-24 h-4 bg-gray-700 rounded" />
+              ) : warmupExercises > 0 && (
                 <div className="flex items-center text-gray-400 text-sm">
                   <svg
                     className="w-4 h-4 mr-1.5 text-amber-600"
@@ -326,7 +389,18 @@ export function ProgramDaySummaryComponent({
             </div>
 
             {/* List all exercises */}
-            {day.exercises?.length > 0 && (
+            {shimmer ? (
+              <div className="mt-3 space-y-2">
+                {Array.from({ length: 4 }).map((_, idx) => (
+                  <div key={idx} className="flex items-center text-sm text-gray-400">
+                    <span className="w-4 h-4 mr-2 flex items-center justify-center">
+                      <span className="shimmer inline-block bg-gray-700 w-3 h-3 rounded-sm" />
+                    </span>
+                    <span className="shimmer inline-block bg-gray-700 h-4 w-1/2 rounded" />
+                  </div>
+                ))}
+              </div>
+            ) : day.exercises?.length > 0 && (
               <div className="mt-3 space-y-1">
                 {day.exercises?.map((exercise, index) => (
                   <div
@@ -363,6 +437,16 @@ export function ProgramDaySummaryComponent({
           </div>
         </div>
       )}
+      <style jsx>{`
+        .shimmer { position: relative; overflow: hidden; }
+        .shimmer::after {
+          position: absolute; inset: 0; transform: translateX(-100%);
+          background-image: linear-gradient(90deg, rgba(255,255,255,0) 0, rgba(255,255,255,0.08) 20%, rgba(255,255,255,0.16) 60%, rgba(255,255,255,0) 100%);
+          animation: shimmer 1.5s infinite;
+          content: '';
+        }
+        @keyframes shimmer { 100% { transform: translateX(100%); } }
+      `}</style>
     </div>
   );
 }

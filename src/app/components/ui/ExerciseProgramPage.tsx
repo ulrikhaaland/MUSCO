@@ -29,6 +29,7 @@ interface ExerciseProgramPageProps {
   type?: ProgramType;
   timeFrame?: string;
   isLoading: boolean;
+  shimmer?: boolean;
   onToggleView: () => void;
   dayName: (day: number) => string;
   onVideoClick: (exercise: Exercise) => void;
@@ -112,6 +113,7 @@ export function ExerciseProgramPage({
   type,
   timeFrame,
   isLoading,
+  shimmer = false,
   dayName,
   onDaySelect,
   isActive = false,
@@ -491,7 +493,7 @@ export function ExerciseProgramPage({
   }, [program]);
 
   // If loading or no program, just return null as we're using the global loader context
-  if (isLoading || program === null || !Array.isArray(program.days)) {
+  if ((isLoading && !shimmer) || program === null || !Array.isArray(program.days)) {
     return null;
   }
 
@@ -547,6 +549,16 @@ export function ExerciseProgramPage({
       ) : (
         <>
           <style>{scrollbarHideStyles}</style>
+          <style jsx>{`
+            .shimmer { position: relative; overflow: hidden; }
+            .shimmer::after {
+              position: absolute; inset: 0; transform: translateX(-100%);
+              background-image: linear-gradient(90deg, rgba(255,255,255,0) 0, rgba(255,255,255,0.08) 20%, rgba(255,255,255,0.16) 60%, rgba(255,255,255,0) 100%);
+              animation: shimmer 1.5s infinite;
+              content: '';
+            }
+            @keyframes shimmer { 100% { transform: translateX(100%); } }
+          `}</style>
 
           {/* Custom header with title only */}
           {
@@ -555,24 +567,33 @@ export function ExerciseProgramPage({
                 {/* Empty spacer with same width as menu button to balance the title */}
                 <div className="w-10"></div>
                 <div className="flex flex-col items-center">
-                  <h1 className="text-app-title text-center">
-                    {title ||
-                      (type === ProgramType.Recovery
-                        ? t('program.recoveryProgramTitle')
-                        : t('program.exerciseProgramTitle'))}
-                  </h1>
-                  {!isCustomProgram &&
-                    (isActive ? (
-                      <div className="mt-1 px-2 py-0.5 bg-green-500/20 text-green-300 text-xs rounded-full flex items-center">
-                        <span className="w-2 h-2 rounded-full bg-green-400 mr-1"></span>
-                        {t('exerciseProgram.badge.active')}
-                      </div>
-                    ) : (
-                      <div className="mt-1 px-2 py-0.5 bg-gray-500/20 text-gray-300 text-xs rounded-full flex items-center">
-                        <span className="w-2 h-2 rounded-full bg-gray-400 mr-1"></span>
-                        {t('exerciseProgram.badge.inactive')}
-                      </div>
-                    ))}
+                  {shimmer ? (
+                    <>
+                      <div className="shimmer h-6 w-48 bg-gray-700 rounded" />
+                      <div className="mt-2 shimmer h-4 w-28 bg-gray-700 rounded-full" />
+                    </>
+                  ) : (
+                    <>
+                      <h1 className="text-app-title text-center">
+                        {title ||
+                          (type === ProgramType.Recovery
+                            ? t('program.recoveryProgramTitle')
+                            : t('program.exerciseProgramTitle'))}
+                      </h1>
+                      {!isCustomProgram &&
+                        (isActive ? (
+                          <div className="mt-1 px-2 py-0.5 bg-green-500/20 text-green-300 text-xs rounded-full flex items-center">
+                            <span className="w-2 h-2 rounded-full bg-green-400 mr-1"></span>
+                            {t('exerciseProgram.badge.active')}
+                          </div>
+                        ) : (
+                          <div className="mt-1 px-2 py-0.5 bg-gray-500/20 text-gray-300 text-xs rounded-full flex items-center">
+                            <span className="w-2 h-2 rounded-full bg-gray-400 mr-1"></span>
+                            {t('exerciseProgram.badge.inactive')}
+                          </div>
+                        ))}
+                    </>
+                  )}
                 </div>
                 {/* Space for menu button */}
                 <div className="w-10"></div>
@@ -686,6 +707,21 @@ export function ExerciseProgramPage({
                   return null;
                 }
 
+                if (shimmer) {
+                  return (
+                    <div className="bg-gray-800/50 rounded-xl overflow-hidden ring-1 ring-gray-700/50 p-6 mb-4">
+                      <div className="flex items-center gap-3 mb-3">
+                        <span className="w-3 h-3 rounded-full bg-indigo-500/40" />
+                        <div className="shimmer h-5 w-40 bg-gray-700 rounded" />
+                      </div>
+                      <div className="space-y-2">
+                        <div className="shimmer h-4 w-3/4 bg-gray-700 rounded" />
+                        <div className="shimmer h-4 w-2/3 bg-gray-700 rounded" />
+                      </div>
+                    </div>
+                  );
+                }
+
                 return (
                   <WeekOverview
                     program={(() => {
@@ -716,7 +752,11 @@ export function ExerciseProgramPage({
                   {/* Week Tabs */}
                   <div className="mb-3 overflow-x-auto scrollbar-hide sticky top-0 z-10 bg-gray-900 pb-2">
                     <div className="flex space-x-2 min-w-max">
-                      {is4WeekProgram ? (
+                      {shimmer ? (
+                        Array.from({ length: 4 }).map((_, i) => (
+                          <div key={i} className="shimmer h-10 w-28 bg-gray-800/60 rounded-lg" />
+                        ))
+                      ) : is4WeekProgram ? (
                         // For multi-week programs, show all available weeks
                         (() => {
                           const totalWeeks =
@@ -1022,8 +1062,13 @@ export function ExerciseProgramPage({
                       {/* Day Tabs */}
                       <div className="overflow-x-auto scrollbar-hide mb-6">
                         <div className="flex space-x-2 min-w-max">
-                          {/* Sort days by day.day to ensure chronological order */}
-                          {[...selectedWeekData.days]
+                          {shimmer ? (
+                            Array.from({ length: 7 }).map((_, i) => (
+                              <div key={i} className="shimmer h-10 w-20 bg-gray-800/60 rounded-lg" />
+                            ))
+                          ) : (
+                          // Sort days by day.day to ensure chronological order
+                          ([...selectedWeekData.days]
                             .sort((a, b) => a.day - b.day)
                             .map((day) => (
                               <button
@@ -1049,28 +1094,39 @@ export function ExerciseProgramPage({
                                   </span>
                                 )}
                               </button>
-                            ))}
+                            )))
+                          )}
                         </div>
                       </div>
 
                       {/* Day Content */}
-                      {expandedDays.map((dayNumber) => {
+                      {(shimmer ? [1] : expandedDays).map((dayNumber) => {
                         const day = selectedWeekData.days.find(
                           (d) => d.day === dayNumber
                         );
-                        if (!day) return null;
+                        const placeholder: ProgramDay = {
+                          day: 1,
+                          description: '',
+                          exercises: [],
+                          isRestDay: false,
+                        } as any;
+                        const safeDay = shimmer ? placeholder : day;
+                        if (!safeDay) return null;
 
                         // Get the correct day index based on day.day, not array position
-                        const dayIndex = day.day - 1; // Subtract 1 since day.day is 1-based
+                        const dayIndex = (safeDay.day || 1) - 1; // Subtract 1 since day.day is 1-based
 
                         return (
                           <ProgramDaySummaryComponent
-                            key={day.day}
-                            day={day}
+                            key={safeDay.day}
+                            day={safeDay}
                             dayName={dayName(dayIndex + 1)}
-                            isHighlighted={day.day === 1} // This might need adjustment based on context
+                            isHighlighted={safeDay.day === 1}
+                            shimmer={shimmer}
+                            autoNavigateIfEmpty={false}
+                            autoNavigateOnShimmer={false}
                             onClick={() =>
-                              handleDayDetailClick(day, dayName(dayIndex + 1))
+                              handleDayDetailClick(safeDay, dayName(dayIndex + 1))
                             }
                           />
                         );
@@ -1088,34 +1144,40 @@ export function ExerciseProgramPage({
                       {/* Day Tabs */}
                       <div className="overflow-x-auto scrollbar-hide mb-6">
                         <div className="flex space-x-2 min-w-max">
-                          {/* Sort days by day.day to ensure chronological order */}
-                          {[...selectedWeekData.days]
-                            .sort((a, b) => a.day - b.day)
-                            .map((day) => (
-                              <button
-                                key={day.day}
-                                data-day={day.day}
-                                onClick={() => handleDayClick(day.day)}
-                                className={`px-6 py-3 rounded-lg font-medium transition-colors duration-200 flex flex-col items-center ${
-                                  expandedDays.includes(day.day)
-                                    ? 'bg-indigo-600 text-white'
-                                    : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white opacity-50'
-                                }`}
-                              >
-                                <span className="text-sm opacity-80 mb-1">
-                                  {getDayShortName(day.day, t)}
-                                </span>
-                                {day.isRestDay ? (
-                                  <span className="text-xs mt-1 opacity-80">
-                                    {t('exerciseProgram.day.rest')}
+                          {shimmer ? (
+                            Array.from({ length: 7 }).map((_, i) => (
+                              <div key={i} className="shimmer h-10 w-20 bg-gray-800/60 rounded-lg" />
+                            ))
+                          ) : (
+                            // Sort days by day.day to ensure chronological order
+                            ([...selectedWeekData.days]
+                              .sort((a, b) => a.day - b.day)
+                              .map((day) => (
+                                <button
+                                  key={day.day}
+                                  data-day={day.day}
+                                  onClick={() => handleDayClick(day.day)}
+                                  className={`px-6 py-3 rounded-lg font-medium transition-colors duration-200 flex flex-col items-center ${
+                                    expandedDays.includes(day.day)
+                                      ? 'bg-indigo-600 text-white'
+                                      : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white opacity-50'
+                                  }`}
+                                >
+                                  <span className="text-sm opacity-80 mb-1">
+                                    {getDayShortName(day.day, t)}
                                   </span>
-                                ) : (
-                                  <span className="text-xs mt-1 opacity-80">
-                                    {t('calendar.workout')}
-                                  </span>
-                                )}
-                              </button>
-                            ))}
+                                  {day.isRestDay ? (
+                                    <span className="text-xs mt-1 opacity-80">
+                                      {t('exerciseProgram.day.rest')}
+                                    </span>
+                                  ) : (
+                                    <span className="text-xs mt-1 opacity-80">
+                                      {t('calendar.workout')}
+                                    </span>
+                                  )}
+                                </button>
+                              )))
+                          )}
                         </div>
                       </div>
 
@@ -1135,6 +1197,9 @@ export function ExerciseProgramPage({
                             day={day}
                             dayName={dayName(dayIndex + 1)}
                             isHighlighted={day.day === 1} // This might need adjustment based on context
+                            shimmer={shimmer}
+                            autoNavigateIfEmpty={false}
+                            autoNavigateOnShimmer={false}
                             onClick={() =>
                               handleDayDetailClick(day, dayName(dayIndex + 1))
                             }

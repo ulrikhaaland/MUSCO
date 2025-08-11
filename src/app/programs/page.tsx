@@ -2,6 +2,7 @@
 
 import { useState, Suspense, useEffect, useRef } from 'react';
 import { useUser } from '@/app/context/UserContext';
+import { ProgramStatus } from '@/app/types/program';
 import { useAuth } from '@/app/context/AuthContext';
 import ConfirmationDialog from '@/app/components/ui/ConfirmationDialog';
 import { format } from 'date-fns';
@@ -10,7 +11,7 @@ import { useTranslation } from '@/app/i18n/TranslationContext';
 import { nb, enUS } from 'date-fns/locale';
 
 function ProgramsContent() {
-  const { userPrograms, isLoading, selectProgram, toggleActiveProgram, loadUserPrograms } =
+  const { userPrograms, isLoading, selectProgram, toggleActiveProgram, loadUserPrograms, programStatus } =
     useUser();
   const { deleteProgram } = useAuth();
   const router = useRouter();
@@ -369,6 +370,30 @@ function ProgramsContent() {
       {/* Scrollable program list */}
       <div className="flex-1 overflow-y-auto px-4 py-6">
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 pb-8">
+          {programStatus === ProgramStatus.Generating && (
+            <div className="relative bg-gray-800/50 rounded-xl overflow-hidden ring-1 ring-gray-700/50 p-5">
+              <div className="flex justify-between items-start mb-3">
+                <div className="shimmer h-5 w-40 bg-gray-700 rounded" />
+              </div>
+              <div className="border-t border-gray-700/50 my-3" />
+              <div className="grid grid-cols-3 gap-6 mb-4">
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <div key={i} className="text-center">
+                    <div className="shimmer h-6 w-8 mx-auto bg-gray-700 rounded mb-2" />
+                    <div className="shimmer h-3 w-16 mx-auto bg-gray-700 rounded" />
+                  </div>
+                ))}
+              </div>
+              <div className="shimmer h-4 w-1/2 bg-gray-700 rounded" />
+              <style jsx>{`
+                .shimmer { position: relative; overflow: hidden; }
+                .shimmer::after { position: absolute; inset: 0; transform: translateX(-100%);
+                  background-image: linear-gradient(90deg, rgba(255,255,255,0) 0, rgba(255,255,255,0.08) 20%, rgba(255,255,255,0.16) 60%, rgba(255,255,255,0) 100%);
+                  animation: shimmer 1.5s infinite; content: ''; }
+                @keyframes shimmer { 100% { transform: translateX(100%); } }
+              `}</style>
+            </div>
+          )}
           {filteredAndSortedPrograms.map((program, index) => {
             // Find the original index in userPrograms using docId for reliable identification
             const originalIndex = userPrograms.findIndex(

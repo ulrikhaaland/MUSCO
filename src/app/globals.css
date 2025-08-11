@@ -23,7 +23,8 @@ body {
   background-color: rgb(var(--background-rgb));
   color: rgb(var(--foreground-rgb));
   height: 100%;
-  overscroll-behavior-y: none;
+  /* Allow pull-to-refresh in browser mode */
+  overscroll-behavior-y: auto;
 }
 
 /* CSS variable used to subtract bottom sheet height from the viewer without reflow */
@@ -357,6 +358,11 @@ iframe {
 @media (display-mode: standalone) {
   body {
     background-color: #111827;
+  }
+  /* In standalone PWA, keep overscroll disabled to avoid rubber-band/bounce */
+  html,
+  body {
+    overscroll-behavior-y: none;
   }
 }
 

@@ -263,6 +263,13 @@ export default function LandingPage() {
     ? sortedPrograms
     : sortedPrograms.slice(0, 6);
 
+  const [showShimmer, setShowShimmer] = useState(true); // temp: enable shimmers while page loads
+
+  useEffect(() => {
+    const t = setTimeout(() => setShowShimmer(false), 1200);
+    return () => clearTimeout(t);
+  }, []);
+
   return (
     <div className="min-h-screen bg-[#0E1116]">
       {/* Top Nav (landing only) */}
@@ -335,17 +342,29 @@ export default function LandingPage() {
 
       {/* Hero */}
       <section className="mx-auto max-w-6xl px-6 pt-16 md:pt-24 pb-16 md:pb-24 min-h-[72vh] flex items-center">
-        <LandingHero
-          onSelect={(mode) => {
-            if (mode === 'diagnose') {
-              logAnalyticsEvent('hero_cta_click', { cta: 'diagnose' });
-              goAppWith(ProgramIntention.Recovery);
-            } else {
-              logAnalyticsEvent('hero_cta_click', { cta: 'workout' });
-              goAppWith(ProgramIntention.Exercise);
-            }
-          }}
-        />
+        {showShimmer ? (
+          <div className="w-full">
+            <div className="shimmer h-8 w-64 bg-gray-800/60 rounded mb-4" />
+            <div className="shimmer h-4 w-2/3 bg-gray-800/60 rounded mb-2" />
+            <div className="shimmer h-4 w-1/2 bg-gray-800/60 rounded mb-8" />
+            <div className="flex gap-3">
+              <div className="shimmer h-10 w-36 bg-gray-800/60 rounded" />
+              <div className="shimmer h-10 w-36 bg-gray-800/60 rounded" />
+            </div>
+          </div>
+        ) : (
+          <LandingHero
+            onSelect={(mode) => {
+              if (mode === 'diagnose') {
+                logAnalyticsEvent('hero_cta_click', { cta: 'diagnose' });
+                goAppWith(ProgramIntention.Recovery);
+              } else {
+                logAnalyticsEvent('hero_cta_click', { cta: 'workout' });
+                goAppWith(ProgramIntention.Exercise);
+              }
+            }}
+          />
+        )}
       </section>
 
       {/* How it works */}
@@ -389,64 +408,63 @@ export default function LandingPage() {
         <h2 className="text-white text-2xl font-semibold mb-4">
           {t('landing.programs.title')}
         </h2>
-        <div className="grid gap-6 md:gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 items-stretch">
-          {visiblePrograms.map(({ key, slug, img }) => (
-            <button
-              key={key}
-              className="group h-full text-left rounded-xl overflow-hidden bg-[#141922] ring-1 ring-white/12 shadow-lg hover:shadow-xl hover:translate-y-[-1px] transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              onClick={() => {
-                logAnalyticsEvent('program_card_open', { condition: key });
-                router.push(`/program/${slug}`);
-              }}
-            >
-              <div className="flex h-full items-stretch min-h-[88px]">
-                {/* Image pane hugging the left border, inherits rounded-l-xl */}
-                <div className="w-24 sm:w-28 md:w-32 xl:w-36 h-full bg-[#0E1116] border-r border-white/10 overflow-hidden">
-                  <img
-                    src={img}
-                    alt=""
-                    className="h-full w-full object-cover object-top"
-                  />
-                </div>
-                <div className="p-4 flex-1 flex flex-col justify-start">
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="text-white font-medium tracking-tight">
-                      {t(`landing.programs.${key}`)}
-                    </div>
-                    <svg
-                      className="mt-1 h-4 w-4 text-white/40 group-hover:text-white/70 transition-colors flex-shrink-0"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M9 18l6-6-6-6" />
-                    </svg>
-                  </div>
-                  <div className="text-[12px] text-white/75 mt-1">
-                    {programSummaries[slug] ||
-                      programSummaries[slug] ||
-                      programCards.find((p) => p.slug === slug)?.summary ||
-                      'Personalized plan with progressive weekly focus.'}
+        {showShimmer ? (
+          <div className="grid gap-6 md:gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 items-stretch">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="rounded-xl overflow-hidden bg-[#141922] ring-1 ring-white/12 shadow-lg p-4">
+                <div className="flex h-full items-stretch min-h-[88px]">
+                  <div className="w-24 sm:w-28 md:w-32 xl:w-36 h-full bg-[#0E1116] border-r border-white/10" />
+                  <div className="p-4 flex-1">
+                    <div className="shimmer h-4 w-40 bg-gray-800/60 rounded mb-2" />
+                    <div className="shimmer h-3 w-5/6 bg-gray-800/60 rounded" />
                   </div>
                 </div>
               </div>
-            </button>
-          ))}
-        </div>
-        {sortedPrograms.length > 6 && (
-          <div className="mt-4">
-            <button
-              onClick={() => setShowAllPrograms((v) => !v)}
-              className="px-5 py-3 bg-gray-800 text-white rounded-md hover:bg-gray-700"
-            >
-              {showAllPrograms ? t('program.seeLess') : t('program.seeMore')}
-            </button>
+            ))}
+          </div>
+        ) : (
+          <div className="grid gap-6 md:gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 items-stretch">
+            {visiblePrograms.map(({ key, slug, img }) => (
+              <button
+                key={key}
+                className="group h-full text-left rounded-xl overflow-hidden bg-[#141922] ring-1 ring-white/12 shadow-lg hover:shadow-xl hover:translate-y-[-1px] transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                onClick={() => {
+                  logAnalyticsEvent('program_card_open', { condition: key });
+                  router.push(`/program/${slug}`);
+                }}
+              >
+                <div className="flex h-full items-stretch min-h-[88px]">
+                  <div className="w-24 sm:w-28 md:w-32 xl:w-36 h-full bg-[#0E1116] border-r border-white/10 overflow-hidden">
+                    <img src={img} alt="" className="h-full w-full object-cover object-top" />
+                  </div>
+                  <div className="p-4 flex-1 flex flex-col justify-start">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="text-white font-medium tracking-tight">
+                        {t(`landing.programs.${key}`)}
+                      </div>
+                      <svg className="mt-1 h-4 w-4 text-white/40 group-hover:text-white/70 transition-colors flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M9 18l6-6-6-6" />
+                      </svg>
+                    </div>
+                    <div className="text-[12px] text-white/75 mt-1">
+                      {programSummaries[slug] || programCards.find((p) => p.slug === slug)?.summary || 'Personalized plan with progressive weekly focus.'}
+                    </div>
+                  </div>
+                </div>
+              </button>
+            ))}
           </div>
         )}
       </section>
+
+      <style jsx>{`
+        .shimmer { position: relative; overflow: hidden; }
+        .shimmer::after {
+          position: absolute; inset: 0; transform: translateX(-100%);
+          background-image: linear-gradient(90deg, rgba(255,255,255,0) 0, rgba(255,255,255,0.08) 20%, rgba(255,255,255,0.16) 60%, rgba(255,255,255,0) 100%);
+          animation: shimmer 1.5s infinite; content: ''; }
+        @keyframes shimmer { 100% { transform: translateX(100%); } }
+      `}</style>
 
       {/* Why it works */}
       <section ref={whyRef} className="mx-auto max-w-6xl px-6 py-16 md:py-24">

@@ -11,33 +11,16 @@ export default function LandingHero({ onSelect }: { onSelect: (m: ViewerMode) =>
   const { t } = useTranslation();
   const containerRef = useRef<HTMLDivElement | null>(null)
   const [offset, setOffset] = useState({ x: 0, y: 0 })
-  const [bp, setBp] = useState<'mobile'|'tablet'|'desktop'>(() => {
-    if (typeof window === 'undefined') return 'desktop'
-    const w = window.innerWidth
-    if (w >= 1024) return 'desktop'
-    if (w >= 768) return 'tablet'
-    return 'mobile'
-  })
+  const [isMounted, setIsMounted] = useState(false)
   const prefersReducedMotion = useMemo(() => (
-    typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  ), [])
+    isMounted && typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  ), [isMounted])
   const isCoarsePointer = useMemo(() => (
-    typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches
-  ), [])
-
-  const imgBase = bp === 'mobile' ? '/landingpage/mobile' : '/landingpage/desktop'
-  const path = (name: string) => `${imgBase}/${name}.png`
+    isMounted && typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches
+  ), [isMounted])
 
   useEffect(() => {
-    if (typeof window === 'undefined') return
-    const onResize = () => {
-      const w = window.innerWidth
-      const next: 'mobile'|'tablet'|'desktop' = w >= 1024 ? 'desktop' : w >= 768 ? 'tablet' : 'mobile'
-      setBp(next)
-    }
-    onResize()
-    window.addEventListener('resize', onResize)
-    return () => window.removeEventListener('resize', onResize)
+    setIsMounted(true)
   }, [])
 
   // subtle parallax (disabled on reduced-motion and coarse pointers)
@@ -56,11 +39,27 @@ export default function LandingHero({ onSelect }: { onSelect: (m: ViewerMode) =>
 
   // analytics: hero surface view + cta impressions
   useEffect(() => {
+    if (!isMounted || typeof window === 'undefined') return
+    const w = window.innerWidth
+    const viewport: 'mobile' | 'tablet' | 'desktop' = w >= 1024 ? 'desktop' : w >= 768 ? 'tablet' : 'mobile'
     const surfaces = 3
-    logAnalyticsEvent('hero_surface_view', { surfaces, breakpoint: bp })
-    logAnalyticsEvent('cta_impression', { cta: 'diagnose', viewport: bp })
-    logAnalyticsEvent('cta_impression', { cta: 'workout', viewport: bp })
-  }, [bp])
+    logAnalyticsEvent('hero_surface_view', { surfaces, breakpoint: viewport })
+    logAnalyticsEvent('cta_impression', { cta: 'diagnose', viewport })
+    logAnalyticsEvent('cta_impression', { cta: 'workout', viewport })
+  }, [isMounted])
+
+  const ResponsiveHeroImage = ({ name, alt }: { name: string; alt: string }) => (
+    <picture>
+      <source media="(min-width: 768px)" srcSet={`/landingpage/desktop/${name}.png`} />
+      <img
+        src={`/landingpage/mobile/${name}.png`}
+        alt={alt}
+        className="absolute inset-0 h-full w-full object-cover"
+        loading="eager"
+        decoding="async"
+      />
+    </picture>
+  )
 
   return (
     <div className="w-full">
@@ -123,13 +122,7 @@ export default function LandingHero({ onSelect }: { onSelect: (m: ViewerMode) =>
                 borderColor: 'rgba(255,255,255,0.12)'
               }}
             >
-              <img
-                src={path('select_area')}
-                alt={t('landing.hero.alt.select')}
-                className="absolute inset-0 h-full w-full object-cover"
-                loading="eager"
-                decoding="async"
-              />
+              <ResponsiveHeroImage name="select_area" alt={t('landing.hero.alt.select')} />
             </div>
 
             {/* Middle surface: Answer questions */}
@@ -140,13 +133,7 @@ export default function LandingHero({ onSelect }: { onSelect: (m: ViewerMode) =>
                 borderColor: 'rgba(255,255,255,0.12)'
               }}
             >
-              <img
-                src={path('answer_questions')}
-                alt={t('landing.hero.alt.chat')}
-                className="absolute inset-0 h-full w-full object-cover"
-                loading="eager"
-                decoding="async"
-              />
+              <ResponsiveHeroImage name="answer_questions" alt={t('landing.hero.alt.chat')} />
             </div>
 
             {/* Front surface: Your plan */}
@@ -157,13 +144,7 @@ export default function LandingHero({ onSelect }: { onSelect: (m: ViewerMode) =>
                 borderColor: 'rgba(255,255,255,0.14)'
               }}
             >
-              <img
-                src={path('your_plan')}
-                alt={t('landing.hero.alt.plan')}
-                className="absolute inset-0 h-full w-full object-cover"
-                loading="eager"
-                decoding="async"
-              />
+              <ResponsiveHeroImage name="your_plan" alt={t('landing.hero.alt.plan')} />
             </div>
 
             {/* Mobile caption */}
