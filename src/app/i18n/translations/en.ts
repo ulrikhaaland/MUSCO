@@ -1101,7 +1101,36 @@ const translations = {
   'landing.faq.q2': 'Is this safe if I have pain?',
   'landing.faq.a2': 'We screen for red flags and advise caution. For medical concerns, see a clinician.',
 
-  'landing.footer.openApp': 'Open app'
+  'landing.footer.openApp': 'Open app',
+  
+  // Subscribe page
+  'subscribe.title': 'Unlock Weekly, Personalized Programs',
+  'subscribe.subtitle': 'AI‑guided recovery and training, adapted to your feedback, available in English and Norwegian.',
+  'subscribe.premium.heading': 'Everything in BodAI Premium',
+  'subscribe.premium.benefit.weeklyFollowUp': 'Weekly follow‑up program tailored from your feedback',
+  'subscribe.premium.benefit.library': 'Full exercise library with clear videos and modifications',
+  'subscribe.premium.benefit.evidence': 'Evidence‑based recovery + strength programming',
+  'subscribe.premium.benefit.calendar': 'Calendar & progress tracking across weeks',
+  'subscribe.premium.benefit.multiLang': 'Multi‑language: English & Norwegian',
+  'subscribe.premium.benefit.priority': 'Priority model access for faster responses',
+  'subscribe.free.limits': 'Free plan limits: follow‑up program generation is locked, and chat/model interactions are limited. Upgrade to remove limits.',
+  'subscribe.plan.monthly': 'Monthly',
+  'subscribe.plan.annual': 'Annual',
+  'subscribe.plan.founder': 'Founder Plan',
+  'subscribe.plan.founderDesc': 'Internal subscription',
+  'subscribe.price.monthly': 'NOK 99 / month',
+  'subscribe.price.annual': 'NOK 899 / year',
+  'subscribe.button.choose': 'Choose',
+  'subscribe.button.redirecting': 'Redirecting…',
+  'subscribe.footer.note': 'Secure checkout by Stripe. Cancel anytime from your account.',
+  // Subscribe success
+  'subscribe.success.title': 'Thanks for subscribing!',
+  'subscribe.success.finalizing': 'Finalizing your subscription…',
+  'subscribe.success.activating': 'Activating your subscription…',
+  'subscribe.success.usuallySeconds': 'This usually takes a few seconds',
+  'subscribe.success.active': 'Subscription active',
+  'subscribe.success.openingFeedback': 'Opening feedback…',
+  'subscribe.success.recordedLoading': 'Subscription recorded, loading your account…'
 };
 
 export default translations;

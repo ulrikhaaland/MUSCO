@@ -3,11 +3,13 @@
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/app/context/AuthContext';
 import { useState } from 'react';
+import { useTranslation } from '@/app/i18n/TranslationContext';
 
 export default function SubscribePage() {
   const { user } = useAuth();
   const router = useRouter();
   const [loadingPlan, setLoadingPlan] = useState<'monthly' | 'annual' | 'ulrik' | null>(null);
+  const { t } = useTranslation();
 
   const startCheckout = async (plan: 'monthly' | 'annual' | 'ulrik') => {
     if (!user?.uid) {
@@ -49,35 +51,35 @@ export default function SubscribePage() {
       <div className="mx-auto max-w-5xl">
         {/* Hero */}
         <div className="text-center mb-10">
-          <h1 className="text-3xl md:text-4xl font-semibold">Unlock Weekly, Personalized Programs</h1>
-          <p className="text-gray-300 mt-3">AI‑guided recovery and training, adapted to your feedback, available in English and Norwegian.</p>
+          <h1 className="text-3xl md:text-4xl font-semibold">{t('subscribe.title')}</h1>
+          <p className="text-gray-300 mt-3">{t('subscribe.subtitle')}</p>
         </div>
 
         <div className="grid md:grid-cols-5 gap-6 items-start">
           {/* Benefits */}
           <div className="md:col-span-3 bg-gray-800/60 rounded-2xl ring-1 ring-gray-700/50 p-6">
-            <h2 className="text-xl font-medium mb-4">Everything in BodAI Premium</h2>
+            <h2 className="text-xl font-medium mb-4">{t('subscribe.premium.heading')}</h2>
             <ul className="space-y-3 text-gray-200">
               {[
-                'Weekly follow‑up program tailored from your feedback',
-                'Full exercise library with clear videos and modifications',
-                'Evidence‑based recovery + strength programming',
-                'Calendar & progress tracking across weeks',
-                'Multi‑language: English & Norwegian',
-                'Priority model access for faster responses',
-              ].map((item) => (
-                <li key={item} className="flex items-start gap-3">
+                'subscribe.premium.benefit.weeklyFollowUp',
+                'subscribe.premium.benefit.library',
+                'subscribe.premium.benefit.evidence',
+                'subscribe.premium.benefit.calendar',
+                'subscribe.premium.benefit.multiLang',
+                'subscribe.premium.benefit.priority',
+              ].map((key) => (
+                <li key={key} className="flex items-start gap-3">
                   <svg className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
                   </svg>
-                  <span>{item}</span>
+                  <span>{t(key)}</span>
                 </li>
               ))}
             </ul>
 
             <div className="mt-6 text-sm text-gray-400">
               <p>
-                Free plan limits: follow‑up program generation is locked, and chat/model interactions are limited. Upgrade to remove limits.
+                {t('subscribe.free.limits')}
               </p>
             </div>
           </div>
@@ -87,15 +89,15 @@ export default function SubscribePage() {
             <div className="bg-gray-800/60 rounded-2xl ring-1 ring-gray-700/50 p-6">
               <div className="flex items-baseline justify-between">
                 <div>
-                  <div className="text-lg font-medium">Monthly</div>
-                  <div className="text-gray-300">NOK 99 / month</div>
+                  <div className="text-lg font-medium">{t('subscribe.plan.monthly')}</div>
+                  <div className="text-gray-300">{t('subscribe.price.monthly')}</div>
                 </div>
                 <button
                   onClick={() => startCheckout('monthly')}
                   disabled={loadingPlan !== null}
                   className="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50"
                 >
-                  {loadingPlan === 'monthly' ? 'Redirecting…' : 'Choose'}
+                  {loadingPlan === 'monthly' ? t('subscribe.button.redirecting') : t('subscribe.button.choose')}
                 </button>
               </div>
             </div>
@@ -103,15 +105,15 @@ export default function SubscribePage() {
             <div className="bg-gray-800/60 rounded-2xl ring-1 ring-gray-700/50 p-6">
               <div className="flex items-baseline justify-between">
                 <div>
-                  <div className="text-lg font-medium">Annual</div>
-                  <div className="text-gray-300">NOK 899 / year</div>
+                  <div className="text-lg font-medium">{t('subscribe.plan.annual')}</div>
+                  <div className="text-gray-300">{t('subscribe.price.annual')}</div>
                 </div>
                 <button
                   onClick={() => startCheckout('annual')}
                   disabled={loadingPlan !== null}
                   className="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50"
                 >
-                  {loadingPlan === 'annual' ? 'Redirecting…' : 'Choose'}
+                  {loadingPlan === 'annual' ? t('subscribe.button.redirecting') : t('subscribe.button.choose')}
                 </button>
               </div>
             </div>
@@ -120,21 +122,21 @@ export default function SubscribePage() {
               <div className="bg-amber-900/50 rounded-2xl ring-1 ring-amber-700/50 p-6">
                 <div className="flex items-baseline justify-between">
                   <div>
-                    <div className="text-lg font-medium">Founder Plan</div>
-                    <div className="text-gray-300">Internal subscription</div>
+                    <div className="text-lg font-medium">{t('subscribe.plan.founder')}</div>
+                    <div className="text-gray-300">{t('subscribe.plan.founderDesc')}</div>
                   </div>
                   <button
                     onClick={() => startCheckout('ulrik')}
                     disabled={loadingPlan !== null}
                     className="px-4 py-2 rounded-lg bg-amber-600 hover:bg-amber-500 disabled:opacity-50"
                   >
-                    {loadingPlan === 'ulrik' ? 'Redirecting…' : 'Choose'}
+                    {loadingPlan === 'ulrik' ? t('subscribe.button.redirecting') : t('subscribe.button.choose')}
                   </button>
                 </div>
               </div>
             )}
 
-            <div className="text-xs text-gray-500">Secure checkout by Stripe. Cancel anytime from your account.</div>
+            <div className="text-xs text-gray-500">{t('subscribe.footer.note')}</div>
           </div>
         </div>
       </div>

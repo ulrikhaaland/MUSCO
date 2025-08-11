@@ -1184,7 +1184,37 @@ const translations = {
   'landing.faq.q2': 'Er dette trygt hvis jeg har smerter?',
   'landing.faq.a2': 'Vi screener for røde flagg og råder til forsiktighet. Oppsøk kliniker ved behov.',
 
-  'landing.footer.openApp': 'Åpne app'
+  'landing.footer.openApp': 'Åpne app',
+
+  // Subscribe page
+  'subscribe.title': 'Lås opp ukentlige, personlige programmer',
+  'subscribe.subtitle': 'AI‑styrt restitusjon og trening, tilpasset din tilbakemelding, tilgjengelig på norsk og engelsk.',
+  'subscribe.premium.heading': 'Alt i BodAI Premium',
+  'subscribe.premium.benefit.weeklyFollowUp': 'Ukentlig oppfølgingsprogram tilpasset fra din tilbakemelding',
+  'subscribe.premium.benefit.library': 'Full øvelsesbank med tydelige videoer og modifikasjoner',
+  'subscribe.premium.benefit.evidence': 'Evidensbasert restitusjon + styrkeprogrammering',
+  'subscribe.premium.benefit.calendar': 'Kalender og fremdriftssporing på tvers av uker',
+  'subscribe.premium.benefit.multiLang': 'Flerspråklig: Norsk & Engelsk',
+  'subscribe.premium.benefit.priority': 'Prioritert modelltilgang for raskere svar',
+  'subscribe.free.limits': 'Gratisplan: generering av oppfølgingsprogram er låst, og chat/modellinteraksjoner er begrenset. Oppgrader for å fjerne begrensninger.',
+  'subscribe.plan.monthly': 'Månedlig',
+  'subscribe.plan.annual': 'Årlig',
+  'subscribe.plan.founder': 'Grunnleggerplan',
+  'subscribe.plan.founderDesc': 'Internt abonnement',
+  'subscribe.price.monthly': '99 kr / mnd',
+  'subscribe.price.annual': '899 kr / år',
+  'subscribe.button.choose': 'Velg',
+  'subscribe.button.redirecting': 'Videresender…',
+  'subscribe.footer.note': 'Sikker betaling via Stripe. Kan avsluttes når som helst fra kontoen din.',
+
+  // Subscribe success
+  'subscribe.success.title': 'Takk for at du abonnerer!',
+  'subscribe.success.finalizing': 'Fullfører abonnementet ditt…',
+  'subscribe.success.activating': 'Aktiverer abonnementet ditt…',
+  'subscribe.success.usuallySeconds': 'Dette tar vanligvis noen sekunder',
+  'subscribe.success.active': 'Abonnement aktivt',
+  'subscribe.success.openingFeedback': 'Åpner tilbakemelding…',
+  'subscribe.success.recordedLoading': 'Abonnement registrert, laster kontoen din…'
 };
 
 export default translations;

@@ -83,11 +83,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 doc(db, 'users', firebaseUser.uid),
                 (snapshot) => {
                   const data = snapshot.exists() ? (snapshot.data() as any) : null;
-                  console.log('auth_profile_snapshot', {
-                    isSubscriber: data?.isSubscriber,
-                    status: data?.subscriptionStatus,
-                    periodEnd: data?.currentPeriodEnd,
-                  });
                   setUser((prev) => (prev ? { ...prev, profile: data || prev.profile } as ExtendedUser : prev));
                 }
               );
