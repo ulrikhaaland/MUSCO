@@ -89,29 +89,29 @@ function ProgramViewShimmer() {
 
         {/* Week tabs shimmer */}
         <div className="mb-3 overflow-x-auto scrollbar-hide sticky top-0 z-10 bg-gray-900 pb-2">
-          <div className="flex space-x-2 min-w-max">
+          <div className="flex space-x-2 min-w-max max-w-full">
             {[0,1].map((i) => (
               <div
                 key={i}
                 className="px-6 py-3 rounded-lg bg-gray-800/50 text-gray-400 relative shrink-0"
               >
-                <div className="shimmer h-4 w-20 sm:w-24 md:w-28 bg-gray-700 rounded" />
-                <span className="block mt-1 shimmer h-3 w-24 sm:w-28 md:w-32 bg-gray-700/70 rounded" />
+                <div className="shimmer h-4 w-24 sm:w-24 md:w-28 max-w-[38vw] bg-gray-700 rounded" />
+                <span className="block mt-1 shimmer h-3 w-28 sm:w-28 md:w-32 max-w-[45vw] bg-gray-700/70 rounded" />
               </div>
             ))}
           </div>
         </div>
 
-        {/* Day tabs shimmer */}
+        {/* Day tabs shimmer → static placeholders like Vercel (no animated sweep) */}
         <div className="overflow-x-auto scrollbar-hide mb-6">
-          <div className="flex space-x-2 min-w-max">
-            {Array.from({ length: 7 }).map((_, i) => (
+          <div className="flex space-x-2 min-w-max max-w-full">
+            {['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map((label, i) => (
               <div
                 key={i}
-                className={`px-6 py-3 rounded-lg bg-gray-800/60 text-gray-400 flex flex-col items-center shrink-0`}
+                className={`px-4 sm:px-6 py-3 rounded-lg bg-gray-800/60 text-gray-400 flex flex-col items-center shrink-0`}
               >
-                <span className="shimmer h-3 w-10 sm:w-12 bg-gray-700 rounded mb-1" />
-                <span className="shimmer h-3 w-14 sm:w-16 bg-gray-700/70 rounded" />
+                <span className="text-xs opacity-80 mb-1">{label}</span>
+                <span className="text-xs opacity-70">{label === 'Tue' ? 'Workout' : 'Rest'}</span>
               </div>
             ))}
           </div>
@@ -643,7 +643,7 @@ export function ExerciseProgramPage({
 
   return (
     <div
-      className={`bg-gray-900 flex flex-col min-h-screen text-white ${
+      className={`bg-gray-900 flex flex-col min-h-screen text-white overflow-x-hidden ${
         isLoading ? 'items-center justify-center' : ''
       }`}
     >
