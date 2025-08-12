@@ -8,12 +8,16 @@ function toProgramType(param?: string | null): ProgramType {
   return v === 'recovery' ? ProgramType.Recovery : ProgramType.Exercise;
 }
 
-export default function QuestionnairePage({
+export default async function QuestionnairePage({
   searchParams,
 }: {
-  searchParams: { type?: string };
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  const programType = toProgramType(searchParams?.type);
+  const params = await searchParams;
+  const typeParam = Array.isArray(params?.type)
+    ? params?.type?.[0]
+    : (params?.type as string | undefined);
+  const programType = toProgramType(typeParam);
   return (
     <Suspense fallback={null}>
       <QuestionnaireClient programType={programType} />
