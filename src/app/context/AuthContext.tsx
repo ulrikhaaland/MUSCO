@@ -1,22 +1,17 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState, useRef } from 'react';
-import { User, signOut, onAuthStateChanged, deleteUser } from 'firebase/auth';
+import { signOut, onAuthStateChanged, deleteUser } from 'firebase/auth';
 import { auth, db, functions } from '../firebase/config';
 import { doc, setDoc, getDoc, deleteDoc, onSnapshot } from 'firebase/firestore';
 import { useClientUrl } from '../hooks/useClientUrl';
 import { useRouter } from 'next/navigation';
-import {
-  getPendingQuestionnaire,
-  deletePendingQuestionnaire,
-  submitQuestionnaire,
-} from '../services/questionnaire';
+// removed unused questionnaire imports
 import { ExtendedUser, UserProfile } from '../types/user';
 import { ExerciseProgram } from '../types/program';
 import { toast } from '../components/ui/ToastProvider';
 import { httpsCallable } from 'firebase/functions';
 import { useTranslation } from '../i18n';
-import { useLoader } from './LoaderContext';
 import { logAnalyticsEvent } from '../utils/analytics';
 
 interface AuthContextType {
@@ -38,14 +33,13 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const { href, isReady } = useClientUrl();
+  const { isReady } = useClientUrl();
   const router = useRouter();
   const { locale, t } = useTranslation();
-  const { setIsLoading: showGlobalLoader, hideLoader } = useLoader();
   const [user, setUser] = useState<ExtendedUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [errorMessage] = useState<string | null>(null);
   const handledEmailLink = useRef(false);
   const profileUnsubscribeRef = useRef<null | (() => void)>(null);
 
@@ -54,7 +48,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (!isReady || handledEmailLink.current) return;
 
     console.log('Setting up auth state listener...');
-    showGlobalLoader(true, t('auth.checkingLoginStatus'));
 
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       try {
@@ -94,13 +87,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             setUser(firebaseUser as ExtendedUser); // Set user even if profile fetch fails
           }
           setLoading(false); // Auth loading complete for logged-in user
-          // Global loader hiding for logged-in user based on path (existing logic)
-          if (
-            window.location.pathname !== '/' &&
-            window.location.pathname !== '/program'
-          ) {
-            showGlobalLoader(false);
-          }
+          // no-op: global loader removed
         } else {
           // No user is signed in
           setUser(null);
@@ -108,7 +95,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           profileUnsubscribeRef.current?.();
           profileUnsubscribeRef.current = null;
           setLoading(false); // Auth context loading is done
-          showGlobalLoader(false); // Auth process is complete, hide global loader
 
           // If not logged in, and not already on the home page, redirect to home.
           // But skip if we're in the middle of an account deletion flow
@@ -133,7 +119,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           false
         );
         setLoading(false);
-        showGlobalLoader(false);
       }
     });
 
@@ -142,13 +127,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const safetyTimer = setTimeout(() => {
       console.log('Auth loading safety timeout triggered');
       setLoading(false);
-      showGlobalLoader(false);
+      
     }, 10000); // 10 seconds max loading time
 
     return () => {
       unsubscribe();
       clearTimeout(safetyTimer);
-      showGlobalLoader(false);
       profileUnsubscribeRef.current?.();
       profileUnsubscribeRef.current = null;
     };
@@ -509,8 +493,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       // Mark the body as logging out to prevent issues
       document.body.classList.add('logging-out');
-
-      showGlobalLoader(true, t('authContext.signingYouOut'));
       await signOut(auth);
       logAnalyticsEvent('logout');
       setUser(null); // Optimistically set user to null
@@ -518,9 +500,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // Clear authentication related localStorage items
       window.localStorage.removeItem('emailForSignIn');
       window.localStorage.removeItem('codeRequestTimestamp');
-
-      // Hide loader before navigation
-      hideLoader();
 
       // Add a small delay before navigation to ensure loader state is updated
       setTimeout(() => {
@@ -530,21 +509,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       // Safety timeout to ensure loader is hidden even if navigation fails
       setTimeout(() => {
-        hideLoader();
         document.body.classList.remove('logging-out');
       }, 1000);
     } catch (error) {
       console.error('Error signing out:', error);
-      hideLoader();
       document.body.classList.remove('logging-out');
       return handleAuthError(error, t('authContext.failedToSignOut'), false);
     }
   };
 
-  // Show loading state while waiting for initialization
-  if (!isReady) {
-    return <>{children}</>;
-  }
+  // Always provide context so global loaders can read loading state immediately
 
   return (
     <AuthContext.Provider

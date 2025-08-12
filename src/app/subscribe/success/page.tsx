@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/app/context/AuthContext';
-import { useLoader } from '@/app/context/LoaderContext';
 import { db } from '@/app/firebase/config';
 import { doc, getDoc } from 'firebase/firestore';
 import { useTranslation } from '@/app/i18n/TranslationContext';
@@ -13,19 +12,13 @@ export default function SubscribeSuccessPage() {
   const { user, loading } = useAuth();
   const { t } = useTranslation();
   const [statusText, setStatusText] = useState(t('subscribe.success.finalizing'));
-  const { setIsLoading } = useLoader();
 
   useEffect(() => {
     // Wait for auth to settle before deciding anything
     if (loading) return;
     if (!user?.uid) return; // don't kick to login; let user arrive after redirect
 
-    // Show global loader while we finalize subscription
-    setIsLoading(
-      true,
-      t('subscribe.success.activating'),
-      t('subscribe.success.usuallySeconds')
-    );
+    // Local inline loading only (global loader removed)
 
     let cancelled = false;
     let attempts = 0;
@@ -40,11 +33,7 @@ export default function SubscribeSuccessPage() {
           data?.subscriptionStatus === 'active' ||
           data?.subscriptionStatus === 'trialing';
         if (active && !cancelled) {
-          setIsLoading(
-            true,
-            t('subscribe.success.active'),
-            t('subscribe.success.openingFeedback')
-          );
+          // Keep local loading; navigate to feedback
           router.replace('/program/feedback');
           return;
         }
@@ -64,9 +53,8 @@ export default function SubscribeSuccessPage() {
     return () => {
       cancelled = true;
       clearTimeout(timeoutId);
-      setIsLoading(false);
     };
-  }, [user, loading, router, setIsLoading, t]);
+  }, [user, loading, router, t]);
 
   return (
     <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center p-6">

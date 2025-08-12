@@ -33,7 +33,6 @@ import {
 import { updateActiveProgramStatus } from '@/app/services/program';
 import { useRouter, usePathname } from 'next/navigation';
 import { enrichExercisesWithFullData } from '@/app/services/exerciseProgramService';
-import { useLoader } from './LoaderContext';
 import { useTranslation } from '@/app/i18n/TranslationContext';
 import { logAnalyticsEvent } from '../utils/analytics';
 
@@ -43,7 +42,7 @@ import {
   clearRecoveryProgramFromSession,
   hasRecoveryProgramInSession,
   getRecoveryProgramFromSession,
-  extractRecoveryProgramSlug 
+  
 } from '../services/recoveryProgramService';
 
 
@@ -92,7 +91,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
-  const { setIsLoading: showGlobalLoader } = useLoader();
+  // Global loader removed
   const { t, locale } = useTranslation();
   const isNorwegian = locale === 'nb';
 
@@ -150,7 +149,6 @@ export function UserProvider({ children }: { children: ReactNode }) {
       if (!sessionData) {
         console.error('Recovery program not found for slug:', slug);
         setIsLoading(false);
-        showGlobalLoader(false);
         return;
       }
 
@@ -159,11 +157,9 @@ export function UserProvider({ children }: { children: ReactNode }) {
       
       setProgramStatus(ProgramStatus.Done);
       setIsLoading(false);
-      showGlobalLoader(false);
     } catch (error) {
       console.error('Error loading recovery program:', error);
       setIsLoading(false);
-      showGlobalLoader(false);
     }
   };
 
@@ -175,7 +171,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
       // Skip if it's a system path like 'day' or 'calendar'
       if (slug && !['day', 'calendar'].includes(slug.split('/')[0])) {
         if (isRecoveryProgramSlug(slug)) {
-          showGlobalLoader(true, t('program.loadingData'));
+          // loader removed
           setRecoveryProgram(slug);
           return;
         }
@@ -204,7 +200,6 @@ export function UserProvider({ children }: { children: ReactNode }) {
         prepareAndSetProgram(userProgram);
         setProgramStatus(ProgramStatus.Done);
         setIsLoading(false);
-        showGlobalLoader(false);
         return;
       } catch (error) {
         console.error('Error restoring recovery program from session:', error);
@@ -216,7 +211,6 @@ export function UserProvider({ children }: { children: ReactNode }) {
     // but user programs useEffect is blocked, we need to ensure loading states are handled
     if (pathname === '/login') {
       setIsLoading(false);
-      showGlobalLoader(false);
     }
   }, [pathname, isNorwegian, t]);
 
@@ -278,8 +272,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
     let unsubscribe: (() => void) | null = null; // Initialize unsubscribe
 
     if (isUserAuthenticated && userId) { // Use derived values
-      showGlobalLoader(true, t('program.loadingData'));
-      // Show loader when starting to fetch data
+      // loader removed
 
       // Listen to all user programs
       const programsRef = collection(db, `users/${userId}/programs`); // Use derived userId
@@ -301,8 +294,6 @@ export function UserProvider({ children }: { children: ReactNode }) {
         // If a program is being generated, set status and redirect to program page
         if (hasGeneratingProgram) {
           setProgramStatus(ProgramStatus.Generating);
-          // Force-show loader during this handoff so user sees progress
-          showGlobalLoader(true, t('program.creating'), t('program.waitMessage'));
           // Only navigate to program page if we're not already there
           if (
             typeof window !== 'undefined' &&
@@ -458,14 +449,12 @@ export function UserProvider({ children }: { children: ReactNode }) {
           // 250 ms delay to ensure the program is loaded
           setTimeout(() => {
             setIsLoading(false);
-            showGlobalLoader(false);
           }, 500);
         } else {
           // No active or most recent (status 'Done') program found.
           // This covers cases like: user has no programs, or programs exist but none are active/Done.
           // Ensure loaders are turned off as the initial loading/processing is complete.
           setIsLoading(false);
-          showGlobalLoader(false);
         }
 
         // Set the program status if we found one
@@ -495,7 +484,6 @@ export function UserProvider({ children }: { children: ReactNode }) {
       setActiveProgram(null);
       setProgramStatus(null);
       setIsLoading(false);
-      showGlobalLoader(false); // Hide loader when user is logged out
     }
 
     // Cleanup function
@@ -503,7 +491,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
       if (unsubscribe) {
         unsubscribe(); // Call the unsubscribe function if it exists
       }
-      showGlobalLoader(false); // Ensure loader is hidden when component unmounts
+      // loader removed
     };
   }, [userId, isUserAuthenticated, authLoading, isNorwegian]);
 
@@ -619,8 +607,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
       // Set program status to generating after clearing program state
       setProgramStatus(ProgramStatus.Generating);
 
-      // Ensure loader is visible immediately during redirect/suspense gap
-      showGlobalLoader(true, t('program.creating'), t('program.waitMessage'));
+      // loader removed
 
       // Clear pending questionnaire data to prevent duplicate submissions
       window.localStorage.removeItem('hasPendingQuestionnaire');
@@ -724,8 +711,6 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const selectProgram = (index: number) => {
     console.log('👆 selectProgram called with index:', index, '- selecting:', userPrograms[index]?.title);
 
-    showGlobalLoader(true, t('userContext.loading.program'));
-
     // If user has program already, select it
     if (userPrograms && userPrograms.length > index && userPrograms[index]) {
       const selectedProgram = userPrograms[index];
@@ -752,7 +737,6 @@ export function UserProvider({ children }: { children: ReactNode }) {
     } else {
       console.error('❌ Invalid index or no programs available:', { index, userProgramsLength: userPrograms?.length });
     }
-    showGlobalLoader(false);
   };
 
   // Toggle the active status of a program (optimistic UI, then Firestore)
@@ -805,8 +789,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
   const generateFollowUpProgram = async () => {
     setProgramStatus(ProgramStatus.Generating);
-    // Show loader immediately to avoid any blank state before ProgramPage mounts
-    showGlobalLoader(true, t('program.creating'), t('program.waitMessage'));
+    // loader removed
     logAnalyticsEvent('generate_follow_up');
     router.push('/program');
   };
@@ -814,7 +797,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const loadUserPrograms = async () => {
     if (!userId || !isUserAuthenticated) return;
     
-    showGlobalLoader(true, t('program.loadingData'));
+    // loader removed
     
     try {
       const programsRef = collection(db, `users/${userId}/programs`);
@@ -906,7 +889,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
     } catch (error) {
       console.error('Error loading user programs:', error);
     } finally {
-      showGlobalLoader(false);
+      // loader removed
     }
   };
 

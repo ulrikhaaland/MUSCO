@@ -703,10 +703,7 @@ const translations = {
   'program.cardioType.cycling': 'Sykling',
   'program.cardioType.rowing': 'Roing',
 
-  // Program - Cardio Environments
-  'program.cardioEnvironment.outside': 'Utendørs',
-  'program.cardioEnvironment.inside': 'Innendørs',
-  'program.cardioEnvironment.both': 'Begge',
+  // Program - Cardio Environments (removed environment chips usage)
 
   // Program Feedback Questionnaire
   'programFeedback.alert.cannotReplaceAdded':

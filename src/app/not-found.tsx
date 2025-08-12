@@ -2,14 +2,12 @@
 
 import { Suspense, useEffect, useState } from 'react';
 import Link from 'next/link';
-import { useLoader } from './context/LoaderContext';
 import { useSearchParams } from 'next/navigation';
 
 // Create a separate component that doesn't use any client hooks directly
 function NotFoundContent() {
   const searchParams = useSearchParams();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const { setIsLoading } = useLoader();
   
   useEffect(() => {
     // Check for error message in URL parameters
@@ -22,10 +20,7 @@ function NotFoundContent() {
         setErrorMessage(error);
       }
     }
-    
-    // Hide loader once content is ready
-    setIsLoading(false);
-  }, [searchParams, setIsLoading]);
+  }, [searchParams]);
 
   return (
     <div className="fixed inset-0 bg-gray-900 flex items-center justify-center">
@@ -60,12 +55,9 @@ function NotFoundContent() {
 
 // Main component that wraps content with suspense
 export default function NotFound() {
-  const { setIsLoading } = useLoader();
-  
   useEffect(() => {
-    // Show loader while content is loading
-    setIsLoading(true, 'Loading');
-  }, [setIsLoading]);
+    // Global loader removed
+  }, []);
   
   return (
     <Suspense fallback={null}>

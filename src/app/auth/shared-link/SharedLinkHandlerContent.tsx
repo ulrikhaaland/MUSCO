@@ -4,17 +4,15 @@ import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { isSignInWithEmailLink, signInWithEmailLink } from 'firebase/auth';
 import { auth } from '@/app/firebase/config';
-import { useLoader } from '@/app/context/LoaderContext';
 
 export default function SharedLinkHandlerContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { setIsLoading } = useLoader();
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const handleSharedLink = async () => {
-      setIsLoading(true, 'Processing sign-in link...');
+      // Global loader removed; rely on page content state
 
       try {
         // Extract the link from search params
@@ -22,7 +20,6 @@ export default function SharedLinkHandlerContent() {
 
         if (!url) {
           setError('No link was shared.');
-          setIsLoading(false);
           return;
         }
 
@@ -36,7 +33,7 @@ export default function SharedLinkHandlerContent() {
             setError(
               'Please use the original device where you requested the sign-in link.'
             );
-            setIsLoading(false);
+            // loader removed
             return;
           }
 
@@ -47,9 +44,6 @@ export default function SharedLinkHandlerContent() {
             // Clean up localStorage
             window.localStorage.removeItem('emailForSignIn');
             window.localStorage.removeItem('hasPendingQuestionnaire');
-
-            // Important: Set loading to false before navigation
-            setIsLoading(false);
 
             // Redirect to app page
             router.push('/app');
@@ -72,12 +66,12 @@ export default function SharedLinkHandlerContent() {
         console.error('Error processing shared link:', err);
         setError('Failed to process sign-in link. Please try again.');
       } finally {
-        setIsLoading(false);
+        // loader removed
       }
     };
 
     handleSharedLink();
-  }, [searchParams, router, setIsLoading]);
+  }, [searchParams, router]);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-4 bg-gray-900 text-white">

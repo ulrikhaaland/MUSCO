@@ -7,7 +7,6 @@ import { ProgramDayComponent } from '@/app/components/ui/ProgramDayComponent';
 import { searchYouTubeVideo } from '@/app/utils/youtube';
 import { useAuth } from '@/app/context/AuthContext';
 import { useUser } from '@/app/context/UserContext';
-import { useLoader } from '@/app/context/LoaderContext';
 import { getStorage, ref, getDownloadURL } from 'firebase/storage';
 import { storage } from '@/app/firebase/config';
 import { useTranslation } from '@/app/i18n/TranslationContext';
@@ -84,29 +83,9 @@ export default function DayDetailPage() {
   // Access context data
   const { user, error: authError } = useAuth();
   const { program, programStatus, userPrograms, activeProgram } = useUser();
-  const { showLoader, hideLoader, isLoading } = useLoader();
   const { t } = useTranslation();
   
-  // Flag to track if we've shown the loader
-  const loaderShown = useRef(false);
-  
-  // Show loader on initial mount only once
-  useEffect(() => {
-    // Only show loader once when component mounts
-    if (!loaderShown.current) {
-      showLoader('Loading program day...');
-      loaderShown.current = true;
-      
-      // Force hide loader after a timeout as a fallback
-      const timeoutId = setTimeout(() => {
-        if (!dataLoaded) {
-          hideLoader();
-        }
-      }, 5000); // Force hide after 5 seconds
-      
-      return () => clearTimeout(timeoutId);
-    }
-  }, [showLoader, dataLoaded]);
+  // Global loader removed; use local loading UI below
 
   // Load data effect with cleanup
   useEffect(() => {
@@ -177,20 +156,14 @@ export default function DayDetailPage() {
           }
         }
         
-        // 6. Ensure loader is hidden regardless of outcome
-        if (loaderShown.current && mounted) {
-          hideLoader();
-        }
+        // Loader removed
       } catch (err) {
         console.error('Error loading program data:', err);
         if (mounted) {
           setError(err instanceof Error ? err : new Error('Failed to load program data'));
         }
         
-        // Ensure loader is hidden even on error
-        if (loaderShown.current && mounted) {
-          hideLoader();
-        }
+        // Loader removed
       }
     };
     
@@ -199,22 +172,10 @@ export default function DayDetailPage() {
     // Cleanup function
     return () => {
       mounted = false;
-      
-      // Ensure loader is hidden when component unmounts
-      if (loaderShown.current) {
-        hideLoader();
-      }
     };
-  }, [program, userPrograms, dayNumber, hideLoader]);
+  }, [program, userPrograms, dayNumber]);
 
-  // Effect to hide the loader when data is loaded
-  useEffect(() => {
-    if (dataLoaded && loaderShown.current) {
-      setTimeout(() => {
-        hideLoader();
-      }, 0);
-    }
-  }, [dataLoaded, hideLoader]);
+  // Loader removed
 
   // Update page title
   useEffect(() => {

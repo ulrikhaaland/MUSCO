@@ -58,6 +58,81 @@ if (typeof document !== 'undefined') {
   document.head.appendChild(style);
 }
 
+function ProgramViewShimmer() {
+  return (
+    <>
+      {/* Title + Active badge shimmer */}
+      <div className="py-3 px-4 flex items-center justify-between">
+        <div className="w-10" />
+        <div className="flex flex-col items-center">
+          <div className="shimmer h-6 w-64 bg-gray-700 rounded" />
+          <div className="mt-2 shimmer h-4 w-28 bg-gray-700 rounded-full" />
+        </div>
+        <div className="w-10" />
+      </div>
+
+      {/* Week Focus info card shimmer */}
+      <div className="max-w-4xl mx-auto px-4">
+        <div className="bg-gray-800/50 rounded-2xl ring-1 ring-gray-700/50 p-5 mb-4">
+          <div className="flex justify-between items-start">
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-indigo-500/50" />
+              <div className="shimmer h-5 w-40 bg-gray-700 rounded" />
+            </div>
+            <div className="shimmer h-4 w-4 bg-gray-700 rounded-full" />
+          </div>
+          <div className="mt-3 space-y-2">
+            <div className="shimmer h-3 w-11/12 bg-gray-700 rounded" />
+            <div className="shimmer h-3 w-3/4 bg-gray-700 rounded" />
+          </div>
+        </div>
+
+        {/* Week tabs shimmer */}
+        <div className="mb-3 overflow-x-auto scrollbar-hide sticky top-0 z-10 bg-gray-900 pb-2">
+          <div className="flex space-x-2 min-w-max">
+            <div className="shimmer h-10 w-28 bg-gray-800/60 rounded-lg" />
+            <div className="shimmer h-10 w-28 bg-gray-800/60 rounded-lg" />
+          </div>
+        </div>
+
+        {/* Day tabs shimmer */}
+        <div className="overflow-x-auto scrollbar-hide mb-6">
+          <div className="flex space-x-2 min-w-max">
+            {Array.from({ length: 7 }).map((_, i) => (
+              <div key={i} className="shimmer h-10 w-20 bg-gray-800/60 rounded-lg" />
+            ))}
+          </div>
+        </div>
+
+        {/* Summary card shimmer (matches spacing to real summary) */}
+        <div className="bg-gray-800/50 rounded-2xl ring-1 ring-gray-700/50 p-5 mb-6">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-indigo-500/50" />
+              <div className="shimmer h-5 w-40 bg-gray-700 rounded" />
+              <div className="shimmer h-5 w-16 bg-gray-700 rounded" />
+            </div>
+            <div className="shimmer h-4 w-24 bg-gray-700 rounded" />
+          </div>
+          <div className="space-y-2 mb-4">
+            <div className="shimmer h-3 w-11/12 bg-gray-700 rounded" />
+            <div className="shimmer h-3 w-3/4 bg-gray-700 rounded" />
+          </div>
+          <div className="flex items-center gap-3 mb-4">
+            <div className="shimmer h-6 w-32 bg-gray-700/60 rounded-md" />
+            <div className="shimmer h-6 w-28 bg-gray-700/60 rounded-md" />
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <div key={i} className="shimmer h-8 w-full bg-gray-700/60 rounded-md" />
+            ))}
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
+
 // NEW COMPONENT: SignUpToContinueCard
 const SignUpToContinueCard = ({
   t,
@@ -492,9 +567,29 @@ export function ExerciseProgramPage({
     setIsInFutureWeek(inFutureWeek);
   }, [program]);
 
-  // If loading or no program, just return null as we're using the global loader context
-  if ((isLoading && !shimmer) || program === null || !Array.isArray(program.days)) {
+  // Only return null when not shimmering; allow shimmer UI even before program is available
+  if (!shimmer && ((isLoading) || program === null || !Array.isArray(program.days))) {
     return null;
+  }
+
+  // When shimmering, render only the dedicated shimmer view to avoid duplicate shimmers below
+  if (shimmer) {
+    return (
+      <div className="bg-gray-900 flex flex-col min-h-screen text-white">
+        <style>{scrollbarHideStyles}</style>
+        <style jsx global>{`
+          .shimmer { position: relative; overflow: hidden; }
+          .shimmer::after {
+            position: absolute; inset: 0; transform: translateX(-100%);
+            background-image: linear-gradient(90deg, rgba(255,255,255,0) 0, rgba(255,255,255,0.08) 35%, rgba(255,255,255,0.16) 65%, rgba(255,255,255,0) 100%);
+            animation: shimmerX 1.6s linear infinite;
+            content: '';
+          }
+          @keyframes shimmerX { 0% { transform: translateX(-100%);} 100% { transform: translateX(100%); } }
+        `}</style>
+        <ProgramViewShimmer />
+      </div>
+    );
   }
 
   // Handle multi-week programs vs regular programs
@@ -549,57 +644,52 @@ export function ExerciseProgramPage({
       ) : (
         <>
           <style>{scrollbarHideStyles}</style>
-          <style jsx>{`
+          <style jsx global>{`
             .shimmer { position: relative; overflow: hidden; }
             .shimmer::after {
               position: absolute; inset: 0; transform: translateX(-100%);
-              background-image: linear-gradient(90deg, rgba(255,255,255,0) 0, rgba(255,255,255,0.08) 20%, rgba(255,255,255,0.16) 60%, rgba(255,255,255,0) 100%);
-              animation: shimmer 1.5s infinite;
+              background-image: linear-gradient(90deg, rgba(255,255,255,0) 0, rgba(255,255,255,0.08) 35%, rgba(255,255,255,0.16) 65%, rgba(255,255,255,0) 100%);
+              animation: shimmerX 1.6s linear infinite;
               content: '';
             }
-            @keyframes shimmer { 100% { transform: translateX(100%); } }
+            @keyframes shimmerX { 0% { transform: translateX(-100%);} 100% { transform: translateX(100%); } }
           `}</style>
 
           {/* Custom header with title only */}
-          {
+          {shimmer ? (
+            <ProgramViewShimmer />
+          ) : (
             <>
               <div className="py-3 px-4 flex items-center justify-between">
                 {/* Empty spacer with same width as menu button to balance the title */}
                 <div className="w-10"></div>
                 <div className="flex flex-col items-center">
-                  {shimmer ? (
-                    <>
-                      <div className="shimmer h-6 w-48 bg-gray-700 rounded" />
-                      <div className="mt-2 shimmer h-4 w-28 bg-gray-700 rounded-full" />
-                    </>
-                  ) : (
-                    <>
-                      <h1 className="text-app-title text-center">
-                        {title ||
-                          (type === ProgramType.Recovery
-                            ? t('program.recoveryProgramTitle')
-                            : t('program.exerciseProgramTitle'))}
-                      </h1>
-                      {!isCustomProgram &&
-                        (isActive ? (
-                          <div className="mt-1 px-2 py-0.5 bg-green-500/20 text-green-300 text-xs rounded-full flex items-center">
-                            <span className="w-2 h-2 rounded-full bg-green-400 mr-1"></span>
-                            {t('exerciseProgram.badge.active')}
-                          </div>
-                        ) : (
-                          <div className="mt-1 px-2 py-0.5 bg-gray-500/20 text-gray-300 text-xs rounded-full flex items-center">
-                            <span className="w-2 h-2 rounded-full bg-gray-400 mr-1"></span>
-                            {t('exerciseProgram.badge.inactive')}
-                          </div>
-                        ))}
-                    </>
-                  )}
+                  <>
+                    <h1 className="text-app-title text-center">
+                      {title ||
+                        (type === ProgramType.Recovery
+                          ? t('program.recoveryProgramTitle')
+                          : t('program.exerciseProgramTitle'))}
+                    </h1>
+                    {!isCustomProgram &&
+                      (isActive ? (
+                        <div className="mt-1 px-2 py-0.5 bg-green-500/20 text-green-300 text-xs rounded-full flex items-center">
+                          <span className="w-2 h-2 rounded-full bg-green-400 mr-1"></span>
+                          {t('exerciseProgram.badge.active')}
+                        </div>
+                      ) : (
+                        <div className="mt-1 px-2 py-0.5 bg-gray-500/20 text-gray-300 text-xs rounded-full flex items-center">
+                          <span className="w-2 h-2 rounded-full bg-gray-400 mr-1"></span>
+                          {t('exerciseProgram.badge.inactive')}
+                        </div>
+                      ))}
+                  </>
                 </div>
                 {/* Space for menu button */}
                 <div className="w-10"></div>
               </div>
             </>
-          }
+          )}
 
           {/* Program Overview Modal - REMOVED - Now using inline week-specific overview card */}
 
@@ -1040,7 +1130,7 @@ export function ExerciseProgramPage({
               }
 
               {/* Selected Week Content or SignUp Card or NextWeekCard */}
-              {(() => {
+               {(() => {
                 if (isCustomProgram && !user && selectedWeek > 1) {
                   return <SignUpToContinueCard t={t} router={router} />;
                 }
@@ -1056,6 +1146,26 @@ export function ExerciseProgramPage({
                   selectedWeek <= maxWeeks &&
                   selectedWeekData
                 ) {
+                   if (shimmer) {
+                     // Explicit summary shimmer card while generating
+                     return (
+                       <div className="bg-gray-800/50 rounded-2xl ring-1 ring-gray-700/50 p-4 mb-6">
+                         <div className="flex items-center gap-3 mb-3">
+                           <span className="w-3 h-3 rounded-full bg-indigo-500/40" />
+                           <div className="shimmer h-5 w-44 bg-gray-700 rounded" />
+                         </div>
+                         <div className="space-y-2 mb-4">
+                           <div className="shimmer h-3 w-3/4 bg-gray-700 rounded" />
+                           <div className="shimmer h-3 w-2/3 bg-gray-700 rounded" />
+                         </div>
+                         <div className="grid grid-cols-4 gap-3">
+                           {Array.from({ length: 8 }).map((_, i) => (
+                             <div key={i} className="shimmer h-10 w-full bg-gray-700/60 rounded-lg" />
+                           ))}
+                         </div>
+                       </div>
+                     );
+                   }
                   // Show the selected week's content
                   return (
                     <>
@@ -1139,6 +1249,25 @@ export function ExerciseProgramPage({
                   !is4WeekProgram
                 ) {
                   // Show regular program content (single week)
+                  if (shimmer) {
+                    return (
+                      <div className="bg-gray-800/50 rounded-2xl ring-1 ring-gray-700/50 p-4 mb-6">
+                        <div className="flex items-center gap-3 mb-3">
+                          <span className="w-3 h-3 rounded-full bg-indigo-500/40" />
+                          <div className="shimmer h-5 w-44 bg-gray-700 rounded" />
+                        </div>
+                        <div className="space-y-2 mb-4">
+                          <div className="shimmer h-3 w-3/4 bg-gray-700 rounded" />
+                          <div className="shimmer h-3 w-2/3 bg-gray-700 rounded" />
+                        </div>
+                        <div className="grid grid-cols-4 gap-3">
+                          {Array.from({ length: 8 }).map((_, i) => (
+                            <div key={i} className="shimmer h-10 w-full bg-gray-700/60 rounded-lg" />
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  }
                   return (
                     <>
                       {/* Day Tabs */}

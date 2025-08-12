@@ -8,7 +8,6 @@ import {
   TARGET_BODY_PARTS, 
   UPPER_BODY_PARTS, 
   LOWER_BODY_PARTS, 
-  ExerciseEnvironment,
   EXERCISE_ENVIRONMENTS,
   WORKOUT_DURATIONS,
   AGE_RANGES,
@@ -21,7 +20,8 @@ import {
 } from '@/app/types/program';
 
 import { useTranslation } from '@/app/i18n';
-import {
+import { useUser } from '@/app/context/UserContext';
+import { 
   getTranslatedTargetBodyParts,
   getTranslatedExerciseEnvironments,
   getTranslatedWorkoutDurations,
@@ -30,7 +30,6 @@ import {
   getTranslatedPlannedExerciseFrequencyOptions,
   getTranslatedExerciseModalities,
   getTranslatedPainBodyParts,
-  translatePainBodyPart,
   getTranslatedBodyRegions,
   translateBodyPart,
   getTranslatedCardioTypes,
@@ -94,12 +93,12 @@ const RECOVERY_WORKOUT_DURATIONS = [
   '45 minutes',
 ] as const;
 
-// Function to get the appropriate workout durations based on program type
-const getWorkoutDurations = (programType: ProgramType) => {
-  return programType === ProgramType.Recovery
-    ? RECOVERY_WORKOUT_DURATIONS
-    : WORKOUT_DURATIONS;
-};
+// Function kept for reference when both pages share logic (currently unused)
+// const getWorkoutDurations = (programType: ProgramType) => {
+//   return programType === ProgramType.Recovery
+//     ? RECOVERY_WORKOUT_DURATIONS
+//     : WORKOUT_DURATIONS;
+// };
 
 // Helper function to convert activity days string to number
 const getWeeklyActivityDays = (activityDays: string): number => {
@@ -149,7 +148,7 @@ function useIntersectionObserver(
         observer.unobserve(element);
       }
     };
-  }, []);
+  }, [options]);
 
   return [elementRef, isVisible];
 }
@@ -183,6 +182,7 @@ export function ExerciseQuestionnaire({
   fullBody,
 }: ExerciseQuestionnaireProps) {
   const { t } = useTranslation();
+  const { answers: storedAnswers, activeProgram } = useUser();
   
   // Get translated options
   const translatedTargetBodyParts = getTranslatedTargetBodyParts(t);
@@ -215,19 +215,13 @@ export function ExerciseQuestionnaire({
     keyof ExerciseQuestionnaireAnswers | null
   >(null);
 
-  const [selectedTargetAreas, setSelectedTargetAreas] = useState<
-    (typeof TARGET_BODY_PARTS)[number][]
-  >(() => {
-    // If fullBody is true, return all target areas
+  const computeInitialTargetAreas = (): (typeof TARGET_BODY_PARTS)[number][] => {
     if (fullBody) {
       return [...TARGET_BODY_PARTS];
     }
-
-    // Otherwise initialize with preselected areas from targetAreas prop
     const preselectedAreas = targetAreas
       .map((group) => {
         const groupId = group.id.toLowerCase();
-        // Map to exact string literals from TARGET_BODY_PARTS
         if (groupId.includes('shoulder')) return 'Shoulders' as const;
         if (groupId.includes('upper_arm')) return 'Upper Arms' as const;
         if (groupId.includes('forearm')) return 'Forearms' as const;
@@ -244,29 +238,35 @@ export function ExerciseQuestionnaire({
       .filter(
         (area): area is (typeof TARGET_BODY_PARTS)[number] => area !== null
       );
-    return [...new Set(preselectedAreas)]; // Remove duplicates
-  });
+    return [...new Set(preselectedAreas)];
+  };
+
+  const prefillAge = (() => {
+    const val = storedAnswers?.age || activeProgram?.questionnaire?.age || '';
+    return AGE_RANGES.includes(val as any) ? val : '';
+  })();
+  const prefillFrequency = (() => {
+    const val =
+      storedAnswers?.lastYearsExerciseFrequency ||
+      activeProgram?.questionnaire?.lastYearsExerciseFrequency ||
+      '';
+    return EXERCISE_FREQUENCY_OPTIONS.includes(val as any) ? val : '';
+  })();
 
   const [answers, setAnswers] = useState<ExerciseQuestionnaireAnswers>(() => ({
-    age: '',
-    lastYearsExerciseFrequency: '',
+    age: prefillAge,
+    lastYearsExerciseFrequency: prefillFrequency,
     numberOfActivityDays: '',
     generallyPainfulAreas: normalizedPainAreas.filter(area => area && area.trim() !== ''),
     exerciseModalities: '',
     exerciseEnvironments: '',
     workoutDuration: '',
-    targetAreas: selectedTargetAreas,
+    targetAreas: computeInitialTargetAreas(),
     cardioType: '',
     cardioEnvironment: '',
   }));
 
-  // Update answers when selectedTargetAreas changes
-  useEffect(() => {
-    setAnswers((prev) => ({
-      ...prev,
-      targetAreas: selectedTargetAreas,
-    }));
-  }, [selectedTargetAreas]);
+  // No-op: target areas are updated directly in answers state
 
   const handleEdit = (field: keyof ExerciseQuestionnaireAnswers) => {
     // Only set targetAreasReopened if:
@@ -1075,7 +1075,7 @@ export function ExerciseQuestionnaire({
   };
 
   // Get the appropriate workout durations based on program type
-  const workoutDurations = getWorkoutDurations(programType);
+  // const workoutDurations = getWorkoutDurations(programType);
 
   // Add the translateAnswer function here inside the component
   // where all the translation variables are available

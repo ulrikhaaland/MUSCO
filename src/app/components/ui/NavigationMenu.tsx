@@ -16,7 +16,7 @@ function NavigationMenuContent() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { user, logOut } = useAuth();
-  const { program } = useUser();
+  const { program, activeProgram, userPrograms } = useUser();
   const { t } = useTranslation();
   // local menu state (not currently rendered as a dropdown)
   const [, setShowUserMenu] = useState(false);
@@ -126,6 +126,8 @@ function NavigationMenuContent() {
   }, [drawerOpen]);
 
   // Navigation items
+  const hasAnyProgram = Boolean(program || activeProgram || (userPrograms && userPrograms.length > 0));
+
   const navItems = [
     {
       name: t('nav.explore'),
@@ -164,7 +166,7 @@ function NavigationMenuContent() {
           />
         </svg>
       ),
-      disabled: !program,
+      disabled: !hasAnyProgram,
     },
     {
       name: t('nav.programs'),
@@ -204,7 +206,7 @@ function NavigationMenuContent() {
           />
         </svg>
       ),
-      disabled: !program,
+      disabled: !hasAnyProgram,
     },
     {
       name: t('nav.profile'),

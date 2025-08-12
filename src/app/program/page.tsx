@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { ExerciseProgramPage } from '@/app/components/ui/ExerciseProgramPage';
 import { useUser } from '@/app/context/UserContext';
 import { useAuth } from '@/app/context/AuthContext';
-import { useLoader } from '@/app/context/LoaderContext';
+// Global loader removed
 import AddToHomescreen from '@/app/components/ui/AddToHomescreen';
 import { logAnalyticsEvent } from '../utils/analytics';
 import {
@@ -18,7 +18,6 @@ import {
 import { searchYouTubeVideo } from '@/app/utils/youtube';
 import { ErrorDisplay } from '@/app/components/ui/ErrorDisplay';
 import { useTranslation } from '@/app/i18n';
-import { LoadingMessage } from '@/app/components/ui/LoadingMessage';
 
 function ProgramPageContent({
   isCustomProgram,
@@ -37,7 +36,6 @@ function ProgramPageContent({
     userPrograms,
     selectProgram,
   } = useUser();
-  const { hideLoader } = useLoader();
   const [error] = useState<Error | null>(null);
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [loadingVideoExercise, setLoadingVideoExercise] = useState<
@@ -49,6 +47,11 @@ function ProgramPageContent({
   const [hasProcessedUrlParam, setHasProcessedUrlParam] = useState(false);
 
   const isLoading = (authLoading || userLoading) && !program;
+  const forceShimmer =
+    searchParams.get('shimmer') === '1' ||
+    searchParams.get('shimmer') === 'true' ||
+    process.env.NEXT_PUBLIC_FORCE_SHIMMER === '1' ||
+    process.env.NEXT_PUBLIC_FORCE_SHIMMER === 'true';
 
   // Handle program selection based on URL params (only once)
   useEffect(() => {
@@ -98,11 +101,7 @@ function ProgramPageContent({
     }
   }, [program, activeProgram?.title, searchParams, hasProcessedUrlParam]);
 
-  // Do not block the app with the global loader on the program page.
-  // Hide the global loader and use on-page shimmers instead.
-  useEffect(() => {
-    hideLoader();
-  }, [isLoading, selectedProgram, programStatus, hideLoader]);
+  // Global loader removed; rely on local shimmers/spinners
 
   // Update page title when program data changes
   useEffect(() => {
@@ -273,6 +272,9 @@ function ProgramPageContent({
 
 
 
+  const shouldShimmer =
+    forceShimmer || (programStatus === ProgramStatus.Generating && !selectedProgram);
+
   return (
     <>
       <ExerciseProgramPage
@@ -280,8 +282,8 @@ function ProgramPageContent({
         title={activeProgram?.title}
         type={activeProgram?.type}
         timeFrame={activeProgram?.timeFrame}
-        isLoading={isLoading}
-        shimmer={programStatus === ProgramStatus.Generating}
+        isLoading={!forceShimmer && isLoading && !shouldShimmer}
+        shimmer={shouldShimmer}
         onToggleView={handleToggleView}
         dayName={getDayName}
         onVideoClick={handleExerciseVideoClick}

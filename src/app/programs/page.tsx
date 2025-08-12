@@ -11,7 +11,7 @@ import { useTranslation } from '@/app/i18n/TranslationContext';
 import { nb, enUS } from 'date-fns/locale';
 
 function ProgramsContent() {
-  const { userPrograms, isLoading, selectProgram, toggleActiveProgram, loadUserPrograms, programStatus } =
+  const { userPrograms, isLoading, toggleActiveProgram, loadUserPrograms, programStatus } =
     useUser();
   const { deleteProgram } = useAuth();
   const router = useRouter();
@@ -179,7 +179,7 @@ function ProgramsContent() {
 
   // Navigate to home page to create a new program
   const handleCreateNewProgram = () => {
-    router.push('/');
+    router.push('/app/questionnaire');
   };
 
   // Render a loading placeholder only if we have no programs yet AND are loading
@@ -192,13 +192,28 @@ function ProgramsContent() {
   }
 
   if (userPrograms.length === 0) {
+    const emptyText = (() => {
+      if (filterType === 'exercise') {
+        return t('programs.noFilteredPrograms').replace(
+          '{type}',
+          t('programs.filter.exercise').toLowerCase()
+        );
+      }
+      if (filterType === 'recovery') {
+        return t('programs.noFilteredPrograms').replace(
+          '{type}',
+          t('programs.filter.recovery').toLowerCase()
+        );
+      }
+      return t('programs.noPrograms.message');
+    })();
     return (
       <div className="h-full flex flex-col items-center justify-center p-8 text-white">
         <h2 className="text-2xl font-semibold mb-4">
           {t('programs.noPrograms')}
         </h2>
         <p className="text-gray-300 text-center max-w-md">
-          {t('programs.noPrograms.message')}
+          {emptyText}
         </p>
         <button
           onClick={() => router.push('/')}
@@ -212,6 +227,21 @@ function ProgramsContent() {
 
   // Show "no programs found" message when filtered list is empty
   if (filteredAndSortedPrograms.length === 0) {
+    const emptyText = (() => {
+      if (filterType === 'exercise') {
+        return t('programs.noFilteredPrograms').replace(
+          '{type}',
+          t('programs.filter.exercise').toLowerCase()
+        );
+      }
+      if (filterType === 'recovery') {
+        return t('programs.noFilteredPrograms').replace(
+          '{type}',
+          t('programs.filter.recovery').toLowerCase()
+        );
+      }
+      return t('programs.noPrograms.message');
+    })();
     return (
       <div className="container mx-auto h-full flex flex-col">
         {/* Fixed header containing both title and buttons */}
@@ -286,9 +316,7 @@ function ProgramsContent() {
         </div>
 
         <div className="flex-1 flex items-center justify-center px-4 py-6">
-          <p className="text-gray-300 text-center">
-            {t('programs.noPrograms.message')}
-          </p>
+          <p className="text-gray-300 text-center">{emptyText}</p>
         </div>
       </div>
     );
@@ -371,20 +399,46 @@ function ProgramsContent() {
       <div className="flex-1 overflow-y-auto px-4 py-6">
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 pb-8">
           {programStatus === ProgramStatus.Generating && (
-            <div className="relative bg-gray-800/50 rounded-xl overflow-hidden ring-1 ring-gray-700/50 p-5">
+              <div className="relative bg-gray-800/50 rounded-xl overflow-hidden ring-1 ring-gray-700/50 transition-colors duration-200 p-5 flex flex-col h-full">
+              {/* Title */}
               <div className="flex justify-between items-start mb-3">
-                <div className="shimmer h-5 w-40 bg-gray-700 rounded" />
+                <div className="shimmer h-6 w-48 bg-gray-700 rounded" />
+                <div className="w-10" />
               </div>
+
+              {/* Divider */}
               <div className="border-t border-gray-700/50 my-3" />
-              <div className="grid grid-cols-3 gap-6 mb-4">
+
+              {/* Key Program Statistics (match layout of real card) */}
+              <div className="flex justify-between items-center mb-4">
                 {Array.from({ length: 3 }).map((_, i) => (
-                  <div key={i} className="text-center">
-                    <div className="shimmer h-6 w-8 mx-auto bg-gray-700 rounded mb-2" />
+                  <div key={i} className="text-center w-1/3">
+                    <div className="shimmer h-6 w-6 mx-auto bg-gray-700 rounded mb-2" />
                     <div className="shimmer h-3 w-16 mx-auto bg-gray-700 rounded" />
                   </div>
                 ))}
               </div>
-              <div className="shimmer h-4 w-1/2 bg-gray-700 rounded" />
+
+              {/* Target areas placeholder */}
+              <div className="mb-3">
+                <div className="shimmer h-3 w-20 bg-gray-700 rounded mb-1" />
+                <div className="flex flex-wrap gap-1">
+                  <div className="shimmer h-5 w-16 bg-gray-700 rounded-full" />
+                  <div className="shimmer h-5 w-20 bg-gray-700 rounded-full" />
+                  <div className="shimmer h-5 w-16 bg-gray-700 rounded-full" />
+                  <div className="shimmer h-5 w-12 bg-gray-700 rounded-full" />
+                </div>
+              </div>
+
+              {/* Footer (Created date and right actions) */}
+              <div className="pt-3 mt-auto flex justify-between items-center">
+                <div className="shimmer h-3 w-40 bg-gray-700 rounded" />
+                <div className="flex items-center space-x-3">
+                  <div className="shimmer h-4 w-4 bg-gray-700 rounded" />
+                  <div className="shimmer w-10 h-5 bg-gray-700 rounded-full" />
+                </div>
+              </div>
+
               <style jsx>{`
                 .shimmer { position: relative; overflow: hidden; }
                 .shimmer::after { position: absolute; inset: 0; transform: translateX(-100%);
@@ -394,7 +448,7 @@ function ProgramsContent() {
               `}</style>
             </div>
           )}
-          {filteredAndSortedPrograms.map((program, index) => {
+          {filteredAndSortedPrograms.map((program) => {
             // Find the original index in userPrograms using docId for reliable identification
             const originalIndex = userPrograms.findIndex(
               (p) => p.docId === program.docId
@@ -403,13 +457,13 @@ function ProgramsContent() {
             // Get the first exercise program from the list
             const exerciseProgram = program.programs[0];
 
-            return (
-              <div
-                key={originalIndex}
-                onClick={() => handleProgramClick(originalIndex)}
-                className="relative bg-gray-800/50 rounded-xl overflow-hidden ring-1 ring-gray-700/50 transition-colors duration-200 hover:bg-gray-700/50 cursor-pointer group"
-              >
-                <div className="p-5">
+              return (
+                <div
+                  key={originalIndex}
+                  onClick={() => handleProgramClick(originalIndex)}
+                  className="relative bg-gray-800/50 rounded-xl overflow-hidden ring-1 ring-gray-700/50 transition-colors duration-200 hover:bg-gray-700/50 cursor-pointer group flex flex-col"
+                >
+                  <div className="p-5 flex flex-col h-full">
                   {/* Program title and type */}
                   <div className="flex justify-between items-start mb-3">
                     <h2 className="text-xl font-medium text-white truncate pr-2">
@@ -454,42 +508,54 @@ function ProgramsContent() {
                     </div>
                   </div>
 
-                  {/* Target areas - only show if there are target areas */}
-                  {exerciseProgram.targetAreas &&
-                    exerciseProgram.targetAreas.length > 0 && (
-                      <div className="mb-3">
-                        <p className="text-xs text-gray-400 mb-1">
-                          {t('programs.targetAreas')}
-                        </p>
-                        <div className="flex flex-wrap gap-1">
-                          {exerciseProgram.targetAreas
-                            .slice(0, 3)
-                            .map((area, i) => (
-                              <span
-                                key={i}
-                                className="text-xs px-2 py-1 bg-gray-700/50 text-gray-300 rounded-full"
-                              >
-                                {t(
-                                  `program.bodyPart.${area.toLowerCase().replace(/\s+/g, '_')}`
-                                )}
-                              </span>
-                            ))}
-                          {exerciseProgram.targetAreas.length > 3 && (
-                            <span className="text-xs px-2 py-1 bg-gray-700/50 text-gray-300 rounded-full">
-                              {t('programs.targetAreas.more').replace(
-                                '{count}',
-                                (
-                                  exerciseProgram.targetAreas.length - 3
-                                ).toString()
+                  {/* Target areas or cardio summary */}
+                  {exerciseProgram.targetAreas && exerciseProgram.targetAreas.length > 0 ? (
+                    <div className="mb-3">
+                      <p className="text-xs text-gray-400 mb-1">
+                        {t('programs.targetAreas')}
+                      </p>
+                      <div className="flex flex-wrap gap-1">
+                        {exerciseProgram.targetAreas
+                          .slice(0, 3)
+                          .map((area, i) => (
+                            <span
+                              key={i}
+                              className="text-xs px-2 py-1 bg-gray-700/50 text-gray-300 rounded-full"
+                            >
+                              {t(
+                                `program.bodyPart.${area.toLowerCase().replace(/\s+/g, '_')}`
                               )}
                             </span>
-                          )}
-                        </div>
+                          ))}
+                        {exerciseProgram.targetAreas.length > 3 && (
+                          <span className="text-xs px-2 py-1 bg-gray-700/50 text-gray-300 rounded-full">
+                            {t('programs.targetAreas.more').replace(
+                              '{count}',
+                              (
+                                exerciseProgram.targetAreas.length - 3
+                              ).toString()
+                            )}
+                          </span>
+                        )}
                       </div>
-                    )}
+                    </div>
+                  ) : (
+                    <div className="mb-3">
+                      <p className="text-xs text-gray-400 mb-1">Cardio</p>
+                      <div className="flex flex-wrap gap-1">
+                        {program.questionnaire?.cardioType && (
+                          <span className="text-xs px-2 py-1 bg-gray-700/50 text-gray-300 rounded-full">
+                            {t(
+                              `program.cardioType.${program.questionnaire.cardioType.toLowerCase()}`
+                            )}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  )}
 
                   {/* Creation date and toggle switch */}
-                  <div className="text-xs text-gray-400 pt-3 flex justify-between items-center">
+                  <div className="text-xs text-gray-400 pt-3 mt-auto flex justify-between items-center">
                     <span>
                       {t('programs.created')}{' '}
                       {program.createdAt

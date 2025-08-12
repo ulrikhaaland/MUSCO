@@ -10,9 +10,8 @@ import { app } from './firebase/config';
 import { AuthProvider } from './context/AuthContext';
 import { UserProvider } from './context/UserContext';
 import { AppProvider } from './context/AppContext';
-import { LoaderProvider } from './context/LoaderContext';
-import { RouteChangeListener } from './components/RouteChangeListener';
 import { ToastProvider } from './components/ui/ToastProvider';
+import BlockingLoader from './components/ui/BlockingLoader';
 import { I18nWrapper } from './i18n/setup';
 import { isSignInWithEmailLink } from 'firebase/auth';
 import { auth } from './firebase/config';
@@ -169,24 +168,25 @@ export default function RootLayout({
       </head>
       <body className="bg-gray-900">
         <I18nWrapper>
-          <LoaderProvider>
-            <AuthProvider>
-              <UserProvider>
-                <AppProvider>
-                  <ToastProvider>
-                    <RouteChangeListener />
-                    <SafeAreaPWA>
-                      <SafeArea className="h-full">
-                        <div className="flex-1">{children}</div>
-                        {/* Do not render bottom drawer nav on marketing landing */}
-                        {pathname !== '/' && <NavigationMenu />}
-                      </SafeArea>
-                    </SafeAreaPWA>
-                  </ToastProvider>
-                </AppProvider>
-              </UserProvider>
-            </AuthProvider>
-          </LoaderProvider>
+          <AuthProvider>
+            <UserProvider>
+              <AppProvider>
+                <ToastProvider>
+                  {!isMounted && (
+                    <div className="fixed inset-0 z-[60000] bg-gray-900" aria-hidden />
+                  )}
+                  <BlockingLoader />
+                  <SafeAreaPWA>
+                    <SafeArea className="h-full">
+                      <div className="flex-1">{children}</div>
+                      {/* Do not render bottom drawer nav on marketing landing */}
+                      {pathname !== '/' && <NavigationMenu />}
+                    </SafeArea>
+                  </SafeAreaPWA>
+                </ToastProvider>
+              </AppProvider>
+            </UserProvider>
+          </AuthProvider>
         </I18nWrapper>
       </body>
     </html>
