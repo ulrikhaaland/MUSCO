@@ -117,30 +117,30 @@ function ProgramViewShimmer() {
           </div>
         </div>
 
-        {/* Summary card shimmer (matches spacing to real summary) */}
-        <div className="bg-gray-800/50 rounded-2xl ring-1 ring-gray-700/50 p-6 mb-6">
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-indigo-500/50" />
-              <div className="shimmer h-5 w-40 bg-gray-700 rounded" />
-              <div className="shimmer h-5 w-16 bg-gray-700 rounded" />
-            </div>
-            <div className="shimmer h-4 w-24 bg-gray-700 rounded" />
-          </div>
-          <div className="space-y-2 mb-4">
-            <div className="shimmer h-3 w-11/12 bg-gray-700 rounded" />
-            <div className="shimmer h-3 w-3/4 bg-gray-700 rounded" />
-          </div>
-          <div className="flex items-center gap-3 mb-4">
-            <div className="shimmer h-6 w-32 bg-gray-700/60 rounded-md" />
-            <div className="shimmer h-6 w-28 bg-gray-700/60 rounded-md" />
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-            {Array.from({ length: 8 }).map((_, i) => (
-              <div key={i} className="shimmer h-9 w-full bg-gray-700/60 rounded-md" />
-            ))}
-          </div>
-        </div>
+        {/* Summary shimmer: reuse the real component's shimmer to maintain parity */}
+        {(() => {
+          const placeholderDay: ProgramDay = {
+            day: 1,
+            description: '',
+            isRestDay: false,
+            exercises: Array.from({ length: 6 }).map((_, idx) => ({
+              name: `Exercise ${idx + 1}`,
+              warmup: idx === 0,
+              sets: [],
+              reps: [],
+              duration: 0,
+            })) as any,
+          } as any;
+          return (
+            <ProgramDaySummaryComponent
+              day={placeholderDay}
+              dayName={"Monday"}
+              shimmer
+              autoNavigateIfEmpty={false}
+              autoNavigateOnShimmer={false}
+            />
+          );
+        })()}
       </div>
     </>
   );
