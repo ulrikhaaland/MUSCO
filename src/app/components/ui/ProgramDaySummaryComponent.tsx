@@ -123,10 +123,14 @@ export function ProgramDaySummaryComponent({
             <div className="flex items-center justify-between w-full">
               <div className="flex items-center gap-3">
                 <h3 className="text-app-title text-white">
-                  {shimmer ? <span className="shimmer bg-gray-700 h-5 w-24 inline-block rounded" /> : dayName}
+                  {shimmer ? (
+                    <span className="shimmer bg-gray-700 h-5 w-20 sm:w-24 inline-block rounded" />
+                  ) : (
+                    dayName
+                  )}
                 </h3>
                 {shimmer ? (
-                  <span className="shimmer inline-block h-5 w-20 bg-gray-700 rounded-full" />
+                  <span className="shimmer inline-block h-5 w-16 sm:w-20 bg-gray-700 rounded-full" />
                 ) : day.isRestDay ? (
                   <Chip variant="highlight" size="sm">
                     {t('calendar.rest')}
@@ -173,9 +177,9 @@ export function ProgramDaySummaryComponent({
           )}
 
           <div className="h-1 mb-1"></div>
-          <p className="text-white text-sm mb-4">
+           <p className="text-white text-sm mb-4">
             {shimmer ? (
-              <span className="shimmer inline-block bg-gray-700 h-4 w-3/4 rounded" />
+              <span className="shimmer inline-block bg-gray-700 h-4 w-5/6 sm:w-3/4 rounded" />
             ) : (
               day.description
             )}
@@ -186,7 +190,10 @@ export function ProgramDaySummaryComponent({
             {/* Exercise count and type breakdown */}
             <div className="flex flex-wrap gap-3">
               {shimmer ? (
-                <div className="shimmer w-1/3 h-4 bg-gray-700 rounded" />
+                <>
+                  <div className="shimmer h-4 bg-gray-700 rounded w-24 sm:w-28" />
+                  <div className="shimmer h-4 bg-gray-700 rounded w-20 sm:w-24" />
+                </>
               ) : totalExercises > 0 && (
                 <div className="flex items-center text-gray-400 text-sm">
                   <svg
@@ -208,7 +215,7 @@ export function ProgramDaySummaryComponent({
                 </div>
               )}
               {shimmer ? (
-                <div className="shimmer w-24 h-4 bg-gray-700 rounded" />
+                <div className="shimmer w-20 sm:w-24 h-4 bg-gray-700 rounded" />
               ) : warmupExercises > 0 && (
                 <div className="flex items-center text-gray-400 text-sm">
                   <svg
@@ -231,15 +238,19 @@ export function ProgramDaySummaryComponent({
 
             {/* List all exercises */}
             {shimmer ? (
-              <div className="mt-3 space-y-2">
-                {Array.from({ length: 4 }).map((_, idx) => (
-                  <div key={idx} className="flex items-center text-sm text-gray-400">
-                    <span className="w-4 h-4 mr-2 flex items-center justify-center">
-                      <span className="shimmer inline-block bg-gray-700 w-3 h-3 rounded-sm" />
-                    </span>
-                    <span className="shimmer inline-block bg-gray-700 h-4 w-1/2 rounded" />
-                  </div>
-                ))}
+              <div className="mt-3 space-y-1">
+                {(() => {
+                  const count = Math.max(day.exercises?.length || 6, 5);
+                  const widths = ['w-5/6','w-2/3','w-3/4','w-1/2','w-2/3','w-3/5'];
+                  return Array.from({ length: count }).map((_, idx) => (
+                    <div key={idx} className="flex items-center text-sm text-gray-400">
+                      <span className="w-4 h-4 mr-2 flex items-center justify-center">
+                        <span className="shimmer inline-block bg-gray-700 w-3 h-3 rounded-sm" />
+                      </span>
+                      <span className={`shimmer inline-block bg-gray-700 h-4 ${widths[idx % widths.length]} rounded`} />
+                    </div>
+                  ));
+                })()}
               </div>
             ) : day.exercises?.length > 0 && (
               <div className="mt-3 space-y-1">
@@ -441,11 +452,11 @@ export function ProgramDaySummaryComponent({
         .shimmer { position: relative; overflow: hidden; }
         .shimmer::after {
           position: absolute; inset: 0; transform: translateX(-100%);
-          background-image: linear-gradient(90deg, rgba(255,255,255,0) 0, rgba(255,255,255,0.08) 20%, rgba(255,255,255,0.16) 60%, rgba(255,255,255,0) 100%);
-          animation: shimmer 1.5s infinite;
+          background-image: linear-gradient(90deg, rgba(255,255,255,0) 0, rgba(255,255,255,0.08) 35%, rgba(255,255,255,0.16) 65%, rgba(255,255,255,0) 100%);
+          animation: shimmerX 1.6s linear infinite;
           content: '';
         }
-        @keyframes shimmer { 100% { transform: translateX(100%); } }
+        @keyframes shimmerX { 0% { transform: translateX(-100%);} 100% { transform: translateX(100%); } }
       `}</style>
     </div>
   );

@@ -73,7 +73,7 @@ function ProgramViewShimmer() {
 
       {/* Week Focus info card shimmer */}
       <div className="max-w-4xl mx-auto px-4">
-        <div className="bg-gray-800/50 rounded-2xl ring-1 ring-gray-700/50 p-5 mb-4">
+        <div className="bg-gray-800/50 rounded-2xl ring-1 ring-gray-700/50 p-6 mb-4">
           <div className="flex justify-between items-start">
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-indigo-500/50" />
@@ -90,8 +90,15 @@ function ProgramViewShimmer() {
         {/* Week tabs shimmer */}
         <div className="mb-3 overflow-x-auto scrollbar-hide sticky top-0 z-10 bg-gray-900 pb-2">
           <div className="flex space-x-2 min-w-max">
-            <div className="shimmer h-10 w-28 bg-gray-800/60 rounded-lg" />
-            <div className="shimmer h-10 w-28 bg-gray-800/60 rounded-lg" />
+            {[0,1].map((i) => (
+              <div
+                key={i}
+                className="px-6 py-3 rounded-lg bg-gray-800/50 text-gray-400 relative shrink-0"
+              >
+                <div className="shimmer h-4 w-20 sm:w-24 md:w-28 bg-gray-700 rounded" />
+                <span className="block mt-1 shimmer h-3 w-24 sm:w-28 md:w-32 bg-gray-700/70 rounded" />
+              </div>
+            ))}
           </div>
         </div>
 
@@ -99,13 +106,19 @@ function ProgramViewShimmer() {
         <div className="overflow-x-auto scrollbar-hide mb-6">
           <div className="flex space-x-2 min-w-max">
             {Array.from({ length: 7 }).map((_, i) => (
-              <div key={i} className="shimmer h-10 w-20 bg-gray-800/60 rounded-lg" />
+              <div
+                key={i}
+                className={`px-6 py-3 rounded-lg bg-gray-800/60 text-gray-400 flex flex-col items-center shrink-0`}
+              >
+                <span className="shimmer h-3 w-10 sm:w-12 bg-gray-700 rounded mb-1" />
+                <span className="shimmer h-3 w-14 sm:w-16 bg-gray-700/70 rounded" />
+              </div>
             ))}
           </div>
         </div>
 
         {/* Summary card shimmer (matches spacing to real summary) */}
-        <div className="bg-gray-800/50 rounded-2xl ring-1 ring-gray-700/50 p-5 mb-6">
+        <div className="bg-gray-800/50 rounded-2xl ring-1 ring-gray-700/50 p-6 mb-6">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-indigo-500/50" />
@@ -124,7 +137,7 @@ function ProgramViewShimmer() {
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
             {Array.from({ length: 8 }).map((_, i) => (
-              <div key={i} className="shimmer h-8 w-full bg-gray-700/60 rounded-md" />
+              <div key={i} className="shimmer h-9 w-full bg-gray-700/60 rounded-md" />
             ))}
           </div>
         </div>
