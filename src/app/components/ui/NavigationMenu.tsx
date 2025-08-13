@@ -11,7 +11,7 @@ import Logo from './Logo';
 import { logAnalyticsEvent } from '@/app/utils/analytics';
 
 // Create a separate component that uses the search params
-function NavigationMenuContent() {
+function NavigationMenuContent({ mobileTitle, mobileFloatingButton }: { mobileTitle?: string; mobileFloatingButton?: boolean }) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -305,51 +305,141 @@ function NavigationMenuContent() {
   };
 
   return (
-    <div className="fixed bottom-0 left-0 z-50 w-full border-t border-gray-800 bg-gray-900">
-      {/* Hamburger button for logged in users, login button for non-logged in users */}
-      {!drawerOpen &&
-        (user ? (
+    <>
+      {/* Desktop header (landing style) */}
+      <header className="hidden md:block sticky top-0 z-40 backdrop-blur supports-[backdrop-filter]:bg-gray-900/60 border-b border-white/10">
+        <div className="mx-auto max-w-6xl px-6 py-3 flex items-center justify-between">
           <button
-            onClick={() => setDrawerOpen(true)}
-            className="fixed top-4 right-4 z-[70] p-2 rounded-lg bg-gray-800 text-white hover:bg-gray-700 transition-colors"
-            aria-label="Menu"
+            onClick={() => {
+              try { logAnalyticsEvent('nav_click', { target: 'app' }); } catch {}
+              router.push('/app');
+            }}
+            aria-label="Home"
           >
-            <svg
-              className="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M4 6h16M4 12h16M4 18h16"
-              />
-            </svg>
+            <Logo />
           </button>
-        ) : (
-          pathname !== '/login' && (
-            <button
-              onClick={() => {
-                const currentPath = pathname + (searchParams?.toString() ? `?${searchParams.toString()}` : '');
-                window.sessionStorage.setItem('previousPath', currentPath);
-                
-                if (pathname.includes('/program/')) {
-                  window.sessionStorage.setItem('loginContext', 'saveProgram');
-                  logAnalyticsEvent('nav_click', { target: 'signin' });
-                  router.push('/login?context=save');
-                } else {
-                  logAnalyticsEvent('nav_click', { target: 'signin' });
-                  router.push('/login');
-                }
-              }}
-              className="fixed top-4 right-4 z-[70] px-3 py-2 rounded-lg bg-gray-800 text-white hover:bg-gray-700 transition-colors"
-            >
-              {t('auth.signIn')}
-            </button>
-          )
-        ))}
+          <nav className="flex items-center gap-6 text-gray-300">
+            {navItems.map((item) => (
+              <button
+                key={item.name}
+                onClick={() => handleNavigation(item.path, item.disabled)}
+                className={`hover:text-white focus:outline-none focus:ring-2 focus:ring-white/30 ${
+                  isActive(item.path) ? 'text-white' : ''
+                } ${item.disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+                disabled={item.disabled}
+              >
+                {item.name}
+              </button>
+            ))}
+          </nav>
+          <div className="flex items-center gap-3">
+            {!user ? (
+              <button
+                onClick={() => {
+                  const currentPath = pathname + (searchParams?.toString() ? `?${searchParams.toString()}` : '');
+                  try { window.sessionStorage.setItem('previousPath', currentPath); } catch {}
+                  try { logAnalyticsEvent('nav_click', { target: 'signin' }); } catch {}
+                  if (pathname.includes('/program/')) {
+                    try { window.sessionStorage.setItem('loginContext', 'saveProgram'); } catch {}
+                    router.push('/login?context=save');
+                  } else {
+                    router.push('/login');
+                  }
+                }}
+                className="px-3 py-2 rounded-md text-sm text-white/90 hover:text-white border border-white/20"
+              >
+                {t('auth.signIn')}
+              </button>
+            ) : (
+              <button
+                onClick={handleLogout}
+                className="px-3 py-2 rounded-md text-sm bg-gray-800 text-white hover:bg-gray-700"
+              >
+                {t('auth.signOut')}
+              </button>
+            )}
+          </div>
+        </div>
+      </header>
+
+      {/* Mobile header: either floating button or inline bar */}
+      {mobileFloatingButton ? (
+        <div className="md:hidden">
+          {!drawerOpen && (
+            user ? (
+              <button
+                onClick={() => setDrawerOpen(true)}
+                className="fixed top-4 right-4 z-[70] p-2 rounded-full bg-gray-800 text-white shadow-lg hover:bg-gray-700 transition-colors"
+                aria-label="Menu"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              </button>
+            ) : (
+              pathname !== '/login' && (
+                <button
+                  onClick={() => {
+                    const currentPath = pathname + (searchParams?.toString() ? `?${searchParams.toString()}` : '');
+                    window.sessionStorage.setItem('previousPath', currentPath);
+                    if (pathname.includes('/program/')) {
+                      window.sessionStorage.setItem('loginContext', 'saveProgram');
+                      logAnalyticsEvent('nav_click', { target: 'signin' });
+                      router.push('/login?context=save');
+                    } else {
+                      logAnalyticsEvent('nav_click', { target: 'signin' });
+                      router.push('/login');
+                    }
+                  }}
+                  className="fixed top-4 right-4 z-[70] px-3 py-2 rounded-lg bg-gray-800 text-white shadow-lg hover:bg-gray-700 transition-colors"
+                >
+                  {t('auth.signIn')}
+                </button>
+              )
+            )
+          )}
+        </div>
+      ) : (
+        <div className="md:hidden z-40 bg-gray-900/95 backdrop-blur">
+          <div className="px-4 py-3 flex items-center justify-between">
+            <div className="w-9" aria-hidden />
+            <div className="text-white text-lg font-semibold text-center whitespace-normal break-words leading-tight max-w-[80%]">
+              {mobileTitle}
+            </div>
+            {user ? (
+              <button
+                onClick={() => setDrawerOpen(true)}
+                className="p-2 rounded-lg bg-gray-800 text-white hover:bg-gray-700 transition-colors"
+                aria-label="Menu"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              </button>
+            ) : (
+              pathname !== '/login' && (
+                <button
+                  onClick={() => {
+                    const currentPath = pathname + (searchParams?.toString() ? `?${searchParams.toString()}` : '');
+                    window.sessionStorage.setItem('previousPath', currentPath);
+                    if (pathname.includes('/program/')) {
+                      window.sessionStorage.setItem('loginContext', 'saveProgram');
+                      logAnalyticsEvent('nav_click', { target: 'signin' });
+                      router.push('/login?context=save');
+                    } else {
+                      logAnalyticsEvent('nav_click', { target: 'signin' });
+                      router.push('/login');
+                    }
+                  }}
+                  className="px-3 py-2 rounded-lg bg-gray-800 text-white hover:bg-gray-700 transition-colors"
+                >
+                  {t('auth.signIn')}
+                </button>
+              )
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Drawer overlay */}
       {drawerOpen && (
@@ -487,7 +577,7 @@ function NavigationMenuContent() {
 
       {/* Conditionally render the Dev Mobile Nav Bar */}
       {showDevNavBar && <DevMobileNavBar />}
-    </div>
+    </>
   );
 }
 
@@ -500,10 +590,10 @@ function MenuLoadingFallback() {
   );
 }
 
-export function NavigationMenu() {
+export function NavigationMenu({ mobileTitle, mobileFloatingButton }: { mobileTitle?: string; mobileFloatingButton?: boolean }) {
   return (
     <Suspense fallback={<MenuLoadingFallback />}>
-      <NavigationMenuContent />
+      <NavigationMenuContent mobileTitle={mobileTitle} mobileFloatingButton={mobileFloatingButton} />
     </Suspense>
   );
 }

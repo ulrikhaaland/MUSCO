@@ -3,6 +3,8 @@
 import { useRef, useState, useCallback, useEffect } from 'react';
 import { DiagnosisAssistantResponse, Gender } from '../../types';
 import PartPopup from '../ui/PartPopup';
+import { NavigationMenu } from '@/app/components/ui/NavigationMenu';
+import { useTranslation } from '@/app/i18n';
 import { useHumanAPI } from '@/app/hooks/useHumanAPI';
 import DesktopControls from './DesktopControls';
 import MobileControls from './MobileControls';
@@ -25,6 +27,7 @@ export default function HumanViewer({
   shouldResetModel = false,
 }: HumanViewerProps) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
+  const { t } = useTranslation();
   const {
     selectedGroups,
     selectedExerciseGroupsRef,
@@ -586,20 +589,19 @@ export default function HumanViewer({
   }, []);
 
   return (
-    <div
-      className="flex flex-col md:flex-row relative w-screen overflow-hidden"
-      style={{ height: isMobile ? '100svh' : undefined }}
-    >
-      {/* Fullscreen overlay when dragging */}
-      {isDragging && (
-        <div className="fixed inset-0 z-50" style={{ cursor: 'ew-resize' }} />
-      )}
+    <div className="flex flex-col w-screen h-[100dvh] overflow-hidden">
+      <NavigationMenu mobileFloatingButton />
+      <div className="flex-1 flex flex-col md:flex-row relative min-h-0">
+        {/* Fullscreen overlay when dragging */}
+        {isDragging && (
+          <div className="fixed inset-0 z-50" style={{ cursor: 'ew-resize' }} />
+        )}
 
-      {/* Model Viewer Container */}
-      <div
-        className="flex-1 relative bg-black flex flex-col"
-        style={{ minWidth: `${minChatWidth}px` }}
-      >
+        {/* Model Viewer Container */}
+        <div
+          className="flex-1 relative bg-black flex flex-col"
+          style={{ minWidth: `${minChatWidth}px` }}
+        >
         {isChangingModel && (
           <div className="absolute inset-0 z-50 bg-black flex items-center justify-center">
             <div className="text-white text-xl">
@@ -610,19 +612,19 @@ export default function HumanViewer({
           </div>
         )}
         {/* Mobile: stable visual viewport height; Desktop: full height */}
-        <div
-          className="md:h-screen w-full"
-          style={{
-            height: isMobile ? 'calc(100svh - var(--sheet-height))' : '100dvh',
-            position: 'relative',
-            top: 0,
-            left: 0,
-            right: 0,
-            overscrollBehavior: isMobile ? 'none' : undefined,
-            zIndex: 0,
-          }}
-          ref={viewerWrapperRef}
-        >
+          <div
+            className="w-full"
+            style={{
+              height: isMobile ? 'calc(100svh - var(--sheet-height))' : '100%',
+              position: 'relative',
+              top: 0,
+              left: 0,
+              right: 0,
+              overscrollBehavior: isMobile ? 'none' : undefined,
+              zIndex: 0,
+            }}
+            ref={viewerWrapperRef}
+          >
           <iframe
             id="myViewer"
             ref={iframeRef}
@@ -719,6 +721,7 @@ export default function HumanViewer({
           />
         </div>
       )}
+      </div>
     </div>
   );
 }

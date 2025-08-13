@@ -9,6 +9,7 @@ import { format } from 'date-fns';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from '@/app/i18n/TranslationContext';
 import { nb, enUS } from 'date-fns/locale';
+import { NavigationMenu } from '@/app/components/ui/NavigationMenu';
 
 function ProgramsContent() {
   const { userPrograms, isLoading, toggleActiveProgram, loadUserPrograms, programStatus } =
@@ -244,10 +245,10 @@ function ProgramsContent() {
     })();
     return (
       <div className="container mx-auto h-full flex flex-col">
-        {/* Fixed header containing both title and buttons */}
-        <div className="sticky top-0 bg-gray-900 z-10 px-4 pb-4 pt-4">
-          {/* Title section */}
-          <div className="flex items-center justify-between mb-4">
+        {/* Header containing title and buttons */}
+        <div className="bg-gray-900 px-4 pb-4 pt-4">
+          {/* Title section (desktop only) */}
+          <div className="hidden md:flex items-center justify-between mb-4">
             <div className="w-10"></div>
             <h1 className="text-app-title text-center text-white">
               {t('programs.title')}
@@ -324,10 +325,10 @@ function ProgramsContent() {
 
   return (
     <div className="container mx-auto h-full flex flex-col">
-      {/* Fixed header containing both title and buttons */}
-      <div className="sticky top-0 bg-gray-900 z-10 px-4 pb-4 pt-4">
-        {/* Title section */}
-        <div className="flex items-center justify-between mb-4">
+      {/* Header containing title and buttons */}
+      <div className="bg-gray-900 px-4 pb-4 pt-4">
+        {/* Title section (desktop only) */}
+        <div className="hidden md:flex items-center justify-between mb-4">
           <div className="w-10"></div>
           <h1 className="text-app-title text-center text-white">
             {t('programs.title')}
@@ -395,8 +396,8 @@ function ProgramsContent() {
         </div>
       </div>
 
-      {/* Scrollable program list */}
-      <div className="flex-1 overflow-y-auto px-4 py-6">
+      {/* Program list */}
+      <div className="flex-1 px-4 py-6">
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 pb-8">
           {programStatus === ProgramStatus.Generating && (
               <div className="relative bg-gray-800/50 rounded-xl overflow-hidden ring-1 ring-gray-700/50 transition-colors duration-200 p-5 flex flex-col h-full">
@@ -704,8 +705,10 @@ function ProgramsContent() {
 }
 
 export default function ProgramsPage() {
+  const { t } = useTranslation();
   return (
     <div className="min-h-screen bg-gray-900 text-white flex flex-col">
+      <NavigationMenu mobileTitle={t('nav.programs')} />
       <Suspense fallback={null}>
         <ProgramsContent />
       </Suspense>

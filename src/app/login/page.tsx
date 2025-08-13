@@ -3,6 +3,7 @@
 import { useRouter, useSearchParams } from 'next/navigation';
 import { AuthForm } from '@/app/components/auth/AuthForm';
 import { useEffect, useState, Suspense } from 'react';
+import { NavigationMenu } from '@/app/components/ui/NavigationMenu';
 
 function LoginPageContent() {
   const router = useRouter();
@@ -19,6 +20,37 @@ function LoginPageContent() {
   }, [searchParams]);
 
   const handleSkip = () => {
+    // If user just logged out or deleted account, always go home
+    const justLoggedOut = typeof window !== 'undefined' && window.sessionStorage.getItem('justLoggedOut');
+    const accountDeleted = typeof window !== 'undefined' && window.sessionStorage.getItem('accountDeleted');
+    if (justLoggedOut || accountDeleted) {
+      window.sessionStorage.removeItem('justLoggedOut');
+      window.sessionStorage.removeItem('accountDeleted');
+      router.push('/');
+      return;
+    }
+
+    // Prefer same-origin referrer to avoid leaving the app
+    if (typeof document !== 'undefined' && document.referrer) {
+      try {
+        const ref = new URL(document.referrer);
+        if (ref.origin === window.location.origin && !ref.pathname.startsWith('/login')) {
+          const path = `${ref.pathname}${ref.search}${ref.hash}`;
+          router.push(path);
+          return;
+        }
+      } catch {
+        // ignore URL parse errors
+      }
+    }
+
+    // Then try browser history
+    if (typeof window !== 'undefined' && window.history.length > 1) {
+      router.back();
+      return;
+    }
+
+    // Final fallback
     router.push('/');
   };
   
@@ -35,8 +67,11 @@ function LoginPageContent() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-      <AuthForm onSkip={handleSkip} isSaveContext={isSaveContext} />
+    <div className="min-h-screen bg-gray-900 text-white flex flex-col">
+      <NavigationMenu mobileTitle="Sign in" />
+      <div className="flex-1 flex items-center justify-center">
+        <AuthForm onSkip={handleSkip} isSaveContext={isSaveContext} />
+      </div>
     </div>
   );
 }

@@ -18,6 +18,7 @@ import {
 import { searchYouTubeVideo } from '@/app/utils/youtube';
 import { ErrorDisplay } from '@/app/components/ui/ErrorDisplay';
 import { useTranslation } from '@/app/i18n';
+import { NavigationMenu } from '@/app/components/ui/NavigationMenu';
 
 function ProgramPageContent({
   isCustomProgram,
@@ -275,8 +276,11 @@ function ProgramPageContent({
   const shouldShimmer =
     forceShimmer || (programStatus === ProgramStatus.Generating && !selectedProgram);
 
+  const mobileTitle = selectedProgram?.title || activeProgram?.title || t('program.defaultPageTitle');
+
   return (
-    <>
+    <div className="flex flex-col min-h-screen bg-gray-900 text-white">
+      <NavigationMenu mobileTitle={mobileTitle} />
       <ExerciseProgramPage
         program={selectedProgram}
         title={activeProgram?.title}
@@ -302,7 +306,7 @@ function ProgramPageContent({
       />
       {renderVideoModal()}
       {!isOverviewVisible && <AddToHomescreen />}
-    </>
+    </div>
   );
 }
 

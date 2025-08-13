@@ -15,6 +15,7 @@ import { UserProfile } from '../types/user';
 import { toast } from '../components/ui/ToastProvider';
 import { useTranslation } from '../i18n/TranslationContext';
 import { VerificationCodeInput } from '../components/ui/VerificationCodeInput';
+import { NavigationMenu } from '@/app/components/ui/NavigationMenu';
 
 export default function PrivacyPage() {
   const router = useRouter();
@@ -374,6 +375,7 @@ export default function PrivacyPage() {
 
   return (
     <div className="bg-gray-900 flex flex-col min-h-screen">
+      <NavigationMenu mobileTitle={t('privacy.title')} />
       <div className="py-3 px-4 flex items-center justify-between">
         {/* Back button */}
         <button

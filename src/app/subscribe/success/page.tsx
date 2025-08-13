@@ -6,6 +6,7 @@ import { useAuth } from '@/app/context/AuthContext';
 import { db } from '@/app/firebase/config';
 import { doc, getDoc } from 'firebase/firestore';
 import { useTranslation } from '@/app/i18n/TranslationContext';
+import { NavigationMenu } from '@/app/components/ui/NavigationMenu';
 
 export default function SubscribeSuccessPage() {
   const router = useRouter();
@@ -57,10 +58,13 @@ export default function SubscribeSuccessPage() {
   }, [user, loading, router, t]);
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center p-6">
-      <div className="text-center">
+    <div className="min-h-screen bg-gray-900 text-white flex flex-col">
+      <NavigationMenu mobileTitle={t('subscribe.success.title')} />
+      <div className="flex-1 flex items-center justify-center p-6">
+        <div className="text-center">
         <div className="text-2xl font-semibold mb-2">{t('subscribe.success.title')}</div>
         <div className="text-gray-300">{statusText}</div>
+        </div>
       </div>
     </div>
   );

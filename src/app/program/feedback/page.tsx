@@ -9,6 +9,7 @@ import { submitProgramFeedback } from '@/app/services/programFeedbackService';
 import { ProgramFeedback } from '@/app/components/ui/ProgramFeedbackQuestionnaire';
 import { useTranslation } from '@/app/i18n';
 import { Exercise } from '@/app/types/program';
+import { NavigationMenu } from '@/app/components/ui/NavigationMenu';
 
 // Helper function to get next Monday's date
 function getNextMonday(d: Date): Date {
@@ -139,7 +140,8 @@ function FeedbackPageContent() {
   }
 
   return (
-    <div className="bg-gray-900 min-h-screen">
+    <div className="bg-gray-900 min-h-screen flex flex-col">
+      <NavigationMenu mobileTitle={t('programFeedback.pageTitle')} />
       <ProgramFeedbackQuestionnaire
         onSubmit={handleFeedbackSubmit}
         onCancel={handleFeedbackCancel}

@@ -18,6 +18,7 @@ import {
 } from '@/app/types/program';
 import { UserProfile } from '@/app/types/user';
 import { useTranslation } from '../i18n';
+import { NavigationMenu } from '@/app/components/ui/NavigationMenu';
 import {
   getTranslatedTargetBodyParts,
   getTranslatedExerciseEnvironments,
@@ -1817,6 +1818,7 @@ export default function ProfilePage() {
 
   return (
     <>
+      <NavigationMenu mobileTitle={t('nav.profile')} />
       <style jsx global>{`
         .phone-input-container .PhoneInput {
           display: flex;
@@ -1906,7 +1908,7 @@ export default function ProfilePage() {
       <div className="bg-gray-900 flex flex-col min-h-screen">
         {' '}
         {/* Removed fixed inset-0, added min-h-screen */}
-        <div className="py-3 px-4 flex items-center justify-between">
+        <div className="py-3 px-4 items-center justify-between hidden md:flex">
           {/* Empty spacer to balance the title */}
           <div className="w-10"></div>
           <div className="flex flex-col items-center">

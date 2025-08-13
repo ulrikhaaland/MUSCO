@@ -11,6 +11,7 @@ import { getStorage, ref, getDownloadURL } from 'firebase/storage';
 import { storage } from '@/app/firebase/config';
 import { useTranslation } from '@/app/i18n/TranslationContext';
 import { logAnalyticsEvent } from '../../../utils/analytics';
+import { NavigationMenu } from '@/app/components/ui/NavigationMenu';
 
 function ErrorDisplay({ error }: { error: Error }) {
   return (
@@ -487,7 +488,8 @@ export default function DayDetailPage() {
 
   return (
     <div className="bg-gray-900 min-h-screen z-50 flex flex-col">
-      <div className="py-3 px-4 flex items-center justify-center">
+      <NavigationMenu mobileTitle={selectedProgram?.title || dayName || t('program.defaultPageTitle')} />
+      <div className="py-3 px-4 items-center justify-center hidden md:flex">
         <h1 className="text-app-title text-center">{dayName}</h1>
       </div>
       <div className="flex-1">

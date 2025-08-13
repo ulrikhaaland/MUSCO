@@ -88,32 +88,58 @@ function ProgramViewShimmer() {
         </div>
 
         {/* Week tabs shimmer */}
-        <div className="mb-3 overflow-x-auto scrollbar-hide sticky top-0 z-10 bg-gray-900 pb-2 max-w-full">
-          <div className="flex space-x-2 w-max">
+        {/* Mobile: grid contained in viewport; Desktop: horizontal tabs */}
+        <div className="mb-3 sticky top-0 z-10 bg-gray-900 pb-2">
+          <div className="sm:hidden grid grid-cols-2 gap-2">
             {[0,1].map((i) => (
-              <div
-                key={i}
-                className="px-6 py-3 rounded-lg bg-gray-800/50 text-gray-400 relative shrink-0"
-              >
-                <div className="shimmer h-4 w-20 sm:w-24 md:w-28 bg-gray-700 rounded" />
-                <span className="block mt-1 shimmer h-3 w-24 sm:w-28 md:w-32 bg-gray-700/70 rounded" />
+              <div key={i} className="rounded-lg bg-gray-800/50 p-3">
+                <div className="shimmer h-4 w-24 bg-gray-700 rounded" />
+                <div className="mt-1 shimmer h-3 w-28 bg-gray-700/70 rounded" />
               </div>
             ))}
+          </div>
+          <div className="hidden sm:block">
+            <div className="overflow-x-auto scrollbar-hide max-w-full">
+              <div className="flex space-x-2 w-max">
+                {[0,1].map((i) => (
+                  <div
+                    key={i}
+                    className="px-6 py-3 rounded-lg bg-gray-800/50 text-gray-400 relative shrink-0"
+                  >
+                    <div className="shimmer h-4 w-24 md:w-28 bg-gray-700 rounded" />
+                    <span className="block mt-1 shimmer h-3 w-28 md:w-32 bg-gray-700/70 rounded" />
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
 
         {/* Day tabs shimmer */}
-        <div className="overflow-x-auto scrollbar-hide mb-6 max-w-full">
-          <div className="flex space-x-2 w-max">
+        {/* Mobile: wrapped grid contained in viewport; Desktop: horizontal scroller */}
+        <div className="mb-6">
+          <div className="sm:hidden grid grid-cols-4 gap-2">
             {Array.from({ length: 7 }).map((_, i) => (
-              <div
-                key={i}
-                className={`px-6 py-3 rounded-lg bg-gray-800/60 text-gray-400 flex flex-col items-center shrink-0`}
-              >
-                <span className="shimmer h-3 w-10 sm:w-12 bg-gray-700 rounded mb-1" />
-                <span className="shimmer h-3 w-14 sm:w-16 bg-gray-700/70 rounded" />
+              <div key={i} className="px-3 py-2 rounded-lg bg-gray-800/60 text-gray-400 flex flex-col items-center">
+                <span className="shimmer h-3 w-10 bg-gray-700 rounded mb-1" />
+                <span className="shimmer h-3 w-12 bg-gray-700/70 rounded" />
               </div>
             ))}
+          </div>
+          <div className="hidden sm:block">
+            <div className="overflow-x-auto scrollbar-hide max-w-full">
+              <div className="flex space-x-2 w-max">
+                {Array.from({ length: 7 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className="px-6 py-3 rounded-lg bg-gray-800/60 text-gray-400 flex flex-col items-center shrink-0"
+                  >
+                    <span className="shimmer h-3 w-12 bg-gray-700 rounded mb-1" />
+                    <span className="shimmer h-3 w-16 bg-gray-700/70 rounded" />
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
 
@@ -668,40 +694,33 @@ export function ExerciseProgramPage({
             @keyframes shimmerX { 0% { transform: translateX(-100%);} 100% { transform: translateX(100%); } }
           `}</style>
 
-          {/* Custom header with title only */}
+          {/* Custom header with title only (desktop only) */}
           {shimmer ? (
             <ProgramViewShimmer />
           ) : (
-            <>
-              <div className="py-3 px-4 flex items-center justify-between">
-                {/* Empty spacer with same width as menu button to balance the title */}
-                <div className="w-10"></div>
-                <div className="flex flex-col items-center">
-                  <>
-                    <h1 className="text-app-title text-center">
-                      {title ||
-                        (type === ProgramType.Recovery
-                          ? t('program.recoveryProgramTitle')
-                          : t('program.exerciseProgramTitle'))}
-                    </h1>
-                    {!isCustomProgram &&
-                      (isActive ? (
-                        <div className="mt-1 px-2 py-0.5 bg-green-500/20 text-green-300 text-xs rounded-full flex items-center">
-                          <span className="w-2 h-2 rounded-full bg-green-400 mr-1"></span>
-                          {t('exerciseProgram.badge.active')}
-                        </div>
-                      ) : (
-                        <div className="mt-1 px-2 py-0.5 bg-gray-500/20 text-gray-300 text-xs rounded-full flex items-center">
-                          <span className="w-2 h-2 rounded-full bg-gray-400 mr-1"></span>
-                          {t('exerciseProgram.badge.inactive')}
-                        </div>
-                      ))}
-                  </>
-                </div>
-                {/* Space for menu button */}
-                <div className="w-10"></div>
+            <div className="hidden md:flex py-3 px-4 items-center justify-center">
+              <div className="flex flex-col items-center">
+                <h1 className="text-app-title text-center">
+                  {title ||
+                    (type === ProgramType.Recovery
+                      ? t('program.recoveryProgramTitle')
+                      : t('program.exerciseProgramTitle'))}
+                </h1>
+                {!isCustomProgram && (
+                  isActive ? (
+                    <div className="mt-1 px-2 py-0.5 bg-green-500/20 text-green-300 text-xs rounded-full flex items-center">
+                      <span className="w-2 h-2 rounded-full bg-green-400 mr-1"></span>
+                      {t('exerciseProgram.badge.active')}
+                    </div>
+                  ) : (
+                    <div className="mt-1 px-2 py-0.5 bg-gray-500/20 text-gray-300 text-xs rounded-full flex items-center">
+                      <span className="w-2 h-2 rounded-full bg-gray-400 mr-1"></span>
+                      {t('exerciseProgram.badge.inactive')}
+                    </div>
+                  )
+                )}
               </div>
-            </>
+            </div>
           )}
 
           {/* Program Overview Modal - REMOVED - Now using inline week-specific overview card */}

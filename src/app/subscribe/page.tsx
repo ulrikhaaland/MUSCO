@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/app/context/AuthContext';
 import { useState } from 'react';
 import { useTranslation } from '@/app/i18n/TranslationContext';
+import { NavigationMenu } from '@/app/components/ui/NavigationMenu';
 
 export default function SubscribePage() {
   const { user } = useAuth();
@@ -47,7 +48,9 @@ export default function SubscribePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white px-6 py-10">
+    <div className="min-h-screen bg-gray-900 text-white flex flex-col">
+      <NavigationMenu mobileTitle={t('subscribe.title')} />
+      <div className="px-6 py-10">
       <div className="mx-auto max-w-5xl">
         {/* Hero */}
         <div className="text-center mb-10">
@@ -139,6 +142,7 @@ export default function SubscribePage() {
             <div className="text-xs text-gray-500">{t('subscribe.footer.note')}</div>
           </div>
         </div>
+      </div>
       </div>
     </div>
   );

@@ -374,7 +374,7 @@ export function ExerciseProgramCalendar({
 
   return (
     <div className="bg-gray-900 min-h-screen flex flex-col">
-      <div className="py-3 px-4 flex items-center justify-between">
+      <div className="py-3 px-4 items-center justify-between hidden md:flex">
         {/* Empty spacer with same width as menu button to balance the title */}
         <div className="w-10"></div>
         <div className="flex flex-col items-center">

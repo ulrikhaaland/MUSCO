@@ -6,6 +6,7 @@ import { ExerciseProgramCalendar } from '@/app/components/ui/ExerciseProgramCale
 import { useUser } from '@/app/context/UserContext';
 import { ProgramDay } from '@/app/types/program';
 import { useTranslation } from '@/app/i18n/TranslationContext';
+import { NavigationMenu } from '@/app/components/ui/NavigationMenu';
 
 export default function CalendarPage() {
   const router = useRouter();
@@ -56,10 +57,13 @@ export default function CalendarPage() {
   };
 
   return (
-    <ExerciseProgramCalendar
-      program={program}
-      dayName={getDayName}
-      onDaySelect={handleDaySelect}
-    />
+    <div className="min-h-screen bg-gray-900 text-white flex flex-col">
+      <NavigationMenu mobileTitle={t('nav.calendar')} />
+      <ExerciseProgramCalendar
+        program={program}
+        dayName={getDayName}
+        onDaySelect={handleDaySelect}
+      />
+    </div>
   );
 }

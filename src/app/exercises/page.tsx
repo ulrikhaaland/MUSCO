@@ -9,6 +9,7 @@ import { storage } from '../firebase/config';
 import { searchYouTubeVideo } from '../utils/youtube';
 import Chip from '../components/ui/Chip';
 import { useTranslation } from '../i18n/TranslationContext';
+import { NavigationMenu } from '@/app/components/ui/NavigationMenu';
 
 interface BodyPartExercises {
   [bodyPart: string]: Exercise[];
@@ -817,6 +818,7 @@ export default function AvailableExercisesPage() {
 
   return (
     <div className="w-full bg-gray-900 min-h-screen text-white">
+      <NavigationMenu mobileTitle="Exercises" />
       <div className="max-w-4xl mx-auto px-4 py-8 space-y-8">
         <h1 className="text-3xl font-bold text-center text-indigo-200 mb-8">Available Exercises</h1>
         

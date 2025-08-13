@@ -1,12 +1,14 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import { NavigationMenu } from '@/app/components/ui/NavigationMenu';
 
 export default function PrivacyPolicyPage() {
   const router = useRouter();
 
   return (
     <div className="bg-gray-900 flex flex-col min-h-screen">
+      <NavigationMenu mobileTitle="Privacy Policy" />
       <div className="py-3 px-4 flex items-center justify-between">
         {/* Back button */}
         <button

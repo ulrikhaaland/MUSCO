@@ -501,6 +501,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       window.localStorage.removeItem('emailForSignIn');
       window.localStorage.removeItem('codeRequestTimestamp');
 
+      // Mark that this navigation comes from an explicit logout
+      try {
+        window.sessionStorage.setItem('justLoggedOut', 'true');
+      } catch {}
+
       // Add a small delay before navigation to ensure loader state is updated
       setTimeout(() => {
         // Use the router for a cleaner transition

@@ -99,7 +99,7 @@ export default function LandingPage() {
   const router = useRouter();
   const [modalOpen, setModalOpen] = useState<null | string>(null);
   const [pricingAnnual, setPricingAnnual] = useState(true);
-  const [showAllPrograms] = useState(false);
+  const [showAllPrograms, setShowAllPrograms] = useState(false);
   const programSummaries: Record<string, string> = {
     'lower-back':
       'Stabilize core and restore lumbar mobility; posture and hinge control.',
@@ -340,7 +340,7 @@ export default function LandingPage() {
               goAppWith();
             } else {
               logAnalyticsEvent('hero_cta_click', { cta: 'workout' });
-              goAppWith();
+              router.push('/app/questionnaire');
             }
           }}
         />
@@ -418,6 +418,16 @@ export default function LandingPage() {
             </button>
           ))}
         </div>
+        {sortedPrograms.length > 6 && (
+          <div className="mt-6">
+            <button
+              onClick={() => setShowAllPrograms((s) => !s)}
+              className="px-4 py-2 rounded-md border border-white/20 text-white/90 hover:text-white hover:bg-white/5"
+            >
+              {showAllPrograms ? t('program.seeLess') : t('program.seeMore')}
+            </button>
+          </div>
+        )}
       </section>
 
       {/* shimmer styles removed */}
@@ -427,16 +437,25 @@ export default function LandingPage() {
         <h2 className="text-white text-2xl font-semibold mb-4">
           {t('landing.why.title')}
         </h2>
-        <ul className="grid gap-2 md:grid-cols-2 text-gray-200 list-disc pl-5">
+          <ul className="grid gap-2 md:grid-cols-2 text-gray-200 list-disc pl-5">
           <li>{t('landing.why.digitalTwin')}</li>
           <li>{t('landing.why.dualAssistants')}</li>
           <li>{t('landing.why.personalization')}</li>
           <li>{t('landing.why.safety')}</li>
           <li>{t('landing.why.speed')}</li>
         </ul>
-        <p className="text-xs text-gray-400 mt-3">
-          {t('landing.why.disclaimer')}
-        </p>
+          <div className="text-xs text-gray-400 mt-3 space-y-2">
+            <p>{t('landing.why.disclaimer')}</p>
+            <div>
+              <span className="block text-gray-300 font-medium">{t('landing.why.seekCare.title')}:</span>
+              <ul className="list-disc pl-5 mt-1 space-y-1">
+                <li>{t('landing.why.seekCare.fever')}</li>
+                <li>{t('landing.why.seekCare.trauma')}</li>
+                <li>{t('landing.why.seekCare.nightPain')}</li>
+                <li>{t('landing.why.seekCare.numbnessWeakness')}</li>
+              </ul>
+            </div>
+          </div>
       </section>
 
       {/* Optional fake demo */}
@@ -506,20 +525,62 @@ export default function LandingPage() {
             </label>
           </div>
           <div className="rounded-xl p-5 border border-white/15 bg-[#141922] text-gray-200">
-            <p className="text-3xl font-bold text-white">
-              {pricingAnnual
-                ? t('landing.pricing.annualPrice')
-                : t('landing.pricing.monthlyPrice')}
-            </p>
-            <p className="text-sm mt-1">{t('landing.pricing.note')}</p>
-            <div className="mt-4">
-              <button
-                onClick={() => router.push('/app')}
-                className="px-5 py-3 bg-indigo-600 text-white rounded-md hover:bg-indigo-500"
-              >
-                {t('landing.pricing.try')}
-              </button>
+            <div className="grid gap-4 md:grid-cols-2">
+              {/* Free tier */}
+              <div className="rounded-lg border border-white/10 p-4">
+                <div className="flex items-baseline justify-between">
+                  <div>
+                    <div className="text-sm text-white/80">{t('landing.pricing.tier.free')}</div>
+                    <div className="text-2xl font-semibold text-white">{t('landing.pricing.try')}</div>
+                  </div>
+                </div>
+                <ul className="mt-3 space-y-1 text-xs text-white/80">
+                  <li>• {t('landing.pricing.free.b1')}</li>
+                  <li>• {t('landing.pricing.free.b2')}</li>
+                  <li>• {t('landing.pricing.free.b3')}</li>
+                </ul>
+                <div className="mt-3">
+                  <button
+                    onClick={() => router.push('/app')}
+                    className="px-4 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-700"
+                  >
+                    {t('landing.pricing.try')}
+                  </button>
+                </div>
+              </div>
+
+              {/* Premium tier */}
+              <div className="rounded-lg border border-white/10 p-4">
+                <div className="flex items-baseline justify-between">
+                  <div>
+                    <div className="text-sm text-white/80">{t('landing.pricing.tier.premium')}</div>
+                    <div className="text-2xl font-semibold text-white">
+                      {pricingAnnual ? t('landing.pricing.annualPrice') : t('landing.pricing.monthlyPrice')}
+                    </div>
+                  </div>
+                </div>
+                <ul className="mt-3 space-y-1 text-xs text-white/80">
+                  <li>• {t('landing.pricing.premium.b1')}</li>
+                  <li>• {t('landing.pricing.premium.b2')}</li>
+                  <li>• {t('landing.pricing.premium.b3')}</li>
+                </ul>
+                <div className="mt-3 flex items-center gap-3">
+                  <button
+                    onClick={() => router.push('/subscribe')}
+                    className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-500"
+                  >
+                    {t('subscribe.button.choose')}
+                  </button>
+                  <button
+                    onClick={() => router.push('/subscribe')}
+                    className="px-4 py-2 border border-white/20 text-white rounded-md hover:bg-white/5"
+                  >
+                    {t('landing.pricing.seePlans')}
+                  </button>
+                </div>
+              </div>
             </div>
+            <p className="text-sm mt-4">{t('landing.pricing.note')}</p>
           </div>
         </section>
       )}

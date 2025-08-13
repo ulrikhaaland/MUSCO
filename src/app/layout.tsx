@@ -5,7 +5,6 @@ import './globals.css';
 import { useEffect, useState } from 'react';
 import { getAnalytics } from 'firebase/analytics';
 import { SafeArea } from './components/ui/SafeArea';
-import { NavigationMenu } from './components/ui/NavigationMenu';
 import { app } from './firebase/config';
 import { AuthProvider } from './context/AuthContext';
 import { UserProvider } from './context/UserContext';
@@ -15,7 +14,7 @@ import BlockingLoader from './components/ui/BlockingLoader';
 import { I18nWrapper } from './i18n/setup';
 import { isSignInWithEmailLink } from 'firebase/auth';
 import { auth } from './firebase/config';
-import { usePathname, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { SafeAreaPWA } from './components/ui/SafeAreaPWA';
 
 // const geistSans = localFont({
@@ -35,7 +34,6 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const router = useRouter();
-  const pathname = usePathname();
   const [isMounted, setIsMounted] = useState(false);
 
   // Handle mounting to prevent hydration mismatch
@@ -179,8 +177,6 @@ export default function RootLayout({
                   <SafeAreaPWA>
                     <SafeArea className="h-full">
                       <div className="flex-1">{children}</div>
-                      {/* Do not render bottom drawer nav on marketing landing */}
-                      {pathname !== '/' && <NavigationMenu />}
                     </SafeArea>
                   </SafeAreaPWA>
                 </ToastProvider>
