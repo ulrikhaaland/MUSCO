@@ -88,8 +88,8 @@ function ProgramViewShimmer() {
         </div>
 
         {/* Week tabs shimmer */}
-        <div className="mb-3 overflow-x-auto scrollbar-hide sticky top-0 z-10 bg-gray-900 pb-2">
-          <div className="flex space-x-2 min-w-max">
+        <div className="mb-3 overflow-x-auto scrollbar-hide sticky top-0 z-10 bg-gray-900 pb-2 max-w-full">
+          <div className="flex space-x-2 w-max">
             {[0,1].map((i) => (
               <div
                 key={i}
@@ -103,8 +103,8 @@ function ProgramViewShimmer() {
         </div>
 
         {/* Day tabs shimmer */}
-        <div className="overflow-x-auto scrollbar-hide mb-6">
-          <div className="flex space-x-2 min-w-max">
+        <div className="overflow-x-auto scrollbar-hide mb-6 max-w-full">
+          <div className="flex space-x-2 w-max">
             {Array.from({ length: 7 }).map((_, i) => (
               <div
                 key={i}
@@ -588,7 +588,7 @@ export function ExerciseProgramPage({
   // When shimmering, render only the dedicated shimmer view to avoid duplicate shimmers below
   if (shimmer) {
     return (
-      <div className="bg-gray-900 flex flex-col min-h-screen text-white">
+      <div className="bg-gray-900 flex flex-col min-h-screen text-white overflow-x-hidden">
         <style>{scrollbarHideStyles}</style>
         <style jsx global>{`
           .shimmer { position: relative; overflow: hidden; }
@@ -643,7 +643,7 @@ export function ExerciseProgramPage({
 
   return (
     <div
-      className={`bg-gray-900 flex flex-col min-h-screen text-white ${
+      className={`bg-gray-900 flex flex-col min-h-screen text-white overflow-x-hidden ${
         isLoading ? 'items-center justify-center' : ''
       }`}
     >
