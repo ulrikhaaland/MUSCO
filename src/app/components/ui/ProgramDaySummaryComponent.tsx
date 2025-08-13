@@ -122,11 +122,15 @@ export function ProgramDaySummaryComponent({
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center justify-between w-full">
               <div className="flex items-center gap-3">
-                <h3 className="text-app-title text-white">{dayName}</h3>
+                <h3 className="text-app-title text-white">
+                  {shimmer ? (
+                    <span className="shimmer bg-gray-700 h-5 w-20 sm:w-24 inline-block rounded" />
+                  ) : (
+                    dayName
+                  )}
+                </h3>
                 {shimmer ? (
-                  <Chip variant="default" size="sm">
-                    {t('program.activity')}
-                  </Chip>
+                  <span className="shimmer inline-block h-5 w-16 sm:w-20 bg-gray-700 rounded-full" />
                 ) : day.isRestDay ? (
                   <Chip variant="highlight" size="sm">
                     {t('calendar.rest')}
@@ -138,7 +142,9 @@ export function ProgramDaySummaryComponent({
                 )}
               </div>
               <div className="flex items-center gap-6">
-                 {shimmer ? null : (
+                {shimmer ? (
+                  <div className="shimmer w-24 h-4 bg-gray-700 rounded" />
+                ) : (
                   day.duration !== undefined && day.duration > 0 && (
                   <div className="flex items-center text-gray-400">
                     <svg
