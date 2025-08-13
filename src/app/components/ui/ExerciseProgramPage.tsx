@@ -88,8 +88,8 @@ function ProgramViewShimmer() {
         </div>
 
         {/* Week tabs shimmer */}
-        <div className="mb-3 overflow-x-auto scrollbar-hide sticky top-0 z-10 bg-gray-900 pb-2">
-          <div className="flex space-x-2 min-w-max max-w-full">
+        <div className="mb-3 overflow-x-auto scrollbar-hide sticky top-0 z-10 bg-gray-900 pb-2" style={{ WebkitOverflowScrolling: 'touch' }}>
+          <div className="inline-flex space-x-2 min-w-max max-w-full">
             {[0,1].map((i) => (
               <div
                 key={i}
@@ -103,8 +103,8 @@ function ProgramViewShimmer() {
         </div>
 
         {/* Day tabs shimmer → static placeholders like Vercel (no animated sweep) */}
-        <div className="overflow-x-auto scrollbar-hide mb-6">
-          <div className="flex space-x-2 min-w-max max-w-full">
+        <div className="overflow-x-auto scrollbar-hide mb-6" style={{ WebkitOverflowScrolling: 'touch' }}>
+          <div className="inline-flex space-x-2 min-w-max max-w-full">
             {['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map((label, i) => (
               <div
                 key={i}
