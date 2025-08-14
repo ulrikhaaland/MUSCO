@@ -19,8 +19,14 @@ export function PartnerLogos() {
       <p className="text-center text-gray-500 text-sm tracking-wide uppercase">
         {t('partners.headline')}
       </p>
-      <div className="marquee-container w-full overflow-hidden opacity-60">
-        <div className="marquee gap-10 py-4">
+      <div
+        className="marquee-container w-full overflow-hidden"
+        style={{
+          maskImage: 'linear-gradient(to right, transparent, black 8%, black 92%, transparent)',
+          WebkitMaskImage: 'linear-gradient(to right, transparent, black 8%, black 92%, transparent)'
+        }}
+      >
+        <div className="marquee gap-8 sm:gap-12 md:gap-20 py-2 sm:py-3 md:py-4">
           {allLogos.map((src, idx) => (
             <Image
               key={src + idx}
@@ -28,7 +34,7 @@ export function PartnerLogos() {
               alt="Partner logo"
               width={140}
               height={48}
-              className="h-16 w-auto invert brightness-0"
+              className={`w-auto brightness-0 invert contrast-200 ${src.includes('/5.svg') ? 'h-10 sm:h-12 md:h-[3.75rem] relative top-[8px] sm:top-[10px] md:top-[14px]' : 'h-12 sm:h-14 md:h-[6rem]'}`}
               priority={idx < logos.length}
             />
           ))}

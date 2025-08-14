@@ -698,7 +698,7 @@ export function ExerciseProgramPage({
           {shimmer ? (
             <ProgramViewShimmer />
           ) : (
-            <div className="hidden md:flex py-3 px-4 items-center justify-center">
+            <div className="hidden md:flex py-3 px-4 items-center justify-center mt-12">
               <div className="flex flex-col items-center">
                 <h1 className="text-app-title text-center">
                   {title ||

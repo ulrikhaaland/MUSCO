@@ -318,13 +318,15 @@ function NavigationMenuContent({ mobileTitle, mobileFloatingButton }: { mobileTi
           >
             <Logo />
           </button>
-          <nav className="flex items-center gap-6 text-gray-300">
+          <nav className="flex items-center gap-3 text-gray-300">
             {navItems.map((item) => (
               <button
                 key={item.name}
                 onClick={() => handleNavigation(item.path, item.disabled)}
-                className={`hover:text-white focus:outline-none focus:ring-2 focus:ring-white/30 ${
-                  isActive(item.path) ? 'text-white' : ''
+                className={`px-3 py-1.5 rounded-md transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-white/30 ${
+                  isActive(item.path)
+                    ? 'text-white'
+                    : 'text-gray-400 hover:text-white hover:bg-white/5 hover:ring-1 hover:ring-white/10'
                 } ${item.disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
                 disabled={item.disabled}
               >
@@ -401,15 +403,15 @@ function NavigationMenuContent({ mobileTitle, mobileFloatingButton }: { mobileTi
         </div>
       ) : (
         <div className="md:hidden z-40 bg-gray-900/95 backdrop-blur">
-          <div className="px-4 py-3 flex items-center justify-between">
+          <div className="px-4 py-3 flex items-center justify-between gap-2 flex-nowrap">
             <div className="w-9" aria-hidden />
-            <div className="text-white text-lg font-semibold text-center whitespace-normal break-words leading-tight max-w-[80%]">
+            <div className="flex-1 min-w-0 text-white text-lg font-semibold text-center whitespace-normal break-words leading-tight">
               {mobileTitle}
             </div>
             {user ? (
               <button
                 onClick={() => setDrawerOpen(true)}
-                className="p-2 rounded-lg bg-gray-800 text-white hover:bg-gray-700 transition-colors"
+                className="p-2 rounded-lg bg-gray-800 text-white hover:bg-gray-700 transition-colors flex-shrink-0 whitespace-nowrap"
                 aria-label="Menu"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -431,7 +433,7 @@ function NavigationMenuContent({ mobileTitle, mobileFloatingButton }: { mobileTi
                       router.push('/login');
                     }
                   }}
-                  className="px-3 py-2 rounded-lg bg-gray-800 text-white hover:bg-gray-700 transition-colors"
+                  className="px-3 py-2 rounded-lg bg-gray-800 text-white hover:bg-gray-700 transition-colors flex-shrink-0 whitespace-nowrap"
                 >
                   {t('auth.signIn')}
                 </button>

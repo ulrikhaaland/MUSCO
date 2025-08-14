@@ -525,62 +525,44 @@ export default function LandingPage() {
             </label>
           </div>
           <div className="rounded-xl p-5 border border-white/15 bg-[#141922] text-gray-200">
-            <div className="grid gap-4 md:grid-cols-2">
-              {/* Free tier */}
-              <div className="rounded-lg border border-white/10 p-4">
-                <div className="flex items-baseline justify-between">
-                  <div>
-                    <div className="text-sm text-white/80">{t('landing.pricing.tier.free')}</div>
-                    <div className="text-2xl font-semibold text-white">{t('landing.pricing.try')}</div>
-                  </div>
-                </div>
-                <ul className="mt-3 space-y-1 text-xs text-white/80">
+            <p className="text-3xl font-bold text-white">
+              {pricingAnnual
+                ? t('landing.pricing.annualPrice')
+                : t('landing.pricing.monthlyPrice')}
+            </p>
+            <p className="text-sm mt-1">{t('landing.pricing.note')}</p>
+            <div className="mt-3 grid gap-4 md:grid-cols-2">
+              <div>
+                <div className="text-white/80 text-sm">{t('landing.pricing.tier.free')}</div>
+                <ul className="mt-1 space-y-1 text-xs text-white/80">
                   <li>• {t('landing.pricing.free.b1')}</li>
                   <li>• {t('landing.pricing.free.b2')}</li>
                   <li>• {t('landing.pricing.free.b3')}</li>
                 </ul>
-                <div className="mt-3">
-                  <button
-                    onClick={() => router.push('/app')}
-                    className="px-4 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-700"
-                  >
-                    {t('landing.pricing.try')}
-                  </button>
-                </div>
               </div>
-
-              {/* Premium tier */}
-              <div className="rounded-lg border border-white/10 p-4">
-                <div className="flex items-baseline justify-between">
-                  <div>
-                    <div className="text-sm text-white/80">{t('landing.pricing.tier.premium')}</div>
-                    <div className="text-2xl font-semibold text-white">
-                      {pricingAnnual ? t('landing.pricing.annualPrice') : t('landing.pricing.monthlyPrice')}
-                    </div>
-                  </div>
-                </div>
-                <ul className="mt-3 space-y-1 text-xs text-white/80">
+              <div>
+                <div className="text-white/80 text-sm">{t('landing.pricing.tier.premium')}</div>
+                <ul className="mt-1 space-y-1 text-xs text-white/80">
                   <li>• {t('landing.pricing.premium.b1')}</li>
                   <li>• {t('landing.pricing.premium.b2')}</li>
                   <li>• {t('landing.pricing.premium.b3')}</li>
                 </ul>
-                <div className="mt-3 flex items-center gap-3">
-                  <button
-                    onClick={() => router.push('/subscribe')}
-                    className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-500"
-                  >
-                    {t('subscribe.button.choose')}
-                  </button>
-                  <button
-                    onClick={() => router.push('/subscribe')}
-                    className="px-4 py-2 border border-white/20 text-white rounded-md hover:bg-white/5"
-                  >
-                    {t('landing.pricing.seePlans')}
-                  </button>
-                </div>
               </div>
             </div>
-            <p className="text-sm mt-4">{t('landing.pricing.note')}</p>
+            <div className="mt-4 flex items-center gap-3">
+              <button
+                onClick={() => router.push('/app')}
+                className="px-5 py-3 bg-indigo-600 text-white rounded-md hover:bg-indigo-500"
+              >
+                {t('landing.pricing.try')}
+              </button>
+              <button
+                onClick={() => router.push('/subscribe')}
+                className="px-5 py-3 border border-white/20 text-white rounded-md hover:bg-white/5"
+              >
+                {t('landing.pricing.seePlans')}
+              </button>
+            </div>
           </div>
         </section>
       )}

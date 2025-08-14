@@ -4,7 +4,11 @@ import { ProgramDaySummaryComponent } from './ProgramDaySummaryComponent';
 import { useUser } from '@/app/context/UserContext';
 import { useTranslation } from '@/app/i18n/TranslationContext';
 import { TextButton } from './TextButton';
-import { getStartOfWeek, getDayOfWeekMondayFirst, addDays } from '@/app/utils/dateutils';
+import {
+  getStartOfWeek,
+  getDayOfWeekMondayFirst,
+  addDays,
+} from '@/app/utils/dateutils';
 
 interface ExerciseProgramCalendarProps {
   program: ExerciseProgram; // This will still be the initially selected program
@@ -37,48 +41,48 @@ export function ExerciseProgramCalendar({
 
     for (const userProgram of activeUserPrograms) {
       for (const activeProgram of userProgram.programs) {
-      // Get the day of week (1 = Monday, 7 = Sunday) using standardized utility
-      const dayOfWeek = getDayOfWeekMondayFirst(date);
+        // Get the day of week (1 = Monday, 7 = Sunday) using standardized utility
+        const dayOfWeek = getDayOfWeekMondayFirst(date);
 
-      // Convert createdAt to Date if it's not already
-      const programStartDate = new Date(activeProgram.createdAt);
+        // Convert createdAt to Date if it's not already
+        const programStartDate = new Date(activeProgram.createdAt);
 
-      // Find the start of the week containing the program start date using standardized utility
-      const programWeekStart = getStartOfWeek(programStartDate);
+        // Find the start of the week containing the program start date using standardized utility
+        const programWeekStart = getStartOfWeek(programStartDate);
 
-      // Reset time part of the check date for accurate comparison
-      const checkDate = new Date(date);
-      checkDate.setHours(0, 0, 0, 0);
+        // Reset time part of the check date for accurate comparison
+        const checkDate = new Date(date);
+        checkDate.setHours(0, 0, 0, 0);
 
-      // Find the start of the week for the check date using standardized utility
-      const checkWeekStart = getStartOfWeek(checkDate);
+        // Find the start of the week for the check date using standardized utility
+        const checkWeekStart = getStartOfWeek(checkDate);
 
-      // Calculate the difference in weeks from the program start week
-      const weekDiff = Math.floor(
-        (checkWeekStart.getTime() - programWeekStart.getTime()) /
-          (7 * 24 * 60 * 60 * 1000)
-      );
+        // Calculate the difference in weeks from the program start week
+        const weekDiff = Math.floor(
+          (checkWeekStart.getTime() - programWeekStart.getTime()) /
+            (7 * 24 * 60 * 60 * 1000)
+        );
 
-      // Since each program now represents one week, we check if this is the right week
-      // If weekDiff is not 0, this program doesn't apply to this date
-      if (weekDiff !== 0) {
-        continue;
-      }
+        // Since each program now represents one week, we check if this is the right week
+        // If weekDiff is not 0, this program doesn't apply to this date
+        if (weekDiff !== 0) {
+          continue;
+        }
 
-      // Find the matching day in the week
-      const day = activeProgram.days.find((d) => d.day === dayOfWeek);
-      if (!day) continue;
+        // Find the matching day in the week
+        const day = activeProgram.days.find((d) => d.day === dayOfWeek);
+        if (!day) continue;
 
-      // Add this program day to the result
-      result.push({
-        day: {
-          ...day,
-          description: day.description,
-        },
-        program: activeProgram,
-        userProgram,
-        dayOfWeek,
-      });
+        // Add this program day to the result
+        result.push({
+          day: {
+            ...day,
+            description: day.description,
+          },
+          program: activeProgram,
+          userProgram,
+          dayOfWeek,
+        });
       }
     }
 
@@ -118,11 +122,8 @@ export function ExerciseProgramCalendar({
         >
           {monthYear}
         </button>
-        
-        <TextButton 
-          onClick={goToCurrentDay}
-          disabled={isCurrentDay()}
-        >
+
+        <TextButton onClick={goToCurrentDay} disabled={isCurrentDay()}>
           {t('calendar.today')}
         </TextButton>
 
@@ -171,12 +172,12 @@ export function ExerciseProgramCalendar({
   const renderWeekDays = () => {
     const weekDays = [
       t('calendar.weekdays.mon'),
-      t('calendar.weekdays.tue'), 
+      t('calendar.weekdays.tue'),
       t('calendar.weekdays.wed'),
       t('calendar.weekdays.thu'),
       t('calendar.weekdays.fri'),
       t('calendar.weekdays.sat'),
-      t('calendar.weekdays.sun')
+      t('calendar.weekdays.sun'),
     ];
     return (
       <div className="grid grid-cols-7 mb-2">
@@ -278,8 +279,8 @@ export function ExerciseProgramCalendar({
                         isProgramDay && isCurrentMonth && !isSelected
                           ? 'hover:bg-gray-700/50'
                           : !isProgramDay && isCurrentMonth && !isSelected
-                          ? 'hover:bg-gray-800/40'
-                          : ''
+                            ? 'hover:bg-gray-800/40'
+                            : ''
                       }
                       transition-all duration-200
                     `}
@@ -297,12 +298,12 @@ export function ExerciseProgramCalendar({
                               isToday
                                 ? 'text-indigo-300 font-semibold'
                                 : isSelected
-                                ? 'text-white font-semibold'
-                                : isCurrentMonth
-                                ? isProgramDay
-                                  ? 'text-gray-100'
-                                  : 'text-gray-300'
-                                : 'text-gray-600'
+                                  ? 'text-white font-semibold'
+                                  : isCurrentMonth
+                                    ? isProgramDay
+                                      ? 'text-gray-100'
+                                      : 'text-gray-300'
+                                    : 'text-gray-600'
                             }
                           `}
                         >
@@ -339,7 +340,9 @@ export function ExerciseProgramCalendar({
     if (programDays.length === 0) {
       return (
         <div className="mt-6 p-4 bg-gray-800/50 rounded-xl">
-          <p className="text-gray-400 text-center">{t('calendar.noProgramForThisDay')}</p>
+          <p className="text-gray-400 text-center">
+            {t('calendar.noProgramForThisDay')}
+          </p>
         </div>
       );
     }
@@ -374,15 +377,7 @@ export function ExerciseProgramCalendar({
 
   return (
     <div className="bg-gray-900 min-h-screen flex flex-col">
-      <div className="py-3 px-4 items-center justify-between hidden md:flex">
-        {/* Empty spacer with same width as menu button to balance the title */}
-        <div className="w-10"></div>
-        <div className="flex flex-col items-center">
-          <h1 className="text-app-title text-center">{t('calendar.title')}</h1>
-        </div>
-        {/* Space for menu button */}
-        <div className="w-10"></div>
-      </div>
+      <div className="mb-12 hidden md:flex"></div>
 
       <div className="flex-1">
         <div className="max-w-2xl mx-auto px-4 pt-8 pb-8">

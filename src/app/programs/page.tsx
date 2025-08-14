@@ -12,8 +12,13 @@ import { nb, enUS } from 'date-fns/locale';
 import { NavigationMenu } from '@/app/components/ui/NavigationMenu';
 
 function ProgramsContent() {
-  const { userPrograms, isLoading, toggleActiveProgram, loadUserPrograms, programStatus } =
-    useUser();
+  const {
+    userPrograms,
+    isLoading,
+    toggleActiveProgram,
+    loadUserPrograms,
+    programStatus,
+  } = useUser();
   const { deleteProgram } = useAuth();
   const router = useRouter();
   const { t, locale } = useTranslation();
@@ -26,8 +31,10 @@ function ProgramsContent() {
     {}
   );
   // Track locally deleted programs for immediate UI updates
-  const [deletedPrograms, setDeletedPrograms] = useState<Set<string>>(new Set());
-  
+  const [deletedPrograms, setDeletedPrograms] = useState<Set<string>>(
+    new Set()
+  );
+
   // Delete dialog state
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [programToDelete, setProgramToDelete] = useState<string | null>(null);
@@ -47,8 +54,6 @@ function ProgramsContent() {
     }
   }, [isLoading, userPrograms.length, loadUserPrograms]);
 
-
-
   // Handle delete program
   const handleDeleteProgram = (programId: string) => {
     setProgramToDelete(programId);
@@ -59,7 +64,7 @@ function ProgramsContent() {
     if (!programToDelete) return;
 
     // Optimistic UI update - remove immediately
-    setDeletedPrograms(prev => new Set(prev).add(programToDelete));
+    setDeletedPrograms((prev) => new Set(prev).add(programToDelete));
     setDeleteDialogOpen(false);
     const programIdToDelete = programToDelete;
     setProgramToDelete(null);
@@ -69,7 +74,7 @@ function ProgramsContent() {
       const success = await deleteProgram(programIdToDelete);
       if (!success) {
         // Revert on failure
-        setDeletedPrograms(prev => {
+        setDeletedPrograms((prev) => {
           const newSet = new Set(prev);
           newSet.delete(programIdToDelete);
           return newSet;
@@ -78,7 +83,7 @@ function ProgramsContent() {
       }
     } catch (error) {
       // Revert on error
-      setDeletedPrograms(prev => {
+      setDeletedPrograms((prev) => {
         const newSet = new Set(prev);
         newSet.delete(programIdToDelete);
         return newSet;
@@ -130,9 +135,9 @@ function ProgramsContent() {
   const handleProgramClick = (programIndex: number) => {
     const program = userPrograms[programIndex];
     if (!program) return;
-    
+
     console.log('📋 Program clicked:', program.title);
-    
+
     // Navigate to program page with the program ID
     router.push(`/program?id=${encodeURIComponent(program.docId)}`);
   };
@@ -213,9 +218,7 @@ function ProgramsContent() {
         <h2 className="text-2xl font-semibold mb-4">
           {t('programs.noPrograms')}
         </h2>
-        <p className="text-gray-300 text-center max-w-md">
-          {emptyText}
-        </p>
+        <p className="text-gray-300 text-center max-w-md">{emptyText}</p>
         <button
           onClick={() => router.push('/')}
           className="mt-8 px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition-colors duration-200"
@@ -244,18 +247,9 @@ function ProgramsContent() {
       return t('programs.noPrograms.message');
     })();
     return (
-      <div className="container mx-auto h-full flex flex-col">
+      <div className="mx-auto max-w-6xl w-full h-full flex flex-col">
         {/* Header containing title and buttons */}
         <div className="bg-gray-900 px-4 pb-4 pt-4">
-          {/* Title section (desktop only) */}
-          <div className="hidden md:flex items-center justify-between mb-4">
-            <div className="w-10"></div>
-            <h1 className="text-app-title text-center text-white">
-              {t('programs.title')}
-            </h1>
-            <div className="w-10"></div>
-          </div>
-
           {/* Filter and Sorting buttons */}
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
             <div className="flex space-x-2">
@@ -324,17 +318,11 @@ function ProgramsContent() {
   }
 
   return (
-    <div className="container mx-auto h-full flex flex-col">
+    <div className="mx-auto max-w-6xl w-full h-full flex flex-col">
       {/* Header containing title and buttons */}
       <div className="bg-gray-900 px-4 pb-4 pt-4">
         {/* Title section (desktop only) */}
-        <div className="hidden md:flex items-center justify-between mb-4">
-          <div className="w-10"></div>
-          <h1 className="text-app-title text-center text-white">
-            {t('programs.title')}
-          </h1>
-          <div className="w-10"></div>
-        </div>
+        <div className="hidden md:flex items-center justify-between mb-12"></div>
 
         {/* Filter and Sorting buttons */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
@@ -342,8 +330,8 @@ function ProgramsContent() {
             <button
               onClick={() => setFilterType('all')}
               className={`px-4 py-2 rounded-lg font-medium transition-colors duration-200 ${
-                filterType === 'all' 
-                  ? 'bg-indigo-600 text-white' 
+                filterType === 'all'
+                  ? 'bg-indigo-600 text-white'
                   : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white'
               }`}
             >
@@ -352,8 +340,8 @@ function ProgramsContent() {
             <button
               onClick={() => setFilterType('exercise')}
               className={`px-4 py-2 rounded-lg font-medium transition-colors duration-200 ${
-                filterType === 'exercise' 
-                  ? 'bg-indigo-600 text-white' 
+                filterType === 'exercise'
+                  ? 'bg-indigo-600 text-white'
                   : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white'
               }`}
             >
@@ -362,21 +350,21 @@ function ProgramsContent() {
             <button
               onClick={() => setFilterType('recovery')}
               className={`px-4 py-2 rounded-lg font-medium transition-colors duration-200 ${
-                filterType === 'recovery' 
-                  ? 'bg-indigo-600 text-white' 
+                filterType === 'recovery'
+                  ? 'bg-indigo-600 text-white'
                   : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white'
               }`}
             >
               {t('programs.filter.recovery')}
             </button>
           </div>
-          
+
           <div className="flex space-x-2">
             <button
               onClick={() => setSortBy('newest')}
               className={`px-4 py-2 rounded-lg font-medium transition-colors duration-200 ${
-                sortBy === 'newest' 
-                  ? 'bg-indigo-600 text-white' 
+                sortBy === 'newest'
+                  ? 'bg-indigo-600 text-white'
                   : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white'
               }`}
             >
@@ -385,8 +373,8 @@ function ProgramsContent() {
             <button
               onClick={() => setSortBy('oldest')}
               className={`px-4 py-2 rounded-lg font-medium transition-colors duration-200 ${
-                sortBy === 'oldest' 
-                  ? 'bg-indigo-600 text-white' 
+                sortBy === 'oldest'
+                  ? 'bg-indigo-600 text-white'
                   : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white'
               }`}
             >
@@ -400,7 +388,7 @@ function ProgramsContent() {
       <div className="flex-1 px-4 py-6">
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 pb-8">
           {programStatus === ProgramStatus.Generating && (
-              <div className="relative bg-gray-800/50 rounded-xl overflow-hidden ring-1 ring-gray-700/50 transition-colors duration-200 p-5 flex flex-col h-full">
+            <div className="relative bg-gray-800/50 rounded-xl overflow-hidden ring-1 ring-gray-700/50 transition-colors duration-200 p-5 flex flex-col h-full">
               {/* Title */}
               <div className="flex justify-between items-start mb-3">
                 <div className="shimmer h-6 w-48 bg-gray-700 rounded" />
@@ -441,11 +429,29 @@ function ProgramsContent() {
               </div>
 
               <style jsx>{`
-                .shimmer { position: relative; overflow: hidden; }
-                .shimmer::after { position: absolute; inset: 0; transform: translateX(-100%);
-                  background-image: linear-gradient(90deg, rgba(255,255,255,0) 0, rgba(255,255,255,0.08) 20%, rgba(255,255,255,0.16) 60%, rgba(255,255,255,0) 100%);
-                  animation: shimmer 1.5s infinite; content: ''; }
-                @keyframes shimmer { 100% { transform: translateX(100%); } }
+                .shimmer {
+                  position: relative;
+                  overflow: hidden;
+                }
+                .shimmer::after {
+                  position: absolute;
+                  inset: 0;
+                  transform: translateX(-100%);
+                  background-image: linear-gradient(
+                    90deg,
+                    rgba(255, 255, 255, 0) 0,
+                    rgba(255, 255, 255, 0.08) 20%,
+                    rgba(255, 255, 255, 0.16) 60%,
+                    rgba(255, 255, 255, 0) 100%
+                  );
+                  animation: shimmer 1.5s infinite;
+                  content: '';
+                }
+                @keyframes shimmer {
+                  100% {
+                    transform: translateX(100%);
+                  }
+                }
               `}</style>
             </div>
           )}
@@ -458,13 +464,13 @@ function ProgramsContent() {
             // Get the first exercise program from the list
             const exerciseProgram = program.programs[0];
 
-              return (
-                <div
-                  key={originalIndex}
-                  onClick={() => handleProgramClick(originalIndex)}
-                  className="relative bg-gray-800/50 rounded-xl overflow-hidden ring-1 ring-gray-700/50 transition-colors duration-200 hover:bg-gray-700/50 cursor-pointer group flex flex-col"
-                >
-                  <div className="p-5 flex flex-col h-full">
+            return (
+              <div
+                key={originalIndex}
+                onClick={() => handleProgramClick(originalIndex)}
+                className="relative bg-gray-800/50 rounded-xl overflow-hidden ring-1 ring-gray-700/50 transition-colors duration-200 hover:bg-gray-700/50 cursor-pointer group flex flex-col"
+              >
+                <div className="p-5 flex flex-col h-full">
                   {/* Program title and type */}
                   <div className="flex justify-between items-start mb-3">
                     <h2 className="text-xl font-medium text-white truncate pr-2">
@@ -478,9 +484,7 @@ function ProgramsContent() {
                   {/* Key Program Statistics */}
                   <div className="flex justify-between items-center mb-4">
                     <div className="text-center">
-                      <p className="text-xl font-semibold text-white">
-                        1
-                      </p>
+                      <p className="text-xl font-semibold text-white">1</p>
                       <p className="text-xs text-gray-400">
                         {t('programs.stats.weeks')}
                       </p>
@@ -510,7 +514,8 @@ function ProgramsContent() {
                   </div>
 
                   {/* Target areas or cardio summary */}
-                  {exerciseProgram.targetAreas && exerciseProgram.targetAreas.length > 0 ? (
+                  {exerciseProgram.targetAreas &&
+                  exerciseProgram.targetAreas.length > 0 ? (
                     <div className="mb-3">
                       <p className="text-xs text-gray-400 mb-1">
                         {t('programs.targetAreas')}
@@ -614,48 +619,48 @@ function ProgramsContent() {
                               ? t('programs.status.active')
                               : t('programs.status.inactive')}
                         </span>
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation(); // Prevent card click
-                          e.preventDefault(); // Prevent any default behavior
-                          handleToggleActive(e, originalIndex);
-                        }}
-                        className="relative inline-flex items-center cursor-pointer"
-                        aria-pressed={
-                          pendingToggles[program.docId] !== undefined
-                            ? pendingToggles[program.docId]
-                            : program.active
-                        }
-                        aria-label={
-                          program.active
-                            ? 'Deactivate program'
-                            : 'Activate program'
-                        }
-                      >
-                        <div
-                          className={`w-10 h-5 rounded-full relative ${
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation(); // Prevent card click
+                            e.preventDefault(); // Prevent any default behavior
+                            handleToggleActive(e, originalIndex);
+                          }}
+                          className="relative inline-flex items-center cursor-pointer"
+                          aria-pressed={
                             pendingToggles[program.docId] !== undefined
                               ? pendingToggles[program.docId]
-                                ? 'bg-green-600'
-                                : 'bg-gray-600 dark:bg-gray-700'
                               : program.active
-                                ? 'bg-green-600'
-                                : 'bg-gray-600 dark:bg-gray-700'
-                          }`}
+                          }
+                          aria-label={
+                            program.active
+                              ? 'Deactivate program'
+                              : 'Activate program'
+                          }
                         >
-                          <span
-                            className={`absolute top-[2px] left-[2px] bg-white border border-gray-300 rounded-full h-4 w-4 transition-all ${
+                          <div
+                            className={`w-10 h-5 rounded-full relative ${
                               pendingToggles[program.docId] !== undefined
                                 ? pendingToggles[program.docId]
-                                  ? 'translate-x-5 bg-white border-white'
-                                  : ''
+                                  ? 'bg-green-600'
+                                  : 'bg-gray-600 dark:bg-gray-700'
                                 : program.active
-                                  ? 'translate-x-5 bg-white border-white'
-                                  : ''
+                                  ? 'bg-green-600'
+                                  : 'bg-gray-600 dark:bg-gray-700'
                             }`}
-                          ></span>
-                        </div>
+                          >
+                            <span
+                              className={`absolute top-[2px] left-[2px] bg-white border border-gray-300 rounded-full h-4 w-4 transition-all ${
+                                pendingToggles[program.docId] !== undefined
+                                  ? pendingToggles[program.docId]
+                                    ? 'translate-x-5 bg-white border-white'
+                                    : ''
+                                  : program.active
+                                    ? 'translate-x-5 bg-white border-white'
+                                    : ''
+                              }`}
+                            ></span>
+                          </div>
                         </button>
                       </div>
                     </div>

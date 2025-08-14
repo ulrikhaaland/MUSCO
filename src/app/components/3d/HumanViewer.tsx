@@ -11,9 +11,10 @@ import MobileControls from './MobileControls';
 import { ExerciseQuestionnaire } from '../ui/ExerciseQuestionnaire';
 import { Question } from '@/app/types';
 import { ExerciseQuestionnaireAnswers, ProgramType } from '../../../../shared/types';
-import { useApp } from '@/app/context/AppContext';
+import { useApp, ProgramIntention } from '@/app/context/AppContext';
 import { useUser } from '@/app/context/UserContext';
 import { logAnalyticsEvent } from '@/app/utils/analytics';
+import { useExplainSelection } from '@/app/hooks/useExplainSelection';
 
 interface HumanViewerProps {
   gender: Gender;
@@ -27,8 +28,9 @@ export default function HumanViewer({
   shouldResetModel = false,
 }: HumanViewerProps) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
-  const { t } = useTranslation();
+  const { locale } = useTranslation();
   const {
+    intention,
     selectedGroups,
     selectedExerciseGroupsRef,
     selectedPart,
@@ -59,6 +61,26 @@ export default function HumanViewer({
   const [isResetting, setIsResetting] = useState(false);
   const { onQuestionnaireSubmit } = useUser();
   const [showQuestionnaire, setShowQuestionnaire] = useState(false);
+
+  // Explore explainer state
+  // Using BioDigital labels for anchoring; no manual screen position needed
+  const exploreOn = intention === ProgramIntention.None; // explore mode when no program intention
+  const languagePref = (locale?.toLowerCase() === 'nb' ? 'NB' : 'EN') as 'EN' | 'NB';
+  const explainer = useExplainSelection({
+    exploreOn,
+    selectedPart: selectedPart
+      ? {
+          id: selectedPart.objectId,
+          displayName: selectedPart.name,
+          partType: 'muscle',
+          side: 'unknown',
+        }
+      : null,
+    language: languagePref,
+    readingLevel: 'standard',
+  });
+
+  // moved below useHumanAPI
 
   useEffect(() => {
     const checkMobile = () => {
@@ -114,6 +136,54 @@ export default function HumanViewer({
     initialGender: gender,
     onZoom: (objectId?: string) => handleZoom(objectId),
   });
+
+  // Create a loading label immediately upon selection (runs after HumanAPI init)
+  useEffect(() => {
+    if (!humanRef?.current) return;
+    const human = humanRef.current;
+    const labelId = 'explainer_label';
+
+    if (!exploreOn || !selectedPart) {
+      try { human.send('labels.destroy', labelId); } catch {}
+      return;
+    }
+
+    try { human.send('labels.destroy', labelId); } catch {}
+
+    try {
+      human.send('labels.create', {
+        objectId: selectedPart.objectId,
+        labelId,
+        title: selectedPart.name,
+        description: 'Loading…',
+        labelOffset: [24, -8],
+        pinGlow: true,
+        flyTo: false,
+        collapseDescription: false,
+      });
+    } catch {}
+  }, [exploreOn, selectedPart, humanRef]);
+
+  // Update the label when explainer text arrives
+  useEffect(() => {
+    if (!humanRef?.current) return;
+    const human = humanRef.current;
+    const labelId = 'explainer_label';
+    if (!exploreOn || !selectedPart) return;
+    if (!explainer?.text) return;
+
+    try {
+      human.send('labels.update', {
+        labelId,
+        title: selectedPart.name,
+        description: explainer.text,
+        pinGlow: false,
+        labelOffset: [24, -8],
+        flyTo: false,
+        collapseDescription: false,
+      });
+    } catch {}
+  }, [exploreOn, selectedPart, explainer?.text, humanRef]);
 
   const handleZoom = (objectId?: string) => {
     // First get current camera info

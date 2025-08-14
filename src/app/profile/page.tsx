@@ -27,30 +27,6 @@ import {
   getTranslatedPlannedExerciseFrequencyOptions,
 } from '@/app/utils/programTranslation';
 
-// Custom hook to track window dimensions
-const useWindowDimensions = () => {
-  const [windowDimensions, setWindowDimensions] = useState({
-    width: typeof window !== 'undefined' ? window.innerWidth : 0,
-    height: typeof window !== 'undefined' ? window.innerHeight : 0,
-  });
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-
-    function handleResize() {
-      setWindowDimensions({
-        width: window.innerWidth,
-        height: window.innerHeight,
-      });
-    }
-
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  return windowDimensions;
-};
-
 // Add a constant for getFitnessLevels with descriptions
 const getFitnessLevels = (t: any) => [
   {
@@ -1908,15 +1884,7 @@ export default function ProfilePage() {
       <div className="bg-gray-900 flex flex-col min-h-screen">
         {' '}
         {/* Removed fixed inset-0, added min-h-screen */}
-        <div className="py-3 px-4 items-center justify-between hidden md:flex">
-          {/* Empty spacer to balance the title */}
-          <div className="w-10"></div>
-          <div className="flex flex-col items-center">
-            <h1 className="text-app-title text-center">{t('profile.title')}</h1>
-          </div>
-          {/* Empty spacer to balance the title */}
-          <div className="w-10"></div>
-        </div>
+        <div className="hidden md:flex items-center justify-between mb-12"></div>
         {/* Message display */}
         {message && (
           <div
@@ -3645,7 +3613,9 @@ export default function ProfilePage() {
                   <div className="rounded-xl ring-1 ring-gray-700/50 bg-gray-900/40 p-4">
                     <div className="flex items-start justify-between gap-4">
                       <div>
-                        <div className="text-white font-medium">Subscription</div>
+                        <div className="text-white font-medium">
+                          Subscription
+                        </div>
                         <div className="text-sm text-gray-300 mt-1">
                           {(() => {
                             const status = user?.profile?.subscriptionStatus;
@@ -3654,7 +3624,9 @@ export default function ProfilePage() {
                               status === 'active' ||
                               status === 'trialing';
                             const until = user?.profile?.currentPeriodEnd
-                              ? new Date(user.profile.currentPeriodEnd).toLocaleDateString()
+                              ? new Date(
+                                  user.profile.currentPeriodEnd
+                                ).toLocaleDateString()
                               : null;
                             if (isActive) {
                               return until
@@ -3677,7 +3649,8 @@ export default function ProfilePage() {
                                 body: JSON.stringify({ uid: user.uid }),
                               });
                               const data = await res.json();
-                              if (!res.ok) throw new Error(data?.error || 'Portal error');
+                              if (!res.ok)
+                                throw new Error(data?.error || 'Portal error');
                               window.location.href = data.url;
                             } catch (e) {
                               console.error('Portal error', e);
@@ -3691,9 +3664,12 @@ export default function ProfilePage() {
                           onClick={() => {
                             // Send to subscribe page if no active subscription
                             if (
-                              !(user?.profile?.isSubscriber ||
-                                user?.profile?.subscriptionStatus === 'active' ||
-                                user?.profile?.subscriptionStatus === 'trialing')
+                              !(
+                                user?.profile?.isSubscriber ||
+                                user?.profile?.subscriptionStatus ===
+                                  'active' ||
+                                user?.profile?.subscriptionStatus === 'trialing'
+                              )
                             ) {
                               router.push('/subscribe');
                             } else {
