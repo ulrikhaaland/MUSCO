@@ -15,10 +15,10 @@ The app's purpose is to make it easy and accessible for people to learn how to f
 #### Chat Interface
 The chat system provides an intelligent, contextual conversation experience with a dual‑mode assistant:
 
-**Dual‑mode Architecture (single assistant)**
+**Dual‑mode Architecture (shared thread)**
 - **Explore mode**: Educates about anatomy, biomechanics, and exercise principles
 - **Diagnosis mode**: Conducts structured pain assessment and generates recovery programs
-- **Mode control**: Frontend sets an explicit `chatMode` on follow‑ups; backend applies per‑run system instructions to a single Assistant (OpenAI Threads). One thread per chat simplifies persistence and retrieval.
+- **Mode control**: Frontend sets an explicit `chatMode` on follow‑ups; backend runs mode‑specific assistants (Explore and Diagnosis) on the same OpenAI Thread with per‑run system instructions, including a session‑language lock. One thread per chat simplifies persistence and retrieval.
 
 **Initial Options**
 When a body part is selected, users see three primary quick-start options:
@@ -89,9 +89,11 @@ The app enforces simple, transparent rules:
 ---
 
 ## State-of-the-Art LLM Integration
-- Powered by OpenAI's Assistants API (Threads) with per-run system instructions
+- Powered by OpenAI's Assistants API (Threads) with per‑run system instructions
+- Session‑language lock (SESSION_LANGUAGE) ensures all user‑visible text stays in the chosen language across the thread
 - **Explore mode**: Expert musculoskeletal education (exercise physiology, biomechanics, anatomy, PT principles)
 - **Diagnosis mode**: Structured pain assessment using evidence-based clinical questioning protocols
+- Models: Explore/Diagnosis assistants currently run on gpt‑4.1‑mini (Assistants support). Explain‑Selection uses Responses API with gpt‑5‑mini. Program generation uses Chat Completions: gpt‑5‑mini (initial) and gpt‑5 (follow‑ups).
 - Context-aware responses based on selected body part, user language preference, and conversation history
 - Advanced safety protocols with red flag detection for serious medical conditions
  
@@ -118,20 +120,19 @@ The app enforces simple, transparent rules:
 #### Example Workflow - Diagnosis Mode
 1. **Selection**: User selects shoulder on the 3D model
 2. **User Action**: User clicks "Find Pain" to enter diagnosis mode
-3. **Structured Assessment**: Diagnosis assistant conducts systematic 7-question clinical assessment:
+3. **Structured Assessment**: Diagnosis assistant conducts systematic 7‑question clinical assessment:
    - Onset and mechanism of injury
    - Specific pain location (finger-point precision)
-   - Pain intensity (0-10 scale)
+   - Pain intensity (0–10 via five bins: 1–2, 3–4, 5–6, 7–8, 9–10)
    - Pain character (sharp, dull, burning, aching)
    - Aggravating factors
    - Relieving factors
-   - Pain pattern (constant vs. movement-dependent)
+   - Pain pattern (derived from aggravating/relieving when possible; otherwise asked explicitly)
 4. **Follow-up Options**: Each question provides specific response choices (e.g., "Suddenly", "Gradually", "Unknown" for onset)
 5. **Safety Screening**: Red flag detection for serious conditions requiring immediate medical care
-6. **Program Selection**: Once assessment complete, users choose from three program options:
+6. **Program Selection**: Once assessment complete, users choose from two program options:
    - "Recovery Only" - Focus on healing and pain management
    - "Exercise + Recovery" - Combined approach with strengthening
-   - "Exercise Program" - Primary focus on fitness and performance
 
 ---
 

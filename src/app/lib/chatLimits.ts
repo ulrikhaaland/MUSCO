@@ -3,7 +3,7 @@
 export const ENFORCE_CHAT_LIMITS: boolean = (process.env.ENFORCE_CHAT_LIMITS ?? 'true') !== 'false';
 
 export const FREE_DAILY_TOKENS: number = parseInt(
-  process.env.NON_SUBSCRIBER_CHAT_DAILY_TOKENS ?? (process.env.NODE_ENV === 'production' ? '5000' : '200'),
+  process.env.NON_SUBSCRIBER_CHAT_DAILY_TOKENS ?? (process.env.NODE_ENV === 'production' ? '10000' : '200'),
   10
 );
 
