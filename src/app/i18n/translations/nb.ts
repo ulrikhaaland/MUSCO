@@ -817,6 +817,9 @@ const translations = {
   'exerciseProgram.overview.whatNotToDo': 'Hva man ikke bør gjøre',
   'exerciseProgram.overview.expectedOutcome': 'Forventet resultat',
   'exerciseProgram.overview.nextSteps': 'Neste trinn',
+  // Week Focus header and fallback
+  'exerciseProgram.weekFocus': 'Uke {{week}} fokus',
+  'exerciseProgram.weekFocus.summaryFallback': 'Fokusdetaljer tilgjengelig',
   'exerciseProgram.nextWeekCard.title': 'Klar for ditt neste program?',
   'exerciseProgram.nextWeekCard.description':
     'Del din tilbakemelding om denne ukens øvelser for å få ditt personlige program for neste uke',

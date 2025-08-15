@@ -840,6 +840,9 @@ const translations = {
   'exerciseProgram.overview.whatNotToDo': 'What Not To Do',
   'exerciseProgram.overview.expectedOutcome': 'Expected Outcome',
   'exerciseProgram.overview.nextSteps': 'Next Steps',
+  // Week Focus header and fallback
+  'exerciseProgram.weekFocus': 'Week {{week}} Focus',
+  'exerciseProgram.weekFocus.summaryFallback': 'Focus details available',
   'exerciseProgram.nextWeekCard.title': 'Ready for Your Next Program?',
   'exerciseProgram.nextWeekCard.description':
     "Share your feedback on this week's exercises to get your personalized program for next week",
