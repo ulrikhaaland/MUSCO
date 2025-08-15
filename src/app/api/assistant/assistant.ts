@@ -52,6 +52,17 @@ export async function sendMessage(
   payload: ChatPayload,
   onStream?: (content: string, payload?: ChatPayload) => void
 ): Promise<MessagesResponse> {
+  // Try to include user context for rate limiting if available
+  let userId: string | undefined;
+  let isSubscriber: boolean | undefined;
+  try {
+    const raw = window.localStorage.getItem('musco_user');
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      userId = parsed?.uid || undefined;
+      isSubscriber = !!parsed?.profile?.isSubscriber;
+    }
+  } catch {}
   const transformedPayload = {
     message: payload.message,
     userPreferences: payload.userPreferences,
@@ -62,7 +73,10 @@ export async function sendMessage(
     language: payload.language,
     diagnosisAssistantResponse: payload.diagnosisAssistantResponse,
     mode: payload.mode,
-    previousQuestions: payload.previousQuestions
+    previousQuestions: payload.previousQuestions,
+    // Prefer values provided by caller (useChat with useAuth) and fall back to localStorage
+    userId: (payload as any).userId ?? userId,
+    isSubscriber: (payload as any).isSubscriber ?? isSubscriber,
   };
 
   // Start both requests in parallel

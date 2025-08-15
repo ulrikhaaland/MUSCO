@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
-import OpenAI from 'openai';
+import { cookies } from 'next/headers';
+// import OpenAI from 'openai';
 import {
   getOrCreateAssistant,
   createThread,
@@ -7,19 +8,18 @@ import {
   getMessages,
   generateExerciseProgramWithModel,
   generateFollowUpExerciseProgram,
-  streamChatCompletion,
-  getChatCompletion,
   runAssistant,
+  streamRunResponse,
+  reserveFreeChatTokens,
+  reserveFreeChatTokensForAnon,
 } from '@/app/api/assistant/openai-server';
 import { OpenAIMessage } from '@/app/types';
 import { ProgramStatus } from '@/app/types/program';
-import { chatSystemPrompt } from '@/app/api/prompts/chatPrompt';
+import { diagnosisSystemPrompt } from '@/app/api/prompts/diagnosisPrompt';
+import { exploreSystemPrompt } from '@/app/api/prompts/explorePrompt';
 import { getOrCreateExploreAssistant, streamExploreResponse } from '@/app/api/assistant/explore-assistant';
 
-// Initialize OpenAI client
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+// OpenAI client not needed directly in this route after migration to helpers
 
 export async function POST(request: Request) {
   const handlerStartTime = performance.now();
@@ -52,12 +52,14 @@ export async function POST(request: Request) {
           );
         }
 
-        // Get message history first (for conversation context)
-        const previousMessages = await getMessages(threadId);
+        // We previously fetched messages for chat completions; kept for future context if needed
+        // const previousMessages = await getMessages(threadId);
         
-        // For explore mode, use dedicated assistant (no system prompt needed)
-        // For other modes, use chat completion with system prompt
-        const systemMessage = payload?.mode === 'explore' ? null : chatSystemPrompt;
+        // Build per-run instructions (merge strategy) and prepend a language lock
+        const basePrompt = payload?.mode === 'explore' ? exploreSystemPrompt : diagnosisSystemPrompt;
+        const sessionLanguage = (payload?.language || 'en').toLowerCase();
+        const languageLock = `\n<<LANGUAGE_LOCK>>\nSESSION_LANGUAGE=${sessionLanguage}\nRules:\n- All natural-language output (assistant bubble and followUpQuestions.question) must be in SESSION_LANGUAGE for the entire thread.\n- Do not switch languages mid-session unless SESSION_LANGUAGE changes.\n- JSON keys remain English (except user-provided content).\n<<LANGUAGE_LOCK_END>>\n`;
+        const systemMessage = `${languageLock}\n${basePrompt}`;
         
         // Store the new message in the thread for future reference
         const preStreamStartTime = performance.now();
@@ -69,6 +71,18 @@ export async function POST(request: Request) {
         console.log(
           `[API Route] Finished pre-stream OpenAI call (addMessage). Duration: ${preStreamEndTime - preStreamStartTime} ms`
         );
+
+        // Identify user context (subscriber or anonymous)
+        const anonCookieName = 'musco_anon_id';
+        const cookieStore = await cookies();
+        let anonId = cookieStore.get(anonCookieName)?.value;
+        let setCookie: string | undefined;
+        if (!anonId) {
+          // generate a simple anon id; cryptographically random is preferred if available
+          anonId = `anon_${Math.random().toString(36).slice(2)}_${Date.now()}`;
+          // set httpOnly cookie for 30 days
+          setCookie = `${anonCookieName}=${anonId}; Path=/; Max-Age=${30 * 24 * 60 * 60}; HttpOnly; SameSite=Lax`;
+        }
 
         if (stream) {
           // Set up streaming response
@@ -93,6 +107,21 @@ export async function POST(request: Request) {
 
                 if (payload?.mode === 'explore') {
                   const exploreAssistantId = await getOrCreateExploreAssistant();
+                  // Pre-reserve free-tier tokens for explore stream (best-effort)
+                  try {
+                    if (payload?.userId) {
+                      // Logged-in path (subscribers bypass in helper)
+                      await reserveFreeChatTokens(payload?.userId, undefined, payload?.isSubscriber);
+                    } else if (anonId) {
+                      // Anonymous path
+                      await reserveFreeChatTokensForAnon(anonId, undefined);
+                    }
+                  } catch {
+                    controller.enqueue(encoder.encode(`data: ${JSON.stringify({ payload: { error: 'free_limit_exceeded' } })}\n\n`));
+                    controller.enqueue(encoder.encode('data: [DONE]\n\n'));
+                    controller.close();
+                    return;
+                  }
                   await streamExploreResponse(threadId, exploreAssistantId, (content) => {
                     const openaiStreamChunkReceivedTime = performance.now();
                     if (!firstChunkSent) {
@@ -103,36 +132,31 @@ export async function POST(request: Request) {
                     if (!firstChunkSent) {
                       firstChunkSent = true;
                     }
-                  });
+                  }, systemMessage);
                 } else {
-                  // Stream using chat completions for diagnosis assistant
-                  await streamChatCompletion({
-                  threadId,
-                  messages: previousMessages,
-                  systemMessage,
-                  userMessage: payload,
-                  modelName: 'gpt-5-mini',
-                  onContent: (content) => {
-                    const openaiStreamChunkReceivedTime = performance.now();
-                    if (!firstChunkSent) {
-                      console.log(
-                        `[API Route] First chunk RECEIVED from OpenAI stream. Time since calling streamChatCompletion: ${openaiStreamChunkReceivedTime - callOpenAIStreamStartTime} ms`
-                      );
-                    }
-
-                    const chunk = encoder.encode(
-                      `data: ${JSON.stringify({ content })}\n\n`
-                    );
-                    controller.enqueue(chunk);
-                    if (!firstChunkSent) {
-                      const firstChunkSentTime = performance.now();
-                      console.log(
-                        `[API Route] First chunk ENQUEUED to client response. Time since receiving from OpenAI: ${firstChunkSentTime - openaiStreamChunkReceivedTime} ms`
-                      );
-                      firstChunkSent = true;
-                    }
-                  },
-                });
+                  // Stream using Assistants Threads for diagnosis as well (merge)
+                  const unifiedAssistant = await getOrCreateAssistant('asst_e1prLG3Ykh2ZCVspoAFMZPZC');
+                  await streamRunResponse(
+                    threadId,
+                    unifiedAssistant.id,
+                    (content) => {
+                      const openaiStreamChunkReceivedTime = performance.now();
+                      if (!firstChunkSent) {
+                        console.log(
+                          `[API Route] First chunk RECEIVED from Assistants stream. +${openaiStreamChunkReceivedTime - callOpenAIStreamStartTime} ms`
+                        );
+                      }
+                      const chunk = encoder.encode(`data: ${JSON.stringify({ content })}\n\n`);
+                      controller.enqueue(chunk);
+                      if (!firstChunkSent) firstChunkSent = true;
+                    },
+                    {
+                      userId: payload?.userId,
+                      isSubscriber: payload?.isSubscriber,
+                      anonId: !payload?.userId ? anonId : undefined,
+                    },
+                    systemMessage
+                  );
                 }
 
                 const streamFinishedTime = performance.now();
@@ -143,8 +167,16 @@ export async function POST(request: Request) {
                 controller.enqueue(encoder.encode('data: [DONE]\n\n'));
                 controller.close();
               } catch (error) {
-                console.error('[API Route] Error during stream:', error);
-                controller.error(error);
+                // Always send a structured SSE message so the client can react
+                const message = String((error as any)?.message || error || '');
+                const payload = message.includes('FREE_CHAT_DAILY_TOKEN_LIMIT_EXCEEDED') || message.includes('free_limit_exceeded')
+                  ? { error: 'free_limit_exceeded' }
+                  : { error: 'stream_error' };
+                try {
+                  controller.enqueue(encoder.encode(`data: ${JSON.stringify({ payload })}\n\n`));
+                  controller.enqueue(encoder.encode('data: [DONE]\n\n'));
+                  controller.close();
+                } catch {}
               }
             },
           });
@@ -158,6 +190,7 @@ export async function POST(request: Request) {
               'Content-Type': 'text/event-stream',
               'Cache-Control': 'no-cache',
               Connection: 'keep-alive',
+              ...(setCookie ? { 'Set-Cookie': setCookie } : {}),
             },
           });
         }
@@ -165,36 +198,30 @@ export async function POST(request: Request) {
         // For non-streaming responses, use chat completions synchronously
         try {
           if (payload?.mode === 'explore') {
-            // Use dedicated assistant (system prompt already built-in)
             const exploreAssistantId = await getOrCreateExploreAssistant();
-            await runAssistant(threadId, exploreAssistantId);
+            await runAssistant(threadId, exploreAssistantId, systemMessage);
           } else {
-            // Get completion from chat model with system prompt
-            const assistantResponse = await getChatCompletion({
-            threadId,
-            messages: previousMessages,
-            systemMessage,
-            userMessage: payload,
-            modelName: 'gpt-5-mini',
-          });
-          
-          // Add assistant response to thread for history tracking
-          await openai.beta.threads.messages.create(threadId, {
-            role: 'assistant',
-            content: assistantResponse || '',
-          });
-          // Return updated messages
-          const messages = await getMessages(threadId);
-          return NextResponse.json({ messages: messages as OpenAIMessage[] });
+            const unifiedAssistant = await getOrCreateAssistant('asst_e1prLG3Ykh2ZCVspoAFMZPZC');
+            await runAssistant(threadId, unifiedAssistant.id, systemMessage);
           }
-          // After if/else, for explore path fetch updated messages and return
+          // After if/else fetch updated messages and return
           const messages = await getMessages(threadId);
-          return NextResponse.json({ messages: messages as OpenAIMessage[] });
+          return NextResponse.json(
+            { messages: messages as OpenAIMessage[] },
+            { headers: setCookie ? { 'Set-Cookie': setCookie } : undefined }
+          );
         } catch (error) {
+          const message = String((error as any)?.message || error || '');
+          if (message.includes('FREE_CHAT_DAILY_TOKEN_LIMIT_EXCEEDED') || message.includes('free_limit_exceeded')) {
+            return NextResponse.json(
+              { error: 'free_limit_exceeded' },
+              { status: 429, headers: setCookie ? { 'Set-Cookie': setCookie } : undefined }
+            );
+          }
           console.error('Error processing non-streaming message:', error);
           return NextResponse.json(
             { error: 'Failed to process message' },
-            { status: 500 }
+            { status: 500, headers: setCookie ? { 'Set-Cookie': setCookie } : undefined }
           );
         }
       }

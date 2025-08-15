@@ -23,6 +23,23 @@ export async function POST(request: Request) {
       existingCustomerId = data?.stripeCustomerId;
     } catch {}
 
+    // Validate the existing customer id to avoid 400 "No such customer"
+    if (existingCustomerId) {
+      try {
+        await stripe.customers.retrieve(existingCustomerId);
+      } catch (e: any) {
+        if (e?.raw?.code === 'resource_missing' || e?.statusCode === 404) {
+          existingCustomerId = undefined;
+          // Best-effort cleanup in Firestore so future calls don't pass stale ids
+          try {
+            await adminDb.collection('users').doc(uid).set({ stripeCustomerId: null }, { merge: true });
+          } catch {}
+        } else {
+          throw e;
+        }
+      }
+    }
+
     const session = await stripe.checkout.sessions.create({
       mode: 'subscription',
       allow_promotion_codes: true,
@@ -30,7 +47,7 @@ export async function POST(request: Request) {
       success_url: `${process.env.NEXT_PUBLIC_APP_URL}/subscribe/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/subscribe/cancel`,
       metadata: { uid, plan },
-      customer: existingCustomerId,
+      customer: existingCustomerId || undefined,
       customer_email: existingCustomerId ? undefined : customerEmail,
     });
 

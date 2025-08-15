@@ -68,6 +68,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
             setUser(extendedUser);
 
+            // Best-effort: request server to migrate anon usage to user and reset the daily cap
+            try {
+              await fetch('/api/usage/migrate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ uid: firebaseUser.uid }),
+              });
+            } catch (e) {
+              console.warn('Anon->user usage migration request failed', e);
+            }
+
             // Live subscription to user profile for real-time subscription status
             try {
               // Clean up any previous listener
@@ -104,6 +115,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             typeof window !== 'undefined' &&
             window.location.pathname !== '/' &&
             window.location.pathname !== '/exercises' &&
+            window.location.pathname !== '/app' &&
+            window.location.pathname !== '/login' &&
             !window.location.pathname.includes('/program/') &&
             !isAccountDeleting
           ) {
@@ -506,11 +519,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         window.sessionStorage.setItem('justLoggedOut', 'true');
       } catch {}
 
-      // Add a small delay before navigation to ensure loader state is updated
-      setTimeout(() => {
-        // Use the router for a cleaner transition
-        router.push('/login');
-      }, 100);
+      // Optional user feedback
+      try { toast.success(t('authContext.signedOut') || 'Signed out'); } catch {}
+
+      // Navigate to a neutral, public landing page and replace history to avoid back-nav into protected UI
+      router.replace('/');
 
       // Safety timeout to ensure loader is hidden even if navigation fails
       setTimeout(() => {

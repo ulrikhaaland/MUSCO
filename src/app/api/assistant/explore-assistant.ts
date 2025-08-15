@@ -7,18 +7,22 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
+// Simple in-process cache to avoid re-creating assistants when env var isn't set
+let exploreAssistantIdCache: string | undefined;
+
 /**
  * Ensure an exploration assistant exists and return its id.
  * Optionally supply an existing assistant id via env EXPLORE_ASSISTANT_ID.
  */
 export async function getOrCreateExploreAssistant(): Promise<string> {
-  const cachedId = process.env.EXPLORE_ASSISTANT_ID;
+  const cachedId = exploreAssistantIdCache || process.env.EXPLORE_ASSISTANT_ID;
   if (cachedId) {
     try {
       // Verify it exists and return cached ID
       await openai.beta.assistants.retrieve(cachedId);
       console.log('[ExploreAssistant] Using cached assistant:', cachedId);
-      return cachedId;
+      exploreAssistantIdCache = cachedId;
+      return exploreAssistantIdCache;
     } catch {
       console.warn('[ExploreAssistant] EXPLORE_ASSISTANT_ID not found, creating new assistant');
     }
@@ -33,7 +37,8 @@ export async function getOrCreateExploreAssistant(): Promise<string> {
     });
 
     console.log('[ExploreAssistant] Created new assistant:', assistant.id);
-    return assistant.id;
+    exploreAssistantIdCache = assistant.id;
+    return exploreAssistantIdCache;
   } catch (error) {
     console.error('[ExploreAssistant] Failed to create assistant:', error);
     throw new Error('Failed to create explore assistant');
@@ -56,9 +61,11 @@ export async function streamExploreResponse(
   threadId: string,
   assistantId: string,
   onMessage: (content: string) => void,
+  instructions?: string,
 ) {
   const stream = await openai.beta.threads.runs.stream(threadId, {
     assistant_id: assistantId,
+    ...(instructions ? { instructions } : {}),
   });
 
   stream

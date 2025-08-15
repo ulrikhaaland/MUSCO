@@ -1,6 +1,6 @@
 'use client'
 
-import PartnerLogos from '@/components/PartnerLogos'
+// PartnerLogos moved below the hero in page.tsx
 import { useTranslation } from '@/app/i18n'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { logAnalyticsEvent } from '@/app/utils/analytics'
@@ -63,7 +63,7 @@ export default function LandingHero({ onSelect }: { onSelect: (m: ViewerMode) =>
 
   return (
     <div className="w-full">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
         {/* Copy */}
         <div className="order-2 md:order-1 text-left">
           <h1 className="text-white text-4xl md:text-5xl font-bold leading-tight">
@@ -72,7 +72,7 @@ export default function LandingHero({ onSelect }: { onSelect: (m: ViewerMode) =>
           <p className="mt-4 text-white/80 text-base md:text-lg">
             {t('landing.hero.subtitle')}
           </p>
-          <div className="mt-6 flex flex-col sm:flex-row gap-3">
+          <div className="mt-4 md:mt-5 flex flex-col sm:flex-row gap-3">
             <button
               onClick={() => onSelect('diagnose')}
               className="px-5 py-3 rounded-md bg-indigo-600 text-white text-base font-medium hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-400"
@@ -88,11 +88,8 @@ export default function LandingHero({ onSelect }: { onSelect: (m: ViewerMode) =>
               {t('landing.hero.ctaWorkout')}
             </button>
           </div>
-          {/* Trust row */}
-          <div className="mt-6 flex flex-col sm:flex-row sm:items-center gap-3 text-gray-300 relative z-20">
-            <div className="opacity-80 grayscale">
-              <PartnerLogos />
-            </div>
+          {/* Reviews link */}
+          <div className="mt-4 text-gray-300 relative z-20">
             <a
               href="https://g.page/r/GREPLACE"
               className="text-sm hover:text-white"
@@ -109,7 +106,7 @@ export default function LandingHero({ onSelect }: { onSelect: (m: ViewerMode) =>
           <div
             ref={containerRef}
             aria-label={t('landing.hero.ariaStack')}
-            className="relative z-0 h-[460px] md:h-[520px] lg:h-[580px] pointer-events-none"
+            className="relative z-0 h-[420px] md:h-[500px] lg:h-[560px] -mt-6 md:-mt-8 pointer-events-none"
           >
             {/* Radial glow */}
             <div className="pointer-events-none absolute inset-0 [background:radial-gradient(60%_60%_at_50%_50%,rgba(255,255,255,0.06)_0%,transparent_70%)]" />

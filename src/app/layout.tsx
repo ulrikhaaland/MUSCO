@@ -14,8 +14,9 @@ import BlockingLoader from './components/ui/BlockingLoader';
 import { I18nWrapper } from './i18n/setup';
 import { isSignInWithEmailLink } from 'firebase/auth';
 import { auth } from './firebase/config';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { SafeAreaPWA } from './components/ui/SafeAreaPWA';
+import RegulatoryFooter from './components/ui/RegulatoryFooter';
 
 // const geistSans = localFont({
 //   src: "./fonts/GeistVF.woff",
@@ -34,6 +35,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const router = useRouter();
+  const pathname = usePathname();
   const [isMounted, setIsMounted] = useState(false);
 
   // Handle mounting to prevent hydration mismatch
@@ -177,6 +179,7 @@ export default function RootLayout({
                   <SafeAreaPWA>
                     <SafeArea className="h-full">
                       <div className="flex-1">{children}</div>
+                      {pathname === '/' && <RegulatoryFooter />}
                     </SafeArea>
                   </SafeAreaPWA>
                 </ToastProvider>

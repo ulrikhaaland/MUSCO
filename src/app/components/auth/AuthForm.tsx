@@ -18,6 +18,9 @@ export function AuthForm({ onSkip, isSaveContext = false }: { onSkip?: () => voi
   const [step, setStep] = useState<'email' | 'code'>('email');
   const { sendSignInLink } = useAuth();
   const { program } = useUser();
+  const [loginContext, setLoginContext] = useState<'default' | 'rateLimit' | 'subscribe' | 'saveProgram'>(
+    isSaveContext ? 'saveProgram' : 'default'
+  );
 
   // If running as PWA and an email is stored locally, jump directly to code entry
   useEffect(() => {
@@ -29,6 +32,15 @@ export function AuthForm({ onSkip, isSaveContext = false }: { onSkip?: () => voi
       setStep('code');
     }
   }, [isPwa]);
+
+  // Determine page copy based on how user arrived here (e.g., rate limit overlay)
+  useEffect(() => {
+    try {
+      const ctx = window.sessionStorage.getItem('loginContext');
+      if (ctx === 'rateLimit') setLoginContext('rateLimit');
+      else if (ctx === 'subscribe') setLoginContext('subscribe');
+    } catch {}
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -79,13 +91,22 @@ export function AuthForm({ onSkip, isSaveContext = false }: { onSkip?: () => voi
       <Logo variant="vertical" />
       <div className="text-center">
         <h2 className="text-3xl font-bold text-white">
-          {isSaveContext ? t('auth.saveProgram') : t('auth.welcome')}
+          {loginContext === 'saveProgram'
+            ? t('auth.saveProgram')
+            : loginContext === 'rateLimit'
+            ? t('auth.rateLimit.title')
+            : loginContext === 'subscribe'
+            ? t('auth.subscribeContext.title')
+            : t('auth.welcome')}
         </h2>
         <p className="mt-1 text-sm text-gray-400">
-          {isSaveContext 
-            ? t('auth.saveDescription') 
-            : t('auth.enterEmailForCode')
-          }
+          {loginContext === 'saveProgram'
+            ? t('auth.saveDescription')
+            : loginContext === 'rateLimit'
+            ? t('auth.rateLimit.subtitle')
+            : loginContext === 'subscribe'
+            ? t('auth.subscribeContext.subtitle')
+            : t('auth.enterEmailForCode')}
         </p>
       </div>
 

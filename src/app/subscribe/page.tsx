@@ -18,6 +18,15 @@ export default function SubscribePage() {
       if (typeof window !== 'undefined') {
         window.sessionStorage.setItem('previousPath', '/subscribe');
         window.sessionStorage.setItem('loginContext', 'subscribe');
+        // Capture a return hint if not already set
+        if (!window.sessionStorage.getItem('returnAfterSubscribe')) {
+          const referrer = document.referrer && new URL(document.referrer).origin === window.location.origin
+            ? new URL(document.referrer).pathname
+            : window.sessionStorage.getItem('previousPath');
+          if (referrer) {
+            window.sessionStorage.setItem('returnAfterSubscribe', referrer);
+          }
+        }
       }
       router.push('/login');
       return;

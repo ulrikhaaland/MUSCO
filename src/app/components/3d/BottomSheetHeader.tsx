@@ -27,12 +27,9 @@ export function BottomSheetHeader({
   const headerRef = useRef<HTMLDivElement>(null);
   const {
     intention,
-    isSelectingExerciseBodyParts,
     isSelectingRecoveryBodyParts,
     selectedGroups,
     selectedPart,
-    selectedExerciseGroups,
-    selectedPainfulAreas,
   } = useApp();
 
   useEffect(() => {
@@ -76,14 +73,7 @@ export function BottomSheetHeader({
       };
     }
 
-    // For Exercise mode
-    if (intention === ProgramIntention.Exercise) {
-      // For Exercise mode, we only have painful areas selection now
-      return {
-        main: t('bottomSheet.selectPainfulExerciseAreas'),
-        sub: t('bottomSheet.selectPainfulAreasOptional'),
-      };
-    }
+    // Exercise mode retired
 
     return {
       main: getGroupDisplayName(),
@@ -111,15 +101,12 @@ export function BottomSheetHeader({
           <button
             onClick={resetChat}
             className={`text-white hover:text-white p-1 rounded-full hover:bg-gray-800 transition-colors ${
-              intention !== ProgramIntention.Exercise && (isLoading || messages.length === 0)
+              isLoading || messages.length === 0
                 ? 'opacity-50 cursor-not-allowed hover:bg-transparent'
                 : ''
             }`}
             aria-label={t('bottomSheet.resetChat')}
-            disabled={
-              intention !== ProgramIntention.Exercise &&
-              (isLoading || messages.length === 0)
-            }
+            disabled={isLoading || messages.length === 0}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"

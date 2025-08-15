@@ -24,10 +24,10 @@ import { BottomSheetFooter } from './BottomSheetFooter';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import MobileControlButtons from './MobileControlButtons';
 import { AnatomyPart } from '@/app/types/human';
-import { ExerciseSelection } from '../ui/ExerciseSelection';
-import { useApp, ProgramIntention } from '@/app/context/AppContext';
-import { ExerciseFooter } from './ExerciseFooter';
+import { useApp } from '@/app/context/AppContext';
+import { useAuth } from '@/app/context/AuthContext';
 import { useTranslation } from '@/app/i18n';
+import { useRouter } from 'next/navigation';
 
 enum SnapPoint {
   MINIMIZED = 0, // minHeight (15% or 72px)
@@ -77,6 +77,8 @@ export default function MobileControls({
   onAreasSelected,
 }: MobileControlsProps) {
   const { t } = useTranslation();
+  const router = useRouter();
+  const { user } = useAuth();
   const [isMobile, setIsMobile] = useState(false);
   const hasInitiallyExpanded = useRef(false);
   const [contentHeight, setContentHeight] = useState(0);
@@ -93,11 +95,12 @@ export default function MobileControls({
   const [controlsBottom, setControlsBottom] = useState('5rem');
   const [message, setMessage] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const { intention, selectedExerciseGroupsRef, fullBodyRef } = useApp();
+  const { selectedGroupsRef } = useApp();
 
   const {
     messages,
     isLoading,
+    rateLimited,
     followUpQuestions,
     messagesRef,
     resetChat,
@@ -227,16 +230,13 @@ export default function MobileControls({
   useEffect(() => {
     const hasContent =
       messages.length > 0 ||
-      followUpQuestions.length > 0 ||
-      fullBodyRef.current;
+      followUpQuestions.length > 0;
 
     const loadingComplete = !isLoading || messages.length === 0;
     // Only manipulate sheet height if user hasn't modified it
     if (!userModifiedSheetHeight) {
       if (
-        (selectedGroups.length > 0 ||
-          selectedExerciseGroupsRef.current.length > 0 ||
-          fullBodyRef.current) &&
+        selectedGroups.length > 0 &&
         loadingComplete &&
         hasContent &&
         getSnapPointIndex(currentSnapPoint) < 2 &&
@@ -259,7 +259,7 @@ export default function MobileControls({
                 setCurrentSnapPoint(SnapPoint.EXPANDED);
               }
             },
-            intention === ProgramIntention.Exercise ? 1000 : 300
+            300
           );
         }
       } else if (
@@ -359,8 +359,7 @@ export default function MobileControls({
     const minHeight = Math.min(viewportHeight * 0.15, 72);
     const hasContent =
       Boolean(selectedGroups.length > 0) ||
-      messages.length > 0 ||
-      fullBodyRef.current;
+      messages.length > 0;
 
     if (!hasContent) {
       return [minHeight];
@@ -481,14 +480,13 @@ export default function MobileControls({
             currentGender={currentGender}
             controlsBottom={controlsBottom}
             onRotate={onRotate}
-            onReset={() => onReset(intention !== ProgramIntention.Exercise)}
+            onReset={() => onReset(true)}
             onSwitchModel={onSwitchModel}
           />
         )}
 
       {/* Expand/Collapse Buttons - Fixed to bottom right */}
       {isMobile &&
-        intention !== ProgramIntention.Exercise &&
         sheetRef.current &&
         (selectedGroups.length > 0 || messages.length > 0) && (
           <div className="mobile-controls-toggle md:hidden fixed right-2 bottom-4 flex bg-transparent rounded-lg z-10">
@@ -591,9 +589,7 @@ export default function MobileControls({
         }}
         snapPoints={getSnapPoints}
         expandOnContentDrag={false}
-        maxHeight={
-          intention === ProgramIntention.Exercise ? contentHeight : null
-        }
+        maxHeight={null}
         onSpringStart={(event) => {
           const source = (event as any).source;
           if (
@@ -657,27 +653,14 @@ export default function MobileControls({
             getGroupDisplayName={getGroupDisplayName}
             getPartDisplayName={getPartDisplayName}
             resetChat={() => {
-              if (intention === ProgramIntention.Exercise) {
-                onReset(true);
-                resetChat();
-              } else {
-                resetChat();
-              }
+              resetChat();
             }}
             onHeightChange={setHeaderHeight}
             isMinimized={currentSnapPoint === SnapPoint.MINIMIZED}
           />
         }
         footer={
-          (selectedGroups.length > 0 ||
-            messages.length > 0 ||
-            fullBodyRef.current) &&
-          (intention === ProgramIntention.Exercise ? (
-            <ExerciseFooter
-              onReset={onReset}
-              onAreasSelected={onAreasSelected}
-            />
-          ) : (
+          (selectedGroups.length > 0 || messages.length > 0) && (
             <BottomSheetFooter
               message={message}
               isLoading={isLoading}
@@ -686,13 +669,12 @@ export default function MobileControls({
               handleOptionClick={handleOptionClick}
               messagesCount={messages.length}
             />
-          ))
+          )
         }
       >
         <div ref={contentRef} className="flex-1 flex flex-col h-full">
           {!selectedGroups.length &&
-          messages.length === 0 &&
-          !fullBodyRef.current ? (
+          messages.length === 0 ? (
             <div className="h-[72px]" />
           ) : (
             /* Expanded Content */
@@ -704,15 +686,29 @@ export default function MobileControls({
                 e.stopPropagation();
               }}
             >
-              {/* Show either ChatMessages or ExerciseSelection based on intention */}
-              {intention === ProgramIntention.Exercise ? (
-                <ExerciseSelection />
-              ) : (
+              {/* Chat content */}
                 <div className="flex-1 min-h-0">
                   <ChatMessages
                     messages={messages}
                     isLoading={isLoading}
                     streamError={streamError}
+                    rateLimited={rateLimited}
+                    onSubscribeClick={() => {
+                      try {
+                        window.sessionStorage.setItem('previousPath', window.location.pathname);
+                        window.sessionStorage.setItem('loginContext', 'subscribe');
+                      } catch {}
+                      router.push('/subscribe');
+                    }}
+                    onLoginClick={() => {
+                      try {
+                        window.sessionStorage.setItem('previousPath', window.location.pathname);
+                        window.sessionStorage.setItem('loginContext', 'rateLimit');
+                      } catch {}
+                      router.push('/login');
+                    }}
+                    isLoggedIn={Boolean(user)}
+                    isSubscriber={Boolean(user?.profile?.isSubscriber)}
                     followUpQuestions={followUpQuestions}
                     onQuestionClick={handleQuestionSelect}
                     part={selectedPart}
@@ -722,7 +718,6 @@ export default function MobileControls({
                     containerHeight={contentHeight}
                   />
                 </div>
-              )}
             </div>
           )}
         </div>

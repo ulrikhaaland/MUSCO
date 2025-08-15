@@ -1,6 +1,7 @@
 import { ChatMessage, Question } from '@/app/types';
 import ReactMarkdown from 'react-markdown';
 import { RefObject, useEffect, useState, useRef, useCallback } from 'react';
+import { useApp } from '@/app/context/AppContext';
 import { LoadingMessage } from './LoadingMessage';
 import { BodyPartGroup } from '@/app/config/bodyPartGroups';
 import { AnatomyPart } from '@/app/types/human';
@@ -95,6 +96,11 @@ interface ChatMessagesProps {
   messagesRef: RefObject<HTMLDivElement | null>;
   isLoading?: boolean;
   streamError?: Error | null;
+  rateLimited?: boolean;
+  onSubscribeClick?: () => void;
+  onLoginClick?: () => void;
+  isLoggedIn?: boolean;
+  isSubscriber?: boolean;
   followUpQuestions?: Question[];
   onQuestionClick?: (question: Question) => void;
   onScroll?: (event: React.UIEvent<HTMLDivElement>) => void;
@@ -112,6 +118,11 @@ export function ChatMessages({
   messagesRef,
   isLoading,
   streamError,
+  rateLimited,
+  onSubscribeClick,
+  onLoginClick,
+  isLoggedIn,
+  isSubscriber,
   followUpQuestions = [],
   onQuestionClick,
   onScroll,
@@ -123,6 +134,7 @@ export function ChatMessages({
   disableAutoScroll = true,
   containerHeight,
 }: ChatMessagesProps) {
+  const { saveViewerState } = useApp();
   const [showScrollButton, setShowScrollButton] = useState(false);
   const [userTouched, setUserTouched] = useState(false);
 
@@ -1056,6 +1068,8 @@ export function ChatMessages({
         onTouchStart={handleReactTouchStart}
         className={`flex-1 scroll-smooth chat-scrollbar ${isMobile ? 'overflow-y-visible' : 'overflow-y-auto pr-2'}`}
       >
+        {/* Rate limit is handled by a fullscreen overlay to preserve page state */}
+
         {messages.length === 0 && !part && !groups && !isMobile && (
           <div className="h-full flex items-center justify-center text-gray-400">
             <div className="text-center">
@@ -1335,6 +1349,66 @@ export function ChatMessages({
           </svg>
         </button>
       </div>
+
+      {rateLimited && (
+        <div
+          className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-center justify-center p-6"
+          role="dialog"
+          aria-modal="true"
+        >
+          <div className="max-w-2xl w-full text-center text-white">
+            <div className="text-2xl sm:text-3xl md:text-4xl font-semibold leading-snug">
+              You’ve reached your daily free limit
+            </div>
+            <div className="mt-3 text-base sm:text-lg text-gray-200">
+              Log in to save progress, or subscribe to explore even more.
+            </div>
+            <div className="mt-8 flex items-center justify-center gap-3 flex-wrap">
+              {isLoggedIn ? (
+                !isSubscriber && (
+                  <button
+                    onClick={onSubscribeClick}
+                    className="px-5 py-3 rounded-md bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium"
+                  >
+                    Subscribe
+                  </button>
+                )
+              ) : (
+                <>
+                  <button
+                    onClick={() => {
+                      try {
+                        saveViewerState();
+                        window.sessionStorage.setItem('loginContext', 'rateLimit');
+                        window.sessionStorage.setItem('previousPath', window.location.pathname);
+                        window.sessionStorage.setItem('returnAfterSubscribe', window.location.pathname);
+                      } catch {}
+                      onLoginClick?.();
+                    }}
+                    className="px-5 py-3 rounded-md bg-white/10 hover:bg-white/20 text-white text-sm font-medium"
+                  >
+                    Log in / Sign up
+                  </button>
+                  <button
+                    onClick={() => {
+                      try {
+                        saveViewerState();
+                        window.sessionStorage.setItem('loginContext', 'subscribe');
+                        window.sessionStorage.setItem('previousPath', window.location.pathname);
+                        window.sessionStorage.setItem('returnAfterSubscribe', window.location.pathname);
+                      } catch {}
+                      onSubscribeClick?.();
+                    }}
+                    className="px-5 py-3 rounded-md bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium"
+                  >
+                    Subscribe
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

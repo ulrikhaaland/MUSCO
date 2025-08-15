@@ -22,6 +22,7 @@
     "test:exercises": "jest exercise-prompt"
   },
   "dependencies": {
+    "@dqbd/tiktoken": "^1.0.17",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@mui/icons-material": "^6.3.0",

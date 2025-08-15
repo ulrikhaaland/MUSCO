@@ -10,7 +10,8 @@ import {
   localizeProgramDayDescriptions,
 } from '../../public/data/programs/recovery';
 import LandingHero from './components/ui/LandingHero';
-import LanguageSwitcher from './components/ui/LanguageSwitcher';
+import PartnerLogos from '@/components/PartnerLogos';
+// import LanguageSwitcher from './components/ui/LanguageSwitcher';
 import { logAnalyticsEvent } from './utils/analytics';
 import Logo from './components/ui/Logo';
 import { useUser } from './context/UserContext';
@@ -189,8 +190,15 @@ export default function LandingPage() {
     return () => observer.disconnect();
   }, [SHOW_PRICING]);
 
-  const scrollTo = (ref: React.RefObject<HTMLDivElement>) =>
-    ref.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  const scrollTo = (ref: React.RefObject<HTMLDivElement>) => {
+    const el = ref.current;
+    if (!el || typeof window === 'undefined') return;
+    const header = document.querySelector('header') as HTMLElement | null;
+    const headerHeight = header?.offsetHeight ?? 64;
+    const extraSpacing = 8; // small breathing room below sticky header
+    const y = el.getBoundingClientRect().top + window.pageYOffset - headerHeight - extraSpacing;
+    window.scrollTo({ top: y, behavior: 'smooth' });
+  };
 
   // Program cards data and ordering by approximate commonality
   const programCardsBase = [
@@ -332,7 +340,7 @@ export default function LandingPage() {
       </header>
 
       {/* Hero */}
-      <section className="mx-auto max-w-6xl px-6 pt-16 md:pt-24 pb-16 md:pb-24 min-h-[72vh] flex items-center">
+      <section className="mx-auto max-w-6xl px-6 pt-10 md:pt-14 pb-10 md:pb-14 min-h-[60vh] flex items-start">
         <LandingHero
           onSelect={(mode) => {
             if (mode === 'diagnose') {
@@ -344,6 +352,11 @@ export default function LandingPage() {
             }
           }}
         />
+      </section>
+
+      {/* Partner logos below hero (animated marquee) */}
+      <section className="mx-auto max-w-6xl px-6 mt-16 md:mt-24 lg:mt-36">
+        <PartnerLogos />
       </section>
 
       {/* How it works */}
@@ -573,30 +586,52 @@ export default function LandingPage() {
           {t('landing.faq.title')}
         </h2>
         <details className="rounded-xl p-4 border border-white/15 bg-[#141922] text-gray-200 mb-2">
-          <summary className="cursor-pointer">{t('landing.faq.q1')}</summary>
-          <p className="mt-2 text-sm">{t('landing.faq.a1')}</p>
+          <summary className="cursor-pointer">{t('landing.faq.freePremium.title')}</summary>
+          <div className="mt-2 text-sm space-y-2">
+            <p>{t('landing.faq.freePremium.desc')}</p>
+            <ul className="list-disc pl-5">
+              <li className="text-white/90 font-medium">{t('landing.pricing.tier.free')}</li>
+              <li className="text-white/70">• {t('landing.pricing.free.b1')}</li>
+              <li className="text-white/70">• {t('landing.pricing.free.b4')}</li>
+              <li className="text-white/70">• {t('landing.pricing.free.b2')}</li>
+            </ul>
+            <ul className="list-disc pl-5">
+              <li className="text-white/90 font-medium">{t('landing.pricing.tier.premium')}</li>
+              <li className="text-white/70">• {t('landing.pricing.premium.b1')}</li>
+              <li className="text-white/70">• {t('landing.pricing.premium.b2')}</li>
+              <li className="text-white/70">• {t('landing.pricing.premium.b3')}</li>
+            </ul>
+          </div>
         </details>
+
         <details className="rounded-xl p-4 border border-white/15 bg-[#141922] text-gray-200 mb-2">
-          <summary className="cursor-pointer">{t('landing.faq.q2')}</summary>
-          <p className="mt-2 text-sm">{t('landing.faq.a2')}</p>
+          <summary className="cursor-pointer">{t('landing.faq.safety.title')}</summary>
+          <div className="mt-2 text-sm space-y-2">
+            <p>{t('landing.faq.safety.desc')}</p>
+            <p className="text-xs text-white/60"><a className="underline" href="/safety">{t('footer.medicalDisclaimer')}</a></p>
+          </div>
+        </details>
+
+        <details className="rounded-xl p-4 border border-white/15 bg-[#141922] text-gray-200 mb-2">
+          <summary className="cursor-pointer">{t('landing.faq.how.title')}</summary>
+          <p className="mt-2 text-sm">{t('landing.faq.how.p1')}</p>
+        </details>
+
+        <details className="rounded-xl p-4 border border-white/15 bg-[#141922] text-gray-200 mb-2">
+          <summary className="cursor-pointer">{t('landing.faq.account.title')}</summary>
+          <p className="mt-2 text-sm">{t('landing.faq.account.p1')}</p>
+        </details>
+
+        <details className="rounded-xl p-4 border border-white/15 bg-[#141922] text-gray-200 mb-2">
+          <summary className="cursor-pointer">{t('landing.faq.billing.title')}</summary>
+          <p className="mt-2 text-sm">{t('landing.faq.billing.p1')}</p>
+        </details>
+
+        <details className="rounded-xl p-4 border border-white/15 bg-[#141922] text-gray-200 mb-2">
+          <summary className="cursor-pointer">{t('landing.faq.privacy.title')}</summary>
+          <p className="mt-2 text-sm">{t('landing.faq.privacy.p1')}</p>
         </details>
       </section>
-
-      {/* Footer */}
-      <footer className="px-6 py-10 border-t border-white/10 text-gray-300">
-        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <LanguageSwitcher showFullNames />
-          <button
-            onClick={() => {
-              logAnalyticsEvent('open_app_from_landing');
-              router.push('/app');
-            }}
-            className="px-4 py-2 bg-gray-800 rounded-md hover:bg-gray-700"
-          >
-            {t('landing.footer.openApp')}
-          </button>
-        </div>
-      </footer>
 
       {/* Program modal */}
       <ProgramPreviewModal

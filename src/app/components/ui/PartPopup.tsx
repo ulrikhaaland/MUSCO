@@ -4,6 +4,9 @@ import { usePartChat } from '@/app/hooks/usePartChat';
 import { BodyPartGroup } from '@/app/config/bodyPartGroups';
 import { Question, ChatMessage } from '@/app/types';
 import { AnatomyPart } from '@/app/types/human';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/app/context/AuthContext';
+import { useApp } from '@/app/context/AppContext';
 
 interface PartPopupProps {
   part: AnatomyPart | null;
@@ -18,11 +21,16 @@ export default function PartPopup({
   onClose,
   onQuestionClick,
 }: PartPopupProps) {
+  const router = useRouter();
+  
+  const { user } = useAuth();
+  const { saveViewerState } = useApp();
   const [message, setMessage] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const {
     messages,
     isLoading,
+    rateLimited,
     followUpQuestions,
     messagesRef,
     resetChat,
@@ -134,6 +142,27 @@ export default function PartPopup({
         messagesRef={messagesRef}
         isLoading={isLoading}
         streamError={streamError}
+        rateLimited={rateLimited}
+        onSubscribeClick={() => {
+          try {
+            saveViewerState();
+            window.sessionStorage.setItem('loginContext', 'subscribe');
+            window.sessionStorage.setItem('previousPath', window.location.pathname);
+            window.sessionStorage.setItem('returnAfterSubscribe', window.location.pathname);
+          } catch {}
+          router.push('/subscribe');
+        }}
+        onLoginClick={() => {
+          try {
+            saveViewerState();
+            window.sessionStorage.setItem('loginContext', 'rateLimit');
+            window.sessionStorage.setItem('previousPath', window.location.pathname);
+            window.sessionStorage.setItem('returnAfterSubscribe', window.location.pathname);
+          } catch {}
+          router.push('/login');
+        }}
+        isLoggedIn={Boolean(user)}
+        isSubscriber={Boolean(user?.profile?.isSubscriber)}
         followUpQuestions={followUpQuestions}
         onQuestionClick={handleQuestionSelect}
         onScroll={handleScroll}

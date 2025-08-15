@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
 import OpenAI from 'openai';
 import { z } from 'zod';
+import { reserveFreeChatTokens, reserveFreeChatTokensForAnon } from '@/app/api/assistant/openai-server';
+import { estimateJsonTokens, ESTIMATED_RESPONSE_TOKENS, ANON_COOKIE_NAME, logFreeLimit } from '@/app/lib/chatLimits';
 
 const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY! });
-const MODEL = process.env.EXPLAIN_MODEL ?? 'gpt-5-mini';
 
 const InputSchema = z.object({
   partId: z.string().min(1),
@@ -21,6 +23,9 @@ const InputSchema = z.object({
       userGoal: z.enum(['learn', 'train', 'recover']).optional(),
     })
     .optional(),
+  // Optional user context for free-tier limits
+  uid: z.string().optional(),
+  isSubscriber: z.boolean().optional(),
 });
 
 // (Kept for future validation if needed)
@@ -59,6 +64,53 @@ export async function POST(req: NextRequest) {
   try {
     const json = await req.json();
     const input = InputSchema.parse(json);
+    
+    // Enforce non-subscriber daily limits (best-effort pre-reservation)
+    const cookieStore = await cookies();
+    const anonCookieName = ANON_COOKIE_NAME;
+    let anonId = cookieStore.get(anonCookieName)?.value;
+    if (!anonId) {
+      anonId = `anon_${Math.random().toString(36).slice(2)}_${Date.now()}`;
+      // Set cookie via response later if needed (SSE path sets headers on Response)
+    }
+    // Roughly estimate tokens: input JSON + expected response chunk
+    const estimatedResponse = ESTIMATED_RESPONSE_TOKENS;
+    const estimatedInput = estimateJsonTokens({
+      partId: input.partId,
+      displayName: input.displayName,
+      partType: input.partType,
+      side: input.side,
+      language: input.language,
+      readingLevel: input.readingLevel,
+      viewerHints: input.viewerHints,
+    });
+    if (input.uid) {
+      try {
+        await reserveFreeChatTokens(input.uid, estimatedInput + estimatedResponse, input.isSubscriber);
+      } catch {
+        logFreeLimit({
+          scope: 'explain_selection',
+          kind: 'user',
+          id: input.uid!,
+          est_in: estimatedInput,
+          est_out: estimatedResponse,
+        });
+        return NextResponse.json({ error: 'free_limit_exceeded' }, { status: 429 });
+      }
+    } else if (!input.uid && anonId) {
+      try {
+        await reserveFreeChatTokensForAnon(anonId, estimatedInput + estimatedResponse);
+      } catch {
+        logFreeLimit({
+          scope: 'explain_selection',
+          kind: 'anon',
+          id: anonId,
+          est_in: estimatedInput,
+          est_out: estimatedResponse,
+        });
+        return NextResponse.json({ error: 'free_limit_exceeded' }, { status: 429 });
+      }
+    }
 
     // Streaming mode if client requests SSE
     const wantsStream =
@@ -69,11 +121,19 @@ export async function POST(req: NextRequest) {
 
     if (wantsStream) {
       const stream = await client.responses.stream({
-        model: MODEL,
+        model: 'gpt-5-mini',
         reasoning: { effort: 'minimal' } as any,
         input: [
           { role: 'system', content: SYSTEM_PROMPT_TEXT },
-          { role: 'user', content: JSON.stringify(input) },
+          { role: 'user', content: JSON.stringify({
+            partId: input.partId,
+            displayName: input.displayName,
+            partType: input.partType,
+            side: input.side,
+            language: input.language,
+            readingLevel: input.readingLevel,
+            viewerHints: input.viewerHints,
+          }) },
         ],
       });
 
@@ -104,7 +164,7 @@ export async function POST(req: NextRequest) {
               controller.close();
             })
             .on('response.completed', () => {
-              const text = capWords(String(fullContent || ''), 120);
+              const text = capWords(String(fullContent || ''), 80);
               controller.enqueue(enc.encode(`data: ${JSON.stringify({ type: 'final', payload: { text } })}\n\n`));
               controller.close();
             });
@@ -113,11 +173,17 @@ export async function POST(req: NextRequest) {
           try { stream.abort(); } catch {}
         },
       });
+      const headers: Record<string, string> = {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache, no-transform',
+        Connection: 'keep-alive',
+      };
+      if (anonId) {
+        headers['Set-Cookie'] = `${anonCookieName}=${anonId}; Path=/; Max-Age=${30 * 24 * 60 * 60}; HttpOnly; SameSite=Lax`;
+      }
       return new Response(sse, {
         headers: {
-          'Content-Type': 'text/event-stream',
-          'Cache-Control': 'no-cache, no-transform',
-          Connection: 'keep-alive',
+          ...headers,
         },
       });
     }

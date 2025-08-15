@@ -83,6 +83,7 @@ export function usePartChat({
   const {
     messages,
     isLoading,
+    rateLimited,
     userPreferences,
     followUpQuestions: chatFollowUpQuestions,
     resetChat,
@@ -92,6 +93,13 @@ export function usePartChat({
   } = useChat();
 
   const { intention } = useApp();
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
 
   const [localFollowUpQuestions, setLocalFollowUpQuestions] = useState<
     Question[]
@@ -142,8 +150,7 @@ export function usePartChat({
     const exploreTitleLower = t('chat.question.explore.title').toLowerCase();
     const painTitleLower = t('chat.question.painSource.title').toLowerCase();
 
-    const isDiagnosisOption =
-      programTypeRaw === 'diagnosis';
+    const isDiagnosisOption = programTypeRaw === 'diagnosis';
 
     const isExploreOption =
       titleLower === exploreTitleLower ||
@@ -182,6 +189,8 @@ export function usePartChat({
         : '',
       bodyPartsInSelectedGroup: selectedGroups[0]?.parts.map((part) => part.name) || [],
       previousQuestions: deduped,
+      // guidance to assistants: more options on desktop
+      maxFollowUpOptions: isMobile ? 3 : 6,
     });
   }, [chatMode, previousQuestions, localFollowUpQuestions, userPreferences, selectedPart, selectedGroups, t, sendChatMessage]);
 
@@ -224,6 +233,7 @@ export function usePartChat({
   return {
     messages,
     isLoading,
+    rateLimited,
     followUpQuestions:
       messages.length === 0 ? localFollowUpQuestions : chatFollowUpQuestions,
     messagesRef,

@@ -312,7 +312,8 @@ function NavigationMenuContent({ mobileTitle, mobileFloatingButton }: { mobileTi
           <button
             onClick={() => {
               try { logAnalyticsEvent('nav_click', { target: 'app' }); } catch {}
-              router.push('/app');
+              // If signed out, go to marketing root; otherwise, go to /app
+              router.push(user ? '/app' : '/');
             }}
             aria-label="Home"
           >

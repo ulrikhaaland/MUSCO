@@ -13,8 +13,11 @@ import { Question } from '@/app/types';
 import { ExerciseQuestionnaireAnswers, ProgramType } from '../../../../shared/types';
 import { useApp, ProgramIntention } from '@/app/context/AppContext';
 import { useUser } from '@/app/context/UserContext';
+import { useAuth } from '@/app/context/AuthContext';
 import { logAnalyticsEvent } from '@/app/utils/analytics';
 import { useExplainSelection } from '@/app/hooks/useExplainSelection';
+
+const DESKTOP_SPLIT_KEY = 'hv:desktop_split_px';
 
 interface HumanViewerProps {
   gender: Gender;
@@ -32,13 +35,11 @@ export default function HumanViewer({
   const {
     intention,
     selectedGroups,
-    selectedExerciseGroupsRef,
     selectedPart,
     setSelectedGroup,
     setSelectedPart,
-    selectedPainfulAreasRef,
     resetSelectionState,
-    fullBodyRef,
+    restoreViewerState,
   } = useApp();
   const lastSelectedIdRef = useRef<string | null>(null);
   const minChatWidth = 300;
@@ -60,14 +61,17 @@ export default function HumanViewer({
   const [isMobile, setIsMobile] = useState(false);
   const [isResetting, setIsResetting] = useState(false);
   const { onQuestionnaireSubmit } = useUser();
+  const { loading: authLoading } = useAuth();
   const [showQuestionnaire, setShowQuestionnaire] = useState(false);
+  const [explainerEnabled, setExplainerEnabled] = useState(true);
+  const isExplainerActive = explainerEnabled && !isMobile;
 
   // Explore explainer state
   // Using BioDigital labels for anchoring; no manual screen position needed
   const exploreOn = intention === ProgramIntention.None; // explore mode when no program intention
   const languagePref = (locale?.toLowerCase() === 'nb' ? 'NB' : 'EN') as 'EN' | 'NB';
   const explainer = useExplainSelection({
-    exploreOn,
+    exploreOn: exploreOn && isExplainerActive,
     selectedPart: selectedPart
       ? {
           id: selectedPart.objectId,
@@ -78,7 +82,28 @@ export default function HumanViewer({
       : null,
     language: languagePref,
     readingLevel: 'standard',
+    // When re-enabling explainer (desktop only), force a re-fetch for the active selection
+    refreshKey: isExplainerActive ? (selectedPart ? 1 : 0) : -1,
   });
+  // Load and persist explainer toggle preference
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    try {
+      const raw = window.localStorage.getItem('explainer_enabled');
+      if (raw === '0') setExplainerEnabled(false);
+    } catch {}
+  }, []);
+
+  const toggleExplainer = useCallback(() => {
+    setExplainerEnabled((prev) => {
+      const next = !prev;
+      try {
+        window.localStorage.setItem('explainer_enabled', next ? '1' : '0');
+      } catch {}
+      return next;
+    });
+  }, []);
+
 
   // moved below useHumanAPI
 
@@ -101,6 +126,11 @@ export default function HumanViewer({
       window.removeEventListener('resize', checkMobile);
     };
   }, []);
+
+  // Restore viewer state after returning from auth/subscription
+  useEffect(() => {
+    restoreViewerState();
+  }, [restoreViewerState]);
 
   // Detect support for stable viewport and keyboard inset env var
   useEffect(() => {
@@ -143,7 +173,8 @@ export default function HumanViewer({
     const human = humanRef.current;
     const labelId = 'explainer_label';
 
-    if (!exploreOn || !selectedPart) {
+    // If disabled (or on mobile) or rate-limited, do not show a loading bubble
+    if (!exploreOn || !selectedPart || explainer?.rateLimited || !isExplainerActive) {
       try { human.send('labels.destroy', labelId); } catch {}
       return;
     }
@@ -162,7 +193,7 @@ export default function HumanViewer({
         collapseDescription: false,
       });
     } catch {}
-  }, [exploreOn, selectedPart, humanRef]);
+  }, [exploreOn, selectedPart, explainer?.rateLimited, isExplainerActive, humanRef]);
 
   // Update the label when explainer text arrives
   useEffect(() => {
@@ -170,7 +201,8 @@ export default function HumanViewer({
     const human = humanRef.current;
     const labelId = 'explainer_label';
     if (!exploreOn || !selectedPart) return;
-    if (!explainer?.text) return;
+    if (!explainer || explainer.rateLimited || !isExplainerActive) return;
+    if (!explainer.text) return;
 
     try {
       human.send('labels.update', {
@@ -183,7 +215,7 @@ export default function HumanViewer({
         collapseDescription: false,
       });
     } catch {}
-  }, [exploreOn, selectedPart, explainer?.text, humanRef]);
+  }, [exploreOn, selectedPart, explainer?.text, explainer?.rateLimited, isExplainerActive, humanRef]);
 
   const handleZoom = (objectId?: string) => {
     // First get current camera info
@@ -366,10 +398,8 @@ export default function HumanViewer({
 
       rafRef.current = requestAnimationFrame(() => {
         const newWidth = window.innerWidth - e.clientX;
-        lastWidthRef.current = Math.min(
-          Math.max(minChatWidth, newWidth),
-          maxChatWidth
-        );
+        const maxAllowed = Math.min(maxChatWidth, window.innerWidth - minChatWidth);
+        lastWidthRef.current = Math.min(Math.max(minChatWidth, newWidth), maxAllowed);
         setChatWidth(lastWidthRef.current);
       });
     };
@@ -382,6 +412,11 @@ export default function HumanViewer({
         cancelAnimationFrame(rafRef.current);
         rafRef.current = null;
       }
+      try {
+        if (typeof window !== 'undefined' && window.innerWidth >= 768) {
+          window.localStorage.setItem(DESKTOP_SPLIT_KEY, String(lastWidthRef.current));
+        }
+      } catch {}
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', stopDragging);
     };
@@ -440,16 +475,50 @@ export default function HumanViewer({
     };
   }, []);
 
-  // Move window-dependent calculation to useEffect
+  // Initialize chat width from localStorage (desktop only) and clamp to viewport
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const initialWidth = Math.min(
-        Math.max(minChatWidth, window.innerWidth / 2),
-        maxChatWidth
-      );
-      setChatWidth(initialWidth);
+    if (typeof window === 'undefined') return;
+    const isDesktop = window.innerWidth >= 768;
+    const half = Math.floor(window.innerWidth / 2);
+    const maxAllowed = Math.min(maxChatWidth, window.innerWidth - minChatWidth);
+    let desired = half;
+    if (isDesktop) {
+      try {
+        const stored = window.localStorage.getItem(DESKTOP_SPLIT_KEY);
+        if (stored != null) {
+          const parsed = parseInt(stored, 10);
+          if (!Number.isNaN(parsed)) desired = parsed;
+        }
+      } catch {}
     }
-  }, []); // Empty dependency array means this runs once after mount
+    const clamped = Math.min(Math.max(minChatWidth, desired), maxAllowed);
+    setChatWidth(clamped);
+    lastWidthRef.current = clamped;
+  }, []);
+
+  // Keep lastWidthRef synced
+  useEffect(() => {
+    lastWidthRef.current = chatWidth;
+  }, [chatWidth]);
+
+  // Clamp stored width on resize and persist
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const onResize = () => {
+      if (window.innerWidth < 768) return; // only relevant on desktop
+      const maxAllowed = Math.min(maxChatWidth, window.innerWidth - minChatWidth);
+      const clamped = Math.min(Math.max(minChatWidth, lastWidthRef.current), maxAllowed);
+      if (clamped !== lastWidthRef.current) {
+        lastWidthRef.current = clamped;
+        setChatWidth(clamped);
+        try {
+          window.localStorage.setItem(DESKTOP_SPLIT_KEY, String(clamped));
+        } catch {}
+      }
+    };
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
 
   const handleBottomSheetHeight = (sheetHeight: number) => {
     // Drive a CSS var to avoid React state reflows
@@ -507,7 +576,7 @@ export default function HumanViewer({
           : 'No diagnosis, just a recovery program',
       programType: diagnosis?.programType ?? ProgramType.Exercise,
       painfulAreas: [
-        ...selectedPainfulAreasRef.current.map((group) => group.name),
+        ...selectedGroups.map((group) => group.name),
       ],
       avoidActivities: [],
       timeFrame: '1 week',
@@ -709,7 +778,7 @@ export default function HumanViewer({
         </div>
 
         {/* Controls - Desktop */}
-        {!showQuestionnaire && (
+        {!showQuestionnaire && !authLoading && (
           <DesktopControls
             isRotating={isRotating}
             isResetting={isResetting}
@@ -721,6 +790,8 @@ export default function HumanViewer({
             onRotate={handleRotate}
             onReset={() => handleReset(true)}
             onSwitchModel={handleSwitchModel}
+            explainerEnabled={explainerEnabled}
+            onToggleExplainer={toggleExplainer}
           />
         )}
       </div>
@@ -761,11 +832,7 @@ export default function HumanViewer({
           isResetting={isResetting}
           isReady={isReady}
           needsReset={needsReset}
-          selectedGroups={
-            selectedGroups.length > 0
-              ? selectedGroups
-              : selectedExerciseGroupsRef.current
-          }
+          selectedGroups={selectedGroups}
           currentGender={currentGender}
           selectedPart={selectedPart}
           onRotate={handleRotate}
@@ -786,8 +853,8 @@ export default function HumanViewer({
             onSubmit={handleQuestionnaireSubmit}
             generallyPainfulAreas={diagnosis?.painfulAreas ?? []}
             programType={diagnosis?.programType ?? ProgramType.Exercise}
-            targetAreas={selectedExerciseGroupsRef.current}
-            fullBody={fullBodyRef.current}
+            targetAreas={[]}
+            fullBody={false}
           />
         </div>
       )}

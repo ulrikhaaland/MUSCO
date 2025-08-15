@@ -40,25 +40,7 @@ export function IntentionQuestion({
               </p>
             </div>
             <div className="space-y-4">
-              <button
-                onClick={() => handleSelect(ProgramIntention.Exercise)}
-                className="w-full bg-indigo-600/90 hover:bg-indigo-500/90 text-white p-4 rounded-xl transition-colors duration-200 flex items-center justify-between group"
-              >
-                <span className="text-lg">{t('intentionQuestion.exerciseProgram')}</span>
-                <svg
-                  className="w-6 h-6 transform group-hover:translate-x-1 transition-transform duration-200"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 5l7 7-7 7"
-                  />
-                </svg>
-              </button>
+              {/* Exercise intention retired */}
               <button
                 onClick={() => handleSelect(ProgramIntention.Recovery)}
                 className="w-full bg-indigo-600/90 hover:bg-indigo-500/90 text-white p-4 rounded-xl transition-colors duration-200 flex items-center justify-between group"

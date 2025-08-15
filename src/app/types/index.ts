@@ -63,6 +63,11 @@ export interface ChatPayload {
   language?: string; // User's preferred language (en/nb)
   diagnosisAssistantResponse?: DiagnosisAssistantResponse; // Current diagnostic information
   mode?: 'diagnosis' | 'explore'; // chat mode
+  // Added for rate limiting context
+  userId?: string;
+  isSubscriber?: boolean;
+  // UI hints for assistants
+  maxFollowUpOptions?: number; // prefer N follow-ups (mobile e.g. 3, desktop e.g. 6)
 }
 
 export interface Question {

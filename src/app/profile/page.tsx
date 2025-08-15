@@ -3660,30 +3660,6 @@ export default function ProfilePage() {
                         >
                           Manage
                         </button>
-                        <button
-                          onClick={() => {
-                            // Send to subscribe page if no active subscription
-                            if (
-                              !(
-                                user?.profile?.isSubscriber ||
-                                user?.profile?.subscriptionStatus ===
-                                  'active' ||
-                                user?.profile?.subscriptionStatus === 'trialing'
-                              )
-                            ) {
-                              router.push('/subscribe');
-                            } else {
-                              router.push('/program/feedback');
-                            }
-                          }}
-                          className="px-3 py-2 bg-indigo-600 hover:bg-indigo-500 rounded-lg text-white text-sm"
-                        >
-                          {user?.profile?.isSubscriber ||
-                          user?.profile?.subscriptionStatus === 'active' ||
-                          user?.profile?.subscriptionStatus === 'trialing'
-                            ? 'Start Feedback'
-                            : 'Subscribe'}
-                        </button>
                       </div>
                     </div>
                   </div>

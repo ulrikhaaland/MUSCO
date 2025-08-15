@@ -11,12 +11,13 @@ import React, {
   MutableRefObject,
 } from 'react';
 import { AnatomyPart, HumanAPI } from '../types/human';
+import { ChatMessage, Question, DiagnosisAssistantResponse } from '../types';
+import { useAuth } from './AuthContext';
 import { bodyPartGroups, BodyPartGroup } from '../config/bodyPartGroups';
 import { createSelectionMap, getGenderedId } from '../utils/anatomyHelpers';
 import { Gender } from '../types';
 
 export enum ProgramIntention {
-  Exercise = 'exercise',
   Recovery = 'recovery',
   None = 'none',
 }
@@ -25,17 +26,9 @@ interface AppContextType {
   intention: ProgramIntention;
   intentionRef: MutableRefObject<ProgramIntention>;
   setIntention: (intention: ProgramIntention) => void;
-  isSelectingExerciseBodyParts: boolean;
-  isSelectingExerciseRef: MutableRefObject<boolean>;
   isSelectingRecoveryBodyParts: boolean;
-  selectedExerciseGroups: BodyPartGroup[];
-  selectedExerciseGroupsRef: MutableRefObject<BodyPartGroup[]>;
-  selectedPainfulAreas: BodyPartGroup[];
-  selectedPainfulAreasRef: MutableRefObject<BodyPartGroup[]>;
   selectedGroups: BodyPartGroup[];
   selectedGroupsRef: MutableRefObject<BodyPartGroup[]>;
-  fullBodyRef: MutableRefObject<boolean>;
-  completeExerciseSelection: () => void;
   completeRecoverySelection: () => void;
   resetSelectionState: () => void;
   completeReset: () => void;
@@ -55,25 +48,31 @@ interface AppContextType {
   humanRef: MutableRefObject<HumanAPI | null>;
   setHumanRef: (human: HumanAPI) => void;
   deselectGroup: (group: BodyPartGroup) => void;
-  resetExerciseSelection: () => void;
+  resetExerciseSelection: () => void; // kept for API compatibility; no-op
+  // persistence helpers
+  saveViewerState: () => void;
+  restoreViewerState: () => void;
+  // chat persistence
+  saveChatState: (snapshot: ChatSnapshot) => void;
+  restoreChatState: () => ChatSnapshot | null;
+  clearChatState: () => void;
+}
+
+export interface ChatSnapshot {
+  messages: ChatMessage[];
+  followUpQuestions?: Question[];
+  assistantResponse?: DiagnosisAssistantResponse | null;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export function AppProvider({ children }: { children: ReactNode }) {
+  const { user } = useAuth();
   const [intention, setIntention] = useState<ProgramIntention>(
     ProgramIntention.None
   );
-  const [isSelectingExerciseBodyParts, setIsSelectingExerciseBodyParts] =
-    useState(false);
   const [isSelectingRecoveryBodyParts, setIsSelectingRecoveryBodyParts] =
     useState(false);
-  const [selectedExerciseGroups, setSelectedExerciseGroups] = useState<
-    BodyPartGroup[]
-  >([]);
-  const [selectedPainfulAreas, setSelectedPainfulAreas] = useState<
-    BodyPartGroup[]
-  >([]);
   const [selectedGroups, setSelectedGroups] = useState<BodyPartGroup[]>([]);
   const [selectedPart, setSelectedPart] = useState<AnatomyPart | null>(null);
   const [skipAuth, setSkipAuth] = useState(false);
@@ -82,29 +81,16 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   // Refs to track state in event handlers
   const intentionRef = useRef(intention);
-  const isSelectingExerciseRef = useRef(isSelectingExerciseBodyParts);
-  const selectedExerciseGroupsRef = useRef(selectedExerciseGroups);
-  const selectedPainfulAreasRef = useRef(selectedPainfulAreas);
   const selectedGroupsRef = useRef(selectedGroups);
   const selectedPartRef = useRef(selectedPart);
-  const fullBodyRef = useRef(false);
+  const fullBodyRef = useRef(false); // retained only for compatibility; unused
 
   // Keep refs in sync with state
   useEffect(() => {
     intentionRef.current = intention;
   }, [intention]);
 
-  useEffect(() => {
-    isSelectingExerciseRef.current = isSelectingExerciseBodyParts;
-  }, [isSelectingExerciseBodyParts]);
-
-  useEffect(() => {
-    selectedExerciseGroupsRef.current = selectedExerciseGroups;
-  }, [selectedExerciseGroups]);
-
-  useEffect(() => {
-    selectedPainfulAreasRef.current = selectedPainfulAreas;
-  }, [selectedPainfulAreas]);
+  // No exercise mode – remove exercise-related sync effects
 
   useEffect(() => {
     selectedGroupsRef.current = selectedGroups;
@@ -116,74 +102,25 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   // Handle intention changes
   const handleSetIntention = useCallback((newIntention: ProgramIntention) => {
-    console.log('handleSetIntention called with:', newIntention);
-
     resetSelectionState();
     setIntention(newIntention);
 
     // Set initial selection state based on intention
     switch (newIntention) {
-      case ProgramIntention.Exercise:
-        console.log('Setting exercise selection mode');
-        // Skip the target area selection and go directly to painful areas
-        setIsSelectingExerciseBodyParts(false);
-        isSelectingExerciseRef.current = false;
-        fullBodyRef.current = true; // Always use full body for target areas
-        break;
       case ProgramIntention.Recovery:
-        console.log('Setting recovery selection mode');
         setIsSelectingRecoveryBodyParts(true);
         break;
       default:
-        console.log('Setting no selection mode');
     }
   }, []);
-
-  const completeExerciseSelection = useCallback(() => {
-    if (selectedExerciseGroups.length > 0 || fullBodyRef.current) {
-      setIsSelectingExerciseBodyParts(false);
-      isSelectingExerciseRef.current = false;
-      // Clear the current visual selection state since we're moving to painful areas
-      setSelectedGroups([]);
-    }
-  }, [selectedExerciseGroups.length]);
 
   const completeRecoverySelection = useCallback(() => {
     setIsSelectingRecoveryBodyParts(false);
   }, []);
 
-  useEffect(() => {
-    setIsSelectingExerciseBodyParts(isSelectingExerciseRef.current);
-  }, [isSelectingExerciseRef.current]);
-
   const resetSelectionState = useCallback(() => {
     // Don't reset intention, only reset the current stage
-    if (intention === ProgramIntention.Exercise) {
-      if (!isSelectingExerciseRef.current) {
-        // If we're in the painful areas selection stage, only reset painful areas
-        setSelectedPainfulAreas([]);
-        selectedPainfulAreasRef.current = [];
-        setSelectedGroups([]);
-        selectedGroupsRef.current = [];
-        setSelectedPart(null);
-        selectedPartRef.current = null;
-        
-        // Make sure isSelectingExerciseRef is set to false so the selected painful areas get updated properly
-        isSelectingExerciseRef.current = false;
-      } else {
-        // Reset all selections
-        setSelectedPainfulAreas([]);
-        selectedPainfulAreasRef.current = [];
-        // If we're in the exercise areas selection stage, reset exercise areas
-        setSelectedExerciseGroups([]);
-        selectedExerciseGroupsRef.current = [];
-        setSelectedGroups([]);
-        selectedGroupsRef.current = [];
-        setSelectedPart(null);
-        selectedPartRef.current = null;
-        fullBodyRef.current = true;
-      }
-    } else if (intention === ProgramIntention.Recovery) {
+    if (intention === ProgramIntention.Recovery) {
       // For recovery, just reset the current selection
       setSelectedGroups([]);
       selectedGroupsRef.current = [];
@@ -199,19 +136,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
       // If no intention, reset everything
       setIntention(ProgramIntention.None);
       intentionRef.current = ProgramIntention.None;
-      setIsSelectingExerciseBodyParts(false);
-      isSelectingExerciseRef.current = false;
       setIsSelectingRecoveryBodyParts(false);
-      setSelectedExerciseGroups([]);
-      selectedExerciseGroupsRef.current = [];
-      setSelectedPainfulAreas([]);
-      selectedPainfulAreasRef.current = [];
       setSelectedGroups([]);
       selectedGroupsRef.current = [];
       setSelectedPart(null);
       selectedPartRef.current = null;
     }
-  }, [intention, isSelectingExerciseRef.current]);
+  }, [intention]);
 
   // Add a complete reset function that resets everything unconditionally
   const completeReset = useCallback(() => {
@@ -220,15 +151,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
     intentionRef.current = ProgramIntention.None;
     
     // Reset selection stages
-    setIsSelectingExerciseBodyParts(false);
-    isSelectingExerciseRef.current = false;
     setIsSelectingRecoveryBodyParts(false);
     
     // Clear all selections
-    setSelectedExerciseGroups([]);
-    selectedExerciseGroupsRef.current = [];
-    setSelectedPainfulAreas([]);
-    selectedPainfulAreasRef.current = [];
     setSelectedGroups([]);
     selectedGroupsRef.current = [];
     setSelectedPart(null);
@@ -253,57 +178,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
       if (!group) {
         setSelectedGroups([]);
         setSelectedPart(null);
-        if (isSelectingExerciseRef.current) fullBodyRef.current = true;
         return;
       }
 
-      if (intentionRef.current === ProgramIntention.Exercise) {
-        console.log('Exercise mode - handling group selection');
-        console.log(
-          'isSelectingExerciseBodyParts:',
-          isSelectingExerciseRef.current
-        );
-        if (isSelectingExerciseRef.current) {
-          // We're selecting target exercise areas
-          setSelectedExerciseGroups((prev) => {
-            const exists = prev.some((g) => g.id === group.id);
-            // If it's an object selection, only add groups, never remove
-            if (isObjectSelection && exists) {
-              return prev;
-            }
-            const newGroups =
-              exists && !isObjectSelection
-                ? prev.filter((g) => g.id !== group.id)
-                : [...prev, group];
-
-            // Set fullBody to false when we have selections
-            fullBodyRef.current = newGroups.length === 0;
-
-            // Update selectedGroups to match exercise areas
-            setSelectedGroups(newGroups);
-            return newGroups;
-          });
-        } else {
-          // We're selecting painful areas
-          setSelectedPainfulAreas((prev) => {
-            const exists = prev.some((g) => g.id === group.id);
-            // If it's an object selection, only add groups, never remove
-            if (isObjectSelection && exists) {
-              return prev;
-            }
-            const newGroups =
-              exists && !isObjectSelection
-                ? prev.filter((g) => g.id !== group.id)
-                : [...prev, group];
-
-            // Update selectedGroups to match painful areas
-            setSelectedGroups(newGroups);
-            return newGroups;
-          });
-        }
-        // In exercise mode, we don't allow part selection
-        setSelectedPart(null);
-      } else if (intentionRef.current === ProgramIntention.Recovery) {
+      if (intentionRef.current === ProgramIntention.Recovery) {
         console.log('Recovery mode - handling group selection');
         if (isObjectSelection) {
           // For object selection in recovery mode
@@ -361,14 +239,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
     // Get the current gender from the iframe's src attribute
     const iframe = document.getElementById('myViewer') as HTMLIFrameElement;
     const gender: Gender = iframe?.src.includes('5tOV') ? 'male' : 'female';
-    if (isSelectingExerciseRef.current) {
-      selectedExerciseGroupsRef.current =
-        selectedExerciseGroupsRef.current.filter((g) => g.id !== group.id);
-    } else {
-      selectedPainfulAreasRef.current = selectedPainfulAreasRef.current.filter(
-        (g) => g.id !== group.id
-      );
-    }
+    selectedGroupsRef.current = selectedGroupsRef.current.filter(
+      (g) => g.id !== group.id
+    );
     // Only deselect IDs that aren't in the selection map
     const toDeselect = createSelectionMap(
       group.selectIds.map((id) => getGenderedId(id, gender)),
@@ -392,9 +265,94 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, []);
 
   function restartExerciseSelection(): void {
-    isSelectingExerciseRef.current = true;
+    // no-op after retiring exercise mode
     resetSelectionState();
   }
+
+  // Persist and restore viewer selection state across auth/subscription flows
+  const saveViewerState = useCallback(() => {
+    if (typeof window === 'undefined') return;
+    try {
+      const snapshot = {
+        intention: intentionRef.current,
+        selectedGroupIds: selectedGroupsRef.current.map((g) => g.id),
+        selectedPart: selectedPartRef.current,
+      } as const;
+      window.sessionStorage.setItem('viewerState', JSON.stringify(snapshot));
+      // Also store current path so we can navigate back after auth/checkout
+      try {
+        window.sessionStorage.setItem('previousPath', window.location.pathname);
+      } catch {}
+    } catch (e) {
+      console.warn('Failed to save viewer state', e);
+    }
+  }, []);
+
+  const restoreViewerState = useCallback(() => {
+    if (typeof window === 'undefined') return;
+    const raw = window.sessionStorage.getItem('viewerState');
+    if (!raw) return;
+    try {
+      const data = JSON.parse(raw) as {
+        intention: ProgramIntention;
+        selectedGroupIds: string[];
+        selectedPart: AnatomyPart | null;
+      };
+
+      // Helper to map ids -> BodyPartGroup objects
+      const idToGroup = new Map(
+        Object.values(bodyPartGroups).map((g) => [g.id, g] as const)
+      );
+      const mapIds = (ids: string[]) => ids.map((id) => idToGroup.get(id)).filter(Boolean) as BodyPartGroup[];
+
+      // Apply state
+      setIntention(data.intention);
+      setSelectedGroups(mapIds(data.selectedGroupIds));
+      setSelectedPart(data.selectedPart ?? null);
+
+      // One-shot restore
+      window.sessionStorage.removeItem('viewerState');
+    } catch (e) {
+      console.warn('Failed to restore viewer state', e);
+    }
+  }, []);
+
+  // Chat persistence in sessionStorage; if logged in, also mirror to localStorage for extra safety
+  const CHAT_KEY = 'chatState';
+  const saveChatState = useCallback((snapshot: ChatSnapshot) => {
+    try {
+      const json = JSON.stringify(snapshot);
+      window.sessionStorage.setItem(CHAT_KEY, json);
+      if (user?.uid) {
+        window.localStorage.setItem(`${CHAT_KEY}:${user.uid}`, json);
+      }
+    } catch (e) {
+      console.warn('Failed to save chat state', e);
+    }
+  }, [user?.uid]);
+
+  const restoreChatState = useCallback((): ChatSnapshot | null => {
+    try {
+      const fromSession = window.sessionStorage.getItem(CHAT_KEY);
+      if (fromSession) return JSON.parse(fromSession) as ChatSnapshot;
+      if (user?.uid) {
+        const fromLocal = window.localStorage.getItem(`${CHAT_KEY}:${user.uid}`);
+        if (fromLocal) return JSON.parse(fromLocal) as ChatSnapshot;
+      }
+    } catch (e) {
+      console.warn('Failed to restore chat state', e);
+    }
+    return null;
+  }, [user?.uid]);
+
+  const clearChatState = useCallback(() => {
+    try {
+      window.sessionStorage.removeItem(CHAT_KEY);
+      if (user?.uid) {
+        window.localStorage.removeItem(`${CHAT_KEY}:${user.uid}`);
+      }
+    } catch {}
+  }, [user?.uid]);
 
   return (
     <AppContext.Provider
@@ -402,17 +360,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
         intention,
         intentionRef,
         setIntention: handleSetIntention,
-        isSelectingExerciseBodyParts,
-        isSelectingExerciseRef,
         isSelectingRecoveryBodyParts,
-        selectedExerciseGroups,
-        selectedExerciseGroupsRef,
-        selectedPainfulAreas,
-        selectedPainfulAreasRef,
         selectedGroups,
         selectedGroupsRef,
-        fullBodyRef,
-        completeExerciseSelection,
         completeRecoverySelection,
         resetSelectionState,
         completeReset,
@@ -428,6 +378,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
         setHumanRef,
         deselectGroup,
         resetExerciseSelection: restartExerciseSelection,
+        // state persistence helpers
+        saveViewerState,
+        restoreViewerState,
+        saveChatState,
+        restoreChatState,
+        clearChatState,
       }}
     >
       {children}

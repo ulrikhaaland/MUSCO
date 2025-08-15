@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useAuth } from '../context/AuthContext';
 
 // Simple client-side memo cache to avoid re-streaming when revisiting a part
 const clientCache = new Map<string, { text: string }>();
@@ -8,6 +9,8 @@ type Input = {
   selectedPart?: { id: string; displayName: string; partType: string; side?: 'L' | 'R' | 'unknown' } | null;
   language: 'EN' | 'NB';
   readingLevel?: 'simple' | 'standard' | 'pro';
+  // Optional: change this value to force a re-fetch even if cached
+  refreshKey?: number;
 };
 
 export function useExplainSelection({
@@ -15,22 +18,50 @@ export function useExplainSelection({
   selectedPart,
   language,
   readingLevel = 'standard',
+  refreshKey,
 }: Input) {
-  const [data, setData] = useState<null | { text: string }>(null);
+  const [state, setState] = useState<{ text: string | null; rateLimited: boolean }>({ text: null, rateLimited: false });
   const ctrl = useRef<AbortController | null>(null);
+  const { user } = useAuth();
+  const lastRefreshRef = useRef<number | undefined>(undefined);
+
+  const SUPPRESS_KEY = 'explain_rate_limited_until';
+  const now = () => Date.now();
+  const getSuppressedUntil = (): number => {
+    try {
+      const v = localStorage.getItem(SUPPRESS_KEY);
+      return v ? parseInt(v, 10) || 0 : 0;
+    } catch {
+      return 0;
+    }
+  };
+  const setSuppression = (msFromNow: number) => {
+    try {
+      localStorage.setItem(SUPPRESS_KEY, String(now() + msFromNow));
+    } catch {}
+  };
 
   useEffect(() => {
     if (!exploreOn || !selectedPart) {
-      setData(null);
+      setState({ text: null, rateLimited: false });
       return;
     }
-    // Check client cache first
+
+    // Early exit if we are currently rate-limited (suppressed window active)
+    const suppressedUntil = getSuppressedUntil();
+    if (suppressedUntil > now()) {
+      setState({ text: null, rateLimited: true });
+      return;
+    }
+    // Check client cache first unless refreshKey changed
     const key = `${selectedPart.id}|${language}|${readingLevel}`;
-    if (clientCache.has(key)) {
+    const refreshChanged = refreshKey !== undefined && refreshKey !== lastRefreshRef.current;
+    if (!refreshChanged && clientCache.has(key)) {
       const cached = clientCache.get(key)!;
-      setData({ text: cached.text });
+      setState({ text: cached.text, rateLimited: false });
       return;
     }
+    lastRefreshRef.current = refreshKey;
 
     const ac = new AbortController();
     ctrl.current?.abort();
@@ -52,12 +83,19 @@ export function useExplainSelection({
             side: selectedPart.side ?? 'unknown',
             language,
             readingLevel,
+            uid: user?.uid,
+            isSubscriber: !!user?.profile?.isSubscriber,
           }),
           signal: ac.signal,
         });
 
         if (!res.ok || !res.body) {
           console.warn('[useExplainSelection] bad response', res.status);
+          if (res.status === 429) {
+            // Mark as rate-limited and set a suppression window (fallback 10 minutes)
+            setState({ text: null, rateLimited: true });
+            setSuppression(10 * 60 * 1000);
+          }
           return;
         }
 
@@ -78,12 +116,12 @@ export function useExplainSelection({
               const msg = JSON.parse(jsonStr);
               if (msg.type === 'delta' && typeof msg.delta === 'string') {
                 full += msg.delta;
-                setData({ text: full });
+                setState({ text: full, rateLimited: false });
               } else if (msg.type === 'final') {
                 const text = msg.payload?.text ?? full;
                 const payload = { text };
                 clientCache.set(key, payload);
-                setData(payload);
+                setState({ text, rateLimited: false });
               }
             } catch {}
           }
@@ -106,9 +144,9 @@ export function useExplainSelection({
       clearTimeout(timer);
       ac.abort();
     };
-  }, [exploreOn, selectedPart?.id, language, readingLevel]);
+  }, [exploreOn, selectedPart?.id, language, readingLevel, refreshKey]);
 
-  return data;
+  return state;
 }
 
 

@@ -24,10 +24,7 @@ function AppContent() {
   const searchParams = useSearchParams();
   const genderParam = searchParams?.get('gender') as Gender;
   const newParam = searchParams?.get('new');
-  const handedOffIntention = searchParams?.get('intention') as
-    | 'exercise'
-    | 'recovery'
-    | null;
+  const handedOffIntention = searchParams?.get('intention') as 'recovery' | null;
   const [gender, setGender] = useState<Gender>(genderParam || 'male');
   const [intentionSelected, setIntentionSelected] = useState(false);
   const [shouldResetModel, setShouldResetModel] = useState(false);
@@ -53,16 +50,10 @@ function AppContent() {
   useEffect(() => {
     if (newParam === 'true' && !intentionSelected) {
       // If intention provided in query, set it
-      if (handedOffIntention === 'exercise') {
-        setIntention(ProgramIntention.Exercise);
-        setIntentionSelected(true);
-      } else if (handedOffIntention === 'recovery') {
+      if (handedOffIntention === 'recovery') {
         setIntention(ProgramIntention.Recovery);
         setIntentionSelected(true);
-      } else if (
-        intention === ProgramIntention.Exercise ||
-        intention === ProgramIntention.Recovery
-      ) {
+      } else if (intention === ProgramIntention.Recovery) {
         // Use intention already present in context (e.g., from landing CTA)
         setIntentionSelected(true);
       }

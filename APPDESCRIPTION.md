@@ -10,30 +10,36 @@ The app's purpose is to make it easy and accessible for people to learn how to f
 ### Interactive 3D-Rendered Musculoskeletal Model
 - Users can zoom, pan, and click on different parts of the model.
 - Clicking on a specific part zooms in and reveals the Chat Interface.
+ - Explain Selection: In Explore mode, picking a structure shows a right‑aligned BioDigital label with a loading state that streams a concise explanation (≤80 words). Desktop only (mobile explainer disabled). Users can toggle this via the desktop controls; preference is persisted in localStorage key `explainer_enabled`. Revisiting a part returns the cached text instantly without re‑streaming.
 
 #### Chat Interface
-The chat system provides an intelligent, contextual conversation experience with dual-mode assistants:
+The chat system provides an intelligent, contextual conversation experience with a dual‑mode assistant:
 
-**Dual Assistant Architecture**
-- **Exploration Assistant**: Educates about anatomy, biomechanics, and exercise principles
-- **Diagnosis Assistant**: Conducts structured pain assessment and generates recovery programs
-- **Smart Mode Switching**: Assistants can seamlessly hand off conversations based on user needs
+**Dual‑mode Architecture (single assistant)**
+- **Explore mode**: Educates about anatomy, biomechanics, and exercise principles
+- **Diagnosis mode**: Conducts structured pain assessment and generates recovery programs
+- **Mode control**: Frontend sets an explicit `chatMode` on follow‑ups; backend applies per‑run system instructions to a single Assistant (OpenAI Threads). One thread per chat simplifies persistence and retrieval.
 
 **Initial Options**
 When a body part is selected, users see three primary quick-start options:
 1. **"Find Pain"** - Launches diagnosis mode for pain assessment and recovery programs
 2. **"Learn More"** - Activates exploration mode for educational content about anatomy/function
-3. **"Build Program"** - Generates exercise programs (switches based on app intention: Exercise/Recovery)
+3. **"Build Program"** - Generates a program after assessment (recovery‑centric; exercise‑only mode has been retired)
 
 **Interactive Chat Features**
-- **Streaming Responses**: Real-time message streaming with ≤120 word responses
-- **Structured Follow-up Questions**: Each response includes exactly 3 relevant quick-reply buttons (≤24 characters each)
+- **Streaming Responses**: Real-time message streaming with ≤80 word responses
+- **Structured Follow-up Questions**: Explore mode uses device-aware counts (mobile up to 3, desktop up to 6). Diagnosis mode is not capped by device.
 - **Contextual Adaptation**: Questions adapt based on selected body part and conversation history
 - **Multi-language Support**: Responds in user's language preference (English/Norwegian)
 - **Free-form Input**: Text field available for custom questions beyond quick-replies
 - **Auto-scrolling**: Intelligent scrolling that respects user behavior while maintaining usability
 - **Error Handling**: Connection issues handled gracefully with retry options
 - **Mobile Optimization**: Touch-friendly interface with smooth animations
+ - **Explain Selection Labels**: Model‑anchored labels update progressively as text streams in, then finalize.
+
+**Rate-limit UX**
+- Hitting the daily free cap shows a full‑screen backdrop overlay prompting login/subscribe; underlying page state (3D model selection, chat transcript) is preserved and restored after auth.
+- Explain Selection requests count toward the same daily token bucket as chat (user and anonymous, the latter keyed by cookie `musco_anon_id`). The backend emits structured warnings on limit hits, and the client applies a brief suppression window after a 429 to avoid hammering.
 
 ---
 
@@ -70,7 +76,7 @@ The app enforces simple, transparent rules:
 
 ### Subscription UX Flow
 - Subscribe page: Dedicated page presenting benefits and pricing, with Monthly and Annual options. Email is prefilled when available.
-- Success page: After checkout, the app briefly confirms and redirects to the feedback page once the subscription is recorded.
+- Success page: After checkout, the app confirms and returns to the page that initiated the subscribe flow (e.g., /app → /subscribe → success → /app; /program → /subscribe → success → /program), preserving chat/model state.
 - Manage subscription: From Profile → Subscription card, users can open the Stripe Billing Portal to update payment method, view invoices, or cancel.
 - Gating: If a non‑subscriber tries to generate a follow‑up, they’re routed to Subscribe. Subscribers proceed to the Feedback flow.
 **Chat Behavior**
@@ -83,23 +89,31 @@ The app enforces simple, transparent rules:
 ---
 
 ## State-of-the-Art LLM Integration
-- Powered by OpenAI's Assistant API with specialized dual-mode system prompts
-- **Exploration Assistant**: Expert musculoskeletal education specialist with knowledge in exercise physiology, biomechanics, anatomy, and physical therapy principles
-- **Diagnosis Assistant**: Structured pain assessment specialist using evidence-based clinical questioning protocols
+- Powered by OpenAI's Assistants API (Threads) with per-run system instructions
+- **Explore mode**: Expert musculoskeletal education (exercise physiology, biomechanics, anatomy, PT principles)
+- **Diagnosis mode**: Structured pain assessment using evidence-based clinical questioning protocols
 - Context-aware responses based on selected body part, user language preference, and conversation history
 - Advanced safety protocols with red flag detection for serious medical conditions
+ 
+### Explain Selection – Streaming Microcopy
+- Backend: streaming‑only endpoint `POST /api/explain-selection?stream=1` (SSE).
+  - Input: `{ partId, displayName, partType, side, language: EN|NB, readingLevel }`.
+  - Emits: `{"type":"delta","delta":"..."}` chunks and a `{"type":"final","payload":{"text":"..."}}` message.
+- Frontend (desktop only): `useExplainSelection` starts SSE on selection, parses chunks, and updates the model label live. Responses are capped to ≤80 words. The explainer can be turned off from the desktop controls; the choice is remembered in localStorage.
+- Caching: lightweight client‑side memo cache keyed by `(partId|language|readingLevel)` avoids re‑streaming on revisits.
+- UI: `labels.create` shows “Loading…” with `pinGlow`; `labels.update` streams text; glow stops on final.
 
 #### Example Workflow - Exploration Mode
 1. **Selection**: User selects the bicep on the 3D model
-2. **Initial Options**: Chat popup appears with three options: "Find Pain", "Learn More", "Build Program"
+2. **Initial Options**: Chat popup appears with: "Find Pain", "Learn More", and "Build Program" (program generation is recovery‑centric)
 3. **User Action**: User clicks "Learn More" to enter exploration mode
-4. **Streaming Response**: Exploration assistant streams educational content about bicep anatomy and function (≤120 words)
+4. **Streaming Response**: Exploration assistant streams educational content about bicep anatomy and function (≤120 words). When a structure is picked, the on‑model label also streams the same explainer.
 5. **Follow-up Questions**: Three relevant quick-reply buttons appear:
    - "How to train bicep?"
    - "What is bicep function?"
-   - "Build Program"
+   - "Build Program" (recovery‑centric)
 6. **Educational Flow**: User can continue learning or transition to program generation
-7. **Program Transition**: When ready, assistant naturally guides toward "Build Program" option
+7. **Program Transition**: When ready, assistant naturally guides toward "Build Program" (recovery program)
 
 #### Example Workflow - Diagnosis Mode
 1. **Selection**: User selects shoulder on the 3D model
@@ -121,23 +135,18 @@ The app enforces simple, transparent rules:
 
 ---
 
-## Exercise/Recovery Program
-The app generates personalized exercise and recovery programs through intelligent assessment:
+## Recovery Program
+The app generates personalized recovery programs through intelligent assessment:
 
 **Program Generation Triggers**
-- **Exploration Mode**: Assistant naturally guides users toward program building after educational content
+- **Exploration Mode**: Assistant can guide users toward program building after educational content
 - **Diagnosis Mode**: Programs offered after completing structured pain assessment
 - **Direct Request**: Users can select "Build Program" from initial options
 - **Context-Aware**: Programs adapt based on selected body part and conversation context
 
-**Program Type Options**
-Users can choose from three distinct program approaches based on their needs:
-
-- **Exercise Programs**: Strength training and conditioning focused on building muscle, improving performance, and enhancing fitness for selected body parts
-- **Recovery Programs**: Injury rehabilitation and pain management protocols designed for healing, mobility restoration, and return to normal function
-- **Combined Programs**: "Exercise + Recovery" approach that integrates both rehabilitation and strengthening elements for comprehensive care
-- **User Choice**: During assessment completion, users are presented with clear options to select their preferred program type
-- **Intention-Based**: App intention (Exercise/Recovery mode) influences initial program suggestions but users retain final choice
+**Program Type**
+- Recovery programs focus on injury rehabilitation and pain management (exercise‑only mode removed).
+  Future combined programs may return; for now generation is recovery‑centric.
 
 **Generation Process**
 - **Assessment-Driven**: Programs generated only after collecting sufficient user information
@@ -249,13 +258,15 @@ The chat system is built with modern React patterns for optimal performance and 
 - **LoginPage**: Authentication entry point with loading states
 
 **Assistant Integration**
-- **Dual Mode System**: Seamless switching between exploration and diagnosis assistants
+- **Dual Mode System**: Seamless switching between Explore and Diagnosis modes (single assistant)
+- **Threads**: One thread per conversation; frontend passes `chatMode` and hints (e.g., `maxFollowUpOptions`) to guide responses
 - **Context Management**: Tracks conversation history and previous questions to avoid duplication
 - **Translation Support**: Multi-language support with dynamic question generation
-- **Mode Detection**: Intelligent detection of user intent to switch between assistants
+- **Mode Detection**: Intelligent detection of user intent to switch modes
 
 **Key Technical Features**
 - **Real-time Streaming**: Server-sent events for immediate response feedback
+ - **Explain Selection Labels**: BioDigital `labels.create`/`labels.update` anchor educational blurbs with progressive streaming and instant client cache.
 - **Dynamic Spacer System**: Intelligent height management for growing content with scroll support
 - **Performance Optimized**: Component extraction, efficient re-render patterns, and cleanup optimizations
 - **Auto-scroll Intelligence**: Respects user scroll behavior while maintaining usability

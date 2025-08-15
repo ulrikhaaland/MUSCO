@@ -12,6 +12,8 @@ import {
   DiagnosisAssistantResponse,
 } from '../types';
 import { useTranslation } from '../i18n';
+import { useAuth } from '../context/AuthContext';
+import { useApp } from '../context/AppContext';
 
 // Type for storing failed message details for retry
 type FailedMessageInfo = {
@@ -21,8 +23,11 @@ type FailedMessageInfo = {
 
 export function useChat() {
   const { locale } = useTranslation();
+  const { user } = useAuth();
+  const { saveChatState, restoreChatState, clearChatState } = useApp();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [rateLimited, setRateLimited] = useState(false);
   const [userPreferences, setUserPreferences] = useState<
     UserPreferences | undefined
   >();
@@ -62,6 +67,41 @@ export function useChat() {
     }
 
     initializeAssistant();
+  }, []);
+
+  // Hydrate rate-limit state from session so overlay persists across redirects
+  useEffect(() => {
+    try {
+      const rl = window.sessionStorage.getItem('rateLimited');
+      if (rl === '1') {
+        setRateLimited(true);
+      }
+    } catch {}
+  }, []);
+
+  // If user logs in (uid present), clear local rate-limit flag (server will re-enforce if still true)
+  useEffect(() => {
+    if (user?.uid) {
+      try { window.sessionStorage.removeItem('rateLimited'); } catch {}
+      setRateLimited(false);
+    }
+  }, [user?.uid]);
+
+  // Restore any previously saved chat snapshot (from anon → login flow or refresh)
+  useEffect(() => {
+    // Only hydrate once, and only if nothing is currently in memory
+    if (messages.length > 0) return;
+    try {
+      const snapshot = restoreChatState?.();
+      if (snapshot && Array.isArray(snapshot.messages) && snapshot.messages.length > 0) {
+        setMessages(snapshot.messages);
+        setFollowUpQuestions(snapshot.followUpQuestions || []);
+        setAssistantResponse(snapshot.assistantResponse ?? null);
+      }
+    } catch (e) {
+      // ignore
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Add listener for visibility change to handle stream interruptions
@@ -122,6 +162,7 @@ export function useChat() {
     setMessages([]);
     setFollowUpQuestions([]);
     setAssistantResponse(null);
+    try { clearChatState?.(); } catch {}
     justResetRef.current = true; // ADDED: Set the flag
     // Log to confirm assistantResponse is intended to be null for the next send operation
     console.log('[useChat - resetChat] assistantResponse set to null and justResetRef set to true. The next \'Value of assistantResponse (state) before capturing\' log should show null.');
@@ -166,6 +207,11 @@ export function useChat() {
     isRefetch: boolean = false, // Added flag to indicate refetch
     isResend: boolean = false   // Added flag to indicate a resend after error
   ) => {
+    // Block send if rate-limited; keep overlay visible
+    if (rateLimited && !isRefetch) {
+      console.warn('Rate limited: blocking send.');
+      return;
+    }
     // Create the message object
     const newMessage: ChatMessage = {
       id: `user-${Date.now()}`,
@@ -283,6 +329,8 @@ export function useChat() {
         message: messageContent,
         language: locale,
         diagnosisAssistantResponse: previousTurnAssistantResponseFromState, // MODIFIED: Use the potentially overridden value
+        userId: user?.uid,
+        isSubscriber: user?.profile?.isSubscriber,
       };
 
       if (isRefetch) {
@@ -302,7 +350,19 @@ export function useChat() {
 
       // Send the message and handle streaming response
       try {
-        await sendMessage(threadIdRef.current ?? '', payload, (content) => {
+        await sendMessage(threadIdRef.current ?? '', payload, (content, payloadObj) => {
+          // Detect rate limit from SSE payload
+          if (payloadObj && (payloadObj as any).error === 'free_limit_exceeded') {
+            setRateLimited(true);
+            try { window.sessionStorage.setItem('rateLimited', '1'); } catch {}
+            setIsLoading(false);
+            return;
+          }
+          if (payloadObj && (payloadObj as any).error === 'stream_error') {
+            setStreamError(new Error('Stream error'));
+            setIsLoading(false);
+            return;
+          }
           if (!content) return;
 
           if (isRefetch) {
@@ -986,9 +1046,25 @@ export function useChat() {
     });
   };
 
+  // Persist chat state on every material change so anon → login preserves it
+  useEffect(() => {
+    try {
+      // Avoid saving empty snapshots
+      if (messages.length === 0 && followUpQuestions.length === 0 && !assistantResponse) {
+        return;
+      }
+      saveChatState?.({
+        messages,
+        followUpQuestions,
+        assistantResponse,
+      });
+    } catch {}
+  }, [messages, followUpQuestions, assistantResponse, saveChatState]);
+
   return {
     messages,
     isLoading,
+    rateLimited,
     userPreferences,
     followUpQuestions,
     assistantResponse,

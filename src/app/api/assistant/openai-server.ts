@@ -1,9 +1,17 @@
 import OpenAI from 'openai';
 import { ChatPayload, DiagnosisAssistantResponse } from '../../types';
-import { ExerciseQuestionnaireAnswers, ProgramType } from '../../../../shared/types';
+import {
+  ENFORCE_CHAT_LIMITS,
+  FREE_DAILY_TOKENS,
+  ESTIMATED_RESPONSE_TOKENS,
+  estimateTokensFromString,
+  FreeLimitExceededError,
+  logFreeLimit,
+} from '@/app/lib/chatLimits';
+import { ExerciseQuestionnaireAnswers } from '../../../../shared/types';
 import { adminDb } from '@/app/firebase/admin';
-import { ProgramStatus, ExerciseProgram, Exercise } from '@/app/types/program';
-import { loadServerExercises } from '@/app/services/server-exercises';
+import { ProgramStatus, ExerciseProgram } from '@/app/types/program';
+// import { loadServerExercises } from '@/app/services/server-exercises';
 import { ProgramFeedback } from '@/app/components/ui/ProgramFeedbackQuestionnaire';
 import { prepareExercisesPrompt } from '@/app/helpers/exercise-prompt';
 import { getStartOfWeek, addDays } from '@/app/utils/dateutils';
@@ -13,24 +21,245 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
+// ----------------------
+// Logging helpers (structured, throttled)
+// ----------------------
+type LogLevel = 'debug' | 'info' | 'warn' | 'error';
+const LOG_LEVEL: LogLevel = (process.env.LOG_LEVEL as LogLevel) || 'info';
+const levelRank: Record<LogLevel, number> = { debug: 10, info: 20, warn: 30, error: 40 };
+const currentRank = levelRank[LOG_LEVEL] ?? 20;
+const throttleMap: Map<string, { count: number; start: number }> = new Map();
+
+function shouldLog(level: LogLevel): boolean {
+  return levelRank[level] >= currentRank;
+}
+
+function throttledLog(level: LogLevel, key: string, line: string) {
+  if (!shouldLog(level)) return;
+  const now = Date.now();
+  const entry = throttleMap.get(key);
+  if (!entry || now - entry.start > 60_000) {
+    throttleMap.set(key, { count: 1, start: now });
+  } else {
+    entry.count += 1;
+    if (entry.count > 3) return; // auto-throttle after 3/min
+  }
+  const logLine = line.length > 80 ? line.slice(0, 80) : line;
+  if (level === 'error') console.error(logLine);
+  else if (level === 'warn') console.warn(logLine);
+  else console.log(logLine);
+}
+
+// Limits are centralized in chatLimits.ts
+
+async function checkAndConsumeUserChatTokens(userId: string, tokensNeeded: number): Promise<void> {
+  if (!ENFORCE_CHAT_LIMITS) return;
+  if (!userId) {
+    throw new Error('Chat limit enforcement requires userId');
+  }
+
+  const now = new Date();
+  const usageRef = adminDb
+    .collection('users')
+    .doc(userId)
+    .collection('usage')
+    .doc('chat_daily');
+
+  await adminDb.runTransaction(async (tx) => {
+    const snapshot = await tx.get(usageRef);
+    const data = snapshot.exists ? (snapshot.data() as any) : null;
+
+    const windowStartIso = data?.windowStart as string | undefined;
+    const tokensUsed = typeof data?.tokensUsed === 'number' ? data.tokensUsed : 0;
+
+    const windowStart = windowStartIso ? new Date(windowStartIso) : null;
+    const windowExpired = !windowStart || (now.getTime() - windowStart.getTime() > 24 * 60 * 60 * 1000);
+
+    const effectiveTokensUsed = windowExpired ? 0 : tokensUsed;
+    const newTotal = effectiveTokensUsed + tokensNeeded;
+
+    throttledLog(
+      'info',
+      `limit_user_${userId}`,
+      `limit=user user=${userId} used=${effectiveTokensUsed} need=${tokensNeeded} new=${newTotal} cap=${FREE_DAILY_TOKENS}`
+    );
+
+    if (newTotal > FREE_DAILY_TOKENS) {
+      logFreeLimit({
+        scope: 'chat',
+        kind: 'user',
+        id: userId,
+        used: effectiveTokensUsed,
+        need: tokensNeeded,
+        next: newTotal,
+        cap: FREE_DAILY_TOKENS,
+      });
+      throw new FreeLimitExceededError();
+    }
+
+    const newDoc = {
+      tokensUsed: newTotal,
+      windowStart: windowExpired ? now.toISOString() : windowStartIso ?? now.toISOString(),
+      updatedAt: now.toISOString(),
+    };
+    if (snapshot.exists) {
+      tx.update(usageRef, newDoc);
+    } else {
+      tx.set(usageRef, newDoc);
+    }
+  });
+}
+
+// Public helper for other routes to reserve free-tier tokens safely
+export async function reserveFreeChatTokens(
+  userId?: string,
+  tokensNeeded?: number,
+  isSubscriber?: boolean
+): Promise<void> {
+  if (!ENFORCE_CHAT_LIMITS) return;
+  if (!userId) return; // cannot enforce without user context
+  if (isSubscriber) {
+    throttledLog(
+      'info',
+      `limit_bypass_user_${userId}`,
+      `limit=bypass user=${userId} reason=subscriber`
+    );
+    return; // subscribers are exempt
+  }
+  const needed = typeof tokensNeeded === 'number' ? tokensNeeded : ESTIMATED_RESPONSE_TOKENS;
+  await checkAndConsumeUserChatTokens(userId, needed);
+}
+
+// Anonymous limits (cookie-based anon id)
+async function checkAndConsumeAnonChatTokens(anonId: string, tokensNeeded: number): Promise<void> {
+  if (!ENFORCE_CHAT_LIMITS) return;
+  if (!anonId) return;
+
+  const now = new Date();
+  const usageRef = adminDb
+    .collection('anonymousUsage')
+    .doc(anonId)
+    .collection('usage')
+    .doc('chat_daily');
+
+  await adminDb.runTransaction(async (tx) => {
+    const snapshot = await tx.get(usageRef);
+    const data = snapshot.exists ? (snapshot.data() as any) : null;
+
+    const windowStartIso = data?.windowStart as string | undefined;
+    const tokensUsed = typeof data?.tokensUsed === 'number' ? data.tokensUsed : 0;
+
+    const windowStart = windowStartIso ? new Date(windowStartIso) : null;
+    const windowExpired = !windowStart || (now.getTime() - windowStart.getTime() > 24 * 60 * 60 * 1000);
+
+    const effectiveTokensUsed = windowExpired ? 0 : tokensUsed;
+    const newTotal = effectiveTokensUsed + tokensNeeded;
+
+    throttledLog(
+      'info',
+      `limit_anon_${anonId}`,
+      `limit=anon anon=${anonId} used=${effectiveTokensUsed} need=${tokensNeeded} new=${newTotal} cap=${FREE_DAILY_TOKENS}`
+    );
+
+    if (newTotal > FREE_DAILY_TOKENS) {
+      logFreeLimit({
+        scope: 'chat',
+        kind: 'anon',
+        id: anonId,
+        used: effectiveTokensUsed,
+        need: tokensNeeded,
+        next: newTotal,
+        cap: FREE_DAILY_TOKENS,
+      });
+      throw new FreeLimitExceededError();
+    }
+
+    const newDoc = {
+      tokensUsed: newTotal,
+      windowStart: windowExpired ? now.toISOString() : windowStartIso ?? now.toISOString(),
+      updatedAt: now.toISOString(),
+    };
+    if (snapshot.exists) {
+      tx.update(usageRef, newDoc);
+    } else {
+      tx.set(usageRef, newDoc);
+    }
+  });
+}
+
+export async function reserveFreeChatTokensForAnon(
+  anonId?: string,
+  tokensNeeded?: number
+): Promise<void> {
+  if (!ENFORCE_CHAT_LIMITS) return;
+  if (!anonId) return;
+  const needed = typeof tokensNeeded === 'number' ? tokensNeeded : ESTIMATED_RESPONSE_TOKENS;
+  await checkAndConsumeAnonChatTokens(anonId, needed);
+}
+
+// Reset/migrate usage when an anonymous user logs in
+export async function migrateAnonUsageToUserAndResetLimit(anonId?: string, userId?: string): Promise<boolean> {
+  try {
+    if (!anonId || !userId) return false;
+
+    // Reset user's daily usage window to zero
+    const nowIso = new Date().toISOString();
+    const userUsageRef = adminDb
+      .collection('users')
+      .doc(userId)
+      .collection('usage')
+      .doc('chat_daily');
+
+    // Delete anonymous usage doc
+    const anonUsageRef = adminDb
+      .collection('anonymousUsage')
+      .doc(anonId)
+      .collection('usage')
+      .doc('chat_daily');
+
+    await adminDb.runTransaction(async (tx) => {
+      // Reset user usage
+      tx.set(userUsageRef, { tokensUsed: 0, windowStart: nowIso, updatedAt: nowIso }, { merge: true });
+      // Clear anon usage
+      tx.delete(anonUsageRef);
+
+      // Mark migration on user root doc to avoid repeated resets if desired in future
+      const userRootRef = adminDb.collection('users').doc(userId);
+      tx.set(userRootRef, { chatUsageMigratedFromAnon: anonId, chatUsageMigratedAt: nowIso }, { merge: true });
+    });
+
+    return true;
+  } catch (e) {
+    // Best-effort; if migration fails, do not block chat
+    console.warn('migrateAnonUsageToUserAndResetLimit failed', e);
+    return false;
+  }
+}
+
 // Stream chat completion with OpenAI
 export async function streamChatCompletion({
-  threadId,
+  threadId: _threadId,
   messages,
   systemMessage,
   userMessage,
-  modelName = 'gpt-5-mini',
   onContent,
+  options,
 }: {
   threadId: string;
   messages: any[];
   systemMessage: string;
   userMessage: any;
-  modelName?: string;
   onContent: (content: string) => void;
+  options?: {
+    userId?: string;
+    isSubscriber?: boolean;
+    estimatedResponseTokens?: number;
+    anonId?: string;
+  };
 }) {
   try {
-    console.log(`[streamChatCompletion] Starting with model: ${modelName}`);
+    void _threadId;
+    console.log(`[streamChatCompletion] Starting with model: gpt-5-mini`);
 
     // Re-introduce historical messages
     const formattedMessages = formatMessagesForChatCompletion(messages);
@@ -60,16 +289,11 @@ export async function streamChatCompletion({
       ) {
         // Append the structured context if it exists and is not empty
         // Omit fields that are AI conclusions or UI constructs, not primary history data
-        const {
-          followUpQuestions,
-          targetAreas,
-          programType,
-          informationalInsights,
-          // assessmentComplete and redFlagsPresent might also be considered AI conclusions,
-          // but they can be useful for the AI to know its own previous state flags.
-          // Let's keep them for now unless they cause issues.
-          ...contextualInfo
-        } = userMessage.diagnosisAssistantResponse;
+        const contextualInfo = ((obj: any) => {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          const { followUpQuestions, targetAreas, programType, informationalInsights, ...rest } = obj || {};
+          return rest;
+        })(userMessage.diagnosisAssistantResponse);
         userMessageContent += `\n\n<<PREVIOUS_CONTEXT_JSON>>\n${JSON.stringify(contextualInfo, null, 2)}\n<<PREVIOUS_CONTEXT_JSON_END>>`;
       }
 
@@ -113,9 +337,22 @@ export async function streamChatCompletion({
       content: userMessageContent,
     });
 
+    // Enforce free-tier chat limits (non-subscribers only)
+    const estimatedInputTokens = estimateTokensFromString(userMessageContent);
+    const estimatedResponse = options?.estimatedResponseTokens ?? ESTIMATED_RESPONSE_TOKENS;
+    if (ENFORCE_CHAT_LIMITS) {
+      if (options?.userId && options?.isSubscriber === true) {
+        throttledLog('info', `limit_bypass_user_${options.userId}`, `limit=bypass user=${options.userId} reason=subscriber`);
+      } else if (options?.userId && options?.isSubscriber === false) {
+        await checkAndConsumeUserChatTokens(options.userId, estimatedInputTokens + estimatedResponse);
+      } else if (options?.anonId) {
+        await checkAndConsumeAnonChatTokens(options.anonId, estimatedInputTokens + estimatedResponse);
+      }
+    }
+
     // Call OpenAI Responses API (streaming) with minimal reasoning effort
     const stream = await openai.responses.stream({
-      model: modelName,
+      model: 'gpt-5-mini',
       reasoning: { effort: 'minimal' } as any,
       input: formattedMessages,
     });
@@ -155,6 +392,7 @@ export async function streamChatCompletion({
     console.log(fullContent);
   } catch (error) {
     console.error('[streamChatCompletion] Error in stream:', error);
+    // Re-throw so the route can send a structured SSE error payload
     throw error;
   }
 }
@@ -181,7 +419,7 @@ function formatMessagesForChatCompletion(messages: any[]) {
       // Try to stringify any other content object
       try {
         content = JSON.stringify(msg.content);
-      } catch (e) {
+      } catch {
         content = 'Content could not be processed';
       }
     }
@@ -197,7 +435,17 @@ function formatMessagesForChatCompletion(messages: any[]) {
 export async function getOrCreateAssistant(assistantId: string) {
   try {
     const assistant = await openai.beta.assistants.retrieve(assistantId);
-
+    // If the assistant exists but is not on the desired model, update it to a supported Assistants model
+    try {
+      const currentModel = (assistant as any)?.model as string | undefined;
+      // Assistants API currently may not support some 5-mini variants; prefer 4.1-mini if update is needed
+      if (currentModel && currentModel !== 'gpt-4.1-mini') {
+        const updated = await openai.beta.assistants.update(assistantId, {
+          model: 'gpt-4.1-mini',
+        });
+        return updated;
+      }
+    } catch {}
     return assistant;
   } catch (error) {
     console.error('Error in getOrCreateAssistant:', error);
@@ -233,11 +481,31 @@ export async function addMessage(threadId: string, payload: ChatPayload) {
 export async function streamRunResponse(
   threadId: string,
   assistantId: string,
-  onMessage: (content: string) => void
+  onMessage: (content: string) => void,
+  options?: {
+    userId?: string;
+    isSubscriber?: boolean;
+    estimatedResponseTokens?: number;
+    anonId?: string;
+  },
+  instructions?: string
 ) {
   try {
+    // For assistant streaming, we can only estimate response tokens
+    if (ENFORCE_CHAT_LIMITS) {
+      const estimated = options?.estimatedResponseTokens ?? ESTIMATED_RESPONSE_TOKENS;
+      if (options?.userId && options?.isSubscriber === true) {
+        throttledLog('info', `limit_bypass_user_${options.userId}`, `limit=bypass user=${options.userId} reason=subscriber`);
+      } else if (options?.userId && options?.isSubscriber === false) {
+        await checkAndConsumeUserChatTokens(options.userId, estimated);
+      } else if (options?.anonId) {
+        await checkAndConsumeAnonChatTokens(options.anonId, estimated);
+      }
+    }
+
     const stream = await openai.beta.threads.runs.stream(threadId, {
       assistant_id: assistantId,
+      ...(instructions ? { instructions } : {}),
     });
 
     // Keep track if we've already handled stream completion
@@ -299,11 +567,16 @@ export async function streamRunResponse(
 }
 
 // Run the assistant on a thread (non-streaming)
-export async function runAssistant(threadId: string, assistantId: string) {
+export async function runAssistant(
+  threadId: string,
+  assistantId: string,
+  instructions?: string
+) {
   try {
     const run = await openai.beta.threads.runs.create(threadId, {
       assistant_id: assistantId,
       response_format: { type: 'json_object' },
+      ...(instructions ? { instructions } : {}),
     });
 
     // Wait for the run to complete
@@ -539,7 +812,7 @@ FAILURE TO FOLLOW THE ABOVE INSTRUCTIONS EXACTLY WILL RESULT IN POOR USER EXPERI
 
     // Call the OpenAI chat completion API
     const response = await openai.chat.completions.create({
-      model: 'gpt-5', // Using a capable model for handling complex JSON output
+      model: 'gpt-5', // keep high-quality model for follow-up generation
       messages: [
         {
           role: 'system',
@@ -829,7 +1102,7 @@ export async function generateExerciseProgramWithModel(context: {
 
     // Call the OpenAI chat completion API
     const response = await openai.chat.completions.create({
-      model: 'gpt-5-mini', // Using a capable model for handling complex JSON output
+      model: 'gpt-5-mini', // small model for initial generation
       messages: [
         {
           role: 'system',
@@ -1006,19 +1279,27 @@ export async function generateExerciseProgramWithModel(context: {
 
 // Non-streaming chat completion with OpenAI
 export async function getChatCompletion({
-  threadId,
+  threadId: _threadId,
   messages,
   systemMessage,
   userMessage,
   modelName = 'gpt-5-mini',
+  options,
 }: {
   threadId: string;
   messages: any[];
   systemMessage: string;
   userMessage: any;
   modelName?: string;
+  options?: {
+    userId?: string;
+    isSubscriber?: boolean;
+    estimatedResponseTokens?: number;
+    anonId?: string;
+  };
 }) {
   try {
+    void _threadId;
     console.log(`[getChatCompletion] Starting with model: ${modelName}`);
 
     // Re-introduce historical messages
@@ -1047,17 +1328,11 @@ export async function getChatCompletion({
       ) {
         // Append the structured context if it exists and is not empty
         // Omit fields that are AI conclusions or UI constructs, not primary history data
-        const {
-          followUpQuestions,
-          targetAreas,
-          programType,
-          informationalInsights,
-          // assessmentComplete and redFlagsPresent might also be considered AI conclusions,
-          // but they can be useful for the AI to know its own previous state flags.
-          // Let's keep them for now unless they cause issues.
-          ...contextualInfo
-        } = userMessage.diagnosisAssistantResponse;
-        userMessageContent += `\n\n<<PREVIOUS_CONTEXT_JSON>>\n${JSON.stringify(contextualInfo, null, 2)}\n<<PREVIOUS_CONTEXT_JSON_END>>`;
+        // Omit UI/AI-only fields from previous context
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { followUpQuestions, targetAreas, programType, informationalInsights, ...rest } =
+          userMessage.diagnosisAssistantResponse || {};
+        userMessageContent += `\n\n<<PREVIOUS_CONTEXT_JSON>>\n${JSON.stringify(rest, null, 2)}\n<<PREVIOUS_CONTEXT_JSON_END>>`;
       }
 
       // Add selected body group and part information
@@ -1111,6 +1386,19 @@ export async function getChatCompletion({
       '[getChatCompletion] Full formattedMessages (with history) being sent to OpenAI API:',
       JSON.stringify(formattedMessages, null, 2)
     );
+
+    // Enforce free-tier chat limits (non-subscribers only)
+    const estimatedInputTokens = estimateTokensFromString(userMessageContent);
+    const estimatedResponse = options?.estimatedResponseTokens ?? ESTIMATED_RESPONSE_TOKENS;
+    if (ENFORCE_CHAT_LIMITS) {
+      if (options?.userId && options?.isSubscriber === true) {
+        throttledLog('info', `limit_bypass_user_${options.userId}`, `limit=bypass user=${options.userId} reason=subscriber`);
+      } else if (options?.userId && options?.isSubscriber === false) {
+        await checkAndConsumeUserChatTokens(options.userId, estimatedInputTokens + estimatedResponse);
+      } else if (options?.anonId) {
+        await checkAndConsumeAnonChatTokens(options.anonId, estimatedInputTokens + estimatedResponse);
+      }
+    }
 
     // Call OpenAI Responses API with minimal reasoning effort
     const response = await openai.responses.create({

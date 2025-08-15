@@ -34,7 +34,20 @@ export default function SubscribeSuccessPage() {
           data?.subscriptionStatus === 'active' ||
           data?.subscriptionStatus === 'trialing';
         if (active && !cancelled) {
-          // Keep local loading; navigate to feedback
+          // Prefer returning user to the page that initiated the subscribe flow
+          try {
+            const returnAfterSubscribe = window.sessionStorage.getItem('returnAfterSubscribe');
+            const previousPath = window.sessionStorage.getItem('previousPath');
+            const target = returnAfterSubscribe || previousPath;
+            if (target) {
+              window.sessionStorage.removeItem('returnAfterSubscribe');
+              window.sessionStorage.removeItem('previousPath');
+              window.sessionStorage.removeItem('loginContext');
+              router.replace(target);
+              return;
+            }
+          } catch {}
+          // Default behavior
           router.replace('/program/feedback');
           return;
         }
