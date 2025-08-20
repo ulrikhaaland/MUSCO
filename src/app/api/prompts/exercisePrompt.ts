@@ -78,12 +78,14 @@ Program Type Handling
      - Keep cardio and strength on separate days (never in the same day).
      - It is ALLOWED to mix recovery (mobility/flexibility/stability/posture) exercises within the same session as strength or cardio. Prefer placing recovery either after the warmup (prep) or at the end (cooldown). Keep recovery items low-intensity and brief.
      - Include at least one dedicated "active recovery" workout day in the week (not a rest day) with gentle mobility/flexibility/stability work (approximately 5–15 minutes total), equipmentless and home-performable.
+     - CRITICAL: If painfulAreas is non-empty, all recovery elements (including any dedicated recovery day) MUST be explicitly tailored to those painful areas. Do not generate a generic, full-body recovery routine—focus mobility/flexibility/stability items on the selected painful parts.
      - Maintain remaining days as standard exercise days following the same rules as "exercise".
 
   C) programType == "recovery"
      - Generate a recovery-focused program prioritizing gentle mobility, flexibility, stability, posture, and core control.
      - Avoid heavy strength loading and high-intensity cardio; prefer low-intensity options (e.g., Zone 2 walking/cycling as appropriate) and short mobility blocks.
      - Ensure all activities are safe for the user's condition and painfulAreas.
+     - CRITICAL: If painfulAreas is non-empty, the program MUST primarily target those painful areas with specific mobility/flexibility/stability/posture/core-control work. Do not output a generic recovery program; center exercise selection, day descriptions, and emphasis on the painful parts.
      - You may use any durations allowed by this prompt, but bias toward the lower end of the user's preferred duration.
 
 3. Exercise Selection Guidelines
@@ -238,6 +240,7 @@ EXERCISE SELECTION PROTOCOL
 - Use the \`avoidActivities\` field to skip exercises that involve potentially harmful movements
 - Ensure that exercises are appropriate for the user's condition and do not worsen existing pain
 - However, do not make pain avoidance the central focus of the program - maintain emphasis on overall fitness
+ - CRITICAL: When programType is "recovery" or "exercise_and_recovery" and painfulAreas is non-empty, prioritize exercises and day themes for those areas; avoid generic recovery plans. The program should clearly focus on improving those painful parts.
 
 7. Structure the Program
 

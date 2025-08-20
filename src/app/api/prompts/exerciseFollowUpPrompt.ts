@@ -73,12 +73,14 @@ Program Type Handling
      - Keep cardio and strength on separate days.
      - It is ALLOWED to mix recovery (mobility/flexibility/stability/posture) exercises within the same session as strength or cardio. Prefer placing recovery either after the warmup (prep) or at the end (cooldown). Keep recovery items low-intensity and brief.
      - Include at least one dedicated "active recovery" workout day in the week (not a rest day) with gentle mobility/flexibility/stability work (approximately 5–15 minutes total), equipmentless and home-performable.
+     - CRITICAL: If painfulAreas is non-empty, all recovery elements (including any dedicated recovery day) MUST be explicitly tailored to those painful areas. Do not generate a generic, full-body recovery routine—focus mobility/flexibility/stability items on the selected painful parts.
      - Maintain remaining days as standard exercise days following the same rules as "exercise".
 
   C) programType == "recovery"
      - Generate a recovery-focused follow-up program prioritizing gentle mobility, flexibility, stability, posture, and core control.
      - Avoid heavy strength loading and high-intensity cardio; prefer low-intensity options and short mobility blocks.
      - Ensure all activities are safe for the user's condition and painfulAreas.
+     - CRITICAL: If painfulAreas is non-empty, the program MUST primarily target those painful areas with specific mobility/flexibility/stability/posture/core-control work. Do not output a generic recovery program; center exercise selection, day descriptions, and emphasis on the painful parts.
 
 3. Exercise Selection Guidelines
 
@@ -164,6 +166,7 @@ EXERCISE SELECTION PROTOCOL
   - Any painful areas or conditions to avoid (don't select exercises that could aggravate these areas)
   - Contraindications listed for each exercise in the appended list
   - Exercise types needed for a balanced program
+  - CRITICAL: When programType is "recovery" or "exercise_and_recovery" and painfulAreas is non-empty, prioritize exercises and day themes for those areas; avoid generic recovery plans. The program should clearly focus on improving those painful parts.
 
 - For a balanced program, continue to include exercises from different categories:
   - Strength exercises: Build muscular strength and endurance

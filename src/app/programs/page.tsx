@@ -391,7 +391,15 @@ function ProgramsContent() {
       <div className="flex-1 px-4 py-6">
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 pb-8">
           {programStatus === ProgramStatus.Generating && (
-            <div className="relative bg-gray-800/50 rounded-xl overflow-hidden ring-1 ring-gray-700/50 transition-colors duration-200 p-5 flex flex-col h-full">
+            <div
+              onClick={() => router.push('/program')}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') router.push('/program');
+              }}
+              className="relative bg-gray-800/50 rounded-xl overflow-hidden ring-1 ring-gray-700/50 transition-colors duration-200 hover:bg-gray-700/50 cursor-pointer p-5 flex flex-col h-full"
+            >
               {/* Title */}
               <div className="flex justify-between items-start mb-3">
                 <div className="shimmer h-6 w-48 bg-gray-700 rounded" />
