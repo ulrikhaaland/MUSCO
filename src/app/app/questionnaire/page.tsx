@@ -5,7 +5,11 @@ import { ProgramType } from '../../../../shared/types';
 function toProgramType(param?: string | null): ProgramType {
   if (!param) return ProgramType.Exercise;
   const v = String(param).toLowerCase();
-  return v === 'recovery' ? ProgramType.Recovery : ProgramType.Exercise;
+  if (v === 'recovery') return ProgramType.Recovery;
+  if (v === 'exercise_and_recovery' || v === 'exercise+recovery' || v === 'exercise-and-recovery') {
+    return ProgramType.ExerciseAndRecovery;
+  }
+  return ProgramType.Exercise;
 }
 
 export default async function QuestionnairePage({

@@ -21,18 +21,13 @@ export function CustomEquipmentSelection({
 }: CustomEquipmentSelectionProps) {
   const { t } = useTranslation();
 
-  // For debuging
+  // For debugging (disabled in production per logging hygiene guidelines)
   useEffect(() => {
-    console.log('CustomEquipmentSelection rendered:');
-    console.log('- selectedCategory:', selectedCategory);
-    console.log('- selectedEquipment:', selectedEquipment);
+    // no-op
   }, [selectedCategory, selectedEquipment]);
 
   // Simplified approach - use a single handler for equipment toggle
   const handleEquipmentToggle = (equipment: string) => {
-    console.log('Toggle equipment:', equipment);
-    console.log('Current selectedEquipment:', selectedEquipment);
-
     let newEquipment: string[];
 
     if (selectedEquipment.includes(equipment)) {
@@ -43,8 +38,27 @@ export function CustomEquipmentSelection({
       newEquipment = [...selectedEquipment, equipment];
     }
 
-    console.log('New equipment selection:', newEquipment);
     onEquipmentChange(newEquipment);
+  };
+
+  // Translate equipment label
+  const translateEquipment = (name: string): string => {
+    const map: Record<string, string> = {
+      'Dumbbell': 'equipmentItem.dumbbell',
+      'Barbell': 'equipmentItem.barbell',
+      'Cable': 'equipmentItem.cable',
+      'Bands': 'equipmentItem.bands',
+      'Bench': 'equipmentItem.bench',
+      'TRX': 'equipmentItem.trx',
+      'Kettle Bell': 'equipmentItem.kettle_bell',
+      'Treadmill': 'equipmentItem.treadmill',
+      'Exercise Bike': 'equipmentItem.exercise_bike',
+      'Rowing Machine': 'equipmentItem.rowing_machine',
+      'Elliptical': 'equipmentItem.elliptical',
+      'Jump Rope': 'equipmentItem.jump_rope',
+    };
+    const key = map[name];
+    return key ? t(key) : name;
   };
 
   return (
@@ -96,7 +110,7 @@ export function CustomEquipmentSelection({
                   className="peer sr-only"
                 />
                 <div className="w-full p-4 rounded-xl bg-gray-900/50 ring-1 ring-gray-700/30 text-gray-400 peer-checked:text-white peer-checked:bg-indigo-500/10 peer-checked:ring-indigo-500 cursor-pointer transition-all duration-200">
-                  {equipment}
+                  {translateEquipment(equipment)}
                 </div>
               </label>
             ))}
@@ -107,7 +121,7 @@ export function CustomEquipmentSelection({
             {onContinue && (
               <button
                 type="button"
-                onClick={onContinue}
+                onClick={(e) => { e.stopPropagation(); onContinue && onContinue(); }}
                 className="px-5 py-2.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition-colors font-medium"
               >
                 {selectedEquipment.length > 0

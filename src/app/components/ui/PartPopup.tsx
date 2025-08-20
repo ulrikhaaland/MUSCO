@@ -76,13 +76,13 @@ export default function PartPopup({
     });
   };
 
-  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
-    console.log('Scroll event in PartPopup');
+  const handleScroll = () => {
+    // no-op
   };
 
-  const handleUserScroll = (hasScrolled: boolean) => {
-    setUserHasScrolled(hasScrolled);
-  };
+  // const handleUserScroll = (hasScrolled: boolean) => {
+  //   setUserHasScrolled(hasScrolled);
+  // };
 
   const handleQuestionSelect = (question: Question) => {
     if (question.generate && onQuestionClick) {

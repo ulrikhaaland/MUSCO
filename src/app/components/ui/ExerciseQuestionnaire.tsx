@@ -39,10 +39,11 @@ import {
 import { CustomEquipmentSelection } from './CustomEquipmentSelection';
 
 interface ExerciseQuestionnaireProps {
-  onClose: () => void;
+  onClose?: () => void;
   onSubmit: (answers: ExerciseQuestionnaireAnswers) => void;
   generallyPainfulAreas: string[];
   programType: ProgramType;
+  onProgramTypeChange?: (type: ProgramType) => void;
   targetAreas: BodyPartGroup[];
   fullBody: boolean;
 }
@@ -178,6 +179,7 @@ export function ExerciseQuestionnaire({
   onSubmit,
   generallyPainfulAreas,
   programType,
+  onProgramTypeChange,
   targetAreas,
   fullBody,
 }: ExerciseQuestionnaireProps) {
@@ -201,7 +203,26 @@ export function ExerciseQuestionnaire({
     duration => t(`program.duration.${duration.toLowerCase().replace(/\s+/g, '_')}`)
   );
   
-  const translatedWorkoutDurations = programType === ProgramType.Recovery
+  const [selectedProgramType, setSelectedProgramType] = useState<ProgramType>(programType);
+  const [programTypeCollapsed, setProgramTypeCollapsed] = useState<boolean>(false);
+
+  useEffect(() => {
+    setSelectedProgramType(programType);
+  }, [programType]);
+
+  const handleProgramTypeChange = (type: ProgramType) => {
+    setSelectedProgramType(type);
+    if (onProgramTypeChange) onProgramTypeChange(type);
+    // Collapse after choosing and scroll to next question
+    setProgramTypeCollapsed(true);
+    setTimeout(() => {
+      if (ageRef.current) {
+        scrollToNextUnansweredQuestion(ageRef, true);
+      }
+    }, 150);
+  };
+
+  const translatedWorkoutDurations = selectedProgramType === ProgramType.Recovery
     ? TRANSLATED_RECOVERY_WORKOUT_DURATIONS
     : getTranslatedWorkoutDurations(t);
   
@@ -310,6 +331,16 @@ export function ExerciseQuestionnaire({
   const shouldCollapseField = (field: keyof ExerciseQuestionnaireAnswers) => {
     // Special handling for targetAreas
     if (field === 'targetAreas') {
+      // If a body region (Full/Upper/Lower) is selected, collapse immediately
+      const selected = answers.targetAreas || [];
+      const isFullBody = selected.length === TARGET_BODY_PARTS.length;
+      const isUpperBody =
+        UPPER_BODY_PARTS.every((p) => selected.includes(p)) &&
+        selected.length === UPPER_BODY_PARTS.length;
+      const isLowerBody =
+        LOWER_BODY_PARTS.every((p) => selected.includes(p)) &&
+        selected.length === LOWER_BODY_PARTS.length;
+      if (isFullBody || isUpperBody || isLowerBody) return true;
       return !targetAreasReopened && !!answers.exerciseEnvironments;
     }
 
@@ -330,6 +361,11 @@ export function ExerciseQuestionnaire({
     // Special handling for cardio environment
     if (field === 'cardioEnvironment') {
       return !cardioEnvironmentReopened && !!answers.exerciseEnvironments;
+    }
+
+    // Always collapse workout duration after selection
+    if (field === 'workoutDuration') {
+      return true;
     }
 
     // For all other fields, keep the existing behavior
@@ -366,6 +402,13 @@ export function ExerciseQuestionnaire({
   const cardioEnvironmentRef = useRef<HTMLDivElement>(null);
 
   const formRef = useRef<HTMLFormElement>(null);
+
+  // Auto-collapse program type once age is answered
+  useEffect(() => {
+    if (answers.age) {
+      setProgramTypeCollapsed(true);
+    }
+  }, [answers.age]);
 
   const scrollToNextUnansweredQuestion = async (
     currentRef: React.RefObject<HTMLDivElement>,
@@ -458,58 +501,59 @@ export function ExerciseQuestionnaire({
   
   // Auto-select cardio equipment when indoor cardio is chosen with custom environment
   useEffect(() => {
-    const shouldPreSelectCardioEquipment = 
-      answers.cardioType && 
-      answers.cardioEnvironment === 'Inside' && 
+    const isIndoorAllowed =
+      answers.cardioEnvironment === 'Inside' ||
+      answers.cardioEnvironment === 'Both';
+    const shouldPreSelectCardioEquipment =
+      !!answers.cardioType &&
+      isIndoorAllowed &&
       answers.exerciseEnvironments === 'Custom';
-    
-    if (shouldPreSelectCardioEquipment) {
-      let equipmentToPreSelect: string[] = [];
-      
-      // Map cardio type to equipment
-      if (answers.cardioType === 'Running') {
-        equipmentToPreSelect = ['Treadmill'];
-      } else if (answers.cardioType === 'Cycling') {
-        equipmentToPreSelect = ['Exercise Bike'];
-      } else if (answers.cardioType === 'Rowing') {
-        equipmentToPreSelect = ['Rowing Machine'];
-      }
-      
-      if (equipmentToPreSelect.length > 0) {
-        console.log(`Pre-selecting cardio equipment for ${answers.cardioType}:`, equipmentToPreSelect);
-        
-        // Update cardio equipment state
-        setCardioEquipment(prev => {
-          const newEquipment = [...new Set([...prev, ...equipmentToPreSelect])];
-          console.log('Updated cardio equipment:', newEquipment);
-          return newEquipment;
-        });
-        
-        // If currently viewing cardio category, update selected equipment
-        if (selectedEquipmentCategory === 'Cardio') {
-          setSelectedCustomEquipment(prev => {
-            const newSelection = [...new Set([...prev, ...equipmentToPreSelect])];
-            console.log('Updated current selection for cardio category:', newSelection);
-            return newSelection;
-          });
-        }
-        
-        // Switch to cardio category if not already there
-        if (!selectedEquipmentCategory || selectedEquipmentCategory !== 'Cardio') {
-          console.log('Switching to Cardio equipment category');
-          setSelectedEquipmentCategory('Cardio');
-          setSelectedCustomEquipment(equipmentToPreSelect);
-        }
-        
-        // Update the combined equipment in answers
-        const updatedCombinedEquipment = [...new Set([...strengthEquipment, ...cardioEquipment, ...equipmentToPreSelect])];
-        setAnswers(prev => ({
-          ...prev,
-          equipment: updatedCombinedEquipment
-        }));
-      }
+
+    if (!shouldPreSelectCardioEquipment) return;
+
+    let equipmentToPreSelect: string[] = [];
+    if (answers.cardioType === 'Running') {
+      equipmentToPreSelect = ['Treadmill'];
+    } else if (answers.cardioType === 'Cycling') {
+      equipmentToPreSelect = ['Exercise Bike'];
+    } else if (answers.cardioType === 'Rowing') {
+      equipmentToPreSelect = ['Rowing Machine'];
     }
-  }, [answers.cardioType, answers.cardioEnvironment, answers.exerciseEnvironments, selectedEquipmentCategory, strengthEquipment, cardioEquipment]);
+
+    if (equipmentToPreSelect.length === 0) return;
+
+    // Avoid redundant updates: if we've already added all, bail out
+    const alreadyHasAll = equipmentToPreSelect.every((eq) =>
+      cardioEquipment.includes(eq)
+    );
+    if (alreadyHasAll) return;
+
+    // Update cardio equipment state only if it changes
+    setCardioEquipment((prev) => {
+      const merged = [...new Set([...prev, ...equipmentToPreSelect])];
+      return merged.length === prev.length ? prev : merged;
+    });
+
+    // Keep UI selection in sync for Cardio category
+    if (selectedEquipmentCategory === 'Cardio') {
+      setSelectedCustomEquipment((prev) => {
+        const merged = [...new Set([...prev, ...equipmentToPreSelect])];
+        return merged.length === prev.length ? prev : merged;
+      });
+    }
+
+    // Switch to Cardio category if not already there
+    if (selectedEquipmentCategory !== 'Cardio') {
+      setSelectedEquipmentCategory('Cardio');
+      setSelectedCustomEquipment(equipmentToPreSelect);
+    }
+
+    // Update the combined equipment in answers (derive from previous answers)
+    setAnswers((prev) => ({
+      ...prev,
+      equipment: [...new Set([...(prev.equipment || []), ...equipmentToPreSelect])],
+    }));
+  }, [answers.cardioType, answers.cardioEnvironment, answers.exerciseEnvironments]);
   
   // Modify handleInputChange to handle custom equipment selection
   const handleInputChange = (
@@ -880,15 +924,10 @@ export function ExerciseQuestionnaire({
 
   // Add a function to handle continuing after equipment selection
   const handleEquipmentContinue = () => {
-    // Only continue if equipment is selected
-    if (selectedCustomEquipment.length > 0) {
-      // Close the editing field
-      setEditingField(null);
-      
-      // Scroll to next question
-      if (exerciseEnvironmentRef.current) {
-        scrollToNextUnansweredQuestion(exerciseEnvironmentRef, true);
-      }
+    // Always collapse/minimize when continuing from equipment selection
+    setEditingField(null);
+    if (exerciseEnvironmentRef.current) {
+      scrollToNextUnansweredQuestion(exerciseEnvironmentRef, true);
     }
   };
 
@@ -935,16 +974,51 @@ export function ExerciseQuestionnaire({
 
   // Handle changing the number of days for cardio or strength
   const handleDayChange = (field: 'cardioDays' | 'strengthDays', value: number) => {
-    // Ensure value is non-negative
-    const newValue = Math.max(0, value);
-    
-    // Update the specific field
-    setAnswers(prev => ({
-      ...prev,
-      [field]: newValue as any, // Use type assertion to work around the string vs number issue
-      // Set modalitySplit to 'custom' to indicate user has directly chosen days
-      modalitySplit: 'custom'
-    }));
+    // Clamp to non-negative
+    const requested = Math.max(0, value);
+
+    setAnswers(prev => {
+      const currentCardio = prev.cardioDays || 0;
+      const currentStrength = prev.strengthDays || 0;
+      const otherField = field === 'cardioDays' ? 'strengthDays' : 'cardioDays';
+      const otherValue = otherField === 'strengthDays' ? currentStrength : currentCardio;
+
+      // Tentative new values for fields
+      let nextCardio = field === 'cardioDays' ? requested : currentCardio;
+      let nextStrength = field === 'strengthDays' ? requested : currentStrength;
+
+      // Compute total and enforce hard cap of 7
+      let total = nextCardio + nextStrength;
+      if (total > 7) {
+        // Cap the changed field so total becomes 7
+        const maxForField = Math.max(0, 7 - otherValue);
+        if (field === 'cardioDays') nextCardio = Math.min(requested, maxForField);
+        else nextStrength = Math.min(requested, maxForField);
+        total = nextCardio + nextStrength; // now ≤ 7
+      }
+
+      // Build weekly label directly from total (track increases and decreases)
+      const weeklyLabel = (() => {
+        switch (total) {
+          case 1: return PLANNED_EXERCISE_FREQUENCY_OPTIONS[0];
+          case 2: return PLANNED_EXERCISE_FREQUENCY_OPTIONS[1];
+          case 3: return PLANNED_EXERCISE_FREQUENCY_OPTIONS[2];
+          case 4: return PLANNED_EXERCISE_FREQUENCY_OPTIONS[3];
+          case 5: return PLANNED_EXERCISE_FREQUENCY_OPTIONS[4];
+          case 6: return PLANNED_EXERCISE_FREQUENCY_OPTIONS[5];
+          case 7: return PLANNED_EXERCISE_FREQUENCY_OPTIONS[6];
+          default: return prev.numberOfActivityDays; // keep if total 0
+        }
+      })();
+
+      return {
+        ...prev,
+        cardioDays: nextCardio as any,
+        strengthDays: nextStrength as any,
+        numberOfActivityDays: weeklyLabel,
+        modalitySplit: 'custom' as any,
+      } as any;
+    });
   };
 
   // Handle saving the modality split and progressing
@@ -993,7 +1067,7 @@ export function ExerciseQuestionnaire({
 
   const shouldShowQuestion = (field: keyof ExerciseQuestionnaireAnswers) => {
     // For recovery programs, don't show exercise modalities question
-    if (programType === ProgramType.Recovery && field === 'exerciseModalities') {
+    if (selectedProgramType === ProgramType.Recovery && field === 'exerciseModalities') {
       return false;
     }
 
@@ -1008,21 +1082,21 @@ export function ExerciseQuestionnaire({
         return !!answers.numberOfActivityDays;
       case 'exerciseModalities':
         return (
-          programType === ProgramType.Exercise &&
+          (selectedProgramType === ProgramType.Exercise || selectedProgramType === ProgramType.ExerciseAndRecovery) &&
           !!answers.numberOfActivityDays &&
           (!!answers.generallyPainfulAreas ||
             answers.generallyPainfulAreas.length === 0)
         );
       case 'modalitySplit':
         return (
-          programType === ProgramType.Exercise &&
+          (selectedProgramType === ProgramType.Exercise || selectedProgramType === ProgramType.ExerciseAndRecovery) &&
           !!answers.exerciseModalities &&
           (answers.exerciseModalities === 'Both' ||
            answers.exerciseModalities === t('program.modality.both'))
         );
       case 'cardioType':
         return (
-          programType === ProgramType.Exercise &&
+          (selectedProgramType === ProgramType.Exercise || selectedProgramType === ProgramType.ExerciseAndRecovery) &&
           !!answers.exerciseModalities &&
           (answers.exerciseModalities === 'Cardio' ||
            answers.exerciseModalities === t('program.modality.cardio') ||
@@ -1033,7 +1107,7 @@ export function ExerciseQuestionnaire({
         // Check for Strength or Both in a translation-safe way by looking at the underlying value
         // or comparing with translated strings
         return (
-          programType === ProgramType.Exercise &&
+          (selectedProgramType === ProgramType.Exercise || selectedProgramType === ProgramType.ExerciseAndRecovery) &&
           !!answers.exerciseModalities &&
           (answers.exerciseModalities === 'Strength' ||
            answers.exerciseModalities === t('program.modality.strength') ||
@@ -1041,7 +1115,7 @@ export function ExerciseQuestionnaire({
            answers.exerciseModalities === t('program.modality.both'))
         );
       case 'exerciseEnvironments':
-        if (programType === ProgramType.Recovery) {
+        if (selectedProgramType === ProgramType.Recovery) {
           // For recovery, show after having exercise frequency
           return !!answers.numberOfActivityDays;
         }
@@ -1163,7 +1237,11 @@ export function ExerciseQuestionnaire({
   };
 
   // Create a custom renderSelectedAnswers function to use the translateAnswer
-  const renderSelectedAnswers = (answers: string | string[], onEdit: () => void) => {
+  const renderSelectedAnswers = (
+    answers: string | string[],
+    onEdit: () => void,
+    options?: { variant?: 'default' | 'pain' }
+  ) => {
     if (!answers || (Array.isArray(answers) && answers.length === 0)) return null;
 
     const answerArray = Array.isArray(answers)
@@ -1176,14 +1254,17 @@ export function ExerciseQuestionnaire({
       <div onClick={onEdit} className="group cursor-pointer">
         <div className="flex items-center justify-between mb-2">
           <div className="flex flex-wrap gap-2">
-            {answerArray.map((answer) => (
-              <div
-                key={answer}
-                className="px-3 py-1.5 rounded-lg bg-indigo-500/10 ring-1 ring-indigo-500 text-white text-sm"
-              >
-                {translateAnswer(answer)}
-              </div>
-            ))}
+            {answerArray.map((answer) => {
+              const chipClass =
+                options?.variant === 'pain'
+                  ? 'px-3 py-1.5 rounded-lg bg-red-500/10 ring-1 ring-red-500 text-white text-sm'
+                  : 'px-3 py-1.5 rounded-lg bg-indigo-500/10 ring-1 ring-indigo-500 text-white text-sm';
+              return (
+                <div key={answer} className={chipClass}>
+                  {translateAnswer(answer)}
+                </div>
+              );
+            })}
           </div>
           <button
             type="button"
@@ -1305,15 +1386,107 @@ export function ExerciseQuestionnaire({
           <RevealOnScroll>
             <div className="text-center">
               <h2 className="text-4xl font-bold text-white tracking-tight">
-                {programType === ProgramType.Exercise
+                {(selectedProgramType === ProgramType.Exercise || selectedProgramType === ProgramType.ExerciseAndRecovery)
                   ? t('questionnaire.exerciseTitle')
                   : t('questionnaire.recoveryTitle')}
               </h2>
               <p className="mt-4 text-lg text-gray-400">
-                {programType === ProgramType.Exercise
+                {(selectedProgramType === ProgramType.Exercise || selectedProgramType === ProgramType.ExerciseAndRecovery)
                   ? t('questionnaire.exerciseDescription')
                   : t('questionnaire.recoveryDescription')}
               </p>
+            </div>
+          </RevealOnScroll>
+
+          {/* Program Type Selection */}
+          <RevealOnScroll>
+            <div
+              className={`bg-gray-800/50 backdrop-blur-sm rounded-2xl p-8 shadow-xl ring-1 ring-gray-700/50 ${
+                programTypeCollapsed ? 'cursor-pointer' : ''
+              }`}
+              onClick={() => {
+                if (programTypeCollapsed) setProgramTypeCollapsed(false);
+              }}
+            >
+              <h3 className="flex items-center text-lg font-semibold text-white mb-6">
+                <svg
+                  className="w-6 h-6 mr-3 text-indigo-400 flex-shrink-0"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                  />
+                </svg>
+                {t('questionnaire.programType.select')}
+              </h3>
+              {!programTypeCollapsed && (
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <label className="relative flex items-center">
+                  <input
+                    type="radio"
+                    name="programType"
+                    value="exercise"
+                    checked={selectedProgramType === ProgramType.Exercise}
+                    onChange={() => handleProgramTypeChange(ProgramType.Exercise)}
+                    className="peer sr-only"
+                  />
+                  <div className="w-full p-4 rounded-xl bg-gray-900/50 ring-1 ring-gray-700/30 text-gray-300 peer-checked:text-white peer-checked:bg-indigo-500/10 peer-checked:ring-indigo-500 cursor-pointer transition-all duration-200">
+                    <div className="font-medium text-white">{t('questionnaire.programType.exercise')}</div>
+                    <div className="text-xs mt-1 text-gray-400 leading-snug">
+                      {t('questionnaire.programType.info.exercise')}
+                    </div>
+                  </div>
+                </label>
+                <label className="relative flex items-center">
+                  <input
+                    type="radio"
+                    name="programType"
+                    value="exercise_and_recovery"
+                    checked={selectedProgramType === ProgramType.ExerciseAndRecovery}
+                    onChange={() => handleProgramTypeChange(ProgramType.ExerciseAndRecovery)}
+                    className="peer sr-only"
+                  />
+                  <div className="w-full p-4 rounded-xl bg-gray-900/50 ring-1 ring-gray-700/30 text-gray-300 peer-checked:text-white peer-checked:bg-indigo-500/10 peer-checked:ring-indigo-500 cursor-pointer transition-all duration-200">
+                    <div className="font-medium text-white">{t('questionnaire.programType.exerciseAndRecovery')}</div>
+                    <div className="text-xs mt-1 text-gray-400 leading-snug">
+                      {t('questionnaire.programType.info.exerciseAndRecovery')}
+                    </div>
+                  </div>
+                </label>
+                <label className="relative flex items-center">
+                  <input
+                    type="radio"
+                    name="programType"
+                    value="recovery"
+                    checked={selectedProgramType === ProgramType.Recovery}
+                    onChange={() => handleProgramTypeChange(ProgramType.Recovery)}
+                    className="peer sr-only"
+                  />
+                  <div className="w-full p-4 rounded-xl bg-gray-900/50 ring-1 ring-gray-700/30 text-gray-300 peer-checked:text-white peer-checked:bg-indigo-500/10 peer-checked:ring-indigo-500 cursor-pointer transition-all duration-200">
+                    <div className="font-medium text-white">{t('questionnaire.programType.recovery')}</div>
+                    <div className="text-xs mt-1 text-gray-400 leading-snug">
+                      {t('questionnaire.programType.info.recovery')}
+                    </div>
+                  </div>
+                </label>
+              </div>
+              )}
+              {programTypeCollapsed && (
+                (() => {
+                  const label =
+                    selectedProgramType === ProgramType.Exercise
+                      ? t('questionnaire.programType.exercise')
+                      : selectedProgramType === ProgramType.ExerciseAndRecovery
+                        ? t('questionnaire.programType.exerciseAndRecovery')
+                        : t('questionnaire.programType.recovery');
+                  return renderSelectedAnswers(label, () => setProgramTypeCollapsed(false));
+                })()
+              )}
             </div>
           </RevealOnScroll>
 
@@ -1460,7 +1633,7 @@ export function ExerciseQuestionnaire({
                       d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
                     />
                   </svg>
-                  {programType === ProgramType.Exercise
+                  {(selectedProgramType === ProgramType.Exercise || selectedProgramType === ProgramType.ExerciseAndRecovery)
                     ? t('questionnaire.exerciseDays')
                     : t('questionnaire.recoveryDays')}
                 </h3>
@@ -1536,7 +1709,8 @@ export function ExerciseQuestionnaire({
                     answers.generallyPainfulAreas.length === 0
                       ? [t('questionnaire.noPain')]
                       : answers.generallyPainfulAreas.filter(area => area && area.trim() !== ''),
-                    () => handleEdit('generallyPainfulAreas')
+                    () => handleEdit('generallyPainfulAreas'),
+                    { variant: answers.generallyPainfulAreas.length === 0 ? 'default' : 'pain' }
                   )
                 ) : (
                   <>
@@ -1590,6 +1764,23 @@ export function ExerciseQuestionnaire({
                           </div>
                         </label>
                       ))}
+                    </div>
+
+                    {/* Continue button */}
+                    <div className="mt-6">
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setEditingField(null);
+                          if (painAreasRef.current) {
+                            scrollToNextUnansweredQuestion(painAreasRef, true);
+                          }
+                        }}
+                        className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition-colors"
+                      >
+                        {t('questionnaire.continue')}
+                      </button>
                     </div>
                   </>
                 )}
@@ -1725,6 +1916,7 @@ export function ExerciseQuestionnaire({
                           </div>
                           <button
                             type="button"
+                            disabled={(answers.cardioDays || 0) + (answers.strengthDays || 0) >= 7}
                             onClick={() => handleDayChange('cardioDays', (answers.cardioDays || 0) + 1)}
                             className="p-2 rounded-r-lg bg-gray-900/70 text-white hover:bg-gray-800 transition-colors"
                           >
@@ -1755,6 +1947,7 @@ export function ExerciseQuestionnaire({
                           </div>
                           <button
                             type="button"
+                            disabled={(answers.cardioDays || 0) + (answers.strengthDays || 0) >= 7}
                             onClick={() => handleDayChange('strengthDays', (answers.strengthDays || 0) + 1)}
                             className="p-2 rounded-r-lg bg-gray-900/70 text-white hover:bg-gray-800 transition-colors"
                           >
@@ -1786,7 +1979,7 @@ export function ExerciseQuestionnaire({
                           ((answers.cardioDays || 0) + (answers.strengthDays || 0)) > 
                             getWeeklyActivityDays(answers.numberOfActivityDays)
                         }
-                        onClick={() => handleSaveModalitySplit()}
+                        onClick={(e) => { e.stopPropagation(); handleSaveModalitySplit(); }}
                       >
                         {t('questionnaire.continue')}
                       </button>
@@ -2138,7 +2331,7 @@ export function ExerciseQuestionnaire({
                       d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
                     />
                   </svg>
-                  {programType === ProgramType.Exercise
+                  {(selectedProgramType === ProgramType.Exercise || selectedProgramType === ProgramType.ExerciseAndRecovery)
                     ? t('questionnaire.trainingType')
                     : t('questionnaire.recoveryLocation')}
                 </h3>
@@ -2188,17 +2381,33 @@ export function ExerciseQuestionnaire({
                     {answers.exerciseEnvironments === 'Custom' && editingField === 'exerciseEnvironments' && (
                       <div className="mt-6 pt-4 border-t border-gray-700/30">
                         {/* Show auto-selection message if cardio equipment was pre-selected */}
-                        {answers.cardioType && answers.cardioEnvironment === 'Inside' && selectedEquipmentCategory === 'Cardio' && (
+                        {answers.cardioType && (answers.cardioEnvironment === 'Inside' || answers.cardioEnvironment === 'Both') && selectedEquipmentCategory === 'Cardio' && (
                           <div className="mb-4 p-3 rounded-lg bg-blue-500/10 ring-1 ring-blue-500/20">
                             <div className="flex items-start">
                               <svg className="w-5 h-5 text-blue-400 mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                               </svg>
-                                                             <p className="text-blue-300 text-sm">
-                                 We&apos;ve pre-selected {answers.cardioType === 'Running' ? 'Treadmill' : 
-                                                     answers.cardioType === 'Cycling' ? 'Exercise Bike' : 
-                                                     'Rowing Machine'} for your indoor {answers.cardioType.toLowerCase()} workouts. You can unselect it if you prefer other options.
-                               </p>
+                              {(() => {
+                                const equipMap: Record<string, string> = {
+                                  Running: 'equipmentItem.treadmill',
+                                  Cycling: 'equipmentItem.exercise_bike',
+                                  Rowing: 'equipmentItem.rowing_machine',
+                                };
+                                const cardioTypeKey: Record<string, string> = {
+                                  Running: 'program.cardioType.running',
+                                  Cycling: 'program.cardioType.cycling',
+                                  Rowing: 'program.cardioType.rowing',
+                                };
+                                const eqKey = equipMap[answers.cardioType as string] || '';
+                                const typeKey = cardioTypeKey[answers.cardioType as string] || '';
+                                const equipmentLabel = eqKey ? t(eqKey) : answers.cardioType;
+                                const typeLabel = typeKey ? t(typeKey).toLowerCase() : answers.cardioType.toLowerCase();
+                                return (
+                                  <p className="text-blue-300 text-sm">
+                                    {t('questionnaire.autoSelectedCardioEquipment', { equipment: equipmentLabel, type: typeLabel })}
+                                  </p>
+                                );
+                              })()}
                             </div>
                           </div>
                         )}
@@ -2240,7 +2449,7 @@ export function ExerciseQuestionnaire({
                       d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
                     />
                   </svg>
-                  {programType === ProgramType.Exercise
+                  {(selectedProgramType === ProgramType.Exercise || selectedProgramType === ProgramType.ExerciseAndRecovery)
                     ? t('questionnaire.workoutDuration')
                     : t('questionnaire.recoveryDuration')}
                 </h3>

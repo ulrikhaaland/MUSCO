@@ -14,7 +14,7 @@ const emptyTranslation = {
 };
 
 function TranslationsPageContent() {
-  const { t, locale } = useTranslation();
+  const { t } = useTranslation();
   const [newTranslation, setNewTranslation] = useState(emptyTranslation);
   const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
   const [savedTranslations, setSavedTranslations] = useState<Array<{key: string, text: string, locale: Locale}>>([]);
@@ -65,7 +65,7 @@ function TranslationsPageContent() {
       
       // Clear message after 3 seconds
       setTimeout(() => setMessage(null), 3000);
-    } catch (error) {
+    } catch {
       setMessage({ text: t('admin.translationAddError'), type: 'error' });
     }
   };

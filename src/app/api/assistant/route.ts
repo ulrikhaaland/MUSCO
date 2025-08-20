@@ -29,14 +29,36 @@ export async function POST(request: Request) {
 
     switch (action) {
       case 'initialize': {
+        const initStart = performance.now();
+        console.log(`[API Route] action=initialize status=starting`);
+        const cookieStore = await cookies();
+        const existingThread = cookieStore.get('musco_thread_id')?.value;
         const assistant = await getOrCreateAssistant(
           'asst_e1prLG3Ykh2ZCVspoAFMZPZC'
         );
-        const thread = await createThread();
-        return NextResponse.json({
+        let threadId: string;
+        if (existingThread) {
+          threadId = existingThread;
+          console.log(`[API Route] action=initialize reuse_thread=${threadId}`);
+        } else {
+          const thread = await createThread();
+          threadId = thread.id;
+        }
+        const initEnd = performance.now();
+        console.log(
+          `[API Route] action=initialize status=ok assistantId=${assistant.id} threadId=${threadId} durMs=${(initEnd - initStart).toFixed(1)}`
+        );
+        const response = NextResponse.json({
           assistantId: assistant.id,
-          threadId: thread.id,
+          threadId,
         });
+        if (!existingThread && threadId) {
+          response.headers.set(
+            'Set-Cookie',
+            `musco_thread_id=${threadId}; Path=/; Max-Age=${30 * 24 * 60 * 60}; HttpOnly; SameSite=Lax`
+          );
+        }
+        return response;
       }
 
       case 'send_message': {

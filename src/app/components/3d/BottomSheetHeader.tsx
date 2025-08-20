@@ -27,7 +27,6 @@ export function BottomSheetHeader({
   const headerRef = useRef<HTMLDivElement>(null);
   const {
     intention,
-    isSelectingRecoveryBodyParts,
     selectedGroups,
     selectedPart,
   } = useApp();

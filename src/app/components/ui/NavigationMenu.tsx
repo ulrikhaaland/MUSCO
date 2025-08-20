@@ -3,6 +3,7 @@
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/app/context/AuthContext';
 import { useUser } from '@/app/context/UserContext';
+import { ProgramStatus } from '@/app/types/program';
 import { useState, useEffect, useRef, Suspense } from 'react';
 import { useTranslation } from '@/app/i18n';
 import LanguageSwitcher from './LanguageSwitcher';
@@ -16,7 +17,7 @@ function NavigationMenuContent({ mobileTitle, mobileFloatingButton }: { mobileTi
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { user, logOut } = useAuth();
-  const { program, activeProgram, userPrograms } = useUser();
+  const { program, activeProgram, userPrograms, programStatus } = useUser();
   const { t } = useTranslation();
   // local menu state (not currently rendered as a dropdown)
   const [, setShowUserMenu] = useState(false);
@@ -166,7 +167,8 @@ function NavigationMenuContent({ mobileTitle, mobileFloatingButton }: { mobileTi
           />
         </svg>
       ),
-      disabled: !hasAnyProgram,
+      // Enable when a program is generating so the shimmer can be shown
+      disabled: !hasAnyProgram && programStatus !== ProgramStatus.Generating,
     },
     {
       name: t('nav.programs'),

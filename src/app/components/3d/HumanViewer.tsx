@@ -52,9 +52,7 @@ export default function HumanViewer({
   const [currentRotation, setCurrentRotation] = useState(0);
   const rotationAnimationRef = useRef<number | null>(null);
   const viewerWrapperRef = useRef<HTMLDivElement | null>(null);
-  const [supportsKeyboardEnv, setSupportsKeyboardEnv] = useState(false);
   const [targetGender, setTargetGender] = useState<Gender | null>(null);
-  const [modelContainerHeight, setModelContainerHeight] = useState('100svh');
   const [diagnosis, setDiagnosis] = useState<DiagnosisAssistantResponse | null>(
     null
   );
@@ -132,17 +130,7 @@ export default function HumanViewer({
     restoreViewerState();
   }, [restoreViewerState]);
 
-  // Detect support for stable viewport and keyboard inset env var
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const supports =
-      typeof (window as any).CSS !== 'undefined' &&
-      (window as any).CSS.supports?.(
-        'height',
-        'calc(100svh - env(keyboard-inset-height, 0px))'
-      );
-    setSupportsKeyboardEnv(Boolean(supports));
-  }, []);
+  // Detect support for stable viewport and keyboard inset env var (unused)
 
   // Remove previous paint nudge; use stable viewport strategy only
 
@@ -537,7 +525,7 @@ export default function HumanViewer({
         const programType = question.programType ?? ProgramType.Exercise;
         const newDiagnosis: DiagnosisAssistantResponse = {
           diagnosis:
-            question.programType === ProgramType.Exercise
+            (question.programType === ProgramType.Exercise || question.programType === ProgramType.ExerciseAndRecovery)
               ? 'No diagnosis, just an exercise program'
               : 'No diagnosis, just a recovery program',
           programType: programType,
@@ -571,7 +559,7 @@ export default function HumanViewer({
   const handleAreasSelected = () => {
     const newDiagnosis: DiagnosisAssistantResponse = {
       diagnosis:
-        diagnosis?.programType === ProgramType.Exercise
+        (diagnosis?.programType === ProgramType.Exercise || diagnosis?.programType === ProgramType.ExerciseAndRecovery)
           ? 'No diagnosis, just an exercise program'
           : 'No diagnosis, just a recovery program',
       programType: diagnosis?.programType ?? ProgramType.Exercise,

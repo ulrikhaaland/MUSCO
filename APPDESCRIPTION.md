@@ -24,7 +24,7 @@ The chat system provides an intelligent, contextual conversation experience with
 When a body part is selected, users see three primary quick-start options:
 1. **"Find Pain"** - Launches diagnosis mode for pain assessment and recovery programs
 2. **"Learn More"** - Activates exploration mode for educational content about anatomy/function
-3. **"Build Program"** - Generates a program after assessment (recovery‑centric; exercise‑only mode has been retired)
+3. **"Build Program"** - Generates a program after assessment (user selects program type)
 
 **Interactive Chat Features**
 - **Streaming Responses**: Real-time message streaming with ≤80 word responses
@@ -115,7 +115,7 @@ The app enforces simple, transparent rules:
    - "What is bicep function?"
    - "Build Program" (recovery‑centric)
 6. **Educational Flow**: User can continue learning or transition to program generation
-7. **Program Transition**: When ready, assistant naturally guides toward "Build Program" (recovery program)
+7. **Program Transition**: When ready, assistant naturally guides toward "Build Program" (program type is selected)
 
 #### Example Workflow - Diagnosis Mode
 1. **Selection**: User selects shoulder on the 3D model
@@ -132,7 +132,7 @@ The app enforces simple, transparent rules:
 5. **Safety Screening**: Red flag detection for serious conditions requiring immediate medical care
 6. **Program Selection**: Once assessment complete, users choose from two program options:
    - "Recovery Only" - Focus on healing and pain management
-   - "Exercise + Recovery" - Combined approach with strengthening
+   - "Exercise + Recovery" - Combined approach with strengthening; recovery (mobility/flexibility/stability) may be mixed into the same session as exercise. Cardio and strength remain on separate days.
 
 ---
 
@@ -146,8 +146,8 @@ The app generates personalized recovery programs through intelligent assessment:
 - **Context-Aware**: Programs adapt based on selected body part and conversation context
 
 **Program Type**
-- Recovery programs focus on injury rehabilitation and pain management (exercise‑only mode removed).
-  Future combined programs may return; for now generation is recovery‑centric.
+- Supported: Recovery and Exercise + Recovery in diagnosis flow. Exercise‑only is also supported via the questionnaire flow.
+- In Exercise + Recovery, recovery elements may be mixed within the same session as exercise (e.g., prep or cooldown blocks). Cardio and strength remain on separate days.
 
 **Generation Process**
 - **Assessment-Driven**: Programs generated only after collecting sufficient user information
@@ -297,5 +297,28 @@ The chat system is built with modern React patterns for optimal performance and 
 
 ---
 
+## Landing Page – UX specifics (desktop + mobile)
+
+### Hero and "How it works"
+- Mobile: three “stacked” screenshots with subtle parallax; container height is auto‑measured so nothing clips; CTA button sits directly beneath the stack with tight spacing.
+- Desktop: images are split into two columns:
+  - Right column: first and third cards stacked (hover to gently zoom; click to open full‑screen preview).
+  - Left column (below CTA): second card (hover zoom; full‑screen on click).
+- Full‑screen preview: accessible (role=button, keyboard Enter/Space, Escape to close) with a dark backdrop and responsive `<picture>` sources.
+- Nav highlighting: the top section is treated as "How it works". Active tab updates while scrolling; at the absolute page bottom, FAQ is forced active for clarity.
+
+### Section widths and spacing
+- Major landing sections (hero, programs, why, pricing, FAQ) share a consistent `max‑width` to align edges.
+- Pricing on landing uses the same shared component as the Subscribe page (see below) with landing‑specific button actions.
+
 ## Developer Documentation
 - Additional documentation is available upon request.
+
+---
+
+## Shared Components
+
+### PricingCards (Landing + Subscribe)
+- A single configurable component renders pricing on both the landing page and the Subscribe page.
+- Props enable per‑page actions (e.g., Monthly/Annual → Subscribe; Try → App) and theming (ring/background colors) to match each page’s look.
+- Layout: left benefit panel; right column with three option cards. The right column stretches so its combined height matches the left panel. Optional footer note: “Secure checkout by Stripe. Cancel anytime from your account.”

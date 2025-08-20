@@ -502,23 +502,23 @@ const translations = {
   'intentionQuestion.recoveryProgram': 'Restitusjonsprogram',
 
   // Program Titles
-  'program.recoveryProgramTitle': 'Restitusjonsprogram',
+  'program.recoveryProgramTitle': 'Rehab‑program',
   'program.exerciseProgramTitle': 'Treningsprogram',
   'program.yourRecoveryProgramTitle': 'Ditt restitusjonsprogram',
   'program.yourExerciseProgramTitle': 'Ditt treningsprogram',
 
   // Questionnaire
   'questionnaire.exerciseTitle': 'Spørreskjema for treningsprogram',
-  'questionnaire.recoveryTitle': 'Spørreskjema for restitusjonsprogram',
+  'questionnaire.recoveryTitle': 'Spørreskjema for rehab‑program',
   'questionnaire.exerciseDescription':
     'Hjelp oss med å tilpasse treningsprogrammet ditt ved å svare på noen spørsmål',
   'questionnaire.recoveryDescription':
-    'Hjelp oss med å lage et restitusjonsprogram tilpasset dine behov ved å svare på noen spørsmål',
+    'Hjelp oss lage et rehab‑program tilpasset dine behov ved å svare på noen spørsmål',
   'questionnaire.age': 'Hvor gammel er du?',
   'questionnaire.pastExercise': 'Hvor ofte har du trent det siste året?',
   'questionnaire.exerciseDays': 'Hvor mange dager i uken vil du trene?',
   'questionnaire.recoveryDays':
-    'Hvor mange dager i uken vil du fokusere på restitusjon?',
+    'Hvor mange dager i uken vil du fokusere på rehab?',
   'questionnaire.painAreas': 'Har du smerter noe sted?',
   'questionnaire.trainingType': 'Hva slags utstyr har du tilgang til?',
   'questionnaire.exerciseModalities': 'Hvilken type trening ønsker du å gjøre?',
@@ -540,11 +540,11 @@ const translations = {
     'Hvor foretrekker du å gjøre kardiotrening?',
   'questionnaire.exerciseLocation': 'Hvor foretrekker du å trene?',
   'questionnaire.recoveryLocation':
-    'Hvor foretrekker du å gjennomføre restitusjonstreningen?',
+    'Hvor foretrekker du å gjennomføre rehab‑øktene?',
   'questionnaire.workoutDuration':
     'Hvor mye tid vil du bruke på hver treningsøkt?',
   'questionnaire.recoveryDuration':
-    'Hvor mye tid vil du bruke på hver restitusjonstrening?',
+    'Hvor mye tid vil du bruke på hver rehab‑økt?',
   'questionnaire.noPain': 'Nei, jeg har ingen smerter',
   'questionnaire.selectAll': 'Velg alle som gjelder',
   'questionnaire.selectSpecific': 'Eller velg spesifikke områder:',
@@ -556,8 +556,30 @@ const translations = {
   'questionnaire.continue': 'Fortsett',
   'questionnaire.skipEquipment': 'Hopp over utstyr',
   'questionnaire.cancel': 'Avbryt',
+  // Equipment items
+  'equipmentItem.dumbbell': 'Manual',
+  'equipmentItem.barbell': 'Vektstang',
+  'equipmentItem.cable': 'Kabel',
+  'equipmentItem.bands': 'Strikk',
+  'equipmentItem.bench': 'Benk',
+  'equipmentItem.trx': 'TRX / Slynger',
+  'equipmentItem.kettle_bell': 'Kettlebell',
+  'equipmentItem.treadmill': 'Tredemølle',
+  'equipmentItem.exercise_bike': 'Trimsykkel',
+  'equipmentItem.rowing_machine': 'Romaskin',
+  'equipmentItem.elliptical': 'Ellipsemaskin',
+  'equipmentItem.jump_rope': 'Hoppetau',
   'questionnaire.selectedCardioType': 'Valgt kardiotype',
+  'questionnaire.autoSelectedCardioEquipment':
+    'Vi har forhåndsvalgt {{equipment}} for dine innendørs {{type}}-økter. Du kan fjerne det hvis du foretrekker andre alternativer.',
   'questionnaire.createProgram': 'Opprett program',
+  'questionnaire.programType.select': 'Hvilken type program ønsker du?',
+  'questionnaire.programType.exercise': 'Trening',
+  'questionnaire.programType.exerciseAndRecovery': 'Trening + Rehab',
+  'questionnaire.programType.recovery': 'Rehab',
+  'questionnaire.programType.info.exercise': 'Fokusert styrke/kondisjon for form og prestasjon.',
+  'questionnaire.programType.info.exerciseAndRecovery': 'Balansert plan som kombinerer trening og målrettet rehab.',
+  'questionnaire.programType.info.recovery': 'Skånsomme økter som reduserer smerte, gjenvinner bevegelighet og hjelper deg i gang igjen.',
 
   // Program page translations
   'program.loading': 'Laster program',
@@ -706,7 +728,10 @@ const translations = {
   'program.cardioType.cycling': 'Sykling',
   'program.cardioType.rowing': 'Roing',
 
-  // Program - Cardio Environments (removed environment chips usage)
+  // Program - Cardio Environments
+  'program.cardioEnvironment.inside': 'Inne',
+  'program.cardioEnvironment.outside': 'Ute',
+  'program.cardioEnvironment.both': 'Begge',
 
   // Program Feedback Questionnaire
   'programFeedback.alert.cannotReplaceAdded':
@@ -908,7 +933,14 @@ const translations = {
   'profile.noneSet': 'Ingen',
   'profile.notSet': 'Ikke angitt',
   'profile.addPhoto': 'Legg til bilde',
-  'profile.noPhoto': 'Intet bilde',
+  'profile.noPhoto': 'Legg til bilde',
+  // Profile - Subscription widget
+  'profile.subscription.title': 'Abonnement',
+  'profile.subscription.active': 'Aktiv',
+  'profile.subscription.activeWithRenewal': 'Aktiv · Fornyes {{date}}',
+  'profile.subscription.statusPrefix': 'Status:',
+  'profile.subscription.none': 'Ingen aktivt abonnement',
+  'profile.subscription.manage': 'Administrer',
   'profile.fields.medicalConditions': 'Medisinske tilstander',
   'profile.fields.medications': 'Medisiner',
   'profile.fields.injuries': 'Skader',
@@ -1118,7 +1150,7 @@ const translations = {
 
   // Landing hero
   'landing.hero.title': 'Lindre smerte, bygg styrke',
-  'landing.hero.subtitle': 'Tilpasset rehabplan på under 2 minutter.',
+  'landing.hero.subtitle': 'Tilpasset trenings- eller rehab-plan på under 2 minutter.',
   'landing.hero.ctaPain': 'Jeg har smerter',
   'landing.hero.ctaWorkout': 'Trenger bare en økt',
   'landing.hero.reviews': 'anmeldelser',
@@ -1140,6 +1172,10 @@ const translations = {
   'landing.how.step2': '7 spørsmål + sikkerhetsvarsler',
   'landing.how.step3': 'Få din plan',
   'landing.how.cta': 'Start vurdering',
+  // Labels for how-it-works overlay badges
+  'landing.how.label.findArea': 'Finn smerteområdet',
+  'landing.how.label.discuss': 'Diskuter problemet',
+  'landing.how.label.execute': 'Utfør planen din',
 
   'landing.programs.title': 'Få hjelp med vanlige skader',
   'landing.programs.lower_back': 'Smerter i korsrygg',

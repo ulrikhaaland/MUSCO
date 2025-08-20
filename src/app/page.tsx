@@ -10,9 +10,11 @@ import {
   localizeProgramDayDescriptions,
 } from '../../public/data/programs/recovery';
 import LandingHero from './components/ui/LandingHero';
+import LandingHeroImages from './components/ui/LandingHeroImages';
 import PartnerLogos from '@/components/PartnerLogos';
 // import LanguageSwitcher from './components/ui/LanguageSwitcher';
 import { logAnalyticsEvent } from './utils/analytics';
+import PricingCards from './components/ui/PricingCards';
 import Logo from './components/ui/Logo';
 import { useUser } from './context/UserContext';
 
@@ -101,6 +103,7 @@ export default function LandingPage() {
   const [modalOpen, setModalOpen] = useState<null | string>(null);
   const [pricingAnnual, setPricingAnnual] = useState(true);
   const [showAllPrograms, setShowAllPrograms] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const programSummaries: Record<string, string> = {
     'lower-back':
       'Stabilize core and restore lumbar mobility; posture and hinge control.',
@@ -125,6 +128,7 @@ export default function LandingPage() {
       'Deload impact; ankle/calf mobility and isometric capacity in week 1.',
   };
   const howRef = useRef<HTMLDivElement | null>(null);
+  const heroRef = useRef<HTMLDivElement | null>(null);
   const programsRef = useRef<HTMLDivElement | null>(null);
   const whyRef = useRef<HTMLDivElement | null>(null);
   const demoRef = useRef<HTMLDivElement | null>(null);
@@ -133,8 +137,7 @@ export default function LandingPage() {
   const [currentSection, setCurrentSection] = useState<
     'how' | 'programs' | 'why' | 'demo' | 'pricing' | 'faq' | 'top'
   >('top');
-  const [demoTapCount, setDemoTapCount] = useState(0);
-  const [demoTyping, setDemoTyping] = useState(false);
+  // demo elements removed
   const SHOW_PRICING = true;
 
   // Soft-redirect signed-in users to /app (delay ~800ms), always show Open app
@@ -153,41 +156,74 @@ export default function LandingPage() {
     if (typeof document !== 'undefined') document.title = t('home.pageTitle');
   }, [t]);
 
+  useEffect(() => {
+    const check = () => {
+      if (typeof window === 'undefined') return;
+      setIsMobile(window.innerWidth < 640);
+    };
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
+
   const goAppWith = () => {
     router.push('/app');
   };
 
   // Observe section views
   useEffect(() => {
-    const entries: Array<[Element | null, string]> = [
-      [howRef.current, 'how'],
-      [programsRef.current, 'programs'],
-      [whyRef.current, 'why'],
-      [demoRef.current, 'demo'],
-      [SHOW_PRICING ? pricingRef.current : null, 'pricing'],
-      [faqRef.current, 'faq'],
-    ];
-    const observer = new IntersectionObserver(
-      (list) => {
-        list.forEach((i) => {
-          if (i.isIntersecting) {
-            logAnalyticsEvent('landing_section_view', {
-              id: i.target.getAttribute('data-id'),
-            });
-            const id = i.target.getAttribute('data-id') as any;
-            setCurrentSection(id);
-          }
-        });
-      },
-      { threshold: 0.4 }
-    );
-    entries.forEach(([el, id]) => {
-      if (el) {
-        el.setAttribute('data-id', id);
-        observer.observe(el);
+    const updateActive = () => {
+      if (typeof window === 'undefined') return;
+      const header = document.querySelector('header') as HTMLElement | null;
+      const headerHeight = header?.offsetHeight ?? 64;
+      const offset = headerHeight + 8;
+      const line = offset + window.innerHeight * 0.33; // choose a line 1/3 down from top
+
+      // If scrolled to the very bottom, force FAQ active
+      const doc = document.documentElement;
+      const atBottom = window.innerHeight + window.scrollY >= (doc.scrollHeight - 2);
+      if (atBottom) {
+        setCurrentSection('faq');
+        return;
       }
-    });
-    return () => observer.disconnect();
+      const sections: Array<{ id: typeof currentSection; el: Element | null }> = [
+        { id: 'how', el: heroRef.current || howRef.current },
+        { id: 'programs', el: programsRef.current },
+        { id: 'why', el: whyRef.current },
+        { id: 'pricing', el: SHOW_PRICING ? pricingRef.current : null },
+        { id: 'faq', el: faqRef.current },
+      ];
+      // Prefer the section whose bounds contain the reference line
+      const visibles: Array<{ id: typeof currentSection; start: number; end: number }> = [];
+      sections.forEach((s) => {
+        if (!s.el) return;
+        const rect = (s.el as HTMLElement).getBoundingClientRect();
+        const start = rect.top;
+        const end = rect.bottom;
+        visibles.push({ id: s.id, start, end });
+      });
+      const spanning = visibles.find((v) => v.start <= line && v.end > line);
+      if (spanning) {
+        setCurrentSection(spanning.id);
+        return;
+      }
+      // Otherwise pick the closest section above the line
+      const passed = visibles.filter((v) => v.start <= line);
+      if (passed.length) {
+        const closest = passed.reduce((a, b) => (a.start > b.start ? a : b));
+        setCurrentSection(closest.id);
+        return;
+      }
+      // Fallback to the first section
+      setCurrentSection('how');
+    };
+    updateActive();
+    window.addEventListener('scroll', updateActive, { passive: true });
+    window.addEventListener('resize', updateActive);
+    return () => {
+      window.removeEventListener('scroll', updateActive);
+      window.removeEventListener('resize', updateActive);
+    };
   }, [SHOW_PRICING]);
 
   const scrollTo = (ref: React.RefObject<HTMLDivElement>) => {
@@ -263,9 +299,10 @@ export default function LandingPage() {
     (a, b) =>
       (commonalityRank[a.slug] ?? 999) - (commonalityRank[b.slug] ?? 999)
   );
+  const defaultVisible = isMobile ? 3 : 6;
   const visiblePrograms = showAllPrograms
     ? sortedPrograms
-    : sortedPrograms.slice(0, 6);
+    : sortedPrograms.slice(0, defaultVisible);
 
   // Shimmer removed
 
@@ -282,7 +319,11 @@ export default function LandingPage() {
           </button>
           <nav className="hidden md:flex items-center gap-6 text-gray-300">
             <button
-              onClick={() => scrollTo(howRef)}
+              onClick={() => {
+                if (typeof window !== 'undefined') {
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+              }}
               className={`hover:text-white focus:outline-none focus:ring-2 focus:ring-white/30 ${currentSection === 'how' ? 'text-white' : ''}`}
             >
               {t('landing.nav.how')}
@@ -340,7 +381,7 @@ export default function LandingPage() {
       </header>
 
       {/* Hero */}
-      <section className="mx-auto max-w-6xl px-6 pt-10 md:pt-14 pb-10 md:pb-14 min-h-[60vh] flex items-start">
+      <section ref={heroRef} className="mx-auto max-w-6xl px-6 py-12 md:py-16 md:min_h-[60vh] flex items-start">
         <LandingHero
           onSelect={(mode) => {
             if (mode === 'diagnose') {
@@ -355,47 +396,20 @@ export default function LandingPage() {
       </section>
 
       {/* Partner logos below hero (animated marquee) */}
-      <section className="mx-auto max-w-6xl px-6 mt-16 md:mt-24 lg:mt-36">
+      <section className="mx-auto max-w-6xl px-6 mt-12 md:mt-16 lg:mt-24 mb-12 md:mb-16 lg:mb-24">
         <PartnerLogos />
       </section>
 
-      {/* How it works */}
-      <section ref={howRef} className="mx-auto max-w-6xl px-6 py-16 md:py-24">
-        <h2 className="text-white text-2xl font-semibold mb-4">
-          {t('landing.how.title')}
-        </h2>
-        <ol className="grid gap-6 md:gap-8 grid-cols-1 md:grid-cols-3 text-gray-200">
-          {[
-            t('landing.how.step1'),
-            t('landing.how.step2'),
-            t('landing.how.step3'),
-          ].map((txt, idx) => (
-            <li
-              key={idx}
-              className="rounded-xl p-5 border border-white/15 bg-[#141922]"
-            >
-              <div className="text-sm text-white/70 mb-2">Step {idx + 1}</div>
-              <div className="text-white font-medium">{txt}</div>
-            </li>
-          ))}
-        </ol>
-        <div className="mt-4">
-          <button
-            onClick={() => {
-              logAnalyticsEvent('start_diagnosis_from_section');
-              goAppWith();
-            }}
-            className="px-5 py-3 bg-indigo-600 text-white rounded-md hover:bg-indigo-500"
-          >
-            {t('landing.how.cta')}
-          </button>
-        </div>
+      {/* How it works anchor: on mobile show mobile images, on desktop it's the hero + desktop images above */}
+      <section ref={howRef} className="mx-auto max-w-6xl px-6 mt-0 mb-12 md:hidden">
+        <LandingHeroImages />
       </section>
+
 
       {/* Programs we cover */}
       <section
         ref={programsRef}
-        className="mx-auto max-w-6xl px-6 py-16 md:py-24"
+        className="mx-auto max-w-6xl px-6 mb-12 md:mb-16 lg:mb-24"
       >
         <h2 className="text-white text-2xl font-semibold mb-4">
           {t('landing.programs.title')}
@@ -431,7 +445,7 @@ export default function LandingPage() {
             </button>
           ))}
         </div>
-        {sortedPrograms.length > 6 && (
+        {sortedPrograms.length > defaultVisible && (
           <div className="mt-6">
             <button
               onClick={() => setShowAllPrograms((s) => !s)}
@@ -446,7 +460,7 @@ export default function LandingPage() {
       {/* shimmer styles removed */}
 
       {/* Why it works */}
-      <section ref={whyRef} className="mx-auto max-w-6xl px-6 py-16 md:py-24">
+      <section ref={whyRef} className="mx-auto max-w-6xl px-6 mb-12 md:mb-16 lg:mb-24">
         <h2 className="text-white text-2xl font-semibold mb-4">
           {t('landing.why.title')}
         </h2>
@@ -471,117 +485,32 @@ export default function LandingPage() {
           </div>
       </section>
 
-      {/* Optional fake demo */}
-      <section ref={demoRef} className="mx-auto max-w-3xl px-6 py-16 md:py-24">
-        <h2 className="text-white text-2xl font-semibold mb-4">
-          {t('landing.demo.title')}
-        </h2>
-        <div className="rounded-xl p-5 border border-white/15 bg-[#141922] text-gray-200">
-          <div className="mb-3 min-h-[80px]">
-            <p>{t('landing.demo.chat')}</p>
-            {demoTyping && (
-              <div
-                className="mt-2 h-4 w-24 bg-white/10 rounded animate-pulse"
-                aria-hidden
-              />
-            )}
-          </div>
-          <div className="flex gap-2 flex-wrap">
-            {[1, 2, 3].map((step) => (
-              <button
-                key={step}
-                className="px-3 py-1 bg-gray-700 rounded-md hover:bg-gray-600"
-                onClick={() => {
-                  setDemoTapCount((c) => c + 1);
-                  setDemoTyping(true);
-                  setTimeout(() => setDemoTyping(false), 350);
-                  logAnalyticsEvent('fake_demo_interaction', { step });
-                }}
-              >
-                {t(`landing.demo.quick${step}`)}
-              </button>
-            ))}
-          </div>
-          {demoTapCount >= 2 && (
-            <div className="mt-4">
-              <button
-                className="px-5 py-3 bg-indigo-600 text-white rounded-md hover:bg-indigo-500"
-                onClick={() => goAppWith()}
-              >
-                {t('landing.demo.cta')}
-              </button>
-            </div>
-          )}
-        </div>
-      </section>
+      
 
       {/* Pricing */}
       {SHOW_PRICING && (
         <section
           ref={pricingRef}
-          className="mx-auto max-w-3xl px-6 py-16 md:py-24"
+          className="mx-auto max-w-6xl px-6 mb-12 md:mb-16 lg:mb-24"
         >
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-white text-2xl font-semibold">
-              {t('landing.pricing.title')}
-            </h2>
-            <label className="text-gray-200 text-sm flex items-center gap-2">
-              {t('landing.pricing.monthly')}
-              <input
-                type="checkbox"
-                aria-label={t('landing.pricing.toggle')}
-                checked={pricingAnnual}
-                onChange={(e) => setPricingAnnual(e.target.checked)}
-                className="accent-indigo-600"
-              />
-              {t('landing.pricing.annual')}
-            </label>
-          </div>
-          <div className="rounded-xl p-5 border border-white/15 bg-[#141922] text-gray-200">
-            <p className="text-3xl font-bold text-white">
-              {pricingAnnual
-                ? t('landing.pricing.annualPrice')
-                : t('landing.pricing.monthlyPrice')}
-            </p>
-            <p className="text-sm mt-1">{t('landing.pricing.note')}</p>
-            <div className="mt-3 grid gap-4 md:grid-cols-2">
-              <div>
-                <div className="text-white/80 text-sm">{t('landing.pricing.tier.free')}</div>
-                <ul className="mt-1 space-y-1 text-xs text-white/80">
-                  <li>• {t('landing.pricing.free.b1')}</li>
-                  <li>• {t('landing.pricing.free.b2')}</li>
-                  <li>• {t('landing.pricing.free.b3')}</li>
-                </ul>
-              </div>
-              <div>
-                <div className="text-white/80 text-sm">{t('landing.pricing.tier.premium')}</div>
-                <ul className="mt-1 space-y-1 text-xs text-white/80">
-                  <li>• {t('landing.pricing.premium.b1')}</li>
-                  <li>• {t('landing.pricing.premium.b2')}</li>
-                  <li>• {t('landing.pricing.premium.b3')}</li>
-                </ul>
-              </div>
-            </div>
-            <div className="mt-4 flex items-center gap-3">
-              <button
-                onClick={() => router.push('/app')}
-                className="px-5 py-3 bg-indigo-600 text-white rounded-md hover:bg-indigo-500"
-              >
-                {t('landing.pricing.try')}
-              </button>
-              <button
-                onClick={() => router.push('/subscribe')}
-                className="px-5 py-3 border border-white/20 text-white rounded-md hover:bg-white/5"
-              >
-                {t('landing.pricing.seePlans')}
-              </button>
-            </div>
-          </div>
+          <h2 className="text-white text-2xl font-semibold mb-3">{t('landing.pricing.title')}</h2>
+          <PricingCards
+            onMonthly={() => router.push('/subscribe')}
+            onAnnual={() => router.push('/subscribe')}
+            onTry={() => router.push('/app')}
+            loading={null}
+            showFounder={false}
+            benefitsBg="bg-[#141922]"
+            benefitsRing="ring-1 ring-white/10"
+            cardBg="bg-[#141922]"
+            cardRing="ring-1 ring-white/10"
+            showFooterNote
+          />
         </section>
       )}
 
       {/* FAQ */}
-      <section ref={faqRef} className="mx-auto max-w-3xl px-6 py-16 md:py-24">
+      <section ref={faqRef} className="mx-auto max-w-6xl px-6 pb-12 md:pb-16 lg:pb-24">
         <h2 className="text-white text-2xl font-semibold mb-4">
           {t('landing.faq.title')}
         </h2>

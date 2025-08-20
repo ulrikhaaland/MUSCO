@@ -586,8 +586,30 @@ const translations = {
   'questionnaire.continue': 'Continue',
   'questionnaire.skipEquipment': 'Skip equipment',
   'questionnaire.cancel': 'Cancel',
+  // Equipment items
+  'equipmentItem.dumbbell': 'Dumbbell',
+  'equipmentItem.barbell': 'Barbell',
+  'equipmentItem.cable': 'Cable',
+  'equipmentItem.bands': 'Bands',
+  'equipmentItem.bench': 'Bench',
+  'equipmentItem.trx': 'TRX / Suspension Trainer',
+  'equipmentItem.kettle_bell': 'Kettlebell',
+  'equipmentItem.treadmill': 'Treadmill',
+  'equipmentItem.exercise_bike': 'Exercise Bike',
+  'equipmentItem.rowing_machine': 'Rowing Machine',
+  'equipmentItem.elliptical': 'Elliptical',
+  'equipmentItem.jump_rope': 'Jump Rope',
   'questionnaire.selectedCardioType': 'Selected cardio type',
+  'questionnaire.autoSelectedCardioEquipment':
+    "We've pre-selected {{equipment}} for your indoor {{type}} workouts. You can deselect it if you prefer other options.",
   'questionnaire.createProgram': 'Create Program',
+  'questionnaire.programType.select': 'What kind of program do you want?',
+  'questionnaire.programType.exercise': 'Exercise',
+  'questionnaire.programType.exerciseAndRecovery': 'Exercise + Recovery',
+  'questionnaire.programType.recovery': 'Recovery',
+  'questionnaire.programType.info.exercise': 'Focused strength/cardio plan for fitness and performance.',
+  'questionnaire.programType.info.exerciseAndRecovery': 'Balanced plan combining training with targeted recovery work.',
+  'questionnaire.programType.info.recovery': 'Gentle routines to reduce pain, restore mobility, and ease back in.',
 
   // Program page translations
   'program.loading': 'Loading program',
@@ -728,7 +750,10 @@ const translations = {
   'program.cardioType.cycling': 'Cycling',
   'program.cardioType.rowing': 'Rowing',
 
-  // Program - Cardio Environments (removed environment chips usage)
+  // Program - Cardio Environments
+  'program.cardioEnvironment.inside': 'Inside',
+  'program.cardioEnvironment.outside': 'Outside',
+  'program.cardioEnvironment.both': 'Both',
 
   // Program Feedback Questionnaire
   'programFeedback.alert.cannotReplaceAdded':
@@ -929,7 +954,14 @@ const translations = {
   'profile.noneSet': 'None',
   'profile.notSet': 'Not set',
   'profile.addPhoto': 'Add Photo',
-  'profile.noPhoto': 'No Photo',
+  'profile.noPhoto': 'Add Photo',
+  // Profile - Subscription widget
+  'profile.subscription.title': 'Subscription',
+  'profile.subscription.active': 'Active',
+  'profile.subscription.activeWithRenewal': 'Active · Renews on {{date}}',
+  'profile.subscription.statusPrefix': 'Status:',
+  'profile.subscription.none': 'No active subscription',
+  'profile.subscription.manage': 'Manage',
   'profile.fields.medicalConditions': 'Medical Conditions',
   'profile.fields.medications': 'Medications',
   'profile.fields.injuries': 'Injuries',
@@ -1038,7 +1070,7 @@ const translations = {
 
   // Landing hero
   'landing.hero.title': 'Relieve Pain, Rebuild Strength',
-  'landing.hero.subtitle': 'Custom rehab plan in under 2 minutes.',
+  'landing.hero.subtitle': 'Custom training or rehab plan in under 2 minutes.',
   'landing.hero.ctaPain': 'I have pain',
   'landing.hero.ctaWorkout': 'Just need a workout',
   'landing.hero.reviews': 'reviews',
@@ -1060,6 +1092,10 @@ const translations = {
   'landing.how.step2': '7 questions + safety red flags',
   'landing.how.step3': 'Get your plan',
   'landing.how.cta': 'Start assessment',
+  // Labels for how-it-works overlay badges
+  'landing.how.label.findArea': 'Find your painful area',
+  'landing.how.label.discuss': 'Discuss your issue',
+  'landing.how.label.execute': 'Execute your plan',
 
   'landing.programs.title': 'Get help with common injuries',
   'landing.programs.lower_back': 'Lower back pain',

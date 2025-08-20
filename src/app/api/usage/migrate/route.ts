@@ -15,7 +15,7 @@ export async function POST(req: Request) {
 
     const migrated = await migrateAnonUsageToUserAndResetLimit(anonId, uid);
     return NextResponse.json({ ok: true, migrated });
-  } catch (e) {
+  } catch {
     return NextResponse.json({ ok: false, error: 'internal_error' }, { status: 500 });
   }
 }

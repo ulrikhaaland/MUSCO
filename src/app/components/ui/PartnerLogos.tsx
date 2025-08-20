@@ -15,7 +15,7 @@ export function PartnerLogos({ size = 'md', showHeading = true, className = '', 
   const allLogos = [...logos, ...logos];
 
   return (
-    <div className={`${className} ${showHeading ? 'space-y-4 pt-8' : ''}`}>
+    <div className={`${className} ${showHeading ? 'space-y-3 pt-4 md:pt-8' : ''}`}>
       {showHeading && (
         <p className="text-center text-gray-500 text-sm tracking-wide uppercase">
           {t('partners.headline')}

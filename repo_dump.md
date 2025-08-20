@@ -144,6 +144,7 @@
         MobileControls.tsx – Mobile bottom sheet controller
       /auth/ – Authentication-related components
       /ui/ – Reusable UI component library
+        LandingHeroImages.tsx – Fanned hero image stack with parallax, labels, and heading
     /config/ – Application configuration files
     /context/ – React context providers and state management
     /data/ – Data management and utilities

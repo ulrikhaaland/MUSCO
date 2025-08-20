@@ -58,9 +58,25 @@ export function useChat() {
   useEffect(() => {
     async function initializeAssistant() {
       try {
+        // Try to reuse prewarmed IDs from sessionStorage to avoid creating new thread
+        let preAssistantId: string | null = null;
+        let preThreadId: string | null = null;
+        try {
+          preAssistantId = window.sessionStorage.getItem('assistant_id');
+          preThreadId = window.sessionStorage.getItem('assistant_thread_id');
+        } catch {}
+        if (preAssistantId && preThreadId) {
+          assistantIdRef.current = preAssistantId;
+          threadIdRef.current = preThreadId;
+          return;
+        }
         const { assistantId, threadId } = await getOrCreateAssistant();
         assistantIdRef.current = assistantId;
         threadIdRef.current = threadId;
+        try {
+          window.sessionStorage.setItem('assistant_id', assistantId);
+          window.sessionStorage.setItem('assistant_thread_id', threadId);
+        } catch {}
       } catch (error) {
         console.error('Error initializing assistant:', error);
       }

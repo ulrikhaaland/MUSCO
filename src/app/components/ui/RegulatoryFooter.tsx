@@ -10,7 +10,7 @@ export default function RegulatoryFooter() {
   const location = 'Oslo, Norway';
 
   return (
-    <footer className="px-6 py-8 border-t border-white/10 text-gray-300">
+    <footer className="px-6 py-8 border-t border-white/10 text-gray-300 bg-transparent">
       <div className="max-w-6xl mx-auto grid gap-4 md:grid-cols-3 items-start">
         <div className="space-y-1 text-sm">
           <div className="font-medium text-white/90">

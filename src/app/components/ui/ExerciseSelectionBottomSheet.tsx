@@ -2,11 +2,11 @@
 
 import { useState, useEffect, useRef, ComponentType, RefAttributes } from 'react';
 import { Exercise } from '@/app/types/program';
-import { exerciseFiles, loadExercisesFromJson } from '@/app/services/exerciseProgramService';
+import { loadExercisesFromJson } from '@/app/services/exerciseProgramService';
 import { BottomSheet, BottomSheetRef } from 'react-spring-bottom-sheet';
 import type { BottomSheetProps } from 'react-spring-bottom-sheet';
 import 'react-spring-bottom-sheet/dist/style.css';
-import ExerciseCard from './ExerciseCard';
+// import ExerciseCard from './ExerciseCard';
 import { useTranslation } from '@/app/i18n';
 
 interface ExerciseSelectionBottomSheetProps {

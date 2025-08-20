@@ -488,7 +488,7 @@ export default function DayDetailPage() {
 
   return (
     <div className="bg-gray-900 min-h-screen z-50 flex flex-col">
-      <NavigationMenu mobileTitle={selectedProgram?.title || dayName || t('program.defaultPageTitle')} />
+      <NavigationMenu mobileTitle={dayName || t('program.defaultPageTitle')} />
       <div className="py-3 px-4 items-center justify-center hidden md:flex">
         <h1 className="text-app-title text-center">{dayName}</h1>
       </div>

@@ -17,6 +17,7 @@ import { auth } from './firebase/config';
 import { usePathname, useRouter } from 'next/navigation';
 import { SafeAreaPWA } from './components/ui/SafeAreaPWA';
 import RegulatoryFooter from './components/ui/RegulatoryFooter';
+import { AuthOverlay } from './components/auth/AuthOverlay';
 
 // const geistSans = localFont({
 //   src: "./fonts/GeistVF.woff",
@@ -182,6 +183,7 @@ export default function RootLayout({
                       {pathname === '/' && <RegulatoryFooter />}
                     </SafeArea>
                   </SafeAreaPWA>
+                  <AuthOverlay />
                 </ToastProvider>
               </AppProvider>
             </UserProvider>

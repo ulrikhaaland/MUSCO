@@ -105,12 +105,12 @@ Required structure:
   "assessmentComplete": true,
   "redFlagsPresent": false,
   "avoidActivities": ["overhead lifting"],
-  "programType": "exercise",          // or "recovery"
+  "programType": "exercise",          // or "recovery" or "exercise_and_recovery"
   "timeFrame": "e.g. 2-4 weeks",      // null until set
   "targetAreas": ["left shoulder"],
   "followUpQuestions": [
     { "question": "Recovery only", "programType": "recovery", "generate": true, "chatMode": "diagnosis" },
-    { "question": "Exercise + recovery", "programType": "exercise", "generate": true, "chatMode": "diagnosis" }
+    { "question": "Exercise + recovery", "programType": "exercise_and_recovery", "generate": true, "chatMode": "diagnosis" }
   ]
 }
 \`\`\`
@@ -134,7 +134,7 @@ Required structure:
   - Pain pattern: ["Constant", "Only with movement", "Intermittent"]
 • FollowUpQuestions must match the current question context. Do NOT provide program options when asking about pain details, onset, location, etc.
 • Program preference options ("Recovery only", "Exercise + recovery") should ONLY appear when ALL mandatory fields are collected AND assessmentComplete is true.
-• When asking for program preference, provide BOTH options with generate: true: "Recovery only" (programType: "recovery", generate: true) and "Exercise + recovery" (programType: "exercise", generate: true).
+• When asking for program preference, provide BOTH options with generate: true: "Recovery only" (programType: "recovery", generate: true) and "Exercise + recovery" (programType: "exercise_and_recovery", generate: true).
 • Include generate:true ONLY after ALL prerequisites met
 • Body part values: use exact PAIN_BODY_PARTS literals
 • If a mandatory field is filled, DO NOT create another followUpQuestion that asks for the same field in different words.

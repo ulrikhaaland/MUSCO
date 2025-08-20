@@ -623,7 +623,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
       }, 10);
 
       //remove neck from answers.targetAreas
-      if (diagnosis.programType === ProgramType.Exercise) {
+      if (diagnosis.programType === ProgramType.Exercise || diagnosis.programType === ProgramType.ExerciseAndRecovery) {
         answers.targetAreas = answers.targetAreas.filter(
           (area) => area !== 'Neck'
         );

@@ -17,7 +17,7 @@ export async function POST(request: Request) {
     const data = userSnap.data() as any;
     let customerId = data?.stripeCustomerId as string | undefined;
     const subscriptionId = data?.stripeSubscriptionId as string | undefined;
-    const email = data?.email as string | undefined;
+    // const email = data?.email as string | undefined;
 
     // Validate existing customerId belongs to this mode
     if (customerId) {
@@ -42,7 +42,7 @@ export async function POST(request: Request) {
           customerId = subCustomer;
           await adminDb.collection('users').doc(uid).set({ stripeCustomerId: subCustomer }, { merge: true });
         }
-      } catch (e) {
+      } catch {
         // ignore, try next fallback
       }
     }

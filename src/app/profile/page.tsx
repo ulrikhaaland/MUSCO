@@ -3613,9 +3613,7 @@ export default function ProfilePage() {
                   <div className="rounded-xl ring-1 ring-gray-700/50 bg-gray-900/40 p-4">
                     <div className="flex items-start justify-between gap-4">
                       <div>
-                        <div className="text-white font-medium">
-                          Subscription
-                        </div>
+                        <div className="text-white font-medium">{t('profile.subscription.title')}</div>
                         <div className="text-sm text-gray-300 mt-1">
                           {(() => {
                             const status = user?.profile?.subscriptionStatus;
@@ -3630,11 +3628,11 @@ export default function ProfilePage() {
                               : null;
                             if (isActive) {
                               return until
-                                ? `Active · Renews on ${until}`
-                                : 'Active';
+                                ? t('profile.subscription.activeWithRenewal', { date: until })
+                                : t('profile.subscription.active');
                             }
-                            if (status) return `Status: ${status}`;
-                            return 'No active subscription';
+                            if (status) return `${t('profile.subscription.statusPrefix')} ${status}`;
+                            return t('profile.subscription.none');
                           })()}
                         </div>
                       </div>
@@ -3658,7 +3656,7 @@ export default function ProfilePage() {
                           }}
                           className="px-3 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-white text-sm"
                         >
-                          Manage
+                          {t('profile.subscription.manage')}
                         </button>
                       </div>
                     </div>

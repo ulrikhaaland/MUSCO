@@ -303,7 +303,7 @@ export default function MobileControls({
 
   useEffect(() => {
     // Track bottom sheet height changes
-    const observer = new MutationObserver((mutations) => {
+    const observer = new MutationObserver(() => {
       mutations.forEach((mutation) => {
         if (
           mutation.type === 'attributes' &&

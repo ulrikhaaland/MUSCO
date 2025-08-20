@@ -6,7 +6,6 @@ import { Gender } from '../types';
 import { useApp, ProgramIntention } from '../context/AppContext';
 import { useAuth } from '../context/AuthContext';
 import { useUser } from '../context/UserContext';
-import { QuestionnaireAuthForm } from '../components/auth/QuestionnaireAuthForm';
 import { ErrorBoundary } from '../components/ErrorBoundary';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { IntentionQuestion } from '../components/ui/IntentionQuestion';
@@ -67,6 +66,41 @@ function AppContent() {
     }
   }, [genderParam]);
 
+  // Prewarm: initialize assistant/thread as soon as /app mounts
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        // Per-tab guard to avoid duplicate prewarm (e.g., StrictMode or remounts)
+        if (typeof window !== 'undefined') {
+          const already = window.sessionStorage.getItem('assistant_prewarm');
+          if (already === '1') return;
+        }
+        const res = await fetch('/api/assistant', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'initialize' }),
+        });
+        if (res.ok) {
+          const data = await res.json().catch(() => null);
+          if (data && typeof window !== 'undefined') {
+            try {
+              if (data.assistantId) window.sessionStorage.setItem('assistant_id', data.assistantId);
+              if (data.threadId) window.sessionStorage.setItem('assistant_thread_id', data.threadId);
+              window.sessionStorage.setItem('assistant_prewarm', '1');
+            } catch {}
+          }
+        }
+      } catch {
+        // best-effort; ignore
+      }
+      if (cancelled) return;
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   const handleGenderChange = useCallback(
     (newGender: Gender) => {
       setGender(newGender);
@@ -116,13 +150,7 @@ function AppContent() {
         />
       </div>
 
-      {showAuthForm && pendingQuestionnaire && (
-        <div className="fixed inset-0 bg-gray-900/95 backdrop-blur-sm z-[70] flex items-center justify-center">
-          <div className="max-w-lg w-full mx-4">
-            <QuestionnaireAuthForm />
-          </div>
-        </div>
-      )}
+      {/* Auth overlay handled globally in layout via <AuthOverlay /> */}
 
       {newParam === 'true' && !intentionSelected && (
         <IntentionQuestion

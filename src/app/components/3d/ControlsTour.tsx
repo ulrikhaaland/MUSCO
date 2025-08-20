@@ -48,7 +48,7 @@ const HighlightRing = ({ currentStep, controlsBottom }: { currentStep: TourStep,
     
     // Set up mutation observer to track DOM changes
     if (!observerRef.current) {
-      observerRef.current = new MutationObserver((mutations) => {
+      observerRef.current = new MutationObserver(() => {
         updatePosition();
       });
       
@@ -113,7 +113,7 @@ export default function ControlsTour({ currentStep, onNext, onSkip, controlsBott
   const tooltipRef = useRef<HTMLDivElement>(null);
   const [prevFocusElement, setPrevFocusElement] = useState<HTMLElement | null>(null);
   const [tooltipPosition, setTooltipPosition] = useState({ left: 0, top: 0 });
-  const [arrowPosition, setArrowPosition] = useState('right');
+  const [arrowPosition] = useState('right');
   const observerRef = useRef<MutationObserver | null>(null);
   const resizeObserverRef = useRef<ResizeObserver | null>(null);
   
@@ -183,7 +183,7 @@ export default function ControlsTour({ currentStep, onNext, onSkip, controlsBott
     
     // Set up mutation observer to track DOM changes
     if (!observerRef.current) {
-      observerRef.current = new MutationObserver((mutations) => {
+      observerRef.current = new MutationObserver(() => {
         updateTooltipPosition();
       });
       

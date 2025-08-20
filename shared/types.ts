@@ -34,5 +34,6 @@ export interface ExerciseQuestionnaireAnswers {
 
 export enum ProgramType {
   Exercise = 'exercise',
-  Recovery = 'recovery'
+  Recovery = 'recovery',
+  ExerciseAndRecovery = 'exercise_and_recovery'
 } 

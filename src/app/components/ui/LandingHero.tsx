@@ -2,40 +2,21 @@
 
 // PartnerLogos moved below the hero in page.tsx
 import { useTranslation } from '@/app/i18n'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
+import LandingHeroImagesDesktop from './LandingHeroImagesDesktop'
 import { logAnalyticsEvent } from '@/app/utils/analytics'
 
 export type ViewerMode = 'full' | 'diagnose' | 'questionnaire'
 
 export default function LandingHero({ onSelect }: { onSelect: (m: ViewerMode) => void }) {
   const { t } = useTranslation();
-  const containerRef = useRef<HTMLDivElement | null>(null)
-  const [offset, setOffset] = useState({ x: 0, y: 0 })
   const [isMounted, setIsMounted] = useState(false)
-  const prefersReducedMotion = useMemo(() => (
-    isMounted && typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  ), [isMounted])
-  const isCoarsePointer = useMemo(() => (
-    isMounted && typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches
-  ), [isMounted])
 
   useEffect(() => {
     setIsMounted(true)
   }, [])
 
-  // subtle parallax (disabled on reduced-motion and coarse pointers)
-  useEffect(() => {
-    if (prefersReducedMotion || isCoarsePointer) return
-    const handleMove = (e: MouseEvent) => {
-      if (!containerRef.current) return
-      const rect = containerRef.current.getBoundingClientRect()
-      const rx = ((e.clientX - rect.left) / rect.width - 0.5) * 4
-      const ry = ((e.clientY - rect.top) / rect.height - 0.5) * 4
-      setOffset({ x: rx, y: ry })
-    }
-    window.addEventListener('mousemove', handleMove)
-    return () => window.removeEventListener('mousemove', handleMove)
-  }, [prefersReducedMotion, isCoarsePointer])
+  // parallax removed from this component (handled in LandingHeroImages)
 
   // analytics: hero surface view + cta impressions
   useEffect(() => {
@@ -48,24 +29,13 @@ export default function LandingHero({ onSelect }: { onSelect: (m: ViewerMode) =>
     logAnalyticsEvent('cta_impression', { cta: 'workout', viewport })
   }, [isMounted])
 
-  const ResponsiveHeroImage = ({ name, alt }: { name: string; alt: string }) => (
-    <picture>
-      <source media="(min-width: 768px)" srcSet={`/landingpage/desktop/${name}.png`} />
-      <img
-        src={`/landingpage/mobile/${name}.png`}
-        alt={alt}
-        className="absolute inset-0 h-full w-full object-cover"
-        loading="eager"
-        decoding="async"
-      />
-    </picture>
-  )
+  // images rendered by LandingHeroImages outside this component
 
   return (
     <div className="w-full">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+      <div className="grid grid-cols-1 md:[grid-template-columns:1fr_1.35fr] gap-8 items-start">
         {/* Copy */}
-        <div className="order-2 md:order-1 text-left">
+        <div className="order-2 md:order-1 text-left relative z-10">
           <h1 className="text-white text-4xl md:text-5xl font-bold leading-tight">
             {t('landing.hero.title')}
           </h1>
@@ -100,53 +70,14 @@ export default function LandingHero({ onSelect }: { onSelect: (m: ViewerMode) =>
               ★ 4.9 • 138 {t('landing.hero.reviews')}
             </a>
           </div>
+          {/* Desktop images: first image sits to the right in the grid column, remaining wrap below */}
+          <div className="hidden md:block mt-6 max-w-[560px]">
+            <LandingHeroImagesDesktop variant="leftBelow" />
+          </div>
         </div>
         {/* Media: fanned stack */}
         <div className="order-1 md:order-2">
-          <div
-            ref={containerRef}
-            aria-label={t('landing.hero.ariaStack')}
-            className="relative z-0 h-[420px] md:h-[500px] lg:h-[560px] -mt-6 md:-mt-8 pointer-events-none"
-          >
-            {/* Radial glow */}
-            <div className="pointer-events-none absolute inset-0 [background:radial-gradient(60%_60%_at_50%_50%,rgba(255,255,255,0.06)_0%,transparent_70%)]" />
-
-            {/* Back surface: Select area */}
-            <div
-              className="absolute left-1/2 top-[45%] w-[80%] md:w-[76%] lg:w-[74%] aspect-video -translate-x-1/2 -translate-y-1/2 rounded-xl border overflow-hidden relative bg-[#141922] shadow-[0_18px_48px_rgba(0,0,0,0.34)]"
-              style={{
-                transform: `translate(calc(-50% + ${prefersReducedMotion || isCoarsePointer ? 0 : offset.x * -0.3}px), calc(-50% + ${prefersReducedMotion || isCoarsePointer ? 0 : offset.y * -0.3}px)) rotate(-10deg) scale(0.94)`,
-                borderColor: 'rgba(255,255,255,0.12)'
-              }}
-            >
-              <ResponsiveHeroImage name="select_area" alt={t('landing.hero.alt.select')} />
-            </div>
-
-            {/* Middle surface: Answer questions */}
-            <div
-              className="absolute left-1/2 top-[45%] w-[88%] md:w-[84%] lg:w-[82%] aspect-video -translate-x-1/2 -translate-y-1/2 rounded-xl border overflow-hidden relative bg-[#141922] shadow-[0_16px_44px_rgba(0,0,0,0.34)]"
-              style={{
-                transform: `translate(calc(-50% + ${prefersReducedMotion || isCoarsePointer ? 0 : offset.x * 0.2}px), calc(-50% + ${prefersReducedMotion || isCoarsePointer ? 0 : offset.y * 0.2}px)) rotate(8deg) scale(0.97)`,
-                borderColor: 'rgba(255,255,255,0.12)'
-              }}
-            >
-              <ResponsiveHeroImage name="answer_questions" alt={t('landing.hero.alt.chat')} />
-            </div>
-
-            {/* Front surface: Your plan */}
-            <div
-              className="absolute left-1/2 top-[45%] w-[96%] md:w-[90%] lg:w-[88%] aspect-video -translate-x-1/2 -translate-y-1/2 rounded-xl border overflow-hidden relative bg-[#141922] shadow-[0_12px_36px_rgba(0,0,0,0.32)]"
-              style={{
-                transform: `translate(calc(-50% + ${prefersReducedMotion || isCoarsePointer ? 0 : offset.x * 0.5}px), calc(-50% + ${prefersReducedMotion || isCoarsePointer ? 0 : offset.y * 0.5}px)) rotate(-6deg) scale(1)`,
-                borderColor: 'rgba(255,255,255,0.14)'
-              }}
-            >
-              <ResponsiveHeroImage name="your_plan" alt={t('landing.hero.alt.plan')} />
-            </div>
-
-            {/* Mobile caption */}
-            {/* no caption on mobile since we now mirror desktop visuals */}
-          </div>
+          <LandingHeroImagesDesktop variant="rightStack" />
         </div>
       </div>
     </div>

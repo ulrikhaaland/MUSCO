@@ -1,7 +1,7 @@
-import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import { Exercise, ProgramDay } from '@/app/types/program';
 import ExerciseCard from './ExerciseCard';
-import Chip from './Chip';
+// import Chip from './Chip';
 import BodyPartFilter from './BodyPartFilter';
 import { useTranslation } from '@/app/i18n/TranslationContext';
 import InfoBadge from './InfoBadge';
