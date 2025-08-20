@@ -17,6 +17,11 @@ import { useAuth } from '@/app/context/AuthContext';
 import { logAnalyticsEvent } from '@/app/utils/analytics';
 import { useExplainSelection } from '@/app/hooks/useExplainSelection';
 
+const MODEL_IDS: Record<Gender, string> = {
+  male: '5tOV',
+  female: '5tOR',
+};
+
 const DESKTOP_SPLIT_KEY = 'hv:desktop_split_px';
 
 interface HumanViewerProps {
@@ -134,10 +139,7 @@ export default function HumanViewer({
 
   // Remove previous paint nudge; use stable viewport strategy only
 
-  const MODEL_IDS = {
-    male: '5tOV',
-    female: '5tOR',
-  };
+  
 
   const {
     humanRef,
@@ -181,7 +183,7 @@ export default function HumanViewer({
         collapseDescription: false,
       });
     } catch {}
-  }, [exploreOn, selectedPart, explainer?.rateLimited, isExplainerActive, humanRef]);
+  }, [exploreOn, selectedPart, explainer, isExplainerActive, humanRef]);
 
   // Update the label when explainer text arrives
   useEffect(() => {
@@ -203,7 +205,7 @@ export default function HumanViewer({
         collapseDescription: false,
       });
     } catch {}
-  }, [exploreOn, selectedPart, explainer?.text, explainer?.rateLimited, isExplainerActive, humanRef]);
+  }, [exploreOn, selectedPart, explainer, isExplainerActive, humanRef]);
 
   const handleZoom = (objectId?: string) => {
     // First get current camera info
@@ -261,7 +263,7 @@ export default function HumanViewer({
       viewerUrl.searchParams.set('ui-logo', 'false');
       return viewerUrl.toString();
     },
-    [MODEL_IDS]
+    []
   );
 
   const [viewerUrl, setViewerUrl] = useState(() => getViewerUrl(gender));
@@ -274,7 +276,7 @@ export default function HumanViewer({
     setSelectedGroup(null, false);
     lastSelectedIdRef.current = null;
     setNeedsReset(false);
-  }, [setSelectedGroup, setSelectedPart, setNeedsReset]);
+  }, [previousSelectedPartGroupRef, setSelectedGroup, setSelectedPart, setNeedsReset]);
 
   const handleSwitchModel = useCallback(() => {
     setIsChangingModel(true);
@@ -371,7 +373,7 @@ export default function HumanViewer({
   // Update reset button state when parts are selected
   useEffect(() => {
     setNeedsReset(selectedGroups.length > 0 || needsReset);
-  }, [selectedGroups, needsReset]);
+  }, [selectedGroups, needsReset, setNeedsReset]);
 
   const startDragging = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
@@ -452,7 +454,7 @@ export default function HumanViewer({
         rotationAnimationRef.current = null;
       }
     };
-  }, [isRotating, currentRotation, isResetting]);
+  }, [isRotating, currentRotation, isResetting, humanRef, setNeedsReset]);
 
   // Clean up animation on unmount
   useEffect(() => {

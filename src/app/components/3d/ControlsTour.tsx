@@ -111,7 +111,7 @@ const HighlightRing = ({ currentStep, controlsBottom }: { currentStep: TourStep,
 export default function ControlsTour({ currentStep, onNext, onSkip, controlsBottom }: ControlsTourProps) {
   const { t } = useTranslation();
   const tooltipRef = useRef<HTMLDivElement>(null);
-  const [prevFocusElement, setPrevFocusElement] = useState<HTMLElement | null>(null);
+  const prevFocusElementRef = useRef<HTMLElement | null>(null);
   const [tooltipPosition, setTooltipPosition] = useState({ left: 0, top: 0 });
   const [arrowPosition] = useState('right');
   const observerRef = useRef<MutationObserver | null>(null);
@@ -138,7 +138,7 @@ export default function ControlsTour({ currentStep, onNext, onSkip, controlsBott
     if (tooltipRef.current) {
       // Store the currently focused element
       if (document.activeElement instanceof HTMLElement) {
-        setPrevFocusElement(document.activeElement);
+        prevFocusElementRef.current = document.activeElement;
       }
       
       // Move focus to tooltip
@@ -147,8 +147,8 @@ export default function ControlsTour({ currentStep, onNext, onSkip, controlsBott
     
     return () => {
       // Return focus to previously focused element on unmount
-      if (prevFocusElement) {
-        prevFocusElement.focus();
+      if (prevFocusElementRef.current) {
+        prevFocusElementRef.current.focus();
       }
     };
   }, [currentStep]);
