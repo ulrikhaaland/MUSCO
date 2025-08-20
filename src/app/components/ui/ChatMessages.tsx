@@ -69,8 +69,12 @@ function FollowUpQuestions({
                 />
               </svg>
               <div className="flex-1">
-                <div className={`${!question.title ? 'text-[#c8cbff]' : 'font-medium text-[#c8cbff] capitalize'}`}>
-                  {question.title ? question.title.toLowerCase() : question.question}
+                <div
+                  className={`${!question.title ? 'text-[#c8cbff]' : 'font-medium text-[#c8cbff] capitalize'}`}
+                >
+                  {question.title
+                    ? question.title.toLowerCase()
+                    : question.question}
                 </div>
                 {question.meta && (
                   <div className="text-sm text-[#c8cbff] opacity-75 mt-1">
@@ -407,12 +411,7 @@ export function ChatMessages({
         container.scrollTo = originalScrollTo;
       }
     };
-  }, [
-    isMobile,
-    messagesRef,
-    resetTouchState,
-    updateScrollButtonVisibility,
-  ]);
+  }, [isMobile, messagesRef, resetTouchState, updateScrollButtonVisibility]);
 
   // Modified version of scrollToBottom function to scroll to the bottom properly
   const scrollToBottom = (forceScroll = false) => {
@@ -420,7 +419,7 @@ export function ChatMessages({
     if (disableAutoScroll && !forceScroll) return;
 
     try {
-      const container = isMobile 
+      const container = isMobile
         ? document.querySelector('[data-rsbs-scroll]')
         : messagesRef.current;
 
@@ -470,10 +469,10 @@ export function ChatMessages({
       // Try to make follow-ups visible by directly scrolling to them
       try {
         followUpsContainer.scrollIntoView({ behavior: 'smooth', block: 'end' });
-              } catch {
-          // Fallback to general scrollToBottom if direct scroll fails
-          setTimeout(scrollToBottom, 50);
-        }
+      } catch {
+        // Fallback to general scrollToBottom if direct scroll fails
+        setTimeout(scrollToBottom, 50);
+      }
     } else {
       // If container not found, use regular scroll to bottom
       scrollToBottom();
@@ -764,8 +763,9 @@ export function ChatMessages({
       if (keepSpacer && availableHeight > 0) {
         // Calculate what the spacer height should be with current container height
         const estimatedUserMessageHeight = 20;
-        const expectedSpacerHeight = chatContainerHeight - estimatedUserMessageHeight;
-        
+        const expectedSpacerHeight =
+          chatContainerHeight - estimatedUserMessageHeight;
+
         // If the expected height matches current height (within 10px tolerance), skip recalculation
         if (Math.abs(expectedSpacerHeight - availableHeight) < 10) {
           return;
@@ -774,7 +774,7 @@ export function ChatMessages({
       // Calculate spacer height to position user message at the very top of viewport
       // Use smaller reserved space so spacer is bigger and pushes content higher
       const estimatedUserMessageHeight = 20; // Reduced to make spacer bigger
-      
+
       // Spacer height = full container minus minimal space for user message
       // Bigger spacer pushes the user message higher to the top
       const spacerHeight = chatContainerHeight - estimatedUserMessageHeight;
@@ -784,17 +784,21 @@ export function ChatMessages({
       let streamHeight = 0;
       const hasStreamRef = !!streamMessageRef.current;
       const hasMessages = messages.length > 0;
-      const lastIsAssistant = messages[messages.length - 1]?.role === 'assistant';
-      
+      const lastIsAssistant =
+        messages[messages.length - 1]?.role === 'assistant';
+
       // Track stream height for reference
       if (hasStreamRef && hasMessages && lastIsAssistant) {
         streamHeight = streamMessageRef.current.offsetHeight;
         lastKnownStreamHeightRef.current = streamHeight;
-      } 
-      else if (!hasStreamRef && hasMessages && lastIsAssistant && lastKnownStreamHeightRef.current > 0) {
+      } else if (
+        !hasStreamRef &&
+        hasMessages &&
+        lastIsAssistant &&
+        lastKnownStreamHeightRef.current > 0
+      ) {
         streamHeight = lastKnownStreamHeightRef.current;
-      }
-      else {
+      } else {
         if (!lastIsAssistant) {
           lastKnownStreamHeightRef.current = 0;
         }
@@ -820,15 +824,13 @@ export function ChatMessages({
         // If content fits within container with some margin, minimize spacer to prevent extra scroll space
         const marginBuffer = 50; // Allow some breathing room
         const availableSpace = chatContainerHeight - marginBuffer;
-        
+
         if (actualContentHeight <= availableSpace) {
           calculatedHeight = 0; // Remove spacer completely when content fits comfortably
         }
       }
 
       const finalHeight = calculatedHeight;
-
-
 
       // Set height for smooth animation
       setAvailableHeight(finalHeight);
@@ -1007,34 +1009,34 @@ export function ChatMessages({
     setClickedQuestions(new Set());
   }, [messages.length]);
 
-
-
   // Effect to measure actual content height and grow spacer if needed
   useEffect(() => {
     const measureContentHeight = () => {
       if (!stackContentRef.current) return;
-      
+
       const contentElement = stackContentRef.current;
-      
+
       // Measure the actual visible content by summing up child elements
       let totalContentHeight = 0;
       Array.from(contentElement.children).forEach((child) => {
         const element = child as HTMLElement;
         totalContentHeight += element.offsetHeight;
       });
-      
 
-      
       // Only grow spacer if content significantly exceeds current spacer height
       // Use a threshold to avoid constant micro-adjustments
       const threshold = 50; // Only grow if content is 50px+ larger than spacer
       const overage = totalContentHeight - availableHeight;
-      
-            if (overage > threshold) {
+
+      if (overage > threshold) {
         // Only apply reduction if content has actually outgrown the original container
         // This prevents unnecessary reduction when content fits within intended bounds
-        const offsetReduction = totalContentHeight > chatContainerHeight ? 150 : 0;
-        const newSpacerHeight = Math.max(totalContentHeight - offsetReduction, availableHeight);
+        const offsetReduction =
+          totalContentHeight > chatContainerHeight ? 150 : 0;
+        const newSpacerHeight = Math.max(
+          totalContentHeight - offsetReduction,
+          availableHeight
+        );
         setAvailableHeight(newSpacerHeight);
       }
     };
@@ -1054,8 +1056,13 @@ export function ChatMessages({
     return () => {
       resizeObserver.disconnect();
     };
-  }, [availableHeight, isStreaming, messages.length, followUpQuestions.length, 
-      isStreaming ? messages[messages.length - 1]?.content : null]);
+  }, [
+    availableHeight,
+    isStreaming,
+    messages.length,
+    followUpQuestions.length,
+    isStreaming ? messages[messages.length - 1]?.content : null,
+  ]);
 
   return (
     <div
@@ -1150,7 +1157,9 @@ export function ChatMessages({
                       )}
                     </div>
                   ) : (
-                    <div className="text-base break-words whitespace-pre-wrap">{msg.content}</div>
+                    <div className="text-base break-words whitespace-pre-wrap">
+                      {msg.content}
+                    </div>
                   )}
                 </div>
               </div>
@@ -1185,9 +1194,7 @@ export function ChatMessages({
           */}
           {(isLoading && (needsResponsePlaceholder || isStreaming)) ||
           keepSpacer ? (
-            <div
-              className="relative"
-            >
+            <div className="relative">
               {/* Fixed spacer at bottom of stack */}
               <div
                 ref={spacerRef}
@@ -1197,7 +1204,7 @@ export function ChatMessages({
                   borderRadius: '8px',
                 }}
               />
-              
+
               {/* Message content positioned at top of stack */}
               <div
                 ref={stackContentRef}
@@ -1211,9 +1218,14 @@ export function ChatMessages({
                   if (!isLastUserMessage(index)) return null;
 
                   return (
-                    <div key={`current-user-${msg.id}`} className="flex-none mb-4">
+                    <div
+                      key={`current-user-${msg.id}`}
+                      className="flex-none mb-4"
+                    >
                       <div className="px-4 py-2 rounded-lg bg-indigo-600 ml-8">
-                        <div className="text-base break-words whitespace-pre-wrap">{msg.content}</div>
+                        <div className="text-base break-words whitespace-pre-wrap">
+                          {msg.content}
+                        </div>
                       </div>
                     </div>
                   );
@@ -1254,9 +1266,10 @@ export function ChatMessages({
                                 <div className="mt-3">
                                   <button
                                     onClick={() => {
-                                      const userMsg = findUserMessageBeforeError(
-                                        messages.length - 1
-                                      );
+                                      const userMsg =
+                                        findUserMessageBeforeError(
+                                          messages.length - 1
+                                        );
                                       if (userMsg) {
                                         handleResend(userMsg);
                                       }
@@ -1308,10 +1321,7 @@ export function ChatMessages({
 
                 {/* Loading message for when waiting for response */}
                 <LoadingMessage
-                  containerHeight={availableHeight}
-                  visible={
-                    needsResponsePlaceholder && !isStreaming
-                  }
+                  visible={needsResponsePlaceholder && !isStreaming}
                 />
               </div>
             </div>
@@ -1379,9 +1389,18 @@ export function ChatMessages({
                     onClick={() => {
                       try {
                         saveViewerState();
-                        window.sessionStorage.setItem('loginContext', 'rateLimit');
-                        window.sessionStorage.setItem('previousPath', window.location.pathname);
-                        window.sessionStorage.setItem('returnAfterSubscribe', window.location.pathname);
+                        window.sessionStorage.setItem(
+                          'loginContext',
+                          'rateLimit'
+                        );
+                        window.sessionStorage.setItem(
+                          'previousPath',
+                          window.location.pathname
+                        );
+                        window.sessionStorage.setItem(
+                          'returnAfterSubscribe',
+                          window.location.pathname
+                        );
                       } catch {}
                       onLoginClick?.();
                     }}
@@ -1393,9 +1412,18 @@ export function ChatMessages({
                     onClick={() => {
                       try {
                         saveViewerState();
-                        window.sessionStorage.setItem('loginContext', 'subscribe');
-                        window.sessionStorage.setItem('previousPath', window.location.pathname);
-                        window.sessionStorage.setItem('returnAfterSubscribe', window.location.pathname);
+                        window.sessionStorage.setItem(
+                          'loginContext',
+                          'subscribe'
+                        );
+                        window.sessionStorage.setItem(
+                          'previousPath',
+                          window.location.pathname
+                        );
+                        window.sessionStorage.setItem(
+                          'returnAfterSubscribe',
+                          window.location.pathname
+                        );
                       } catch {}
                       onSubscribeClick?.();
                     }}
