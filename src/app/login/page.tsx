@@ -68,7 +68,6 @@ function LoginPageContent() {
 
   return (
     <div className="min-h-screen bg-gray-900 text-white flex flex-col">
-      <NavigationMenu mobileTitle="Sign in" />
       <div className="flex-1 flex items-center justify-center">
         <AuthForm onSkip={handleSkip} isSaveContext={isSaveContext} />
       </div>

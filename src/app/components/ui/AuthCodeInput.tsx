@@ -323,6 +323,8 @@ export function AuthCodeInput() {
       origin: window.location.origin,
       language: locale,
       isPwa,
+      // infer admin resend if current path is an admin route
+      isAdmin: typeof window !== 'undefined' && window.location.pathname.startsWith('/admin'),
     }).catch((error) => {
       console.error('Error resending code:', error);
       toast.error(t('login.codeResendFailed'));

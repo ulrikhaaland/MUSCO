@@ -35,33 +35,46 @@ export async function loadServerExercises(
   const exercises: Exercise[] = [];
 
   // Map of body parts to their JSON file paths
+  // IMPORTANT: Only use /json and /musco/json2 sources per spec
   const exerciseFilePaths: Record<string, string[]> = {
-    Shoulders: ['data/exercises/musco/json2/m_shoulders.json'],
+    Shoulders: ['data/exercises/musco/json2/m_shoulders.json', 'data/exercises/json/shoulders.json'],
     'Upper Arms': [
       'data/exercises/musco/json2/m_biceps.json',
       'data/exercises/musco/json2/m_triceps.json',
+      'data/exercises/json/biceps.json',
+      'data/exercises/json/triceps.json',
     ],
-    Forearms: ['data/exercises/musco/json2/m_forearms.json'],
-    Chest: ['data/exercises/musco/json2/m_chest.json'],
+    Forearms: ['data/exercises/musco/json2/m_forearms.json', 'data/exercises/json/forearms.json'],
+    Chest: ['data/exercises/musco/json2/m_chest.json', 'data/exercises/json/chest.json'],
     Abdomen: [
       'data/exercises/musco/json2/m_abs.json',
       'data/exercises/musco/json2/m_obliques.json',
+      'data/exercises/json/abs.json',
+      'data/exercises/json/obliques.json',
     ],
     'Upper Back': [
       'data/exercises/musco/json2/m_upper-back.json',
       'data/exercises/musco/json2/m_lats.json',
       'data/exercises/musco/json2/m_traps.json',
+      'data/exercises/json/upper_back.json',
+      'data/exercises/json/lats.json',
+      'data/exercises/json/traps.json',
     ],
-    'Lower Back': ['data/exercises/musco/json2/m_lower-back.json'],
-    Glutes: ['data/exercises/musco/json2/m_glutes.json'],
+    'Lower Back': ['data/exercises/musco/json2/m_lower-back.json', 'data/exercises/json/lower_back.json'],
+    Glutes: ['data/exercises/musco/json2/m_glutes.json', 'data/exercises/json/glutes.json'],
     'Upper Legs': [
       'data/exercises/musco/json2/m_quads.json',
       'data/exercises/musco/json2/m_hamstrings.json',
       'data/exercises/musco/json2/m_hip_flexors.json',
       'data/exercises/musco/json2/m_adductors.json',
       'data/exercises/musco/json2/m_abductors.json',
+      'data/exercises/json/quads.json',
+      'data/exercises/json/hamstrings.json',
+      'data/exercises/json/hip_flexors.json',
+      'data/exercises/json/adductors.json',
+      'data/exercises/json/abductors.json',
     ],
-    'Lower Legs': ['data/exercises/musco/json2/m_calves.json'],
+    'Lower Legs': ['data/exercises/musco/json2/m_calves.json', 'data/exercises/json/calves.json'],
     Warmup: ['data/exercises/musco/json2/warmups.json'],
     Cardio: ['data/exercises/musco/json2/cardio.json'],
   };
@@ -156,7 +169,7 @@ export async function loadServerExercises(
       continue;
     }
 
-    // Process Musco exercise files first
+    // Process each file path listed for this body part (order does not matter)
     for (const filePath of filePaths) {
       const { exercises: exerciseData = [] } = await readJsonFile(filePath);
 

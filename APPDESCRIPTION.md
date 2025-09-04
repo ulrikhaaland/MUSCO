@@ -72,7 +72,12 @@ The app enforces simple, transparent rules:
 
 > Implementation notes
 > - Gating is enforced both client-side (navigation) and server-side where applicable (API route checks), using user subscription status in Firestore: `isSubscriber`, `subscriptionStatus`, and `currentPeriodEnd`.
+> - Admin access is role‑gated. Users must have `users/{uid}.isGymAdmin === true` or `roles` containing `"gym_admin"` to use admin APIs.
 > - Webhooks from Stripe (`customer.subscription.*` and `checkout.session.completed`) update these fields automatically, so access reflects the latest billing state without manual intervention.
+
+### Admin Routing Guard
+- Any unauthenticated navigation to `/admin/*` redirects to `/admin/login`.
+- Admin APIs also check Firestore (`isGymAdmin` or `roles` includes `gym_admin`). Non‑admins receive 403.
 
 ### Subscription UX Flow
 - Subscribe page: Dedicated page presenting benefits and pricing, with Monthly and Annual options. Email is prefilled when available.
@@ -218,6 +223,50 @@ Secure, user-friendly authentication with email verification:
 - **Error Handling**: Clear error messages for invalid codes or network issues
 - **Loading States**: Visual feedback during authentication process
 - **Responsive Design**: Optimized for both desktop and mobile input
+
+**Admin Login Variant**
+- Path: `/admin/login` (legacy `/admin/register` redirects here).
+- Uses the same code‑based flow and shared UI as regular login (`AuthForm` with `isAdmin` prop) with admin‑specific copy.
+- When requesting an admin code, the backend rejects emails belonging to non‑admin users with a descriptive error (“This email is already in use for a regular app account. Please use a different email to create an admin account.”).
+- Admin emails receive a template that references the admin console and defaults the post‑login redirect to `/admin/gyms`.
+
+**Input Autofill Styling**
+- Global CSS normalizes autofill/UA styles (Chrome/Safari) for dark theme: prevents white/yellow backgrounds and preserves focus ring/border on suggested values.
+
+---
+
+## Admin Console & Gym QR Single‑Day
+
+### Admin Console
+- Path: `/admin/gyms` (requires admin). Create/update gyms; generate QR.
+- Data model for gyms (Firestore collection `gyms`): `{ ownerId, name, slug, brand?, equipment[], token?, createdAt, updatedAt }`.
+- Slug is globally unique.
+- Equipment is normalized (aliases → canonical names).
+
+### Admin Auth
+- Path: `/admin/login`. Code‑based login; admin‑specific email copy and default redirect to `/admin/gyms`.
+- Role gating in Firestore: `isGymAdmin === true` or `roles` includes `gym_admin`. Admin API calls verify these fields server‑side.
+- If a non‑admin existing account attempts admin login, the email is rejected with a descriptive message.
+
+### Public Funnel from QR
+- Public routes:
+  - `/g/[slug]`: 3‑step stepper (modality, experience, duration). Mobile‑first PWA.
+  - `/g/[slug]/session`: renders the single‑day session result.
+- API: `POST /api/programs/single-day` (flag‑gated via `enableQrSingleDay` or `ENABLE_QR_SINGLE_DAY`).
+  1) Lookup gym by `slug`; 404 if missing.
+  2) Load exercises and pre‑filter to gym equipment.
+  3) Build LLM input with `availableExercises` (strict source of truth).
+  4) Call LLM with externalized system prompt; strict JSON response expected.
+  5) Validate with Zod and business rules; if invalid → do one repair pass; if still invalid → deterministic fallback plan is returned.
+
+### Validation & Safety (Single‑Day)
+- Warmup rule: Strength/Both must have exactly one warmup first; Cardio has none.
+- Cardio items require `duration`.
+- Duration bands and ±10% tolerance enforced; exercise count bands enforced per target duration.
+- All `exerciseId`s must exist in `availableExercises`.
+
+### Fallback Plan
+- Deterministic, seed‑based selection when LLM output is invalid; ensures a valid response within duration/count bands.
 
 ### Program Display & User Interface
 

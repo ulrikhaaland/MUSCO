@@ -72,11 +72,13 @@ function getInitialQuestions(name?: string, intention?: string, translationFunc?
 export interface UsePartChatProps {
   selectedPart: AnatomyPart | null;
   selectedGroups: BodyPartGroup[];
+  forceMode?: 'diagnosis' | 'explore';
 }
 
 export function usePartChat({
   selectedPart,
   selectedGroups,
+  forceMode,
 }: UsePartChatProps) {
   const { t } = useTranslation();
   const messagesRef = useRef<HTMLDivElement>(null);
@@ -111,7 +113,7 @@ export function usePartChat({
   });
 
   const [previousQuestions, setPreviousQuestions] = useState<Question[]>([]);
-  const [chatMode, setChatMode] = useState<'diagnosis' | 'explore'>('diagnosis');
+  const [chatMode, setChatMode] = useState<'diagnosis' | 'explore'>(forceMode ?? 'diagnosis');
 
   // Update the questions when part changes
   useEffect(() => {
@@ -148,7 +150,6 @@ export function usePartChat({
 
     // Localised titles
     const exploreTitleLower = t('chat.question.explore.title').toLowerCase();
-    const painTitleLower = t('chat.question.painSource.title').toLowerCase();
 
     const isDiagnosisOption = programTypeRaw === 'diagnosis';
 
@@ -157,10 +158,14 @@ export function usePartChat({
       titleLower.includes('explore') ||
       titleLower.includes('utforsk');
 
-    if (isDiagnosisOption) {
-      nextMode = 'diagnosis';
-    } else if (isExploreOption) {
-      nextMode = 'explore';
+    if (forceMode) {
+      nextMode = forceMode;
+    } else {
+      if (isDiagnosisOption) {
+        nextMode = 'diagnosis';
+      } else if (isExploreOption) {
+        nextMode = 'explore';
+      }
     }
 
     setChatMode(nextMode);
@@ -192,7 +197,7 @@ export function usePartChat({
       // guidance to assistants: more options on desktop
       maxFollowUpOptions: isMobile ? 3 : 6,
     });
-  }, [chatMode, previousQuestions, localFollowUpQuestions, userPreferences, selectedPart, selectedGroups, t, sendChatMessage]);
+  }, [chatMode, previousQuestions, localFollowUpQuestions, userPreferences, selectedPart, selectedGroups, t, sendChatMessage, forceMode, isMobile]);
 
   const getGroupDisplayName = (): string => {
     if (selectedGroups.length === 0) {

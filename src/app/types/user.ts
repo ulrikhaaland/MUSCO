@@ -42,6 +42,10 @@ export interface UserProfile {
   stripeCustomerId?: string;
   stripeSubscriptionId?: string;
   currentPeriodEnd?: string; // ISO date
+
+  // Admin / roles
+  isGymAdmin?: boolean;
+  roles?: string[]; // e.g., ['gym_admin']
 }
 
 export interface ExtendedUser extends FirebaseUser {

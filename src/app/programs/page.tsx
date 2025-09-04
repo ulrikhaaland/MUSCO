@@ -222,10 +222,32 @@ function ProgramsContent() {
         </h2>
         <p className="text-gray-300 text-center max-w-md">{emptyText}</p>
         <button
-          onClick={() => router.push('/')}
+          onClick={handleCreateNewProgram}
           className="mt-8 px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition-colors duration-200"
         >
           {t('programs.createProgram')}
+        </button>
+
+        {/* Floating Action Button (visible even with no programs) */}
+        <button
+          onClick={handleCreateNewProgram}
+          className="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-indigo-600 text-white shadow-lg flex items-center justify-center hover:bg-indigo-500 transition-colors duration-200 z-50"
+          aria-label={t('programs.createProgram')}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-8 w-8"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 4v16m8-8H4"
+            />
+          </svg>
         </button>
       </div>
     );
@@ -316,6 +338,28 @@ function ProgramsContent() {
         <div className="flex-1 flex items-center justify-center px-4 py-6">
           <p className="text-gray-300 text-center">{emptyText}</p>
         </div>
+
+        {/* Floating Action Button (also visible for filtered-empty state) */}
+        <button
+          onClick={handleCreateNewProgram}
+          className="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-indigo-600 text-white shadow-lg flex items-center justify-center hover:bg-indigo-500 transition-colors duration-200 z-50"
+          aria-label={t('programs.createProgram')}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-8 w-8"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 4v16m8-8H4"
+            />
+          </svg>
+        </button>
       </div>
     );
   }

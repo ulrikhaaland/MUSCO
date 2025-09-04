@@ -27,6 +27,42 @@ body {
   overscroll-behavior-y: auto;
 }
 
+/* Fix white autofill/UA backgrounds on dark inputs (Chrome/Safari) */
+input[type='email'],
+input[type='text'],
+input[type='password'],
+input[type='tel'],
+input[type='search'] {
+  -webkit-appearance: none;
+  appearance: none;
+  background-color: rgba(17, 24, 39, 0.5); /* bg-gray-900/50 */
+  color: #fff;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+  -webkit-text-fill-color: #fff !important;
+  caret-color: #fff !important;
+  /* Paint over the UA white/yellow autofill background */
+  -webkit-box-shadow: 0 0 0px 1000px rgba(17, 24, 39, 0.5) inset !important;
+  box-shadow: 0 0 0px 1000px rgba(17, 24, 39, 0.5) inset !important;
+  transition: background-color 9999s ease-in-out 0s !important;
+  border-color: #374151 !important; /* border-gray-700 */
+}
+
+/* Preserve the purple focus ring when autofill is active */
+input:-webkit-autofill:focus {
+  -webkit-box-shadow:
+    0 0 0 2px rgba(99, 102, 241, 0.8), /* ring-indigo-500 */
+    0 0 0px 1000px rgba(17, 24, 39, 0.5) inset !important;
+  box-shadow:
+    0 0 0 2px rgba(99, 102, 241, 0.8),
+    0 0 0px 1000px rgba(17, 24, 39, 0.5) inset !important;
+}
+
 /* CSS variable used to subtract bottom sheet height from the viewer without reflow */
 :root {
   --sheet-height: 0px;

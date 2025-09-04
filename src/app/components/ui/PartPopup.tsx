@@ -13,6 +13,7 @@ interface PartPopupProps {
   groups: BodyPartGroup[];
   onClose: () => void;
   onQuestionClick?: (question: Question) => void;
+  forceMode?: 'diagnosis' | 'explore';
 }
 
 export default function PartPopup({
@@ -20,6 +21,7 @@ export default function PartPopup({
   groups,
   onClose,
   onQuestionClick,
+  forceMode,
 }: PartPopupProps) {
   const router = useRouter();
   
@@ -38,9 +40,9 @@ export default function PartPopup({
     getGroupDisplayName,
     getPartDisplayName,
     streamError,
-  } = usePartChat({ selectedPart: part, selectedGroups: groups });
+  } = usePartChat({ selectedPart: part, selectedGroups: groups, forceMode });
 
-  const [userHasScrolled, setUserHasScrolled] = useState(false);
+  // no local scroll tracking in this variant
 
   const handleResetChat = () => {
     setMessage('');
@@ -163,7 +165,7 @@ export default function PartPopup({
         }}
         isLoggedIn={Boolean(user)}
         isSubscriber={Boolean(user?.profile?.isSubscriber)}
-        followUpQuestions={followUpQuestions}
+        followUpQuestions={forceMode === 'explore' ? followUpQuestions.filter((q) => q.chatMode !== 'diagnosis' && !q.generate) : followUpQuestions}
         onQuestionClick={handleQuestionSelect}
         onScroll={handleScroll}
         part={part}

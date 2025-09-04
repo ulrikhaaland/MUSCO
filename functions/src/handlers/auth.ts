@@ -23,6 +23,7 @@ interface RequestData {
   isPwa?: boolean; // Add flag to indicate if user is on PWA
   program?: unknown; // Add optional program data for saving
   redirectUrl?: string; // Add optional custom redirect URL for special flows like account deletion
+  isAdmin?: boolean; // Admin console login copy/redirect
 }
 
 /**
@@ -52,7 +53,8 @@ export const sendLoginEmail = functions.https.onCall(
     const language = request.data.language || 'en'; // Get language, default to 'en'
     const isPwa = request.data.isPwa || false; // Check if user is on PWA
     const program = request.data.program; // Get program data if provided
-    const redirectUrl = request.data.redirectUrl; // Get custom redirect URL if provided
+    const isAdmin = Boolean(request.data.isAdmin);
+    const redirectUrl = request.data.redirectUrl || (isAdmin ? `${origin}/admin/gyms` : undefined); // Admin default
 
     // --- Validate Origin ---
     if (
@@ -78,6 +80,32 @@ export const sendLoginEmail = functions.https.onCall(
 
     const auth = admin.auth();
     const resend = new Resend(currentResendApiKey);
+
+    // If admin flow and email already exists but user is not admin -> reject early
+    if (isAdmin) {
+      try {
+        const existing = await auth.getUserByEmail(email);
+        if (existing?.uid) {
+          const userDoc = await admin.firestore().collection('users').doc(existing.uid).get();
+          const data = userDoc.exists ? (userDoc.data() as Record<string, unknown>) : null;
+          const roles = Array.isArray((data as { roles?: unknown })?.roles) ? (((data as { roles?: string[] }).roles) as string[]) : [];
+          const isGymAdmin = Boolean((data as { isGymAdmin?: unknown })?.isGymAdmin) || roles.includes('gym_admin');
+          if (!isGymAdmin) {
+            throw new functions.https.HttpsError(
+              'permission-denied',
+              'This email belongs to a non-admin user. Contact support to enable admin access.',
+            );
+          }
+        }
+      } catch (e) {
+        // If user not found, allow code issuance (new admin onboarding)
+        const err = e as { code?: string } | functions.https.HttpsError;
+        if ((err as { code?: string }).code !== 'auth/user-not-found' && !(err instanceof functions.https.HttpsError)) {
+          throw e;
+        }
+        if (err instanceof functions.https.HttpsError) throw err;
+      }
+    }
 
     const actionCodeSettings: admin.auth.ActionCodeSettings = {
       url: redirectUrl || `${origin}/`, // Use custom redirectUrl if provided, otherwise default to origin root
@@ -158,6 +186,29 @@ export const sendLoginEmail = functions.https.onCall(
           preheaderText = 'confirm deletion of your account – expires in 30 min.';
           codeLabel = 'Account Deletion Confirmation Code';
           codeInstructions = 'To permanently delete your account, enter this code on the privacy page. This action cannot be undone.';
+        }
+      } else if (isAdmin) {
+        // Admin login email content
+        if (language === 'nb') {
+          emailSubject = 'Din BodAI Admin-kode';
+          emailTitle = 'BodAI Admin-innlogging';
+          tagline = 'Sikker tilgang til administrasjon';
+          heading = 'Administrator-kode';
+          expireText = 'Koden utløper om 1 time.';
+          footerText = 'Du mottar denne e-posten fordi en BodAI admin-innlogging ble forespurt.';
+          preheaderText = 'din 6-sifrede adminkode – utløper om 1 t.';
+          codeLabel = 'Skriv inn denne koden på admin-siden';
+          codeInstructions = 'Gå til admin-siden og skriv inn denne koden for å logge inn. Ikke del denne koden med andre.';
+        } else {
+          emailSubject = 'Your BodAI Admin Code';
+          emailTitle = 'BodAI Admin Sign‑In';
+          tagline = 'Secure access to administration';
+          heading = 'Administrator Code';
+          expireText = 'Code expires in 1 hour.';
+          footerText = 'You’re receiving this email because a BodAI admin sign‑in was requested.';
+          preheaderText = 'your 6‑digit admin code – expires in 1h.';
+          codeLabel = 'Enter this code on the admin page';
+          codeInstructions = 'Go to the admin page and enter this code to sign in. Do not share this code with anyone.';
         }
       } else {
         // Original login email content

@@ -8,8 +8,9 @@ import Logo from '@/app/components/ui/Logo';
 import { AuthCodeInput } from '@/app/components/ui/AuthCodeInput';
 import { LoadingDots } from '@/app/components/ui/LoadingDots';
 import { useIsPwa } from '@/app/hooks/useIsPwa';
+import { TextField } from '@/app/components/ui/TextField';
 
-export function AuthForm({ onSkip, isSaveContext = false }: { onSkip?: () => void; isSaveContext?: boolean }) {
+export function AuthForm({ onSkip, isSaveContext = false, isAdmin = false }: { onSkip?: () => void; isSaveContext?: boolean; isAdmin?: boolean }) {
   const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
@@ -24,7 +25,7 @@ export function AuthForm({ onSkip, isSaveContext = false }: { onSkip?: () => voi
 
   // If running as PWA and an email is stored locally, jump directly to code entry
   useEffect(() => {
-    if (!isPwa) return;
+    if (!isPwa) return; 
 
     const storedEmail = window.localStorage.getItem('emailForSignIn');
     if (storedEmail) {
@@ -50,9 +51,9 @@ export function AuthForm({ onSkip, isSaveContext = false }: { onSkip?: () => voi
     try {
       // If in save context and we have a program, pass it to sendSignInLink
       if (isSaveContext && program) {
-        await sendSignInLink(email, program);
+        await sendSignInLink(email, program, { isAdmin });
       } else {
-        await sendSignInLink(email);
+        await sendSignInLink(email, undefined, { isAdmin });
       }
       
       // Save the email locally to complete sign in after user clicks the link
@@ -91,7 +92,9 @@ export function AuthForm({ onSkip, isSaveContext = false }: { onSkip?: () => voi
       <Logo variant="vertical" />
       <div className="text-center">
         <h2 className="text-3xl font-bold text-white">
-          {loginContext === 'saveProgram'
+          {isAdmin
+            ? 'Admin sign in'
+            : loginContext === 'saveProgram'
             ? t('auth.saveProgram')
             : loginContext === 'rateLimit'
             ? t('auth.rateLimit.title')
@@ -100,7 +103,9 @@ export function AuthForm({ onSkip, isSaveContext = false }: { onSkip?: () => voi
             : t('auth.welcome')}
         </h2>
         <p className="mt-1 text-sm text-gray-400">
-          {loginContext === 'saveProgram'
+          {isAdmin
+            ? 'Owner/manager access to create gyms, equipment profiles, and QR codes. Enter your email to sign in or create an admin account.'
+            : loginContext === 'saveProgram'
             ? t('auth.saveDescription')
             : loginContext === 'rateLimit'
             ? t('auth.rateLimit.subtitle')
@@ -115,7 +120,7 @@ export function AuthForm({ onSkip, isSaveContext = false }: { onSkip?: () => voi
           <label htmlFor="email" className="sr-only">
             {t('auth.emailAddress')}
           </label>
-          <input
+          <TextField
             id="email"
             name="email"
             type="email"
@@ -123,7 +128,6 @@ export function AuthForm({ onSkip, isSaveContext = false }: { onSkip?: () => voi
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-4 py-3 rounded-xl bg-gray-900/50 border border-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             placeholder={t('auth.emailAddress')}
           />
         </div>

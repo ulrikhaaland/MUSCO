@@ -17,6 +17,7 @@ import { logAnalyticsEvent } from './utils/analytics';
 import PricingCards from './components/ui/PricingCards';
 import Logo from './components/ui/Logo';
 import { useUser } from './context/UserContext';
+import HumanViewer from './components/3d/HumanViewer';
 
 function ProgramPreviewModal({
   isOpen,
@@ -104,6 +105,7 @@ export default function LandingPage() {
   const [pricingAnnual, setPricingAnnual] = useState(true);
   const [showAllPrograms, setShowAllPrograms] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [exploreInput, setExploreInput] = useState('');
   const programSummaries: Record<string, string> = {
     'lower-back':
       'Stabilize core and restore lumbar mobility; posture and hinge control.',
@@ -403,6 +405,17 @@ export default function LandingPage() {
       {/* How it works anchor: on mobile show mobile images, on desktop it's the hero + desktop images above */}
       <section ref={howRef} className="mx-auto max-w-6xl px-6 mt-0 mb-12 md:hidden">
         <LandingHeroImages />
+      </section>
+
+
+      {/* Explore demo (desktop only) */}
+      <section className="hidden md:block mx-auto max-w-6xl px-6 mb-12 md:mb-16 lg:mb-24">
+        <h2 className="text-white text-2xl font-semibold mb-4">
+          {t('landing.why.digitalTwin')}
+        </h2>
+        <div className="w-full rounded-xl ring-1 ring-white/10 overflow-hidden">
+          <HumanViewer gender={'male'} hideNav />
+        </div>
       </section>
 
 

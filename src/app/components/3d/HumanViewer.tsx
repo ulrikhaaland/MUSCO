@@ -28,12 +28,14 @@ interface HumanViewerProps {
   gender: Gender;
   onGenderChange?: (gender: Gender) => void;
   shouldResetModel?: boolean;
+  hideNav?: boolean;
 }
 
 export default function HumanViewer({
   gender,
   onGenderChange,
   shouldResetModel = false,
+  hideNav,
 }: HumanViewerProps) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const { locale } = useTranslation();
@@ -718,8 +720,8 @@ export default function HumanViewer({
   }, []);
 
   return (
-    <div className="flex flex-col w-screen h-[100dvh] overflow-hidden">
-      <NavigationMenu mobileFloatingButton />
+    <div className={`flex flex-col ${hideNav ? 'w-full h-[900px]' : 'w-screen h-[100dvh]'} overflow-hidden`}>
+      {!hideNav && <NavigationMenu mobileFloatingButton />}
       <div className="flex-1 flex flex-col md:flex-row relative min-h-0">
         {/* Fullscreen overlay when dragging */}
         {isDragging && (

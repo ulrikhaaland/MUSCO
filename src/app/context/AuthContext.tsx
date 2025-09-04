@@ -19,8 +19,15 @@ interface AuthContextType {
   loading: boolean;
   error: Error | null;
   errorMessage: string | null;
-  sendSignInLink: (email: string, program?: ExerciseProgram) => Promise<void>;
-  sendAccountDeletionEmail: (email: string, redirectUrl: string) => Promise<void>;
+  sendSignInLink: (
+    email: string,
+    program?: ExerciseProgram,
+    options?: { isAdmin?: boolean }
+  ) => Promise<void>;
+  sendAccountDeletionEmail: (
+    email: string,
+    redirectUrl: string
+  ) => Promise<void>;
   logOut: () => Promise<void>;
   createUserDoc: () => Promise<void>;
   updateUserProfile: (profileData: Partial<UserProfile>) => Promise<void>;
@@ -86,8 +93,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               profileUnsubscribeRef.current = onSnapshot(
                 doc(db, 'users', firebaseUser.uid),
                 (snapshot) => {
-                  const data = snapshot.exists() ? (snapshot.data() as any) : null;
-                  setUser((prev) => (prev ? { ...prev, profile: data || prev.profile } as ExtendedUser : prev));
+                  const data = snapshot.exists()
+                    ? (snapshot.data() as any)
+                    : null;
+                  setUser((prev) =>
+                    prev
+                      ? ({
+                          ...prev,
+                          profile: data || prev.profile,
+                        } as ExtendedUser)
+                      : prev
+                  );
                 }
               );
             } catch (e) {
@@ -109,18 +125,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
           // If not logged in, and not already on the home page, redirect to home.
           // But skip if we're in the middle of an account deletion flow
-          const isAccountDeleting = typeof window !== 'undefined' && sessionStorage.getItem('accountDeleted');
-          
-          if (
+          const isAccountDeleting =
             typeof window !== 'undefined' &&
-            window.location.pathname !== '/' &&
-            window.location.pathname !== '/exercises' &&
-            window.location.pathname !== '/app' &&
-            window.location.pathname !== '/login' &&
-            !window.location.pathname.includes('/program/') &&
-            !isAccountDeleting
-          ) {
-            router.push('/');
+            sessionStorage.getItem('accountDeleted');
+
+          if (typeof window !== 'undefined' && !isAccountDeleting) {
+            const path = window.location.pathname || '';
+            if (path.startsWith('/admin') && path !== '/admin/login') {
+              router.push('/admin/login');
+            } else if (
+              path !== '/' &&
+              path !== '/exercises' &&
+              path !== '/app' &&
+              path !== '/login' &&
+              path !== '/g/demo' &&
+              !path.includes('/program/')
+            ) {
+              router.push('/');
+            }
           }
         }
       } catch (error) {
@@ -140,7 +162,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const safetyTimer = setTimeout(() => {
       console.log('Auth loading safety timeout triggered');
       setLoading(false);
-      
     }, 10000); // 10 seconds max loading time
 
     return () => {
@@ -170,7 +191,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       await setDoc(userDocRef, newUserDoc);
       console.log('User document created automatically during login');
-      
+
       return newUserDoc as UserProfile;
     } catch (error) {
       console.error('Error fetching/creating user profile:', error);
@@ -289,10 +310,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       logAnalyticsEvent('delete_account');
       return true;
     } catch (error: any) {
-
       // Handle specific Firebase error codes
       if (error.code === 'auth/requires-recent-login') {
-        console.log('🚨 Requires recent login error detected, throwing to privacy page...');
+        console.log(
+          '🚨 Requires recent login error detected, throwing to privacy page...'
+        );
         // Don't show toast here, let the privacy page handle the re-authentication flow
         throw error; // Throw the error so the privacy page can catch it
       }
@@ -321,7 +343,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       // Handle Firestore error codes
       let errorMessage = t('authContext.failedToDeleteProgram');
-      
+
       if (error.code === 'permission-denied') {
         errorMessage = t('authContext.notAuthorizedToDeleteProgram');
       } else if (error.code === 'not-found') {
@@ -402,7 +424,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (shouldRedirect) {
       // Use Next.js router for client-side transition (keeps toast visible)
       setLoading(false);
-      // router.push('/');
     }
 
     // For non-redirect cases, still need to return a rejected promise
@@ -411,7 +432,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const sendSignInLink = async (email: string, program?: ExerciseProgram) => {
+  const sendSignInLink = async (email: string, program?: ExerciseProgram, options?: { isAdmin?: boolean }) => {
     // Check if running in standalone mode (PWA)
     const isPwa =
       typeof window !== 'undefined' &&
@@ -421,12 +442,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const origin = window.location.origin; // This should be the clean URL without query params
     const sendLoginEmail = httpsCallable(functions, 'sendLoginEmail');
-    
+
     const requestData: any = { 
       email, 
       origin, 
       language: locale,
-      isPwa 
+      isPwa,
+      isAdmin: options?.isAdmin === true
     };
     
     // Include program data if provided
@@ -453,22 +475,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     }
 
-    // Optimistic fire-and-forget: do not await the network call
-    sendLoginEmail(requestData)
-      .then(() => {
-        logAnalyticsEvent('send_login_link');
-      })
-      .catch((error) => {
-        console.error('Error sending login code:', error);
-        handleAuthError(
-          error,
-          t('authContext.failedToSendLoginCode'),
-          false
-        );
-      });
+    try {
+      await sendLoginEmail(requestData);
+      logAnalyticsEvent('send_login_link');
+    } catch (error: any) {
+      const code: string = (error && error.code) || '';
+      if (options?.isAdmin && code.includes('permission-denied')) {
+        // Non-admin existing account trying to use admin flow
+        throw new Error('This email is already in use for a regular app account. Please use a different email to create an admin account.');
+      }
+      if (code.includes('invalid-argument')) {
+        throw new Error(t('login.invalidEmail'));
+      }
+      // Generic
+      console.error('Error sending login code:', error);
+      handleAuthError(error, t('authContext.failedToSendLoginCode'), false);
+      throw error;
+    }
   };
 
-  const sendAccountDeletionEmail = async (email: string, redirectUrl: string) => {
+  const sendAccountDeletionEmail = async (
+    email: string,
+    redirectUrl: string
+  ) => {
     // Check if running in standalone mode (PWA)
     const isPwa =
       typeof window !== 'undefined' &&
@@ -478,13 +507,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const origin = window.location.origin;
     const sendLoginEmail = httpsCallable(functions, 'sendLoginEmail');
-    
-    const requestData = { 
-      email, 
-      origin, 
+
+    const requestData = {
+      email,
+      origin,
       language: locale,
       isPwa,
-      redirectUrl // Include the custom redirect URL for account deletion
+      redirectUrl, // Include the custom redirect URL for account deletion
     };
 
     // Optimistic fire-and-forget: do not await the network call
@@ -494,11 +523,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       })
       .catch((error) => {
         console.error('Error sending account deletion email:', error);
-        handleAuthError(
-          error,
-          t('authContext.failedToSendLoginCode'),
-          false
-        );
+        handleAuthError(error, t('authContext.failedToSendLoginCode'), false);
       });
   };
 
@@ -520,7 +545,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       } catch {}
 
       // Optional user feedback
-      try { toast.success(t('authContext.signedOut') || 'Signed out'); } catch {}
+      try {
+        toast.success(t('authContext.signedOut') || 'Signed out');
+      } catch {}
 
       // Navigate to a neutral, public landing page and replace history to avoid back-nav into protected UI
       router.replace('/');
