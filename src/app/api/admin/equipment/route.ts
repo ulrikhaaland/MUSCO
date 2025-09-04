@@ -20,11 +20,11 @@ async function computeEquipment(): Promise<EquipmentEntry[]> {
   }
   // Exclude items we don't want
   const EXCLUDE = new Set<string>(['Bodyweight', 'Other']);
-  const entries: EquipmentEntry[] = Array.from(count.entries())
+  const pairEntries: [string, number][] = Array.from(count.entries())
     .filter(([name]) => !EXCLUDE.has(name));
   // Sort by frequency desc, then alpha
-  entries.sort((a, b) => (b[1] - a[1]) || a[0].localeCompare(b[0]));
-  cached = entries.map(([name, cnt]) => ({ name, count: cnt }));
+  pairEntries.sort((a, b) => (b[1] - a[1]) || a[0].localeCompare(b[0]));
+  cached = pairEntries.map(([name, cnt]) => ({ name, count: cnt }));
   return cached;
 }
 
