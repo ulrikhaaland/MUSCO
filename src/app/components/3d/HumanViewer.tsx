@@ -658,8 +658,9 @@ export default function HumanViewer({
     }
   }, [shouldResetModel, isReady, resetModel]);
 
-  // Prevent parent scrolling
+  // Prevent parent scrolling (disabled when embedded on landing with hideNav)
   useEffect(() => {
+    if (hideNav) return; // allow page scroll on landing embed
     const preventParentScroll = (e: WheelEvent) => {
       // Only prevent default if we're not in a scrollable element with actual overflow
       if (e.target instanceof Element) {
@@ -717,7 +718,7 @@ export default function HumanViewer({
     return () => {
       document.removeEventListener('wheel', preventParentScroll);
     };
-  }, []);
+  }, [hideNav]);
 
   return (
     <div className={`flex flex-col ${hideNav ? 'w-full h-[900px]' : 'w-screen h-[100dvh]'} overflow-hidden`}>
@@ -725,7 +726,7 @@ export default function HumanViewer({
       <div className="flex-1 flex flex-col md:flex-row relative min-h-0">
         {/* Fullscreen overlay when dragging */}
         {isDragging && (
-          <div className="fixed inset-0 z-50" style={{ cursor: 'ew-resize' }} />
+          <div className={`fixed inset-0 ${hideNav ? 'z-30' : 'z-50'}`} style={{ cursor: 'ew-resize' }} />
         )}
 
         {/* Model Viewer Container */}
@@ -791,7 +792,7 @@ export default function HumanViewer({
       {/* Drag Handle - Desktop Only */}
       <div
         onMouseDown={startDragging}
-        className="hidden md:block w-1 hover:w-2 bg-gray-800 hover:bg-indigo-600 cursor-ew-resize transition-all duration-150 active:bg-indigo-500 flex-shrink-0 z-40"
+        className="hidden md:block w-1 hover:w-2 bg-gray-800 hover:bg-indigo-600 cursor-ew-resize transition-all duration-150 active:bg-indigo-500 flex-shrink-0 z-30"
         style={{ touchAction: 'none' }}
       />
 

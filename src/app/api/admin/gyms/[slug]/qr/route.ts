@@ -23,12 +23,15 @@ function uuidv4() {
   });
 }
 
-export async function POST(req: NextRequest, { params }: { params: { slug: string } }) {
+export async function POST(
+  req: NextRequest,
+  { params }: { params: Promise<{ slug: string }> }
+) {
   const auth = await requireAuth(req);
   if (!auth) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
   if (!auth.isAdmin) return NextResponse.json({ error: 'forbidden' }, { status: 403 });
 
-  const slug = params.slug;
+  const { slug } = await params;
   const snap = await adminDb.collection('gyms').where('slug', '==', slug).limit(1).get();
   if (snap.empty) return NextResponse.json({ error: 'not_found' }, { status: 404 });
   const doc = snap.docs[0];

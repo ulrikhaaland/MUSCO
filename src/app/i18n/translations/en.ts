@@ -1087,6 +1087,7 @@ const translations = {
   'landing.nav.why': 'Why',
   'landing.nav.pricing': 'Pricing',
   'landing.nav.faq': 'FAQ',
+  'landing.nav.demo': 'Demo',
   'landing.how.title': 'How it works',
   'landing.how.step1': 'Select body area & chat briefly',
   'landing.how.step2': '7 questions + safety red flags',

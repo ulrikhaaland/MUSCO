@@ -331,6 +331,12 @@ export default function LandingPage() {
               {t('landing.nav.how')}
             </button>
             <button
+              onClick={() => scrollTo(demoRef)}
+              className={`hover:text-white focus:outline-none focus:ring-2 focus:ring-white/30 ${currentSection === 'demo' ? 'text-white' : ''}`}
+            >
+              {t('landing.nav.demo')}
+            </button>
+            <button
               onClick={() => scrollTo(programsRef)}
               className={`hover:text-white focus:outline-none focus:ring-2 focus:ring-white/30 ${currentSection === 'programs' ? 'text-white' : ''}`}
             >
@@ -409,7 +415,7 @@ export default function LandingPage() {
 
 
       {/* Explore demo (desktop only) */}
-      <section className="hidden md:block mx-auto max-w-6xl px-6 mb-12 md:mb-16 lg:mb-24">
+      <section ref={demoRef} className="hidden md:block mx-auto max-w-6xl px-6 mb-12 md:mb-16 lg:mb-24">
         <h2 className="text-white text-2xl font-semibold mb-4">
           {t('landing.why.digitalTwin')}
         </h2>

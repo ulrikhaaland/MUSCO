@@ -65,7 +65,7 @@ export default function DesktopControls({
   return (
     <div
       className="absolute bottom-6 right-6 md:flex md:flex-col md:gap-3 hidden bg-[#111827]/80 p-2 rounded-lg shadow-lg backdrop-blur-md"
-      style={{ zIndex: 1000 }}
+      style={{ zIndex: 30 }}
       onMouseEnter={handleMouseEnterContainer}
       onMouseLeave={handleMouseLeaveContainer}
     >

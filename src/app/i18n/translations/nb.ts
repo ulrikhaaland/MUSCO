@@ -1167,6 +1167,7 @@ const translations = {
   'landing.nav.why': 'Hvorfor',
   'landing.nav.pricing': 'Pris',
   'landing.nav.faq': 'FAQ',
+  'landing.nav.demo': 'Demo',
   'landing.how.title': 'Slik fungerer det',
   'landing.how.step1': 'Velg område og chat kort',
   'landing.how.step2': '7 spørsmål + sikkerhetsvarsler',
