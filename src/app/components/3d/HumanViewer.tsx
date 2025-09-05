@@ -818,7 +818,7 @@ export default function HumanViewer({
       </div>
 
       {/* Mobile Controls */}
-      {isMobile && (
+      {isMobile && !hideNav && (
         <MobileControls
           onAreasSelected={handleAreasSelected}
           isRotating={isRotating}

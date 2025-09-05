@@ -161,7 +161,7 @@ export default function LandingPage() {
   useEffect(() => {
     const check = () => {
       if (typeof window === 'undefined') return;
-      setIsMobile(window.innerWidth < 640);
+      setIsMobile(window.innerWidth < 768);
     };
     check();
     window.addEventListener('resize', check);
@@ -415,14 +415,16 @@ export default function LandingPage() {
 
 
       {/* Explore demo (desktop only) */}
-      <section ref={demoRef} className="hidden md:block mx-auto max-w-6xl px-6 mb-12 md:mb-16 lg:mb-24">
-        <h2 className="text-white text-2xl font-semibold mb-4">
-          {t('landing.why.digitalTwin')}
-        </h2>
-        <div className="w-full rounded-xl ring-1 ring-white/10 overflow-hidden">
-          <HumanViewer gender={'male'} hideNav />
-        </div>
-      </section>
+      {!isMobile && (
+        <section ref={demoRef} className="mx-auto max-w-6xl px-6 mb-12 md:mb-16 lg:mb-24">
+          <h2 className="text-white text-2xl font-semibold mb-4">
+            {t('landing.why.digitalTwin')}
+          </h2>
+          <div className="w-full rounded-xl ring-1 ring-white/10 overflow-hidden">
+            <HumanViewer gender={'male'} hideNav />
+          </div>
+        </section>
+      )}
 
 
       {/* Programs we cover */}
