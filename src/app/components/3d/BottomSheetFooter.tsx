@@ -1,4 +1,5 @@
 import { RefObject } from 'react';
+import CloseIcon from '@mui/icons-material/Close';
 import { Question } from '@/app/types';
 import { useTranslation } from '@/app/i18n';
 
@@ -9,6 +10,7 @@ interface BottomSheetFooterProps {
   setMessage: (message: string) => void;
   handleOptionClick: (question: Question) => void;
   messagesCount?: number;
+  onClose?: () => void;
 }
 
 export function BottomSheetFooter({
@@ -18,6 +20,7 @@ export function BottomSheetFooter({
   setMessage,
   handleOptionClick,
   messagesCount = 0,
+  onClose,
 }: BottomSheetFooterProps) {
   const { t } = useTranslation();
   
@@ -41,8 +44,10 @@ export function BottomSheetFooter({
     ? t('bottomSheet.typeMessage') 
     : t('bottomSheet.askSomethingElse');
 
+  const hasClose = Boolean(onClose);
+
   return (
-    <div className="border-t border-gray-700 pt-2 pb-1 flex-shrink-0 bg-gray-900 pr-[60px]">
+    <div className={`border-t border-gray-700 pt-2 pb-1 flex-shrink-0 bg-gray-900 pr-2`}>
       <div className="flex items-center gap-2">
         <form
           className="relative flex-1"
@@ -121,6 +126,16 @@ export function BottomSheetFooter({
             )}
           </button>
         </form>
+        {hasClose && (
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label={t('mobile.controls.close')}
+            className="flex-shrink-0 w-10 h-10 flex justify-center items-center rounded-full text-white hover:bg-gray-700"
+          >
+            <CloseIcon className="h-6 w-6" />
+          </button>
+        )}
       </div>
     </div>
   );

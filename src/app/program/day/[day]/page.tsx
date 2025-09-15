@@ -82,7 +82,7 @@ export default function DayDetailPage() {
   const dayNumber = parseInt(dayParam);
   
   // Access context data
-  const { user, error: authError } = useAuth();
+  const { error: authError } = useAuth();
   const { program, programStatus, userPrograms, activeProgram } = useUser();
   const { t } = useTranslation();
   
@@ -187,14 +187,12 @@ export default function DayDetailPage() {
     }
   }, [dayName]);
 
-  // Redirect to home if no user or program
+  // Redirect only if there is no program available (allow guest access for custom programs)
   useEffect(() => {
-    if (!user) {
-      router.push('/');
-    } else if (!program && programStatus !== ProgramStatus.Generating) {
-      router.push('/');
+    if (!program && programStatus !== ProgramStatus.Generating) {
+      router.push('/program');
     }
-  }, [user, program, programStatus, router]);
+  }, [program, programStatus, router]);
 
   // Inject one-time global style for modal scroll lock
   useEffect(() => {

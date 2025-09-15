@@ -1,15 +1,6 @@
 'use client';
 
-import {
-  useState,
-  useEffect,
-  useRef,
-  RefAttributes,
-  ComponentType,
-} from 'react';
-import { BottomSheet, BottomSheetRef } from 'react-spring-bottom-sheet';
-import type { BottomSheetProps } from 'react-spring-bottom-sheet';
-import 'react-spring-bottom-sheet/dist/style.css';
+import { useState, useEffect, useRef } from 'react';
 import {
   DiagnosisAssistantResponse,
   Gender,
@@ -21,20 +12,11 @@ import { usePartChat } from '@/app/hooks/usePartChat';
 import { BodyPartGroup } from '@/app/config/bodyPartGroups';
 import { BottomSheetHeader } from './BottomSheetHeader';
 import { BottomSheetFooter } from './BottomSheetFooter';
-import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import MobileControlButtons from './MobileControlButtons';
 import { AnatomyPart } from '@/app/types/human';
-import { useApp } from '@/app/context/AppContext';
 import { useAuth } from '@/app/context/AuthContext';
 import { useTranslation } from '@/app/i18n';
 import { useRouter } from 'next/navigation';
-
-enum SnapPoint {
-  MINIMIZED = 0, // minHeight (15% or 72px)
-  PREVIEW = 1, // 40% of viewport height
-  EXPANDED = 2, // 78% of viewport height
-  FULL = 3, // 100% of viewport height
-}
 
 interface MobileControlsProps {
   isRotating: boolean;
@@ -52,12 +34,11 @@ interface MobileControlsProps {
   onDiagnosis: (response: DiagnosisAssistantResponse) => void;
   hideBottomSheet?: boolean;
   onAreasSelected: () => void;
+  overlayOpen?: boolean;
+  onCloseOverlay?: () => void;
 }
 
-// Use BottomSheet directly
-const BottomSheetBase = BottomSheet as ComponentType<
-  BottomSheetProps & RefAttributes<BottomSheetRef>
->;
+// Bottom sheet fully removed; overlay-only implementation
 
 export default function MobileControls({
   isRotating,
@@ -73,29 +54,24 @@ export default function MobileControls({
   onHeightChange,
   onQuestionClick,
   onDiagnosis,
-  hideBottomSheet,
   onAreasSelected,
+  overlayOpen,
+  onCloseOverlay,
 }: MobileControlsProps) {
   const { t } = useTranslation();
   const router = useRouter();
   const { user } = useAuth();
   const [isMobile, setIsMobile] = useState(false);
-  const hasInitiallyExpanded = useRef(false);
-  const [contentHeight, setContentHeight] = useState(0);
-  const [userModifiedSheetHeight, setUserModifiedSheetHeight] = useState(false);
-  const [currentSnapPoint, setCurrentSnapPoint] = useState<SnapPoint>(
-    SnapPoint.MINIMIZED
-  );
-  const previousSnapPointRef = useRef<SnapPoint>(SnapPoint.MINIMIZED);
-  const sheetRef = useRef<BottomSheetRef>(null);
-  const contentRef = useRef<HTMLDivElement>(null);
-  const [headerHeight, setHeaderHeight] = useState(0);
-  const [footerHeight, setFooterHeight] = useState(0);
-  const [isDragging, setIsDragging] = useState(false);
-  const [controlsBottom, setControlsBottom] = useState('5rem');
+  const [controlsBottom] = useState('5rem');
   const [message, setMessage] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const { selectedGroupsRef } = useApp();
+  // no app-level refs needed here
+
+  // Overlay-only height bookkeeping
+  const [overlayHeaderHeight, setOverlayHeaderHeight] = useState(0);
+  const [overlayFooterHeight, setOverlayFooterHeight] = useState(0);
+  const [overlayContentHeight, setOverlayContentHeight] = useState(0);
+  const overlayFooterRef = useRef<HTMLDivElement | null>(null);
 
   const {
     messages,
@@ -142,279 +118,28 @@ export default function MobileControls({
   }, []);
 
 
-  useEffect(() => {
-    const updateContentHeight = () => {
-      // Get the overlay element (main bottom sheet container)
-      const overlay = document.querySelector('[data-rsbs-overlay="true"]');
-      const header = document.querySelector('[data-rsbs-header="true"]');
-      const footer = document.querySelector('[data-rsbs-footer]');
+  // no sheet content height bookkeeping needed in overlay
 
-      if (overlay && header) {
-        // Get the exact height of the overlay element directly
-        const overlayHeight = (overlay as HTMLElement).getBoundingClientRect()
-          .height;
+  // (no snap points in overlay)
 
-        // Just use the actual height of the overlay element
-        const totalHeight = overlayHeight;
+  // No bottom sheet mechanics: selection changes don't manipulate any sheet
 
-        // For informational purposes only, still calculate content height
-        const headerHeight = header.getBoundingClientRect().height;
-        const footerHeight = footer?.getBoundingClientRect().height ?? 0;
-        setFooterHeight(footerHeight);
-        const contentHeight = totalHeight - headerHeight - footerHeight;
+  // No model height coupling needed in overlay mode
 
-        if (contentHeight > 0) {
-          setContentHeight(contentHeight);
-        } else {
-          if (contentRef.current) {
-            // Get the container that holds all content (messages and input)
-            const contentContainer = contentRef.current.querySelector(
-              '#bottom-sheet-content'
-            );
-
-            // Find the footer element in the bottom sheet
-            const footer = document.querySelector('[data-rsbs-footer]');
-            const footerHeight = footer?.getBoundingClientRect().height ?? 0;
-            setFooterHeight(footerHeight);
-            if (contentContainer) {
-              const localContentHeight = (
-                contentContainer as HTMLElement
-              ).getBoundingClientRect().height;
-              const height = localContentHeight + headerHeight + footerHeight;
-              setContentHeight(height);
-            }
-          }
-        }
-      } else if (contentRef.current) {
-        // Fallback to our original approach if overlay elements aren't found
-
-        const footer = document.querySelector('[data-rsbs-footer]');
-        const footerHeight = footer?.getBoundingClientRect().height ?? 0;
-        setFooterHeight(footerHeight);
-
-        // Fixed reasonable height that doesn't expand too much
-        const fixedContentHeight = 200 + Math.min(200, messages.length * 50);
-        const totalHeight = fixedContentHeight + headerHeight + footerHeight;
-
-        setContentHeight(totalHeight);
-      }
-    };
-
-    // Update height when messages or follow-up questions change
-    updateContentHeight();
-
-    // Set up a ResizeObserver to watch for content changes
-    const resizeObserver = new ResizeObserver(updateContentHeight);
-    if (contentRef.current) {
-      resizeObserver.observe(contentRef.current);
-    }
-
-    // Also observe the footer for height changes
-    const footer = document.querySelector('[data-rsbs-footer]');
-    if (footer) {
-      resizeObserver.observe(footer);
-    }
-
-    return () => resizeObserver.disconnect();
-  }, [messages, followUpQuestions, headerHeight]);
-
-  const getSnapPointIndex = (snapPoint: SnapPoint) => {
-    if (snapPoint === SnapPoint.MINIMIZED) return 0;
-    if (snapPoint === SnapPoint.PREVIEW) return 1;
-    if (snapPoint === SnapPoint.EXPANDED) return 2;
-    if (snapPoint === SnapPoint.FULL) return 3;
-    return 0;
-  };
-
-  // Handle body part selection and deselection
-  useEffect(() => {
-    const hasContent =
-      messages.length > 0 ||
-      followUpQuestions.length > 0;
-
-    const loadingComplete = !isLoading || messages.length === 0;
-    // Only manipulate sheet height if user hasn't modified it
-    if (!userModifiedSheetHeight) {
-      if (
-        selectedGroups.length > 0 &&
-        loadingComplete &&
-        hasContent &&
-        getSnapPointIndex(currentSnapPoint) < 2 &&
-        !hasInitiallyExpanded.current
-      ) {
-        if (sheetRef.current) {
-          const snapPoints = getSnapPoints();
-          let snapPoint = snapPoints[2]; // Use EXPANDED (78%) instead of PREVIEW (40%)
-
-          if (contentHeight < snapPoint) {
-            snapPoint = contentHeight;
-          }
-          setTimeout(
-            () => {
-              if (sheetRef.current) {
-                console.log('Auto-expanding to EXPANDED height:', snapPoint);
-                sheetRef.current.snapTo(({ maxHeight }) => snapPoint);
-                hasInitiallyExpanded.current = true;
-                // Explicitly set the snap point to EXPANDED
-                setCurrentSnapPoint(SnapPoint.EXPANDED);
-              }
-            },
-            300
-          );
-        }
-      } else if (
-        selectedGroups.length > 0 &&
-        isLoading &&
-        messages.length === 1
-      ) {
-        // First message is loading, expand to third snap point
-        if (sheetRef.current) {
-          const snapPoints = getSnapPoints();
-          const thirdPoint = snapPoints[2]; // viewportHeight * 0.78
-          setTimeout(() => {
-            sheetRef.current.snapTo(() => thirdPoint);
-          }, 200);
-        }
-      } else if (selectedGroups.length === 0 && messages.length === 0) {
-        // Part was deselected
-        setIsDragging(true);
-        if (sheetRef.current) {
-          sheetRef.current.snapTo(({ maxHeight }) =>
-            Math.min(maxHeight * 0.15, 72)
-          );
-        }
-      }
-    }
-  }, [
-    selectedGroups,
-    isLoading,
-    messages,
-    followUpQuestions,
-    contentHeight,
-    userModifiedSheetHeight,
-  ]);
-
-  // Update model height whenever sheet height changes (but not due to keyboard)
-  const updateModelHeight = (sheetHeight: number) => {
-    if (onHeightChange) {
-      onHeightChange(sheetHeight);
-    }
-  };
-
-  useEffect(() => {
-    // Track bottom sheet height changes
-    const observer = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        if (
-          mutation.type === 'attributes' &&
-          mutation.attributeName === 'style'
-        ) {
-          const element = mutation.target as HTMLElement;
-          const height = element.getBoundingClientRect().height;
-          updateModelHeight(height);
-        }
-      });
-    });
-
-    if (sheetRef.current) {
-      const element = sheetRef.current as unknown as HTMLElement;
-      observer.observe(element, {
-        attributes: true,
-        attributeFilter: ['style'],
-      });
-    }
-
-    return () => observer.disconnect();
-  }, []);
+  // (removed)
 
   // Track height changes only during drag or animation
-  useEffect(() => {
-    let rafId: number;
-    let lastHeight = 0;
+  // (removed)
 
-    const checkHeight = () => {
-      if (sheetRef.current) {
-        const currentHeight = sheetRef.current.height;
-        if (currentHeight !== lastHeight) {
-          lastHeight = currentHeight;
-          updateModelHeight(currentHeight);
-          setControlsBottom(`calc(${currentHeight}px + 1rem)`);
-        }
-      }
-      rafId = requestAnimationFrame(checkHeight);
-    };
-
-    // Run the animation frame loop continuously to track height changes
-    rafId = requestAnimationFrame(checkHeight);
-
-    return () => {
-      if (rafId) {
-        cancelAnimationFrame(rafId);
-      }
-    };
-  }, []);
-
-  const getSnapPoints = (): number[] => {
-    const viewportHeight = getViewportHeight();
-    const minHeight = Math.min(viewportHeight * 0.15, 72);
-    const hasContent =
-      Boolean(selectedGroups.length > 0) ||
-      messages.length > 0;
-
-    if (!hasContent) {
-      return [minHeight];
-    }
-
-    // if (contentHeight <= minHeight) {
-    //   return [minHeight];
-    // }
-
-    let secondSnapPoint = viewportHeight * 0.4;
-    if (messages.length === 0) {
-      secondSnapPoint = contentHeight;
-    }
-
-    return [minHeight, secondSnapPoint, viewportHeight * 0.78, viewportHeight];
-  };
+  // (removed)
 
   // Removed all keyboard detection logic - keeping things simple
 
   // Track height changes only during drag or animation
-  useEffect(() => {
-    let rafId: number;
-    let lastHeight = 0;
-
-    const checkHeight = () => {
-      if (sheetRef.current) {
-        const currentHeight = sheetRef.current.height;
-        if (currentHeight !== lastHeight) {
-          lastHeight = currentHeight;
-          updateModelHeight(currentHeight);
-          setControlsBottom(`calc(${currentHeight}px + 1rem)`);
-        }
-      }
-      rafId = requestAnimationFrame(checkHeight);
-    };
-
-    // Run the animation frame loop continuously to track height changes
-    rafId = requestAnimationFrame(checkHeight);
-
-    return () => {
-      if (rafId) {
-        cancelAnimationFrame(rafId);
-      }
-    };
-  }, []);
+  // (removed)
 
   // Remove the old controls position effect since we're handling it in the RAF loop
-  useEffect(() => {
-    const updateControlsPosition = () => {
-      if (sheetRef.current) {
-        setControlsBottom(`calc(${sheetRef.current.height}px + 1rem)`);
-      }
-    };
-    updateControlsPosition();
-  }, []); // Just set initial position
+  // Keep default controlsBottom
 
   const handleQuestionSelect = (question: Question) => {
     if (question.generate && onQuestionClick) {
@@ -424,37 +149,15 @@ export default function MobileControls({
     }
   };
 
-  // Store previous snap point when hiding
-  useEffect(() => {
-    if (hideBottomSheet) {
-      previousSnapPointRef.current = currentSnapPoint;
-    } else {
-      // Restore previous height when becoming visible again
-      if (
-        sheetRef.current &&
-        previousSnapPointRef.current !== currentSnapPoint
-      ) {
-        const snapPoints = getSnapPoints();
-        const targetHeight = snapPoints[previousSnapPointRef.current];
-        setTimeout(() => {
-          sheetRef.current?.snapTo(() => targetHeight);
-          setCurrentSnapPoint(previousSnapPointRef.current);
-        }, 0);
-      }
-    }
-  }, [hideBottomSheet]);
+  // no bottom sheet state to store/restore
 
   useEffect(() => {
     if (assistantResponse) {
       onDiagnosis(assistantResponse);
     }
-  }, [assistantResponse]);
+  }, [assistantResponse, onDiagnosis]);
 
-  useEffect(() => {
-    if (!selectedGroups.length && userModifiedSheetHeight) {
-      setUserModifiedSheetHeight(false);
-    }
-  }, [selectedGroups.length, userModifiedSheetHeight]);
+  // nothing to reset related to sheet drag state
 
   // Handle resending a message when it was interrupted
   const handleResendMessage = (message: ChatMessage) => {
@@ -466,12 +169,43 @@ export default function MobileControls({
     }
   };
 
+  // Overlay: compute stable content height = svh - header - footer
+  useEffect(() => {
+    const compute = () => {
+      const total = getViewportHeight();
+      const next = Math.max(0, total - overlayHeaderHeight - overlayFooterHeight);
+      setOverlayContentHeight(next);
+      if (onHeightChange) {
+        // Drive CSS var in parent for viewer sizing (overlay covers full height)
+        onHeightChange(overlayOpen ? total : 0);
+      }
+    };
+
+    compute();
+
+    const onResize = () => compute();
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, [overlayOpen, overlayHeaderHeight, overlayFooterHeight, onHeightChange]);
+
+  // Observe overlay footer height
+  useEffect(() => {
+    if (!overlayOpen) return;
+    const element = overlayFooterRef.current;
+    if (!element) return;
+    const ro = new ResizeObserver(() => {
+      setOverlayFooterHeight(element.getBoundingClientRect().height || 0);
+    });
+    ro.observe(element);
+    // Set initial
+    setOverlayFooterHeight(element.getBoundingClientRect().height || 0);
+    return () => ro.disconnect();
+  }, [overlayOpen]);
+
   return (
     <>
       {/* Mobile Controls - Positioned relative to bottom sheet */}
-      {isMobile &&
-        currentSnapPoint !== SnapPoint.FULL &&
-        currentSnapPoint !== SnapPoint.EXPANDED && (
+      {isMobile && !overlayOpen && (
           <MobileControlButtons
             isRotating={isRotating}
             isResetting={isResetting}
@@ -484,169 +218,14 @@ export default function MobileControls({
             onSwitchModel={onSwitchModel}
           />
         )}
+      {/* Removed bottom sheet UI; overlay replaces it */}
 
-      {/* Expand/Collapse Buttons - Fixed to bottom right */}
-      {isMobile &&
-        sheetRef.current &&
-        (selectedGroups.length > 0 || messages.length > 0) && (
-          <div className="mobile-controls-toggle md:hidden fixed right-2 bottom-4 flex bg-transparent rounded-lg z-10">
-            <button
-              onClick={() => {
-                if (sheetRef.current) {
-                  const currentHeight = sheetRef.current.height;
-                  const snapPoints = getSnapPoints();
-                  // Find next smaller snap point
-                  const nextPoint = [...snapPoints]
-                    .reverse()
-                    .find((point) => point < currentHeight - 2);
-                  if (nextPoint) {
-                    if (nextPoint === snapPoints[0]) {
-                      setCurrentSnapPoint(SnapPoint.MINIMIZED);
-                    }
-                    setUserModifiedSheetHeight(true);
-                    sheetRef.current.snapTo(() => nextPoint);
-                  }
-                }
-              }}
-              disabled={(() => {
-                if (!sheetRef.current) return true;
-                const currentHeight = sheetRef.current.height;
-                const snapPoints = getSnapPoints();
-                return !snapPoints.some((point) => point < currentHeight - 2);
-              })()}
-              className={`text-white p-1 bg-transparent rounded-lg transition-colors duration-200 ${
-                (() => {
-                  if (!sheetRef.current) return true;
-                  const currentHeight = sheetRef.current.height;
-                  const snapPoints = getSnapPoints();
-                  return !snapPoints.some((point) => point < currentHeight - 2);
-                })()
-                  ? 'opacity-50 cursor-not-allowed'
-                  : 'hover:bg-white/10'
-              }`}
-              aria-label={t('mobile.controls.minimize')}
-            >
-              <ExpandLessIcon className="h-6 w-6 rotate-180" />
-            </button>
-            <button
-              onClick={() => {
-                if (sheetRef.current) {
-                  const currentHeight = sheetRef.current.height;
-                  const snapPoints = getSnapPoints();
-
-                  // Find next larger snap point
-                  const nextPoint = snapPoints.find(
-                    (point) => point > currentHeight + 2
-                  );
-                  if (nextPoint) {
-                    if (nextPoint === snapPoints[1]) {
-                      setCurrentSnapPoint(SnapPoint.PREVIEW);
-                    }
-                    setUserModifiedSheetHeight(true);
-                    sheetRef.current.snapTo(() => nextPoint);
-                  }
-                }
-              }}
-              disabled={(() => {
-                if (!sheetRef.current) return true;
-                const currentHeight = sheetRef.current.height;
-                const snapPoints = getSnapPoints();
-                return !snapPoints.some((point) => point > currentHeight + 2);
-              })()}
-              className={`text-white p-1 bg-transparent rounded-lg transition-colors duration-200 ${
-                (() => {
-                  if (!sheetRef.current) return true;
-                  const currentHeight = sheetRef.current.height;
-                  const snapPoints = getSnapPoints();
-                  return !snapPoints.some((point) => point > currentHeight + 2);
-                })()
-                  ? 'opacity-50 cursor-not-allowed'
-                  : 'hover:bg-white/10'
-              }`}
-              aria-label={t('mobile.controls.expand')}
-            >
-              <ExpandLessIcon className="h-6 w-6" />
-            </button>
-          </div>
-        )}
-
-      {/* Bottom Sheet */}
-      <BottomSheetBase
-        className={`!bg-gray-900 [&>*]:!bg-gray-900 relative h-[100vh] ${
-          hideBottomSheet ? 'pointer-events-none opacity-0' : ''
-        }`}
-        ref={sheetRef}
-        open={!hideBottomSheet}
-        blocking={false}
-        defaultSnap={({ maxHeight }) => {
-          const minHeight = Math.min(maxHeight * 0.15, 72);
-          // Use previous snap point if available, otherwise use minimum height
-          if (previousSnapPointRef.current !== SnapPoint.MINIMIZED) {
-            const snapPoints = getSnapPoints();
-            return snapPoints[previousSnapPointRef.current];
-          }
-          return minHeight;
-        }}
-        snapPoints={getSnapPoints}
-        expandOnContentDrag={false}
-        maxHeight={null}
-        onSpringStart={(event) => {
-          const source = (event as any).source;
-          if (
-            source === 'dragging' &&
-            currentSnapPoint !== SnapPoint.MINIMIZED
-          ) {
-            setUserModifiedSheetHeight(true);
-          }
-          if (!isDragging) {
-            setIsDragging(true);
-            setTimeout(() => {
-              setIsDragging(false);
-            }, 100);
-          }
-          if (sheetRef.current) {
-            const currentHeight = sheetRef.current.height;
-            updateModelHeight(currentHeight);
-
-            // Find which snap point we're closest to
-            const snapPoints = getSnapPoints();
-            const closestPointIndex = snapPoints.reduce(
-              (prevIndex, curr, index, arr) => {
-                const prev = arr[prevIndex];
-                return Math.abs(curr - currentHeight) <
-                  Math.abs(prev - currentHeight)
-                  ? index
-                  : prevIndex;
-              },
-              0
-            );
-            if (closestPointIndex !== currentSnapPoint) {
-              setCurrentSnapPoint(closestPointIndex as SnapPoint);
-            }
-          }
-        }}
-        onSpringEnd={(event) => {
-          if (sheetRef.current) {
-            const currentHeight = sheetRef.current.height;
-
-            updateModelHeight(currentHeight);
-
-            // Update current snap point at the end of animation
-            const snapPoints = getSnapPoints();
-            const closestPointIndex = snapPoints.reduce(
-              (prevIndex, curr, index, arr) => {
-                const prev = arr[prevIndex];
-                return Math.abs(curr - currentHeight) <
-                  Math.abs(prev - currentHeight)
-                  ? index
-                  : prevIndex;
-              },
-              0
-            );
-            setCurrentSnapPoint(closestPointIndex as SnapPoint);
-          }
-        }}
-        header={
+      {/* Full-screen Chat Overlay (mobile) */}
+      {isMobile && overlayOpen && (
+        <>
+        <div className="fixed inset-0 z-[80] flex flex-col bg-gray-900 md:hidden">
+          {/* Header */}
+          <div className="relative">
           <BottomSheetHeader
             messages={messages}
             isLoading={isLoading}
@@ -655,39 +234,48 @@ export default function MobileControls({
             resetChat={() => {
               resetChat();
             }}
-            onHeightChange={setHeaderHeight}
-            isMinimized={currentSnapPoint === SnapPoint.MINIMIZED}
-          />
-        }
-        footer={
-          (selectedGroups.length > 0 || messages.length > 0) && (
-            <BottomSheetFooter
-              message={message}
-              isLoading={isLoading}
-              textareaRef={textareaRef}
-              setMessage={setMessage}
-              handleOptionClick={handleOptionClick}
-              messagesCount={messages.length}
+              onHeightChange={(h) => setOverlayHeaderHeight(Math.max(0, h - 28))}
+              isMinimized={false}
             />
-          )
-        }
-      >
-        <div ref={contentRef} className="flex-1 flex flex-col h-full">
-          {!selectedGroups.length &&
-          messages.length === 0 ? (
-            <div className="h-[72px]" />
-          ) : (
-            /* Expanded Content */
-            <div
-              id="bottom-sheet-content"
-              className="flex-1 flex px-4 py-2 flex-col"
-              onWheel={(e) => {
-                // Stop wheel events from propagating to parent containers
-                e.stopPropagation();
-              }}
-            >
-              {/* Chat content */}
+          </div>
+
+          {/* Content */}
+          <div
+            data-rsbs-scroll
+            className="flex-1 min-h-0 overflow-y-auto px-4 pt-1 pb-2"
+            style={{ height: overlayContentHeight }}
+            onWheel={(e) => e.stopPropagation()}
+          >
                 <div className="flex-1 min-h-0">
+                  {messages.length === 0 && selectedGroups.length === 0 && !isLoading && (
+                    <div className="mb-3 rounded-lg border border-gray-800 bg-gray-900/60 p-3">
+                      <div className="text-sm text-white mb-1">Start a chat or select a specific part</div>
+                      <div className="text-xs text-gray-400 mb-2">Ask anything about pain, recovery or training.</div>
+                      <div className="flex flex-wrap gap-2">
+                        <button
+                          type="button"
+                          onClick={() => handleOptionClick({ title: '', question: 'What can you help me with?' })}
+                          className="px-3 py-1.5 text-xs rounded-full bg-gray-800 text-white hover:bg-gray-700"
+                        >
+                          What can you help me with?
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleOptionClick({ title: '', question: 'I have pain' })}
+                          className="px-3 py-1.5 text-xs rounded-full bg-gray-800 text-white hover:bg-gray-700"
+                        >
+                          I have pain
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleOptionClick({ title: '', question: 'Build an exercise program' })}
+                          className="px-3 py-1.5 text-xs rounded-full bg-gray-800 text-white hover:bg-gray-700"
+                        >
+                          Build an exercise program
+                        </button>
+                      </div>
+                    </div>
+                  )}
                   <ChatMessages
                     messages={messages}
                     isLoading={isLoading}
@@ -715,13 +303,28 @@ export default function MobileControls({
                     messagesRef={messagesRef}
                     isMobile={isMobile}
                     onResend={handleResendMessage}
-                    containerHeight={contentHeight}
+                containerHeight={overlayContentHeight}
                   />
                 </div>
             </div>
-          )}
+
+          {/* Footer */}
+          <div ref={overlayFooterRef}>
+            {(selectedGroups.length > 0 || messages.length > 0) && (
+              <BottomSheetFooter
+                message={message}
+                isLoading={isLoading}
+                textareaRef={textareaRef}
+                setMessage={setMessage}
+                handleOptionClick={handleOptionClick}
+                messagesCount={messages.length}
+                onClose={onCloseOverlay}
+              />
+            )}
+          </div>
         </div>
-      </BottomSheetBase>
+        </>
+      )}
     </>
   );
 }

@@ -351,12 +351,18 @@ export function ChatMessages({
     [messages, isLoading, keepSpacer]
   );
 
+  const getScrollContainer = useCallback((): Element | null => {
+    if (isMobile) {
+      const el = document.querySelector('[data-rsbs-scroll]');
+      return el ?? (messagesRef.current as unknown as Element | null);
+    }
+    return messagesRef.current as unknown as Element | null;
+  }, [isMobile, messagesRef]);
+
   // Set up scroll event listeners and handle initial scroll position
   useEffect(() => {
     // Get the right container based on mobile or desktop
-    const container = isMobile
-      ? document.querySelector('[data-rsbs-scroll]')
-      : messagesRef.current;
+    const container = getScrollContainer();
 
     if (!container) return;
 
@@ -411,7 +417,7 @@ export function ChatMessages({
         container.scrollTo = originalScrollTo;
       }
     };
-  }, [isMobile, messagesRef, resetTouchState, updateScrollButtonVisibility]);
+  }, [getScrollContainer, resetTouchState, updateScrollButtonVisibility]);
 
   // Modified version of scrollToBottom function to scroll to the bottom properly
   const scrollToBottom = (forceScroll = false) => {
@@ -419,9 +425,7 @@ export function ChatMessages({
     if (disableAutoScroll && !forceScroll) return;
 
     try {
-      const container = isMobile
-        ? document.querySelector('[data-rsbs-scroll]')
-        : messagesRef.current;
+      const container = getScrollContainer();
 
       if (container) {
         container.scrollTo({
@@ -728,7 +732,7 @@ export function ChatMessages({
   }, [
     messages,
     needsResponsePlaceholder,
-    isMobile,
+    getScrollContainer,
     userTouched,
     isLoading,
     updateScrollButtonVisibility,

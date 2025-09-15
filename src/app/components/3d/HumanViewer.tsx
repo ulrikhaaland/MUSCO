@@ -70,6 +70,7 @@ export default function HumanViewer({
   const [showQuestionnaire, setShowQuestionnaire] = useState(false);
   const [explainerEnabled, setExplainerEnabled] = useState(true);
   const isExplainerActive = explainerEnabled && !isMobile;
+  const [isChatOverlayOpen, setIsChatOverlayOpen] = useState(false);
 
   // Explore explainer state
   // Using BioDigital labels for anchoring; no manual screen position needed
@@ -835,6 +836,8 @@ export default function HumanViewer({
           onQuestionClick={handleQuestionClick}
           hideBottomSheet={showQuestionnaire}
           onDiagnosis={setDiagnosis}
+          overlayOpen={!showQuestionnaire && isChatOverlayOpen}
+          onCloseOverlay={() => setIsChatOverlayOpen(false)}
         />
       )}
 
@@ -849,6 +852,31 @@ export default function HumanViewer({
             targetAreas={[]}
             fullBody={false}
           />
+        </div>
+      )}
+
+      {/* Mobile footer with selection info and chat button */}
+      {isMobile && !hideNav && !showQuestionnaire && (
+        <div className="md:hidden fixed inset-x-0 bottom-0 z-[50] bg-gray-900/80 backdrop-blur-sm border-t border-gray-800">
+          <div className="px-3 py-2 flex items-center justify-between gap-3">
+            <div className="min-w-0 flex-1">
+              <div className="text-sm text-white truncate">
+                {selectedPart?.name || selectedGroups[0]?.name || 'Select an area'}
+              </div>
+              {selectedGroups.length > 0 && (
+                <div className="text-xs text-gray-400 truncate">
+                  {selectedGroups.map((g) => g.name).join(', ')}
+                </div>
+              )}
+            </div>
+            <button
+              onClick={() => setIsChatOverlayOpen(true)}
+              className="flex-shrink-0 px-3 py-1.5 text-sm rounded-full bg-indigo-600 text-white hover:bg-indigo-500 active:bg-indigo-700 transition-colors"
+              aria-label="Open chat"
+            >
+              Chat
+            </button>
+          </div>
         </div>
       )}
       </div>

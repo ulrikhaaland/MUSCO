@@ -85,7 +85,7 @@ export function BottomSheetHeader({
   return (
     <div
       ref={headerRef}
-      className="h-12 w-full flex justify-between items-center"
+      className="h-12 w-full flex justify-between items-center pt-1 px-3"
     >
       <div className="flex flex-col items-start text-left flex-1 mr-4 max-h-12 overflow-hidden">
         <h3 className="text-md font-bold text-white text-left break-words w-full line-clamp-1">
