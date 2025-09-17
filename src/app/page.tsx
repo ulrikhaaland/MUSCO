@@ -140,6 +140,33 @@ export default function LandingPage() {
   // demo elements removed
   const SHOW_PRICING = true;
 
+  // Ensure landing page starts at top and prevent browser scroll restoration
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const { history } = window;
+    const prev = (history as any).scrollRestoration;
+    try {
+      if ('scrollRestoration' in history) {
+        history.scrollRestoration = 'manual';
+      }
+    } catch (e) {
+      // ignore
+    }
+    // Only force to top if no hash in URL
+    if (!window.location.hash) {
+      window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+    }
+    return () => {
+      try {
+        if ('scrollRestoration' in history) {
+          history.scrollRestoration = prev || 'auto';
+        }
+      } catch (e) {
+        // ignore
+      }
+    };
+  }, []);
+
   // Soft-redirect signed-in users to /app (delay ~800ms), always show Open app
   useEffect(() => {
     if (authLoading || userLoading) return;
@@ -413,17 +440,17 @@ export default function LandingPage() {
       {/* Explore demo */}
       <section
         ref={demoRef}
-        className="mx-auto max-w-6xl px-6 mb-4 md:mb-16 lg:mb-24 "
+        className="mx-auto max-w-6xl px-6 mb-4 md:mb-16 lg:mb-4"
       >
-        <h2 className="text-white text-1xl font-semibold mb-4">
-          {t('landing.why.digitalTwin')}
+        <h2 className="text-white text-1xl font-semibold mb-4 mt-4">
+          {'Din AI helseassistent'}
         </h2>
         <div className="w-full rounded-xl ring-1 ring-white/10 overflow-hidden">
           <HumanViewer gender={'male'} hideNav />
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-6 mt-4 md:mt-16 lg:mt-24 mb-4 md:mb-16 lg:mb-24">
+      <section className="mx-auto max-w-6xl px-6 mt-4 md:mt-16 lg:mt-12 mb-4 md:mb-16 lg:mb-12">
         <PartnerLogos />
       </section>
 
