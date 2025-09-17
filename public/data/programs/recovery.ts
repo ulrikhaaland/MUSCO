@@ -3236,46 +3236,46 @@ export const rehabPrograms: ExerciseProgram[] = [
 // URL slug mapping for direct program access - maps to the starting index of each 4-week sequence
 export const programSlugs: Record<string, number> = {
   'shin-splints': 0,
-  // Low Back: indices 0-3 (4 weeks)
-  lowback: 0,
-  'low-back': 0,
-  'lower-back': 0,
+  // Low Back: indices 4-7 (4 weeks)
+  lowback: 4,
+  'low-back': 4,
+  'lower-back': 4,
   
-  // Runner's Knee: indices 4-7 (4 weeks)
-  runnersknee: 4,
-  'runners-knee': 4,
+  // Runner's Knee: indices 8-11 (4 weeks)
+  runnersknee: 8,
+  'runners-knee': 8,
   
-  // Shoulder: indices 8-11 (4 weeks)
-  shoulder: 8,
-  'shoulder-impingement': 8,
+  // Shoulder: indices 12-15 (4 weeks)
+  shoulder: 12,
+  'shoulder-impingement': 12,
   
-  // Ankle: indices 12-15 (4 weeks)
-  ankle: 12,
-  'ankle-sprain': 12,
+  // Ankle: indices 16-19 (4 weeks)
+  ankle: 16,
+  'ankle-sprain': 16,
   
-  // Tennis Elbow: indices 16-19 (4 weeks)
-  'tennis-elbow': 16,
-  elbow: 16,
+  // Tennis Elbow: indices 20-23 (4 weeks)
+  'tennis-elbow': 20,
+  elbow: 20,
   
-  // Tech Neck: indices 20-23 (4 weeks)
-  techneck: 20,
+  // Tech Neck: indices 24-27 (4 weeks)
+  techneck: 24,
   
-  // Plantar Fasciitis: indices 24-27 (4 weeks)
-  'plantar-fasciitis': 24,
-  plantarfasciitis: 24,
-  plantar: 24,
+  // Plantar Fasciitis: indices 28-31 (4 weeks)
+  'plantar-fasciitis': 28,
+  plantarfasciitis: 28,
+  plantar: 28,
   
-  // Hamstring: indices 28-31 (4 weeks)
-  'hamstring-strain': 28,
-  hamstring: 28,
+  // Hamstring: indices 32-35 (4 weeks)
+  'hamstring-strain': 32,
+  hamstring: 32,
   
-  // Upper Back & Core: indices 32-35 (4 weeks)
-  'upper-back-core': 32,
-  upperbackcore: 32,
+  // Upper Back & Core: indices 36-39 (4 weeks)
+  'upper-back-core': 36,
+  upperbackcore: 36,
   
-  // Core Stability: indices 36-39 (4 weeks)
-  'core-stability': 36,
-  corestability: 36,
+  // Core Stability: indices 40-43 (4 weeks)
+  'core-stability': 40,
+  corestability: 40,
 };
 
 // Function to get program by URL slug - combines all 4 weeks into a single 28-day program

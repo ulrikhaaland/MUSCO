@@ -256,6 +256,7 @@ export default function HumanViewer({
       viewerUrl.searchParams.set('ui-whiteboard', 'false');
       viewerUrl.searchParams.set('ui-zoom', 'false');
       viewerUrl.searchParams.set('initial.none', 'false');
+      // Allow viewer scroll/zoom; we gate wheel to the iframe via our own handlers
       viewerUrl.searchParams.set('disable-scroll', 'false');
       viewerUrl.searchParams.set('uaid', 'LzCgB');
       viewerUrl.searchParams.set('paid', 'o_26b5a0fa');
@@ -266,7 +267,7 @@ export default function HumanViewer({
       viewerUrl.searchParams.set('ui-logo', 'false');
       return viewerUrl.toString();
     },
-    []
+    [hideNav]
   );
 
   const [viewerUrl, setViewerUrl] = useState(() => getViewerUrl(gender));
@@ -294,6 +295,11 @@ export default function HumanViewer({
     // Call the parent's gender change handler
     onGenderChange?.(newGender);
   }, [currentGender, getViewerUrl, onGenderChange, resetValues]);
+
+  // Recompute viewer URL if embed context (hideNav) changes
+  useEffect(() => {
+    setViewerUrl(getViewerUrl(currentGender));
+  }, [getViewerUrl, currentGender]);
 
   // Clear target gender when model change is complete
   useEffect(() => {
@@ -659,10 +665,25 @@ export default function HumanViewer({
     }
   }, [shouldResetModel, isReady, resetModel]);
 
-  // Prevent parent scrolling (disabled when embedded on landing with hideNav)
+  // Prevent wheel from bubbling when not embedded on landing; when embedded (hideNav),
+  // consume wheel over the iframe EXCEPT when Shift is held (to allow zoom).
   useEffect(() => {
-    if (hideNav) return; // allow page scroll on landing embed
     const preventParentScroll = (e: WheelEvent) => {
+      // If embedded on landing, consume wheel events over the viewer iframe to avoid page shifts
+      if (hideNav) {
+        if (iframeRef.current && e.target instanceof Element) {
+          if (iframeRef.current.contains(e.target)) {
+            // When user holds Shift, allow the event through for viewer zooming
+            if (e.shiftKey) {
+              return;
+            }
+            e.preventDefault();
+            e.stopPropagation();
+            return;
+          }
+        }
+        return; // otherwise let page scroll
+      }
       // Only prevent default if we're not in a scrollable element with actual overflow
       if (e.target instanceof Element) {
         let target = e.target;

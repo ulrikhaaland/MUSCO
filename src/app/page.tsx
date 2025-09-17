@@ -428,7 +428,7 @@ export default function LandingPage() {
             }
           }}
         />
-      </section> */}
+      </section> */}  
 
       {/* Partner logos below hero (animated marquee) */}
       {/* <section className="mx-auto max-w-6xl px-6 mt-12 md:mt-16 lg:mt-24 mb-12 md:mb-16 lg:mb-24">
