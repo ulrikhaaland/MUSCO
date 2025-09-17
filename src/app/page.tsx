@@ -356,7 +356,7 @@ export default function LandingPage() {
             bod<span className="text-indigo-500 font-extrabold">AI</span>
           </button>
           <nav className="hidden md:flex items-center gap-6 text-gray-300">
-            <button
+            {/* <button
               onClick={() => {
                 if (typeof window !== 'undefined') {
                   window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -365,7 +365,7 @@ export default function LandingPage() {
               className={`hover:text-white focus:outline-none focus:ring-2 focus:ring-white/30 ${currentSection === 'how' ? 'text-white' : ''}`}
             >
               {t('landing.nav.how')}
-            </button>
+            </button> */}
             <button
               onClick={() => scrollTo(demoRef)}
               className={`hover:text-white focus:outline-none focus:ring-2 focus:ring-white/30 ${currentSection === 'demo' ? 'text-white' : ''}`}
@@ -384,7 +384,7 @@ export default function LandingPage() {
             >
               {t('landing.nav.why')}
             </button>
-            {SHOW_PRICING && (
+            {false && (
               <button
                 onClick={() => scrollTo(pricingRef)}
                 className={`hover:text-white focus:outline-none focus:ring-2 focus:ring-white/30 ${currentSection === 'pricing' ? 'text-white' : ''}`}
@@ -553,7 +553,7 @@ export default function LandingPage() {
       </section>
 
       {/* Pricing */}
-      {SHOW_PRICING && (
+      {false && (
         <section
           ref={pricingRef}
           className="mx-auto max-w-6xl px-6 mb-12 md:mb-16 lg:mb-24"
