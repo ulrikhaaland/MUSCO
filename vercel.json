@@ -3,5 +3,6 @@
     "app/api/**/*": {
       "maxDuration": 60
     }
-  }
-} 
+  },
+  "buildCommand": "npm test && next build"
+}
