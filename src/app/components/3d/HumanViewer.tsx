@@ -722,7 +722,7 @@ export default function HumanViewer({
   }, [hideNav]);
 
   return (
-    <div className={`flex flex-col ${hideNav ? 'w-full h-[900px]' : 'w-screen h-[100dvh]'} overflow-hidden`}>
+    <div className={`flex flex-col ${hideNav ? 'w-full h-[500px]' : 'w-screen h-[100dvh]'} overflow-hidden`}>
       {!hideNav && <NavigationMenu mobileFloatingButton />}
       <div className="flex-1 flex flex-col md:flex-row relative min-h-0">
         {/* Fullscreen overlay when dragging */}
@@ -748,7 +748,7 @@ export default function HumanViewer({
           <div
             className="w-full"
             style={{
-              height: isMobile ? 'calc(100svh - var(--sheet-height))' : '100%',
+              height: hideNav ? '100%' : (isMobile ? 'calc(100svh - var(--sheet-height))' : '100%'),
               position: 'relative',
               top: 0,
               left: 0,
@@ -771,6 +771,17 @@ export default function HumanViewer({
           />
         </div>
 
+        {isMobile && hideNav && (
+          <div className="absolute inset-x-0 bottom-0 z-40 pointer-events-none">
+            <div className="w-full bg-gray-900/90 border-t border-gray-800 backdrop-blur-sm">
+              <div className="max-w-6xl mx-auto px-4 py-4">
+                <div className="w-16 h-1.5 rounded-full bg-white/20 mx-auto mb-2" />
+                <p className="text-white text-sm text-center font-medium">Click a bodypart to get started</p>
+              </div>
+            </div>
+          </div>
+        )}
+ 
         {/* Controls - Desktop */}
         {!showQuestionnaire && !authLoading && (
           <DesktopControls

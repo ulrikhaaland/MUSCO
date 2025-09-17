@@ -47,7 +47,7 @@ export function BottomSheetFooter({
   const hasClose = Boolean(onClose);
 
   return (
-    <div className={`border-t border-gray-700 pt-2 pb-1 flex-shrink-0 bg-gray-900 pr-2`}>
+    <div className={`border-t border-gray-700 pt-2 pb-1 flex-shrink-0 bg-gray-900 px-3`}>
       <div className="flex items-center gap-2">
         <form
           className="relative flex-1"

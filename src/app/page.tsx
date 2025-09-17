@@ -3,19 +3,17 @@
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from './context/AuthContext';
- 
+
 import { useTranslation } from './i18n';
 import {
   getProgramBySlug,
   localizeProgramDayDescriptions,
 } from '../../public/data/programs/recovery';
 import LandingHero from './components/ui/LandingHero';
-import LandingHeroImages from './components/ui/LandingHeroImages';
 import PartnerLogos from '@/components/PartnerLogos';
 // import LanguageSwitcher from './components/ui/LanguageSwitcher';
 import { logAnalyticsEvent } from './utils/analytics';
 import PricingCards from './components/ui/PricingCards';
-import Logo from './components/ui/Logo';
 import { useUser } from './context/UserContext';
 import HumanViewer from './components/3d/HumanViewer';
 
@@ -183,20 +181,26 @@ export default function LandingPage() {
 
       // If scrolled to the very bottom, force FAQ active
       const doc = document.documentElement;
-      const atBottom = window.innerHeight + window.scrollY >= (doc.scrollHeight - 2);
+      const atBottom =
+        window.innerHeight + window.scrollY >= doc.scrollHeight - 2;
       if (atBottom) {
         setCurrentSection('faq');
         return;
       }
-      const sections: Array<{ id: typeof currentSection; el: Element | null }> = [
-        { id: 'how', el: heroRef.current || howRef.current },
-        { id: 'programs', el: programsRef.current },
-        { id: 'why', el: whyRef.current },
-        { id: 'pricing', el: SHOW_PRICING ? pricingRef.current : null },
-        { id: 'faq', el: faqRef.current },
-      ];
+      const sections: Array<{ id: typeof currentSection; el: Element | null }> =
+        [
+          { id: 'how', el: heroRef.current || howRef.current },
+          { id: 'programs', el: programsRef.current },
+          { id: 'why', el: whyRef.current },
+          { id: 'pricing', el: SHOW_PRICING ? pricingRef.current : null },
+          { id: 'faq', el: faqRef.current },
+        ];
       // Prefer the section whose bounds contain the reference line
-      const visibles: Array<{ id: typeof currentSection; start: number; end: number }> = [];
+      const visibles: Array<{
+        id: typeof currentSection;
+        start: number;
+        end: number;
+      }> = [];
       sections.forEach((s) => {
         if (!s.el) return;
         const rect = (s.el as HTMLElement).getBoundingClientRect();
@@ -234,7 +238,11 @@ export default function LandingPage() {
     const header = document.querySelector('header') as HTMLElement | null;
     const headerHeight = header?.offsetHeight ?? 64;
     const extraSpacing = 8; // small breathing room below sticky header
-    const y = el.getBoundingClientRect().top + window.pageYOffset - headerHeight - extraSpacing;
+    const y =
+      el.getBoundingClientRect().top +
+      window.pageYOffset -
+      headerHeight -
+      extraSpacing;
     window.scrollTo({ top: y, behavior: 'smooth' });
   };
 
@@ -312,12 +320,13 @@ export default function LandingPage() {
     <div className="min-h-screen bg-[#0E1116]">
       {/* Top Nav (landing only) */}
       <header className="sticky top-0 z-40 backdrop-blur supports-[backdrop-filter]:bg-gray-900/60 border-b border-white/10">
-        <div className="mx-auto max-w-6xl px-6 py-3 flex items-center justify-between">
+        <div className="mx-auto max-w-6xl px-6 py-[0.45rem] md:py-3 flex items-center justify-between">
           <button
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
             aria-label="Home"
+            className="text-white font-bold text-xl tracking-tight"
           >
-            <Logo />
+            bod<span className="text-indigo-500 font-extrabold">AI</span>
           </button>
           <nav className="hidden md:flex items-center gap-6 text-gray-300">
             <button
@@ -375,21 +384,12 @@ export default function LandingPage() {
                 {t('auth.signIn')}
               </button>
             )}
-            <button
-              onClick={() => {
-                logAnalyticsEvent('open_app_from_landing');
-                router.push('/app');
-              }}
-              className="px-3 py-2 rounded-md text-sm bg-gray-800 text-white hover:bg-gray-700"
-            >
-              {t('landing.footer.openApp')}
-            </button>
           </div>
         </div>
       </header>
 
       {/* Hero */}
-      <section ref={heroRef} className="mx-auto max-w-6xl px-6 py-12 md:py-16 md:min_h-[60vh] flex items-start">
+      {/* <section ref={heroRef} className="mx-auto max-w-6xl px-6 py-12 md:py-16 md:min_h-[60vh] flex items-start">
         <LandingHero
           onSelect={(mode) => {
             if (mode === 'diagnose') {
@@ -401,38 +401,38 @@ export default function LandingPage() {
             }
           }}
         />
-      </section>
+      </section> */}
 
       {/* Partner logos below hero (animated marquee) */}
-      <section className="mx-auto max-w-6xl px-6 mt-12 md:mt-16 lg:mt-24 mb-12 md:mb-16 lg:mb-24">
+      {/* <section className="mx-auto max-w-6xl px-6 mt-12 md:mt-16 lg:mt-24 mb-12 md:mb-16 lg:mb-24">
+        <PartnerLogos />
+      </section> */}
+
+      {/* How it works section removed */}
+
+      {/* Explore demo */}
+      <section
+        ref={demoRef}
+        className="mx-auto max-w-6xl px-6 mb-4 md:mb-16 lg:mb-24 "
+      >
+        <h2 className="text-white text-1xl font-semibold mb-4">
+          {t('landing.why.digitalTwin')}
+        </h2>
+        <div className="w-full rounded-xl ring-1 ring-white/10 overflow-hidden">
+          <HumanViewer gender={'male'} hideNav />
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-6xl px-6 mt-4 md:mt-16 lg:mt-24 mb-4 md:mb-16 lg:mb-24">
         <PartnerLogos />
       </section>
-
-      {/* How it works anchor: on mobile show mobile images, on desktop it's the hero + desktop images above */}
-      <section ref={howRef} className="mx-auto max-w-6xl px-6 mt-0 mb-12 md:hidden">
-        <LandingHeroImages />
-      </section>
-
-
-      {/* Explore demo (desktop only) */}
-      {!isMobile && (
-        <section ref={demoRef} className="mx-auto max-w-6xl px-6 mb-12 md:mb-16 lg:mb-24">
-          <h2 className="text-white text-2xl font-semibold mb-4">
-            {t('landing.why.digitalTwin')}
-          </h2>
-          <div className="w-full rounded-xl ring-1 ring-white/10 overflow-hidden">
-            <HumanViewer gender={'male'} hideNav />
-          </div>
-        </section>
-      )}
-
 
       {/* Programs we cover */}
       <section
         ref={programsRef}
         className="mx-auto max-w-6xl px-6 mb-12 md:mb-16 lg:mb-24"
       >
-        <h2 className="text-white text-2xl font-semibold mb-4">
+        <h2 className="text-white text-1xl font-semibold mb-4">
           {t('landing.programs.title')}
         </h2>
         <div className="grid gap-6 md:gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 items-stretch">
@@ -447,19 +447,33 @@ export default function LandingPage() {
             >
               <div className="flex h-full items-stretch min-h-[88px]">
                 <div className="w-24 sm:w-28 md:w-32 xl:w-36 h-full bg-[#0E1116] border-r border-white/10 overflow-hidden">
-                  <img src={img} alt="" className="h-full w-full object-cover object-top" />
+                  <img
+                    src={img}
+                    alt=""
+                    className="h-full w-full object-cover object-top"
+                  />
                 </div>
                 <div className="p-4 flex-1 flex flex-col justify-start">
                   <div className="flex items-start justify-between gap-3">
                     <div className="text-white font-medium tracking-tight">
                       {t(`landing.programs.${key}`)}
                     </div>
-                    <svg className="mt-1 h-4 w-4 text-white/40 group-hover:text-white/70 transition-colors flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <svg
+                      className="mt-1 h-4 w-4 text-white/40 group-hover:text-white/70 transition-colors flex-shrink-0"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
                       <path d="M9 18l6-6-6-6" />
                     </svg>
                   </div>
                   <div className="text-[12px] text-white/75 mt-1">
-                    {programSummaries[slug] || programCards.find((p) => p.slug === slug)?.summary || 'Personalized plan with progressive weekly focus.'}
+                    {programSummaries[slug] ||
+                      programCards.find((p) => p.slug === slug)?.summary ||
+                      'Personalized plan with progressive weekly focus.'}
                   </div>
                 </div>
               </div>
@@ -481,32 +495,35 @@ export default function LandingPage() {
       {/* shimmer styles removed */}
 
       {/* Why it works */}
-      <section ref={whyRef} className="mx-auto max-w-6xl px-6 mb-12 md:mb-16 lg:mb-24">
+      <section
+        ref={whyRef}
+        className="mx-auto max-w-6xl px-6 mb-12 md:mb-16 lg:mb-24"
+      >
         <h2 className="text-white text-2xl font-semibold mb-4">
           {t('landing.why.title')}
         </h2>
-          <ul className="grid gap-2 md:grid-cols-2 text-gray-200 list-disc pl-5">
+        <ul className="grid gap-2 md:grid-cols-2 text-gray-200 list-disc pl-5">
           <li>{t('landing.why.digitalTwin')}</li>
           <li>{t('landing.why.dualAssistants')}</li>
           <li>{t('landing.why.personalization')}</li>
           <li>{t('landing.why.safety')}</li>
           <li>{t('landing.why.speed')}</li>
         </ul>
-          <div className="text-xs text-gray-400 mt-3 space-y-2">
-            <p>{t('landing.why.disclaimer')}</p>
-            <div>
-              <span className="block text-gray-300 font-medium">{t('landing.why.seekCare.title')}:</span>
-              <ul className="list-disc pl-5 mt-1 space-y-1">
-                <li>{t('landing.why.seekCare.fever')}</li>
-                <li>{t('landing.why.seekCare.trauma')}</li>
-                <li>{t('landing.why.seekCare.nightPain')}</li>
-                <li>{t('landing.why.seekCare.numbnessWeakness')}</li>
-              </ul>
-            </div>
+        <div className="text-xs text-gray-400 mt-3 space-y-2">
+          <p>{t('landing.why.disclaimer')}</p>
+          <div>
+            <span className="block text-gray-300 font-medium">
+              {t('landing.why.seekCare.title')}:
+            </span>
+            <ul className="list-disc pl-5 mt-1 space-y-1">
+              <li>{t('landing.why.seekCare.fever')}</li>
+              <li>{t('landing.why.seekCare.trauma')}</li>
+              <li>{t('landing.why.seekCare.nightPain')}</li>
+              <li>{t('landing.why.seekCare.numbnessWeakness')}</li>
+            </ul>
           </div>
+        </div>
       </section>
-
-      
 
       {/* Pricing */}
       {SHOW_PRICING && (
@@ -514,7 +531,9 @@ export default function LandingPage() {
           ref={pricingRef}
           className="mx-auto max-w-6xl px-6 mb-12 md:mb-16 lg:mb-24"
         >
-          <h2 className="text-white text-2xl font-semibold mb-3">{t('landing.pricing.title')}</h2>
+          <h2 className="text-white text-2xl font-semibold mb-3">
+            {t('landing.pricing.title')}
+          </h2>
           <PricingCards
             onMonthly={() => router.push('/subscribe')}
             onAnnual={() => router.push('/subscribe')}
@@ -531,54 +550,89 @@ export default function LandingPage() {
       )}
 
       {/* FAQ */}
-      <section ref={faqRef} className="mx-auto max-w-6xl px-6 pb-12 md:pb-16 lg:pb-24">
+      <section
+        ref={faqRef}
+        className="mx-auto max-w-6xl px-6 pb-12 md:pb-16 lg:pb-24"
+      >
         <h2 className="text-white text-2xl font-semibold mb-4">
           {t('landing.faq.title')}
         </h2>
         <details className="rounded-xl p-4 border border-white/15 bg-[#141922] text-gray-200 mb-2">
-          <summary className="cursor-pointer">{t('landing.faq.freePremium.title')}</summary>
+          <summary className="cursor-pointer">
+            {t('landing.faq.freePremium.title')}
+          </summary>
           <div className="mt-2 text-sm space-y-2">
             <p>{t('landing.faq.freePremium.desc')}</p>
             <ul className="list-disc pl-5">
-              <li className="text-white/90 font-medium">{t('landing.pricing.tier.free')}</li>
-              <li className="text-white/70">• {t('landing.pricing.free.b1')}</li>
-              <li className="text-white/70">• {t('landing.pricing.free.b4')}</li>
-              <li className="text-white/70">• {t('landing.pricing.free.b2')}</li>
+              <li className="text-white/90 font-medium">
+                {t('landing.pricing.tier.free')}
+              </li>
+              <li className="text-white/70">
+                • {t('landing.pricing.free.b1')}
+              </li>
+              <li className="text-white/70">
+                • {t('landing.pricing.free.b4')}
+              </li>
+              <li className="text-white/70">
+                • {t('landing.pricing.free.b2')}
+              </li>
             </ul>
             <ul className="list-disc pl-5">
-              <li className="text-white/90 font-medium">{t('landing.pricing.tier.premium')}</li>
-              <li className="text-white/70">• {t('landing.pricing.premium.b1')}</li>
-              <li className="text-white/70">• {t('landing.pricing.premium.b2')}</li>
-              <li className="text-white/70">• {t('landing.pricing.premium.b3')}</li>
+              <li className="text-white/90 font-medium">
+                {t('landing.pricing.tier.premium')}
+              </li>
+              <li className="text-white/70">
+                • {t('landing.pricing.premium.b1')}
+              </li>
+              <li className="text-white/70">
+                • {t('landing.pricing.premium.b2')}
+              </li>
+              <li className="text-white/70">
+                • {t('landing.pricing.premium.b3')}
+              </li>
             </ul>
           </div>
         </details>
 
         <details className="rounded-xl p-4 border border-white/15 bg-[#141922] text-gray-200 mb-2">
-          <summary className="cursor-pointer">{t('landing.faq.safety.title')}</summary>
+          <summary className="cursor-pointer">
+            {t('landing.faq.safety.title')}
+          </summary>
           <div className="mt-2 text-sm space-y-2">
             <p>{t('landing.faq.safety.desc')}</p>
-            <p className="text-xs text-white/60"><a className="underline" href="/safety">{t('footer.medicalDisclaimer')}</a></p>
+            <p className="text-xs text-white/60">
+              <a className="underline" href="/safety">
+                {t('footer.medicalDisclaimer')}
+              </a>
+            </p>
           </div>
         </details>
 
         <details className="rounded-xl p-4 border border-white/15 bg-[#141922] text-gray-200 mb-2">
-          <summary className="cursor-pointer">{t('landing.faq.how.title')}</summary>
+          <summary className="cursor-pointer">
+            {t('landing.faq.how.title')}
+          </summary>
           <p className="mt-2 text-sm">{t('landing.faq.how.p1')}</p>
         </details>
 
         <details className="rounded-xl p-4 border border-white/15 bg-[#141922] text-gray-200 mb-2">
-          <summary className="cursor-pointer">{t('landing.faq.account.title')}</summary>
+          <summary className="cursor-pointer">
+            {t('landing.faq.account.title')}
+          </summary>
           <p className="mt-2 text-sm">{t('landing.faq.account.p1')}</p>
         </details>
 
         <details className="rounded-xl p-4 border border-white/15 bg-[#141922] text-gray-200 mb-2">
-          <summary className="cursor-pointer">{t('landing.faq.billing.title')}</summary>
+          <summary className="cursor-pointer">
+            {t('landing.faq.billing.title')}
+          </summary>
           <p className="mt-2 text-sm">{t('landing.faq.billing.p1')}</p>
         </details>
 
         <details className="rounded-xl p-4 border border-white/15 bg-[#141922] text-gray-200 mb-2">
-          <summary className="cursor-pointer">{t('landing.faq.privacy.title')}</summary>
+          <summary className="cursor-pointer">
+            {t('landing.faq.privacy.title')}
+          </summary>
           <p className="mt-2 text-sm">{t('landing.faq.privacy.p1')}</p>
         </details>
       </section>

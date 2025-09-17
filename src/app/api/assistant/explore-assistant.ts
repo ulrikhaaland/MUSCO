@@ -7,6 +7,8 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
+const EXPLORE_MODEL = process.env.EXPLORE_MODEL || 'gpt-4.1-mini';
+
 // Simple in-process cache to avoid re-creating assistants when env var isn't set
 let exploreAssistantIdCache: string | undefined;
 
@@ -32,7 +34,7 @@ export async function getOrCreateExploreAssistant(): Promise<string> {
     const assistant = await openai.beta.assistants.create({
       name: 'Musco Explore Assistant',
       instructions: exploreSystemPrompt,
-      model: 'gpt-4.1-mini',
+      model: EXPLORE_MODEL,
       tools: [],
     });
 

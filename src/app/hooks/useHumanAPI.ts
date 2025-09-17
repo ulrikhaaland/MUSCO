@@ -96,10 +96,10 @@ export function useHumanAPI({
   const expectingProgrammaticSelectionRef = useRef<boolean>(false);
   const programmaticSelectionIdRef = useRef<string | null>(null);
 
-  // Zoom helper – only do zooms on mobile
+  // Zoom helper – trigger on all viewports (desktop and mobile)
   const zoomIfMobile = useCallback(
     (objectId?: string) => {
-      if (typeof window !== 'undefined' && window.innerWidth < 768) {
+      if (typeof window !== 'undefined') {
         onZoom?.(objectId);
       }
     },

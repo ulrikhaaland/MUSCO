@@ -22,6 +22,15 @@ const openai = new OpenAI({
 });
 
 // ----------------------
+// Model and token controls
+// ----------------------
+const CHAT_MODEL = process.env.CHAT_MODEL || 'gpt-5-mini';
+const FOLLOWUP_MODEL = process.env.FOLLOWUP_MODEL || 'gpt-5';
+const CHAT_MAX_TURNS = Number(process.env.CHAT_MAX_TURNS || 8);
+const CHAT_MAX_MESSAGE_CHARS = Number(process.env.CHAT_MAX_MESSAGE_CHARS || 1500);
+const CHAT_MAX_OUTPUT_TOKENS = Number(process.env.CHAT_MAX_OUTPUT_TOKENS || 512);
+
+// ----------------------
 // Logging helpers (structured, throttled)
 // ----------------------
 type LogLevel = 'debug' | 'info' | 'warn' | 'error';
@@ -51,6 +60,12 @@ function throttledLog(level: LogLevel, key: string, line: string) {
 }
 
 // Limits are centralized in chatLimits.ts
+
+function truncate(input: string, max: number): string {
+  if (!input) return '';
+  if (input.length <= max) return input;
+  return input.slice(0, Math.max(0, max - 1)) + '…';
+}
 
 async function checkAndConsumeUserChatTokens(userId: string, tokensNeeded: number): Promise<void> {
   if (!ENFORCE_CHAT_LIMITS) return;
@@ -259,10 +274,10 @@ export async function streamChatCompletion({
 }) {
   try {
     void _threadId;
-    console.log(`[streamChatCompletion] Starting with model: gpt-5-mini`);
+    throttledLog('info', 'chat_stream_start', `ctx=stream model=${CHAT_MODEL}`);
 
     // Re-introduce historical messages
-    const formattedMessages = formatMessagesForChatCompletion(messages);
+    const formattedMessages = formatMessagesForChatCompletion((messages || []).slice(-CHAT_MAX_TURNS));
 
     // Add the system message at the beginning
     formattedMessages.unshift({
@@ -294,7 +309,8 @@ export async function streamChatCompletion({
           const { followUpQuestions, targetAreas, programType, informationalInsights, ...rest } = obj || {};
           return rest;
         })(userMessage.diagnosisAssistantResponse);
-        userMessageContent += `\n\n<<PREVIOUS_CONTEXT_JSON>>\n${JSON.stringify(contextualInfo, null, 2)}\n<<PREVIOUS_CONTEXT_JSON_END>>`;
+        const contextualJson = JSON.stringify(contextualInfo);
+        userMessageContent += `\n\n<<PREVIOUS_CONTEXT_JSON>>\n${truncate(contextualJson, CHAT_MAX_MESSAGE_CHARS)}\n<<PREVIOUS_CONTEXT_JSON_END>>`;
       }
 
       // Add selected body group and part information
@@ -326,10 +342,7 @@ export async function streamChatCompletion({
       // Fallback for unexpected userMessage types
       userMessageContent = JSON.stringify(userMessage);
     }
-    console.log(
-      '[streamChatCompletion] Constructed user message content (for current turn):',
-      userMessageContent
-    );
+    throttledLog('debug', 'chat_user_msg', `len=${userMessageContent.length}`);
 
     // Add the new user message to the history
     formattedMessages.push({
@@ -352,12 +365,14 @@ export async function streamChatCompletion({
 
     // Call OpenAI Responses API (streaming) with minimal reasoning effort
     const stream = await openai.responses.stream({
-      model: 'gpt-5-mini',
+      model: CHAT_MODEL,
       reasoning: { effort: 'minimal' } as any,
       input: formattedMessages,
+      max_output_tokens: CHAT_MAX_OUTPUT_TOKENS,
+      temperature: 0.2,
     });
 
-    console.log('[streamChatCompletion] Responses stream created, processing...');
+    throttledLog('debug', 'chat_stream_created', 'status=ok');
 
     let streamEnded = false;
     let fullContent = '';
@@ -372,7 +387,7 @@ export async function streamChatCompletion({
           }
         } catch (err) {
           if (!streamEnded) {
-            console.error('[streamChatCompletion] Error in output_text.delta handler:', err);
+            console.error('[streamChatCompletion] delta_error', err);
             streamEnded = true;
           }
         }
@@ -384,12 +399,11 @@ export async function streamChatCompletion({
         }
       })
       .on('response.completed', () => {
-        console.log('[streamChatCompletion] Responses stream completed successfully');
+        throttledLog('debug', 'chat_stream_complete', 'ok=1');
       });
 
     await stream.done();
-    console.log('[streamChatCompletion] Full accumulated response content:');
-    console.log(fullContent);
+    throttledLog('debug', 'chat_stream_result', `len=${fullContent.length}`);
   } catch (error) {
     console.error('[streamChatCompletion] Error in stream:', error);
     // Re-throw so the route can send a structured SSE error payload
@@ -399,7 +413,7 @@ export async function streamChatCompletion({
 
 // Helper function to format messages for chat completion
 function formatMessagesForChatCompletion(messages: any[]) {
-  return messages.map((msg) => {
+  return (messages || []).map((msg) => {
     // Map OpenAI assistant API message format to chat completion format
     const role = msg.role === 'user' ? 'user' : 'assistant';
 
@@ -426,7 +440,7 @@ function formatMessagesForChatCompletion(messages: any[]) {
 
     return {
       role: role as 'user' | 'assistant' | 'system',
-      content,
+      content: truncate(content, CHAT_MAX_MESSAGE_CHARS),
     };
   });
 }
@@ -664,19 +678,17 @@ export async function generateFollowUpExerciseProgram(context: {
       context.userInfo,
       removedExerciseIdsForPrompt
     );
-    console.log(
-      `Prepared exercise prompt with ${exerciseCount} total exercises after excluding removed ones`
-    );
+    throttledLog('debug', 'followup_ex_prompt', `count=${exerciseCount}`);
 
     // Import the follow-up system prompt
     const systemPrompt = await import('../prompts/exerciseFollowUpPrompt');
 
-    // Before we transform feedback data, log the raw input
-    console.log('Raw program feedback input:');
-    console.log('preferredExercises:', context.feedback.preferredExercises);
-    console.log('removedExercises:', context.feedback.removedExercises);
-    console.log('replacedExercises:', context.feedback.replacedExercises);
-    console.log('addedExercises:', context.feedback.addedExercises);
+    // Debug-only: input sizes
+    throttledLog(
+      'debug',
+      'followup_feedback_sizes',
+      `pref=${context.feedback.preferredExercises?.length || 0} rem=${context.feedback.removedExercises?.length || 0} repl=${context.feedback.replacedExercises?.length || 0} add=${context.feedback.addedExercises?.length || 0}`
+    );
 
     // Only include necessary exercise information (id and name) for the main feedback object
     const programFeedback = {
@@ -782,18 +794,9 @@ FAILURE TO FOLLOW THE ABOVE INSTRUCTIONS EXACTLY WILL RESULT IN POOR USER EXPERI
       formattedFeedback +
       exercisesPrompt;
 
-    // Log a sample of the prompt to verify its structure
-    console.log('Prompt structure summary:');
-    console.log(
-      `- System prompt: ${systemPrompt.programFollowUpSystemPrompt.substring(0, 100)}...`
-    );
-    console.log(
-      `- Feedback section: ${formattedFeedback.substring(0, 200)}...`
-    );
-    console.log(`- Exercise database: ${exercisesPrompt.substring(0, 100)}...`);
-    console.log(
-      `- Total prompt length: ${finalSystemPrompt.length} characters`
-    );
+    // Debug-only: prompt sizes
+    throttledLog('debug', 'followup_prompt_lengths', `sys=${systemPrompt.programFollowUpSystemPrompt.length} fb=${formattedFeedback.length} ex=${exercisesPrompt.length}`);
+    throttledLog('debug', 'followup_prompt_total', `chars=${finalSystemPrompt.length}`);
 
     // Transform context into a valid user message payload
     const userMessage = JSON.stringify({
@@ -812,7 +815,7 @@ FAILURE TO FOLLOW THE ABOVE INSTRUCTIONS EXACTLY WILL RESULT IN POOR USER EXPERI
 
     // Call the OpenAI chat completion API
     const response = await openai.chat.completions.create({
-      model: 'gpt-5', // keep high-quality model for follow-up generation
+      model: FOLLOWUP_MODEL,
       messages: [
         {
           role: 'system',
@@ -824,6 +827,8 @@ FAILURE TO FOLLOW THE ABOVE INSTRUCTIONS EXACTLY WILL RESULT IN POOR USER EXPERI
         },
       ],
       response_format: { type: 'json_object' },
+      max_tokens: CHAT_MAX_OUTPUT_TOKENS,
+      temperature: 0.2,
     });
 
     // Extract the content from the response
@@ -832,10 +837,7 @@ FAILURE TO FOLLOW THE ABOVE INSTRUCTIONS EXACTLY WILL RESULT IN POOR USER EXPERI
       throw new Error('No response content from chat completion');
     }
 
-    console.log(
-      `Response first 100 chars: "${rawContent.substring(0, 100)}..."`
-    );
-    console.log(`Response length: ${rawContent.length} characters`);
+    throttledLog('debug', 'followup_resp', `len=${rawContent.length}`);
 
     // Parse the response as JSON
     let program: ExerciseProgram;
@@ -890,45 +892,11 @@ FAILURE TO FOLLOW THE ABOVE INSTRUCTIONS EXACTLY WILL RESULT IN POOR USER EXPERI
       }
 
       // Check if preferred exercises are included
-      console.log('\nPREFERRED EXERCISES (should all be included):');
-      programFeedback.preferredExercises.forEach((id) => {
-        const isIncluded = includedExerciseIds.has(id);
-        console.log(`  - ${id}: ${isIncluded ? '✅ INCLUDED' : '❌ MISSING'}`);
-      });
-
-      // Check if removed exercises are excluded
-      console.log('\nREMOVED EXERCISES (should NOT be included):');
-      programFeedback.removedExercises.forEach((id) => {
-        const isIncluded = includedExerciseIds.has(id);
-        console.log(
-          `  - ${id}: ${isIncluded ? '❌ WRONGLY INCLUDED' : '✅ PROPERLY EXCLUDED'}`
-        );
-      });
-
-      // Check if replaced exercises are excluded
-      console.log('\nREPLACED EXERCISES (should NOT be included):');
-      programFeedback.replacedExercises.forEach((id) => {
-        const isIncluded = includedExerciseIds.has(id);
-        console.log(
-          `  - ${id}: ${isIncluded ? '❌ WRONGLY INCLUDED' : '✅ PROPERLY EXCLUDED'}`
-        );
-      });
-
-      // Check if added exercises are included
-      console.log('\nADDED EXERCISES (should all be included):');
-      programFeedback.addedExercises.forEach((ex) => {
-        const id = ex.id;
-        const isIncluded = includedExerciseIds.has(id);
-        console.log(
-          `  - ${id} (${ex.name}): ${isIncluded ? '✅ INCLUDED' : '❌ MISSING'}`
-        );
-      });
-
-      // List all exercises in the response
-      console.log('\nALL EXERCISES IN RESPONSE:');
-      console.log([...includedExerciseIds].join(', '));
-
-      console.log('\n----- END VALIDATION -----\n');
+      const preferredIncluded = programFeedback.preferredExercises.filter((id) => includedExerciseIds.has(id)).length;
+      const removedIncluded = programFeedback.removedExercises.filter((id) => includedExerciseIds.has(id)).length;
+      const replacedIncluded = programFeedback.replacedExercises.filter((id) => includedExerciseIds.has(id)).length;
+      const addedIncluded = programFeedback.addedExercises.filter((ex) => includedExerciseIds.has(ex.id)).length;
+      throttledLog('debug', 'followup_compliance', `prefIn=${preferredIncluded} remIn=${removedIncluded} replIn=${replacedIncluded} addIn=${addedIncluded}`);
     } catch (parseError) {
       console.error('JSON parse error:', parseError);
       console.error(
@@ -1300,10 +1268,11 @@ export async function getChatCompletion({
 }) {
   try {
     void _threadId;
-    console.log(`[getChatCompletion] Starting with model: ${modelName}`);
+    const model = modelName || CHAT_MODEL;
+    throttledLog('info', 'chat_completion_start', `ctx=nonstream model=${model}`);
 
     // Re-introduce historical messages
-    const formattedMessages = formatMessagesForChatCompletion(messages);
+    const formattedMessages = formatMessagesForChatCompletion((messages || []).slice(-CHAT_MAX_TURNS));
 
     // Add the system message at the beginning
     formattedMessages.unshift({
@@ -1371,10 +1340,7 @@ export async function getChatCompletion({
     } else {
       userMessageContent = JSON.stringify(userMessage);
     }
-    console.log(
-      '[getChatCompletion] Constructed user message content (for current turn):',
-      userMessageContent
-    );
+    throttledLog('debug', 'chat_user_msg', `len=${userMessageContent.length}`);
 
     // Add the new user message to the history
     formattedMessages.push({
@@ -1382,10 +1348,7 @@ export async function getChatCompletion({
       content: userMessageContent,
     });
 
-    console.log(
-      '[getChatCompletion] Full formattedMessages (with history) being sent to OpenAI API:',
-      JSON.stringify(formattedMessages, null, 2)
-    );
+    throttledLog('debug', 'chat_payload_size', `msgs=${formattedMessages.length}`);
 
     // Enforce free-tier chat limits (non-subscribers only)
     const estimatedInputTokens = estimateTokensFromString(userMessageContent);
@@ -1402,21 +1365,23 @@ export async function getChatCompletion({
 
     // Call OpenAI Responses API with minimal reasoning effort
     const response = await openai.responses.create({
-      model: modelName,
+      model,
       reasoning: { effort: 'minimal' } as any,
       input: formattedMessages,
+      max_output_tokens: CHAT_MAX_OUTPUT_TOKENS,
+      temperature: 0.2,
     });
 
     // Prefer SDK convenience if available
     const outputText: string | undefined = (response as any).output_text;
     if (outputText && typeof outputText === 'string') {
-      console.log('[getChatCompletion] Extracted output_text length:', outputText.length);
+      throttledLog('debug', 'chat_output_text', `len=${outputText.length}`);
       return outputText;
     }
 
     // Fallback to first text segment
     const firstText = (response as any)?.output?.[0]?.content?.[0]?.text?.value;
-    console.log('[getChatCompletion] Fallback first text length:', firstText?.length ?? 0);
+    throttledLog('debug', 'chat_output_first', `len=${firstText?.length ?? 0}`);
     return firstText ?? '';
   } catch (error) {
     console.error('[getChatCompletion] Error:', error);
