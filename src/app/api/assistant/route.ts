@@ -12,6 +12,8 @@ import {
   streamRunResponse,
   reserveFreeChatTokens,
   reserveFreeChatTokensForAnon,
+  streamChatCompletion,
+  getChatCompletion,
 } from '@/app/api/assistant/openai-server';
 import { OpenAIMessage } from '@/app/types';
 import { ProgramStatus } from '@/app/types/program';
@@ -246,6 +248,100 @@ export async function POST(request: Request) {
             { status: 500, headers: setCookie ? { 'Set-Cookie': setCookie } : undefined }
           );
         }
+      }
+
+      case 'send_message_chat': {
+        const basePrompt = payload?.mode === 'explore' ? exploreSystemPrompt : diagnosisSystemPrompt;
+        const sessionLanguage = (payload?.language || 'en').toLowerCase();
+        const languageLock = `\n<<LANGUAGE_LOCK>>\nSESSION_LANGUAGE=${sessionLanguage}\nRules:\n- All natural-language output (assistant bubble and followUpQuestions.question) must be in SESSION_LANGUAGE for the entire thread.\n- Do not switch languages mid-session unless SESSION_LANGUAGE changes.\n- JSON keys remain English (except user-provided content).\n<<LANGUAGE_LOCK_END>>\n`;
+        const systemMessage = `${languageLock}\n${basePrompt}`;
+
+        const anonCookieName = 'musco_anon_id';
+        const cookieStore = await cookies();
+        let anonId = cookieStore.get(anonCookieName)?.value;
+        let setCookie: string | undefined;
+        if (!anonId) {
+          anonId = `anon_${Math.random().toString(36).slice(2)}_${Date.now()}`;
+          setCookie = `${anonCookieName}=${anonId}; Path=/; Max-Age=${30 * 24 * 60 * 60}; HttpOnly; SameSite=Lax`;
+        }
+
+        if (stream) {
+          const encoder = new TextEncoder();
+          const customReadable = new ReadableStream({
+            async start(controller) {
+              try {
+                // Rate-limit reservation (best effort)
+                try {
+                  if (payload?.userId) {
+                    await reserveFreeChatTokens(payload?.userId, undefined, payload?.isSubscriber);
+                  } else if (anonId) {
+                    await reserveFreeChatTokensForAnon(anonId, undefined);
+                  }
+                } catch {
+                  controller.enqueue(encoder.encode(`data: ${JSON.stringify({ payload: { error: 'free_limit_exceeded' } })}\n\n`));
+                  controller.enqueue(encoder.encode('data: [DONE]\n\n'));
+                  controller.close();
+                  return;
+                }
+
+                await streamChatCompletion({
+                  threadId: 'virtual',
+                  messages: payload?.messages || [],
+                  systemMessage,
+                  userMessage: payload,
+                  onContent: (content) => {
+                    controller.enqueue(encoder.encode(`data: ${JSON.stringify({ content })}\n\n`));
+                  },
+                  options: {
+                    userId: payload?.userId,
+                    isSubscriber: payload?.isSubscriber,
+                    anonId: !payload?.userId ? anonId : undefined,
+                  },
+                });
+
+                controller.enqueue(encoder.encode('data: [DONE]\n\n'));
+                controller.close();
+              } catch (error) {
+                const message = String((error as any)?.message || error || '');
+                const payloadObj = message.includes('FREE_CHAT_DAILY_TOKEN_LIMIT_EXCEEDED') || message.includes('free_limit_exceeded')
+                  ? { error: 'free_limit_exceeded' }
+                  : { error: 'stream_error' };
+                try {
+                  controller.enqueue(encoder.encode(`data: ${JSON.stringify({ payload: payloadObj })}\n\n`));
+                  controller.enqueue(encoder.encode('data: [DONE]\n\n'));
+                  controller.close();
+                } catch {}
+              }
+            }
+          });
+
+          return new Response(customReadable, {
+            headers: {
+              'Content-Type': 'text/event-stream',
+              'Cache-Control': 'no-cache',
+              Connection: 'keep-alive',
+              ...(setCookie ? { 'Set-Cookie': setCookie } : {}),
+            },
+          });
+        }
+
+        // Non-streaming fallback
+        const text = await getChatCompletion({
+          threadId: 'virtual',
+          messages: payload?.messages || [],
+          systemMessage,
+          userMessage: payload,
+          modelName: undefined,
+          options: {
+            userId: payload?.userId,
+            isSubscriber: payload?.isSubscriber,
+            anonId: !payload?.userId ? anonId : undefined,
+          },
+        });
+        return NextResponse.json(
+          { messages: [{ role: 'assistant', content: text }] as OpenAIMessage[] },
+          { headers: setCookie ? { 'Set-Cookie': setCookie } : undefined }
+        );
       }
 
       case 'get_messages': {

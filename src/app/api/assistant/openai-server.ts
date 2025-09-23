@@ -369,7 +369,6 @@ export async function streamChatCompletion({
       reasoning: { effort: 'minimal' } as any,
       input: formattedMessages,
       max_output_tokens: CHAT_MAX_OUTPUT_TOKENS,
-      temperature: 0.2,
     });
 
     throttledLog('debug', 'chat_stream_created', 'status=ok');
@@ -1369,7 +1368,6 @@ export async function getChatCompletion({
       reasoning: { effort: 'minimal' } as any,
       input: formattedMessages,
       max_output_tokens: CHAT_MAX_OUTPUT_TOKENS,
-      temperature: 0.2,
     });
 
     // Prefer SDK convenience if available

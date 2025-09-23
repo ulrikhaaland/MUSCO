@@ -236,33 +236,8 @@ export function useChat() {
       timestamp: new Date(),
     };
 
-    // If the thread is not yet ready (e.g., immediately after a reset), queue
-    // the message and return. Once the new thread id is obtained, queued
-    // messages will be processed by `processNextMessage` which is triggered
-    // in the `createThread` promise inside `resetChat`.
-    if (!threadIdRef.current) {
-      console.warn('Chat thread not ready yet, queuing message.');
-
-      messageQueueRef.current.push({
-        message: messageContent,
-        payload: {
-          ...chatPayload,
-          diagnosisAssistantResponse: assistantResponse,
-        },
-      });
-
-      // Store as last user message so that potential reconnection logic still
-      // works correctly.
-      lastUserMessageRef.current = {
-        messageContent,
-        chatPayload: {
-          ...chatPayload,
-          diagnosisAssistantResponse: assistantResponse,
-        },
-      };
-
-      return; // Exit until thread is ready
-    }
+    // Threads are optional in chat-completions fast path; proceed even if not ready.
+    // We still allow queueing while actively loading to preserve order.
     
     if (!isRefetch) {
       if (isLoading) {
@@ -340,6 +315,9 @@ export function useChat() {
     streamPossiblyInterruptedRef.current = false; // Reset before starting
 
     try {
+      // Build lightweight prior history for chat-completions (exclude current message)
+      const priorHistory = messages.map((m) => ({ role: m.role as ('user' | 'assistant' | 'system'), content: m.content }));
+
       const payload: ChatPayload = {
         ...chatPayload,
         message: messageContent,
@@ -347,6 +325,7 @@ export function useChat() {
         diagnosisAssistantResponse: previousTurnAssistantResponseFromState, // MODIFIED: Use the potentially overridden value
         userId: user?.uid,
         isSubscriber: user?.profile?.isSubscriber,
+        messages: priorHistory,
       };
 
       if (isRefetch) {
@@ -489,6 +468,26 @@ export function useChat() {
                       .slice(2, 7)}`,
                     role: 'assistant',
                     content: textContentBeforeJson,
+                    timestamp: new Date(),
+                  },
+                ];
+              });
+            }
+
+            // If there's no visible text before JSON and previous message isn't assistant,
+            // insert a minimal placeholder to avoid "only follow-ups" UI state.
+            if (!textContentBeforeJson) {
+              setMessages((prev) => {
+                const lastMessage = prev[prev.length - 1];
+                if (lastMessage?.role === 'assistant') return prev;
+                return [
+                  ...prev,
+                  {
+                    id: `assistant-${Date.now()}-${Math.random()
+                      .toString(36)
+                      .slice(2, 7)}`,
+                    role: 'assistant',
+                    content: '',
                     timestamp: new Date(),
                   },
                 ];
@@ -658,6 +657,74 @@ export function useChat() {
 
           // No markers found, proceed with normal processing
           if (!jsonDetected) {
+            // Early suppression for partial JSON without markers (streaming across chunks)
+            // If a chunk starts a JSON object that looks like our schema, do not render it.
+            const braceIndex = content.indexOf('{');
+            if (braceIndex !== -1) {
+              const tail = content.substring(braceIndex);
+              const looksLikeSchema = /"diagnosis"|"followUpQuestions"/.test(tail);
+              if (looksLikeSchema) {
+                // Add any text before the JSON brace
+                const textBeforeJson = content.substring(0, braceIndex).trim();
+                if (textBeforeJson) {
+                  setMessages((prev) => {
+                    const lastMessage = prev[prev.length - 1];
+                    if (lastMessage?.role === 'assistant') {
+                      return [
+                        ...prev.slice(0, -1),
+                        {
+                          ...lastMessage,
+                          content: lastMessage.content + textBeforeJson,
+                          timestamp: new Date(),
+                        },
+                      ];
+                    }
+                    return [
+                      ...prev,
+                      {
+                        id: `assistant-${Date.now()}-${Math.random()
+                          .toString(36)
+                          .slice(2, 7)}`,
+                        role: 'assistant',
+                        content: textBeforeJson,
+                        timestamp: new Date(),
+                      },
+                    ];
+                  });
+                }
+
+                // Start accumulating JSON across chunks and prevent it from rendering
+                jsonDetected = true;
+                accumulatedContent += tail;
+
+                // Try to extract any early follow-up questions from the partial JSON
+                const questionMatchesEarly = tail.match(/"question"\s*:\s*"[^"]*"/g);
+                if (questionMatchesEarly) {
+                  for (const qm of questionMatchesEarly) {
+                    const endIdx = tail.indexOf('}', tail.indexOf(qm));
+                    if (endIdx !== -1) {
+                      const startIdx = tail.lastIndexOf('{', tail.indexOf(qm));
+                      if (startIdx !== -1) {
+                        const objStr = tail.substring(startIdx, endIdx + 1);
+                        try {
+                          const qObj = JSON.parse(objStr) as Question;
+                          setFollowUpQuestions((prev) => {
+                            if (!prev.some((q) => q.question === qObj.question)) {
+                              return [...prev, qObj];
+                            }
+                            return prev;
+                          });
+                        } catch {}
+                      }
+                    }
+                  }
+                }
+
+                // Suppress rendering this chunk further
+                return;
+              }
+            }
+
             // Look for JSON structure in the message
             const jsonRegex =
               /\{\s*"diagnosis"[\s\S]*"followUpQuestions"[\s\S]*\}|\{\s*["']diagnosis["']\s*:\s*null,\s*["']followUpQuestions["']\s*:\s*\[[\s\S]*\]\s*\}/;
@@ -820,8 +887,17 @@ export function useChat() {
               }
             }
 
-            // Only add message content if there's content to add
-            if (contentToAdd) {
+          // Only add message content if there's content to add
+          if (contentToAdd) {
+            // Proactively strip any trailing JSON portion that may be concatenated
+            const stripIndexMarked = contentToAdd.search(/<<JSON_DATA>>/);
+            const stripIndexPlainA = contentToAdd.search(/\{[\s\S]*?"diagnosis"[\s\S]*?\}/);
+            const stripIndexPlainB = contentToAdd.search(/\{[\s\S]*?"followUpQuestions"[\s\S]*?\}/);
+            const candidates = [stripIndexMarked, stripIndexPlainA, stripIndexPlainB].filter((i) => i >= 0);
+            if (candidates.length > 0) {
+              const cut = Math.min(...candidates);
+              contentToAdd = contentToAdd.substring(0, cut).trim();
+            }
               // Check if the content contains '<<' and cut off the message at that point
               const markerIndex = contentToAdd.indexOf('<<');
               if (markerIndex !== -1) {
@@ -855,6 +931,9 @@ export function useChat() {
                     },
                   ];
                 });
+
+                // After appending, ensure no JSON leaked in the composed message
+                cleanupAssistantJsonLeak();
               }
             }
 
@@ -1026,39 +1105,39 @@ export function useChat() {
     }
   };
 
-  // Clean up any JSON that might have slipped through
-  const cleanupJsonInMessages = () => {
+  // Strip any leaked JSON blocks (markers or plain object with diagnosis/followUpQuestions)
+  const cleanupAssistantJsonLeak = () => {
     setMessages((prev) => {
       if (prev.length === 0) return prev;
-
       const lastMessage = prev[prev.length - 1];
       if (lastMessage.role !== 'assistant') return prev;
 
-      // Remove markers and any text after them
-      const markerRegex = /<<JSON_DATA>>|<<JSON_END>>/;
-      const match = lastMessage.content.match(markerRegex);
+      const strip = (text: string): string => {
+        if (!text) return text;
+        // Remove marked blocks and anything after them
+        const marked = text.match(/<<JSON_DATA>>[\s\S]*?<<JSON_END>>/);
+        if (marked && marked.index !== undefined) {
+          return text.substring(0, marked.index).trim();
+        }
+        // Remove plain JSON containing schema keys
+        const idxDiagnosis = text.search(/\{[\s\S]*?"diagnosis"[\s\S]*?\}/);
+        const idxFollowUps = text.search(/\{[\s\S]*?"followUpQuestions"[\s\S]*?\}/);
+        const idx = [idxDiagnosis, idxFollowUps].filter((i) => i >= 0).reduce((a, b) => Math.min(a, b), Number.MAX_SAFE_INTEGER);
+        if (idx !== Number.MAX_SAFE_INTEGER) {
+          return text.substring(0, idx).trim();
+        }
+        return text;
+      };
 
-      if (match && match.index !== undefined) {
-          const cleanContent = lastMessage.content.substring(0, match.index).trim();
-          console.log("Cleaning up JSON markers from last message.");
-
-          // If cleaning removed everything, remove the message entirely
-          if (!cleanContent) {
-             console.log("Cleaned content is empty, removing message.");
-            return prev.slice(0,-1);
-          }
-
-          return [
-            ...prev.slice(0, -1),
-            {
-              ...lastMessage,
-              content: cleanContent,
-              timestamp: new Date(),
-            },
-          ];
+      const cleaned = strip(lastMessage.content);
+      if (cleaned === lastMessage.content) return prev;
+      if (!cleaned) {
+        return prev.slice(0, -1);
       }
-
-      return prev;
+      return [
+        ...prev.slice(0, -1),
+        { ...lastMessage, content: cleaned, timestamp: new Date() },
+      ];
     });
   };
 

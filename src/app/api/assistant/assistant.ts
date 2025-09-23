@@ -87,9 +87,14 @@ export async function sendMessage(
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      action: 'send_message',
+      // Prefer chat-completions fast path which ignores threadId
+      action: 'send_message_chat',
       threadId,
-      payload: transformedPayload,
+      payload: {
+        ...transformedPayload,
+        // Prefer messages passed by caller; fallback to cached snapshot
+        messages: (payload as any).messages ?? buildSimpleHistoryFromDOMOrCache(),
+      },
       stream: !!onStream,
     }),
   });
@@ -97,6 +102,20 @@ export async function sendMessage(
   // Wait for message response
   const response = await messagePromise;
   if (!response.ok) {
+    // Try to surface structured error so UI can react consistently
+    try {
+      const data = await response.json();
+      if (onStream && data && (data.error === 'free_limit_exceeded' || data.error === 'stream_error')) {
+        onStream('', { ...(payload as any), error: data.error } as any);
+        return { messages: [] } as any;
+      }
+      console.error('[assistant.sendMessage] HTTP error', response.status, data);
+    } catch {
+      try {
+        const text = await response.text();
+        console.error('[assistant.sendMessage] HTTP error', response.status, text);
+      } catch {}
+    }
     throw new Error('Failed to send message');
   }
 
@@ -148,29 +167,29 @@ export async function sendMessage(
       reader.releaseLock();
     }
 
-    // Get final messages after streaming is complete
-    const finalResponse = await fetch('/api/assistant', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        action: 'get_messages',
-        threadId,
-      }),
-    });
-
-    if (!finalResponse.ok) {
-      throw new Error('Failed to get final messages');
-    }
-
-    return finalResponse.json();
+    // Streaming path returns no thread messages; construct a minimal response
+    return { messages: [] } as any;
   }
 
   // For non-streaming responses, wait for both requests
   const messageResult = await response.json();
 
   return messageResult;
+}
+
+// Build a lightweight history array from cached chat state if present
+function buildSimpleHistoryFromDOMOrCache(): Array<{ role: 'user' | 'assistant' | 'system'; content: string }> | undefined {
+  try {
+    const raw = window.sessionStorage.getItem('chat_snapshot');
+    if (!raw) return undefined;
+    const parsed = JSON.parse(raw);
+    const messages = Array.isArray(parsed?.messages) ? parsed.messages : [];
+    // Map only last few items to reduce token usage
+    const last = messages.slice(-8).map((m: any) => ({ role: m.role, content: m.content }));
+    return last;
+  } catch {
+    return undefined;
+  }
 }
 
 export async function getMessages(threadId: string): Promise<MessagesResponse> {

@@ -68,6 +68,8 @@ export interface ChatPayload {
   isSubscriber?: boolean;
   // UI hints for assistants
   maxFollowUpOptions?: number; // prefer N follow-ups (mobile e.g. 3, desktop e.g. 6)
+  // Optional: prior message history for chat-completions fast path
+  messages?: Array<{ role: 'user' | 'assistant' | 'system'; content: string }>;
 }
 
 export interface Question {
