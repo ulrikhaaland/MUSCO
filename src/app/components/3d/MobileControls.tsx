@@ -15,9 +15,11 @@ import { BottomSheetFooter } from './BottomSheetFooter';
 import MobileControlButtons from './MobileControlButtons';
 import { AnatomyPart } from '@/app/types/human';
 import { useAuth } from '@/app/context/AuthContext';
-import { useTranslation } from '@/app/i18n';
 import { useRouter } from 'next/navigation';
 import { ProgramType } from '../../../../shared/types';
+import { Exercise } from '@/app/types/program';
+import { VideoModal } from '../ui/VideoModal';
+import { fetchExerciseVideoUrl } from '@/app/utils/videoUtils';
 
 interface MobileControlsProps {
   isRotating: boolean;
@@ -59,13 +61,36 @@ export default function MobileControls({
   onCloseOverlay,
   onGenerateProgram,
 }: MobileControlsProps) {
-  const { t } = useTranslation();
   const router = useRouter();
   const { user } = useAuth();
   const [isMobile, setIsMobile] = useState(false);
   const [controlsBottom] = useState('5rem');
   const [message, setMessage] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  
+  // Video handling for exercise cards
+  const [videoUrl, setVideoUrl] = useState<string | null>(null);
+  const [loadingVideoExercise, setLoadingVideoExercise] = useState<string | null>(null);
+  const [currentExercise, setCurrentExercise] = useState<Exercise | null>(null);
+  
+  const handleVideoClick = async (exercise: Exercise) => {
+    const exerciseId = exercise.name || exercise.id;
+    if (loadingVideoExercise === exerciseId) return;
+    
+    setLoadingVideoExercise(exerciseId);
+    setCurrentExercise(exercise);
+    try {
+      const videoUrl = await fetchExerciseVideoUrl(exercise);
+      if (videoUrl) {
+        setVideoUrl(videoUrl);
+      }
+    } catch (error) {
+      console.error('Error loading video:', error);
+    } finally {
+      setLoadingVideoExercise(null);
+    }
+  };
+  
   // no app-level refs needed here
 
   // Overlay-only height bookkeeping
@@ -82,6 +107,7 @@ export default function MobileControls({
     rateLimited,
     followUpQuestions,
     exerciseResults,
+    inlineExercises,
     messagesRef,
     resetChat,
     handleOptionClick,
@@ -342,7 +368,11 @@ export default function MobileControls({
                     isLoggedIn={Boolean(user)}
                     isSubscriber={Boolean(user?.profile?.isSubscriber)}
                     followUpQuestions={followUpQuestions}
+                    exerciseResults={exerciseResults}
+                    inlineExercises={inlineExercises}
                     onQuestionClick={handleQuestionSelect}
+                    onVideoClick={handleVideoClick}
+                    loadingVideoExercise={loadingVideoExercise}
                     part={selectedPart}
                     messagesRef={messagesRef}
                     isMobile={isMobile}
@@ -368,6 +398,18 @@ export default function MobileControls({
           </div>
         </div>
         </>
+      )}
+      
+      {/* Video Modal */}
+      {videoUrl && (
+        <VideoModal
+          videoUrl={videoUrl}
+          onClose={() => {
+            setVideoUrl(null);
+            setCurrentExercise(null);
+          }}
+          exerciseName={currentExercise?.name}
+        />
       )}
     </>
   );

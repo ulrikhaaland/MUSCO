@@ -8,6 +8,9 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/app/context/AuthContext';
 import { useApp } from '@/app/context/AppContext';
 import { ProgramType } from '../../../../shared/types';
+import { Exercise } from '@/app/types/program';
+import { VideoModal } from './VideoModal';
+import { fetchExerciseVideoUrl } from '@/app/utils/videoUtils';
 
 interface PartPopupProps {
   part: AnatomyPart | null;
@@ -32,11 +35,19 @@ export default function PartPopup({
   const { saveViewerState } = useApp();
   const [message, setMessage] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  
+  // Video handling for exercise cards
+  const [videoUrl, setVideoUrl] = useState<string | null>(null);
+  const [loadingVideoExercise, setLoadingVideoExercise] = useState<string | null>(null);
+  const [currentExercise, setCurrentExercise] = useState<Exercise | null>(null);
+  
   const {
     messages,
     isLoading,
     rateLimited,
     followUpQuestions,
+    exerciseResults,
+    inlineExercises,
     messagesRef,
     resetChat,
     handleOptionClick,
@@ -44,6 +55,24 @@ export default function PartPopup({
     getPartDisplayName,
     streamError,
   } = usePartChat({ selectedPart: part, selectedGroups: groups, forceMode, onGenerateProgram });
+  
+  const handleVideoClick = async (exercise: Exercise) => {
+    const exerciseId = exercise.name || exercise.id;
+    if (loadingVideoExercise === exerciseId) return;
+    
+    setLoadingVideoExercise(exerciseId);
+    setCurrentExercise(exercise);
+    try {
+      const videoUrl = await fetchExerciseVideoUrl(exercise);
+      if (videoUrl) {
+        setVideoUrl(videoUrl);
+      }
+    } catch (error) {
+      console.error('Error loading video:', error);
+    } finally {
+      setLoadingVideoExercise(null);
+    }
+  };
 
   // no local scroll tracking in this variant
 
@@ -169,7 +198,11 @@ export default function PartPopup({
         isLoggedIn={Boolean(user)}
         isSubscriber={Boolean(user?.profile?.isSubscriber)}
         followUpQuestions={forceMode === 'explore' ? followUpQuestions.filter((q) => q.chatMode !== 'diagnosis') : followUpQuestions}
+        exerciseResults={exerciseResults}
+        inlineExercises={inlineExercises}
         onQuestionClick={handleQuestionSelect}
+        onVideoClick={handleVideoClick}
+        loadingVideoExercise={loadingVideoExercise}
         onScroll={handleScroll}
         part={part}
         groups={groups}
@@ -244,6 +277,18 @@ export default function PartPopup({
           </button>
         </form>
       </div>
+      
+      {/* Video Modal */}
+      {videoUrl && (
+        <VideoModal
+          videoUrl={videoUrl}
+          onClose={() => {
+            setVideoUrl(null);
+            setCurrentExercise(null);
+          }}
+          exerciseName={currentExercise?.name}
+        />
+      )}
     </div>
   );
 }

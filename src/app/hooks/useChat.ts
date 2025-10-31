@@ -15,6 +15,7 @@ import { Exercise } from '../types/program';
 import { useTranslation } from '../i18n';
 import { useAuth } from '../context/AuthContext';
 import { useApp } from '../context/AppContext';
+import { extractExerciseMarkers } from '../utils/exerciseMarkerParser';
 
 // Type for storing failed message details for retry
 type FailedMessageInfo = {
@@ -34,6 +35,7 @@ export function useChat() {
   const [assistantResponse, setAssistantResponse] =
     useState<DiagnosisAssistantResponse | null>(null);
   const [exerciseResults, setExerciseResults] = useState<Exercise[]>([]);
+  const [inlineExercises, setInlineExercises] = useState<Map<string, Exercise>>(new Map());
   const threadIdRef = useRef<string | null>(null);
   const assistantIdRef = useRef<string | null>(null);
   const messageQueueRef = useRef<
@@ -191,6 +193,43 @@ export function useChat() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const fetchInlineExercises = async (messageContent: string) => {
+    const exerciseMarkers = extractExerciseMarkers(messageContent);
+    const exerciseNames = exerciseMarkers.map(m => m.name);
+    
+    if (exerciseNames.length === 0) return;
+
+    try {
+      // Search for ALL exercises (no query filter) to ensure we get matches
+      const response = await fetch('/api/exercises/search', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          bodyParts: [], // Search all body parts
+          query: '', // No query filter - get all exercises
+          limit: 200, // High limit to get all exercises
+          locale,
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.exercises) {
+          // Create map of exercise name -> Exercise for quick lookup
+          const exerciseMap = new Map<string, Exercise>();
+          data.exercises.forEach((ex: Exercise) => {
+            exerciseMap.set(ex.name, ex);
+          });
+          setInlineExercises(exerciseMap);
+        }
+      } else {
+        console.error('[useChat] API returned error:', response.status);
+      }
+    } catch (error) {
+      console.error('[useChat] Failed to fetch inline exercises:', error);
+    }
+  };
+
   const resetChat = () => {
     // Increment reset counter to invalidate in-flight streams
     const resetId = Date.now();
@@ -200,6 +239,7 @@ export function useChat() {
     setFollowUpQuestions([]);
     setAssistantResponse(null);
     setExerciseResults([]); // Clear exercise results on reset
+    setInlineExercises(new Map()); // Clear inline exercises on reset
     setIsLoading(false); // Stop loading state
     try {
       clearChatState?.();
@@ -395,7 +435,7 @@ export function useChat() {
           (content, payloadObj) => {
             // Ignore events if chat was reset during this stream
             if ((window as any).__chatResetId !== streamResetId) {
-              console.log('[useChat] Ignoring SSE event - chat was reset');
+              // Chat was reset - ignore this event
               return;
             }
             
@@ -467,9 +507,13 @@ export function useChat() {
           }
 
             if (payloadObj && (payloadObj as any).type === 'complete') {
-              // Stream complete - optional handling
-                return;
+              // Stream complete - fetch exercises for inline markers
+              const lastMessage = messages[messages.length - 1];
+              if (lastMessage?.role === 'assistant' && lastMessage.content) {
+                fetchInlineExercises(lastMessage.content);
               }
+              return;
+            }
 
             // Handle text content
             if (content) {
@@ -612,6 +656,17 @@ export function useChat() {
     } catch {}
   }, [messages, followUpQuestions, assistantResponse, saveChatState]);
 
+  // Fetch inline exercises when assistant messages are added
+  useEffect(() => {
+    const lastMessage = messages[messages.length - 1];
+    if (lastMessage?.role === 'assistant' && lastMessage.content) {
+      const markers = extractExerciseMarkers(lastMessage.content);
+      if (markers.length > 0 && inlineExercises.size === 0) {
+        fetchInlineExercises(lastMessage.content);
+      }
+    }
+  }, [messages]);
+
   // Use assistantResponse.followUpQuestions when available (has augmented fields)
   // Fall back to incremental followUpQuestions if no assistant response yet
   const finalFollowUpQuestions = assistantResponse?.followUpQuestions || followUpQuestions;
@@ -624,6 +679,7 @@ export function useChat() {
     followUpQuestions: finalFollowUpQuestions,
     assistantResponse,
     exerciseResults,
+    inlineExercises,
     lastSendError,
     streamError,
     resetChat,

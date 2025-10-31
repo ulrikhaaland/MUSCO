@@ -349,6 +349,31 @@ export async function streamChatCompletion({
       }
     }
 
+    // DEBUG: Log what we're sending to the LLM
+    console.log('═══════════════════════════════════════');
+    console.log('[LLM Request]');
+    console.log('Model:', selectedModel);
+    console.log('Mode:', isExploreMode ? 'explore' : isDiagnosisMode ? 'diagnosis' : 'unknown');
+    console.log('Message count:', formattedMessages.length);
+    console.log('System prompt length:', systemMessage.length, 'chars');
+    console.log('Has exercise index:', systemMessage.includes('Shoulders:'));
+    console.log('Has EXERCISE_QUERY instruction:', systemMessage.includes('<<EXERCISE_QUERY'));
+    console.log('Has exercise database section:', systemMessage.includes('**8. Exercise Database'));
+    console.log('Estimated tokens:', Math.ceil(systemMessage.length / 4));
+    
+    // Extract and log the exercise database section
+    if (systemMessage.includes('**Exercise Database')) {
+      const exerciseDbStart = systemMessage.indexOf('**Exercise Database');
+      const exerciseDbEnd = systemMessage.indexOf('**When user asks about exercises', exerciseDbStart);
+      const exerciseDbSection = systemMessage.substring(exerciseDbStart, exerciseDbEnd > 0 ? exerciseDbEnd : exerciseDbStart + 500);
+      console.log('\n📚 Exercise Database Section:');
+      console.log(exerciseDbSection);
+      console.log('');
+    }
+    
+    console.log('Last user message:', formattedMessages[formattedMessages.length - 1]?.content.substring(0, 200));
+    console.log('═══════════════════════════════════════');
+    
     // Call OpenAI Responses API (streaming) with minimal reasoning effort
     const stream = await openai.responses.stream({
       model: selectedModel,
@@ -923,7 +948,7 @@ export async function generateExerciseProgramWithModel(context: {
       currentDay: new Date().getDay(),
       previousProgram: context.previousProgram,
       language: context.language || 'en', // Default to English if not specified
-    });
+    });   
 
     // Call the OpenAI chat completion API
     const response = await openai.chat.completions.create({

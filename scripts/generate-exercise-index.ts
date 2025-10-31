@@ -131,11 +131,13 @@ function formatIndexCompact(index: ExerciseIndex): string {
   Object.entries(index).forEach(([bodyPart, data]) => {
     const mainPart = bodyPart.split('(')[0].trim();
     if (!grouped[mainPart]) grouped[mainPart] = [];
-    grouped[mainPart].push(...data.exercises.slice(0, 6));
+    // Increased from 6 to 12 to include more bodyweight/band exercises
+    grouped[mainPart].push(...data.exercises.slice(0, 12));
   });
 
   Object.entries(grouped).forEach(([bodyPart, exercises]) => {
-    const uniqueExercises = [...new Set(exercises)].slice(0, 8);
+    // Increased from 8 to 15 to include more variety
+    const uniqueExercises = [...new Set(exercises)].slice(0, 15);
     output += `• ${bodyPart}: ${uniqueExercises.join(', ')}...\n`;
   });
 

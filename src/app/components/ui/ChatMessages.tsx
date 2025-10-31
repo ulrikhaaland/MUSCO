@@ -1,6 +1,5 @@
 import { ChatMessage, Question } from '@/app/types';
 import { Exercise } from '@/app/types/program';
-import ReactMarkdown from 'react-markdown';
 import { RefObject, useEffect, useState, useRef, useCallback } from 'react';
 import { useApp } from '@/app/context/AppContext';
 import { LoadingMessage } from './LoadingMessage';
@@ -8,6 +7,7 @@ import { BodyPartGroup } from '@/app/config/bodyPartGroups';
 import { AnatomyPart } from '@/app/types/human';
 import ExerciseChatCard from './ExerciseChatCard';
 import { isProgramButton as checkIsProgramButton } from '@/app/utils/questionAugmentation';
+import { MessageWithExercises } from './MessageWithExercises';
 
 // Follow-up Questions Component
 interface FollowUpQuestionsProps {
@@ -110,6 +110,7 @@ interface ChatMessagesProps {
   isSubscriber?: boolean;
   followUpQuestions?: Question[];
   exerciseResults?: Exercise[];
+  inlineExercises?: Map<string, Exercise>;
   onQuestionClick?: (question: Question) => void;
   onVideoClick?: (exercise: Exercise) => void;
   onScroll?: (event: React.UIEvent<HTMLDivElement>) => void;
@@ -135,6 +136,7 @@ export function ChatMessages({
   isSubscriber,
   followUpQuestions = [],
   exerciseResults = [],
+  inlineExercises = new Map(),
   onQuestionClick,
   onVideoClick,
   onScroll,
@@ -210,7 +212,7 @@ export function ChatMessages({
   }, []);
 
   // Handle touch events to detect user interaction for DOM events
-  const handleDOMInteraction = (e: Event) => {
+  const handleDOMInteraction = useCallback((e: Event) => {
     // Skip if the interaction is on a follow-up question button or scroll button
     const target = e.target as HTMLElement;
 
@@ -226,7 +228,7 @@ export function ChatMessages({
       hasHadTouchRef.current = true; // Mark that we've had a real touch
       resetTouchState();
     }
-  };
+  }, [resetTouchState]);
 
   // Handle React touch events
   const handleReactTouchStart = useCallback<
@@ -426,10 +428,10 @@ export function ChatMessages({
         container.scrollTo = originalScrollTo;
       }
     };
-  }, [getScrollContainer, resetTouchState, updateScrollButtonVisibility]);
+  }, [getScrollContainer, resetTouchState, updateScrollButtonVisibility, handleDOMInteraction]);
 
   // Modified version of scrollToBottom function to scroll to the bottom properly
-  const scrollToBottom = (forceScroll = false) => {
+  const scrollToBottom = useCallback((forceScroll = false) => {
     // Skip scrolling if disabled, unless forceScroll is true
     if (disableAutoScroll && !forceScroll) return;
 
@@ -453,7 +455,7 @@ export function ChatMessages({
     } catch (error) {
       console.error('Error scrolling to bottom:', error);
     }
-  };
+  }, [disableAutoScroll, getScrollContainer, updateScrollButtonVisibility]);
 
   // Track follow-up questions and auto-scroll when they appear
   const followUpQuestionsRef = useRef<Question[]>([]);
@@ -493,7 +495,7 @@ export function ChatMessages({
 
     // Additional attempt after a delay to ensure visibility
     setTimeout(scrollToBottom, 250);
-  }, [userTouched, disableAutoScroll]);
+  }, [userTouched, disableAutoScroll, scrollToBottom]);
 
   useEffect(() => {
     // Skip empty arrays
@@ -746,6 +748,9 @@ export function ChatMessages({
     updateScrollButtonVisibility,
     isScrolledToBottom,
     disableAutoScroll,
+    isMobile,
+    messagesRef,
+    scrollToBottom,
   ]);
 
   // Fix the scrollToBottom click handler
@@ -875,9 +880,10 @@ export function ChatMessages({
     keepSpacer,
     isStreaming,
     showFollowUps,
-    messages.length,
+    messages,
     followUpQuestions.length,
-    isStreaming ? messages[messages.length - 1]?.content : null,
+    availableHeight,
+    messagesRef,
   ]);
 
   // Add touch animation and scrollbar styles
@@ -982,7 +988,7 @@ export function ChatMessages({
   // Initialize loading ref on mount
   useEffect(() => {
     initialLoadingRef.current = isLoading;
-  }, []); // Only run once on mount
+  }, [isLoading]); // Only run once on mount
 
   // Effect to track loading state changes and manage spacer
   useEffect(() => {
@@ -1076,9 +1082,9 @@ export function ChatMessages({
   }, [
     availableHeight,
     isStreaming,
-    messages.length,
+    messages,
     followUpQuestions.length,
-    isStreaming ? messages[messages.length - 1]?.content : null,
+    chatContainerHeight,
   ]);
 
   return (
@@ -1123,18 +1129,13 @@ export function ChatMessages({
                 >
                   {msg.role === 'assistant' ? (
                     <div className="prose prose-invert max-w-none prose-p:my-2 prose-pre:my-0 prose-pre:leading-none prose-strong:text-indigo-300 prose-strong:font-bold">
-                      <ReactMarkdown
+                      <MessageWithExercises
+                        content={msg.content}
+                        exercises={inlineExercises}
+                        onVideoClick={onVideoClick}
+                        loadingVideoExercise={loadingVideoExercise}
                         className="text-base leading-relaxed"
-                        components={{
-                          ul: ({ children }) => (
-                            <ul className="list-none">
-                              {children as React.ReactNode}
-                            </ul>
-                          ),
-                        }}
-                      >
-                        {msg.content}
-                      </ReactMarkdown>
+                      />
                       {msg.hasError && (
                         <div>
                           <div className="mt-2 text-sm text-red-400">
@@ -1273,18 +1274,13 @@ export function ChatMessages({
                     >
                       <div className="px-4 py-2 rounded-lg bg-gray-800 mr-4">
                         <div className="prose prose-invert max-w-none prose-p:my-2 prose-pre:my-0 prose-pre:leading-none prose-strong:text-indigo-300 prose-strong:font-bold">
-                          <ReactMarkdown
+                          <MessageWithExercises
+                            content={messages[messages.length - 1].content}
+                            exercises={inlineExercises}
+                            onVideoClick={onVideoClick}
+                            loadingVideoExercise={loadingVideoExercise}
                             className="text-base leading-relaxed"
-                            components={{
-                              ul: ({ children }) => (
-                                <ul className="list-none">
-                                  {children as React.ReactNode}
-                                </ul>
-                              ),
-                            }}
-                          >
-                            {messages[messages.length - 1].content}
-                          </ReactMarkdown>
+                          />
 
                           {/* Show error message if stream error occurred */}
                           {streamError && (

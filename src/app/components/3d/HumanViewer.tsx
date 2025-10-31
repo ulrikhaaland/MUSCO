@@ -53,6 +53,8 @@ export default function HumanViewer({
   const maxChatWidth = 800;
   const [chatWidth, setChatWidth] = useState(384);
   const [isDragging, setIsDragging] = useState(false);
+  const [isAtMinWidth, setIsAtMinWidth] = useState(false);
+  const [isAtMaxWidth, setIsAtMaxWidth] = useState(false);
   const lastWidthRef = useRef(chatWidth);
   const rafRef = useRef<number | null>(null);
   const [isRotating, setIsRotating] = useState(false);
@@ -398,8 +400,11 @@ export default function HumanViewer({
       rafRef.current = requestAnimationFrame(() => {
         const newWidth = window.innerWidth - e.clientX;
         const maxAllowed = Math.min(maxChatWidth, window.innerWidth - minChatWidth);
-        lastWidthRef.current = Math.min(Math.max(minChatWidth, newWidth), maxAllowed);
-        setChatWidth(lastWidthRef.current);
+        const clampedWidth = Math.min(Math.max(minChatWidth, newWidth), maxAllowed);
+        lastWidthRef.current = clampedWidth;
+        setChatWidth(clampedWidth);
+        setIsAtMinWidth(clampedWidth <= minChatWidth);
+        setIsAtMaxWidth(clampedWidth >= maxAllowed);
       });
     };
 
@@ -493,6 +498,8 @@ export default function HumanViewer({
     const clamped = Math.min(Math.max(minChatWidth, desired), maxAllowed);
     setChatWidth(clamped);
     lastWidthRef.current = clamped;
+    setIsAtMinWidth(clamped <= minChatWidth);
+    setIsAtMaxWidth(clamped >= maxAllowed);
   }, []);
 
   // Keep lastWidthRef synced
@@ -510,6 +517,8 @@ export default function HumanViewer({
       if (clamped !== lastWidthRef.current) {
         lastWidthRef.current = clamped;
         setChatWidth(clamped);
+        setIsAtMinWidth(clamped <= minChatWidth);
+        setIsAtMaxWidth(clamped >= maxAllowed);
         try {
           window.localStorage.setItem(DESKTOP_SPLIT_KEY, String(clamped));
         } catch {}
@@ -809,9 +818,25 @@ export default function HumanViewer({
       {/* Drag Handle - Desktop Only */}
       <div
         onMouseDown={startDragging}
-        className="hidden md:block w-1 hover:w-2 bg-gray-800 hover:bg-indigo-600 cursor-ew-resize transition-all duration-150 active:bg-indigo-500 flex-shrink-0 z-30"
+        className="hidden md:block w-1 hover:w-2 bg-gray-800 hover:bg-indigo-600 cursor-ew-resize transition-all duration-150 active:bg-indigo-500 flex-shrink-0 z-30 relative group"
         style={{ touchAction: 'none' }}
-      />
+      >
+        {/* Resize Icon - Custom Bidirectional Arrows */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
+          <svg
+            className="w-12 h-12 text-gray-400 group-hover:text-white transition-colors"
+            viewBox="0 0 48 48"
+            fill="currentColor"
+          >
+            {/* Left Arrow - show when NOT at min width (can expand left) */}
+            {!isAtMinWidth && <path d="M14 24l-6-6v4H2v4h6v4z" />}
+            {/* Right Arrow - show when NOT at max width (can shrink right) */}
+            {!isAtMaxWidth && <path d="M34 24l6-6v4h6v4h-6v4z" />}
+            {/* Center vertical line */}
+            <rect x="22" y="12" width="4" height="24" rx="2" />
+          </svg>
+        </div>
+      </div>
 
       {/* Right side - Popup with animation - Desktop Only */}
       <div

@@ -125,10 +125,21 @@ Forbidden phrases in assistant bubble: "Acknowledged", "Below are next steps", "
 
 ${EXERCISE_INDEX_COMPACT}
 
-**When user asks about exercises:**
-• Insert marker at END of your message: \`<<EXERCISE_QUERY:BodyPart:search>>\`
-• System will display 3 exercise cards automatically
-• Example: "Focus on stabilizers. <<EXERCISE_QUERY:Shoulders:rotator>>"
-• NEVER list exercise names in text - the marker triggers the cards
+**How to recommend exercises:**
+1. **Reference specific exercises by name** from the index above in your response
+2. **Format exercise names** with double brackets: \`[[Exercise Name]]\`
+3. **Be specific** - use the exact names from the database
+4. **Natural placement** - mention exercises where they make sense in your explanation
+
+**Examples:**
+• "For rotator cuff health, try [[Cable Face Pull]] and [[Band Pull Apart]] to strengthen the posterior shoulder."
+• "Build anterior deltoid with [[Military Press]] or [[Seated Shoulder Press]]."
+• "Start with [[Bodyweight Glute Bridge]] then progress to [[Barbell Glute Bridge]]."
+
+**Rules:**
+• Only reference exercises from the database above
+• Use exact names: "[[Cable Face Pull]]" not "[[face pull]]"
+• Inline placement: mention exercises naturally within sentences
+• 2-4 exercises per response when recommending
 
 Ready.`;
