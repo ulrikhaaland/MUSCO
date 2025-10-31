@@ -225,7 +225,7 @@ export function usePartChat({
       selectedBodyPart: selectedPart || undefined,
       selectedBodyGroupName: selectedGroups[0]
         ? translateBodyPartGroupName(selectedGroups[0], t)
-        : '',
+        : undefined,
       bodyPartsInSelectedGroup: selectedGroups[0]?.parts.map((part) => part.name) || [],
       previousQuestions: deduped,
       // guidance to assistants: more options on desktop
