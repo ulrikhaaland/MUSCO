@@ -17,6 +17,7 @@ import { AnatomyPart } from '@/app/types/human';
 import { useAuth } from '@/app/context/AuthContext';
 import { useTranslation } from '@/app/i18n';
 import { useRouter } from 'next/navigation';
+import { ProgramType } from '../../../../shared/types';
 
 interface MobileControlsProps {
   isRotating: boolean;
@@ -33,9 +34,9 @@ interface MobileControlsProps {
   onQuestionClick?: (question: Question) => void;
   onDiagnosis: (response: DiagnosisAssistantResponse) => void;
   hideBottomSheet?: boolean;
-  onAreasSelected: () => void;
   overlayOpen?: boolean;
   onCloseOverlay?: () => void;
+  onGenerateProgram?: (programType: ProgramType) => void;
 }
 
 // Bottom sheet fully removed; overlay-only implementation
@@ -54,9 +55,9 @@ export default function MobileControls({
   onHeightChange,
   onQuestionClick,
   onDiagnosis,
-  onAreasSelected,
   overlayOpen,
   onCloseOverlay,
+  onGenerateProgram,
 }: MobileControlsProps) {
   const { t } = useTranslation();
   const router = useRouter();
@@ -80,6 +81,7 @@ export default function MobileControls({
     isLoading,
     rateLimited,
     followUpQuestions,
+    exerciseResults,
     messagesRef,
     resetChat,
     handleOptionClick,
@@ -90,6 +92,7 @@ export default function MobileControls({
   } = usePartChat({
     selectedPart: selectedPart,
     selectedGroups: selectedGroups,
+    onGenerateProgram,
   });
 
   // Use the largest, stable viewport height captured at mount to avoid keyboard-induced jumps
@@ -155,6 +158,7 @@ export default function MobileControls({
 
   useEffect(() => {
     if (assistantResponse) {
+      console.log('[MobileControls] Updating diagnosis:', assistantResponse);
       onDiagnosis(assistantResponse);
     }
   }, [assistantResponse, onDiagnosis]);

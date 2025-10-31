@@ -1,10 +1,13 @@
 import { ChatMessage, Question } from '@/app/types';
+import { Exercise } from '@/app/types/program';
 import ReactMarkdown from 'react-markdown';
 import { RefObject, useEffect, useState, useRef, useCallback } from 'react';
 import { useApp } from '@/app/context/AppContext';
 import { LoadingMessage } from './LoadingMessage';
 import { BodyPartGroup } from '@/app/config/bodyPartGroups';
 import { AnatomyPart } from '@/app/types/human';
+import ExerciseChatCard from './ExerciseChatCard';
+import { isProgramButton as checkIsProgramButton } from '@/app/utils/questionAugmentation';
 
 // Follow-up Questions Component
 interface FollowUpQuestionsProps {
@@ -106,8 +109,11 @@ interface ChatMessagesProps {
   isLoggedIn?: boolean;
   isSubscriber?: boolean;
   followUpQuestions?: Question[];
+  exerciseResults?: Exercise[];
   onQuestionClick?: (question: Question) => void;
+  onVideoClick?: (exercise: Exercise) => void;
   onScroll?: (event: React.UIEvent<HTMLDivElement>) => void;
+  loadingVideoExercise?: string | null;
 
   part?: AnatomyPart;
   groups?: BodyPartGroup[];
@@ -128,8 +134,11 @@ export function ChatMessages({
   isLoggedIn,
   isSubscriber,
   followUpQuestions = [],
+  exerciseResults = [],
   onQuestionClick,
+  onVideoClick,
   onScroll,
+  loadingVideoExercise,
 
   part,
   groups,
@@ -516,19 +525,18 @@ export function ChatMessages({
       );
     });
 
-    // Stagger question animations when new questions appear
+    // Show new questions immediately
     if (hasNewQuestions) {
-      // Clear previous questions
-      setVisibleQuestions(new Set());
+      const prevIds = new Set(followUpQuestionsRef.current.map((q) => getQId(q)));
+      const newQuestions = followUpQuestions.filter((q) => !prevIds.has(getQId(q)));
 
-      // Add questions with staggered delays
-      followUpQuestions.forEach((question, index) => {
+      setVisibleQuestions((prev) => {
+        const updated = new Set(prev);
+        newQuestions.forEach((question) => {
         const questionId = question.title || question.question;
-        setTimeout(() => {
-          setVisibleQuestions((prev) => new Set([...prev, questionId]));
-
-          // Questions animation complete
-        }, index * 150); // 150ms delay between each question
+          updated.add(questionId);
+        });
+        return updated;
       });
     }
 
@@ -921,20 +929,25 @@ export function ChatMessages({
     // Get unique identifier for this question
     const questionId = question.title || question.question;
 
-    // Prevent double-clicking/tapping the same question
-    if (isProcessingClickRef.current || clickedQuestions.has(questionId)) {
+    // Check if this is a program generation button (should be reusable)
+    const isProgramButton = checkIsProgramButton(question);
+
+    // Prevent double-clicking/tapping the same question (except program buttons)
+    if (isProcessingClickRef.current || (!isProgramButton && clickedQuestions.has(questionId))) {
       return;
     }
 
-    // Immediately mark as processing to prevent double clicks
+    // Immediately mark as processing to prevent double clicks 
     isProcessingClickRef.current = true;
 
-    // Add to clicked questions set
+    // Add to clicked questions set (but not for program generation buttons)
+    if (!isProgramButton) {
     setClickedQuestions((prev) => {
       const newSet = new Set(prev);
       newSet.add(questionId);
       return newSet;
     });
+    }
 
     // Clear any previous timeout if it exists
     if (clickTimeoutRef.current) {
@@ -1109,7 +1122,7 @@ export function ChatMessages({
                   } ${msg.hasError ? 'border border-red-400' : ''}`}
                 >
                   {msg.role === 'assistant' ? (
-                    <div className="prose prose-invert max-w-none prose-p:my-2 prose-pre:my-0 prose-pre:leading-none prose-strong:text-white prose-strong:font-semibold">
+                    <div className="prose prose-invert max-w-none prose-p:my-2 prose-pre:my-0 prose-pre:leading-none prose-strong:text-indigo-300 prose-strong:font-bold">
                       <ReactMarkdown
                         className="text-base leading-relaxed"
                         components={{
@@ -1181,6 +1194,20 @@ export function ChatMessages({
                 transition: 'opacity 0.2s ease-out',
               }}
             >
+              {/* Exercise results */}
+              {exerciseResults.length > 0 && onVideoClick && (
+                <div className="mb-4 space-y-2">
+                  {exerciseResults.map((exercise) => (
+                    <ExerciseChatCard
+                      key={exercise.id || exercise.name}
+                      exercise={exercise}
+                      onVideoClick={onVideoClick}
+                      loadingVideoExercise={loadingVideoExercise}
+                    />
+                  ))}
+                </div>
+              )}
+
               <FollowUpQuestions
                 questions={followUpQuestions}
                 clickedQuestions={clickedQuestions}
@@ -1245,7 +1272,7 @@ export function ChatMessages({
                       ref={streamMessageRef}
                     >
                       <div className="px-4 py-2 rounded-lg bg-gray-800 mr-4">
-                        <div className="prose prose-invert max-w-none prose-p:my-2 prose-pre:my-0 prose-pre:leading-none prose-strong:text-white prose-strong:font-semibold">
+                        <div className="prose prose-invert max-w-none prose-p:my-2 prose-pre:my-0 prose-pre:leading-none prose-strong:text-indigo-300 prose-strong:font-bold">
                           <ReactMarkdown
                             className="text-base leading-relaxed"
                             components={{

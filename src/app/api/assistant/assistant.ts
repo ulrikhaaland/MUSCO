@@ -122,7 +122,6 @@ export async function sendMessage(
   if (onStream) {
     const reader = response.body?.getReader();
     const decoder = new TextDecoder();
-    let firstChunkReceived = false; // Flag to track first chunk
 
     if (!reader) {
       throw new Error('Failed to get response reader');
@@ -131,14 +130,6 @@ export async function sendMessage(
     try {
       while (true) {
         const { done, value } = await reader.read();
-
-        // Measure time to first chunk
-        if (!firstChunkReceived && value) {
-            const firstChunkTime = performance.now();
-            console.log(`Time to first stream chunk: ${firstChunkTime - startTime} ms`);
-            firstChunkReceived = true;
-        }
-
         if (done) break;
 
         const chunk = decoder.decode(value);
@@ -150,8 +141,26 @@ export async function sendMessage(
             if (data === '[DONE]') break;
             try {
               const parsed = JSON.parse(data);
-              if (parsed.content || parsed.payload) {
-                onStream(parsed.content || '', parsed.payload);
+              
+              // Handle new structured event types from backend
+              if (parsed.type === 'text') {
+                // Text content - pass as content
+                onStream(parsed.content || '', undefined);
+              } else if (parsed.type === 'followup') {
+                // Follow-up question - pass as payload
+                onStream('', { type: 'followup', question: parsed.question } as any);
+              } else if (parsed.type === 'assistant_response') {
+                // Complete assistant response - pass as payload
+                onStream('', { type: 'assistant_response', response: parsed.response } as any);
+              } else if (parsed.type === 'complete') {
+                // Stream complete - optional callback
+                onStream('', { type: 'complete' } as any);
+              } else if (parsed.payload) {
+                // Legacy error payloads (rate limit, stream error)
+                onStream('', parsed.payload);
+              } else if (parsed.content) {
+                // Legacy content chunks (backward compatibility)
+                onStream(parsed.content, undefined);
               }
             } catch (e) {
               console.error('Error parsing stream data:', e);
@@ -237,5 +246,22 @@ export async function generateExerciseProgram(
     throw new Error('Failed to generate exercise program');
   }
 
+  return response.json();
+}
+
+export async function routeChatMode(payload: {
+  message: string;
+  selectedBodyGroupName?: string;
+  selectedBodyPart?: string;
+  language?: string;
+}): Promise<{ chatMode: 'diagnosis' | 'explore' }> {
+  const response = await fetch('/api/assistant', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'route_chat_mode', payload }),
+  });
+  if (!response.ok) {
+    throw new Error('Failed to route chat mode');
+  }
   return response.json();
 }

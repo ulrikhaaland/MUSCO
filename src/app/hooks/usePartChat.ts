@@ -1,12 +1,14 @@
 import { useRef, useEffect, useState, useCallback } from 'react';
 import { useChat } from './useChat';
 import { AnatomyPart } from '../types/human';
-import { Question } from '../types';
+import { Question, DiagnosisAssistantResponse } from '../types';
 import { BodyPartGroup } from '../config/bodyPartGroups';
 import { ProgramIntention, useApp } from '../context/AppContext';
 import { ProgramType } from '../../../shared/types';
 import { useTranslation } from '../i18n';
 import { translateBodyPartGroupName, translatePartDirectionPrefix } from '../utils/bodyPartTranslation';
+import { decideMode } from './logic/partChatDecision';
+import { detectProgramType } from '../utils/questionAugmentation';
 
 // Initialize translations with null function that will be replaced
 let t = (key: string) => key;
@@ -25,6 +27,7 @@ const getInitialQuestionsTemplate = (): Question[] => [
     question: t('chat.question.explore.text'),
     asked: false,
     meta: t('chat.question.explore.meta'),
+    chatMode: 'explore',
   },
   {
     title: t('chat.question.exercise.title'),
@@ -69,16 +72,21 @@ function getInitialQuestions(name?: string, intention?: string, translationFunc?
   return questions;
 }
 
+// Pure decision helper extracted for unit testing
+// moved to './logic/partChatDecision'
+
 export interface UsePartChatProps {
   selectedPart: AnatomyPart | null;
   selectedGroups: BodyPartGroup[];
   forceMode?: 'diagnosis' | 'explore';
+  onGenerateProgram?: (programType: ProgramType, diagnosisData?: DiagnosisAssistantResponse | null) => void;
 }
 
 export function usePartChat({
   selectedPart,
   selectedGroups,
   forceMode,
+  onGenerateProgram,
 }: UsePartChatProps) {
   const { t } = useTranslation();
   const messagesRef = useRef<HTMLDivElement>(null);
@@ -88,6 +96,7 @@ export function usePartChat({
     rateLimited,
     userPreferences,
     followUpQuestions: chatFollowUpQuestions,
+    exerciseResults,
     resetChat,
     sendChatMessage,
     assistantResponse,
@@ -141,34 +150,52 @@ export function usePartChat({
   const switchHandledRef = useRef(false);
 
   const handleOptionClick = useCallback((question: Question) => {
-    // Decide which assistant should handle the next turn.
-    // Prefer explicit programType flag from the backend. Fallback to heuristics on the title text.
-    const programTypeRaw = (question as any).chatMode as string | undefined;
-    const titleLower = (question.title || '').toLowerCase();
-
-    let nextMode: 'diagnosis' | 'explore' = chatMode;
-
-    // Localised titles
-    const exploreTitleLower = t('chat.question.explore.title').toLowerCase();
-
-    const isDiagnosisOption = programTypeRaw === 'diagnosis';
-
-    const isExploreOption =
-      titleLower === exploreTitleLower ||
-      titleLower.includes('explore') ||
-      titleLower.includes('utforsk');
-
-    if (forceMode) {
-      nextMode = forceMode;
-    } else {
-      if (isDiagnosisOption) {
-        nextMode = 'diagnosis';
-      } else if (isExploreOption) {
-        nextMode = 'explore';
+    // Check if this is a special "Answer in chat" button
+    if (question.question === 'Answer in chat') {
+      // Focus the chat input field
+      const chatInput = document.querySelector('input[type="text"], textarea') as HTMLElement;
+      if (chatInput) {
+        chatInput.focus();
       }
+      // Don't clear follow-ups - let user see the button while typing
+      return;
     }
 
-    setChatMode(nextMode);
+    // Check if this is a program generation button
+    // Primary check: backend-augmented fields
+    if ((question as any).generate && (question as any).programType) {
+      const programType = (question as any).programType as ProgramType;
+      onGenerateProgram?.(programType, assistantResponse);
+      setLocalFollowUpQuestions([]);
+      return;
+    }
+    
+    // Fallback check: detect by question text (for cached/old questions)
+    const detection = detectProgramType(question.question);
+    
+    if (detection.isProgram && detection.programType) {
+      onGenerateProgram?.(detection.programType, assistantResponse);
+      setLocalFollowUpQuestions([]);
+      return;
+    }
+
+    const rawMode = (question as any).chatMode as ('diagnosis' | 'explore') | undefined;
+
+    const decision = decideMode({
+      forceMode,
+      rawMode,
+      currentChatMode: chatMode,
+      messagesLength: messages.length,
+      questionTitle: question.title,
+      questionHasChatMode: Boolean((question as any).chatMode),
+      questionGenerate: Boolean((question as any).generate),
+    });
+
+    try {
+      console.info(`level=info event=fe_mode_decide next=${decision.nextMode} force=${Boolean(forceMode)} chat_mode=${rawMode ?? 'none'}`);
+    } catch {}
+
+    setChatMode(decision.nextMode);
 
     // Merge previous and current follow-up options, de-duplicating by question text
     const merged = [...previousQuestions, ...localFollowUpQuestions];
@@ -185,8 +212,12 @@ export function usePartChat({
     // Immediately clear follow-up questions to prevent stale ones from flashing
     setLocalFollowUpQuestions([]);
 
+    if (decision.deferRouter) {
+      try { console.info('level=info event=fe_defer_router reason=first_typed'); } catch {}
+    }
+
     sendChatMessage(question.question, {
-      mode: nextMode,
+      mode: decision.modeForPayload,
       userPreferences,
       selectedBodyPart: selectedPart || undefined,
       selectedBodyGroupName: selectedGroups[0]
@@ -196,8 +227,9 @@ export function usePartChat({
       previousQuestions: deduped,
       // guidance to assistants: more options on desktop
       maxFollowUpOptions: isMobile ? 3 : 6,
+      diagnosisAssistantResponse: assistantResponse || undefined, // Pass current assistant state
     });
-  }, [chatMode, previousQuestions, localFollowUpQuestions, userPreferences, selectedPart, selectedGroups, t, sendChatMessage, forceMode, isMobile]);
+  }, [chatMode, previousQuestions, localFollowUpQuestions, userPreferences, selectedPart, selectedGroups, t, sendChatMessage, forceMode, isMobile, messages.length, assistantResponse, onGenerateProgram]);
 
   const getGroupDisplayName = (): string => {
     if (selectedGroups.length === 0) {
@@ -235,12 +267,14 @@ export function usePartChat({
     }
   }, [assistantResponse, selectedPart, selectedGroups, t, handleOptionClick]);
 
+  const returnedFollowUps = messages.length === 0 ? localFollowUpQuestions : chatFollowUpQuestions;
+
   return {
     messages,
     isLoading,
     rateLimited,
-    followUpQuestions:
-      messages.length === 0 ? localFollowUpQuestions : chatFollowUpQuestions,
+    followUpQuestions: returnedFollowUps,
+    exerciseResults,
     messagesRef,
     resetChat,
     handleOptionClick,

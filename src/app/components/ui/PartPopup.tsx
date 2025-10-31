@@ -7,6 +7,7 @@ import { AnatomyPart } from '@/app/types/human';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/app/context/AuthContext';
 import { useApp } from '@/app/context/AppContext';
+import { ProgramType } from '../../../../shared/types';
 
 interface PartPopupProps {
   part: AnatomyPart | null;
@@ -14,6 +15,7 @@ interface PartPopupProps {
   onClose: () => void;
   onQuestionClick?: (question: Question) => void;
   forceMode?: 'diagnosis' | 'explore';
+  onGenerateProgram?: (programType: ProgramType) => void;
 }
 
 export default function PartPopup({
@@ -22,6 +24,7 @@ export default function PartPopup({
   onClose,
   onQuestionClick,
   forceMode,
+  onGenerateProgram,
 }: PartPopupProps) {
   const router = useRouter();
   
@@ -40,7 +43,7 @@ export default function PartPopup({
     getGroupDisplayName,
     getPartDisplayName,
     streamError,
-  } = usePartChat({ selectedPart: part, selectedGroups: groups, forceMode });
+  } = usePartChat({ selectedPart: part, selectedGroups: groups, forceMode, onGenerateProgram });
 
   // no local scroll tracking in this variant
 
@@ -165,7 +168,7 @@ export default function PartPopup({
         }}
         isLoggedIn={Boolean(user)}
         isSubscriber={Boolean(user?.profile?.isSubscriber)}
-        followUpQuestions={forceMode === 'explore' ? followUpQuestions.filter((q) => q.chatMode !== 'diagnosis' && !q.generate) : followUpQuestions}
+        followUpQuestions={forceMode === 'explore' ? followUpQuestions.filter((q) => q.chatMode !== 'diagnosis') : followUpQuestions}
         onQuestionClick={handleQuestionSelect}
         onScroll={handleScroll}
         part={part}

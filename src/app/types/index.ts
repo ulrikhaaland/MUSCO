@@ -1,6 +1,9 @@
 import { ProgramType } from '../../../shared/types';
 import { AnatomyPart } from './human';
 
+// Re-export ProgramType for convenience
+export type { ProgramType };
+
 export type Gender = 'male' | 'female';
 
 export interface PopupOption {
@@ -84,18 +87,21 @@ export interface Question {
 }
 
 export interface DiagnosisAssistantResponse {
+  /* Running summary of collected information */
+  summary: string | null; // Updated on each turn with a concise summary of what's been learned
+  
   /* 7-Q core + optional fields */
   informationalInsights: string | null;
-  painfulAreas: string[];
-  onset: 'acute' | 'gradual' | 'unknown' | null;
+  painfulAreas: string | null;
+  onset: string | null; // Free text: "suddenly", "gradually", "over time", etc.
   painLocation: string | null;
   painScale: number | null; // 0-10
-  painCharacter: string | null;
-  aggravatingFactors: string[]; // array
-  relievingFactors: string[]; // array
-  painPattern: 'constant' | 'intermittent' | 'activity-dependent' | null;
-  priorInjury?: 'yes' | 'no' | null;
-  mechanismOfInjury?: 'trauma' | 'overuse' | 'posture' | 'unknown' | null;
+  painCharacter: string | null; // Free text: "sharp", "dull", "aching", "burning", etc.
+  aggravatingFactors: string | null; // Free text, comma-separated if multiple
+  relievingFactors: string | null; // Free text, comma-separated if multiple
+  painPattern: string | null; // Free text: "constant", "intermittent", "comes and goes", etc.
+  priorInjury: string | null; // Free text: "yes", "no", or description
+  mechanismOfInjury: string | null; // Free text: description of how injury occurred
 
   /* state flags */
   assessmentComplete: boolean;
@@ -103,9 +109,9 @@ export interface DiagnosisAssistantResponse {
 
   /* program scaffolding */
   diagnosis: string | null;
-  timeFrame: string | null; // null until set
-  avoidActivities: string[];
-  targetAreas: string[];
+  timeFrame: string | null;
+  avoidActivities: string | null;
+  targetAreas: string | null;
   /* UI */
   followUpQuestions: Question[];
   // The type of program the user is getting, e.g. 'exercise' or 'recovery'

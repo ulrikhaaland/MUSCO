@@ -11,6 +11,7 @@ import {
   UserPreferences,
   DiagnosisAssistantResponse,
 } from '../types';
+import { Exercise } from '../types/program';
 import { useTranslation } from '../i18n';
 import { useAuth } from '../context/AuthContext';
 import { useApp } from '../context/AppContext';
@@ -28,12 +29,11 @@ export function useChat() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [rateLimited, setRateLimited] = useState(false);
-  const [userPreferences, setUserPreferences] = useState<
-    UserPreferences | undefined
-  >();
+  const [userPreferences] = useState<UserPreferences | undefined>();
   const [followUpQuestions, setFollowUpQuestions] = useState<Question[]>([]);
   const [assistantResponse, setAssistantResponse] =
     useState<DiagnosisAssistantResponse | null>(null);
+  const [exerciseResults, setExerciseResults] = useState<Exercise[]>([]);
   const threadIdRef = useRef<string | null>(null);
   const assistantIdRef = useRef<string | null>(null);
   const messageQueueRef = useRef<
@@ -54,6 +54,7 @@ export function useChat() {
     null
   );
   const [streamError, setStreamError] = useState<Error | null>(null); // Add stream error state
+  const streamHadErrorRef = useRef(false);
 
   useEffect(() => {
     async function initializeAssistant() {
@@ -83,6 +84,9 @@ export function useChat() {
     }
 
     initializeAssistant();
+    // NOTE: initializeAssistant is stable, and we intentionally
+    // run this once on mount.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Hydrate rate-limit state from session so overlay persists across redirects
@@ -98,7 +102,9 @@ export function useChat() {
   // If user logs in (uid present), clear local rate-limit flag (server will re-enforce if still true)
   useEffect(() => {
     if (user?.uid) {
-      try { window.sessionStorage.removeItem('rateLimited'); } catch {}
+      try {
+        window.sessionStorage.removeItem('rateLimited');
+      } catch {}
       setRateLimited(false);
     }
   }, [user?.uid]);
@@ -109,12 +115,16 @@ export function useChat() {
     if (messages.length > 0) return;
     try {
       const snapshot = restoreChatState?.();
-      if (snapshot && Array.isArray(snapshot.messages) && snapshot.messages.length > 0) {
+      if (
+        snapshot &&
+        Array.isArray(snapshot.messages) &&
+        snapshot.messages.length > 0
+      ) {
         setMessages(snapshot.messages);
         setFollowUpQuestions(snapshot.followUpQuestions || []);
         setAssistantResponse(snapshot.assistantResponse ?? null);
       }
-    } catch (e) {
+    } catch {
       // ignore
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -139,26 +149,32 @@ export function useChat() {
         setTimeout(() => {
           // Double check if still needed (e.g., user didn't reset chat in the meantime)
           if (!lastUserMessageRef.current) {
-              console.log("Refetch cancelled: No last user message.");
+            console.log('Refetch cancelled: No last user message.');
               isRefetchingRef.current = false;
               return;
           }
-          console.log("Executing delayed refetch...");
+          console.log('Executing delayed refetch...');
           sendChatMessage(
             lastUserMessageRef.current.messageContent,
             lastUserMessageRef.current.chatPayload,
             true // Indicate this is a refetch
           ).finally(() => {
             isRefetchingRef.current = false; // Mark refetching as complete
-            console.log(`Delayed Refetch finally block: isRefetchingRef reset to ${isRefetchingRef.current}`);
+            console.log(
+              `Delayed Refetch finally block: isRefetchingRef reset to ${isRefetchingRef.current}`
+            );
           });
         }, 1000); // Delay for 1 second (1000ms)
-
-      } else if (document.visibilityState === 'hidden' /* && isLoading - Removing isLoading check here, rely on flag set in sendChatMessage */) {
+      } else if (
+        document.visibilityState ===
+        'hidden' /* && isLoading - Removing isLoading check here, rely on flag set in sendChatMessage */
+      ) {
         // If page hides, and streamPossiblyInterruptedRef is true (set before API call),
         // keep the flag as true. If it's false, it means no stream was active.
         if (streamPossiblyInterruptedRef.current) {
-             console.log('App hidden while stream might be active, interruption flag remains true.');
+          console.log(
+            'App hidden while stream might be active, interruption flag remains true.'
+          );
         } else {
              // console.log('App hidden, but no stream was active.');
         }
@@ -172,16 +188,27 @@ export function useChat() {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
     // Remove isLoading dependency, rely on the ref flag set within sendChatMessage
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const resetChat = () => {
+    // Increment reset counter to invalidate in-flight streams
+    const resetId = Date.now();
+    (window as any).__chatResetId = resetId;
+    
     setMessages([]);
     setFollowUpQuestions([]);
     setAssistantResponse(null);
-    try { clearChatState?.(); } catch {}
-    justResetRef.current = true; // ADDED: Set the flag
+    setExerciseResults([]); // Clear exercise results on reset
+    setIsLoading(false); // Stop loading state
+    try {
+      clearChatState?.();
+    } catch {}
+    justResetRef.current = true; // ADDED: Ref to track if reset just occurred
     // Log to confirm assistantResponse is intended to be null for the next send operation
-    console.log('[useChat - resetChat] assistantResponse set to null and justResetRef set to true. The next \'Value of assistantResponse (state) before capturing\' log should show null.');
+    console.log(
+      "[useChat - resetChat] assistantResponse set to null and justResetRef set to true. The next 'Value of assistantResponse (state) before capturing' log should show null."
+    );
     messageQueueRef.current = []; // Clear the queue on reset
     lastUserMessageRef.current = null; // Clear last message on reset
     streamPossiblyInterruptedRef.current = false; // Reset interruption flag
@@ -213,15 +240,22 @@ export function useChat() {
     if (messageQueueRef.current.length > 0 && !isLoading) {
       const nextMessage = messageQueueRef.current[0];
       messageQueueRef.current = messageQueueRef.current.slice(1);
-      await sendChatMessage(nextMessage.message, nextMessage.payload);
+      // Merge the LATEST assistantResponse when processing (not when queueing)
+      const payloadWithLatestContext = {
+        ...nextMessage.payload,
+        diagnosisAssistantResponse: assistantResponse || nextMessage.payload.diagnosisAssistantResponse,
+      };
+      await sendChatMessage(nextMessage.message, payloadWithLatestContext);
     }
   };
+
+  // (Client no longer decides mode; routing handled server-side.)
 
   const sendChatMessage = async (
     messageContent: string,
     chatPayload: Omit<ChatPayload, 'message'>,
     isRefetch: boolean = false, // Added flag to indicate refetch
-    isResend: boolean = false   // Added flag to indicate a resend after error
+    isResend: boolean = false // Added flag to indicate a resend after error
   ) => {
     // Block send if rate-limited; keep overlay visible
     if (rateLimited && !isRefetch) {
@@ -242,35 +276,33 @@ export function useChat() {
     if (!isRefetch) {
       if (isLoading) {
         // Queue the message if loading (unless it's a refetch)
-        // Since we're queueing a new message, we can consider the current response complete
-        // setIsLoading(false); // Let's not assume the current response is complete, just queue
-        console.log("Chat is busy, queuing message:", messageContent);
+        // Don't save assistantResponse here - it will be retrieved fresh when processing
+        console.log('Chat is busy, queuing message:', messageContent);
         messageQueueRef.current.push({
           message: messageContent,
-          payload: {
-            ...chatPayload,
-            diagnosisAssistantResponse: assistantResponse,
-          },
+          payload: chatPayload, // Don't include assistantResponse yet
         });
+        // CRITICAL: Clear follow-up questions immediately when queueing
+        // This prevents duplicate questions from appearing when the stream completes
+        setFollowUpQuestions([]);
         return;
       }
       
       if (isResend) {
-        // Find and remove the error message and keep only the original user message
+        // Robust cleanup: remove any assistant error bubbles and empty assistant tails
         setMessages((prev) => {
-          // Find the last error message index
-          const errorMsgIndex = [...prev].reverse().findIndex(msg => 
-            msg.role === 'assistant' && msg.hasError === true);
-          
-          if (errorMsgIndex >= 0) {
-            // Real index from the end
-            const realErrorIndex = prev.length - 1 - errorMsgIndex;
-            
-            // Remove the error message
-            return prev.filter((_, index) => index !== realErrorIndex);
+          let filtered = prev.filter(
+            (m: any) => !(m.role === 'assistant' && m.hasError === true)
+          );
+          while (
+            filtered.length > 0 &&
+            filtered[filtered.length - 1].role === 'assistant' &&
+            (!filtered[filtered.length - 1].content ||
+              filtered[filtered.length - 1].content.trim() === '')
+          ) {
+            filtered = filtered.slice(0, -1);
           }
-          
-          return prev;
+          return filtered;
         });
       } else {
         // Normal new message flow - add the user message
@@ -282,12 +314,14 @@ export function useChat() {
         messageContent, 
         chatPayload: {
           ...chatPayload,
-          diagnosisAssistantResponse: assistantResponse
-        }
+          diagnosisAssistantResponse: assistantResponse,
+        },
       };
     } else {
       // If it's a refetch, remove the potentially incomplete last assistant message
-      console.log("Refetching: Removing potentially incomplete last assistant message.");
+      console.log(
+        'Refetching: Removing potentially incomplete last assistant message.'
+      );
       setMessages((prev) => {
           const lastMsg = prev[prev.length - 1];
           if (lastMsg && lastMsg.role === 'assistant') {
@@ -301,7 +335,9 @@ export function useChat() {
     let previousTurnAssistantResponseFromState = assistantResponse; // Capture current state from hook
 
     if (justResetRef.current) {
-      console.log('[useChat] First message after reset: Forcing previousTurnAssistantResponse to null.');
+      console.log(
+        '[useChat] First message after reset: Forcing previousTurnAssistantResponse to null.'
+      );
       previousTurnAssistantResponseFromState = null;
       justResetRef.current = false; // Clear the flag after using it once
     }
@@ -309,14 +345,19 @@ export function useChat() {
     // Reset state for the new/refetched response
     setFollowUpQuestions([]);
     setAssistantResponse(null); // Also reset previous assistant response data
+    setExerciseResults([]); // Clear previous exercise results
     setLastSendError(null); // Clear any previous error when sending a new message
     setStreamError(null); // Clear any previous stream error
+    streamHadErrorRef.current = false;
     setIsLoading(true);
     streamPossiblyInterruptedRef.current = false; // Reset before starting
 
     try {
       // Build lightweight prior history for chat-completions (exclude current message)
-      const priorHistory = messages.map((m) => ({ role: m.role as ('user' | 'assistant' | 'system'), content: m.content }));
+      const priorHistory = messages.map((m) => ({
+        role: m.role as 'user' | 'assistant' | 'system',
+        content: m.content,
+      }));
 
       const payload: ChatPayload = {
         ...chatPayload,
@@ -328,585 +369,116 @@ export function useChat() {
         messages: priorHistory,
       };
 
-      if (isRefetch) {
-        console.log("Refetch: Sending payload:", JSON.stringify(payload));
-      }
+      // Client no longer routes; backend determines mode for first typed message when needed
 
-      let accumulatedContent = '';
-      let jsonDetected = false;
-      let accumulatedJsonBuffer = '';
+      if (isRefetch) {
+        console.log('Refetch: Sending payload:', JSON.stringify(payload));
+      }
 
       // Mark stream as potentially interruptible right before the async call
       // Only set if not already loading (prevents overriding during queue processing)
       if (!isLoading) {
         streamPossiblyInterruptedRef.current = true;
-        console.log("Set streamPossiblyInterruptedRef = true before await sendMessage");
+        console.log(
+          'Set streamPossiblyInterruptedRef = true before await sendMessage'
+        );
       }
 
-      // Send the message and handle streaming response
+      // Capture reset ID to detect if chat was reset during this stream
+      const streamResetId = (window as any).__chatResetId || 0;
+      
+      // Send the message and handle streaming response with structured events
       try {
-        await sendMessage(threadIdRef.current ?? '', payload, (content, payloadObj) => {
-          // Detect rate limit from SSE payload
+        await sendMessage(
+          threadIdRef.current ?? '',
+          payload,
+          (content, payloadObj) => {
+            // Ignore events if chat was reset during this stream
+            if ((window as any).__chatResetId !== streamResetId) {
+              console.log('[useChat] Ignoring SSE event - chat was reset');
+              return;
+            }
+            
+            // Handle error payloads
           if (payloadObj && (payloadObj as any).error === 'free_limit_exceeded') {
             setRateLimited(true);
-            try { window.sessionStorage.setItem('rateLimited', '1'); } catch {}
+              try {
+                window.sessionStorage.setItem('rateLimited', '1');
+              } catch {}
             setIsLoading(false);
             return;
           }
+            
           if (payloadObj && (payloadObj as any).error === 'stream_error') {
             setStreamError(new Error('Stream error'));
+              streamHadErrorRef.current = true;
             setIsLoading(false);
-            return;
-          }
-          if (!content) return;
-
-          if (isRefetch) {
-            console.log("Refetch: Received content chunk:", content ? content.substring(0, 50) + '...' : 'null');
-          }
-
-          // If the stream was previously marked as interrupted and we are now receiving content,
-          // it means the connection survived or reconnected automatically. Reset the flag.
-          if (streamPossiblyInterruptedRef.current) {
-              console.log("Receiving content after potential interruption, resetting flag.");
-              streamPossiblyInterruptedRef.current = false;
-          }
-
-          // Add to buffer for cross-chunk marker detection
-          accumulatedJsonBuffer += content;
-
-          // First check if content has any '<<' marker
-          const markerIndex = content.indexOf('<<');
-          if (markerIndex !== -1) {
-            // Extract text before the marker and process any json after it
-            const textBeforeMarker = content.substring(0, markerIndex).trim();
-            jsonDetected = true;
-
-            // Add text content before marker to messages if any
-            if (textBeforeMarker) {
               setMessages((prev) => {
-                const lastMessage = prev[prev.length - 1];
-                if (lastMessage?.role === 'assistant') {
+                const lastMsg = prev[prev.length - 1];
+                if (lastMsg && lastMsg.role === 'assistant' && (lastMsg as any).hasError !== true) {
                   return [
                     ...prev.slice(0, -1),
-                    {
-                      ...lastMessage,
-                      content: lastMessage.content + textBeforeMarker,
-                      timestamp: new Date(),
-                    },
+                    { ...lastMsg, hasError: true, content: lastMsg.content || 'Message interrupted' },
                   ];
-                }
+                } else if (lastMsg && lastMsg.role === 'user') {
                 return [
                   ...prev,
                   {
-                    id: `assistant-${Date.now()}-${Math.random()
-                      .toString(36)
-                      .slice(2, 7)}`,
+                      id: `assistant-error-${Date.now()}`,
                     role: 'assistant',
-                    content: textBeforeMarker,
+                      content: 'Unable to complete response due to connection issue.',
+                      hasError: true,
                     timestamp: new Date(),
                   },
                 ];
+                }
+                return prev;
               });
+              return;
             }
 
-            // Collect the content after '<<' for JSON processing
-            accumulatedContent += content.substring(markerIndex);
-
-            // Don't show this chunk with marker
+            // Handle structured event from backend
+            if (payloadObj && (payloadObj as any).type === 'followup') {
+              const question = (payloadObj as any).question as Question;
+              // Skip adding follow-ups if user already queued a message
+              // (they clicked a follow-up before the stream completed)
+              if (messageQueueRef.current.length > 0) {
             return;
           }
-
-          // First check if accumulated buffer contains markers
-          const markerStartIndex = accumulatedJsonBuffer.indexOf('<<JSON_DATA>>');
-          const markerEndIndex = accumulatedJsonBuffer.indexOf('<<JSON_END>>');
-
-          if (
-            markerStartIndex !== -1 &&
-            markerEndIndex !== -1 &&
-            markerEndIndex > markerStartIndex
-          ) {
-            // We have complete JSON with markers in the buffer
-            jsonDetected = true;
-
-            // Extract text content before markers
-            const textContentBeforeJson = accumulatedJsonBuffer
-              .substring(0, markerStartIndex)
-              .trim();
-
-            // Extract JSON content between markers
-            const jsonContent = accumulatedJsonBuffer
-              .substring(
-                markerStartIndex + '<<JSON_DATA>>'.length,
-                markerEndIndex
-              )
-              .trim();
-
-            // Extract content after JSON end marker
-            const contentAfterJson = accumulatedJsonBuffer
-              .substring(markerEndIndex + '<<JSON_END>>'.length)
-              .trim();
-
-            // Add text content before JSON to message if it exists
-            if (textContentBeforeJson) {
-              setMessages((prev) => {
-                const lastMessage = prev[prev.length - 1];
-                if (lastMessage?.role === 'assistant') {
-                  return [
-                    ...prev.slice(0, -1),
-                    {
-                      ...lastMessage,
-                      content: textContentBeforeJson, // Replace with clean content
-                      timestamp: new Date(),
-                    },
-                  ];
-                }
-                return [
-                  ...prev,
-                  {
-                    id: `assistant-${Date.now()}-${Math.random()
-                      .toString(36)
-                      .slice(2, 7)}`,
-                    role: 'assistant',
-                    content: textContentBeforeJson,
-                    timestamp: new Date(),
-                  },
-                ];
-              });
-            }
-
-            // If there's no visible text before JSON and previous message isn't assistant,
-            // insert a minimal placeholder to avoid "only follow-ups" UI state.
-            if (!textContentBeforeJson) {
-              setMessages((prev) => {
-                const lastMessage = prev[prev.length - 1];
-                if (lastMessage?.role === 'assistant') return prev;
-                return [
-                  ...prev,
-                  {
-                    id: `assistant-${Date.now()}-${Math.random()
-                      .toString(36)
-                      .slice(2, 7)}`,
-                    role: 'assistant',
-                    content: '',
-                    timestamp: new Date(),
-                  },
-                ];
-              });
-            }
-
-            // Process JSON content
-            try {
-              const response = JSON.parse(
-                jsonContent
-              ) as DiagnosisAssistantResponse;
-              setAssistantResponse(response);
-
-              if (
-                response.followUpQuestions &&
-                response.followUpQuestions.length > 0
-              ) {
-                // Process questions one by one with a small delay to simulate incremental appearance
-                response.followUpQuestions.forEach((question, index) => {
-                  setTimeout(() => {
                     setFollowUpQuestions((prev) => {
                       if (!prev.some((q) => q.question === question.question)) {
                         return [...prev, question];
                       }
                       return prev;
                     });
-                  }, index * 150); // Stagger by 150ms per question
-                });
+              return;
               }
-            } catch (e) {
-              // JSON parsing failed
-            }
 
-            // Clear buffer but keep content after end marker if any
-            accumulatedJsonBuffer = contentAfterJson;
-
-            // If we have content after JSON, process it normally
-            if (contentAfterJson) {
-              // Check for more JSON or just add as regular content
-              if (!jsonDetected) {
-                // Process as regular content
-                setMessages((prev) => {
-                  const lastMessage = prev[prev.length - 1];
-                  if (lastMessage?.role === 'assistant') {
-                    return [
-                      ...prev.slice(0, -1),
-                      {
-                        ...lastMessage,
-                        content: lastMessage.content + contentAfterJson,
-                        timestamp: new Date(),
-                      },
-                    ];
-                  }
-                  return [
-                    ...prev,
-                    {
-                      id: `assistant-${Date.now()}-${Math.random()
-                        .toString(36)
-                        .slice(2, 7)}`,
-                      role: 'assistant',
-                      content: contentAfterJson,
-                      timestamp: new Date(),
-                    },
-                  ];
-                });
-              }
-            }
-
+            if (payloadObj && (payloadObj as any).type === 'assistant_response') {
+              const response = (payloadObj as any).response as DiagnosisAssistantResponse;
+              setAssistantResponse(response);
             return;
           }
 
-          // If we have markers but not the complete pair, wait for more content
-          if (
-            (markerStartIndex !== -1 && markerEndIndex === -1) ||
-            content.includes('<<')
-          ) {
-            // We have a marker or part of one, extract any text content before it
-            if (content.includes('<<')) {
-              // Only add text content that comes before the marker
-              const textBeforeMarker = content
-                .substring(0, content.indexOf('<<'))
-                .trim();
-              if (textBeforeMarker) {
-                setMessages((prev) => {
-                  const lastMessage = prev[prev.length - 1];
-                  if (lastMessage?.role === 'assistant') {
-                    return [
-                      ...prev.slice(0, -1),
-                      {
-                        ...lastMessage,
-                        content: lastMessage.content + textBeforeMarker,
-                        timestamp: new Date(),
-                      },
-                    ];
-                  }
-                  return [
-                    ...prev,
-                    {
-                      id: `assistant-${Date.now()}-${Math.random()
-                        .toString(36)
-                        .slice(2, 7)}`,
-                      role: 'assistant',
-                      content: textBeforeMarker,
-                      timestamp: new Date(),
-                    },
-                  ];
-                });
-              }
-            }
-
-            // Check if we have the start marker
-            if (markerStartIndex !== -1) {
-              // Try to extract partial questions from what we have so far
-              const partialJson = accumulatedJsonBuffer.substring(
-                markerStartIndex + '<<JSON_DATA>>'.length
-              );
-
-              // Look for complete question objects in the partial JSON
-              const questionMatches = partialJson.match(
-                /"question"\s*:\s*"[^"]*"/g
-              );
-
-              if (questionMatches) {
-                for (const questionMatch of questionMatches) {
-                  // Find the complete object containing this question
-                  const questionEndIndex = partialJson.indexOf(
-                    '}',
-                    partialJson.indexOf(questionMatch)
-                  );
-
-                  if (questionEndIndex !== -1) {
-                    // Look backwards for the start of this object
-                    const questionStartIndex = partialJson.lastIndexOf(
-                      '{',
-                      partialJson.indexOf(questionMatch)
-                    );
-
-                    if (questionStartIndex !== -1) {
-                      const questionObject = partialJson.substring(
-                        questionStartIndex,
-                        questionEndIndex + 1
-                      );
-
-                      try {
-                        const question = JSON.parse(questionObject) as Question;
-                        // Only add if not already in the follow-up questions
-                        setFollowUpQuestions((prev) => {
-                          if (
-                            !prev.some((q) => q.question === question.question)
-                          ) {
-                            return [...prev, question];
-                          }
-                          return prev;
-                        });
-                      } catch (e) {
-                        // Skip malformed question
-                      }
-                    }
-                  }
-                }
-              }
-            }
-
-            // Wait for more content before displaying
+            if (payloadObj && (payloadObj as any).type === 'exercises') {
+              const exercises = (payloadObj as any).exercises as Exercise[];
+              setExerciseResults(exercises);
             return;
           }
 
-          // No markers found, proceed with normal processing
-          if (!jsonDetected) {
-            // Early suppression for partial JSON without markers (streaming across chunks)
-            // If a chunk starts a JSON object that looks like our schema, do not render it.
-            const braceIndex = content.indexOf('{');
-            if (braceIndex !== -1) {
-              const tail = content.substring(braceIndex);
-              const looksLikeSchema = /"diagnosis"|"followUpQuestions"/.test(tail);
-              if (looksLikeSchema) {
-                // Add any text before the JSON brace
-                const textBeforeJson = content.substring(0, braceIndex).trim();
-                if (textBeforeJson) {
-                  setMessages((prev) => {
-                    const lastMessage = prev[prev.length - 1];
-                    if (lastMessage?.role === 'assistant') {
-                      return [
-                        ...prev.slice(0, -1),
-                        {
-                          ...lastMessage,
-                          content: lastMessage.content + textBeforeJson,
-                          timestamp: new Date(),
-                        },
-                      ];
-                    }
-                    return [
-                      ...prev,
-                      {
-                        id: `assistant-${Date.now()}-${Math.random()
-                          .toString(36)
-                          .slice(2, 7)}`,
-                        role: 'assistant',
-                        content: textBeforeJson,
-                        timestamp: new Date(),
-                      },
-                    ];
-                  });
-                }
-
-                // Start accumulating JSON across chunks and prevent it from rendering
-                jsonDetected = true;
-                accumulatedContent += tail;
-
-                // Try to extract any early follow-up questions from the partial JSON
-                const questionMatchesEarly = tail.match(/"question"\s*:\s*"[^"]*"/g);
-                if (questionMatchesEarly) {
-                  for (const qm of questionMatchesEarly) {
-                    const endIdx = tail.indexOf('}', tail.indexOf(qm));
-                    if (endIdx !== -1) {
-                      const startIdx = tail.lastIndexOf('{', tail.indexOf(qm));
-                      if (startIdx !== -1) {
-                        const objStr = tail.substring(startIdx, endIdx + 1);
-                        try {
-                          const qObj = JSON.parse(objStr) as Question;
-                          setFollowUpQuestions((prev) => {
-                            if (!prev.some((q) => q.question === qObj.question)) {
-                              return [...prev, qObj];
-                            }
-                            return prev;
-                          });
-                        } catch {}
-                      }
-                    }
-                  }
-                }
-
-                // Suppress rendering this chunk further
+            if (payloadObj && (payloadObj as any).type === 'complete') {
+              // Stream complete - optional handling
                 return;
               }
-            }
 
-            // Look for JSON structure in the message
-            const jsonRegex =
-              /\{\s*"diagnosis"[\s\S]*"followUpQuestions"[\s\S]*\}|\{\s*["']diagnosis["']\s*:\s*null,\s*["']followUpQuestions["']\s*:\s*\[[\s\S]*\]\s*\}/;
-            const markerRegex = /<<JSON_DATA>>[\s\S]*<<JSON_END>>/;
-            // Check if content has a partial start marker without end marker
-            const hasPartialMarker =
-              content.includes('<<JSON_DATA') &&
-              !content.includes('<<JSON_END>>');
-
-            let contentToAdd = content;
-            let foundJson = false;
-
-            // If we have a partial marker, don't display this chunk at all
-            if (hasPartialMarker) {
-              // Set flag but don't display the content containing the marker
-              foundJson = true;
-              jsonDetected = true;
-              contentToAdd = content
-                .substring(0, content.indexOf('<<JSON_DATA'))
-                .trim();
-              // Add partial JSON to accumulated content for later extraction
-              accumulatedContent += content.substring(
-                content.indexOf('<<JSON_DATA')
-              );
-            }
-            // First check for the markers
-            else if (markerRegex.test(content)) {
-              foundJson = true;
-              const match = content.match(markerRegex);
-              if (match) {
-                // Remove the marked JSON from the content
-                contentToAdd = content.replace(match[0], '').trim();
-
-                // Extract JSON content between markers
-                const jsonContent = match[0]
-                  .replace('<<JSON_DATA>>', '')
-                  .replace('<<JSON_END>>', '')
-                  .trim();
-
-                jsonDetected = true;
-                accumulatedContent = jsonContent;
-
-                try {
-                  const response = JSON.parse(
-                    jsonContent
-                  ) as DiagnosisAssistantResponse;
-                  setAssistantResponse(response);
-
-                  if (
-                    response.followUpQuestions &&
-                    response.followUpQuestions.length > 0
-                  ) {
-                    // Process questions one by one with a small delay to simulate incremental appearance
-                    response.followUpQuestions.forEach((question, index) => {
-                      setTimeout(() => {
-                        setFollowUpQuestions((prev) => {
-                          if (
-                            !prev.some((q) => q.question === question.question)
-                          ) {
-                            return [...prev, question];
-                          }
-                          return prev;
-                        });
-                      }, index * 150); // Stagger by 150ms per question
-                    });
-                  }
-                } catch (e) {
-                  // JSON parsing failed
-                }
-              }
-            }
-            // Then check for standard JSON format if no markers found
-            else if (jsonRegex.test(content)) {
-              foundJson = true;
-              const jsonMatch = content.match(jsonRegex);
-              if (jsonMatch) {
-                // Remove JSON from the content
-                contentToAdd = content.replace(jsonMatch[0], '').trim();
-
-                // Use the JSON for processing follow-up questions
-                jsonDetected = true;
-                accumulatedContent = jsonMatch[0];
-
-                try {
-                  const response = JSON.parse(
-                    jsonMatch[0]
-                  ) as DiagnosisAssistantResponse;
-                  setAssistantResponse(response);
-
-                  // Extract questions one by one instead of all at once
-                  if (
-                    response.followUpQuestions &&
-                    response.followUpQuestions.length > 0
-                  ) {
-                    // Process each question individually with a small delay
-                    response.followUpQuestions.forEach((question, index) => {
-                      setTimeout(() => {
-                        setFollowUpQuestions((prev) => {
-                          if (
-                            !prev.some((q) => q.question === question.question)
-                          ) {
-                            return [...prev, question];
-                          }
-                          return prev;
-                        });
-                      }, index * 150); // Stagger by 150ms per question
-                    });
-                  }
-                } catch (e) {
-                  // JSON parsing failed
-
-                  // Even if full parsing failed, try to extract individual questions
-                  const questionMatches = jsonMatch[0].match(
-                    /"question"\s*:\s*"[^"]*"/g
-                  );
-
-                  if (questionMatches) {
-                    for (const questionMatch of questionMatches) {
-                      // Find the complete object containing this question
-                      const questionEndIndex = jsonMatch[0].indexOf(
-                        '}',
-                        jsonMatch[0].indexOf(questionMatch)
-                      );
-
-                      if (questionEndIndex !== -1) {
-                        // Look backwards for the start of this object
-                        const questionStartIndex = jsonMatch[0].lastIndexOf(
-                          '{',
-                          jsonMatch[0].indexOf(questionMatch)
-                        );
-
-                        if (questionStartIndex !== -1) {
-                          const questionObject = jsonMatch[0].substring(
-                            questionStartIndex,
-                            questionEndIndex + 1
-                          );
-
-                          try {
-                            const question = JSON.parse(
-                              questionObject
-                            ) as Question;
-                            setFollowUpQuestions((prev) => {
-                              if (
-                                !prev.some(
-                                  (q) => q.question === question.question
-                                )
-                              ) {
-                                return [...prev, question];
+            // Handle text content
+            if (content) {
+              // Reset interruption flag when receiving content
+              if (streamPossiblyInterruptedRef.current) {
+                streamPossiblyInterruptedRef.current = false;
                               }
-                              return prev;
-                            });
-                          } catch (e) {
-                            // Skip malformed question
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
 
-          // Only add message content if there's content to add
-          if (contentToAdd) {
-            // Proactively strip any trailing JSON portion that may be concatenated
-            const stripIndexMarked = contentToAdd.search(/<<JSON_DATA>>/);
-            const stripIndexPlainA = contentToAdd.search(/\{[\s\S]*?"diagnosis"[\s\S]*?\}/);
-            const stripIndexPlainB = contentToAdd.search(/\{[\s\S]*?"followUpQuestions"[\s\S]*?\}/);
-            const candidates = [stripIndexMarked, stripIndexPlainA, stripIndexPlainB].filter((i) => i >= 0);
-            if (candidates.length > 0) {
-              const cut = Math.min(...candidates);
-              contentToAdd = contentToAdd.substring(0, cut).trim();
-            }
-              // Check if the content contains '<<' and cut off the message at that point
-              const markerIndex = contentToAdd.indexOf('<<');
-              if (markerIndex !== -1) {
-                // Only include content before the marker
-                contentToAdd = contentToAdd.substring(0, markerIndex).trim();
-              }
-
-              // Only add if we have content left after filtering
-              if (contentToAdd) {
+              // Add text to assistant message
                 setMessages((prev) => {
                   const lastMessage = prev[prev.length - 1];
                   if (lastMessage?.role === 'assistant') {
@@ -914,7 +486,7 @@ export function useChat() {
                       ...prev.slice(0, -1),
                       {
                         ...lastMessage,
-                        content: lastMessage.content + contentToAdd,
+                      content: lastMessage.content + content,
                         timestamp: new Date(),
                       },
                     ];
@@ -922,130 +494,28 @@ export function useChat() {
                   return [
                     ...prev,
                     {
-                      id: `assistant-${Date.now()}-${Math.random()
-                        .toString(36)
-                        .slice(2, 7)}`,
+                    id: `assistant-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
                       role: 'assistant',
-                      content: contentToAdd,
+                    content,
                       timestamp: new Date(),
                     },
                   ];
                 });
-
-                // After appending, ensure no JSON leaked in the composed message
-                cleanupAssistantJsonLeak();
               }
             }
-
-            if (!foundJson) {
-              accumulatedContent += content;
-            }
-          }
-
-          // Always accumulate content for JSON parsing, even if we're not updating messages
-          if (jsonDetected) {
-            accumulatedContent += content;
-
-            // Try to find complete follow-up questions in the accumulated content
-            const questionMatches = accumulatedContent.match(
-              /"question":\s*"[^"]*"/g
-            );
-            if (questionMatches) {
-              for (const questionMatch of questionMatches) {
-                // Find the complete object containing this question
-                const questionEndIndex = accumulatedContent.indexOf(
-                  '}',
-                  accumulatedContent.indexOf(questionMatch)
-                );
-                if (questionEndIndex !== -1) {
-                  // Look backwards for the start of this object
-                  const questionStartIndex = accumulatedContent.lastIndexOf(
-                    '{',
-                    accumulatedContent.indexOf(questionMatch)
-                  );
-                  if (questionStartIndex !== -1) {
-                    const questionObject = accumulatedContent.substring(
-                      questionStartIndex,
-                      questionEndIndex + 1
-                    );
-                    try {
-                      const question = JSON.parse(questionObject) as Question;
-                      // Only add if not already present
-                      setFollowUpQuestions((prev) => {
-                        if (!prev.some((q) => q.question === question.question)) {
-                          return [...prev, question];
-                        }
-                        return prev;
-                      });
-                    } catch (e) {
-                      // Skip malformed question
-                    }
-                  }
-                }
-              }
-            }
-
-            // Still try to parse the complete response when possible
-            try {
-              // First check for our new markers
-              const markerJsonRegex = /<<JSON_DATA>>[\s\S]*<<JSON_END>>/;
-              let jsonMatch = accumulatedContent.match(markerJsonRegex)?.[0];
-
-              if (jsonMatch) {
-                // Extract just the JSON part between the markers
-                const jsonContent = jsonMatch
-                  .replace('<<JSON_DATA>>', '')
-                  .replace('<<JSON_END>>', '')
-                  .trim();
-                const response = JSON.parse(
-                  jsonContent
-                ) as DiagnosisAssistantResponse;
-                setAssistantResponse(response);
-
-                // Also clean the markers from any existing messages
-                setMessages((prev) => {
-                  if (prev.length === 0) return prev;
-                  const lastMessage = prev[prev.length - 1];
-                  if (lastMessage.role === 'assistant') {
-                    const cleanedContent = lastMessage.content
-                      .replace(markerJsonRegex, '')
-                      .trim();
-                    return [
-                      ...prev.slice(0, -1),
-                      {
-                        ...lastMessage,
-                        content: cleanedContent,
-                        timestamp: new Date(),
-                      },
-                    ];
-                  }
-                  return prev;
-                });
-              } else {
-                // Fall back to the original method if no markers found
-                jsonMatch = accumulatedContent.match(/\{[\s\S]*\}/)?.[0];
-                if (jsonMatch) {
-                  // Make sure we have a valid JSON object by removing any text before the first {
-                  const cleanedJson = jsonMatch.substring(jsonMatch.indexOf('{'));
-                  const response = JSON.parse(
-                    cleanedJson
-                  ) as DiagnosisAssistantResponse;
-                  setAssistantResponse(response);
-                }
-              }
-            } catch (e) {
-              // Complete JSON not available yet
-            }
-          }
-        });
+        );
         
-        // Stream completed successfully
+        // Stream completed successfully (only clear if no error was flagged)
+        if (!streamHadErrorRef.current) {
         setStreamError(null);
+        }
       } catch (error) {
         console.error('Error during message streaming:', error);
         
         // Set stream error state so the UI can show an error message
-        setStreamError(error instanceof Error ? error : new Error('Stream interrupted'));
+        setStreamError(
+          error instanceof Error ? error : new Error('Stream interrupted')
+        );
         
         // Add a note to the latest assistant message if one exists
         setMessages((prev) => {
@@ -1058,7 +528,7 @@ export function useChat() {
                 ...lastMsg,
                 hasError: true, // Flag to indicate error
                 content: lastMsg.content || 'Message interrupted', // Ensure content exists
-              }
+              },
             ];
           }
           // If last message was from user, add a new assistant message with error
@@ -1071,7 +541,7 @@ export function useChat() {
                 content: 'Unable to complete response due to connection issue.',
                 hasError: true,
                 timestamp: new Date(),
-              }
+              },
             ];
           }
           return prev;
@@ -1093,59 +563,45 @@ export function useChat() {
 
   // Function to retry sending the last failed message
   const retryLastMessage = () => {
-    if (lastSendError) {
-      console.log('Retrying last failed message...');
-      const { messageContent, chatPayload } = lastSendError;
+    const base = lastSendError ?? lastUserMessageRef.current;
+    if (!base) return;
+    console.log('Retrying last message (cleanup + resend)...');
+    const { messageContent, chatPayload } = base;
+    // Remove any assistant error bubbles to avoid duplicating them on retry
+    setMessages((prev) => {
+      let filtered = prev.filter((m: any) => !(m.role === 'assistant' && m.hasError === true));
+      // Also trim trailing empty assistant message if present
+      while (
+        filtered.length > 0 &&
+        filtered[filtered.length - 1].role === 'assistant' &&
+        (!filtered[filtered.length - 1].content || filtered[filtered.length - 1].content.trim() === '')
+      ) {
+        filtered = filtered.slice(0, -1);
+      }
+      return filtered;
+    });
       setLastSendError(null); // Clear the error state before retrying
       // Send the message again with the isResend flag
-      sendChatMessage(messageContent, {
+    sendChatMessage(
+      messageContent,
+      {
         ...chatPayload,
-        diagnosisAssistantResponse: assistantResponse
-      }, false, true);
-    }
-  };
-
-  // Strip any leaked JSON blocks (markers or plain object with diagnosis/followUpQuestions)
-  const cleanupAssistantJsonLeak = () => {
-    setMessages((prev) => {
-      if (prev.length === 0) return prev;
-      const lastMessage = prev[prev.length - 1];
-      if (lastMessage.role !== 'assistant') return prev;
-
-      const strip = (text: string): string => {
-        if (!text) return text;
-        // Remove marked blocks and anything after them
-        const marked = text.match(/<<JSON_DATA>>[\s\S]*?<<JSON_END>>/);
-        if (marked && marked.index !== undefined) {
-          return text.substring(0, marked.index).trim();
-        }
-        // Remove plain JSON containing schema keys
-        const idxDiagnosis = text.search(/\{[\s\S]*?"diagnosis"[\s\S]*?\}/);
-        const idxFollowUps = text.search(/\{[\s\S]*?"followUpQuestions"[\s\S]*?\}/);
-        const idx = [idxDiagnosis, idxFollowUps].filter((i) => i >= 0).reduce((a, b) => Math.min(a, b), Number.MAX_SAFE_INTEGER);
-        if (idx !== Number.MAX_SAFE_INTEGER) {
-          return text.substring(0, idx).trim();
-        }
-        return text;
-      };
-
-      const cleaned = strip(lastMessage.content);
-      if (cleaned === lastMessage.content) return prev;
-      if (!cleaned) {
-        return prev.slice(0, -1);
-      }
-      return [
-        ...prev.slice(0, -1),
-        { ...lastMessage, content: cleaned, timestamp: new Date() },
-      ];
-    });
+        diagnosisAssistantResponse: assistantResponse,
+      },
+      false,
+      true
+    );
   };
 
   // Persist chat state on every material change so anon → login preserves it
   useEffect(() => {
     try {
       // Avoid saving empty snapshots
-      if (messages.length === 0 && followUpQuestions.length === 0 && !assistantResponse) {
+      if (
+        messages.length === 0 &&
+        followUpQuestions.length === 0 &&
+        !assistantResponse
+      ) {
         return;
       }
       saveChatState?.({
@@ -1156,13 +612,18 @@ export function useChat() {
     } catch {}
   }, [messages, followUpQuestions, assistantResponse, saveChatState]);
 
+  // Use assistantResponse.followUpQuestions when available (has augmented fields)
+  // Fall back to incremental followUpQuestions if no assistant response yet
+  const finalFollowUpQuestions = assistantResponse?.followUpQuestions || followUpQuestions;
+
   return {
     messages,
     isLoading,
     rateLimited,
     userPreferences,
-    followUpQuestions,
+    followUpQuestions: finalFollowUpQuestions,
     assistantResponse,
+    exerciseResults,
     lastSendError,
     streamError,
     resetChat,

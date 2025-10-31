@@ -4,6 +4,7 @@ import OpenAI from 'openai';
 import { z } from 'zod';
 import { reserveFreeChatTokens, reserveFreeChatTokensForAnon } from '@/app/api/assistant/openai-server';
 import { estimateJsonTokens, ESTIMATED_RESPONSE_TOKENS, ANON_COOKIE_NAME, logFreeLimit } from '@/app/lib/chatLimits';
+import { EXPLORE_MODEL } from '@/app/api/assistant/models';
 
 const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY! });
 
@@ -121,8 +122,8 @@ export async function POST(req: NextRequest) {
 
     if (wantsStream) {
       const stream = await client.responses.stream({
-        model: 'gpt-5-mini',
-        reasoning: { effort: 'minimal' } as any,
+        model: EXPLORE_MODEL,
+        // reasoning: { effort: 'minimal' } as any,
         input: [
           { role: 'system', content: SYSTEM_PROMPT_TEXT },
           { role: 'user', content: JSON.stringify({

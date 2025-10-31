@@ -19,16 +19,18 @@ import { getStartOfWeek, addDays } from '@/app/utils/dateutils';
 // Initialize OpenAI client
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
+  dangerouslyAllowBrowser: process.env.NODE_ENV === 'test', // Allow in test environment only
 });
+
+// Import centralized model configuration
+import { DIAGNOSIS_MODEL, EXPLORE_MODEL, PROGRAM_MODEL, FOLLOWUP_MODEL } from './models';
 
 // ----------------------
 // Model and token controls
 // ----------------------
-const CHAT_MODEL = process.env.CHAT_MODEL || 'gpt-5-mini';
-const FOLLOWUP_MODEL = process.env.FOLLOWUP_MODEL || 'gpt-5';
-const CHAT_MAX_TURNS = Number(process.env.CHAT_MAX_TURNS || 8);
+const CHAT_MAX_TURNS = Number(process.env.CHAT_MAX_TURNS || 6);
 const CHAT_MAX_MESSAGE_CHARS = Number(process.env.CHAT_MAX_MESSAGE_CHARS || 1500);
-const CHAT_MAX_OUTPUT_TOKENS = Number(process.env.CHAT_MAX_OUTPUT_TOKENS || 512);
+const CHAT_MAX_OUTPUT_TOKENS = Number(process.env.CHAT_MAX_OUTPUT_TOKENS || 1024);
 
 // ----------------------
 // Logging helpers (structured, throttled)
@@ -274,12 +276,19 @@ export async function streamChatCompletion({
 }) {
   try {
     void _threadId;
-    throttledLog('info', 'chat_stream_start', `ctx=stream model=${CHAT_MODEL}`);
+    
+    // For diagnosis mode: send ALL turns to prevent losing context
+    // For explore mode: send last 6 turns to keep token usage reasonable
+    const isDiagnosisMode = userMessage && typeof userMessage === 'object' && userMessage.mode === 'diagnosis';
+    const isExploreMode = userMessage && typeof userMessage === 'object' && userMessage.mode === 'explore';
+    const selectedModel = isExploreMode ? EXPLORE_MODEL : DIAGNOSIS_MODEL; // Default to diagnosis if mode unknown
+    
+    throttledLog('info', 'chat_stream_start', `ctx=stream model=${selectedModel}`);
+    
+    const turnLimit = isDiagnosisMode ? (messages?.length || 0) : CHAT_MAX_TURNS;
+    const formattedMessages = formatMessagesForChatCompletion((messages || []).slice(-turnLimit));
 
-    // Re-introduce historical messages
-    const formattedMessages = formatMessagesForChatCompletion((messages || []).slice(-CHAT_MAX_TURNS));
-
-    // Add the system message at the beginning
+    // Add system message (no complex injection)
     formattedMessages.unshift({
       role: 'system' as const,
       content: systemMessage,
@@ -292,51 +301,28 @@ export async function streamChatCompletion({
     } else if (typeof userMessage === 'object' && userMessage !== null) {
       // Prioritize userMessage.message if it exists (this is the actual typed text)
       if (userMessage.message && typeof userMessage.message === 'string') {
-        userMessageContent = `User input: "${userMessage.message}"`;
+        userMessageContent = userMessage.message;
       } else {
-        // Fallback if .message isn't there, though ChatPayload expects it
         userMessageContent = 'User input: (no direct text provided)';
       }
 
-      if (
-        userMessage.diagnosisAssistantResponse &&
-        Object.keys(userMessage.diagnosisAssistantResponse).length > 0
-      ) {
-        // Append the structured context if it exists and is not empty
-        // Omit fields that are AI conclusions or UI constructs, not primary history data
-        const contextualInfo = ((obj: any) => {
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          const { followUpQuestions, targetAreas, programType, informationalInsights, ...rest } = obj || {};
-          return rest;
-        })(userMessage.diagnosisAssistantResponse);
-        const contextualJson = JSON.stringify(contextualInfo);
-        userMessageContent += `\n\n<<PREVIOUS_CONTEXT_JSON>>\n${truncate(contextualJson, CHAT_MAX_MESSAGE_CHARS)}\n<<PREVIOUS_CONTEXT_JSON_END>>`;
-      }
-
-      // Add selected body group and part information
-      if (
-        userMessage.selectedBodyGroupName &&
-        typeof userMessage.selectedBodyGroupName === 'string'
-      ) {
-        userMessageContent += `\nSelected Body Group: ${userMessage.selectedBodyGroupName}`;
-      }
-      if (
-        userMessage.selectedBodyPart &&
-        typeof userMessage.selectedBodyPart === 'string' &&
-        userMessage.selectedBodyPart !== 'no body part of body group selected'
-      ) {
-        userMessageContent += `\nSelected Specific Body Part: ${userMessage.selectedBodyPart}`;
-      } else if (
-        userMessage.selectedBodyPart ===
-          'no body part of body group selected' &&
-        !userMessage.selectedBodyGroupName
-      ) {
-        // Only add this if group name is also missing, to avoid redundancy if group is present
-        userMessageContent += `\nSelected Specific Body Part: ${userMessage.selectedBodyPart}`;
-      }
-
-      if (userMessage.language && typeof userMessage.language === 'string') {
-        userMessageContent += `\nLanguage Preference: ${userMessage.language}`;
+      // Inject collected JSON context so LLM knows what's already answered
+      if (userMessage.diagnosisAssistantResponse && Object.keys(userMessage.diagnosisAssistantResponse).length > 0) {
+        const context = userMessage.diagnosisAssistantResponse;
+        const collectedFields: string[] = [];
+        
+        if (context.onset) collectedFields.push(`onset: ${context.onset}`);
+        if (context.painLocation) collectedFields.push(`painLocation: ${context.painLocation}`);
+        if (context.painScale) collectedFields.push(`painScale: ${context.painScale}`);
+        if (context.painCharacter) collectedFields.push(`painCharacter: ${context.painCharacter}`);
+        if (context.aggravatingFactors) collectedFields.push(`aggravatingFactors: ${context.aggravatingFactors}`);
+        if (context.relievingFactors) collectedFields.push(`relievingFactors: ${context.relievingFactors}`);
+        if (context.painPattern) collectedFields.push(`painPattern: ${context.painPattern}`);
+        if (context.priorInjury !== null && context.priorInjury !== undefined) collectedFields.push(`priorInjury: ${context.priorInjury}`);
+        
+        if (collectedFields.length > 0) {
+          userMessageContent += `\n\n[Already collected: ${collectedFields.join(', ')}]`;
+        }
       }
     } else {
       // Fallback for unexpected userMessage types
@@ -365,11 +351,11 @@ export async function streamChatCompletion({
 
     // Call OpenAI Responses API (streaming) with minimal reasoning effort
     const stream = await openai.responses.stream({
-      model: CHAT_MODEL,
-      reasoning: { effort: 'minimal' } as any,
+      model: selectedModel,
+      reasoning: isExploreMode ? { effort: 'minimal' } as any : undefined,
       input: formattedMessages,
       max_output_tokens: CHAT_MAX_OUTPUT_TOKENS,
-    });
+    } as any);
 
     throttledLog('debug', 'chat_stream_created', 'status=ok');
 
@@ -491,133 +477,7 @@ export async function addMessage(threadId: string, payload: ChatPayload) {
 }
 
 // Run the assistant on a thread with streaming
-export async function streamRunResponse(
-  threadId: string,
-  assistantId: string,
-  onMessage: (content: string) => void,
-  options?: {
-    userId?: string;
-    isSubscriber?: boolean;
-    estimatedResponseTokens?: number;
-    anonId?: string;
-  },
-  instructions?: string
-) {
-  try {
-    // For assistant streaming, we can only estimate response tokens
-    if (ENFORCE_CHAT_LIMITS) {
-      const estimated = options?.estimatedResponseTokens ?? ESTIMATED_RESPONSE_TOKENS;
-      if (options?.userId && options?.isSubscriber === true) {
-        throttledLog('info', `limit_bypass_user_${options.userId}`, `limit=bypass user=${options.userId} reason=subscriber`);
-      } else if (options?.userId && options?.isSubscriber === false) {
-        await checkAndConsumeUserChatTokens(options.userId, estimated);
-      } else if (options?.anonId) {
-        await checkAndConsumeAnonChatTokens(options.anonId, estimated);
-      }
-    }
-
-    const stream = await openai.beta.threads.runs.stream(threadId, {
-      assistant_id: assistantId,
-      ...(instructions ? { instructions } : {}),
-    });
-
-    // Keep track if we've already handled stream completion
-    let streamEnded = false;
-
-    // Add proper error handling - common for client disconnects
-    const handleStreamEnd = (error?: Error) => {
-      if (streamEnded) return; // Prevent duplicate handling
-      streamEnded = true;
-
-      if (error) {
-        // Check if it's a premature close error (client disconnected)
-        const isPrematureClose =
-          error.message?.includes('Premature close') ||
-          (error.cause as any)?.code === 'ERR_STREAM_PREMATURE_CLOSE';
-
-        if (isPrematureClose) {
-          // This is expected when clients navigate away or close the page
-          console.log('Client disconnected from stream (expected behavior)');
-        } else {
-          // For other errors, log them as actual errors
-          console.error('Stream error:', error);
-        }
-      } else {
-        console.log('Stream completed successfully');
-      }
-    };
-
-    stream
-      .on('textCreated', () => {
-        // Optional: Handle when text is created
-      })
-      .on('textDelta', (delta) => {
-        if (delta.value) {
-          onMessage(delta.value);
-        }
-      })
-      .on('error', (error) => {
-        handleStreamEnd(error);
-      })
-      .on('end', () => {
-        handleStreamEnd();
-      });
-
-    try {
-      await stream.done();
-    } catch (error) {
-      // Handle the error at the await point if it wasn't caught by the event handlers
-      handleStreamEnd(
-        error instanceof Error ? error : new Error(String(error))
-      );
-    }
-
-    return;
-  } catch (error) {
-    console.error('Error in streamRunResponse:', error);
-    throw error;
-  }
-}
-
-// Run the assistant on a thread (non-streaming)
-export async function runAssistant(
-  threadId: string,
-  assistantId: string,
-  instructions?: string
-) {
-  try {
-    const run = await openai.beta.threads.runs.create(threadId, {
-      assistant_id: assistantId,
-      response_format: { type: 'json_object' },
-      ...(instructions ? { instructions } : {}),
-    });
-
-    // Wait for the run to complete
-    let runStatus = await openai.beta.threads.runs.retrieve(threadId, run.id);
-    while (
-      runStatus.status === 'in_progress' ||
-      runStatus.status === 'queued'
-    ) {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      runStatus = await openai.beta.threads.runs.retrieve(threadId, run.id);
-    }
-
-    if (
-      runStatus.status === 'failed' ||
-      runStatus.status === 'cancelled' ||
-      runStatus.status === 'expired'
-    ) {
-      throw new Error(`Run ended with status: ${runStatus.status}`);
-    }
-
-    // Get the messages after run completion
-    const messages = await getMessages(threadId);
-    return { runStatus, messages };
-  } catch (error) {
-    console.error('Error running assistant:', error);
-    throw new Error('Failed to run assistant');
-  }
-}
+// Legacy Assistants API functions removed - now using chat-completions with StreamParser
 
 // Get messages from a thread
 export async function getMessages(threadId: string) {
@@ -826,8 +686,6 @@ FAILURE TO FOLLOW THE ABOVE INSTRUCTIONS EXACTLY WILL RESULT IN POOR USER EXPERI
         },
       ],
       response_format: { type: 'json_object' },
-      max_tokens: CHAT_MAX_OUTPUT_TOKENS,
-      temperature: 0.2,
     });
 
     // Extract the content from the response
@@ -1069,7 +927,7 @@ export async function generateExerciseProgramWithModel(context: {
 
     // Call the OpenAI chat completion API
     const response = await openai.chat.completions.create({
-      model: 'gpt-5-mini', // small model for initial generation
+      model: PROGRAM_MODEL, // Use dedicated program generation m odel
       messages: [
         {
           role: 'system',
@@ -1250,7 +1108,7 @@ export async function getChatCompletion({
   messages,
   systemMessage,
   userMessage,
-  modelName = 'gpt-5-mini',
+  modelName = 'gpt-4o-mini',
   options,
 }: {
   threadId: string;
@@ -1267,74 +1125,27 @@ export async function getChatCompletion({
 }) {
   try {
     void _threadId;
-    const model = modelName || CHAT_MODEL;
+    const model = modelName || DIAGNOSIS_MODEL; // Default to diagnosis model
     throttledLog('info', 'chat_completion_start', `ctx=nonstream model=${model}`);
 
-    // Re-introduce historical messages
+    // Simple: send last 6 turns for both modes
     const formattedMessages = formatMessagesForChatCompletion((messages || []).slice(-CHAT_MAX_TURNS));
 
-    // Add the system message at the beginning
+    // Add system message (no complex injection)
     formattedMessages.unshift({
       role: 'system' as const,
       content: systemMessage,
     });
 
-    // Construct the user message content
+    // Construct the user message content (simple - used for router only)
     let userMessageContent = '';
     if (typeof userMessage === 'string') {
       userMessageContent = userMessage;
     } else if (typeof userMessage === 'object' && userMessage !== null) {
       if (userMessage.message && typeof userMessage.message === 'string') {
-        userMessageContent = `User input: "${userMessage.message}"`;
+        userMessageContent = userMessage.message;
       } else {
         userMessageContent = 'User input: (no direct text provided)';
-      }
-
-      if (
-        userMessage.diagnosisAssistantResponse &&
-        Object.keys(userMessage.diagnosisAssistantResponse).length > 0
-      ) {
-        // Append the structured context if it exists and is not empty
-        // Omit fields that are AI conclusions or UI constructs, not primary history data
-        // Omit UI/AI-only fields from previous context
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { followUpQuestions, targetAreas, programType, informationalInsights, ...rest } =
-          userMessage.diagnosisAssistantResponse || {};
-        userMessageContent += `\n\n<<PREVIOUS_CONTEXT_JSON>>\n${JSON.stringify(rest, null, 2)}\n<<PREVIOUS_CONTEXT_JSON_END>>`;
-      }
-
-      // Add selected body group and part information
-      if (
-        userMessage.selectedBodyGroupName &&
-        typeof userMessage.selectedBodyGroupName === 'string'
-      ) {
-        userMessageContent += `\nSelected Body Group: ${userMessage.selectedBodyGroupName}`;
-      }
-      if (
-        userMessage.selectedBodyPart &&
-        typeof userMessage.selectedBodyPart === 'string' &&
-        userMessage.selectedBodyPart !== 'no body part of body group selected'
-      ) {
-        userMessageContent += `\nSelected Specific Body Part: ${userMessage.selectedBodyPart}`;
-      } else if (
-        userMessage.selectedBodyPart ===
-          'no body part of body group selected' &&
-        !userMessage.selectedBodyGroupName
-      ) {
-        // Only add this if group name is also missing, to avoid redundancy if group is present
-        userMessageContent += `\nSelected Specific Body Part: ${userMessage.selectedBodyPart}`;
-      }
-
-      if (
-        userMessage.bodyPartsInSelectedGroup &&
-        Array.isArray(userMessage.bodyPartsInSelectedGroup) &&
-        userMessage.bodyPartsInSelectedGroup.length > 0
-      ) {
-        userMessageContent += `\nBody Parts In Selected Group: [${userMessage.bodyPartsInSelectedGroup.join(', ')}]`;
-      }
-
-      if (userMessage.language && typeof userMessage.language === 'string') {
-        userMessageContent += `\nLanguage Preference: ${userMessage.language}`;
       }
     } else {
       userMessageContent = JSON.stringify(userMessage);
@@ -1365,10 +1176,10 @@ export async function getChatCompletion({
     // Call OpenAI Responses API with minimal reasoning effort
     const response = await openai.responses.create({
       model,
-      reasoning: { effort: 'minimal' } as any,
+      // reasoning: { effort: 'minimal' } as any,
       input: formattedMessages,
       max_output_tokens: CHAT_MAX_OUTPUT_TOKENS,
-    });
+    } as any);
 
     // Prefer SDK convenience if available
     const outputText: string | undefined = (response as any).output_text;

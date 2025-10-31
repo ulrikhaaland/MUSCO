@@ -526,78 +526,62 @@ export default function HumanViewer({
     }
   };
 
-  const handleQuestionClick = (question: Question) => {
-    if (question.generate) {
-      logAnalyticsEvent('open_questionnaire', { from: 'question_click' });
-      if (diagnosis) {
-        diagnosis.followUpQuestions = [];
-        diagnosis.programType = ProgramType.Exercise;
+  // Handler for program generation triggered from chat
+  const handleGenerateProgram = useCallback((programType: ProgramType, diagnosisData?: DiagnosisAssistantResponse | null) => {
+    logAnalyticsEvent('open_questionnaire', { from: 'chat_button' });
+    
+    // Use passed diagnosis data (from chat) or fall back to state
+    const currentDiagnosis = diagnosisData || diagnosis;
+    
+    if (currentDiagnosis) {
+      // Use existing diagnosis data, just update programType and clear follow-ups
+      console.log('[HumanViewer] Using diagnosis data:', currentDiagnosis);
+      setDiagnosis({
+        ...currentDiagnosis,
+        followUpQuestions: [],
+        programType: programType,
+      });
       } else {
-        const programType = question.programType ?? ProgramType.Exercise;
+      // Create new diagnosis if none exists
+      console.log('[HumanViewer] No diagnosis data, creating new');
         const newDiagnosis: DiagnosisAssistantResponse = {
+        summary: null,
           diagnosis:
-            (question.programType === ProgramType.Exercise || question.programType === ProgramType.ExerciseAndRecovery)
+          (programType === ProgramType.Exercise || programType === ProgramType.ExerciseAndRecovery)
               ? 'No diagnosis, just an exercise program'
               : 'No diagnosis, just a recovery program',
           programType: programType,
-          painfulAreas: [
-            ...(selectedGroups[0]?.name ? [selectedGroups[0].name] : []),
-            ...(selectedPart?.name ? [selectedPart.name] : []),
-          ],
-          avoidActivities: [],
+        painfulAreas: [selectedGroups[0]?.name, selectedPart?.name].filter(Boolean).join(', ') || null,
+        avoidActivities: null,
           onset: null,
           timeFrame: '1 week',
           followUpQuestions: [],
           informationalInsights: '',
           painScale: 0,
           mechanismOfInjury: null,
-          aggravatingFactors: [],
-          relievingFactors: [],
+        aggravatingFactors: null,
+        relievingFactors: null,
           priorInjury: null,
           painPattern: null,
           painLocation: null,
           painCharacter: null,
           assessmentComplete: false,
           redFlagsPresent: false,
-          targetAreas: [],
+        targetAreas: null,
         };
         setDiagnosis(newDiagnosis);
       }
       setShowQuestionnaire(true);
+  }, [diagnosis, selectedGroups, selectedPart]);
+
+  const handleQuestionClick = (question: Question) => {
+    if (question.generate) {
+      const programType = question.programType ?? ProgramType.Exercise;
+      handleGenerateProgram(programType);
     }
   };
 
-  const handleAreasSelected = () => {
-    const newDiagnosis: DiagnosisAssistantResponse = {
-      diagnosis:
-        (diagnosis?.programType === ProgramType.Exercise || diagnosis?.programType === ProgramType.ExerciseAndRecovery)
-          ? 'No diagnosis, just an exercise program'
-          : 'No diagnosis, just a recovery program',
-      programType: diagnosis?.programType ?? ProgramType.Exercise,
-      painfulAreas: [
-        ...selectedGroups.map((group) => group.name),
-      ],
-      avoidActivities: [],
-      timeFrame: '1 week',
-      followUpQuestions: [],
-      informationalInsights: '',
-      onset: null,
-      painScale: 0,
-      mechanismOfInjury: null,
-      aggravatingFactors: [],
-      relievingFactors: [],
-      priorInjury: null,
-      painPattern: null,
-      painLocation: null,
-      painCharacter: null,
-      assessmentComplete: false,
-      redFlagsPresent: false,
-      targetAreas: [],
-    };
-    setDiagnosis(newDiagnosis);
-    logAnalyticsEvent('open_questionnaire', { from: 'area_select' });
-    setShowQuestionnaire(true);
-  };
+
 
   const handleBack = () => {
     if (showQuestionnaire) {
@@ -846,6 +830,7 @@ export default function HumanViewer({
             groups={selectedGroups}
             onClose={() => {}}
             onQuestionClick={handleQuestionClick}
+            onGenerateProgram={handleGenerateProgram}
           />
         </div>
       </div>
@@ -853,7 +838,6 @@ export default function HumanViewer({
       {/* Mobile Controls */}
       {isMobile && !hideNav && (
         <MobileControls
-          onAreasSelected={handleAreasSelected}
           isRotating={isRotating}
           isResetting={isResetting}
           isReady={isReady}
@@ -868,6 +852,7 @@ export default function HumanViewer({
           onQuestionClick={handleQuestionClick}
           hideBottomSheet={showQuestionnaire}
           onDiagnosis={setDiagnosis}
+          onGenerateProgram={handleGenerateProgram}
           overlayOpen={!showQuestionnaire && isChatOverlayOpen}
           onCloseOverlay={() => setIsChatOverlayOpen(false)}
         />
@@ -879,9 +864,16 @@ export default function HumanViewer({
           <ExerciseQuestionnaire
             onClose={handleBack}
             onSubmit={handleQuestionnaireSubmit}
-            generallyPainfulAreas={diagnosis?.painfulAreas ?? []}
+            generallyPainfulAreas={
+              // Use actual selected body parts from 3D viewer, not LLM output
+              selectedGroups.length > 0
+                ? selectedGroups.map(g => g.name)
+                : selectedPart
+                  ? [selectedPart.name]
+                  : []
+            }
             programType={diagnosis?.programType ?? ProgramType.Exercise}
-            targetAreas={[]}
+            targetAreas={selectedGroups}
             fullBody={false}
           />
         </div>

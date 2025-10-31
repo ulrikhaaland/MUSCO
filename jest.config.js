@@ -16,8 +16,11 @@ const customJestConfig = {
     '<rootDir>/node_modules/',
     '<rootDir>/.next/',
   ],
+  testMatch: [
+    '<rootDir>/src/**/__tests__/**/*.(test|spec).(ts|tsx)'
+  ],
   transform: {
-    '^.+\\.(ts|tsx)$': ['ts-jest', {
+    '^.+\.(ts|tsx)$': ['ts-jest', {
       tsconfig: 'tsconfig.json',
     }],
   },
