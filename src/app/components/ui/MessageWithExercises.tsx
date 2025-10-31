@@ -79,35 +79,37 @@ export function MessageWithExercises({
           const exerciseName = typeof children === 'string' ? children : String(children);
           const exercise = exercises.get(exerciseName);
           
+          // If exercise not found in database, render as plain italic text
+          if (!exercise) {
+            return <em>{children as any}</em>;
+          }
+          
           const handleTouch = (e: React.TouchEvent) => {
-            if (!exercise) return;
             e.preventDefault();
             e.stopPropagation();
             setSelectedExercise(exercise);
           };
 
           const handleClick = (e: React.MouseEvent) => {
-            if (!exercise) return;
             e.preventDefault();
             e.stopPropagation();
             setSelectedExercise(exercise);
           };
           
+          // Render as clickable badge for exercises in database
           return (
             <span 
-              className={`not-italic px-1.5 py-0.5 rounded bg-indigo-600/30 text-white font-medium border border-indigo-500/40 select-none ${
-                exercise ? 'cursor-pointer hover:bg-indigo-600/50 hover:border-indigo-400 transition-colors active:bg-indigo-600/70' : ''
-              }`}
+              className="not-italic px-1.5 py-0.5 rounded bg-indigo-600/30 text-white font-medium border border-indigo-500/40 select-none cursor-pointer hover:bg-indigo-600/50 hover:border-indigo-400 transition-colors active:bg-indigo-600/70"
               onClick={handleClick}
               onTouchStart={handleTouch}
-              role={exercise ? 'button' : undefined}
-              tabIndex={exercise ? 0 : undefined}
-              aria-label={exercise ? `View ${exerciseName} details` : exerciseName}
-              style={exercise ? { 
+              role="button"
+              tabIndex={0}
+              aria-label={`View ${exerciseName} details`}
+              style={{ 
                 WebkitTouchCallout: 'none',
                 WebkitUserSelect: 'none',
                 userSelect: 'none'
-              } : undefined}
+              }}
             >
               {children as any}
             </span>
