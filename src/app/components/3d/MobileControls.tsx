@@ -324,21 +324,21 @@ export default function MobileControls({
                       <div className="flex flex-wrap gap-2">
                         <button
                           type="button"
-                          onClick={() => handleOptionClick({ title: '', question: 'What can you help me with?' })}
+                          onClick={() => handleOptionClick({ title: '', question: 'What can you help me with?', chatMode: 'explore' })}
                           className="px-3 py-1.5 text-xs rounded-full bg-gray-800 text-white hover:bg-gray-700"
                         >
                           What can you help me with?
                         </button>
                         <button
                           type="button"
-                          onClick={() => handleOptionClick({ title: '', question: 'I have pain' })}
+                          onClick={() => handleOptionClick({ title: '', question: 'I have pain', chatMode: 'diagnosis' })}
                           className="px-3 py-1.5 text-xs rounded-full bg-gray-800 text-white hover:bg-gray-700"
                         >
                           I have pain
                         </button>
                         <button
                           type="button"
-                          onClick={() => handleOptionClick({ title: '', question: 'Build an exercise program' })}
+                          onClick={() => handleOptionClick({ title: '', question: 'Build an exercise program', chatMode: 'explore' })}
                           className="px-3 py-1.5 text-xs rounded-full bg-gray-800 text-white hover:bg-gray-700"
                         >
                           Build an exercise program
