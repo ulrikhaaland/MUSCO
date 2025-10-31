@@ -25,6 +25,21 @@ export function MessageWithExercises({
 }: MessageWithExercisesProps) {
   const [selectedExercise, setSelectedExercise] = React.useState<Exercise | null>(null);
   const markers = extractExerciseMarkers(content);
+  
+  // Debug: Log when modal state changes or component remounts
+  React.useEffect(() => {
+    if (selectedExercise) {
+      console.log('[MessageWithExercises] Modal opened for:', selectedExercise.name);
+    }
+  }, [selectedExercise]);
+  
+  React.useEffect(() => {
+    return () => {
+      if (selectedExercise) {
+        console.log('[MessageWithExercises] Component unmounting while modal was open!');
+      }
+    };
+  }, [selectedExercise]);
 
   // If no markers, render markdown normally
   if (markers.length === 0) {
@@ -106,6 +121,7 @@ export function MessageWithExercises({
     {/* Exercise Detail Modal */}
     {selectedExercise && (
       <ExerciseDetailModal
+        key={selectedExercise.id || selectedExercise.name}
         exercise={selectedExercise}
         onClose={() => setSelectedExercise(null)}
         onVideoClick={(ex) => {
