@@ -19,7 +19,7 @@ import { getStartOfWeek, addDays } from '@/app/utils/dateutils';
 // Initialize OpenAI client
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
-  dangerouslyAllowBrowser: process.env.NODE_ENV === 'test', // Allow in test environment only
+  dangerouslyAllowBrowser: process.env.NODE_ENV === 'test' || process.env.CI === 'true', // Allow in test/CI environments only
 });
 
 // Import centralized model configuration
