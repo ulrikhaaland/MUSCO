@@ -151,6 +151,8 @@ export function usePartChat({
   const switchHandledRef = useRef(false);
 
   const handleOptionClick = useCallback((question: Question) => {
+    console.log('[usePartChat] handleOptionClick received:', JSON.stringify(question));
+    
     // Check if this is a special "Answer in chat" button
     if (question.question === 'Answer in chat') {
       // Focus the chat input field
@@ -193,7 +195,7 @@ export function usePartChat({
     });
 
     try {
-      console.info(`level=info event=fe_mode_decide next=${decision.nextMode} force=${Boolean(forceMode)} chat_mode=${rawMode ?? 'none'}`);
+      console.info(`level=info event=fe_mode_decide next=${decision.nextMode} modeForPayload=${decision.modeForPayload ?? 'undefined'} force=${Boolean(forceMode)} chat_mode=${rawMode ?? 'none'} messages=${messages.length}`);
     } catch {}
 
     setChatMode(decision.nextMode);
