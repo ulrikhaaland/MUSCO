@@ -17,9 +17,13 @@ import { prepareExercisesPrompt } from '@/app/helpers/exercise-prompt';
 import { getStartOfWeek, addDays } from '@/app/utils/dateutils';
 
 // Initialize OpenAI client
+const isTestOrCI = process.env.NODE_ENV === 'test' || 
+                   process.env.CI === 'true' || 
+                   process.env.CI === '1' ||
+                   process.env.VERCEL === '1';
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
-  dangerouslyAllowBrowser: process.env.NODE_ENV === 'test' || process.env.CI === 'true', // Allow in test/CI environments only
+  dangerouslyAllowBrowser: isTestOrCI, // Allow in test/CI environments only
 });
 
 // Import centralized model configuration

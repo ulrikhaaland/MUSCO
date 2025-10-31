@@ -28,13 +28,15 @@ if (typeof window === 'undefined') {
 
 describe('Explore Assistant - Exercise Integration', () => {
   // Skip in CI environments to avoid API costs
-  const shouldSkip = process.env.CI === 'true' || !process.env.OPENAI_API_KEY;
+  // CI can be 'true', true, '1', or '1' depending on the environment
+  const isCI = process.env.CI === 'true' || process.env.CI === true || process.env.CI === '1' || process.env.VERCEL === '1';
+  const shouldSkip = isCI || !process.env.OPENAI_API_KEY;
   
   if (!shouldSkip) {
     console.log('🔑 API Key found, running integration tests...');
     console.log('   Using model:', process.env.CHAT_MODEL || 'gpt-4o');
   } else {
-    console.log('⏭️  Skipping integration tests (no API key or CI environment)');
+    console.log('⏭️  Skipping integration tests (CI environment or no API key)');
   }
 
   (shouldSkip ? describe.skip : describe)('Real LLM Integration', () => {
