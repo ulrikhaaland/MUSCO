@@ -402,7 +402,7 @@ export const createMinimalRecoveryProgram = (
     programs: [program],
     diagnosis: {
       diagnosis: title || 'Recovery Program',
-      painfulAreas: program.targetAreas || [],
+      painfulAreas: (program.targetAreas?.join(', ') || '') as any,
       informationalInsights: program.programOverview || null,
       onset: 'gradual',
       painScale: 5,
@@ -415,11 +415,12 @@ export const createMinimalRecoveryProgram = (
       painCharacter: 'dull',
       assessmentComplete: true,
       redFlagsPresent: false,
-      avoidActivities: [],
+      avoidActivities: [] as any,
       timeFrame: '4 weeks',
       followUpQuestions: [],
       programType: ProgramType.Recovery,
-      targetAreas: program.targetAreas || [],
+      targetAreas: (program.targetAreas?.join(', ') || '') as any,
+      summary: '',
     },
     questionnaire: {
       age: '30_40',

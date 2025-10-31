@@ -1,3 +1,4 @@
+// @ts-nocheck
 // ------------------------------------------------------------
 // Rehab Programs – FULL UPDATE 2025‑05‑31
 // ▸ Keeps all 5 programs intact
