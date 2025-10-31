@@ -429,13 +429,17 @@ export function useChat() {
       
       // Send the message and handle streaming response with structured events
       try {
+        console.log('[useChat] Starting sendMessage, payload.mode:', payload.mode);
         await sendMessage(
           threadIdRef.current ?? '',
           payload,
           (content, payloadObj) => {
+            console.log('[useChat] SSE event:', { content: content?.substring(0, 50), payloadObj });
+            
             // Ignore events if chat was reset during this stream
             if ((window as any).__chatResetId !== streamResetId) {
               // Chat was reset - ignore this event
+              console.log('[useChat] Ignoring event - chat was reset');
               return;
             }
             
