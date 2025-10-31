@@ -58,6 +58,14 @@ export function useChat() {
   const [streamError, setStreamError] = useState<Error | null>(null); // Add stream error state
   const streamHadErrorRef = useRef(false);
 
+  // Initialize chat reset ID on mount to prevent first stream from being invalidated
+  useEffect(() => {
+    if (typeof (window as any).__chatResetId === 'undefined') {
+      (window as any).__chatResetId = 0;
+      console.log('[useChat] Initialized __chatResetId to 0');
+    }
+  }, []);
+
   useEffect(() => {
     async function initializeAssistant() {
       try {
