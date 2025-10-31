@@ -64,15 +64,22 @@ export function MessageWithExercises({
           const exerciseName = typeof children === 'string' ? children : String(children);
           const exercise = exercises.get(exerciseName);
           
+          const handleClick = (e: React.MouseEvent | React.TouchEvent) => {
+            if (!exercise) return;
+            e.preventDefault();
+            e.stopPropagation();
+            setSelectedExercise(exercise);
+          };
+          
           return (
             <span 
               className={`not-italic px-1.5 py-0.5 rounded bg-indigo-600/30 text-white font-medium border border-indigo-500/40 ${
-                exercise ? 'cursor-pointer hover:bg-indigo-600/50 hover:border-indigo-400 transition-colors' : ''
+                exercise ? 'cursor-pointer hover:bg-indigo-600/50 hover:border-indigo-400 transition-colors active:bg-indigo-600/70' : ''
               }`}
-              onClick={exercise ? (e) => {
-                e.stopPropagation();
-                setSelectedExercise(exercise);
-              } : undefined}
+              onClick={handleClick}
+              onTouchEnd={handleClick}
+              role={exercise ? 'button' : undefined}
+              tabIndex={exercise ? 0 : undefined}
               title={exercise ? `Click to view ${exerciseName} details` : exerciseName}
             >
               {children as any}
