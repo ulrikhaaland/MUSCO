@@ -112,6 +112,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         selectedGroupIds: selectedGroups.map((g) => g.id),
         selectedPart,
       };
+      console.log('[AppContext] Auto-saving viewer state:', snapshot);
       window.localStorage.setItem('viewerState', JSON.stringify(snapshot));
     } catch (e) {
       console.warn('Failed to auto-save viewer state', e);
@@ -312,6 +313,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     if (typeof window === 'undefined') return;
     // Try sessionStorage first (for auth flow), then localStorage (for page reload)
     const raw = window.sessionStorage.getItem('viewerState') || window.localStorage.getItem('viewerState');
+    console.log('[AppContext] Restoring viewer state from storage:', raw);
     if (!raw) return;
     try {
       const data = JSON.parse(raw) as {
@@ -319,6 +321,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         selectedGroupIds: string[];
         selectedPart: AnatomyPart | null;
       };
+      
+      console.log('[AppContext] Parsed viewer state:', data);
 
       // Helper to map ids -> BodyPartGroup objects
       const idToGroup = new Map(
@@ -330,6 +334,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setIntention(data.intention);
       setSelectedGroups(mapIds(data.selectedGroupIds));
       setSelectedPart(data.selectedPart ?? null);
+      
+      console.log('[AppContext] Applied state - groups:', mapIds(data.selectedGroupIds), 'part:', data.selectedPart);
 
       // Clear sessionStorage (one-shot for auth flow), but keep localStorage (for future reloads)
       window.sessionStorage.removeItem('viewerState');

@@ -298,9 +298,13 @@ export function useHumanAPI({
     let selectionMap: Record<string, boolean> = {};
     let zoomId: string | null = null;
 
+    console.log('[useHumanAPI] Hydration - selectedPartRef:', selectedPartRef.current);
+    console.log('[useHumanAPI] Hydration - selectedGroupsRef:', selectedGroupsRef.current);
+
     // Priority: If a specific part is present, select ONLY the part (not the group)
     if (selectedPartRef.current) {
       // Select only the specific part
+      console.log('[useHumanAPI] Selecting specific part:', selectedPartRef.current.objectId);
       selectionMap = { [selectedPartRef.current.objectId]: true } as Record<string, boolean>;
       zoomId = selectedPartRef.current.objectId;
       if (!isXrayEnabledRef.current) {
@@ -310,6 +314,7 @@ export function useHumanAPI({
     } else if (selectedGroupsRef.current.length > 0) {
       // Only select the group if there's no specific part
       const group = selectedGroupsRef.current[0];
+      console.log('[useHumanAPI] Selecting group:', group.name);
       selectionMap = createSelectionMap(group.selectIds, gender);
       zoomId = getGenderedId(group.zoomId, gender);
       if (!isXrayEnabledRef.current) {
@@ -317,6 +322,8 @@ export function useHumanAPI({
         isXrayEnabledRef.current = true;
       }
     }
+
+    console.log('[useHumanAPI] Selection map:', selectionMap);
 
     if (Object.keys(selectionMap).length) {
       prevSelection.current = {};
