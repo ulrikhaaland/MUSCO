@@ -342,7 +342,7 @@ const translations = {
   'chat.question.painSource.title': 'Find Pain',
   'chat.question.painSource.text':
     "I'm experiencing discomfort in my $part. Can you help me figure out what might be wrong?",
-  'chat.question.painSource.meta': 'Quick questions to diagnose your $part issues',
+  'chat.question.painSource.meta': 'Diagnose your $part issue(s)',
   'chat.question.movement.title': 'Test Movement',
   'chat.question.movement.text':
     "Can you guide me through some movements to check if there's an issue with my $part?",
