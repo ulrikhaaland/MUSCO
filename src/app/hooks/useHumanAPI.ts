@@ -555,6 +555,16 @@ export function useHumanAPI({
   }
 
   function handleOnObjectSelectedNone(event: any) {
+    console.log('[handleOnObjectSelectedNone] Called with event:', event);
+    console.log('[handleOnObjectSelectedNone] expectingProgrammaticSelection:', expectingProgrammaticSelectionRef.current);
+    console.log('[handleOnObjectSelectedNone] programmaticSelectionId:', programmaticSelectionIdRef.current);
+    
+    // Skip if this is a programmatic selection (e.g., from hydration)
+    if (expectingProgrammaticSelectionRef.current) {
+      console.log('[handleOnObjectSelectedNone] Skipping - programmatic selection');
+      return;
+    }
+    
     if (isResettingRef.current) {
       if (isXrayEnabledRef.current) {
         isXrayEnabledRef.current = false;
