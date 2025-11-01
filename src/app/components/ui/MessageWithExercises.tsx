@@ -49,9 +49,14 @@ export const MessageWithExercises = React.memo(function MessageWithExercises({
         className={className}
         components={{
           ul: ({ children }) => (
-            <ul className="list-none">
+            <ul className="list-none pl-0">
               {children as any}
             </ul>
+          ),
+          li: ({ children }) => (
+            <li className="ml-0 pl-4 relative before:content-['•'] before:absolute before:left-0 before:text-gray-400">
+              {children as any}
+            </li>
           ),
         }}
       >
@@ -72,9 +77,14 @@ export const MessageWithExercises = React.memo(function MessageWithExercises({
       className={className}
       components={{
         ul: ({ children }) => (
-          <ul className="list-none">
+          <ul className="list-none pl-0">
             {children as any}
           </ul>
+        ),
+        li: ({ children }) => (
+          <li className="ml-0 pl-4 relative before:content-['•'] before:absolute before:left-0 before:text-gray-400">
+            {children as any}
+          </li>
         ),
         em: ({ children }) => {
           const exerciseName = typeof children === 'string' ? children : String(children);
