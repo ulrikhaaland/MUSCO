@@ -996,31 +996,31 @@ export function ChatMessages({
     }
   };
 
-  // Initialize loading ref on mount
-  useEffect(() => {
-    initialLoadingRef.current = isLoading;
-  }, [isLoading]); // Only run once on mount
+  // Track the previous loading state to detect completion
+  const prevLoadingRef = useRef(isLoading);
 
   // Effect to track loading state changes and manage spacer
   useEffect(() => {
-    // If we just finished loading (response completed), keep the spacer visible
-    const wasLoading = initialLoadingRef.current;
+    // Detect when loading transitions from true to false (response completed)
+    const wasLoading = prevLoadingRef.current;
+    const justFinishedLoading = wasLoading && !isLoading;
 
     console.log('[ChatMessages] Loading state change:', {
       wasLoading,
       isLoading,
       messagesLength: messages.length,
-      willSetKeepSpacer: wasLoading && !isLoading && messages.length > 0,
+      justFinishedLoading,
+      willSetKeepSpacer: justFinishedLoading && messages.length > 0,
     });
 
-    if (wasLoading && !isLoading && messages.length > 0) {
+    if (justFinishedLoading && messages.length > 0) {
       // Response just completed - keep spacer until next user message
       console.log('[ChatMessages] Setting keepSpacer = TRUE');
       setKeepSpacer(true);
     }
 
-    // Update the loading state ref
-    initialLoadingRef.current = isLoading;
+    // Always update the ref at the end
+    prevLoadingRef.current = isLoading;
   }, [isLoading, messages.length]);
 
   // Effect to track streaming state changes
