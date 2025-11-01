@@ -566,7 +566,7 @@ export default function HumanViewer({
           console.error('[HumanViewer] Error zooming to group:', error);
         }
       }
-    } else {
+      } else {
       console.warn('[HumanViewer] No mapping found for body group:', groupName);
     }
   }, [setSelectedGroup, humanRef]);
