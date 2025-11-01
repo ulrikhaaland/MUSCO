@@ -1006,8 +1006,16 @@ export function ChatMessages({
     // If we just finished loading (response completed), keep the spacer visible
     const wasLoading = initialLoadingRef.current;
 
+    console.log('[ChatMessages] Loading state change:', {
+      wasLoading,
+      isLoading,
+      messagesLength: messages.length,
+      willSetKeepSpacer: wasLoading && !isLoading && messages.length > 0,
+    });
+
     if (wasLoading && !isLoading && messages.length > 0) {
       // Response just completed - keep spacer until next user message
+      console.log('[ChatMessages] Setting keepSpacer = TRUE');
       setKeepSpacer(true);
     }
 
