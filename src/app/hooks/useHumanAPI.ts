@@ -326,10 +326,23 @@ export function useHumanAPI({
     console.log('[useHumanAPI] Selection map:', selectionMap);
 
     if (Object.keys(selectionMap).length) {
+      // Set the programmatic selection flag to prevent event handlers from overriding
+      expectingProgrammaticSelectionRef.current = true;
+      if (selectedPartRef.current) {
+        programmaticSelectionIdRef.current = selectedPartRef.current.objectId;
+      }
+      
       prevSelection.current = {};
       humanRef.current.send('scene.selectObjects', { ...selectionMap, replace: true });
       Object.assign(prevSelection.current, selectionMap);
       didHydrateFromContextRef.current = true;
+      
+      // Clear the programmatic flag after a delay (to allow event to process)
+      setTimeout(() => {
+        expectingProgrammaticSelectionRef.current = false;
+        programmaticSelectionIdRef.current = null;
+      }, 1000);
+      
       if (zoomId) {
         zoomIfMobile(zoomId);
       }
