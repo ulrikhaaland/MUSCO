@@ -830,13 +830,18 @@ export function ChatMessages({
           }
         });
 
-        // If content fits within container with some margin, minimize spacer to prevent extra scroll space
-        const marginBuffer = 50; // Allow some breathing room
-        const availableSpace = chatContainerHeight - marginBuffer;
+        // Only collapse spacer on mobile (when auto-scroll is enabled)
+        // On desktop (disableAutoScroll=true), keep spacer to maintain consistent positioning
+        if (!disableAutoScroll) {
+          // If content fits within container with some margin, minimize spacer to prevent extra scroll space
+          const marginBuffer = 50; // Allow some breathing room
+          const availableSpace = chatContainerHeight - marginBuffer;
 
-        if (actualContentHeight <= availableSpace) {
-          calculatedHeight = 0; // Remove spacer completely when content fits comfortably
+          if (actualContentHeight <= availableSpace) {
+            calculatedHeight = 0; // Remove spacer completely when content fits comfortably
+          }
         }
+        // On desktop, we keep the calculatedHeight as-is (don't collapse to 0)
       }
 
       const finalHeight = calculatedHeight;
@@ -876,6 +881,7 @@ export function ChatMessages({
     followUpQuestions.length,
     availableHeight,
     messagesRef,
+    disableAutoScroll,
   ]);
 
   // Add touch animation and scrollbar styles
