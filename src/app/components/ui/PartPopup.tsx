@@ -11,6 +11,8 @@ import { ProgramType } from '../../../../shared/types';
 import { Exercise } from '@/app/types/program';
 import { VideoModal } from './VideoModal';
 import { fetchExerciseVideoUrl } from '@/app/utils/videoUtils';
+import { getGlobalTemplateQuestions } from '@/app/config/templateQuestions';
+import { useTranslation } from '@/app/i18n';
 
 interface PartPopupProps {
   part: AnatomyPart | null;
@@ -30,11 +32,15 @@ export default function PartPopup({
   onGenerateProgram,
 }: PartPopupProps) {
   const router = useRouter();
+  const { t } = useTranslation();
   
   const { user } = useAuth();
   const { saveViewerState } = useApp();
   const [message, setMessage] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  
+  // Get translated template questions
+  const globalTemplateQuestions = getGlobalTemplateQuestions(t);
   
   // Video handling for exercise cards
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
@@ -170,6 +176,31 @@ export default function PartPopup({
           </div>
         </div>
       </div>
+
+      {/* Global Template Questions (when no body part selected and no messages) */}
+      {messages.length === 0 && groups.length === 0 && !isLoading && (
+        <div className="mb-4 rounded-lg border border-gray-800 bg-gray-900/60 p-4">
+          <div className="text-base text-white mb-2">Start a chat or select a specific part</div>
+          <div className="text-sm text-gray-400 mb-3">Ask anything about pain, recovery or training.</div>
+          <div className="flex flex-wrap gap-2">
+            {globalTemplateQuestions.map((template) => (
+              <button
+                key={template.question}
+                type="button"
+                onClick={() => handleOptionClick({ 
+                  title: template.title, 
+                  question: template.question, 
+                  chatMode: template.chatMode 
+                })}
+                className="px-3 py-2 text-sm rounded-full bg-gray-800 text-white hover:bg-gray-700 transition-colors"
+                title={template.description}
+              >
+                {template.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       <ChatMessages
         messages={messages}
