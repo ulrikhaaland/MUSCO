@@ -6,13 +6,11 @@ import { LoadingMessage } from './LoadingMessage';
 import { BodyPartGroup } from '@/app/config/bodyPartGroups';
 import { AnatomyPart } from '@/app/types/human';
 import ExerciseChatCard from './ExerciseChatCard';
-import { isProgramButton as checkIsProgramButton } from '@/app/utils/questionAugmentation';
 import { MessageWithExercises } from './MessageWithExercises';
 
 // Follow-up Questions Component
 interface FollowUpQuestionsProps {
   questions: Question[];
-  clickedQuestions: Set<string>;
   visibleQuestions: Set<string>;
   prefersReducedMotion: boolean;
   onQuestionClick: (question: Question) => void;
@@ -20,7 +18,6 @@ interface FollowUpQuestionsProps {
 
 function FollowUpQuestions({
   questions,
-  clickedQuestions,
   visibleQuestions,
   prefersReducedMotion,
   onQuestionClick,
@@ -29,7 +26,6 @@ function FollowUpQuestions({
     <div className="space-y-[10px]">
       {questions.map((question, index) => {
         const questionId = question.title || question.question;
-        const isClicked = clickedQuestions.has(questionId);
         const isVisible = visibleQuestions.has(questionId);
 
         return (
@@ -39,7 +35,6 @@ function FollowUpQuestions({
             aria-label={questionId}
             data-quick-reply
             role="button"
-            disabled={isClicked}
             className={`follow-up-question-btn w-full min-h-[48px] text-left px-4 py-3 pb-4 rounded-lg cursor-pointer
               bg-[rgba(99,91,255,0.12)] border border-[rgba(99,91,255,0.35)] text-[#c8cbff] font-medium
               hover:border-[rgba(99,91,255,0.5)] focus:border-[rgba(99,91,255,0.5)] active:border-[rgba(99,91,255,0.5)]
@@ -48,7 +43,6 @@ function FollowUpQuestions({
               hover:-translate-y-[2px] active:-translate-y-[2px] active:shadow-[0_4px_16px_rgba(0,0,0,0.3)]
               group transition-all duration-300 ease-out
               ${prefersReducedMotion ? '' : 'motion-safe:hover:-translate-y-[2px] motion-safe:active:scale-[0.99]'}
-              ${isClicked ? 'opacity-50 pointer-events-none' : ''}
               ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
             style={{
               transitionDelay: isVisible ? `${index * 50}ms` : '0ms',
@@ -157,9 +151,6 @@ export function ChatMessages({
   const [chatContainerHeight, setChatContainerHeight] = useState(0);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 
-  const [clickedQuestions, setClickedQuestions] = useState<Set<string>>(
-    new Set()
-  );
   const [keepSpacer, setKeepSpacer] = useState(false);
 
   const [visibleQuestions, setVisibleQuestions] = useState<Set<string>>(
@@ -932,31 +923,13 @@ export function ChatMessages({
 
   // Handle question selection with additional cleanup and debounce
   const handleQuestionSelect = (question: Question) => {
-    // Get unique identifier for this question
-    const questionId = question.title || question.question;
-
-    // Check if this is a program generation button (should be reusable)
-    const isProgramButton = checkIsProgramButton(question);
-    
-    // Check if this is the "Answer in chat" button (also reusable - it just focuses input)
-    const isAnswerInChatButton = question.question === 'Answer in chat';
-
-    // Prevent double-clicking/tapping the same question (except program buttons and Answer in chat)
-    if (isProcessingClickRef.current || (!isProgramButton && !isAnswerInChatButton && clickedQuestions.has(questionId))) {
+    // Prevent double-clicking/tapping (debounce protection)
+    if (isProcessingClickRef.current) {
       return;
     }
 
     // Immediately mark as processing to prevent double clicks 
     isProcessingClickRef.current = true;
-
-    // Add to clicked questions set (but not for program generation buttons or Answer in chat)
-    if (!isProgramButton && !isAnswerInChatButton) {
-    setClickedQuestions((prev) => {
-      const newSet = new Set(prev);
-      newSet.add(questionId);
-      return newSet;
-    });
-    }
 
     // Clear any previous timeout if it exists
     if (clickTimeoutRef.current) {
@@ -1027,13 +1000,6 @@ export function ChatMessages({
     // Update ref for next check
     wasStreamingRef.current = isCurrentlyStreaming;
   }, [isLoading, messages, followUpQuestions]);
-
-  // Reset clicked questions when messages change
-  useEffect(() => {
-    // When new messages arrive, we can reset the clicked questions
-    // as the previous questions have already been processed
-    setClickedQuestions(new Set());
-  }, [messages.length]);
 
   // Effect to measure actual content height and grow spacer if needed
   useEffect(() => {
@@ -1214,7 +1180,6 @@ export function ChatMessages({
 
               <FollowUpQuestions
                 questions={followUpQuestions}
-                clickedQuestions={clickedQuestions}
                 visibleQuestions={visibleQuestions}
                 prefersReducedMotion={prefersReducedMotion}
                 onQuestionClick={handleQuestionSelect}
@@ -1341,7 +1306,6 @@ export function ChatMessages({
                   >
                     <FollowUpQuestions
                       questions={followUpQuestions}
-                      clickedQuestions={clickedQuestions}
                       visibleQuestions={visibleQuestions}
                       prefersReducedMotion={prefersReducedMotion}
                       onQuestionClick={handleQuestionSelect}
