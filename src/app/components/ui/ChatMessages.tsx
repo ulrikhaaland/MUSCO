@@ -972,13 +972,18 @@ export function ChatMessages({
     const wasLoading = initialLoadingRef.current;
 
     if (wasLoading && !isLoading && messages.length > 0) {
-      // Response just completed - keep spacer until next user message
-      setKeepSpacer(true);
+      // Response just completed - only keep spacer if auto-scroll is enabled
+      // For desktop (disableAutoScroll=true), remove spacer immediately to prevent jumping
+      if (!disableAutoScroll) {
+        setKeepSpacer(true);
+      } else {
+        setKeepSpacer(false);
+      }
     }
 
     // Update the loading state ref
     initialLoadingRef.current = isLoading;
-  }, [isLoading, messages.length]);
+  }, [isLoading, messages.length, disableAutoScroll]);
 
   // Effect to track streaming state changes
   useEffect(() => {
