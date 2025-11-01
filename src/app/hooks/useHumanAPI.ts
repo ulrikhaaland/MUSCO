@@ -298,15 +298,42 @@ export function useHumanAPI({
     let selectionMap: Record<string, boolean> = {};
     let zoomId: string | null = null;
 
-    if (selectedPartRef.current) {
-      // Restore a specific part selection
-      // First, select the group that contains this part
-      const group = selectedGroupsRef.current[0] || null;
-      if (group) {
-        selectionMap = createSelectionMap(group.selectIds, gender);
+    // If we have both a group and a specific part, we need to select the group first,
+    // then the part after a delay (for restoration scenarios)
+    if (selectedPartRef.current && selectedGroupsRef.current.length > 0) {
+      const group = selectedGroupsRef.current[0];
+      
+      // Enable X-ray
+      if (!isXrayEnabledRef.current) {
+        humanRef.current.send('scene.enableXray', () => {});
+        isXrayEnabledRef.current = true;
       }
-      // Then add the specific part to the selection (highlighting it within the group)
-      selectionMap[selectedPartRef.current.objectId] = true;
+      
+      // Step 1: Select the group first
+      const groupSelectionMap = createSelectionMap(group.selectIds, gender);
+      prevSelection.current = {};
+      humanRef.current.send('scene.selectObjects', { ...groupSelectionMap, replace: true });
+      Object.assign(prevSelection.current, groupSelectionMap);
+      
+      // Step 2: After a delay, select the specific part within the group
+      setTimeout(() => {
+        if (!humanRef.current) return;
+        const partSelectionMap = { [selectedPartRef.current!.objectId]: true };
+        humanRef.current.send('scene.selectObjects', { ...partSelectionMap, replace: true });
+        prevSelection.current = {};
+        Object.assign(prevSelection.current, partSelectionMap);
+        
+        // Zoom to the specific part
+        zoomIfMobile(selectedPartRef.current!.objectId);
+      }, 500);
+      
+      didHydrateFromContextRef.current = true;
+      return; // Early return to skip the rest
+    }
+    
+    if (selectedPartRef.current) {
+      // Restore a specific part selection (no group context)
+      selectionMap = { [selectedPartRef.current.objectId]: true } as Record<string, boolean>;
       zoomId = selectedPartRef.current.objectId;
       if (!isXrayEnabledRef.current) {
         humanRef.current.send('scene.enableXray', () => {});
