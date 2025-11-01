@@ -306,7 +306,7 @@ const translations = {
   'chat.question.painSource.title': 'Finn Smerte',
   'chat.question.painSource.text':
     'Jeg opplever ubehag i $part. Kan du hjelpe meg med å finne ut hva som er galt?',
-  'chat.question.painSource.meta': '3 raske spørsmål',
+  'chat.question.painSource.meta': 'Diagnostiser $part-problemet ditt',
   'chat.question.movement.title': 'Test Bevegelse',
   'chat.question.movement.text':
     'Kan du guide meg gjennom noen bevegelser for å sjekke om det er et problem med $part?',
@@ -322,6 +322,17 @@ const translations = {
   'chat.question.recovery.text':
     'Hva er det beste restitusjonsprogrammet for $part?',
   'chat.question.recovery.meta': '2 min oppsett',
+
+  // Chat - Global Template Questions (no body part selected)
+  'chat.template.whatCanYouHelp.label': 'Hva kan du hjelpe meg med?',
+  'chat.template.whatCanYouHelp.question': 'Hva kan du hjelpe meg med?',
+  'chat.template.whatCanYouHelp.description': 'Lær om assistentens funksjoner',
+  'chat.template.havePain.label': 'Jeg har smerter',
+  'chat.template.havePain.question': 'Jeg har smerter',
+  'chat.template.havePain.description': 'Start en smertevurdering',
+  'chat.template.buildProgram.label': 'Bygg et treningsprogram',
+  'chat.template.buildProgram.question': 'Bygg et treningsprogram',
+  'chat.template.buildProgram.description': 'Lag en tilpasset treningsplan',
 
   // Profile - Sections
   'profile.sections.general': 'Generelt',
