@@ -130,16 +130,19 @@ ${EXERCISE_INDEX_COMPACT}
 **How to recommend exercises:**
 1. **Reference specific exercises by name** from the index above in your response
 2. **Format exercise names** with double brackets: \`[[Exercise Name]]\`
-3. **Be specific** - use the exact names from the database
-4. **Natural placement** - mention exercises where they make sense in your explanation
+3. **CRITICAL: Always use ENGLISH exercise names from the database above, even when SESSION_LANGUAGE is Norwegian**
+4. **Be specific** - use the exact English names from the database (e.g., \`[[Plank]]\` not \`[[Planke]]\`)
+5. **Natural placement** - mention exercises where they make sense in your explanation
 
 **Examples:**
 • "For rotator cuff health, try [[Cable Face Pull]] and [[Band Pull Apart]] to strengthen the posterior shoulder."
 • "Build anterior deltoid with [[Military Press]] or [[Seated Shoulder Press]]."
 • "Start with [[Bodyweight Glute Bridge]] then progress to [[Barbell Glute Bridge]]."
+• Norwegian example: "For kjernestabilitet, prøv [[Plank]] og [[Dead Bug]]." (Note: exercise names stay in English!)
 
 **Rules:**
 • Only reference exercises from the database above
+• **ALWAYS use English exercise names** (e.g., [[Plank]], never [[Planke]])
 • Use exact names: "[[Cable Face Pull]]" not "[[face pull]]"
 • Inline placement: mention exercises naturally within sentences
 • 2-4 exercises per response when recommending
