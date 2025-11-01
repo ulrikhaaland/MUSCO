@@ -758,11 +758,12 @@ export function ChatMessages({
     const isNewMessage = lastMessageId !== lastMessageIdRef.current;
     const isNewUserMessage = lastMessage?.role === 'user' && isNewMessage;
 
-    // Remove spacer when new user message is sent
-    if (isNewUserMessage) {
+    // Remove spacer when new user message is sent, but only if auto-scroll is enabled
+    // For desktop (disableAutoScroll=true), keep the spacer to prevent viewport shifts
+    if (isNewUserMessage && !disableAutoScroll) {
       setKeepSpacer(false);
     }
-  }, [messages]);
+  }, [messages, disableAutoScroll]);
 
   // Calculate available height for loading message with smooth transitions
   useEffect(() => {
@@ -972,18 +973,13 @@ export function ChatMessages({
     const wasLoading = initialLoadingRef.current;
 
     if (wasLoading && !isLoading && messages.length > 0) {
-      // Response just completed - only keep spacer if auto-scroll is enabled
-      // For desktop (disableAutoScroll=true), remove spacer immediately to prevent jumping
-      if (!disableAutoScroll) {
-        setKeepSpacer(true);
-      } else {
-        setKeepSpacer(false);
-      }
+      // Response just completed - keep spacer until next user message
+      setKeepSpacer(true);
     }
 
     // Update the loading state ref
     initialLoadingRef.current = isLoading;
-  }, [isLoading, messages.length, disableAutoScroll]);
+  }, [isLoading, messages.length]);
 
   // Effect to track streaming state changes
   useEffect(() => {
