@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Exercise } from '@/app/types/program';
+import fs from 'fs';
+import path from 'path';
 
 interface SearchParams {
   bodyParts?: string[];
@@ -8,25 +10,32 @@ interface SearchParams {
   locale?: string;
 }
 
-// Helper to fetch and parse exercise JSON
-async function fetchExercises(path: string): Promise<Exercise[]> {
+// Helper to read and parse exercise JSON from filesystem
+async function fetchExercises(filePath: string): Promise<Exercise[]> {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
-    const url = `${baseUrl}${path}`;
-    const response = await fetch(url, { cache: 'force-cache' });
+    // In production, files are in .next/static or public; in dev, they're in public
+    const publicDir = path.join(process.cwd(), 'public');
+    const fullPath = path.join(publicDir, filePath);
     
-    if (!response.ok) return [];
+    console.log('[fetchExercises] Reading file:', fullPath);
     
-    const data = await response.json();
+    if (!fs.existsSync(fullPath)) {
+      console.error('[fetchExercises] File not found:', fullPath);
+      return [];
+    }
+    
+    const fileContent = fs.readFileSync(fullPath, 'utf-8');
+    const data = JSON.parse(fileContent);
     return data.exercises || [];
-  } catch {
+  } catch (error) {
+    console.error('[fetchExercises] Error reading file:', filePath, error);
     return [];
   }
 }
 
 // Map body part names to file paths
 function getExerciseFiles(bodyPart: string, useNorwegian: boolean = false): string[] {
-  const base = useNorwegian ? '/data/exercises/musco/json2_no/' : '/data/exercises/musco/json2/';
+  const base = useNorwegian ? 'data/exercises/musco/json2_no/' : 'data/exercises/musco/json2/';
   
   const mapping: Record<string, string[]> = {
     shoulders: [`${base}m_shoulders.json`],
