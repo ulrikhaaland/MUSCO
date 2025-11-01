@@ -819,6 +819,15 @@ export function ChatMessages({
       const minHeight = Math.max(50, chatContainerHeight * 0.1);
       let calculatedHeight = Math.max(spacerHeight, minHeight);
 
+      console.log('[ChatMessages] Spacer calculation START:', {
+        keepSpacer,
+        disableAutoScroll,
+        initialCalculatedHeight: calculatedHeight,
+        spacerHeight,
+        minHeight,
+        chatContainerHeight,
+      });
+
       // When keepSpacer is true (after completion), check if content actually needs the spacer
       let actualContentHeight = 0;
       if (keepSpacer && messagesRef.current) {
@@ -830,15 +839,28 @@ export function ChatMessages({
           }
         });
 
+        console.log('[ChatMessages] Content height calculated:', {
+          actualContentHeight,
+          calculatedHeight,
+          disableAutoScroll,
+        });
+
         // Different behavior for mobile vs desktop
         if (!disableAutoScroll) {
           // MOBILE: Fit spacer to content to save space
           const marginBuffer = 100;
           const contentBasedHeight = actualContentHeight + marginBuffer;
           
+          console.log('[ChatMessages] MOBILE path:', {
+            contentBasedHeight,
+            willShrink: contentBasedHeight < calculatedHeight,
+          });
+          
           if (contentBasedHeight < calculatedHeight) {
             calculatedHeight = contentBasedHeight;
           }
+        } else {
+          console.log('[ChatMessages] DESKTOP path: Keeping original height');
         }
         // DESKTOP (disableAutoScroll=true): Keep original spacer height
         // DO NOT shrink the spacer, as this causes viewport shifts
@@ -846,6 +868,11 @@ export function ChatMessages({
       }
 
       const finalHeight = calculatedHeight;
+
+      console.log('[ChatMessages] Spacer calculation END:', {
+        finalHeight,
+        changed: finalHeight !== availableHeight,
+      });
 
       // Set height for smooth animation
       setAvailableHeight(finalHeight);

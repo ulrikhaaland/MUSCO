@@ -62,7 +62,6 @@ export function useChat() {
   useEffect(() => {
     if (typeof (window as any).__chatResetId === 'undefined') {
       (window as any).__chatResetId = 0;
-      console.log('[useChat] Initialized __chatResetId to 0');
     }
   }, []);
 
@@ -253,10 +252,6 @@ export function useChat() {
       clearChatState?.();
     } catch {}
     justResetRef.current = true; // ADDED: Ref to track if reset just occurred
-    // Log to confirm assistantResponse is intended to be null for the next send operation
-    console.log(
-      "[useChat - resetChat] assistantResponse set to null and justResetRef set to true. The next 'Value of assistantResponse (state) before capturing' log should show null."
-    );
     messageQueueRef.current = []; // Clear the queue on reset
     lastUserMessageRef.current = null; // Clear last message on reset
     streamPossiblyInterruptedRef.current = false; // Reset interruption flag
@@ -383,9 +378,6 @@ export function useChat() {
     let previousTurnAssistantResponseFromState = assistantResponse; // Capture current state from hook
 
     if (justResetRef.current) {
-      console.log(
-        '[useChat] First message after reset: Forcing previousTurnAssistantResponse to null.'
-      );
       previousTurnAssistantResponseFromState = null;
       justResetRef.current = false; // Clear the flag after using it once
     }
@@ -419,17 +411,10 @@ export function useChat() {
 
       // Client no longer routes; backend determines mode for first typed message when needed
 
-      if (isRefetch) {
-        console.log('Refetch: Sending payload:', JSON.stringify(payload));
-      }
-
       // Mark stream as potentially interruptible right before the async call
       // Only set if not already loading (prevents overriding during queue processing)
       if (!isLoading) {
         streamPossiblyInterruptedRef.current = true;
-        console.log(
-          'Set streamPossiblyInterruptedRef = true before await sendMessage'
-        );
       }
 
       // Capture reset ID to detect if chat was reset during this stream
@@ -437,17 +422,13 @@ export function useChat() {
       
       // Send the message and handle streaming response with structured events
       try {
-        console.log('[useChat] Starting sendMessage, payload.mode:', payload.mode);
         await sendMessage(
           threadIdRef.current ?? '',
           payload,
           (content, payloadObj) => {
-            console.log('[useChat] SSE event:', { content: content?.substring(0, 50), payloadObj });
-            
             // Ignore events if chat was reset during this stream
             if ((window as any).__chatResetId !== streamResetId) {
               // Chat was reset - ignore this event
-              console.log('[useChat] Ignoring event - chat was reset');
               return;
             }
             
