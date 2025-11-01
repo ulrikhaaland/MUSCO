@@ -3,73 +3,21 @@ import { useChat } from './useChat';
 import { AnatomyPart } from '../types/human';
 import { Question, DiagnosisAssistantResponse } from '../types';
 import { BodyPartGroup } from '../config/bodyPartGroups';
-import { ProgramIntention, useApp } from '../context/AppContext';
+import { useApp } from '../context/AppContext';
 import { ProgramType } from '../../../shared/types';
 import { useTranslation } from '../i18n';
 import { translateBodyPartGroupName, translatePartDirectionPrefix } from '../utils/bodyPartTranslation';
 import { decideMode } from './logic/partChatDecision';
 import { detectProgramType } from '../utils/questionAugmentation';
-
-// Initialize translations with null function that will be replaced
-let t = (key: string) => key;
-
-// Define initial questions using translation function
-const getInitialQuestionsTemplate = (): Question[] => [
-  {
-    title: t('chat.question.painSource.title'),
-    question: t('chat.question.painSource.text'),
-    asked: false,
-    meta: t('chat.question.painSource.meta'),
-    chatMode: 'diagnosis',
-  },
-  {
-    title: t('chat.question.explore.title'),
-    question: t('chat.question.explore.text'),
-    asked: false,
-    meta: t('chat.question.explore.meta'),
-    chatMode: 'explore',
-  },
-  {
-    title: t('chat.question.exercise.title'),
-    question: t('chat.question.exercise.text'),
-    asked: false,
-    generate: true,
-    diagnosis: '',
-    programType: ProgramType.Exercise,
-    meta: t('chat.question.exercise.meta'),
-  },
-];
+import { getPartSpecificTemplateQuestions } from '../config/templateQuestions';
 
 function getInitialQuestions(name?: string, intention?: string, translationFunc?: (key: string) => string): Question[] {
   if (!name) return [];
-
-  // Use provided translation function or fallback to identity function
+  
   const translate = translationFunc || ((key: string) => key);
   
-  // Update t for template generation
-  t = translate;
-  
-  // Get questions with translations applied
-  const questions = getInitialQuestionsTemplate().map(q => {
-    // Deep copy to avoid modifying the original
-    const question = {...q};
-    
-    // Replace the Exercise program question with Recovery program when intention is recovery
-    if (question.title === translate('chat.question.exercise.title') && intention === ProgramIntention.Recovery) {
-      question.title = translate('chat.question.recovery.title');
-      question.question = translate('chat.question.recovery.text');
-      question.programType = ProgramType.Recovery;
-    }
-    
-      // Always replace the $part placeholder with the part name
-  return {
-    ...question,
-    question: question.question.replace('$part', name.toLowerCase()),
-    meta: question.meta?.replace('$part', name.toLowerCase()),
-  };
-  });
-
-  return questions;
+  // Use centralized template questions
+  return getPartSpecificTemplateQuestions(name, intention, translate);
 }
 
 // Pure decision helper extracted for unit testing

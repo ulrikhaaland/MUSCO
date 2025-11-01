@@ -4,6 +4,7 @@
  */
 
 import { Question } from '@/app/types';
+import { ProgramType } from '@/../shared/types';
 
 export interface TemplateQuestion extends Question {
   /** Display label for the button */
@@ -47,6 +48,64 @@ export function getGlobalTemplateQuestions(t: (key: string) => string): Template
 }
 
 /**
+ * Get part-specific template questions (when a body part is selected)
+ * @param name - Body part name (will replace $part placeholder)
+ * @param intention - Program intention ('recovery' or other)
+ * @param t - Translation function from useTranslation hook
+ */
+export function getPartSpecificTemplateQuestions(
+  name: string,
+  intention: string | undefined,
+  t: (key: string) => string
+): Question[] {
+  const questions: Question[] = [
+    {
+      title: t('chat.question.painSource.title'),
+      question: t('chat.question.painSource.text'),
+      asked: false,
+      meta: t('chat.question.painSource.meta'),
+      chatMode: 'diagnosis',
+    },
+    {
+      title: t('chat.question.explore.title'),
+      question: t('chat.question.explore.text'),
+      asked: false,
+      meta: t('chat.question.explore.meta'),
+      chatMode: 'explore',
+    },
+    {
+      title: t('chat.question.exercise.title'),
+      question: t('chat.question.exercise.text'),
+      asked: false,
+      generate: true,
+      diagnosis: '',
+      programType: ProgramType.Exercise,
+      meta: t('chat.question.exercise.meta'),
+    },
+  ];
+
+  // Replace Exercise program question with Recovery program when intention is recovery
+  return questions.map(q => {
+    const question = {...q};
+    
+    if (question.title === t('chat.question.exercise.title') && intention === 'recovery') {
+      question.title = t('chat.question.recovery.title');
+      question.question = t('chat.question.recovery.text');
+      question.programType = ProgramType.Recovery;
+      question.meta = t('chat.question.recovery.meta');
+    }
+    
+    // Replace $part placeholder with the part name
+    return {
+      ...question,
+      question: question.question.replace('$part', name.toLowerCase()),
+      meta: question.meta?.replace('$part', name.toLowerCase()),
+    };
+  });
+}
+
+/**
+ * @deprecated Use getPartSpecificTemplateQuestions instead
  * Template questions shown when a body part is selected
  * Can be filtered/customized based on selected body part
  * @param t - Translation function from useTranslation hook
