@@ -68,11 +68,12 @@ export function useHumanAPI({
     setSelectedPart,
     intentionRef,
     selectedGroupsRef,
+    selectedPartRef,
   } = useApp();
   const initialCameraRef = useRef<CameraPosition | null>(null);
   const selectionEventRef = useRef<any>(null);
   const previousSelectedPartGroupRef = useRef<BodyPartGroup | null>(null);
-  const selectedPartRef = useRef<AnatomyPart | null>(null);
+  // Remove local selectedPartRef - we use the one from AppContext now
   const selectedPartIdRef = useRef<string | null>(null);
   const isResettingRef = useRef<boolean>(false);
   const isXrayEnabledRef = useRef<boolean>(false);
