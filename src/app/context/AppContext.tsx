@@ -100,6 +100,24 @@ export function AppProvider({ children }: { children: ReactNode }) {
     selectedPartRef.current = selectedPart;
   }, [selectedPart]);
 
+  // Auto-save viewer state to localStorage whenever selection changes
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    // Don't save if nothing is selected (avoid saving empty state on initial mount)
+    if (selectedGroups.length === 0 && !selectedPart) return;
+    
+    try {
+      const snapshot = {
+        intention,
+        selectedGroupIds: selectedGroups.map((g) => g.id),
+        selectedPart,
+      };
+      window.localStorage.setItem('viewerState', JSON.stringify(snapshot));
+    } catch (e) {
+      console.warn('Failed to auto-save viewer state', e);
+    }
+  }, [selectedGroups, selectedPart, intention]);
+
   // Handle intention changes
   const handleSetIntention = useCallback((newIntention: ProgramIntention) => {
     resetSelectionState();
@@ -279,6 +297,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         selectedPart: selectedPartRef.current,
       } as const;
       window.sessionStorage.setItem('viewerState', JSON.stringify(snapshot));
+      // Also save to localStorage for page reload persistence
+      window.localStorage.setItem('viewerState', JSON.stringify(snapshot));
       // Also store current path so we can navigate back after auth/checkout
       try {
         window.sessionStorage.setItem('previousPath', window.location.pathname);
@@ -290,7 +310,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const restoreViewerState = useCallback(() => {
     if (typeof window === 'undefined') return;
-    const raw = window.sessionStorage.getItem('viewerState');
+    // Try sessionStorage first (for auth flow), then localStorage (for page reload)
+    const raw = window.sessionStorage.getItem('viewerState') || window.localStorage.getItem('viewerState');
     if (!raw) return;
     try {
       const data = JSON.parse(raw) as {
@@ -310,7 +331,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setSelectedGroups(mapIds(data.selectedGroupIds));
       setSelectedPart(data.selectedPart ?? null);
 
-      // One-shot restore
+      // Clear sessionStorage (one-shot for auth flow), but keep localStorage (for future reloads)
       window.sessionStorage.removeItem('viewerState');
     } catch (e) {
       console.warn('Failed to restore viewer state', e);
