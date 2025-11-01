@@ -131,7 +131,7 @@ export async function POST(request: Request) {
         const bodyPartGroups = BODY_PART_GROUPS.join(', ');
         const specificBodyParts = JSON.stringify(SPECIFIC_BODY_PARTS, null, 2);
         
-        let promptWithContext = basePrompt
+        const promptWithContext = basePrompt
           .replace(/\{\{BODY_PART\}\}/g, bodyPart)
           .replace(/\{\{BODY_PART_GROUPS\}\}/g, bodyPartGroups)
           .replace(/\{\{SPECIFIC_BODY_PARTS\}\}/g, specificBodyParts);
