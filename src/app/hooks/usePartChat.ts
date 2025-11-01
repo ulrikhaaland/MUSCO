@@ -112,6 +112,10 @@ export function usePartChat({
   }, [chatFollowUpQuestions]);
 
   const switchHandledRef = useRef(false);
+  
+  // Ref to track if we're currently processing a click to prevent duplicates
+  // This is more reliable than isLoading state which can be stale in callbacks
+  const isProcessingRef = useRef(false);
 
   const handleOptionClick = useCallback(
     (question: Question) => {
@@ -120,12 +124,22 @@ export function usePartChat({
         JSON.stringify(question)
       );
 
-      // CRITICAL: Block clicks while loading to prevent duplicate messages
-      // User might click multiple follow-up buttons rapidly before stream starts
-      if (isLoading) {
-        console.warn('[usePartChat] Ignoring click - already loading');
+      // CRITICAL: Prevent rapid duplicate clicks using a ref (not state)
+      // State can be stale in callbacks, but refs are always current
+      // This only blocks VERY rapid clicks (300ms) - after that, messages queue properly
+      if (isProcessingRef.current) {
+        console.warn('[usePartChat] Ignoring rapid duplicate click');
         return;
       }
+      
+      // Mark as processing immediately
+      isProcessingRef.current = true;
+      
+      // Reset after a short delay to allow next legitimate click
+      // If isLoading=true when reset fires, useChat will queue the message properly
+      setTimeout(() => {
+        isProcessingRef.current = false;
+      }, 300); // Short delay - just enough to prevent accidental double-clicks
 
       // Check if this is a special "Answer in chat" button
       if (question.question === 'Answer in chat') {
@@ -217,7 +231,6 @@ export function usePartChat({
     });
     },
     [
-      isLoading, // CRITICAL: Must include to prevent duplicate sends
       chatMode,
       previousQuestions,
       localFollowUpQuestions,
