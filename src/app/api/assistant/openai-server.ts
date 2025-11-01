@@ -288,7 +288,7 @@ export async function streamChatCompletion({
     const selectedModel = isExploreMode ? EXPLORE_MODEL : DIAGNOSIS_MODEL; // Default to diagnosis if mode unknown
     
     throttledLog('info', 'chat_stream_start', `ctx=stream model=${selectedModel}`);
-    
+
     const turnLimit = isDiagnosisMode ? (messages?.length || 0) : CHAT_MAX_TURNS;
     const formattedMessages = formatMessagesForChatCompletion((messages || []).slice(-turnLimit));
 
@@ -377,7 +377,7 @@ export async function streamChatCompletion({
     
     console.log('Last user message:', formattedMessages[formattedMessages.length - 1]?.content.substring(0, 200));
     console.log('═══════════════════════════════════════');
-    
+
     // Call OpenAI Responses API (streaming) with minimal reasoning effort
     const stream = await openai.responses.stream({
       model: selectedModel,
@@ -952,7 +952,7 @@ export async function generateExerciseProgramWithModel(context: {
       currentDay: new Date().getDay(),
       previousProgram: context.previousProgram,
       language: context.language || 'en', // Default to English if not specified
-    });   
+    });
 
     // Call the OpenAI chat completion API
     const response = await openai.chat.completions.create({

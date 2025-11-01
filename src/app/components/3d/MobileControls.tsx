@@ -232,6 +232,35 @@ export default function MobileControls({
     return () => window.removeEventListener('resize', onResize);
   }, [overlayOpen, overlayHeaderHeight, overlayFooterHeight, onHeightChange]);
 
+  // Track scroll position to preserve it when returning from questionnaire
+  const scrollPositionRef = useRef<number>(0);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  // Save scroll position before opening questionnaire
+  useEffect(() => {
+    if (showQuestionnaire && scrollContainerRef.current) {
+      scrollPositionRef.current = scrollContainerRef.current.scrollTop;
+    }
+  }, [showQuestionnaire]);
+
+  // Restore scroll position when returning from questionnaire
+  useEffect(() => {
+    if (!showQuestionnaire && scrollContainerRef.current && scrollPositionRef.current > 0) {
+      // Wait for next frame to ensure DOM is ready
+      requestAnimationFrame(() => {
+        if (scrollContainerRef.current) {
+          scrollContainerRef.current.scrollTop = scrollPositionRef.current;
+        }
+      });
+    }
+  }, [showQuestionnaire]);
+
+  // Update scroll position ref when user scrolls
+  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const target = e.currentTarget;
+    scrollPositionRef.current = target.scrollTop;
+  };
+
   // Observe overlay footer height
   useEffect(() => {
     if (!overlayOpen) return;
@@ -323,10 +352,12 @@ export default function MobileControls({
 
           {/* Content */}
           <div
+            ref={scrollContainerRef}
             data-rsbs-scroll
-            className="flex-1 min-h-0 overflow-y-auto px-4 pt-1 pb-2"
+            className="flex-1 min-h-0 overflow-y-auto px-4 pt-1 pb-2 chat-scrollbar"
             style={{ height: overlayContentHeight }}
             onWheel={(e) => e.stopPropagation()}
+            onScroll={handleScroll}
           >
                 <div className="flex-1 min-h-0">
                   {messages.length === 0 && selectedGroups.length === 0 && !isLoading && (

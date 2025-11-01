@@ -419,7 +419,7 @@ export function useChat() {
 
       // Capture reset ID to detect if chat was reset during this stream
       const streamResetId = (window as any).__chatResetId || 0;
-      
+
       // Send the message and handle streaming response with structured events
       try {
         await sendMessage(
@@ -505,8 +505,8 @@ export function useChat() {
               if (lastMessage?.role === 'assistant' && lastMessage.content) {
                 fetchInlineExercises(lastMessage.content);
               }
-              return;
-            }
+                return;
+              }
 
             // Handle text content
             if (content) {

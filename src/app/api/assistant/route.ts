@@ -92,8 +92,8 @@ export async function POST(request: Request) {
               const parsed = JSON.parse(text);
               if (parsed?.chatMode === 'diagnosis' || parsed?.chatMode === 'explore') {
                 effectiveMode = parsed.chatMode;
-              }
-            } catch {
+                    }
+                  } catch {
               const s = (text || '').toLowerCase();
               if (/pain|hurt|injur|symptom|red flag|numb|tingl|swoll|ache/.test(s)) {
                 effectiveMode = 'diagnosis';

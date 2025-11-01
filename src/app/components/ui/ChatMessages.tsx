@@ -850,7 +850,7 @@ export function ChatMessages({
           // MOBILE: Fit spacer to content to save space
           const marginBuffer = 100;
           const contentBasedHeight = actualContentHeight + marginBuffer;
-          
+
           console.log('[ChatMessages] MOBILE path:', {
             contentBasedHeight,
             willShrink: contentBasedHeight < calculatedHeight,
