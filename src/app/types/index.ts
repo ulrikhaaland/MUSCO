@@ -90,6 +90,10 @@ export interface DiagnosisAssistantResponse {
   /* Running summary of collected information */
   summary: string | null; // Updated on each turn with a concise summary of what's been learned
   
+  /* Body part selection (for diagnosis without pre-selected part) */
+  selectedBodyGroup: string | null; // e.g., "Neck", "Shoulders", "Back"
+  selectedBodyPart: string | null; // e.g., "Left shoulder", "Lower back"
+  
   /* 7-Q core + optional fields */
   informationalInsights: string | null;
   painfulAreas: string | null;

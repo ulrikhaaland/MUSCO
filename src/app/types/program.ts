@@ -10,7 +10,49 @@ export enum ProgramStatus {
 // Body parts for target areas
 export const BODY_REGIONS = ['Full Body', 'Upper Body', 'Lower Body'] as const;
 
-// Body part groupings
+// Body part groups (for diagnosis flow - group → specific part)
+export const BODY_PART_GROUPS = [
+  'Neck',
+  'Shoulders', 
+  'Arms',
+  'Chest',
+  'Abdomen',
+  'Back',
+  'Hips & Glutes',
+  'Legs',
+] as const;
+
+export type BodyPartGroupName = (typeof BODY_PART_GROUPS)[number];
+
+// Specific parts within each group (for diagnosis narrowing)
+export const SPECIFIC_BODY_PARTS: Record<BodyPartGroupName, readonly string[]> = {
+  'Neck': ['Front of neck', 'Side of neck', 'Back of neck'],
+  'Shoulders': ['Left shoulder', 'Right shoulder', 'Both shoulders'],
+  'Arms': [
+    'Left upper arm', 
+    'Right upper arm',
+    'Left elbow',
+    'Right elbow',
+    'Left forearm',
+    'Right forearm',
+  ],
+  'Chest': ['Upper chest', 'Lower chest', 'Entire chest'],
+  'Abdomen': ['Upper abdomen', 'Lower abdomen', 'Side of abdomen'],
+  'Back': ['Upper back', 'Middle back', 'Lower back'],
+  'Hips & Glutes': ['Left hip', 'Right hip', 'Glutes'],
+  'Legs': [
+    'Left thigh',
+    'Right thigh',
+    'Left knee',
+    'Right knee',
+    'Left lower leg',
+    'Right lower leg',
+    'Left foot',
+    'Right foot',
+  ],
+} as const;
+
+// Body part groupings (for program generation - existing functionality)
 export const TARGET_BODY_PARTS = [
   'Neck',
   'Shoulders',
