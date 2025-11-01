@@ -830,18 +830,16 @@ export function ChatMessages({
           }
         });
 
-        // Only collapse spacer on mobile (when auto-scroll is enabled)
-        // On desktop (disableAutoScroll=true), keep spacer to maintain consistent positioning
-        if (!disableAutoScroll) {
-          // If content fits within container with some margin, minimize spacer to prevent extra scroll space
-          const marginBuffer = 50; // Allow some breathing room
-          const availableSpace = chatContainerHeight - marginBuffer;
-
-          if (actualContentHeight <= availableSpace) {
-            calculatedHeight = 0; // Remove spacer completely when content fits comfortably
-          }
+        // On both mobile and desktop: fit spacer to actual content height
+        // This prevents viewport shifts by maintaining consistent content positioning
+        const marginBuffer = 100; // Padding below content
+        const contentBasedHeight = actualContentHeight + marginBuffer;
+        
+        // Use content-based height if content is shorter than the full spacer
+        // This prevents large empty gaps that cause viewport shifts
+        if (contentBasedHeight < calculatedHeight) {
+          calculatedHeight = contentBasedHeight;
         }
-        // On desktop, we keep the calculatedHeight as-is (don't collapse to 0)
       }
 
       const finalHeight = calculatedHeight;
