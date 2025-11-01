@@ -261,8 +261,33 @@ export function useHumanAPI({
   }, []);
 
   // Hydrate model selection from AppContext state (after restoreViewerState)
+  // Track the current selection to detect when it changes (e.g., after restore)
+  const prevSelectedGroupsLengthRef = useRef(0);
+  const prevSelectedPartIdRef = useRef<string | null>(null);
+  
   useEffect(() => {
-    if (!isReady || !humanRef.current || didHydrateFromContextRef.current) return;
+    if (!isReady || !humanRef.current) return;
+    
+    const currentGroupsLength = selectedGroupsRef.current.length;
+    const currentPartId = selectedPartRef.current?.objectId || null;
+    
+    // Detect if selection state changed from empty to populated (restoration scenario)
+    const selectionChanged = 
+      (prevSelectedGroupsLengthRef.current === 0 && currentGroupsLength > 0) ||
+      (prevSelectedPartIdRef.current === null && currentPartId !== null);
+    
+    // Reset hydration flag if selection was restored
+    if (selectionChanged && didHydrateFromContextRef.current) {
+      didHydrateFromContextRef.current = false;
+    }
+    
+    // Update tracking refs
+    prevSelectedGroupsLengthRef.current = currentGroupsLength;
+    prevSelectedPartIdRef.current = currentPartId;
+    
+    // Skip if already hydrated
+    if (didHydrateFromContextRef.current) return;
+    
     const hasState =
       selectedGroupsRef.current.length > 0 ||
       !!selectedPartRef.current;
@@ -302,7 +327,7 @@ export function useHumanAPI({
         zoomIfMobile(zoomId);
       }
     }
-  }, [isReady, currentGender]);
+  }, [isReady, currentGender, selectedGroupsRef, selectedPartRef, zoomIfMobile]);
 
   function onObjectPicked(event: any) {
     if (!event.position) return;
