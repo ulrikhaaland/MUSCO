@@ -587,18 +587,16 @@ export default function HumanViewer({
     const currentDiagnosis = diagnosisData || diagnosis;
     
     if (currentDiagnosis) {
-      // Use existing diagnosis data, just update programType and clear follow-ups
-      console.log('[HumanViewer] Using diagnosis data:', currentDiagnosis);
       setDiagnosis({
         ...currentDiagnosis,
         followUpQuestions: [],
         programType: programType,
       });
       } else {
-      // Create new diagnosis if none exists
-      console.log('[HumanViewer] No diagnosis data, creating new');
         const newDiagnosis: DiagnosisAssistantResponse = {
         summary: null,
+        selectedBodyGroup: null,
+        selectedBodyPart: null,
           diagnosis:
           (programType === ProgramType.Exercise || programType === ProgramType.ExerciseAndRecovery)
               ? 'No diagnosis, just an exercise program'

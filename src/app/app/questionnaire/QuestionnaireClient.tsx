@@ -23,6 +23,9 @@ export default function QuestionnaireClient({
 
   const handleSubmit = async (answers: ExerciseQuestionnaireAnswers) => {
     const diagnosis: DiagnosisAssistantResponse = {
+      summary: '',
+      selectedBodyGroup: null,
+      selectedBodyPart: null,
       diagnosis:
         selectedProgramType !== ProgramType.Recovery
           ? 'No diagnosis, just an exercise program'
@@ -45,7 +48,6 @@ export default function QuestionnaireClient({
       assessmentComplete: false,
       redFlagsPresent: false,
       targetAreas: '' as any,
-      summary: '',
     };
 
     try {
