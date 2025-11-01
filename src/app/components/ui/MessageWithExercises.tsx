@@ -15,8 +15,9 @@ interface MessageWithExercisesProps {
 /**
  * Renders message text with inline exercise chips
  * Exercises are clickable to show detail modal
+ * Memoized to prevent re-renders during streaming from interrupting clicks
  */
-export function MessageWithExercises({
+export const MessageWithExercises = React.memo(function MessageWithExercises({
   content,
   exercises,
   onVideoClick,
@@ -87,12 +88,14 @@ export function MessageWithExercises({
           const handleTouch = (e: React.TouchEvent) => {
             e.preventDefault();
             e.stopPropagation();
+            console.log('[MessageWithExercises] Touch event on:', exerciseName);
             setSelectedExercise(exercise);
           };
 
-          const handleClick = (e: React.MouseEvent) => {
+          const handleMouseDown = (e: React.MouseEvent) => {
             e.preventDefault();
             e.stopPropagation();
+            console.log('[MessageWithExercises] MouseDown event on:', exerciseName);
             setSelectedExercise(exercise);
           };
           
@@ -100,7 +103,7 @@ export function MessageWithExercises({
           return (
             <span 
               className="not-italic px-1.5 py-0.5 rounded bg-indigo-600/30 text-white font-medium border border-indigo-500/40 select-none cursor-pointer hover:bg-indigo-600/50 hover:border-indigo-400 transition-colors active:bg-indigo-600/70"
-              onClick={handleClick}
+              onMouseDown={handleMouseDown}
               onTouchStart={handleTouch}
               role="button"
               tabIndex={0}
@@ -135,4 +138,4 @@ export function MessageWithExercises({
     )}
     </>
   );
-}
+});
