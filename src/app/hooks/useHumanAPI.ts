@@ -298,34 +298,29 @@ export function useHumanAPI({
     let selectionMap: Record<string, boolean> = {};
     let zoomId: string | null = null;
 
-    // If we have both a group and a part, select the group first, then add the part
-    const group = selectedGroupsRef.current[0] || null;
-    const part = selectedPartRef.current;
-
-    if (part && group) {
-      // Both part and group: select group + highlight the specific part
-      selectionMap = createSelectionMap(group.selectIds, gender);
-      selectionMap[part.objectId] = true; // Add specific part highlight
-      zoomId = part.objectId; // Zoom to the specific part
+    if (selectedPartRef.current) {
+      // Restore a specific part selection
+      // First, select the group that contains this part
+      const group = selectedGroupsRef.current[0] || null;
+      if (group) {
+        selectionMap = createSelectionMap(group.selectIds, gender);
+      }
+      // Then add the specific part to the selection (highlighting it within the group)
+      selectionMap[selectedPartRef.current.objectId] = true;
+      zoomId = selectedPartRef.current.objectId;
       if (!isXrayEnabledRef.current) {
         humanRef.current.send('scene.enableXray', () => {});
         isXrayEnabledRef.current = true;
       }
-    } else if (part) {
-      // Only part: select just the part
-      selectionMap = { [part.objectId]: true } as Record<string, boolean>;
-      zoomId = part.objectId;
-      if (!isXrayEnabledRef.current) {
-        humanRef.current.send('scene.enableXray', () => {});
-        isXrayEnabledRef.current = true;
-      }
-    } else if (group) {
-      // Only group: select the group
-      selectionMap = createSelectionMap(group.selectIds, gender);
-      zoomId = getGenderedId(group.zoomId, gender);
-      if (!isXrayEnabledRef.current) {
-        humanRef.current.send('scene.enableXray', () => {});
-        isXrayEnabledRef.current = true;
+    } else {
+      const group = selectedGroupsRef.current[0] || null;
+      if (group) {
+        selectionMap = createSelectionMap(group.selectIds, gender);
+        zoomId = getGenderedId(group.zoomId, gender);
+        if (!isXrayEnabledRef.current) {
+          humanRef.current.send('scene.enableXray', () => {});
+          isXrayEnabledRef.current = true;
+        }
       }
     }
 
