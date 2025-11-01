@@ -100,12 +100,12 @@ export function BottomSheetHeader({
           <button
             onClick={resetChat}
             className={`text-white hover:text-white p-1 rounded-full hover:bg-gray-800 transition-colors ${
-              isLoading || messages.length === 0
+              messages.length === 0
                 ? 'opacity-50 cursor-not-allowed hover:bg-transparent'
                 : ''
             }`}
             aria-label={t('bottomSheet.resetChat')}
-            disabled={isLoading || messages.length === 0}
+            disabled={messages.length === 0}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
