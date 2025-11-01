@@ -384,17 +384,15 @@ export default function MobileControls({
 
           {/* Footer */}
           <div ref={overlayFooterRef}>
-            {(selectedGroups.length > 0 || messages.length > 0) && (
-              <BottomSheetFooter
-                message={message}
-                isLoading={isLoading}
-                textareaRef={textareaRef}
-                setMessage={setMessage}
-                handleOptionClick={handleOptionClick}
-                messagesCount={messages.length}
-                onClose={onCloseOverlay}
-              />
-            )}
+            <BottomSheetFooter
+              message={message}
+              isLoading={isLoading}
+              textareaRef={textareaRef}
+              setMessage={setMessage}
+              handleOptionClick={handleOptionClick}
+              messagesCount={messages.length}
+              onClose={onCloseOverlay}
+            />
           </div>
         </div>
         </>
