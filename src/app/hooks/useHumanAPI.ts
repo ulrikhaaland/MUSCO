@@ -298,56 +298,23 @@ export function useHumanAPI({
     let selectionMap: Record<string, boolean> = {};
     let zoomId: string | null = null;
 
-    // If we have both a group and a specific part, we need to select the group first,
-    // then the part after a delay (for restoration scenarios)
-    if (selectedPartRef.current && selectedGroupsRef.current.length > 0) {
-      const group = selectedGroupsRef.current[0];
-      
-      // Enable X-ray
-      if (!isXrayEnabledRef.current) {
-        humanRef.current.send('scene.enableXray', () => {});
-        isXrayEnabledRef.current = true;
-      }
-      
-      // Step 1: Select the group first
-      const groupSelectionMap = createSelectionMap(group.selectIds, gender);
-      prevSelection.current = {};
-      humanRef.current.send('scene.selectObjects', { ...groupSelectionMap, replace: true });
-      Object.assign(prevSelection.current, groupSelectionMap);
-      
-      // Step 2: After a delay, select the specific part within the group
-      setTimeout(() => {
-        if (!humanRef.current) return;
-        const partSelectionMap = { [selectedPartRef.current!.objectId]: true };
-        humanRef.current.send('scene.selectObjects', { ...partSelectionMap, replace: true });
-        prevSelection.current = {};
-        Object.assign(prevSelection.current, partSelectionMap);
-        
-        // Zoom to the specific part
-        zoomIfMobile(selectedPartRef.current!.objectId);
-      }, 500);
-      
-      didHydrateFromContextRef.current = true;
-      return; // Early return to skip the rest
-    }
-    
+    // Priority: If a specific part is present, select ONLY the part (not the group)
     if (selectedPartRef.current) {
-      // Restore a specific part selection (no group context)
+      // Select only the specific part
       selectionMap = { [selectedPartRef.current.objectId]: true } as Record<string, boolean>;
       zoomId = selectedPartRef.current.objectId;
       if (!isXrayEnabledRef.current) {
         humanRef.current.send('scene.enableXray', () => {});
         isXrayEnabledRef.current = true;
       }
-    } else {
-      const group = selectedGroupsRef.current[0] || null;
-      if (group) {
-        selectionMap = createSelectionMap(group.selectIds, gender);
-        zoomId = getGenderedId(group.zoomId, gender);
-        if (!isXrayEnabledRef.current) {
-          humanRef.current.send('scene.enableXray', () => {});
-          isXrayEnabledRef.current = true;
-        }
+    } else if (selectedGroupsRef.current.length > 0) {
+      // Only select the group if there's no specific part
+      const group = selectedGroupsRef.current[0];
+      selectionMap = createSelectionMap(group.selectIds, gender);
+      zoomId = getGenderedId(group.zoomId, gender);
+      if (!isXrayEnabledRef.current) {
+        humanRef.current.send('scene.enableXray', () => {});
+        isXrayEnabledRef.current = true;
       }
     }
 
