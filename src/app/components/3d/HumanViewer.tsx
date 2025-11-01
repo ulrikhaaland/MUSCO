@@ -926,6 +926,7 @@ export default function HumanViewer({
           onBodyPartSelected={handleBodyPartSelected}
           overlayOpen={!showQuestionnaire && isChatOverlayOpen}
           onCloseOverlay={() => setIsChatOverlayOpen(false)}
+          showQuestionnaire={showQuestionnaire}
         />
       )}
 

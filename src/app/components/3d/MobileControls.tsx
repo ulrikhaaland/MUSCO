@@ -43,6 +43,7 @@ interface MobileControlsProps {
   onGenerateProgram?: (programType: ProgramType) => void;
   onBodyGroupSelected?: (groupName: string) => void;
   onBodyPartSelected?: (partName: string) => void;
+  showQuestionnaire?: boolean;
 }
 
 // Bottom sheet fully removed; overlay-only implementation
@@ -66,6 +67,7 @@ export default function MobileControls({
   onGenerateProgram,
   onBodyGroupSelected,
   onBodyPartSelected,
+  showQuestionnaire = false,
 }: MobileControlsProps) {
   const router = useRouter();
   const { user } = useAuth();
