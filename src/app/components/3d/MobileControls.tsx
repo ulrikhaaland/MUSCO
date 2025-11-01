@@ -339,9 +339,9 @@ export default function MobileControls({
           >
                 <div className="flex-1 min-h-0">
                   {messages.length === 0 && selectedGroups.length === 0 && !isLoading && (
-                    <div className="mb-3 rounded-lg border border-gray-800 bg-gray-900/60 p-3">
-                      <div className="text-sm text-white mb-1">Start a chat or select a specific part</div>
-                      <div className="text-xs text-gray-400 mb-2">Ask anything about pain, recovery or training.</div>
+                    <div className="mb-3 rounded-lg border border-gray-800 bg-gray-900/60 p-4">
+                      <div className="text-base font-medium text-white mb-2">Start a chat or select a specific part</div>
+                      <div className="text-sm text-gray-400 mb-3">Ask anything about pain, recovery or training.</div>
                       <div className="flex flex-wrap gap-2">
                         {globalTemplateQuestions.map((template) => (
                         <button
@@ -352,7 +352,7 @@ export default function MobileControls({
                               question: template.question, 
                               chatMode: template.chatMode 
                             })}
-                          className="px-3 py-1.5 text-xs rounded-full bg-gray-800 text-white hover:bg-gray-700"
+                          className="px-4 py-2 text-sm font-medium rounded-full bg-gray-800 text-white hover:bg-gray-700 active:bg-gray-600"
                             title={template.description}
                         >
                             {template.label}
