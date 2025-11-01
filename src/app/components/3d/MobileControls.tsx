@@ -20,7 +20,8 @@ import { ProgramType } from '../../../../shared/types';
 import { Exercise } from '@/app/types/program';
 import { VideoModal } from '../ui/VideoModal';
 import { fetchExerciseVideoUrl } from '@/app/utils/videoUtils';
-import { GLOBAL_TEMPLATE_QUESTIONS } from '@/app/config/templateQuestions';
+import { getGlobalTemplateQuestions } from '@/app/config/templateQuestions';
+import { useTranslation } from '@/app/i18n';
 
 interface MobileControlsProps {
   isRotating: boolean;
@@ -64,6 +65,7 @@ export default function MobileControls({
 }: MobileControlsProps) {
   const router = useRouter();
   const { user } = useAuth();
+  const { t } = useTranslation();
   const [isMobile, setIsMobile] = useState(false);
   const [controlsBottom] = useState('5rem');
   const [message, setMessage] = useState('');
@@ -73,6 +75,9 @@ export default function MobileControls({
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [loadingVideoExercise, setLoadingVideoExercise] = useState<string | null>(null);
   const [currentExercise, setCurrentExercise] = useState<Exercise | null>(null);
+  
+  // Get translated template questions
+  const globalTemplateQuestions = getGlobalTemplateQuestions(t);
   
   const handleVideoClick = async (exercise: Exercise) => {
     const exerciseId = exercise.name || exercise.id;
@@ -323,7 +328,7 @@ export default function MobileControls({
                       <div className="text-sm text-white mb-1">Start a chat or select a specific part</div>
                       <div className="text-xs text-gray-400 mb-2">Ask anything about pain, recovery or training.</div>
                       <div className="flex flex-wrap gap-2">
-                        {GLOBAL_TEMPLATE_QUESTIONS.map((template) => (
+                        {globalTemplateQuestions.map((template) => (
                           <button
                             key={template.question}
                             type="button"

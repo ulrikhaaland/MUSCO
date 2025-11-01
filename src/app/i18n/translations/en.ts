@@ -358,6 +358,17 @@ const translations = {
     "What's the best recovery program for my $part?",
   'chat.question.recovery.meta': '2 min setup',
 
+  // Chat - Global Template Questions (no body part selected)
+  'chat.template.whatCanYouHelp.label': 'What can you help me with?',
+  'chat.template.whatCanYouHelp.question': 'What can you help me with?',
+  'chat.template.whatCanYouHelp.description': 'Learn about the assistant capabilities',
+  'chat.template.havePain.label': 'I have pain',
+  'chat.template.havePain.question': 'I have pain',
+  'chat.template.havePain.description': 'Start a pain assessment',
+  'chat.template.buildProgram.label': 'Build an exercise program',
+  'chat.template.buildProgram.question': 'Build an exercise program',
+  'chat.template.buildProgram.description': 'Create a customized training plan',
+
   // Profile - Sections
   'profile.sections.general': 'General',
   'profile.sections.healthBasics': 'Health Basics',

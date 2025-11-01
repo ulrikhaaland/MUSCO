@@ -17,57 +17,63 @@ export interface TemplateQuestion extends Question {
 }
 
 /**
- * Template questions shown when no body part is selected
+ * Get template questions with translations applied
+ * @param t - Translation function from useTranslation hook
  */
-export const GLOBAL_TEMPLATE_QUESTIONS: TemplateQuestion[] = [
-  {
-    label: 'What can you help me with?',
-    question: 'What can you help me with?',
-    chatMode: 'explore',
-    title: '',
-    description: 'Learn about the assistant capabilities',
-  },
-  {
-    label: 'I have pain',
-    question: 'I have pain',
-    chatMode: 'diagnosis',
-    title: '',
-    description: 'Start a pain assessment',
-  },
-  {
-    label: 'Build an exercise program',
-    question: 'Build an exercise program',
-    chatMode: 'explore',
-    title: '',
-    description: 'Create a customized training plan',
-  },
-];
+export function getGlobalTemplateQuestions(t: (key: string) => string): TemplateQuestion[] {
+  return [
+    {
+      label: t('chat.template.whatCanYouHelp.label'),
+      question: t('chat.template.whatCanYouHelp.question'),
+      chatMode: 'explore',
+      title: '',
+      description: t('chat.template.whatCanYouHelp.description'),
+    },
+    {
+      label: t('chat.template.havePain.label'),
+      question: t('chat.template.havePain.question'),
+      chatMode: 'diagnosis',
+      title: '',
+      description: t('chat.template.havePain.description'),
+    },
+    {
+      label: t('chat.template.buildProgram.label'),
+      question: t('chat.template.buildProgram.question'),
+      chatMode: 'explore',
+      title: '',
+      description: t('chat.template.buildProgram.description'),
+    },
+  ];
+}
 
 /**
  * Template questions shown when a body part is selected
  * Can be filtered/customized based on selected body part
+ * @param t - Translation function from useTranslation hook
  */
-export const BODY_PART_TEMPLATE_QUESTIONS: TemplateQuestion[] = [
-  {
-    label: 'I have pain here',
-    question: 'I have pain in this area',
-    chatMode: 'diagnosis',
-    title: '',
-    description: 'Start assessment for selected body part',
-  },
-  {
-    label: 'Show me exercises',
-    question: 'What exercises can help strengthen this area?',
-    chatMode: 'explore',
-    title: '',
-    description: 'Get exercise recommendations',
-  },
-  {
-    label: 'Build a program',
-    question: 'Create a training program for this area',
-    chatMode: 'explore',
-    title: '',
-    description: 'Generate customized program',
-  },
-];
+export function getBodyPartTemplateQuestions(t: (key: string) => string): TemplateQuestion[] {
+  return [
+    {
+      label: t('chat.question.painSource.title'),
+      question: 'I have pain in this area',
+      chatMode: 'diagnosis',
+      title: '',
+      description: t('chat.question.painSource.meta'),
+    },
+    {
+      label: t('chat.question.explore.title'),
+      question: 'What exercises can help strengthen this area?',
+      chatMode: 'explore',
+      title: '',
+      description: t('chat.question.explore.meta'),
+    },
+    {
+      label: t('chat.question.exercise.title'),
+      question: 'Create a training program for this area',
+      chatMode: 'explore',
+      title: '',
+      description: t('chat.question.exercise.meta'),
+    },
+  ];
+}
 
