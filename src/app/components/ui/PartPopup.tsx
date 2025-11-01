@@ -1,18 +1,12 @@
-import { useState, useRef, ChangeEvent } from 'react';
+import { ChangeEvent } from 'react';
 import { ChatMessages } from './ChatMessages';
-import { usePartChat } from '@/app/hooks/usePartChat';
+import { useChatContainer } from '@/app/hooks/useChatContainer';
 import { BodyPartGroup } from '@/app/config/bodyPartGroups';
 import { Question, ChatMessage } from '@/app/types';
 import { AnatomyPart } from '@/app/types/human';
-import { useRouter } from 'next/navigation';
-import { useAuth } from '@/app/context/AuthContext';
 import { useApp } from '@/app/context/AppContext';
 import { ProgramType } from '../../../../shared/types';
-import { Exercise } from '@/app/types/program';
 import { VideoModal } from './VideoModal';
-import { fetchExerciseVideoUrl } from '@/app/utils/videoUtils';
-import { getGlobalTemplateQuestions } from '@/app/config/templateQuestions';
-import { useTranslation } from '@/app/i18n';
 
 interface PartPopupProps {
   part: AnatomyPart | null;
@@ -35,23 +29,22 @@ export default function PartPopup({
   onBodyGroupSelected,
   onBodyPartSelected,
 }: PartPopupProps) {
-  const router = useRouter();
-  const { t } = useTranslation();
-  
-  const { user } = useAuth();
   const { saveViewerState } = useApp();
-  const [message, setMessage] = useState('');
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
   
-  // Get translated template questions
-  const globalTemplateQuestions = getGlobalTemplateQuestions(t);
-  
-  // Video handling for exercise cards
-  const [videoUrl, setVideoUrl] = useState<string | null>(null);
-  const [loadingVideoExercise, setLoadingVideoExercise] = useState<string | null>(null);
-  const [currentExercise, setCurrentExercise] = useState<Exercise | null>(null);
-  
+  // Use consolidated chat container logic
   const {
+    router,
+    user,
+    t,
+    message,
+    setMessage,
+    textareaRef,
+    videoUrl,
+    loadingVideoExercise,
+    currentExercise,
+    handleVideoClick,
+    handleCloseVideo,
+    globalTemplateQuestions,
     messages,
     isLoading,
     rateLimited,
@@ -59,44 +52,19 @@ export default function PartPopup({
     exerciseResults,
     inlineExercises,
     messagesRef,
-    resetChat,
+    handleResetChat,
     handleOptionClick,
     getGroupDisplayName,
     getPartDisplayName,
     streamError,
-  } = usePartChat({ 
-    selectedPart: part, 
-    selectedGroups: groups, 
-    forceMode, 
+  } = useChatContainer({
+    selectedPart: part,
+    selectedGroups: groups,
+    forceMode,
     onGenerateProgram,
     onBodyGroupSelected,
     onBodyPartSelected,
   });
-  
-  const handleVideoClick = async (exercise: Exercise) => {
-    const exerciseId = exercise.name || exercise.id;
-    if (loadingVideoExercise === exerciseId) return;
-    
-    setLoadingVideoExercise(exerciseId);
-    setCurrentExercise(exercise);
-    try {
-      const videoUrl = await fetchExerciseVideoUrl(exercise);
-      if (videoUrl) {
-        setVideoUrl(videoUrl);
-      }
-    } catch (error) {
-      console.error('Error loading video:', error);
-    } finally {
-      setLoadingVideoExercise(null);
-    }
-  };
-
-  // no local scroll tracking in this variant
-
-  const handleResetChat = () => {
-    setMessage('');
-    resetChat();
-  };
 
   const handleTextareaChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setMessage(e.target.value);
@@ -324,10 +292,7 @@ export default function PartPopup({
       {videoUrl && (
         <VideoModal
           videoUrl={videoUrl}
-          onClose={() => {
-            setVideoUrl(null);
-            setCurrentExercise(null);
-          }}
+          onClose={handleCloseVideo}
           exerciseName={currentExercise?.name}
         />
       )}

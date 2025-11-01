@@ -8,20 +8,14 @@ import {
   ChatMessage,
 } from '@/app/types';
 import { ChatMessages } from '../ui/ChatMessages';
-import { usePartChat } from '@/app/hooks/usePartChat';
+import { useChatContainer } from '@/app/hooks/useChatContainer';
 import { BodyPartGroup } from '@/app/config/bodyPartGroups';
 import { BottomSheetHeader } from './BottomSheetHeader';
 import { BottomSheetFooter } from './BottomSheetFooter';
 import MobileControlButtons from './MobileControlButtons';
 import { AnatomyPart } from '@/app/types/human';
-import { useAuth } from '@/app/context/AuthContext';
-import { useRouter } from 'next/navigation';
 import { ProgramType } from '../../../../shared/types';
-import { Exercise } from '@/app/types/program';
 import { VideoModal } from '../ui/VideoModal';
-import { fetchExerciseVideoUrl } from '@/app/utils/videoUtils';
-import { getGlobalTemplateQuestions } from '@/app/config/templateQuestions';
-import { useTranslation } from '@/app/i18n';
 
 interface MobileControlsProps {
   isRotating: boolean;
@@ -69,51 +63,23 @@ export default function MobileControls({
   onBodyPartSelected,
   showQuestionnaire = false,
 }: MobileControlsProps) {
-  const router = useRouter();
-  const { user } = useAuth();
-  const { t } = useTranslation();
   const [isMobile, setIsMobile] = useState(false);
   const [controlsBottom] = useState('5rem');
-  const [message, setMessage] = useState('');
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
   
-  // Video handling for exercise cards
-  const [videoUrl, setVideoUrl] = useState<string | null>(null);
-  const [loadingVideoExercise, setLoadingVideoExercise] = useState<string | null>(null);
-  const [currentExercise, setCurrentExercise] = useState<Exercise | null>(null);
-  
-  // Get translated template questions
-  const globalTemplateQuestions = getGlobalTemplateQuestions(t);
-  
-  const handleVideoClick = async (exercise: Exercise) => {
-    const exerciseId = exercise.name || exercise.id;
-    if (loadingVideoExercise === exerciseId) return;
-    
-    setLoadingVideoExercise(exerciseId);
-    setCurrentExercise(exercise);
-    try {
-      const videoUrl = await fetchExerciseVideoUrl(exercise);
-      if (videoUrl) {
-        setVideoUrl(videoUrl);
-      }
-    } catch (error) {
-      console.error('Error loading video:', error);
-    } finally {
-      setLoadingVideoExercise(null);
-    }
-  };
-  
-  // no app-level refs needed here
-
-  // Overlay-only height bookkeeping
-  const [overlayHeaderHeight, setOverlayHeaderHeight] = useState(0);
-  const [overlayFooterHeight, setOverlayFooterHeight] = useState(0);
-  const [overlayContentHeight, setOverlayContentHeight] = useState(0);
-  const overlayFooterRef = useRef<HTMLDivElement | null>(null);
-  const overlayRef = useRef<HTMLDivElement | null>(null);
-  const dragStateRef = useRef<{ startY: number; lastY: number; dragging: boolean }>({ startY: 0, lastY: 0, dragging: false });
-
+  // Use consolidated chat container logic
   const {
+    router,
+    user,
+    t,
+    message,
+    setMessage,
+    textareaRef,
+    videoUrl,
+    loadingVideoExercise,
+    currentExercise,
+    handleVideoClick,
+    handleCloseVideo,
+    globalTemplateQuestions,
     messages,
     isLoading,
     rateLimited,
@@ -127,13 +93,23 @@ export default function MobileControls({
     getPartDisplayName,
     assistantResponse,
     streamError,
-  } = usePartChat({
-    selectedPart: selectedPart,
-    selectedGroups: selectedGroups,
+  } = useChatContainer({
+    selectedPart,
+    selectedGroups,
     onGenerateProgram,
     onBodyGroupSelected,
     onBodyPartSelected,
   });
+  
+  // no app-level refs needed here
+
+  // Overlay-only height bookkeeping
+  const [overlayHeaderHeight, setOverlayHeaderHeight] = useState(0);
+  const [overlayFooterHeight, setOverlayFooterHeight] = useState(0);
+  const [overlayContentHeight, setOverlayContentHeight] = useState(0);
+  const overlayFooterRef = useRef<HTMLDivElement | null>(null);
+  const overlayRef = useRef<HTMLDivElement | null>(null);
+  const dragStateRef = useRef<{ startY: number; lastY: number; dragging: boolean }>({ startY: 0, lastY: 0, dragging: false });
 
   // Use the largest, stable viewport height captured at mount to avoid keyboard-induced jumps
   const initialViewportHeightRef = useRef<number>(0);
@@ -441,10 +417,7 @@ export default function MobileControls({
       {videoUrl && (
         <VideoModal
           videoUrl={videoUrl}
-          onClose={() => {
-            setVideoUrl(null);
-            setCurrentExercise(null);
-          }}
+          onClose={handleCloseVideo}
           exerciseName={currentExercise?.name}
         />
       )}
