@@ -556,14 +556,20 @@ export default function HumanViewer({
       const group = bodyPartGroups[configKey];
       console.log('[HumanViewer] Mapping to config:', configKey, group.name);
       setSelectedGroup(group);
-      // Optionally zoom to the group using the API
-      if (humanAPI) {
-        humanAPI.camera.zoomToObject(group.zoomId);
+      // Zoom to the group using the HumanAPI
+      if (humanRef?.current && group.zoomId) {
+        try {
+          humanRef.current.send('camera.set', {
+            objectId: group.zoomId,
+          });
+        } catch (error) {
+          console.error('[HumanViewer] Error zooming to group:', error);
+        }
       }
     } else {
       console.warn('[HumanViewer] No mapping found for body group:', groupName);
     }
-  }, [setSelectedGroup, humanAPI]);
+  }, [setSelectedGroup, humanRef]);
 
   // Handler for specific body part selection from assistant
   const handleBodyPartSelected = useCallback((partName: string) => {
