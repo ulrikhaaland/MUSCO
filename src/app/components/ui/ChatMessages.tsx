@@ -830,16 +830,19 @@ export function ChatMessages({
           }
         });
 
-        // On both mobile and desktop: fit spacer to actual content height
-        // This prevents viewport shifts by maintaining consistent content positioning
-        const marginBuffer = 100; // Padding below content
-        const contentBasedHeight = actualContentHeight + marginBuffer;
-        
-        // Use content-based height if content is shorter than the full spacer
-        // This prevents large empty gaps that cause viewport shifts
-        if (contentBasedHeight < calculatedHeight) {
-          calculatedHeight = contentBasedHeight;
+        // Different behavior for mobile vs desktop
+        if (!disableAutoScroll) {
+          // MOBILE: Fit spacer to content to save space
+          const marginBuffer = 100;
+          const contentBasedHeight = actualContentHeight + marginBuffer;
+          
+          if (contentBasedHeight < calculatedHeight) {
+            calculatedHeight = contentBasedHeight;
+          }
         }
+        // DESKTOP (disableAutoScroll=true): Keep original spacer height
+        // DO NOT shrink the spacer, as this causes viewport shifts
+        // The spacer must maintain its original height to keep messages at the same position
       }
 
       const finalHeight = calculatedHeight;
