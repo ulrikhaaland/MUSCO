@@ -249,7 +249,7 @@ export default function PartPopup({
         part={part}
         groups={groups}
         onResend={handleResendMessage}
-        disableAutoScroll={false}
+        disableAutoScroll={true}
       />
 
       <div className="mt-4 border-t border-gray-700 pt-4 flex-shrink-0">

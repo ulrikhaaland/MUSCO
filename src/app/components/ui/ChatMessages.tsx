@@ -484,8 +484,8 @@ export function ChatMessages({
       scrollToBottom();
     }
 
-    // Quick follow-up scroll to catch any layout shifts (reduced delay)
-    setTimeout(scrollToBottom, 50);
+    // Additional attempt after a delay to ensure visibility
+    setTimeout(scrollToBottom, 250);
   }, [userTouched, disableAutoScroll, scrollToBottom]);
 
   useEffect(() => {
@@ -552,13 +552,13 @@ export function ChatMessages({
           // When DOM changes detected, ensure questions are visible
           ensureFollowUpQuestionsVisible();
 
-          // Disconnect quickly to avoid multiple scroll attempts
+          // Disconnect after a certain time to avoid infinite loops
           setTimeout(() => {
             if (followUpObserverRef.current) {
               followUpObserverRef.current.disconnect();
               followUpObserverRef.current = null;
             }
-          }, 100);
+          }, 1000);
         });
 
         // Start observing
@@ -928,7 +928,7 @@ export function ChatMessages({
       return;
     }
 
-    // Immediately mark as processing to prevent double clicks 
+    // Immediately mark as processing to prevent double clicks
     isProcessingClickRef.current = true;
 
     // Clear any previous timeout if it exists

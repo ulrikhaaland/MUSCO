@@ -22,7 +22,7 @@ function getInitialQuestions(
   if (!name) return [];
 
   const translate = translationFunc || ((key: string) => key);
-
+  
   // Use centralized template questions
   return getPartSpecificTemplateQuestions(name, intention, translate);
 }
@@ -75,7 +75,7 @@ export function usePartChat({
   const [localFollowUpQuestions, setLocalFollowUpQuestions] = useState<
     Question[]
   >(() => {
-    const name = selectedPart
+    const name = selectedPart 
       ? translatePartDirectionPrefix(selectedPart, t).toLowerCase()
       : selectedGroups.length > 0
         ? translateBodyPartGroupName(selectedGroups[0], t).toLowerCase()
@@ -91,12 +91,12 @@ export function usePartChat({
   // Update the questions when part changes
   useEffect(() => {
     if (selectedPart || selectedGroups.length > 0) {
-      const name = selectedPart
+      const name = selectedPart 
         ? translatePartDirectionPrefix(selectedPart, t).toLowerCase()
         : selectedGroups.length > 0
           ? translateBodyPartGroupName(selectedGroups[0], t).toLowerCase()
           : '';
-
+        
       setLocalFollowUpQuestions(getInitialQuestions(name, intention, t));
     } else if (messages.length === 0) {
       setLocalFollowUpQuestions([]);
@@ -173,20 +173,20 @@ export function usePartChat({
 
       setChatMode(decision.nextMode);
 
-      // Merge previous and current follow-up options, de-duplicating by question text
-      const merged = [...previousQuestions, ...localFollowUpQuestions];
-      const seen = new Set<string>();
-      const deduped = merged.filter((q) => {
-        if (!q.question) return false;
-        const key = q.question.trim().toLowerCase();
-        if (seen.has(key)) return false;
-        seen.add(key);
-        return true;
-      });
-      setPreviousQuestions(deduped);
+    // Merge previous and current follow-up options, de-duplicating by question text
+    const merged = [...previousQuestions, ...localFollowUpQuestions];
+    const seen = new Set<string>();
+    const deduped = merged.filter((q) => {
+      if (!q.question) return false;
+      const key = q.question.trim().toLowerCase();
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+    setPreviousQuestions(deduped);
 
-      // Immediately clear follow-up questions to prevent stale ones from flashing
-      setLocalFollowUpQuestions([]);
+    // Immediately clear follow-up questions to prevent stale ones from flashing
+    setLocalFollowUpQuestions([]);
 
       if (decision.deferRouter) {
         try {
@@ -194,20 +194,20 @@ export function usePartChat({
         } catch {}
       }
 
-      sendChatMessage(question.question, {
+    sendChatMessage(question.question, {
         mode: decision.modeForPayload,
-        userPreferences,
-        selectedBodyPart: selectedPart || undefined,
-        selectedBodyGroupName: selectedGroups[0]
-          ? translateBodyPartGroupName(selectedGroups[0], t)
+      userPreferences,
+      selectedBodyPart: selectedPart || undefined,
+      selectedBodyGroupName: selectedGroups[0]
+        ? translateBodyPartGroupName(selectedGroups[0], t)
           : undefined,
         bodyPartsInSelectedGroup:
           selectedGroups[0]?.parts.map((part) => part.name) || [],
-        previousQuestions: deduped,
-        // guidance to assistants: more options on desktop
-        maxFollowUpOptions: isMobile ? 3 : 6,
+      previousQuestions: deduped,
+      // guidance to assistants: more options on desktop
+      maxFollowUpOptions: isMobile ? 3 : 6,
         diagnosisAssistantResponse: assistantResponse || undefined, // Pass current assistant state
-      });
+    });
     },
     [
       chatMode,
