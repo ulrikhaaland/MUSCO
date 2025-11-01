@@ -83,9 +83,10 @@ export async function POST(request: NextRequest) {
       const results = await Promise.all(files.map(fetchExercises));
       allExercises = results.flat();
     } else {
-      // Load all body parts
+      // Load all body parts + warmups + cardio
       const allBodyParts = ['shoulders', 'upper arms', 'forearms', 'chest', 'abdomen', 
-                           'upper back', 'lower back', 'glutes', 'upper legs', 'lower legs'];
+                           'upper back', 'lower back', 'glutes', 'upper legs', 'lower legs',
+                           'warmup', 'cardio'];
       const files = allBodyParts.flatMap(bp => getExerciseFiles(bp, useNorwegian));
       const results = await Promise.all(files.map(fetchExercises));
       allExercises = results.flat();
