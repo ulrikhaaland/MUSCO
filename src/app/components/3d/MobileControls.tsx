@@ -41,6 +41,8 @@ interface MobileControlsProps {
   overlayOpen?: boolean;
   onCloseOverlay?: () => void;
   onGenerateProgram?: (programType: ProgramType) => void;
+  onBodyGroupSelected?: (groupName: string) => void;
+  onBodyPartSelected?: (partName: string) => void;
 }
 
 // Bottom sheet fully removed; overlay-only implementation
@@ -62,6 +64,8 @@ export default function MobileControls({
   overlayOpen,
   onCloseOverlay,
   onGenerateProgram,
+  onBodyGroupSelected,
+  onBodyPartSelected,
 }: MobileControlsProps) {
   const router = useRouter();
   const { user } = useAuth();
@@ -125,6 +129,8 @@ export default function MobileControls({
     selectedPart: selectedPart,
     selectedGroups: selectedGroups,
     onGenerateProgram,
+    onBodyGroupSelected,
+    onBodyPartSelected,
   });
 
   // Use the largest, stable viewport height captured at mount to avoid keyboard-induced jumps

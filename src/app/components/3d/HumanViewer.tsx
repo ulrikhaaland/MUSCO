@@ -16,6 +16,7 @@ import { useUser } from '@/app/context/UserContext';
 import { useAuth } from '@/app/context/AuthContext';
 import { logAnalyticsEvent } from '@/app/utils/analytics';
 import { useExplainSelection } from '@/app/hooks/useExplainSelection';
+import { bodyPartGroups, BodyPartGroup } from '@/app/config/bodyPartGroups';
 
 const MODEL_IDS: Record<Gender, string> = {
   male: '5tOV',
@@ -23,6 +24,18 @@ const MODEL_IDS: Record<Gender, string> = {
 };
 
 const DESKTOP_SPLIT_KEY = 'hv:desktop_split_px';
+
+// Map assistant's body group names to bodyPartGroups config keys
+const BODY_GROUP_NAME_TO_CONFIG: Record<string, keyof typeof bodyPartGroups> = {
+  'Neck': 'neck',
+  'Shoulders': 'chest', // chest config includes shoulder area
+  'Arms': 'chest', // arms are part of upper body, use chest for now
+  'Chest': 'chest',
+  'Abdomen': 'abdomen',
+  'Back': 'back',
+  'Hips & Glutes': 'glutes',
+  'Legs': 'glutes', // legs are connected to glutes in the model
+};
 
 interface HumanViewerProps {
   gender: Gender;
@@ -535,6 +548,31 @@ export default function HumanViewer({
     }
   };
 
+  // Handler for body group selection from assistant (diagnosis flow without pre-selected part)
+  const handleBodyGroupSelected = useCallback((groupName: string) => {
+    console.log('[HumanViewer] Assistant selected body group:', groupName);
+    const configKey = BODY_GROUP_NAME_TO_CONFIG[groupName];
+    if (configKey && bodyPartGroups[configKey]) {
+      const group = bodyPartGroups[configKey];
+      console.log('[HumanViewer] Mapping to config:', configKey, group.name);
+      setSelectedGroup(group);
+      // Optionally zoom to the group using the API
+      if (humanAPI) {
+        humanAPI.camera.zoomToObject(group.zoomId);
+      }
+    } else {
+      console.warn('[HumanViewer] No mapping found for body group:', groupName);
+    }
+  }, [setSelectedGroup, humanAPI]);
+
+  // Handler for specific body part selection from assistant
+  const handleBodyPartSelected = useCallback((partName: string) => {
+    console.log('[HumanViewer] Assistant selected body part:', partName);
+    // For now, just log. We could add more specific zooming logic here if needed
+    // The specific part is more for the diagnosis data than the 3D model selection
+    // The model already highlights the group, and the diagnosis tracks the specific part
+  }, []);
+
   // Handler for program generation triggered from chat
   const handleGenerateProgram = useCallback((programType: ProgramType, diagnosisData?: DiagnosisAssistantResponse | null) => {
     logAnalyticsEvent('open_questionnaire', { from: 'chat_button' });
@@ -856,6 +894,8 @@ export default function HumanViewer({
             onClose={() => {}}
             onQuestionClick={handleQuestionClick}
             onGenerateProgram={handleGenerateProgram}
+            onBodyGroupSelected={handleBodyGroupSelected}
+            onBodyPartSelected={handleBodyPartSelected}
           />
         </div>
       </div>
@@ -878,6 +918,8 @@ export default function HumanViewer({
           hideBottomSheet={showQuestionnaire}
           onDiagnosis={setDiagnosis}
           onGenerateProgram={handleGenerateProgram}
+          onBodyGroupSelected={handleBodyGroupSelected}
+          onBodyPartSelected={handleBodyPartSelected}
           overlayOpen={!showQuestionnaire && isChatOverlayOpen}
           onCloseOverlay={() => setIsChatOverlayOpen(false)}
         />

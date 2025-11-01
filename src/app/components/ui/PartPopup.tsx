@@ -21,6 +21,8 @@ interface PartPopupProps {
   onQuestionClick?: (question: Question) => void;
   forceMode?: 'diagnosis' | 'explore';
   onGenerateProgram?: (programType: ProgramType) => void;
+  onBodyGroupSelected?: (groupName: string) => void;
+  onBodyPartSelected?: (partName: string) => void;
 }
 
 export default function PartPopup({
@@ -30,6 +32,8 @@ export default function PartPopup({
   onQuestionClick,
   forceMode,
   onGenerateProgram,
+  onBodyGroupSelected,
+  onBodyPartSelected,
 }: PartPopupProps) {
   const router = useRouter();
   const { t } = useTranslation();
@@ -60,7 +64,14 @@ export default function PartPopup({
     getGroupDisplayName,
     getPartDisplayName,
     streamError,
-  } = usePartChat({ selectedPart: part, selectedGroups: groups, forceMode, onGenerateProgram });
+  } = usePartChat({ 
+    selectedPart: part, 
+    selectedGroups: groups, 
+    forceMode, 
+    onGenerateProgram,
+    onBodyGroupSelected,
+    onBodyPartSelected,
+  });
   
   const handleVideoClick = async (exercise: Exercise) => {
     const exerciseId = exercise.name || exercise.id;
