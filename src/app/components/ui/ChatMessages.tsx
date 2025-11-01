@@ -14,6 +14,7 @@ interface FollowUpQuestionsProps {
   visibleQuestions: Set<string>;
   prefersReducedMotion: boolean;
   onQuestionClick: (question: Question) => void;
+  isLoading: boolean; // Add loading state for disabling buttons
 }
 
 function FollowUpQuestions({
@@ -21,6 +22,7 @@ function FollowUpQuestions({
   visibleQuestions,
   prefersReducedMotion,
   onQuestionClick,
+  isLoading,
 }: FollowUpQuestionsProps) {
   return (
     <div className="space-y-[10px]">
@@ -32,15 +34,17 @@ function FollowUpQuestions({
           <button
             key={questionId}
             onClick={() => onQuestionClick(question)}
+            disabled={isLoading}
             aria-label={questionId}
             data-quick-reply
             role="button"
-            className={`follow-up-question-btn w-full min-h-[48px] text-left px-4 py-3 pb-4 rounded-lg cursor-pointer
+            className={`follow-up-question-btn w-full min-h-[48px] text-left px-4 py-3 pb-4 rounded-lg 
+              ${isLoading ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}
               bg-[rgba(99,91,255,0.12)] border border-[rgba(99,91,255,0.35)] text-[#c8cbff] font-medium
-              hover:border-[rgba(99,91,255,0.5)] focus:border-[rgba(99,91,255,0.5)] active:border-[rgba(99,91,255,0.5)]
-              hover:shadow-[0_4px_12px_rgba(0,0,0,0.25)] focus:shadow-[0_4px_12px_rgba(0,0,0,0.25)] active:shadow-[0_4px_16px_rgba(0,0,0,0.3)]
-              hover:bg-gradient-to-r hover:from-indigo-900/80 hover:to-indigo-800/80
-              hover:-translate-y-[2px] active:-translate-y-[2px] active:shadow-[0_4px_16px_rgba(0,0,0,0.3)]
+              ${!isLoading && 'hover:border-[rgba(99,91,255,0.5)] focus:border-[rgba(99,91,255,0.5)] active:border-[rgba(99,91,255,0.5)]'}
+              ${!isLoading && 'hover:shadow-[0_4px_12px_rgba(0,0,0,0.25)] focus:shadow-[0_4px_12px_rgba(0,0,0,0.25)] active:shadow-[0_4px_16px_rgba(0,0,0,0.3)]'}
+              ${!isLoading && 'hover:bg-gradient-to-r hover:from-indigo-900/80 hover:to-indigo-800/80'}
+              ${!isLoading && 'hover:-translate-y-[2px] active:-translate-y-[2px] active:shadow-[0_4px_16px_rgba(0,0,0,0.3)]'}
               group transition-all duration-300 ease-out
               ${prefersReducedMotion ? '' : 'motion-safe:hover:-translate-y-[2px] motion-safe:active:scale-[0.99]'}
               ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
@@ -160,7 +164,6 @@ export function ChatMessages({
   const lastMessageContentRef = useRef<string>('');
   const lastMessageIdRef = useRef<string>('');
   const hasHadTouchRef = useRef<boolean>(false);
-  const initialLoadingRef = useRef<boolean>(true);
 
   const chatViewRef = useRef<HTMLDivElement>(null);
   const streamMessageRef = useRef<HTMLDivElement>(null);
@@ -1226,6 +1229,7 @@ export function ChatMessages({
                 visibleQuestions={visibleQuestions}
                 prefersReducedMotion={prefersReducedMotion}
                 onQuestionClick={handleQuestionSelect}
+                isLoading={isLoading}
               />
             </div>
           )}
@@ -1352,6 +1356,7 @@ export function ChatMessages({
                       visibleQuestions={visibleQuestions}
                       prefersReducedMotion={prefersReducedMotion}
                       onQuestionClick={handleQuestionSelect}
+                      isLoading={isLoading}
                     />
                   </div>
                 )}

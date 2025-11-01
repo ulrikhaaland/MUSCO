@@ -120,6 +120,13 @@ export function usePartChat({
         JSON.stringify(question)
       );
 
+      // CRITICAL: Block clicks while loading to prevent duplicate messages
+      // User might click multiple follow-up buttons rapidly before stream starts
+      if (isLoading) {
+        console.warn('[usePartChat] Ignoring click - already loading');
+        return;
+      }
+
       // Check if this is a special "Answer in chat" button
       if (question.question === 'Answer in chat') {
         // Focus the chat input field
@@ -210,6 +217,7 @@ export function usePartChat({
     });
     },
     [
+      isLoading, // CRITICAL: Must include to prevent duplicate sends
       chatMode,
       previousQuestions,
       localFollowUpQuestions,
