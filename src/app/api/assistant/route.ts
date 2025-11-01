@@ -14,7 +14,7 @@ import {
 import { OpenAIMessage } from '@/app/types';
 import { ProgramStatus, BODY_PART_GROUPS, SPECIFIC_BODY_PARTS } from '@/app/types/program';
 import { diagnosisSystemPrompt } from '@/app/api/prompts/diagnosisPrompt';
-import { exploreSystemPrompt } from '@/app/api/prompts/explorePrompt';
+import { getExploreSystemPrompt } from '@/app/api/prompts/explorePrompt';
 import { chatModeRouterPrompt } from '@/app/api/prompts/routePrompt';
 import { ROUTER_MODEL } from '@/app/api/assistant/models';
 import { StreamParser } from '@/app/api/assistant/stream-parser';
@@ -116,9 +116,14 @@ export async function POST(request: Request) {
         // Build the system message with the resolved mode
         const resolvedMode: 'diagnosis' | 'explore' = effectiveMode === 'diagnosis' ? 'diagnosis' : 'explore';
         try { console.info(`level=info event=mode_use value=${resolvedMode}`); } catch {}
-        const basePrompt = resolvedMode === 'explore' ? exploreSystemPrompt : diagnosisSystemPrompt;
         const locale = payload?.language || 'en';
         const sessionLanguage = locale.toLowerCase();
+        
+        // Get language-specific explore prompt or diagnosis prompt
+        const basePrompt = resolvedMode === 'explore' 
+          ? getExploreSystemPrompt(locale) 
+          : diagnosisSystemPrompt;
+          
         const languageLock = `\n<<LANGUAGE_LOCK>>\nSESSION_LANGUAGE=${sessionLanguage}\nRules:\n- All natural-language output (assistant bubble and followUpQuestions.question) must be in SESSION_LANGUAGE for the entire thread.\n- Do not switch languages mid-session unless SESSION_LANGUAGE changes.\n- JSON keys remain English (except user-provided content).\n<<LANGUAGE_LOCK_END>>\n`;
         
         // Inject body part context and body part groups data for diagnosis mode
