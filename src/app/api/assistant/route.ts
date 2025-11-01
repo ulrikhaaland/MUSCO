@@ -12,7 +12,7 @@ import {
   getChatCompletion,
 } from '@/app/api/assistant/openai-server';
 import { OpenAIMessage } from '@/app/types';
-import { ProgramStatus } from '@/app/types/program';
+import { ProgramStatus, BODY_PART_GROUPS, SPECIFIC_BODY_PARTS } from '@/app/types/program';
 import { diagnosisSystemPrompt } from '@/app/api/prompts/diagnosisPrompt';
 import { exploreSystemPrompt } from '@/app/api/prompts/explorePrompt';
 import { chatModeRouterPrompt } from '@/app/api/prompts/routePrompt';
@@ -121,9 +121,15 @@ export async function POST(request: Request) {
         const sessionLanguage = locale.toLowerCase();
         const languageLock = `\n<<LANGUAGE_LOCK>>\nSESSION_LANGUAGE=${sessionLanguage}\nRules:\n- All natural-language output (assistant bubble and followUpQuestions.question) must be in SESSION_LANGUAGE for the entire thread.\n- Do not switch languages mid-session unless SESSION_LANGUAGE changes.\n- JSON keys remain English (except user-provided content).\n<<LANGUAGE_LOCK_END>>\n`;
         
-        // Inject body part context for diagnosis mode
-        const bodyPart = payload?.selectedBodyPart || payload?.selectedBodyGroupName || 'the affected area';
-        const promptWithContext = basePrompt.replace(/\{\{BODY_PART\}\}/g, bodyPart);
+        // Inject body part context and body part groups data for diagnosis mode
+        const bodyPart = payload?.selectedBodyPart || payload?.selectedBodyGroupName || '(not yet selected)';
+        const bodyPartGroups = BODY_PART_GROUPS.join(', ');
+        const specificBodyParts = JSON.stringify(SPECIFIC_BODY_PARTS, null, 2);
+        
+        let promptWithContext = basePrompt
+          .replace(/\{\{BODY_PART\}\}/g, bodyPart)
+          .replace(/\{\{BODY_PART_GROUPS\}\}/g, bodyPartGroups)
+          .replace(/\{\{SPECIFIC_BODY_PARTS\}\}/g, specificBodyParts);
         
         const systemMessage = `${languageLock}\n${promptWithContext}`;
 
