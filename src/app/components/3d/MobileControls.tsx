@@ -20,6 +20,7 @@ import { ProgramType } from '../../../../shared/types';
 import { Exercise } from '@/app/types/program';
 import { VideoModal } from '../ui/VideoModal';
 import { fetchExerciseVideoUrl } from '@/app/utils/videoUtils';
+import { GLOBAL_TEMPLATE_QUESTIONS } from '@/app/config/templateQuestions';
 
 interface MobileControlsProps {
   isRotating: boolean;
@@ -322,27 +323,21 @@ export default function MobileControls({
                       <div className="text-sm text-white mb-1">Start a chat or select a specific part</div>
                       <div className="text-xs text-gray-400 mb-2">Ask anything about pain, recovery or training.</div>
                       <div className="flex flex-wrap gap-2">
-                        <button
-                          type="button"
-                          onClick={() => handleOptionClick({ title: '', question: 'What can you help me with?', chatMode: 'explore' })}
-                          className="px-3 py-1.5 text-xs rounded-full bg-gray-800 text-white hover:bg-gray-700"
-                        >
-                          What can you help me with?
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleOptionClick({ title: '', question: 'I have pain', chatMode: 'diagnosis' })}
-                          className="px-3 py-1.5 text-xs rounded-full bg-gray-800 text-white hover:bg-gray-700"
-                        >
-                          I have pain
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleOptionClick({ title: '', question: 'Build an exercise program', chatMode: 'explore' })}
-                          className="px-3 py-1.5 text-xs rounded-full bg-gray-800 text-white hover:bg-gray-700"
-                        >
-                          Build an exercise program
-                        </button>
+                        {GLOBAL_TEMPLATE_QUESTIONS.map((template) => (
+                          <button
+                            key={template.question}
+                            type="button"
+                            onClick={() => handleOptionClick({ 
+                              title: template.title, 
+                              question: template.question, 
+                              chatMode: template.chatMode 
+                            })}
+                            className="px-3 py-1.5 text-xs rounded-full bg-gray-800 text-white hover:bg-gray-700"
+                            title={template.description}
+                          >
+                            {template.label}
+                          </button>
+                        ))}
                       </div>
                     </div>
                   )}

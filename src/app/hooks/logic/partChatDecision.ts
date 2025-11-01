@@ -25,6 +25,10 @@ export function decideMode(input: ModeDecisionInput): ModeDecisionOutput {
     questionGenerate,
   } = input;
 
+  // Determine next mode based on priority:
+  // 1. forceMode (from component prop)
+  // 2. rawMode (explicit chatMode from question/template)
+  // 3. currentChatMode (existing conversation mode)
   let nextMode: 'diagnosis' | 'explore' = currentChatMode;
   if (forced) {
     nextMode = forced;
@@ -32,6 +36,10 @@ export function decideMode(input: ModeDecisionInput): ModeDecisionOutput {
     nextMode = rawMode;
   }
 
+  // Defer to backend router ONLY for:
+  // - First message (no conversation history)
+  // - Typed by user (no question button clicked)
+  // - No explicit chatMode provided (template questions always have chatMode)
   const isTypedFirstMessage =
     messagesLength === 0 &&
     (!questionTitle || questionTitle.trim() === '') &&
