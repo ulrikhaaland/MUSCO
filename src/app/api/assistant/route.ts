@@ -110,8 +110,8 @@ export async function POST(request: Request) {
           try {
             const reason = effectiveMode ? 'has_mode' : 'has_history';
             console.info(`level=info event=router_skip reason=${reason}`);
-          } catch {}
-        }
+                } catch {}
+              }
 
         // Build the system message with the resolved mode
         const resolvedMode: 'diagnosis' | 'explore' = effectiveMode === 'diagnosis' ? 'diagnosis' : 'explore';

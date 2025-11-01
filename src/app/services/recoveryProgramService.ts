@@ -421,6 +421,8 @@ export const createMinimalRecoveryProgram = (
       programType: ProgramType.Recovery,
       targetAreas: (program.targetAreas?.join(', ') || '') as any,
       summary: '',
+      selectedBodyGroup: null,
+      selectedBodyPart: null,
     },
     questionnaire: {
       age: '30_40',
