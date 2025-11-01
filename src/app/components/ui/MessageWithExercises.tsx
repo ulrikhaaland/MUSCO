@@ -43,6 +43,14 @@ function findExercise(name: string, exercises: Map<string, Exercise>): Exercise 
 }
 
 /**
+ * Helper to clean exercise name for display by removing parenthetical additions
+ * e.g., "Military Press (AKA Overhead Press)" → "Military Press"
+ */
+function cleanExerciseName(name: string): string {
+  return name.replace(/\s*\([^)]*\)/g, '').trim();
+}
+
+/**
  * Renders message text with inline exercise chips
  * Exercises are clickable to show detail modal
  * Memoized to prevent re-renders during streaming from interrupting clicks
@@ -141,6 +149,7 @@ export const MessageWithExercises = React.memo(function MessageWithExercises({
           };
           
           // Render as clickable badge for exercises in database
+          const displayName = cleanExerciseName(exercise.name);
           return (
             <span 
               className="not-italic px-1.5 py-0.5 rounded bg-indigo-600/30 text-white font-medium border border-indigo-500/40 select-none cursor-pointer hover:bg-indigo-600/50 hover:border-indigo-400 transition-colors active:bg-indigo-600/70"
@@ -148,14 +157,14 @@ export const MessageWithExercises = React.memo(function MessageWithExercises({
               onTouchStart={handleTouch}
               role="button"
               tabIndex={0}
-              aria-label={`View ${exerciseName} details`}
+              aria-label={`View ${displayName} details`}
               style={{ 
                 WebkitTouchCallout: 'none',
                 WebkitUserSelect: 'none',
                 userSelect: 'none'
               }}
             >
-              {children as any}
+              {displayName}
             </span>
           );
         },
