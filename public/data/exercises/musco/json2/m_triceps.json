@@ -5,10 +5,16 @@
       "id": "triceps-4",
       "name": "Rope Tricep Extension",
       "description": "The rope tricep extension is a variation of the cable tricep extension and an exercise used to build the muscles of the triceps. Well-built triceps also have a lot of positive carryover into your pressing movements such as bench press variations and shoulder press variations. The rope tricep extension can be included in your tricep workouts, upper body workouts, push workouts, and full body workouts.",
-      "targetBodyParts": ["Triceps"],
-      "exerciseType": ["strength"],
+      "targetBodyParts": [
+        "Triceps"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
       "difficulty": "beginner",
-      "equipment": ["Cable"],
+      "equipment": [
+        "Cable"
+      ],
       "steps": [
         "Attach a rope to a cable stack as high as possible and assume a standing position.",
         "Grasp the rope with a neutral grip (palms facing in) and lean forward slightly by hinging at the hips.",
@@ -28,7 +34,9 @@
         "Acute pain during movement",
         "Shoulder impingement"
       ],
-      "muscles": ["Triceps"],
+      "muscles": [
+        "Triceps"
+      ],
       "alternatives": [
         "triceps-21",
         "triceps-23",
@@ -49,10 +57,16 @@
       "id": "triceps-11",
       "name": "French Press",
       "description": "No description available",
-      "targetBodyParts": ["Triceps"],
-      "exerciseType": ["strength"],
+      "targetBodyParts": [
+        "Triceps"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
       "difficulty": "beginner",
-      "equipment": ["Barbell"],
+      "equipment": [
+        "Barbell"
+      ],
       "steps": [
         "Set up for the french press by loading a barbell or EZ-bar with the appropriate amount of weight and placing it on the floor in front of you.",
         "Bend only at the knees and grasp the barbell with an overhand grip (palms facing down) with your hands about 8-12 inches apart.",
@@ -74,7 +88,9 @@
         "Acute pain during movement",
         "Shoulder impingement"
       ],
-      "muscles": ["Triceps"],
+      "muscles": [
+        "Triceps"
+      ],
       "alternatives": [
         "triceps-107",
         "triceps-23",
@@ -95,10 +111,16 @@
       "id": "triceps-17",
       "name": "Bench Dip",
       "description": "No description available",
-      "targetBodyParts": ["Triceps"],
-      "exerciseType": ["strength"],
+      "targetBodyParts": [
+        "Triceps"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
       "difficulty": "beginner",
-      "equipment": ["Bodyweight"],
+      "equipment": [
+        "Bodyweight"
+      ],
       "steps": [
         "Set up for the bench dip by placing 2 flat benches parallel to one another to around 4-5 feet apart (you may need to adjust the width to suit your height).",
         "Put your heels on the edge of one bench around shoulder-width apart.",
@@ -121,7 +143,10 @@
         "Recent surgery",
         "Severe cardiovascular issues (for heavy compound movements)"
       ],
-      "muscles": ["Triceps", "Shoulders"],
+      "muscles": [
+        "Triceps",
+        "Shoulders"
+      ],
       "alternatives": [
         "triceps-11",
         "triceps-4",
@@ -142,10 +167,16 @@
       "id": "triceps-21",
       "name": "One-Arm Cable Tricep Extension",
       "description": "No description available",
-      "targetBodyParts": ["Triceps"],
-      "exerciseType": ["strength"],
+      "targetBodyParts": [
+        "Triceps"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
       "difficulty": "beginner",
-      "equipment": ["Cable"],
+      "equipment": [
+        "Cable"
+      ],
       "steps": [
         "Set up for the one-arm cable tricep extension by attaching a single grip handle to a high pulley cable and selecting the weight you want to use on the stack.",
         "Stand facing the machine and grab the handle with an overhand grip.",
@@ -164,7 +195,9 @@
         "Acute pain during movement",
         "Shoulder impingement"
       ],
-      "muscles": ["Triceps"],
+      "muscles": [
+        "Triceps"
+      ],
       "alternatives": [
         "triceps-23",
         "triceps-4",
@@ -183,12 +216,18 @@
     },
     {
       "id": "triceps-23",
-      "name": "Standing Low Pulley Overhead Tricep Extension (Rope Extension)",
+      "name": "Standing Low Pulley Overhead Tricep Extension",
       "description": "No description available",
-      "targetBodyParts": ["Triceps"],
-      "exerciseType": ["strength"],
+      "targetBodyParts": [
+        "Triceps"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
       "difficulty": "beginner",
-      "equipment": ["Cable"],
+      "equipment": [
+        "Cable"
+      ],
       "steps": [
         "Set up for the exercise by attaching a rope to the low pulley of a pulley cable machine and selecting the weight you want to use on the stack.",
         "Facing away from the pulley, grab the rope behind your neck with a neutral grip.",
@@ -209,7 +248,9 @@
         "Acute pain during movement",
         "Shoulder impingement"
       ],
-      "muscles": ["Triceps"],
+      "muscles": [
+        "Triceps"
+      ],
       "alternatives": [
         "triceps-21",
         "triceps-4",
@@ -230,10 +271,17 @@
       "id": "triceps-107",
       "name": "Dumbbell Tricep Extension",
       "description": "The flat bench dumbbell tricep extension is a fundamental exercise for isolating and developing the triceps muscles. Performed lying flat on a bench, this movement allows for optimal stability and control while targeting all three heads of the triceps. The flat position helps maintain consistent tension throughout the movement and can be particularly effective for developing triceps strength and size.",
-      "targetBodyParts": ["Triceps"],
-      "exerciseType": ["strength"],
+      "targetBodyParts": [
+        "Triceps"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
       "difficulty": "beginner",
-      "equipment": ["Dumbbell", "Bench"],
+      "equipment": [
+        "Dumbbell",
+        "Bench"
+      ],
       "steps": [
         "Lie flat on a bench with your feet planted firmly on the ground.",
         "Hold a dumbbell in each hand and press them straight up over your chest with palms facing each other (neutral grip).",
@@ -256,7 +304,9 @@
         "Wrist issues",
         "Acute pain during movement"
       ],
-      "muscles": ["Triceps"],
+      "muscles": [
+        "Triceps"
+      ],
       "alternatives": [
         "triceps-11",
         "triceps-23",

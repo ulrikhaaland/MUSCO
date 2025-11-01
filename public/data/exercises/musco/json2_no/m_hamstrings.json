@@ -29,10 +29,16 @@
         "Hold albuene strake for å unngå bicepsbelastning.",
         "Er du svak i toppen, bruk rack pulls, RDL eller band/kjetting. Er du svak fra gulvet, bruk pauseløft eller deficit-løft."
       ],
-      "targetBodyParts": ["Hamstrings"],
-      "exerciseType": ["strength"],
+      "targetBodyParts": [
+        "Hamstrings"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
       "difficulty": "intermediate",
-      "equipment": ["Barbell"],
+      "equipment": [
+        "Barbell"
+      ],
       "contraindications": [
         "Hamstrings injury",
         "Joint pain",
@@ -55,7 +61,10 @@
         "Traps",
         "Upper Back"
       ],
-      "alternatives": ["hamstrings-5", "hamstrings-34"],
+      "alternatives": [
+        "hamstrings-5",
+        "hamstrings-34"
+      ],
       "repetitions": 8,
       "sets": 3,
       "restBetweenSets": 60,
@@ -68,7 +77,7 @@
     },
     {
       "id": "hamstrings-5",
-      "name": "Rumensk Markløft (RDL)",
+      "name": "Rumensk Markløft",
       "description": "Rumensk markløft er en variant av konvensjonell markløft og retter seg primært mot hamstrings og setemuskler. Selv om alle hoftehengs bevegelser treffer hamstrings, er RDL lenge blitt sett på som «beindeadlift-varianten». En smart strategi er å gjøre RDL på beindag og en annen markløftvariant på rygg- eller pulledager. Hoftehengs er et grunnleggende mønster, så finn en variant du behersker og tren den jevnlig. RDL passer best i bein- eller helkroppsøkter.",
       "steps": [
         "Plasser stangen over skolissene og ta hoftebredt fotfeste.",
@@ -86,10 +95,16 @@
         "Hold vekten jevnt fordelt over hele foten; ikke la tærne løfte seg.",
         "Hold albuene strake for å minske risikoen for bicepskade."
       ],
-      "targetBodyParts": ["Hamstrings"],
-      "exerciseType": ["strength"],
+      "targetBodyParts": [
+        "Hamstrings"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
       "difficulty": "beginner",
-      "equipment": ["Barbell"],
+      "equipment": [
+        "Barbell"
+      ],
       "contraindications": [
         "Hamstrings injury",
         "Joint pain",
@@ -107,7 +122,10 @@
         "Traps",
         "Upper Back"
       ],
-      "alternatives": ["hamstrings-34", "hamstrings-2"],
+      "alternatives": [
+        "hamstrings-34",
+        "hamstrings-2"
+      ],
       "repetitions": 8,
       "sets": 3,
       "restBetweenSets": 60,
@@ -141,18 +159,33 @@
         "Start med mindre bevegelse dersom du er ny til øvelsen.",
         "Bruk armene for å hjelpe tilbake hvis hamstrings ikke klarer opp-fasen."
       ],
-      "targetBodyParts": ["Hamstrings"],
-      "exerciseType": ["strength"],
+      "targetBodyParts": [
+        "Hamstrings"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
       "difficulty": "advanced",
-      "equipment": ["Bodyweight"],
+      "equipment": [
+        "Bodyweight"
+      ],
       "contraindications": [
         "Hamstrings injury",
         "Knee injuries",
         "Acute pain during movement",
         "Hypertension (due to potential breath holding during the exercise)"
       ],
-      "muscles": ["Hamstrings", "Glutes", "Abs", "Calves"],
-      "alternatives": ["hamstrings-20", "hamstrings-5", "hamstrings-34"],
+      "muscles": [
+        "Hamstrings",
+        "Glutes",
+        "Abs",
+        "Calves"
+      ],
+      "alternatives": [
+        "hamstrings-20",
+        "hamstrings-5",
+        "hamstrings-34"
+      ],
       "repetitions": 6,
       "sets": 3,
       "restBetweenSets": 90,
@@ -189,10 +222,16 @@
         "Hold vekten over hele foten – tre kontaktpunkter.",
         "Hold albuene strake for å beskytte biceps."
       ],
-      "targetBodyParts": ["Hamstrings"],
-      "exerciseType": ["strength"],
+      "targetBodyParts": [
+        "Hamstrings"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
       "difficulty": "intermediate",
-      "equipment": ["Barbell"],
+      "equipment": [
+        "Barbell"
+      ],
       "contraindications": [
         "Hamstrings injury",
         "Joint pain",
@@ -213,7 +252,10 @@
         "Traps",
         "Upper Back"
       ],
-      "alternatives": ["hamstrings-5", "hamstrings-2"],
+      "alternatives": [
+        "hamstrings-5",
+        "hamstrings-2"
+      ],
       "repetitions": 8,
       "sets": 3,
       "restBetweenSets": 60,
@@ -247,8 +289,12 @@
         "Bruk vegg-støtte med frie fingertupper om balansen er utfordrende.",
         "Øvelsen kan utføres med manual, kettlebell, vektplate, stang eller kroppsvekt."
       ],
-      "targetBodyParts": ["Hamstrings"],
-      "exerciseType": ["strength"],
+      "targetBodyParts": [
+        "Hamstrings"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
       "difficulty": "intermediate",
       "equipment": [
         "Kettlebell",
@@ -264,8 +310,18 @@
         "Hip injury",
         "Ankle instability"
       ],
-      "muscles": ["Hamstrings", "Glutes", "Lower Back", "Core", "Calves"],
-      "alternatives": ["hamstrings-5", "hamstrings-34", "hamstrings-20"],
+      "muscles": [
+        "Hamstrings",
+        "Glutes",
+        "Lower Back",
+        "Core",
+        "Calves"
+      ],
+      "alternatives": [
+        "hamstrings-5",
+        "hamstrings-34",
+        "hamstrings-20"
+      ],
       "repetitions": 10,
       "sets": 3,
       "restBetweenSets": 60,

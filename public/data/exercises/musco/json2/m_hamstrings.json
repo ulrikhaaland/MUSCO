@@ -5,10 +5,16 @@
       "id": "hamstrings-2",
       "name": "Conventional Deadlift",
       "description": "The deadlift is an extremely popular exercise and a true test of total body strength. It is popular across numerous weight lifting circle including bodybuilders, powerlifts, and Crossfit athletes. The deadlift focuses on lifting dead weight off the ground to hip level without using momentum to assist the weight on its path up. It is known as one of the “big three“ exercises for powerlifters which includes squats, bench press, and the deadlift. Bodybuilders use the deadlift to promote muscle growth in their entire posterior chain (muscles on the back of the body). The deadlift primarily works the muscles of the hamstrings. However, it is a complete compound exercise and also requires muscle activation from the back, glutes, hamstrings, arms, and core. The conventional deadlift shouldn't be performed by just anyone as it involves a lot of technique and skill to execute. However, the hip-hinge movement pattern trained while performing a deadlift is and should be included in every workout program. For those who cannot deadlift using the conventional pulling method, they can perform the exercise using one of the many deadlift variations out there. Some of these deadlift variations include: Trap Bar Deadlift Romanian Deadlift Stiff Leg Deadlift Landmine Deadlift Dumbbell Deadlift Smith Machine Deadlift Grip strength is key to being able to deadlift a lot of weight and there are several grip variations you can use while deadlifting including: an overhand grip, mixed grip, and the hook grip.",
-      "targetBodyParts": ["Hamstrings"],
-      "exerciseType": ["strength"],
+      "targetBodyParts": [
+        "Hamstrings"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
       "difficulty": "intermediate",
-      "equipment": ["Barbell"],
+      "equipment": [
+        "Barbell"
+      ],
       "steps": [
         "Position the bar over the top of your shoelaces and assume a hip width stance.",
         "Push your hips back and hinge forward until your torso is nearly parallel with the floor.",
@@ -65,7 +71,10 @@
         "Traps",
         "Upper Back"
       ],
-      "alternatives": ["hamstrings-5", "hamstrings-34"],
+      "alternatives": [
+        "hamstrings-5",
+        "hamstrings-34"
+      ],
       "repetitions": 8,
       "sets": 3,
       "restBetweenSets": 60,
@@ -78,12 +87,18 @@
     },
     {
       "id": "hamstrings-5",
-      "name": "Romanian Deadlift (AKA RDL)",
+      "name": "Romanian Deadlift",
       "description": "The Romanian deadlift, also known as the RDL, is a variation of the conventional deadlift and an exercise used primarily to target the muscles of the hamstrings and glutes. The RDL has long been thought of as the “leg” deadlift variation, despite all hip hinge movements primarily targeting the hamstrings. A smart option, to increase training frequency and work on the movement pattern, would be to perform RDLs on your leg day and another deadlift variation on your back or pull days. The hip hinge is a crucial movement pattern, so it is important to find a variation that is comfortable for you to perform (if able), and work on it. The Romanian deadlift is best utilized during your leg workouts and/or full body workouts.",
-      "targetBodyParts": ["Hamstrings"],
-      "exerciseType": ["strength"],
+      "targetBodyParts": [
+        "Hamstrings"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
       "difficulty": "beginner",
-      "equipment": ["Barbell"],
+      "equipment": [
+        "Barbell"
+      ],
       "steps": [
         "Position the bar over the top of your shoelaces and assume a hip width stance.",
         "Assume a double overhand grip just outside of hip width and deadlift the weight into position at the top with the hips and knees locked out.",
@@ -120,7 +135,10 @@
         "Traps",
         "Upper Back"
       ],
-      "alternatives": ["hamstrings-34", "hamstrings-2"],
+      "alternatives": [
+        "hamstrings-34",
+        "hamstrings-2"
+      ],
       "repetitions": 8,
       "sets": 3,
       "restBetweenSets": 60,
@@ -135,10 +153,16 @@
       "id": "hamstrings-20",
       "name": "Nordic Hamstring Curl",
       "description": "The Nordic hamstring curl is a highly effective eccentric hamstring-strengthening exercise performed by slowly lowering the torso forward from a kneeling position while keeping the hips extended and the spine neutral. The ankles are anchored—typically under a bar, machine, or fixed surface (here, a stall bar)—while the hamstrings resist the forward fall in a lengthening contraction. This controlled descent targets the hamstrings' eccentric strength, which is strongly correlated with reduced risk of hamstring strains and improved sprint performance.",
-      "targetBodyParts": ["Hamstrings"],
-      "exerciseType": ["strength"],
+      "targetBodyParts": [
+        "Hamstrings"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
       "difficulty": "advanced",
-      "equipment": ["Bodyweight"],
+      "equipment": [
+        "Bodyweight"
+      ],
       "steps": [
         "Kneel on a soft surface with your ankles secured under a fixed bar or have a partner hold your ankles firmly.",
         "Position your knees hip-width apart and maintain an upright torso with hips fully extended.",
@@ -164,8 +188,17 @@
         "Acute pain during movement",
         "Hypertension (due to potential breath holding during the exercise)"
       ],
-      "muscles": ["Hamstrings", "Glutes", "Abs", "Calves"],
-      "alternatives": ["hamstrings-20", "hamstrings-5", "hamstrings-34"],
+      "muscles": [
+        "Hamstrings",
+        "Glutes",
+        "Abs",
+        "Calves"
+      ],
+      "alternatives": [
+        "hamstrings-20",
+        "hamstrings-5",
+        "hamstrings-34"
+      ],
       "repetitions": 6,
       "sets": 3,
       "restBetweenSets": 90,
@@ -180,10 +213,16 @@
       "id": "hamstrings-34",
       "name": "Straight Leg Deadlift",
       "description": "The straight leg deadlift is a variation of the deadlift. It is an exercise used to strengthen the muscles of the entire posterior chain including the hamstrings, glutes, calves, and back. The straight leg deadlift differs from its conventional deadlift counterpart in that one must keep their legs straight during the eccentric portion of the lift. This places more tension on the hamstrings as they stretch when lowering the weight. One can utilize the straight leg deadlift to build bigger hamstrings or to strengthen their personal records on the conventional deadlift.",
-      "targetBodyParts": ["Hamstrings"],
-      "exerciseType": ["strength"],
+      "targetBodyParts": [
+        "Hamstrings"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
       "difficulty": "intermediate",
-      "equipment": ["Barbell"],
+      "equipment": [
+        "Barbell"
+      ],
       "steps": [
         "Set a bar at just below hip height and load your desired weight.",
         "Hinge forward slightly and grasp the bar with a double overhand, shoulder width grip.",
@@ -231,7 +270,10 @@
         "Traps",
         "Upper Back"
       ],
-      "alternatives": ["hamstrings-5", "hamstrings-2"],
+      "alternatives": [
+        "hamstrings-5",
+        "hamstrings-2"
+      ],
       "repetitions": 8,
       "sets": 3,
       "restBetweenSets": 60,
@@ -246,8 +288,12 @@
       "id": "hamstrings-48",
       "name": "Single-Leg Romanian Deadlift",
       "description": "The single-leg Romanian deadlift (RDL) is a unilateral posterior chain exercise targeting the hamstrings, glutes, and stabilizing muscles of the foot, ankle, and core. Performed by hinging at the hips while one leg extends backward and a weight lowers toward the floor, the movement emphasizes balance, control, and hamstring loading through a lengthened position. This variation is particularly effective for developing strength asymmetry correction, injury resilience, and hip-hinge mechanics.",
-      "targetBodyParts": ["Hamstrings"],
-      "exerciseType": ["strength"],
+      "targetBodyParts": [
+        "Hamstrings"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
       "difficulty": "intermediate",
       "equipment": [
         "Kettlebell",
@@ -282,8 +328,18 @@
         "Hip injury",
         "Ankle instability"
       ],
-      "muscles": ["Hamstrings", "Glutes", "Lower Back", "Core", "Calves"],
-      "alternatives": ["hamstrings-5", "hamstrings-34", "hamstrings-20"],
+      "muscles": [
+        "Hamstrings",
+        "Glutes",
+        "Lower Back",
+        "Core",
+        "Calves"
+      ],
+      "alternatives": [
+        "hamstrings-5",
+        "hamstrings-34",
+        "hamstrings-20"
+      ],
       "repetitions": 10,
       "sets": 3,
       "restBetweenSets": 60,

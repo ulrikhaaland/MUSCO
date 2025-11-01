@@ -28,10 +28,16 @@
         "Knær Inn Eller Ut: Hold Knærne På Linje Med Føttene.",
         "Se Ned: Blikk Nedover Fører Til Rund Rygg."
       ],
-      "targetBodyParts": ["Upper Legs"],
-      "exerciseType": ["strength"],
+      "targetBodyParts": [
+        "Upper Legs"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
       "difficulty": "intermediate",
-      "equipment": ["Barbell"],
+      "equipment": [
+        "Barbell"
+      ],
       "contraindications": [
         "Upper Legs injury",
         "Joint pain",
@@ -40,8 +46,18 @@
         "Recent surgery",
         "Severe cardiovascular issues (for heavy compound movements)"
       ],
-      "muscles": ["Upper Legs", "Calves", "Glutes", "Hamstrings", "Lower Back"],
-      "alternatives": ["quads-5", "quads-190", "quads-186"],
+      "muscles": [
+        "Upper Legs",
+        "Calves",
+        "Glutes",
+        "Hamstrings",
+        "Lower Back"
+      ],
+      "alternatives": [
+        "quads-5",
+        "quads-190",
+        "quads-186"
+      ],
       "repetitions": 8,
       "sets": 3,
       "restBetweenSets": 60,
@@ -69,18 +85,30 @@
         "Ikke Bruk Ekstremt Tunge Vekter Da Hamstrings Ikke Medvirker Til Stabilisering, Noe Som Øker Skaderisikoen.",
         "Pek Tærne For Å Forbedre Muskelkontakt."
       ],
-      "targetBodyParts": ["Upper Legs"],
-      "exerciseType": ["strength"],
+      "targetBodyParts": [
+        "Upper Legs"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
       "difficulty": "beginner",
-      "equipment": ["Machine"],
+      "equipment": [
+        "Machine"
+      ],
       "contraindications": [
         "Upper Legs injury",
         "Joint pain",
         "Acute pain during movement",
         "Shoulder impingement"
       ],
-      "muscles": ["Upper Legs"],
-      "alternatives": ["quads-5", "quads-28", "quads-51"],
+      "muscles": [
+        "Upper Legs"
+      ],
+      "alternatives": [
+        "quads-5",
+        "quads-28",
+        "quads-51"
+      ],
       "repetitions": 12,
       "sets": 3,
       "restBetweenSets": 60,
@@ -113,10 +141,16 @@
         "Selvspotting Er Mulig Ved Å Press­e Hender Mot Knær Om Nødvendig.",
         "Justér Tåvinkel Etter Egen Hofte- Og Ankelmobilitet."
       ],
-      "targetBodyParts": ["Upper Legs"],
-      "exerciseType": ["strength"],
+      "targetBodyParts": [
+        "Upper Legs"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
       "difficulty": "beginner",
-      "equipment": ["Machine"],
+      "equipment": [
+        "Machine"
+      ],
       "contraindications": [
         "Upper Legs injury",
         "Joint pain",
@@ -134,7 +168,11 @@
         "Hamstrings",
         "Lower Back"
       ],
-      "alternatives": ["quads-1", "quads-4", "quads-190"],
+      "alternatives": [
+        "quads-1",
+        "quads-4",
+        "quads-190"
+      ],
       "repetitions": 12,
       "sets": 3,
       "restBetweenSets": 60,
@@ -163,10 +201,16 @@
         "For Mer Quad-Fokus, Ta Mindre Skritt Og Press Gjennom Forfoten.",
         "For Mer Sete-Og Hamstring­Fokus, Ta Større Skritt Og Press Gjennom Hælen."
       ],
-      "targetBodyParts": ["Upper Legs"],
-      "exerciseType": ["strength"],
+      "targetBodyParts": [
+        "Upper Legs"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
       "difficulty": "beginner",
-      "equipment": ["Bodyweight"],
+      "equipment": [
+        "Bodyweight"
+      ],
       "contraindications": [
         "Upper Legs injury",
         "Joint pain",
@@ -183,7 +227,11 @@
         "Glutes",
         "Hamstrings"
       ],
-      "alternatives": ["quads-186", "quads-192", "quads-51"],
+      "alternatives": [
+        "quads-186",
+        "quads-192",
+        "quads-51"
+      ],
       "repetitions": 12,
       "sets": 3,
       "restBetweenSets": 60,
@@ -211,10 +259,16 @@
         "Tilpass Benkehøyden Om Du Ikke Klarer Full Bevegelse.",
         "Start Med Motvekt Som Manual I Goblet­Posisjon For Bedre Bal­anse."
       ],
-      "targetBodyParts": ["Upper Legs"],
-      "exerciseType": ["strength"],
+      "targetBodyParts": [
+        "Upper Legs"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
       "difficulty": "intermediate",
-      "equipment": ["Bench"],
+      "equipment": [
+        "Bench"
+      ],
       "contraindications": [
         "Upper Legs injury",
         "Joint pain",
@@ -231,7 +285,11 @@
         "Glutes",
         "Hamstrings"
       ],
-      "alternatives": ["quads-191", "quads-192", "quads-28"],
+      "alternatives": [
+        "quads-191",
+        "quads-192",
+        "quads-28"
+      ],
       "repetitions": 12,
       "sets": 3,
       "restBetweenSets": 60,
@@ -258,10 +316,16 @@
       "tips": [
         "Samme Prinsipper Som For Vanlig Knebøy: Rett Rygg, Blikk Frem, Bryst Opp Og Knær På Linje Med Føttene."
       ],
-      "targetBodyParts": ["Upper Legs"],
-      "exerciseType": ["strength"],
+      "targetBodyParts": [
+        "Upper Legs"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
       "difficulty": "beginner",
-      "equipment": ["Bodyweight"],
+      "equipment": [
+        "Bodyweight"
+      ],
       "contraindications": [
         "Upper Legs injury",
         "Joint pain",
@@ -270,8 +334,17 @@
         "Recent surgery",
         "Severe cardiovascular issues (for heavy compound movements)"
       ],
-      "muscles": ["Upper Legs", "Calves", "Glutes", "Hamstrings"],
-      "alternatives": ["quads-28", "quads-191", "quads-192"],
+      "muscles": [
+        "Upper Legs",
+        "Calves",
+        "Glutes",
+        "Hamstrings"
+      ],
+      "alternatives": [
+        "quads-28",
+        "quads-191",
+        "quads-192"
+      ],
       "repetitions": 12,
       "sets": 3,
       "restBetweenSets": 60,
@@ -306,10 +379,17 @@
         "Hold Vekten I Hælene; Du Skal Kunne Vrikke Tærne I Bunnposisjon.",
         "Start Med Kortere Bevegelses­utslag Om Nødvendig Og Øk Dybden Etter Hvert."
       ],
-      "targetBodyParts": ["Upper Legs"],
-      "exerciseType": ["strength", "mobility"],
+      "targetBodyParts": [
+        "Upper Legs"
+      ],
+      "exerciseType": [
+        "strength",
+        "mobility"
+      ],
       "difficulty": "beginner",
-      "equipment": ["Bodyweight"],
+      "equipment": [
+        "Bodyweight"
+      ],
       "contraindications": [
         "Knee injury or pain",
         "Hip injury",
@@ -317,8 +397,17 @@
         "Severe ankle mobility restrictions",
         "Balance issues"
       ],
-      "muscles": ["Upper Legs", "Glutes", "Calves", "Core"],
-      "alternatives": ["quads-1", "quads-5", "quads-28"],
+      "muscles": [
+        "Upper Legs",
+        "Glutes",
+        "Calves",
+        "Core"
+      ],
+      "alternatives": [
+        "quads-1",
+        "quads-5",
+        "quads-28"
+      ],
       "repetitions": 15,
       "sets": 3,
       "restBetweenSets": 45,
@@ -351,10 +440,18 @@
         "Sørg For At Kneet Følger Foten.",
         "Jobb Parallelt Med Ankel- Og Hofte­mobilitet."
       ],
-      "targetBodyParts": ["Upper Legs"],
-      "exerciseType": ["strength"],
+      "targetBodyParts": [
+        "Upper Legs"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
       "difficulty": "intermediate",
-      "equipment": ["Bodyweight", "TRX", "Bands"],
+      "equipment": [
+        "Bodyweight",
+        "TRX",
+        "Bands"
+      ],
       "contraindications": [
         "Upper Legs injury",
         "Significant knee or hip pain",
@@ -370,7 +467,11 @@
         "Glutes",
         "Hamstrings"
       ],
-      "alternatives": ["quads-51", "quads-192", "quads-186"],
+      "alternatives": [
+        "quads-51",
+        "quads-192",
+        "quads-186"
+      ],
       "repetitions": 8,
       "sets": 3,
       "restBetweenSets": 75,
@@ -404,18 +505,34 @@
         "Justér Boks­Høyden For Å Endre Vanskelighetsgrad.",
         "Er Stående Opp For Tøft, Tren Kun Den Eksentriske Fas­en Før Du Reiser Deg Med Begge Ben."
       ],
-      "targetBodyParts": ["Upper Legs"],
-      "exerciseType": ["strength"],
+      "targetBodyParts": [
+        "Upper Legs"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
       "difficulty": "intermediate",
-      "equipment": ["Bodyweight", "Bench"],
+      "equipment": [
+        "Bodyweight",
+        "Bench"
+      ],
       "contraindications": [
         "Upper Legs injury",
         "Significant knee or hip pain",
         "Acute pain during movement",
         "Severe balance impairments"
       ],
-      "muscles": ["Quads", "Glutes", "Hamstrings", "Core"],
-      "alternatives": ["quads-51", "quads-191", "quads-28"],
+      "muscles": [
+        "Quads",
+        "Glutes",
+        "Hamstrings",
+        "Core"
+      ],
+      "alternatives": [
+        "quads-51",
+        "quads-191",
+        "quads-28"
+      ],
       "repetitions": 10,
       "sets": 3,
       "restBetweenSets": 60,
@@ -428,7 +545,7 @@
     },
     {
       "id": "quads-193",
-      "name": "Veggsitt (Isometrisk Hold)",
+      "name": "Veggsitt",
       "description": "Veggsitt Er En Isometrisk Utholdenhetsøvelse Der Du Holder En Sitteposisjon Med Ryggen Mot En Vegg Og Knærne I Cirka 90 Grader. Holdet Aktiverer Quadriceps Kraftig Og Engasjerer Også Sete, Hamstrings Og Kjerne. Øvelsen Bygger Muskulær Utholdenhet, Forbedrer Leddstabilitet Og Øker Tidspress Uten Ledd­belastning.",
       "steps": [
         "Stå Omtrent 60 Cm Foran En Vegg Med Ryggen Mot Veggen.",
@@ -450,18 +567,34 @@
         "Skjelving I Bena Betyr At Musklene Utfordres.",
         "For Økt Vanskelighet Kan Du Strekke Ett Ben Ut Eller Holde Vekter."
       ],
-      "targetBodyParts": ["Upper Legs"],
-      "exerciseType": ["strength", "endurance"],
+      "targetBodyParts": [
+        "Upper Legs"
+      ],
+      "exerciseType": [
+        "strength",
+        "endurance"
+      ],
       "difficulty": "beginner",
-      "equipment": ["Bodyweight"],
+      "equipment": [
+        "Bodyweight"
+      ],
       "contraindications": [
         "Acute knee pain or injury",
         "Recent lower back injury",
         "Significant hypertension",
         "Acute joint inflammation"
       ],
-      "muscles": ["Upper Legs", "Glutes", "Hamstrings", "Core"],
-      "alternatives": ["quads-190", "quads-1", "quads-5"],
+      "muscles": [
+        "Upper Legs",
+        "Glutes",
+        "Hamstrings",
+        "Core"
+      ],
+      "alternatives": [
+        "quads-190",
+        "quads-1",
+        "quads-5"
+      ],
       "repetitions": 1,
       "sets": 3,
       "restBetweenSets": 60,
@@ -495,10 +628,18 @@
         "Hold Ryggen Flat I Plankeposisjonen.",
         "For Ekstra Utfordring, Legg Til Full Armheving Eller Tuck-Jump."
       ],
-      "targetBodyParts": ["Upper Legs", "Cardio"],
-      "exerciseType": ["cardio", "strength"],
+      "targetBodyParts": [
+        "Upper Legs",
+        "Cardio"
+      ],
+      "exerciseType": [
+        "cardio",
+        "strength"
+      ],
       "difficulty": "intermediate",
-      "equipment": ["Bodyweight"],
+      "equipment": [
+        "Bodyweight"
+      ],
       "contraindications": [
         "Cardiovascular conditions",
         "Knee or ankle injuries",
@@ -515,7 +656,11 @@
         "Chest",
         "Shoulders"
       ],
-      "alternatives": ["quads-190", "quads-1", "quads-5"],
+      "alternatives": [
+        "quads-190",
+        "quads-1",
+        "quads-5"
+      ],
       "repetitions": 15,
       "sets": 3,
       "restBetweenSets": 60,

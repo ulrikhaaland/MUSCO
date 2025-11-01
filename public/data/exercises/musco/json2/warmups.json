@@ -5,10 +5,17 @@
       "id": "warmup-1",
       "name": "Rowing Machine",
       "description": "A low-impact cardio warmup that activates the entire upper body, including back, shoulders, and arms. This exercise increases blood flow to major muscle groups and prepares the body for strength training.",
-      "targetBodyParts": ["Warmup"],
-      "exerciseType": ["warmup", "cardio"],
+      "targetBodyParts": [
+        "Warmup"
+      ],
+      "exerciseType": [
+        "warmup",
+        "cardio"
+      ],
       "difficulty": "beginner",
-      "equipment": ["Rowing Machine"],
+      "equipment": [
+        "Rowing Machine"
+      ],
       "duration": 600,
       "steps": [
         "Sit on the rower with your feet secured on the footplates and grab the handle with both hands.",
@@ -29,8 +36,17 @@
         "Wrist pain",
         "Knee problems"
       ],
-      "muscles": ["Back", "Shoulders", "Arms", "Core"],
-      "alternatives": ["warmup-2", "warmup-3", "warmup-6"],
+      "muscles": [
+        "Back",
+        "Shoulders",
+        "Arms",
+        "Core"
+      ],
+      "alternatives": [
+        "warmup-2",
+        "warmup-3",
+        "warmup-6"
+      ],
       "forceType": "Pull",
       "mechanics": "Compound",
       "category": "gym",
@@ -40,10 +56,17 @@
       "id": "warmup-2",
       "name": "Stationary Bike",
       "description": "A low-impact cardio exercise that effectively warms up the lower body, particularly the quadriceps, hamstrings, and calves. Using a stationary bike increases circulation to the legs and joints while gradually raising your heart rate.",
-      "targetBodyParts": ["Warmup"],
-      "exerciseType": ["warmup", "cardio"],
+      "targetBodyParts": [
+        "Warmup"
+      ],
+      "exerciseType": [
+        "warmup",
+        "cardio"
+      ],
       "difficulty": "beginner",
-      "equipment": ["Stationary Bike"],
+      "equipment": [
+        "Stationary Bike"
+      ],
       "duration": 600,
       "steps": [
         "Adjust the bike seat to the proper height - your leg should be almost fully extended at the bottom of the pedal stroke.",
@@ -58,9 +81,21 @@
         "Pedal at a consistent pace that elevates your heart rate to about 50-60% of your maximum.",
         "Use this as a leg warmup before strength training."
       ],
-      "contraindications": ["Knee injury", "Hip pain", "Severe back problems"],
-      "muscles": ["Quadriceps", "Hamstrings", "Calves"],
-      "alternatives": ["warmup-3", "warmup-1", "warmup-6"],
+      "contraindications": [
+        "Knee injury",
+        "Hip pain",
+        "Severe back problems"
+      ],
+      "muscles": [
+        "Quadriceps",
+        "Hamstrings",
+        "Calves"
+      ],
+      "alternatives": [
+        "warmup-3",
+        "warmup-1",
+        "warmup-6"
+      ],
       "forceType": "Push/Pull",
       "mechanics": "Compound",
       "category": "gym",
@@ -68,12 +103,19 @@
     },
     {
       "id": "warmup-3",
-      "name": "Treadmill Walk/Jog (5° Incline)",
+      "name": "Treadmill Walk/Jog",
       "description": "A versatile warmup that engages the entire lower body while gradually raising heart rate. Walking or light jogging on an inclined treadmill activates the posterior chain more intensely than flat walking, making it an excellent full-body preparation.",
-      "targetBodyParts": ["Warmup"],
-      "exerciseType": ["warmup", "cardio"],
+      "targetBodyParts": [
+        "Warmup"
+      ],
+      "exerciseType": [
+        "warmup",
+        "cardio"
+      ],
       "difficulty": "beginner",
-      "equipment": ["Treadmill"],
+      "equipment": [
+        "Treadmill"
+      ],
       "duration": 600,
       "steps": [
         "Set the treadmill to a 5-degree incline.",
@@ -94,8 +136,18 @@
         "Severe back problems",
         "Cardiovascular conditions"
       ],
-      "muscles": ["Quadriceps", "Hamstrings", "Calves", "Glutes", "Core"],
-      "alternatives": ["warmup-2", "warmup-6", "warmup-1"],
+      "muscles": [
+        "Quadriceps",
+        "Hamstrings",
+        "Calves",
+        "Glutes",
+        "Core"
+      ],
+      "alternatives": [
+        "warmup-2",
+        "warmup-6",
+        "warmup-1"
+      ],
       "forceType": "Push",
       "mechanics": "Compound",
       "category": "gym"
@@ -104,10 +156,17 @@
       "id": "warmup-4",
       "name": "Bodyweight Squat",
       "description": "A fundamental lower body movement that effectively warms up the hips, knees, and ankles while engaging all major muscles of the legs. Bodyweight squats increase blood flow to the lower body and prepare the joints for more intense exercise.",
-      "targetBodyParts": ["Warmup"],
-      "exerciseType": ["warmup", "strength"],
+      "targetBodyParts": [
+        "Warmup"
+      ],
+      "exerciseType": [
+        "warmup",
+        "strength"
+      ],
       "difficulty": "beginner",
-      "equipment": ["Bodyweight"],
+      "equipment": [
+        "Bodyweight"
+      ],
       "sets": 1,
       "repetitions": 15,
       "steps": [
@@ -129,8 +188,17 @@
         "Severe hip pain",
         "Recent lower body surgery"
       ],
-      "muscles": ["Quadriceps", "Hamstrings", "Glutes", "Core"],
-      "alternatives": ["warmup-6", "warmup-5", "warmup-3"],
+      "muscles": [
+        "Quadriceps",
+        "Hamstrings",
+        "Glutes",
+        "Core"
+      ],
+      "alternatives": [
+        "warmup-6",
+        "warmup-5",
+        "warmup-3"
+      ],
       "forceType": "Push",
       "mechanics": "Compound",
       "category": "home"
@@ -139,10 +207,17 @@
       "id": "warmup-5",
       "name": "Pelvic Tilt",
       "description": "A gentle exercise that activates the core and lower back muscles while improving pelvic mobility. This movement helps prepare the spine for exercise while engaging the deep abdominal muscles.",
-      "targetBodyParts": ["Warmup"],
-      "exerciseType": ["warmup", "mobility"],
+      "targetBodyParts": [
+        "Warmup"
+      ],
+      "exerciseType": [
+        "warmup",
+        "mobility"
+      ],
       "difficulty": "beginner",
-      "equipment": ["Bodyweight"],
+      "equipment": [
+        "Bodyweight"
+      ],
       "sets": 1,
       "repetitions": 12,
       "steps": [
@@ -159,9 +234,20 @@
         "Coordinate your breathing with the movement for better activation.",
         "This is particularly beneficial before exercises that involve the lower back."
       ],
-      "contraindications": ["Acute back pain", "Recent abdominal surgery"],
-      "muscles": ["Abs", "Lower Back", "Glutes"],
-      "alternatives": ["warmup-4", "warmup-6", "warmup-3"],
+      "contraindications": [
+        "Acute back pain",
+        "Recent abdominal surgery"
+      ],
+      "muscles": [
+        "Abs",
+        "Lower Back",
+        "Glutes"
+      ],
+      "alternatives": [
+        "warmup-4",
+        "warmup-6",
+        "warmup-3"
+      ],
       "forceType": "Push",
       "mechanics": "Isolation",
       "category": "home"
@@ -170,10 +256,17 @@
       "id": "warmup-6",
       "name": "Jogging in Place",
       "description": "A simple cardiovascular warmup that raises heart rate while engaging multiple muscle groups. This exercise improves circulation throughout the body and prepares the legs for more intense activity.",
-      "targetBodyParts": ["Warmup"],
-      "exerciseType": ["warmup", "cardio"],
+      "targetBodyParts": [
+        "Warmup"
+      ],
+      "exerciseType": [
+        "warmup",
+        "cardio"
+      ],
       "difficulty": "beginner",
-      "equipment": ["Bodyweight"],
+      "equipment": [
+        "Bodyweight"
+      ],
       "duration": 60,
       "steps": [
         "Stand with feet hip-width apart and arms at your sides.",
@@ -194,8 +287,17 @@
         "Severe joint pain",
         "Cardiovascular conditions"
       ],
-      "muscles": ["Quadriceps", "Hamstrings", "Calves", "Core"],
-      "alternatives": ["warmup-3", "warmup-2", "warmup-1"],
+      "muscles": [
+        "Quadriceps",
+        "Hamstrings",
+        "Calves",
+        "Core"
+      ],
+      "alternatives": [
+        "warmup-3",
+        "warmup-2",
+        "warmup-1"
+      ],
       "forceType": "Push",
       "mechanics": "Compound",
       "category": "home"
@@ -204,10 +306,17 @@
       "id": "warmup-7",
       "name": "Wall Push-Ups",
       "description": "A modified push-up variation that gently engages the chest, shoulders, and arms. This exercise provides a low-impact way to prepare the upper body for more challenging movements.",
-      "targetBodyParts": ["Warmup"],
-      "exerciseType": ["warmup", "strength"],
+      "targetBodyParts": [
+        "Warmup"
+      ],
+      "exerciseType": [
+        "warmup",
+        "strength"
+      ],
       "difficulty": "beginner",
-      "equipment": ["Bodyweight"],
+      "equipment": [
+        "Bodyweight"
+      ],
       "sets": 1,
       "repetitions": 15,
       "steps": [
@@ -224,9 +333,22 @@
         "Focus on squeezing your chest muscles as you push away from the wall.",
         "This is an excellent warmup before chest, shoulder, or arm exercises."
       ],
-      "contraindications": ["Acute wrist pain", "Shoulder injury"],
-      "muscles": ["Chest", "Shoulders", "Triceps", "Core"],
-      "alternatives": ["warmup-8", "warmup-9", "warmup-1", "warmup-10"],
+      "contraindications": [
+        "Acute wrist pain",
+        "Shoulder injury"
+      ],
+      "muscles": [
+        "Chest",
+        "Shoulders",
+        "Triceps",
+        "Core"
+      ],
+      "alternatives": [
+        "warmup-8",
+        "warmup-9",
+        "warmup-1",
+        "warmup-10"
+      ],
       "forceType": "Push",
       "mechanics": "Compound",
       "category": "home"
@@ -235,10 +357,17 @@
       "id": "warmup-8",
       "name": "Arm Circles",
       "description": "A dynamic warmup exercise that mobilizes the shoulder joints and activates the muscles of the upper body. Arm circles increase blood flow to the shoulder complex and prepare the joints for more intense upper body exercises.",
-      "targetBodyParts": ["Warmup"],
-      "exerciseType": ["warmup", "mobility"],
+      "targetBodyParts": [
+        "Warmup"
+      ],
+      "exerciseType": [
+        "warmup",
+        "mobility"
+      ],
       "difficulty": "beginner",
-      "equipment": ["Bodyweight"],
+      "equipment": [
+        "Bodyweight"
+      ],
       "sets": 3,
       "repetitions": 10,
       "steps": [
@@ -259,8 +388,17 @@
         "Rotator cuff injury",
         "Recent shoulder surgery"
       ],
-      "muscles": ["Deltoids", "Rotator Cuff", "Upper Back"],
-      "alternatives": ["warmup-7", "warmup-9", "warmup-1", "warmup-10"],
+      "muscles": [
+        "Deltoids",
+        "Rotator Cuff",
+        "Upper Back"
+      ],
+      "alternatives": [
+        "warmup-7",
+        "warmup-9",
+        "warmup-1",
+        "warmup-10"
+      ],
       "forceType": "Dynamic",
       "mechanics": "Isolation",
       "category": "home"
@@ -269,10 +407,17 @@
       "id": "warmup-9",
       "name": "Standing Trunk Rotation",
       "description": "A rotational exercise that warms up the core and improves spinal mobility. This movement prepares the torso for twisting motions and engages the obliques and other core stabilizers.",
-      "targetBodyParts": ["Warmup"],
-      "exerciseType": ["warmup", "mobility"],
+      "targetBodyParts": [
+        "Warmup"
+      ],
+      "exerciseType": [
+        "warmup",
+        "mobility"
+      ],
       "difficulty": "beginner",
-      "equipment": ["Bodyweight"],
+      "equipment": [
+        "Bodyweight"
+      ],
       "sets": 1,
       "repetitions": 24,
       "steps": [
@@ -294,8 +439,17 @@
         "Herniated disc",
         "Recent abdominal surgery"
       ],
-      "muscles": ["Obliques", "Erector Spinae", "Core"],
-      "alternatives": ["warmup-5", "warmup-8", "warmup-4", "warmup-6"],
+      "muscles": [
+        "Obliques",
+        "Erector Spinae",
+        "Core"
+      ],
+      "alternatives": [
+        "warmup-5",
+        "warmup-8",
+        "warmup-4",
+        "warmup-6"
+      ],
       "forceType": "Dynamic",
       "mechanics": "Isolation",
       "category": "home"
@@ -304,10 +458,17 @@
       "id": "warmup-10",
       "name": "Elliptical Machine",
       "description": "A low-impact full-body cardio warmup that engages both upper and lower body simultaneously. The elliptical machine provides a smooth, fluid motion that increases circulation while being gentle on the joints.",
-      "targetBodyParts": ["Warmup"],
-      "exerciseType": ["warmup", "cardio"],
+      "targetBodyParts": [
+        "Warmup"
+      ],
+      "exerciseType": [
+        "warmup",
+        "cardio"
+      ],
       "difficulty": "beginner",
-      "equipment": ["Elliptical Machine"],
+      "equipment": [
+        "Elliptical Machine"
+      ],
       "duration": 600,
       "steps": [
         "Step onto the elliptical and place your feet on the pedals.",
@@ -337,7 +498,12 @@
         "Arms",
         "Core"
       ],
-      "alternatives": ["warmup-1", "warmup-2", "warmup-3", "warmup-11"],
+      "alternatives": [
+        "warmup-1",
+        "warmup-2",
+        "warmup-3",
+        "warmup-11"
+      ],
       "forceType": "Push/Pull",
       "mechanics": "Compound",
       "category": "gym"
@@ -346,10 +512,17 @@
       "id": "warmup-11",
       "name": "Jump Rope",
       "description": "A high-efficiency cardiovascular warmup that rapidly increases heart rate while improving coordination and footwork. Jump rope activates the entire body, especially the calves, shoulders, and core, making it an excellent preparation for a variety of workouts.",
-      "targetBodyParts": ["Warmup"],
-      "exerciseType": ["warmup", "cardio"],
+      "targetBodyParts": [
+        "Warmup"
+      ],
+      "exerciseType": [
+        "warmup",
+        "cardio"
+      ],
       "difficulty": "beginner",
-      "equipment": ["Jump Rope"],
+      "equipment": [
+        "Jump Rope"
+      ],
       "duration": 180,
       "steps": [
         "Hold the handles of the jump rope with each hand, positioning the rope behind you.",
@@ -371,8 +544,19 @@
         "Balance issues",
         "Cardiovascular conditions"
       ],
-      "muscles": ["Calves", "Shoulders", "Forearms", "Core", "Quadriceps"],
-      "alternatives": ["warmup-6", "warmup-3", "warmup-2", "warmup-10"],
+      "muscles": [
+        "Calves",
+        "Shoulders",
+        "Forearms",
+        "Core",
+        "Quadriceps"
+      ],
+      "alternatives": [
+        "warmup-6",
+        "warmup-3",
+        "warmup-2",
+        "warmup-10"
+      ],
       "forceType": "Dynamic",
       "mechanics": "Compound",
       "category": "both"

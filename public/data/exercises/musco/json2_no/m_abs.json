@@ -5,10 +5,16 @@
       "id": "abs-5",
       "name": "Hengende Benløft",
       "description": "Hengende benløft er en høyspenningsøvelse for magemusklene som særlig aktiverer nedre rectus abdominis, samtidig som den krever solid grep- og skulderstabilitet. Hvert strikte løft tvinger hoftebøyere og dyp kjerne til å holde overkroppen urørlig, noe som gir helkroppskontroll og bedre holdning. Siden øvelsen bare krever en robust stang, er den en klassiker blant kalistenikkutøvere, gymnaster og styrkeløftere som vil definere midtpartiet. Økende belastning med ankelvekter eller en manual mellom føttene holder bevegelsen utfordrende selv for erfarne utøvere.",
-      "targetBodyParts": ["Abs"],
-      "exerciseType": ["strength"],
+      "targetBodyParts": [
+        "Abs"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
       "difficulty": "advanced",
-      "equipment": ["Bodyweight"],
+      "equipment": [
+        "Bodyweight"
+      ],
       "steps": [
         "Hengende benløft er en utmerket øvelse for nedre magemuskler. alt du trenger er noe å henge i – en chinstang eller et solid tre.",
         "Når du henger, stram midtpartiet. Hold bena strake og løft dem sakte så høyt du kan.",
@@ -28,8 +34,17 @@
         "Joint pain",
         "Acute pain during movement"
       ],
-      "muscles": ["Abs", "Forearms"],
-      "alternatives": ["abs-22", "abs-13", "abs-9", "abs-6", "abs-20"],
+      "muscles": [
+        "Abs",
+        "Forearms"
+      ],
+      "alternatives": [
+        "abs-22",
+        "abs-13",
+        "abs-9",
+        "abs-6",
+        "abs-20"
+      ],
       "repetitions": 12,
       "sets": 3,
       "restBetweenSets": 60,
@@ -44,10 +59,16 @@
       "id": "abs-6",
       "name": "Planke",
       "description": "Planke er en kjerneforsterkende øvelse som aktiverer magemuskler, korsrygg, skuldre og setemuskler. Øvelsen bygger utholdenhet, forbedrer balanse og forebygger skader ved å styrke musklene som støtter ryggraden. Den fremmer også bedre holdning og kan forbedre idrettslig ytelse. Uten behov for utstyr er planken en allsidig og effektiv øvelse for å utvikle kjernestyrke og stabilitet, og bør inngå i enhver treningsrutine.",
-      "targetBodyParts": ["Abs"],
-      "exerciseType": ["strength"],
+      "targetBodyParts": [
+        "Abs"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
       "difficulty": "beginner",
-      "equipment": ["Bodyweight"],
+      "equipment": [
+        "Bodyweight"
+      ],
       "steps": [
         "Start med å ligge på magen. Plasser underarmene i gulvet med albuene rett under skuldrene.",
         "Plasser føttene i hoftebreddes avstand med tærne i gulvet.",
@@ -74,8 +95,17 @@
         "Joint pain",
         "Acute pain during movement"
       ],
-      "muscles": ["Abs", "Lower Back"],
-      "alternatives": ["abs-120", "abs-121", "abs-20", "abs-9", "abs-13"],
+      "muscles": [
+        "Abs",
+        "Lower Back"
+      ],
+      "alternatives": [
+        "abs-120",
+        "abs-121",
+        "abs-20",
+        "abs-9",
+        "abs-13"
+      ],
       "repetitions": 12,
       "sets": 3,
       "restBetweenSets": 60,
@@ -90,10 +120,16 @@
       "id": "abs-9",
       "name": "Sit-up",
       "description": "Sit-up er en klassisk mageøvelse. selv om den sjelden brukes i dag, er den fortsatt en svært effektiv fleksjonsbasert bevegelse for å treffe kjernen. øvelsen innebærer noe risiko sammenlignet med crunches, først og fremst potensielle korsryggsmerter. sit-ups kan inngå i en ren magetrening eller i en helkroppsøkt.",
-      "targetBodyParts": ["Abs"],
-      "exerciseType": ["strength"],
+      "targetBodyParts": [
+        "Abs"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
       "difficulty": "beginner",
-      "equipment": ["Bodyweight"],
+      "equipment": [
+        "Bodyweight"
+      ],
       "steps": [
         "Ligg på ryggen med knærne bøyd og hendene krysset over brystet.",
         "Pust ut og stram magen mens du ruller overkroppen opp fra gulvet.",
@@ -110,8 +146,16 @@
         "Joint pain",
         "Acute pain during movement"
       ],
-      "muscles": ["Abs"],
-      "alternatives": ["abs-13", "abs-119", "abs-6", "abs-5", "abs-20"],
+      "muscles": [
+        "Abs"
+      ],
+      "alternatives": [
+        "abs-13",
+        "abs-119",
+        "abs-6",
+        "abs-5",
+        "abs-20"
+      ],
       "repetitions": 12,
       "sets": 3,
       "restBetweenSets": 60,
@@ -124,12 +168,18 @@
     },
     {
       "id": "abs-13",
-      "name": "Sykkel-Crunch (Abdominal Air Bike)",
+      "name": "Sykkel-Crunch",
       "description": "Sykkel-crunch er trolig den mest fryktede mageøvelsen for alle som har fulgt en hjemmevideo. øvelsen treffer hele mageregionen og holder konstant spenning i midtpartiet mens du sykler side til side. dette er en avansert crunch-variant som kan utføres i tidsbestemte sett eller med fast repetisjonsantall.",
-      "targetBodyParts": ["Abs"],
-      "exerciseType": ["strength"],
+      "targetBodyParts": [
+        "Abs"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
       "difficulty": "beginner",
-      "equipment": ["Bodyweight"],
+      "equipment": [
+        "Bodyweight"
+      ],
       "steps": [
         "Ligg på ryggen med armene bak hodet og bena strake.",
         "Pust ut mens du fører ett kne mot ansiktet og motsatt albue mot kneet.",
@@ -148,8 +198,16 @@
         "Recent surgery",
         "Severe cardiovascular issues (for heavy compound movements)"
       ],
-      "muscles": ["Abs"],
-      "alternatives": ["abs-9", "abs-121", "abs-20", "abs-6", "abs-119"],
+      "muscles": [
+        "Abs"
+      ],
+      "alternatives": [
+        "abs-9",
+        "abs-121",
+        "abs-20",
+        "abs-6",
+        "abs-119"
+      ],
       "repetitions": 12,
       "sets": 3,
       "restBetweenSets": 60,
@@ -164,10 +222,16 @@
       "id": "abs-20",
       "name": "Dead Bug",
       "description": "Dead Bug er en øvelse som styrker magemusklene. den stammer fra plankefamilien og fungerer som en anti-ekstensjonsøvelse der du må holde ryggraden stabil mens armen senkes bak hodet. navnet kommer av at du ligner en død bille på ryggen med bena i været.",
-      "targetBodyParts": ["Abs"],
-      "exerciseType": ["strength"],
+      "targetBodyParts": [
+        "Abs"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
       "difficulty": "intermediate",
-      "equipment": ["Bodyweight"],
+      "equipment": [
+        "Bodyweight"
+      ],
       "steps": [
         "Ligg på ryggen med hofte- og kneledd i 90/90-posisjon og armene strukket mot taket.",
         "Pust ut mens du samtidig strekker motsatt arm og ben fra kroppen.",
@@ -187,8 +251,16 @@
         "Recent surgery",
         "Severe cardiovascular issues (for heavy compound movements)"
       ],
-      "muscles": ["Abs"],
-      "alternatives": ["abs-121", "abs-6", "abs-13", "abs-119", "abs-22"],
+      "muscles": [
+        "Abs"
+      ],
+      "alternatives": [
+        "abs-121",
+        "abs-6",
+        "abs-13",
+        "abs-119",
+        "abs-22"
+      ],
       "repetitions": 12,
       "sets": 3,
       "restBetweenSets": 60,
@@ -203,10 +275,16 @@
       "id": "abs-22",
       "name": "Liggende Benløft med Hofteløft",
       "description": "Liggende benløft med hofteløft kombinerer et kontrollert benløft med en bekkenkrøll for å maksimere aktivering av nedre magemuskler. etter at bena er løftet til vertikal posisjon, ruller et bevisst hofteløft halebeinet fra benken, eliminerer momentum og tvinger hele bukveggen til å kontrahere. sekvensen trener anti-ekstensjonsstyrke, forbedrer lumbopelvisk stabilitet og gir en dyp brennende følelse som vanlige benløft ofte mangler. øvelsen kan utføres med kroppsvekt eller en lett manual mellom føttene, og gir en skalerbar, leddvennlig vei til sterkere og mer definerte nedre magemuskler.",
-      "targetBodyParts": ["Abs"],
-      "exerciseType": ["strength"],
+      "targetBodyParts": [
+        "Abs"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
       "difficulty": "beginner",
-      "equipment": ["Bodyweight"],
+      "equipment": [
+        "Bodyweight"
+      ],
       "steps": [
         "Liggende benløft med hofteløft på benk er en effektiv mageøvelse. finn en flat benk og plasser deg slik at bena kan strekkes utover enden.",
         "Sitt med setet nær benkenden og legg deg tilbake.",
@@ -229,8 +307,16 @@
         "Recent surgery",
         "Severe cardiovascular issues (for heavy compound movements)"
       ],
-      "muscles": ["Abs"],
-      "alternatives": ["abs-5", "abs-119", "abs-13", "abs-9", "abs-120"],
+      "muscles": [
+        "Abs"
+      ],
+      "alternatives": [
+        "abs-5",
+        "abs-119",
+        "abs-13",
+        "abs-9",
+        "abs-120"
+      ],
       "repetitions": 12,
       "sets": 3,
       "restBetweenSets": 60,
@@ -245,10 +331,16 @@
       "id": "abs-119",
       "name": "Hollow Body-Crunch med Armsveip",
       "description": "En helhetlig kjerneøvelse som kombinerer en crunch-bevegelse med et armsveip over hodet, og treffer flere deler av bukveggen mens korrekt ryggposisjon opprettholdes. øvelsen vektlegger kjernestyring og lærer riktig hollow body-posisjon, noe som gjør den svært god for både styrke og stabilitet.",
-      "targetBodyParts": ["Abs"],
-      "exerciseType": ["strength"],
+      "targetBodyParts": [
+        "Abs"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
       "difficulty": "beginner",
-      "equipment": ["Bodyweight"],
+      "equipment": [
+        "Bodyweight"
+      ],
       "steps": [
         "Ligg flatt på ryggen med armene strukket over hodet og knærne bøyd, føttene i gulvet.",
         "Press korsryggen bestemt ned i gulvet ved å aktivere kjernen.",
@@ -272,8 +364,19 @@
         "Pregnancy",
         "Acute core strain"
       ],
-      "muscles": ["Abs", "Hip Flexors", "Serratus Anterior", "Core"],
-      "alternatives": ["abs-9", "abs-13", "abs-22", "abs-120", "abs-6"],
+      "muscles": [
+        "Abs",
+        "Hip Flexors",
+        "Serratus Anterior",
+        "Core"
+      ],
+      "alternatives": [
+        "abs-9",
+        "abs-13",
+        "abs-22",
+        "abs-120",
+        "abs-6"
+      ],
       "repetitions": 12,
       "sets": 3,
       "restBetweenSets": 60,
@@ -288,10 +391,16 @@
       "id": "abs-120",
       "name": "Planke til Push-up",
       "description": "En dynamisk plankevariant som kombinerer kjerne­stabilitet med overkroppsstyrke. fra underarmsplanke løfter du deg til høy planke og tilbake, noe som utfordrer kjerne-antirotasjon samtidig som skuldre og armer jobber. også kjent som plank up-downs, og bygger funksjonell styrke og koordinasjon.",
-      "targetBodyParts": ["Abs"],
-      "exerciseType": ["strength"],
+      "targetBodyParts": [
+        "Abs"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
       "difficulty": "intermediate",
-      "equipment": ["Bodyweight"],
+      "equipment": [
+        "Bodyweight"
+      ],
       "steps": [
         "Start i underarmsplanke med albuene rett under skuldrene og kroppen i en rett linje.",
         "Aktiver kjerne og setemuskler for å holde en stiv planke.",
@@ -315,8 +424,20 @@
         "Core instability",
         "Elbow issues"
       ],
-      "muscles": ["Abs", "Shoulders", "Triceps", "Chest", "Core"],
-      "alternatives": ["abs-6", "abs-121", "abs-119", "abs-20", "abs-22"],
+      "muscles": [
+        "Abs",
+        "Shoulders",
+        "Triceps",
+        "Chest",
+        "Core"
+      ],
+      "alternatives": [
+        "abs-6",
+        "abs-121",
+        "abs-119",
+        "abs-20",
+        "abs-22"
+      ],
       "repetitions": 10,
       "sets": 3,
       "restBetweenSets": 60,
@@ -331,10 +452,16 @@
       "id": "abs-121",
       "name": "Spiderman-planke",
       "description": "En dynamisk plankevariant der hvert kne føres mot albuen på samme side, og kombinerer kjerne­stabilitet med hoftemobilitet. også kjent som same-side knee-to-elbow mountain climber; øvelsen retter seg spesielt mot skrå magemuskler samtidig som full kroppsspenning opprettholdes i plankeposisjonen.",
-      "targetBodyParts": ["Abs"],
-      "exerciseType": ["strength"],
+      "targetBodyParts": [
+        "Abs"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
       "difficulty": "intermediate",
-      "equipment": ["Bodyweight"],
+      "equipment": [
+        "Bodyweight"
+      ],
       "steps": [
         "Start i høy planke med hendene rett under skuldrene og kroppen i en rett linje.",
         "Aktiver kjernen og hold en sterk planke.",
@@ -358,8 +485,20 @@
         "Hip flexor strain",
         "Core instability"
       ],
-      "muscles": ["Abs", "Obliques", "Hip Flexors", "Shoulders", "Core"],
-      "alternatives": ["abs-6", "abs-120", "abs-20", "abs-13", "abs-5"],
+      "muscles": [
+        "Abs",
+        "Obliques",
+        "Hip Flexors",
+        "Shoulders",
+        "Core"
+      ],
+      "alternatives": [
+        "abs-6",
+        "abs-120",
+        "abs-20",
+        "abs-13",
+        "abs-5"
+      ],
       "repetitions": 12,
       "sets": 3,
       "restBetweenSets": 60,
@@ -374,10 +513,18 @@
       "id": "abs-122",
       "name": "Mountain Climbers",
       "description": "dette er en høyintensiv kondisjons- og kjernedrill der du raskt alternerer med å drive knærne mot brystet fra plankeposisjon. varianten her er mer eksplosiv og hoppende – mindre «klatring» og mer som raske byttehopp i planke. øvelsen aktiverer hoftebøyere, skuldre og mage samtidig som pulsen skyter i været.",
-      "targetBodyParts": ["Abs", "Cardio"],
-      "exerciseType": ["cardio", "strength"],
+      "targetBodyParts": [
+        "Abs",
+        "Cardio"
+      ],
+      "exerciseType": [
+        "cardio",
+        "strength"
+      ],
       "difficulty": "intermediate",
-      "equipment": ["Bodyweight"],
+      "equipment": [
+        "Bodyweight"
+      ],
       "steps": [
         "Start i høy planke med hendene rett under skuldrene og kroppen i en rett linje.",
         "Aktiver kjernen og sørg for at skuldrene er plassert rett over håndleddene.",
@@ -405,8 +552,18 @@
         "Ankle or knee injuries",
         "Cardiovascular conditions (consult physician)"
       ],
-      "muscles": ["Abs", "Hip Flexors", "Shoulders", "Quads", "Core"],
-      "alternatives": ["abs-121", "abs-120", "abs-13"],
+      "muscles": [
+        "Abs",
+        "Hip Flexors",
+        "Shoulders",
+        "Quads",
+        "Core"
+      ],
+      "alternatives": [
+        "abs-121",
+        "abs-120",
+        "abs-13"
+      ],
       "repetitions": 30,
       "sets": 3,
       "restBetweenSets": 45,

@@ -5,10 +5,16 @@
       "id": "shoulders-1",
       "name": "Dumbbell Lateral Raise",
       "description": "The dumbbell lateral raise is a shoulder exercise used to strengthen the muscles of the shoulder. It\"s a good exercise for building width in your upper body which gives you the \"V\" shape.",
-      "targetBodyParts": ["Shoulders"],
-      "exerciseType": ["strength"],
+      "targetBodyParts": [
+        "Shoulders"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
       "difficulty": "beginner",
-      "equipment": ["Dumbbell"],
+      "equipment": [
+        "Dumbbell"
+      ],
       "steps": [
         "Select the desired weight from the rack, then take a few steps back into an open area.",
         "Take a deep breath and raise the dumbbells to shoulder height using a neutral grip (palms facing in) while keeping the elbows slightly bent.",
@@ -27,7 +33,9 @@
         "Joint pain",
         "Acute pain during movement"
       ],
-      "muscles": ["Shoulders"],
+      "muscles": [
+        "Shoulders"
+      ],
       "alternatives": [
         "shoulders-16",
         "shoulders-39",
@@ -46,12 +54,18 @@
     },
     {
       "id": "shoulders-2",
-      "name": "Military Press (AKA Overhead Press)",
+      "name": "Military Press",
       "description": "The military press is a complete shoulder building exercise perfect for building shoulder muscle. The military press is an exercise with many names and is often referred to as the shoulder press, overhead press, and strict press. The military press is used primarily to build the deltoid muscle. It also indirectly targets the other muscles of the shoulder, your triceps, and your core. Since the military press is completed standing up, it involves a lot of core strength to help stabilize the spine while pressing weight overhead. There are a number of variations to the military press you can use to target the deltoids from different angles and different ways. These military press variations include: Seated Military Press Dumbbell Military Press Seated Dumbbell Press Arnold Press Behind The Neck Military Press Smith Machine Military Press Be sure to add a variation of the military press to your shoulder workout to get the benefits from one of the most complete shoulder exercises out there.",
-      "targetBodyParts": ["Shoulders"],
-      "exerciseType": ["strength"],
+      "targetBodyParts": [
+        "Shoulders"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
       "difficulty": "intermediate",
-      "equipment": ["Barbell"],
+      "equipment": [
+        "Barbell"
+      ],
       "steps": [
         "Adjust the barbell to just below shoulder height then load the desired weight onto the bar.",
         "Assume a shoulder width stance and place your hands at (or just outside of) shoulder width with a pronated grip on the bar.",
@@ -78,8 +92,17 @@
         "Recent surgery",
         "Severe cardiovascular issues (for heavy compound movements)"
       ],
-      "muscles": ["Shoulders", "Abs", "Traps", "Triceps"],
-      "alternatives": ["shoulders-4", "shoulders-5", "shoulders-90"],
+      "muscles": [
+        "Shoulders",
+        "Abs",
+        "Traps",
+        "Triceps"
+      ],
+      "alternatives": [
+        "shoulders-4",
+        "shoulders-5",
+        "shoulders-90"
+      ],
       "repetitions": 8,
       "sets": 3,
       "restBetweenSets": 60,
@@ -94,10 +117,16 @@
       "id": "shoulders-4",
       "name": "Seated Arnold Press",
       "description": "The seated Arnold press is a variation of the seated dumbbell press and an exercise utilized to build shoulder muscle size and strength. The Arnold press, named after Arnold Schwarzenegger himself, is an exercise used to target every single head of the deltoid. The exercise is best used by those seeking aesthetic benefits due to its long time under tension, but can also be used as an accessory movement by those attempting to build strength.",
-      "targetBodyParts": ["Shoulders"],
-      "exerciseType": ["strength"],
+      "targetBodyParts": [
+        "Shoulders"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
       "difficulty": "intermediate",
-      "equipment": ["Dumbbell"],
+      "equipment": [
+        "Dumbbell"
+      ],
       "steps": [
         "Set up an adjustable angle bench to 90 degrees and select the desired weight from the rack.",
         "Pick up the dumbbells from the floor using a neutral grip (palms facing in). Position the end of the dumbbells on your knees and sit down on the bench.",
@@ -124,8 +153,16 @@
         "Recent surgery",
         "Severe cardiovascular issues (for heavy compound movements)"
       ],
-      "muscles": ["Shoulders", "Traps", "Triceps"],
-      "alternatives": ["shoulders-5", "shoulders-2", "shoulders-90"],
+      "muscles": [
+        "Shoulders",
+        "Traps",
+        "Triceps"
+      ],
+      "alternatives": [
+        "shoulders-5",
+        "shoulders-2",
+        "shoulders-90"
+      ],
       "repetitions": 8,
       "sets": 3,
       "restBetweenSets": 60,
@@ -140,10 +177,16 @@
       "id": "shoulders-5",
       "name": "Seated Shoulder Press",
       "description": "The seated dumbbell press is a variation of the standing dumbbell press and an exercise used to strengthen the muscles of the shoulders. The overhead press is a foundational movement for establishing baseline strength and building a completely balanced physique. Utilizing dumbbells as opposed to performing with a barbell will allow the individual to strengthen each side of the muscle equally. The exercise can be included in shoulder workouts, push workouts, upper body workouts, and full body workouts.",
-      "targetBodyParts": ["Shoulders"],
-      "exerciseType": ["strength"],
+      "targetBodyParts": [
+        "Shoulders"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
       "difficulty": "beginner",
-      "equipment": ["Dumbbell"],
+      "equipment": [
+        "Dumbbell"
+      ],
       "steps": [
         "Set up an adjustable angle bench to 90 degrees and select the desired weight from the rack.",
         "Pick up the dumbbells from the floor using a neutral grip (palms facing in). Position the end of the dumbbells on your knees and sit down on the bench.",
@@ -169,8 +212,16 @@
         "Recent surgery",
         "Severe cardiovascular issues (for heavy compound movements)"
       ],
-      "muscles": ["Shoulders", "Traps", "Triceps"],
-      "alternatives": ["shoulders-4", "shoulders-2", "shoulders-90"],
+      "muscles": [
+        "Shoulders",
+        "Traps",
+        "Triceps"
+      ],
+      "alternatives": [
+        "shoulders-4",
+        "shoulders-2",
+        "shoulders-90"
+      ],
       "repetitions": 8,
       "sets": 3,
       "restBetweenSets": 60,
@@ -185,10 +236,16 @@
       "id": "shoulders-10",
       "name": "Cable Face Pull",
       "description": "The cable face pull is a great shoulder exercise that can be used to target the rear deltoids. Not many exercises can effectively target the rear delts like the cable face pull can. The rear delt is often a lagging muscle group for many lifters and weak rear delts can result in poor posture, thus performing the cable face pull (or other rear delt exercises) is highly recommended. Add the cable face pull exercise in your body part split on either shoulder or back day, on your upper day during your upper/lower splits, or on your pull day for push/pull/leg splits.",
-      "targetBodyParts": ["Shoulders"],
-      "exerciseType": ["strength"],
+      "targetBodyParts": [
+        "Shoulders"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
       "difficulty": "beginner",
-      "equipment": ["Cable"],
+      "equipment": [
+        "Cable"
+      ],
       "steps": [
         "Assume a split stance with the arms straight out in front of you utilizing a pronated grip.",
         "Inhale and pull the rope towards your face with the elbows high.",
@@ -209,8 +266,16 @@
         "Recent surgery",
         "Severe cardiovascular issues (for heavy compound movements)"
       ],
-      "muscles": ["Shoulders", "Traps", "Upper Back"],
-      "alternatives": ["shoulders-78", "shoulders-30", "shoulders-94"],
+      "muscles": [
+        "Shoulders",
+        "Traps",
+        "Upper Back"
+      ],
+      "alternatives": [
+        "shoulders-78",
+        "shoulders-30",
+        "shoulders-94"
+      ],
       "repetitions": 12,
       "sets": 3,
       "restBetweenSets": 60,
@@ -225,10 +290,16 @@
       "id": "shoulders-13",
       "name": "Cable Reverse Fly",
       "description": "The cable reverse fly is a shoulder isolation exercise that targets the posterior deltoids, rhomboids, and middle trapezius. Performed using a cable machine with handles set at shoulder height, the movement involves pulling both arms laterally and slightly backward while keeping a slight bend in the elbows. This exercise is effective for developing upper back strength, improving posture, and balancing shoulder musculature—especially for individuals overdeveloped in the anterior chain.",
-      "targetBodyParts": ["Shoulders"],
-      "exerciseType": ["strength"],
+      "targetBodyParts": [
+        "Shoulders"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
       "difficulty": "beginner",
-      "equipment": ["Cable"],
+      "equipment": [
+        "Cable"
+      ],
       "steps": [
         "Set cable pulleys to shoulder height on both sides of the machine.",
         "Stand in the center of the cable station and grasp each handle with opposite hands (right hand to left pulley, left hand to right pulley).",
@@ -256,8 +327,16 @@
         "Recent shoulder surgery",
         "Severe thoracic kyphosis"
       ],
-      "muscles": ["Shoulders", "Upper Back", "Traps"],
-      "alternatives": ["shoulders-10", "shoulders-30", "shoulders-78"],
+      "muscles": [
+        "Shoulders",
+        "Upper Back",
+        "Traps"
+      ],
+      "alternatives": [
+        "shoulders-10",
+        "shoulders-30",
+        "shoulders-78"
+      ],
       "repetitions": 12,
       "sets": 3,
       "restBetweenSets": 60,
@@ -272,10 +351,16 @@
       "id": "shoulders-16",
       "name": "Cable Lateral Raise",
       "description": "No description available",
-      "targetBodyParts": ["Shoulders"],
-      "exerciseType": ["strength"],
+      "targetBodyParts": [
+        "Shoulders"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
       "difficulty": "beginner",
-      "equipment": ["Cable"],
+      "equipment": [
+        "Cable"
+      ],
       "steps": [
         "Set the pulleys of a dual cable machine to the low setting and select the weight you wish to use.",
         "Stand facing away from the machine and grasp opposite handles with opposite hands.",
@@ -294,7 +379,9 @@
         "Joint pain",
         "Acute pain during movement"
       ],
-      "muscles": ["Shoulders"],
+      "muscles": [
+        "Shoulders"
+      ],
       "alternatives": [
         "shoulders-1",
         "shoulders-39",
@@ -315,10 +402,16 @@
       "id": "shoulders-30",
       "name": "Band Pull Apart",
       "description": "The band pull apart is an exercise that targets the muscles of the upper body including the shoulders (rear delts), upper back, and traps. People typically use the band pull apart as a prehab/warm up exercise, but it can also be used to strengthen the rear deltoids.",
-      "targetBodyParts": ["Shoulders"],
-      "exerciseType": ["activation"],
+      "targetBodyParts": [
+        "Shoulders"
+      ],
+      "exerciseType": [
+        "activation"
+      ],
       "difficulty": "beginner",
-      "equipment": ["Bands"],
+      "equipment": [
+        "Bands"
+      ],
       "steps": [
         "Set up in an athletic position with a band in both hands and your palms facing down.",
         "Lift the hands to shoulder height with the elbows extended.",
@@ -341,8 +434,16 @@
         "Recent surgery",
         "Severe cardiovascular issues (for heavy compound movements)"
       ],
-      "muscles": ["Shoulders", "Traps", "Upper Back"],
-      "alternatives": ["shoulders-78", "shoulders-10", "shoulders-94"],
+      "muscles": [
+        "Shoulders",
+        "Traps",
+        "Upper Back"
+      ],
+      "alternatives": [
+        "shoulders-78",
+        "shoulders-10",
+        "shoulders-94"
+      ],
       "repetitions": 12,
       "sets": 3,
       "restBetweenSets": 60,
@@ -357,10 +458,16 @@
       "id": "shoulders-32",
       "name": "Cable External Rotation",
       "description": "The external cable rotation exercise is a great prehab exercise to perform to promote rotator cuff health. Rotator cuffs are one of the more common injuries, especially as lifters get older. Performing prehab exercises such as external cable rotations can help prevent injury and increase your longevity in the gym.",
-      "targetBodyParts": ["Shoulders"],
-      "exerciseType": ["strength"],
+      "targetBodyParts": [
+        "Shoulders"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
       "difficulty": "beginner",
-      "equipment": ["Machine"],
+      "equipment": [
+        "Machine"
+      ],
       "steps": [
         "Position a cable just above waist height and attach a handle.",
         "Hinge from the elbow and bring the forearm up to 90 degrees while keeping the upper arm tight to the torso.",
@@ -378,8 +485,15 @@
         "Joint pain",
         "Acute pain during movement"
       ],
-      "muscles": ["Shoulders", "Upper Back"],
-      "alternatives": ["shoulders-94", "shoulders-62", "shoulders-30"],
+      "muscles": [
+        "Shoulders",
+        "Upper Back"
+      ],
+      "alternatives": [
+        "shoulders-94",
+        "shoulders-62",
+        "shoulders-30"
+      ],
       "repetitions": 12,
       "sets": 3,
       "restBetweenSets": 60,
@@ -394,10 +508,16 @@
       "id": "shoulders-39",
       "name": "Banded Lateral Raise",
       "description": "The banded lateral raise is a variation of the dumbbell lateral raise and an exercise used to strengthen the muscles of the shoulders. The banded lateral raise utilizes bands to provide accommodating resistance during the exercise. As you get closer to the full contraction, the more resistance is applied to the target muscle groups.",
-      "targetBodyParts": ["Shoulders"],
-      "exerciseType": ["strength"],
+      "targetBodyParts": [
+        "Shoulders"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
       "difficulty": "beginner",
-      "equipment": ["Bands"],
+      "equipment": [
+        "Bands"
+      ],
       "steps": [
         "Stand on a band with a shoulder width stance and your arms hanging at your sides.",
         "Inhale and raise the arms laterally to shoulder height using a pronated grip (palms facing down) while keeping the elbows slightly bent.",
@@ -414,7 +534,11 @@
         "Joint pain",
         "Acute pain during movement"
       ],
-      "muscles": ["Shoulders", "Traps", "Upper Back"],
+      "muscles": [
+        "Shoulders",
+        "Traps",
+        "Upper Back"
+      ],
       "alternatives": [
         "shoulders-178",
         "shoulders-1",
@@ -435,10 +559,16 @@
       "id": "shoulders-62",
       "name": "Cable Internal Rotation",
       "description": "The internal cable rotation exercise is a great prehab exercise to perform to promote rotator cuff health. Rotator cuffs are one of the more common injuries, especially as lifters get older. Performing prehab exercises such as internal cable rotations can help prevent injury and increase your longevity in the gym.",
-      "targetBodyParts": ["Shoulders"],
-      "exerciseType": ["strength"],
+      "targetBodyParts": [
+        "Shoulders"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
       "difficulty": "beginner",
-      "equipment": ["Cable"],
+      "equipment": [
+        "Cable"
+      ],
       "steps": [
         "Position a cable just above waist height and attach a handle.",
         "Hinge from the elbow and bring the forearm up to 90 degrees while keeping the upper arm tight to the torso.",
@@ -458,8 +588,15 @@
         "Acute pain during movement",
         "Shoulder impingement"
       ],
-      "muscles": ["Shoulders", "Upper Back"],
-      "alternatives": ["shoulders-32", "shoulders-94", "shoulders-30"],
+      "muscles": [
+        "Shoulders",
+        "Upper Back"
+      ],
+      "alternatives": [
+        "shoulders-32",
+        "shoulders-94",
+        "shoulders-30"
+      ],
       "repetitions": 12,
       "sets": 3,
       "restBetweenSets": 60,
@@ -474,10 +611,16 @@
       "id": "shoulders-78",
       "name": "Standing Banded Face Pull",
       "description": "The banded face pull is an exercise used to isolate the muscles of the rear deltoids. The band used when performing banded face pulls provides accommodating resistance. Therefore, the closer one gets to a full contraction of the target muscle group, the more resistance that is applied by the band.",
-      "targetBodyParts": ["Shoulders"],
-      "exerciseType": ["strength"],
+      "targetBodyParts": [
+        "Shoulders"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
       "difficulty": "intermediate",
-      "equipment": ["Bands"],
+      "equipment": [
+        "Bands"
+      ],
       "steps": [
         "Assume a split stance with the arms straight out in front of you utilizing a pronated grip.",
         "Inhale, brace your abs, and pull the band towards your face with the elbows high and wide.",
@@ -496,8 +639,16 @@
         "Joint pain",
         "Acute pain during movement"
       ],
-      "muscles": ["Shoulders", "Abs", "Upper Back"],
-      "alternatives": ["shoulders-10", "shoulders-30", "shoulders-94"],
+      "muscles": [
+        "Shoulders",
+        "Abs",
+        "Upper Back"
+      ],
+      "alternatives": [
+        "shoulders-10",
+        "shoulders-30",
+        "shoulders-94"
+      ],
       "repetitions": 12,
       "sets": 3,
       "restBetweenSets": 60,
@@ -512,10 +663,16 @@
       "id": "shoulders-94",
       "name": "Single Arm Banded External Rotation",
       "description": "The single arm band external rotation is an exercise that targets the muscles of the upper body including the shoulders (rear delts) and upper back. People typically use the single arm band external rotation as a prehab/warm up exercise, but it can also be used to strengthen the rear deltoids.",
-      "targetBodyParts": ["Shoulders"],
-      "exerciseType": ["strength"],
+      "targetBodyParts": [
+        "Shoulders"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
       "difficulty": "beginner",
-      "equipment": ["Bands"],
+      "equipment": [
+        "Bands"
+      ],
       "steps": [
         "Assume a standing position with your elbow flexed to 90 degrees while holding a band anchored to a sturdy object.",
         "Rotate your hand away from your body while keeping your elbow tight to your torso.",
@@ -532,8 +689,15 @@
         "Joint pain",
         "Acute pain during movement"
       ],
-      "muscles": ["Shoulders", "Upper Back"],
-      "alternatives": ["shoulders-32", "shoulders-62", "shoulders-30"],
+      "muscles": [
+        "Shoulders",
+        "Upper Back"
+      ],
+      "alternatives": [
+        "shoulders-32",
+        "shoulders-62",
+        "shoulders-30"
+      ],
       "repetitions": 12,
       "sets": 3,
       "restBetweenSets": 60,
@@ -548,10 +712,16 @@
       "id": "shoulders-176",
       "name": "Neutral Grip Dumbbell Front Raise",
       "description": "The neutral grip dumbbell front raise is a shoulder exercise targeting the front deltoids, performed with palms facing each other. This grip variation can be more comfortable for the wrists and shoulders compared to the pronated grip version. The neutral grip position helps maintain shoulder health while still effectively building strength and size in the anterior deltoids. This variation can be particularly beneficial for those with wrist or shoulder discomfort during traditional front raises.",
-      "targetBodyParts": ["Shoulders"],
-      "exerciseType": ["strength"],
+      "targetBodyParts": [
+        "Shoulders"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
       "difficulty": "beginner",
-      "equipment": ["Dumbbell"],
+      "equipment": [
+        "Dumbbell"
+      ],
       "steps": [
         "Stand with feet shoulder-width apart, holding a dumbbell in each hand at your sides with palms facing each other (neutral grip).",
         "Keeping a slight bend in your elbows, brace your core and raise both arms straight in front of you.",
@@ -574,8 +744,14 @@
         "Acute pain during movement",
         "Rotator cuff issues"
       ],
-      "muscles": ["Shoulders"],
-      "alternatives": ["shoulders-177", "shoulders-1", "shoulders-16"],
+      "muscles": [
+        "Shoulders"
+      ],
+      "alternatives": [
+        "shoulders-177",
+        "shoulders-1",
+        "shoulders-16"
+      ],
       "repetitions": 12,
       "sets": 3,
       "restBetweenSets": 60,
@@ -590,10 +766,16 @@
       "id": "shoulders-177",
       "name": "Arc Shoulder Raise",
       "description": "A dynamic shoulder exercise that combines lateral and front raises into one fluid movement. Starting with a lateral raise and transitioning to a front raise at the top creates constant tension through multiple deltoid heads while adding a rotational component. This unique movement pattern challenges shoulder stability, coordination, and provides complete deltoid development through its arc-like motion path.",
-      "targetBodyParts": ["Shoulders"],
-      "exerciseType": ["strength"],
+      "targetBodyParts": [
+        "Shoulders"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
       "difficulty": "intermediate",
-      "equipment": ["Dumbbell"],
+      "equipment": [
+        "Dumbbell"
+      ],
       "steps": [
         "Stand with feet shoulder-width apart, holding dumbbells at your sides with a neutral grip.",
         "Begin by raising the dumbbells laterally (out to the sides) with slightly bent elbows.",
@@ -619,8 +801,16 @@
         "Limited shoulder mobility",
         "Acute pain during movement"
       ],
-      "muscles": ["Shoulders", "Upper Chest", "Trapezius"],
-      "alternatives": ["shoulders-176", "shoulders-1", "shoulders-16"],
+      "muscles": [
+        "Shoulders",
+        "Upper Chest",
+        "Trapezius"
+      ],
+      "alternatives": [
+        "shoulders-176",
+        "shoulders-1",
+        "shoulders-16"
+      ],
       "repetitions": 10,
       "sets": 3,
       "restBetweenSets": 60,
@@ -635,10 +825,17 @@
       "id": "shoulders-178",
       "name": "Modified Banded Lateral Raise",
       "description": "A rehabilitation-friendly variation of the banded lateral raise that uses a reduced range of motion to minimize shoulder impingement risk. This version is particularly suitable for those recovering from shoulder injuries or dealing with shoulder mobility issues. By limiting the range of motion to below shoulder height, this exercise allows for deltoid strengthening while keeping the shoulder in a safer position.",
-      "targetBodyParts": ["Shoulders"],
-      "exerciseType": ["strength", "rehabilitation"],
+      "targetBodyParts": [
+        "Shoulders"
+      ],
+      "exerciseType": [
+        "strength",
+        "rehabilitation"
+      ],
       "difficulty": "beginner",
-      "equipment": ["Bands"],
+      "equipment": [
+        "Bands"
+      ],
       "steps": [
         "Stand on a resistance band with feet shoulder-width apart.",
         "Hold the ends of the band with your arms at your sides, palms facing your thighs.",
@@ -662,8 +859,15 @@
         "Recent shoulder surgery (without clearance)",
         "Active inflammation"
       ],
-      "muscles": ["Shoulders", "Upper Back"],
-      "alternatives": ["shoulders-39", "shoulders-179", "shoulders-90"],
+      "muscles": [
+        "Shoulders",
+        "Upper Back"
+      ],
+      "alternatives": [
+        "shoulders-39",
+        "shoulders-179",
+        "shoulders-90"
+      ],
       "repetitions": 15,
       "sets": 2,
       "restBetweenSets": 45,
@@ -678,10 +882,18 @@
       "id": "shoulders-179",
       "name": "Banded Shoulder Flexion Raise",
       "description": "A shoulder activation and mobility exercise performed with slightly bent elbows while maintaining outward band tension. This bent-arm variation reduces impingement risk and allows for better rotator cuff engagement during the overhead movement. The exercise combines shoulder flexion with external rotation resistance, making it excellent for shoulder health, mobility, and proper scapular mechanics.",
-      "targetBodyParts": ["Shoulders"],
-      "exerciseType": ["mobility", "prehab", "warm-up"],
+      "targetBodyParts": [
+        "Shoulders"
+      ],
+      "exerciseType": [
+        "mobility",
+        "prehab",
+        "warm-up"
+      ],
       "difficulty": "beginner",
-      "equipment": ["Bands"],
+      "equipment": [
+        "Bands"
+      ],
       "steps": [
         "Hold a light resistance band between both hands with arms at your sides.",
         "Position your hands slightly wider than shoulder-width, maintaining band tension.",
@@ -717,7 +929,11 @@
         "Trapezius",
         "Upper Back"
       ],
-      "alternatives": ["shoulders-90", "shoulders-39", "shoulders-178"],
+      "alternatives": [
+        "shoulders-90",
+        "shoulders-39",
+        "shoulders-178"
+      ],
       "repetitions": 8,
       "sets": 2,
       "restBetweenSets": 30,
@@ -732,10 +948,18 @@
       "id": "shoulders-90",
       "name": "Straight-Arm Banded Shoulder Flexion Raise",
       "description": "A challenging variation of the banded shoulder flexion raise performed with straight arms, requiring greater shoulder stability and mobility. This version creates maximum tension through the entire range of motion and demands high levels of shoulder control. While more demanding than the bent-arm version, it helps develop end-range shoulder mobility and strength when performed with proper form.",
-      "targetBodyParts": ["Shoulders"],
-      "exerciseType": ["mobility", "prehab", "warm-up"],
+      "targetBodyParts": [
+        "Shoulders"
+      ],
+      "exerciseType": [
+        "mobility",
+        "prehab",
+        "warm-up"
+      ],
       "difficulty": "intermediate",
-      "equipment": ["Bands"],
+      "equipment": [
+        "Bands"
+      ],
       "steps": [
         "Hold a light resistance band between both hands with arms at your sides.",
         "Position your hands slightly wider than shoulder-width, creating tension in the band.",
@@ -773,7 +997,11 @@
         "Upper Back",
         "Core Stabilizers"
       ],
-      "alternatives": ["shoulders-179", "shoulders-39", "shoulders-178"],
+      "alternatives": [
+        "shoulders-179",
+        "shoulders-39",
+        "shoulders-178"
+      ],
       "repetitions": 6,
       "sets": 2,
       "restBetweenSets": 45,
@@ -788,10 +1016,18 @@
       "id": "shoulders-180",
       "name": "Side-Lying Shoulder External Rotation",
       "description": "This is a rotator cuff isolation exercise performed lying on your side, typically on a bench, with the working arm holding a dumbbell and the elbow bent to 90 degrees. The forearm rotates upward away from the body while the upper arm remains fixed against the torso. This movement targets the infraspinatus and teres minor—key stabilizers of the shoulder—helping to improve joint integrity, posture, and overhead performance.",
-      "targetBodyParts": ["Shoulders"],
-      "exerciseType": ["strength", "rehabilitation", "prehab"],
+      "targetBodyParts": [
+        "Shoulders"
+      ],
+      "exerciseType": [
+        "strength",
+        "rehabilitation",
+        "prehab"
+      ],
       "difficulty": "beginner",
-      "equipment": ["Dumbbell"],
+      "equipment": [
+        "Dumbbell"
+      ],
       "steps": [
         "Lie on your side on a flat bench or mat, with your knees bent for stability.",
         "Rest your head on your lower arm or a small pillow for comfort.",
@@ -820,8 +1056,15 @@
         "Acute rotator cuff tears",
         "Joint pain during movement"
       ],
-      "muscles": ["Shoulders", "Rotator Cuff"],
-      "alternatives": ["shoulders-94", "shoulders-32", "shoulders-62"],
+      "muscles": [
+        "Shoulders",
+        "Rotator Cuff"
+      ],
+      "alternatives": [
+        "shoulders-94",
+        "shoulders-32",
+        "shoulders-62"
+      ],
       "repetitions": 12,
       "sets": 3,
       "restBetweenSets": 60,

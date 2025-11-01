@@ -14,7 +14,7 @@ interface MessageWithExercisesProps {
 
 /**
  * Helper to find exercise by name with fuzzy matching
- * Handles cases like "Military Press" matching "Military Press (AKA Overhead Press)"
+ * Handles cases like "Military Press" matching database variations
  */
 function findExercise(name: string, exercises: Map<string, Exercise>): Exercise | undefined {
   // Try exact match first
@@ -28,7 +28,6 @@ function findExercise(name: string, exercises: Map<string, Exercise>): Exercise 
     const normalizedDbName = dbName.toLowerCase().trim();
     
     // Check if database name starts with search term
-    // e.g., "Military Press (AKA Overhead Press)".startsWith("Military Press")
     if (normalizedDbName.startsWith(normalizedSearch)) {
       return exercise;
     }
@@ -40,14 +39,6 @@ function findExercise(name: string, exercises: Map<string, Exercise>): Exercise 
   }
   
   return undefined;
-}
-
-/**
- * Helper to clean exercise name for display by removing parenthetical additions
- * e.g., "Military Press (AKA Overhead Press)" → "Military Press"
- */
-function cleanExerciseName(name: string): string {
-  return name.replace(/\s*\([^)]*\)/g, '').trim();
 }
 
 /**
@@ -149,7 +140,6 @@ export const MessageWithExercises = React.memo(function MessageWithExercises({
           };
           
           // Render as clickable badge for exercises in database
-          const displayName = cleanExerciseName(exercise.name);
           return (
             <span 
               className="not-italic px-1.5 py-0.5 rounded bg-indigo-600/30 text-white font-medium border border-indigo-500/40 select-none cursor-pointer hover:bg-indigo-600/50 hover:border-indigo-400 transition-colors active:bg-indigo-600/70"
@@ -157,14 +147,14 @@ export const MessageWithExercises = React.memo(function MessageWithExercises({
               onTouchStart={handleTouch}
               role="button"
               tabIndex={0}
-              aria-label={`View ${displayName} details`}
+              aria-label={`View ${exercise.name} details`}
               style={{ 
                 WebkitTouchCallout: 'none',
                 WebkitUserSelect: 'none',
                 userSelect: 'none'
               }}
             >
-              {displayName}
+              {exercise.name}
             </span>
           );
         },

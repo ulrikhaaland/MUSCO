@@ -23,10 +23,16 @@
         "Hold kjernen aktiv og unngå overdreven svai i korsryggen.",
         "Hold føttene flatt i gulvet og ikke la underkroppen bevege seg under settet."
       ],
-      "targetBodyParts": ["Chest"],
-      "exerciseType": ["strength"],
+      "targetBodyParts": [
+        "Chest"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
       "difficulty": "beginner",
-      "equipment": ["Dumbbell"],
+      "equipment": [
+        "Dumbbell"
+      ],
       "contraindications": [
         "Chest injury",
         "Joint pain",
@@ -35,8 +41,17 @@
         "Recent surgery",
         "Severe cardiovascular issues (for heavy compound movements)"
       ],
-      "muscles": ["Chest", "Shoulders", "Triceps"],
-      "alternatives": ["chest-3", "chest-7", "chest-11", "chest-18"],
+      "muscles": [
+        "Chest",
+        "Shoulders",
+        "Triceps"
+      ],
+      "alternatives": [
+        "chest-3",
+        "chest-7",
+        "chest-11",
+        "chest-18"
+      ],
       "repetitions": 8,
       "sets": 3,
       "restBetweenSets": 60,
@@ -69,10 +84,16 @@
         "Hold kjernen aktiv og unngå overdreven korsryggsvei.",
         "Føtter flatt i gulvet; underkroppen skal være stille."
       ],
-      "targetBodyParts": ["Chest"],
-      "exerciseType": ["strength"],
+      "targetBodyParts": [
+        "Chest"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
       "difficulty": "beginner",
-      "equipment": ["Dumbbell"],
+      "equipment": [
+        "Dumbbell"
+      ],
       "contraindications": [
         "Chest injury",
         "Joint pain",
@@ -81,8 +102,17 @@
         "Recent surgery",
         "Severe cardiovascular issues (for heavy compound movements)"
       ],
-      "muscles": ["Chest", "Shoulders", "Triceps"],
-      "alternatives": ["chest-1", "chest-7", "chest-14", "chest-11"],
+      "muscles": [
+        "Chest",
+        "Shoulders",
+        "Triceps"
+      ],
+      "alternatives": [
+        "chest-1",
+        "chest-7",
+        "chest-14",
+        "chest-11"
+      ],
       "repetitions": 8,
       "sets": 3,
       "restBetweenSets": 60,
@@ -119,10 +149,16 @@
         "Hold skulderbladene retrahert gjennom hele løftet.",
         "Bruk spotter for løft av for å beholde spenning i øvre rygg."
       ],
-      "targetBodyParts": ["Chest"],
-      "exerciseType": ["strength"],
+      "targetBodyParts": [
+        "Chest"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
       "difficulty": "intermediate",
-      "equipment": ["Barbell"],
+      "equipment": [
+        "Barbell"
+      ],
       "contraindications": [
         "Chest injury",
         "Joint pain",
@@ -131,8 +167,17 @@
         "Recent surgery",
         "Severe cardiovascular issues (for heavy compound movements)"
       ],
-      "muscles": ["Chest", "Shoulders", "Triceps"],
-      "alternatives": ["chest-1", "chest-3", "chest-11", "chest-18"],
+      "muscles": [
+        "Chest",
+        "Shoulders",
+        "Triceps"
+      ],
+      "alternatives": [
+        "chest-1",
+        "chest-3",
+        "chest-11",
+        "chest-18"
+      ],
       "repetitions": 8,
       "sets": 3,
       "restBetweenSets": 60,
@@ -162,10 +207,16 @@
         "Hold alltid en svak albuebøy og unngå posisjoner som gir skuldersmerter.",
         "Hold kjernen aktiv og unngå overdreven korsryggsvei."
       ],
-      "targetBodyParts": ["Chest"],
-      "exerciseType": ["strength"],
+      "targetBodyParts": [
+        "Chest"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
       "difficulty": "beginner",
-      "equipment": ["Cable"],
+      "equipment": [
+        "Cable"
+      ],
       "contraindications": [
         "Chest injury",
         "Joint pain",
@@ -174,8 +225,16 @@
         "Recent surgery",
         "Severe cardiovascular issues (for heavy compound movements)"
       ],
-      "muscles": ["Chest", "Shoulders", "Triceps"],
-      "alternatives": ["chest-16", "chest-22", "chest-14"],
+      "muscles": [
+        "Chest",
+        "Shoulders",
+        "Triceps"
+      ],
+      "alternatives": [
+        "chest-16",
+        "chest-22",
+        "chest-14"
+      ],
       "repetitions": 12,
       "sets": 3,
       "restBetweenSets": 60,
@@ -188,7 +247,7 @@
     },
     {
       "id": "chest-11",
-      "name": "Maskinbenkpress (Hammer Strength)",
+      "name": "Maskinbenkpress",
       "description": "Maskinbenkpress er en pressvariant som isolerer brystet via en fast bevegelsesbane og belaster også skuldre og triceps indirekte. Siden banen er stabil, kan du fokusere mer på muskelkontakt mot slutten av brystøkten når målet er hypertrofi.",
       "steps": [
         "Sitt i maskinen slik at håndtakene er like under skulderhøyde.",
@@ -205,10 +264,16 @@
         "Hold kjernen aktiv og unngå overdreven korsryggsbue.",
         "Føttene flatt i gulvet; underkroppen ubevegelig."
       ],
-      "targetBodyParts": ["Chest"],
-      "exerciseType": ["strength"],
+      "targetBodyParts": [
+        "Chest"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
       "difficulty": "beginner",
-      "equipment": ["Machine"],
+      "equipment": [
+        "Machine"
+      ],
       "contraindications": [
         "Chest injury",
         "Joint pain",
@@ -217,8 +282,17 @@
         "Recent surgery",
         "Severe cardiovascular issues (for heavy compound movements)"
       ],
-      "muscles": ["Chest", "Shoulders", "Triceps"],
-      "alternatives": ["chest-7", "chest-1", "chest-3", "chest-18"],
+      "muscles": [
+        "Chest",
+        "Shoulders",
+        "Triceps"
+      ],
+      "alternatives": [
+        "chest-7",
+        "chest-1",
+        "chest-3",
+        "chest-18"
+      ],
       "repetitions": 12,
       "sets": 3,
       "restBetweenSets": 60,
@@ -250,18 +324,32 @@
         "Føtter flatt; fokuser på albuebøy og brystaktivering.",
         "Hold kjernen aktiv og unngå overdreven korsryggsbue."
       ],
-      "targetBodyParts": ["Chest"],
-      "exerciseType": ["strength"],
+      "targetBodyParts": [
+        "Chest"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
       "difficulty": "beginner",
-      "equipment": ["Dumbbell"],
+      "equipment": [
+        "Dumbbell"
+      ],
       "contraindications": [
         "Chest injury",
         "Joint pain",
         "Acute pain during movement",
         "Shoulder impingement"
       ],
-      "muscles": ["Chest", "Shoulders", "Triceps"],
-      "alternatives": ["chest-10", "chest-16", "chest-22"],
+      "muscles": [
+        "Chest",
+        "Shoulders",
+        "Triceps"
+      ],
+      "alternatives": [
+        "chest-10",
+        "chest-16",
+        "chest-22"
+      ],
       "repetitions": 12,
       "sets": 3,
       "restBetweenSets": 60,
@@ -291,18 +379,32 @@
         "Hold en liten albuebøy og unngå smertefulle skulderposisjoner.",
         "Hold kjernen aktiv og unngå overdreven korsryggsbue."
       ],
-      "targetBodyParts": ["Chest"],
-      "exerciseType": ["strength"],
+      "targetBodyParts": [
+        "Chest"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
       "difficulty": "intermediate",
-      "equipment": ["Cable"],
+      "equipment": [
+        "Cable"
+      ],
       "contraindications": [
         "Chest injury",
         "Joint pain",
         "Acute pain during movement",
         "Shoulder impingement"
       ],
-      "muscles": ["Chest", "Shoulders", "Triceps"],
-      "alternatives": ["chest-10", "chest-22", "chest-14"],
+      "muscles": [
+        "Chest",
+        "Shoulders",
+        "Triceps"
+      ],
+      "alternatives": [
+        "chest-10",
+        "chest-22",
+        "chest-14"
+      ],
       "repetitions": 12,
       "sets": 3,
       "restBetweenSets": 60,
@@ -335,10 +437,16 @@
         "Skyv deg så langt fra gulvet som mulig og la skulderbladene bevege seg fritt.",
         "Fullfører du ikke bevegelsen, mister du effekt."
       ],
-      "targetBodyParts": ["Chest"],
-      "exerciseType": ["strength"],
+      "targetBodyParts": [
+        "Chest"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
       "difficulty": "beginner",
-      "equipment": ["Bodyweight"],
+      "equipment": [
+        "Bodyweight"
+      ],
       "contraindications": [
         "Chest injury",
         "Joint pain",
@@ -347,8 +455,17 @@
         "Recent surgery",
         "Severe cardiovascular issues (for heavy compound movements)"
       ],
-      "muscles": ["Chest", "Abs", "Shoulders", "Triceps"],
-      "alternatives": ["chest-1", "chest-7", "chest-11"],
+      "muscles": [
+        "Chest",
+        "Abs",
+        "Shoulders",
+        "Triceps"
+      ],
+      "alternatives": [
+        "chest-1",
+        "chest-7",
+        "chest-11"
+      ],
       "repetitions": 12,
       "sets": 3,
       "restBetweenSets": 60,
@@ -378,18 +495,32 @@
         "Hold en liten albuebøy og unngå smertefulle skulderposisjoner.",
         "Hold kjernen aktiv og unngå overdreven korsryggsbue."
       ],
-      "targetBodyParts": ["Chest"],
-      "exerciseType": ["strength"],
+      "targetBodyParts": [
+        "Chest"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
       "difficulty": "beginner",
-      "equipment": ["Cable"],
+      "equipment": [
+        "Cable"
+      ],
       "contraindications": [
         "Chest injury",
         "Joint pain",
         "Acute pain during movement",
         "Shoulder impingement"
       ],
-      "muscles": ["Chest", "Shoulders", "Triceps"],
-      "alternatives": ["chest-10", "chest-16", "chest-14"],
+      "muscles": [
+        "Chest",
+        "Shoulders",
+        "Triceps"
+      ],
+      "alternatives": [
+        "chest-10",
+        "chest-16",
+        "chest-14"
+      ],
       "repetitions": 12,
       "sets": 3,
       "restBetweenSets": 60,

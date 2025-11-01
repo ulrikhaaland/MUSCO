@@ -17,10 +17,17 @@
         "Tenk rytmen: bein–rygg–armer på draget, armer–rygg–bein på returen.",
         "Hold tempoet moderat slik at pulsen øker uten å slite deg ut."
       ],
-      "targetBodyParts": ["Warmup"],
-      "exerciseType": ["warmup", "cardio"],
+      "targetBodyParts": [
+        "Warmup"
+      ],
+      "exerciseType": [
+        "warmup",
+        "cardio"
+      ],
       "difficulty": "beginner",
-      "equipment": ["Rowing Machine"],
+      "equipment": [
+        "Rowing Machine"
+      ],
       "duration": 600,
       "contraindications": [
         "Back injury",
@@ -28,8 +35,17 @@
         "Wrist pain",
         "Knee problems"
       ],
-      "muscles": ["Back", "Shoulders", "Arms", "Core"],
-      "alternatives": ["warmup-2", "warmup-3", "warmup-6"],
+      "muscles": [
+        "Back",
+        "Shoulders",
+        "Arms",
+        "Core"
+      ],
+      "alternatives": [
+        "warmup-2",
+        "warmup-3",
+        "warmup-6"
+      ],
       "forceType": "Pull",
       "mechanics": "Compound",
       "category": "gym",
@@ -51,14 +67,33 @@
         "Sitt med rak rygg og avslappede skuldre.",
         "Sikt på ca. 50–60 % av makspuls."
       ],
-      "targetBodyParts": ["Warmup"],
-      "exerciseType": ["warmup", "cardio"],
+      "targetBodyParts": [
+        "Warmup"
+      ],
+      "exerciseType": [
+        "warmup",
+        "cardio"
+      ],
       "difficulty": "beginner",
-      "equipment": ["Stationary Bike"],
+      "equipment": [
+        "Stationary Bike"
+      ],
       "duration": 600,
-      "contraindications": ["Knee injury", "Hip pain", "Severe back problems"],
-      "muscles": ["Quadriceps", "Hamstrings", "Calves"],
-      "alternatives": ["warmup-3", "warmup-1", "warmup-6"],
+      "contraindications": [
+        "Knee injury",
+        "Hip pain",
+        "Severe back problems"
+      ],
+      "muscles": [
+        "Quadriceps",
+        "Hamstrings",
+        "Calves"
+      ],
+      "alternatives": [
+        "warmup-3",
+        "warmup-1",
+        "warmup-6"
+      ],
       "forceType": "Push/Pull",
       "mechanics": "Compound",
       "category": "gym",
@@ -66,7 +101,7 @@
     },
     {
       "id": "warmup-3",
-      "name": "Tredemølle Gange/Jogg (5 ° stigning)",
+      "name": "Tredemølle Gange/Jogg",
       "description": "Gange eller lett jogg i motbakke som aktiverer hele underkroppen og hever pulsen jevnt.",
       "steps": [
         "Still tredemøllen på 5 graders stigning.",
@@ -80,10 +115,17 @@
         "Hold overkroppen oppreist, skuldre tilbake og kjernen aktiv.",
         "Stigningen øker aktiveringen av legger, bakside lår og setemuskler."
       ],
-      "targetBodyParts": ["Warmup"],
-      "exerciseType": ["warmup", "cardio"],
+      "targetBodyParts": [
+        "Warmup"
+      ],
+      "exerciseType": [
+        "warmup",
+        "cardio"
+      ],
       "difficulty": "beginner",
-      "equipment": ["Treadmill"],
+      "equipment": [
+        "Treadmill"
+      ],
       "duration": 600,
       "contraindications": [
         "Ankle or knee injury",
@@ -91,8 +133,18 @@
         "Severe back problems",
         "Cardiovascular conditions"
       ],
-      "muscles": ["Quadriceps", "Hamstrings", "Calves", "Glutes", "Core"],
-      "alternatives": ["warmup-2", "warmup-6", "warmup-1"],
+      "muscles": [
+        "Quadriceps",
+        "Hamstrings",
+        "Calves",
+        "Glutes",
+        "Core"
+      ],
+      "alternatives": [
+        "warmup-2",
+        "warmup-6",
+        "warmup-1"
+      ],
       "forceType": "Push",
       "mechanics": "Compound",
       "category": "gym"
@@ -113,10 +165,17 @@
         "La knærne følge tærnes retning – ikke kollapse innover.",
         "Fokuser på full bevegelsesbane for å varme leddene skikkelig."
       ],
-      "targetBodyParts": ["Warmup"],
-      "exerciseType": ["warmup", "strength"],
+      "targetBodyParts": [
+        "Warmup"
+      ],
+      "exerciseType": [
+        "warmup",
+        "strength"
+      ],
       "difficulty": "beginner",
-      "equipment": ["Bodyweight"],
+      "equipment": [
+        "Bodyweight"
+      ],
       "sets": 1,
       "repetitions": 15,
       "contraindications": [
@@ -124,8 +183,17 @@
         "Severe hip pain",
         "Recent lower body surgery"
       ],
-      "muscles": ["Quadriceps", "Hamstrings", "Glutes", "Core"],
-      "alternatives": ["warmup-6", "warmup-5", "warmup-3"],
+      "muscles": [
+        "Quadriceps",
+        "Hamstrings",
+        "Glutes",
+        "Core"
+      ],
+      "alternatives": [
+        "warmup-6",
+        "warmup-5",
+        "warmup-3"
+      ],
       "forceType": "Push",
       "mechanics": "Compound",
       "category": "home"
@@ -146,15 +214,33 @@
         "Hold bevegelsen liten og kontrollert.",
         "Synkroniser pust og bevegelse for bedre aktivering."
       ],
-      "targetBodyParts": ["Warmup"],
-      "exerciseType": ["warmup", "mobility"],
+      "targetBodyParts": [
+        "Warmup"
+      ],
+      "exerciseType": [
+        "warmup",
+        "mobility"
+      ],
       "difficulty": "beginner",
-      "equipment": ["Bodyweight"],
+      "equipment": [
+        "Bodyweight"
+      ],
       "sets": 1,
       "repetitions": 12,
-      "contraindications": ["Acute back pain", "Recent abdominal surgery"],
-      "muscles": ["Abs", "Lower Back", "Glutes"],
-      "alternatives": ["warmup-4", "warmup-6", "warmup-3"],
+      "contraindications": [
+        "Acute back pain",
+        "Recent abdominal surgery"
+      ],
+      "muscles": [
+        "Abs",
+        "Lower Back",
+        "Glutes"
+      ],
+      "alternatives": [
+        "warmup-4",
+        "warmup-6",
+        "warmup-3"
+      ],
       "forceType": "Push",
       "mechanics": "Isolation",
       "category": "home"
@@ -175,18 +261,34 @@
         "La armene pendle naturlig for å øke intensiteten.",
         "Pust rytmisk og hold tempoet jevnt."
       ],
-      "targetBodyParts": ["Warmup"],
-      "exerciseType": ["warmup", "cardio"],
+      "targetBodyParts": [
+        "Warmup"
+      ],
+      "exerciseType": [
+        "warmup",
+        "cardio"
+      ],
       "difficulty": "beginner",
-      "equipment": ["Bodyweight"],
+      "equipment": [
+        "Bodyweight"
+      ],
       "duration": 60,
       "contraindications": [
         "Balance issues",
         "Severe joint pain",
         "Cardiovascular conditions"
       ],
-      "muscles": ["Quadriceps", "Hamstrings", "Calves", "Core"],
-      "alternatives": ["warmup-3", "warmup-2", "warmup-1"],
+      "muscles": [
+        "Quadriceps",
+        "Hamstrings",
+        "Calves",
+        "Core"
+      ],
+      "alternatives": [
+        "warmup-3",
+        "warmup-2",
+        "warmup-1"
+      ],
       "forceType": "Push",
       "mechanics": "Compound",
       "category": "home"
@@ -206,15 +308,35 @@
         "Flytt føttene lenger fra veggen for mer motstand.",
         "Fokuser på å klemme brystmuskulaturen når du presser fra veggen."
       ],
-      "targetBodyParts": ["Warmup"],
-      "exerciseType": ["warmup", "strength"],
+      "targetBodyParts": [
+        "Warmup"
+      ],
+      "exerciseType": [
+        "warmup",
+        "strength"
+      ],
       "difficulty": "beginner",
-      "equipment": ["Bodyweight"],
+      "equipment": [
+        "Bodyweight"
+      ],
       "sets": 1,
       "repetitions": 15,
-      "contraindications": ["Acute wrist pain", "Shoulder injury"],
-      "muscles": ["Chest", "Shoulders", "Triceps", "Core"],
-      "alternatives": ["warmup-8", "warmup-9", "warmup-1", "warmup-10"],
+      "contraindications": [
+        "Acute wrist pain",
+        "Shoulder injury"
+      ],
+      "muscles": [
+        "Chest",
+        "Shoulders",
+        "Triceps",
+        "Core"
+      ],
+      "alternatives": [
+        "warmup-8",
+        "warmup-9",
+        "warmup-1",
+        "warmup-10"
+      ],
       "forceType": "Push",
       "mechanics": "Compound",
       "category": "home"
@@ -234,10 +356,17 @@
         "Start smått og øk sirkel­størrelsen gradvis.",
         "Reduser sirklene hvis du kjenner ubehag i skuldrene."
       ],
-      "targetBodyParts": ["Warmup"],
-      "exerciseType": ["warmup", "mobility"],
+      "targetBodyParts": [
+        "Warmup"
+      ],
+      "exerciseType": [
+        "warmup",
+        "mobility"
+      ],
       "difficulty": "beginner",
-      "equipment": ["Bodyweight"],
+      "equipment": [
+        "Bodyweight"
+      ],
       "sets": 3,
       "repetitions": 10,
       "contraindications": [
@@ -245,8 +374,17 @@
         "Rotator cuff injury",
         "Recent shoulder surgery"
       ],
-      "muscles": ["Deltoids", "Rotator Cuff", "Upper Back"],
-      "alternatives": ["warmup-7", "warmup-9", "warmup-1", "warmup-10"],
+      "muscles": [
+        "Deltoids",
+        "Rotator Cuff",
+        "Upper Back"
+      ],
+      "alternatives": [
+        "warmup-7",
+        "warmup-9",
+        "warmup-1",
+        "warmup-10"
+      ],
       "forceType": "Dynamic",
       "mechanics": "Isolation",
       "category": "home"
@@ -267,10 +405,17 @@
         "Pust ut når du roterer til hver side.",
         "Beveg deg sakte og kontrollert for best effekt."
       ],
-      "targetBodyParts": ["Warmup"],
-      "exerciseType": ["warmup", "mobility"],
+      "targetBodyParts": [
+        "Warmup"
+      ],
+      "exerciseType": [
+        "warmup",
+        "mobility"
+      ],
       "difficulty": "beginner",
-      "equipment": ["Bodyweight"],
+      "equipment": [
+        "Bodyweight"
+      ],
       "sets": 1,
       "repetitions": 24,
       "contraindications": [
@@ -278,8 +423,17 @@
         "Herniated disc",
         "Recent abdominal surgery"
       ],
-      "muscles": ["Obliques", "Erector Spinae", "Core"],
-      "alternatives": ["warmup-5", "warmup-8", "warmup-4", "warmup-6"],
+      "muscles": [
+        "Obliques",
+        "Erector Spinae",
+        "Core"
+      ],
+      "alternatives": [
+        "warmup-5",
+        "warmup-8",
+        "warmup-4",
+        "warmup-6"
+      ],
       "forceType": "Dynamic",
       "mechanics": "Isolation",
       "category": "home"
@@ -300,10 +454,17 @@
         "Unngå å lene deg for langt fremover på håndtakene.",
         "Press og dra likt med armene for å aktivere overkroppen."
       ],
-      "targetBodyParts": ["Warmup"],
-      "exerciseType": ["warmup", "cardio"],
+      "targetBodyParts": [
+        "Warmup"
+      ],
+      "exerciseType": [
+        "warmup",
+        "cardio"
+      ],
       "difficulty": "beginner",
-      "equipment": ["Elliptical Machine"],
+      "equipment": [
+        "Elliptical Machine"
+      ],
       "duration": 600,
       "contraindications": [
         "Balance issues",
@@ -319,7 +480,12 @@
         "Arms",
         "Core"
       ],
-      "alternatives": ["warmup-1", "warmup-2", "warmup-3", "warmup-11"],
+      "alternatives": [
+        "warmup-1",
+        "warmup-2",
+        "warmup-3",
+        "warmup-11"
+      ],
       "forceType": "Push/Pull",
       "mechanics": "Compound",
       "category": "gym"
@@ -341,10 +507,17 @@
         "Begynn uten tau for å finne rytmen hvis du er nybegynner.",
         "Alternér føtter («bokser-skipping») for mindre støt."
       ],
-      "targetBodyParts": ["Warmup"],
-      "exerciseType": ["warmup", "cardio"],
+      "targetBodyParts": [
+        "Warmup"
+      ],
+      "exerciseType": [
+        "warmup",
+        "cardio"
+      ],
       "difficulty": "beginner",
-      "equipment": ["Jump Rope"],
+      "equipment": [
+        "Jump Rope"
+      ],
       "duration": 180,
       "contraindications": [
         "Ankle or knee injury",
@@ -352,8 +525,19 @@
         "Balance issues",
         "Cardiovascular conditions"
       ],
-      "muscles": ["Calves", "Shoulders", "Forearms", "Core", "Quadriceps"],
-      "alternatives": ["warmup-6", "warmup-3", "warmup-2", "warmup-10"],
+      "muscles": [
+        "Calves",
+        "Shoulders",
+        "Forearms",
+        "Core",
+        "Quadriceps"
+      ],
+      "alternatives": [
+        "warmup-6",
+        "warmup-3",
+        "warmup-2",
+        "warmup-10"
+      ],
       "forceType": "Dynamic",
       "mechanics": "Compound",
       "category": "both"

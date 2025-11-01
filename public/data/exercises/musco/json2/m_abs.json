@@ -5,10 +5,16 @@
       "id": "abs-5",
       "name": "Hanging Leg Raise",
       "description": "The hanging leg raise is a high‑tension abdominal exercise that targets the lower rectus abdominis while demanding serious grip and shoulder stability. Each strict leg lift forces the hip flexors and deep core to keep the torso motionless, teaching full‑body control and improving posture. Because it requires only a sturdy bar, it is a staple for calisthenics athletes, gymnasts, and lifters seeking sharper mid‑section definition. Progressively adding ankle weights or a dumbbell between the feet keeps the movement challenging even for advanced trainees.",
-      "targetBodyParts": ["Abs"],
-      "exerciseType": ["strength"],
+      "targetBodyParts": [
+        "Abs"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
       "difficulty": "advanced",
-      "equipment": ["Bodyweight"],
+      "equipment": [
+        "Bodyweight"
+      ],
       "steps": [
         "The hanging leg raise is an awesome exercise for building the lower abs. All you need for this exercise is somewhere to hang from. It could be a chinup bar or it could be a tree.",
         "Once you\"re hanging, tense up the mid section. While keeping your legs straight, raise your them up slowly. You should raise your legs are high as possible.",
@@ -28,8 +34,17 @@
         "Joint pain",
         "Acute pain during movement"
       ],
-      "muscles": ["Abs", "Forearms"],
-      "alternatives": ["abs-22", "abs-13", "abs-9", "abs-6", "abs-20"],
+      "muscles": [
+        "Abs",
+        "Forearms"
+      ],
+      "alternatives": [
+        "abs-22",
+        "abs-13",
+        "abs-9",
+        "abs-6",
+        "abs-20"
+      ],
       "repetitions": 12,
       "sets": 3,
       "restBetweenSets": 60,
@@ -44,10 +59,16 @@
       "id": "abs-6",
       "name": "Plank",
       "description": "The plank is a core-strengthening exercise that targets the abdominals, lower back, shoulders, and glutes. Planks help build endurance, enhance balance, and prevent injuries by strengthening the muscles that support the spine. They also promote better posture and can improve athletic performance. With no equipment needed, planks are a versatile and efficient exercise for developing core strength and stability, making them a must-have in any fitness routine.",
-      "targetBodyParts": ["Abs"],
-      "exerciseType": ["strength"],
+      "targetBodyParts": [
+        "Abs"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
       "difficulty": "beginner",
-      "equipment": ["Bodyweight"],
+      "equipment": [
+        "Bodyweight"
+      ],
       "steps": [
         "Start by lying face down on the floor. Place your forearms on the ground, elbows directly below your shoulders.",
         "Position your feet hip-width apart with your toes tucked under.",
@@ -74,8 +95,17 @@
         "Joint pain",
         "Acute pain during movement"
       ],
-      "muscles": ["Abs", "Lower Back"],
-      "alternatives": ["abs-120", "abs-121", "abs-20", "abs-9", "abs-13"],
+      "muscles": [
+        "Abs",
+        "Lower Back"
+      ],
+      "alternatives": [
+        "abs-120",
+        "abs-121",
+        "abs-20",
+        "abs-9",
+        "abs-13"
+      ],
       "repetitions": 12,
       "sets": 3,
       "restBetweenSets": 60,
@@ -90,10 +120,16 @@
       "id": "abs-9",
       "name": "Sit Up",
       "description": "The sit up is a classic abdominal exercise. It's rarely performed anymore, however, it's still a very effective flexion based exercise for those looking to utilize it to target their core. There are some risks involved in performing the sit up as opposed to crunches (or stability ball crunches). The primary one being the common complaint of lower back pain. One can perform sit ups as part of their ab workout or full body workout.",
-      "targetBodyParts": ["Abs"],
-      "exerciseType": ["strength"],
+      "targetBodyParts": [
+        "Abs"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
       "difficulty": "beginner",
-      "equipment": ["Bodyweight"],
+      "equipment": [
+        "Bodyweight"
+      ],
       "steps": [
         "Lay supine in a relaxed position with your knees up and hands across your chest.",
         "Exhale and squeeze your abs as you curl your upper body off the floor.",
@@ -110,8 +146,16 @@
         "Joint pain",
         "Acute pain during movement"
       ],
-      "muscles": ["Abs"],
-      "alternatives": ["abs-13", "abs-119", "abs-6", "abs-5", "abs-20"],
+      "muscles": [
+        "Abs"
+      ],
+      "alternatives": [
+        "abs-13",
+        "abs-119",
+        "abs-6",
+        "abs-5",
+        "abs-20"
+      ],
       "repetitions": 12,
       "sets": 3,
       "restBetweenSets": 60,
@@ -124,12 +168,18 @@
     },
     {
       "id": "abs-13",
-      "name": "Abdominal Air Bike (AKA Bicycle)",
+      "name": "Abdominal Air Bike",
       "description": "The abdominal air bike is probably the most feared abdominal movement from anyone who's performed an at-home ab workout video. The bicycle exercise targets the whole abdomen and places constant tension on the mid-section as you go through the motions on both sides. This exercise is an advanced variation of a crunch. It can be performed for timed sets or as a set with a fixed rep range.",
-      "targetBodyParts": ["Abs"],
-      "exerciseType": ["strength"],
+      "targetBodyParts": [
+        "Abs"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
       "difficulty": "beginner",
-      "equipment": ["Bodyweight"],
+      "equipment": [
+        "Bodyweight"
+      ],
       "steps": [
         "Lay supine in a relaxed position with your arms behind your head and legs straight.",
         "Exhale as you raise one knee towards your face while driving the opposite elbow to the knee.",
@@ -148,8 +198,16 @@
         "Recent surgery",
         "Severe cardiovascular issues (for heavy compound movements)"
       ],
-      "muscles": ["Abs"],
-      "alternatives": ["abs-9", "abs-121", "abs-20", "abs-6", "abs-119"],
+      "muscles": [
+        "Abs"
+      ],
+      "alternatives": [
+        "abs-9",
+        "abs-121",
+        "abs-20",
+        "abs-6",
+        "abs-119"
+      ],
       "repetitions": 12,
       "sets": 3,
       "restBetweenSets": 60,
@@ -164,10 +222,16 @@
       "id": "abs-20",
       "name": "Dead Bug",
       "description": "The deadbug is an exercise used to strengthen the muscles of the abs. The exercise stems from the plank exercise family tree. The deadbug works as an anti-extension abdominal exercise in which you must keep the spine stable as you slowly raise your arm overhead. The deadbug gets its name because you look like a dead bug on its back with its legs in the air when you are performing the exercise.",
-      "targetBodyParts": ["Abs"],
-      "exerciseType": ["strength"],
+      "targetBodyParts": [
+        "Abs"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
       "difficulty": "intermediate",
-      "equipment": ["Bodyweight"],
+      "equipment": [
+        "Bodyweight"
+      ],
       "steps": [
         "Setup in a supine position with your legs in a 90/90 position (90 degree bend at the hips and knees) and your arms reaching towards the ceiling.",
         "Extend the opposite arm and leg simultaneously as you exhale.",
@@ -187,8 +251,16 @@
         "Recent surgery",
         "Severe cardiovascular issues (for heavy compound movements)"
       ],
-      "muscles": ["Abs"],
-      "alternatives": ["abs-121", "abs-6", "abs-13", "abs-119", "abs-22"],
+      "muscles": [
+        "Abs"
+      ],
+      "alternatives": [
+        "abs-121",
+        "abs-6",
+        "abs-13",
+        "abs-119",
+        "abs-22"
+      ],
       "repetitions": 12,
       "sets": 3,
       "restBetweenSets": 60,
@@ -203,10 +275,16 @@
       "id": "abs-22",
       "name": "Lying Leg Raise With Hip Thrust",
       "description": "The lying leg raise with hip thrust marries a controlled leg lift with a pelvic curl to super‑charge lower‑abdominal activation. After raising the legs to vertical, the deliberate hip thrust rolls the tailbone off the bench, eliminating momentum and forcing the entire abdominal wall to contract. This sequence trains anti‑extension strength, enhances lumbo‑pelvic stability, and delivers a deep burn that standard leg raises often miss. Performed with body‑weight or a light dumbbell held between the feet, it offers a scalable, joint‑friendly path to stronger, better‑defined lower abs.",
-      "targetBodyParts": ["Abs"],
-      "exerciseType": ["strength"],
+      "targetBodyParts": [
+        "Abs"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
       "difficulty": "beginner",
-      "equipment": ["Bodyweight"],
+      "equipment": [
+        "Bodyweight"
+      ],
       "steps": [
         "The lying bench leg raise with hip thrust is a great exercise for hitting your abdominal muscles. Set up for the exercise by getting a flat bench and positioning it to give enough room for your legs to extend out one end.",
         "Sit on the bench with your buttocks close to one end, then lay back.",
@@ -229,8 +307,16 @@
         "Recent surgery",
         "Severe cardiovascular issues (for heavy compound movements)"
       ],
-      "muscles": ["Abs"],
-      "alternatives": ["abs-5", "abs-119", "abs-13", "abs-9", "abs-120"],
+      "muscles": [
+        "Abs"
+      ],
+      "alternatives": [
+        "abs-5",
+        "abs-119",
+        "abs-13",
+        "abs-9",
+        "abs-120"
+      ],
       "repetitions": 12,
       "sets": 3,
       "restBetweenSets": 60,
@@ -245,10 +331,16 @@
       "id": "abs-119",
       "name": "Hollow Body Crunch with Arm Sweep",
       "description": "A comprehensive core exercise that combines a crunch movement with an overhead arm sweep, targeting multiple areas of the abdominal wall while maintaining proper spinal positioning. This exercise emphasizes core control and teaches proper hollow body position, making it excellent for both strength and stability.",
-      "targetBodyParts": ["Abs"],
-      "exerciseType": ["strength"],
+      "targetBodyParts": [
+        "Abs"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
       "difficulty": "beginner",
-      "equipment": ["Bodyweight"],
+      "equipment": [
+        "Bodyweight"
+      ],
       "steps": [
         "Lie flat on your back with arms extended overhead and knees bent, feet flat on the floor.",
         "Press your lower back firmly into the ground by engaging your core.",
@@ -272,8 +364,19 @@
         "Pregnancy",
         "Acute core strain"
       ],
-      "muscles": ["Abs", "Hip Flexors", "Serratus Anterior", "Core"],
-      "alternatives": ["abs-9", "abs-13", "abs-22", "abs-120", "abs-6"],
+      "muscles": [
+        "Abs",
+        "Hip Flexors",
+        "Serratus Anterior",
+        "Core"
+      ],
+      "alternatives": [
+        "abs-9",
+        "abs-13",
+        "abs-22",
+        "abs-120",
+        "abs-6"
+      ],
       "repetitions": 12,
       "sets": 3,
       "restBetweenSets": 60,
@@ -288,10 +391,16 @@
       "id": "abs-120",
       "name": "Plank to Push-Up",
       "description": "A dynamic plank variation that combines core stability with upper body strength. Starting from a forearm plank, you transition to a high plank position and back, challenging core anti-rotation while engaging shoulders and arms. Also known as Plank Up-Downs, this exercise builds functional strength and coordination.",
-      "targetBodyParts": ["Abs"],
-      "exerciseType": ["strength"],
+      "targetBodyParts": [
+        "Abs"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
       "difficulty": "intermediate",
-      "equipment": ["Bodyweight"],
+      "equipment": [
+        "Bodyweight"
+      ],
       "steps": [
         "Start in a forearm plank with elbows directly under shoulders and body forming a straight line.",
         "Engage your core and glutes to maintain a rigid plank position.",
@@ -315,8 +424,20 @@
         "Core instability",
         "Elbow issues"
       ],
-      "muscles": ["Abs", "Shoulders", "Triceps", "Chest", "Core"],
-      "alternatives": ["abs-6", "abs-121", "abs-119", "abs-20", "abs-22"],
+      "muscles": [
+        "Abs",
+        "Shoulders",
+        "Triceps",
+        "Chest",
+        "Core"
+      ],
+      "alternatives": [
+        "abs-6",
+        "abs-121",
+        "abs-119",
+        "abs-20",
+        "abs-22"
+      ],
       "repetitions": 10,
       "sets": 3,
       "restBetweenSets": 60,
@@ -331,10 +452,16 @@
       "id": "abs-121",
       "name": "Spiderman Plank",
       "description": "A dynamic plank variation where you bring each knee to its same-side elbow, combining core stability with hip mobility. Also known as Same-Side Knee-to-Elbow Mountain Climber, this exercise particularly targets the obliques while maintaining full-body tension through the plank position.",
-      "targetBodyParts": ["Abs"],
-      "exerciseType": ["strength"],
+      "targetBodyParts": [
+        "Abs"
+      ],
+      "exerciseType": [
+        "strength"
+      ],
       "difficulty": "intermediate",
-      "equipment": ["Bodyweight"],
+      "equipment": [
+        "Bodyweight"
+      ],
       "steps": [
         "Start in a high plank position with hands directly under shoulders and body forming a straight line.",
         "Engage your core and maintain a strong plank position.",
@@ -358,8 +485,20 @@
         "Hip flexor strain",
         "Core instability"
       ],
-      "muscles": ["Abs", "Obliques", "Hip Flexors", "Shoulders", "Core"],
-      "alternatives": ["abs-6", "abs-120", "abs-20", "abs-13", "abs-5"],
+      "muscles": [
+        "Abs",
+        "Obliques",
+        "Hip Flexors",
+        "Shoulders",
+        "Core"
+      ],
+      "alternatives": [
+        "abs-6",
+        "abs-120",
+        "abs-20",
+        "abs-13",
+        "abs-5"
+      ],
       "repetitions": 12,
       "sets": 3,
       "restBetweenSets": 60,
@@ -374,10 +513,18 @@
       "id": "abs-122",
       "name": "Mountain Climbers",
       "description": "This is a high-intensity cardio and core drill where you rapidly alternate driving your knees toward your chest from a plank position. The version in your image involves a more explosive, jumping-style movement—less like \"climbing\" and more like switch jumps in plank form. It lights up the hip flexors, shoulders, and abs while spiking heart rate.",
-      "targetBodyParts": ["Abs", "Cardio"],
-      "exerciseType": ["cardio", "strength"],
+      "targetBodyParts": [
+        "Abs",
+        "Cardio"
+      ],
+      "exerciseType": [
+        "cardio",
+        "strength"
+      ],
       "difficulty": "intermediate",
-      "equipment": ["Bodyweight"],
+      "equipment": [
+        "Bodyweight"
+      ],
       "steps": [
         "Start in a high plank position with hands directly under shoulders and body forming a straight line.",
         "Engage your core and ensure your shoulders are stacked over your wrists.",
@@ -405,8 +552,18 @@
         "Ankle or knee injuries",
         "Cardiovascular conditions (consult physician)"
       ],
-      "muscles": ["Abs", "Hip Flexors", "Shoulders", "Quads", "Core"],
-      "alternatives": ["abs-121", "abs-120", "abs-13"],
+      "muscles": [
+        "Abs",
+        "Hip Flexors",
+        "Shoulders",
+        "Quads",
+        "Core"
+      ],
+      "alternatives": [
+        "abs-121",
+        "abs-120",
+        "abs-13"
+      ],
       "repetitions": 30,
       "sets": 3,
       "restBetweenSets": 45,
