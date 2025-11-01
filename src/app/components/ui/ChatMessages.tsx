@@ -937,17 +937,20 @@ export function ChatMessages({
 
     // Check if this is a program generation button (should be reusable)
     const isProgramButton = checkIsProgramButton(question);
+    
+    // Check if this is the "Answer in chat" button (also reusable - it just focuses input)
+    const isAnswerInChatButton = question.question === 'Answer in chat';
 
-    // Prevent double-clicking/tapping the same question (except program buttons)
-    if (isProcessingClickRef.current || (!isProgramButton && clickedQuestions.has(questionId))) {
+    // Prevent double-clicking/tapping the same question (except program buttons and Answer in chat)
+    if (isProcessingClickRef.current || (!isProgramButton && !isAnswerInChatButton && clickedQuestions.has(questionId))) {
       return;
     }
 
     // Immediately mark as processing to prevent double clicks 
     isProcessingClickRef.current = true;
 
-    // Add to clicked questions set (but not for program generation buttons)
-    if (!isProgramButton) {
+    // Add to clicked questions set (but not for program generation buttons or Answer in chat)
+    if (!isProgramButton && !isAnswerInChatButton) {
     setClickedQuestions((prev) => {
       const newSet = new Set(prev);
       newSet.add(questionId);
