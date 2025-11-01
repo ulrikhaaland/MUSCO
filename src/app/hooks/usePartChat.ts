@@ -35,6 +35,8 @@ export interface UsePartChatProps {
     programType: ProgramType,
     diagnosisData?: DiagnosisAssistantResponse | null
   ) => void;
+  onBodyGroupSelected?: (groupName: string) => void;
+  onBodyPartSelected?: (partName: string) => void;
 }
 
 export function usePartChat({
@@ -42,6 +44,8 @@ export function usePartChat({
   selectedGroups,
   forceMode,
   onGenerateProgram,
+  onBodyGroupSelected,
+  onBodyPartSelected,
 }: UsePartChatProps) {
   const { t } = useTranslation();
   const messagesRef = useRef<HTMLDivElement>(null);
@@ -262,6 +266,22 @@ export function usePartChat({
       // Do NOT auto-send; user must click the option explicitly.
     }
   }, [assistantResponse, selectedPart, selectedGroups, t, handleOptionClick]);
+
+  // Effect to handle body group selection from assistant (for no pre-selected body part flow)
+  useEffect(() => {
+    if (assistantResponse?.selectedBodyGroup && !selectedGroups.length && onBodyGroupSelected) {
+      console.log('[usePartChat] Assistant selected body group:', assistantResponse.selectedBodyGroup);
+      onBodyGroupSelected(assistantResponse.selectedBodyGroup);
+    }
+  }, [assistantResponse?.selectedBodyGroup, selectedGroups.length, onBodyGroupSelected]);
+
+  // Effect to handle specific body part selection from assistant
+  useEffect(() => {
+    if (assistantResponse?.selectedBodyPart && !selectedPart && onBodyPartSelected) {
+      console.log('[usePartChat] Assistant selected body part:', assistantResponse.selectedBodyPart);
+      onBodyPartSelected(assistantResponse.selectedBodyPart);
+    }
+  }, [assistantResponse?.selectedBodyPart, selectedPart, onBodyPartSelected]);
 
   const returnedFollowUps =
     messages.length === 0 ? localFollowUpQuestions : chatFollowUpQuestions;
