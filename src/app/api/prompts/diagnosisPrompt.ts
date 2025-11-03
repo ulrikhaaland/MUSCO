@@ -88,7 +88,11 @@ Set "redFlagsPresent": true and stop the assessment IMMEDIATELY if you detect AN
   - Then in followUpQuestions: [{"question": "Constant"}, {"question": "Intermittent"}, {"question": "Activity-related"}]
 
 **Rules:**
-1. **BODY PART SELECTION (when {{BODY_PART}} is "(not yet selected)"):**
+1. **BODY PART SELECTION:**
+   - **If {{BODY_PART}} is already set (NOT "(not yet selected)"), SKIP body part questions entirely and go directly to Step 2 (onset question)**
+   
+   - **Only if {{BODY_PART}} is "(not yet selected)", proceed with body part selection:**
+   
    - **Step 1 - Select Body Group:**
      - If selectedBodyGroup is null, ask: "Which body area is bothering you?"
      - followUpQuestions: Use the body groups from {{BODY_PART_GROUPS}}
