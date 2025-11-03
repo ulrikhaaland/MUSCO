@@ -29,13 +29,14 @@ When a body part is selected, users see three primary quick-start options:
 **Interactive Chat Features**
 - **Streaming Responses**: Real-time message streaming with ≤80 word responses
 - **Structured Follow-up Questions**: Explore mode uses device-aware counts (mobile up to 3, desktop up to 6). Diagnosis mode is not capped by device.
+- **Interactive Exercise Recommendations**: Exercise names in chat messages are clickable badges that open detailed modals with video demonstrations, instructions, and safety information
 - **Contextual Adaptation**: Questions adapt based on selected body part and conversation history
 - **Multi-language Support**: Responds in user's language preference (English/Norwegian)
 - **Free-form Input**: Text field available for custom questions beyond quick-replies
 - **Auto-scrolling**: Intelligent scrolling that respects user behavior while maintaining usability
 - **Error Handling**: Connection issues handled gracefully with retry options
 - **Mobile Optimization**: Touch-friendly interface with smooth animations
- - **Explain Selection Labels**: Model‑anchored labels update progressively as text streams in, then finalize.
+- **Explain Selection Labels**: Model‑anchored labels update progressively as text streams in, then finalize.
 
 **Rate-limit UX**
 - Hitting the daily free cap shows a full‑screen backdrop overlay prompting login/subscribe; underlying page state (3D model selection, chat transcript) is preserved and restored after auth.
@@ -316,7 +317,8 @@ The chat system is built with modern React patterns for optimal performance and 
 
 **Key Technical Features**
 - **Real-time Streaming**: Server-sent events for immediate response feedback
- - **Explain Selection Labels**: BioDigital `labels.create`/`labels.update` anchor educational blurbs with progressive streaming and instant client cache.
+- **Explain Selection Labels**: BioDigital `labels.create`/`labels.update` anchor educational blurbs with progressive streaming and instant client cache.
+- **Inline Exercise Integration**: Exercise names are automatically detected and matched with database entries using fuzzy matching, rendered as interactive badges with modal access to full exercise details
 - **Dynamic Spacer System**: Intelligent height management for growing content with scroll support
 - **Performance Optimized**: Component extraction, efficient re-render patterns, and cleanup optimizations
 - **Auto-scroll Intelligence**: Respects user scroll behavior while maintaining usability
