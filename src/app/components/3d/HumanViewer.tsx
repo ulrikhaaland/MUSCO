@@ -16,7 +16,7 @@ import { useUser } from '@/app/context/UserContext';
 import { useAuth } from '@/app/context/AuthContext';
 import { logAnalyticsEvent } from '@/app/utils/analytics';
 import { useExplainSelection } from '@/app/hooks/useExplainSelection';
-import { bodyPartGroups, BodyPartGroup } from '@/app/config/bodyPartGroups';
+import { bodyPartGroups } from '@/app/config/bodyPartGroups';
 
 const MODEL_IDS: Record<Gender, string> = {
   male: '5tOV',
@@ -399,6 +399,45 @@ export default function HumanViewer({
     setNeedsReset(selectedGroups.length > 0 || needsReset);
   }, [selectedGroups, needsReset, setNeedsReset]);
 
+  // Reset split to optimal sizes based on screen width (prioritize chat)
+  const resetSplitSizes = useCallback(() => {
+    const screenWidth = window.innerWidth;
+    let optimalChatWidth: number;
+
+    // Calculate optimal chat width based on screen size
+    // Prioritize chat, especially on smaller desktop screens
+    if (screenWidth >= 1600) {
+      // Large screens: chat gets ~55% but cap at max
+      optimalChatWidth = Math.min(maxChatWidth, Math.floor(screenWidth * 0.55));
+    } else if (screenWidth >= 1200) {
+      // Medium-large screens: chat gets ~60%
+      optimalChatWidth = Math.min(maxChatWidth, Math.floor(screenWidth * 0.60));
+    } else if (screenWidth >= 1024) {
+      // Medium screens: chat gets ~65%
+      optimalChatWidth = Math.min(maxChatWidth, Math.floor(screenWidth * 0.65));
+    } else {
+      // Smaller desktop screens: chat gets ~70%, ensuring viewer still has minimum space
+      const maxPossible = screenWidth - minChatWidth;
+      optimalChatWidth = Math.min(maxChatWidth, Math.floor(screenWidth * 0.70), maxPossible);
+    }
+
+    // Ensure within bounds
+    const maxAllowed = Math.min(maxChatWidth, screenWidth - minChatWidth);
+    const finalWidth = Math.min(Math.max(minChatWidth, optimalChatWidth), maxAllowed);
+
+    setChatWidth(finalWidth);
+    lastWidthRef.current = finalWidth;
+    setIsAtMinWidth(finalWidth <= minChatWidth);
+    setIsAtMaxWidth(finalWidth >= maxAllowed);
+
+    // Persist to localStorage
+    try {
+      window.localStorage.setItem(DESKTOP_SPLIT_KEY, String(finalWidth));
+    } catch {}
+
+    logAnalyticsEvent('reset_split_sizes', { width: finalWidth, screenWidth });
+  }, [minChatWidth, maxChatWidth]);
+
   const startDragging = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     setIsDragging(true);
@@ -496,18 +535,51 @@ export default function HumanViewer({
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const isDesktop = window.innerWidth >= 768;
-    const half = Math.floor(window.innerWidth / 2);
+    if (!isDesktop) return;
+
     const maxAllowed = Math.min(maxChatWidth, window.innerWidth - minChatWidth);
-    let desired = half;
-    if (isDesktop) {
-      try {
-        const stored = window.localStorage.getItem(DESKTOP_SPLIT_KEY);
-        if (stored != null) {
-          const parsed = parseInt(stored, 10);
-          if (!Number.isNaN(parsed)) desired = parsed;
+    let desired: number;
+
+    // Check if user has a saved preference
+    try {
+      const stored = window.localStorage.getItem(DESKTOP_SPLIT_KEY);
+      if (stored != null) {
+        const parsed = parseInt(stored, 10);
+        if (!Number.isNaN(parsed)) {
+          desired = parsed;
+        } else {
+          // No valid saved preference, use optimal size for current screen
+          const screenWidth = window.innerWidth;
+          if (screenWidth >= 1600) {
+            desired = Math.min(maxChatWidth, Math.floor(screenWidth * 0.55));
+          } else if (screenWidth >= 1200) {
+            desired = Math.min(maxChatWidth, Math.floor(screenWidth * 0.60));
+          } else if (screenWidth >= 1024) {
+            desired = Math.min(maxChatWidth, Math.floor(screenWidth * 0.65));
+          } else {
+            const maxPossible = screenWidth - minChatWidth;
+            desired = Math.min(maxChatWidth, Math.floor(screenWidth * 0.70), maxPossible);
+          }
         }
-      } catch {}
+      } else {
+        // No saved preference, use optimal size for current screen
+        const screenWidth = window.innerWidth;
+        if (screenWidth >= 1600) {
+          desired = Math.min(maxChatWidth, Math.floor(screenWidth * 0.55));
+        } else if (screenWidth >= 1200) {
+          desired = Math.min(maxChatWidth, Math.floor(screenWidth * 0.60));
+        } else if (screenWidth >= 1024) {
+          desired = Math.min(maxChatWidth, Math.floor(screenWidth * 0.65));
+        } else {
+          const maxPossible = screenWidth - minChatWidth;
+          desired = Math.min(maxChatWidth, Math.floor(screenWidth * 0.70), maxPossible);
+        }
+      }
+    } catch {
+      // Fallback to 50/50 if something goes wrong
+      desired = Math.floor(window.innerWidth / 2);
     }
+
     const clamped = Math.min(Math.max(minChatWidth, desired), maxAllowed);
     setChatWidth(clamped);
     lastWidthRef.current = clamped;
@@ -860,8 +932,10 @@ export default function HumanViewer({
       {/* Drag Handle - Desktop Only */}
       <div
         onMouseDown={startDragging}
+        onDoubleClick={resetSplitSizes}
         className="hidden md:block w-1 hover:w-2 bg-gray-800 hover:bg-indigo-600 cursor-ew-resize transition-all duration-150 active:bg-indigo-500 flex-shrink-0 z-30 relative group"
         style={{ touchAction: 'none' }}
+        title="Drag to resize, double-click to reset"
       >
         {/* Resize Icon - Custom Bidirectional Arrows */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
@@ -878,6 +952,26 @@ export default function HumanViewer({
             <rect x="22" y="12" width="4" height="24" rx="2" />
           </svg>
         </div>
+
+        {/* Reset Button - appears on hover */}
+        <button
+          onClick={resetSplitSizes}
+          className="absolute bottom-4 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-auto bg-gray-800 hover:bg-indigo-600 rounded-full p-2 shadow-lg"
+          title="Reset to optimal sizes"
+          aria-label="Reset split sizes"
+        >
+          <svg
+            className="w-4 h-4 text-white"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path
+              fillRule="evenodd"
+              d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
+              clipRule="evenodd"
+            />
+          </svg>
+        </button>
       </div>
 
       {/* Right side - Popup with animation - Desktop Only */}

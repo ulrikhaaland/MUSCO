@@ -31,7 +31,8 @@ export default function ExerciseChatCard({
         className="p-3 cursor-pointer hover:bg-gray-800/80 transition-colors"
         onClick={() => setIsExpanded(!isExpanded)}
       >
-        <div className="flex items-start justify-between gap-2">
+        {/* Desktop Layout: horizontal */}
+        <div className="hidden sm:flex items-start justify-between gap-2">
           <div className="flex-1 min-w-0">
             <h4 className="text-white font-medium text-sm mb-1 truncate">
               {exercise.name}
@@ -82,6 +83,60 @@ export default function ExerciseChatCard({
             className="flex-shrink-0 text-gray-400 transition-transform" 
             isRotated={isExpanded}
           />
+        </div>
+
+        {/* Mobile Layout: stacked */}
+        <div className="sm:hidden space-y-2">
+          {/* Title and expand indicator */}
+          <div className="flex items-start justify-between gap-2">
+            <h4 className="text-white font-medium text-sm flex-1">
+              {exercise.name}
+            </h4>
+            <ChevronDown 
+              className="flex-shrink-0 text-gray-400 transition-transform mt-0.5" 
+              isRotated={isExpanded}
+            />
+          </div>
+
+          {/* Metrics chips */}
+          <div className="flex items-center gap-2 flex-wrap">
+            {exercise.duration ? (
+              <span className="text-xs px-2 py-0.5 rounded bg-indigo-600/30 text-indigo-200">
+                {exercise.bodyPart === 'Cardio' 
+                  ? `${exercise.duration} min`
+                  : exercise.duration >= 60
+                    ? `${Math.floor(exercise.duration / 60)} min${exercise.duration % 60 > 0 ? ` ${exercise.duration % 60}s` : ''}`
+                    : `${exercise.duration}s`}
+              </span>
+            ) : (
+              exercise.sets && exercise.repetitions && (
+                <span className="text-xs px-2 py-0.5 rounded bg-indigo-600/30 text-indigo-200">
+                  {exercise.sets} × {exercise.repetitions}
+                </span>
+              )
+            )}
+            {exercise.bodyPart && (
+              <span className="text-xs px-2 py-0.5 rounded border border-indigo-500/40 text-indigo-300">
+                {exercise.bodyPart}
+              </span>
+            )}
+          </div>
+
+          {/* Video button - full width on mobile */}
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onVideoClick(exercise);
+            }}
+            className="w-full flex items-center justify-center gap-1.5 bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white px-3 py-2 rounded-lg text-sm transition-colors"
+          >
+            {isLoadingVideo ? (
+              <SpinnerIcon size="sm" />
+            ) : (
+              <PlayIcon size="sm" />
+            )}
+            <span>{t('program.watchVideo')}</span>
+          </button>
         </div>
       </div>
 
