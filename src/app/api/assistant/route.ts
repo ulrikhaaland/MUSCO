@@ -127,7 +127,7 @@ export async function POST(request: Request) {
         const languageLock = `\n<<LANGUAGE_LOCK>>\nSESSION_LANGUAGE=${sessionLanguage}\nRules:\n- All natural-language output (assistant bubble and followUpQuestions.question) must be in SESSION_LANGUAGE for the entire thread.\n- Do not switch languages mid-session unless SESSION_LANGUAGE changes.\n- JSON keys remain English (except user-provided content).\n<<LANGUAGE_LOCK_END>>\n`;
         
         // Inject body part context and body part groups data for diagnosis mode
-        const bodyPart = payload?.selectedBodyPart || payload?.selectedBodyGroupName || '(not yet selected)';
+        const bodyPart = payload?.selectedBodyPart?.name || payload?.selectedBodyGroupName || '(not yet selected)';
         const bodyPartGroups = BODY_PART_GROUPS.join(', ');
         const specificBodyParts = JSON.stringify(SPECIFIC_BODY_PARTS, null, 2);
         
