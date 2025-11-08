@@ -144,6 +144,16 @@ export function AppProvider({ children }: { children: ReactNode }) {
       humanRef.current.send('scene.selectObjects', { replace: true });
     }
 
+    // Clear localStorage to prevent hydration from restoring the selection
+    if (typeof window !== 'undefined') {
+      try {
+        window.localStorage.removeItem('viewerState');
+        console.log('[AppContext] Cleared localStorage during reset');
+      } catch (e) {
+        console.warn('Failed to clear localStorage', e);
+      }
+    }
+
     // Don't reset intention, only reset the current stage
     if (intention === ProgramIntention.Recovery) {
       // For recovery, just reset the current selection
@@ -175,6 +185,16 @@ export function AppProvider({ children }: { children: ReactNode }) {
     if (humanRef.current) {
       // Deselect all objects in the 3D scene
       humanRef.current.send('scene.selectObjects', { replace: true });
+    }
+
+    // Clear localStorage to prevent hydration from restoring the selection
+    if (typeof window !== 'undefined') {
+      try {
+        window.localStorage.removeItem('viewerState');
+        console.log('[AppContext] Cleared localStorage during complete reset');
+      } catch (e) {
+        console.warn('Failed to clear localStorage', e);
+      }
     }
 
     // Reset intention to the default
