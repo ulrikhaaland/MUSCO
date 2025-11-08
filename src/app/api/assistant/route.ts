@@ -105,7 +105,7 @@ export async function POST(request: Request) {
             effectiveMode = 'explore';
             try { console.warn('level=warn event=router_fail fallback=explore'); } catch {}
               }
-        } else {
+                } else {
           // log: router skipped
           try {
             const reason = effectiveMode ? 'has_mode' : 'has_history';

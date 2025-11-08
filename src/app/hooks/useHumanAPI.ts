@@ -269,6 +269,12 @@ export function useHumanAPI({
   useEffect(() => {
     if (!isReady || !humanRef.current) return;
     
+    // Skip hydration if we're currently resetting (prevents restoration during reset)
+    if (isResettingRef.current) {
+      console.log('[useHumanAPI] Skipping hydration - currently resetting');
+      return;
+    }
+    
     const currentGroupsLength = selectedGroupsRef.current.length;
     const currentPartId = selectedPartRef.current?.objectId || null;
     

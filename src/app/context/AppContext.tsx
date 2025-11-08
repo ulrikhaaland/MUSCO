@@ -138,22 +138,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const resetSelectionState = useCallback(() => {
-    // Clear 3D model selection before clearing React state
-    if (humanRef.current) {
-      // Deselect all objects in the 3D scene
-      humanRef.current.send('scene.selectObjects', { replace: true });
+    // Clear localStorage to prevent hydration from restoring old state
+    try {
+      window.localStorage.removeItem('viewerState');
+      window.sessionStorage.removeItem('viewerState');
+    } catch (e) {
+      console.warn('Failed to clear viewer state', e);
     }
-
-    // Clear localStorage to prevent hydration from restoring the selection
-    if (typeof window !== 'undefined') {
-      try {
-        window.localStorage.removeItem('viewerState');
-        console.log('[AppContext] Cleared localStorage during reset');
-      } catch (e) {
-        console.warn('Failed to clear localStorage', e);
-      }
-    }
-
+    
     // Don't reset intention, only reset the current stage
     if (intention === ProgramIntention.Recovery) {
       // For recovery, just reset the current selection
@@ -181,22 +173,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   // Add a complete reset function that resets everything unconditionally
   const completeReset = useCallback(() => {
-    // Clear 3D model selection before clearing React state
-    if (humanRef.current) {
-      // Deselect all objects in the 3D scene
-      humanRef.current.send('scene.selectObjects', { replace: true });
-    }
-
-    // Clear localStorage to prevent hydration from restoring the selection
-    if (typeof window !== 'undefined') {
-      try {
-        window.localStorage.removeItem('viewerState');
-        console.log('[AppContext] Cleared localStorage during complete reset');
-      } catch (e) {
-        console.warn('Failed to clear localStorage', e);
-      }
-    }
-
     // Reset intention to the default
     setIntention(ProgramIntention.None);
     intentionRef.current = ProgramIntention.None;
