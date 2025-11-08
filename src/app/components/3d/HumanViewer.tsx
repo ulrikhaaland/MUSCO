@@ -334,6 +334,9 @@ export default function HumanViewer({
       // Reset the context state
       if (shouldResetSelectionState == true) {
         resetSelectionState();
+        
+        // Close mobile chat overlay if open
+        setIsChatOverlayOpen(false);
 
         // Use scene.reset to reset everything to initial state
         if (humanRef.current) {
@@ -1046,7 +1049,7 @@ export default function HumanViewer({
       )}
 
       {/* Mobile footer with selection info and chat button */}
-      {isMobile && !hideNav && !showQuestionnaire && (
+      {isMobile && !hideNav && !showQuestionnaire && (selectedGroups.length > 0 || selectedPart) && (
         <div className="md:hidden fixed inset-x-0 bottom-0 z-[50] bg-gray-900/80 backdrop-blur-sm border-t border-gray-800">
           <div className="px-3 py-2 flex items-center justify-between gap-3">
             <div className="min-w-0 flex-1">
