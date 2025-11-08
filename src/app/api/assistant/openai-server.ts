@@ -288,6 +288,18 @@ export async function streamChatCompletion({
     const selectedModel = isExploreMode ? EXPLORE_MODEL : DIAGNOSIS_MODEL; // Default to diagnosis if mode unknown
     
     throttledLog('info', 'chat_stream_start', `ctx=stream model=${selectedModel}`);
+    
+    // Log diagnosis mode info at start of turn
+    if (isDiagnosisMode) {
+      console.log('\n┌─────────────────────────────────────');
+      console.log('│ DIAGNOSIS MODE - New Turn');
+      console.log('│ Model:', selectedModel);
+      console.log('│ Message count:', (messages?.length || 0) + 1);
+      if (userMessage && typeof userMessage === 'object') {
+        console.log('│ User message:', userMessage.message || '(structured input)');
+      }
+      console.log('└─────────────────────────────────────');
+    }
 
     const turnLimit = isDiagnosisMode ? (messages?.length || 0) : CHAT_MAX_TURNS;
     const formattedMessages = formatMessagesForChatCompletion((messages || []).slice(-turnLimit));
@@ -326,6 +338,14 @@ export async function streamChatCompletion({
         
         if (collectedFields.length > 0) {
           userMessageContent += `\n\n[Already collected: ${collectedFields.join(', ')}]`;
+          
+          // Log gathered diagnosis information
+          console.log('\n=== DIAGNOSIS INFO (Current Turn) ===');
+          console.log(`Gathered fields (${collectedFields.length}/8):`);
+          collectedFields.forEach(field => console.log(`  • ${field}`));
+          if (context.diagnosis) console.log(`Diagnosis: ${context.diagnosis}`);
+          if (context.redFlag) console.log(`🚩 Red Flag: ${context.redFlag}`);
+          console.log('=====================================\n');
         }
       }
     } else {
