@@ -459,34 +459,32 @@ export default function MobileControls({
                 </div>
               </button>
             ) : (
-              // Show card-style prompt - entire card clickable
+              // Show empty state - same layout as selection view for consistency
               <button
                 onClick={onOpenOverlay}
-                className="w-full rounded-lg border border-gray-800 bg-gray-900/60 mx-3 my-2 p-3 hover:bg-gray-800/60 active:bg-gray-700/60 hover:border-gray-700 transition-all cursor-pointer text-left group"
+                className="w-full flex items-center justify-between gap-3 text-left hover:bg-gray-800/40 active:bg-gray-700/40 px-3 py-3 transition-colors cursor-pointer group"
                 aria-label="Open chat"
               >
-                <div className="flex items-center justify-between gap-3">
-                  <div className="flex-1">
-                    <div className="text-base font-medium text-white mb-1 group-hover:text-indigo-400 transition-colors">
-                      Select a body part
-                    </div>
-                    <div className="text-sm text-gray-400 group-hover:text-gray-300 transition-colors">
-                      Tap on the model to get started
-                    </div>
+                <div className="min-w-0 flex-1">
+                  <div className="text-sm font-medium text-white group-hover:text-indigo-400 transition-colors">
+                    Select a body part
                   </div>
-                  <div className="flex items-center gap-2 flex-shrink-0">
-                    <div className="px-3 py-1.5 text-sm rounded-full bg-indigo-600 text-white group-hover:bg-indigo-500 group-active:bg-indigo-700 transition-colors">
-                      Chat
-                    </div>
-                    <svg 
-                      className="w-5 h-5 text-gray-400 group-hover:text-white transition-colors" 
-                      fill="none" 
-                      stroke="currentColor" 
-                      viewBox="0 0 24 24"
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
+                  <div className="text-xs text-gray-400 group-hover:text-gray-300 transition-colors">
+                    Tap on the model to get started
                   </div>
+                </div>
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <div className="px-3 py-1.5 text-sm rounded-full bg-indigo-600 text-white group-hover:bg-indigo-500 group-active:bg-indigo-700 transition-colors">
+                    Chat
+                  </div>
+                  <svg 
+                    className="w-5 h-5 text-gray-400 group-hover:text-white transition-colors" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
                 </div>
               </button>
             )}
