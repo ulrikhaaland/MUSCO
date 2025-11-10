@@ -446,9 +446,9 @@ export default function MobileControls({
                   )}
                 </div>
                 <div className="flex items-center gap-2 flex-shrink-0">
-                  <span className="text-xs text-gray-400 group-hover:text-gray-300 transition-colors">
-                    Tap to chat
-                  </span>
+                  <div className="px-3 py-1.5 text-sm rounded-full bg-indigo-600 text-white group-hover:bg-indigo-500 group-active:bg-indigo-700 transition-colors">
+                    Chat
+                  </div>
                   <svg 
                     className="w-4 h-4 text-gray-400 group-hover:text-white transition-colors" 
                     fill="none" 
@@ -475,14 +475,19 @@ export default function MobileControls({
                       Tap on the model to get started
                     </div>
                   </div>
-                  <svg 
-                    className="w-5 h-5 text-gray-400 group-hover:text-white flex-shrink-0 transition-colors" 
-                    fill="none" 
-                    stroke="currentColor" 
-                    viewBox="0 0 24 24"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    <div className="px-3 py-1.5 text-sm rounded-full bg-indigo-600 text-white group-hover:bg-indigo-500 group-active:bg-indigo-700 transition-colors">
+                      Chat
+                    </div>
+                    <svg 
+                      className="w-4 h-4 text-gray-400 group-hover:text-white transition-colors" 
+                      fill="none" 
+                      stroke="currentColor" 
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </div>
                 </div>
               </button>
             )}
