@@ -131,7 +131,7 @@ export function BottomSheetFooter({
             type="button"
             onClick={onClose}
             aria-label={t('mobile.controls.close')}
-            className="flex-shrink-0 w-10 h-10 flex justify-center items-center rounded-full text-white hover:bg-gray-700"
+            className="flex-shrink-0 w-10 h-10 flex justify-center items-center rounded-full bg-gray-800 text-white hover:bg-gray-700 active:bg-gray-600 transition-colors"
           >
             <CloseIcon className="h-6 w-6" />
           </button>
