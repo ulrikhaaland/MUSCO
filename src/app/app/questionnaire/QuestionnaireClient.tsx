@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { ExerciseQuestionnaire } from '@/app/components/ui/ExerciseQuestionnaire';
-import { ProgramType, ExerciseQuestionnaireAnswers } from '@/../../shared/types';
+import { ProgramType, ExerciseQuestionnaireAnswers } from '../../../../shared/types';
 import { useState, useEffect } from 'react';
 import { DiagnosisAssistantResponse } from '@/app/types';
 import { useUser } from '@/app/context/UserContext';
