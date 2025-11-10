@@ -427,12 +427,11 @@ export default function MobileControls({
       {/* Mobile Footer - Always visible when not in overlay or questionnaire */}
       {isMobile && !overlayOpen && !showQuestionnaire && (
         <div className="md:hidden fixed inset-x-0 bottom-0 z-[50] bg-gray-900/80 backdrop-blur-sm border-t border-gray-800">
-          <div className="px-3 py-2">
             {(selectedGroups.length > 0 || selectedPart) ? (
               // Show selection info - entire area clickable
               <button
                 onClick={onOpenOverlay}
-                className="w-full flex items-center justify-between gap-3 text-left hover:bg-gray-800/40 active:bg-gray-700/40 rounded-lg p-2 -m-2 transition-colors cursor-pointer group"
+                className="w-full flex items-center justify-between gap-3 text-left hover:bg-gray-800/40 active:bg-gray-700/40 px-3 py-3 transition-colors cursor-pointer group"
                 aria-label="Open chat"
               >
                 <div className="min-w-0 flex-1">
@@ -450,7 +449,7 @@ export default function MobileControls({
                     Chat
                   </div>
                   <svg 
-                    className="w-4 h-4 text-gray-400 group-hover:text-white transition-colors" 
+                    className="w-5 h-5 text-gray-400 group-hover:text-white transition-colors" 
                     fill="none" 
                     stroke="currentColor" 
                     viewBox="0 0 24 24"
@@ -463,7 +462,7 @@ export default function MobileControls({
               // Show card-style prompt - entire card clickable
               <button
                 onClick={onOpenOverlay}
-                className="w-full rounded-lg border border-gray-800 bg-gray-900/60 p-3 hover:bg-gray-800/60 active:bg-gray-700/60 hover:border-gray-700 transition-all cursor-pointer text-left group"
+                className="w-full rounded-lg border border-gray-800 bg-gray-900/60 mx-3 my-2 p-3 hover:bg-gray-800/60 active:bg-gray-700/60 hover:border-gray-700 transition-all cursor-pointer text-left group"
                 aria-label="Open chat"
               >
                 <div className="flex items-center justify-between gap-3">
@@ -480,7 +479,7 @@ export default function MobileControls({
                       Chat
                     </div>
                     <svg 
-                      className="w-4 h-4 text-gray-400 group-hover:text-white transition-colors" 
+                      className="w-5 h-5 text-gray-400 group-hover:text-white transition-colors" 
                       fill="none" 
                       stroke="currentColor" 
                       viewBox="0 0 24 24"
@@ -491,7 +490,6 @@ export default function MobileControls({
                 </div>
               </button>
             )}
-          </div>
         </div>
       )}
     </>
