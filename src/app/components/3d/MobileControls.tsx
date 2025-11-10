@@ -429,8 +429,12 @@ export default function MobileControls({
         <div className="md:hidden fixed inset-x-0 bottom-0 z-[50] bg-gray-900/80 backdrop-blur-sm border-t border-gray-800">
           <div className="px-3 py-2">
             {(selectedGroups.length > 0 || selectedPart) ? (
-              // Show selection info
-              <div className="flex items-center justify-between gap-3">
+              // Show selection info - entire area clickable
+              <button
+                onClick={onOpenOverlay}
+                className="w-full flex items-center justify-between gap-3 text-left hover:bg-gray-800/40 active:bg-gray-700/40 rounded-lg p-2 -m-2 transition-colors cursor-pointer group"
+                aria-label="Open chat"
+              >
                 <div className="min-w-0 flex-1">
                   <div className="text-sm text-white truncate">
                     {selectedPart?.name || selectedGroups[0]?.name}
@@ -441,35 +445,46 @@ export default function MobileControls({
                     </div>
                   )}
                 </div>
-                <button
-                  onClick={onOpenOverlay}
-                  className="flex-shrink-0 px-3 py-1.5 text-sm rounded-full bg-indigo-600 text-white hover:bg-indigo-500 active:bg-indigo-700 transition-colors"
-                  aria-label="Open chat"
-                >
-                  Chat
-                </button>
-              </div>
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <span className="text-xs text-gray-400 group-hover:text-gray-300 transition-colors">
+                    Tap to chat
+                  </span>
+                  <svg 
+                    className="w-4 h-4 text-gray-400 group-hover:text-white transition-colors" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </div>
+              </button>
             ) : (
-              // Show card-style prompt to select
-              <div className="rounded-lg border border-gray-800 bg-gray-900/60 p-3">
+              // Show card-style prompt - entire card clickable
+              <button
+                onClick={onOpenOverlay}
+                className="w-full rounded-lg border border-gray-800 bg-gray-900/60 p-3 hover:bg-gray-800/60 active:bg-gray-700/60 hover:border-gray-700 transition-all cursor-pointer text-left group"
+                aria-label="Open chat"
+              >
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex-1">
-                    <div className="text-base font-medium text-white mb-1">
+                    <div className="text-base font-medium text-white mb-1 group-hover:text-indigo-400 transition-colors">
                       Select a body part
                     </div>
-                    <div className="text-sm text-gray-400">
+                    <div className="text-sm text-gray-400 group-hover:text-gray-300 transition-colors">
                       Tap on the model to get started
                     </div>
                   </div>
-                  <button
-                    onClick={onOpenOverlay}
-                    className="flex-shrink-0 px-3 py-1.5 text-sm rounded-full bg-indigo-600 text-white hover:bg-indigo-500 active:bg-indigo-700 transition-colors"
-                    aria-label="Open chat"
+                  <svg 
+                    className="w-5 h-5 text-gray-400 group-hover:text-white flex-shrink-0 transition-colors" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    viewBox="0 0 24 24"
                   >
-                    Chat
-                  </button>
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
                 </div>
-              </div>
+              </button>
             )}
           </div>
         </div>
