@@ -34,6 +34,7 @@ interface MobileControlsProps {
   hideBottomSheet?: boolean;
   overlayOpen?: boolean;
   onCloseOverlay?: () => void;
+  onOpenOverlay?: () => void;
   onGenerateProgram?: (programType: ProgramType) => void;
   onBodyGroupSelected?: (groupName: string) => void;
   onBodyPartSelected?: (partName: string) => void;
@@ -58,6 +59,7 @@ export default function MobileControls({
   onDiagnosis,
   overlayOpen,
   onCloseOverlay,
+  onOpenOverlay,
   onGenerateProgram,
   onBodyGroupSelected,
   onBodyPartSelected,
@@ -420,6 +422,57 @@ export default function MobileControls({
           onClose={handleCloseVideo}
           exerciseName={currentExercise?.name}
         />
+      )}
+
+      {/* Mobile Footer - Always visible when not in overlay or questionnaire */}
+      {isMobile && !overlayOpen && !showQuestionnaire && (
+        <div className="md:hidden fixed inset-x-0 bottom-0 z-[50] bg-gray-900/80 backdrop-blur-sm border-t border-gray-800">
+          <div className="px-3 py-2">
+            {(selectedGroups.length > 0 || selectedPart) ? (
+              // Show selection info
+              <div className="flex items-center justify-between gap-3">
+                <div className="min-w-0 flex-1">
+                  <div className="text-sm text-white truncate">
+                    {selectedPart?.name || selectedGroups[0]?.name}
+                  </div>
+                  {selectedGroups.length > 0 && (
+                    <div className="text-xs text-gray-400 truncate">
+                      {selectedGroups.map((g) => g.name).join(', ')}
+                    </div>
+                  )}
+                </div>
+                <button
+                  onClick={onOpenOverlay}
+                  className="flex-shrink-0 px-3 py-1.5 text-sm rounded-full bg-indigo-600 text-white hover:bg-indigo-500 active:bg-indigo-700 transition-colors"
+                  aria-label="Open chat"
+                >
+                  Chat
+                </button>
+              </div>
+            ) : (
+              // Show card-style prompt to select
+              <div className="rounded-lg border border-gray-800 bg-gray-900/60 p-3">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex-1">
+                    <div className="text-base font-medium text-white mb-1">
+                      Select a body part
+                    </div>
+                    <div className="text-sm text-gray-400">
+                      Tap on the model to get started
+                    </div>
+                  </div>
+                  <button
+                    onClick={onOpenOverlay}
+                    className="flex-shrink-0 px-3 py-1.5 text-sm rounded-full bg-indigo-600 text-white hover:bg-indigo-500 active:bg-indigo-700 transition-colors"
+                    aria-label="Open chat"
+                  >
+                    Chat
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
       )}
     </>
   );
