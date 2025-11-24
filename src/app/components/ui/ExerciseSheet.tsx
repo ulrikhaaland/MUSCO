@@ -23,31 +23,32 @@ export function ExerciseSheet({
   const { t } = useTranslation();
   const sheetRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
+  const headerRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [startY, setStartY] = useState(0);
   const [currentY, setCurrentY] = useState(0);
   const [translateY, setTranslateY] = useState(0);
 
-  // Handle touch start
-  const handleTouchStart = (e: React.TouchEvent) => {
-    // Only allow dragging if scrolled to top
-    if (contentRef.current && contentRef.current.scrollTop === 0) {
-      setIsDragging(true);
-      setStartY(e.touches[0].clientY);
-      setCurrentY(e.touches[0].clientY);
-    }
+  // Handle touch start - ONLY on header area
+  const handleHeaderTouchStart = (e: React.TouchEvent) => {
+    setIsDragging(true);
+    setStartY(e.touches[0].clientY);
+    setCurrentY(e.touches[0].clientY);
   };
 
-  // Handle touch move
+  // Handle touch move - with rubber-band effect
   const handleTouchMove = (e: React.TouchEvent) => {
     if (!isDragging) return;
 
     const deltaY = e.touches[0].clientY - startY;
     
-    // Only allow dragging down, not up
+    // Allow dragging down with rubber-band resistance
     if (deltaY > 0) {
+      // Apply rubber-band effect: diminishing returns as you drag further
+      const resistance = 0.5;
+      const rubberBandDelta = deltaY * resistance;
       setCurrentY(e.touches[0].clientY);
-      setTranslateY(deltaY);
+      setTranslateY(rubberBandDelta);
     }
   };
 
@@ -58,48 +59,66 @@ export function ExerciseSheet({
     setIsDragging(false);
     const deltaY = currentY - startY;
 
-    // If dragged down more than 150px, close the sheet
-    if (deltaY > 150) {
+    // If dragged down more than 100px (accounting for rubber-band), close the sheet
+    if (deltaY > 100) {
       onClose();
     } else {
-      // Reset position
+      // Reset position with spring animation
       setTranslateY(0);
     }
   };
 
-  // Reset scroll on open
+  // Reset scroll and drag state on open
   useEffect(() => {
     if (contentRef.current) {
       contentRef.current.scrollTop = 0;
     }
+    setTranslateY(0);
+    setIsDragging(false);
   }, [exercise]);
 
   return (
     <div 
-      className="fixed inset-0 z-[80] bg-black/60 flex items-end"
-      onClick={onClose}
+      className="fixed inset-0 z-[80] bg-black/60 flex items-end backdrop-blur-sm"
+      onClick={(e) => {
+        // Don't close if currently dragging
+        if (!isDragging) {
+          onClose();
+        }
+      }}
     >
       <div
         ref={sheetRef}
-        className="relative w-full bg-gray-900 rounded-t-2xl flex flex-col max-h-[95vh] transition-transform"
+        className="relative w-full bg-gray-900 rounded-t-2xl flex flex-col max-h-[95vh]"
         style={{
           transform: `translateY(${translateY}px)`,
-          transition: isDragging ? 'none' : 'transform 0.3s ease-out',
+          transition: isDragging ? 'none' : 'transform 0.3s cubic-bezier(0.32, 0.72, 0, 1)',
         }}
         onClick={(e) => e.stopPropagation()}
-        onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
-        {/* Handle bar and header */}
-        <div className="sticky top-0 bg-gray-900 z-10 rounded-t-2xl">
-          {/* Drag handle */}
-          <div className="w-full flex justify-center pt-3 pb-2">
-            <div className="w-12 h-1 bg-gray-600 rounded-full" />
+        {/* Handle bar and header - DRAG ZONE */}
+        <div 
+          ref={headerRef}
+          className="sticky top-0 bg-gray-900 z-10 rounded-t-2xl touch-pan-y"
+          onTouchStart={handleHeaderTouchStart}
+        >
+          {/* Drag handle - more prominent with visual feedback */}
+          <div className="w-full flex flex-col items-center pt-4 pb-3">
+            <div 
+              className="w-16 h-1.5 bg-gray-500 rounded-full transition-all"
+              style={{
+                transform: isDragging ? 'scaleX(1.2)' : 'scaleX(1)',
+                backgroundColor: isDragging ? 'rgb(156, 163, 175)' : 'rgb(107, 114, 128)',
+              }}
+            />
+            {/* Subtle hint text */}
+            <p className="text-gray-600 text-xs mt-2">Swipe down to close</p>
           </div>
 
           {/* Header */}
-          <div className="px-4 pb-3 flex items-start justify-between gap-3 border-b border-gray-800">
+          <div className="px-4 pb-4 flex items-start justify-between gap-3 border-b border-gray-800">
             <div className="flex-1 min-w-0">
               <h3 className="text-white font-semibold text-base mb-1">{exercise.name}</h3>
               {exercise.bodyPart && (
@@ -110,7 +129,7 @@ export function ExerciseSheet({
             </div>
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-white transition-colors p-1 flex-shrink-0"
+              className="text-gray-400 hover:text-white active:text-white transition-colors p-2 -m-1 flex-shrink-0 touch-manipulation"
               aria-label="Close"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -120,10 +139,11 @@ export function ExerciseSheet({
           </div>
         </div>
 
-        {/* Content - Scrollable */}
+        {/* Content - Scrollable (touch events don't trigger dismiss) */}
         <div 
           ref={contentRef}
-          className="flex-1 overflow-y-auto overscroll-contain"
+          className="flex-1 overflow-y-auto overscroll-contain touch-pan-y"
+          style={{ WebkitOverflowScrolling: 'touch' }}
         >
           <div className="p-4 space-y-4 pb-24">
             {/* Metrics */}

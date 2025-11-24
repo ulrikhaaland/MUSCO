@@ -253,6 +253,13 @@ const translations = {
   'mobile.controls.tour.rotate': 'Roter modellen',
   'mobile.controls.tour.reset': 'Tilbakestill valg, zoom og visningsposisjon',
   'mobile.controls.tour.gender': 'Bytt mellom mannlig / kvinnelig anatomi',
+  
+  // Mobile Chat Overlay
+  'mobile.chat.startOrSelect': 'Start en chat eller velg en spesifikk del',
+  'mobile.chat.askAnything': 'Spør om smerte, rehabilitering eller trening.',
+  'mobile.chat.button': 'Chat',
+  'mobile.chat.selectBodyPart': 'Velg en kroppsdel',
+  'mobile.chat.tapToStart': 'Trykk på modellen for å komme i gang',
 
   // BottomSheet Components
   'bottomSheet.resetChat': 'Tilbakestill Chat',
@@ -266,35 +273,6 @@ const translations = {
     'Velg et bestemt område av {{group}} (valgfritt)',
   'bottomSheet.typeMessage': 'Skriv inn meldingen din',
   'bottomSheet.askSomethingElse': 'Spør om noe annet',
-
-  // BottomSheet tour steps
-  'bottomSheet.tourHeader':
-    'Her kan du se den valgte kroppsgruppen, og rett under den, den valgte kroppsdelen.',
-  'bottomSheet.tourReset':
-    'Bruk denne knappen for å tilbakestille chatten og starte på nytt.',
-  'bottomSheet.tourSuggestions':
-    'Klikk på foreslåtte spørsmål for å lære mer om den valgte kroppsdelen.',
-  'bottomSheet.tourInput':
-    'Skriv inn dine spørsmål her for å lære mer om anatomi, øvelser og behandlingsalternativer.',
-  'bottomSheet.tourControls':
-    'Bruk disse knappene for å utvide eller minimere chatteområdet.',
-  'bottomSheet.tourRotate': 'Bruk denne knappen for å rotere 3D-modellen.',
-  'bottomSheet.tourResetModel':
-    'Bruk denne knappen for å tilbakestille 3D-modellen til utgangspunktet.',
-  'bottomSheet.tourGender':
-    'Bruk denne knappen for å bytte mellom mannlig og kvinnelig 3D-modell.',
-
-  // Tour steps
-  'tour.bodyGroup':
-    'Her kan du se den valgte kroppsgruppen, og rett under den, den valgte kroppsdelen.',
-  'tour.resetButton':
-    'Bruk denne knappen for å nullstille chatten og starte på nytt.',
-  'tour.suggestedQuestions':
-    'Klikk på foreslåtte spørsmål for å lære mer om den valgte kroppsdelen.',
-  'tour.askQuestions':
-    'Skriv inn dine spørsmål her for å lære mer om anatomi, øvelser og behandlingsalternativer.',
-  'tour.expandButtons':
-    'Bruk disse knappene for å utvide eller minimere chatteområdet.',
 
   // Chat - Body Part Selection
   'chat.noBodyPartSelected': 'Ingen kroppsdel valgt',
@@ -471,25 +449,6 @@ const translations = {
   'program.precaution': 'Forholdsregel:',
   'program.rest': '{{seconds}}s hvile',
   'program.dayAccessibility': 'Tilgjengelighetsinformasjon for dag {{day}}',
-
-  bottomSheet: {
-    minimize: 'Minimer',
-    expand: 'Utvid',
-    resetChat: 'Tilbakestill chat',
-    typeMessage: 'Skriv din melding',
-    next: 'Neste →',
-    back: '← Tilbake',
-    gotIt: 'Forstått',
-    tourStep1:
-      'Her kan du se den valgte kroppsgruppen, og rett under den, den valgte kroppsdelen.',
-    tourStep2:
-      'Bruk denne knappen for å tilbakestille chatten og starte på nytt.',
-    tourStep3:
-      'Klikk på foreslåtte spørsmål for å lære mer om den valgte kroppsdelen.',
-    tourStep4:
-      'Skriv dine spørsmål her for å lære mer om anatomi, øvelser og behandlingsalternativer.',
-    tourStep5: 'Bruk disse knappene for å utvide eller minimere chatteområdet.',
-  },
 
   // Exercise Selection
   'exerciseSelection.targetAreas': 'Målområder',
@@ -780,8 +739,6 @@ const translations = {
   'exerciseFeedbackSelector.button.addExercise': 'Legg til {{category}} øvelse',
   'exerciseFeedbackSelector.alert.addNotSupported':
     'Legge til øvelser for {{category}} støttes ikke ennå.',
-  'exerciseFeedbackSelector.button.expandAll': 'Utvid alle',
-  'exerciseFeedbackSelector.button.collapseAll': 'Skjul alle',
 
   // User Context
   'userContext.loading.programs': 'Laster programmene dine',

@@ -342,8 +342,8 @@ export default function MobileControls({
                 <div className="flex-1 min-h-0">
                   {messages.length === 0 && selectedGroups.length === 0 && !isLoading && (
                     <div className="mb-3 rounded-lg border border-gray-800 bg-gray-900/60 p-4">
-                      <div className="text-base font-medium text-white mb-2">Start a chat or select a specific part</div>
-                      <div className="text-sm text-gray-400 mb-3">Ask anything about pain, recovery or training.</div>
+                      <div className="text-base font-medium text-white mb-2">{t('mobile.chat.startOrSelect')}</div>
+                      <div className="text-sm text-gray-400 mb-3">{t('mobile.chat.askAnything')}</div>
                       <div className="flex flex-wrap gap-2">
                         {globalTemplateQuestions.map((template) => (
                         <button
@@ -446,7 +446,7 @@ export default function MobileControls({
                 </div>
                 <div className="flex items-center gap-2 flex-shrink-0">
                   <div className="px-3 py-1.5 text-sm rounded-full bg-indigo-600 text-white group-hover:bg-indigo-500 group-active:bg-indigo-700 transition-colors">
-                    Chat
+                    {t('mobile.chat.button')}
                   </div>
                   <svg 
                     className="w-5 h-5 text-gray-400 group-hover:text-white transition-colors" 
@@ -467,15 +467,15 @@ export default function MobileControls({
               >
                 <div className="min-w-0 flex-1">
                   <div className="text-sm font-medium text-white group-hover:text-indigo-400 transition-colors">
-                    Select a body part
+                    {t('mobile.chat.selectBodyPart')}
                   </div>
                   <div className="text-xs text-gray-400 group-hover:text-gray-300 transition-colors">
-                    Tap on the model to get started
+                    {t('mobile.chat.tapToStart')}
                   </div>
                 </div>
                 <div className="flex items-center gap-2 flex-shrink-0">
                   <div className="px-3 py-1.5 text-sm rounded-full bg-indigo-600 text-white group-hover:bg-indigo-500 group-active:bg-indigo-700 transition-colors">
-                    Chat
+                    {t('mobile.chat.button')}
                   </div>
                   <svg 
                     className="w-5 h-5 text-gray-400 group-hover:text-white transition-colors" 

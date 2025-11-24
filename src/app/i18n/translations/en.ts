@@ -291,6 +291,13 @@ const translations = {
   'mobile.controls.tour.rotate': 'Rotate the model',
   'mobile.controls.tour.reset': 'Reset selections, zoom, and viewing position',
   'mobile.controls.tour.gender': 'Toggle between male / female anatomy',
+  
+  // Mobile Chat Overlay
+  'mobile.chat.startOrSelect': 'Start a chat or select a specific part',
+  'mobile.chat.askAnything': 'Ask anything about pain, recovery or training.',
+  'mobile.chat.button': 'Chat',
+  'mobile.chat.selectBodyPart': 'Select a body part',
+  'mobile.chat.tapToStart': 'Tap on the model to get started',
 
   // BottomSheet Components
   'bottomSheet.resetChat': 'Reset Chat',
@@ -304,33 +311,6 @@ const translations = {
     'Select a specific area of the {{group}} (optional)',
   'bottomSheet.typeMessage': 'Type your message',
   'bottomSheet.askSomethingElse': 'Ask something else',
-
-  // BottomSheet tour steps
-  'bottomSheet.tourHeader':
-    'Here you can see the selected body group, and right below it, the selected body part.',
-  'bottomSheet.tourReset': 'Use this button to reset the chat and start over.',
-  'bottomSheet.tourSuggestions':
-    'Click on suggested questions to learn more about the selected body part.',
-  'bottomSheet.tourInput':
-    'Type your questions here to learn more about anatomy, exercises, and treatment options.',
-  'bottomSheet.tourControls':
-    'Use these buttons to expand or minimize the chat area.',
-  'bottomSheet.tourRotate': 'Use this button to rotate the 3D model.',
-  'bottomSheet.tourResetModel':
-    'Use this button to reset the 3D model to the original position.',
-  'bottomSheet.tourGender':
-    'Use this button to switch between male and female 3D models.',
-
-  // Tour steps
-  'tour.bodyGroup':
-    'Here you can see the selected body group, and right below it, the selected body part.',
-  'tour.resetButton': 'Use this button to reset the chat and start over.',
-  'tour.suggestedQuestions':
-    'Click on suggested questions to learn more about the selected body part.',
-  'tour.askQuestions':
-    'Type your questions here to learn more about anatomy, exercises, and treatment options.',
-  'tour.expandButtons':
-    'Use these buttons to expand or minimize the chat area.',
 
   // Chat - Body Part Selection
   'chat.noBodyPartSelected': 'No body part selected',
@@ -500,24 +480,6 @@ const translations = {
   'program.hideInstructions': 'Hide instructions',
   'program.modification': 'Modification:',
   'program.precaution': 'Precaution:',
-
-  bottomSheet: {
-    minimize: 'Minimize',
-    expand: 'Expand',
-    resetChat: 'Reset chat',
-    typeMessage: 'Type your message',
-    next: 'Next →',
-    back: '← Back',
-    gotIt: 'Got it',
-    tourStep1:
-      'Here you can see the selected body group, and right below it, the selected body part.',
-    tourStep2: 'Use this button to reset the chat and start over.',
-    tourStep3:
-      'Click on suggested questions to learn more about the selected body part.',
-    tourStep4:
-      'Type your questions here to learn more about anatomy, exercises, and treatment options.',
-    tourStep5: 'Use these buttons to expand or minimize the chat area.',
-  },
 
   // Exercise Selection
   'exerciseSelection.targetAreas': 'Target Areas',
@@ -803,8 +765,6 @@ const translations = {
   'exerciseFeedbackSelector.button.addExercise': 'Add {{category}} Exercise',
   'exerciseFeedbackSelector.alert.addNotSupported':
     'Adding exercises for {{category}} is not supported yet.',
-  'exerciseFeedbackSelector.button.expandAll': 'Expand All',
-  'exerciseFeedbackSelector.button.collapseAll': 'Collapse All',
 
   // User Context
   'userContext.loading.programs': 'Loading your programs',
