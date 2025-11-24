@@ -28,7 +28,7 @@ export function VideoModal({
 
   return (
     <div
-      className="fixed inset-0 bg-black/95 backdrop-blur-sm flex items-center justify-center z-[90]"
+      className="fixed inset-0 bg-black/95 backdrop-blur-sm flex items-center justify-center z-[100]"
       onClick={onClose}
     >
       <div
