@@ -1,7 +1,7 @@
 import { RefObject } from 'react';
 import { Question } from '@/app/types';
 import { useTranslation } from '@/app/i18n';
-import { CloseButton } from '../components/ui/CloseButton';
+import { CloseButton } from '../ui/CloseButton';
 
 interface BottomSheetFooterProps {
   message: string;
