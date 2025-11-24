@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Exercise } from '@/app/types/program';
 import { PlayIcon, SpinnerIcon } from '../icons';
 import { useTranslation } from '@/app/i18n/TranslationContext';
@@ -77,7 +78,15 @@ export function ExerciseSheet({
     setIsDragging(false);
   }, [exercise]);
 
-  return (
+  // Prevent body scroll when sheet is open
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, []);
+
+  const sheetContent = (
     <div 
       className="fixed inset-0 z-[90] bg-gray-900 flex items-end"
       onClick={(e) => {
@@ -251,5 +260,9 @@ export function ExerciseSheet({
       </div>
     </div>
   );
+
+  // Render in portal to escape chat overlay DOM hierarchy
+  if (typeof window === 'undefined') return null;
+  return createPortal(sheetContent, document.body);
 }
 
