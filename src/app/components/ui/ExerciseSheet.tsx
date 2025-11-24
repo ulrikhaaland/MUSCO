@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { Exercise } from '@/app/types/program';
 import { PlayIcon, SpinnerIcon } from '../icons';
 import { useTranslation } from '@/app/i18n/TranslationContext';
+import { CloseButton } from './CloseButton';
 
 interface ExerciseSheetProps {
   exercise: Exercise;
@@ -43,24 +44,13 @@ export function ExerciseSheet({
     <div className="fixed inset-0 z-[90] bg-gray-900 flex flex-col">
       {/* Header */}
       <div className="sticky top-0 bg-gray-900 z-10 border-b border-gray-800">
-        <div className="px-4 py-4 flex items-start justify-between gap-3">
-          <div className="flex-1 min-w-0">
-            <h3 className="text-white font-semibold text-lg mb-1">{exercise.name}</h3>
-            {exercise.bodyPart && (
-              <span className="inline-block px-2 py-0.5 rounded bg-indigo-600/20 text-indigo-300 text-xs border border-indigo-500/40">
-                {exercise.bodyPart}
-              </span>
-            )}
-          </div>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-white active:text-white transition-colors p-2 -m-1 flex-shrink-0 touch-manipulation"
-            aria-label="Close"
-          >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
+        <div className="px-4 py-4">
+          <h3 className="text-white font-semibold text-lg mb-1">{exercise.name}</h3>
+          {exercise.bodyPart && (
+            <span className="inline-block px-2 py-0.5 rounded bg-indigo-600/20 text-indigo-300 text-xs border border-indigo-500/40">
+              {exercise.bodyPart}
+            </span>
+          )}
         </div>
       </div>
 
@@ -156,14 +146,14 @@ export function ExerciseSheet({
           </div>
         </div>
         
-      {/* Fixed Footer - Video Button and Close */}
-      <div className="sticky bottom-0 border-t border-gray-800 p-4 bg-gray-900">
-        {exercise.videoUrl ? (
-          <div className="flex items-center gap-3">
+      {/* Fixed Footer - Matches BottomSheetFooter styling */}
+      <div className="border-t border-gray-700 pt-2 pb-1 flex-shrink-0 bg-gray-900 px-3">
+        <div className="flex items-center gap-2">
+          {exercise.videoUrl && (
             <button
               onClick={() => onVideoClick(exercise)}
               disabled={loadingVideo}
-              className="flex-1 flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white px-4 py-3.5 rounded-lg transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white px-4 py-3 rounded-lg transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loadingVideo ? (
                 <SpinnerIcon size="md" />
@@ -172,27 +162,9 @@ export function ExerciseSheet({
               )}
               <span>{t('program.watchVideo')}</span>
             </button>
-            <button
-              onClick={onClose}
-              className="flex items-center justify-center p-3.5 rounded-lg bg-gray-800 hover:bg-gray-700 active:bg-gray-600 text-white transition-colors touch-manipulation"
-              aria-label="Close"
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
-        ) : (
-          <button
-            onClick={onClose}
-            className="w-full flex items-center justify-center gap-2 p-3.5 rounded-lg bg-gray-800 hover:bg-gray-700 active:bg-gray-600 text-white transition-colors font-medium touch-manipulation"
-          >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-            <span>Close</span>
-          </button>
-        )}
+          )}
+          <CloseButton onClick={onClose} label="Close exercise" />
+        </div>
       </div>
     </div>
   );

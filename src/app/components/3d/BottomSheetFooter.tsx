@@ -1,7 +1,7 @@
 import { RefObject } from 'react';
-import CloseIcon from '@mui/icons-material/Close';
 import { Question } from '@/app/types';
 import { useTranslation } from '@/app/i18n';
+import { CloseButton } from '../components/ui/CloseButton';
 
 interface BottomSheetFooterProps {
   message: string;
@@ -127,14 +127,7 @@ export function BottomSheetFooter({
           </button>
         </form>
         {hasClose && (
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label={t('mobile.controls.close')}
-            className="flex-shrink-0 w-10 h-10 flex justify-center items-center rounded-full bg-gray-800 text-white hover:bg-gray-700 active:bg-gray-600 transition-colors"
-          >
-            <CloseIcon className="h-6 w-6" />
-          </button>
+          <CloseButton onClick={onClose} label={t('mobile.controls.close')} />
         )}
       </div>
     </div>
