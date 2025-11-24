@@ -79,7 +79,7 @@ export function ExerciseSheet({
 
   return (
     <div 
-      className="fixed inset-0 z-[90] bg-black/60 flex items-end backdrop-blur-sm"
+      className="fixed inset-0 z-[90] bg-gray-900 flex items-end"
       onClick={(e) => {
         // Don't close if currently dragging
         if (!isDragging) {
