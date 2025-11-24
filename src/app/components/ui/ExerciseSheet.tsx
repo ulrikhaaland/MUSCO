@@ -155,7 +155,6 @@ export function ExerciseSheet({
             )}
           </div>
         </div>
-      </div>
         
       {/* Fixed Footer - Video Button and Close */}
       <div className="sticky bottom-0 border-t border-gray-800 p-4 bg-gray-900">
