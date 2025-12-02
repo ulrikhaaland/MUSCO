@@ -310,10 +310,11 @@ export function useHumanAPI({
 
     // Priority: If a specific part is present, select ONLY the part (not the group)
     if (selectedPartRef.current) {
-      // Select only the specific part
-      console.log('[useHumanAPI] Selecting specific part:', selectedPartRef.current.objectId);
-      selectionMap = { [selectedPartRef.current.objectId]: true } as Record<string, boolean>;
-      zoomId = selectedPartRef.current.objectId;
+      // Select only the specific part - apply gender prefix to objectId
+      const genderedPartId = getGenderedId(selectedPartRef.current.objectId, gender);
+      console.log('[useHumanAPI] Selecting specific part:', selectedPartRef.current.objectId, '-> gendered:', genderedPartId);
+      selectionMap = { [genderedPartId]: true } as Record<string, boolean>;
+      zoomId = genderedPartId;
       if (!isXrayEnabledRef.current) {
         humanRef.current.send('scene.enableXray', () => {});
         isXrayEnabledRef.current = true;
@@ -336,7 +337,8 @@ export function useHumanAPI({
       // Set the programmatic selection flag to prevent event handlers from overriding
       expectingProgrammaticSelectionRef.current = true;
       if (selectedPartRef.current) {
-        programmaticSelectionIdRef.current = selectedPartRef.current.objectId;
+        // Use gendered ID for programmatic selection tracking
+        programmaticSelectionIdRef.current = getGenderedId(selectedPartRef.current.objectId, gender);
       }
       
       prevSelection.current = {};
