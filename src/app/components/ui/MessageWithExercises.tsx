@@ -5,7 +5,7 @@ import { extractExerciseMarkers } from '@/app/utils/exerciseMarkerParser';
 import { extractBodyPartMarkers } from '@/app/utils/bodyPartMarkerParser';
 import { ExerciseDetailModal } from './ExerciseDetailModal';
 import { AnatomyPart } from '@/app/types/human';
-import { bodyPartGroups } from '@/app/config/bodyPartGroups';
+import { bodyPartGroups, BodyPartGroup } from '@/app/config/bodyPartGroups';
 
 interface MessageWithExercisesProps {
   content: string;
@@ -15,8 +15,8 @@ interface MessageWithExercisesProps {
   className?: string;
   selectedExercise?: Exercise | null;
   onExerciseSelect?: (exercise: Exercise | null) => void;
-  // Body part click handler - part looked up from bodyPartGroups by name
-  onBodyPartClick?: (part: AnatomyPart) => void;
+  // Body part click handler - part and group looked up from bodyPartGroups by name
+  onBodyPartClick?: (part: AnatomyPart, group: BodyPartGroup) => void;
 }
 
 /**
@@ -50,10 +50,10 @@ function findExercise(name: string, exercises: Map<string, Exercise>): Exercise 
 
 /**
  * Helper to find body part by name from bodyPartGroups config
- * Returns the full AnatomyPart object for selection on 3D model
+ * Returns the full AnatomyPart object and its parent group for selection on 3D model
  * Searches ALL body parts regardless of current selection
  */
-function findBodyPartByName(name: string): AnatomyPart | undefined {
+function findBodyPartByName(name: string): { part: AnatomyPart; group: BodyPartGroup } | undefined {
   const normalizedSearch = name.toLowerCase().trim();
   
   // Search all body part groups to find the matching part
@@ -63,7 +63,7 @@ function findBodyPartByName(name: string): AnatomyPart | undefined {
       if (normalizedPartName === normalizedSearch ||
           normalizedPartName.includes(normalizedSearch) ||
           normalizedSearch.includes(normalizedPartName)) {
-        return part;
+        return { part, group };
       }
     }
   }
@@ -191,18 +191,20 @@ export const MessageWithExercises = React.memo(function MessageWithExercises({
           // Check if this is a body part marker
           if (rawText.startsWith('bodypart:')) {
             const bodyPartName = rawText.substring('bodypart:'.length);
-            const bodyPart = findBodyPartByName(bodyPartName);
+            const result = findBodyPartByName(bodyPartName);
             
             // If body part not found, render as plain text
-            if (!bodyPart || !onBodyPartClick) {
+            if (!result || !onBodyPartClick) {
               return <span>{bodyPartName}</span>;
             }
+            
+            const { part, group } = result;
             
             const handleClick = (e: React.MouseEvent | React.TouchEvent) => {
               e.preventDefault();
               e.stopPropagation();
-              // bodyPart is already a full AnatomyPart from bodyPartGroups
-              onBodyPartClick(bodyPart);
+              // Pass both part and group so the group can be selected too
+              onBodyPartClick(part, group);
             };
             
             // Render as clickable badge for body parts (different color from exercises)
@@ -213,14 +215,14 @@ export const MessageWithExercises = React.memo(function MessageWithExercises({
                 onTouchStart={handleClick}
                 role="button"
                 tabIndex={0}
-                aria-label={`Select ${bodyPart.name} on model`}
+                aria-label={`Select ${part.name} on model`}
                 style={{ 
                   WebkitTouchCallout: 'none',
                   WebkitUserSelect: 'none',
                   userSelect: 'none'
                 }}
               >
-                {bodyPart.name}
+                {part.name}
               </span>
             );
           }

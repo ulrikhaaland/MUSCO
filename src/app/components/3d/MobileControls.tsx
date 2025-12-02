@@ -69,8 +69,16 @@ export default function MobileControls({
   const [isMobile, setIsMobile] = useState(false);
   const [controlsBottom] = useState('5rem');
   
-  // Get setSelectedPart from AppContext for body part selection
-  const { setSelectedPart } = useApp();
+  // Get setSelectedPart and setSelectedGroup from AppContext for body part selection
+  const { setSelectedPart, setSelectedGroup } = useApp();
+  
+  // Handler for body part click from chat - selects both the group and the part
+  const handleBodyPartClick = (part: AnatomyPart, group: BodyPartGroup) => {
+    // First select the group (this ensures the model is in the right state)
+    setSelectedGroup(group, true);
+    // Then select the specific part
+    setSelectedPart(part);
+  };
   
   // Use consolidated chat container logic
   const {
@@ -399,7 +407,7 @@ export default function MobileControls({
                     isMobile={isMobile}
                     onResend={handleResendMessage}
                     containerHeight={overlayContentHeight}
-                    onBodyPartClick={setSelectedPart}
+                    onBodyPartClick={handleBodyPartClick}
                   />
                 </div>
             </div>

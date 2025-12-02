@@ -116,8 +116,8 @@ interface ChatMessagesProps {
   onResend?: (message: ChatMessage) => void;
   disableAutoScroll?: boolean;
   containerHeight?: number;
-  // Body part click handler for selecting on 3D model
-  onBodyPartClick?: (part: AnatomyPart) => void;
+  // Body part click handler for selecting on 3D model (includes group for context)
+  onBodyPartClick?: (part: AnatomyPart, group: BodyPartGroup) => void;
 }
 
 export function ChatMessages({
