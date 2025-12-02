@@ -448,12 +448,14 @@ export default function MobileControls({
                 aria-label="Open chat"
               >
                 <div className="min-w-0 flex-1">
+                  {/* Group name first (parent category) */}
                   <div className="text-sm text-white truncate">
-                    {selectedPart?.name || selectedGroups[0]?.name}
+                    {selectedGroups[0]?.name || selectedPart?.name}
                   </div>
-                  {selectedGroups.length > 0 && (
+                  {/* Part name second (specific selection) */}
+                  {selectedPart && (
                     <div className="text-xs text-gray-400 truncate">
-                      {selectedGroups.map((g) => g.name).join(', ')}
+                      {selectedPart.name}
                     </div>
                   )}
                 </div>
