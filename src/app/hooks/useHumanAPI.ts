@@ -262,7 +262,7 @@ export function useHumanAPI({
   }, []);
 
   // Hydrate model selection from AppContext state (after restoreViewerState)
-  // Track the current selection to detect when it changes (e.g., after restore)
+  // Track the current selection to detect when it changes (e.g., after restore or chat click)
   const prevSelectedGroupsLengthRef = useRef(0);
   const prevSelectedPartIdRef = useRef<string | null>(null);
   
@@ -278,13 +278,20 @@ export function useHumanAPI({
     const currentGroupsLength = selectedGroupsRef.current.length;
     const currentPartId = selectedPartRef.current?.objectId || null;
     
-    // Detect if selection state changed from empty to populated (restoration scenario)
+    // Detect if selection state changed:
+    // 1. From empty to populated (restoration scenario)
+    // 2. Part changed to a different part (chat body part click scenario)
     const selectionChanged = 
       (prevSelectedGroupsLengthRef.current === 0 && currentGroupsLength > 0) ||
-      (prevSelectedPartIdRef.current === null && currentPartId !== null);
+      (prevSelectedPartIdRef.current === null && currentPartId !== null) ||
+      (prevSelectedPartIdRef.current !== null && currentPartId !== null && prevSelectedPartIdRef.current !== currentPartId);
     
-    // Reset hydration flag if selection was restored
+    // Reset hydration flag if selection changed
     if (selectionChanged && didHydrateFromContextRef.current) {
+      console.log('[useHumanAPI] Selection changed, resetting hydration flag', {
+        prevPartId: prevSelectedPartIdRef.current,
+        currentPartId,
+      });
       didHydrateFromContextRef.current = false;
     }
     
