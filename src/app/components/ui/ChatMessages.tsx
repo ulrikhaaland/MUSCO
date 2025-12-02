@@ -1142,6 +1142,7 @@ export function ChatMessages({
                   {msg.role === 'assistant' ? (
                     <div className="prose prose-invert max-w-none prose-p:my-2 prose-pre:my-0 prose-pre:leading-none prose-strong:text-indigo-300 prose-strong:font-bold">
                       <MessageWithExercises
+                        key={`msg-${index}-${msg.content.substring(0, 50)}`}
                         content={msg.content}
                         exercises={inlineExercises}
                         onVideoClick={onVideoClick}
@@ -1286,6 +1287,7 @@ export function ChatMessages({
                       <div className="px-4 py-2 rounded-lg bg-gray-800 mr-4">
                         <div className="prose prose-invert max-w-none prose-p:my-2 prose-pre:my-0 prose-pre:leading-none prose-strong:text-indigo-300 prose-strong:font-bold">
                           <MessageWithExercises
+                            key={`streaming-msg-${messages.length - 1}`}
                             content={messages[messages.length - 1].content}
                             exercises={inlineExercises}
                             onVideoClick={onVideoClick}

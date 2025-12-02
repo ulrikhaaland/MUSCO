@@ -54,7 +54,13 @@ export const MessageWithExercises = React.memo(function MessageWithExercises({
   className,
 }: MessageWithExercisesProps) {
   const [selectedExercise, setSelectedExercise] = React.useState<Exercise | null>(null);
+  const selectedExerciseRef = React.useRef<Exercise | null>(null);
   const markers = extractExerciseMarkers(content);
+  
+  // Keep ref in sync with state
+  React.useEffect(() => {
+    selectedExerciseRef.current = selectedExercise;
+  }, [selectedExercise]);
   
   // Debug: Log when modal state changes or component remounts
   React.useEffect(() => {
@@ -65,11 +71,11 @@ export const MessageWithExercises = React.memo(function MessageWithExercises({
   
   React.useEffect(() => {
     return () => {
-      if (selectedExercise) {
+      if (selectedExerciseRef.current) {
         console.log('[MessageWithExercises] Component unmounting while modal was open!');
       }
     };
-  }, [selectedExercise]);
+  }, []);
 
   // If no markers, render markdown normally
   if (markers.length === 0) {
@@ -179,4 +185,4 @@ export const MessageWithExercises = React.memo(function MessageWithExercises({
     </>
   );
 });
-// Cache bust: 1762011964
+// Cache bust: 1762011965
