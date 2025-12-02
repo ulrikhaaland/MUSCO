@@ -5,11 +5,7 @@ import { extractExerciseMarkers } from '@/app/utils/exerciseMarkerParser';
 import { extractBodyPartMarkers } from '@/app/utils/bodyPartMarkerParser';
 import { ExerciseDetailModal } from './ExerciseDetailModal';
 import { AnatomyPart } from '@/app/types/human';
-
-interface AvailableBodyPart {
-  name: string;
-  objectId: string;
-}
+import { bodyPartGroups } from '@/app/config/bodyPartGroups';
 
 interface MessageWithExercisesProps {
   content: string;
@@ -19,8 +15,8 @@ interface MessageWithExercisesProps {
   className?: string;
   selectedExercise?: Exercise | null;
   onExerciseSelect?: (exercise: Exercise | null) => void;
-  // Body part selection support
-  availableBodyParts?: AvailableBodyPart[];
+  // Body part selection support (just names - objectId looked up from bodyPartGroups)
+  availableBodyPartNames?: string[];
   onBodyPartClick?: (part: AnatomyPart) => void;
 }
 
@@ -54,20 +50,31 @@ function findExercise(name: string, exercises: Map<string, Exercise>): Exercise 
 }
 
 /**
- * Helper to find body part by name with fuzzy matching
+ * Helper to find body part by name from bodyPartGroups config
+ * Returns the full AnatomyPart object for selection on 3D model
  */
-function findBodyPart(name: string, parts: AvailableBodyPart[]): AvailableBodyPart | undefined {
+function findBodyPartByName(name: string, availableNames: string[]): AnatomyPart | undefined {
   const normalizedSearch = name.toLowerCase().trim();
   
-  // Try exact match first
-  const exactMatch = parts.find(p => p.name.toLowerCase() === normalizedSearch);
-  if (exactMatch) return exactMatch;
+  // First check if this name is in the available list (fuzzy)
+  const isAvailable = availableNames.some(n => {
+    const normalizedName = n.toLowerCase().trim();
+    return normalizedName === normalizedSearch || 
+           normalizedName.includes(normalizedSearch) || 
+           normalizedSearch.includes(normalizedName);
+  });
   
-  // Try fuzzy match
-  for (const part of parts) {
-    const normalizedName = part.name.toLowerCase().trim();
-    if (normalizedName.includes(normalizedSearch) || normalizedSearch.includes(normalizedName)) {
-      return part;
+  if (!isAvailable) return undefined;
+  
+  // Search all body part groups to find the matching part
+  for (const group of Object.values(bodyPartGroups)) {
+    for (const part of group.parts) {
+      const normalizedPartName = part.name.toLowerCase().trim();
+      if (normalizedPartName === normalizedSearch ||
+          normalizedPartName.includes(normalizedSearch) ||
+          normalizedSearch.includes(normalizedPartName)) {
+        return part;
+      }
     }
   }
   
@@ -89,7 +96,7 @@ export const MessageWithExercises = React.memo(function MessageWithExercises({
   className,
   selectedExercise: externalSelectedExercise,
   onExerciseSelect,
-  availableBodyParts = [],
+  availableBodyPartNames = [],
   onBodyPartClick,
 }: MessageWithExercisesProps) {
   const exerciseMarkers = extractExerciseMarkers(content);
@@ -195,52 +202,26 @@ export const MessageWithExercises = React.memo(function MessageWithExercises({
           // Check if this is a body part marker
           if (rawText.startsWith('bodypart:')) {
             const bodyPartName = rawText.substring('bodypart:'.length);
-            const bodyPart = findBodyPart(bodyPartName, availableBodyParts);
+            const bodyPart = findBodyPartByName(bodyPartName, availableBodyPartNames);
             
             // If body part not found, render as plain text
             if (!bodyPart || !onBodyPartClick) {
               return <span>{bodyPartName}</span>;
             }
             
-            const handleTouch = (e: React.TouchEvent) => {
+            const handleClick = (e: React.MouseEvent | React.TouchEvent) => {
               e.preventDefault();
               e.stopPropagation();
-              // Create AnatomyPart from the available body part data
-              const anatomyPart: AnatomyPart = {
-                objectId: bodyPart.objectId,
-                name: bodyPart.name,
-                description: '',
-                available: true,
-                shown: true,
-                selected: false,
-                parent: '',
-                children: [],
-              };
-              onBodyPartClick(anatomyPart);
-            };
-
-            const handleMouseDown = (e: React.MouseEvent) => {
-              e.preventDefault();
-              e.stopPropagation();
-              const anatomyPart: AnatomyPart = {
-                objectId: bodyPart.objectId,
-                name: bodyPart.name,
-                description: '',
-                available: true,
-                shown: true,
-                selected: false,
-                parent: '',
-                children: [],
-              };
-              onBodyPartClick(anatomyPart);
+              // bodyPart is already a full AnatomyPart from bodyPartGroups
+              onBodyPartClick(bodyPart);
             };
             
             // Render as clickable badge for body parts (different color from exercises)
             return (
               <span 
                 className="not-italic px-1.5 py-0.5 rounded bg-emerald-600/30 text-white font-medium border border-emerald-500/40 select-none cursor-pointer hover:bg-emerald-600/50 hover:border-emerald-400 transition-colors active:bg-emerald-600/70"
-                onMouseDown={handleMouseDown}
-                onTouchStart={handleTouch}
+                onMouseDown={handleClick}
+                onTouchStart={handleClick}
                 role="button"
                 tabIndex={0}
                 aria-label={`Select ${bodyPart.name} on model`}

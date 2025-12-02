@@ -99,7 +99,7 @@ export default function MobileControls({
     getPartDisplayName,
     assistantResponse,
     streamError,
-    availableBodyParts,
+    availableBodyPartNames,
   } = useChatContainer({
     selectedPart,
     selectedGroups,
@@ -400,7 +400,7 @@ export default function MobileControls({
                     isMobile={isMobile}
                     onResend={handleResendMessage}
                     containerHeight={overlayContentHeight}
-                    availableBodyParts={availableBodyParts}
+                    availableBodyPartNames={availableBodyPartNames}
                     onBodyPartClick={setSelectedPart}
                   />
                 </div>

@@ -116,8 +116,8 @@ interface ChatMessagesProps {
   onResend?: (message: ChatMessage) => void;
   disableAutoScroll?: boolean;
   containerHeight?: number;
-  // Body part selection support
-  availableBodyParts?: Array<{ name: string; objectId: string }>;
+  // Body part selection support (just names - objectId looked up from bodyPartGroups)
+  availableBodyPartNames?: string[];
   onBodyPartClick?: (part: AnatomyPart) => void;
 }
 
@@ -145,7 +145,7 @@ export function ChatMessages({
   onResend,
   disableAutoScroll = true,
   containerHeight,
-  availableBodyParts = [],
+  availableBodyPartNames = [],
   onBodyPartClick,
 }: ChatMessagesProps) {
   const { saveViewerState } = useApp();
@@ -1130,7 +1130,7 @@ export function ChatMessages({
                         className="text-base leading-relaxed"
                         selectedExercise={selectedExercise}
                         onExerciseSelect={setSelectedExercise}
-                        availableBodyParts={availableBodyParts}
+                        availableBodyPartNames={availableBodyPartNames}
                         onBodyPartClick={onBodyPartClick}
                       />
                       {msg.hasError && (
@@ -1279,7 +1279,7 @@ export function ChatMessages({
                             className="text-base leading-relaxed"
                             selectedExercise={selectedExercise}
                             onExerciseSelect={setSelectedExercise}
-                            availableBodyParts={availableBodyParts}
+                            availableBodyPartNames={availableBodyPartNames}
                             onBodyPartClick={onBodyPartClick}
                           />
 

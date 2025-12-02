@@ -62,8 +62,6 @@ export interface ChatPayload {
   selectedBodyPart?: AnatomyPart;
   selectedBodyGroupName: string;
   bodyPartsInSelectedGroup: string[];
-  // Body parts available for selection with their objectIds (for clickable body part markers)
-  availableBodyParts?: Array<{ name: string; objectId: string }>;
   previousQuestions?: Question[];
   language?: string; // User's preferred language (en/nb)
   diagnosisAssistantResponse?: DiagnosisAssistantResponse; // Current diagnostic information

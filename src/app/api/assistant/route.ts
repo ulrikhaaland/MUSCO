@@ -132,7 +132,7 @@ export async function POST(request: Request) {
         const specificBodyParts = JSON.stringify(SPECIFIC_BODY_PARTS, null, 2);
         
         // Available body parts for clickable markers (from selected group)
-        const availableBodyParts = payload?.availableBodyParts?.map(p => p.name).join(', ') || '(none selected)';
+        const availableBodyParts = payload?.bodyPartsInSelectedGroup?.join(', ') || '(none selected)';
         
         const promptWithContext = basePrompt
           .replace(/\{\{BODY_PART\}\}/g, bodyPart)
