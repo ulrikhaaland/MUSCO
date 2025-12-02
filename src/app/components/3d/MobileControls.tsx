@@ -74,15 +74,19 @@ export default function MobileControls({
   
   // Handler for body part click from chat - selects both the group and the part
   const handleBodyPartClick = (part: AnatomyPart, group: BodyPartGroup) => {
-    // Only change group if it's different (setSelectedGroup clears selectedPart)
-    const currentGroup = selectedGroups[0];
-    if (!currentGroup || currentGroup.id !== group.id) {
-      setSelectedGroup(group, true);
-    }
-    // Set the specific part
-    setSelectedPart(part);
-    // Close the chat overlay so user can see the model
+    // Close the chat overlay first so user sees the model
     onCloseOverlay?.();
+    
+    // Delay selection so animation happens after chat closes
+    setTimeout(() => {
+      // Only change group if it's different (setSelectedGroup clears selectedPart)
+      const currentGroup = selectedGroups[0];
+      if (!currentGroup || currentGroup.id !== group.id) {
+        setSelectedGroup(group, true);
+      }
+      // Set the specific part
+      setSelectedPart(part);
+    }, 200);
   };
   
   // Use consolidated chat container logic
