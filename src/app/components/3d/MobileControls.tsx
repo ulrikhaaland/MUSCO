@@ -78,8 +78,11 @@ export default function MobileControls({
     setSelectedGroup(group, true);
     // Then select the specific part
     setSelectedPart(part);
-    // Close the chat overlay so user can see the model
-    onCloseOverlay?.();
+    // Close the chat overlay after a brief delay to let the model update first
+    // This prevents a black flash between overlay close and model render
+    setTimeout(() => {
+      onCloseOverlay?.();
+    }, 100);
   };
   
   // Use consolidated chat container logic
