@@ -29,7 +29,18 @@ export default function PartPopup({
   onBodyGroupSelected,
   onBodyPartSelected,
 }: PartPopupProps) {
-  const { saveViewerState } = useApp();
+  const { saveViewerState, setSelectedPart, setSelectedGroup, selectedGroups } = useApp();
+  
+  // Handler for body part click from chat - selects both the group and the part
+  const handleBodyPartClick = (clickedPart: AnatomyPart, group: BodyPartGroup) => {
+    // Only change group if it's different (setSelectedGroup clears selectedPart)
+    const currentGroup = selectedGroups[0];
+    if (!currentGroup || currentGroup.id !== group.id) {
+      setSelectedGroup(group, true);
+    }
+    // Set the specific part
+    setSelectedPart(clickedPart);
+  };
   
   // Use consolidated chat container logic
   const {
@@ -218,6 +229,7 @@ export default function PartPopup({
         groups={groups}
         onResend={handleResendMessage}
         disableAutoScroll={true}
+        onBodyPartClick={handleBodyPartClick}
       />
 
       <div className="mt-4 border-t border-gray-700 pt-4 flex-shrink-0">
