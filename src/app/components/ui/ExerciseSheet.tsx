@@ -42,24 +42,24 @@ export function ExerciseSheet({
 
   const sheetContent = (
     <div className="fixed inset-0 z-[90] bg-gray-900 flex flex-col">
-      {/* Header */}
+          {/* Header */}
       <div className="sticky top-0 bg-gray-900 z-10 border-b border-gray-800">
         <div className="px-4 py-4">
           <h3 className="text-white font-semibold text-lg mb-1">{exercise.name}</h3>
-          {exercise.bodyPart && (
-            <span className="inline-block px-2 py-0.5 rounded bg-indigo-600/20 text-indigo-300 text-xs border border-indigo-500/40">
-              {exercise.bodyPart}
-            </span>
-          )}
+              {exercise.bodyPart && (
+                <span className="inline-block px-2 py-0.5 rounded bg-indigo-600/20 text-indigo-300 text-xs border border-indigo-500/40">
+                  {exercise.bodyPart}
+                </span>
+              )}
+          </div>
         </div>
-      </div>
 
-      {/* Content - Scrollable */}
-      <div 
-        ref={contentRef}
-        className="flex-1 overflow-y-auto overscroll-contain"
+        {/* Content - Scrollable */}
+        <div 
+          ref={contentRef}
+          className="flex-1 overflow-y-auto overscroll-contain"
         style={{ WebkitOverflowScrolling: 'touch' }}
-      >
+        >
           <div className="p-4 space-y-4 pb-24">
             {/* Metrics */}
             <div className="flex flex-wrap gap-2">
@@ -149,7 +149,7 @@ export function ExerciseSheet({
       {/* Fixed Footer - Matches BottomSheetFooter styling */}
       <div className="border-t border-gray-700 pt-2 pb-1 flex-shrink-0 bg-gray-900 px-3">
         <div className="flex items-center gap-2">
-          {exercise.videoUrl && (
+        {exercise.videoUrl && (
             <button
               onClick={() => onVideoClick(exercise)}
               disabled={loadingVideo}
@@ -164,7 +164,7 @@ export function ExerciseSheet({
             </button>
           )}
           <CloseButton onClick={onClose} label="Close exercise" />
-        </div>
+          </div>
       </div>
     </div>
   );

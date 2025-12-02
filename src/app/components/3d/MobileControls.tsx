@@ -16,6 +16,7 @@ import MobileControlButtons from './MobileControlButtons';
 import { AnatomyPart } from '@/app/types/human';
 import { ProgramType } from '../../../../shared/types';
 import { VideoModal } from '../ui/VideoModal';
+import { useApp } from '@/app/context/AppContext';
 
 interface MobileControlsProps {
   isRotating: boolean;
@@ -68,6 +69,9 @@ export default function MobileControls({
   const [isMobile, setIsMobile] = useState(false);
   const [controlsBottom] = useState('5rem');
   
+  // Get setSelectedPart from AppContext for body part selection
+  const { setSelectedPart } = useApp();
+  
   // Use consolidated chat container logic
   const {
     router,
@@ -95,6 +99,7 @@ export default function MobileControls({
     getPartDisplayName,
     assistantResponse,
     streamError,
+    availableBodyParts,
   } = useChatContainer({
     selectedPart,
     selectedGroups,
@@ -394,7 +399,9 @@ export default function MobileControls({
                     messagesRef={messagesRef}
                     isMobile={isMobile}
                     onResend={handleResendMessage}
-                containerHeight={overlayContentHeight}
+                    containerHeight={overlayContentHeight}
+                    availableBodyParts={availableBodyParts}
+                    onBodyPartClick={setSelectedPart}
                   />
                 </div>
             </div>

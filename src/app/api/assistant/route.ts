@@ -131,10 +131,14 @@ export async function POST(request: Request) {
         const bodyPartGroups = BODY_PART_GROUPS.join(', ');
         const specificBodyParts = JSON.stringify(SPECIFIC_BODY_PARTS, null, 2);
         
+        // Available body parts for clickable markers (from selected group)
+        const availableBodyParts = payload?.availableBodyParts?.map(p => p.name).join(', ') || '(none selected)';
+        
         const promptWithContext = basePrompt
           .replace(/\{\{BODY_PART\}\}/g, bodyPart)
           .replace(/\{\{BODY_PART_GROUPS\}\}/g, bodyPartGroups)
-          .replace(/\{\{SPECIFIC_BODY_PARTS\}\}/g, specificBodyParts);
+          .replace(/\{\{SPECIFIC_BODY_PARTS\}\}/g, specificBodyParts)
+          .replace(/\{\{AVAILABLE_BODY_PARTS\}\}/g, availableBodyParts);
         
         const systemMessage = `${languageLock}\n${promptWithContext}`;
 

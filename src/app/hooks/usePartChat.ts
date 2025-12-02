@@ -203,6 +203,11 @@ export function usePartChat({
           : undefined,
         bodyPartsInSelectedGroup:
           selectedGroups[0]?.parts.map((part) => part.name) || [],
+        // Include all body part names with their objectIds for the LLM to reference
+        availableBodyParts: selectedGroups[0]?.parts.map((part) => ({
+          name: part.name,
+          objectId: part.objectId,
+        })) || [],
       previousQuestions: deduped,
       // guidance to assistants: more options on desktop
       maxFollowUpOptions: isMobile ? 3 : 6,

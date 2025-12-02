@@ -105,6 +105,12 @@ export function useChatContainer({
     resetChat();
   };
 
+  // Get available body parts from the selected group for clickable markers
+  const availableBodyParts = selectedGroups[0]?.parts.map((part) => ({
+    name: part.name,
+    objectId: part.objectId,
+  })) || [];
+
   return {
     // Auth/Router
     router,
@@ -141,6 +147,9 @@ export function useChatContainer({
     getPartDisplayName,
     assistantResponse,
     streamError,
+    
+    // Body part selection
+    availableBodyParts,
   };
 }
 

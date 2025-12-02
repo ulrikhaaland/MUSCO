@@ -288,6 +288,7 @@ const translations = {
   'mobile.controls.next': 'Next →',
   'mobile.controls.back': '← Back',
   'mobile.controls.gotIt': 'Got It',
+  'mobile.controls.close': 'Close',
   'mobile.controls.tour.rotate': 'Rotate the model',
   'mobile.controls.tour.reset': 'Reset selections, zoom, and viewing position',
   'mobile.controls.tour.gender': 'Toggle between male / female anatomy',

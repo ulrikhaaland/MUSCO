@@ -250,6 +250,7 @@ const translations = {
   'mobile.controls.next': 'Neste →',
   'mobile.controls.back': '← Tilbake',
   'mobile.controls.gotIt': 'Forstått',
+  'mobile.controls.close': 'Lukk',
   'mobile.controls.tour.rotate': 'Roter modellen',
   'mobile.controls.tour.reset': 'Tilbakestill valg, zoom og visningsposisjon',
   'mobile.controls.tour.gender': 'Bytt mellom mannlig / kvinnelig anatomi',
