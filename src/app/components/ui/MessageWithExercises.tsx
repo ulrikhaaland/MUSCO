@@ -15,8 +15,7 @@ interface MessageWithExercisesProps {
   className?: string;
   selectedExercise?: Exercise | null;
   onExerciseSelect?: (exercise: Exercise | null) => void;
-  // Body part selection support (just names - objectId looked up from bodyPartGroups)
-  availableBodyPartNames?: string[];
+  // Body part click handler - part looked up from bodyPartGroups by name
   onBodyPartClick?: (part: AnatomyPart) => void;
 }
 
@@ -52,19 +51,10 @@ function findExercise(name: string, exercises: Map<string, Exercise>): Exercise 
 /**
  * Helper to find body part by name from bodyPartGroups config
  * Returns the full AnatomyPart object for selection on 3D model
+ * Searches ALL body parts regardless of current selection
  */
-function findBodyPartByName(name: string, availableNames: string[]): AnatomyPart | undefined {
+function findBodyPartByName(name: string): AnatomyPart | undefined {
   const normalizedSearch = name.toLowerCase().trim();
-  
-  // First check if this name is in the available list (fuzzy)
-  const isAvailable = availableNames.some(n => {
-    const normalizedName = n.toLowerCase().trim();
-    return normalizedName === normalizedSearch || 
-           normalizedName.includes(normalizedSearch) || 
-           normalizedSearch.includes(normalizedName);
-  });
-  
-  if (!isAvailable) return undefined;
   
   // Search all body part groups to find the matching part
   for (const group of Object.values(bodyPartGroups)) {
@@ -96,7 +86,6 @@ export const MessageWithExercises = React.memo(function MessageWithExercises({
   className,
   selectedExercise: externalSelectedExercise,
   onExerciseSelect,
-  availableBodyPartNames = [],
   onBodyPartClick,
 }: MessageWithExercisesProps) {
   const exerciseMarkers = extractExerciseMarkers(content);
@@ -202,7 +191,7 @@ export const MessageWithExercises = React.memo(function MessageWithExercises({
           // Check if this is a body part marker
           if (rawText.startsWith('bodypart:')) {
             const bodyPartName = rawText.substring('bodypart:'.length);
-            const bodyPart = findBodyPartByName(bodyPartName, availableBodyPartNames);
+            const bodyPart = findBodyPartByName(bodyPartName);
             
             // If body part not found, render as plain text
             if (!bodyPart || !onBodyPartClick) {
