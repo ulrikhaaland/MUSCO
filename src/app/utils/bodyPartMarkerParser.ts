@@ -4,6 +4,9 @@
  * Uses double curly braces to differentiate from exercise markers [[]]
  */
 
+import { bodyPartGroups, BodyPartGroup } from '@/app/config/bodyPartGroups';
+import { AnatomyPart } from '@/app/types/human';
+
 export interface BodyPartMarker {
   name: string;
   startIndex: number;
@@ -46,5 +49,28 @@ export function getUniqueBodyPartNames(text: string): string[] {
  */
 export function hasBodyPartMarkers(text: string): boolean {
   return /\{\{([^}]+)\}\}/.test(text);
+}
+
+/**
+ * Finds a body part by name from bodyPartGroups config
+ * Returns the full AnatomyPart object and its parent group for selection on 3D model
+ * Searches ALL body parts with fuzzy matching
+ */
+export function findBodyPartByName(name: string): { part: AnatomyPart; group: BodyPartGroup } | undefined {
+  const normalizedSearch = name.toLowerCase().trim();
+  
+  // Search all body part groups to find the matching part
+  for (const group of Object.values(bodyPartGroups)) {
+    for (const part of group.parts) {
+      const normalizedPartName = part.name.toLowerCase().trim();
+      if (normalizedPartName === normalizedSearch ||
+          normalizedPartName.includes(normalizedSearch) ||
+          normalizedSearch.includes(normalizedPartName)) {
+        return { part, group };
+      }
+    }
+  }
+  
+  return undefined;
 }
 

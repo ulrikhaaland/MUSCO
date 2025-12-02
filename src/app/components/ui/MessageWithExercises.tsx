@@ -2,10 +2,10 @@ import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import { Exercise } from '@/app/types/program';
 import { extractExerciseMarkers } from '@/app/utils/exerciseMarkerParser';
-import { extractBodyPartMarkers } from '@/app/utils/bodyPartMarkerParser';
+import { extractBodyPartMarkers, findBodyPartByName } from '@/app/utils/bodyPartMarkerParser';
 import { ExerciseDetailModal } from './ExerciseDetailModal';
 import { AnatomyPart } from '@/app/types/human';
-import { bodyPartGroups, BodyPartGroup } from '@/app/config/bodyPartGroups';
+import { BodyPartGroup } from '@/app/config/bodyPartGroups';
 
 interface MessageWithExercisesProps {
   content: string;
@@ -42,29 +42,6 @@ function findExercise(name: string, exercises: Map<string, Exercise>): Exercise 
     // Check if search term is contained in database name (for partial matches)
     if (normalizedDbName.includes(normalizedSearch) || normalizedSearch.includes(normalizedDbName)) {
       return exercise;
-    }
-  }
-  
-  return undefined;
-}
-
-/**
- * Helper to find body part by name from bodyPartGroups config
- * Returns the full AnatomyPart object and its parent group for selection on 3D model
- * Searches ALL body parts regardless of current selection
- */
-function findBodyPartByName(name: string): { part: AnatomyPart; group: BodyPartGroup } | undefined {
-  const normalizedSearch = name.toLowerCase().trim();
-  
-  // Search all body part groups to find the matching part
-  for (const group of Object.values(bodyPartGroups)) {
-    for (const part of group.parts) {
-      const normalizedPartName = part.name.toLowerCase().trim();
-      if (normalizedPartName === normalizedSearch ||
-          normalizedPartName.includes(normalizedSearch) ||
-          normalizedSearch.includes(normalizedPartName)) {
-        return { part, group };
-      }
     }
   }
   
