@@ -110,21 +110,18 @@ export const MessageWithExercises = React.memo(function MessageWithExercises({
           
           // If exercise not found in database, render as plain italic text
           if (!exercise) {
-            console.log('[MessageWithExercises] Exercise not found:', exerciseName);
             return <em>{children as any}</em>;
           }
           
           const handleTouch = (e: React.TouchEvent) => {
             e.preventDefault();
             e.stopPropagation();
-            console.log('[MessageWithExercises] Touch event on:', exerciseName, '-> matched:', exercise.name);
             onExerciseSelect?.(exercise);
           };
 
           const handleMouseDown = (e: React.MouseEvent) => {
             e.preventDefault();
             e.stopPropagation();
-            console.log('[MessageWithExercises] MouseDown event on:', exerciseName, '-> matched:', exercise.name);
             onExerciseSelect?.(exercise);
           };
           
@@ -168,4 +165,3 @@ export const MessageWithExercises = React.memo(function MessageWithExercises({
     </>
   );
 });
-// Cache bust: 1762011966
