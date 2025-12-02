@@ -78,6 +78,8 @@ export default function MobileControls({
     setSelectedGroup(group, true);
     // Then select the specific part
     setSelectedPart(part);
+    // Close the chat overlay so user can see the model
+    onCloseOverlay?.();
   };
   
   // Use consolidated chat container logic
