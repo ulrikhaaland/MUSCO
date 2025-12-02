@@ -123,7 +123,7 @@ export async function POST(req: NextRequest) {
     if (wantsStream) {
       const stream = await client.responses.stream({
         model: EXPLORE_MODEL,
-        // reasoning: { effort: 'minimal' } as any,
+        reasoning: { effort: 'minimal' } as any,
         input: [
           { role: 'system', content: SYSTEM_PROMPT_TEXT },
           { role: 'user', content: JSON.stringify({
