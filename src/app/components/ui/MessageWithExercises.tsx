@@ -10,6 +10,8 @@ interface MessageWithExercisesProps {
   onVideoClick?: (exercise: Exercise) => void;
   loadingVideoExercise?: string | null;
   className?: string;
+  selectedExercise?: Exercise | null;
+  onExerciseSelect?: (exercise: Exercise | null) => void;
 }
 
 /**
@@ -45,6 +47,7 @@ function findExercise(name: string, exercises: Map<string, Exercise>): Exercise 
  * Renders message text with inline exercise chips
  * Exercises are clickable to show detail modal
  * Memoized to prevent re-renders during streaming from interrupting clicks
+ * Modal state is managed externally to survive component remounts
  */
 export const MessageWithExercises = React.memo(function MessageWithExercises({
   content,
@@ -52,30 +55,10 @@ export const MessageWithExercises = React.memo(function MessageWithExercises({
   onVideoClick,
   loadingVideoExercise,
   className,
+  selectedExercise: externalSelectedExercise,
+  onExerciseSelect,
 }: MessageWithExercisesProps) {
-  const [selectedExercise, setSelectedExercise] = React.useState<Exercise | null>(null);
-  const selectedExerciseRef = React.useRef<Exercise | null>(null);
   const markers = extractExerciseMarkers(content);
-  
-  // Keep ref in sync with state
-  React.useEffect(() => {
-    selectedExerciseRef.current = selectedExercise;
-  }, [selectedExercise]);
-  
-  // Debug: Log when modal state changes or component remounts
-  React.useEffect(() => {
-    if (selectedExercise) {
-      console.log('[MessageWithExercises] Modal opened for:', selectedExercise.name);
-    }
-  }, [selectedExercise]);
-  
-  React.useEffect(() => {
-    return () => {
-      if (selectedExerciseRef.current) {
-        console.log('[MessageWithExercises] Component unmounting while modal was open!');
-      }
-    };
-  }, []);
 
   // If no markers, render markdown normally
   if (markers.length === 0) {
@@ -135,14 +118,14 @@ export const MessageWithExercises = React.memo(function MessageWithExercises({
             e.preventDefault();
             e.stopPropagation();
             console.log('[MessageWithExercises] Touch event on:', exerciseName, '-> matched:', exercise.name);
-            setSelectedExercise(exercise);
+            onExerciseSelect?.(exercise);
           };
 
           const handleMouseDown = (e: React.MouseEvent) => {
             e.preventDefault();
             e.stopPropagation();
             console.log('[MessageWithExercises] MouseDown event on:', exerciseName, '-> matched:', exercise.name);
-            setSelectedExercise(exercise);
+            onExerciseSelect?.(exercise);
           };
           
           // Render as clickable badge for exercises in database
@@ -169,20 +152,20 @@ export const MessageWithExercises = React.memo(function MessageWithExercises({
       {contentWithChips}
     </ReactMarkdown>
     
-    {/* Exercise Detail Modal */}
-    {selectedExercise && (
+    {/* Exercise Detail Modal - Controlled by external state */}
+    {externalSelectedExercise && onExerciseSelect && (
       <ExerciseDetailModal
-        key={selectedExercise.id || selectedExercise.name}
-        exercise={selectedExercise}
-        onClose={() => setSelectedExercise(null)}
+        key={externalSelectedExercise.id || externalSelectedExercise.name}
+        exercise={externalSelectedExercise}
+        onClose={() => onExerciseSelect(null)}
         onVideoClick={(ex) => {
           // Keep detail modal open, just trigger video
           onVideoClick?.(ex);
         }}
-        loadingVideo={loadingVideoExercise === (selectedExercise.name || selectedExercise.id)}
+        loadingVideo={loadingVideoExercise === (externalSelectedExercise.name || externalSelectedExercise.id)}
       />
     )}
     </>
   );
 });
-// Cache bust: 1762011965
+// Cache bust: 1762011966

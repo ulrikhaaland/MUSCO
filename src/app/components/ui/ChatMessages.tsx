@@ -153,6 +153,9 @@ export function ChatMessages({
 
   const [keepSpacer, setKeepSpacer] = useState(false);
 
+  // Global state for selected exercise (survives component remounts)
+  const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
+
   const [visibleQuestions, setVisibleQuestions] = useState<Set<string>>(
     new Set()
   );
@@ -1148,6 +1151,8 @@ export function ChatMessages({
                         onVideoClick={onVideoClick}
                         loadingVideoExercise={loadingVideoExercise}
                         className="text-base leading-relaxed"
+                        selectedExercise={selectedExercise}
+                        onExerciseSelect={setSelectedExercise}
                       />
                       {msg.hasError && (
                         <div>
@@ -1293,6 +1298,8 @@ export function ChatMessages({
                             onVideoClick={onVideoClick}
                             loadingVideoExercise={loadingVideoExercise}
                             className="text-base leading-relaxed"
+                            selectedExercise={selectedExercise}
+                            onExerciseSelect={setSelectedExercise}
                           />
 
                           {/* Show error message if stream error occurred */}
