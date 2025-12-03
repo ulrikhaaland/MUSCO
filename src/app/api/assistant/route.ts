@@ -18,6 +18,10 @@ import { getExploreSystemPrompt } from '@/app/api/prompts/explorePrompt';
 import { chatModeRouterPrompt } from '@/app/api/prompts/routePrompt';
 import { ROUTER_MODEL } from '@/app/api/assistant/models';
 import { StreamParser } from '@/app/api/assistant/stream-parser';
+import { bodyPartGroups } from '@/app/config/bodyPartGroups';
+
+// Get all actual group names from bodyPartGroups config (for clickable markers)
+const ALL_GROUP_NAMES = Object.values(bodyPartGroups).map(g => g.name);
 
 export async function POST(request: Request) {
   const handlerStartTime = performance.now();
@@ -128,15 +132,18 @@ export async function POST(request: Request) {
         
         // Inject body part context and body part groups data for diagnosis mode
         const bodyPart = payload?.selectedBodyPart?.name || payload?.selectedBodyGroupName || '(not yet selected)';
-        const bodyPartGroups = BODY_PART_GROUPS.join(', ');
+        const bodyPartGroupsForDiagnosis = BODY_PART_GROUPS.join(', ');
         const specificBodyParts = JSON.stringify(SPECIFIC_BODY_PARTS, null, 2);
         
         // Available body parts for clickable markers (from selected group)
         const availableBodyParts = payload?.bodyPartsInSelectedGroup?.join(', ') || '(none selected)';
         
+        // All actual group names for clickable group markers
+        const allGroupNames = ALL_GROUP_NAMES.join(', ');
+        
         const promptWithContext = basePrompt
           .replace(/\{\{BODY_PART\}\}/g, bodyPart)
-          .replace(/\{\{BODY_PART_GROUPS\}\}/g, bodyPartGroups)
+          .replace(/\{\{BODY_PART_GROUPS\}\}/g, allGroupNames)
           .replace(/\{\{SPECIFIC_BODY_PARTS\}\}/g, specificBodyParts)
           .replace(/\{\{AVAILABLE_BODY_PARTS\}\}/g, availableBodyParts);
         
