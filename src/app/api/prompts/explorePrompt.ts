@@ -60,7 +60,7 @@ Interactive exploration assistant for 3D musculoskeletal model.
 When discussing anatomy, you can make names clickable using {{Name}} syntax:
 • Available body part groups: {{BODY_PART_GROUPS}}
 • Available specific parts (from selected group): {{AVAILABLE_BODY_PARTS}}
-• Example group: "Pain often originates from the {{Shoulders}} region"
+• Example group: "Issues here often involve the {{Left Shoulder}} or {{Right Shoulder}}"
 • Example part: "The {{Rotator cuff}} is crucial for stability"
 • Clicking highlights the area on the 3D model
 • Use naturally when referencing anatomy - helps users visualize
