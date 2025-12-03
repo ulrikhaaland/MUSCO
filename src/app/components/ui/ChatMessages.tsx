@@ -118,6 +118,8 @@ interface ChatMessagesProps {
   containerHeight?: number;
   // Body part click handler for selecting on 3D model (includes group for context)
   onBodyPartClick?: (part: AnatomyPart, group: BodyPartGroup) => void;
+  // Group click handler for selecting just the group
+  onGroupClick?: (group: BodyPartGroup) => void;
 }
 
 export function ChatMessages({
@@ -145,6 +147,7 @@ export function ChatMessages({
   disableAutoScroll = true,
   containerHeight,
   onBodyPartClick,
+  onGroupClick,
 }: ChatMessagesProps) {
   const { saveViewerState } = useApp();
   const [showScrollButton, setShowScrollButton] = useState(false);
@@ -1129,6 +1132,7 @@ export function ChatMessages({
                         selectedExercise={selectedExercise}
                         onExerciseSelect={setSelectedExercise}
                         onBodyPartClick={onBodyPartClick}
+                        onGroupClick={onGroupClick}
                       />
                       {msg.hasError && (
                         <div>
@@ -1277,6 +1281,7 @@ export function ChatMessages({
                             selectedExercise={selectedExercise}
                             onExerciseSelect={setSelectedExercise}
                             onBodyPartClick={onBodyPartClick}
+                            onGroupClick={onGroupClick}
                           />
 
                           {/* Show error message if stream error occurred */}

@@ -42,6 +42,14 @@ export default function PartPopup({
     setSelectedPart(clickedPart);
   };
   
+  // Handler for group click from chat - selects just the group
+  const handleGroupClick = (group: BodyPartGroup) => {
+    const currentGroup = selectedGroups[0];
+    if (!currentGroup || currentGroup.id !== group.id) {
+      setSelectedGroup(group, true);
+    }
+  };
+  
   // Use consolidated chat container logic
   const {
     router,
@@ -230,6 +238,7 @@ export default function PartPopup({
         onResend={handleResendMessage}
         disableAutoScroll={true}
         onBodyPartClick={handleBodyPartClick}
+        onGroupClick={handleGroupClick}
       />
 
       <div className="mt-4 border-t border-gray-700 pt-4 flex-shrink-0">

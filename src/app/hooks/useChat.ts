@@ -225,7 +225,7 @@ export function useChat() {
           // Update the Map in place to preserve reference and prevent component remounts
           setInlineExercises((prevMap) => {
             const newMap = new Map(prevMap);
-            data.exercises.forEach((ex: Exercise) => {
+          data.exercises.forEach((ex: Exercise) => {
               newMap.set(ex.name, ex);
             });
             return newMap;

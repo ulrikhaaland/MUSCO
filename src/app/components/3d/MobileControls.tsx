@@ -89,6 +89,20 @@ export default function MobileControls({
     }, 200);
   };
   
+  // Handler for group click from chat - selects just the group
+  const handleGroupClick = (group: BodyPartGroup) => {
+    // Close the chat overlay first so user sees the model
+    onCloseOverlay?.();
+    
+    // Delay selection so animation happens after chat closes
+    setTimeout(() => {
+      const currentGroup = selectedGroups[0];
+      if (!currentGroup || currentGroup.id !== group.id) {
+        setSelectedGroup(group, true);
+      }
+    }, 200);
+  };
+  
   // Use consolidated chat container logic
   const {
     router,
@@ -415,8 +429,9 @@ export default function MobileControls({
                     messagesRef={messagesRef}
                     isMobile={isMobile}
                     onResend={handleResendMessage}
-                    containerHeight={overlayContentHeight}
+                containerHeight={overlayContentHeight}
                     onBodyPartClick={handleBodyPartClick}
+                    onGroupClick={handleGroupClick}
                   />
                 </div>
             </div>

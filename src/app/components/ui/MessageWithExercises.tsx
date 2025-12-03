@@ -2,7 +2,7 @@ import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import { Exercise } from '@/app/types/program';
 import { extractExerciseMarkers } from '@/app/utils/exerciseMarkerParser';
-import { extractBodyPartMarkers, findBodyPartByName } from '@/app/utils/bodyPartMarkerParser';
+import { extractBodyPartMarkers, findBodyPartByName, findGroupByName } from '@/app/utils/bodyPartMarkerParser';
 import { ExerciseDetailModal } from './ExerciseDetailModal';
 import { AnatomyPart } from '@/app/types/human';
 import { BodyPartGroup } from '@/app/config/bodyPartGroups';
@@ -17,6 +17,8 @@ interface MessageWithExercisesProps {
   onExerciseSelect?: (exercise: Exercise | null) => void;
   // Body part click handler - part and group looked up from bodyPartGroups by name
   onBodyPartClick?: (part: AnatomyPart, group: BodyPartGroup) => void;
+  // Group click handler - selects just the group
+  onGroupClick?: (group: BodyPartGroup) => void;
 }
 
 /**
@@ -64,6 +66,7 @@ export const MessageWithExercises = React.memo(function MessageWithExercises({
   selectedExercise: externalSelectedExercise,
   onExerciseSelect,
   onBodyPartClick,
+  onGroupClick,
 }: MessageWithExercisesProps) {
   const exerciseMarkers = extractExerciseMarkers(content);
   const bodyPartMarkers = extractBodyPartMarkers(content);
@@ -126,53 +129,84 @@ export const MessageWithExercises = React.memo(function MessageWithExercises({
           // Check if this is an exercise marker
           if (rawText.startsWith('exercise:')) {
             const exerciseName = rawText.substring('exercise:'.length);
-            const exercise = findExercise(exerciseName, exercises);
-            
+          const exercise = findExercise(exerciseName, exercises);
+          
             // If exercise not found in database, render as plain text
-            if (!exercise) {
+          if (!exercise) {
               return <span>{exerciseName}</span>;
-            }
-            
-            const handleTouch = (e: React.TouchEvent) => {
-              e.preventDefault();
-              e.stopPropagation();
-              onExerciseSelect?.(exercise);
-            };
-
-            const handleMouseDown = (e: React.MouseEvent) => {
-              e.preventDefault();
-              e.stopPropagation();
-              onExerciseSelect?.(exercise);
-            };
-            
-            // Render as clickable badge for exercises in database
-            return (
-              <span 
-                className="not-italic px-1.5 py-0.5 rounded bg-indigo-600/30 text-white font-medium border border-indigo-500/40 select-none cursor-pointer hover:bg-indigo-600/50 hover:border-indigo-400 transition-colors active:bg-indigo-600/70"
-                onMouseDown={handleMouseDown}
-                onTouchStart={handleTouch}
-                role="button"
-                tabIndex={0}
-                aria-label={`View ${exercise.name} details`}
-                style={{ 
-                  WebkitTouchCallout: 'none',
-                  WebkitUserSelect: 'none',
-                  userSelect: 'none'
-                }}
-              >
-                {exercise.name}
-              </span>
-            );
           }
           
-          // Check if this is a body part marker
+          const handleTouch = (e: React.TouchEvent) => {
+            e.preventDefault();
+            e.stopPropagation();
+              onExerciseSelect?.(exercise);
+          };
+
+          const handleMouseDown = (e: React.MouseEvent) => {
+            e.preventDefault();
+            e.stopPropagation();
+              onExerciseSelect?.(exercise);
+          };
+          
+          // Render as clickable badge for exercises in database
+          return (
+            <span 
+              className="not-italic px-1.5 py-0.5 rounded bg-indigo-600/30 text-white font-medium border border-indigo-500/40 select-none cursor-pointer hover:bg-indigo-600/50 hover:border-indigo-400 transition-colors active:bg-indigo-600/70"
+              onMouseDown={handleMouseDown}
+              onTouchStart={handleTouch}
+              role="button"
+              tabIndex={0}
+              aria-label={`View ${exercise.name} details`}
+              style={{ 
+                WebkitTouchCallout: 'none',
+                WebkitUserSelect: 'none',
+                userSelect: 'none'
+              }}
+            >
+              {exercise.name}
+            </span>
+          );
+          }
+          
+          // Check if this is a body part marker (could be a group or specific part)
           if (rawText.startsWith('bodypart:')) {
-            const bodyPartName = rawText.substring('bodypart:'.length);
-            const result = findBodyPartByName(bodyPartName);
+            const markerName = rawText.substring('bodypart:'.length);
+            
+            // First check if it's a group name
+            const matchedGroup = findGroupByName(markerName);
+            if (matchedGroup) {
+              const handleGroupClick = (e: React.MouseEvent | React.TouchEvent) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onGroupClick?.(matchedGroup);
+              };
+              
+              // Render as group badge (cyan/teal color to differentiate from body parts)
+              return (
+                <span 
+                  className={`not-italic px-1.5 py-0.5 rounded bg-cyan-600/30 text-white font-medium border border-cyan-500/40 select-none ${onGroupClick ? 'cursor-pointer hover:bg-cyan-600/50 hover:border-cyan-400 active:bg-cyan-600/70' : ''} transition-colors`}
+                  onMouseDown={onGroupClick ? handleGroupClick : undefined}
+                  onTouchStart={onGroupClick ? handleGroupClick : undefined}
+                  role={onGroupClick ? 'button' : undefined}
+                  tabIndex={onGroupClick ? 0 : undefined}
+                  aria-label={onGroupClick ? `Select ${matchedGroup.name} region on model` : undefined}
+                  style={{ 
+                    WebkitTouchCallout: 'none',
+                    WebkitUserSelect: 'none',
+                    userSelect: 'none'
+                  }}
+                >
+                  {matchedGroup.name}
+                </span>
+              );
+            }
+            
+            // Then check if it's a specific body part
+            const result = findBodyPartByName(markerName);
             
             // If body part not found, render as plain text
             if (!result || !onBodyPartClick) {
-              return <span>{bodyPartName}</span>;
+              return <span>{markerName}</span>;
             }
             
             const { part, group } = result;
@@ -184,7 +218,7 @@ export const MessageWithExercises = React.memo(function MessageWithExercises({
               onBodyPartClick(part, group);
             };
             
-            // Render as clickable badge for body parts (different color from exercises)
+            // Render as clickable badge for body parts (emerald color)
             return (
               <span 
                 className="not-italic px-1.5 py-0.5 rounded bg-emerald-600/30 text-white font-medium border border-emerald-500/40 select-none cursor-pointer hover:bg-emerald-600/50 hover:border-emerald-400 transition-colors active:bg-emerald-600/70"

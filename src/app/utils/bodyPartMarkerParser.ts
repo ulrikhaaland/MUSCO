@@ -36,6 +36,23 @@ export function extractBodyPartMarkers(text: string): BodyPartMarker[] {
 }
 
 /**
+ * Finds a group by name
+ * Returns the BodyPartGroup if found
+ */
+export function findGroupByName(name: string): BodyPartGroup | undefined {
+  const normalizedSearch = name.toLowerCase().trim();
+  
+  for (const group of Object.values(bodyPartGroups)) {
+    const normalizedGroupName = group.name.toLowerCase().trim();
+    if (normalizedGroupName === normalizedSearch) {
+      return group;
+    }
+  }
+  
+  return undefined;
+}
+
+/**
  * Finds a body part by name from bodyPartGroups config
  * Returns the full AnatomyPart object and its parent group for selection on 3D model
  * Searches ALL body parts with fuzzy matching
