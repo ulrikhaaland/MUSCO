@@ -321,7 +321,15 @@ export function useHumanAPI({
       const genderedPartId = getGenderedId(selectedPartRef.current.objectId, gender);
       console.log('[useHumanAPI] Selecting specific part:', selectedPartRef.current.objectId, '-> gendered:', genderedPartId);
       selectionMap = { [genderedPartId]: true } as Record<string, boolean>;
-      zoomId = genderedPartId;
+      
+      // On mobile, zoom to the group level rather than the individual part
+      const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+      if (isMobile && selectedGroupsRef.current.length > 0) {
+        zoomId = getGenderedId(selectedGroupsRef.current[0].zoomId, gender);
+      } else {
+        zoomId = genderedPartId;
+      }
+      
       if (!isXrayEnabledRef.current) {
         humanRef.current.send('scene.enableXray', () => {});
         isXrayEnabledRef.current = true;
