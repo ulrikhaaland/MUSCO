@@ -36,22 +36,6 @@ export function extractBodyPartMarkers(text: string): BodyPartMarker[] {
 }
 
 /**
- * Gets unique body part names from text (deduplicated)
- */
-export function getUniqueBodyPartNames(text: string): string[] {
-  const markers = extractBodyPartMarkers(text);
-  const uniqueNames = new Set(markers.map(m => m.name));
-  return Array.from(uniqueNames);
-}
-
-/**
- * Checks if text contains any body part markers
- */
-export function hasBodyPartMarkers(text: string): boolean {
-  return /\{\{([^}]+)\}\}/.test(text);
-}
-
-/**
  * Finds a body part by name from bodyPartGroups config
  * Returns the full AnatomyPart object and its parent group for selection on 3D model
  * Searches ALL body parts with fuzzy matching
