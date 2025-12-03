@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import {
   getOrCreateAssistant,
   createThread,
@@ -12,10 +12,16 @@ import {
   DiagnosisAssistantResponse,
 } from '../types';
 import { Exercise } from '../types/program';
+import { ChatSession } from '../types/chat';
 import { useTranslation } from '../i18n';
 import { useAuth } from '../context/AuthContext';
 import { useApp } from '../context/AppContext';
 import { extractExerciseMarkers } from '../utils/exerciseMarkerParser';
+import {
+  createChatSession,
+  updateChatSession,
+  getChatSession,
+} from '../services/chatService';
 
 // Type for storing failed message details for retry
 type FailedMessageInfo = {
@@ -36,6 +42,12 @@ export function useChat() {
     useState<DiagnosisAssistantResponse | null>(null);
   const [exerciseResults, setExerciseResults] = useState<Exercise[]>([]);
   const [inlineExercises, setInlineExercises] = useState<Map<string, Exercise>>(new Map());
+  // Chat history state
+  const [currentChatId, setCurrentChatId] = useState<string | null>(null);
+  const [scrollTrigger, setScrollTrigger] = useState(0);
+  const chatSaveInProgressRef = useRef(false);
+  const lastSavedMessagesCountRef = useRef(0);
+  
   const threadIdRef = useRef<string | null>(null);
   const assistantIdRef = useRef<string | null>(null);
   const messageQueueRef = useRef<
@@ -503,10 +515,14 @@ export function useChat() {
 
             if (payloadObj && (payloadObj as any).type === 'complete') {
               // Stream complete - fetch exercises for inline markers
-              const lastMessage = messages[messages.length - 1];
-              if (lastMessage?.role === 'assistant' && lastMessage.content) {
-                fetchInlineExercises(lastMessage.content);
-              }
+              // Use setMessages to access current state (avoids stale closure)
+              setMessages((prev) => {
+                const lastMessage = prev[prev.length - 1];
+                if (lastMessage?.role === 'assistant' && lastMessage.content) {
+                  fetchInlineExercises(lastMessage.content);
+                }
+                return prev; // Don't modify, just read
+              });
                 return;
               }
 
@@ -632,8 +648,12 @@ export function useChat() {
     );
   };
 
-  // Persist chat state on every material change so anon → login preserves it
+  // Persist chat state to sessionStorage for anonymous users only
+  // (Logged-in users have chat saved to Firestore instead)
   useEffect(() => {
+    // Skip if user is logged in - Firestore is the source of truth
+    if (user?.uid) return;
+    
     try {
       // Avoid saving empty snapshots
       if (
@@ -649,7 +669,152 @@ export function useChat() {
         assistantResponse,
       });
     } catch {}
-  }, [messages, followUpQuestions, assistantResponse, saveChatState]);
+  }, [user?.uid, messages, followUpQuestions, assistantResponse, saveChatState]);
+
+  // Track previous user ID to detect login transitions
+  const prevUserIdRef = useRef<string | null>(null);
+
+  // Handle anonymous → logged-in migration: save existing chat to Firestore immediately
+  useEffect(() => {
+    const prevUserId = prevUserIdRef.current;
+    const currentUserId = user?.uid || null;
+    
+    // Update ref for next render
+    prevUserIdRef.current = currentUserId;
+    
+    // Detect transition: was anonymous (null), now logged in (has uid)
+    if (prevUserId === null && currentUserId !== null) {
+      // Check if there's an anonymous chat to migrate
+      const userMessageCount = messages.filter((m) => m.role === 'user').length;
+      const assistantMessageCount = messages.filter((m) => m.role === 'assistant').length;
+      
+      if (userMessageCount > 0 && assistantMessageCount > 0 && !currentChatId) {
+        // Use assistantResponse.followUpQuestions if available (diagnosis mode)
+        const followUpsToSave = assistantResponse?.followUpQuestions || followUpQuestions;
+        
+        // Migrate anonymous chat to Firestore immediately
+        const migrateChat = async () => {
+          if (chatSaveInProgressRef.current) return;
+          chatSaveInProgressRef.current = true;
+          
+          try {
+            const chatId = await createChatSession(currentUserId, {
+              messages,
+              followUpQuestions: followUpsToSave,
+              assistantResponse,
+            });
+            setCurrentChatId(chatId);
+            lastSavedMessagesCountRef.current = messages.length;
+            // Clear sessionStorage after successful migration
+            clearChatState?.();
+          } catch (error) {
+            console.error('[useChat] Failed to migrate anonymous chat:', error);
+          } finally {
+            chatSaveInProgressRef.current = false;
+          }
+        };
+        
+        migrateChat();
+      }
+    }
+  }, [user?.uid, messages, followUpQuestions, assistantResponse, currentChatId, clearChatState]);
+
+  // Auto-save to Firestore for logged-in users (ongoing saves after initial migration)
+  useEffect(() => {
+    // Only save for logged-in users
+    if (!user?.uid) return;
+    // Need at least one user message and one assistant response to save
+    const userMessageCount = messages.filter((m) => m.role === 'user').length;
+    const assistantMessageCount = messages.filter((m) => m.role === 'assistant').length;
+    if (userMessageCount === 0 || assistantMessageCount === 0) return;
+    // Don't save if already in progress
+    if (chatSaveInProgressRef.current) return;
+    // Don't save if message count hasn't changed
+    if (messages.length === lastSavedMessagesCountRef.current) return;
+
+    // Use assistantResponse.followUpQuestions if available (diagnosis mode), 
+    // otherwise use standalone followUpQuestions (explore mode)
+    const followUpsToSave = assistantResponse?.followUpQuestions || followUpQuestions;
+
+    const saveToFirestore = async () => {
+      chatSaveInProgressRef.current = true;
+      try {
+        if (currentChatId) {
+          // Update existing chat
+          await updateChatSession(user.uid, currentChatId, {
+            messages,
+            followUpQuestions: followUpsToSave,
+            assistantResponse,
+          });
+        } else {
+          // Create new chat
+          const chatId = await createChatSession(user.uid, {
+            messages,
+            followUpQuestions: followUpsToSave,
+            assistantResponse,
+          });
+          setCurrentChatId(chatId);
+        }
+        lastSavedMessagesCountRef.current = messages.length;
+      } catch (error) {
+        console.error('[useChat] Failed to save chat to Firestore:', error);
+      } finally {
+        chatSaveInProgressRef.current = false;
+      }
+    };
+
+    // Debounce save to avoid too many writes
+    const timeoutId = setTimeout(saveToFirestore, 2000);
+    return () => clearTimeout(timeoutId);
+  }, [user?.uid, messages, followUpQuestions, assistantResponse, currentChatId]);
+
+  // Load a chat session from history
+  const loadChatSession = useCallback(
+    async (chatId: string): Promise<boolean> => {
+      if (!user?.uid) return false;
+
+      try {
+        const session = await getChatSession(user.uid, chatId);
+        if (!session) return false;
+
+        // Reset current state and load the session
+        setMessages(session.messages);
+        setFollowUpQuestions(session.followUpQuestions);
+        setAssistantResponse(session.assistantResponse);
+        setCurrentChatId(chatId);
+        lastSavedMessagesCountRef.current = session.messages.length;
+        
+        // Clear inline exercises (will be re-fetched)
+        setInlineExercises(new Map());
+        
+        // Trigger scroll to bottom after loading
+        setScrollTrigger((prev) => prev + 1);
+
+        return true;
+      } catch (error) {
+        console.error('[useChat] Failed to load chat session:', error);
+        return false;
+      }
+    },
+    [user?.uid]
+  );
+
+  // Start a new chat (clear current state)
+  const startNewChat = useCallback(() => {
+    setMessages([]);
+    setFollowUpQuestions([]);
+    setAssistantResponse(null);
+    setExerciseResults([]);
+    setInlineExercises(new Map());
+    setCurrentChatId(null);
+    lastSavedMessagesCountRef.current = 0;
+    setIsLoading(false);
+    try {
+      clearChatState?.();
+    } catch {}
+    justResetRef.current = true;
+    messageQueueRef.current = [];
+  }, [clearChatState]);
 
   // Fetch inline exercises when assistant messages are added
   useEffect(() => {
@@ -681,5 +846,10 @@ export function useChat() {
     sendChatMessage,
     retryLastMessage,
     setFollowUpQuestions,
+    // Chat history
+    currentChatId,
+    loadChatSession,
+    startNewChat,
+    scrollTrigger,
   };
 }

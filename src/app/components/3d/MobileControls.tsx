@@ -16,6 +16,7 @@ import MobileControlButtons from './MobileControlButtons';
 import { AnatomyPart } from '@/app/types/human';
 import { ProgramType } from '../../../../shared/types';
 import { VideoModal } from '../ui/VideoModal';
+import { ChatHistory } from '../ui/ChatHistory';
 import { useApp } from '@/app/context/AppContext';
 
 interface MobileControlsProps {
@@ -130,6 +131,11 @@ export default function MobileControls({
     getPartDisplayName,
     assistantResponse,
     streamError,
+    // Chat history
+    currentChatId,
+    loadChatSession,
+    startNewChat,
+    scrollTrigger,
   } = useChatContainer({
     selectedPart,
     selectedGroups,
@@ -144,6 +150,9 @@ export default function MobileControls({
   const [overlayHeaderHeight, setOverlayHeaderHeight] = useState(0);
   const [overlayFooterHeight, setOverlayFooterHeight] = useState(0);
   const [overlayContentHeight, setOverlayContentHeight] = useState(0);
+  
+  // Chat history panel state
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const overlayFooterRef = useRef<HTMLDivElement | null>(null);
   const overlayRef = useRef<HTMLDivElement | null>(null);
   const dragStateRef = useRef<{ startY: number; lastY: number; dragging: boolean }>({ startY: 0, lastY: 0, dragging: false });
@@ -353,16 +362,14 @@ export default function MobileControls({
           {/* Header */}
           <div className="relative">
           <BottomSheetHeader
-            messages={messages}
             isLoading={isLoading}
             getGroupDisplayName={getGroupDisplayName}
             getPartDisplayName={getPartDisplayName}
-            resetChat={() => {
-              resetChat();
-            }}
-              onHeightChange={(h) => setOverlayHeaderHeight(Math.max(0, h - 28))}
-              isMinimized={false}
-            />
+            onNewChat={() => startNewChat()}
+            onHeightChange={(h) => setOverlayHeaderHeight(Math.max(0, h - 28))}
+            isMinimized={false}
+            onOpenHistory={() => setIsHistoryOpen(true)}
+          />
           </div>
 
           {/* Content */}
@@ -432,6 +439,7 @@ export default function MobileControls({
                 containerHeight={overlayContentHeight}
                     onBodyPartClick={handleBodyPartClick}
                     onGroupClick={handleGroupClick}
+                    scrollTrigger={scrollTrigger}
                   />
                 </div>
             </div>
@@ -529,6 +537,19 @@ export default function MobileControls({
             )}
         </div>
       )}
+
+      {/* Chat History Panel */}
+      <ChatHistory
+        isOpen={isHistoryOpen}
+        onClose={() => setIsHistoryOpen(false)}
+        currentChatId={currentChatId}
+        onSelectChat={(chatId) => {
+          loadChatSession(chatId);
+        }}
+        onNewChat={() => {
+          startNewChat();
+        }}
+      />
     </>
   );
 }

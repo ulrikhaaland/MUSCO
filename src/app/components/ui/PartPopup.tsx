@@ -1,5 +1,6 @@
-import { ChangeEvent } from 'react';
+import { ChangeEvent, useState } from 'react';
 import { ChatMessages } from './ChatMessages';
+import { ChatHistory } from './ChatHistory';
 import { useChatContainer } from '@/app/hooks/useChatContainer';
 import { BodyPartGroup } from '@/app/config/bodyPartGroups';
 import { Question, ChatMessage } from '@/app/types';
@@ -76,6 +77,11 @@ export default function PartPopup({
     getGroupDisplayName,
     getPartDisplayName,
     streamError,
+    // Chat history
+    currentChatId,
+    loadChatSession,
+    startNewChat,
+    scrollTrigger,
   } = useChatContainer({
     selectedPart: part,
     selectedGroups: groups,
@@ -84,6 +90,9 @@ export default function PartPopup({
     onBodyGroupSelected,
     onBodyPartSelected,
   });
+
+  // Chat history panel state
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
 
   const handleTextareaChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setMessage(e.target.value);
@@ -152,24 +161,51 @@ export default function PartPopup({
             <div className="flex items-center justify-between w-full gap-2">
               <h2 className="text-sm text-gray-400">{getPartDisplayName()}</h2>
 
-              <button
-                onClick={handleResetChat}
-                className="text-gray-400 hover:text-white p-1 rounded-full hover:bg-gray-800 transition-colors"
-                aria-label="Reset Chat"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
+              <div className="flex items-center gap-1">
+                {/* History button - only show if user is logged in */}
+                {user && (
+                  <button
+                    onClick={() => setIsHistoryOpen(true)}
+                    className="text-gray-400 hover:text-white p-1 rounded-full hover:bg-gray-800 transition-colors"
+                    aria-label={t('bottomSheet.chatHistory')}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </button>
+                )}
+                {/* New Chat button */}
+                <button
+                  onClick={handleResetChat}
+                  className="text-gray-400 hover:text-white p-1.5 rounded-lg hover:bg-gray-800 transition-colors"
+                  aria-label={t('chatHistory.newChat')}
+                  title={t('chatHistory.newChat')}
                 >
-                  <path
-                    fillRule="evenodd"
-                    d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </button>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                    />
+                  </svg>
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -239,6 +275,7 @@ export default function PartPopup({
         disableAutoScroll={true}
         onBodyPartClick={handleBodyPartClick}
         onGroupClick={handleGroupClick}
+        scrollTrigger={scrollTrigger}
       />
 
       <div className="mt-4 border-t border-gray-700 pt-4 flex-shrink-0">
@@ -317,6 +354,19 @@ export default function PartPopup({
           exerciseName={currentExercise?.name}
         />
       )}
+
+      {/* Chat History Panel */}
+      <ChatHistory
+        isOpen={isHistoryOpen}
+        onClose={() => setIsHistoryOpen(false)}
+        currentChatId={currentChatId}
+        onSelectChat={(chatId) => {
+          loadChatSession(chatId);
+        }}
+        onNewChat={() => {
+          startNewChat();
+        }}
+      />
     </div>
   );
 }

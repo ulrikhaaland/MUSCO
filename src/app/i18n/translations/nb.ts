@@ -264,6 +264,16 @@ const translations = {
 
   // BottomSheet Components
   'bottomSheet.resetChat': 'Tilbakestill Chat',
+  'bottomSheet.chatHistory': 'Chathistorikk',
+
+  // Chat History
+  'chatHistory.title': 'Chathistorikk',
+  'chatHistory.close': 'Lukk',
+  'chatHistory.newChat': 'Ny chat',
+  'chatHistory.noChats': 'Ingen tidligere samtaler',
+  'chatHistory.startConversation': 'Start en samtale for å se den her',
+  'chatHistory.messages': 'meldinger',
+  'chatHistory.deleteChat': 'Slett chat',
   'bottomSheet.selectRecoveryArea': 'Velg restitusjonsområde',
   'bottomSheet.chooseBodyPart':
     'Velg kroppsdelen du vil fokusere på for restitusjon',

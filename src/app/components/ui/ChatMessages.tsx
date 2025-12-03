@@ -120,6 +120,8 @@ interface ChatMessagesProps {
   onBodyPartClick?: (part: AnatomyPart, group: BodyPartGroup) => void;
   // Group click handler for selecting just the group
   onGroupClick?: (group: BodyPartGroup) => void;
+  // Increment to trigger scroll to bottom (used when loading chat from history)
+  scrollTrigger?: number;
 }
 
 export function ChatMessages({
@@ -148,10 +150,12 @@ export function ChatMessages({
   containerHeight,
   onBodyPartClick,
   onGroupClick,
+  scrollTrigger = 0,
 }: ChatMessagesProps) {
   const { saveViewerState } = useApp();
   const [showScrollButton, setShowScrollButton] = useState(false);
   const [userTouched, setUserTouched] = useState(false);
+  const prevScrollTriggerRef = useRef(scrollTrigger);
 
   const [availableHeight, setAvailableHeight] = useState(0);
   const [chatContainerHeight, setChatContainerHeight] = useState(0);
@@ -456,6 +460,19 @@ export function ChatMessages({
       console.error('Error scrolling to bottom:', error);
     }
   }, [disableAutoScroll, getScrollContainer, updateScrollButtonVisibility]);
+
+  // Scroll to bottom when scrollTrigger changes (e.g., when loading chat from history)
+  useEffect(() => {
+    if (scrollTrigger !== prevScrollTriggerRef.current) {
+      prevScrollTriggerRef.current = scrollTrigger;
+      // Reset user touched state and force scroll
+      setUserTouched(false);
+      // Small delay to let messages render first
+      setTimeout(() => {
+        scrollToBottom(true);
+      }, 100);
+    }
+  }, [scrollTrigger, scrollToBottom]);
 
   // Track follow-up questions and auto-scroll when they appear
   const followUpQuestionsRef = useRef<Question[]>([]);

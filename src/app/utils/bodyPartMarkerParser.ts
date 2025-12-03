@@ -36,15 +36,26 @@ export function extractBodyPartMarkers(text: string): BodyPartMarker[] {
 }
 
 /**
- * Finds a group by name
+ * Finds a group by name with fuzzy matching
  * Returns the BodyPartGroup if found
+ * Matches exact, contains, or partial matches
  */
 export function findGroupByName(name: string): BodyPartGroup | undefined {
   const normalizedSearch = name.toLowerCase().trim();
   
+  // Try exact match first
   for (const group of Object.values(bodyPartGroups)) {
     const normalizedGroupName = group.name.toLowerCase().trim();
     if (normalizedGroupName === normalizedSearch) {
+      return group;
+    }
+  }
+  
+  // Try fuzzy match: search term contained in group name or vice versa
+  for (const group of Object.values(bodyPartGroups)) {
+    const normalizedGroupName = group.name.toLowerCase().trim();
+    if (normalizedGroupName.includes(normalizedSearch) ||
+        normalizedSearch.includes(normalizedGroupName)) {
       return group;
     }
   }

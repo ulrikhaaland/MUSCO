@@ -67,6 +67,11 @@ export function useChatContainer({
     getPartDisplayName,
     assistantResponse,
     streamError,
+    // Chat history
+    currentChatId,
+    loadChatSession,
+    startNewChat,
+    scrollTrigger,
   } = usePartChat({
     selectedPart,
     selectedGroups,
@@ -74,6 +79,7 @@ export function useChatContainer({
     onGenerateProgram,
     onBodyGroupSelected,
     onBodyPartSelected,
+    textareaRef,
   });
 
   // Video handling
@@ -142,6 +148,12 @@ export function useChatContainer({
     assistantResponse,
     streamError,
     selectedGroups,
+
+    // Chat history
+    currentChatId,
+    loadChatSession,
+    startNewChat,
+    scrollTrigger,
   };
 }
 

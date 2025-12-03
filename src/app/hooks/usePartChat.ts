@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState, useCallback } from 'react';
+import { useRef, useEffect, useState, useCallback, RefObject } from 'react';
 import { useChat } from './useChat';
 import { AnatomyPart } from '../types/human';
 import { Question, DiagnosisAssistantResponse } from '../types';
@@ -37,6 +37,7 @@ export interface UsePartChatProps {
   ) => void;
   onBodyGroupSelected?: (groupName: string) => void;
   onBodyPartSelected?: (partName: string) => void;
+  textareaRef?: RefObject<HTMLTextAreaElement>;
 }
 
 export function usePartChat({
@@ -46,6 +47,7 @@ export function usePartChat({
   onGenerateProgram,
   onBodyGroupSelected,
   onBodyPartSelected,
+  textareaRef,
 }: UsePartChatProps) {
   const { t } = useTranslation();
   const messagesRef = useRef<HTMLDivElement>(null);
@@ -61,6 +63,11 @@ export function usePartChat({
     sendChatMessage,
     assistantResponse,
     streamError,
+    // Chat history
+    currentChatId,
+    loadChatSession,
+    startNewChat,
+    scrollTrigger,
   } = useChat();
 
   const { intention } = useApp();
@@ -122,12 +129,12 @@ export function usePartChat({
 
       // Check if this is a special "Answer in chat" button
       if (question.question === 'Answer in chat') {
-        // Focus the chat input field
-        const chatInput = document.querySelector(
-          'input[type="text"], textarea'
-        ) as HTMLElement;
-        if (chatInput) {
-          chatInput.focus();
+        // Focus the chat input field using the ref if available, fallback to querySelector
+        if (textareaRef?.current) {
+          textareaRef.current.focus();
+        } else {
+          const chatInput = document.querySelector('textarea') as HTMLElement;
+          chatInput?.focus();
         }
         // Don't clear follow-ups - let user see the button while typing
         return;
@@ -300,5 +307,10 @@ export function usePartChat({
     getPartDisplayName,
     assistantResponse,
     streamError,
+    // Chat history
+    currentChatId,
+    loadChatSession,
+    startNewChat,
+    scrollTrigger,
   };
 }

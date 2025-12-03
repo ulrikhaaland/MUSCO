@@ -302,6 +302,16 @@ const translations = {
 
   // BottomSheet Components
   'bottomSheet.resetChat': 'Reset Chat',
+  'bottomSheet.chatHistory': 'Chat history',
+
+  // Chat History
+  'chatHistory.title': 'Chat History',
+  'chatHistory.close': 'Close',
+  'chatHistory.newChat': 'New Chat',
+  'chatHistory.noChats': 'No previous chats',
+  'chatHistory.startConversation': 'Start a conversation to see it here',
+  'chatHistory.messages': 'messages',
+  'chatHistory.deleteChat': 'Delete chat',
   'bottomSheet.selectRecoveryArea': 'Select Recovery Area',
   'bottomSheet.chooseBodyPart':
     'Choose the body part you want to focus on for recovery',

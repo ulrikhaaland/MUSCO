@@ -67,7 +67,9 @@ export function useHumanAPI({
     setSelectedGroup,
     setSelectedPart,
     intentionRef,
+    selectedGroups,
     selectedGroupsRef,
+    selectedPart,
     selectedPartRef,
   } = useApp();
   const initialCameraRef = useRef<CameraPosition | null>(null);
@@ -264,6 +266,7 @@ export function useHumanAPI({
   // Hydrate model selection from AppContext state (after restoreViewerState)
   // Track the current selection to detect when it changes (e.g., after restore or chat click)
   const prevSelectedGroupsLengthRef = useRef(0);
+  const prevSelectedGroupIdRef = useRef<string | null>(null);
   const prevSelectedPartIdRef = useRef<string | null>(null);
   
   useEffect(() => {
@@ -275,36 +278,35 @@ export function useHumanAPI({
       return;
     }
     
-    const currentGroupsLength = selectedGroupsRef.current.length;
-    const currentPartId = selectedPartRef.current?.objectId || null;
+    // Use state values directly (not refs) to get current selection
+    const currentGroupsLength = selectedGroups.length;
+    const currentGroupId = selectedGroups[0]?.id || null;
+    const currentPartId = selectedPart?.objectId || null;
     
     // Detect if selection state changed:
     // 1. From empty to populated (restoration scenario)
-    // 2. Part changed to a different part (chat body part click scenario)
+    // 2. Group changed to a different group (chat group click scenario)
+    // 3. Part changed to a different part (chat body part click scenario)
     const selectionChanged = 
       (prevSelectedGroupsLengthRef.current === 0 && currentGroupsLength > 0) ||
+      (prevSelectedGroupIdRef.current !== null && currentGroupId !== null && prevSelectedGroupIdRef.current !== currentGroupId) ||
       (prevSelectedPartIdRef.current === null && currentPartId !== null) ||
       (prevSelectedPartIdRef.current !== null && currentPartId !== null && prevSelectedPartIdRef.current !== currentPartId);
     
     // Reset hydration flag if selection changed
     if (selectionChanged && didHydrateFromContextRef.current) {
-      console.log('[useHumanAPI] Selection changed, resetting hydration flag', {
-        prevPartId: prevSelectedPartIdRef.current,
-        currentPartId,
-      });
       didHydrateFromContextRef.current = false;
     }
     
     // Update tracking refs
     prevSelectedGroupsLengthRef.current = currentGroupsLength;
+    prevSelectedGroupIdRef.current = currentGroupId;
     prevSelectedPartIdRef.current = currentPartId;
     
     // Skip if already hydrated
     if (didHydrateFromContextRef.current) return;
     
-    const hasState =
-      selectedGroupsRef.current.length > 0 ||
-      !!selectedPartRef.current;
+    const hasState = selectedGroups.length > 0 || !!selectedPart;
     if (!hasState) return;
 
     const gender = currentGender;
@@ -312,20 +314,17 @@ export function useHumanAPI({
     let selectionMap: Record<string, boolean> = {};
     let zoomId: string | null = null;
 
-    console.log('[useHumanAPI] Hydration - selectedPartRef:', selectedPartRef.current);
-    console.log('[useHumanAPI] Hydration - selectedGroupsRef:', selectedGroupsRef.current);
-
     // Priority: If a specific part is present, select ONLY the part (not the group)
-    if (selectedPartRef.current) {
+    if (selectedPart) {
       // Select only the specific part - apply gender prefix to objectId
-      const genderedPartId = getGenderedId(selectedPartRef.current.objectId, gender);
-      console.log('[useHumanAPI] Selecting specific part:', selectedPartRef.current.objectId, '-> gendered:', genderedPartId);
+      const genderedPartId = getGenderedId(selectedPart.objectId, gender);
+      console.log('[useHumanAPI] Selecting specific part:', selectedPart.objectId, '-> gendered:', genderedPartId);
       selectionMap = { [genderedPartId]: true } as Record<string, boolean>;
       
       // On mobile, zoom to the group level rather than the individual part
       const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-      if (isMobile && selectedGroupsRef.current.length > 0) {
-        zoomId = getGenderedId(selectedGroupsRef.current[0].zoomId, gender);
+      if (isMobile && selectedGroups.length > 0) {
+        zoomId = getGenderedId(selectedGroups[0].zoomId, gender);
       } else {
         zoomId = genderedPartId;
       }
@@ -334,9 +333,9 @@ export function useHumanAPI({
         humanRef.current.send('scene.enableXray', () => {});
         isXrayEnabledRef.current = true;
       }
-    } else if (selectedGroupsRef.current.length > 0) {
+    } else if (selectedGroups.length > 0) {
       // Only select the group if there's no specific part
-      const group = selectedGroupsRef.current[0];
+      const group = selectedGroups[0];
       console.log('[useHumanAPI] Selecting group:', group.name);
       selectionMap = createSelectionMap(group.selectIds, gender);
       zoomId = getGenderedId(group.zoomId, gender);
@@ -351,9 +350,9 @@ export function useHumanAPI({
     if (Object.keys(selectionMap).length) {
       // Set the programmatic selection flag to prevent event handlers from overriding
       expectingProgrammaticSelectionRef.current = true;
-      if (selectedPartRef.current) {
+      if (selectedPart) {
         // Use gendered ID for programmatic selection tracking
-        programmaticSelectionIdRef.current = getGenderedId(selectedPartRef.current.objectId, gender);
+        programmaticSelectionIdRef.current = getGenderedId(selectedPart.objectId, gender);
       }
       
       prevSelection.current = {};
@@ -371,7 +370,9 @@ export function useHumanAPI({
         zoomIfMobile(zoomId);
       }
     }
-  }, [isReady, currentGender, selectedGroupsRef, selectedPartRef, zoomIfMobile]);
+  // selectedGroups and selectedPart (state values) trigger re-runs when selection changes
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isReady, currentGender, selectedGroups, selectedPart, zoomIfMobile]);
 
   function onObjectPicked(event: any) {
     if (!event.position) return;
