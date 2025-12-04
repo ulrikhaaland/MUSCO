@@ -274,6 +274,7 @@ const translations = {
   'chatHistory.startConversation': 'Start en samtale for å se den her',
   'chatHistory.messages': 'meldinger',
   'chatHistory.deleteChat': 'Slett chat',
+  'chatHistory.loadError': 'Kunne ikke laste chathistorikk',
   'bottomSheet.selectRecoveryArea': 'Velg restitusjonsområde',
   'bottomSheet.chooseBodyPart':
     'Velg kroppsdelen du vil fokusere på for restitusjon',

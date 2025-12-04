@@ -6,6 +6,7 @@ import { useTranslation } from '@/app/i18n';
 import { getChatSessionList, deleteChatSession } from '@/app/services/chatService';
 import { ChatSessionSummary } from '@/app/types/chat';
 import { formatDistanceToNow } from 'date-fns';
+import { enUS, nb } from 'date-fns/locale';
 import { Drawer } from './Drawer';
 
 interface ChatHistoryProps {
@@ -24,8 +25,11 @@ export function ChatHistory({
   onClose,
 }: ChatHistoryProps) {
   const { user } = useAuth();
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const [chats, setChats] = useState<ChatSessionSummary[]>([]);
+  
+  // Get date-fns locale based on current app locale
+  const dateLocale = locale === 'nb' ? nb : enUS;
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -41,7 +45,7 @@ export function ChatHistory({
         setChats(chatList);
       } catch (err) {
         console.error('[ChatHistory] Failed to load chats:', err);
-        setError('Failed to load chat history');
+        setError(t('chatHistory.loadError'));
       } finally {
         setIsLoading(false);
       }
@@ -177,6 +181,7 @@ export function ChatHistory({
                         <span>
                           {formatDistanceToNow(chat.updatedAt, {
                             addSuffix: true,
+                            locale: dateLocale,
                           })}
                         </span>
                       </div>

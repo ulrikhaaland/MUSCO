@@ -312,6 +312,7 @@ const translations = {
   'chatHistory.startConversation': 'Start a conversation to see it here',
   'chatHistory.messages': 'messages',
   'chatHistory.deleteChat': 'Delete chat',
+  'chatHistory.loadError': 'Failed to load chat history',
   'bottomSheet.selectRecoveryArea': 'Select Recovery Area',
   'bottomSheet.chooseBodyPart':
     'Choose the body part you want to focus on for recovery',
