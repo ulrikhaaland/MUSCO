@@ -30,7 +30,6 @@ interface MobileControlsProps {
   onRotate: () => void;
   onReset: (resetSelectionState?: boolean) => void;
   onSwitchModel: () => void;
-  onHeightChange?: (height: number) => void;
   onQuestionClick?: (question: Question) => void;
   onDiagnosis: (response: DiagnosisAssistantResponse) => void;
   hideBottomSheet?: boolean;
@@ -56,7 +55,6 @@ export default function MobileControls({
   onRotate,
   onReset,
   onSwitchModel,
-  onHeightChange,
   onQuestionClick,
   onDiagnosis,
   overlayOpen,
@@ -243,10 +241,6 @@ export default function MobileControls({
       const total = getViewportHeight();
       const next = Math.max(0, total - overlayHeaderHeight - overlayFooterHeight);
       setOverlayContentHeight(next);
-      if (onHeightChange) {
-        // Drive CSS var in parent for viewer sizing (overlay covers full height)
-        onHeightChange(overlayOpen ? total : 0);
-      }
     };
 
     compute();
@@ -254,7 +248,7 @@ export default function MobileControls({
     const onResize = () => compute();
     window.addEventListener('resize', onResize);
     return () => window.removeEventListener('resize', onResize);
-  }, [overlayOpen, overlayHeaderHeight, overlayFooterHeight, onHeightChange]);
+  }, [overlayOpen, overlayHeaderHeight, overlayFooterHeight]);
 
   // Track scroll position to preserve it when returning from questionnaire
   const scrollPositionRef = useRef<number>(0);

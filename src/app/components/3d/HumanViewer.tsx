@@ -616,13 +616,6 @@ export default function HumanViewer({
     return () => window.removeEventListener('resize', onResize);
   }, []);
 
-  const handleBottomSheetHeight = (sheetHeight: number) => {
-    // Drive a CSS var to avoid React state reflows
-    if (typeof document !== 'undefined') {
-      document.documentElement.style.setProperty('--sheet-height', `${sheetHeight}px`);
-    }
-  };
-
   // Handler for body group selection from assistant (diagnosis flow without pre-selected part)
   const handleBodyGroupSelected = useCallback((groupName: string) => {
     console.log('[HumanViewer] Assistant selected body group:', groupName);
@@ -879,7 +872,7 @@ export default function HumanViewer({
           <div
             className="w-full"
             style={{
-              height: hideNav ? '100%' : (isMobile ? 'calc(100svh - var(--sheet-height))' : '100%'),
+              height: hideNav ? '100%' : (isMobile ? '100svh' : '100%'),
               position: 'relative',
               top: 0,
               left: 0,
@@ -1014,7 +1007,6 @@ export default function HumanViewer({
           onRotate={handleRotate}
           onReset={handleReset}
           onSwitchModel={handleSwitchModel}
-          onHeightChange={handleBottomSheetHeight}
           onQuestionClick={handleQuestionClick}
           hideBottomSheet={showQuestionnaire}
           onDiagnosis={setDiagnosis}
