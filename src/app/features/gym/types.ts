@@ -6,8 +6,6 @@ import {
   TargetBodyPart,
   STRENGTH_EQUIPMENT,
   CARDIO_EQUIPMENT,
-  WORKOUT_DURATIONS,
-  EXERCISE_MODALITIES,
 } from '@/app/types/program';
 
 export type EquipmentName =

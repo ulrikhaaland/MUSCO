@@ -80,6 +80,7 @@ export function ChatHistory({
     };
 
     loadChats();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, user?.uid]);
 
   const handleDelete = async (e: React.MouseEvent, chatId: string) => {

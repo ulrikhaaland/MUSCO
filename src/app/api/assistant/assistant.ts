@@ -80,7 +80,6 @@ export async function sendMessage(
   };
 
   // Start both requests in parallel
-  const startTime = performance.now(); // Record start time
   const messagePromise = fetch('/api/assistant', {
     method: 'POST',
     headers: {

@@ -22,7 +22,7 @@ export function VerificationCodeInput({
   onSubmit,
   error,
   isLoading = false,
-  placeholder = "Enter 6-digit code",
+  placeholder: _placeholder = "Enter 6-digit code",
   submitButtonText = "Submit",
   submitButtonLoadingText = "Processing...",
   submitButtonVariant = 'primary',

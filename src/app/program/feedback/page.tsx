@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, Suspense } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { ProgramFeedbackQuestionnaire } from '@/app/components/ui/ProgramFeedbackQuestionnaire';
 import { useUser } from '@/app/context/UserContext';
 import { useAuth } from '@/app/context/AuthContext';
@@ -27,7 +27,7 @@ function FeedbackPageContent() {
   const { program, answers, diagnosisData, generateFollowUpProgram, isLoading: userLoading } = useUser();
 
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error] = useState<string | null>(null);
 
   // Check if user is authenticated and has a program
   useEffect(() => {

@@ -318,7 +318,7 @@ export class StreamParser {
             this.callbacks.onExercises(data.exercises, query);
           }
         }
-      } catch (error) {
+      } catch {
         // Silently fail - don't break the stream
       }
     }

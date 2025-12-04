@@ -383,6 +383,7 @@ export function ExerciseProgramPage({
         });
       }
     }, 100);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [program, isCustomProgram, activeProgram, currentDayOfWeek]);
 
   const handleWeekChange = (weekNumber: number) => {

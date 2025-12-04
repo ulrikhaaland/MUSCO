@@ -1,6 +1,6 @@
 import { SingleDayProgramResult } from '@/app/features/gym/types';
 
-export function SingleDayProgramView({ result, t }: { result: SingleDayProgramResult; t: (k: string)=>string }) {
+export function SingleDayProgramView({ result, t: _t }: { result: SingleDayProgramResult; t: (k: string)=>string }) {
   const day = result.day;
   return (
     <div className="max-w-4xl mx-auto px-4 pb-8">

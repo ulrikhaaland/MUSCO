@@ -16,7 +16,7 @@ export default function AddToHomescreen() {
   const [isStandalone, setIsStandalone] = useState(false);
   const [debugInfo, setDebugInfo] = useState<string>('');
   const [showShareHint, setShowShareHint] = useState(false);
-  const [showCopiedMessage, setShowCopiedMessage] = useState(false);
+  const [_showCopiedMessage, setShowCopiedMessage] = useState(false);
 
   // Desktop browser detection
   const [isDesktop, setIsDesktop] = useState(false);
@@ -305,7 +305,7 @@ export default function AddToHomescreen() {
     }
   };
 
-  const openInSafari = () => {
+  const _openInSafari = () => {
     // iOS doesn't allow direct navigation between browsers
     // Instead, we'll copy the URL and show instructions
     copyToClipboard();

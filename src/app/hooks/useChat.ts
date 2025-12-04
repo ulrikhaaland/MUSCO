@@ -12,7 +12,6 @@ import {
   DiagnosisAssistantResponse,
 } from '../types';
 import { Exercise } from '../types/program';
-import { ChatSession } from '../types/chat';
 import { useTranslation } from '../i18n';
 import { useAuth } from '../context/AuthContext';
 import { useApp } from '../context/AppContext';
@@ -825,6 +824,7 @@ export function useChat() {
         fetchInlineExercises(lastMessage.content);
       }
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [messages]);
 
   // Use assistantResponse.followUpQuestions when available (has augmented fields)

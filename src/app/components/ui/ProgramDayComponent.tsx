@@ -23,8 +23,8 @@ interface ProgramDayComponentProps {
 
 export function ProgramDayComponent({
   day,
-  dayName,
-  date,
+  dayName: _dayName,
+  date: _date,
   expandedExercises = [],
   onExerciseToggle,
   onVideoClick,
@@ -40,7 +40,7 @@ export function ProgramDayComponent({
   // State to track if title is being hovered
   const [isTitleHovered, setIsTitleHovered] = useState(false);
   // State to track viewport width for responsive adjustments
-  const [isMobile, setIsMobile] = useState(false);
+  const [_isMobile, setIsMobile] = useState(false);
 
   // Get all unique body parts from exercises
   const allBodyParts = useMemo(() => {
@@ -190,7 +190,7 @@ export function ProgramDayComponent({
         {filteredExercises && filteredExercises.length > 0 ? (
           <div className="space-y-8">
             {filteredExercises.map((exercise) => {
-              const exerciseId =
+              const _exerciseId =
                 exercise.id || exercise.exerciseId || exercise.name;
               const isExpanded =
                 !onExerciseToggle || expandedExercises.includes(exercise.name);

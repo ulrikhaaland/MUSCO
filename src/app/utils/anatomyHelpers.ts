@@ -23,7 +23,7 @@ export function getPartGroup(id: string): BodyPartGroup | null {
   const neutralId = getNeutralId(id);
 
   // First check if the part's ID matches any group's ids (ignoring gender)
-  for (const [groupKey, group] of Object.entries(bodyPartGroups)) {
+  for (const [_groupKey, group] of Object.entries(bodyPartGroups)) {
     // Check both regular ids and selectIds
     const allGroupIds = [...(group.parts.map((part) => part.objectId) || []), ...(group.selectIds || [])];
     if (allGroupIds.some(id => getNeutralId(id) === neutralId)) {

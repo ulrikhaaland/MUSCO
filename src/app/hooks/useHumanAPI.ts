@@ -68,7 +68,7 @@ export function useHumanAPI({
     setSelectedPart,
     intentionRef,
     selectedGroups,
-    selectedGroupsRef,
+    selectedGroupsRef: _selectedGroupsRef,
     selectedPart,
     selectedPartRef,
   } = useApp();
@@ -79,7 +79,7 @@ export function useHumanAPI({
   const selectedPartIdRef = useRef<string | null>(null);
   const isResettingRef = useRef<boolean>(false);
   const isXrayEnabledRef = useRef<boolean>(false);
-  const canSelectRef = useRef<boolean>(true);
+  const _canSelectRef = useRef<boolean>(true);
   const disableSelectionHandlerRef = useRef<boolean>(false);
   const lastPickTimeRef = useRef<number>(0);
   const PICK_RATE_LIMIT = 500; // ms between allowed picks
@@ -151,6 +151,7 @@ export function useHumanAPI({
         isResettingRef.current = false;
       }, 500);
     });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Add rate limiting for infinite loop detection
@@ -236,6 +237,7 @@ export function useHumanAPI({
         humanRef.current = null;
       }
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [elementId, initialGender]); // Add initialGender to dependencies
 
   // Update currentGender when initialGender changes
@@ -261,6 +263,7 @@ export function useHumanAPI({
 
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Hydrate model selection from AppContext state (after restoreViewerState)

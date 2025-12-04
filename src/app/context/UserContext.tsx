@@ -26,7 +26,6 @@ import {
   ProgramDay,
 } from '@/app/types/program';
 import {
-  submitQuestionnaire,
   submitQuestionnaireIncremental,
   storePendingQuestionnaire,
   getPendingQuestionnaire,
@@ -132,7 +131,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   // Incremental generation state
   const [generatingDay, setGeneratingDay] = useState<number | null>(null);
   const [generatedDays, setGeneratedDays] = useState<number[]>([]);
-  const [partialProgram, setPartialProgram] = useState<PartialProgram | null>(null);
+  const [_partialProgram, setPartialProgram] = useState<PartialProgram | null>(null);
 
   // Helper that wires all related state when a program becomes the current one
   const prepareAndSetProgram = (userProgram: UserProgramWithId) => {
@@ -228,6 +227,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
     if (pathname === '/login') {
       setIsLoading(false);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname, isNorwegian, t]);
 
   // Check for save context and handle recovery program clearing
@@ -466,7 +466,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
                   activeProgram = userProgram;
                 }
               }
-            } catch (error) {
+            } catch {
               // error captured but logging removed
             }
           }
@@ -570,6 +570,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
       }
       // loader removed
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId, isUserAuthenticated, authLoading, isNorwegian]);
 
   // On initial load, check localStorage for pending questionnaire flag
@@ -596,7 +597,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
           // Set the actual data from session storage
           setPendingQuestionnaire({ diagnosis, answers });
-        } catch (e) {
+        } catch {
           // error captured but logging removed
 
           // Set an empty placeholder so the UI shows login requirement
@@ -613,6 +614,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
         });
       }
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [t]); // Added t to dependencies
 
   const onQuestionnaireSubmit = async (
@@ -652,7 +654,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
             'pendingAnswers',
             JSON.stringify(answers)
           );
-        } catch (error) {
+        } catch {
           // error captured but logging removed
         }
       } else {
@@ -843,7 +845,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
               // no questionnaire found, logging removed
             }
           }
-        } catch (error) {
+        } catch {
           // error captured but logging removed
         }
       };
@@ -855,6 +857,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
         handlePendingQuestionnaire();
       }
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, authLoading, pendingQuestionnaire, t]); // Added t to dependencies
 
   // Function to select a specific program from the userPrograms array

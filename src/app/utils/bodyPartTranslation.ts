@@ -1,5 +1,4 @@
 import { BodyPartGroup } from '../config/bodyPartGroups';
-import { Locale } from '../i18n';
 import { AnatomyPart } from '../types/human';
 
 /**

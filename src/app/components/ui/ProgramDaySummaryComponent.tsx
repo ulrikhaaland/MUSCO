@@ -19,7 +19,7 @@ interface ProgramDaySummaryComponentProps {
 export function ProgramDaySummaryComponent({
   day,
   dayName,
-  date,
+  date: _date,
   onClick,
   programTitle,
   isCalendarView = false,

@@ -24,7 +24,7 @@ interface PartPopupProps {
 export default function PartPopup({
   part,
   groups,
-  onClose,
+  onClose: _onClose,
   onQuestionClick,
   forceMode,
   onGenerateProgram,

@@ -3,7 +3,6 @@
 import { useRouter, useSearchParams } from 'next/navigation';
 import { AuthForm } from '@/app/components/auth/AuthForm';
 import { useEffect, useState, Suspense } from 'react';
-import { NavigationMenu } from '@/app/components/ui/NavigationMenu';
 
 function LoginPageContent() {
   const router = useRouter();

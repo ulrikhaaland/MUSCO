@@ -100,7 +100,7 @@ describe.skip('useChat SSE and flow', () => {
   it('queues messages while loading and preserves order', async () => {
     let resolveFirst: (() => void) | undefined;
     sendMessageMock
-      .mockImplementationOnce((_tid, _payload, _onChunk) => new Promise<void>((res) => { resolveFirst = res; }))
+      .mockImplementationOnce(() => new Promise<void>((res) => { resolveFirst = res; }))
       .mockImplementationOnce(async () => {});
 
     let api: ReturnType<typeof useChat> | undefined;
@@ -123,7 +123,7 @@ describe.skip('useChat SSE and flow', () => {
       .mockImplementationOnce(async (_tid, _payload, onChunk) => {
         onChunk('Some text', { type: 'assistant_response', response: { diagnosis: null, followUpQuestions: [] } });
       })
-      .mockImplementationOnce(async (_tid, payload, _onChunk) => {
+      .mockImplementationOnce(async (_tid, payload) => {
         // Capture payload for assertion
         (sendMessageMock as any).lastPayload = payload;
       });
@@ -224,8 +224,8 @@ describe.skip('useChat SSE and flow', () => {
     let resolveSecond: (() => void) | undefined;
     // First call never resolves or enqueues chunks to keep interruption flag true
     sendMessageMock
-      .mockImplementationOnce((_tid, _payload, _onChunk) => new Promise<void>(() => {}))
-      .mockImplementationOnce((_tid, _payload, _onChunk) => new Promise<void>((res) => { resolveSecond = res; }));
+      .mockImplementationOnce(() => new Promise<void>(() => {}))
+      .mockImplementationOnce(() => new Promise<void>((res) => { resolveSecond = res; }));
 
     let api: ReturnType<typeof useChat> | undefined;
     render(<Harness onReady={(h) => (api = h)} />);
@@ -256,8 +256,8 @@ describe.skip('useChat SSE and flow', () => {
     let resolveFirst: (() => void) | undefined;
     let resolveSecond: (() => void) | undefined;
     sendMessageMock
-      .mockImplementationOnce((_tid, _payload, _onChunk) => new Promise<void>((res) => { resolveFirst = res; }))
-      .mockImplementationOnce((_tid, _payload, _onChunk) => new Promise<void>((res) => { resolveSecond = res; }))
+      .mockImplementationOnce(() => new Promise<void>((res) => { resolveFirst = res; }))
+      .mockImplementationOnce(() => new Promise<void>((res) => { resolveSecond = res; }))
       .mockImplementationOnce(async () => {});
 
     let api: ReturnType<typeof useChat> | undefined;

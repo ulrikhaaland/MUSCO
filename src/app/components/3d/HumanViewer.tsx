@@ -202,6 +202,7 @@ export default function HumanViewer({
         collapseDescription: false,
       });
     } catch {}
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [exploreOn, selectedPart, explainer, isExplainerActive, humanRef]);
 
   // Update the label when explainer text arrives
@@ -283,7 +284,8 @@ export default function HumanViewer({
       viewerUrl.searchParams.set('ui-logo', 'false');
       return viewerUrl.toString();
     },
-    [hideNav]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
   );
 
   const [viewerUrl, setViewerUrl] = useState(() => getViewerUrl(gender));
@@ -395,6 +397,7 @@ export default function HumanViewer({
         }
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [isResettingRef, setNeedsReset, isReady, humanRef, resetSelectionState]
   );
 

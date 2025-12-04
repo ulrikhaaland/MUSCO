@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { renderHook as _renderHook } from '@testing-library/react';
 import { renderHook } from '@testing-library/react';
 import { usePartChat } from '../usePartChat';
 

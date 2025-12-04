@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { EXERCISE_MODALITIES, WORKOUT_DURATIONS } from '@/app/types/program';
 
-export default function GymFunnelPage({ params, searchParams }: any) {
+export default function GymFunnelPage({ params, searchParams: _searchParams }: any) {
   const slug = params.slug as string;
   const router = useRouter();
   const [modality, setModality] = useState<string>('Strength');

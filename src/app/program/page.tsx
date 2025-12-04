@@ -9,7 +9,6 @@ import { useAuth } from '@/app/context/AuthContext';
 import AddToHomescreen from '@/app/components/ui/AddToHomescreen';
 import { logAnalyticsEvent } from '../utils/analytics';
 import {
-  ProgramStatus,
   Exercise,
   ProgramDay,
   ExerciseProgram,
@@ -33,7 +32,7 @@ function ProgramPageContent({
     program,
     activeProgram,
     isLoading: userLoading,
-    programStatus,
+    programStatus: _programStatus,
     userPrograms,
     selectProgram,
     generatingDay,

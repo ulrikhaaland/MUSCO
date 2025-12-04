@@ -1,13 +1,10 @@
 import {
-  getDocs,
-  collection,
   doc,
   updateDoc,
-  addDoc,
 } from 'firebase/firestore';
 import { db } from '@/app/firebase/config';
 import { DiagnosisAssistantResponse } from '@/app/types';
-import { ExerciseQuestionnaireAnswers, ProgramType } from '../../../shared/types';
+import { ExerciseQuestionnaireAnswers } from '../../../shared/types';
 import { ProgramStatus, ExerciseProgram } from '@/app/types/program';
 import { ProgramFeedback } from '../components/ui/ProgramFeedbackQuestionnaire';
 import { Locale } from '../i18n/translations';
@@ -15,7 +12,7 @@ import { getSavedLocalePreference } from '../i18n/utils';
 import { getStartOfWeek, addDays } from '@/app/utils/dateutils';
 
 // Extended ExerciseQuestionnaireAnswers to include feedback fields
-interface FeedbackEnhancedQuestionnaire extends ExerciseQuestionnaireAnswers {
+interface _FeedbackEnhancedQuestionnaire extends ExerciseQuestionnaireAnswers {
   // Updated to only include fields we're using
   feedbackRemovedExercises?: string[];
   feedbackReplacedExercises?: string[];

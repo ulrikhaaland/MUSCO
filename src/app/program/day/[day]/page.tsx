@@ -7,7 +7,7 @@ import { ProgramDayComponent } from '@/app/components/ui/ProgramDayComponent';
 import { searchYouTubeVideo } from '@/app/utils/youtube';
 import { useAuth } from '@/app/context/AuthContext';
 import { useUser } from '@/app/context/UserContext';
-import { getStorage, ref, getDownloadURL } from 'firebase/storage';
+import { ref, getDownloadURL } from 'firebase/storage';
 import { storage } from '@/app/firebase/config';
 import { useTranslation } from '@/app/i18n/TranslationContext';
 import { logAnalyticsEvent } from '../../../utils/analytics';
@@ -37,7 +37,7 @@ function isYouTubeUrl(url: string): boolean {
   return youtubeRegExp.test(url);
 }
 
-function isVimeoUrl(url: string): boolean {
+function _isVimeoUrl(url: string): boolean {
   return url.includes('vimeo.com') || url.includes('player.vimeo.com');
 }
 
@@ -61,7 +61,7 @@ function getVideoEmbedUrl(url: string): string {
 
 export default function DayDetailPage() {
   // Use a persistent ID to avoid duplicate render issues
-  const componentId = useRef(`day-page-${Date.now()}`);
+  const _componentId = useRef(`day-page-${Date.now()}`);
   
   // Component state
   const [error, setError] = useState<Error | null>(null);
@@ -73,7 +73,7 @@ export default function DayDetailPage() {
   const [selectedProgram, setSelectedProgram] = useState<ExerciseProgram | null>(null);
   const [preloadedVideoUrls, setPreloadedVideoUrls] = useState<{ [key: string]: string }>({});
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState<number>(-1);
-  const [dataLoaded, setDataLoaded] = useState(false);
+  const [_dataLoaded, setDataLoaded] = useState(false);
 
   // Router and params
   const router = useRouter();
@@ -174,6 +174,7 @@ export default function DayDetailPage() {
     return () => {
       mounted = false;
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [program, userPrograms, dayNumber]);
 
   // Loader removed
@@ -185,6 +186,7 @@ export default function DayDetailPage() {
     } else if (typeof document !== 'undefined') {
       document.title = 'Program Day | BodAI';
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dayName]);
 
   // Preload video URLs when day data is available
@@ -227,7 +229,7 @@ export default function DayDetailPage() {
               preloadLinks.push(link);
             }
           }
-        } catch (err) {
+        } catch {
           // Silent fail for preloading - will fetch on demand
         }
       }

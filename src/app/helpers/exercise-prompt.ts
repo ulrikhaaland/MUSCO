@@ -390,7 +390,7 @@ export async function prepareExercisesPrompt(
   });
 
   let totalExerciseCount = 0;
-  Object.entries(exercisesByBodyPart).forEach(([_, exercises]) => {
+  Object.entries(exercisesByBodyPart).forEach(([_bodyPartKey, exercises]) => {
     totalExerciseCount += exercises.length;
   });
 

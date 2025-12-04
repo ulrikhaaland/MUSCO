@@ -24,7 +24,7 @@ interface ProgramDayWithSource {
 }
 
 export function ExerciseProgramCalendar({
-  program,
+  program: _program,
   dayName,
   onDaySelect,
 }: ExerciseProgramCalendarProps) {
@@ -249,7 +249,7 @@ export function ExerciseProgramCalendar({
                   isSelected,
                   isProgramDay,
                 },
-                dayIndex
+                _dayIndex
               ) => {
                 // Check if there are any workout days (non-rest days)
                 const hasWorkout = programDays.some((p) => !p.day.isRestDay);

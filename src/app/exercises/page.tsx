@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback, useMemo, useRef } from 'react';
 import ExerciseCard from '../components/ui/ExerciseCard';
 import { Exercise } from '../types/program';
 import { exerciseFiles, loadExercisesFromJson } from '../services/exerciseProgramService';
-import { getStorage, ref, getDownloadURL } from 'firebase/storage';
+import { ref, getDownloadURL } from 'firebase/storage';
 import { storage } from '../firebase/config';
 import { searchYouTubeVideo } from '../utils/youtube';
 import Chip from '../components/ui/Chip';
@@ -65,7 +65,7 @@ export default function AvailableExercisesPage() {
   // Add video states
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [loadingVideoExercise, setLoadingVideoExercise] = useState<string | null>(null);
-  const [preloadedVideoUrls, setPreloadedVideoUrls] = useState<{ [key: string]: string }>({});
+  const [preloadedVideoUrls, _setPreloadedVideoUrls] = useState<{ [key: string]: string }>({});
 
   // Refs for category sections to enable scrolling
   const categoryRefs = useRef<Record<string, HTMLElement | null>>({});
@@ -551,6 +551,7 @@ export default function AvailableExercisesPage() {
       // Collapse all categories when clearing search if all were previously expanded
       setExpandedCategories([]);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchQuery]); // Only dependency on searchQuery - we don't want to react to displayExercises changes
 
   // Handle video click

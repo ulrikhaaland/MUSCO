@@ -20,7 +20,7 @@ export function ExerciseSelectionPage({
 }: ExerciseSelectionPageProps) {
   const [effectiveExercises, setEffectiveExercises] = useState<string[]>(initialEffectiveExercises);
   const [ineffectiveExercises, setIneffectiveExercises] = useState<string[]>(initialIneffectiveExercises);
-  const [currentStep, setCurrentStep] = useState<'effective' | 'ineffective'>(initialStep);
+  const [currentStep, _setCurrentStep] = useState<'effective' | 'ineffective'>(initialStep);
 
   // Get a unique identifier for each exercise
   const getExerciseId = (exercise: Exercise): string => {

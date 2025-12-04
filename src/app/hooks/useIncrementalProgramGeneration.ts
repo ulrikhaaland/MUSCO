@@ -149,7 +149,7 @@ export function useIncrementalProgramGeneration({
         onMetadataReady?.(metadataResult);
 
         // Create initial partial program with metadata only (no days yet)
-        let partialProgram: PartialProgram = {
+        const partialProgram: PartialProgram = {
           title: metadataResult.title,
           programOverview: metadataResult.programOverview,
           summary: metadataResult.summary,

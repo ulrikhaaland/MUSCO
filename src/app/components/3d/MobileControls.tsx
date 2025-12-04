@@ -125,7 +125,7 @@ export default function MobileControls({
     exerciseResults,
     inlineExercises,
     messagesRef,
-    resetChat,
+    resetChat: _resetChat,
     handleOptionClick,
     getGroupDisplayName,
     getPartDisplayName,

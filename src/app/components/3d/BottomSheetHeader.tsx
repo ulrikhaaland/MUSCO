@@ -15,7 +15,7 @@ interface BottomSheetHeaderProps {
 }
 
 export function BottomSheetHeader({
-  isLoading,
+  isLoading: _isLoading,
   getGroupDisplayName,
   getPartDisplayName,
   onNewChat,

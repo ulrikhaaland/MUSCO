@@ -9,7 +9,6 @@ import {
   getProgramBySlug,
   localizeProgramDayDescriptions,
 } from '../../public/data/programs/recovery';
-import LandingHero from './components/ui/LandingHero';
 import PartnerLogos from '@/components/PartnerLogos';
 // import LanguageSwitcher from './components/ui/LanguageSwitcher';
 import { logAnalyticsEvent } from './utils/analytics';
@@ -100,10 +99,10 @@ export default function LandingPage() {
   const { t, locale } = useTranslation();
   const router = useRouter();
   const [modalOpen, setModalOpen] = useState<null | string>(null);
-  const [pricingAnnual, setPricingAnnual] = useState(true);
+  const [_pricingAnnual, _setPricingAnnual] = useState(true);
   const [showAllPrograms, setShowAllPrograms] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const [exploreInput, setExploreInput] = useState('');
+  const [_exploreInput, _setExploreInput] = useState('');
   const programSummaries: Record<string, string> = {
     'lower-back':
       'Stabilize core and restore lumbar mobility; posture and hinge control.',
@@ -149,7 +148,7 @@ export default function LandingPage() {
       if ('scrollRestoration' in history) {
         history.scrollRestoration = 'manual';
       }
-    } catch (e) {
+    } catch {
       // ignore
     }
     // Only force to top if no hash in URL
@@ -161,7 +160,7 @@ export default function LandingPage() {
         if ('scrollRestoration' in history) {
           history.scrollRestoration = prev || 'auto';
         }
-      } catch (e) {
+      } catch {
         // ignore
       }
     };
@@ -193,7 +192,7 @@ export default function LandingPage() {
     return () => window.removeEventListener('resize', check);
   }, []);
 
-  const goAppWith = () => {
+  const _goAppWith = () => {
     router.push('/app');
   };
 

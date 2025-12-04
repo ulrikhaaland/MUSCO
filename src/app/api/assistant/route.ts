@@ -12,7 +12,7 @@ import {
   getChatCompletion,
 } from '@/app/api/assistant/openai-server';
 import { OpenAIMessage } from '@/app/types';
-import { ProgramStatus, BODY_PART_GROUPS, SPECIFIC_BODY_PARTS } from '@/app/types/program';
+import { ProgramStatus, SPECIFIC_BODY_PARTS } from '@/app/types/program';
 import { diagnosisSystemPrompt } from '@/app/api/prompts/diagnosisPrompt';
 import { getExploreSystemPrompt } from '@/app/api/prompts/explorePrompt';
 import { chatModeRouterPrompt } from '@/app/api/prompts/routePrompt';
@@ -132,7 +132,6 @@ export async function POST(request: Request) {
         
         // Inject body part context and body part groups data for diagnosis mode
         const bodyPart = payload?.selectedBodyPart?.name || payload?.selectedBodyGroupName || '(not yet selected)';
-        const bodyPartGroupsForDiagnosis = BODY_PART_GROUPS.join(', ');
         const specificBodyParts = JSON.stringify(SPECIFIC_BODY_PARTS, null, 2);
         
         // Available body parts for clickable markers (from selected group)

@@ -181,7 +181,7 @@ export function ChatMessages({
   const lastMessageContentRef = useRef<string>('');
   const lastMessageIdRef = useRef<string>('');
   const hasHadTouchRef = useRef<boolean>(false);
-  const initialLoadingRef = useRef<boolean>(true);
+  const _initialLoadingRef = useRef<boolean>(true);
 
   const chatViewRef = useRef<HTMLDivElement>(null);
   const streamMessageRef = useRef<HTMLDivElement>(null);

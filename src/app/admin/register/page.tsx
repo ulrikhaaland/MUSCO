@@ -3,12 +3,11 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/app/context/AuthContext';
-import { AuthForm } from '@/app/components/auth/AuthForm';
 
 export default function GymOwnerRegisterPage() {
   const router = useRouter();
   const { user, loading } = useAuth();
-  const [err] = useState<string | null>(null);
+  const [_err] = useState<string | null>(null);
 
   useEffect(() => {
     if (!loading && user) {

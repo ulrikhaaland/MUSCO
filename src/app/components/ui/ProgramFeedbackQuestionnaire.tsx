@@ -3,9 +3,8 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
 import { Exercise } from '@/app/types/program';
 import { ExerciseFeedbackSelector } from './ExerciseFeedbackSelector';
-import { exerciseFiles, loadExercisesFromJson } from '@/app/services/exerciseProgramService';
+import { loadExercisesFromJson } from '@/app/services/exerciseProgramService';
 import { useTranslation } from '@/app/i18n';
-import { toast } from './ToastProvider';
 
 // Extend the Exercise type to include additional properties
 interface ExtendedExercise extends Exercise {
@@ -38,11 +37,11 @@ export function ProgramFeedbackQuestionnaire({
   isFeedbackDay,
   previousExercises = [],
   onAddExercise,
-  isFutureWeek,
-  nextProgramDate,
+  isFutureWeek: _isFutureWeek,
+  nextProgramDate: _nextProgramDate,
 }: ProgramFeedbackQuestionnaireProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const formRef = useRef<HTMLFormElement>(null);
+  const _formRef = useRef<HTMLFormElement>(null);
   const [replacedExercises, setReplacedExercises] = useState<string[]>([]);
   const [removedExercises, setRemovedExercises] = useState<string[]>([]);
   const [addedExercises, setAddedExercises] = useState<ExtendedExercise[]>([]);
@@ -50,10 +49,10 @@ export function ProgramFeedbackQuestionnaire({
   const [loadingAlternatives, setLoadingAlternatives] = useState(false);
   const [replacementMap, setReplacementMap] = useState<Record<string, Exercise>>({});
   const [usedAlternativeIds, setUsedAlternativeIds] = useState<Set<string>>(new Set());
-  const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
-  const [selectedCategoryForSheet, setSelectedCategoryForSheet] = useState('');
-  const [allExistingExercises, setAllExistingExercises] = useState<Exercise[]>([]);
-  const { t, locale } = useTranslation();
+  const [_isBottomSheetOpen, _setIsBottomSheetOpen] = useState(false);
+  const [_selectedCategoryForSheet, _setSelectedCategoryForSheet] = useState('');
+  const [_allExistingExercises, setAllExistingExercises] = useState<Exercise[]>([]);
+  const { t, locale: _locale } = useTranslation();
   
   // Process previousExercises to ensure they have an 'order' property
   const processedPreviousExercises = useMemo(() => {
@@ -67,7 +66,7 @@ export function ProgramFeedbackQuestionnaire({
   useEffect(() => {
     const loadAllAlternatives = async () => {
       setLoadingAlternatives(true);
-      const allAlternatives: Record<string, Exercise[]> = {};
+      const _allAlternatives: Record<string, Exercise[]> = {};
       
       // Get all body parts needed for loading
       const categoryToBodyPartMap: Record<string, string> = {
@@ -307,7 +306,7 @@ export function ProgramFeedbackQuestionnaire({
       if (isReplacementExercise) {
         // Find the original exercise ID this was replacing
         const originalId = Object.entries(replacementMap).find(
-          ([_, ex]) => (ex.id || ex.exerciseId || ex.name) === exerciseId
+          ([_origId, ex]) => (ex.id || ex.exerciseId || ex.name) === exerciseId
         )?.[0];
         
         if (originalId) {
@@ -551,6 +550,6 @@ export function ProgramFeedbackQuestionnaire({
 
 // Helper to get a unique ID for an exercise (if not already present)
 // This is a conceptual placement, ensure it's defined or imported appropriately if used more broadly.
-const getExerciseId = (exercise: Exercise): string => {
+const _getExerciseId = (exercise: Exercise): string => {
   return exercise.id || exercise.exerciseId || exercise.name;
 };

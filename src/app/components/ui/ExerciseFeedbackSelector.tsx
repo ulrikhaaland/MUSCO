@@ -503,7 +503,7 @@ export function ExerciseFeedbackSelector({
   };
 
   // Get all exercises from both original and added exercises
-  const allExistingExercises = useMemo(() => {
+  const _allExistingExercises = useMemo(() => {
     return [...exercises, ...addedExercises];
   }, [exercises, addedExercises]);
 

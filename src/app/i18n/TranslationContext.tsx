@@ -1,6 +1,6 @@
 import React, { createContext, useState, useContext, useCallback, ReactNode, useEffect } from 'react';
 import { Locale, TranslationKey, t as translate } from './translations';
-import { detectBrowserLocale, saveLocalePreference, getSavedLocalePreference } from './utils';
+import { saveLocalePreference, getSavedLocalePreference } from './utils';
 
 interface TranslationContextType {
   locale: Locale;

@@ -562,6 +562,7 @@ export function ExerciseQuestionnaire({
       ...prev,
       equipment: [...new Set([...(prev.equipment || []), ...equipmentToPreSelect])],
     }));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [answers.cardioType, answers.cardioEnvironment, answers.exerciseEnvironments]);
   
   // Modify handleInputChange to handle custom equipment selection

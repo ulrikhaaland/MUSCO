@@ -297,7 +297,7 @@ async function loadFallbackExercises(missingIds: Set<string>, useNorwegian: bool
   });
 
   // Load exercises from each needed file
-  for (const [prefix, ids] of Object.entries(idsByPrefix)) {
+  for (const [prefix, _ids] of Object.entries(idsByPrefix)) {
     const filePath = originalExerciseFiles[prefix];
     if (!filePath) {
       continue; // Skip if we don't have a mapping for this prefix
@@ -305,8 +305,6 @@ async function loadFallbackExercises(missingIds: Set<string>, useNorwegian: bool
 
     try {
       const { exercises = [] } = await fetchJson(filePath, useNorwegian);
-
-      let foundCount = 0;
 
       // Find the exercises with matching IDs and add them to cache
       exercises.forEach((exercise: Exercise) => {
@@ -316,8 +314,6 @@ async function loadFallbackExercises(missingIds: Set<string>, useNorwegian: bool
             ...exercise,
             isOriginal: true,
           };
-
-          foundCount++;
 
           // Also cache by exerciseId if available
           if (exercise.exerciseId) {

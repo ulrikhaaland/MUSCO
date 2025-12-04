@@ -6,7 +6,7 @@ export function LoadingMessage({
   absolute?: boolean;
 }) {
   // Constants for shimmer group sizing
-  const SHIMMER_GROUP_HEIGHT = 65;
+  const _SHIMMER_GROUP_HEIGHT = 65;
 
   // Always show exactly 2 paragraphs of shimmer for consistent, compact loading state
   const shimmerRowCount = 2;

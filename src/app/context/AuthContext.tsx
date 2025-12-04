@@ -170,6 +170,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       profileUnsubscribeRef.current?.();
       profileUnsubscribeRef.current = null;
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isReady]);
 
   // Fetch user profile data from Firestore

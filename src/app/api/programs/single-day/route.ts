@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { adminDb } from '@/app/firebase/admin';
 import { loadServerExercises } from '@/app/services/server-exercises';
-import { STRENGTH_EQUIPMENT, CARDIO_EQUIPMENT, Exercise } from '@/app/types/program';
+import { Exercise } from '@/app/types/program';
 import { normalizeEquipmentName } from '@/app/features/gym/equipmentAliases';
 import { SingleDayProgramRequest, SingleDayProgramResult, Gym } from '@/app/features/gym/types';
 import { getSingleDaySystemPrompt, callSingleDayLLM } from '@/app/features/gym/llm';

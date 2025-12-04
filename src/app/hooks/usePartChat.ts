@@ -217,6 +217,7 @@ export function usePartChat({
         diagnosisAssistantResponse: assistantResponse || undefined, // Pass current assistant state
     });
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [
       chatMode,
       previousQuestions,

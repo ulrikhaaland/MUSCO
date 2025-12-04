@@ -187,7 +187,7 @@ export default function ProfilePage() {
       try {
         const translatedValue = t(`bodyParts.${key}`);
         return translatedValue === bodyPart;
-      } catch (e) {
+      } catch {
         // If translation fails, it's not a match
         return false;
       }
@@ -204,7 +204,7 @@ export default function ProfilePage() {
         if (translated !== `bodyParts.${bodyPart}`) {
           return translated;
         }
-      } catch (e) {
+      } catch {
         // Translation not found, continue with original
       }
     }
@@ -217,15 +217,15 @@ export default function ProfilePage() {
   const router = useRouter();
 
   // Get translated constants
-  const translatedTargetBodyParts = getTranslatedTargetBodyParts(t);
-  const translatedExerciseEnvironments = getTranslatedExerciseEnvironments(t);
+  const _translatedTargetBodyParts = getTranslatedTargetBodyParts(t);
+  const _translatedExerciseEnvironments = getTranslatedExerciseEnvironments(t);
   const translatedWorkoutDurations = getTranslatedWorkoutDurations(t);
   const translatedPainBodyParts = getTranslatedPainBodyParts(t);
   const translatedPlannedFrequencyOptions =
     getTranslatedPlannedExerciseFrequencyOptions(t);
 
   // Use the translation functions to get localized options
-  const healthGoalsOptions = getHealthGoalsOptions(t);
+  const _healthGoalsOptions = getHealthGoalsOptions(t);
   const dietaryPreferencesOptions = getDietaryPreferencesOptions(t);
 
   // CSS styles for smooth section transitions
@@ -249,16 +249,16 @@ export default function ProfilePage() {
   const [editingField, setEditingField] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [uploadProgress, setUploadProgress] = useState(0);
+  const [_uploadProgress, setUploadProgress] = useState(0);
   const [message, setMessage] = useState<{
     type: 'success' | 'error';
     text: string;
   } | null>(null);
-  const [dirty, setDirty] = useState(false);
+  const [_dirty, setDirty] = useState(false);
 
   // Profile data states
   const [displayName, setDisplayName] = useState('');
-  const [name, setName] = useState('');
+  const [_name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [photoURL, setPhotoURL] = useState<string | null>(null);
   const [previewURL, setPreviewURL] = useState('');
@@ -305,7 +305,7 @@ export default function ProfilePage() {
   const [medicalBackgroundExpanded, setMedicalBackgroundExpanded] =
     useState(false);
   const [fitnessProfileExpanded, setFitnessProfileExpanded] = useState(false);
-  const [goalsPreferencesExpanded, setGoalsPreferencesExpanded] =
+  const [_goalsPreferencesExpanded, setGoalsPreferencesExpanded] =
     useState(false);
 
   useEffect(() => {
@@ -757,7 +757,7 @@ export default function ProfilePage() {
               translatedValue.toLowerCase() === bodyPart.toLowerCase() ||
               key.toLowerCase() === bodyPart.toLowerCase()
             );
-          } catch (e) {
+          } catch {
             return false;
           }
         });
@@ -819,11 +819,11 @@ export default function ProfilePage() {
         for (const level of fitnessLevels) {
           if (level.name === levelValue) {
             // Find the English key for this fitness level
-            const englishKey = Object.keys(level).find((key) => {
+            const englishKey = Object.keys(level).find((_key) => {
               try {
                 // Try to find the original English key
                 return level.name === fitnessLevel;
-              } catch (e) {
+              } catch {
                 return false;
               }
             });
@@ -851,7 +851,7 @@ export default function ProfilePage() {
               `exerciseFrequency.${option.toLowerCase().replace(/\s+/g, '')}`
             );
             if (translatedOption === freqValue) return option;
-          } catch (e) {
+          } catch {
             // Continue to next option
           }
         }
@@ -867,7 +867,7 @@ export default function ProfilePage() {
               `workoutDurations.${duration.toLowerCase().replace(/\s+/g, '')}`
             );
             if (translatedDuration === durationValue) return duration;
-          } catch (e) {
+          } catch {
             // Continue to next option
           }
         }
@@ -884,7 +884,7 @@ export default function ProfilePage() {
               `exerciseEnvironments.${envKey.toLowerCase().replace(/\s+/g, '')}`
             );
             if (translatedEnv === envValue) return envKey;
-          } catch (e) {
+          } catch {
             // Continue to next option
           }
         }
@@ -943,7 +943,7 @@ export default function ProfilePage() {
           try {
             const translated = t(`targetBodyParts.${key.toLowerCase()}`);
             targetBodyPartMap.set(translated, key);
-          } catch (e) {
+          } catch {
             // Skip if translation fails
           }
         });
@@ -955,7 +955,7 @@ export default function ProfilePage() {
             if (!targetBodyPartMap.has(translated)) {
               targetBodyPartMap.set(translated, key);
             }
-          } catch (e) {
+          } catch {
             // Skip if translation fails
           }
         });
@@ -1327,6 +1327,7 @@ export default function ProfilePage() {
         setHealthGoals(['Improve strength', 'Build muscle']);
       }
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     userPrograms,
     questionnaireAnswers,
@@ -1684,7 +1685,7 @@ export default function ProfilePage() {
             if (translated !== bodyPartMap[term]) {
               return translated;
             }
-          } catch (e) {
+          } catch {
             // If translation fails and we're in Norwegian, try direct mapping
             if (isNorwegian && norwegianBodyParts[term]) {
               return norwegianBodyParts[term];
@@ -1694,7 +1695,7 @@ export default function ProfilePage() {
         }
 
         // Try converting underscores to camelCase
-        const camelCased = term.replace(/_([a-z])/g, (match, letter) =>
+        const camelCased = term.replace(/_([a-z])/g, (_match, letter) =>
           letter.toUpperCase()
         );
         try {
@@ -1702,7 +1703,7 @@ export default function ProfilePage() {
           if (translatedCamel !== `${translationPrefix}.${camelCased}`) {
             return translatedCamel;
           }
-        } catch (e) {
+        } catch {
           // If translation fails and we're in Norwegian, try direct mapping of camelCase
           if (isNorwegian && norwegianBodyParts[camelCased]) {
             return norwegianBodyParts[camelCased];
@@ -1741,7 +1742,7 @@ export default function ProfilePage() {
             if (translated !== dietaryTranslationMap[dietKey]) {
               return translated;
             }
-          } catch (e) {
+          } catch {
             // Continue to other methods if this fails
           }
         }
@@ -1753,7 +1754,7 @@ export default function ProfilePage() {
         if (translatedDirect !== `${translationPrefix}.${term}`) {
           return translatedDirect;
         }
-      } catch (e) {
+      } catch {
         // Continue to other methods if this fails
       }
 
@@ -1764,7 +1765,7 @@ export default function ProfilePage() {
         if (translated !== formattedKey) {
           return translated;
         }
-      } catch (e) {
+      } catch {
         // Continue to other methods if this fails
       }
 
@@ -3171,7 +3172,7 @@ export default function ProfilePage() {
                                     try {
                                       const translated = t(`bodyParts.${key}`);
                                       return translated === displayName;
-                                    } catch (e) {
+                                    } catch {
                                       return false;
                                     }
                                   });
@@ -3218,7 +3219,7 @@ export default function ProfilePage() {
                                       if (translated === displayName) {
                                         return underscoreKey;
                                       }
-                                    } catch (e) {
+                                    } catch {
                                       // Continue to next key
                                     }
                                   }

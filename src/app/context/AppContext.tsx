@@ -134,6 +134,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         break;
       default:
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const completeRecoverySelection = useCallback(() => {
@@ -251,6 +252,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         console.log('No intention set - group selection ignored');
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
 

@@ -28,7 +28,7 @@ async function computeEquipment(): Promise<EquipmentEntry[]> {
   return cached;
 }
 
-export async function GET(req: NextRequest) {
+export async function GET(_req: NextRequest) {
   const items = await computeEquipment();
   return NextResponse.json({ equipment: items });
 }

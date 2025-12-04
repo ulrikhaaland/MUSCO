@@ -16,7 +16,7 @@ export function QuestionnaireAuthForm() {
   const [loading, setLoading] = useState(false);
   const { sendSignInLink } = useAuth();
   const { pendingQuestionnaire } = useUser();
-  const isPwa = useIsPwa();
+  const _isPwa = useIsPwa();
   const [showAuthCode, setShowAuthCode] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {

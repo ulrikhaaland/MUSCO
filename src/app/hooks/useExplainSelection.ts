@@ -144,6 +144,7 @@ export function useExplainSelection({
       clearTimeout(timer);
       ac.abort();
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [exploreOn, selectedPart?.id, language, readingLevel, refreshKey]);
 
   return state;

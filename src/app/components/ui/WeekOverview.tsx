@@ -1,5 +1,4 @@
 import React from 'react';
-import { ProgramType } from '../../../../shared/types';
 import { ExerciseProgram, UserProgram } from '@/app/types/program';
 import { useTranslation } from '@/app/i18n/TranslationContext';
 import { getWeekNumber } from '@/app/utils/dateutils';

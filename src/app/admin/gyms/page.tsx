@@ -51,11 +51,12 @@ export default function AdminGymsPage() {
       }
       const data = await res.json();
       setGyms(Array.isArray(data.gyms) ? data.gyms as Gym[] : []);
-    } catch (e: any) {
+    } catch {
       setErr('Failed to load gyms');
     }
   };
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { void load(); }, [uid]);
 
   // Load canonical equipment options
@@ -104,7 +105,7 @@ export default function AdminGymsPage() {
       setForm({ name: '', slug: '', color: '', logoUrl: '', equipmentCsv: '' });
       setSelectedEquipment([]);
       setSlugTouched(false);
-    } catch (e) {
+    } catch {
       setErr('Failed to save gym');
     } finally { setBusy(false); }
   };
@@ -122,7 +123,7 @@ export default function AdminGymsPage() {
       a.href = data.qrPngDataUrl;
       a.download = `${slug}-qr.svg`;
       document.body.appendChild(a); a.click(); document.body.removeChild(a);
-    } catch (e) {
+    } catch {
       setErr('Failed to generate QR');
     } finally { setBusy(false); }
   };

@@ -25,18 +25,19 @@ export default function MuscleLoader({
 
   /* ─── stroke-dash pulse ─────────────────────────────────────────────── */
   useEffect(() => {
-    if (!svgRef.current) return;
+    const svgElement = svgRef.current;
+    if (!svgElement) return;
 
     // Use timeout to ensure DOM is fully ready
     const initTimer = setTimeout(() => {
-      if (!svgRef.current) return;
+      if (!svgElement) return;
 
-      const pulsePaths = svgRef.current.querySelectorAll('g.pulse path');
-      const pulseGroup = svgRef.current.querySelector('g.pulse');
+      const pulsePaths = svgElement.querySelectorAll('g.pulse path');
+      const pulseGroup = svgElement.querySelector('g.pulse');
 
       if (pulseGroup) {
         // First set up all paths with the correct dash values
-        pulsePaths.forEach((p, i) => {
+        pulsePaths.forEach((p, _i) => {
           const len = (p as SVGPathElement).getTotalLength();
           (p as SVGPathElement).style.strokeDasharray = `${len}`;
           (p as SVGPathElement).style.strokeDashoffset = `${len}`;
@@ -60,13 +61,13 @@ export default function MuscleLoader({
     return () => {
       clearTimeout(initTimer);
       console.log('Cleaning up MuscleLoader animation');
-      if (svgRef.current) {
-        const pulseGroup = svgRef.current.querySelector('g.pulse');
+      if (svgElement) {
+        const pulseGroup = svgElement.querySelector('g.pulse');
         if (pulseGroup) {
           (pulseGroup as SVGGElement).style.opacity = '0';
         }
 
-        const paths = svgRef.current.querySelectorAll('g.pulse path');
+        const paths = svgElement.querySelectorAll('g.pulse path');
         paths.forEach((p) => {
           (p as SVGPathElement).style.animation = 'none';
         });

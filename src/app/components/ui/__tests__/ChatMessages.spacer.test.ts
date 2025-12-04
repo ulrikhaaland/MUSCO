@@ -9,10 +9,10 @@ describe('ChatMessages - Spacer Behavior', () => {
       // When a response completes on desktop, keepSpacer should remain true
       // This prevents viewport shifts when sending the next message
       
-      const disableAutoScroll = true;
-      const wasLoading = true;
-      const isLoading = false;
-      const hasMessages = true;
+      const _disableAutoScroll = true;
+      const _wasLoading = true;
+      const _isLoading = false;
+      const _hasMessages = true;
       
       // After response completes:
       // keepSpacer should be set to true
@@ -39,7 +39,7 @@ describe('ChatMessages - Spacer Behavior', () => {
       // even when content fits within the container
       
       const disableAutoScroll = true;
-      const keepSpacer = true;
+      const _keepSpacer = true;
       const contentFits = true; // actualContentHeight <= availableSpace
       const initialHeight = 500;
       
@@ -72,7 +72,7 @@ describe('ChatMessages - Spacer Behavior', () => {
       // On mobile, spacer can collapse to save space when content fits
       
       const disableAutoScroll = false;
-      const keepSpacer = true;
+      const _keepSpacer = true;
       const contentFits = true;
       const initialHeight = 500;
       
@@ -149,7 +149,7 @@ describe('ChatMessages - Auto-scroll Behavior', () => {
     });
 
     it('should force scroll for user messages', () => {
-      const disableAutoScroll = true;
+      const _disableAutoScroll = true;
       const isNewUserMessage = true;
       const forceScroll = true;
       

@@ -84,7 +84,7 @@ export const submitQuestionnaireIncremental = async (
   diagnosis: DiagnosisAssistantResponse,
   questionnaire: ExerciseQuestionnaireAnswers,
   callbacks?: IncrementalGenerationCallbacks,
-  assistantId?: string
+  _assistantId?: string
 ): Promise<string> => {
   // Create sanitized copy of questionnaire
   const sanitizedQuestionnaire = { ...questionnaire };

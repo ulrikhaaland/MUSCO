@@ -1,5 +1,5 @@
 import { StreamParser } from '../stream-parser';
-import { Question, DiagnosisAssistantResponse } from '@/app/types';
+import { Question } from '@/app/types';
 
 describe('StreamParser', () => {
   describe('basic text streaming', () => {
