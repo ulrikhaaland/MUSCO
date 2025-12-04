@@ -36,6 +36,8 @@ function ProgramPageContent({
     programStatus,
     userPrograms,
     selectProgram,
+    generatingDay,
+    generatedDays,
   } = useUser();
   const [error] = useState<Error | null>(null);
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
@@ -273,8 +275,8 @@ function ProgramPageContent({
 
 
 
-  const shouldShimmer =
-    forceShimmer || (programStatus === ProgramStatus.Generating && !selectedProgram);
+  // Only force shimmer for testing - during generation we use per-day shimmers
+  const shouldShimmer = forceShimmer;
 
   const mobileTitle = selectedProgram?.title || activeProgram?.title || t('program.defaultPageTitle');
 
@@ -302,6 +304,8 @@ function ProgramPageContent({
           )
         }
         isCustomProgram={isCustomProgram}
+        generatingDay={generatingDay}
+        generatedDays={generatedDays}
         onOverviewVisibilityChange={(visible) => setIsOverviewVisible(visible)}
       />
       {renderVideoModal()}

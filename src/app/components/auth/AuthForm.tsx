@@ -74,7 +74,7 @@ export function AuthForm({ onSkip, isSaveContext = false, isAdmin = false }: { o
       <div className="w-full max-w-md px-4 pb-6 overflow-hidden">
         <AuthCodeInput />
         
-        <div className="mt-6 text-center">
+        <div className="mt-4 text-center">
           <button
             type="button"
             onClick={() => setStep('email')}

@@ -23,13 +23,17 @@ import {
   ProgramStatus,
   ExerciseProgram,
   UserProgram,
+  ProgramDay,
 } from '@/app/types/program';
 import {
   submitQuestionnaire,
+  submitQuestionnaireIncremental,
   storePendingQuestionnaire,
   getPendingQuestionnaire,
   deletePendingQuestionnaire,
 } from '@/app/services/questionnaire';
+import { PartialProgram } from '@/app/types/incremental-program';
+import { partialToDisplayProgram } from '@/app/services/incrementalProgramService';
 import { updateActiveProgramStatus } from '@/app/services/program';
 import { useRouter, usePathname } from 'next/navigation';
 import { enrichExercisesWithFullData } from '@/app/services/exerciseProgramService';
@@ -80,6 +84,9 @@ interface UserContextType {
   toggleActiveProgram: (programIndex: number) => Promise<void>;
   generateFollowUpProgram: () => Promise<void>;
   loadUserPrograms: () => Promise<void>;
+  // Incremental generation state
+  generatingDay: number | null; // Which day is currently being generated (1-7), null if not generating
+  generatedDays: number[]; // Array of day numbers that have been generated
 }
 
 const UserContext = createContext<UserContextType>({} as UserContextType);
@@ -121,6 +128,11 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const submissionInProgressRef = useRef(false);
   // Add a ref to track the currently active program ID
   const activeProgramIdRef = useRef<string | null>(null);
+  
+  // Incremental generation state
+  const [generatingDay, setGeneratingDay] = useState<number | null>(null);
+  const [generatedDays, setGeneratedDays] = useState<number[]>([]);
+  const [partialProgram, setPartialProgram] = useState<PartialProgram | null>(null);
 
   // Helper that wires all related state when a program becomes the current one
   const prepareAndSetProgram = (userProgram: UserProgramWithId) => {
@@ -140,6 +152,10 @@ export function UserProvider({ children }: { children: ReactNode }) {
     setProgram(primaryProgram);
     setAnswers(userProgram.questionnaire);
     setDiagnosisData(userProgram.diagnosis);
+    
+    // Mark all days as generated for existing programs (not incrementally generating)
+    setGeneratedDays([1, 2, 3, 4, 5, 6, 7]);
+    setGeneratingDay(null);
   };
 
   // Helper to set a recovery program as the current program
@@ -287,14 +303,75 @@ export function UserProvider({ children }: { children: ReactNode }) {
         let activeProgram: UserProgramWithId | null = null;
 
         // Check if any program is currently being generated
-        const hasGeneratingProgram = snapshot.docs.some(
+        const generatingDoc = snapshot.docs.find(
           (doc) => doc.data().status === ProgramStatus.Generating
         );
 
-        // If a program is being generated, set status and redirect to program page
-        if (hasGeneratingProgram) {
+        // Handle incremental generation updates
+        if (generatingDoc) {
+          const data = generatingDoc.data();
           setProgramStatus(ProgramStatus.Generating);
-          // Only navigate to program page if we're not already there
+          
+          // Update incremental generation state from Firebase
+          if (data.generatingDay !== undefined) {
+            setGeneratingDay(data.generatingDay);
+          }
+          
+          // If we have days, build the program for display
+          if (data.days && Array.isArray(data.days)) {
+            const generatedDayNumbers = data.days.map((d: ProgramDay) => d.day);
+            setGeneratedDays(generatedDayNumbers);
+            
+            // Build display program from Firebase data
+            const displayProgram: ExerciseProgram = {
+              title: data.title || '',
+              programOverview: data.programOverview || '',
+              summary: data.summary || '',
+              timeFrameExplanation: '',
+              whatNotToDo: data.whatNotToDo || '',
+              afterTimeFrame: data.afterTimeFrame || { expectedOutcome: '', nextSteps: '' },
+              targetAreas: data.questionnaire?.targetAreas || [],
+              bodyParts: data.questionnaire?.targetAreas || [],
+              createdAt: data.createdAt?.toDate?.() || new Date(),
+              days: [1, 2, 3, 4, 5, 6, 7].map((dayNum) => {
+                const existingDay = data.days.find((d: ProgramDay) => d.day === dayNum);
+                return existingDay || {
+                  day: dayNum,
+                  description: '',
+                  isRestDay: false,
+                  exercises: [],
+                  duration: 0,
+                };
+              }),
+            };
+            
+            // Enrich exercises with full data
+            await enrichExercisesWithFullData(displayProgram, isNorwegian);
+            setProgram(displayProgram);
+          } else {
+            // No days yet, show skeleton
+            const skeletonProgram: ExerciseProgram = {
+              title: data.title || '',
+              programOverview: data.programOverview || '',
+              summary: data.summary || '',
+              timeFrameExplanation: '',
+              whatNotToDo: data.whatNotToDo || '',
+              afterTimeFrame: data.afterTimeFrame || { expectedOutcome: '', nextSteps: '' },
+              targetAreas: data.questionnaire?.targetAreas || [],
+              bodyParts: data.questionnaire?.targetAreas || [],
+              createdAt: new Date(),
+              days: [1, 2, 3, 4, 5, 6, 7].map((day) => ({
+                day,
+                description: '',
+                isRestDay: false,
+                exercises: [],
+                duration: 0,
+              })),
+            };
+            setProgram(skeletonProgram);
+          }
+          
+          // Navigate to program page if not already there
           if (
             typeof window !== 'undefined' &&
             !window.location.pathname.includes('/program')
@@ -465,7 +542,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
           // Only update the status to Done if we're not currently generating a new program
           if (
             programStatus !== ProgramStatus.Generating &&
-            !hasGeneratingProgram
+            !generatingDoc
           ) {
             setProgramStatus(ProgramStatus.Done);
           }
@@ -597,14 +674,39 @@ export function UserProvider({ children }: { children: ReactNode }) {
     submissionInProgressRef.current = true;
 
     try {
-      // Clear existing program state before navigation
-      setProgram(null);
+      // Clear existing program state
       setActiveProgram(null);
+      
+      // Reset incremental generation state
+      setGeneratingDay(1);
+      setGeneratedDays([]);
+      setPartialProgram(null);
+
+      // Create skeleton program immediately so UI shows full week from start
+      const skeletonProgram: ExerciseProgram = {
+        title: '',
+        programOverview: '',
+        summary: '',
+        timeFrameExplanation: '',
+        whatNotToDo: '',
+        afterTimeFrame: { expectedOutcome: '', nextSteps: '' },
+        targetAreas: answers.targetAreas,
+        bodyParts: answers.targetAreas,
+        createdAt: new Date(),
+        days: [1, 2, 3, 4, 5, 6, 7].map((day) => ({
+          day,
+          description: '',
+          isRestDay: false,
+          exercises: [],
+          duration: 0,
+        })),
+      };
+      setProgram(skeletonProgram);
 
       // Update local state
       setAnswers(answers);
       setDiagnosisData(diagnosis);
-      // Set program status to generating after clearing program state
+      // Set program status to generating after setting skeleton program
       setProgramStatus(ProgramStatus.Generating);
 
       // loader removed
@@ -616,11 +718,8 @@ export function UserProvider({ children }: { children: ReactNode }) {
       window.sessionStorage.removeItem('pendingAnswers');
       setPendingQuestionnaire(null);
 
-      // Delay navigation slightly to ensure state updates are processed
-      setTimeout(() => {
-        // Directly navigate to the program page
-        router.push('/program');
-      }, 10);
+      // Navigate immediately - don't wait for Firebase operations
+      router.push('/program');
 
       //remove neck from answers.targetAreas
       if (diagnosis.programType === ProgramType.Exercise || diagnosis.programType === ProgramType.ExerciseAndRecovery) {
@@ -629,18 +728,69 @@ export function UserProvider({ children }: { children: ReactNode }) {
         );
       }
 
-      // Submit questionnaire and generate program
-      const programId = await submitQuestionnaire(user.uid, diagnosis, answers);
-      logAnalyticsEvent('questionnaire_submitted', {
-        programType: diagnosis.programType,
-        programId,
+      // Submit questionnaire and generate program incrementally
+      // Don't await - let Firebase operations happen in background while user sees the program page
+      submitQuestionnaireIncremental(
+        user.uid,
+        diagnosis,
+        answers,
+        {
+          onMetadataReady: async (partial) => {
+            console.log('[UserContext] Metadata ready, starting day generation');
+            setPartialProgram(partial);
+            // Update skeleton program with metadata (keep placeholder days)
+            setProgram((prev) => prev ? {
+              ...prev,
+              title: partial.title,
+              programOverview: partial.programOverview,
+              summary: partial.summary,
+              whatNotToDo: partial.whatNotToDo,
+              afterTimeFrame: partial.afterTimeFrame,
+            } : partialToDisplayProgram(partial));
+          },
+          onDayGenerated: async (day, dayNumber, partial) => {
+            console.log(`[UserContext] Day ${dayNumber} generated`);
+            setPartialProgram(partial);
+            setGeneratedDays((prev) => [...prev, dayNumber]);
+            setGeneratingDay(dayNumber < 7 ? dayNumber + 1 : null);
+            // Update display program with new day
+            const displayProgram = partialToDisplayProgram(partial);
+            // Enrich exercises with full data
+            await enrichExercisesWithFullData(displayProgram, isNorwegian);
+            setProgram(displayProgram);
+          },
+          onComplete: async (finalProgram) => {
+            console.log('[UserContext] Program generation complete');
+            // Enrich final program
+            await enrichExercisesWithFullData(finalProgram, isNorwegian);
+            setProgram(finalProgram);
+            setPartialProgram(null);
+            setGeneratingDay(null);
+            setGeneratedDays([1, 2, 3, 4, 5, 6, 7]);
+            setProgramStatus(ProgramStatus.Done);
+          },
+          onError: (error) => {
+            console.error('[UserContext] Program generation error:', error);
+            setProgramStatus(ProgramStatus.Error);
+            setGeneratingDay(null);
+          },
+        }
+      ).then((programId) => {
+        logAnalyticsEvent('questionnaire_submitted', {
+          programType: diagnosis.programType,
+          programId,
+        });
+      }).catch((error) => {
+        console.error('[UserContext] Program submission error:', error);
+        setProgramStatus(ProgramStatus.Error);
       });
 
       submissionInProgressRef.current = false;
-      return { programId };
+      return {};
     } catch (error) {
       // logging removed
       setProgramStatus(ProgramStatus.Error);
+      setGeneratingDay(null);
       submissionInProgressRef.current = false;
       throw error;
     }
@@ -912,6 +1062,9 @@ export function UserProvider({ children }: { children: ReactNode }) {
         toggleActiveProgram,
         generateFollowUpProgram,
         loadUserPrograms,
+        // Incremental generation state
+        generatingDay,
+        generatedDays,
       }}
     >
       {children}

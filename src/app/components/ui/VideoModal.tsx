@@ -37,11 +37,11 @@ export function VideoModal({
       >
         {/* Navigation buttons */}
         {showNavigation && onNavigate && (
-          <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-between px-4 sm:px-8 z-[10001]">
+          <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-between px-4 sm:px-8 z-[10001] pointer-events-none">
             {showPreviousButton && (
               <button
                 onClick={() => onNavigate('prev')}
-                className="bg-black/70 rounded-full p-3 text-white/90 hover:text-white hover:bg-black/90 transition-colors duration-200 shadow-lg"
+                className="bg-black/70 rounded-full p-3 text-white/90 hover:text-white hover:bg-black/90 transition-colors duration-200 shadow-lg pointer-events-auto"
                 aria-label="Previous video"
               >
                 <svg
@@ -65,7 +65,7 @@ export function VideoModal({
             {showNextButton && (
               <button
                 onClick={() => onNavigate('next')}
-                className="bg-black/70 rounded-full p-3 text-white/90 hover:text-white hover:bg-black/90 transition-colors duration-200 shadow-lg"
+                className="bg-black/70 rounded-full p-3 text-white/90 hover:text-white hover:bg-black/90 transition-colors duration-200 shadow-lg pointer-events-auto"
                 aria-label="Next video"
               >
                 <svg

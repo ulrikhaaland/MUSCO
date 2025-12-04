@@ -285,6 +285,7 @@ export function ExerciseQuestionnaire({
     targetAreas: computeInitialTargetAreas(),
     cardioType: '',
     cardioEnvironment: '',
+    includeWeekends: true,
   }));
 
   // No-op: target areas are updated directly in answers state
@@ -409,6 +410,14 @@ export function ExerciseQuestionnaire({
       setProgramTypeCollapsed(true);
     }
   }, [answers.age]);
+
+  // Force includeWeekends to true when more than 5 days are selected
+  useEffect(() => {
+    const days = getWeeklyActivityDays(answers.numberOfActivityDays);
+    if (days > 5 && !answers.includeWeekends) {
+      setAnswers(prev => ({ ...prev, includeWeekends: true }));
+    }
+  }, [answers.numberOfActivityDays, answers.includeWeekends]);
 
   const scrollToNextUnansweredQuestion = async (
     currentRef: React.RefObject<HTMLDivElement>,
@@ -1619,7 +1628,7 @@ export function ExerciseQuestionnaire({
                 onClick={() => handleEdit('numberOfActivityDays')}
                 className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-8 shadow-xl ring-1 ring-gray-700/50"
               >
-                <h3 className="flex items-center text-lg font-semibold text-white mb-6">
+                <h3 className="flex items-center text-lg font-semibold text-white mb-4">
                   <svg
                     className="w-6 h-6 mr-3 text-indigo-400 flex-shrink-0"
                     fill="none"
@@ -1637,6 +1646,57 @@ export function ExerciseQuestionnaire({
                     ? t('questionnaire.exerciseDays')
                     : t('questionnaire.recoveryDays')}
                 </h3>
+                
+                {/* Include Weekends Checkbox */}
+                <div className="mb-6">
+                  <label 
+                    className={`flex items-center group ${
+                      getWeeklyActivityDays(answers.numberOfActivityDays) > 5 
+                        ? 'cursor-not-allowed' 
+                        : 'cursor-pointer'
+                    }`}
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <div className="relative">
+                      <input
+                        type="checkbox"
+                        checked={answers.includeWeekends ?? true}
+                        disabled={getWeeklyActivityDays(answers.numberOfActivityDays) > 5}
+                        onChange={(e) => {
+                          e.stopPropagation();
+                          setAnswers(prev => ({ ...prev, includeWeekends: e.target.checked }));
+                        }}
+                        className="sr-only peer"
+                      />
+                      <div className={`w-5 h-5 rounded ring-1 transition-all duration-200 flex items-center justify-center ${
+                        getWeeklyActivityDays(answers.numberOfActivityDays) > 5
+                          ? 'bg-indigo-500/30 ring-indigo-500/50'
+                          : (answers.includeWeekends ?? true)
+                            ? 'bg-indigo-500/20 ring-indigo-500'
+                            : 'bg-gray-900/50 ring-gray-700/30 group-hover:ring-gray-600'
+                      }`}>
+                        {(answers.includeWeekends ?? true) && (
+                          <svg className={`w-3 h-3 ${getWeeklyActivityDays(answers.numberOfActivityDays) > 5 ? 'text-indigo-400/70' : 'text-indigo-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                          </svg>
+                        )}
+                      </div>
+                    </div>
+                    <span className={`ml-2 text-sm ${
+                      getWeeklyActivityDays(answers.numberOfActivityDays) > 5
+                        ? 'text-gray-500'
+                        : 'text-gray-300'
+                    }`}>
+                      {t('questionnaire.includeWeekends')}
+                    </span>
+                    {getWeeklyActivityDays(answers.numberOfActivityDays) > 5 && (
+                      <span className="ml-2 text-xs text-gray-500">
+                        ({t('questionnaire.weekendsRequired')})
+                      </span>
+                    )}
+                  </label>
+                </div>
+                
                 {answers.numberOfActivityDays &&
                 editingField !== 'numberOfActivityDays' &&
                 shouldCollapseField('numberOfActivityDays') ? (

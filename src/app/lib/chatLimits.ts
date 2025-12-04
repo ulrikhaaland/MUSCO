@@ -2,6 +2,9 @@
 
 export const ENFORCE_CHAT_LIMITS: boolean = (process.env.ENFORCE_CHAT_LIMITS ?? 'true') !== 'false';
 
+// Re-export from client-safe module (server code can import from either place)
+export { SUBSCRIPTIONS_ENABLED } from './featureFlags';
+
 export const FREE_DAILY_TOKENS: number = parseInt(
   process.env.NON_SUBSCRIBER_CHAT_DAILY_TOKENS ?? (process.env.NODE_ENV === 'production' ? '10000' : '200'),
   10

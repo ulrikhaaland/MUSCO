@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useCallback } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { Exercise } from '@/app/types/program';
 import { extractExerciseMarkers } from '@/app/utils/exerciseMarkerParser';
@@ -6,6 +6,99 @@ import { extractBodyPartMarkers, findBodyPartByName, findGroupByName } from '@/a
 import { ExerciseDetailModal } from './ExerciseDetailModal';
 import { AnatomyPart } from '@/app/types/human';
 import { BodyPartGroup } from '@/app/config/bodyPartGroups';
+import { useTranslation } from '@/app/i18n';
+import { translateBodyPartGroupName, translateAnatomyPart } from '@/app/utils/bodyPartTranslation';
+
+// Touch tracking for distinguishing taps from scrolls
+const SCROLL_THRESHOLD = 10; // px - movement beyond this is a scroll, not a tap
+
+// Color schemes for badges - must use full class names for Tailwind
+const BADGE_COLORS = {
+  indigo: {
+    base: 'bg-indigo-600/30 border-indigo-500/40',
+    hover: 'hover:bg-indigo-600/50 hover:border-indigo-400',
+    active: 'active:bg-indigo-600/70',
+  },
+  emerald: {
+    base: 'bg-emerald-600/30 border-emerald-500/40',
+    hover: 'hover:bg-emerald-600/50 hover:border-emerald-400',
+    active: 'active:bg-emerald-600/70',
+  },
+  cyan: {
+    base: 'bg-cyan-600/30 border-cyan-500/40',
+    hover: 'hover:bg-cyan-600/50 hover:border-cyan-400',
+    active: 'active:bg-cyan-600/70',
+  },
+} as const;
+
+type BadgeColor = keyof typeof BADGE_COLORS;
+
+/**
+ * Clickable badge that distinguishes between taps and scrolls on mobile
+ */
+function ClickableBadge({
+  children,
+  onClick,
+  color,
+  ariaLabel,
+}: {
+  children: React.ReactNode;
+  onClick?: () => void;
+  color: BadgeColor;
+  ariaLabel?: string;
+}) {
+  const touchStartRef = useRef<{ x: number; y: number } | null>(null);
+
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    const touch = e.touches[0];
+    touchStartRef.current = { x: touch.clientX, y: touch.clientY };
+  }, []);
+
+  const handleTouchEnd = useCallback((e: React.TouchEvent) => {
+    if (!touchStartRef.current || !onClick) return;
+    
+    const touch = e.changedTouches[0];
+    const dx = Math.abs(touch.clientX - touchStartRef.current.x);
+    const dy = Math.abs(touch.clientY - touchStartRef.current.y);
+    
+    // Only trigger click if finger didn't move much (it's a tap, not a scroll)
+    if (dx < SCROLL_THRESHOLD && dy < SCROLL_THRESHOLD) {
+      e.preventDefault();
+      e.stopPropagation();
+      onClick();
+    }
+    
+    touchStartRef.current = null;
+  }, [onClick]);
+
+  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+    if (!onClick) return;
+    e.preventDefault();
+    e.stopPropagation();
+    onClick();
+  }, [onClick]);
+
+  const colorScheme = BADGE_COLORS[color];
+
+  return (
+    <span 
+      className={`not-italic px-1.5 py-0.5 rounded ${colorScheme.base} text-white font-medium border select-none ${onClick ? `cursor-pointer ${colorScheme.hover} ${colorScheme.active}` : ''} transition-colors`}
+      onMouseDown={onClick ? handleMouseDown : undefined}
+      onTouchStart={onClick ? handleTouchStart : undefined}
+      onTouchEnd={onClick ? handleTouchEnd : undefined}
+      role={onClick ? 'button' : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      aria-label={ariaLabel}
+      style={{ 
+        WebkitTouchCallout: 'none',
+        WebkitUserSelect: 'none',
+        userSelect: 'none'
+      }}
+    >
+      {children}
+    </span>
+  );
+}
 
 interface MessageWithExercisesProps {
   content: string;
@@ -68,6 +161,7 @@ export const MessageWithExercises = React.memo(function MessageWithExercises({
   onBodyPartClick,
   onGroupClick,
 }: MessageWithExercisesProps) {
+  const { t } = useTranslation();
   const exerciseMarkers = extractExerciseMarkers(content);
   const bodyPartMarkers = extractBodyPartMarkers(content);
   const hasMarkers = exerciseMarkers.length > 0 || bodyPartMarkers.length > 0;
@@ -129,43 +223,23 @@ export const MessageWithExercises = React.memo(function MessageWithExercises({
           // Check if this is an exercise marker
           if (rawText.startsWith('exercise:')) {
             const exerciseName = rawText.substring('exercise:'.length);
-          const exercise = findExercise(exerciseName, exercises);
+            const exercise = findExercise(exerciseName, exercises);
           
             // If exercise not found in database, render as plain text
-          if (!exercise) {
+            if (!exercise) {
               return <span>{exerciseName}</span>;
-          }
+            }
           
-          const handleTouch = (e: React.TouchEvent) => {
-            e.preventDefault();
-            e.stopPropagation();
-              onExerciseSelect?.(exercise);
-          };
-
-          const handleMouseDown = (e: React.MouseEvent) => {
-            e.preventDefault();
-            e.stopPropagation();
-              onExerciseSelect?.(exercise);
-          };
-          
-          // Render as clickable badge for exercises in database
-          return (
-            <span 
-              className="not-italic px-1.5 py-0.5 rounded bg-indigo-600/30 text-white font-medium border border-indigo-500/40 select-none cursor-pointer hover:bg-indigo-600/50 hover:border-indigo-400 transition-colors active:bg-indigo-600/70"
-              onMouseDown={handleMouseDown}
-              onTouchStart={handleTouch}
-              role="button"
-              tabIndex={0}
-              aria-label={`View ${exercise.name} details`}
-              style={{ 
-                WebkitTouchCallout: 'none',
-                WebkitUserSelect: 'none',
-                userSelect: 'none'
-              }}
-            >
-              {exercise.name}
-            </span>
-          );
+            // Render as clickable badge for exercises in database
+            return (
+              <ClickableBadge
+                color="indigo"
+                onClick={() => onExerciseSelect?.(exercise)}
+                ariaLabel={`View ${exercise.name} details`}
+              >
+                {exercise.name}
+              </ClickableBadge>
+            );
           }
           
           // Check if this is a body part marker (could be a group or specific part)
@@ -175,29 +249,16 @@ export const MessageWithExercises = React.memo(function MessageWithExercises({
             // First check if it's a group name
             const matchedGroup = findGroupByName(markerName);
             if (matchedGroup) {
-              const handleGroupClick = (e: React.MouseEvent | React.TouchEvent) => {
-                e.preventDefault();
-                e.stopPropagation();
-                onGroupClick?.(matchedGroup);
-              };
-              
+              const translatedGroupName = translateBodyPartGroupName(matchedGroup, t);
               // Render as group badge (cyan/teal color to differentiate from body parts)
               return (
-                <span 
-                  className={`not-italic px-1.5 py-0.5 rounded bg-cyan-600/30 text-white font-medium border border-cyan-500/40 select-none ${onGroupClick ? 'cursor-pointer hover:bg-cyan-600/50 hover:border-cyan-400 active:bg-cyan-600/70' : ''} transition-colors`}
-                  onMouseDown={onGroupClick ? handleGroupClick : undefined}
-                  onTouchStart={onGroupClick ? handleGroupClick : undefined}
-                  role={onGroupClick ? 'button' : undefined}
-                  tabIndex={onGroupClick ? 0 : undefined}
-                  aria-label={onGroupClick ? `Select ${matchedGroup.name} region on model` : undefined}
-                  style={{ 
-                    WebkitTouchCallout: 'none',
-                    WebkitUserSelect: 'none',
-                    userSelect: 'none'
-                  }}
+                <ClickableBadge
+                  color="cyan"
+                  onClick={onGroupClick ? () => onGroupClick(matchedGroup) : undefined}
+                  ariaLabel={onGroupClick ? `Select ${translatedGroupName} region on model` : undefined}
                 >
-                  {matchedGroup.name}
-                </span>
+                  {translatedGroupName}
+                </ClickableBadge>
               );
             }
             
@@ -210,31 +271,17 @@ export const MessageWithExercises = React.memo(function MessageWithExercises({
             }
             
             const { part, group } = result;
-            
-            const handleClick = (e: React.MouseEvent | React.TouchEvent) => {
-              e.preventDefault();
-              e.stopPropagation();
-              // Pass both part and group so the group can be selected too
-              onBodyPartClick(part, group);
-            };
+            const translatedPartName = translateAnatomyPart(part, t);
             
             // Render as clickable badge for body parts (emerald color)
             return (
-              <span 
-                className="not-italic px-1.5 py-0.5 rounded bg-emerald-600/30 text-white font-medium border border-emerald-500/40 select-none cursor-pointer hover:bg-emerald-600/50 hover:border-emerald-400 transition-colors active:bg-emerald-600/70"
-                onMouseDown={handleClick}
-                onTouchStart={handleClick}
-                role="button"
-                tabIndex={0}
-                aria-label={`Select ${part.name} on model`}
-                style={{ 
-                  WebkitTouchCallout: 'none',
-                  WebkitUserSelect: 'none',
-                  userSelect: 'none'
-                }}
+              <ClickableBadge
+                color="emerald"
+                onClick={() => onBodyPartClick(part, group)}
+                ariaLabel={`Select ${translatedPartName} on model`}
               >
-                {part.name}
-              </span>
+                {translatedPartName}
+              </ClickableBadge>
             );
           }
           

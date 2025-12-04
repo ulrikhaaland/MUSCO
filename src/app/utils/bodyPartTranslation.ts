@@ -47,4 +47,36 @@ export function translatePartDirectionPrefix(part: AnatomyPart | null, t: (key: 
   }
   
   return name;
+}
+
+/**
+ * Translate an anatomy part name fully (both direction prefix AND body part name)
+ * Tries multiple translation key formats for the body part name.
+ * @param part The anatomy part to translate
+ * @param t Translation function
+ * @returns Fully translated part name, or original with direction prefix translated
+ */
+export function translateAnatomyPart(part: AnatomyPart | null, t: (key: string, options?: any) => string): string {
+  if (!part) return '';
+  
+  const name = part.name;
+  
+  // Try direct translations with various key formats
+  const keyFormats = [
+    `bodyParts.${name}`,                           // "bodyParts.Left Shoulder"
+    `bodyParts.${name.toLowerCase()}`,             // "bodyParts.left shoulder"
+    `bodyParts.${name.replace(/\s+/g, '')}`,       // "bodyParts.LeftShoulder"
+    `bodyParts.${name.toLowerCase().replace(/\s+/g, '')}`, // "bodyParts.leftshoulder"
+  ];
+  
+  for (const key of keyFormats) {
+    const translation = t(key);
+    // If translation exists (not same as key), return it
+    if (translation !== key) {
+      return translation;
+    }
+  }
+  
+  // Fallback: at least translate the direction prefix
+  return translatePartDirectionPrefix(part, t);
 } 

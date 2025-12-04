@@ -1,6 +1,5 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import { ExerciseQuestionnaire } from '@/app/components/ui/ExerciseQuestionnaire';
 import { ProgramType, ExerciseQuestionnaireAnswers } from '../../../../shared/types';
 import { useState, useEffect } from 'react';
@@ -13,7 +12,6 @@ export default function QuestionnaireClient({
 }: {
   programType: ProgramType;
 }) {
-  const router = useRouter();
   const { onQuestionnaireSubmit } = useUser();
   const [selectedProgramType, setSelectedProgramType] = useState<ProgramType>(programType);
 
@@ -51,10 +49,10 @@ export default function QuestionnaireClient({
     };
 
     try {
-      const result = await onQuestionnaireSubmit(diagnosis, answers);
-      if (!result?.requiresAuth) {
-        router.push('/programs');
-      }
+      // Navigation is handled by UserContext.onQuestionnaireSubmit:
+      // - Authenticated users: navigates to /program during generation
+      // - Unauthenticated users: returns requiresAuth flag (auth overlay shown)
+      await onQuestionnaireSubmit(diagnosis, answers);
     } catch (err) {
       console.error('Questionnaire submission failed', err);
     }

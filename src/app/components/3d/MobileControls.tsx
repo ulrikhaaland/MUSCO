@@ -18,6 +18,8 @@ import { ProgramType } from '../../../../shared/types';
 import { VideoModal } from '../ui/VideoModal';
 import { ChatHistory } from '../ui/ChatHistory';
 import { useApp } from '@/app/context/AppContext';
+import { SUBSCRIPTIONS_ENABLED } from '@/app/lib/featureFlags';
+import { translateBodyPartGroupName, translateAnatomyPart } from '@/app/utils/bodyPartTranslation';
 
 interface MobileControlsProps {
   isRotating: boolean;
@@ -419,7 +421,7 @@ export default function MobileControls({
                       router.push('/login');
                     }}
                     isLoggedIn={Boolean(user)}
-                    isSubscriber={Boolean(user?.profile?.isSubscriber)}
+                    isSubscriber={!SUBSCRIPTIONS_ENABLED || Boolean(user?.profile?.isSubscriber)}
                     followUpQuestions={followUpQuestions}
                     exerciseResults={exerciseResults}
                     inlineExercises={inlineExercises}
@@ -476,12 +478,14 @@ export default function MobileControls({
                 <div className="min-w-0 flex-1">
                   {/* Group name first (parent category) */}
                   <div className="text-sm text-white truncate">
-                    {selectedGroups[0]?.name || selectedPart?.name}
+                    {selectedGroups[0] 
+                      ? translateBodyPartGroupName(selectedGroups[0], t)
+                      : selectedPart ? translateAnatomyPart(selectedPart, t) : ''}
                   </div>
                   {/* Part name second (specific selection) */}
                   {selectedPart && (
                     <div className="text-xs text-gray-400 truncate">
-                      {selectedPart.name}
+                      {translateAnatomyPart(selectedPart, t)}
                     </div>
                   )}
                 </div>

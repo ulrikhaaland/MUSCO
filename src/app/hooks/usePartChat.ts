@@ -8,6 +8,7 @@ import { ProgramType } from '../../../shared/types';
 import { useTranslation } from '../i18n';
 import {
   translateBodyPartGroupName,
+  translateAnatomyPart,
   translatePartDirectionPrefix,
 } from '../utils/bodyPartTranslation';
 import { decideMode } from './logic/partChatDecision';
@@ -257,7 +258,7 @@ export function usePartChat({
         });
       }
     }
-    return translatePartDirectionPrefix(selectedPart, t);
+    return translateAnatomyPart(selectedPart, t);
   };
 
   // Effect to handle automatic switch to diagnosis

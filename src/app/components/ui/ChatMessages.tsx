@@ -7,8 +7,16 @@ import { BodyPartGroup } from '@/app/config/bodyPartGroups';
 import { AnatomyPart } from '@/app/types/human';
 import ExerciseChatCard from './ExerciseChatCard';
 import { MessageWithExercises } from './MessageWithExercises';
+import { SUBSCRIPTIONS_ENABLED } from '@/app/lib/featureFlags';
 
 // Follow-up Questions Component
+/**
+ * Strip {{Name}} markers from text for display (used in follow-up buttons)
+ */
+function stripBodyPartMarkers(text: string): string {
+  return text.replace(/\{\{([^}]+)\}\}/g, '$1');
+}
+
 interface FollowUpQuestionsProps {
   questions: Question[];
   visibleQuestions: Set<string>;
@@ -70,17 +78,17 @@ function FollowUpQuestions({
                   className={`${!question.title ? 'text-[#c8cbff]' : 'font-medium text-[#c8cbff] capitalize'}`}
                 >
                   {question.title
-                    ? question.title.toLowerCase()
-                    : question.question}
+                    ? stripBodyPartMarkers(question.title.toLowerCase())
+                    : stripBodyPartMarkers(question.question)}
                 </div>
                 {question.meta && (
                   <div className="text-sm text-[#c8cbff] opacity-75 mt-1">
-                    {question.meta}
+                    {stripBodyPartMarkers(question.meta)}
                   </div>
                 )}
                 {question.title && !question.meta && (
                   <div className="text-sm text-gray-400">
-                    {question.question}
+                    {stripBodyPartMarkers(question.question)}
                   </div>
                 )}
               </div>
@@ -1420,7 +1428,7 @@ export function ChatMessages({
             </div>
             <div className="mt-8 flex items-center justify-center gap-3 flex-wrap">
               {isLoggedIn ? (
-                !isSubscriber && (
+                SUBSCRIPTIONS_ENABLED && !isSubscriber && (
                   <button
                     onClick={onSubscribeClick}
                     className="px-5 py-3 rounded-md bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium"
@@ -1453,29 +1461,31 @@ export function ChatMessages({
                   >
                     Log in / Sign up
                   </button>
-                  <button
-                    onClick={() => {
-                      try {
-                        saveViewerState();
-                        window.sessionStorage.setItem(
-                          'loginContext',
-                          'subscribe'
-                        );
-                        window.sessionStorage.setItem(
-                          'previousPath',
-                          window.location.pathname
-                        );
-                        window.sessionStorage.setItem(
-                          'returnAfterSubscribe',
-                          window.location.pathname
-                        );
-                      } catch {}
-                      onSubscribeClick?.();
-                    }}
-                    className="px-5 py-3 rounded-md bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium"
-                  >
-                    Subscribe
-                  </button>
+                  {SUBSCRIPTIONS_ENABLED && (
+                    <button
+                      onClick={() => {
+                        try {
+                          saveViewerState();
+                          window.sessionStorage.setItem(
+                            'loginContext',
+                            'subscribe'
+                          );
+                          window.sessionStorage.setItem(
+                            'previousPath',
+                            window.location.pathname
+                          );
+                          window.sessionStorage.setItem(
+                            'returnAfterSubscribe',
+                            window.location.pathname
+                          );
+                        } catch {}
+                        onSubscribeClick?.();
+                      }}
+                      className="px-5 py-3 rounded-md bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium"
+                    >
+                      Subscribe
+                    </button>
+                  )}
                 </>
               )}
             </div>

@@ -12,10 +12,19 @@ import {
 import { db } from '../firebase/config';
 import { DiagnosisAssistantResponse } from '../types';
 import { ExerciseQuestionnaireAnswers } from '../../../shared/types';
-import { ProgramStatus } from '../types/program';
+import { ExerciseProgram, ProgramDay, ProgramStatus } from '../types/program';
 import { Locale } from '../i18n/translations';
 import { getSavedLocalePreference } from '../i18n/utils';
+import { PartialProgram } from '../types/incremental-program';
+import {
+  generateProgramIncrementally,
+  IncrementalProgramCallbacks,
+} from './incrementalProgramService';
 
+/**
+ * Legacy function - generates entire program at once
+ * @deprecated Use generateProgramIncrementally instead
+ */
 async function generateProgram(
   userId: string,
   programId: string,
@@ -55,6 +64,80 @@ async function generateProgram(
     console.error('Error generating program:', error);
     throw error;
   }
+}
+
+/**
+ * Callbacks for incremental program generation with UI updates
+ */
+export interface IncrementalGenerationCallbacks {
+  onMetadataReady?: (partialProgram: PartialProgram) => void;
+  onDayGenerated?: (day: ProgramDay, dayNumber: number, partialProgram: PartialProgram) => void;
+  onComplete?: (program: ExerciseProgram) => void;
+  onError?: (error: Error) => void;
+}
+
+/**
+ * Submit questionnaire and generate program incrementally (day by day)
+ */
+export const submitQuestionnaireIncremental = async (
+  userId: string,
+  diagnosis: DiagnosisAssistantResponse,
+  questionnaire: ExerciseQuestionnaireAnswers,
+  callbacks?: IncrementalGenerationCallbacks,
+  assistantId?: string
+): Promise<string> => {
+  // Create sanitized copy of questionnaire
+  const sanitizedQuestionnaire = { ...questionnaire };
+  Object.keys(sanitizedQuestionnaire).forEach((key) => {
+    if (sanitizedQuestionnaire[key] === undefined) {
+      sanitizedQuestionnaire[key] = null;
+    }
+  });
+
+  // Check for existing programs
+  const programsRef = collection(db, `users/${userId}/programs`);
+  const existingProgramsQuery = query(programsRef);
+  const existingProgramsSnapshot = await getDocs(existingProgramsQuery);
+  const hasExistingPrograms = !existingProgramsSnapshot.empty;
+
+  // Create the program document
+  const docRef = await addDoc(programsRef, {
+    diagnosis,
+    questionnaire: sanitizedQuestionnaire,
+    status: ProgramStatus.Generating,
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
+    type: diagnosis.programType,
+    active: !hasExistingPrograms,
+  });
+
+  console.log(`[incremental] Program document created: ${docRef.id}`);
+
+  // Start incremental generation
+  const incrementalCallbacks: IncrementalProgramCallbacks = {
+    onMetadataReady: callbacks?.onMetadataReady,
+    onDayGenerated: callbacks?.onDayGenerated,
+    onComplete: callbacks?.onComplete,
+    onError: (error) => {
+      callbacks?.onError?.(error);
+    },
+  };
+
+  // Don't await - let generation happen in background
+  generateProgramIncrementally(
+    diagnosis,
+    sanitizedQuestionnaire,
+    incrementalCallbacks,
+    {
+      userId,
+      programId: docRef.id,
+    }
+  ).catch((error) => {
+    console.error('[incremental] Background generation error:', error);
+    callbacks?.onError?.(error);
+  });
+
+  return docRef.id;
 }
 
 export const submitQuestionnaire = async (

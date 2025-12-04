@@ -89,11 +89,18 @@ export default function ExerciseCard({
     if (!bodyPart) return '';
     
     // First try with bodyPart.category prefix (for standard categories)
-    const translationWithPrefix = t(`bodyPart.category.${bodyPart}`, { defaultValue: '' });
-    if (translationWithPrefix) return translationWithPrefix;
+    const translationKey = `bodyPart.category.${bodyPart}`;
+    const translated = t(translationKey as any);
+    // If translation returns the key itself, it means no translation was found
+    if (translated && translated !== translationKey) return translated;
     
     // Fallback to program.bodyPart prefix for other body parts
-    return t(`program.bodyPart.${bodyPart.toLowerCase().replace(/ /g, '_')}`, { defaultValue: bodyPart });
+    const fallbackKey = `program.bodyPart.${bodyPart.toLowerCase().replace(/ /g, '_')}`;
+    const fallbackTranslated = t(fallbackKey as any);
+    if (fallbackTranslated && fallbackTranslated !== fallbackKey) return fallbackTranslated;
+    
+    // Return the original bodyPart name if no translation found
+    return bodyPart;
   };
 
   const getTruncatedDescription = (description: string, charLimit = 100) => {

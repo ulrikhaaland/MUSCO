@@ -109,27 +109,11 @@ function ProgramsContent() {
       if (filterType === 'all') return true;
       return program.type === filterType;
     })
-    // Then sort
+    // Then sort by createdAt (matches displayed date)
     .sort((a, b) => {
-      // If both have updatedAt, compare those
-      if (a.updatedAt && b.updatedAt) {
-        return sortBy === 'newest'
-          ? b.updatedAt.getTime() - a.updatedAt.getTime()
-          : a.updatedAt.getTime() - b.updatedAt.getTime();
-      }
-
-      // If only one has updatedAt, prioritize it
-      if (a.updatedAt && !b.updatedAt) {
-        return sortBy === 'newest' ? -1 : 1; // a comes first for newest, last for oldest
-      }
-      if (!a.updatedAt && b.updatedAt) {
-        return sortBy === 'newest' ? 1 : -1; // b comes first for newest, last for oldest
-      }
-
-      // If neither has updatedAt, fall back to createdAt
-      return sortBy === 'newest'
-        ? new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-        : new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+      const aTime = new Date(a.createdAt).getTime();
+      const bTime = new Date(b.createdAt).getTime();
+      return sortBy === 'newest' ? bTime - aTime : aTime - bTime;
     });
 
   const handleProgramClick = (programIndex: number) => {
@@ -539,7 +523,9 @@ function ProgramsContent() {
                   {/* Key Program Statistics */}
                   <div className="flex justify-between items-center mb-4">
                     <div className="text-center">
-                      <p className="text-xl font-semibold text-white">1</p>
+                      <p className="text-xl font-semibold text-white">
+                        {program.programs.length}
+                      </p>
                       <p className="text-xs text-gray-400">
                         {t('programs.stats.weeks')}
                       </p>

@@ -372,7 +372,7 @@ export function AuthCodeInput() {
   }
 
   return (
-    <div className="w-full max-w-md space-y-8">
+    <div className="w-full max-w-md space-y-6">
       <div className="text-center">
         <Logo variant="vertical" />
         <h2 className="text-3xl font-bold text-white mt-5">
@@ -384,12 +384,12 @@ export function AuthCodeInput() {
           {t('auth.codeSentTo')} <span className="text-white">{email}</span>
         </p>
 
-        <p className="text-gray-400 text-sm mt-2">
+        <p className="text-gray-400 text-sm mt-1">
           {t('auth.enterCodeFromEmail')}
         </p>
       </div>
 
-      <form onSubmit={handleCodeSubmit} className="space-y-6">
+      <form onSubmit={handleCodeSubmit} className="space-y-5">
         <div className="flex justify-center space-x-2 sm:space-x-4">
           {/* Individual digit inputs */}
           {[...Array(6)].map((_, index) => (
@@ -435,7 +435,7 @@ export function AuthCodeInput() {
         )}
 
         {/* Resend code link */}
-        <p className="mt-3 text-center text-sm">
+        <p className="text-center text-sm">
           <button
             type="button"
             onClick={handleResendCode}

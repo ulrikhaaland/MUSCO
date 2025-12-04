@@ -2,6 +2,7 @@ import OpenAI from 'openai';
 import { ChatPayload, DiagnosisAssistantResponse } from '../../types';
 import {
   ENFORCE_CHAT_LIMITS,
+  SUBSCRIPTIONS_ENABLED,
   FREE_DAILY_TOKENS,
   ESTIMATED_RESPONSE_TOKENS,
   estimateTokensFromString,
@@ -138,6 +139,7 @@ export async function reserveFreeChatTokens(
   isSubscriber?: boolean
 ): Promise<void> {
   if (!ENFORCE_CHAT_LIMITS) return;
+  if (!SUBSCRIPTIONS_ENABLED) return; // all users treated as subscribers when disabled
   if (!userId) return; // cannot enforce without user context
   if (isSubscriber) {
     throttledLog(
@@ -363,7 +365,7 @@ export async function streamChatCompletion({
     // Enforce free-tier chat limits (non-subscribers only)
     const estimatedInputTokens = estimateTokensFromString(userMessageContent);
     const estimatedResponse = options?.estimatedResponseTokens ?? ESTIMATED_RESPONSE_TOKENS;
-    if (ENFORCE_CHAT_LIMITS) {
+    if (ENFORCE_CHAT_LIMITS && SUBSCRIPTIONS_ENABLED) {
       if (options?.userId && options?.isSubscriber === true) {
         throttledLog('info', `limit_bypass_user_${options.userId}`, `limit=bypass user=${options.userId} reason=subscriber`);
       } else if (options?.userId && options?.isSubscriber === false) {
@@ -1212,7 +1214,7 @@ export async function getChatCompletion({
     // Enforce free-tier chat limits (non-subscribers only)
     const estimatedInputTokens = estimateTokensFromString(userMessageContent);
     const estimatedResponse = options?.estimatedResponseTokens ?? ESTIMATED_RESPONSE_TOKENS;
-    if (ENFORCE_CHAT_LIMITS) {
+    if (ENFORCE_CHAT_LIMITS && SUBSCRIPTIONS_ENABLED) {
       if (options?.userId && options?.isSubscriber === true) {
         throttledLog('info', `limit_bypass_user_${options.userId}`, `limit=bypass user=${options.userId} reason=subscriber`);
       } else if (options?.userId && options?.isSubscriber === false) {

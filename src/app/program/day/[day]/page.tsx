@@ -187,6 +187,73 @@ export default function DayDetailPage() {
     }
   }, [dayName]);
 
+  // Preload video URLs when day data is available
+  useEffect(() => {
+    if (!dayData?.exercises) return;
+    
+    const preloadVideos = async () => {
+      const urlCache: { [key: string]: string } = {};
+      const preloadLinks: HTMLLinkElement[] = [];
+      
+      for (const exercise of dayData.exercises) {
+        if (!exercise.videoUrl || !exercise.name) continue;
+        
+        try {
+          let downloadUrl: string;
+          
+          if (isFirebaseStorageUrl(exercise.videoUrl)) {
+            const storageRef = ref(storage, exercise.videoUrl);
+            downloadUrl = await getDownloadURL(storageRef);
+          } else if (isYouTubeUrl(exercise.videoUrl)) {
+            // YouTube URLs don't need preloading - they're iframes
+            continue;
+          } else {
+            downloadUrl = exercise.videoUrl;
+          }
+          
+          urlCache[exercise.name] = downloadUrl;
+          
+          // Add preload link hint for the video file
+          if (typeof document !== 'undefined') {
+            const linkId = `preload-video-${exercise.name.replace(/\s+/g, '-')}`;
+            if (!document.getElementById(linkId)) {
+              const link = document.createElement('link');
+              link.id = linkId;
+              link.rel = 'preload';
+              link.as = 'video';
+              link.href = downloadUrl;
+              link.crossOrigin = 'anonymous';
+              document.head.appendChild(link);
+              preloadLinks.push(link);
+            }
+          }
+        } catch (err) {
+          // Silent fail for preloading - will fetch on demand
+        }
+      }
+      
+      if (Object.keys(urlCache).length > 0) {
+        setPreloadedVideoUrls(prev => ({ ...prev, ...urlCache }));
+      }
+    };
+    
+    preloadVideos();
+    
+    // Cleanup preload links on unmount
+    return () => {
+      if (typeof document !== 'undefined') {
+        dayData.exercises.forEach(exercise => {
+          if (!exercise.name) return;
+          const linkId = `preload-video-${exercise.name.replace(/\s+/g, '-')}`;
+          const link = document.getElementById(linkId);
+          if (link) {
+            document.head.removeChild(link);
+          }
+        });
+      }
+    };
+  }, [dayData]);
+
   // Redirect only if there is no program available (allow guest access for custom programs)
   useEffect(() => {
     if (!program && programStatus !== ProgramStatus.Generating) {
@@ -216,19 +283,6 @@ export default function DayDetailPage() {
         : [...prev, exerciseName]
     );
   };
-
-  // Clean up any lingering elements on unmount
-  useEffect(() => {
-    return () => {
-      expandedExercises.forEach(exerciseName => {
-        const linkId = `preload-video-${exerciseName.replace(/\s+/g, '-')}`;
-        const existingLink = document.getElementById(linkId);
-        if (existingLink) {
-          document.head.removeChild(existingLink);
-        }
-      });
-    };
-  }, [expandedExercises]);
 
   // Handle video clicks with simpler implementation
   const handleVideoClick = async (exercise: Exercise) => {
@@ -346,11 +400,11 @@ export default function DayDetailPage() {
           onClick={(e) => e.stopPropagation()}
         >
           {/* Navigation buttons */}
-          <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-between px-4 sm:px-8 z-[10001]">
+          <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-between px-4 sm:px-8 z-[10001] pointer-events-none">
             {showPreviousButton && (
               <button
                 onClick={() => navigateToVideo('prev')}
-                className="bg-black/70 rounded-full p-3 text-white/90 hover:text-white hover:bg-black/90 transition-colors duration-200 shadow-lg"
+                className="bg-black/70 rounded-full p-3 text-white/90 hover:text-white hover:bg-black/90 transition-colors duration-200 shadow-lg pointer-events-auto"
                 aria-label="Previous video"
               >
                 <svg
@@ -374,7 +428,7 @@ export default function DayDetailPage() {
             {showNextButton && (
               <button
                 onClick={() => navigateToVideo('next')}
-                className="bg-black/70 rounded-full p-3 text-white/90 hover:text-white hover:bg-black/90 transition-colors duration-200 shadow-lg"
+                className="bg-black/70 rounded-full p-3 text-white/90 hover:text-white hover:bg-black/90 transition-colors duration-200 shadow-lg pointer-events-auto"
                 aria-label="Next video"
               >
                 <svg

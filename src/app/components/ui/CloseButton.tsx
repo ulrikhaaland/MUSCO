@@ -16,7 +16,7 @@ export function CloseButton({ onClick, label = 'Close', className = '' }: CloseB
       type="button"
       onClick={onClick}
       aria-label={label}
-      className={`flex-shrink-0 w-10 h-10 flex justify-center items-center rounded-full bg-gray-800 text-white hover:bg-gray-700 active:bg-gray-600 transition-colors ${className}`}
+      className={`flex-shrink-0 w-11 h-11 flex justify-center items-center rounded-full bg-gray-800 text-white hover:bg-gray-700 active:bg-gray-600 transition-colors ${className}`}
     >
       <CloseIcon className="h-6 w-6" />
     </button>

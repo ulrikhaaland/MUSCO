@@ -5,9 +5,39 @@ import { useAuth } from '@/app/context/AuthContext';
 import { useTranslation } from '@/app/i18n';
 import { getChatSessionList, deleteChatSession } from '@/app/services/chatService';
 import { ChatSessionSummary } from '@/app/types/chat';
-import { formatDistanceToNow } from 'date-fns';
-import { enUS, nb } from 'date-fns/locale';
 import { Drawer } from './Drawer';
+
+/**
+ * Compact time-ago formatter (avoids text wrapping in tight spaces)
+ */
+function formatTimeAgo(date: Date, locale: string): string {
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffSec = Math.floor(diffMs / 1000);
+  const diffMin = Math.floor(diffSec / 60);
+  const diffHour = Math.floor(diffMin / 60);
+  const diffDay = Math.floor(diffHour / 24);
+
+  const isNorwegian = locale === 'nb';
+
+  if (diffMin < 1) {
+    return isNorwegian ? 'nå' : 'now';
+  }
+  if (diffMin < 60) {
+    return isNorwegian ? `${diffMin}m` : `${diffMin}m`;
+  }
+  if (diffHour < 24) {
+    return isNorwegian ? `${diffHour}t` : `${diffHour}h`;
+  }
+  if (diffDay < 7) {
+    return isNorwegian ? `${diffDay}d` : `${diffDay}d`;
+  }
+  // Beyond a week, show date
+  return date.toLocaleDateString(isNorwegian ? 'nb-NO' : 'en-US', {
+    day: 'numeric',
+    month: 'short',
+  });
+}
 
 interface ChatHistoryProps {
   onSelectChat: (chatId: string) => void;
@@ -28,8 +58,6 @@ export function ChatHistory({
   const { t, locale } = useTranslation();
   const [chats, setChats] = useState<ChatSessionSummary[]>([]);
   
-  // Get date-fns locale based on current app locale
-  const dateLocale = locale === 'nb' ? nb : enUS;
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -178,12 +206,7 @@ export function ChatHistory({
                       <div className="flex items-center gap-2 mt-1 text-sm text-gray-500">
                         <span>{chat.messageCount} {t('chatHistory.messages')}</span>
                         <span>•</span>
-                        <span>
-                          {formatDistanceToNow(chat.updatedAt, {
-                            addSuffix: true,
-                            locale: dateLocale,
-                          })}
-                        </span>
+                        <span>{formatTimeAgo(chat.updatedAt, locale)}</span>
                       </div>
                     </div>
                     <button

@@ -26,6 +26,7 @@ import {
   getTranslatedPainBodyParts,
   getTranslatedPlannedExerciseFrequencyOptions,
 } from '@/app/utils/programTranslation';
+import { SUBSCRIPTIONS_ENABLED } from '@/app/lib/featureFlags';
 
 // Add a constant for getFitnessLevels with descriptions
 const getFitnessLevels = (t: any) => [
@@ -3609,58 +3610,60 @@ export default function ProfilePage() {
                   {t('profile.account')}
                 </h3>
                 <div className="space-y-4">
-                  {/* Subscription Card */}
-                  <div className="rounded-xl ring-1 ring-gray-700/50 bg-gray-900/40 p-4">
-                    <div className="flex items-start justify-between gap-4">
-                      <div>
-                        <div className="text-white font-medium">{t('profile.subscription.title')}</div>
-                        <div className="text-sm text-gray-300 mt-1">
-                          {(() => {
-                            const status = user?.profile?.subscriptionStatus;
-                            const isActive =
-                              user?.profile?.isSubscriber === true ||
-                              status === 'active' ||
-                              status === 'trialing';
-                            const until = user?.profile?.currentPeriodEnd
-                              ? new Date(
-                                  user.profile.currentPeriodEnd
-                                ).toLocaleDateString()
-                              : null;
-                            if (isActive) {
-                              return until
-                                ? t('profile.subscription.activeWithRenewal', { date: until })
-                                : t('profile.subscription.active');
-                            }
-                            if (status) return `${t('profile.subscription.statusPrefix')} ${status}`;
-                            return t('profile.subscription.none');
-                          })()}
+                  {/* Subscription Card - only show when subscriptions are enabled */}
+                  {SUBSCRIPTIONS_ENABLED && (
+                    <div className="rounded-xl ring-1 ring-gray-700/50 bg-gray-900/40 p-4">
+                      <div className="flex items-start justify-between gap-4">
+                        <div>
+                          <div className="text-white font-medium">{t('profile.subscription.title')}</div>
+                          <div className="text-sm text-gray-300 mt-1">
+                            {(() => {
+                              const status = user?.profile?.subscriptionStatus;
+                              const isActive =
+                                user?.profile?.isSubscriber === true ||
+                                status === 'active' ||
+                                status === 'trialing';
+                              const until = user?.profile?.currentPeriodEnd
+                                ? new Date(
+                                    user.profile.currentPeriodEnd
+                                  ).toLocaleDateString()
+                                : null;
+                              if (isActive) {
+                                return until
+                                  ? t('profile.subscription.activeWithRenewal', { date: until })
+                                  : t('profile.subscription.active');
+                              }
+                              if (status) return `${t('profile.subscription.statusPrefix')} ${status}`;
+                              return t('profile.subscription.none');
+                            })()}
+                          </div>
+                        </div>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={async () => {
+                              if (!user?.uid) return;
+                              try {
+                                const res = await fetch('/api/subscribe/portal', {
+                                  method: 'POST',
+                                  headers: { 'Content-Type': 'application/json' },
+                                  body: JSON.stringify({ uid: user.uid }),
+                                });
+                                const data = await res.json();
+                                if (!res.ok)
+                                  throw new Error(data?.error || 'Portal error');
+                                window.location.href = data.url;
+                              } catch (e) {
+                                console.error('Portal error', e);
+                              }
+                            }}
+                            className="px-3 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-white text-sm"
+                          >
+                            {t('profile.subscription.manage')}
+                          </button>
                         </div>
                       </div>
-                      <div className="flex gap-2">
-                        <button
-                          onClick={async () => {
-                            if (!user?.uid) return;
-                            try {
-                              const res = await fetch('/api/subscribe/portal', {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ uid: user.uid }),
-                              });
-                              const data = await res.json();
-                              if (!res.ok)
-                                throw new Error(data?.error || 'Portal error');
-                              window.location.href = data.url;
-                            } catch (e) {
-                              console.error('Portal error', e);
-                            }
-                          }}
-                          className="px-3 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-white text-sm"
-                        >
-                          {t('profile.subscription.manage')}
-                        </button>
-                      </div>
                     </div>
-                  </div>
+                  )}
                   <button
                     onClick={() => router.push('/privacy')}
                     className="px-4 py-3 bg-gray-700 text-white rounded-lg hover:bg-gray-600 w-full flex items-center justify-between"

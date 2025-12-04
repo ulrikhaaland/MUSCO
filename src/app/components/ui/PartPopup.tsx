@@ -8,6 +8,7 @@ import { AnatomyPart } from '@/app/types/human';
 import { useApp } from '@/app/context/AppContext';
 import { ProgramType } from '../../../../shared/types';
 import { VideoModal } from './VideoModal';
+import { SUBSCRIPTIONS_ENABLED } from '@/app/lib/featureFlags';
 
 interface PartPopupProps {
   part: AnatomyPart | null;
@@ -261,7 +262,7 @@ export default function PartPopup({
           router.push('/login');
         }}
         isLoggedIn={Boolean(user)}
-        isSubscriber={Boolean(user?.profile?.isSubscriber)}
+        isSubscriber={!SUBSCRIPTIONS_ENABLED || Boolean(user?.profile?.isSubscriber)}
         followUpQuestions={forceMode === 'explore' ? followUpQuestions.filter((q) => q.chatMode !== 'diagnosis') : followUpQuestions}
         exerciseResults={exerciseResults}
         inlineExercises={inlineExercises}

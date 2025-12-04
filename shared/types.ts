@@ -30,6 +30,8 @@ export interface ExerciseQuestionnaireAnswers {
   cardioType?: string;
   // Preferred cardio environment, e.g. 'Outside', 'Inside', 'Both'
   cardioEnvironment?: string;
+  // Whether to include weekend days for exercise, defaults to true
+  includeWeekends?: boolean;
 }
 
 export enum ProgramType {

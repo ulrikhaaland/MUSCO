@@ -518,9 +518,9 @@ export function useChat() {
               // Use setMessages to access current state (avoids stale closure)
               setMessages((prev) => {
                 const lastMessage = prev[prev.length - 1];
-                if (lastMessage?.role === 'assistant' && lastMessage.content) {
-                  fetchInlineExercises(lastMessage.content);
-                }
+              if (lastMessage?.role === 'assistant' && lastMessage.content) {
+                fetchInlineExercises(lastMessage.content);
+              }
                 return prev; // Don't modify, just read
               });
                 return;

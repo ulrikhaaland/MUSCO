@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { ProgramDaySummaryComponent } from './ProgramDaySummaryComponent';
 import { WeekOverview } from './WeekOverview';
 import { ProgramType } from '../../../../shared/types';
@@ -22,6 +22,7 @@ import {
   saveRecoveryProgramToAccount,
   clearRecoveryProgramFromSession,
 } from '../../services/recoveryProgramService';
+import { SUBSCRIPTIONS_ENABLED } from '@/app/lib/featureFlags';
 
 interface ExerciseProgramPageProps {
   program: ExerciseProgram;
@@ -38,6 +39,9 @@ interface ExerciseProgramPageProps {
   isActive?: boolean;
   onOverviewVisibilityChange?: (visible: boolean) => void;
   isCustomProgram?: boolean;
+  // Incremental generation props
+  generatingDay?: number | null;
+  generatedDays?: number[];
 }
 
 // Add styles to hide scrollbars while maintaining scroll functionality
@@ -232,6 +236,8 @@ export function ExerciseProgramPage({
   onDaySelect,
   isActive = false,
   isCustomProgram = false,
+  generatingDay: propGeneratingDay,
+  generatedDays: propGeneratedDays,
 }: ExerciseProgramPageProps) {
   // Get current date info
   const currentDate = new Date();
@@ -239,12 +245,18 @@ export function ExerciseProgramPage({
 
   const [selectedWeek, setSelectedWeek] = useState<number>(1);
   const [expandedDays, setExpandedDays] = useState<number[]>([]);
+  const hasInitializedDaySelection = useRef(false);
+  const previousProgramId = useRef<string | null>(null);
   const { user } = useAuth();
   // Add state to track if current date is in a future week
   const [isInFutureWeek, setIsInFutureWeek] = useState(false);
   // Add state to store the date when user can generate a new program
   const [nextProgramDate, setNextProgramDate] = useState<Date | null>(null);
-  const { activeProgram } = useUser();
+  const { activeProgram, generatingDay: contextGeneratingDay, generatedDays: contextGeneratedDays } = useUser();
+  
+  // Use props if provided, otherwise fall back to context
+  const generatingDay = propGeneratingDay ?? contextGeneratingDay;
+  const generatedDays = propGeneratedDays ?? contextGeneratedDays ?? [];
   const { t, locale } = useTranslation();
   const router = useRouter();
   const pathname = usePathname();
@@ -258,9 +270,28 @@ export function ExerciseProgramPage({
   // State for week-specific overview card
   const [showWeekOverview, setShowWeekOverview] = useState(false);
 
-  // Set initial week and day when program loads
+  // Set initial week and day when program loads (only on first load or when program changes)
   useEffect(() => {
     if (!program?.days || !Array.isArray(program.days)) return;
+    
+    // During incremental generation, never reset the selected day
+    if (generatingDay !== null) {
+      // Just mark as initialized and return - don't change selection
+      hasInitializedDaySelection.current = true;
+      return;
+    }
+    
+    // Use title as stable identifier (empty title = new/generating program)
+    const programId = program.title || 'generating';
+    
+    // Reset if we're looking at a completely different program (title changed)
+    if (previousProgramId.current && previousProgramId.current !== programId && programId !== 'generating') {
+      hasInitializedDaySelection.current = false;
+    }
+    previousProgramId.current = programId;
+    
+    // Skip if we've already initialized the day selection
+    if (hasInitializedDaySelection.current) return;
 
     // Check if this is a multi-week program (either custom 4-week or user program with multiple weeks)
     const isMultiWeekProgram = isCustomProgram && program.days.length === 28;
@@ -329,6 +360,9 @@ export function ExerciseProgramPage({
       setSelectedWeek(1);
       setExpandedDays([currentDayOfWeek]);
     }
+    
+    // Mark that we've initialized the day selection
+    hasInitializedDaySelection.current = true;
 
     // Scroll day into view
     setTimeout(() => {
@@ -470,6 +504,8 @@ export function ExerciseProgramPage({
   // Render next week card function inside the component
   const renderNextWeekCard = () => {
     const isUserSubscribed = () => {
+      // All users treated as subscribed when subscriptions disabled
+      if (!SUBSCRIPTIONS_ENABLED) return true;
       const profile = user?.profile;
       if (!profile) return false;
       if (profile.isSubscriber) return true;
@@ -1212,21 +1248,35 @@ export function ExerciseProgramPage({
                           // Sort days by day.day to ensure chronological order
                           ([...selectedWeekData.days]
                             .sort((a, b) => a.day - b.day)
-                            .map((day) => (
+                            .map((day) => {
+                              const isDayGenerated = generatedDays.includes(day.day);
+                              const isDayGenerating = generatingDay === day.day;
+                              
+                              return (
                               <button
                                 key={day.day}
                                 data-day={day.day}
                                 onClick={() => handleDayClick(day.day)}
-                                className={`px-6 py-3 rounded-lg font-medium transition-colors duration-200 flex flex-col items-center ${
+                                className={`px-6 py-3 rounded-lg font-medium transition-colors duration-200 flex flex-col items-center relative ${
                                   expandedDays.includes(day.day)
                                     ? 'bg-indigo-600 text-white'
-                                    : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white opacity-50'
+                                    : isDayGenerated
+                                      ? 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white opacity-50'
+                                      : 'bg-gray-800/30 text-gray-500 opacity-40'
                                 }`}
                               >
+                                {/* Generating indicator */}
+                                {isDayGenerating && (
+                                  <span className="absolute -top-1 -right-1 w-3 h-3 bg-indigo-500 rounded-full animate-pulse" />
+                                )}
                                 <span className="text-sm opacity-80 mb-1">
                                   {getDayShortName(day.day, t)}
                                 </span>
-                                {day.isRestDay ? (
+                                {!isDayGenerated ? (
+                                  <span className="text-xs mt-1 opacity-60 shimmer">
+                                    ...
+                                  </span>
+                                ) : day.isRestDay ? (
                                   <span className="text-xs mt-1 opacity-80">
                                     {t('exerciseProgram.day.rest')}
                                   </span>
@@ -1236,7 +1286,8 @@ export function ExerciseProgramPage({
                                   </span>
                                 )}
                               </button>
-                            )))
+                              );
+                            }))
                           )}
                         </div>
                       </div>
@@ -1246,13 +1297,18 @@ export function ExerciseProgramPage({
                         const day = selectedWeekData.days.find(
                           (d) => d.day === dayNumber
                         );
+                        const isDayGenerated = generatedDays.includes(dayNumber);
+                        const isDayGenerating = generatingDay === dayNumber;
+                        // Shimmer if: full page shimmer, day not generated yet, OR day is currently generating
+                        const shouldShimmerDay = shimmer || !isDayGenerated;
+                        
                         const placeholder: ProgramDay = {
-                          day: 1,
-                          description: '',
+                          day: dayNumber,
+                          description: isDayGenerating ? 'Generating...' : 'Loading...',
                           exercises: [],
                           isRestDay: false,
                         } as any;
-                        const safeDay = shimmer ? placeholder : day;
+                        const safeDay = shouldShimmerDay ? placeholder : day;
                         if (!safeDay) return null;
 
                         // Get the correct day index based on day.day, not array position
@@ -1264,11 +1320,11 @@ export function ExerciseProgramPage({
                             day={safeDay}
                             dayName={dayName(dayIndex + 1)}
                             isHighlighted={safeDay.day === 1}
-                            shimmer={shimmer}
+                            shimmer={shouldShimmerDay}
                             autoNavigateIfEmpty={false}
                             autoNavigateOnShimmer={false}
                             onClick={() =>
-                              handleDayDetailClick(safeDay, dayName(dayIndex + 1))
+                              !shouldShimmerDay && handleDayDetailClick(safeDay, dayName(dayIndex + 1))
                             }
                           />
                         );
@@ -1313,21 +1369,35 @@ export function ExerciseProgramPage({
                             // Sort days by day.day to ensure chronological order
                             ([...selectedWeekData.days]
                               .sort((a, b) => a.day - b.day)
-                              .map((day) => (
+                              .map((day) => {
+                                const isDayGenerated = generatedDays.includes(day.day);
+                                const isDayGenerating = generatingDay === day.day;
+                                
+                                return (
                                 <button
                                   key={day.day}
                                   data-day={day.day}
                                   onClick={() => handleDayClick(day.day)}
-                                  className={`px-6 py-3 rounded-lg font-medium transition-colors duration-200 flex flex-col items-center ${
+                                  className={`px-6 py-3 rounded-lg font-medium transition-colors duration-200 flex flex-col items-center relative ${
                                     expandedDays.includes(day.day)
                                       ? 'bg-indigo-600 text-white'
-                                      : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white opacity-50'
+                                      : isDayGenerated
+                                        ? 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white opacity-50'
+                                        : 'bg-gray-800/30 text-gray-500 opacity-40'
                                   }`}
                                 >
+                                  {/* Generating indicator */}
+                                  {isDayGenerating && (
+                                    <span className="absolute -top-1 -right-1 w-3 h-3 bg-indigo-500 rounded-full animate-pulse" />
+                                  )}
                                   <span className="text-sm opacity-80 mb-1">
                                     {getDayShortName(day.day, t)}
                                   </span>
-                                  {day.isRestDay ? (
+                                  {!isDayGenerated ? (
+                                    <span className="text-xs mt-1 opacity-60 shimmer">
+                                      ...
+                                    </span>
+                                  ) : day.isRestDay ? (
                                     <span className="text-xs mt-1 opacity-80">
                                       {t('exerciseProgram.day.rest')}
                                     </span>
@@ -1337,7 +1407,8 @@ export function ExerciseProgramPage({
                                     </span>
                                   )}
                                 </button>
-                              )))
+                                );
+                              }))
                           )}
                         </div>
                       </div>
@@ -1347,22 +1418,36 @@ export function ExerciseProgramPage({
                         const day = selectedWeekData.days.find(
                           (d) => d.day === dayNumber
                         );
-                        if (!day) return null;
+                        const isDayGenerated = generatedDays.includes(dayNumber);
+                        const isDayGenerating = generatingDay === dayNumber;
+                        // Shimmer if day not generated yet (including while generating)
+                        const shouldShimmerDay = !isDayGenerated;
+                        
+                        // Create placeholder if day not generated yet
+                        const placeholder: ProgramDay = {
+                          day: dayNumber,
+                          description: isDayGenerating ? 'Generating...' : 'Loading...',
+                          exercises: [],
+                          isRestDay: false,
+                        };
+                        
+                        const displayDay = shouldShimmerDay ? placeholder : day;
+                        if (!displayDay) return null;
 
                         // Get the correct day index based on day.day, not array position
-                        const dayIndex = day.day - 1; // Subtract 1 since day.day is 1-based
+                        const dayIndex = displayDay.day - 1; // Subtract 1 since day.day is 1-based
 
                         return (
                           <ProgramDaySummaryComponent
-                            key={day.day}
-                            day={day}
+                            key={displayDay.day}
+                            day={displayDay}
                             dayName={dayName(dayIndex + 1)}
-                            isHighlighted={day.day === 1} // This might need adjustment based on context
-                            shimmer={shimmer}
+                            isHighlighted={displayDay.day === 1}
+                            shimmer={shouldShimmerDay}
                             autoNavigateIfEmpty={false}
                             autoNavigateOnShimmer={false}
                             onClick={() =>
-                              handleDayDetailClick(day, dayName(dayIndex + 1))
+                              !shouldShimmerDay && handleDayDetailClick(displayDay, dayName(dayIndex + 1))
                             }
                           />
                         );

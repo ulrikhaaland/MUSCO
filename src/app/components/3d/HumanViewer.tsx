@@ -17,6 +17,7 @@ import { useAuth } from '@/app/context/AuthContext';
 import { logAnalyticsEvent } from '@/app/utils/analytics';
 import { useExplainSelection } from '@/app/hooks/useExplainSelection';
 import { bodyPartGroups } from '@/app/config/bodyPartGroups';
+import { getGenderedId } from '@/app/utils/anatomyHelpers';
 
 const MODEL_IDS: Record<Gender, string> = {
   male: '5tOV',
@@ -191,7 +192,7 @@ export default function HumanViewer({
 
     try {
       human.send('labels.create', {
-        objectId: selectedPart.objectId,
+        objectId: getGenderedId(selectedPart.objectId, currentGender),
         labelId,
         title: selectedPart.name,
         description: 'Loading…',

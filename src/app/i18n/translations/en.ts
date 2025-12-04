@@ -588,6 +588,8 @@ const translations = {
   'questionnaire.autoSelectedCardioEquipment':
     "We've pre-selected {{equipment}} for your indoor {{type}} workouts. You can deselect it if you prefer other options.",
   'questionnaire.createProgram': 'Create Program',
+  'questionnaire.includeWeekends': 'Include weekend days for exercise',
+  'questionnaire.weekendsRequired': 'required for 6+ days',
   'questionnaire.programType.select': 'What kind of program do you want?',
   'questionnaire.programType.exercise': 'Exercise',
   'questionnaire.programType.exerciseAndRecovery': 'Exercise + Recovery',
@@ -913,6 +915,10 @@ const translations = {
   'bodyPart.category.Upper Back': 'Upper Back',
   'bodyPart.category.Upper Legs': 'Upper Legs',
   'bodyPart.category.Warmup': 'Warmup',
+  'bodyPart.category.Adductors': 'Adductors',
+  'bodyPart.category.Abductors': 'Abductors',
+  'bodyPart.category.Hip Flexors': 'Hip Flexors',
+  'bodyPart.category.Serratus': 'Serratus',
 
   // Exercise feedback selector UI translations
   'exerciseFeedbackSelector.title': 'Exercises from Your Previous Program',

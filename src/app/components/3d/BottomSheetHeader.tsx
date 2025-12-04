@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { useApp, ProgramIntention } from '@/app/context/AppContext';
 import { useAuth } from '@/app/context/AuthContext';
 import { useTranslation } from '@/app/i18n';
-import { translateBodyPartGroupName, translatePartDirectionPrefix } from '@/app/utils/bodyPartTranslation';
+import { translateBodyPartGroupName, translateAnatomyPart } from '@/app/utils/bodyPartTranslation';
 
 interface BottomSheetHeaderProps {
   isLoading: boolean;
@@ -61,7 +61,7 @@ export function BottomSheetHeader({
         return {
           main: translateBodyPartGroupName(selectedGroups[0], t),
           sub: selectedPart
-            ? translatePartDirectionPrefix(selectedPart, t)
+            ? translateAnatomyPart(selectedPart, t)
             : t('bottomSheet.selectSpecificArea', { 
                 group: translateBodyPartGroupName(selectedGroups[0], t).toLowerCase() 
               }),

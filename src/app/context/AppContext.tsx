@@ -100,9 +100,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
     selectedPartRef.current = selectedPart;
   }, [selectedPart]);
 
-  // Auto-save viewer state to localStorage whenever selection changes
+  // Auto-save viewer state to sessionStorage for NON-logged-in users only
+  // (so anonymous users can persist selection through login/signup)
   useEffect(() => {
     if (typeof window === 'undefined') return;
+    // Only save for non-logged-in users
+    if (user) return;
     // Don't save if nothing is selected (avoid saving empty state on initial mount)
     if (selectedGroups.length === 0 && !selectedPart) return;
     
@@ -112,12 +115,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
         selectedGroupIds: selectedGroups.map((g) => g.id),
         selectedPart,
       };
-      console.log('[AppContext] Auto-saving viewer state:', snapshot);
-      window.localStorage.setItem('viewerState', JSON.stringify(snapshot));
+      // Save to sessionStorage for anonymous user persistence through auth flow
+      window.sessionStorage.setItem('viewerState', JSON.stringify(snapshot));
     } catch (e) {
       console.warn('Failed to auto-save viewer state', e);
     }
-  }, [selectedGroups, selectedPart, intention]);
+  }, [selectedGroups, selectedPart, intention, user]);
 
   // Handle intention changes
   const handleSetIntention = useCallback((newIntention: ProgramIntention) => {
@@ -138,9 +141,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const resetSelectionState = useCallback(() => {
-    // Clear localStorage to prevent hydration from restoring old state
+    // Clear sessionStorage to prevent restoration of old state
     try {
-      window.localStorage.removeItem('viewerState');
       window.sessionStorage.removeItem('viewerState');
     } catch (e) {
       console.warn('Failed to clear viewer state', e);
@@ -296,7 +298,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
     resetSelectionState();
   }
 
-  // Persist and restore viewer selection state across auth/subscription flows
+  // Persist viewer selection state for auth/subscription flows (sessionStorage only)
+  // This is for the explicit save before navigating away (e.g., to auth pages)
   const saveViewerState = useCallback(() => {
     if (typeof window === 'undefined') return;
     try {
@@ -305,9 +308,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         selectedGroupIds: selectedGroupsRef.current.map((g) => g.id),
         selectedPart: selectedPartRef.current,
       } as const;
+      // Only save to sessionStorage (for one-shot auth flow restoration)
       window.sessionStorage.setItem('viewerState', JSON.stringify(snapshot));
-      // Also save to localStorage for page reload persistence
-      window.localStorage.setItem('viewerState', JSON.stringify(snapshot));
       // Also store current path so we can navigate back after auth/checkout
       try {
         window.sessionStorage.setItem('previousPath', window.location.pathname);
@@ -319,9 +321,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const restoreViewerState = useCallback(() => {
     if (typeof window === 'undefined') return;
-    // Try sessionStorage first (for auth flow), then localStorage (for page reload)
-    const raw = window.sessionStorage.getItem('viewerState') || window.localStorage.getItem('viewerState');
-    console.log('[AppContext] Restoring viewer state from storage:', raw);
+    
+    // For logged-in users: only restore from sessionStorage (one-shot auth flow)
+    // and always clear any old localStorage state
+    // For non-logged-in users: restore from sessionStorage
+    const raw = window.sessionStorage.getItem('viewerState');
+    
+    // Always clear localStorage viewer state to prevent stale data persisting
+    try {
+      window.localStorage.removeItem('viewerState');
+    } catch {}
+    
     if (!raw) return;
     try {
       const data = JSON.parse(raw) as {
@@ -329,8 +339,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
         selectedGroupIds: string[];
         selectedPart: AnatomyPart | null;
       };
-      
-      console.log('[AppContext] Parsed viewer state:', data);
 
       // Helper to map ids -> BodyPartGroup objects
       const idToGroup = new Map(
@@ -342,10 +350,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setIntention(data.intention);
       setSelectedGroups(mapIds(data.selectedGroupIds));
       setSelectedPart(data.selectedPart ?? null);
-      
-      console.log('[AppContext] Applied state - groups:', mapIds(data.selectedGroupIds), 'part:', data.selectedPart);
 
-      // Clear sessionStorage (one-shot for auth flow), but keep localStorage (for future reloads)
+      // Clear sessionStorage (one-shot for auth flow)
       window.sessionStorage.removeItem('viewerState');
     } catch (e) {
       console.warn('Failed to restore viewer state', e);

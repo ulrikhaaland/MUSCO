@@ -555,6 +555,8 @@ const translations = {
   'questionnaire.autoSelectedCardioEquipment':
     'Vi har forhåndsvalgt {{equipment}} for dine innendørs {{type}}-økter. Du kan fjerne det hvis du foretrekker andre alternativer.',
   'questionnaire.createProgram': 'Opprett program',
+  'questionnaire.includeWeekends': 'Inkluder helgedager for trening',
+  'questionnaire.weekendsRequired': 'påkrevd for 6+ dager',
   'questionnaire.programType.select': 'Hvilken type program ønsker du?',
   'questionnaire.programType.exercise': 'Trening',
   'questionnaire.programType.exerciseAndRecovery': 'Trening + Rehab',
@@ -889,6 +891,10 @@ const translations = {
   'bodyPart.category.Upper Back': 'Øvre rygg',
   'bodyPart.category.Upper Legs': 'Lår',
   'bodyPart.category.Warmup': 'Oppvarming',
+  'bodyPart.category.Adductors': 'Adduktorer',
+  'bodyPart.category.Abductors': 'Abduktorer',
+  'bodyPart.category.Hip Flexors': 'Hoftefleksorer',
+  'bodyPart.category.Serratus': 'Serratus',
 
   // Exercise feedback selector UI translations
   'exerciseFeedbackSelector.title': 'Øvelser fra ditt forrige program',
