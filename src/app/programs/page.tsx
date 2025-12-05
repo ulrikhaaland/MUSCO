@@ -258,7 +258,7 @@ function ProgramsContent() {
     return (
       <div className="mx-auto max-w-6xl w-full h-full flex flex-col">
         {/* Header containing title and buttons */}
-        <div className="bg-gray-900 px-4 pb-4 pt-4">
+        <div className="bg-gray-900 px-4 pb-4 pt-6">
           {/* Filter and Sorting buttons */}
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
             <div className="flex space-x-2">
@@ -351,7 +351,7 @@ function ProgramsContent() {
   return (
     <div className="mx-auto max-w-6xl w-full h-full flex flex-col">
       {/* Header containing title and buttons */}
-      <div className="bg-gray-900 px-4 pb-4 pt-4">
+      <div className="bg-gray-900 px-4 pb-4 pt-6">
         {/* Filter and Sorting buttons */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
           <div className="flex space-x-2">
