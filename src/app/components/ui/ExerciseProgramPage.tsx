@@ -121,7 +121,7 @@ function ProgramViewShimmer() {
 
         {/* Day tabs shimmer */}
         {/* Mobile: wrapped grid contained in viewport; Desktop: horizontal scroller */}
-        <div className="mb-6">
+        <div className="mb-4">
           <div className="sm:hidden grid grid-cols-4 gap-2">
             {Array.from({ length: 7 }).map((_, i) => (
               <div key={i} className="px-3 py-2 rounded-lg bg-gray-800/60 text-gray-400 flex flex-col items-center">
@@ -1240,7 +1240,7 @@ export function ExerciseProgramPage({
                    if (shimmer) {
                      // Explicit summary shimmer card while generating
                      return (
-                       <div className="bg-gray-800/50 rounded-2xl ring-1 ring-gray-700/50 p-4 mb-6">
+                       <div className="bg-gray-800/50 rounded-2xl ring-1 ring-gray-700/50 p-4 mb-4">
                          <div className="flex items-center gap-3 mb-3">
                            <span className="w-3 h-3 rounded-full bg-indigo-500/40" />
                            <div className="shimmer h-5 w-44 bg-gray-700 rounded" />
@@ -1276,7 +1276,7 @@ export function ExerciseProgramPage({
                       )}
                       
                       {/* Day Tabs */}
-                      <div className="overflow-x-auto scrollbar-hide mb-6">
+                      <div className="overflow-x-auto scrollbar-hide mb-4">
                         <div className="flex space-x-2 min-w-max">
                           {shimmer ? (
                             Array.from({ length: 7 }).map((_, i) => (
@@ -1388,7 +1388,7 @@ export function ExerciseProgramPage({
                   // Show regular program content (single week)
                   if (shimmer) {
                     return (
-                      <div className="bg-gray-800/50 rounded-2xl ring-1 ring-gray-700/50 p-4 mb-6">
+                      <div className="bg-gray-800/50 rounded-2xl ring-1 ring-gray-700/50 p-4 mb-4">
                         <div className="flex items-center gap-3 mb-3">
                           <span className="w-3 h-3 rounded-full bg-indigo-500/40" />
                           <div className="shimmer h-5 w-44 bg-gray-700 rounded" />
@@ -1423,7 +1423,7 @@ export function ExerciseProgramPage({
                       )}
                       
                       {/* Day Tabs */}
-                      <div className="overflow-x-auto scrollbar-hide mb-6">
+                      <div className="overflow-x-auto scrollbar-hide mb-4">
                         <div className="flex space-x-2 min-w-max">
                           {shimmer ? (
                             Array.from({ length: 7 }).map((_, i) => (

@@ -43,7 +43,7 @@ export function WeekOverview({
   };
 
   return (
-    <div className="mb-6">
+    <div className="mb-4">
       {/* Collapsed Snapshot Bar */}
       {!isExpanded && (
         <div 
