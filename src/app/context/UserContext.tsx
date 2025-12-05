@@ -763,6 +763,23 @@ export function UserProvider({ children }: { children: ReactNode }) {
           },
           onComplete: async (finalProgram) => {
             console.log('[UserContext] Program generation complete');
+            // Log the full program for debugging
+            console.log('\n========== GENERATED PROGRAM ==========');
+            console.log('Title:', finalProgram.title);
+            console.log('Overview:', finalProgram.programOverview);
+            console.log('\n--- WEEKLY SCHEDULE ---');
+            finalProgram.days?.forEach((day) => {
+              console.log(`\nDAY ${day.day}: ${day.isRestDay ? '(REST)' : day.isCardioDay ? '(CARDIO)' : '(STRENGTH)'}`);
+              console.log('Description:', day.description);
+              console.log('Duration:', day.duration, 'min');
+              console.log('Exercises:');
+              day.exercises?.forEach((ex, i) => {
+                const label = ex.warmup ? '[WARMUP]' : '';
+                const bodyPart = ex.bodyPart || 'unknown';
+                console.log(`  ${i + 1}. ${ex.name || ex.exerciseId} ${label} - ${bodyPart}`);
+              });
+            });
+            console.log('\n========================================\n');
             // Enrich final program
             await enrichExercisesWithFullData(finalProgram, isNorwegian);
             setProgram(finalProgram);

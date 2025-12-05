@@ -10,12 +10,11 @@ import {
 } from '@/app/types/incremental-program';
 import { ProgramDay, ProgramStatus } from '@/app/types/program';
 import { adminDb } from '@/app/firebase/admin';
+import { PROGRAM_MODEL } from '@/app/api/assistant/models';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
-
-const PROGRAM_MODEL = process.env.PROGRAM_MODEL || 'gpt-4o';
 
 /**
  * Save metadata to Firebase

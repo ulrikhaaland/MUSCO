@@ -1159,7 +1159,7 @@ export async function getChatCompletion({
   messages,
   systemMessage,
   userMessage,
-  modelName = 'gpt-4o-mini',
+  modelName,
   options,
 }: {
   threadId: string;
