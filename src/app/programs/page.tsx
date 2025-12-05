@@ -352,9 +352,6 @@ function ProgramsContent() {
     <div className="mx-auto max-w-6xl w-full h-full flex flex-col">
       {/* Header containing title and buttons */}
       <div className="bg-gray-900 px-4 pb-4 pt-4">
-        {/* Title section (desktop only) */}
-        <div className="hidden md:flex items-center justify-between mb-12"></div>
-
         {/* Filter and Sorting buttons */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
           <div className="flex space-x-2">
