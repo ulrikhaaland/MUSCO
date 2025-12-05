@@ -672,7 +672,7 @@ export function ExerciseProgramPage({
   // When shimmering, render only the dedicated shimmer view to avoid duplicate shimmers below
   if (shimmer) {
     return (
-      <div className="bg-gray-900 flex flex-col min-h-screen text-white overflow-x-hidden">
+      <div className="bg-gray-900 flex flex-col flex-1 text-white overflow-x-hidden">
         <style>{scrollbarHideStyles}</style>
         <style jsx global>{`
           .shimmer { position: relative; overflow: hidden; }
@@ -727,7 +727,7 @@ export function ExerciseProgramPage({
 
   return (
     <div
-      className={`bg-gray-900 flex flex-col min-h-screen text-white overflow-x-hidden ${
+      className={`bg-gray-900 flex flex-col flex-1 text-white overflow-x-hidden ${
         isLoading ? 'items-center justify-center' : ''
       }`}
     >
