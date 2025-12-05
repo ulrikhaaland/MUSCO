@@ -302,14 +302,64 @@ Recovery Day Structure:
 - If painfulAreas is non-empty, exercises MUST target those specific areas
 - Always include modifications and precautions for each exercise
 
-7. Exercise Order
+7. CRITICAL: Exercise Order (MUST FOLLOW)
 
-- Warmup first
-- Group exercises for the same or related body parts together
-- Compound exercises FIRST, followed by isolation exercises
-- Core exercises (abs/obliques) should be LAST in each workout
+The order of exercises is CRITICAL for safety and effectiveness. ALWAYS follow this exact sequence:
 
-7. Rest Day Structure
+**STRICT ORDER:**
+1. Warmup exercises FIRST (if strength day)
+2. Compound exercises (multi-joint movements)
+3. Isolation exercises (single-joint movements)
+4. Core exercises (abs/obliques) LAST
+
+**COMPOUND EXERCISES** (do these BEFORE isolation):
+- Squats, Deadlifts, Romanian Deadlifts, Lunges, Step-ups (legs)
+- Bench Press, Incline Press, Push-ups, Dips (chest)
+- Rows, Pull-ups, Lat Pulldowns, Cable Rows (back)
+- Military Press, Overhead Press, Arnold Press (shoulders)
+- Hip Thrusts (glutes - when loaded/barbell)
+
+**ISOLATION EXERCISES** (do these AFTER compound):
+- Leg Curls, Leg Extensions, Calf Raises (legs)
+- Lateral Raises, Front Raises, Rear Delt Flyes (shoulders)
+- Bicep Curls, Tricep Extensions, Hammer Curls (arms)
+- Chest Flyes, Cable Crossovers (chest)
+- Glute Bridges (bodyweight), Hip Abductions, Hip Adductions (glutes/hips)
+- Face Pulls, Shrugs (upper back/traps)
+
+**CORE EXERCISES** (ALWAYS LAST):
+- Planks, Sit-ups, Crunches, Russian Twists, Leg Raises, Dead Bugs
+
+**CORRECT ORDER EXAMPLE (Upper Body):**
+1. Rowing Machine (warmup)
+2. Bench Press (compound - chest)
+3. Incline Dumbbell Press (compound - chest)
+4. Seated Cable Row (compound - back)
+5. Military Press (compound - shoulders)
+6. Lateral Raises (isolation - shoulders)
+7. Dumbbell Flyes (isolation - chest)
+8. Plank (core - LAST)
+
+**WRONG ORDER EXAMPLE (DO NOT DO THIS):**
+1. Lateral Raises ❌ (isolation before compound)
+2. Military Press (compound after isolation)
+3. Sit-up ❌ (core before other exercises)
+4. Bench Press (should be earlier)
+
+**CORRECT ORDER EXAMPLE (Lower Body):**
+1. Jump Rope (warmup)
+2. Barbell Squat (compound)
+3. Romanian Deadlift (compound)
+4. Lunges (compound)
+5. Leg Press (compound)
+6. Leg Curls (isolation)
+7. Glute Bridge (isolation)
+8. Calf Raises (isolation)
+9. Plank (core - LAST)
+
+**FINAL CHECK:** Before outputting, verify: Are warmups first? Are ALL compound exercises before ALL isolation exercises? Is core last?
+
+8. Rest Day Structure
 
 For rest days (isRestDay: true):
 - Include 1-2 gentle mobility/stretching exercises
@@ -317,7 +367,7 @@ For rest days (isRestDay: true):
 - All exercises must be equipmentless home exercises
 - Include a clear description explaining focus on recovery, hydration, gentle stretching
 
-9. JSON Response
+9. JSON Response Format
 
 Return ONLY:
 {

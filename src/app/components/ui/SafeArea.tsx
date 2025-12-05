@@ -1,56 +1,36 @@
-import React, { useEffect, useState } from "react";
+'use client';
+
+import React, { ReactNode } from "react";
 
 interface SafeAreaProps {
-  children: React.ReactNode;
+  children: ReactNode;
   className?: string;
+  /** Include bottom navigation bar height in padding (default: true for mobile) */
+  includeNavBar?: boolean;
 }
 
-export function SafeArea({ children, className }: SafeAreaProps) {
-  const [isMobile, setIsMobile] = useState(false);
-  const [isAndroid, setIsAndroid] = useState(false);
-
-  useEffect(() => {
-    const checkIfMobile = () => {
-      const userAgent = navigator.userAgent;
-      const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-        userAgent
-      );
-      setIsMobile(isMobileDevice);
-      setIsAndroid(/Android/i.test(userAgent));
-    };
-
-    checkIfMobile();
-    window.addEventListener("resize", checkIfMobile);
-    return () => window.removeEventListener("resize", checkIfMobile);
-  }, []);
-
+/**
+ * Main layout SafeArea wrapper
+ * Handles safe areas for the app's main content area
+ * 
+ * For fixed bottom elements (nav bars, FABs), use:
+ * - className="pb-safe" or "bottom-safe" utilities
+ * - Or add padding: calc(env(safe-area-inset-bottom) + your-spacing)
+ */
+export function SafeArea({ children, className = '', includeNavBar = true }: SafeAreaProps) {
   return (
     <div
       className={`
         min-h-screen flex flex-col bg-gray-900
-        ${isMobile ? "pb-[calc(env(safe-area-inset-bottom)+4rem)]" : ""}
-        ${isAndroid ? "android-safe-area" : ""}
-        ${className || ''}
+        pt-safe px-safe
+        ${includeNavBar ? 'pb-[calc(env(safe-area-inset-bottom,0px)+4rem)]' : 'pb-safe'}
+        ${className}
       `}
-      style={{
-        WebkitOverflowScrolling: "touch",
-        ...(isAndroid && {
-          paddingBottom: 'calc(env(safe-area-inset-bottom) + 4rem)',
-          backgroundColor: '#111827'
-        })
-      }}
+      style={{ WebkitOverflowScrolling: 'touch' }}
     >
       {children}
-      {isAndroid && (
-        <div 
-          className="fixed left-0 right-0 bottom-0 bg-gray-900" 
-          style={{ 
-            height: '100px',
-            zIndex: -1,
-            transform: 'translateY(70px)'
-          }}
-        />
-      )}
     </div>
   );
 }
+
+export default SafeArea;
