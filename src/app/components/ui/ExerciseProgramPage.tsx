@@ -1287,7 +1287,7 @@ export function ExerciseProgramPage({
                                   isSelected && isDayGenerated
                                     ? 'bg-indigo-600 text-white'
                                     : isDayGenerating
-                                      ? 'bg-emerald-500/20 text-emerald-300 ring-1 ring-emerald-500/50'
+                                      ? 'bg-emerald-500/20 text-emerald-300'
                                       : isDayGenerated
                                         ? 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white'
                                         : 'bg-gray-800/30 text-gray-500 opacity-50 cursor-not-allowed'
