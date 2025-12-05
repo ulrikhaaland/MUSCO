@@ -74,7 +74,7 @@ For each day, determine:
 
 PROGRAM TYPE SPECIFIC RULES:
 
-**For programType "exercise" or "exercise_and_recovery":**
+**For programType "exercise":**
 - Total workout days (strength + cardio) must equal numberOfActivityDays
 - If exerciseModalities is "both": use cardioDays for cardio days and strengthDays for strength days
 - If exerciseModalities is "strength": all workout days are strength
@@ -83,13 +83,27 @@ PROGRAM TYPE SPECIFIC RULES:
 - Space rest days evenly throughout the week
 - For "both" modality: alternate cardio and strength when possible
 
+**For programType "exercise_and_recovery":**
+- Generate a fitness program that INTEGRATES recovery work throughout the week
+- Keep cardio and strength on separate days (never mix them)
+- It IS ALLOWED to include recovery exercises (mobility/flexibility/stability) within strength or cardio sessions
+- Place recovery exercises either after warmup (as prep) or at the end of the workout (as cooldown)
+- Keep integrated recovery items low-intensity and brief (1-3 exercises, 5-10 min)
+- CRITICAL: Include at least ONE dedicated "active recovery" day (dayType: "recovery") per week
+  - This is NOT a rest day - it's an active session with gentle mobility/flexibility/stability work
+  - Duration: ~15-20 minutes, all exercises must be equipmentless and home-performable
+- If painfulAreas is non-empty, all recovery elements MUST be tailored to those painful areas
+- Remaining workout days follow normal strength/cardio rules based on exerciseModalities
+- Example for 4 activity days, modality "strength": Mon: strength+recovery cooldown, Wed: dedicated recovery, Fri: strength, Sat: strength
+
 **For programType "recovery":**
-- Use dayType "recovery" for active recovery sessions (NOT "strength" or "cardio")
+- Use dayType "recovery" for ALL active sessions (NOT "strength" or "cardio")
 - Recovery sessions include gentle mobility, stretching, and light strengthening exercises
 - Total active recovery days must equal numberOfActivityDays
 - Remaining days should be "rest" days with very gentle mobility only
 - All recovery sessions should be low intensity - no heavy lifting or intense cardio
 - Focus on pain reduction, mobility improvement, and gradual progression
+- If painfulAreas is non-empty, the program MUST primarily target those painful areas
 - Example: 3 activity days → Mon: recovery, Wed: recovery, Fri: recovery, rest days: Tue, Thu, Sat, Sun
 
 INTENSITY AND REST RULES (for exercise/exercise_and_recovery):
@@ -174,6 +188,13 @@ RULES:
 6. Use the "focus" field from weeklyPlan to guide your exercise selection
 7. CRITICAL: NEVER mix cardio and strength exercises on the same day
 
+SPECIAL RULE FOR "exercise_and_recovery" programType:
+- For strength or cardio days: You MAY include 1-3 recovery exercises (mobility/flexibility/stability) 
+- Place recovery exercises either AFTER the warmup (as prep) or at the END of the workout (as cooldown)
+- These recovery exercises should be low-intensity and brief
+- If painfulAreas is non-empty, recovery exercises MUST target those specific painful areas
+- This creates a hybrid workout that addresses fitness AND recovery needs
+
 ---
 
 1. Utilize Diagnosis Data Effectively
@@ -246,9 +267,19 @@ Based on user's preferred duration:
 - NO strength exercises on cardio days
 - NO warmup exercises on cardio days
 
-6b. Recovery Day Guidelines (when dayType is "recovery" or programType is "recovery")
+6b. Recovery Day Guidelines (when dayType is "recovery")
 
-CRITICAL: Recovery programs focus on gentle rehabilitation, NOT intense exercise.
+CRITICAL: Recovery days focus on gentle rehabilitation, NOT intense exercise.
+
+**For programType "recovery":**
+All active days are recovery days - the entire program is recovery-focused.
+
+**For programType "exercise_and_recovery":**
+- At least ONE day per week should be a dedicated recovery day
+- This is NOT a rest day - it's an active session
+- Duration: ~15-20 minutes
+- All exercises must be equipmentless and home-performable
+- Focus on mobility/flexibility/stability for painful areas
 
 Exercise Selection for Recovery Days:
 - Select gentle mobility, stretching, and light strengthening exercises
@@ -259,7 +290,7 @@ Exercise Selection for Recovery Days:
 
 Exercise Count for Recovery Days (based on workout duration):
 - 15 minutes: 2-3 exercises
-- 30 minutes: 3-5 exercises  
+- 20-30 minutes: 3-5 exercises  
 - 45 minutes: 5-7 exercises
 
 Recovery Day Structure:
@@ -268,7 +299,7 @@ Recovery Day Structure:
 - Add light strengthening exercises if appropriate for the user's condition
 - End with relaxation or gentle stretching
 - All exercises should be LOW intensity
-- Consider user's painful areas and avoid exercises that could aggravate them
+- If painfulAreas is non-empty, exercises MUST target those specific areas
 - Always include modifications and precautions for each exercise
 
 7. Exercise Order
