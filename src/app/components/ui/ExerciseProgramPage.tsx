@@ -784,7 +784,7 @@ export function ExerciseProgramPage({
           {/* Program Overview Modal - REMOVED - Now using inline week-specific overview card */}
 
           <div className="flex-1">
-            <div className="max-w-4xl mx-auto px-4 pb-8">
+            <div className="max-w-4xl mx-auto px-4 pb-24">
               {/* Program overview button and save button */}
               {
                                   <div className="text-center mb-4 space-y-2 mt-2">

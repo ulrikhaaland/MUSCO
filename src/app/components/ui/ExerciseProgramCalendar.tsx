@@ -380,7 +380,7 @@ export function ExerciseProgramCalendar({
       <div className="mb-12 hidden md:flex"></div>
 
       <div className="flex-1">
-        <div className="max-w-2xl mx-auto px-4 pt-8 pb-8">
+        <div className="max-w-2xl mx-auto px-4 pt-8 pb-24">
           <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-xl ring-1 ring-gray-700/50">
             {renderHeader()}
             <div className="p-4">

@@ -417,7 +417,7 @@ function ProgramsContent() {
 
       {/* Program list */}
       <div className="flex-1 px-4 py-6">
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 pb-8">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 pb-24">
           {programStatus === ProgramStatus.Generating && (
             <div
               onClick={() => router.push('/program')}

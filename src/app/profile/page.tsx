@@ -1910,7 +1910,7 @@ export default function ProfilePage() {
           {/* Removed h-screen overflow-y-auto, added flex-1 */}
           <div
             ref={topRef}
-            className="max-w-md mx-auto px-4 pt-6 pb-8" // Adjusted padding
+            className="max-w-md mx-auto px-4 pt-6 pb-24" // Space for mobile nav bar
           >
             <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-xl ring-1 ring-gray-700/50 p-6 mb-8">
               <div className="flex flex-col items-center mb-6 relative">
