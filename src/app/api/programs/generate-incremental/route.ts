@@ -165,7 +165,7 @@ async function generateMetadata(
       { role: 'user', content: userMessage },
     ],
     response_format: { type: 'json_object' },
-    reasoning_effort: 'low',
+    reasoning_effort: 'minimal',
   } as any);
 
   const rawContent = response.choices[0].message.content;
@@ -225,7 +225,7 @@ async function generateSingleDay(
       { role: 'user', content: userMessage },
     ],
     response_format: { type: 'json_object' },
-    reasoning_effort: 'low',
+    reasoning_effort: 'minimal',
   } as any);
 
   const rawContent = response.choices[0].message.content;
