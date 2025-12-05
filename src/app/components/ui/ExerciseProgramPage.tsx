@@ -1248,6 +1248,19 @@ export function ExerciseProgramPage({
                   // Show the selected week's content
                   return (
                     <>
+                      {/* Generation Progress Indicator */}
+                      {generatingDay !== null && (
+                        <div className="mb-4 flex items-center justify-center gap-2 text-sm text-gray-400">
+                          <svg className="w-4 h-4 animate-spin text-emerald-400" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                          </svg>
+                          <span>
+                            {t('exerciseProgram.generatingDay', { current: generatingDay, total: 7 })}
+                          </span>
+                        </div>
+                      )}
+                      
                       {/* Day Tabs */}
                       <div className="overflow-x-auto scrollbar-hide mb-6">
                         <div className="flex space-x-2 min-w-max">
@@ -1262,30 +1275,41 @@ export function ExerciseProgramPage({
                             .map((day) => {
                               const isDayGenerated = generatedDays.includes(day.day);
                               const isDayGenerating = generatingDay === day.day;
+                              const isSelected = expandedDays.includes(day.day);
                               
                               return (
                               <button
                                 key={day.day}
                                 data-day={day.day}
-                                onClick={() => handleDayClick(day.day)}
-                                className={`px-6 py-3 rounded-lg font-medium transition-colors duration-200 flex flex-col items-center relative ${
-                                  expandedDays.includes(day.day)
+                                onClick={() => isDayGenerated && handleDayClick(day.day)}
+                                disabled={!isDayGenerated}
+                                className={`px-6 py-3 rounded-lg font-medium transition-all duration-200 flex flex-col items-center relative ${
+                                  isSelected && isDayGenerated
                                     ? 'bg-indigo-600 text-white'
-                                    : isDayGenerated
-                                      ? 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white opacity-50'
-                                      : 'bg-gray-800/30 text-gray-500 opacity-40'
+                                    : isDayGenerating
+                                      ? 'bg-emerald-500/20 text-emerald-300 ring-1 ring-emerald-500/50'
+                                      : isDayGenerated
+                                        ? 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white'
+                                        : 'bg-gray-800/30 text-gray-500 opacity-50 cursor-not-allowed'
                                 }`}
                               >
-                                {/* Generating indicator */}
+                                {/* Generating indicator - inside button */}
                                 {isDayGenerating && (
-                                  <span className="absolute -top-1 -right-1 w-3 h-3 bg-indigo-500 rounded-full animate-pulse" />
+                                  <span className="absolute top-1 right-1 w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
                                 )}
-                                <span className="text-sm opacity-80 mb-1">
+                                <span className={`text-sm mb-1 ${isDayGenerating ? 'opacity-100' : 'opacity-80'}`}>
                                   {getDayShortName(day.day, t)}
                                 </span>
-                                {!isDayGenerated ? (
-                                  <span className="text-xs mt-1 opacity-60 shimmer">
-                                    ...
+                                {isDayGenerating ? (
+                                  <span className="text-xs mt-1 text-emerald-300">
+                                    <svg className="w-3 h-3 animate-spin inline" fill="none" viewBox="0 0 24 24">
+                                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                                    </svg>
+                                  </span>
+                                ) : !isDayGenerated ? (
+                                  <span className="text-xs mt-1 opacity-60">
+                                    —
                                   </span>
                                 ) : day.isRestDay ? (
                                   <span className="text-xs mt-1 opacity-80">
@@ -1369,6 +1393,19 @@ export function ExerciseProgramPage({
                   }
                   return (
                     <>
+                      {/* Generation Progress Indicator */}
+                      {generatingDay !== null && (
+                        <div className="mb-4 flex items-center justify-center gap-2 text-sm text-gray-400">
+                          <svg className="w-4 h-4 animate-spin text-emerald-400" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                          </svg>
+                          <span>
+                            {t('exerciseProgram.generatingDay', { current: generatingDay, total: 7 })}
+                          </span>
+                        </div>
+                      )}
+                      
                       {/* Day Tabs */}
                       <div className="overflow-x-auto scrollbar-hide mb-6">
                         <div className="flex space-x-2 min-w-max">
@@ -1383,30 +1420,41 @@ export function ExerciseProgramPage({
                               .map((day) => {
                                 const isDayGenerated = generatedDays.includes(day.day);
                                 const isDayGenerating = generatingDay === day.day;
+                                const isSelected = expandedDays.includes(day.day);
                                 
                                 return (
                                 <button
                                   key={day.day}
                                   data-day={day.day}
-                                  onClick={() => handleDayClick(day.day)}
-                                  className={`px-6 py-3 rounded-lg font-medium transition-colors duration-200 flex flex-col items-center relative ${
-                                    expandedDays.includes(day.day)
+                                  onClick={() => isDayGenerated && handleDayClick(day.day)}
+                                  disabled={!isDayGenerated}
+                                  className={`px-6 py-3 rounded-lg font-medium transition-all duration-200 flex flex-col items-center relative ${
+                                    isSelected && isDayGenerated
                                       ? 'bg-indigo-600 text-white'
-                                      : isDayGenerated
-                                        ? 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white opacity-50'
-                                        : 'bg-gray-800/30 text-gray-500 opacity-40'
+                                      : isDayGenerating
+                                        ? 'bg-emerald-500/20 text-emerald-300 ring-1 ring-emerald-500/50'
+                                        : isDayGenerated
+                                          ? 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white'
+                                          : 'bg-gray-800/30 text-gray-500 opacity-50 cursor-not-allowed'
                                   }`}
                                 >
-                                  {/* Generating indicator */}
+                                  {/* Generating indicator - inside button */}
                                   {isDayGenerating && (
-                                    <span className="absolute -top-1 -right-1 w-3 h-3 bg-indigo-500 rounded-full animate-pulse" />
+                                    <span className="absolute top-1 right-1 w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
                                   )}
-                                  <span className="text-sm opacity-80 mb-1">
+                                  <span className={`text-sm mb-1 ${isDayGenerating ? 'opacity-100' : 'opacity-80'}`}>
                                     {getDayShortName(day.day, t)}
                                   </span>
-                                  {!isDayGenerated ? (
-                                    <span className="text-xs mt-1 opacity-60 shimmer">
-                                      ...
+                                  {isDayGenerating ? (
+                                    <span className="text-xs mt-1 text-emerald-300">
+                                      <svg className="w-3 h-3 animate-spin inline" fill="none" viewBox="0 0 24 24">
+                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                                      </svg>
+                                    </span>
+                                  ) : !isDayGenerated ? (
+                                    <span className="text-xs mt-1 opacity-60">
+                                      —
                                     </span>
                                   ) : day.isRestDay ? (
                                     <span className="text-xs mt-1 opacity-80">

@@ -814,6 +814,7 @@ const translations = {
   'exerciseProgram.dayAbbr.sun': 'Søn',
   'exerciseProgram.day.rest': 'Hvile',
   'exerciseProgram.day.activity': 'Trening',
+  'exerciseProgram.generatingDay': 'Genererer dag {{current}} av {{total}}...',
   'exerciseProgram.overview.title.exercise':
     'Personlig tilpasset for dine treningsmål',
   'exerciseProgram.overview.title.recovery':
