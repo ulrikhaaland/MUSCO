@@ -291,7 +291,9 @@ export function ExerciseProgramPage({
     const programId = program.title || 'generating';
     
     // Reset if we're looking at a completely different program (title changed)
-    if (previousProgramId.current && previousProgramId.current !== programId && programId !== 'generating') {
+    // BUT don't reset when transitioning from 'generating' to actual title (that's just generation completing)
+    const isTransitionFromGenerating = previousProgramId.current === 'generating' && programId !== 'generating';
+    if (previousProgramId.current && previousProgramId.current !== programId && programId !== 'generating' && !isTransitionFromGenerating) {
       hasInitializedDaySelection.current = false;
       userHasManuallySelectedDay.current = false; // Reset manual selection flag for new program
     }

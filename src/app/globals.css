@@ -2,20 +2,49 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Support for safe areas on mobile devices */
+/* ============================================
+   Theme Color Tokens
+   ============================================ */
 :root {
+  /* Background surfaces (darkest to lightest) */
+  --surface-deepest: #0E1116;
+  --surface-base: #111827;
+  --surface-elevated: #141922;
+  --surface-muted: #1f2937;
+
+  /* Primary brand (purple) */
+  --brand: #635bff;
+  --brand-hover: #7c75ff;
+  --brand-soft: rgba(99, 91, 255, 0.12);
+  --brand-border: rgba(99, 91, 255, 0.35);
+  --brand-text: #c8cbff;
+  --brand-text-light: #f2f6ff;
+
+  /* Borders */
+  --border-default: #374151;
+  --border-muted: rgba(255, 255, 255, 0.1);
+  --border-subtle: rgba(255, 255, 255, 0.15);
+
+  /* Miscellaneous */
+  --drag-handle: #566074;
+  --tooltip-bg: #1f2937e0;
+}
+
+/* ============================================
+   Safe area & legacy variables
+   ============================================ */
+:root {
+  /* Safe areas on mobile devices */
   --app-safe-area-top: env(safe-area-inset-top, 0px);
   --app-safe-area-bottom: env(safe-area-inset-bottom, 0px);
   --app-safe-area-left: env(safe-area-inset-left, 0px);
   --app-safe-area-right: env(safe-area-inset-right, 0px);
-}
 
-/* Default variables */
-:root {
+  /* Legacy variables (kept for compatibility) */
   --foreground-rgb: 255, 255, 255;
   --background-rgb: 0, 0, 0;
-  --navigation-bar-color: #111827;
-  --mobile-chrome-fix: #111827;
+  --navigation-bar-color: var(--surface-base);
+  --mobile-chrome-fix: var(--surface-base);
 }
 
 html,
@@ -122,7 +151,7 @@ iframe {
 
 /* Bottom sheet custom styles */
 [data-rsbs-overlay] {
-  background: rgb(17, 24, 39) !important; /* bg-gray-900 */
+  background: var(--surface-base) !important;
   z-index: 3 !important;
 }
 
@@ -135,15 +164,15 @@ iframe {
 }
 
 [data-rsbs-root]:after {
-  background: rgb(17, 24, 39) !important; /* bg-gray-900 */
+  background: var(--surface-base) !important;
 }
 
 [data-rsbs-has-header='true']:after {
-  background: rgb(17, 24, 39) !important; /* bg-gray-900 */
+  background: var(--surface-base) !important;
 }
 
 [data-rsbs-header] {
-  background: rgb(17, 24, 39) !important; /* bg-gray-900 */
+  background: var(--surface-base) !important;
   z-index: 4 !important;
   position: relative !important;
 }
@@ -152,32 +181,30 @@ iframe {
   content: '';
   position: absolute;
   bottom: 0;
-  left: 1rem; /* px-4 */
-  right: 1rem; /* px-4 */
+  left: 1rem;
+  right: 1rem;
   height: 1px;
-  background: rgb(55, 65, 81) !important; /* border-gray-700 */
+  background: var(--border-default) !important;
 }
 
 [data-rsbs-footer] {
-  background: rgb(17, 24, 39) !important; /* bg-gray-900 */
+  background: var(--surface-base) !important;
   z-index: 4 !important;
   padding-bottom: 0 !important;
   padding-top: 0 !important;
 }
 
 [data-rsbs-scroll] {
-  background: rgb(17, 24, 39) !important; /* bg-gray-900 */
-  /* overflow-y: auto !important; */
+  background: var(--surface-base) !important;
 }
 
 [data-rsbs-content] {
-  background: rgb(17, 24, 39) !important; /* bg-gray-900 */
-  /* overflow: hidden !important; */
+  background: var(--surface-base) !important;
 }
 
 /* Bottom Sheet Styles */
 [data-rsbs-header]:before {
-  background: #566074 !important;
+  background: var(--drag-handle) !important;
 }
 
 /* Remove all remaining phone input related CSS */
@@ -262,7 +289,7 @@ iframe {
   position: absolute;
   width: 8px;
   height: 8px;
-  background-color: #1f2937e0;
+  background-color: var(--tooltip-bg);
   right: -4px;
   top: 50%;
   transform: translateY(-50%) rotate(45deg);
@@ -273,7 +300,7 @@ iframe {
   position: absolute;
   width: 8px;
   height: 8px;
-  background-color: #1f2937e0;
+  background-color: var(--tooltip-bg);
   left: -4px;
   top: 50%;
   transform: translateY(-50%) rotate(45deg);
@@ -284,7 +311,7 @@ iframe {
   position: absolute;
   width: 8px;
   height: 8px;
-  background-color: #1f2937e0;
+  background-color: var(--tooltip-bg);
   top: -4px;
   left: 50%;
   transform: translateX(-50%) rotate(45deg);
@@ -295,25 +322,21 @@ iframe {
   position: absolute;
   width: 8px;
   height: 8px;
-  background-color: #1f2937e0;
+  background-color: var(--tooltip-bg);
   bottom: -4px;
   left: 50%;
   transform: translateX(-50%) rotate(45deg);
 }
 
-/* Android navigation bar color fix */
-:root {
-  --navigation-bar-color: #111827;
-  --mobile-chrome-fix: #111827;
-}
+/* Android navigation bar color fix - uses theme tokens defined above */
 
 /* Target Chrome/Android */
 @media (display-mode: browser) {
   body {
-    background-color: #111827;
+    background-color: var(--surface-base);
   }
   html {
-    background-color: #111827;
+    background-color: var(--surface-base);
   }
 }
 
@@ -331,7 +354,7 @@ iframe {
     right: 0;
     bottom: 0;
     height: 100px;
-    background-color: #111827;
+    background-color: var(--surface-base);
     z-index: -10;
   }
 }
@@ -345,7 +368,7 @@ iframe {
     bottom: 0;
     right: 0;
     height: 50px;
-    background-color: #111827;
+    background-color: var(--surface-base);
     z-index: -10;
   }
 }
@@ -359,7 +382,7 @@ iframe {
     left: 0;
     right: 0;
     height: 100px;
-    background: #111827;
+    background: var(--surface-base);
     z-index: -1;
   }
 }
@@ -385,10 +408,14 @@ iframe {
   --safe-area-inset-left: env(safe-area-inset-left, 0px);
 }
 
+/* ============================================
+   Apply theme tokens to hardcoded values
+   ============================================ */
+
 /* Add padding to main PWA container in standalone mode */
 @media (display-mode: standalone) {
   body {
-    background-color: #111827;
+    background-color: var(--surface-base);
   }
   /* In standalone PWA, keep overscroll disabled to avoid rubber-band/bounce */
   html,
@@ -451,7 +478,7 @@ iframe {
 
 .chat-scrollbar:hover,
 .chat-scrollbar:focus-within {
-  scrollbar-color: rgba(99, 91, 255, 0.3) transparent;
+  scrollbar-color: var(--brand-soft) transparent;
 }
 
 /* Webkit browsers (Chrome, Safari, Edge) */
@@ -471,7 +498,7 @@ iframe {
 
 .chat-scrollbar:hover::-webkit-scrollbar-thumb,
 .chat-scrollbar:focus-within::-webkit-scrollbar-thumb {
-  background-color: rgba(99, 91, 255, 0.3);
+  background-color: var(--brand-soft);
 }
 
 .chat-scrollbar::-webkit-scrollbar-thumb:hover {
