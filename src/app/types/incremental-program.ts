@@ -7,7 +7,7 @@ import { ExerciseQuestionnaireAnswers } from '../../../shared/types';
  */
 export interface WeeklyPlanDay {
   day: number;
-  dayType: 'strength' | 'cardio' | 'rest';
+  dayType: 'strength' | 'cardio' | 'recovery' | 'rest';
   intensity: 'high' | 'moderate' | 'low';
   focus: string;
 }
@@ -30,6 +30,8 @@ export interface ProgramMetadataResponse {
 export interface SingleDayResponse {
   day: number;
   isRestDay: boolean;
+  isCardioDay?: boolean;
+  isRecoveryDay?: boolean;
   description: string;
   exercises: Exercise[];
   duration: number;

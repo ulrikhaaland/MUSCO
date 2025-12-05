@@ -1282,7 +1282,7 @@ l-8 40 -1 -45z"
         {showRetry && onRetry && (
           <button
             onClick={onRetry}
-            className="mt-2 text-xs text-[#6366f1] underline text-center mx-auto block"
+            className="mt-2 text-xs text-indigo-500 underline text-center mx-auto block"
           >
             taking longer than usual – tap to retry
           </button>

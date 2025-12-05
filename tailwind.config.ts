@@ -33,6 +33,8 @@ export default {
           muted: "var(--border-muted)",
           subtle: "var(--border-subtle)",
         },
+        // Theme: Miscellaneous
+        tooltip: "var(--tooltip-bg)",
       },
       animation: {
         shimmer: 'shimmer 2s infinite linear',

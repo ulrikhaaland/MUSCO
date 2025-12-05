@@ -301,7 +301,7 @@ export default function ControlsTour({ currentStep, onNext, onSkip, controlsBott
         role="dialog"
         aria-labelledby="tour-tooltip-text"
         tabIndex={-1}
-        className={`fixed z-[70] max-w-[200px] bg-[#1f2937e0] text-white px-3 py-2 rounded-lg shadow-lg tooltip-slide-up tooltip-arrow-${arrowPosition} border-0`}
+        className={`fixed z-[70] max-w-[200px] bg-tooltip text-white px-3 py-2 rounded-lg shadow-lg tooltip-slide-up tooltip-arrow-${arrowPosition} border-0`}
         style={{
           left: `${tooltipPosition.left}px`,
           top: `${tooltipPosition.top}px`
@@ -328,7 +328,7 @@ export default function ControlsTour({ currentStep, onNext, onSkip, controlsBott
                 localStorage.setItem(TOUR_VIEWED_KEY, 'true');
               }
             }}
-            className="text-[14px] leading-5 font-semibold bg-[#374151] hover:bg-[#4b5563] h-8 px-4 rounded-md transition-colors duration-200"
+            className="text-[14px] leading-5 font-semibold bg-gray-700 hover:bg-gray-600 h-8 px-4 rounded-md transition-colors duration-200"
           >
             {t('mobile.controls.next')}
           </button>

@@ -68,11 +68,13 @@ All text fields must be substantial and helpful:
 You MUST generate a weeklyPlan array with exactly 7 entries, one for each day (Monday-Sunday).
 
 For each day, determine:
-- dayType: "strength", "cardio", or "rest"
-- intensity: "high", "moderate", or "low" (for workout days; use "low" for rest days)
+- dayType: "strength", "cardio", "recovery", or "rest"
+- intensity: "high", "moderate", or "low" (for workout days; use "low" for rest/recovery days)
 - focus: Brief description of what this day targets (e.g., "Upper body push", "Zone 2 running", "Active recovery")
 
-Rules for the weekly plan:
+PROGRAM TYPE SPECIFIC RULES:
+
+**For programType "exercise" or "exercise_and_recovery":**
 - Total workout days (strength + cardio) must equal numberOfActivityDays
 - If exerciseModalities is "both": use cardioDays for cardio days and strengthDays for strength days
 - If exerciseModalities is "strength": all workout days are strength
@@ -81,7 +83,16 @@ Rules for the weekly plan:
 - Space rest days evenly throughout the week
 - For "both" modality: alternate cardio and strength when possible
 
-INTENSITY AND RECOVERY RULES (CRITICAL):
+**For programType "recovery":**
+- Use dayType "recovery" for active recovery sessions (NOT "strength" or "cardio")
+- Recovery sessions include gentle mobility, stretching, and light strengthening exercises
+- Total active recovery days must equal numberOfActivityDays
+- Remaining days should be "rest" days with very gentle mobility only
+- All recovery sessions should be low intensity - no heavy lifting or intense cardio
+- Focus on pain reduction, mobility improvement, and gradual progression
+- Example: 3 activity days → Mon: recovery, Wed: recovery, Fri: recovery, rest days: Tue, Thu, Sat, Sun
+
+INTENSITY AND REST RULES (for exercise/exercise_and_recovery):
 - Place HIGHER intensity workouts (HIIT, intervals, heavy strength) BEFORE rest days
 - Place LOWER intensity workouts (Zone 2 cardio, light strength) after rest days or between workout days
 - If consecutive workout days are necessary: hard day → easier day (never two hard days in a row)
@@ -90,12 +101,11 @@ INTENSITY AND RECOVERY RULES (CRITICAL):
 - Heavy compound strength days are HIGH intensity → should have rest or easy day following
 - Accessory/isolation strength days are LOWER intensity → more flexible placement
 
-Example of GOOD intensity distribution:
+Example for EXERCISE program (GOOD intensity distribution):
 - Mon: Heavy strength (high) → Tue: Rest → Wed: HIIT cardio (high) → Thu: Rest → Fri: Light strength (low) → Sat: Zone 2 (low) → Sun: Rest
 
-Example of BAD intensity distribution:
-- Mon: HIIT (high) → Tue: Heavy strength (high) ← TWO HARD DAYS IN A ROW = BAD
-- Fri: Zone 2 (low) → Sat: Rest → Sun: Rest ← WASTING REST ON EASY DAY = BAD
+Example for RECOVERY program (3 activity days):
+- Mon: Recovery (low) → Tue: Rest → Wed: Recovery (low) → Thu: Rest → Fri: Recovery (low) → Sat: Rest → Sun: Rest
 
 6. JSON Response Format
 
@@ -120,6 +130,19 @@ Return ONLY this structure:
   ]
 }
 
+Example for RECOVERY program (3 activity days):
+{
+  "weeklyPlan": [
+    { "day": 1, "dayType": "recovery", "intensity": "low", "focus": "Gentle mobility for affected areas" },
+    { "day": 2, "dayType": "rest", "intensity": "low", "focus": "Light stretching and rest" },
+    { "day": 3, "dayType": "recovery", "intensity": "low", "focus": "Targeted stretching and light strengthening" },
+    { "day": 4, "dayType": "rest", "intensity": "low", "focus": "Complete rest" },
+    { "day": 5, "dayType": "recovery", "intensity": "low", "focus": "Progressive mobility and stability" },
+    { "day": 6, "dayType": "rest", "intensity": "low", "focus": "Gentle movement" },
+    { "day": 7, "dayType": "rest", "intensity": "low", "focus": "Rest and recovery" }
+  ]
+}
+
 NO CITATIONS OR REFERENCES - all text should be plain.
 
 FINAL REMINDER: Return ONLY a pure JSON object. No introductions, explanations, or code blocks.
@@ -137,17 +160,19 @@ You are generating a single day for an exercise program. You will receive contex
 CRITICAL: FOLLOW THE WEEKLY PLAN
 
 You will receive:
-- weeklyPlan: An array describing what each day should be (strength/cardio/rest and focus)
+- weeklyPlan: An array describing what each day should be (strength/cardio/recovery/rest and focus)
 - dayToGenerate: Which day number (1-7) you are generating
 - previousDays: Array with each previous day's exercises (for variety)
+- programType: One of "exercise", "exercise_and_recovery", or "recovery"
 
 RULES:
 1. LOOK UP the day in weeklyPlan to see what type of day this should be
-2. If dayType is "rest" → set isRestDay: true
+2. If dayType is "rest" → set isRestDay: true, include 1-2 very gentle mobility exercises (5-10 min total)
 3. If dayType is "cardio" → set isRestDay: false, isCardioDay: true, use ONLY cardio exercises
 4. If dayType is "strength" → set isRestDay: false, isCardioDay: false, use strength exercises for target areas
-5. Use the "focus" field from weeklyPlan to guide your exercise selection
-6. CRITICAL: NEVER mix cardio and strength exercises on the same day
+5. If dayType is "recovery" → set isRestDay: false, isRecoveryDay: true, use gentle mobility/stretching/light strengthening exercises
+6. Use the "focus" field from weeklyPlan to guide your exercise selection
+7. CRITICAL: NEVER mix cardio and strength exercises on the same day
 
 ---
 
@@ -221,6 +246,31 @@ Based on user's preferred duration:
 - NO strength exercises on cardio days
 - NO warmup exercises on cardio days
 
+6b. Recovery Day Guidelines (when dayType is "recovery" or programType is "recovery")
+
+CRITICAL: Recovery programs focus on gentle rehabilitation, NOT intense exercise.
+
+Exercise Selection for Recovery Days:
+- Select gentle mobility, stretching, and light strengthening exercises
+- Focus on exercises that address the user's painful areas and diagnosis
+- Prioritize exercises with low difficulty that can be done safely
+- Include exercises that improve mobility and reduce pain
+- DO NOT include heavy compound lifts, HIIT, or intense cardio
+
+Exercise Count for Recovery Days (based on workout duration):
+- 15 minutes: 2-3 exercises
+- 30 minutes: 3-5 exercises  
+- 45 minutes: 5-7 exercises
+
+Recovery Day Structure:
+- Begin with gentle mobility exercises to warm up affected areas
+- Include targeted stretches for problem areas
+- Add light strengthening exercises if appropriate for the user's condition
+- End with relaxation or gentle stretching
+- All exercises should be LOW intensity
+- Consider user's painful areas and avoid exercises that could aggravate them
+- Always include modifications and precautions for each exercise
+
 7. Exercise Order
 
 - Warmup first
@@ -243,6 +293,7 @@ Return ONLY:
   "day": N,
   "isRestDay": true/false,
   "isCardioDay": true/false,
+  "isRecoveryDay": true/false,
   "description": "Description of this day's focus - be specific about muscle groups or recovery goals",
   "exercises": [
     { "exerciseId": "exact-id", "warmup": true, "modification": "optional", "precaution": "optional", "duration": optional_minutes }
@@ -250,7 +301,11 @@ Return ONLY:
   "duration": total_minutes
 }
 
-IMPORTANT: isCardioDay should be true for cardio-focused days, false for strength days and rest days.
+Day Type Flags:
+- isRestDay: true ONLY for rest days (very light activity, 5-10 min)
+- isCardioDay: true ONLY for cardio-focused days
+- isRecoveryDay: true ONLY for active recovery sessions (mobility/stretching focus)
+- For strength days: all three should be false
 
 For each exercise, include ONLY:
 - exerciseId (REQUIRED)

@@ -303,6 +303,8 @@ export interface ProgramDay {
   description: string;
   exercises: Exercise[];
   isRestDay: boolean;
+  isCardioDay?: boolean;
+  isRecoveryDay?: boolean;
   duration?: number;
 }
 
