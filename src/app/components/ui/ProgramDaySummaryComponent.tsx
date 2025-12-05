@@ -1,6 +1,6 @@
 import { ProgramDay } from '@/app/types/program';
 import Chip from './Chip';
-import { useEffect, useState, useCallback, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useTranslation } from '@/app/i18n/TranslationContext';
 
 interface ProgramDaySummaryComponentProps {
@@ -48,18 +48,6 @@ export function ProgramDaySummaryComponent({
     return () => mediaQuery.removeEventListener('change', handleChange);
   }, []);
 
-  // Debounced click handler
-  const debouncedClickHandler = useCallback(() => {
-    if (!onClick) return;
-    
-    let timeout: NodeJS.Timeout;
-    return () => {
-      clearTimeout(timeout);
-      timeout = setTimeout(() => {
-        onClick();
-      }, 250);
-    };
-  }, [onClick]);
 
   // Handle touch events for mobile feedback
   const handleTouchStart = () => {
@@ -107,7 +95,7 @@ export function ProgramDaySummaryComponent({
           href="#" 
           onClick={(e) => {
             e.preventDefault();
-            debouncedClickHandler()?.();
+            onClick?.();
           }}
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
