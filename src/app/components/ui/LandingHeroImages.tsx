@@ -105,7 +105,7 @@ export default function LandingHeroImages({ className = '' }: { className?: stri
         <div ref={groupRef} style={{ transform: `translateY(${groupShiftY}px)` }}>
         <div
           ref={layerBackRef}
-          className="absolute left-1/2 top-16 md:top-[45%] w-[80%] md:w-[76%] lg:w-[74%] aspect-video -translate-x-1/2 -translate-y-0 md:-translate-y-1/2 rounded-xl border overflow-hidden relative bg-[#141922] shadow-[0_18px_48px_rgba(0,0,0,0.34)]"
+          className="absolute left-1/2 top-16 md:top-[45%] w-[80%] md:w-[76%] lg:w-[74%] aspect-video -translate-x-1/2 -translate-y-0 md:-translate-y-1/2 rounded-xl border overflow-hidden relative bg-surface-elevated shadow-[0_18px_48px_rgba(0,0,0,0.34)]"
           style={{
             transform: `translate(calc(-50% + ${prefersReducedMotion || isCoarsePointer ? 0 : offset.x * -0.3}px), calc(-50% + ${prefersReducedMotion || isCoarsePointer ? 0 : offset.y * -0.3}px)) rotate(-10deg) scale(0.94)`,
             borderColor: 'rgba(255,255,255,0.12)'
@@ -119,7 +119,7 @@ export default function LandingHeroImages({ className = '' }: { className?: stri
 
         <div
           ref={layerMidRef}
-          className="absolute left-1/2 top-28 md:top-[45%] w-[88%] md:w-[84%] lg:w-[82%] aspect-video -translate-x-1/2 -translate-y-0 md:-translate-y-1/2 rounded-xl border overflow-hidden relative bg-[#141922] shadow-[0_16px_44px_rgba(0,0,0,0.34)]"
+          className="absolute left-1/2 top-28 md:top-[45%] w-[88%] md:w-[84%] lg:w-[82%] aspect-video -translate-x-1/2 -translate-y-0 md:-translate-y-1/2 rounded-xl border overflow-hidden relative bg-surface-elevated shadow-[0_16px_44px_rgba(0,0,0,0.34)]"
           style={{
             transform: `translate(calc(-50% + ${prefersReducedMotion || isCoarsePointer ? 0 : offset.x * 0.2}px), calc(-50% + ${prefersReducedMotion || isCoarsePointer ? 0 : offset.y * 0.2}px)) rotate(8deg) scale(0.97)`,
             borderColor: 'rgba(255,255,255,0.12)'
@@ -133,7 +133,7 @@ export default function LandingHeroImages({ className = '' }: { className?: stri
 
         <div
           ref={layerFrontRef}
-          className="absolute left-1/2 top-40 md:top-[45%] w-[96%] md:w-[90%] lg:w-[88%] aspect-video -translate-x-1/2 -translate-y-0 md:-translate-y-1/2 rounded-xl border overflow-hidden relative bg-[#141922] shadow-[0_12px_36px_rgba(0,0,0,0.32)]"
+          className="absolute left-1/2 top-40 md:top-[45%] w-[96%] md:w-[90%] lg:w-[88%] aspect-video -translate-x-1/2 -translate-y-0 md:-translate-y-1/2 rounded-xl border overflow-hidden relative bg-surface-elevated shadow-[0_12px_36px_rgba(0,0,0,0.32)]"
           style={{
             transform: `translate(calc(-50% + ${prefersReducedMotion || isCoarsePointer ? 0 : offset.x * 0.5}px), calc(-50% + ${prefersReducedMotion || isCoarsePointer ? 0 : offset.y * 0.5}px)) rotate(-6deg) scale(1)`,
             borderColor: 'rgba(255,255,255,0.14)'

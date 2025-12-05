@@ -78,7 +78,7 @@ export default function MobileControlButtons({
   return (
     <>
       <div
-        className="md:hidden fixed right-4 flex flex-col gap-2 bg-[#111827]/80 p-1.5 rounded-lg shadow-lg transition-all duration-300 backdrop-blur-md z-[50] mobile-controls-container"
+        className="md:hidden fixed right-4 flex flex-col gap-2 bg-surface-base/80 p-1.5 rounded-lg shadow-lg transition-all duration-300 backdrop-blur-md z-[50] mobile-controls-container"
         style={{
           bottom: controlsBottom,
         }}

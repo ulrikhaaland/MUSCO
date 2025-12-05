@@ -268,8 +268,17 @@ export function ExerciseProgramPage({
   // State for save button
   const [isSaving, setIsSaving] = useState(false);
 
-  // State for week-specific overview card
+  // State for week-specific overview card - auto-expand during generation
   const [showWeekOverview, setShowWeekOverview] = useState(false);
+  const hasAutoExpandedOverview = useRef(false);
+  
+  // Auto-expand overview when generation starts
+  useEffect(() => {
+    if (generatingDay !== null && !hasAutoExpandedOverview.current) {
+      setShowWeekOverview(true);
+      hasAutoExpandedOverview.current = true;
+    }
+  }, [generatingDay]);
 
   // Set initial week and day when program loads (only on first load or when program changes)
   useEffect(() => {
@@ -913,6 +922,7 @@ export function ExerciseProgramPage({
                     timeFrame={timeFrame}
                     isExpanded={showWeekOverview}
                     onToggle={() => setShowWeekOverview(!showWeekOverview)}
+                    isGenerating={generatingDay !== null}
                   />
                 );
               })()}

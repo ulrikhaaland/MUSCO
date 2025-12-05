@@ -67,8 +67,8 @@ export function BodyPartFilter({
               removedBodyParts.includes(bodyPart)
                 ? 'border-gray-600 text-gray-400/80 line-through'
                 : bodyPart.toLowerCase() === 'warmup'
-                  ? 'border-amber-600 text-[#f2f6ff]'
-                  : 'border-[#635bff] text-[#f2f6ff]'
+                  ? 'border-amber-600 text-brand-text-light'
+                  : 'border-brand text-brand-text-light'
             } transition-colors`}
             icon={
               removedBodyParts.includes(bodyPart) ? (

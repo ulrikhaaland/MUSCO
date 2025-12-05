@@ -343,7 +343,7 @@ export default function LandingPage() {
   // Shimmer removed
 
   return (
-    <div className="min-h-screen bg-[#0E1116]">
+    <div className="min-h-screen bg-surface-deepest">
       {/* Top Nav (landing only) */}
       <header className="sticky top-0 z-40 backdrop-blur supports-[backdrop-filter]:bg-gray-900/60 border-b border-white/10">
         <div className="mx-auto max-w-6xl px-6 py-[0.45rem] md:py-3 flex items-center justify-between">
@@ -465,14 +465,14 @@ export default function LandingPage() {
           {visiblePrograms.map(({ key, slug, img }) => (
             <button
               key={key}
-              className="group h-full text-left rounded-xl overflow-hidden bg-[#141922] ring-1 ring-white/12 shadow-lg hover:shadow-xl hover:translate-y-[-1px] transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="group h-full text-left rounded-xl overflow-hidden bg-surface-elevated ring-1 ring-white/12 shadow-lg hover:shadow-xl hover:translate-y-[-1px] transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
               onClick={() => {
                 logAnalyticsEvent('program_card_open', { condition: key });
                 router.push(`/program/${slug}`);
               }}
             >
               <div className="flex h-full items-stretch min-h-[88px]">
-                <div className="w-24 sm:w-28 md:w-32 xl:w-36 h-full bg-[#0E1116] border-r border-white/10 overflow-hidden">
+                <div className="w-24 sm:w-28 md:w-32 xl:w-36 h-full bg-surface-deepest border-r border-white/10 overflow-hidden">
                   <img
                     src={img}
                     alt=""
@@ -566,9 +566,9 @@ export default function LandingPage() {
             onTry={() => router.push('/app')}
             loading={null}
             showFounder={false}
-            benefitsBg="bg-[#141922]"
+            benefitsBg="bg-surface-elevated"
             benefitsRing="ring-1 ring-white/10"
-            cardBg="bg-[#141922]"
+            cardBg="bg-surface-elevated"
             cardRing="ring-1 ring-white/10"
             showFooterNote
           />
@@ -583,7 +583,7 @@ export default function LandingPage() {
         <h2 className="text-white text-2xl font-semibold mb-4">
           {t('landing.faq.title')}
         </h2>
-        <details className="rounded-xl p-4 border border-white/15 bg-[#141922] text-gray-200 mb-2">
+        <details className="rounded-xl p-4 border border-white/15 bg-surface-elevated text-gray-200 mb-2">
           <summary className="cursor-pointer">
             {t('landing.faq.freePremium.title')}
           </summary>
@@ -620,7 +620,7 @@ export default function LandingPage() {
           </div>
         </details>
 
-        <details className="rounded-xl p-4 border border-white/15 bg-[#141922] text-gray-200 mb-2">
+        <details className="rounded-xl p-4 border border-white/15 bg-surface-elevated text-gray-200 mb-2">
           <summary className="cursor-pointer">
             {t('landing.faq.safety.title')}
           </summary>
@@ -634,28 +634,28 @@ export default function LandingPage() {
           </div>
         </details>
 
-        <details className="rounded-xl p-4 border border-white/15 bg-[#141922] text-gray-200 mb-2">
+        <details className="rounded-xl p-4 border border-white/15 bg-surface-elevated text-gray-200 mb-2">
           <summary className="cursor-pointer">
             {t('landing.faq.how.title')}
           </summary>
           <p className="mt-2 text-sm">{t('landing.faq.how.p1')}</p>
         </details>
 
-        <details className="rounded-xl p-4 border border-white/15 bg-[#141922] text-gray-200 mb-2">
+        <details className="rounded-xl p-4 border border-white/15 bg-surface-elevated text-gray-200 mb-2">
           <summary className="cursor-pointer">
             {t('landing.faq.account.title')}
           </summary>
           <p className="mt-2 text-sm">{t('landing.faq.account.p1')}</p>
         </details>
 
-        <details className="rounded-xl p-4 border border-white/15 bg-[#141922] text-gray-200 mb-2">
+        <details className="rounded-xl p-4 border border-white/15 bg-surface-elevated text-gray-200 mb-2">
           <summary className="cursor-pointer">
             {t('landing.faq.billing.title')}
           </summary>
           <p className="mt-2 text-sm">{t('landing.faq.billing.p1')}</p>
         </details>
 
-        <details className="rounded-xl p-4 border border-white/15 bg-[#141922] text-gray-200 mb-2">
+        <details className="rounded-xl p-4 border border-white/15 bg-surface-elevated text-gray-200 mb-2">
           <summary className="cursor-pointer">
             {t('landing.faq.privacy.title')}
           </summary>

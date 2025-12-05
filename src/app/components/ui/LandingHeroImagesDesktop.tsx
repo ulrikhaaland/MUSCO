@@ -22,7 +22,7 @@ export default function LandingHeroImagesDesktop({ variant, className = '' }: { 
     </picture>
   )
 
-  const cardBase = 'relative w-full max-w-[820px] lg:max-w-[960px] xl:max-w-[1100px] 2xl:max-w-[1240px] aspect-video rounded-xl border border-white/10 bg-[#141922] overflow-hidden transition-transform duration-300 transform-gpu hover:scale-[1.05] hover:z-10 cursor-zoom-in'
+  const cardBase = 'relative w-full max-w-[820px] lg:max-w-[960px] xl:max-w-[1100px] 2xl:max-w-[1240px] aspect-video rounded-xl border border-white/10 bg-surface-elevated overflow-hidden transition-transform duration-300 transform-gpu hover:scale-[1.05] hover:z-10 cursor-zoom-in'
   const label = 'absolute top-2 left-2 z-10 px-2 py-1 rounded-md bg-black/50 text-white text-xs md:text-sm font-medium'
 
   // fullscreen overlay for image preview

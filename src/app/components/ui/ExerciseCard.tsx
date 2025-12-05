@@ -204,7 +204,7 @@ export default function ExerciseCard({
             {exercise.bodyPart && (
               <Chip
                 size="md"
-                className={`bg-transparent border ${exercise.warmup ? 'border-amber-600 text-[#f2f6ff]' : 'border-[#635bff] text-[#f2f6ff]'}`}
+                className={`bg-transparent border ${exercise.warmup ? 'border-amber-600 text-brand-text-light' : 'border-brand text-brand-text-light'}`}
               >
                 {getTranslatedBodyPart(exercise.bodyPart)}
               </Chip>
