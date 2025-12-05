@@ -55,7 +55,7 @@ Create a balanced program description that fits the programType:
 4. DETAILED DESCRIPTIONS REQUIRED
 
 All text fields must be substantial and helpful:
-- title: A concise name for the program referencing target areas
+- title: SHORT and MEMORABLE (2-4 words max). NO parentheses, NO listing body parts. Examples: "Upper Body Power", "Push-Pull Styrke", "Overkropp Fokus", "Styrke & Stabilitet"
 - programOverview: Description of the program's purpose and goals, explaining how it addresses user's needs and what they'll achieve
 - summary: A concise description of the program's main focus for quick reference
 - whatNotToDo: Specific activities to avoid to prevent injury, based on user's condition (not generic advice)
