@@ -864,69 +864,6 @@ export function ExerciseProgramPage({
                   </div>
               }
 
-              {/* Week Focus Overview - Only show for real weeks, not generate weeks */}
-              {(() => {
-                // Determine if we're viewing a real week or a "generate next week" state
-                const maxWeeks =
-                  hasMultipleWeeks && activeProgram?.programs
-                    ? activeProgram.programs.length
-                    : is4WeekProgram
-                      ? 4
-                      : 1;
-
-                const isRealWeek =
-                  selectedWeek >= 1 && selectedWeek <= maxWeeks;
-
-                // For custom programs, only show overview for week 1 unless user is logged in
-                if (isCustomProgram && !user && selectedWeek > 1) {
-                  return null;
-                }
-
-                // Only render overview if we're viewing a real week
-                if (!isRealWeek) {
-                  return null;
-                }
-
-                if (shimmer) {
-                  return (
-                    <div className="bg-gray-800/50 rounded-xl overflow-hidden ring-1 ring-gray-700/50 p-6 mb-4">
-                      <div className="flex items-center gap-3 mb-3">
-                        <span className="w-3 h-3 rounded-full bg-indigo-500/40" />
-                        <div className="shimmer h-5 w-40 bg-gray-700 rounded" />
-                      </div>
-                      <div className="space-y-2">
-                        <div className="shimmer h-4 w-3/4 bg-gray-700 rounded" />
-                        <div className="shimmer h-4 w-2/3 bg-gray-700 rounded" />
-                      </div>
-                    </div>
-                  );
-                }
-
-                return (
-                  <WeekOverview
-                    program={(() => {
-                      // For multi-week programs, use the selected week's program data
-                      if (
-                        hasMultipleWeeks &&
-                        activeProgram?.programs &&
-                        activeProgram.programs[selectedWeek - 1]
-                      ) {
-                        return activeProgram.programs[selectedWeek - 1];
-                      }
-                      // For single week programs, use the main program
-                      return program;
-                    })()}
-                    selectedWeek={selectedWeek}
-                    hasMultipleWeeks={hasMultipleWeeks}
-                    activeProgram={activeProgram}
-                    timeFrame={timeFrame}
-                    isExpanded={showWeekOverview}
-                    onToggle={() => setShowWeekOverview(!showWeekOverview)}
-                    isGenerating={generatingDay !== null}
-                  />
-                );
-              })()}
-
               {/* Week/Day tabs */}
               {
                 <>
@@ -1219,6 +1156,69 @@ export function ExerciseProgramPage({
                   </div>
                 </>
               }
+
+              {/* Week Focus Overview - Only show for real weeks, not generate weeks */}
+              {(() => {
+                // Determine if we're viewing a real week or a "generate next week" state
+                const maxWeeks =
+                  hasMultipleWeeks && activeProgram?.programs
+                    ? activeProgram.programs.length
+                    : is4WeekProgram
+                      ? 4
+                      : 1;
+
+                const isRealWeek =
+                  selectedWeek >= 1 && selectedWeek <= maxWeeks;
+
+                // For custom programs, only show overview for week 1 unless user is logged in
+                if (isCustomProgram && !user && selectedWeek > 1) {
+                  return null;
+                }
+
+                // Only render overview if we're viewing a real week
+                if (!isRealWeek) {
+                  return null;
+                }
+
+                if (shimmer) {
+                  return (
+                    <div className="bg-gray-800/50 rounded-xl overflow-hidden ring-1 ring-gray-700/50 p-6 mb-4">
+                      <div className="flex items-center gap-3 mb-3">
+                        <span className="w-3 h-3 rounded-full bg-indigo-500/40" />
+                        <div className="shimmer h-5 w-40 bg-gray-700 rounded" />
+                      </div>
+                      <div className="space-y-2">
+                        <div className="shimmer h-4 w-3/4 bg-gray-700 rounded" />
+                        <div className="shimmer h-4 w-2/3 bg-gray-700 rounded" />
+                      </div>
+                    </div>
+                  );
+                }
+
+                return (
+                  <WeekOverview
+                    program={(() => {
+                      // For multi-week programs, use the selected week's program data
+                      if (
+                        hasMultipleWeeks &&
+                        activeProgram?.programs &&
+                        activeProgram.programs[selectedWeek - 1]
+                      ) {
+                        return activeProgram.programs[selectedWeek - 1];
+                      }
+                      // For single week programs, use the main program
+                      return program;
+                    })()}
+                    selectedWeek={selectedWeek}
+                    hasMultipleWeeks={hasMultipleWeeks}
+                    activeProgram={activeProgram}
+                    timeFrame={timeFrame}
+                    isExpanded={showWeekOverview}
+                    onToggle={() => setShowWeekOverview(!showWeekOverview)}
+                    isGenerating={generatingDay !== null}
+                  />
+                );
+              })()}
 
               {/* Selected Week Content or SignUp Card or NextWeekCard */}
                {(() => {
