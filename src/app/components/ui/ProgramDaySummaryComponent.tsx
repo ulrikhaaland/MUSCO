@@ -132,7 +132,7 @@ export function ProgramDaySummaryComponent({
                 {shimmer ? (
                   <span className="shimmer inline-block h-5 w-16 sm:w-20 bg-gray-700 rounded-full" />
                 ) : day.isRestDay ? (
-                  <Chip variant="highlight" size="sm">
+                  <Chip variant="subtle" size="sm">
                     {t('calendar.rest')}
                   </Chip>
                 ) : (
@@ -299,7 +299,7 @@ export function ProgramDaySummaryComponent({
                 {shimmer ? (
                   <span className="shimmer inline-block h-5 w-20 bg-gray-700 rounded-full" />
                 ) : day.isRestDay ? (
-                  <Chip variant="highlight" size="sm">
+                  <Chip variant="subtle" size="sm">
                     {t('program.rest')}
                   </Chip>
                 ) : (
