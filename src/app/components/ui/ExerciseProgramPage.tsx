@@ -247,6 +247,7 @@ export function ExerciseProgramPage({
   const [expandedDays, setExpandedDays] = useState<number[]>([]);
   const hasInitializedDaySelection = useRef(false);
   const previousProgramId = useRef<string | null>(null);
+  const userHasManuallySelectedDay = useRef(false);
   const { user } = useAuth();
   // Add state to track if current date is in a future week
   const [isInFutureWeek, setIsInFutureWeek] = useState(false);
@@ -274,10 +275,15 @@ export function ExerciseProgramPage({
   useEffect(() => {
     if (!program?.days || !Array.isArray(program.days)) return;
     
-    // During incremental generation, never reset the selected day
+    // If user has manually selected a day, never reset it
+    if (userHasManuallySelectedDay.current) return;
+    
+    // During incremental generation, auto-select Monday (day 1) if not yet initialized
     if (generatingDay !== null) {
-      // Just mark as initialized and return - don't change selection
-      hasInitializedDaySelection.current = true;
+      if (!hasInitializedDaySelection.current) {
+        setExpandedDays([1]); // Monday
+        hasInitializedDaySelection.current = true;
+      }
       return;
     }
     
@@ -287,6 +293,7 @@ export function ExerciseProgramPage({
     // Reset if we're looking at a completely different program (title changed)
     if (previousProgramId.current && previousProgramId.current !== programId && programId !== 'generating') {
       hasInitializedDaySelection.current = false;
+      userHasManuallySelectedDay.current = false; // Reset manual selection flag for new program
     }
     previousProgramId.current = programId;
     
@@ -384,7 +391,7 @@ export function ExerciseProgramPage({
       }
     }, 100);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [program, isCustomProgram, activeProgram, currentDayOfWeek]);
+  }, [program, isCustomProgram, activeProgram, currentDayOfWeek, generatingDay]);
 
   const handleWeekChange = (weekNumber: number) => {
     setSelectedWeek(weekNumber);
@@ -403,6 +410,9 @@ export function ExerciseProgramPage({
   };
 
   const handleDayClick = (dayNumber: number) => {
+    // Mark that user has manually selected a day
+    userHasManuallySelectedDay.current = true;
+    
     const isExpanding = !expandedDays.includes(dayNumber);
 
     if (isExpanding) {
