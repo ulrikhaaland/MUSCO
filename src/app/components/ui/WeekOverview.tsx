@@ -55,7 +55,7 @@ export function WeekOverview({
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-xl font-semibold text-white flex items-center">
                 <span className="w-3 h-3 rounded-full bg-indigo-600 mr-3"></span>
-                {t('exerciseProgram.weekFocus', { week: String(getDisplayWeekNumber()) })}
+                {t('exerciseProgram.weekFocus')}
               </h3>
               <ChevronDown 
                 className="text-gray-400" 
@@ -89,7 +89,7 @@ export function WeekOverview({
             <div className="flex items-center justify-between">
               <h3 className="text-xl font-semibold text-white flex items-center">
                 <span className="w-3 h-3 rounded-full bg-indigo-600 mr-3"></span>
-                {t('exerciseProgram.weekFocus', { week: String(getDisplayWeekNumber()) })}
+                {t('exerciseProgram.weekFocus')}
               </h3>
               <ChevronDown 
                 className="text-gray-400" 

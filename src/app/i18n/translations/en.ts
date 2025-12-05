@@ -853,7 +853,7 @@ const translations = {
   'exerciseProgram.overview.expectedOutcome': 'Expected Outcome',
   'exerciseProgram.overview.nextSteps': 'Next Steps',
   // Week Focus header and fallback
-  'exerciseProgram.weekFocus': 'Week {{week}} Focus',
+  'exerciseProgram.weekFocus': 'Weekly Focus',
   'exerciseProgram.weekFocus.summaryFallback': 'Focus details available',
   'exerciseProgram.nextWeekCard.title': 'Ready for Your Next Program?',
   'exerciseProgram.nextWeekCard.description':
