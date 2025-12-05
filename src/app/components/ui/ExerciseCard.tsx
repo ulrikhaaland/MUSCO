@@ -116,7 +116,7 @@ export default function ExerciseCard({
 
     if (ex.duration) {
       chips.push(
-        <Chip key="duration" size="sm">
+        <Chip key="duration" size="sm" variant="subtle">
           {ex.bodyPart === "Cardio" 
             ? `${ex.duration} min` // For cardio exercises, duration is always in minutes
             : ex.duration >= 60
@@ -127,14 +127,14 @@ export default function ExerciseCard({
     } else {
       if (ex.sets && ex.repetitions) {
         chips.push(
-          <Chip key="sets-reps" size="lg">
+          <Chip key="sets-reps" size="lg" variant="subtle">
             {ex.sets} × {ex.repetitions}
           </Chip>
         );
       }
       if (ex.restBetweenSets && ex.restBetweenSets !== 0) {
         chips.push(
-          <Chip key="restBetweenSets" size="lg">
+          <Chip key="restBetweenSets" size="lg" variant="subtle">
             {t('program.rest', { seconds: ex.restBetweenSets.toString() })}
           </Chip>
         );
@@ -146,7 +146,7 @@ export default function ExerciseCard({
 
   // Function to render the exercise metrics row (consistent between collapsed/expanded states)
   const renderExerciseMetricsRow = () => (
-    <div className="flex flex-wrap gap-4 items-center mb-4">
+    <div className="flex flex-wrap gap-4 items-center">
       <div className="flex flex-wrap gap-2 justify-start">
         {renderExerciseChips(exercise)}
       </div>
@@ -204,7 +204,7 @@ export default function ExerciseCard({
             {exercise.bodyPart && (
               <Chip
                 size="md"
-                className={`bg-transparent border ${exercise.warmup ? 'border-amber-600 text-brand-text-light' : 'border-brand text-brand-text-light'}`}
+                variant={exercise.warmup ? 'warmup' : 'category'}
               >
                 {getTranslatedBodyPart(exercise.bodyPart)}
               </Chip>

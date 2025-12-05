@@ -42,7 +42,7 @@ export const Card = ({
     >
       {/* Header section - conditional render */}
       {(title || tag || headerContent) && (
-        <div className="w-full px-4 py-4 flex flex-col gap-2">
+        <div className="w-full px-4 pt-4 pb-4 flex flex-col gap-2">
           {/* Title and tag row */}
           {(title || tag) && (
             <div className="flex justify-between gap-2">
@@ -69,7 +69,7 @@ export const Card = ({
       )}
       
       {/* Main content */}
-      <div className="px-4 pb-4 space-y-4">
+      <div className="px-4 pb-3">
         {children}
       </div>
       

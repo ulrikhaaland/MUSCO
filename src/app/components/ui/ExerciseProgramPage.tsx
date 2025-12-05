@@ -1263,7 +1263,7 @@ export function ExerciseProgramPage({
                       {/* Generation Progress Indicator */}
                       {generatingDay !== null && (
                         <div className="mb-4 flex items-center justify-center gap-2 text-sm text-gray-400">
-                          <svg className="w-4 h-4 animate-spin text-emerald-400" fill="none" viewBox="0 0 24 24">
+                          <svg className="w-4 h-4 animate-spin text-violet-400" fill="none" viewBox="0 0 24 24">
                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                           </svg>
@@ -1299,7 +1299,7 @@ export function ExerciseProgramPage({
                                   isSelected && isDayGenerated
                                     ? 'bg-indigo-600 text-white'
                                     : isDayGenerating
-                                      ? 'bg-emerald-500/20 text-emerald-300'
+                                      ? 'bg-violet-500/15 text-violet-300'
                                       : isDayGenerated
                                         ? 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white'
                                         : 'bg-gray-800/30 text-gray-500 opacity-50 cursor-not-allowed'
@@ -1307,13 +1307,13 @@ export function ExerciseProgramPage({
                               >
                                 {/* Generating indicator - inside button */}
                                 {isDayGenerating && (
-                                  <span className="absolute top-1 right-1 w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
+                                  <span className="absolute top-1 right-1 w-2 h-2 bg-violet-400 rounded-full animate-pulse" />
                                 )}
                                 <span className={`text-sm mb-1 ${isDayGenerating ? 'opacity-100' : 'opacity-80'}`}>
                                   {getDayShortName(day.day, t)}
                                 </span>
                                 {isDayGenerating ? (
-                                  <span className="text-xs mt-1 text-emerald-300">
+                                  <span className="text-xs mt-1 text-violet-300">
                                     <svg className="w-3 h-3 animate-spin inline" fill="none" viewBox="0 0 24 24">
                                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
@@ -1408,7 +1408,7 @@ export function ExerciseProgramPage({
                       {/* Generation Progress Indicator */}
                       {generatingDay !== null && (
                         <div className="mb-4 flex items-center justify-center gap-2 text-sm text-gray-400">
-                          <svg className="w-4 h-4 animate-spin text-emerald-400" fill="none" viewBox="0 0 24 24">
+                          <svg className="w-4 h-4 animate-spin text-violet-400" fill="none" viewBox="0 0 24 24">
                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                           </svg>
@@ -1444,7 +1444,7 @@ export function ExerciseProgramPage({
                                     isSelected && isDayGenerated
                                       ? 'bg-indigo-600 text-white'
                                       : isDayGenerating
-                                        ? 'bg-emerald-500/20 text-emerald-300 ring-1 ring-emerald-500/50'
+                                        ? 'bg-violet-500/15 text-violet-300 ring-1 ring-violet-500/40'
                                         : isDayGenerated
                                           ? 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white'
                                           : 'bg-gray-800/30 text-gray-500 opacity-50 cursor-not-allowed'
@@ -1452,13 +1452,13 @@ export function ExerciseProgramPage({
                                 >
                                   {/* Generating indicator - inside button */}
                                   {isDayGenerating && (
-                                    <span className="absolute top-1 right-1 w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
+                                    <span className="absolute top-1 right-1 w-2 h-2 bg-violet-400 rounded-full animate-pulse" />
                                   )}
                                   <span className={`text-sm mb-1 ${isDayGenerating ? 'opacity-100' : 'opacity-80'}`}>
                                     {getDayShortName(day.day, t)}
                                   </span>
                                   {isDayGenerating ? (
-                                    <span className="text-xs mt-1 text-emerald-300">
+                                    <span className="text-xs mt-1 text-violet-300">
                                       <svg className="w-3 h-3 animate-spin inline" fill="none" viewBox="0 0 24 24">
                                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />

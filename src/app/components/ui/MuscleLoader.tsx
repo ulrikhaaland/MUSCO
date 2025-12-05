@@ -99,8 +99,8 @@ export default function MuscleLoader({
   }, [defaultMessage]);
 
   const wrapCls = fullScreen
-    ? 'fixed inset-0 z-50 flex items-center justify-center bg-surface-base'
-    : 'flex items-center justify-center h-full w-full bg-surface-base';
+    ? 'fixed inset-0 z-50 flex items-center justify-center bg-gray-900'
+    : 'flex items-center justify-center h-full w-full bg-gray-900';
 
   // Added spaces around dots to prevent kerning shifts
   const dots = ['·  ', '··  ', '···'][dotFrame];
