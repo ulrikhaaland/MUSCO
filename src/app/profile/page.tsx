@@ -1795,7 +1795,7 @@ export default function ProfilePage() {
   };
 
   return (
-    <>
+    <div className="flex-1 bg-gray-900 text-white flex flex-col">
       <NavigationMenu mobileTitle={t('nav.profile')} />
       <style jsx global>{`
         .phone-input-container .PhoneInput {
@@ -3721,6 +3721,6 @@ export default function ProfilePage() {
           </div>
         )}
       </div>
-    </>
+    </div>
   );
 }
