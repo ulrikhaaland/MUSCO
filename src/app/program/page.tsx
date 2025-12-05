@@ -280,7 +280,7 @@ function ProgramPageContent({
   const mobileTitle = selectedProgram?.title || activeProgram?.title || t('program.defaultPageTitle');
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-900 text-white">
+    <div className="flex flex-col flex-1 bg-gray-900 text-white">
       <NavigationMenu mobileTitle={mobileTitle} />
       <ExerciseProgramPage
         program={selectedProgram}

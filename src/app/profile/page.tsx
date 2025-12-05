@@ -1883,7 +1883,7 @@ export default function ProfilePage() {
       <style jsx global>
         {fadeInAnimation}
       </style>
-      <div className="bg-gray-900 flex flex-col min-h-screen">
+      <div className="bg-gray-900 flex flex-col flex-1">
         {' '}
         {/* Removed fixed inset-0, added min-h-screen */}
         <div className="hidden md:flex items-center justify-between mb-12"></div>

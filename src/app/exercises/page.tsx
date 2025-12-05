@@ -818,7 +818,7 @@ export default function AvailableExercisesPage() {
   }, [exercisesByBodyPart, showMuscoExercises]);
 
   return (
-    <div className="w-full bg-gray-900 min-h-screen text-white">
+    <div className="w-full bg-gray-900 flex-1 text-white">
       <NavigationMenu mobileTitle="Exercises" />
       <div className="max-w-4xl mx-auto px-4 py-8 space-y-8">
         <h1 className="text-3xl font-bold text-center text-indigo-200 mb-8">Available Exercises</h1>

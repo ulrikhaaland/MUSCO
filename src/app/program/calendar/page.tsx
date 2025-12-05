@@ -57,7 +57,7 @@ export default function CalendarPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white flex flex-col">
+    <div className="flex-1 bg-gray-900 text-white flex flex-col">
       <NavigationMenu mobileTitle={t('nav.calendar')} />
       <ExerciseProgramCalendar
         program={program}
