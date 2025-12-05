@@ -1795,7 +1795,7 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="flex-1 bg-gray-900 text-white flex flex-col">
+    <>
       <NavigationMenu mobileTitle={t('nav.profile')} />
       <style jsx global>{`
         .phone-input-container .PhoneInput {
@@ -1883,28 +1883,32 @@ export default function ProfilePage() {
       <style jsx global>
         {fadeInAnimation}
       </style>
-      {/* Message display */}
-      {message && (
-        <div
-          className={`fixed top-16 left-0 right-0 mx-auto max-w-md z-50 p-3 rounded-lg shadow-lg ${
-            message.type === 'success'
-              ? 'bg-green-900/50 text-green-200 backdrop-blur-sm'
-              : 'bg-red-900/50 text-red-200 backdrop-blur-sm'
-          }`}
-        >
-          {message.text}
-          <button
-            className="float-right text-sm opacity-70 hover:opacity-100"
-            onClick={() => setMessage(null)}
+      <div className="bg-gray-900 flex flex-col flex-1">
+        {/* Message display */}
+        {message && (
+          <div
+            className={`fixed top-16 left-0 right-0 mx-auto max-w-md z-50 p-3 rounded-lg shadow-lg ${
+              message.type === 'success'
+                ? 'bg-green-900/50 text-green-200 backdrop-blur-sm'
+                : 'bg-red-900/50 text-red-200 backdrop-blur-sm'
+            }`}
           >
-            ✕
-          </button>
-        </div>
-      )}
-      <div
-        ref={topRef}
-        className="max-w-md mx-auto px-4 pt-6 pb-24 md:pb-8"
-      >
+            {message.text}
+            <button
+              className="float-right text-sm opacity-70 hover:opacity-100"
+              onClick={() => setMessage(null)}
+            >
+              ✕
+            </button>
+          </div>
+        )}
+        <div className="flex-1">
+          {' '}
+          {/* Removed h-screen overflow-y-auto, added flex-1 */}
+          <div
+            ref={topRef}
+            className="max-w-md mx-auto px-4 pt-6 pb-24 md:pb-8" // Space for mobile nav bar
+          >
             <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-xl ring-1 ring-gray-700/50 p-6 mb-8">
               <div className="flex flex-col items-center mb-6 relative">
                 {/* Edit button - only visible when not in edit mode */}
@@ -3721,6 +3725,6 @@ export default function ProfilePage() {
           </div>
         )}
       </div>
-    </div>
+    </>
   );
 }
