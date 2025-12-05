@@ -679,8 +679,8 @@ export function UserProvider({ children }: { children: ReactNode }) {
       // Clear existing program state
       setActiveProgram(null);
       
-      // Reset incremental generation state
-      setGeneratingDay(1);
+      // Reset incremental generation state (0 = generating metadata, 1-7 = generating days)
+      setGeneratingDay(0);
       setGeneratedDays([]);
       setPartialProgram(null);
 
@@ -740,6 +740,8 @@ export function UserProvider({ children }: { children: ReactNode }) {
           onMetadataReady: async (partial) => {
             console.log('[UserContext] Metadata ready, starting day generation');
             setPartialProgram(partial);
+            // Metadata done, now starting day 1 generation
+            setGeneratingDay(1);
             // Update skeleton program with metadata (keep placeholder days)
             setProgram((prev) => prev ? {
               ...prev,
