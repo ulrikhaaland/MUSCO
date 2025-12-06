@@ -5,6 +5,14 @@ import Chip from './Chip';
 import { useTranslation } from '@/app/i18n/TranslationContext';
 import { ChevronDown, PlayIcon, ArrowUp, ArrowDown, SpinnerIcon } from '../icons';
 
+// Filter out placeholder values that shouldn't be displayed
+const PLACEHOLDER_VALUES = ['ingen', 'none', 'optional', 'n/a', 'null', 'undefined', '-'];
+const isPlaceholderValue = (value: string | undefined): boolean => {
+  if (!value) return true;
+  const normalized = value.trim().toLowerCase();
+  return PLACEHOLDER_VALUES.includes(normalized) || normalized.length === 0;
+};
+
 interface ExerciseCardProps {
   exercise: Exercise;
   isExpanded?: boolean; // Controls whether details are shown
@@ -267,14 +275,14 @@ export default function ExerciseCard({
                 </div>
               )}
 
-              {exercise.modification && (
+              {exercise.modification && !isPlaceholderValue(exercise.modification) && (
                 <p className="text-yellow-200/90 text-sm leading-relaxed mb-4">
                   <span className="font-medium">{t('program.modification')}</span>{' '}
                   {exercise.modification}
                 </p>
               )}
 
-              {exercise.precaution && (
+              {exercise.precaution && !isPlaceholderValue(exercise.precaution) && (
                 <p className="text-red-400/90 text-sm leading-relaxed mb-4">
                   <span className="font-medium">{t('program.precaution')}</span>{' '}
                   {exercise.precaution}

@@ -300,7 +300,7 @@ Recovery Day Structure:
 - End with relaxation or gentle stretching
 - All exercises should be LOW intensity
 - If painfulAreas is non-empty, exercises MUST target those specific areas
-- Always include modifications and precautions for each exercise
+- Only include modification/precaution fields when there's an actual recommendation - omit them entirely if not needed
 
 7. CRITICAL: Exercise Order (MUST FOLLOW)
 
