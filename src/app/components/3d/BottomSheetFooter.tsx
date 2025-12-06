@@ -159,7 +159,7 @@ export function BottomSheetFooter({
            style={showHeaderContent ? { paddingBottom: 'max(0.5rem, env(safe-area-inset-bottom, 0px))' } : { paddingBottom: 'max(0.5rem, env(safe-area-inset-bottom, 0px))' }}>
         <div className="flex items-end gap-2">
           <form
-            className="flex-1 flex items-end gap-1.5 bg-gray-800 rounded-xl px-3 py-1.5 focus-within:ring-2 focus-within:ring-indigo-500/50"
+            className="flex-1 flex items-end gap-1.5 bg-gray-800 rounded-xl px-3 py-1.5 focus-within:ring-2 focus-within:ring-violet-500/50"
             onSubmit={(e) => {
               e.preventDefault();
               handleSendMessage();
@@ -193,7 +193,7 @@ export function BottomSheetFooter({
               className={`flex-shrink-0 flex justify-center items-center w-7 h-7 mb-0.5 rounded-lg transition-colors ${
                 isLoading || !message.trim()
                   ? 'text-gray-600 cursor-not-allowed'
-                  : 'text-indigo-400 hover:text-indigo-300 hover:bg-gray-700/50'
+                  : 'text-violet-400 hover:text-violet-300'
               }`}
             >
               {isLoading ? (

@@ -448,6 +448,7 @@ export default function MobileControls({
                     onBodyPartClick={handleBodyPartClick}
                     onGroupClick={handleGroupClick}
                     scrollTrigger={scrollTrigger}
+                    footerHeight={overlayFooterHeight}
                   />
                 </div>
             </div>

@@ -130,6 +130,8 @@ interface ChatMessagesProps {
   onGroupClick?: (group: BodyPartGroup) => void;
   // Increment to trigger scroll to bottom (used when loading chat from history)
   scrollTrigger?: number;
+  // Footer height for positioning scroll button above footer (mobile)
+  footerHeight?: number;
 }
 
 export function ChatMessages({
@@ -159,6 +161,7 @@ export function ChatMessages({
   onBodyPartClick,
   onGroupClick,
   scrollTrigger = 0,
+  footerHeight = 0,
 }: ChatMessagesProps) {
   const { saveViewerState } = useApp();
   const [showScrollButton, setShowScrollButton] = useState(false);
@@ -1384,9 +1387,10 @@ export function ChatMessages({
 
       {/* Scroll to bottom button with fade animation */}
       <div
-        className={`fixed left-1/2 bottom-16 transform -translate-x-1/2 z-50 transition-opacity duration-300 ease-in-out ${
+        className={`fixed left-1/2 transform -translate-x-1/2 z-50 transition-opacity duration-300 ease-in-out ${
           showScrollButton ? 'opacity-100' : 'opacity-0 pointer-events-none'
         }`}
+        style={{ bottom: footerHeight > 0 ? `${footerHeight + 16}px` : '4rem' }}
       >
         <button
           onClick={handleScrollToBottomClick}
