@@ -114,9 +114,9 @@ export function WeekOverview({
                     <div className="shimmer h-4 w-3/4 bg-gray-700 rounded" />
                   </div>
                 ) : (
-                  <p className="text-gray-300 leading-relaxed">
-                    {program.programOverview}
-                  </p>
+                <p className="text-gray-300 leading-relaxed">
+                  {program.programOverview}
+                </p>
                 )}
               </div>
             )}

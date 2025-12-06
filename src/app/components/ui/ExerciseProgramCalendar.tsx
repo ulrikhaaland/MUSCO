@@ -41,37 +41,37 @@ export function ExerciseProgramCalendar({
   // Memoized function to get program data for a specific date
   const getDayProgram = useCallback(
     (date: Date): ProgramDayWithSource[] => {
-      const result: ProgramDayWithSource[] = [];
+    const result: ProgramDayWithSource[] = [];
       const dayOfWeek = getDayOfWeekMondayFirst(date);
       const checkDate = new Date(date);
       checkDate.setHours(0, 0, 0, 0);
       const checkWeekStart = getStartOfWeek(checkDate);
 
-      for (const userProgram of activeUserPrograms) {
-        for (const activeProgram of userProgram.programs) {
-          const programStartDate = new Date(activeProgram.createdAt);
-          const programWeekStart = getStartOfWeek(programStartDate);
+    for (const userProgram of activeUserPrograms) {
+      for (const activeProgram of userProgram.programs) {
+        const programStartDate = new Date(activeProgram.createdAt);
+        const programWeekStart = getStartOfWeek(programStartDate);
 
-          const weekDiff = Math.floor(
-            (checkWeekStart.getTime() - programWeekStart.getTime()) /
-              (7 * 24 * 60 * 60 * 1000)
-          );
+        const weekDiff = Math.floor(
+          (checkWeekStart.getTime() - programWeekStart.getTime()) /
+            (7 * 24 * 60 * 60 * 1000)
+        );
 
           if (weekDiff !== 0) continue;
 
-          const day = activeProgram.days.find((d) => d.day === dayOfWeek);
-          if (!day) continue;
+        const day = activeProgram.days.find((d) => d.day === dayOfWeek);
+        if (!day) continue;
 
-          result.push({
+        result.push({
             day: { ...day, description: day.description },
-            program: activeProgram,
-            userProgram,
-            dayOfWeek,
-          });
-        }
+          program: activeProgram,
+          userProgram,
+          dayOfWeek,
+        });
       }
+    }
 
-      return result;
+    return result;
     },
     [activeUserPrograms]
   );
@@ -110,7 +110,7 @@ export function ExerciseProgramCalendar({
   const handleMonthChange = useCallback((increment: number) => {
     setSelectedDate((prev) => {
       const newDate = new Date(prev);
-      newDate.setMonth(newDate.getMonth() + increment);
+    newDate.setMonth(newDate.getMonth() + increment);
       return newDate;
     });
   }, []);
@@ -124,7 +124,7 @@ export function ExerciseProgramCalendar({
     return selectedDate.toDateString() === today.toDateString();
   }, [selectedDate]);
 
-  return (
+    return (
     <div className="flex-1 bg-gray-900 flex flex-col">
       <div className="flex-1 px-4 pt-6 pb-24 md:pb-8">
         <div className="max-w-6xl mx-auto">
@@ -147,8 +147,8 @@ export function ExerciseProgramCalendar({
                   workoutLabel={t('calendar.workout')}
                   restLabel={t('calendar.rest')}
                 />
-              </div>
-            </div>
+        </div>
+      </div>
 
             {/* Selected Day Details */}
             <div className="mt-6 lg:mt-0 lg:flex-1 lg:max-w-md">

@@ -254,18 +254,18 @@ export default function ExerciseCard({
           }`}
         >
           {isExpanded && (
-            <Card.Section className="pt-4">
+            <Card.Section className="pt-4 space-y-4">
               {/* Exercise description */}
               {exercise.description && (
-                <div className="text-gray-300 text-sm leading-relaxed mb-4">
-                  <span className="text-gray-100">
+                <div className="text-gray-300 text-sm leading-relaxed">
+                  <p>
                     {isDescriptionExpanded
                       ? exercise.description
                       : getTruncatedDescription(exercise.description)}
-                  </span>
+                  </p>
                   {exercise.description.length > 100 && (
                     <button
-                      className="ml-2 text-indigo-400 hover:text-indigo-300 text-sm font-medium"
+                      className="mt-1 text-indigo-400 hover:text-indigo-300 text-xs font-medium px-2 py-0.5 rounded-full bg-indigo-500/10 hover:bg-indigo-500/20 transition-colors"
                       onClick={(e) => {
                         e.stopPropagation();
                         setIsDescriptionExpanded((prev) => !prev);
@@ -277,53 +277,56 @@ export default function ExerciseCard({
                 </div>
               )}
 
-              {/* Tips section - modification and precaution grouped */}
-              {((!isPlaceholderValue(exercise.modification)) || (!isPlaceholderValue(exercise.precaution))) && (
-                <div className="bg-gray-800/50 rounded-lg p-3 mb-4 space-y-2">
+              {/* Modification & Precaution container */}
+              {((exercise.modification && !isPlaceholderValue(exercise.modification)) ||
+                (exercise.precaution && !isPlaceholderValue(exercise.precaution))) && (
+                <div className="bg-gray-800/50 rounded-lg p-3 space-y-2 border border-gray-700/50">
                   {exercise.modification && !isPlaceholderValue(exercise.modification) && (
-                    <div className="flex items-start gap-2">
-                      <span className="text-yellow-400 text-base flex-shrink-0 mt-0.5">⚙️</span>
-                      <p className="text-yellow-200/90 text-sm leading-relaxed">
-                        {exercise.modification}
-                      </p>
+                    <div className="flex items-start gap-2 text-sm">
+                      <span className="text-yellow-400 flex-shrink-0 mt-0.5">⚙️</span>
+                      <div>
+                        <span className="text-yellow-300 font-medium">{t('program.modification')}</span>{' '}
+                        <span className="text-yellow-200/80">{exercise.modification}</span>
+                      </div>
                     </div>
                   )}
+
                   {exercise.precaution && !isPlaceholderValue(exercise.precaution) && (
-                    <div className="flex items-start gap-2">
-                      <span className="text-red-400 text-base flex-shrink-0 mt-0.5">⚠️</span>
-                      <p className="text-red-300/90 text-sm leading-relaxed">
-                        {exercise.precaution}
-                      </p>
+                    <div className="flex items-start gap-2 text-sm">
+                      <span className="text-red-400 flex-shrink-0 mt-0.5">⚠️</span>
+                      <div>
+                        <span className="text-red-400 font-medium">{t('program.precaution')}</span>{' '}
+                        <span className="text-red-300/80">{exercise.precaution}</span>
+                      </div>
                     </div>
                   )}
                 </div>
               )}
 
+              {/* Instructions section */}
               {exercise.steps && exercise.steps.length > 0 && (
-                <div className="text-gray-300 text-sm leading-relaxed">
-                  <div className="flex items-center">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setShowInstructions((prev) => !prev);
-                      }}
-                      className="text-indigo-300 hover:text-indigo-200 text-sm font-medium inline-flex items-center"
-                    >
-                      {showInstructions ? (
-                        <>
-                          <ArrowUp className="mr-1" />
-                          {t('program.hideInstructions')}
-                        </>
-                      ) : (
-                        <>
-                          <ArrowDown className="mr-1" />
-                          {t('program.viewInstructions')}
-                        </>
-                      )}
-                    </button>
-                  </div>
+                <div className="text-gray-300 text-sm">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowInstructions((prev) => !prev);
+                    }}
+                    className="text-indigo-400 hover:text-indigo-300 text-sm font-medium inline-flex items-center gap-1 px-2 py-1 rounded-lg hover:bg-indigo-500/10 transition-colors"
+                  >
+                    {showInstructions ? (
+                      <>
+                        <ArrowUp className="w-4 h-4" />
+                        {t('program.hideInstructions')}
+                      </>
+                    ) : (
+                      <>
+                        <ArrowDown className="w-4 h-4" />
+                        {t('program.viewInstructions')}
+                      </>
+                    )}
+                  </button>
                   {showInstructions && (
-                    <div className="mt-3 pl-6 relative bg-gray-800/40 p-4 mx-2 rounded-r-xl">
+                    <div className="mt-3 pl-6 relative bg-gray-800/40 p-4 rounded-r-xl">
                       <div className="absolute left-0 top-0 bottom-0 w-[4px] bg-gradient-to-b from-indigo-700/80 via-indigo-700/50 to-indigo-700/20 rounded-full" />
                       <ol className="list-decimal pl-5 space-y-2">
                         {exercise.steps.map((step, index) => (
