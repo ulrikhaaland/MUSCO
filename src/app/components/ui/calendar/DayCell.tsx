@@ -31,8 +31,7 @@ export const DayCell = memo(function DayCell({
     <button
       onClick={onClick}
       className={`
-        relative p-1 md:p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 focus:ring-offset-gray-900
-        min-h-[52px] md:min-h-[72px]
+        relative aspect-square p-1 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-900
         ${isCurrentMonth
           ? hasProgramDay
             ? 'bg-gray-800/50'
@@ -40,7 +39,7 @@ export const DayCell = memo(function DayCell({
           : 'bg-gray-900/30 text-gray-600'
         }
         ${isSelected
-          ? 'bg-indigo-600/40 ring-2 ring-indigo-400'
+          ? 'bg-indigo-600/40 border-2 border-indigo-400'
           : ''
         }
         ${hasProgramDay && isCurrentMonth && !isSelected
@@ -51,17 +50,14 @@ export const DayCell = memo(function DayCell({
         }
         transition-all duration-200
       `}
-      aria-label={`${date.toLocaleDateString()}, ${hasWorkout ? workoutLabel : isRestDay ? restLabel : ''}`}
-      aria-selected={isSelected}
     >
-      <div className="flex flex-col h-full justify-between">
-        {/* Date number */}
-        <div className="flex justify-center items-center">
+      <div className="flex flex-col h-full">
+        <div className={`flex justify-center items-center flex-grow ${isToday ? 'relative' : ''}`}>
           <span
             className={`
-              text-sm md:text-base font-medium
+              text-sm relative z-10
               ${isToday
-                ? 'bg-indigo-600 text-white rounded-full w-7 h-7 md:w-8 md:h-8 flex items-center justify-center'
+                ? 'text-indigo-300 font-semibold'
                 : isSelected
                   ? 'text-white font-semibold'
                   : isCurrentMonth
@@ -75,16 +71,14 @@ export const DayCell = memo(function DayCell({
             {date.getDate()}
           </span>
         </div>
-
-        {/* Workout indicator */}
         {hasProgramDay && isCurrentMonth && (
-          <div className="mt-auto pb-1">
+          <div className="mt-auto">
             {hasWorkout ? (
-              <div className="text-[10px] md:text-xs text-indigo-300 text-center font-medium">
+              <div className="text-xs text-white mt-1 flex items-center justify-center opacity-65">
                 {workoutLabel}
               </div>
             ) : isRestDay ? (
-              <div className="text-[10px] md:text-xs text-gray-400 text-center">
+              <div className="text-xs text-white mt-1 flex items-center justify-center opacity-65">
                 {restLabel}
               </div>
             ) : null}

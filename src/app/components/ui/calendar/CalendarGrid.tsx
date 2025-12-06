@@ -70,7 +70,7 @@ export function CalendarGrid({
   }, [selectedDate]);
 
   return (
-    <div className="p-2 md:p-4">
+    <div className="p-4">
       {/* Week day headers */}
       <div className="grid grid-cols-7 mb-2">
         {weekDays.map((day, index) => (
@@ -87,9 +87,9 @@ export function CalendarGrid({
       </div>
 
       {/* Calendar grid */}
-      <div className="grid gap-px bg-gray-800/30 rounded-lg overflow-hidden">
+      <div className="grid gap-px bg-gray-800/30">
         {weeks.map((week, weekIndex) => (
-          <div key={weekIndex} className="grid grid-cols-7 gap-px">
+          <div key={weekIndex} className="grid grid-cols-7">
             {week.map((date) => {
               const dayData = getDayData(date);
               const dateString = date.toDateString();
