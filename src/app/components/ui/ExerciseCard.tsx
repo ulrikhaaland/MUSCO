@@ -114,24 +114,22 @@ export default function ExerciseCard({
   const renderExerciseChips = (ex: Exercise): ReactNode[] => {
     const chips: ReactNode[] = [];
 
-    if (ex.duration) {
+    // Determine if this is a duration-based exercise (cardio, warmup, stretching)
+    const isDurationExercise = 
+      ex.bodyPart === "Cardio" || 
+      ex.bodyPart === "Warmup" ||
+      ex.warmup === true ||
+      ex.exerciseType?.includes('cardio') ||
+      ex.exerciseType?.includes('warmup') ||
+      ex.exerciseType?.includes('stretching');
+
+    // Show sets × reps for strength exercises
+    if (ex.sets && ex.repetitions && !isDurationExercise) {
       chips.push(
-        <Chip key="duration" size="sm" variant="subtle">
-          {ex.bodyPart === "Cardio" 
-            ? `${ex.duration} min` // For cardio exercises, duration is always in minutes
-            : ex.duration >= 60
-              ? `${Math.floor(ex.duration / 60)} min${ex.duration % 60 > 0 ? ` ${ex.duration % 60} sec` : ''}`
-              : `${ex.duration} sec`}
+        <Chip key="sets-reps" size="lg" variant="subtle">
+          {ex.sets} × {ex.repetitions}
         </Chip>
       );
-    } else {
-      if (ex.sets && ex.repetitions) {
-        chips.push(
-          <Chip key="sets-reps" size="lg" variant="subtle">
-            {ex.sets} × {ex.repetitions}
-          </Chip>
-        );
-      }
       if (ex.restBetweenSets && ex.restBetweenSets !== 0) {
         chips.push(
           <Chip key="restBetweenSets" size="lg" variant="subtle">
@@ -139,6 +137,24 @@ export default function ExerciseCard({
           </Chip>
         );
       }
+    } 
+    // Show duration for cardio/warmup/stretching exercises
+    else if (ex.duration && isDurationExercise) {
+      chips.push(
+        <Chip key="duration" size="sm" variant="subtle">
+          {ex.duration >= 60
+            ? `${Math.floor(ex.duration / 60)} min${ex.duration % 60 > 0 ? ` ${ex.duration % 60} sec` : ''}`
+            : `${ex.duration} min`}
+        </Chip>
+      );
+    }
+    // Fallback: show sets × reps if available
+    else if (ex.sets && ex.repetitions) {
+      chips.push(
+        <Chip key="sets-reps" size="lg" variant="subtle">
+          {ex.sets} × {ex.repetitions}
+        </Chip>
+      );
     }
 
     return chips;

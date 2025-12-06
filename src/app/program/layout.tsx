@@ -1,6 +1,7 @@
 'use client';
 
 import { ErrorBoundary } from '../components/ErrorBoundary';
+import { SelectedDayProvider } from '../context/SelectedDayContext';
 
 export default function ProgramLayout({
   children,
@@ -9,7 +10,9 @@ export default function ProgramLayout({
 }) {
   return (
     <ErrorBoundary>
-      {children}
+      <SelectedDayProvider>
+        {children}
+      </SelectedDayProvider>
     </ErrorBoundary>
   );
 } 

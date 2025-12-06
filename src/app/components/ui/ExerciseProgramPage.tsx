@@ -5,6 +5,7 @@ import { ProgramType } from '../../../../shared/types';
 import { Exercise, ExerciseProgram, ProgramDay } from '@/app/types/program';
 import { useAuth } from '@/app/context/AuthContext';
 import { useUser } from '@/app/context/UserContext';
+import { useSelectedDay } from '@/app/context/SelectedDayContext';
 import { useTranslation } from '@/app/i18n';
 import { useRouter, usePathname } from 'next/navigation';
 import { toast } from './ToastProvider';
@@ -261,6 +262,7 @@ export function ExerciseProgramPage({
   const { t, locale } = useTranslation();
   const router = useRouter();
   const pathname = usePathname();
+  const { setSelectedDayData } = useSelectedDay();
 
   // Determine if this is a custom recovery program being viewed (not saved to user account)
   const isViewingCustomProgram = isViewingCustomRecoveryProgram(pathname);
@@ -450,8 +452,19 @@ export function ExerciseProgramPage({
     }
   };
 
-  const handleDayDetailClick = (day: ProgramDay, dayName: string) => {
-    onDaySelect(day, dayName);
+  const handleDayDetailClick = (day: ProgramDay, dayNameStr: string) => {
+    // Pre-cache the day data so the target page can render instantly
+    if (program) {
+      setSelectedDayData({
+        day,
+        dayName: dayNameStr,
+        program,
+        programTitle: title || activeProgram?.title || 'Exercise Program',
+      });
+    }
+    
+    // Navigate immediately - no need for loading state since data is pre-cached
+    onDaySelect(day, dayNameStr);
   };
 
   // Save custom program to user account
@@ -629,6 +642,19 @@ export function ExerciseProgramPage({
       </div>
     );
   };
+
+  // Prefetch day routes for faster navigation
+  useEffect(() => {
+    if (!program?.days || !Array.isArray(program.days) || program.days.length === 0) {
+      return;
+    }
+    
+    // Prefetch all day routes so navigation is instant
+    program.days.forEach((day) => {
+      const route = `/program/day/${day.day}`;
+      router.prefetch(route);
+    });
+  }, [program, router]);
 
   // Determine if the current date is in a future week compared to the program
   useEffect(() => {

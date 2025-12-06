@@ -185,9 +185,14 @@ async function generateMetadata(
 async function generateSingleDay(
   request: GenerateSingleDayRequest
 ): Promise<SingleDayResponse> {
-  const { exercisesPrompt, exerciseCount } = await prepareExercisesPrompt(request.userInfo);
+  const { exercisesPrompt, exerciseCount } = await prepareExercisesPrompt(
+    request.userInfo,
+    undefined, // removedExerciseIds
+    false, // includeEquipment
+    request.language || 'en' // language
+  );
 
-  console.log(`[incremental] Day ${request.dayNumber}: using ${exerciseCount} exercises`);
+  console.log(`[incremental] Day ${request.dayNumber}: using ${exerciseCount} exercises (locale: ${request.language || 'en'})`);
 
   // Use the detailed singleDaySystemPrompt + exercises
   const finalSystemPrompt = singleDaySystemPrompt + exercisesPrompt;

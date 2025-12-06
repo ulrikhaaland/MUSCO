@@ -44,8 +44,8 @@ function FollowUpQuestions({
             data-quick-reply
             role="button"
             className={`follow-up-question-btn w-full min-h-[48px] text-left px-4 py-3 pb-4 rounded-lg cursor-pointer
-              bg-brand-soft border border-brand-border text-brand-text font-medium
-              hover:border-brand/50 focus:border-brand/50 active:border-brand/50
+              bg-[rgba(99,91,255,0.12)] border border-[rgba(99,91,255,0.35)] text-[#c8cbff] font-medium
+              hover:border-[rgba(99,91,255,0.5)] focus:border-[rgba(99,91,255,0.5)] active:border-[rgba(99,91,255,0.5)]
               hover:shadow-[0_4px_12px_rgba(0,0,0,0.25)] focus:shadow-[0_4px_12px_rgba(0,0,0,0.25)] active:shadow-[0_4px_16px_rgba(0,0,0,0.3)]
               hover:bg-gradient-to-r hover:from-indigo-900/80 hover:to-indigo-800/80
               hover:-translate-y-[2px] active:-translate-y-[2px] active:shadow-[0_4px_16px_rgba(0,0,0,0.3)]
@@ -63,7 +63,7 @@ function FollowUpQuestions({
                 viewBox="0 0 24 24"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
-                className={`mr-2 text-brand transform transition-transform duration-[90ms] mt-[2px] ${prefersReducedMotion ? '' : 'group-hover:translate-x-[6px]'}`}
+                className={`mr-2 text-[#635bff] transform transition-transform duration-[90ms] mt-[2px] ${prefersReducedMotion ? '' : 'group-hover:translate-x-[6px]'}`}
               >
                 <path
                   d="M7 17L17 7M17 7H7M17 7V17"
@@ -75,14 +75,14 @@ function FollowUpQuestions({
               </svg>
               <div className="flex-1">
                 <div
-                  className={`${!question.title ? 'text-brand-text' : 'font-medium text-brand-text capitalize'}`}
+                  className={`${!question.title ? 'text-[#c8cbff]' : 'font-medium text-[#c8cbff] capitalize'}`}
                 >
                   {question.title
                     ? stripBodyPartMarkers(question.title.toLowerCase())
                     : stripBodyPartMarkers(question.question)}
                 </div>
                 {question.meta && (
-                  <div className="text-sm text-brand-text opacity-75 mt-1">
+                  <div className="text-sm text-[#c8cbff] opacity-75 mt-1">
                     {stripBodyPartMarkers(question.meta)}
                   </div>
                 )}

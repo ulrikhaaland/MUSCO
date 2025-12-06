@@ -583,12 +583,14 @@ export async function generateFollowUpExerciseProgram(context: {
       )
       .filter(Boolean) as string[];
 
-    // Get exercises prompt from shared utility function, excluding removed exercises
+    // Get exercises prompt from shared utility function, excluding removed exercises, using locale-specific exercises
     const { exercisesPrompt, exerciseCount } = await prepareExercisesPrompt(
       context.userInfo,
-      removedExerciseIdsForPrompt
+      removedExerciseIdsForPrompt,
+      false, // includeEquipment
+      context.language || 'en' // language
     );
-    throttledLog('debug', 'followup_ex_prompt', `count=${exerciseCount}`);
+    throttledLog('debug', 'followup_ex_prompt', `count=${exerciseCount} locale=${context.language || 'en'}`);
 
     // Import the follow-up system prompt
     const systemPrompt = await import('../prompts/exerciseFollowUpPrompt');
@@ -947,12 +949,15 @@ export async function generateExerciseProgramWithModel(context: {
       }
     }
 
-    // Get exercises prompt from shared utility function
+    // Get exercises prompt from shared utility function, using locale-specific exercises
     const { exercisesPrompt, exerciseCount } = await prepareExercisesPrompt(
-      context.userInfo
+      context.userInfo,
+      undefined, // removedExerciseIds
+      false, // includeEquipment
+      context.language || 'en' // language
     );
     console.log(
-      `Prepared exercise prompt with ${exerciseCount} total exercises`
+      `Prepared exercise prompt with ${exerciseCount} total exercises (locale: ${context.language || 'en'})`
     );
     console.log(exercisesPrompt);
 

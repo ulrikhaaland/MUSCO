@@ -189,7 +189,7 @@ export function ProgramDayComponent({
         {/* Exercise list - same for both rest days and workout days */}
         {filteredExercises && filteredExercises.length > 0 ? (
           <div className="space-y-8">
-            {filteredExercises.map((exercise) => {
+            {filteredExercises.map((exercise, index) => {
               const _exerciseId =
                 exercise.id || exercise.exerciseId || exercise.name;
               const isExpanded =
@@ -197,11 +197,7 @@ export function ProgramDayComponent({
 
               return (
                 <ExerciseCard
-                  key={
-                    exercise.id ||
-                    exercise.exerciseId ||
-                    `${exercise.name}-${exercise.bodyPart}`
-                  }
+                  key={`${exercise.id || exercise.exerciseId || exercise.name}-${index}`}
                   exercise={exercise}
                   isExpanded={isExpanded}
                   onToggle={() => onExerciseToggle?.(exercise.name)}

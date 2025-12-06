@@ -829,6 +829,7 @@ const translations = {
   'exerciseProgram.button.viewOverview': 'View Program Overview',
   'exerciseProgram.button.getStarted': 'Get Started',
   'exerciseProgram.loading': 'Loading program',
+  'exerciseProgram.loadingDay': 'Loading workout...',
   'exerciseProgram.weekTab': 'Week',
   'exerciseProgram.nextWeek': 'Next Week',
   'exerciseProgram.dayAbbr.mon': 'Mon',

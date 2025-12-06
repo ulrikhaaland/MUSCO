@@ -7,6 +7,7 @@ import { ProgramDayComponent } from '@/app/components/ui/ProgramDayComponent';
 import { searchYouTubeVideo } from '@/app/utils/youtube';
 import { useAuth } from '@/app/context/AuthContext';
 import { useUser } from '@/app/context/UserContext';
+import { useSelectedDay } from '@/app/context/SelectedDayContext';
 import { ref, getDownloadURL } from 'firebase/storage';
 import { storage } from '@/app/firebase/config';
 import { useTranslation } from '@/app/i18n/TranslationContext';
@@ -63,19 +64,7 @@ export default function DayDetailPage() {
   // Use a persistent ID to avoid duplicate render issues
   const _componentId = useRef(`day-page-${Date.now()}`);
   
-  // Component state
-  const [error, setError] = useState<Error | null>(null);
-  const [dayData, setDayData] = useState<ProgramDay | null>(null);
-  const [dayName, setDayName] = useState('');
-  const [videoUrl, setVideoUrl] = useState<string | null>(null);
-  const [loadingVideoExercise, setLoadingVideoExercise] = useState<string | null>(null);
-  const [expandedExercises, setExpandedExercises] = useState<string[]>([]);
-  const [selectedProgram, setSelectedProgram] = useState<ExerciseProgram | null>(null);
-  const [preloadedVideoUrls, setPreloadedVideoUrls] = useState<{ [key: string]: string }>({});
-  const [currentExerciseIndex, setCurrentExerciseIndex] = useState<number>(-1);
-  const [_dataLoaded, setDataLoaded] = useState(false);
-
-  // Router and params
+  // Router and params - get these first
   const router = useRouter();
   const params = useParams();
   const dayParam = params.day as string;
@@ -84,12 +73,43 @@ export default function DayDetailPage() {
   // Access context data
   const { error: authError } = useAuth();
   const { program, programStatus, userPrograms, activeProgram } = useUser();
+  const { selectedDayData } = useSelectedDay();
   const { t } = useTranslation();
   
-  // Global loader removed; use local loading UI below
+  // Check if we have cached data for this specific day (instant render)
+  const hasCachedData = selectedDayData && selectedDayData.day.day === dayNumber;
+  
+  // Component state - initialize from cached data if available for instant render
+  const [error, setError] = useState<Error | null>(null);
+  const [dayData, setDayData] = useState<ProgramDay | null>(
+    hasCachedData ? selectedDayData.day : null
+  );
+  const [dayName, setDayName] = useState(
+    hasCachedData ? selectedDayData.dayName : ''
+  );
+  const [videoUrl, setVideoUrl] = useState<string | null>(null);
+  const [loadingVideoExercise, setLoadingVideoExercise] = useState<string | null>(null);
+  const [expandedExercises, setExpandedExercises] = useState<string[]>([]);
+  const [selectedProgram, setSelectedProgram] = useState<ExerciseProgram | null>(
+    hasCachedData ? { ...selectedDayData.program, title: selectedDayData.programTitle } : null
+  );
+  const [preloadedVideoUrls, setPreloadedVideoUrls] = useState<{ [key: string]: string }>({});
+  const [currentExerciseIndex, setCurrentExerciseIndex] = useState<number>(-1);
+  const [_dataLoaded, setDataLoaded] = useState(hasCachedData);
 
-  // Load data effect with cleanup
+  // Log analytics when page loads with cached data
   useEffect(() => {
+    if (hasCachedData) {
+      logAnalyticsEvent('view_program_day', { day: dayNumber });
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Load data effect - only needed if no cached data (fallback for direct URL access)
+  useEffect(() => {
+    // Skip if we already have cached data
+    if (hasCachedData) return;
+    
     let mounted = true;
     
     const loadProgramData = async () => {
@@ -156,15 +176,11 @@ export default function DayDetailPage() {
             logAnalyticsEvent('view_program_day', { day: dayNumber });
           }
         }
-        
-        // Loader removed
       } catch (err) {
         console.error('Error loading program data:', err);
         if (mounted) {
           setError(err instanceof Error ? err : new Error('Failed to load program data'));
         }
-        
-        // Loader removed
       }
     };
     
@@ -175,7 +191,7 @@ export default function DayDetailPage() {
       mounted = false;
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [program, userPrograms, dayNumber]);
+  }, [program, userPrograms, dayNumber, hasCachedData]);
 
   // Loader removed
 

@@ -15,6 +15,8 @@ export interface LoadExercisesOptions {
   onlyLoadMissingOriginals?: boolean;
   equipment?: string[];
   includeBodyweightWarmups?: boolean;
+  /** When true, loads Norwegian exercise data from json2_no folder */
+  useNorwegian?: boolean;
 }
 
 /**
@@ -30,54 +32,90 @@ export async function loadServerExercises(
     onlyLoadMissingOriginals = false,
     equipment,
     includeBodyweightWarmups = false,
+    useNorwegian = false,
   } = options;
 
   const exercises: Exercise[] = [];
 
+  // Use Norwegian folder (json2_no) when useNorwegian is true, otherwise use English (json2)
+  const muscoFolder = useNorwegian ? 'json2_no' : 'json2';
+  console.log(`[loadServerExercises] useNorwegian=${useNorwegian}, muscoFolder=${muscoFolder}, bodyParts=${bodyParts.join(',')}`);
+
   // Map of body parts to their JSON file paths
-  // IMPORTANT: Only use /json and /musco/json2 sources per spec
-  const exerciseFilePaths: Record<string, string[]> = {
-    Shoulders: ['data/exercises/musco/json2/m_shoulders.json', 'data/exercises/json/shoulders.json'],
-    'Upper Arms': [
-      'data/exercises/musco/json2/m_biceps.json',
-      'data/exercises/musco/json2/m_triceps.json',
-      'data/exercises/json/biceps.json',
-      'data/exercises/json/triceps.json',
-    ],
-    Forearms: ['data/exercises/musco/json2/m_forearms.json', 'data/exercises/json/forearms.json'],
-    Chest: ['data/exercises/musco/json2/m_chest.json', 'data/exercises/json/chest.json'],
-    Abdomen: [
-      'data/exercises/musco/json2/m_abs.json',
-      'data/exercises/musco/json2/m_obliques.json',
-      'data/exercises/json/abs.json',
-      'data/exercises/json/obliques.json',
-    ],
-    'Upper Back': [
-      'data/exercises/musco/json2/m_upper-back.json',
-      'data/exercises/musco/json2/m_lats.json',
-      'data/exercises/musco/json2/m_traps.json',
-      'data/exercises/json/upper_back.json',
-      'data/exercises/json/lats.json',
-      'data/exercises/json/traps.json',
-    ],
-    'Lower Back': ['data/exercises/musco/json2/m_lower-back.json', 'data/exercises/json/lower_back.json'],
-    Glutes: ['data/exercises/musco/json2/m_glutes.json', 'data/exercises/json/glutes.json'],
-    'Upper Legs': [
-      'data/exercises/musco/json2/m_quads.json',
-      'data/exercises/musco/json2/m_hamstrings.json',
-      'data/exercises/musco/json2/m_hip_flexors.json',
-      'data/exercises/musco/json2/m_adductors.json',
-      'data/exercises/musco/json2/m_abductors.json',
-      'data/exercises/json/quads.json',
-      'data/exercises/json/hamstrings.json',
-      'data/exercises/json/hip_flexors.json',
-      'data/exercises/json/adductors.json',
-      'data/exercises/json/abductors.json',
-    ],
-    'Lower Legs': ['data/exercises/musco/json2/m_calves.json', 'data/exercises/json/calves.json'],
-    Warmup: ['data/exercises/musco/json2/warmups.json'],
-    Cardio: ['data/exercises/musco/json2/cardio.json'],
-  };
+  // When useNorwegian is true, ONLY load from json2_no (Norwegian exercises)
+  // When useNorwegian is false, load from both json2 (musco) and json (original English)
+  const exerciseFilePaths: Record<string, string[]> = useNorwegian
+    ? {
+        // Norwegian: Only load from json2_no folder
+        Shoulders: [`data/exercises/musco/${muscoFolder}/m_shoulders.json`],
+        'Upper Arms': [
+          `data/exercises/musco/${muscoFolder}/m_biceps.json`,
+          `data/exercises/musco/${muscoFolder}/m_triceps.json`,
+        ],
+        Forearms: [`data/exercises/musco/${muscoFolder}/m_forearms.json`],
+        Chest: [`data/exercises/musco/${muscoFolder}/m_chest.json`],
+        Abdomen: [
+          `data/exercises/musco/${muscoFolder}/m_abs.json`,
+          `data/exercises/musco/${muscoFolder}/m_obliques.json`,
+        ],
+        'Upper Back': [
+          `data/exercises/musco/${muscoFolder}/m_upper-back.json`,
+          `data/exercises/musco/${muscoFolder}/m_lats.json`,
+          `data/exercises/musco/${muscoFolder}/m_traps.json`,
+        ],
+        'Lower Back': [`data/exercises/musco/${muscoFolder}/m_lower-back.json`],
+        Glutes: [`data/exercises/musco/${muscoFolder}/m_glutes.json`],
+        'Upper Legs': [
+          `data/exercises/musco/${muscoFolder}/m_quads.json`,
+          `data/exercises/musco/${muscoFolder}/m_hamstrings.json`,
+        ],
+        'Lower Legs': [`data/exercises/musco/${muscoFolder}/m_calves.json`],
+        Warmup: [`data/exercises/musco/${muscoFolder}/warmups.json`],
+        Cardio: [`data/exercises/musco/${muscoFolder}/cardio.json`],
+      }
+    : {
+        // English: Load from both musco/json2 and original json
+        Shoulders: [`data/exercises/musco/${muscoFolder}/m_shoulders.json`, 'data/exercises/json/shoulders.json'],
+        'Upper Arms': [
+          `data/exercises/musco/${muscoFolder}/m_biceps.json`,
+          `data/exercises/musco/${muscoFolder}/m_triceps.json`,
+          'data/exercises/json/biceps.json',
+          'data/exercises/json/triceps.json',
+        ],
+        Forearms: [`data/exercises/musco/${muscoFolder}/m_forearms.json`, 'data/exercises/json/forearms.json'],
+        Chest: [`data/exercises/musco/${muscoFolder}/m_chest.json`, 'data/exercises/json/chest.json'],
+        Abdomen: [
+          `data/exercises/musco/${muscoFolder}/m_abs.json`,
+          `data/exercises/musco/${muscoFolder}/m_obliques.json`,
+          'data/exercises/json/abs.json',
+          'data/exercises/json/obliques.json',
+        ],
+        'Upper Back': [
+          `data/exercises/musco/${muscoFolder}/m_upper-back.json`,
+          `data/exercises/musco/${muscoFolder}/m_lats.json`,
+          `data/exercises/musco/${muscoFolder}/m_traps.json`,
+          'data/exercises/json/upper_back.json',
+          'data/exercises/json/lats.json',
+          'data/exercises/json/traps.json',
+        ],
+        'Lower Back': [`data/exercises/musco/${muscoFolder}/m_lower-back.json`, 'data/exercises/json/lower_back.json'],
+        Glutes: [`data/exercises/musco/${muscoFolder}/m_glutes.json`, 'data/exercises/json/glutes.json'],
+        'Upper Legs': [
+          `data/exercises/musco/${muscoFolder}/m_quads.json`,
+          `data/exercises/musco/${muscoFolder}/m_hamstrings.json`,
+          `data/exercises/musco/${muscoFolder}/m_hip_flexors.json`,
+          `data/exercises/musco/${muscoFolder}/m_adductors.json`,
+          `data/exercises/musco/${muscoFolder}/m_abductors.json`,
+          'data/exercises/json/quads.json',
+          'data/exercises/json/hamstrings.json',
+          'data/exercises/json/hip_flexors.json',
+          'data/exercises/json/adductors.json',
+          'data/exercises/json/abductors.json',
+        ],
+        'Lower Legs': [`data/exercises/musco/${muscoFolder}/m_calves.json`, 'data/exercises/json/calves.json'],
+        Warmup: [`data/exercises/musco/${muscoFolder}/warmups.json`],
+        Cardio: [`data/exercises/musco/${muscoFolder}/cardio.json`],
+      };
 
   // Original exercise files paths
   const originalExerciseFilePaths: Record<string, string> = {
@@ -113,10 +151,14 @@ export async function loadServerExercises(
       const fileContent = await fs.readFile(fullPath, 'utf-8');
       const data = JSON.parse(fileContent);
 
-      return data && Array.isArray(data.exercises) ? data : { exercises: [] };
+      const result = data && Array.isArray(data.exercises) ? data : { exercises: [] };
+      console.log(`[readJsonFile] ${filePath} -> ${result.exercises.length} exercises`);
+      return result;
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code !== 'ENOENT') {
         console.error(`[SERVER] Error reading file ${filePath}:`, error);
+      } else {
+        console.log(`[readJsonFile] ${filePath} -> NOT FOUND`);
       }
       return { exercises: [] };
     }
@@ -296,5 +338,6 @@ export async function loadServerExercises(
     }
   }
 
+  console.log(`[loadServerExercises] TOTAL: ${exercises.length} exercises loaded`);
   return exercises;
 }

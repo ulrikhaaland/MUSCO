@@ -803,6 +803,7 @@ const translations = {
   'exerciseProgram.button.viewOverview': 'Vis programoversikt',
   'exerciseProgram.button.getStarted': 'Kom i gang',
   'exerciseProgram.loading': 'Laster program',
+  'exerciseProgram.loadingDay': 'Laster treningsdag...',
   'exerciseProgram.weekTab': 'Uke',
   'exerciseProgram.nextWeek': 'Neste uke',
   'exerciseProgram.dayAbbr.mon': 'Man',

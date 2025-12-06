@@ -1,5 +1,5 @@
 import { ExerciseQuestionnaireAnswers } from '../../../shared/types';
-import { Exercise } from '@/app/types/program';
+import { Exercise, TARGET_BODY_PARTS } from '@/app/types/program';
 import { loadServerExercises } from '@/app/services/server-exercises';
 
 /**
@@ -43,15 +43,22 @@ export function shouldIncludeIntervals(
 
 /**
  * Utility function to prepare exercises prompt for the LLM
+ * @param userInfo User questionnaire data
+ * @param removedExerciseIds Optional list of exercise IDs to exclude
+ * @param includeEquipment Whether to include equipment info in prompt
+ * @param language Language code ('en' or 'nb') - defaults to 'en'
  */
 export async function prepareExercisesPrompt(
   userInfo: ExerciseQuestionnaireAnswers,
   removedExerciseIds?: string[],
-  includeEquipment: boolean = false
+  includeEquipment: boolean = false,
+  language: string = 'en'
 ): Promise<{
   exercisesPrompt: string;
   exerciseCount: number;
 }> {
+  const useNorwegian = language === 'nb';
+  console.log(`[prepareExercisesPrompt] language=${language}, useNorwegian=${useNorwegian}`);
   const targetAreas = userInfo.targetAreas;
   const equipment = [...(userInfo.equipment || [])];
   const exerciseEnvironment = userInfo.exerciseEnvironments || 'gym';
@@ -84,10 +91,18 @@ export async function prepareExercisesPrompt(
 
   // Prepare body parts to load - only include warmups for strength training
   const isCardioOnly = exerciseModalities.toLowerCase() === 'cardio';
-  const bodyPartsToLoad = [...targetAreas];
   
-  // Only include warmups if we're doing strength training or have target areas (not cardio-only)
-  if (!isCardioOnly && (targetAreas.length > 0 || exerciseModalities.toLowerCase().includes('strength') || exerciseModalities.toLowerCase().includes('both'))) {
+  // If targetAreas is empty (e.g., recovery programs), load ALL body parts
+  // This ensures we have exercises to filter by equipment
+  // Filter out 'Neck' as there are no neck exercises in the database
+  const loadableBodyParts = TARGET_BODY_PARTS.filter(bp => bp !== 'Neck');
+  const bodyPartsToLoad = targetAreas.length > 0 
+    ? targetAreas.filter(bp => bp !== 'Neck') 
+    : [...loadableBodyParts];
+  console.log(`[prepareExercisesPrompt] targetAreas=${targetAreas.length > 0 ? targetAreas.join(',') : '(empty, using all loadable body parts)'}`);
+  
+  // Only include warmups if we're doing strength training or have body parts to load (not cardio-only)
+  if (!isCardioOnly && (bodyPartsToLoad.length > 0 || exerciseModalities.toLowerCase().includes('strength') || exerciseModalities.toLowerCase().includes('both'))) {
     bodyPartsToLoad.push('Warmup');
   }
 
@@ -116,6 +131,7 @@ export async function prepareExercisesPrompt(
         onlyLoadMissingOriginals: true,
         equipment: equipment,
         includeBodyweightWarmups: true, // Include bodyweight warmups for custom environment
+        useNorwegian,
       });
     } else {
       availableExercises = await loadServerExercises({
@@ -123,9 +139,11 @@ export async function prepareExercisesPrompt(
         includeOriginals: false,
         onlyLoadMissingOriginals: true,
         includeBodyweightWarmups: false, // Don't include bodyweight warmups for non-custom environments
+        useNorwegian,
       });
     }
   }
+  console.log(`[prepareExercisesPrompt] After loadServerExercises: ${availableExercises.length} exercises for bodyParts=${bodyPartsToLoad.join(',')}`);
 
   // Load cardio exercises separately without equipment filtering if needed
   let cardioExercises: Exercise[] = [];
@@ -135,6 +153,7 @@ export async function prepareExercisesPrompt(
       includeOriginals: false,
       onlyLoadMissingOriginals: true,
       // No equipment filtering for cardio - we'll handle that manually
+      useNorwegian,
     });
   }
 
@@ -150,6 +169,7 @@ export async function prepareExercisesPrompt(
       bodyParts: trxTargetBodyParts,
       includeOriginals: false,
       onlyLoadMissingOriginals: true,
+      useNorwegian,
     });
     
     // Filter to only include exercises that mention TRX/Suspension or Pistol Squat
@@ -182,6 +202,7 @@ export async function prepareExercisesPrompt(
       bodyParts: kettlebellTargetBodyParts,
       includeOriginals: false,
       onlyLoadMissingOriginals: true,
+      useNorwegian,
     });
     
     // Filter to only include exercises that can use kettlebells
@@ -197,6 +218,7 @@ export async function prepareExercisesPrompt(
 
   // Combine all exercise arrays
   availableExercises = [...availableExercises, ...cardioExercises, ...trxExercises, ...kettlebellExercises];
+  console.log(`[prepareExercisesPrompt] After combining: ${availableExercises.length} total (cardio=${cardioExercises.length}, trx=${trxExercises.length}, kb=${kettlebellExercises.length})`);
 
   // If removedExerciseIds are provided, filter them out from availableExercises
   if (removedExerciseIds && removedExerciseIds.length > 0) {
@@ -393,6 +415,7 @@ export async function prepareExercisesPrompt(
   Object.entries(exercisesByBodyPart).forEach(([_bodyPartKey, exercises]) => {
     totalExerciseCount += exercises.length;
   });
+  console.log(`[prepareExercisesPrompt] Final count by bodyPart:`, Object.entries(exercisesByBodyPart).map(([k, v]) => `${k}:${v.length}`).join(', '));
 
   // Format exercises as JSON for the prompt
   let exercisesPrompt = '\n\nEXERCISE DATABASE:\n';

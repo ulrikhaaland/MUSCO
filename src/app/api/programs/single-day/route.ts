@@ -42,11 +42,13 @@ export async function POST(req: NextRequest) {
 
     const includeBodyweightWarmups = normalizedEquipment.includes('Bodyweight');
     const allEquipForFilter = normalizedEquipment.filter(Boolean);
+    const useNorwegian = body.locale === 'nb';
 
     const exercises: Exercise[] = await loadServerExercises({
       bodyParts: ['Shoulders','Upper Arms','Forearms','Chest','Abdomen','Upper Back','Lower Back','Glutes','Upper Legs','Lower Legs','Warmup','Cardio'],
       equipment: allEquipForFilter,
       includeBodyweightWarmups,
+      useNorwegian,
     });
 
     // Build available exercises mapping for LLM
