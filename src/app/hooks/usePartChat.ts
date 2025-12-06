@@ -141,7 +141,15 @@ export function usePartChat({
         return;
       }
 
-      // Check if this follow-up has a body part selection attached
+      // Check if this follow-up has a specific body part selection attached
+      if (question.selectBodyPart && onBodyPartSelected) {
+        console.log('[usePartChat] Follow-up has body part selection:', question.selectBodyPart);
+        onBodyPartSelected(question.selectBodyPart);
+        setLocalFollowUpQuestions([]);
+        return;
+      }
+
+      // Check if this follow-up has a body group selection attached
       if (question.selectBodyGroup && onBodyGroupSelected) {
         console.log('[usePartChat] Follow-up has body group selection:', question.selectBodyGroup);
         onBodyGroupSelected(question.selectBodyGroup);

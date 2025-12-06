@@ -85,6 +85,7 @@ export interface Question {
   chatMode?: 'diagnosis' | 'explore';
   meta?: string;
   selectBodyGroup?: string; // When set, clicking this follow-up selects the body group on the 3D model
+  selectBodyPart?: string;  // When set, clicking this follow-up selects a specific body part on the 3D model
 }
 
 export interface DiagnosisAssistantResponse {

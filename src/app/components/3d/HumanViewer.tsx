@@ -18,6 +18,7 @@ import { logAnalyticsEvent } from '@/app/utils/analytics';
 import { useExplainSelection } from '@/app/hooks/useExplainSelection';
 import { bodyPartGroups } from '@/app/config/bodyPartGroups';
 import { getGenderedId } from '@/app/utils/anatomyHelpers';
+import { findGroupByName, findBodyPartByName } from '@/app/utils/bodyPartMarkerParser';
 
 const MODEL_IDS: Record<Gender, string> = {
   male: '5tOV',
@@ -620,36 +621,80 @@ export default function HumanViewer({
     return () => window.removeEventListener('resize', onResize);
   }, []);
 
-  // Handler for body group selection from assistant (diagnosis flow without pre-selected part)
+  // Handler for body group selection from follow-up questions or assistant response
+  // Uses the same findGroupByName utility as chat message badges for consistency
   const handleBodyGroupSelected = useCallback((groupName: string) => {
-    console.log('[HumanViewer] Assistant selected body group:', groupName);
-    const configKey = BODY_GROUP_NAME_TO_CONFIG[groupName];
-    if (configKey && bodyPartGroups[configKey]) {
-      const group = bodyPartGroups[configKey];
-      console.log('[HumanViewer] Mapping to config:', configKey, group.name);
-      setSelectedGroup(group);
-      // Zoom to the group using the HumanAPI
-      if (humanRef?.current && group.zoomId) {
-        try {
-          humanRef.current.send('camera.set', {
-            objectId: group.zoomId,
-          });
-        } catch (error) {
-          console.error('[HumanViewer] Error zooming to group:', error);
+    console.log('[HumanViewer] Body group selection requested:', groupName);
+    
+    // Close the mobile chat overlay first so user sees the model
+    setIsChatOverlayOpen(false);
+    
+    // Delay selection so user sees the model before selection happens
+    setTimeout(() => {
+      // Use shared utility for fuzzy matching (same as chat badges)
+      const group = findGroupByName(groupName);
+      if (group) {
+        console.log('[HumanViewer] Found group:', group.name);
+        setSelectedGroup(group);
+        // Zoom to the group using the HumanAPI
+        if (humanRef?.current && group.zoomId) {
+          try {
+            humanRef.current.send('camera.set', {
+              objectId: group.zoomId,
+            });
+          } catch (error) {
+            console.error('[HumanViewer] Error zooming to group:', error);
+          }
+        }
+      } else {
+        // Fallback to legacy mapping for backwards compatibility
+        const configKey = BODY_GROUP_NAME_TO_CONFIG[groupName];
+        if (configKey && bodyPartGroups[configKey]) {
+          const legacyGroup = bodyPartGroups[configKey];
+          console.log('[HumanViewer] Using legacy mapping:', configKey);
+          setSelectedGroup(legacyGroup);
+        } else {
+          console.warn('[HumanViewer] No mapping found for body group:', groupName);
         }
       }
-      } else {
-      console.warn('[HumanViewer] No mapping found for body group:', groupName);
-    }
+    }, 200);
   }, [setSelectedGroup, humanRef]);
 
-  // Handler for specific body part selection from assistant
+  // Handler for specific body part selection from follow-up questions or assistant response
+  // Uses the same findBodyPartByName utility as chat message badges for consistency
   const handleBodyPartSelected = useCallback((partName: string) => {
-    console.log('[HumanViewer] Assistant selected body part:', partName);
-    // For now, just log. We could add more specific zooming logic here if needed
-    // The specific part is more for the diagnosis data than the 3D model selection
-    // The model already highlights the group, and the diagnosis tracks the specific part
-  }, []);
+    console.log('[HumanViewer] Body part selection requested:', partName);
+    
+    // Close the mobile chat overlay first so user sees the model
+    setIsChatOverlayOpen(false);
+    
+    // Delay selection so user sees the model before selection happens
+    setTimeout(() => {
+      // Use shared utility for fuzzy matching (same as chat badges)
+      const result = findBodyPartByName(partName);
+      if (result) {
+        const { part, group } = result;
+        console.log('[HumanViewer] Found part:', part.name, 'in group:', group.name);
+        
+        // Select the group first (if different), then the part
+        setSelectedGroup(group);
+        setSelectedPart(part);
+        
+        // Zoom to the part using the HumanAPI
+        if (humanRef?.current && part.objectId) {
+          try {
+            humanRef.current.send('camera.set', {
+              objectId: part.objectId,
+            });
+          } catch (error) {
+            console.error('[HumanViewer] Error zooming to part:', error);
+          }
+        }
+      } else {
+        console.warn('[HumanViewer] No mapping found for body part:', partName);
+      }
+    }, 200);
+  }, [setSelectedGroup, setSelectedPart, humanRef]);
 
   // Handler for program generation triggered from chat
   const handleGenerateProgram = useCallback((programType: ProgramType, diagnosisData?: DiagnosisAssistantResponse | null) => {

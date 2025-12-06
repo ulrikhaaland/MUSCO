@@ -274,6 +274,18 @@ export default function MobileControls({
     }
   }, [showQuestionnaire]);
 
+  // Scroll to bottom when overlay opens (so user sees latest messages)
+  useEffect(() => {
+    if (overlayOpen && scrollContainerRef.current) {
+      // Wait for next frame to ensure DOM is rendered
+      requestAnimationFrame(() => {
+        if (scrollContainerRef.current) {
+          scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight;
+        }
+      });
+    }
+  }, [overlayOpen]);
+
   // Update scroll position ref when user scrolls
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const target = e.currentTarget;
