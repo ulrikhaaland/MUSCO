@@ -254,7 +254,7 @@ export default function ExerciseCard({
           }`}
         >
           {isExpanded && (
-            <Card.Section>
+            <Card.Section className="pt-4">
               {/* Exercise description */}
               {exercise.description && (
                 <div className="text-gray-50 leading-relaxed mb-4">
