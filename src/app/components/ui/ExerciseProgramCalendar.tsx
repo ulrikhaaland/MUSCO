@@ -1,17 +1,17 @@
-import { useState } from 'react';
+'use client';
+
+import { useState, useMemo, useCallback } from 'react';
 import type { ExerciseProgram, ProgramDay } from '@/app/types/program';
-import { ProgramDaySummaryComponent } from './ProgramDaySummaryComponent';
 import { useUser } from '@/app/context/UserContext';
 import { useTranslation } from '@/app/i18n/TranslationContext';
-import { TextButton } from './TextButton';
+import { CalendarHeader, CalendarGrid, SelectedDayPanel } from './calendar';
 import {
   getStartOfWeek,
   getDayOfWeekMondayFirst,
-  addDays,
 } from '@/app/utils/dateutils';
 
 interface ExerciseProgramCalendarProps {
-  program: ExerciseProgram; // This will still be the initially selected program
+  program: ExerciseProgram;
   dayName: (day: number) => string;
   onDaySelect?: (day: ProgramDay, dayName: string, programId: string) => void;
 }
@@ -19,7 +19,7 @@ interface ExerciseProgramCalendarProps {
 interface ProgramDayWithSource {
   day: ProgramDay;
   program: ExerciseProgram;
-  userProgram: any; // Will contain the UserProgram with title
+  userProgram: { title?: string; active: boolean; programs: ExerciseProgram[] };
   dayOfWeek: number;
 }
 
@@ -29,370 +29,135 @@ export function ExerciseProgramCalendar({
   onDaySelect,
 }: ExerciseProgramCalendarProps) {
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [showYearPicker, setShowYearPicker] = useState(false);
   const { userPrograms } = useUser();
   const { t } = useTranslation();
 
   // Get all active user programs
-  const activeUserPrograms = userPrograms.filter((up) => up.active);
+  const activeUserPrograms = useMemo(
+    () => userPrograms.filter((up) => up.active),
+    [userPrograms]
+  );
 
-  const getDayProgram = (date: Date): ProgramDayWithSource[] => {
-    const result: ProgramDayWithSource[] = [];
+  // Memoized function to get program data for a specific date
+  const getDayProgram = useCallback(
+    (date: Date): ProgramDayWithSource[] => {
+      const result: ProgramDayWithSource[] = [];
+      const dayOfWeek = getDayOfWeekMondayFirst(date);
+      const checkDate = new Date(date);
+      checkDate.setHours(0, 0, 0, 0);
+      const checkWeekStart = getStartOfWeek(checkDate);
 
-    for (const userProgram of activeUserPrograms) {
-      for (const activeProgram of userProgram.programs) {
-        // Get the day of week (1 = Monday, 7 = Sunday) using standardized utility
-        const dayOfWeek = getDayOfWeekMondayFirst(date);
+      for (const userProgram of activeUserPrograms) {
+        for (const activeProgram of userProgram.programs) {
+          const programStartDate = new Date(activeProgram.createdAt);
+          const programWeekStart = getStartOfWeek(programStartDate);
 
-        // Convert createdAt to Date if it's not already
-        const programStartDate = new Date(activeProgram.createdAt);
+          const weekDiff = Math.floor(
+            (checkWeekStart.getTime() - programWeekStart.getTime()) /
+              (7 * 24 * 60 * 60 * 1000)
+          );
 
-        // Find the start of the week containing the program start date using standardized utility
-        const programWeekStart = getStartOfWeek(programStartDate);
+          if (weekDiff !== 0) continue;
 
-        // Reset time part of the check date for accurate comparison
-        const checkDate = new Date(date);
-        checkDate.setHours(0, 0, 0, 0);
+          const day = activeProgram.days.find((d) => d.day === dayOfWeek);
+          if (!day) continue;
 
-        // Find the start of the week for the check date using standardized utility
-        const checkWeekStart = getStartOfWeek(checkDate);
-
-        // Calculate the difference in weeks from the program start week
-        const weekDiff = Math.floor(
-          (checkWeekStart.getTime() - programWeekStart.getTime()) /
-            (7 * 24 * 60 * 60 * 1000)
-        );
-
-        // Since each program now represents one week, we check if this is the right week
-        // If weekDiff is not 0, this program doesn't apply to this date
-        if (weekDiff !== 0) {
-          continue;
+          result.push({
+            day: { ...day, description: day.description },
+            program: activeProgram,
+            userProgram,
+            dayOfWeek,
+          });
         }
-
-        // Find the matching day in the week
-        const day = activeProgram.days.find((d) => d.day === dayOfWeek);
-        if (!day) continue;
-
-        // Add this program day to the result
-        result.push({
-          day: {
-            ...day,
-            description: day.description,
-          },
-          program: activeProgram,
-          userProgram,
-          dayOfWeek,
-        });
       }
-    }
 
-    return result;
-  };
+      return result;
+    },
+    [activeUserPrograms]
+  );
 
-  const handleDateClick = (date: Date) => {
-    setSelectedDate(date);
-  };
+  // Get day data for calendar grid (simplified for performance)
+  const getDayData = useCallback(
+    (date: Date) => {
+      const programDays = getDayProgram(date);
+      const hasWorkout = programDays.some((p) => !p.day.isRestDay);
+      const isRestDay = !hasWorkout && programDays.some((p) => p.day.isRestDay);
+      return { date, hasWorkout, isRestDay };
+    },
+    [getDayProgram]
+  );
 
-  const handleMonthChange = (increment: number) => {
-    const newDate = new Date(selectedDate);
-    newDate.setMonth(newDate.getMonth() + increment);
-    setSelectedDate(newDate);
-  };
+  // Get selected day's program data
+  const selectedDayPrograms = useMemo(
+    () => getDayProgram(selectedDate),
+    [getDayProgram, selectedDate]
+  );
 
-  const goToCurrentDay = () => {
+  // Week day labels
+  const weekDays = useMemo(
+    () => [
+      { short: t('calendar.weekdays.mon'), full: t('days.monday') },
+      { short: t('calendar.weekdays.tue'), full: t('days.tuesday') },
+      { short: t('calendar.weekdays.wed'), full: t('days.wednesday') },
+      { short: t('calendar.weekdays.thu'), full: t('days.thursday') },
+      { short: t('calendar.weekdays.fri'), full: t('days.friday') },
+      { short: t('calendar.weekdays.sat'), full: t('days.saturday') },
+      { short: t('calendar.weekdays.sun'), full: t('days.sunday') },
+    ],
+    [t]
+  );
+
+  const handleMonthChange = useCallback((increment: number) => {
+    setSelectedDate((prev) => {
+      const newDate = new Date(prev);
+      newDate.setMonth(newDate.getMonth() + increment);
+      return newDate;
+    });
+  }, []);
+
+  const handleTodayClick = useCallback(() => {
     setSelectedDate(new Date());
-  };
+  }, []);
 
-  const isCurrentDay = () => {
+  const isCurrentDay = useMemo(() => {
     const today = new Date();
     return selectedDate.toDateString() === today.toDateString();
-  };
-
-  const renderHeader = () => {
-    const monthYear = selectedDate.toLocaleString('default', {
-      month: 'long',
-      year: 'numeric',
-    });
-
-    return (
-      <div className="flex items-center justify-between px-4 py-3 border-b border-gray-700/50">
-        <button
-          onClick={() => setShowYearPicker(!showYearPicker)}
-          className="text-xl font-semibold text-white hover:text-indigo-400 transition-colors"
-        >
-          {monthYear}
-        </button>
-
-        <TextButton onClick={goToCurrentDay} disabled={isCurrentDay()}>
-          {t('calendar.today')}
-        </TextButton>
-
-        <div className="flex space-x-4">
-          <button
-            onClick={() => handleMonthChange(-1)}
-            className="p-3 rounded-full hover:bg-gray-800/80 text-gray-400 hover:text-white transition-colors disabled:opacity-60"
-          >
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M15 19l-7-7 7-7"
-              />
-            </svg>
-          </button>
-          <button
-            onClick={() => handleMonthChange(1)}
-            className="p-3 rounded-full hover:bg-gray-800/80 text-gray-400 hover:text-white transition-colors disabled:opacity-60"
-          >
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 5l7 7-7 7"
-              />
-            </svg>
-          </button>
-        </div>
-      </div>
-    );
-  };
-
-  const renderWeekDays = () => {
-    const weekDays = [
-      t('calendar.weekdays.mon'),
-      t('calendar.weekdays.tue'),
-      t('calendar.weekdays.wed'),
-      t('calendar.weekdays.thu'),
-      t('calendar.weekdays.fri'),
-      t('calendar.weekdays.sat'),
-      t('calendar.weekdays.sun'),
-    ];
-    return (
-      <div className="grid grid-cols-7 mb-2">
-        {weekDays.map((day) => (
-          <div key={day} className="text-center py-2">
-            <span className="text-sm font-medium text-gray-400">{day}</span>
-          </div>
-        ))}
-      </div>
-    );
-  };
-
-  const renderCalendarDays = () => {
-    const firstDay = new Date(
-      selectedDate.getFullYear(),
-      selectedDate.getMonth(),
-      1
-    );
-    const lastDay = new Date(
-      selectedDate.getFullYear(),
-      selectedDate.getMonth() + 1,
-      0
-    );
-    // Get the Monday of the week containing the first day of the month
-    const startDate = getStartOfWeek(firstDay);
-
-    const weeks = [];
-    const today = new Date();
-    const currentDateString = today.toDateString();
-
-    // Calculate days for the visible calendar (max 6 weeks)
-    for (let week = 0; week < 6; week++) {
-      const currentWeek = [];
-      for (let day = 0; day < 7; day++) {
-        const date = new Date(startDate);
-        const programDays = getDayProgram(date);
-        const isProgramDay = programDays.length > 0;
-
-        currentWeek.push({
-          date,
-          programDays,
-          isCurrentMonth: date.getMonth() === selectedDate.getMonth(),
-          isToday: date.toDateString() === currentDateString,
-          isSelected: date.toDateString() === selectedDate.toDateString(),
-          isProgramDay,
-        });
-        const nextDate = addDays(startDate, 1);
-        startDate.setTime(nextDate.getTime());
-      }
-      weeks.push(currentWeek);
-
-      // Break if we've gone past the last day of the month and completed the week
-      if (startDate > lastDay && startDate.getDay() === 1) {
-        break;
-      }
-    }
-
-    return (
-      <div className="grid gap-px bg-gray-800/30">
-        {weeks.map((week, weekIndex) => (
-          <div key={weekIndex} className="grid grid-cols-7">
-            {week.map(
-              (
-                {
-                  date,
-                  programDays,
-                  isCurrentMonth,
-                  isToday,
-                  isSelected,
-                  isProgramDay,
-                },
-                _dayIndex
-              ) => {
-                // Check if there are any workout days (non-rest days)
-                const hasWorkout = programDays.some((p) => !p.day.isRestDay);
-                // Only show "Rest" if there are no workout days and at least one rest day
-                const isRestOnly =
-                  !hasWorkout && programDays.some((p) => p.day.isRestDay);
-
-                return (
-                  <button
-                    key={date.toDateString()}
-                    onClick={() => handleDateClick(date)}
-                    className={`
-                      relative aspect-square p-1 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-900
-                      ${
-                        isCurrentMonth
-                          ? isProgramDay
-                            ? 'bg-gray-800/50'
-                            : 'bg-gray-900/50'
-                          : 'bg-gray-900/30 text-gray-600'
-                      }
-                      ${
-                        isSelected
-                          ? 'bg-indigo-600/40 border-2 border-indigo-400'
-                          : ''
-                      }
-                      ${
-                        isProgramDay && isCurrentMonth && !isSelected
-                          ? 'hover:bg-gray-700/50'
-                          : !isProgramDay && isCurrentMonth && !isSelected
-                            ? 'hover:bg-gray-800/40'
-                            : ''
-                      }
-                      transition-all duration-200
-                    `}
-                  >
-                    <div className="flex flex-col h-full">
-                      <div
-                        className={`
-                        flex justify-center items-center flex-grow
-                        ${isToday ? 'relative' : ''}
-                      `}
-                      >
-                        <span
-                          className={`
-                            text-sm relative z-10 ${
-                              isToday
-                                ? 'text-indigo-300 font-semibold'
-                                : isSelected
-                                  ? 'text-white font-semibold'
-                                  : isCurrentMonth
-                                    ? isProgramDay
-                                      ? 'text-gray-100'
-                                      : 'text-gray-300'
-                                    : 'text-gray-600'
-                            }
-                          `}
-                        >
-                          {date.getDate()}
-                        </span>
-                      </div>
-                      {isProgramDay && isCurrentMonth && (
-                        <div className="mt-auto">
-                          {hasWorkout ? (
-                            <div className="text-xs text-white mt-1 flex items-center justify-center opacity-65">
-                              {t('calendar.workout')}
-                            </div>
-                          ) : isRestOnly ? (
-                            <div className="text-xs text-white mt-1 flex items-center justify-center opacity-65">
-                              {t('calendar.rest')}
-                            </div>
-                          ) : null}
-                        </div>
-                      )}
-                    </div>
-                  </button>
-                );
-              }
-            )}
-          </div>
-        ))}
-      </div>
-    );
-  };
-
-  const renderSelectedDayProgram = () => {
-    const programDays = getDayProgram(selectedDate);
-
-    if (programDays.length === 0) {
-      return (
-        <div className="p-4 bg-gray-800/50 rounded-xl h-full flex items-center justify-center">
-          <p className="text-gray-400 text-center">
-            {t('calendar.noProgramForThisDay')}
-          </p>
-        </div>
-      );
-    }
-
-    return (
-      <div className="space-y-4">
-        {programDays.map((programDay, index) => (
-          <div key={index}>
-            <ProgramDaySummaryComponent
-              day={programDay.day}
-              dayName={dayName(programDay.dayOfWeek)}
-              onClick={
-                onDaySelect
-                  ? () =>
-                      onDaySelect(
-                        programDay.day,
-                        dayName(programDay.dayOfWeek),
-                        programDay.program.createdAt.toString()
-                      )
-                  : undefined
-              }
-              programTitle={programDay.userProgram.title || 'Program'}
-              isCalendarView={true}
-            />
-          </div>
-        ))}
-      </div>
-    );
-  };
+  }, [selectedDate]);
 
   return (
     <div className="flex-1 bg-gray-900 flex flex-col">
       <div className="flex-1 px-4 pt-6 pb-24 md:pb-8">
-        {/* Mobile: stacked layout, Desktop: side-by-side */}
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col lg:flex-row lg:gap-8">
             {/* Calendar */}
             <div className="lg:flex-1 lg:max-w-2xl">
               <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-xl ring-1 ring-gray-700/50">
-                {renderHeader()}
-                <div className="p-4">
-                  {renderWeekDays()}
-                  {renderCalendarDays()}
-                </div>
+                <CalendarHeader
+                  selectedDate={selectedDate}
+                  onMonthChange={handleMonthChange}
+                  onTodayClick={handleTodayClick}
+                  isCurrentDay={isCurrentDay}
+                  todayLabel={t('calendar.today')}
+                />
+                <CalendarGrid
+                  selectedDate={selectedDate}
+                  onDateSelect={setSelectedDate}
+                  getDayData={getDayData}
+                  weekDays={weekDays}
+                  workoutLabel={t('calendar.workout')}
+                  restLabel={t('calendar.rest')}
+                />
               </div>
             </div>
-            
+
             {/* Selected Day Details */}
             <div className="mt-6 lg:mt-0 lg:flex-1 lg:max-w-md">
-              {renderSelectedDayProgram()}
+              <SelectedDayPanel
+                programDays={selectedDayPrograms}
+                dayName={dayName}
+                onDaySelect={onDaySelect}
+                emptyMessage={t('calendar.noProgramForThisDay')}
+              />
             </div>
           </div>
         </div>
