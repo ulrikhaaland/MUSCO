@@ -56,10 +56,10 @@ export const DayCell = memo(function DayCell({
           <span
             className={`
               text-sm relative z-10
-              ${isToday
-                ? 'text-indigo-300 font-semibold'
-                : isSelected
-                  ? 'text-white font-semibold'
+              ${isSelected
+                ? 'text-white font-bold'
+                : isToday
+                  ? 'text-indigo-300 font-semibold'
                   : isCurrentMonth
                     ? hasProgramDay
                       ? 'text-gray-100'
