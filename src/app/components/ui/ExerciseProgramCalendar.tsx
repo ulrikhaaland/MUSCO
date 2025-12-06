@@ -339,7 +339,7 @@ export function ExerciseProgramCalendar({
 
     if (programDays.length === 0) {
       return (
-        <div className="mt-6 p-4 bg-gray-800/50 rounded-xl">
+        <div className="p-4 bg-gray-800/50 rounded-xl ring-1 ring-gray-700/50">
           <p className="text-gray-400 text-center">
             {t('calendar.noProgramForThisDay')}
           </p>
@@ -350,7 +350,7 @@ export function ExerciseProgramCalendar({
     // Format the date for display
 
     return (
-      <div className="mt-8 space-y-8">
+      <div className="space-y-6">
         {programDays.map((programDay, index) => (
           <div key={index} className="space-y-2">
             <ProgramDaySummaryComponent
@@ -378,15 +378,24 @@ export function ExerciseProgramCalendar({
   return (
     <div className="bg-gray-900 min-h-screen flex flex-col">
       <div className="flex-1">
-        <div className="max-w-2xl mx-auto px-4 pt-6 pb-24 md:pb-8">
-          <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-xl ring-1 ring-gray-700/50">
-            {renderHeader()}
-            <div className="p-4">
-              {renderWeekDays()}
-              {renderCalendarDays()}
+        <div className="max-w-6xl mx-auto px-4 pt-6 pb-24 md:pb-8">
+          {/* Desktop: horizontal layout, Mobile: vertical stack */}
+          <div className="flex flex-col lg:flex-row lg:gap-6 lg:items-start">
+            {/* Calendar - fixed width on desktop */}
+            <div className="lg:w-[480px] lg:flex-shrink-0">
+              <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-xl ring-1 ring-gray-700/50">
+                {renderHeader()}
+                <div className="p-4">
+                  {renderWeekDays()}
+                  {renderCalendarDays()}
+                </div>
+              </div>
+            </div>
+            {/* Selected day - fills remaining space on desktop */}
+            <div className="flex-1 mt-6 lg:mt-0">
+              {renderSelectedDayProgram()}
             </div>
           </div>
-          {renderSelectedDayProgram()}
         </div>
       </div>
     </div>
