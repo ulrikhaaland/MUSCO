@@ -339,7 +339,7 @@ export function ExerciseProgramCalendar({
 
     if (programDays.length === 0) {
       return (
-        <div className="p-4 bg-gray-800/50 rounded-xl ring-1 ring-gray-700/50">
+        <div className="p-4 bg-gray-800/50 rounded-xl h-full flex items-center justify-center">
           <p className="text-gray-400 text-center">
             {t('calendar.noProgramForThisDay')}
           </p>
@@ -347,12 +347,10 @@ export function ExerciseProgramCalendar({
       );
     }
 
-    // Format the date for display
-
     return (
-      <div className="space-y-6">
+      <div className="space-y-4">
         {programDays.map((programDay, index) => (
-          <div key={index} className="space-y-2">
+          <div key={index}>
             <ProgramDaySummaryComponent
               day={programDay.day}
               dayName={dayName(programDay.dayOfWeek)}
@@ -376,13 +374,13 @@ export function ExerciseProgramCalendar({
   };
 
   return (
-    <div className="bg-gray-900 min-h-screen flex flex-col">
-      <div className="flex-1">
-        <div className="max-w-6xl mx-auto px-4 pt-6 pb-24 md:pb-8">
-          {/* Desktop: horizontal layout, Mobile: vertical stack */}
-          <div className="flex flex-col lg:flex-row lg:gap-6 lg:items-start">
-            {/* Calendar - fixed width on desktop */}
-            <div className="lg:w-[480px] lg:flex-shrink-0">
+    <div className="flex-1 bg-gray-900 flex flex-col">
+      <div className="flex-1 px-4 pt-6 pb-24 md:pb-8">
+        {/* Mobile: stacked layout, Desktop: side-by-side */}
+        <div className="max-w-6xl mx-auto">
+          <div className="flex flex-col lg:flex-row lg:gap-8">
+            {/* Calendar */}
+            <div className="lg:flex-1 lg:max-w-2xl">
               <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-xl ring-1 ring-gray-700/50">
                 {renderHeader()}
                 <div className="p-4">
@@ -391,8 +389,9 @@ export function ExerciseProgramCalendar({
                 </div>
               </div>
             </div>
-            {/* Selected day - fills remaining space on desktop */}
-            <div className="flex-1 mt-6 lg:mt-0">
+            
+            {/* Selected Day Details */}
+            <div className="mt-6 lg:mt-0 lg:flex-1 lg:max-w-md">
               {renderSelectedDayProgram()}
             </div>
           </div>
