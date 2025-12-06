@@ -360,6 +360,7 @@ const translations = {
   'chat.template.buildProgram.label': 'Build an exercise program',
   'chat.template.buildProgram.question': 'Build an exercise program',
   'chat.template.buildProgram.description': 'Create a customized training plan',
+  'chat.askInChat': 'Ask in chat',
 
   // Profile - Sections
   'profile.sections.general': 'General',

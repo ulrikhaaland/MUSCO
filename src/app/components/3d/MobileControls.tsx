@@ -10,7 +10,6 @@ import {
 import { ChatMessages } from '../ui/ChatMessages';
 import { useChatContainer } from '@/app/hooks/useChatContainer';
 import { BodyPartGroup } from '@/app/config/bodyPartGroups';
-import { BottomSheetHeader } from './BottomSheetHeader';
 import { BottomSheetFooter } from './BottomSheetFooter';
 import MobileControlButtons from './MobileControlButtons';
 import { AnatomyPart } from '@/app/types/human';
@@ -147,7 +146,7 @@ export default function MobileControls({
   // no app-level refs needed here
 
   // Overlay-only height bookkeeping
-  const [overlayHeaderHeight, setOverlayHeaderHeight] = useState(0);
+  // Header is now merged into footer, so no separate header height needed
   const [overlayFooterHeight, setOverlayFooterHeight] = useState(0);
   const [overlayContentHeight, setOverlayContentHeight] = useState(0);
   
@@ -241,7 +240,7 @@ export default function MobileControls({
   useEffect(() => {
     const compute = () => {
       const total = getViewportHeight();
-      const next = Math.max(0, total - overlayHeaderHeight - overlayFooterHeight);
+      const next = Math.max(0, total - overlayFooterHeight);
       setOverlayContentHeight(next);
     };
 
@@ -250,7 +249,7 @@ export default function MobileControls({
     const onResize = () => compute();
     window.addEventListener('resize', onResize);
     return () => window.removeEventListener('resize', onResize);
-  }, [overlayOpen, overlayHeaderHeight, overlayFooterHeight]);
+  }, [overlayOpen, overlayFooterHeight]);
 
   // Track scroll position to preserve it when returning from questionnaire
   const scrollPositionRef = useRef<number>(0);
@@ -355,19 +354,6 @@ export default function MobileControls({
             }
           }}
         >
-          {/* Header */}
-          <div className="relative">
-          <BottomSheetHeader
-            isLoading={isLoading}
-            getGroupDisplayName={getGroupDisplayName}
-            getPartDisplayName={getPartDisplayName}
-            onNewChat={() => startNewChat()}
-            onHeightChange={(h) => setOverlayHeaderHeight(Math.max(0, h - 28))}
-            isMinimized={false}
-            onOpenHistory={() => setIsHistoryOpen(true)}
-          />
-          </div>
-
           {/* Content */}
           <div
             ref={scrollContainerRef}
@@ -392,12 +378,23 @@ export default function MobileControls({
                               question: template.question, 
                               chatMode: template.chatMode 
                             })}
-                          className="px-4 py-2 text-sm font-medium rounded-full bg-gray-800 text-white hover:bg-gray-700 active:bg-gray-600"
+                          className="px-4 py-2 text-sm font-medium rounded-full bg-[rgba(99,91,255,0.12)] border border-[rgba(99,91,255,0.35)] text-[#c8cbff] hover:bg-[rgba(99,91,255,0.2)] hover:border-[rgba(99,91,255,0.5)] active:bg-[rgba(99,91,255,0.25)] transition-colors duration-200"
                             title={template.description}
                         >
                             {template.label}
                         </button>
                         ))}
+                        {/* Ask in chat button */}
+                        <button
+                          type="button"
+                          onClick={() => textareaRef.current?.focus()}
+                          className="px-4 py-2 text-sm font-medium rounded-full bg-transparent border border-[rgba(99,91,255,0.35)] text-[#c8cbff] hover:bg-[rgba(99,91,255,0.12)] hover:border-[rgba(99,91,255,0.5)] active:bg-[rgba(99,91,255,0.2)] transition-colors duration-200 flex items-center gap-1.5"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                          </svg>
+                          {t('chat.askInChat')}
+                        </button>
                       </div>
                     </div>
                   )}
@@ -440,7 +437,7 @@ export default function MobileControls({
                 </div>
             </div>
 
-          {/* Footer */}
+          {/* Footer with merged header */}
           <div ref={overlayFooterRef}>
               <BottomSheetFooter
                 message={message}
@@ -450,6 +447,11 @@ export default function MobileControls({
                 handleOptionClick={handleOptionClick}
                 messagesCount={messages.length}
                 onClose={onCloseOverlay}
+                showHeaderContent={true}
+                title={getGroupDisplayName()}
+                subtitle={getPartDisplayName()}
+                onNewChat={() => startNewChat()}
+                onOpenHistory={() => setIsHistoryOpen(true)}
               />
           </div>
         </div>

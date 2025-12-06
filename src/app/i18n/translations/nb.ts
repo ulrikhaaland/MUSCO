@@ -323,6 +323,7 @@ const translations = {
   'chat.template.buildProgram.label': 'Bygg et treningsprogram',
   'chat.template.buildProgram.question': 'Bygg et treningsprogram',
   'chat.template.buildProgram.description': 'Lag en tilpasset treningsplan',
+  'chat.askInChat': 'Spør i chat',
 
   // Profile - Sections
   'profile.sections.general': 'Generelt',

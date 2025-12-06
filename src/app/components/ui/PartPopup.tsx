@@ -227,12 +227,23 @@ export default function PartPopup({
                   question: template.question, 
                   chatMode: template.chatMode 
                 })}
-                className="px-3 py-2 text-sm rounded-full bg-gray-800 text-white hover:bg-gray-700 transition-colors"
+                className="px-4 py-2 text-sm font-medium rounded-full bg-[rgba(99,91,255,0.12)] border border-[rgba(99,91,255,0.35)] text-[#c8cbff] hover:bg-[rgba(99,91,255,0.2)] hover:border-[rgba(99,91,255,0.5)] active:bg-[rgba(99,91,255,0.25)] transition-colors duration-200"
                 title={template.description}
               >
                 {template.label}
               </button>
             ))}
+            {/* Ask in chat button */}
+            <button
+              type="button"
+              onClick={() => textareaRef.current?.focus()}
+              className="px-4 py-2 text-sm font-medium rounded-full bg-transparent border border-[rgba(99,91,255,0.35)] text-[#c8cbff] hover:bg-[rgba(99,91,255,0.12)] hover:border-[rgba(99,91,255,0.5)] active:bg-[rgba(99,91,255,0.2)] transition-colors duration-200 flex items-center gap-1.5"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+              </svg>
+              {t('chat.askInChat')}
+            </button>
           </div>
         </div>
       )}
