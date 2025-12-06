@@ -358,8 +358,11 @@ export default function MobileControls({
           <div
             ref={scrollContainerRef}
             data-rsbs-scroll
-            className="flex-1 min-h-0 overflow-y-auto px-4 pt-1 pb-2 chat-scrollbar"
-            style={{ height: overlayContentHeight }}
+            className="flex-1 min-h-0 overflow-y-auto px-4 pb-2 chat-scrollbar"
+            style={{ 
+              height: overlayContentHeight,
+              paddingTop: 'max(1rem, env(safe-area-inset-top, 0px))' 
+            }}
             onWheel={(e) => e.stopPropagation()}
             onScroll={handleScroll}
           >

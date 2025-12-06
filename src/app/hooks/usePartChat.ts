@@ -141,6 +141,14 @@ export function usePartChat({
         return;
       }
 
+      // Check if this follow-up has a body part selection attached
+      if (question.selectBodyGroup && onBodyGroupSelected) {
+        console.log('[usePartChat] Follow-up has body group selection:', question.selectBodyGroup);
+        onBodyGroupSelected(question.selectBodyGroup);
+        setLocalFollowUpQuestions([]);
+        return;
+      }
+
       // Check if this is a program generation button
       // Primary check: backend-augmented fields
       if ((question as any).generate && (question as any).programType) {

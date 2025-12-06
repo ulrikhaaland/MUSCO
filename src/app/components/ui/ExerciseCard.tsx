@@ -257,13 +257,15 @@ export default function ExerciseCard({
             <Card.Section className="pt-4">
               {/* Exercise description */}
               {exercise.description && (
-                <div className="text-gray-50 leading-relaxed mb-4">
-                  {isDescriptionExpanded
-                    ? exercise.description
-                    : getTruncatedDescription(exercise.description)}
+                <div className="text-gray-300 text-sm leading-relaxed mb-4">
+                  <span className="text-gray-100">
+                    {isDescriptionExpanded
+                      ? exercise.description
+                      : getTruncatedDescription(exercise.description)}
+                  </span>
                   {exercise.description.length > 100 && (
                     <button
-                      className="ml-1 text-indigo-300 hover:text-indigo-200 text-sm font-medium"
+                      className="ml-2 text-indigo-400 hover:text-indigo-300 text-sm font-medium"
                       onClick={(e) => {
                         e.stopPropagation();
                         setIsDescriptionExpanded((prev) => !prev);
@@ -275,18 +277,26 @@ export default function ExerciseCard({
                 </div>
               )}
 
-              {exercise.modification && !isPlaceholderValue(exercise.modification) && (
-                <p className="text-yellow-200/90 text-sm leading-relaxed mb-4">
-                  <span className="font-medium">{t('program.modification')}</span>{' '}
-                  {exercise.modification}
-                </p>
-              )}
-
-              {exercise.precaution && !isPlaceholderValue(exercise.precaution) && (
-                <p className="text-red-400/90 text-sm leading-relaxed mb-4">
-                  <span className="font-medium">{t('program.precaution')}</span>{' '}
-                  {exercise.precaution}
-                </p>
+              {/* Tips section - modification and precaution grouped */}
+              {((!isPlaceholderValue(exercise.modification)) || (!isPlaceholderValue(exercise.precaution))) && (
+                <div className="bg-gray-800/50 rounded-lg p-3 mb-4 space-y-2">
+                  {exercise.modification && !isPlaceholderValue(exercise.modification) && (
+                    <div className="flex items-start gap-2">
+                      <span className="text-yellow-400 text-base flex-shrink-0 mt-0.5">⚙️</span>
+                      <p className="text-yellow-200/90 text-sm leading-relaxed">
+                        {exercise.modification}
+                      </p>
+                    </div>
+                  )}
+                  {exercise.precaution && !isPlaceholderValue(exercise.precaution) && (
+                    <div className="flex items-start gap-2">
+                      <span className="text-red-400 text-base flex-shrink-0 mt-0.5">⚠️</span>
+                      <p className="text-red-300/90 text-sm leading-relaxed">
+                        {exercise.precaution}
+                      </p>
+                    </div>
+                  )}
+                </div>
               )}
 
               {exercise.steps && exercise.steps.length > 0 && (

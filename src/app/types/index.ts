@@ -84,6 +84,7 @@ export interface Question {
   programType?: ProgramType;
   chatMode?: 'diagnosis' | 'explore';
   meta?: string;
+  selectBodyGroup?: string; // When set, clicking this follow-up selects the body group on the 3D model
 }
 
 export interface DiagnosisAssistantResponse {
