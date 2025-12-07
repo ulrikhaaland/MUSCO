@@ -1418,7 +1418,7 @@ export function ExerciseQuestionnaire({
                     </svg>
                     <div>
                       <p className="text-sm font-medium text-indigo-300 mb-1">{t('questionnaire.assessmentSummary')}</p>
-                      <p className="text-sm text-gray-300">{diagnosisText}</p>
+                      <p className="text-sm text-gray-300">{diagnosisText.charAt(0).toUpperCase() + diagnosisText.slice(1)}</p>
                     </div>
                   </div>
                 </div>

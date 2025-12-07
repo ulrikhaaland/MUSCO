@@ -511,7 +511,7 @@ const translations = {
     'Hjelp oss med å tilpasse treningsprogrammet ditt ved å svare på noen spørsmål',
   'questionnaire.recoveryDescription':
     'Hjelp oss lage et rehab‑program tilpasset dine behov ved å svare på noen spørsmål',
-  'questionnaire.assessmentSummary': 'Oppsummering av vurdering',
+  'questionnaire.assessmentSummary': 'Konklusjon av vurdering',
   'questionnaire.age': 'Hvor gammel er du?',
   'questionnaire.pastExercise': 'Hvor ofte har du trent det siste året?',
   'questionnaire.exerciseDays': 'Hvor mange dager i uken vil du trene?',
