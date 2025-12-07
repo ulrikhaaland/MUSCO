@@ -623,8 +623,8 @@ export default function HumanViewer({
 
   // Handler for body group selection from follow-up questions or assistant response
   // Uses the same findGroupByName utility as chat message badges for consistency
-  const handleBodyGroupSelected = useCallback((groupName: string) => {
-    console.log('[HumanViewer] Body group selection requested:', groupName);
+  const handleBodyGroupSelected = useCallback((groupName: string, keepChatOpen?: boolean) => {
+    console.log('[HumanViewer] Body group selection requested:', groupName, 'keepChatOpen:', keepChatOpen);
     
     // Find the group first to check if already selected
     const group = findGroupByName(groupName);
@@ -643,10 +643,13 @@ export default function HumanViewer({
       return;
     }
     
-    // Close the mobile chat overlay first so user sees the model
-    setIsChatOverlayOpen(false);
+    // Close the mobile chat overlay first so user sees the model (unless keepChatOpen is true)
+    if (!keepChatOpen) {
+      setIsChatOverlayOpen(false);
+    }
     
     // Delay selection so user sees the model before selection happens
+    const delay = keepChatOpen ? 0 : 200;
     setTimeout(() => {
       console.log('[HumanViewer] Selecting group:', targetGroup.name);
       setSelectedGroup(targetGroup, true);
@@ -661,13 +664,13 @@ export default function HumanViewer({
           console.error('[HumanViewer] Error zooming to group:', error);
         }
       }
-    }, 200);
+    }, delay);
   }, [setSelectedGroup, humanRef, selectedGroups]);
 
   // Handler for specific body part selection from follow-up questions or assistant response
   // Uses the same findBodyPartByName utility as chat message badges for consistency
-  const handleBodyPartSelected = useCallback((partName: string) => {
-    console.log('[HumanViewer] Body part selection requested:', partName);
+  const handleBodyPartSelected = useCallback((partName: string, keepChatOpen?: boolean) => {
+    console.log('[HumanViewer] Body part selection requested:', partName, 'keepChatOpen:', keepChatOpen);
     
     // Find the part first to check if already selected
     const result = findBodyPartByName(partName);
@@ -684,17 +687,21 @@ export default function HumanViewer({
       return;
     }
     
-    // Close the mobile chat overlay first so user sees the model
-    setIsChatOverlayOpen(false);
+    // Close the mobile chat overlay first so user sees the model (unless keepChatOpen is true)
+    if (!keepChatOpen) {
+      setIsChatOverlayOpen(false);
+    }
     
     // Delay selection so user sees the model before selection happens
+    const delay = keepChatOpen ? 0 : 200;
     setTimeout(() => {
       console.log('[HumanViewer] Selecting part:', part.name, 'in group:', group.name);
       
       // Only change group if different
       const currentGroup = selectedGroups[0];
       if (!currentGroup || currentGroup.id !== group.id) {
-        setSelectedGroup(group, true);
+        // Pass skipPartReset=true since we're setting the part ourselves
+        setSelectedGroup(group, true, true);
       }
       // Set the specific part
       setSelectedPart(part);
@@ -709,7 +716,7 @@ export default function HumanViewer({
           console.error('[HumanViewer] Error zooming to part:', error);
         }
       }
-    }, 200);
+    }, delay);
   }, [setSelectedGroup, setSelectedPart, humanRef, selectedGroups, selectedPart]);
 
   // Handler for program generation triggered from chat
@@ -1102,6 +1109,7 @@ export default function HumanViewer({
             programType={diagnosis?.programType ?? ProgramType.Exercise}
             targetAreas={selectedGroups}
             fullBody={false}
+            diagnosisText={diagnosis?.diagnosis}
           />
         </div>
       )}

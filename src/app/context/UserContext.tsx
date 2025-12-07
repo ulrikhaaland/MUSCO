@@ -343,6 +343,11 @@ export function UserProvider({ children }: { children: ReactNode }) {
       // OPTIMIZATION: First, quickly fetch only the active program for immediate display
       const loadActiveProgram = async () => {
         try {
+          // Skip if a questionnaire submission is in progress
+          if (submissionInProgressRef.current) {
+            return;
+          }
+
           // Query for active program first (fast path)
           const activeQuery = query(
             programsRef,
@@ -352,11 +357,21 @@ export function UserProvider({ children }: { children: ReactNode }) {
           );
           const activeSnapshot = await getDocs(activeQuery);
 
+          // Re-check after async operation
+          if (submissionInProgressRef.current) {
+            return;
+          }
+
           if (!activeSnapshot.empty) {
             const doc = activeSnapshot.docs[0];
             const data = doc.data();
             const userProgram = await fetchProgramWithWeeks(userId, doc.id, data);
             
+            // Re-check after async operation
+            if (submissionInProgressRef.current) {
+              return;
+            }
+
             if (userProgram) {
               console.log('⚡ Fast-loaded active program:', userProgram.title);
               prepareAndSetProgram(userProgram);
@@ -377,11 +392,21 @@ export function UserProvider({ children }: { children: ReactNode }) {
           );
           const recentSnapshot = await getDocs(recentQuery);
 
+          // Re-check after async operation
+          if (submissionInProgressRef.current) {
+            return;
+          }
+
           if (!recentSnapshot.empty) {
             const doc = recentSnapshot.docs[0];
             const data = doc.data();
             const userProgram = await fetchProgramWithWeeks(userId, doc.id, data);
             
+            // Re-check after async operation
+            if (submissionInProgressRef.current) {
+              return;
+            }
+
             if (userProgram) {
               console.log('⚡ Fast-loaded most recent program:', userProgram.title);
               prepareAndSetProgram(userProgram);
@@ -488,6 +513,11 @@ export function UserProvider({ children }: { children: ReactNode }) {
         // If initial load already done and not generating, skip heavy processing
         // The user will call loadUserPrograms() when they need all programs
         if (initialLoadDone) {
+          // Skip updates if a questionnaire submission is in progress
+          if (submissionInProgressRef.current) {
+            return;
+          }
+
           // Just check if we need to update the current program (e.g., new week added)
           const currentDocId = activeProgramIdRef.current;
           if (currentDocId) {
@@ -496,6 +526,12 @@ export function UserProvider({ children }: { children: ReactNode }) {
               const data = updatedDoc.data();
               // Check if program was updated (e.g., new week)
               const updatedProgram = await fetchProgramWithWeeks(userId, currentDocId, data);
+              
+              // Re-check after async operation
+              if (submissionInProgressRef.current) {
+                return;
+              }
+
               if (updatedProgram) {
                 prepareAndSetProgram(updatedProgram);
                 // Update in userPrograms array
@@ -515,12 +551,22 @@ export function UserProvider({ children }: { children: ReactNode }) {
         }
 
         // Full load only if fast load didn't work (fallback)
+        // Skip if a questionnaire submission is in progress
+        if (submissionInProgressRef.current) {
+          return;
+        }
+
         const programs: UserProgramWithId[] = [];
         let mostRecentProgram: UserProgramWithId | null = null;
         let mostRecentDate: Date | null = null;
         let foundActiveProgram: UserProgramWithId | null = null;
 
         for (const doc of snapshot.docs) {
+          // Check periodically during async loop
+          if (submissionInProgressRef.current) {
+            return;
+          }
+
           const data = doc.data();
 
           if (data.status === ProgramStatus.Done) {
@@ -539,6 +585,11 @@ export function UserProvider({ children }: { children: ReactNode }) {
               }
             }
           }
+        }
+
+        // Re-check after all async operations
+        if (submissionInProgressRef.current) {
+          return;
         }
 
         if (programs.length > 0) {
@@ -817,11 +868,14 @@ export function UserProvider({ children }: { children: ReactNode }) {
             setGeneratingDay(null);
             setGeneratedDays([1, 2, 3, 4, 5, 6, 7]);
             setProgramStatus(ProgramStatus.Done);
+            // Allow other program loads now that generation is complete
+            submissionInProgressRef.current = false;
           },
           onError: (error) => {
             console.error('[UserContext] Program generation error:', error);
             setProgramStatus(ProgramStatus.Error);
             setGeneratingDay(null);
+            submissionInProgressRef.current = false;
           },
         }
       ).then((programId) => {
@@ -832,9 +886,9 @@ export function UserProvider({ children }: { children: ReactNode }) {
       }).catch((error) => {
         console.error('[UserContext] Program submission error:', error);
         setProgramStatus(ProgramStatus.Error);
+        submissionInProgressRef.current = false;
       });
 
-      submissionInProgressRef.current = false;
       return {};
     } catch (error) {
       // logging removed

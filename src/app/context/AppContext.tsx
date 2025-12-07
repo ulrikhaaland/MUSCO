@@ -42,7 +42,8 @@ interface AppContextType {
   selectedPartRef: MutableRefObject<AnatomyPart | null>;
   setSelectedGroup: (
     group: BodyPartGroup | null,
-    isObjectSelection?: boolean
+    isObjectSelection?: boolean,
+    skipPartReset?: boolean
   ) => void;
   setSelectedPart: (part: AnatomyPart | null) => void;
   humanRef: MutableRefObject<HumanAPI | null>;
@@ -198,16 +199,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   // 3D model selection handlers
   const handleSetSelectedGroup = useCallback(
-    (group: BodyPartGroup | null, isObjectSelection: boolean = false) => {
+    (group: BodyPartGroup | null, isObjectSelection: boolean = false, skipPartReset: boolean = false) => {
       console.log('handleSetSelectedGroup called with:', {
         group,
         isObjectSelection,
+        skipPartReset,
         currentIntention: intentionRef.current,
       });
 
       if (!group) {
         setSelectedGroups([]);
-        setSelectedPart(null);
+        if (!skipPartReset) setSelectedPart(null);
         return;
       }
 
@@ -223,12 +225,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
           } else {
             // If clicking a different group, replace the current selection
             setSelectedGroups([group]);
-            setSelectedPart(null);
+            if (!skipPartReset) setSelectedPart(null);
           }
         } else {
           // For direct group selection (e.g., from UI), replace the current selection
           setSelectedGroups([group]);
-          setSelectedPart(null);
+          if (!skipPartReset) setSelectedPart(null);
         }
       } else if (intentionRef.current === ProgramIntention.None) {
         console.log('None intention - handling group selection');
@@ -241,12 +243,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
           } else {
             // If clicking a different group, replace the current selection
             setSelectedGroups([group]);
-            setSelectedPart(null);
+            if (!skipPartReset) setSelectedPart(null);
           }
         } else {
           // For direct group selection (e.g., from UI), replace the current selection
           setSelectedGroups([group]);
-          setSelectedPart(null);
+          if (!skipPartReset) setSelectedPart(null);
         }
       } else {
         console.log('No intention set - group selection ignored');

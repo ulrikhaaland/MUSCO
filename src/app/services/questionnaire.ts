@@ -8,6 +8,8 @@ import {
   serverTimestamp,
   query,
   getDocs,
+  where,
+  updateDoc,
 } from 'firebase/firestore';
 import { db } from '../firebase/config';
 import { DiagnosisAssistantResponse } from '../types';
@@ -94,21 +96,39 @@ export const submitQuestionnaireIncremental = async (
     }
   });
 
-  // Check for existing programs
   const programsRef = collection(db, `users/${userId}/programs`);
-  const existingProgramsQuery = query(programsRef);
-  const existingProgramsSnapshot = await getDocs(existingProgramsQuery);
-  const hasExistingPrograms = !existingProgramsSnapshot.empty;
+  const programType = diagnosis.programType;
 
-  // Create the program document
+  // Deactivate existing active programs of the same type
+  const existingActiveQuery = query(
+    programsRef,
+    where('type', '==', programType),
+    where('active', '==', true)
+  );
+  const existingActiveSnapshot = await getDocs(existingActiveQuery);
+
+  const deactivationPromises = existingActiveSnapshot.docs.map((docSnapshot) =>
+    updateDoc(doc(db, `users/${userId}/programs`, docSnapshot.id), {
+      active: false,
+    })
+  );
+  await Promise.all(deactivationPromises);
+
+  if (deactivationPromises.length > 0) {
+    console.log(
+      `[incremental] Deactivated ${deactivationPromises.length} existing ${programType} program(s)`
+    );
+  }
+
+  // Create the program document - always active since we deactivated others of same type
   const docRef = await addDoc(programsRef, {
     diagnosis,
     questionnaire: sanitizedQuestionnaire,
     status: ProgramStatus.Generating,
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
-    type: diagnosis.programType,
-    active: !hasExistingPrograms,
+    type: programType,
+    active: true,
   });
 
   console.log(`[incremental] Program document created: ${docRef.id}`);
@@ -163,30 +183,42 @@ export const submitQuestionnaire = async (
       }
     });
 
-    // Check if user already has existing programs
     const programsRef = collection(db, `users/${userId}/programs`);
-    const existingProgramsQuery = query(programsRef);
-    const existingProgramsSnapshot = await getDocs(existingProgramsQuery);
-    const hasExistingPrograms = !existingProgramsSnapshot.empty;
+    const programType = diagnosis.programType;
 
-    console.log(
-      `📊 User has ${existingProgramsSnapshot.size} existing programs when submitting questionnaire`
+    // Deactivate existing active programs of the same type
+    const existingActiveQuery = query(
+      programsRef,
+      where('type', '==', programType),
+      where('active', '==', true)
     );
+    const existingActiveSnapshot = await getDocs(existingActiveQuery);
 
-    // Use sanitized questionnaire in the Firestore document
+    const deactivationPromises = existingActiveSnapshot.docs.map((docSnapshot) =>
+      updateDoc(doc(db, `users/${userId}/programs`, docSnapshot.id), {
+        active: false,
+      })
+    );
+    await Promise.all(deactivationPromises);
+
+    if (deactivationPromises.length > 0) {
+      console.log(
+        `📊 Deactivated ${deactivationPromises.length} existing ${programType} program(s)`
+      );
+    }
+
+    // Use sanitized questionnaire in the Firestore document - always active since we deactivated others of same type
     const docRef = await addDoc(programsRef, {
       diagnosis,
       questionnaire: sanitizedQuestionnaire,
       status: ProgramStatus.Generating,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
-      type: diagnosis.programType,
-      active: !hasExistingPrograms, // Only set as active if user has no existing programs
+      type: programType,
+      active: true,
     });
 
-    console.log(
-      `📋 New program created with active status: ${!hasExistingPrograms} (reason: ${hasExistingPrograms ? 'User has existing programs' : 'First program for user'})`
-    );
+    console.log(`📋 New ${programType} program created with active status: true`);
 
     // Start program generation
     try {

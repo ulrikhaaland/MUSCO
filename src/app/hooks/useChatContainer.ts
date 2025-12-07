@@ -15,8 +15,8 @@ interface UseChatContainerProps {
   selectedGroups: BodyPartGroup[];
   forceMode?: 'diagnosis' | 'explore';
   onGenerateProgram?: (programType: ProgramType) => void;
-  onBodyGroupSelected?: (groupName: string) => void;
-  onBodyPartSelected?: (partName: string) => void;
+  onBodyGroupSelected?: (groupName: string, keepChatOpen?: boolean) => void;
+  onBodyPartSelected?: (partName: string, keepChatOpen?: boolean) => void;
 }
 
 /**

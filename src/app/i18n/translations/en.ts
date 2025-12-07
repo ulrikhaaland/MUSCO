@@ -542,6 +542,7 @@ const translations = {
     'Help us customize your exercise program by answering a few questions',
   'questionnaire.recoveryDescription':
     'Help us create a recovery program tailored to your needs by answering a few questions',
+  'questionnaire.assessmentSummary': 'Assessment Summary',
   'questionnaire.age': 'How old are you?',
   'questionnaire.pastExercise':
     'How often have you exercised in the past year?',

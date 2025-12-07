@@ -17,8 +17,8 @@ interface PartPopupProps {
   onQuestionClick?: (question: Question) => void;
   forceMode?: 'diagnosis' | 'explore';
   onGenerateProgram?: (programType: ProgramType) => void;
-  onBodyGroupSelected?: (groupName: string) => void;
-  onBodyPartSelected?: (partName: string) => void;
+  onBodyGroupSelected?: (groupName: string, keepChatOpen?: boolean) => void;
+  onBodyPartSelected?: (partName: string, keepChatOpen?: boolean) => void;
 }
 
 export default function PartPopup({
@@ -35,10 +35,11 @@ export default function PartPopup({
   
   // Handler for body part click from chat - selects both the group and the part
   const handleBodyPartClick = (clickedPart: AnatomyPart, group: BodyPartGroup) => {
-    // Only change group if it's different (setSelectedGroup clears selectedPart)
+    // Only change group if it's different
     const currentGroup = selectedGroups[0];
     if (!currentGroup || currentGroup.id !== group.id) {
-      setSelectedGroup(group, true);
+      // Pass skipPartReset=true since we're setting the part ourselves
+      setSelectedGroup(group, true, true);
     }
     // Set the specific part
     setSelectedPart(clickedPart);

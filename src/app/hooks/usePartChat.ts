@@ -36,8 +36,8 @@ export interface UsePartChatProps {
     programType: ProgramType,
     diagnosisData?: DiagnosisAssistantResponse | null
   ) => void;
-  onBodyGroupSelected?: (groupName: string) => void;
-  onBodyPartSelected?: (partName: string) => void;
+  onBodyGroupSelected?: (groupName: string, keepChatOpen?: boolean) => void;
+  onBodyPartSelected?: (partName: string, keepChatOpen?: boolean) => void;
   textareaRef?: RefObject<HTMLTextAreaElement>;
 }
 
@@ -145,7 +145,9 @@ export function usePartChat({
       // Select the part AND continue to send the message
       if (question.selectBodyPart && onBodyPartSelected) {
         console.log('[usePartChat] Follow-up has body part selection:', question.selectBodyPart);
-        onBodyPartSelected(question.selectBodyPart);
+        // In diagnosis mode, keep the chat open so the conversation can continue
+        const isDiagnosisMode = (question as any).chatMode === 'diagnosis' || chatMode === 'diagnosis';
+        onBodyPartSelected(question.selectBodyPart, isDiagnosisMode);
         // Don't return - continue to send the message so the conversation proceeds
       }
 
@@ -153,7 +155,9 @@ export function usePartChat({
       // Select the group AND continue to send the message
       if (question.selectBodyGroup && onBodyGroupSelected) {
         console.log('[usePartChat] Follow-up has body group selection:', question.selectBodyGroup);
-        onBodyGroupSelected(question.selectBodyGroup);
+        // In diagnosis mode, keep the chat open so the conversation can continue
+        const isDiagnosisMode = (question as any).chatMode === 'diagnosis' || chatMode === 'diagnosis';
+        onBodyGroupSelected(question.selectBodyGroup, isDiagnosisMode);
         // Don't return - continue to send the message so the conversation proceeds
       }
 

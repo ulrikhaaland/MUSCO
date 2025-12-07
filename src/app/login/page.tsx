@@ -19,37 +19,32 @@ function LoginPageContent() {
   }, [searchParams]);
 
   const handleSkip = () => {
-    // If user just logged out or deleted account, always go home
-    const justLoggedOut = typeof window !== 'undefined' && window.sessionStorage.getItem('justLoggedOut');
-    const accountDeleted = typeof window !== 'undefined' && window.sessionStorage.getItem('accountDeleted');
-    if (justLoggedOut || accountDeleted) {
-      window.sessionStorage.removeItem('justLoggedOut');
-      window.sessionStorage.removeItem('accountDeleted');
-      router.push('/');
-      return;
-    }
+    // Clean up any logout/delete flags
+    window.sessionStorage.removeItem('justLoggedOut');
+    window.sessionStorage.removeItem('accountDeleted');
 
-    // Prefer same-origin referrer to avoid leaving the app
-    if (typeof document !== 'undefined' && document.referrer) {
-      try {
-        const ref = new URL(document.referrer);
-        if (ref.origin === window.location.origin && !ref.pathname.startsWith('/login')) {
-          const path = `${ref.pathname}${ref.search}${ref.hash}`;
-          router.push(path);
-          return;
+    // Only try to go back if user was in a save context (trying to save a program)
+    if (isSaveContext) {
+      // Prefer same-origin referrer
+      if (document.referrer) {
+        try {
+          const ref = new URL(document.referrer);
+          if (ref.origin === window.location.origin && !ref.pathname.startsWith('/login')) {
+            router.push(`${ref.pathname}${ref.search}${ref.hash}`);
+            return;
+          }
+        } catch {
+          // ignore URL parse errors
         }
-      } catch {
-        // ignore URL parse errors
+      }
+      // Fall back to browser history
+      if (window.history.length > 1) {
+        router.back();
+        return;
       }
     }
 
-    // Then try browser history
-    if (typeof window !== 'undefined' && window.history.length > 1) {
-      router.back();
-      return;
-    }
-
-    // Final fallback
+    // Default: go to root
     router.push('/');
   };
   

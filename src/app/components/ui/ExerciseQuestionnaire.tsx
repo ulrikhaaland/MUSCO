@@ -46,6 +46,8 @@ interface ExerciseQuestionnaireProps {
   onProgramTypeChange?: (type: ProgramType) => void;
   targetAreas: BodyPartGroup[];
   fullBody: boolean;
+  /** Diagnosis text from the chat assessment (displayed below subtitle) */
+  diagnosisText?: string | null;
 }
 
 // Map composite pain areas to their individual parts
@@ -182,6 +184,7 @@ export function ExerciseQuestionnaire({
   onProgramTypeChange,
   targetAreas,
   fullBody,
+  diagnosisText,
 }: ExerciseQuestionnaireProps) {
   const { t } = useTranslation();
   const { answers: storedAnswers, activeProgram } = useUser();
@@ -1405,6 +1408,21 @@ export function ExerciseQuestionnaire({
                   ? t('questionnaire.exerciseDescription')
                   : t('questionnaire.recoveryDescription')}
               </p>
+              
+              {/* Display diagnosis from chat assessment */}
+              {diagnosisText && (
+                <div className="mt-6 mx-auto max-w-2xl p-4 rounded-xl bg-indigo-500/10 ring-1 ring-indigo-500/30 text-left">
+                  <div className="flex items-start gap-3">
+                    <svg className="w-5 h-5 text-indigo-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <div>
+                      <p className="text-sm font-medium text-indigo-300 mb-1">{t('questionnaire.assessmentSummary')}</p>
+                      <p className="text-sm text-gray-300">{diagnosisText}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </RevealOnScroll>
 

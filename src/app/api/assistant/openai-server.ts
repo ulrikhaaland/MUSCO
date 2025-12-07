@@ -833,6 +833,31 @@ FAILURE TO FOLLOW THE ABOVE INSTRUCTIONS EXACTLY WILL RESULT IN POOR USER EXPERI
         // Atomically add the new week document and mark the parent program as Done
         const batch = adminDb.batch();
 
+        // Deactivate other programs of the same type before setting this one as active
+        const programType = context.diagnosisData.programType;
+        if (programType) {
+          const otherActiveProgramsQuery = adminDb
+            .collection('users')
+            .doc(context.userId)
+            .collection('programs')
+            .where('active', '==', true)
+            .where('type', '==', programType);
+
+          const otherActiveProgramsSnapshot =
+            await otherActiveProgramsQuery.get();
+          otherActiveProgramsSnapshot.forEach((doc) => {
+            if (doc.id !== context.programId) {
+              batch.update(doc.ref, {
+                active: false,
+                updatedAt: new Date().toISOString(),
+              });
+              console.log(
+                `[follow-up] Deactivating program ${doc.id} of type ${programType}`
+              );
+            }
+          });
+        }
+
         // Extract fields that belong to UserProgram level vs weekly program level
         const { timeFrame, title, days, ...programMetadata } = program as any;
 
