@@ -142,19 +142,19 @@ export function usePartChat({
       }
 
       // Check if this follow-up has a specific body part selection attached
+      // Select the part AND continue to send the message
       if (question.selectBodyPart && onBodyPartSelected) {
         console.log('[usePartChat] Follow-up has body part selection:', question.selectBodyPart);
         onBodyPartSelected(question.selectBodyPart);
-        setLocalFollowUpQuestions([]);
-        return;
+        // Don't return - continue to send the message so the conversation proceeds
       }
 
       // Check if this follow-up has a body group selection attached
+      // Select the group AND continue to send the message
       if (question.selectBodyGroup && onBodyGroupSelected) {
         console.log('[usePartChat] Follow-up has body group selection:', question.selectBodyGroup);
         onBodyGroupSelected(question.selectBodyGroup);
-        setLocalFollowUpQuestions([]);
-        return;
+        // Don't return - continue to send the message so the conversation proceeds
       }
 
       // Check if this is a program generation button

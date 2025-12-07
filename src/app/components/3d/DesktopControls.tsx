@@ -8,6 +8,7 @@ import InfoIcon from '@mui/icons-material/Info';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import { Gender } from '../../types';
 import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from '@/app/i18n';
 
 interface DesktopControlsProps {
   isRotating: boolean;
@@ -38,6 +39,7 @@ export default function DesktopControls({
   explainerEnabled,
   onToggleExplainer,
 }: DesktopControlsProps) {
+  const { t } = useTranslation();
   const [showLabels, setShowLabels] = useState(true);
   useEffect(() => {
     const timer = setTimeout(() => setShowLabels(false), 4000);
@@ -78,7 +80,7 @@ export default function DesktopControls({
       >
         <CropRotateIcon className={`h-5 w-5 ${isRotating ? 'animate-spin' : ''}`} />
         <span className={`${labelBase} ${showLabels ? expanded : collapsed}`}>
-          {isRotating ? 'Rotating...' : 'Rotate Model'}
+          {isRotating ? t('desktopControls.rotating') : t('desktopControls.rotateModel')}
         </span>
       </button>
 
@@ -91,7 +93,7 @@ export default function DesktopControls({
       >
         <RestartAltIcon className={`h-5 w-5 ${isResetting ? 'animate-spin' : ''}`} />
         <span className={`${labelBase} ${showLabels ? expanded : collapsed}`}>
-          {isResetting ? 'Resetting...' : 'Reset View'}
+          {isResetting ? t('desktopControls.resetting') : t('desktopControls.resetView')}
         </span>
       </button>
 
@@ -107,7 +109,7 @@ export default function DesktopControls({
             <InfoOutlinedIcon className="h-5 w-5" />
           )}
           <span className={`${labelBase} ${showLabels ? expanded : collapsed}`}>
-            {explainerEnabled ? 'Explainer On' : 'Explainer Off'}
+            {explainerEnabled ? t('desktopControls.explainerOn') : t('desktopControls.explainerOff')}
           </span>
         </button>
       )}
@@ -125,7 +127,7 @@ export default function DesktopControls({
           <FemaleIcon className={`h-5 w-5 ${isChangingModel ? 'animate-spin' : ''}`} />
         )}
         <span className={`${labelBase} ${showLabels ? expanded : collapsed}`}>
-          {isChangingModel ? 'Loading...' : `Switch to ${currentGender === 'male' ? 'Female' : 'Male'}`}
+          {isChangingModel ? t('desktopControls.loading') : t(currentGender === 'male' ? 'desktopControls.switchToFemale' : 'desktopControls.switchToMale')}
         </span>
       </button>
     </div>

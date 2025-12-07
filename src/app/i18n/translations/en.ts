@@ -300,6 +300,17 @@ const translations = {
   'mobile.chat.selectBodyPart': 'Select a body part',
   'mobile.chat.tapToStart': 'Tap on the model to get started',
 
+  // Desktop Controls
+  'desktopControls.rotateModel': 'Rotate Model',
+  'desktopControls.rotating': 'Rotating...',
+  'desktopControls.resetView': 'Reset View',
+  'desktopControls.resetting': 'Resetting...',
+  'desktopControls.explainerOn': 'Explainer On',
+  'desktopControls.explainerOff': 'Explainer Off',
+  'desktopControls.switchToFemale': 'Switch to Female',
+  'desktopControls.switchToMale': 'Switch to Male',
+  'desktopControls.loading': 'Loading...',
+
   // BottomSheet Components
   'bottomSheet.resetChat': 'Reset Chat',
   'bottomSheet.chatHistory': 'Chat history',
@@ -491,8 +502,11 @@ const translations = {
   'program.seeLess': 'See less',
   'program.viewInstructions': 'View instructions',
   'program.hideInstructions': 'Hide instructions',
-  'program.modification': 'Modification:',
-  'program.precaution': 'Precaution:',
+  'program.description': 'Description',
+  'program.instructions': 'Instructions',
+  'program.tips': 'Tips',
+  'program.modification': 'Modification',
+  'program.precaution': 'Precaution',
 
   // Exercise Selection
   'exerciseSelection.targetAreas': 'Target Areas',

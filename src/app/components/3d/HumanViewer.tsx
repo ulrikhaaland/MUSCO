@@ -626,75 +626,91 @@ export default function HumanViewer({
   const handleBodyGroupSelected = useCallback((groupName: string) => {
     console.log('[HumanViewer] Body group selection requested:', groupName);
     
+    // Find the group first to check if already selected
+    const group = findGroupByName(groupName);
+    const legacyConfigKey = !group ? BODY_GROUP_NAME_TO_CONFIG[groupName] : null;
+    const targetGroup = group || (legacyConfigKey ? bodyPartGroups[legacyConfigKey] : null);
+    
+    if (!targetGroup) {
+      console.warn('[HumanViewer] No mapping found for body group:', groupName);
+      return;
+    }
+    
+    // Early return if this group is already selected
+    const currentGroup = selectedGroups[0];
+    if (currentGroup?.id === targetGroup.id) {
+      console.log('[HumanViewer] Group already selected, skipping:', targetGroup.name);
+      return;
+    }
+    
     // Close the mobile chat overlay first so user sees the model
     setIsChatOverlayOpen(false);
     
     // Delay selection so user sees the model before selection happens
     setTimeout(() => {
-      // Use shared utility for fuzzy matching (same as chat badges)
-      const group = findGroupByName(groupName);
-      if (group) {
-        console.log('[HumanViewer] Found group:', group.name);
-        setSelectedGroup(group);
-        // Zoom to the group using the HumanAPI
-        if (humanRef?.current && group.zoomId) {
-          try {
-            humanRef.current.send('camera.set', {
-              objectId: group.zoomId,
-            });
-          } catch (error) {
-            console.error('[HumanViewer] Error zooming to group:', error);
-          }
-        }
-      } else {
-        // Fallback to legacy mapping for backwards compatibility
-        const configKey = BODY_GROUP_NAME_TO_CONFIG[groupName];
-        if (configKey && bodyPartGroups[configKey]) {
-          const legacyGroup = bodyPartGroups[configKey];
-          console.log('[HumanViewer] Using legacy mapping:', configKey);
-          setSelectedGroup(legacyGroup);
-        } else {
-          console.warn('[HumanViewer] No mapping found for body group:', groupName);
+      console.log('[HumanViewer] Selecting group:', targetGroup.name);
+      setSelectedGroup(targetGroup, true);
+      
+      // Zoom to the group using the HumanAPI
+      if (humanRef?.current && targetGroup.zoomId) {
+        try {
+          humanRef.current.send('camera.set', {
+            objectId: targetGroup.zoomId,
+          });
+        } catch (error) {
+          console.error('[HumanViewer] Error zooming to group:', error);
         }
       }
     }, 200);
-  }, [setSelectedGroup, humanRef]);
+  }, [setSelectedGroup, humanRef, selectedGroups]);
 
   // Handler for specific body part selection from follow-up questions or assistant response
   // Uses the same findBodyPartByName utility as chat message badges for consistency
   const handleBodyPartSelected = useCallback((partName: string) => {
     console.log('[HumanViewer] Body part selection requested:', partName);
     
+    // Find the part first to check if already selected
+    const result = findBodyPartByName(partName);
+    if (!result) {
+      console.warn('[HumanViewer] No mapping found for body part:', partName);
+      return;
+    }
+    
+    const { part, group } = result;
+    
+    // Early return if this exact part is already selected
+    if (selectedPart?.objectId === part.objectId) {
+      console.log('[HumanViewer] Part already selected, skipping:', part.name);
+      return;
+    }
+    
     // Close the mobile chat overlay first so user sees the model
     setIsChatOverlayOpen(false);
     
     // Delay selection so user sees the model before selection happens
     setTimeout(() => {
-      // Use shared utility for fuzzy matching (same as chat badges)
-      const result = findBodyPartByName(partName);
-      if (result) {
-        const { part, group } = result;
-        console.log('[HumanViewer] Found part:', part.name, 'in group:', group.name);
-        
-        // Select the group first (if different), then the part
-        setSelectedGroup(group);
-        setSelectedPart(part);
-        
-        // Zoom to the part using the HumanAPI
-        if (humanRef?.current && part.objectId) {
-          try {
-            humanRef.current.send('camera.set', {
-              objectId: part.objectId,
-            });
-          } catch (error) {
-            console.error('[HumanViewer] Error zooming to part:', error);
-          }
+      console.log('[HumanViewer] Selecting part:', part.name, 'in group:', group.name);
+      
+      // Only change group if different
+      const currentGroup = selectedGroups[0];
+      if (!currentGroup || currentGroup.id !== group.id) {
+        setSelectedGroup(group, true);
+      }
+      // Set the specific part
+      setSelectedPart(part);
+      
+      // Zoom to the part using the HumanAPI
+      if (humanRef?.current && part.objectId) {
+        try {
+          humanRef.current.send('camera.set', {
+            objectId: part.objectId,
+          });
+        } catch (error) {
+          console.error('[HumanViewer] Error zooming to part:', error);
         }
-      } else {
-        console.warn('[HumanViewer] No mapping found for body part:', partName);
       }
     }, 200);
-  }, [setSelectedGroup, setSelectedPart, humanRef]);
+  }, [setSelectedGroup, setSelectedPart, humanRef, selectedGroups, selectedPart]);
 
   // Handler for program generation triggered from chat
   const handleGenerateProgram = useCallback((programType: ProgramType, diagnosisData?: DiagnosisAssistantResponse | null) => {

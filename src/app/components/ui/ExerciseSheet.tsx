@@ -99,7 +99,7 @@ export function ExerciseSheet({
             {/* Description */}
             {exercise.description && (
               <div>
-                <h4 className="text-indigo-300 font-medium mb-2 text-sm">Description</h4>
+                <h4 className="text-indigo-300 font-medium mb-2 text-sm">{t('program.description')}</h4>
                 <p className="text-gray-300 leading-relaxed text-sm">{exercise.description}</p>
               </div>
             )}
@@ -107,7 +107,7 @@ export function ExerciseSheet({
             {/* Steps */}
             {exercise.steps && exercise.steps.length > 0 && (
               <div>
-                <h4 className="text-indigo-300 font-medium mb-2 text-sm">Instructions</h4>
+                <h4 className="text-indigo-300 font-medium mb-2 text-sm">{t('program.instructions')}</h4>
                 <div className="space-y-2 text-gray-300 text-sm">
                   {exercise.steps.map((step, idx) => (
                     <div key={idx} className="leading-relaxed">{idx + 1}. {step}</div>
@@ -119,7 +119,7 @@ export function ExerciseSheet({
             {/* Tips */}
             {exercise.tips && exercise.tips.length > 0 && (
               <div>
-                <h4 className="text-yellow-300 font-medium mb-2 text-sm">Tips</h4>
+                <h4 className="text-yellow-300 font-medium mb-2 text-sm">{t('program.tips')}</h4>
                 <div className="space-y-2 text-gray-300 text-sm">
                   {exercise.tips.map((tip, idx) => (
                     <div key={idx} className="leading-relaxed">• {tip}</div>

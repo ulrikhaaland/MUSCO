@@ -262,6 +262,17 @@ const translations = {
   'mobile.chat.selectBodyPart': 'Velg en kroppsdel',
   'mobile.chat.tapToStart': 'Trykk på modellen for å komme i gang',
 
+  // Desktop Controls
+  'desktopControls.rotateModel': 'Roter modell',
+  'desktopControls.rotating': 'Roterer...',
+  'desktopControls.resetView': 'Tilbakestill visning',
+  'desktopControls.resetting': 'Tilbakestiller...',
+  'desktopControls.explainerOn': 'Forklaring på',
+  'desktopControls.explainerOff': 'Forklaring av',
+  'desktopControls.switchToFemale': 'Bytt til kvinne',
+  'desktopControls.switchToMale': 'Bytt til mann',
+  'desktopControls.loading': 'Laster...',
+
   // BottomSheet Components
   'bottomSheet.resetChat': 'Tilbakestill Chat',
   'bottomSheet.chatHistory': 'Chathistorikk',
@@ -458,8 +469,11 @@ const translations = {
   'program.seeLess': 'Se mindre',
   'program.viewInstructions': 'Vis instruksjoner',
   'program.hideInstructions': 'Skjul instruksjoner',
-  'program.modification': 'Modifikasjon:',
-  'program.precaution': 'Forholdsregel:',
+  'program.description': 'Beskrivelse',
+  'program.instructions': 'Instruksjoner',
+  'program.tips': 'Tips',
+  'program.modification': 'Modifikasjon',
+  'program.precaution': 'Forholdsregel',
   'program.rest': '{{seconds}}s hvile',
   'program.dayAccessibility': 'Tilgjengelighetsinformasjon for dag {{day}}',
 

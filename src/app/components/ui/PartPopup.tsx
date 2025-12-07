@@ -151,7 +151,7 @@ export default function PartPopup({
   };
 
   return (
-    <div className="h-full bg-gray-900 text-white p-6 flex flex-col">
+    <div className="h-full bg-gray-900 text-white p-6 flex flex-col relative" id="part-popup-container">
       <div className="flex justify-between items-start mb-6 flex-shrink-0">
         <div className="w-full">
           <h2 className="text-sm text-gray-400 mb-1">
@@ -215,8 +215,8 @@ export default function PartPopup({
       {/* Global Template Questions (when no body part selected and no messages) */}
       {messages.length === 0 && groups.length === 0 && !isLoading && (
         <div className="mb-4 rounded-lg border border-gray-800 bg-gray-900/60 p-4">
-          <div className="text-base text-white mb-2">Start a chat or select a specific part</div>
-          <div className="text-sm text-gray-400 mb-3">Ask anything about pain, recovery or training.</div>
+          <div className="text-base text-white mb-2">{t('mobile.chat.startOrSelect')}</div>
+          <div className="text-sm text-gray-400 mb-3">{t('mobile.chat.askAnything')}</div>
           <div className="flex flex-wrap gap-2">
             {globalTemplateQuestions.map((template) => (
               <button

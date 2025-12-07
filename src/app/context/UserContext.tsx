@@ -699,6 +699,20 @@ export function UserProvider({ children }: { children: ReactNode }) {
     submissionInProgressRef.current = true;
 
     try {
+      // Clear pending questionnaire data to prevent duplicate submissions
+      window.localStorage.removeItem('hasPendingQuestionnaire');
+      window.localStorage.removeItem('pendingQuestionnaireEmail');
+      window.sessionStorage.removeItem('pendingDiagnosis');
+      window.sessionStorage.removeItem('pendingAnswers');
+
+      // Navigate FIRST - before state updates that would trigger expensive re-renders
+      // of other components (like the 3D HumanViewer) that subscribe to UserContext
+      router.push('/program');
+
+      // Defer state updates to next tick so navigation starts immediately
+      // This prevents the 3D viewer from re-rendering while we're still on that page
+      await new Promise(resolve => setTimeout(resolve, 0));
+
       // Clear existing program state
       setActiveProgram(null);
       
@@ -735,16 +749,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
       setProgramStatus(ProgramStatus.Generating);
 
       // loader removed
-
-      // Clear pending questionnaire data to prevent duplicate submissions
-      window.localStorage.removeItem('hasPendingQuestionnaire');
-      window.localStorage.removeItem('pendingQuestionnaireEmail');
-      window.sessionStorage.removeItem('pendingDiagnosis');
-      window.sessionStorage.removeItem('pendingAnswers');
       setPendingQuestionnaire(null);
-
-      // Navigate immediately - don't wait for Firebase operations
-      router.push('/program');
 
       //remove neck from answers.targetAreas
       if (diagnosis.programType === ProgramType.Exercise || diagnosis.programType === ProgramType.ExerciseAndRecovery) {
