@@ -348,11 +348,12 @@ export function UserProvider({ children }: { children: ReactNode }) {
             return;
           }
 
-          // Query for active program first (fast path)
+          // Query for most recent active program (fast path)
           const activeQuery = query(
             programsRef,
             where('active', '==', true),
             where('status', '==', ProgramStatus.Done),
+            orderBy('updatedAt', 'desc'),
             limit(1)
           );
           const activeSnapshot = await getDocs(activeQuery);
@@ -559,7 +560,8 @@ export function UserProvider({ children }: { children: ReactNode }) {
         const programs: UserProgramWithId[] = [];
         let mostRecentProgram: UserProgramWithId | null = null;
         let mostRecentDate: Date | null = null;
-        let foundActiveProgram: UserProgramWithId | null = null;
+        let mostRecentActiveProgram: UserProgramWithId | null = null;
+        let mostRecentActiveDate: Date | null = null;
 
         for (const doc of snapshot.docs) {
           // Check periodically during async loop
@@ -580,8 +582,12 @@ export function UserProvider({ children }: { children: ReactNode }) {
                 mostRecentProgram = userProgram;
               }
 
+              // Track most recent active program (not just any active program)
               if (data.active === true) {
-                foundActiveProgram = userProgram;
+                if (!mostRecentActiveDate || updatedAt.getTime() > mostRecentActiveDate.getTime()) {
+                  mostRecentActiveDate = updatedAt;
+                  mostRecentActiveProgram = userProgram;
+                }
               }
             }
           }
@@ -596,7 +602,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
           setUserPrograms(programs);
         }
 
-        const programToDisplay = foundActiveProgram || mostRecentProgram;
+        const programToDisplay = mostRecentActiveProgram || mostRecentProgram;
 
         if (programToDisplay) {
           const previousActiveProgramId = activeProgramIdRef.current;
