@@ -215,6 +215,191 @@ function DragOverlayContent({ day, t }: DragOverlayContentProps) {
   );
 }
 
+// Helper function to get the day short name with translations (moved outside component)
+function getDayShortName(dayOfWeek: number, t: (key: string) => string): string {
+  const days = [
+    t('exerciseProgram.dayAbbr.mon'),
+    t('exerciseProgram.dayAbbr.tue'),
+    t('exerciseProgram.dayAbbr.wed'),
+    t('exerciseProgram.dayAbbr.thu'),
+    t('exerciseProgram.dayAbbr.fri'),
+    t('exerciseProgram.dayAbbr.sat'),
+    t('exerciseProgram.dayAbbr.sun'),
+  ];
+  return days[dayOfWeek - 1];
+}
+
+// Helper function to get the translated month abbreviation (moved outside component)
+function getMonthAbbreviation(month: number, t: (key: string) => string): string {
+  const months = [
+    t('month.jan'),
+    t('month.feb'),
+    t('month.mar'),
+    t('month.apr'),
+    t('month.may'),
+    t('month.jun'),
+    t('month.jul'),
+    t('month.aug'),
+    t('month.sep'),
+    t('month.oct'),
+    t('month.nov'),
+    t('month.dec'),
+  ];
+  return months[month];
+}
+
+// Props for the DayTabsWithDnd component
+interface DayTabsWithDndProps {
+  days: ProgramDay[];
+  generatedDays: number[];
+  generatingDay: number | null;
+  expandedDays: number[];
+  activeDragId: string | null;
+  overDragId: string | null;
+  isDragEnabled: boolean;
+  sensors: ReturnType<typeof useSensors>;
+  onDragStart: (event: DragStartEvent) => void;
+  onDragOver: (event: DragOverEvent) => void;
+  onDragEnd: (event: DragEndEvent) => void;
+  onDayClick: (dayNumber: number) => void;
+  t: (key: string) => string;
+}
+
+// Extracted component for Day Tabs with Drag-and-Drop (used in both multi-week and single-week views)
+function DayTabsWithDnd({
+  days,
+  generatedDays,
+  generatingDay,
+  expandedDays,
+  activeDragId,
+  overDragId,
+  isDragEnabled,
+  sensors,
+  onDragStart,
+  onDragOver,
+  onDragEnd,
+  onDayClick,
+  t,
+}: DayTabsWithDndProps) {
+  const sortedDays = [...days].sort((a, b) => a.day - b.day);
+  
+  return (
+    <DndContext
+      sensors={sensors}
+      collisionDetection={closestCenter}
+      onDragStart={onDragStart}
+      onDragOver={onDragOver}
+      onDragEnd={onDragEnd}
+    >
+      <SortableContext
+        items={sortedDays.map((d) => `day-${d.day}`)}
+        strategy={horizontalListSortingStrategy}
+      >
+        <div className="grid grid-cols-7 gap-1.5">
+          {sortedDays.map((day) => {
+            const isDayGenerated = generatedDays.includes(day.day);
+            const isDayGenerating = generatingDay === day.day;
+            const isSelected = expandedDays.includes(day.day);
+            const isDropTarget = overDragId === `day-${day.day}` && activeDragId !== `day-${day.day}`;
+            
+            return (
+              <SortableDayTab
+                key={day.day}
+                id={`day-${day.day}`}
+                day={day}
+                dayShortName={getDayShortName(day.day, t)}
+                isSelected={isSelected}
+                isDayGenerated={isDayGenerated}
+                isDayGenerating={isDayGenerating}
+                isDragEnabled={isDragEnabled}
+                isDropTarget={isDropTarget}
+                onClick={() => onDayClick(day.day)}
+                t={t}
+              />
+            );
+          })}
+        </div>
+      </SortableContext>
+      
+      {/* Drag overlay with swap indicator */}
+      <DragOverlay>
+        {activeDragId && (() => {
+          const activeDayNum = parseInt(activeDragId.replace('day-', ''));
+          const activeDay = days.find((d) => d.day === activeDayNum);
+          const overDayNum = overDragId ? parseInt(overDragId.replace('day-', '')) : null;
+          
+          if (!activeDay) return null;
+          
+          return (
+            <div className="flex flex-col items-center">
+              <DragOverlayContent day={activeDay} t={t} />
+              {overDayNum && overDayNum !== activeDayNum && (
+                <div className="mt-2 px-3 py-1 bg-gray-900/90 rounded-full text-xs text-gray-300 whitespace-nowrap">
+                  {getDayShortName(activeDayNum, t)} ↔ {getDayShortName(overDayNum, t)}
+                </div>
+              )}
+            </div>
+          );
+        })()}
+      </DragOverlay>
+    </DndContext>
+  );
+}
+
+// Day tabs shimmer placeholder
+function DayTabsShimmer() {
+  return (
+    <div className="grid grid-cols-7 gap-1.5">
+      {Array.from({ length: 7 }).map((_, i) => (
+        <div key={i} className="shimmer h-16 bg-gray-800/60 rounded-lg" />
+      ))}
+    </div>
+  );
+}
+
+// Generation progress indicator component
+interface GenerationProgressProps {
+  generatingDay: number;
+  t: (key: string, options?: Record<string, string>) => string;
+}
+
+function GenerationProgress({ generatingDay, t }: GenerationProgressProps) {
+  return (
+    <div className="mb-4 flex items-center justify-center gap-2 text-sm text-gray-400">
+      <svg className="w-4 h-4 animate-spin text-violet-400" fill="none" viewBox="0 0 24 24">
+        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+      </svg>
+      <span>
+        {generatingDay === 0 
+          ? t('exerciseProgram.generatingOverview')
+          : t('exerciseProgram.generatingDay', { current: String(generatingDay), total: '7' })}
+      </span>
+    </div>
+  );
+}
+
+// Summary card shimmer placeholder (used when shimmer=true for week content)
+function SummaryCardShimmer() {
+  return (
+    <div className="bg-gray-800/50 rounded-2xl ring-1 ring-gray-700/50 p-4 mb-4">
+      <div className="flex items-center gap-3 mb-3">
+        <span className="w-3 h-3 rounded-full bg-indigo-500/40" />
+        <div className="shimmer h-5 w-44 bg-gray-700 rounded" />
+      </div>
+      <div className="space-y-2 mb-4">
+        <div className="shimmer h-3 w-3/4 bg-gray-700 rounded" />
+        <div className="shimmer h-3 w-2/3 bg-gray-700 rounded" />
+      </div>
+      <div className="grid grid-cols-4 gap-3">
+        {Array.from({ length: 8 }).map((_, i) => (
+          <div key={i} className="shimmer h-10 w-full bg-gray-700/60 rounded-lg" />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function ProgramViewShimmer() {
   return (
     <>
@@ -912,45 +1097,6 @@ export function ExerciseProgramPage({
       return day;
     });
   };
-
-  // Helper function to get the day short name with translations
-  function getDayShortName(
-    dayOfWeek: number,
-    t: (key: string) => string
-  ): string {
-    const days = [
-      t('exerciseProgram.dayAbbr.mon'),
-      t('exerciseProgram.dayAbbr.tue'),
-      t('exerciseProgram.dayAbbr.wed'),
-      t('exerciseProgram.dayAbbr.thu'),
-      t('exerciseProgram.dayAbbr.fri'),
-      t('exerciseProgram.dayAbbr.sat'),
-      t('exerciseProgram.dayAbbr.sun'),
-    ];
-    return days[dayOfWeek - 1];
-  }
-
-  // Helper function to get the translated month abbreviation
-  function getMonthAbbreviation(
-    month: number,
-    t: (key: string) => string
-  ): string {
-    const months = [
-      t('month.jan'),
-      t('month.feb'),
-      t('month.mar'),
-      t('month.apr'),
-      t('month.may'),
-      t('month.jun'),
-      t('month.jul'),
-      t('month.aug'),
-      t('month.sep'),
-      t('month.oct'),
-      t('month.nov'),
-      t('month.dec'),
-    ];
-    return months[month];
-  }
 
   // Render next week card function inside the component
   const renderNextWeekCard = () => {
@@ -1809,113 +1955,36 @@ export function ExerciseProgramPage({
                   selectedWeekData
                 ) {
                    if (shimmer) {
-                     // Explicit summary shimmer card while generating
-                     return (
-                       <div className="bg-gray-800/50 rounded-2xl ring-1 ring-gray-700/50 p-4 mb-4">
-                         <div className="flex items-center gap-3 mb-3">
-                           <span className="w-3 h-3 rounded-full bg-indigo-500/40" />
-                           <div className="shimmer h-5 w-44 bg-gray-700 rounded" />
-                         </div>
-                         <div className="space-y-2 mb-4">
-                           <div className="shimmer h-3 w-3/4 bg-gray-700 rounded" />
-                           <div className="shimmer h-3 w-2/3 bg-gray-700 rounded" />
-                         </div>
-                         <div className="grid grid-cols-4 gap-3">
-                           {Array.from({ length: 8 }).map((_, i) => (
-                             <div key={i} className="shimmer h-10 w-full bg-gray-700/60 rounded-lg" />
-                           ))}
-                         </div>
-                       </div>
-                     );
+                     return <SummaryCardShimmer />;
                    }
                   // Show the selected week's content
                   return (
                     <>
                       {/* Generation Progress Indicator */}
                       {generatingDay !== null && (
-                        <div className="mb-4 flex items-center justify-center gap-2 text-sm text-gray-400">
-                          <svg className="w-4 h-4 animate-spin text-violet-400" fill="none" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                          </svg>
-                          <span>
-                            {generatingDay === 0 
-                              ? t('exerciseProgram.generatingOverview')
-                              : t('exerciseProgram.generatingDay', { current: String(generatingDay), total: '7' })}
-                          </span>
-                        </div>
+                        <GenerationProgress generatingDay={generatingDay} t={t} />
                       )}
                       
                       {/* Day Tabs with Drag-and-Drop */}
                       <div className="mb-4">
                         {shimmer ? (
-                          <div className="grid grid-cols-7 gap-1.5">
-                            {Array.from({ length: 7 }).map((_, i) => (
-                              <div key={i} className="shimmer h-16 bg-gray-800/60 rounded-lg" />
-                            ))}
-                          </div>
+                          <DayTabsShimmer />
                         ) : (
-                          <DndContext
+                          <DayTabsWithDnd
+                            days={selectedWeekData.days}
+                            generatedDays={generatedDays}
+                            generatingDay={generatingDay}
+                            expandedDays={expandedDays}
+                            activeDragId={activeDragId}
+                            overDragId={overDragId}
+                            isDragEnabled={!!isDragEnabled}
                             sensors={sensors}
-                            collisionDetection={closestCenter}
                             onDragStart={handleDragStart}
                             onDragOver={handleDragOver}
                             onDragEnd={handleDragEnd}
-                          >
-                            <SortableContext
-                              items={[...selectedWeekData.days].sort((a, b) => a.day - b.day).map((d) => `day-${d.day}`)}
-                              strategy={horizontalListSortingStrategy}
-                            >
-                              <div className="grid grid-cols-7 gap-1.5">
-                                {[...selectedWeekData.days]
-                                  .sort((a, b) => a.day - b.day)
-                                  .map((day) => {
-                                    const isDayGenerated = generatedDays.includes(day.day);
-                                    const isDayGenerating = generatingDay === day.day;
-                                    const isSelected = expandedDays.includes(day.day);
-                                    const isDropTarget = overDragId === `day-${day.day}` && activeDragId !== `day-${day.day}`;
-                                    
-                                    return (
-                                      <SortableDayTab
-                                        key={day.day}
-                                        id={`day-${day.day}`}
-                                        day={day}
-                                        dayShortName={getDayShortName(day.day, t)}
-                                        isSelected={isSelected}
-                                        isDayGenerated={isDayGenerated}
-                                        isDayGenerating={isDayGenerating}
-                                        isDragEnabled={!!isDragEnabled}
-                                        isDropTarget={isDropTarget}
-                                        onClick={() => handleDayClick(day.day)}
-                                        t={t}
-                                      />
-                                    );
-                                  })}
-                              </div>
-                            </SortableContext>
-                            
-                            {/* Drag overlay with swap indicator */}
-                            <DragOverlay>
-                              {activeDragId && (() => {
-                                const activeDayNum = parseInt(activeDragId.replace('day-', ''));
-                                const activeDay = selectedWeekData.days.find((d) => d.day === activeDayNum);
-                                const overDayNum = overDragId ? parseInt(overDragId.replace('day-', '')) : null;
-                                
-                                if (!activeDay) return null;
-                                
-                                return (
-                                  <div className="flex flex-col items-center">
-                                    <DragOverlayContent day={activeDay} t={t} />
-                                    {overDayNum && overDayNum !== activeDayNum && (
-                                      <div className="mt-2 px-3 py-1 bg-gray-900/90 rounded-full text-xs text-gray-300 whitespace-nowrap">
-                                        {getDayShortName(activeDayNum, t)} ↔ {getDayShortName(overDayNum, t)}
-                                      </div>
-                                    )}
-                                  </div>
-                                );
-                              })()}
-                            </DragOverlay>
-                          </DndContext>
+                            onDayClick={handleDayClick}
+                            t={t}
+                          />
                         )}
                       </div>
 
@@ -1963,111 +2032,35 @@ export function ExerciseProgramPage({
                 ) {
                   // Show regular program content (single week)
                   if (shimmer) {
-                    return (
-                      <div className="bg-gray-800/50 rounded-2xl ring-1 ring-gray-700/50 p-4 mb-4">
-                        <div className="flex items-center gap-3 mb-3">
-                          <span className="w-3 h-3 rounded-full bg-indigo-500/40" />
-                          <div className="shimmer h-5 w-44 bg-gray-700 rounded" />
-                        </div>
-                        <div className="space-y-2 mb-4">
-                          <div className="shimmer h-3 w-3/4 bg-gray-700 rounded" />
-                          <div className="shimmer h-3 w-2/3 bg-gray-700 rounded" />
-                        </div>
-                        <div className="grid grid-cols-4 gap-3">
-                          {Array.from({ length: 8 }).map((_, i) => (
-                            <div key={i} className="shimmer h-10 w-full bg-gray-700/60 rounded-lg" />
-                          ))}
-                        </div>
-                      </div>
-                    );
+                    return <SummaryCardShimmer />;
                   }
                   return (
                     <>
                       {/* Generation Progress Indicator */}
                       {generatingDay !== null && (
-                        <div className="mb-4 flex items-center justify-center gap-2 text-sm text-gray-400">
-                          <svg className="w-4 h-4 animate-spin text-violet-400" fill="none" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                          </svg>
-                          <span>
-                            {generatingDay === 0 
-                              ? t('exerciseProgram.generatingOverview')
-                              : t('exerciseProgram.generatingDay', { current: String(generatingDay), total: '7' })}
-                          </span>
-                        </div>
+                        <GenerationProgress generatingDay={generatingDay} t={t} />
                       )}
                       
                       {/* Day Tabs with Drag-and-Drop */}
                       <div className="mb-4">
                         {shimmer ? (
-                          <div className="grid grid-cols-7 gap-1.5">
-                            {Array.from({ length: 7 }).map((_, i) => (
-                              <div key={i} className="shimmer h-16 bg-gray-800/60 rounded-lg" />
-                            ))}
-                          </div>
+                          <DayTabsShimmer />
                         ) : (
-                          <DndContext
+                          <DayTabsWithDnd
+                            days={selectedWeekData.days}
+                            generatedDays={generatedDays}
+                            generatingDay={generatingDay}
+                            expandedDays={expandedDays}
+                            activeDragId={activeDragId}
+                            overDragId={overDragId}
+                            isDragEnabled={!!isDragEnabled}
                             sensors={sensors}
-                            collisionDetection={closestCenter}
                             onDragStart={handleDragStart}
                             onDragOver={handleDragOver}
                             onDragEnd={handleDragEnd}
-                          >
-                            <SortableContext
-                              items={[...selectedWeekData.days].sort((a, b) => a.day - b.day).map((d) => `day-${d.day}`)}
-                              strategy={horizontalListSortingStrategy}
-                            >
-                              <div className="grid grid-cols-7 gap-1.5">
-                                {[...selectedWeekData.days]
-                                  .sort((a, b) => a.day - b.day)
-                                  .map((day) => {
-                                    const isDayGenerated = generatedDays.includes(day.day);
-                                    const isDayGenerating = generatingDay === day.day;
-                                    const isSelected = expandedDays.includes(day.day);
-                                    const isDropTarget = overDragId === `day-${day.day}` && activeDragId !== `day-${day.day}`;
-                                    
-                                    return (
-                                      <SortableDayTab
-                                        key={day.day}
-                                        id={`day-${day.day}`}
-                                        day={day}
-                                        dayShortName={getDayShortName(day.day, t)}
-                                        isSelected={isSelected}
-                                        isDayGenerated={isDayGenerated}
-                                        isDayGenerating={isDayGenerating}
-                                        isDragEnabled={!!isDragEnabled}
-                                        isDropTarget={isDropTarget}
-                                        onClick={() => handleDayClick(day.day)}
-                                        t={t}
-                                      />
-                                    );
-                                  })}
-                              </div>
-                            </SortableContext>
-                            
-                            {/* Drag overlay with swap indicator */}
-                            <DragOverlay>
-                              {activeDragId && (() => {
-                                const activeDayNum = parseInt(activeDragId.replace('day-', ''));
-                                const activeDay = selectedWeekData.days.find((d) => d.day === activeDayNum);
-                                const overDayNum = overDragId ? parseInt(overDragId.replace('day-', '')) : null;
-                                
-                                if (!activeDay) return null;
-                                
-                                return (
-                                  <div className="flex flex-col items-center">
-                                    <DragOverlayContent day={activeDay} t={t} />
-                                    {overDayNum && overDayNum !== activeDayNum && (
-                                      <div className="mt-2 px-3 py-1 bg-gray-900/90 rounded-full text-xs text-gray-300 whitespace-nowrap">
-                                        {getDayShortName(activeDayNum, t)} ↔ {getDayShortName(overDayNum, t)}
-                                      </div>
-                                    )}
-                                  </div>
-                                );
-                              })()}
-                            </DragOverlay>
-                          </DndContext>
+                            onDayClick={handleDayClick}
+                            t={t}
+                          />
                         )}
                       </div>
 
