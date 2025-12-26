@@ -174,6 +174,29 @@ describe('prepareExercisesPrompt integration tests', () => {
     expect(cardioSection).not.toMatch(/Cycling|Bike/i);
   });
   
+  // Test Norwegian rowing cardio type filter
+  test('Norwegian rowing cardio type filter should only include rowing exercises', async () => {
+    const userInfo = createUserInfo({
+      exerciseModalities: 'Cardio',
+      cardioType: 'Rowing',
+      cardioEnvironment: 'Inside',
+      exerciseEnvironments: 'Large Gym',
+      targetAreas: [],
+    });
+    
+    // Use Norwegian language
+    const result = await prepareExercisesPrompt(userInfo, undefined, false, 'nb');
+    
+    // Extract cardio section for specific checks
+    const cardioSection = extractCardioSection(result.exercisesPrompt);
+    
+    // Verify cardio section exists with Norwegian rowing content (Roing)
+    expect(result.exercisesPrompt).toMatch(/"bodyPart": "Cardio"/);
+    expect(cardioSection).toMatch(/Roing/i);
+    expect(cardioSection).not.toMatch(/Løping|Utendørs/i); // No running (Løping) or outdoor (Utendørs)
+    expect(cardioSection).not.toMatch(/Sykling|Sykkel/i); // No cycling
+  });
+  
   // Test both environment
   test('Both environment should include both indoor and outdoor exercises', async () => {
     const userInfo = createUserInfo({

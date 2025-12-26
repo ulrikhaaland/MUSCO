@@ -278,13 +278,17 @@ export async function prepareExercisesPrompt(
         }
 
         // Check if the exercise name contains the selected cardio type
+        // Include both English and Norwegian terms for matching
         const matchesType =
           (cardioType.includes('running') && 
-            (name.includes('running') || name.includes('run') || name.includes('jog'))) ||
+            (name.includes('running') || name.includes('run') || name.includes('jog') ||
+             name.includes('løping') || name.includes('løp'))) ||
           (cardioType.includes('cycling') &&
-            (name.includes('cycling') || name.includes('bike'))) ||
+            (name.includes('cycling') || name.includes('bike') ||
+             name.includes('sykling') || name.includes('sykkel'))) ||
           (cardioType.includes('rowing') && 
-            (name.includes('rowing') || name.includes('row')));
+            (name.includes('rowing') || name.includes('row') ||
+             name.includes('roing')));
         
         // If no specific type is selected, include all cardio types
         // Otherwise strictly enforce the cardio type match

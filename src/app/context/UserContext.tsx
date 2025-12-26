@@ -202,6 +202,9 @@ export function UserProvider({ children }: { children: ReactNode }) {
           const programData = programDoc.data();
           const prog = programData as ExerciseProgram;
 
+          // Store the week document ID for later use (e.g., reordering days)
+          prog.docId = programDoc.id;
+
           // Convert Firestore Timestamp to JavaScript Date
           if (programData.createdAt && typeof (programData.createdAt as any).toDate === 'function') {
             prog.createdAt = (programData.createdAt as any).toDate();

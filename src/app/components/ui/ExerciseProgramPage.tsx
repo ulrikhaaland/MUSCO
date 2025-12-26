@@ -9,6 +9,25 @@ import { useSelectedDay } from '@/app/context/SelectedDayContext';
 import { useTranslation } from '@/app/i18n';
 import { useRouter, usePathname } from 'next/navigation';
 import { toast } from './ToastProvider';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+  DragStartEvent,
+  DragOverEvent,
+  DragOverlay,
+} from '@dnd-kit/core';
+import {
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  horizontalListSortingStrategy,
+} from '@dnd-kit/sortable';
+// CSS import removed - not using transforms for cleaner swap UX
 
 import {
   getStartOfWeek,
@@ -61,6 +80,139 @@ if (typeof document !== 'undefined') {
   const style = document.createElement('style');
   style.textContent = scrollbarHideStyles;
   document.head.appendChild(style);
+}
+
+// Sortable day tab wrapper for drag-and-drop reordering
+interface SortableDayTabProps {
+  id: string;
+  day: ProgramDay;
+  dayShortName: string;
+  isSelected: boolean;
+  isDayGenerated: boolean;
+  isDayGenerating: boolean;
+  isDragEnabled: boolean;
+  isDropTarget?: boolean;
+  onClick: () => void;
+  t: (key: string) => string;
+}
+
+function SortableDayTab({
+  id,
+  day,
+  dayShortName,
+  isSelected,
+  isDayGenerated,
+  isDayGenerating,
+  isDragEnabled,
+  isDropTarget = false,
+  onClick,
+  t,
+}: SortableDayTabProps) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    isDragging,
+  } = useSortable({ id, disabled: !isDragEnabled });
+
+  const style: React.CSSProperties = {
+    // Don't apply transforms - items stay in place, only swap on drop
+    // The drop target indicator shows where it will land
+    opacity: isDragging ? 0.3 : 1,
+  };
+
+  return (
+    <button
+      ref={setNodeRef}
+      style={style}
+      {...(isDragEnabled && isDayGenerated ? { ...attributes, ...listeners } : {})}
+      data-day={day.day}
+      onClick={() => {
+        // Only trigger click if not dragging
+        if (!isDragging && isDayGenerated) {
+          onClick();
+        }
+      }}
+      disabled={!isDayGenerated}
+      className={`py-2.5 rounded-lg font-medium transition-all duration-200 flex flex-col items-center justify-center relative group ${
+        isDragging
+          ? 'bg-gray-700/50 text-gray-500 ring-2 ring-dashed ring-indigo-400'
+          : isDropTarget
+            ? 'bg-indigo-500/30 text-white ring-2 ring-indigo-400 scale-105'
+            : isSelected && isDayGenerated
+              ? 'bg-indigo-600 text-white'
+              : isDayGenerating
+                ? 'bg-violet-500/15 text-violet-300 ring-1 ring-violet-500/40'
+                : isDayGenerated
+                  ? 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white'
+                  : 'bg-gray-800/30 text-gray-500 opacity-50 cursor-not-allowed'
+      } ${isDragEnabled && isDayGenerated ? 'cursor-grab active:cursor-grabbing' : ''}`}
+    >
+      {/* Drag hint icon - shows on hover when draggable */}
+      {isDragEnabled && isDayGenerated && !isDragging && !isDayGenerating && (
+        <span className="absolute -top-1 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
+          <svg className="w-3 h-3 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M8 6a2 2 0 1 1-4 0 2 2 0 0 1 4 0zM8 12a2 2 0 1 1-4 0 2 2 0 0 1 4 0zM8 18a2 2 0 1 1-4 0 2 2 0 0 1 4 0zM20 6a2 2 0 1 1-4 0 2 2 0 0 1 4 0zM20 12a2 2 0 1 1-4 0 2 2 0 0 1 4 0zM20 18a2 2 0 1 1-4 0 2 2 0 0 1 4 0z" />
+          </svg>
+        </span>
+      )}
+      {/* Generating indicator - inside button */}
+      {isDayGenerating && (
+        <span className="absolute top-1 right-1 w-2 h-2 bg-violet-400 rounded-full animate-pulse" />
+      )}
+      <span className={`text-sm mb-0.5 ${isDayGenerating ? 'opacity-100' : 'opacity-80'}`}>
+        {dayShortName}
+      </span>
+      {isDayGenerating ? (
+        <span className="text-xs text-violet-300">
+          <svg className="w-3 h-3 animate-spin inline" fill="none" viewBox="0 0 24 24">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+          </svg>
+        </span>
+      ) : !isDayGenerated ? (
+        <span className="text-xs opacity-60">
+          —
+        </span>
+      ) : day.isRestDay ? (
+        <span className="text-xs opacity-80">
+          {t('exerciseProgram.day.rest')}
+        </span>
+      ) : (
+        <span className="text-xs opacity-80">
+          {t('calendar.workout')}
+        </span>
+      )}
+    </button>
+  );
+}
+
+// Drag overlay component showing the day type being moved
+interface DragOverlayContentProps {
+  day: ProgramDay;
+  t: (key: string) => string;
+}
+
+function DragOverlayContent({ day, t }: DragOverlayContentProps) {
+  return (
+    <div className="py-3 px-5 rounded-lg bg-indigo-600 text-white shadow-xl ring-2 ring-indigo-400 flex items-center justify-center gap-2">
+      {day.isRestDay ? (
+        <>
+          <svg className="w-4 h-4 opacity-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+          </svg>
+          <span className="text-sm font-medium">{t('exerciseProgram.day.rest')}</span>
+        </>
+      ) : (
+        <>
+          <svg className="w-4 h-4 opacity-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+          </svg>
+          <span className="text-sm font-medium">{t('calendar.workout')}</span>
+        </>
+      )}
+    </div>
+  );
 }
 
 function ProgramViewShimmer() {
@@ -281,21 +433,57 @@ export function ExerciseProgramPage({
   // State for week-specific overview card - auto-expand during generation
   const [showWeekOverview, setShowWeekOverview] = useState(false);
   const prevGeneratingDay = useRef<number | null | undefined>(undefined);
+  const userClosedDuringGeneration = useRef(false);
+
+  // State for drag-and-drop reordering
+  const [_isReordering, setIsReordering] = useState(false);
+  const [activeDragId, setActiveDragId] = useState<string | null>(null);
+  const [overDragId, setOverDragId] = useState<string | null>(null);
+
+  // DnD sensors for drag-and-drop
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8, // 8px movement required before drag starts
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  // Check if drag is enabled (not generating and user owns the program)
+  const isDragEnabled = generatingDay === null && user && activeProgram?.docId && !isViewingCustomProgram;
   
-  // Auto-expand overview during generation, collapse when done
+  // Auto-expand overview only when generation STARTS, collapse when done
+  // Respect user's manual close during generation
   useEffect(() => {
-    if (generatingDay !== null) {
-      // Generation is active - expand
-      // This handles both initial load during generation and when generation starts
+    const wasGenerating = prevGeneratingDay.current !== null && prevGeneratingDay.current !== undefined;
+    const isNowGenerating = generatingDay !== null;
+    
+    if (!wasGenerating && isNowGenerating) {
+      // Generation just started - expand and reset the manual close flag
+      userClosedDuringGeneration.current = false;
       setShowWeekOverview(true);
-    } else if (prevGeneratingDay.current !== null && prevGeneratingDay.current !== undefined) {
-      // Generation just finished (was generating, now not) - collapse
+    } else if (wasGenerating && !isNowGenerating) {
+      // Generation just finished - collapse
       setShowWeekOverview(false);
+      userClosedDuringGeneration.current = false;
     }
-    // Note: If generatingDay is null on initial load (not generating), 
-    // prevGeneratingDay is undefined, so we don't collapse (keeps user's preference)
+    // Note: We don't re-expand when generatingDay changes (e.g., 1 -> 2 -> 3)
+    // to respect user's manual close
+    
     prevGeneratingDay.current = generatingDay;
   }, [generatingDay]);
+
+  // Custom toggle that tracks manual closes during generation
+  const handleOverviewToggle = () => {
+    if (generatingDay !== null && showWeekOverview) {
+      // User is closing during generation - remember this
+      userClosedDuringGeneration.current = true;
+    }
+    setShowWeekOverview(!showWeekOverview);
+  };
 
   // Set initial week and day when program loads (only on first load or when program changes)
   useEffect(() => {
@@ -582,6 +770,87 @@ export function ExerciseProgramPage({
       handleSaveTitle();
     } else if (e.key === 'Escape') {
       handleCancelEditTitle();
+    }
+  };
+
+  // Handle drag start
+  const handleDragStart = (event: DragStartEvent) => {
+    setActiveDragId(event.active.id as string);
+  };
+
+  // Handle drag over (for showing drop target indicator)
+  const handleDragOver = (event: DragOverEvent) => {
+    setOverDragId(event.over?.id as string | null);
+  };
+
+  // Handle drag end for day reordering
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
+    
+    // Clear drag state
+    setActiveDragId(null);
+    setOverDragId(null);
+    
+    if (!over || active.id === over.id) {
+      return;
+    }
+
+    if (!user || !activeProgram?.docId) {
+      return;
+    }
+
+    // Get the current week's data and weekId
+    const currentWeekProgram = activeProgram.programs?.[selectedWeek - 1];
+    const weekId = currentWeekProgram?.docId;
+    
+    if (!weekId || !currentWeekProgram?.days) {
+      toast.error(t('exerciseProgram.reorderFailed'));
+      return;
+    }
+
+    const days = currentWeekProgram.days;
+    const fromDayNum = parseInt((active.id as string).replace('day-', ''));
+    const toDayNum = parseInt((over.id as string).replace('day-', ''));
+
+    if (!fromDayNum || !toDayNum) {
+      return;
+    }
+
+    // Create a swap: exchange the two days' positions
+    // newDayOrder[i] = which original day number should be at position i+1
+    const sortedDays = [...days].sort((a, b) => a.day - b.day);
+    const newDayOrder = sortedDays.map((d) => {
+      if (d.day === fromDayNum) return toDayNum;  // Day A goes to Day B's slot
+      if (d.day === toDayNum) return fromDayNum;  // Day B goes to Day A's slot
+      return d.day;  // Other days stay in place
+    });
+
+    setIsReordering(true);
+
+    try {
+      const response = await fetch('/api/programs/reorder-days', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: user.uid,
+          programId: activeProgram.docId,
+          weekId,
+          newDayOrder,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Failed to reorder days');
+      }
+
+      toast.success(t('exerciseProgram.daysReordered'));
+      // Firebase onSnapshot will update the UI with the new order
+    } catch (error) {
+      console.error('Error reordering days:', error);
+      toast.error(t('exerciseProgram.reorderFailed'));
+    } finally {
+      setIsReordering(false);
     }
   };
 
@@ -940,7 +1209,10 @@ export function ExerciseProgramPage({
           ) : (
             <div className="hidden md:flex py-3 px-4 items-center justify-center">
               <div className="flex flex-col items-center">
-                {isEditingTitle ? (
+                {/* Show shimmer for title while generating and no title yet */}
+                {generatingDay !== null && !title && !program?.title ? (
+                  <div className="shimmer h-8 w-64 bg-gray-700 rounded" />
+                ) : isEditingTitle ? (
                   <div className="flex items-center gap-2">
                     <input
                       ref={titleInputRef}
@@ -1446,7 +1718,7 @@ export function ExerciseProgramPage({
                     activeProgram={activeProgram}
                     timeFrame={timeFrame}
                     isExpanded={showWeekOverview}
-                    onToggle={() => setShowWeekOverview(!showWeekOverview)}
+                    onToggle={handleOverviewToggle}
                     isGenerating={generatingDay !== null}
                   />
                 );
@@ -1507,70 +1779,77 @@ export function ExerciseProgramPage({
                         </div>
                       )}
                       
-                      {/* Day Tabs */}
+                      {/* Day Tabs with Drag-and-Drop */}
                       <div className="mb-4">
-                        <div className="grid grid-cols-7 gap-1.5">
-                          {shimmer ? (
-                            Array.from({ length: 7 }).map((_, i) => (
+                        {shimmer ? (
+                          <div className="grid grid-cols-7 gap-1.5">
+                            {Array.from({ length: 7 }).map((_, i) => (
                               <div key={i} className="shimmer h-16 bg-gray-800/60 rounded-lg" />
-                            ))
-                          ) : (
-                          // Sort days by day.day to ensure chronological order
-                          ([...selectedWeekData.days]
-                            .sort((a, b) => a.day - b.day)
-                            .map((day) => {
-                              const isDayGenerated = generatedDays.includes(day.day);
-                              const isDayGenerating = generatingDay === day.day;
-                              const isSelected = expandedDays.includes(day.day);
-                              
-                              return (
-                              <button
-                                key={day.day}
-                                data-day={day.day}
-                                onClick={() => isDayGenerated && handleDayClick(day.day)}
-                                disabled={!isDayGenerated}
-                                className={`py-2.5 rounded-lg font-medium transition-all duration-200 flex flex-col items-center justify-center relative ${
-                                  isSelected && isDayGenerated
-                                    ? 'bg-indigo-600 text-white'
-                                    : isDayGenerating
-                                      ? 'bg-violet-500/15 text-violet-300'
-                                      : isDayGenerated
-                                        ? 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white'
-                                        : 'bg-gray-800/30 text-gray-500 opacity-50 cursor-not-allowed'
-                                }`}
-                              >
-                                {/* Generating indicator - inside button */}
-                                {isDayGenerating && (
-                                  <span className="absolute top-1 right-1 w-2 h-2 bg-violet-400 rounded-full animate-pulse" />
-                                )}
-                                <span className={`text-sm mb-0.5 ${isDayGenerating ? 'opacity-100' : 'opacity-80'}`}>
-                                  {getDayShortName(day.day, t)}
-                                </span>
-                                {isDayGenerating ? (
-                                  <span className="text-xs text-violet-300">
-                                    <svg className="w-3 h-3 animate-spin inline" fill="none" viewBox="0 0 24 24">
-                                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                                    </svg>
-                                  </span>
-                                ) : !isDayGenerated ? (
-                                  <span className="text-xs opacity-60">
-                                    —
-                                  </span>
-                                ) : day.isRestDay ? (
-                                  <span className="text-xs opacity-80">
-                                    {t('exerciseProgram.day.rest')}
-                                  </span>
-                                ) : (
-                                  <span className="text-xs opacity-80">
-                                    {t('calendar.workout')}
-                                  </span>
-                                )}
-                              </button>
-                              );
-                            }))
-                          )}
-                        </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <DndContext
+                            sensors={sensors}
+                            collisionDetection={closestCenter}
+                            onDragStart={handleDragStart}
+                            onDragOver={handleDragOver}
+                            onDragEnd={handleDragEnd}
+                          >
+                            <SortableContext
+                              items={[...selectedWeekData.days].sort((a, b) => a.day - b.day).map((d) => `day-${d.day}`)}
+                              strategy={horizontalListSortingStrategy}
+                            >
+                              <div className="grid grid-cols-7 gap-1.5">
+                                {[...selectedWeekData.days]
+                                  .sort((a, b) => a.day - b.day)
+                                  .map((day) => {
+                                    const isDayGenerated = generatedDays.includes(day.day);
+                                    const isDayGenerating = generatingDay === day.day;
+                                    const isSelected = expandedDays.includes(day.day);
+                                    const isDropTarget = overDragId === `day-${day.day}` && activeDragId !== `day-${day.day}`;
+                                    
+                                    return (
+                                      <SortableDayTab
+                                        key={day.day}
+                                        id={`day-${day.day}`}
+                                        day={day}
+                                        dayShortName={getDayShortName(day.day, t)}
+                                        isSelected={isSelected}
+                                        isDayGenerated={isDayGenerated}
+                                        isDayGenerating={isDayGenerating}
+                                        isDragEnabled={!!isDragEnabled}
+                                        isDropTarget={isDropTarget}
+                                        onClick={() => handleDayClick(day.day)}
+                                        t={t}
+                                      />
+                                    );
+                                  })}
+                              </div>
+                            </SortableContext>
+                            
+                            {/* Drag overlay with swap indicator */}
+                            <DragOverlay>
+                              {activeDragId && (() => {
+                                const activeDayNum = parseInt(activeDragId.replace('day-', ''));
+                                const activeDay = selectedWeekData.days.find((d) => d.day === activeDayNum);
+                                const overDayNum = overDragId ? parseInt(overDragId.replace('day-', '')) : null;
+                                
+                                if (!activeDay) return null;
+                                
+                                return (
+                                  <div className="flex flex-col items-center">
+                                    <DragOverlayContent day={activeDay} t={t} />
+                                    {overDayNum && overDayNum !== activeDayNum && (
+                                      <div className="mt-2 px-3 py-1 bg-gray-900/90 rounded-full text-xs text-gray-300 whitespace-nowrap">
+                                        {getDayShortName(activeDayNum, t)} ↔ {getDayShortName(overDayNum, t)}
+                                      </div>
+                                    )}
+                                  </div>
+                                );
+                              })()}
+                            </DragOverlay>
+                          </DndContext>
+                        )}
                       </div>
 
                       {/* Day Content */}
@@ -1580,7 +1859,6 @@ export function ExerciseProgramPage({
                         );
                         const isDayGenerated = generatedDays.includes(dayNumber);
                         const isDayGenerating = generatingDay === dayNumber;
-                        // Shimmer if: full page shimmer, day not generated yet, OR day is currently generating
                         const shouldShimmerDay = shimmer || !isDayGenerated;
                         
                         const placeholder: ProgramDay = {
@@ -1592,8 +1870,7 @@ export function ExerciseProgramPage({
                         const safeDay = shouldShimmerDay ? placeholder : day;
                         if (!safeDay) return null;
 
-                        // Get the correct day index based on day.day, not array position
-                        const dayIndex = (safeDay.day || 1) - 1; // Subtract 1 since day.day is 1-based
+                        const dayIndex = (safeDay.day || 1) - 1;
 
                         return (
                           <ProgramDaySummaryComponent
@@ -1654,70 +1931,77 @@ export function ExerciseProgramPage({
                         </div>
                       )}
                       
-                      {/* Day Tabs */}
+                      {/* Day Tabs with Drag-and-Drop */}
                       <div className="mb-4">
-                        <div className="grid grid-cols-7 gap-1.5">
-                          {shimmer ? (
-                            Array.from({ length: 7 }).map((_, i) => (
+                        {shimmer ? (
+                          <div className="grid grid-cols-7 gap-1.5">
+                            {Array.from({ length: 7 }).map((_, i) => (
                               <div key={i} className="shimmer h-16 bg-gray-800/60 rounded-lg" />
-                            ))
-                          ) : (
-                            // Sort days by day.day to ensure chronological order
-                            ([...selectedWeekData.days]
-                              .sort((a, b) => a.day - b.day)
-                              .map((day) => {
-                                const isDayGenerated = generatedDays.includes(day.day);
-                                const isDayGenerating = generatingDay === day.day;
-                                const isSelected = expandedDays.includes(day.day);
+                            ))}
+                          </div>
+                        ) : (
+                          <DndContext
+                            sensors={sensors}
+                            collisionDetection={closestCenter}
+                            onDragStart={handleDragStart}
+                            onDragOver={handleDragOver}
+                            onDragEnd={handleDragEnd}
+                          >
+                            <SortableContext
+                              items={[...selectedWeekData.days].sort((a, b) => a.day - b.day).map((d) => `day-${d.day}`)}
+                              strategy={horizontalListSortingStrategy}
+                            >
+                              <div className="grid grid-cols-7 gap-1.5">
+                                {[...selectedWeekData.days]
+                                  .sort((a, b) => a.day - b.day)
+                                  .map((day) => {
+                                    const isDayGenerated = generatedDays.includes(day.day);
+                                    const isDayGenerating = generatingDay === day.day;
+                                    const isSelected = expandedDays.includes(day.day);
+                                    const isDropTarget = overDragId === `day-${day.day}` && activeDragId !== `day-${day.day}`;
+                                    
+                                    return (
+                                      <SortableDayTab
+                                        key={day.day}
+                                        id={`day-${day.day}`}
+                                        day={day}
+                                        dayShortName={getDayShortName(day.day, t)}
+                                        isSelected={isSelected}
+                                        isDayGenerated={isDayGenerated}
+                                        isDayGenerating={isDayGenerating}
+                                        isDragEnabled={!!isDragEnabled}
+                                        isDropTarget={isDropTarget}
+                                        onClick={() => handleDayClick(day.day)}
+                                        t={t}
+                                      />
+                                    );
+                                  })}
+                              </div>
+                            </SortableContext>
+                            
+                            {/* Drag overlay with swap indicator */}
+                            <DragOverlay>
+                              {activeDragId && (() => {
+                                const activeDayNum = parseInt(activeDragId.replace('day-', ''));
+                                const activeDay = selectedWeekData.days.find((d) => d.day === activeDayNum);
+                                const overDayNum = overDragId ? parseInt(overDragId.replace('day-', '')) : null;
+                                
+                                if (!activeDay) return null;
                                 
                                 return (
-                                <button
-                                  key={day.day}
-                                  data-day={day.day}
-                                  onClick={() => isDayGenerated && handleDayClick(day.day)}
-                                  disabled={!isDayGenerated}
-                                  className={`py-2.5 rounded-lg font-medium transition-all duration-200 flex flex-col items-center justify-center relative ${
-                                    isSelected && isDayGenerated
-                                      ? 'bg-indigo-600 text-white'
-                                      : isDayGenerating
-                                        ? 'bg-violet-500/15 text-violet-300 ring-1 ring-violet-500/40'
-                                        : isDayGenerated
-                                          ? 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white'
-                                          : 'bg-gray-800/30 text-gray-500 opacity-50 cursor-not-allowed'
-                                  }`}
-                                >
-                                  {/* Generating indicator - inside button */}
-                                  {isDayGenerating && (
-                                    <span className="absolute top-1 right-1 w-2 h-2 bg-violet-400 rounded-full animate-pulse" />
-                                  )}
-                                  <span className={`text-sm mb-0.5 ${isDayGenerating ? 'opacity-100' : 'opacity-80'}`}>
-                                    {getDayShortName(day.day, t)}
-                                  </span>
-                                  {isDayGenerating ? (
-                                    <span className="text-xs text-violet-300">
-                                      <svg className="w-3 h-3 animate-spin inline" fill="none" viewBox="0 0 24 24">
-                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                                      </svg>
-                                    </span>
-                                  ) : !isDayGenerated ? (
-                                    <span className="text-xs opacity-60">
-                                      —
-                                    </span>
-                                  ) : day.isRestDay ? (
-                                    <span className="text-xs opacity-80">
-                                      {t('exerciseProgram.day.rest')}
-                                    </span>
-                                  ) : (
-                                    <span className="text-xs opacity-80">
-                                      {t('calendar.workout')}
-                                    </span>
-                                  )}
-                                </button>
+                                  <div className="flex flex-col items-center">
+                                    <DragOverlayContent day={activeDay} t={t} />
+                                    {overDayNum && overDayNum !== activeDayNum && (
+                                      <div className="mt-2 px-3 py-1 bg-gray-900/90 rounded-full text-xs text-gray-300 whitespace-nowrap">
+                                        {getDayShortName(activeDayNum, t)} ↔ {getDayShortName(overDayNum, t)}
+                                      </div>
+                                    )}
+                                  </div>
                                 );
-                              }))
-                          )}
-                        </div>
+                              })()}
+                            </DragOverlay>
+                          </DndContext>
+                        )}
                       </div>
 
                       {/* Day Content */}
@@ -1727,10 +2011,8 @@ export function ExerciseProgramPage({
                         );
                         const isDayGenerated = generatedDays.includes(dayNumber);
                         const isDayGenerating = generatingDay === dayNumber;
-                        // Shimmer if day not generated yet (including while generating)
                         const shouldShimmerDay = !isDayGenerated;
                         
-                        // Create placeholder if day not generated yet
                         const placeholder: ProgramDay = {
                           day: dayNumber,
                           description: isDayGenerating ? 'Generating...' : 'Loading...',
@@ -1741,8 +2023,7 @@ export function ExerciseProgramPage({
                         const displayDay = shouldShimmerDay ? placeholder : day;
                         if (!displayDay) return null;
 
-                        // Get the correct day index based on day.day, not array position
-                        const dayIndex = displayDay.day - 1; // Subtract 1 since day.day is 1-based
+                        const dayIndex = displayDay.day - 1;
 
                         return (
                           <ProgramDaySummaryComponent

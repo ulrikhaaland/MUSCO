@@ -883,6 +883,11 @@ const translations = {
   'exerciseProgram.titleUpdated': 'Tittel oppdatert',
   'exerciseProgram.titleUpdateFailed': 'Kunne ikke oppdatere tittel',
 
+  // Day reordering
+  'exerciseProgram.daysReordered': 'Dager omorganisert',
+  'exerciseProgram.reorderFailed': 'Kunne ikke omorganisere dager',
+  'exerciseProgram.dragToReorder': 'Dra for å omorganisere',
+
   // Month abbreviations
   'month.jan': 'Jan',
   'month.feb': 'Feb',

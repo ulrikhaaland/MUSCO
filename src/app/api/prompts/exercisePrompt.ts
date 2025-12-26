@@ -207,19 +207,70 @@ EXERCISE SELECTION PROTOCOL
 
 - Cardio Specific Guidelines:
   - For dedicated cardio workouts, select cardio exercises based on the user's cardioType and cardioEnvironment preferences
-  - IMPORTANT: Unlike strength workouts, cardio days should NOT include warmup exercises, as the cardio activity itself should begin with a lower intensity that serves as the warm-up
   - IMPORTANT: NEVER include both cardio and strength exercises on the same day
   - For users with "both" as their exerciseModalities:
     - Always create dedicated strength days and dedicated cardio days
     - Use strengthDays and cardioDays parameters to determine how many of each type to include
     - Ignore modalitySplit parameter if it suggests "same day" - always keep cardio and strength on separate days
-  - Always specify duration for cardio exercises (e.g., "duration": 20 for a 20-minute cardio session)
-  - For Zone 2 cardio (moderate intensity), the duration should ALWAYS match the upper bound of the user's preferred workout duration. For example:
-    - If Workout Duration is "15-30 minutes", set Zone 2 cardio duration to 30 minutes
-    - If Workout Duration is "30-45 minutes", set Zone 2 cardio duration to 45 minutes
-    - If Workout Duration is "45-60 minutes", set Zone 2 cardio duration to 60 minutes
-    - If Workout Duration is "60+ minutes", set Zone 2 cardio duration to 60 minutes
-  - For 4x4 interval training (high intensity), recommend shorter durations (28-30 minutes including recovery periods)
+  
+  - CRITICAL - Zone 2 / Steady-State Cardio Days:
+    - Include ONLY a single cardio exercise (no warmup exercise needed, as the cardio itself starts at lower intensity)
+    - The duration MUST match the UPPER BOUND of the user's preferred workout duration:
+      - If Workout Duration is "15-30 minutes", set cardio duration to 30 minutes
+      - If Workout Duration is "30-45 minutes", set cardio duration to 45 minutes
+      - If Workout Duration is "45-60 minutes", set cardio duration to 60 minutes
+      - If Workout Duration is "60+ minutes", set cardio duration to 60 minutes
+    - Example of a Zone 2 cardio day (for 45-60 min preference):
+      \`\`\`
+      {
+        "day": 2,
+        "isRestDay": false,
+        "description": "Zone 2 cardio session focused on building aerobic base.",
+        "exercises": [
+          {
+            "exerciseId": "cardio-5",
+            "duration": 60,
+            "modification": "Maintain a conversational pace to stay in Zone 2 intensity"
+          }
+        ],
+        "duration": 60
+      }
+      \`\`\`
+  
+  - CRITICAL - 4x4 Interval Training Days:
+    - Include THREE exercises: warmup + interval + cooldown
+    - The TOTAL duration (warmup + interval + cooldown) MUST equal the UPPER BOUND of the user's preferred workout duration
+    - Recommended structure for 60-minute session: 10 min warmup + 40 min intervals + 10 min cooldown
+    - Recommended structure for 45-minute session: 8 min warmup + 30 min intervals + 7 min cooldown
+    - Recommended structure for 30-minute session: 5 min warmup + 20 min intervals + 5 min cooldown
+    - Use a low-intensity cardio exercise for warmup and cooldown (same cardio type as user preference)
+    - Use an interval-specific cardio exercise for the main interval portion
+    - Example of a 4x4 interval day (for 45-60 min preference):
+      \`\`\`
+      {
+        "day": 4,
+        "isRestDay": false,
+        "description": "High-intensity 4x4 interval training to improve cardiovascular capacity.",
+        "exercises": [
+          {
+            "exerciseId": "cardio-5",
+            "duration": 10,
+            "modification": "Easy pace warmup to prepare for intervals"
+          },
+          {
+            "exerciseId": "cardio-6",
+            "duration": 40,
+            "modification": "4x4 intervals: 4 minutes at high intensity followed by 4 minutes recovery, repeat 4-5 times"
+          },
+          {
+            "exerciseId": "cardio-5",
+            "duration": 10,
+            "modification": "Easy pace cooldown to bring heart rate down gradually"
+          }
+        ],
+        "duration": 60
+      }
+      \`\`\`
 
 - Include enough exercises to satisfy the user's preferred workout duration:
   - 15-30 minutes: 4-6 exercises (including warmups)

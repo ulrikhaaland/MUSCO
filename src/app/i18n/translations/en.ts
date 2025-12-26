@@ -907,6 +907,11 @@ const translations = {
   'exerciseProgram.titleUpdated': 'Title updated',
   'exerciseProgram.titleUpdateFailed': 'Failed to update title',
 
+  // Day reordering
+  'exerciseProgram.daysReordered': 'Days reordered successfully',
+  'exerciseProgram.reorderFailed': 'Failed to reorder days',
+  'exerciseProgram.dragToReorder': 'Drag to reorder',
+
   // Month abbreviations
   'month.jan': 'Jan',
   'month.feb': 'Feb',

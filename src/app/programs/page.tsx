@@ -95,10 +95,13 @@ function ProgramsContent() {
   // Select date locale based on user's language
   const dateLocale = locale === 'nb' ? nb : enUS;
 
+  // Programs remaining after filtering out locally deleted ones
+  const remainingPrograms = userPrograms.filter(
+    (program) => !deletedPrograms.has(program.docId)
+  );
+
   // Sort programs by date
-  const filteredAndSortedPrograms = [...userPrograms]
-    // Filter out locally deleted programs first
-    .filter((program) => !deletedPrograms.has(program.docId))
+  const filteredAndSortedPrograms = [...remainingPrograms]
     // Apply the type filter
     .filter((program) => {
       if (filterType === 'all') return true;
@@ -129,7 +132,7 @@ function ProgramsContent() {
 
   // Render a loading placeholder only if we have no programs yet AND are loading
   // Do NOT show this when a program is being generated; show shimmer card instead
-  if (isLoading && userPrograms.length === 0 && programStatus !== ProgramStatus.Generating) {
+  if (isLoading && remainingPrograms.length === 0 && programStatus !== ProgramStatus.Generating) {
     return (
       <div className="h-full flex items-center justify-center">
         <div className="text-gray-400">{t('common.loading')}</div>
@@ -138,7 +141,8 @@ function ProgramsContent() {
   }
 
   // When generating, avoid the empty state and show the shimmer card instead
-  if (userPrograms.length === 0 && programStatus !== ProgramStatus.Generating) {
+  // Use remainingPrograms to account for optimistically deleted programs
+  if (remainingPrograms.length === 0 && programStatus !== ProgramStatus.Generating) {
     const emptyText = (() => {
       if (filterType === 'exercise') {
         return t('programs.noFilteredPrograms').replace(

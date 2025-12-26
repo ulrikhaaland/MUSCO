@@ -48,7 +48,6 @@ async function createWeekWithMetadata(
     summary: metadata.summary,
     whatNotToDo: metadata.whatNotToDo,
     afterTimeFrame: metadata.afterTimeFrame,
-    weeklyPlan: (metadata as any).weeklyPlan || [],
     targetAreas: targetAreas,
     bodyParts: targetAreas,
     days: [],
