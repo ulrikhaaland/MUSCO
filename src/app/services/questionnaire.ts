@@ -6,10 +6,6 @@ import {
   collection,
   setDoc,
   serverTimestamp,
-  query,
-  getDocs,
-  where,
-  updateDoc,
 } from 'firebase/firestore';
 import { db } from '../firebase/config';
 import { DiagnosisAssistantResponse } from '../types';

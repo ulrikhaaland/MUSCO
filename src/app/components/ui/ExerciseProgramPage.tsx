@@ -736,17 +736,17 @@ export function ExerciseProgramPage({
   // Check weekly generation limit for this program type
   useEffect(() => {
     const checkWeeklyLimit = async () => {
-      if (!user?.uid || !program?.type) {
+      if (!user?.uid || !activeProgram?.type) {
         setIsWeeklyLimitReached(false);
         return;
       }
 
       try {
-        const canGenerate = await canGenerateProgram(user.uid, program.type);
+        const canGenerate = await canGenerateProgram(user.uid, activeProgram.type);
         setIsWeeklyLimitReached(!canGenerate);
 
         if (!canGenerate) {
-          const nextDate = await getNextAllowedGenerationDate(user.uid, program.type);
+          const nextDate = await getNextAllowedGenerationDate(user.uid, activeProgram.type);
           setWeeklyLimitNextDate(nextDate);
         } else {
           setWeeklyLimitNextDate(null);
@@ -758,7 +758,7 @@ export function ExerciseProgramPage({
     };
 
     checkWeeklyLimit();
-  }, [user?.uid, program?.type]);
+  }, [user?.uid, activeProgram?.type]);
 
   // Only return null when not shimmering; allow shimmer UI even before program is available
   if (!shimmer && ((isLoading) || program === null || !Array.isArray(program.days))) {

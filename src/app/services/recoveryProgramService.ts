@@ -1,4 +1,4 @@
-import { collection, addDoc, getDocs, query, doc, updateDoc, where } from 'firebase/firestore';
+import { collection, addDoc } from 'firebase/firestore';
 import { db } from '../firebase/config';
 import { 
   getProgramBySlug,
