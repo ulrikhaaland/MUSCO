@@ -18,38 +18,66 @@ const openai = new OpenAI({
 });
 
 /**
- * Save metadata to Firebase
+ * Create a new week document in the weeks subcollection and save metadata.
+ * Returns the weekId for subsequent day saves.
+ * 
+ * Structure:
+ * users/{userId}/programs/{programId} - top-level metadata (title, diagnosis, questionnaire, status, type)
+ * users/{userId}/programs/{programId}/weeks/{weekId} - week data (overview, days[], etc.)
+ * 
+ * Note: Title is stored in program document (generated once, not per week)
  */
-async function saveMetadataToFirebase(
+async function createWeekWithMetadata(
   userId: string,
   programId: string,
-  metadata: ProgramMetadataResponse
-): Promise<void> {
+  metadata: ProgramMetadataResponse,
+  targetAreas: string[]
+): Promise<string> {
   const programRef = adminDb
     .collection('users')
     .doc(userId)
     .collection('programs')
     .doc(programId);
 
-  await programRef.update({
-    title: metadata.title,
+  // Create new week document in weeks subcollection
+  const weekRef = programRef.collection('weeks').doc();
+  
+  // Week-specific data (changes each week)
+  const weekData = {
     programOverview: metadata.programOverview,
     summary: metadata.summary,
     whatNotToDo: metadata.whatNotToDo,
     afterTimeFrame: metadata.afterTimeFrame,
+    weeklyPlan: (metadata as any).weeklyPlan || [],
+    targetAreas: targetAreas,
+    bodyParts: targetAreas,
+    days: [],
     generatingDay: 1, // About to generate day 1
+    createdAt: new Date().toISOString(),
+  };
+
+  // Update program document with title (only generated once) and tracking fields
+  const batch = adminDb.batch();
+  batch.set(weekRef, weekData);
+  batch.update(programRef, {
+    title: metadata.title, // Title stored at program level
+    currentWeekId: weekRef.id,
+    generatingDay: 1,
     updatedAt: new Date().toISOString(),
   });
+  await batch.commit();
 
-  console.log(`[incremental] Saved metadata to Firebase for ${programId}`);
+  console.log(`[incremental] Created week ${weekRef.id} with metadata for program ${programId}`);
+  return weekRef.id;
 }
 
 /**
- * Save a generated day to Firebase
+ * Save a generated day to the week document in Firebase
  */
-async function saveDayToFirebase(
+async function saveDayToWeek(
   userId: string,
   programId: string,
+  weekId: string,
   day: ProgramDay,
   isLastDay: boolean,
   diagnosisType?: string
@@ -59,13 +87,15 @@ async function saveDayToFirebase(
     .doc(userId)
     .collection('programs')
     .doc(programId);
+  
+  const weekRef = programRef.collection('weeks').doc(weekId);
 
   const batch = adminDb.batch();
 
-  // Get current program data
-  const programSnap = await programRef.get();
-  const existingData = programSnap.data() || {};
-  const existingDays: ProgramDay[] = existingData.days || [];
+  // Get current week data
+  const weekSnap = await weekRef.get();
+  const weekData = weekSnap.data() || {};
+  const existingDays: ProgramDay[] = weekData.days || [];
   
   // Add or replace the day
   const dayIndex = existingDays.findIndex((d) => d.day === day.day);
@@ -77,40 +107,23 @@ async function saveDayToFirebase(
   // Sort by day number
   existingDays.sort((a, b) => a.day - b.day);
 
-  const updates: Record<string, unknown> = {
+  // Update week document
+  const weekUpdates: Record<string, unknown> = {
     days: existingDays,
+    generatingDay: isLastDay ? null : day.day + 1,
+  };
+  batch.update(weekRef, weekUpdates);
+
+  // Update program document
+  const programUpdates: Record<string, unknown> = {
     generatingDay: isLastDay ? null : day.day + 1,
     updatedAt: new Date().toISOString(),
   };
 
-  // If last day, mark as complete and save to subcollection
+  // If last day, mark program as complete
   if (isLastDay) {
-    updates.status = ProgramStatus.Done;
-
-    // Save the weekly program to subcollection (like old generation did)
-    const weekRef = adminDb
-      .collection('users')
-      .doc(userId)
-      .collection('programs')
-      .doc(programId)
-      .collection('programs')
-      .doc();
-
-    // Extract program metadata for the weekly document
-    const weeklyProgramData = {
-      days: existingDays,
-      title: existingData.title || '',
-      programOverview: existingData.programOverview || '',
-      summary: existingData.summary || '',
-      whatNotToDo: existingData.whatNotToDo || '',
-      afterTimeFrame: existingData.afterTimeFrame || {},
-      targetAreas: existingData.questionnaire?.targetAreas || [],
-      bodyParts: existingData.questionnaire?.targetAreas || [],
-      createdAt: new Date().toISOString(),
-    };
-
-    batch.set(weekRef, weeklyProgramData);
-    console.log(`[incremental] Created weekly program document: ${weekRef.id}`);
+    programUpdates.status = ProgramStatus.Done;
+    programUpdates.currentWeekId = null; // Clear generating week reference
 
     // Record the weekly generation limit now that program is complete
     if (diagnosisType) {
@@ -118,10 +131,10 @@ async function saveDayToFirebase(
     }
   }
 
-  batch.update(programRef, updates);
+  batch.update(programRef, programUpdates);
   await batch.commit();
 
-  console.log(`[incremental] Saved day ${day.day} to Firebase (lastDay: ${isLastDay})`);
+  console.log(`[incremental] Saved day ${day.day} to week ${weekId} (lastDay: ${isLastDay})`);
 }
 
 /**
@@ -246,75 +259,118 @@ function toProgramDay(response: SingleDayResponse): ProgramDay {
   } as ProgramDay;
 }
 
+/**
+ * Generate the full program (metadata + all 7 days) in a single API call.
+ * Each day is saved to Firebase immediately after generation.
+ * The frontend listens to Firebase for real-time updates.
+ * 
+ * Structure:
+ * - Program document: metadata only (diagnosis, questionnaire, status, type)
+ * - Week document (in weeks subcollection): title, overview, days[], etc.
+ */
+async function generateFullProgram(
+  userId: string,
+  programId: string,
+  diagnosisData: GenerateMetadataRequest['diagnosisData'],
+  userInfo: GenerateMetadataRequest['userInfo'],
+  language: string
+): Promise<{ success: boolean; completedDays: number; weekId: string }> {
+  // Generate metadata first
+  console.log(`[incremental-full] Generating metadata for ${programId}...`);
+  const metadata = await generateMetadata({
+    diagnosisData,
+    userInfo,
+    userId,
+    programId,
+    language,
+  });
+  
+  // Create week document with metadata
+  const weekId = await createWeekWithMetadata(
+    userId,
+    programId,
+    metadata,
+    userInfo.targetAreas || []
+  );
+  console.log(`[incremental-full] Week ${weekId} created with metadata for ${programId}`);
+  
+  const programMeta = {
+    title: metadata.title,
+    programOverview: metadata.programOverview,
+    weeklyPlan: (metadata as any).weeklyPlan || [],
+  };
+  
+  // Generate all 7 days sequentially, saving each immediately to the week
+  const currentDays: ProgramDay[] = [];
+  
+  for (let dayNum = 1; dayNum <= 7; dayNum++) {
+    console.log(`[incremental-full] Generating day ${dayNum} for ${programId}...`);
+    
+    const dayResult = await generateSingleDay({
+      dayNumber: dayNum,
+      diagnosisData,
+      userInfo,
+      previousDays: currentDays,
+      programMetadata: programMeta,
+      userId,
+      programId,
+      language,
+    });
+    
+    const programDay = toProgramDay(dayResult);
+    currentDays.push(programDay);
+    
+    // Save immediately to the week document
+    const isLastDay = dayNum === 7;
+    await saveDayToWeek(
+      userId,
+      programId,
+      weekId,
+      programDay,
+      isLastDay,
+      diagnosisData?.programType
+    );
+    
+    console.log(`[incremental-full] Day ${dayNum} saved to week ${weekId}`);
+  }
+  
+  return { success: true, completedDays: 7, weekId };
+}
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const { action } = body;
 
-    if (action === 'generate_metadata') {
-      // Generate program metadata only (no exercises)
-      const request = body as GenerateMetadataRequest & { action: string };
+    if (action === 'generate_full_program') {
+      // Generate the entire program in one API call
+      // Each day is saved to Firebase immediately, so progress is preserved
+      const { userId, programId, diagnosisData, userInfo, language } = body;
       
-      const result = await generateMetadata({
-        diagnosisData: request.diagnosisData,
-        userInfo: request.userInfo,
-        userId: request.userId,
-        programId: request.programId,
-        language: request.language,
-      });
-
-      // Save metadata to Firebase
-      if (request.userId && request.programId) {
-        await saveMetadataToFirebase(request.userId, request.programId, result);
+      if (!userId || !programId) {
+        return NextResponse.json(
+          { error: 'userId and programId are required' },
+          { status: 400 }
+        );
       }
+
+      console.log(`[incremental-full] Starting full program generation for ${programId}`);
+      
+      const result = await generateFullProgram(
+        userId,
+        programId,
+        diagnosisData,
+        userInfo,
+        language || 'en'
+      );
 
       return NextResponse.json({
         success: true,
         data: result,
       });
-    } else if (action === 'generate_day') {
-      // Generate a single day (1-7)
-      const request = body as GenerateSingleDayRequest & { action: string };
-      
-      if (request.dayNumber < 1 || request.dayNumber > 7) {
-        return NextResponse.json(
-          { error: 'dayNumber must be between 1 and 7' },
-          { status: 400 }
-        );
-      }
-
-      const result = await generateSingleDay({
-        dayNumber: request.dayNumber,
-        diagnosisData: request.diagnosisData,
-        userInfo: request.userInfo,
-        previousDays: request.previousDays || [],
-        programMetadata: request.programMetadata,
-        userId: request.userId,
-        programId: request.programId,
-        language: request.language,
-      });
-
-      const programDay = toProgramDay(result);
-
-      // Save day to Firebase
-      if (request.userId && request.programId) {
-        const isLastDay = request.dayNumber === 7;
-        await saveDayToFirebase(
-          request.userId,
-          request.programId,
-          programDay,
-          isLastDay,
-          request.diagnosisData?.programType
-        );
-      }
-
-      return NextResponse.json({
-        success: true,
-        data: programDay,
-      });
     } else {
       return NextResponse.json(
-        { error: 'Invalid action. Use "generate_metadata" or "generate_day"' },
+        { error: 'Invalid action. Use "generate_full_program"' },
         { status: 400 }
       );
     }

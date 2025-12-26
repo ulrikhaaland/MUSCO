@@ -901,6 +901,12 @@ const translations = {
   'exerciseProgram.signUp.button': 'Sign Up / Log In',
   'exerciseProgram.signUp.saveProgram': 'Save program',
 
+  // Title editing
+  'exerciseProgram.editTitle': 'Edit title',
+  'exerciseProgram.titleRequired': 'Title is required',
+  'exerciseProgram.titleUpdated': 'Title updated',
+  'exerciseProgram.titleUpdateFailed': 'Failed to update title',
+
   // Month abbreviations
   'month.jan': 'Jan',
   'month.feb': 'Feb',

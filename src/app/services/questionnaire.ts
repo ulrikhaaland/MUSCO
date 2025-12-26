@@ -15,10 +15,6 @@ import { Locale } from '../i18n/translations';
 import { getSavedLocalePreference } from '../i18n/utils';
 import { PartialProgram } from '../types/incremental-program';
 import {
-  generateProgramIncrementally,
-  IncrementalProgramCallbacks,
-} from './incrementalProgramService';
-import {
   canGenerateProgram,
   WeeklyLimitReachedError,
   getNextAllowedGenerationDate,
@@ -81,7 +77,18 @@ export interface IncrementalGenerationCallbacks {
 }
 
 /**
- * Submit questionnaire and generate program incrementally (day by day)
+ * Submit questionnaire and trigger program generation.
+ * 
+ * Generation happens in a single API call that:
+ * 1. Generates metadata
+ * 2. Generates all 7 days sequentially
+ * 3. Saves each day to Firebase immediately (progress preserved even if interrupted)
+ * 
+ * The frontend's onSnapshot listener in UserContext will update the UI
+ * in real-time as each day is saved to Firebase.
+ * 
+ * If the user refreshes the page, the UserContext will detect the incomplete
+ * program and call resume_generation to continue from where it left off.
  */
 export const submitQuestionnaireIncremental = async (
   userId: string,
@@ -99,6 +106,10 @@ export const submitQuestionnaireIncremental = async (
     callbacks?.onError?.(error);
     throw error;
   }
+
+  // Get user's language preference
+  const language: Locale =
+    typeof window !== 'undefined' ? getSavedLocalePreference() : 'en';
 
   // Create sanitized copy of questionnaire
   const sanitizedQuestionnaire = { ...questionnaire };
@@ -118,35 +129,38 @@ export const submitQuestionnaireIncremental = async (
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
     type: programType,
+    language,
+    generatingDay: 0, // 0 = generating metadata
+    days: [],
   });
 
   console.log(`[incremental] Program document created: ${docRef.id}`);
 
-  // Note: Weekly generation limit is recorded in generate-incremental/route.ts
-  // when the program is fully generated (day 7 saved), not here
-
-  // Start incremental generation
-  const incrementalCallbacks: IncrementalProgramCallbacks = {
-    onMetadataReady: callbacks?.onMetadataReady,
-    onDayGenerated: callbacks?.onDayGenerated,
-    onComplete: callbacks?.onComplete,
-    onError: (error) => {
-      callbacks?.onError?.(error);
-    },
-  };
-
-  // Don't await - let generation happen in background
-  generateProgramIncrementally(
-    diagnosis,
-    sanitizedQuestionnaire,
-    incrementalCallbacks,
-    {
+  // Start full program generation in a single API call
+  // The API saves each day to Firebase immediately, so the onSnapshot listener
+  // will update the UI in real-time. If this request fails or times out,
+  // the progress is preserved and can be resumed.
+  fetch('/api/programs/generate-incremental', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      action: 'generate_full_program',
       userId,
       programId: docRef.id,
+      diagnosisData: diagnosis,
+      userInfo: sanitizedQuestionnaire,
+      language,
+    }),
+  }).then(async (response) => {
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.error || 'Generation failed');
     }
-  ).catch((error) => {
-    console.error('[incremental] Background generation error:', error);
-    callbacks?.onError?.(error);
+    console.log(`[incremental] Full program generation completed for ${docRef.id}`);
+  }).catch((error) => {
+    // Don't call onError here - the program might be partially complete
+    // The resume logic will handle continuing generation on page load
+    console.error(`[incremental] Generation error (will resume on page load):`, error);
   });
 
   return docRef.id;

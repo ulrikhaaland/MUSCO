@@ -14,6 +14,8 @@ import { useAuth } from './AuthContext';
 import { db } from '@/app/firebase/config';
 import {
   collection,
+  doc,
+  getDoc,
   getDocs,
   query,
   orderBy,
@@ -184,12 +186,15 @@ export function UserProvider({ children }: { children: ReactNode }) {
     docId: string,
     docData: any
   ): Promise<UserProgramWithId | null> => {
-    const programsCollectionRef = collection(db, `users/${uid}/programs/${docId}/programs`);
-
     try {
-      // Fetch all week documents without orderBy to avoid index requirements
-      // We'll sort in memory after converting dates
-      const programSnapshot = await getDocs(programsCollectionRef);
+      // Try the new 'weeks' subcollection first, fall back to legacy 'programs' subcollection
+      let programSnapshot = await getDocs(collection(db, `users/${uid}/programs/${docId}/weeks`));
+      
+      // Fall back to legacy 'programs' subcollection if 'weeks' is empty
+      if (programSnapshot.empty) {
+        programSnapshot = await getDocs(collection(db, `users/${uid}/programs/${docId}/programs`));
+      }
+      
       if (programSnapshot.empty) return null;
 
       const exercisePrograms = await Promise.all(
@@ -401,40 +406,98 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
       // Set up real-time listener for generation status and updates
       const listenerQuery = query(programsRef, orderBy('createdAt', 'desc'));
+      let wasGenerating = false; // Track if we were previously generating
+      
       unsubscribe = onSnapshot(listenerQuery, async (snapshot) => {
         // Check if any program is currently being generated
         const generatingDoc = snapshot.docs.find(
           (doc) => doc.data().status === ProgramStatus.Generating
         );
 
+        // Handle transition from Generating to Done
+        if (wasGenerating && !generatingDoc) {
+          console.log('[UserContext] Generation completed (detected via onSnapshot)');
+          // Find the recently completed program (most recent with status Done)
+          const completedDoc = snapshot.docs.find(
+            (doc) => doc.data().status === ProgramStatus.Done
+          );
+          
+          if (completedDoc) {
+            const data = completedDoc.data();
+            // Update state to reflect completion
+            setGeneratingDay(null);
+            setGeneratedDays([1, 2, 3, 4, 5, 6, 7]);
+            setProgramStatus(ProgramStatus.Done);
+            submissionInProgressRef.current = false;
+            
+            // Load the completed program
+            const completedProgram = await fetchProgramWithWeeks(userId, completedDoc.id, data);
+            if (completedProgram) {
+              prepareAndSetProgram(completedProgram);
+              setUserPrograms(prev => {
+                const idx = prev.findIndex(p => p.docId === completedDoc.id);
+                if (idx >= 0) {
+                  const newList = [...prev];
+                  newList[idx] = completedProgram;
+                  return newList;
+                }
+                return [...prev, completedProgram];
+              });
+            }
+          }
+          wasGenerating = false;
+          return;
+        }
+
         // Handle incremental generation updates (high priority)
+        // The backend generates everything in a single API call and saves each day
+        // to the weeks subcollection. We need to fetch week data for the display.
         if (generatingDoc) {
-          const data = generatingDoc.data();
+          wasGenerating = true;
+          const programData = generatingDoc.data();
           setProgramStatus(ProgramStatus.Generating);
           
-          // Update incremental generation state from Firebase
-          if (data.generatingDay !== undefined) {
-            setGeneratingDay(data.generatingDay);
+          // Update incremental generation state from program document
+          if (programData.generatingDay !== undefined) {
+            setGeneratingDay(programData.generatingDay);
           }
           
-          // If we have days, build the program for display
-          if (data.days && Array.isArray(data.days)) {
-            const generatedDayNumbers = data.days.map((d: ProgramDay) => d.day);
+          // Fetch the current week data from the weeks subcollection
+          const currentWeekId = programData.currentWeekId;
+          let weekData: Record<string, unknown> | null = null;
+          
+          if (currentWeekId) {
+            try {
+              const weekDocRef = doc(db, `users/${userId}/programs/${generatingDoc.id}/weeks/${currentWeekId}`);
+              const weekSnap = await getDoc(weekDocRef);
+              if (weekSnap.exists()) {
+                weekData = weekSnap.data();
+              }
+            } catch (e) {
+              console.warn('[UserContext] Could not fetch week data:', e);
+            }
+          }
+          
+          // If we have week data with days, build the program for display
+          if (weekData && weekData.days && Array.isArray(weekData.days)) {
+            const days = weekData.days as ProgramDay[];
+            const generatedDayNumbers = days.map((d: ProgramDay) => d.day);
             setGeneratedDays(generatedDayNumbers);
             
-            // Build display program from Firebase data
+            // Build display program from program + week data
+            // Title comes from program document (generated once), week-specific data from week document
             const displayProgram: ExerciseProgram = {
-              title: data.title || '',
-              programOverview: data.programOverview || '',
-              summary: data.summary || '',
+              title: programData.title || '', // Title from program document
+              programOverview: (weekData.programOverview as string) || '',
+              summary: (weekData.summary as string) || '',
               timeFrameExplanation: '',
-              whatNotToDo: data.whatNotToDo || '',
-              afterTimeFrame: data.afterTimeFrame || { expectedOutcome: '', nextSteps: '' },
-              targetAreas: data.questionnaire?.targetAreas || [],
-              bodyParts: data.questionnaire?.targetAreas || [],
-              createdAt: data.createdAt?.toDate?.() || new Date(),
+              whatNotToDo: (weekData.whatNotToDo as string) || '',
+              afterTimeFrame: (weekData.afterTimeFrame as { expectedOutcome: string; nextSteps: string }) || { expectedOutcome: '', nextSteps: '' },
+              targetAreas: (weekData.targetAreas as string[]) || programData.questionnaire?.targetAreas || [],
+              bodyParts: (weekData.bodyParts as string[]) || programData.questionnaire?.targetAreas || [],
+              createdAt: programData.createdAt?.toDate?.() || new Date(),
               days: [1, 2, 3, 4, 5, 6, 7].map((dayNum) => {
-                const existingDay = data.days.find((d: ProgramDay) => d.day === dayNum);
+                const existingDay = days.find((d: ProgramDay) => d.day === dayNum);
                 return existingDay || {
                   day: dayNum,
                   description: '',
@@ -449,16 +512,16 @@ export function UserProvider({ children }: { children: ReactNode }) {
             await enrichExercisesWithFullData(displayProgram, isNorwegian);
             setProgram(displayProgram);
           } else {
-            // No days yet, show skeleton
+            // No week data yet, show skeleton with title from program if available
             const skeletonProgram: ExerciseProgram = {
-              title: data.title || '',
-              programOverview: data.programOverview || '',
-              summary: data.summary || '',
+              title: programData.title || '', // Title from program document
+              programOverview: '',
+              summary: '',
               timeFrameExplanation: '',
-              whatNotToDo: data.whatNotToDo || '',
-              afterTimeFrame: data.afterTimeFrame || { expectedOutcome: '', nextSteps: '' },
-              targetAreas: data.questionnaire?.targetAreas || [],
-              bodyParts: data.questionnaire?.targetAreas || [],
+              whatNotToDo: '',
+              afterTimeFrame: { expectedOutcome: '', nextSteps: '' },
+              targetAreas: programData.questionnaire?.targetAreas || [],
+              bodyParts: programData.questionnaire?.targetAreas || [],
               createdAt: new Date(),
               days: [1, 2, 3, 4, 5, 6, 7].map((day) => ({
                 day,
@@ -775,80 +838,31 @@ export function UserProvider({ children }: { children: ReactNode }) {
         );
       }
 
-      // Submit questionnaire and generate program incrementally
-      // Don't await - let Firebase operations happen in background while user sees the program page
+      // Submit questionnaire - the Firebase Cloud Function (onProgramGenerating)
+      // will handle the actual generation in the background.
+      // The onSnapshot listener in this context will pick up Firebase updates
+      // and update the UI state accordingly.
       submitQuestionnaireIncremental(
         user.uid,
         diagnosis,
         answers,
         {
-          onMetadataReady: async (partial) => {
-            console.log('[UserContext] Metadata ready, starting day generation');
-            setPartialProgram(partial);
-            // Metadata done, now starting day 1 generation
-            setGeneratingDay(1);
-            // Update skeleton program with metadata (keep placeholder days)
-            setProgram((prev) => prev ? {
-              ...prev,
-              title: partial.title,
-              programOverview: partial.programOverview,
-              summary: partial.summary,
-              whatNotToDo: partial.whatNotToDo,
-              afterTimeFrame: partial.afterTimeFrame,
-            } : partialToDisplayProgram(partial));
-          },
-          onDayGenerated: async (day, dayNumber, partial) => {
-            console.log(`[UserContext] Day ${dayNumber} generated`);
-            setPartialProgram(partial);
-            setGeneratedDays((prev) => [...prev, dayNumber]);
-            setGeneratingDay(dayNumber < 7 ? dayNumber + 1 : null);
-            // Update display program with new day
-            const displayProgram = partialToDisplayProgram(partial);
-            // Enrich exercises with full data
-            await enrichExercisesWithFullData(displayProgram, isNorwegian);
-            setProgram(displayProgram);
-          },
-          onComplete: async (finalProgram) => {
-            console.log('[UserContext] Program generation complete');
-            // Log the full program for debugging
-            console.log('\n========== GENERATED PROGRAM ==========');
-            console.log('Title:', finalProgram.title);
-            console.log('Overview:', finalProgram.programOverview);
-            console.log('\n--- WEEKLY SCHEDULE ---');
-            finalProgram.days?.forEach((day) => {
-              console.log(`\nDAY ${day.day}: ${day.isRestDay ? '(REST)' : day.isCardioDay ? '(CARDIO)' : '(STRENGTH)'}`);
-              console.log('Description:', day.description);
-              console.log('Duration:', day.duration, 'min');
-              console.log('Exercises:');
-              day.exercises?.forEach((ex, i) => {
-                const label = ex.warmup ? '[WARMUP]' : '';
-                const bodyPart = ex.bodyPart || 'unknown';
-                console.log(`  ${i + 1}. ${ex.name || ex.exerciseId} ${label} - ${bodyPart}`);
-              });
-            });
-            console.log('\n========================================\n');
-            // Enrich final program
-            await enrichExercisesWithFullData(finalProgram, isNorwegian);
-            setProgram(finalProgram);
-            setPartialProgram(null);
-            setGeneratingDay(null);
-            setGeneratedDays([1, 2, 3, 4, 5, 6, 7]);
-            setProgramStatus(ProgramStatus.Done);
-            // Allow other program loads now that generation is complete
-            submissionInProgressRef.current = false;
-          },
           onError: (error) => {
-            console.error('[UserContext] Program generation error:', error);
+            console.error('[UserContext] Program submission error:', error);
             setProgramStatus(ProgramStatus.Error);
             setGeneratingDay(null);
             submissionInProgressRef.current = false;
           },
         }
       ).then((programId) => {
+        console.log(`[UserContext] Program document created: ${programId}`);
+        console.log('[UserContext] Cloud Function will handle generation, listening via onSnapshot...');
         logAnalyticsEvent('questionnaire_submitted', {
           programType: diagnosis.programType,
           programId,
         });
+        // Note: submissionInProgressRef will be cleared when onSnapshot
+        // detects the program status changing to Done
       }).catch((error) => {
         console.error('[UserContext] Program submission error:', error);
         setProgramStatus(ProgramStatus.Error);

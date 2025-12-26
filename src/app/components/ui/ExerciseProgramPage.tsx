@@ -272,16 +272,29 @@ export function ExerciseProgramPage({
   // State for save button
   const [isSaving, setIsSaving] = useState(false);
 
+  // State for title editing
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [editedTitle, setEditedTitle] = useState('');
+  const [isSavingTitle, setIsSavingTitle] = useState(false);
+  const titleInputRef = useRef<HTMLInputElement>(null);
+
   // State for week-specific overview card - auto-expand during generation
   const [showWeekOverview, setShowWeekOverview] = useState(false);
-  const hasAutoExpandedOverview = useRef(false);
+  const prevGeneratingDay = useRef<number | null | undefined>(undefined);
   
-  // Auto-expand overview when generation starts
+  // Auto-expand overview during generation, collapse when done
   useEffect(() => {
-    if (generatingDay !== null && !hasAutoExpandedOverview.current) {
+    if (generatingDay !== null) {
+      // Generation is active - expand
+      // This handles both initial load during generation and when generation starts
       setShowWeekOverview(true);
-      hasAutoExpandedOverview.current = true;
+    } else if (prevGeneratingDay.current !== null && prevGeneratingDay.current !== undefined) {
+      // Generation just finished (was generating, now not) - collapse
+      setShowWeekOverview(false);
     }
+    // Note: If generatingDay is null on initial load (not generating), 
+    // prevGeneratingDay is undefined, so we don't collapse (keeps user's preference)
+    prevGeneratingDay.current = generatingDay;
   }, [generatingDay]);
 
   // Set initial week and day when program loads (only on first load or when program changes)
@@ -496,6 +509,79 @@ export function ExerciseProgramPage({
       toast.error('Failed to save program. Please try again.');
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  // Start editing title
+  const handleStartEditTitle = () => {
+    const currentTitle = title || program?.title || '';
+    setEditedTitle(currentTitle);
+    setIsEditingTitle(true);
+    // Focus input after state update
+    setTimeout(() => titleInputRef.current?.focus(), 0);
+  };
+
+  // Cancel editing title
+  const handleCancelEditTitle = () => {
+    setIsEditingTitle(false);
+    setEditedTitle('');
+  };
+
+  // Save edited title
+  const handleSaveTitle = async () => {
+    if (!user || !activeProgram?.docId) {
+      toast.error(t('common.loginRequired'));
+      return;
+    }
+
+    const trimmedTitle = editedTitle.trim();
+    if (!trimmedTitle) {
+      toast.error(t('exerciseProgram.titleRequired'));
+      return;
+    }
+
+    if (trimmedTitle === (title || program?.title)) {
+      // No change, just close edit mode
+      setIsEditingTitle(false);
+      return;
+    }
+
+    setIsSavingTitle(true);
+    try {
+      const response = await fetch('/api/programs/update-title', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: user.uid,
+          programId: activeProgram.docId,
+          title: trimmedTitle,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Failed to update title');
+      }
+
+      toast.success(t('exerciseProgram.titleUpdated'));
+      setIsEditingTitle(false);
+      
+      // The onSnapshot listener in UserContext will pick up the change
+      // and update the UI automatically
+    } catch (error) {
+      console.error('Error updating title:', error);
+      toast.error(t('exerciseProgram.titleUpdateFailed'));
+    } finally {
+      setIsSavingTitle(false);
+    }
+  };
+
+  // Handle Enter key to save, Escape to cancel
+  const handleTitleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleSaveTitle();
+    } else if (e.key === 'Escape') {
+      handleCancelEditTitle();
     }
   };
 
@@ -854,12 +940,75 @@ export function ExerciseProgramPage({
           ) : (
             <div className="hidden md:flex py-3 px-4 items-center justify-center">
               <div className="flex flex-col items-center">
-                <h1 className="text-app-title text-center">
-                  {title || program?.title ||
-                    (type === ProgramType.Recovery
-                      ? t('program.recoveryProgramTitle')
-                      : t('program.exerciseProgramTitle'))}
-                </h1>
+                {isEditingTitle ? (
+                  <div className="flex items-center gap-2">
+                    <input
+                      ref={titleInputRef}
+                      type="text"
+                      value={editedTitle}
+                      onChange={(e) => setEditedTitle(e.target.value)}
+                      onKeyDown={handleTitleKeyDown}
+                      className="text-app-title text-center bg-gray-800 border border-gray-600 rounded-lg px-3 py-1 text-white focus:outline-none focus:border-indigo-500"
+                      maxLength={100}
+                      disabled={isSavingTitle}
+                    />
+                    <button
+                      onClick={handleSaveTitle}
+                      disabled={isSavingTitle}
+                      className="p-1.5 rounded-lg bg-indigo-600 text-white hover:bg-indigo-500 transition-colors disabled:opacity-50"
+                      title={t('common.save')}
+                    >
+                      {isSavingTitle ? (
+                        <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                        </svg>
+                      ) : (
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                      )}
+                    </button>
+                    <button
+                      onClick={handleCancelEditTitle}
+                      disabled={isSavingTitle}
+                      className="p-1.5 rounded-lg bg-gray-700 text-gray-300 hover:bg-gray-600 transition-colors disabled:opacity-50"
+                      title={t('common.cancel')}
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2 group">
+                    {user && activeProgram?.docId && !isViewingCustomProgram ? (
+                      <button
+                        onClick={handleStartEditTitle}
+                        className="text-app-title text-center hover:text-gray-300 transition-colors cursor-pointer"
+                        title={t('exerciseProgram.editTitle')}
+                      >
+                        {title || program?.title ||
+                          (type === ProgramType.Recovery
+                            ? t('program.recoveryProgramTitle')
+                            : t('program.exerciseProgramTitle'))}
+                      </button>
+                    ) : (
+                      <h1 className="text-app-title text-center">
+                        {title || program?.title ||
+                          (type === ProgramType.Recovery
+                            ? t('program.recoveryProgramTitle')
+                            : t('program.exerciseProgramTitle'))}
+                      </h1>
+                    )}
+                    {/* Edit icon hint - only show for logged-in users with their own program */}
+                    {user && activeProgram?.docId && !isViewingCustomProgram && (
+                      <svg className="w-4 h-4 text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                      </svg>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -1359,11 +1508,11 @@ export function ExerciseProgramPage({
                       )}
                       
                       {/* Day Tabs */}
-                      <div className="overflow-x-auto scrollbar-hide mb-4">
-                        <div className="flex space-x-2 min-w-max">
+                      <div className="mb-4">
+                        <div className="grid grid-cols-7 gap-1.5">
                           {shimmer ? (
                             Array.from({ length: 7 }).map((_, i) => (
-                              <div key={i} className="shimmer h-10 w-20 bg-gray-800/60 rounded-lg" />
+                              <div key={i} className="shimmer h-16 bg-gray-800/60 rounded-lg" />
                             ))
                           ) : (
                           // Sort days by day.day to ensure chronological order
@@ -1380,7 +1529,7 @@ export function ExerciseProgramPage({
                                 data-day={day.day}
                                 onClick={() => isDayGenerated && handleDayClick(day.day)}
                                 disabled={!isDayGenerated}
-                                className={`px-6 py-3 rounded-lg font-medium transition-all duration-200 flex flex-col items-center relative ${
+                                className={`py-2.5 rounded-lg font-medium transition-all duration-200 flex flex-col items-center justify-center relative ${
                                   isSelected && isDayGenerated
                                     ? 'bg-indigo-600 text-white'
                                     : isDayGenerating
@@ -1394,26 +1543,26 @@ export function ExerciseProgramPage({
                                 {isDayGenerating && (
                                   <span className="absolute top-1 right-1 w-2 h-2 bg-violet-400 rounded-full animate-pulse" />
                                 )}
-                                <span className={`text-sm mb-1 ${isDayGenerating ? 'opacity-100' : 'opacity-80'}`}>
+                                <span className={`text-sm mb-0.5 ${isDayGenerating ? 'opacity-100' : 'opacity-80'}`}>
                                   {getDayShortName(day.day, t)}
                                 </span>
                                 {isDayGenerating ? (
-                                  <span className="text-xs mt-1 text-violet-300">
+                                  <span className="text-xs text-violet-300">
                                     <svg className="w-3 h-3 animate-spin inline" fill="none" viewBox="0 0 24 24">
                                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                                     </svg>
                                   </span>
                                 ) : !isDayGenerated ? (
-                                  <span className="text-xs mt-1 opacity-60">
+                                  <span className="text-xs opacity-60">
                                     —
                                   </span>
                                 ) : day.isRestDay ? (
-                                  <span className="text-xs mt-1 opacity-80">
+                                  <span className="text-xs opacity-80">
                                     {t('exerciseProgram.day.rest')}
                                   </span>
                                 ) : (
-                                  <span className="text-xs mt-1 opacity-80">
+                                  <span className="text-xs opacity-80">
                                     {t('calendar.workout')}
                                   </span>
                                 )}
@@ -1506,11 +1655,11 @@ export function ExerciseProgramPage({
                       )}
                       
                       {/* Day Tabs */}
-                      <div className="overflow-x-auto scrollbar-hide mb-4">
-                        <div className="flex space-x-2 min-w-max">
+                      <div className="mb-4">
+                        <div className="grid grid-cols-7 gap-1.5">
                           {shimmer ? (
                             Array.from({ length: 7 }).map((_, i) => (
-                              <div key={i} className="shimmer h-10 w-20 bg-gray-800/60 rounded-lg" />
+                              <div key={i} className="shimmer h-16 bg-gray-800/60 rounded-lg" />
                             ))
                           ) : (
                             // Sort days by day.day to ensure chronological order
@@ -1527,7 +1676,7 @@ export function ExerciseProgramPage({
                                   data-day={day.day}
                                   onClick={() => isDayGenerated && handleDayClick(day.day)}
                                   disabled={!isDayGenerated}
-                                  className={`px-6 py-3 rounded-lg font-medium transition-all duration-200 flex flex-col items-center relative ${
+                                  className={`py-2.5 rounded-lg font-medium transition-all duration-200 flex flex-col items-center justify-center relative ${
                                     isSelected && isDayGenerated
                                       ? 'bg-indigo-600 text-white'
                                       : isDayGenerating
@@ -1541,26 +1690,26 @@ export function ExerciseProgramPage({
                                   {isDayGenerating && (
                                     <span className="absolute top-1 right-1 w-2 h-2 bg-violet-400 rounded-full animate-pulse" />
                                   )}
-                                  <span className={`text-sm mb-1 ${isDayGenerating ? 'opacity-100' : 'opacity-80'}`}>
+                                  <span className={`text-sm mb-0.5 ${isDayGenerating ? 'opacity-100' : 'opacity-80'}`}>
                                     {getDayShortName(day.day, t)}
                                   </span>
                                   {isDayGenerating ? (
-                                    <span className="text-xs mt-1 text-violet-300">
+                                    <span className="text-xs text-violet-300">
                                       <svg className="w-3 h-3 animate-spin inline" fill="none" viewBox="0 0 24 24">
                                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                                       </svg>
                                     </span>
                                   ) : !isDayGenerated ? (
-                                    <span className="text-xs mt-1 opacity-60">
+                                    <span className="text-xs opacity-60">
                                       —
                                     </span>
                                   ) : day.isRestDay ? (
-                                    <span className="text-xs mt-1 opacity-80">
+                                    <span className="text-xs opacity-80">
                                       {t('exerciseProgram.day.rest')}
                                     </span>
                                   ) : (
-                                    <span className="text-xs mt-1 opacity-80">
+                                    <span className="text-xs opacity-80">
                                       {t('calendar.workout')}
                                     </span>
                                   )}

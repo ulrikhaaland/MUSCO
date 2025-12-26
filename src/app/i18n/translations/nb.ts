@@ -877,6 +877,12 @@ const translations = {
   'exerciseProgram.signUp.button': 'Registrer deg / Logg inn',
   'exerciseProgram.signUp.saveProgram': 'Lagre program',
 
+  // Title editing
+  'exerciseProgram.editTitle': 'Rediger tittel',
+  'exerciseProgram.titleRequired': 'Tittel er påkrevd',
+  'exerciseProgram.titleUpdated': 'Tittel oppdatert',
+  'exerciseProgram.titleUpdateFailed': 'Kunne ikke oppdatere tittel',
+
   // Month abbreviations
   'month.jan': 'Jan',
   'month.feb': 'Feb',
