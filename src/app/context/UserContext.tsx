@@ -187,10 +187,11 @@ export function UserProvider({ children }: { children: ReactNode }) {
     docData: any
   ): Promise<UserProgramWithId | null> => {
     const programsCollectionRef = collection(db, `users/${uid}/programs/${docId}/programs`);
-    const programQ = query(programsCollectionRef, orderBy('createdAt', 'asc'));
 
     try {
-      const programSnapshot = await getDocs(programQ);
+      // Fetch all week documents without orderBy to avoid index requirements
+      // We'll sort in memory after converting dates
+      const programSnapshot = await getDocs(programsCollectionRef);
       if (programSnapshot.empty) return null;
 
       const exercisePrograms = await Promise.all(
@@ -210,6 +211,13 @@ export function UserProvider({ children }: { children: ReactNode }) {
         })
       );
 
+      // Sort weeks by createdAt in ascending order (oldest first = week 1)
+      exercisePrograms.sort((a, b) => {
+        const dateA = a.createdAt instanceof Date ? a.createdAt : new Date(a.createdAt || 0);
+        const dateB = b.createdAt instanceof Date ? b.createdAt : new Date(b.createdAt || 0);
+        return dateA.getTime() - dateB.getTime();
+      });
+
       // Parse dates
       const createdAt = docData.createdAt?.toDate?.() 
         ?? (typeof docData.createdAt === 'string' ? new Date(docData.createdAt) : new Date());
@@ -228,7 +236,8 @@ export function UserProvider({ children }: { children: ReactNode }) {
         timeFrame: docData.timeFrame,
         docId,
       };
-    } catch {
+    } catch (error) {
+      console.error('Error fetching program weeks:', error);
       return null;
     }
   };

@@ -1,8 +1,11 @@
 import {
-  ProgramType,
   ExerciseQuestionnaireAnswers,
-} from '../../../shared/types';
+  ProgramType,
+} from '@shared/types';
 import { DiagnosisAssistantResponse } from '../types';
+
+// Re-export for use throughout the app
+export { ProgramType };
 
 export enum ProgramStatus {
   Generating = 'generating',
@@ -135,7 +138,7 @@ export const EXERCISE_ENVIRONMENTS: ExerciseEnvironment[] = [
 export type ExerciseEnvironmentName =
   (typeof EXERCISE_ENVIRONMENTS)[number]['name'];
 
-// Workout duration options
+// Workout duration options for exercise programs
 export const WORKOUT_DURATIONS = [
   '15-30 minutes',
   '30-45 minutes',
@@ -145,6 +148,15 @@ export const WORKOUT_DURATIONS = [
 ] as const;
 
 export type WorkoutDuration = (typeof WORKOUT_DURATIONS)[number];
+
+// Workout duration options for recovery programs (shorter durations)
+export const RECOVERY_WORKOUT_DURATIONS = [
+  '15 minutes',
+  '30 minutes',
+  '45 minutes',
+] as const;
+
+export type RecoveryWorkoutDuration = (typeof RECOVERY_WORKOUT_DURATIONS)[number];
 
 // Age range options
 export const AGE_RANGES = [
@@ -184,7 +196,11 @@ export const PLANNED_EXERCISE_FREQUENCY_OPTIONS = [
 export type PlannedExerciseFrequency =
   (typeof PLANNED_EXERCISE_FREQUENCY_OPTIONS)[number];
 
-// Exercise modality options
+/**
+ * Exercise modality options for program generation
+ * NOTE: For profile display with descriptions, use PROFILE_EXERCISE_MODALITIES
+ * from @/app/profile/constants/profileOptions.ts
+ */
 export const EXERCISE_MODALITIES = ['Cardio', 'Strength', 'Both'] as const;
 
 export type ExerciseModality = (typeof EXERCISE_MODALITIES)[number];

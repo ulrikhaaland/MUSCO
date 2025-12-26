@@ -2696,7 +2696,7 @@ export const getUserProgramBySlug = (slug: string): {
         avoidActivities: ['Heavy lifting', 'Prolonged sitting', 'High-impact activities'],
         timeFrame: '4 weeks',
         followUpQuestions: [],
-        programType: ProgramType.Recovery,
+        programType: Recovery,
         targetAreas: ['Lower Back', 'Core']
       },
       questionnaire: {

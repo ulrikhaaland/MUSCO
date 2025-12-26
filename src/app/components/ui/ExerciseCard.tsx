@@ -4,13 +4,13 @@ import Card from './Card';
 import Chip from './Chip';
 import { useTranslation } from '@/app/i18n/TranslationContext';
 import { ChevronDown, PlayIcon, ArrowUp, ArrowDown, SpinnerIcon } from '../icons';
+import { PLACEHOLDER_VALUES } from '@/app/constants';
 
 // Filter out placeholder values that shouldn't be displayed
-const PLACEHOLDER_VALUES = ['ingen', 'none', 'optional', 'n/a', 'null', 'undefined', '-'];
 const isPlaceholderValue = (value: string | undefined): boolean => {
   if (!value) return true;
   const normalized = value.trim().toLowerCase();
-  return PLACEHOLDER_VALUES.includes(normalized) || normalized.length === 0;
+  return PLACEHOLDER_VALUES.includes(normalized as typeof PLACEHOLDER_VALUES[number]) || normalized.length === 0;
 };
 
 interface ExerciseCardProps {

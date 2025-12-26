@@ -24,6 +24,7 @@ import {
   clearRecoveryProgramFromSession,
 } from '../../services/recoveryProgramService';
 import { SUBSCRIPTIONS_ENABLED } from '@/app/lib/featureFlags';
+import { canGenerateProgram, getNextAllowedGenerationDate } from '@/app/services/programGenerationLimits';
 
 interface ExerciseProgramPageProps {
   program: ExerciseProgram;
@@ -254,6 +255,9 @@ export function ExerciseProgramPage({
   const [isInFutureWeek, setIsInFutureWeek] = useState(false);
   // Add state to store the date when user can generate a new program
   const [nextProgramDate, setNextProgramDate] = useState<Date | null>(null);
+  // Add state for weekly generation limit
+  const [isWeeklyLimitReached, setIsWeeklyLimitReached] = useState(false);
+  const [weeklyLimitNextDate, setWeeklyLimitNextDate] = useState<Date | null>(null);
   const { activeProgram, generatingDay: contextGeneratingDay, generatedDays: contextGeneratedDays } = useUser();
   
   // Use props if provided, otherwise fall back to context
@@ -690,6 +694,33 @@ export function ExerciseProgramPage({
     setIsInFutureWeek(inFutureWeek);
   }, [program]);
 
+  // Check weekly generation limit for this program type
+  useEffect(() => {
+    const checkWeeklyLimit = async () => {
+      if (!user?.uid || !program?.type) {
+        setIsWeeklyLimitReached(false);
+        return;
+      }
+
+      try {
+        const canGenerate = await canGenerateProgram(user.uid, program.type);
+        setIsWeeklyLimitReached(!canGenerate);
+
+        if (!canGenerate) {
+          const nextDate = await getNextAllowedGenerationDate(user.uid, program.type);
+          setWeeklyLimitNextDate(nextDate);
+        } else {
+          setWeeklyLimitNextDate(null);
+        }
+      } catch (error) {
+        console.error('Error checking weekly limit:', error);
+        setIsWeeklyLimitReached(false);
+      }
+    };
+
+    checkWeeklyLimit();
+  }, [user?.uid, program?.type]);
+
   // Only return null when not shimmering; allow shimmer UI even before program is available
   if (!shimmer && ((isLoading) || program === null || !Array.isArray(program.days))) {
     return null;
@@ -785,12 +816,12 @@ export function ExerciseProgramPage({
             <div className="hidden md:flex py-3 px-4 items-center justify-center">
               <div className="flex flex-col items-center">
                 <h1 className="text-app-title text-center">
-                  {title ||
+                  {title || program?.title ||
                     (type === ProgramType.Recovery
                       ? t('program.recoveryProgramTitle')
                       : t('program.exerciseProgramTitle'))}
                 </h1>
-                {!isCustomProgram && (
+                {!isCustomProgram && generatingDay === null && (
                   isActive ? (
                     <div className="mt-1 px-2 py-0.5 bg-green-500/20 text-green-300 text-xs rounded-full flex items-center">
                       <span className="w-2 h-2 rounded-full bg-green-400 mr-1"></span>

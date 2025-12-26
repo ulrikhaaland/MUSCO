@@ -69,6 +69,8 @@ export function usePartChat({
     loadChatSession,
     startNewChat,
     scrollTrigger,
+    chatListRefreshTrigger,
+    titleGeneratingForChatId,
   } = useChat();
 
   const { intention } = useApp();
@@ -266,18 +268,9 @@ export function usePartChat({
   };
 
   const getPartDisplayName = (): string => {
+    // Only show part name if a specific part is selected
     if (!selectedPart) {
-      if (selectedGroups.length === 0) {
-        return '';
-      } else {
-        const translatedGroupName = translateBodyPartGroupName(
-          selectedGroups[0],
-          t
-        );
-        return t('chat.chatAboutOrSelectSpecific', {
-          group: translatedGroupName.toLowerCase(),
-        });
-      }
+      return '';
     }
     return translateAnatomyPart(selectedPart, t);
   };
@@ -334,5 +327,7 @@ export function usePartChat({
     loadChatSession,
     startNewChat,
     scrollTrigger,
+    chatListRefreshTrigger,
+    titleGeneratingForChatId,
   };
 }

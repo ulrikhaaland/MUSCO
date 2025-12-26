@@ -3,8 +3,11 @@
 import { ExerciseQuestionnaire } from '@/app/components/ui/ExerciseQuestionnaire';
 import { ProgramType, ExerciseQuestionnaireAnswers } from '../../../../shared/types';
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { DiagnosisAssistantResponse } from '@/app/types';
 import { useUser } from '@/app/context/UserContext';
+import { WeeklyLimitReachedError } from '@/app/services/questionnaire';
+import { WeeklyLimitModal } from '@/app/components/ui/WeeklyLimitModal';
 // Auth overlay is handled globally in layout via <AuthOverlay />
 
 export default function QuestionnaireClient({
@@ -12,8 +15,17 @@ export default function QuestionnaireClient({
 }: {
   programType: ProgramType;
 }) {
+  const router = useRouter();
   const { onQuestionnaireSubmit } = useUser();
   const [selectedProgramType, setSelectedProgramType] = useState<ProgramType>(programType);
+  const [weeklyLimitError, setWeeklyLimitError] = useState<{
+    programType: ProgramType;
+    nextAllowedDate: Date;
+  } | null>(null);
+
+  const handleClose = () => {
+    router.back();
+  };
 
   useEffect(() => {
     setSelectedProgramType(programType);
@@ -54,7 +66,14 @@ export default function QuestionnaireClient({
       // - Unauthenticated users: returns requiresAuth flag (auth overlay shown)
       await onQuestionnaireSubmit(diagnosis, answers);
     } catch (err) {
-      console.error('Questionnaire submission failed', err);
+      if (err instanceof WeeklyLimitReachedError) {
+        setWeeklyLimitError({
+          programType: err.programType,
+          nextAllowedDate: err.nextAllowedDate,
+        });
+      } else {
+        console.error('Questionnaire submission failed', err);
+      }
     }
   };
 
@@ -62,6 +81,7 @@ export default function QuestionnaireClient({
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800">
       <ExerciseQuestionnaire
+        onClose={handleClose}
         onSubmit={handleSubmit}
         generallyPainfulAreas={[]}
         programType={selectedProgramType}
@@ -71,6 +91,16 @@ export default function QuestionnaireClient({
       />
 
       {/* Auth overlay handled globally */}
+
+      {/* Weekly limit modal */}
+      {weeklyLimitError && (
+        <WeeklyLimitModal
+          isOpen={true}
+          programType={weeklyLimitError.programType}
+          nextAllowedDate={weeklyLimitError.nextAllowedDate}
+          onClose={() => setWeeklyLimitError(null)}
+        />
+      )}
     </div>
   );
 }

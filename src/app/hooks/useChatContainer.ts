@@ -72,6 +72,8 @@ export function useChatContainer({
     loadChatSession,
     startNewChat,
     scrollTrigger,
+    chatListRefreshTrigger,
+    titleGeneratingForChatId,
   } = usePartChat({
     selectedPart,
     selectedGroups,
@@ -154,6 +156,8 @@ export function useChatContainer({
     loadChatSession,
     startNewChat,
     scrollTrigger,
+    chatListRefreshTrigger,
+    titleGeneratingForChatId,
   };
 }
 

@@ -19,6 +19,7 @@ interface PartPopupProps {
   onGenerateProgram?: (programType: ProgramType) => void;
   onBodyGroupSelected?: (groupName: string, keepChatOpen?: boolean) => void;
   onBodyPartSelected?: (partName: string, keepChatOpen?: boolean) => void;
+  onHistoryOpenChange?: (isOpen: boolean) => void;
 }
 
 export default function PartPopup({
@@ -30,6 +31,7 @@ export default function PartPopup({
   onGenerateProgram,
   onBodyGroupSelected,
   onBodyPartSelected,
+  onHistoryOpenChange,
 }: PartPopupProps) {
   const { saveViewerState, setSelectedPart, setSelectedGroup, selectedGroups } = useApp();
   
@@ -84,6 +86,8 @@ export default function PartPopup({
     loadChatSession,
     startNewChat,
     scrollTrigger,
+    chatListRefreshTrigger,
+    titleGeneratingForChatId,
   } = useChatContainer({
     selectedPart: part,
     selectedGroups: groups,
@@ -94,7 +98,13 @@ export default function PartPopup({
   });
 
   // Chat history panel state
-  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+  const [isHistoryOpenInternal, setIsHistoryOpenInternal] = useState(false);
+  
+  // Wrapper to notify parent of history open state changes
+  const setIsHistoryOpen = (open: boolean) => {
+    setIsHistoryOpenInternal(open);
+    onHistoryOpenChange?.(open);
+  };
 
   const handleTextareaChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setMessage(e.target.value);
@@ -153,69 +163,65 @@ export default function PartPopup({
 
   return (
     <div className="h-full bg-gray-900 text-white p-6 flex flex-col relative" id="part-popup-container">
-      <div className="flex justify-between items-start mb-6 flex-shrink-0">
-        <div className="w-full">
-          <h2 className="text-sm text-gray-400 mb-1">
-            Musculoskeletal Assistant
-          </h2>
+      <div className="flex flex-col pb-4 border-b border-gray-700 flex-shrink-0">
+        {/* Top row: Group title and buttons */}
+        <div className="flex items-start justify-between">
           <h3 className="text-app-title">{getGroupDisplayName()}</h3>
-          <div>
-            <div className="flex items-center justify-between w-full gap-2">
-              <h2 className="text-sm text-gray-400">{getPartDisplayName()}</h2>
-
-              <div className="flex items-center gap-1">
-                {/* History button - only show if user is logged in */}
-                {user && (
-                  <button
-                    onClick={() => setIsHistoryOpen(true)}
-                    className="text-gray-400 hover:text-white p-1 rounded-full hover:bg-gray-800 transition-colors"
-                    aria-label={t('bottomSheet.chatHistory')}
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-5 w-5"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  </button>
-                )}
-                {/* New Chat button */}
-                <button
-                  onClick={handleResetChat}
-                  className="text-gray-400 hover:text-white p-1.5 rounded-lg hover:bg-gray-800 transition-colors"
-                  aria-label={t('chatHistory.newChat')}
-                  title={t('chatHistory.newChat')}
+          <div className="flex items-center gap-1">
+            {/* History button - only show if user is logged in */}
+            {user && (
+              <button
+                onClick={() => setIsHistoryOpen(true)}
+                className="text-gray-400 hover:text-white p-1 rounded-full hover:bg-gray-800 transition-colors"
+                aria-label={t('bottomSheet.chatHistory')}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth={2}
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                    />
-                  </svg>
-                </button>
-              </div>
-            </div>
+                  <path
+                    fillRule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </button>
+            )}
+            {/* New Chat button */}
+            <button
+              onClick={handleResetChat}
+              className="text-gray-400 hover:text-white p-1.5 rounded-lg hover:bg-gray-800 transition-colors"
+              aria-label={t('chatHistory.newChat')}
+              title={t('chatHistory.newChat')}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                />
+              </svg>
+            </button>
           </div>
         </div>
+        {/* Selected part name (if any) */}
+        {getPartDisplayName() && (
+          <h2 className="text-sm text-gray-400 mt-1">{getPartDisplayName()}</h2>
+        )}
       </div>
 
       {/* Global Template Questions (when no body part selected and no messages) */}
       {messages.length === 0 && groups.length === 0 && !isLoading && (
-        <div className="mb-4 rounded-lg border border-gray-800 bg-gray-900/60 p-4">
+        <div className="mt-4 mb-4 rounded-lg border border-gray-800 bg-gray-900/60 p-4">
           <div className="text-base text-white mb-2">{t('mobile.chat.startOrSelect')}</div>
           <div className="text-sm text-gray-400 mb-3">{t('mobile.chat.askAnything')}</div>
           <div className="flex flex-wrap gap-2">
@@ -291,7 +297,7 @@ export default function PartPopup({
         scrollTrigger={scrollTrigger}
       />
 
-      <div className="mt-4 border-t border-gray-700 pt-4 flex-shrink-0">
+      <div className="border-t border-gray-700 pt-4 flex-shrink-0">
         <form
           onSubmit={(e) => {
             e.preventDefault();
@@ -370,7 +376,7 @@ export default function PartPopup({
 
       {/* Chat History Panel */}
       <ChatHistory
-        isOpen={isHistoryOpen}
+        isOpen={isHistoryOpenInternal}
         onClose={() => setIsHistoryOpen(false)}
         currentChatId={currentChatId}
         onSelectChat={(chatId) => {
@@ -379,6 +385,8 @@ export default function PartPopup({
         onNewChat={() => {
           startNewChat();
         }}
+        refreshTrigger={chatListRefreshTrigger}
+        titleGeneratingForChatId={titleGeneratingForChatId}
       />
     </div>
   );

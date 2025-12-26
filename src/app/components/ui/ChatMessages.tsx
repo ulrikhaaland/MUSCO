@@ -1133,7 +1133,7 @@ export function ChatMessages({
         )}
 
         {/* Regular messages container */}
-        <div className="space-y-4 min-h-full relative flex flex-col">
+        <div className={`space-y-4 min-h-full relative flex flex-col ${!isMobile ? 'pt-4 pb-4' : ''}`}>
           {/* Prior messages (not part of current turn) */}
           {messages.map((msg, index) => {
             // Skip current turn messages as they'll be rendered differently

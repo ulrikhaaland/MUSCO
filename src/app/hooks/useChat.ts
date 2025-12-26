@@ -20,6 +20,7 @@ import {
   createChatSession,
   updateChatSession,
   getChatSession,
+  generateChatTitle,
 } from '../services/chatService';
 
 // Type for storing failed message details for retry
@@ -44,6 +45,8 @@ export function useChat() {
   // Chat history state
   const [currentChatId, setCurrentChatId] = useState<string | null>(null);
   const [scrollTrigger, setScrollTrigger] = useState(0);
+  const [chatListRefreshTrigger, setChatListRefreshTrigger] = useState(0);
+  const [titleGeneratingForChatId, setTitleGeneratingForChatId] = useState<string | null>(null);
   const chatSaveInProgressRef = useRef(false);
   const lastSavedMessagesCountRef = useRef(0);
   
@@ -672,6 +675,8 @@ export function useChat() {
 
   // Track previous user ID to detect login transitions
   const prevUserIdRef = useRef<string | null>(null);
+  // Track if we've generated an LLM title for the current chat
+  const titleGeneratedRef = useRef(false);
 
   // Handle anonymous → logged-in migration: save existing chat to Firestore immediately
   useEffect(() => {
@@ -745,14 +750,64 @@ export function useChat() {
             followUpQuestions: followUpsToSave,
             assistantResponse,
           });
+          
+          // Generate LLM title after first complete exchange (if not already generated)
+          if (!titleGeneratedRef.current && userMessageCount >= 1 && assistantMessageCount >= 1) {
+            const firstUserMsg = messages.find((m) => m.role === 'user');
+            const firstAssistantMsg = messages.find((m) => m.role === 'assistant');
+            if (firstUserMsg?.content && firstAssistantMsg?.content) {
+              titleGeneratedRef.current = true;
+              setTitleGeneratingForChatId(currentChatId);
+              // Generate title asynchronously (don't block)
+              generateChatTitle(
+                firstUserMsg.content,
+                firstAssistantMsg.content,
+                locale === 'nb' ? 'nb' : 'en'
+              ).then((title) => {
+                if (title && currentChatId) {
+                  updateChatSession(user.uid, currentChatId, { title }).then(() => {
+                    setChatListRefreshTrigger((prev) => prev + 1);
+                  });
+                }
+                setTitleGeneratingForChatId(null);
+              }).catch(() => {
+                setTitleGeneratingForChatId(null);
+              });
+            }
+          }
         } else {
-          // Create new chat
+          // Create new chat (with fallback title initially)
           const chatId = await createChatSession(user.uid, {
             messages,
             followUpQuestions: followUpsToSave,
             assistantResponse,
           });
           setCurrentChatId(chatId);
+          // Trigger chat list refresh immediately so chat appears in history
+          setChatListRefreshTrigger((prev) => prev + 1);
+          
+          // Generate LLM title after creating the chat
+          const firstUserMsg = messages.find((m) => m.role === 'user');
+          const firstAssistantMsg = messages.find((m) => m.role === 'assistant');
+          if (firstUserMsg?.content && firstAssistantMsg?.content) {
+            titleGeneratedRef.current = true;
+            setTitleGeneratingForChatId(chatId);
+            // Generate title asynchronously (don't block)
+            generateChatTitle(
+              firstUserMsg.content,
+              firstAssistantMsg.content,
+              locale === 'nb' ? 'nb' : 'en'
+            ).then((title) => {
+              if (title && chatId) {
+                updateChatSession(user.uid, chatId, { title }).then(() => {
+                  setChatListRefreshTrigger((prev) => prev + 1);
+                });
+              }
+              setTitleGeneratingForChatId(null);
+            }).catch(() => {
+              setTitleGeneratingForChatId(null);
+            });
+          }
         }
         lastSavedMessagesCountRef.current = messages.length;
       } catch (error) {
@@ -782,6 +837,7 @@ export function useChat() {
         setAssistantResponse(session.assistantResponse);
         setCurrentChatId(chatId);
         lastSavedMessagesCountRef.current = session.messages.length;
+        titleGeneratedRef.current = true; // Loaded chat already has a title
         
         // Clear inline exercises (will be re-fetched)
         setInlineExercises(new Map());
@@ -807,6 +863,7 @@ export function useChat() {
     setInlineExercises(new Map());
     setCurrentChatId(null);
     lastSavedMessagesCountRef.current = 0;
+    titleGeneratedRef.current = false; // Reset title generation flag
     setIsLoading(false);
     try {
       clearChatState?.();
@@ -851,5 +908,7 @@ export function useChat() {
     loadChatSession,
     startNewChat,
     scrollTrigger,
+    chatListRefreshTrigger,
+    titleGeneratingForChatId,
   };
 }

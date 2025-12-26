@@ -9,13 +9,14 @@ import {
   FreeLimitExceededError,
   logFreeLimit,
 } from '@/app/lib/chatLimits';
-import { ExerciseQuestionnaireAnswers } from '../../../../shared/types';
+import { ExerciseQuestionnaireAnswers, ProgramType } from '../../../../shared/types';
 import { adminDb } from '@/app/firebase/admin';
 import { ProgramStatus, ExerciseProgram } from '@/app/types/program';
 // import { loadServerExercises } from '@/app/services/server-exercises';
 import { ProgramFeedback } from '@/app/components/ui/ProgramFeedbackQuestionnaire';
 import { prepareExercisesPrompt } from '@/app/helpers/exercise-prompt';
 import { getStartOfWeek, addDays } from '@/app/utils/dateutils';
+import { recordProgramGenerationAdmin } from '@/app/services/programGenerationLimitsAdmin';
 
 // Initialize OpenAI client
 const isTestOrCI = process.env.NODE_ENV === 'test' || 
@@ -898,6 +899,12 @@ FAILURE TO FOLLOW THE ABOVE INSTRUCTIONS EXACTLY WILL RESULT IN POOR USER EXPERI
         await batch.commit();
 
         console.log('Successfully updated program document and set as active');
+
+        // Record the weekly generation limit now that follow-up is complete
+        // programType already declared above at line 838
+        if (programType) {
+          await recordProgramGenerationAdmin(context.userId, programType as ProgramType);
+        }
       } catch (error) {
         console.error('Error updating program document:', error);
         // Update status to error if save fails
@@ -1136,6 +1143,12 @@ export async function generateExerciseProgramWithModel(context: {
         await batch.commit();
 
         console.log('Successfully updated program document and set as active');
+
+        // Record the weekly generation limit now that program is complete
+        // programType already declared above at line 1078
+        if (programType) {
+          await recordProgramGenerationAdmin(context.userId, programType as ProgramType);
+        }
       } catch (error) {
         console.error('Error updating program document:', error);
         // Update status to error if save fails

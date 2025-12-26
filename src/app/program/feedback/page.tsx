@@ -5,11 +5,13 @@ import { useRouter } from 'next/navigation';
 import { ProgramFeedbackQuestionnaire } from '@/app/components/ui/ProgramFeedbackQuestionnaire';
 import { useUser } from '@/app/context/UserContext';
 import { useAuth } from '@/app/context/AuthContext';
-import { submitProgramFeedback } from '@/app/services/programFeedbackService';
+import { submitProgramFeedback, WeeklyLimitReachedError } from '@/app/services/programFeedbackService';
 import { ProgramFeedback } from '@/app/components/ui/ProgramFeedbackQuestionnaire';
 import { useTranslation } from '@/app/i18n';
 import { Exercise } from '@/app/types/program';
 import { NavigationMenu } from '@/app/components/ui/NavigationMenu';
+import { WeeklyLimitModal } from '@/app/components/ui/WeeklyLimitModal';
+import { ProgramType } from '@/app/types/program';
 
 // Helper function to get next Monday's date
 function getNextMonday(d: Date): Date {
@@ -28,6 +30,10 @@ function FeedbackPageContent() {
 
   const [isLoading, setIsLoading] = useState(true);
   const [error] = useState<string | null>(null);
+  const [weeklyLimitError, setWeeklyLimitError] = useState<{
+    programType: ProgramType;
+    nextAllowedDate: Date;
+  } | null>(null);
 
   // Check if user is authenticated and has a program
   useEffect(() => {
@@ -99,6 +105,13 @@ function FeedbackPageContent() {
 
       return Promise.resolve();
     } catch (error) {
+      if (error instanceof WeeklyLimitReachedError) {
+        setWeeklyLimitError({
+          programType: error.programType,
+          nextAllowedDate: error.nextAllowedDate,
+        });
+        return Promise.resolve(); // Don't reject, we'll show the modal
+      }
       console.error(t('exerciseProgram.feedback.error.generating'), error);
       return Promise.reject(error);
     }
@@ -151,6 +164,19 @@ function FeedbackPageContent() {
         isFutureWeek={true} // We only allow access to this page when eligible
         nextProgramDate={null}
       />
+
+      {/* Weekly limit modal */}
+      {weeklyLimitError && (
+        <WeeklyLimitModal
+          isOpen={true}
+          programType={weeklyLimitError.programType}
+          nextAllowedDate={weeklyLimitError.nextAllowedDate}
+          onClose={() => {
+            setWeeklyLimitError(null);
+            router.push('/program');
+          }}
+        />
+      )}
     </div>
   );
 }

@@ -4,12 +4,20 @@ import {
 } from 'firebase/firestore';
 import { db } from '@/app/firebase/config';
 import { DiagnosisAssistantResponse } from '@/app/types';
-import { ExerciseQuestionnaireAnswers } from '../../../shared/types';
+import { ExerciseQuestionnaireAnswers, ProgramType } from '../../../shared/types';
 import { ProgramStatus, ExerciseProgram } from '@/app/types/program';
 import { ProgramFeedback } from '../components/ui/ProgramFeedbackQuestionnaire';
 import { Locale } from '../i18n/translations';
 import { getSavedLocalePreference } from '../i18n/utils';
 import { getStartOfWeek, addDays } from '@/app/utils/dateutils';
+import {
+  canGenerateProgram,
+  WeeklyLimitReachedError,
+  getNextAllowedGenerationDate,
+} from './programGenerationLimits';
+
+// Re-export for consumers
+export { WeeklyLimitReachedError } from './programGenerationLimits';
 
 // Extended ExerciseQuestionnaireAnswers to include feedback fields
 interface _FeedbackEnhancedQuestionnaire extends ExerciseQuestionnaireAnswers {
@@ -41,7 +49,15 @@ export const submitProgramFeedback = async (
   feedback: ProgramFeedback
 ): Promise<string> => {
   try {
-    // Create a modified questionnaire based on the feedback
+    // Get program type for limit checking
+    const programType = diagnosisData.programType || ProgramType.Exercise;
+
+    // Check weekly generation limit for follow-up programs
+    const canGenerate = await canGenerateProgram(userId, programType);
+    if (!canGenerate) {
+      const nextAllowedDate = await getNextAllowedGenerationDate(userId, programType);
+      throw new WeeklyLimitReachedError(programType, nextAllowedDate || new Date());
+    }
 
     // Instead of creating a new program, add a follow-up week to the existing program
     // Get the programId from the current program
@@ -97,6 +113,9 @@ export const submitProgramFeedback = async (
 
       const result = await response.json();
       console.log('Follow-up program generated successfully', result);
+
+      // Note: Weekly generation limit is recorded in openai-server.ts
+      // when the follow-up program is fully generated
 
       return programId; // Return the existing program ID
     } catch (error) {

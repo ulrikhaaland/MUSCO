@@ -18,3 +18,6 @@ export const FOLLOWUP_MODEL = process.env.FOLLOWUP_MODEL || 'gpt-5-mini';
 // Router model for determining chat mode
 export const ROUTER_MODEL = process.env.ROUTER_MODEL || 'gpt-5-mini';
 
+// Title generation model (lightweight, fast)
+export const TITLE_MODEL = process.env.TITLE_MODEL || 'gpt-4.1-nano';
+

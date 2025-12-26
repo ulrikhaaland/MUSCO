@@ -276,6 +276,7 @@ const translations = {
   // BottomSheet Components
   'bottomSheet.resetChat': 'Tilbakestill Chat',
   'bottomSheet.chatHistory': 'Chathistorikk',
+  'bottomSheet.digitalPhysiotherapist': 'Digital fysioterapeut',
 
   // Chat History
   'chatHistory.title': 'Chathistorikk',
@@ -286,6 +287,10 @@ const translations = {
   'chatHistory.messages': 'meldinger',
   'chatHistory.deleteChat': 'Slett chat',
   'chatHistory.loadError': 'Kunne ikke laste chathistorikk',
+  'chatHistory.deleteDialog.title': 'Slett Chat',
+  'chatHistory.deleteDialog.description': 'Er du sikker på at du vil slette denne chatten? Denne handlingen kan ikke angres.',
+  'chatHistory.deleteDialog.confirm': 'Slett',
+  'chatHistory.deleteDialog.cancel': 'Avbryt',
   'bottomSheet.selectRecoveryArea': 'Velg restitusjonsområde',
   'bottomSheet.chooseBodyPart':
     'Velg kroppsdelen du vil fokusere på for restitusjon',
@@ -299,7 +304,7 @@ const translations = {
 
   // Chat - Body Part Selection
   'chat.noBodyPartSelected': 'Ingen kroppsdel valgt',
-  'chat.selectBodyPartToStart': 'Trykk på en kroppsdel for å komme i gang',
+  'chat.selectBodyPartToStart': 'Trykk på en kroppsdel eller start en chat for å komme i gang',
   'chat.chatAboutOrSelectSpecific':
     'Start en chat eller velg en spesifikk del av {{group}}',
 
@@ -343,6 +348,7 @@ const translations = {
   'profile.sections.goalsPreferences': 'Mål og preferanser',
 
   // Profile - Fields
+  'profile.fields.email': 'E-post',
   'profile.fields.name': 'Navn',
   'profile.fields.phone': 'Telefon',
   'profile.fields.dateOfBirth': 'Fødselsdato',
@@ -580,6 +586,13 @@ const translations = {
   'questionnaire.programType.info.exercise': 'Fokusert styrke/kondisjon for form og prestasjon.',
   'questionnaire.programType.info.exerciseAndRecovery': 'Balansert plan som kombinerer trening og målrettet rehab.',
   'questionnaire.programType.info.recovery': 'Skånsomme økter som reduserer smerte, gjenvinner bevegelighet og hjelper deg i gang igjen.',
+  'questionnaire.programType.generatedThisWeek': 'Allerede generert denne uken',
+
+  // Weekly generation limit messages
+  'questionnaire.weeklyLimit.allTypesLocked': 'Ukentlig grense nådd',
+  'questionnaire.weeklyLimit.allTypesMessage': 'Du har generert alle programtyper denne uken. Kom tilbake neste uke for å lage nye programmer!',
+  'questionnaire.weeklyLimit.nextAllowed': 'Neste tilgjengelig: {{date}}',
+  'questionnaire.goBack': 'Gå tilbake',
 
   // Program page translations
   'program.loading': 'Laster program',
@@ -935,10 +948,19 @@ const translations = {
   'profile.cancel': 'Avbryt',
   'profile.profileUpdated': 'Profil oppdatert',
   'profile.updateError': 'Feil ved oppdatering av profil',
+  'profile.logoutError': 'Kunne ikke logge ut. Prøv igjen.',
   'profile.noneSet': 'Ingen',
   'profile.notSet': 'Ikke angitt',
   'profile.addPhoto': 'Legg til bilde',
+  'profile.changePhoto': 'Klikk for å endre bilde',
   'profile.noPhoto': 'Legg til bilde',
+  'profile.profilePreview': 'Forhåndsvisning av profil',
+  'profile.profilePhoto': 'Profilbilde',
+  'profile.cropPhoto': 'Beskjær bilde',
+  'profile.cropPhotoDescription': 'Dra for å flytte, scroll for å zoome',
+  'profile.convertingImage': 'Konverterer bilde...',
+  'profile.heicConversionError': 'Kunne ikke konvertere bilde. Prøv et annet format.',
+  'profile.phoneError.tooShort': 'Telefonnummeret er for kort',
   // Profile - Subscription widget
   'profile.subscription.title': 'Abonnement',
   'profile.subscription.active': 'Aktiv',
@@ -1320,7 +1342,16 @@ const translations = {
   'subscribe.success.usuallySeconds': 'Dette tar vanligvis noen sekunder',
   'subscribe.success.active': 'Abonnement aktivt',
   'subscribe.success.openingFeedback': 'Åpner tilbakemelding…',
-  'subscribe.success.recordedLoading': 'Abonnement registrert, laster kontoen din…'
+  'subscribe.success.recordedLoading': 'Abonnement registrert, laster kontoen din…',
+
+  // Weekly generation limit
+  'weeklyLimit.title': 'Ukentlig grense nådd',
+  'weeklyLimit.message': 'Du kan bare generere ett {{programType}} program per uke.',
+  'weeklyLimit.nextAllowed': 'Du kan generere et nytt program på {{date}}.',
+  'weeklyLimit.programType.exercise': 'trenings',
+  'weeklyLimit.programType.recovery': 'restitusjons',
+  'weeklyLimit.programType.exercise_and_recovery': 'trening og restitusjons',
+  'weeklyLimit.dismiss': 'Forstått',
 };
 
 export default translations;

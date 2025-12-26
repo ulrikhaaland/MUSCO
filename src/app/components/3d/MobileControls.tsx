@@ -136,6 +136,8 @@ export default function MobileControls({
     loadChatSession,
     startNewChat,
     scrollTrigger,
+    chatListRefreshTrigger,
+    titleGeneratingForChatId,
   } = useChatContainer({
     selectedPart,
     selectedGroups,
@@ -566,6 +568,8 @@ export default function MobileControls({
         onNewChat={() => {
           startNewChat();
         }}
+        refreshTrigger={chatListRefreshTrigger}
+        titleGeneratingForChatId={titleGeneratingForChatId}
       />
     </>
   );

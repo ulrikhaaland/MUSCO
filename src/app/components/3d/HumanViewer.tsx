@@ -19,6 +19,8 @@ import { useExplainSelection } from '@/app/hooks/useExplainSelection';
 import { bodyPartGroups } from '@/app/config/bodyPartGroups';
 import { getGenderedId } from '@/app/utils/anatomyHelpers';
 import { findGroupByName, findBodyPartByName } from '@/app/utils/bodyPartMarkerParser';
+import { WeeklyLimitReachedError } from '@/app/services/questionnaire';
+import { WeeklyLimitModal } from '../ui/WeeklyLimitModal';
 
 const MODEL_IDS: Record<Gender, string> = {
   male: '5tOV',
@@ -86,8 +88,13 @@ export default function HumanViewer({
   const { loading: authLoading } = useAuth();
   const [showQuestionnaire, setShowQuestionnaire] = useState(false);
   const [explainerEnabled, setExplainerEnabled] = useState(true);
+  const [weeklyLimitError, setWeeklyLimitError] = useState<{
+    programType: ProgramType;
+    nextAllowedDate: Date;
+  } | null>(null);
   const isExplainerActive = explainerEnabled && !isMobile;
   const [isChatOverlayOpen, setIsChatOverlayOpen] = useState(false);
+  const [isChatHistoryOpen, setIsChatHistoryOpen] = useState(false);
 
   // Explore explainer state
   // Using BioDigital labels for anchoring; no manual screen position needed
@@ -797,9 +804,14 @@ export default function HumanViewer({
         programId: result.programId,
       });
     } catch (error) {
-      console.error('Error in questionnaire submission:', error);
-      // Handle other errors appropriately
-      // You might want to show an error message to the user here
+      if (error instanceof WeeklyLimitReachedError) {
+        setWeeklyLimitError({
+          programType: error.programType,
+          nextAllowedDate: error.nextAllowedDate,
+        });
+      } else {
+        console.error('Error in questionnaire submission:', error);
+      }
     }
   };
 
@@ -978,6 +990,14 @@ export default function HumanViewer({
           </div>
         )}
  
+        {/* Backdrop for chat history - Desktop */}
+        {isChatHistoryOpen && (
+          <div 
+            className="hidden md:block absolute inset-0 bg-black/60 backdrop-blur-sm z-[90] transition-opacity"
+            onClick={() => setIsChatHistoryOpen(false)}
+          />
+        )}
+
         {/* Controls - Desktop */}
         {!showQuestionnaire && !authLoading && (
           <DesktopControls
@@ -1054,15 +1074,16 @@ export default function HumanViewer({
         }}
       >
         <div className="h-full border-l border-gray-800 overflow-y-auto">
-          <PartPopup
-            part={selectedPart}
-            groups={selectedGroups}
-            onClose={() => {}}
-            onQuestionClick={handleQuestionClick}
-            onGenerateProgram={handleGenerateProgram}
-            onBodyGroupSelected={handleBodyGroupSelected}
-            onBodyPartSelected={handleBodyPartSelected}
-          />
+            <PartPopup
+              part={selectedPart}
+              groups={selectedGroups}
+              onClose={() => {}}
+              onQuestionClick={handleQuestionClick}
+              onGenerateProgram={handleGenerateProgram}
+              onBodyGroupSelected={handleBodyGroupSelected}
+              onBodyPartSelected={handleBodyPartSelected}
+              onHistoryOpenChange={setIsChatHistoryOpen}
+            />
         </div>
       </div>
 
@@ -1112,6 +1133,16 @@ export default function HumanViewer({
             diagnosisText={diagnosis?.diagnosis}
           />
         </div>
+      )}
+
+      {/* Weekly limit modal */}
+      {weeklyLimitError && (
+        <WeeklyLimitModal
+          isOpen={true}
+          programType={weeklyLimitError.programType}
+          nextAllowedDate={weeklyLimitError.nextAllowedDate}
+          onClose={() => setWeeklyLimitError(null)}
+        />
       )}
       </div>
     </div>

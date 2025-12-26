@@ -186,16 +186,20 @@ export const saveRecoveryProgramToAccount = async (
       throw new Error('User not authenticated');
     }
 
-    // Check for existing recovery programs and deactivate them
+    // Check for existing active recovery programs and deactivate them
     const programsRef = collection(db, `users/${user.uid}/programs`);
-    const existingRecoveryQuery = query(programsRef, where('type', '==', ProgramType.Recovery));
+    const existingRecoveryQuery = query(
+      programsRef,
+      where('type', '==', ProgramType.Recovery),
+      where('active', '==', true)
+    );
     const existingRecoverySnapshot = await getDocs(existingRecoveryQuery);
 
     console.log(
-      `📊 User has ${existingRecoverySnapshot.size} existing recovery programs`
+      `📊 User has ${existingRecoverySnapshot.size} active recovery programs`
     );
 
-    // Deactivate all existing recovery programs
+    // Deactivate existing active recovery programs
     const deactivationPromises = existingRecoverySnapshot.docs.map(async (docSnapshot) => {
       const docRef = doc(db, `users/${user.uid}/programs`, docSnapshot.id);
       await updateDoc(docRef, { active: false, updatedAt: new Date() });

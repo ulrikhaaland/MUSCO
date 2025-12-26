@@ -22,6 +22,14 @@ import {
   generateProgramIncrementally,
   IncrementalProgramCallbacks,
 } from './incrementalProgramService';
+import {
+  canGenerateProgram,
+  WeeklyLimitReachedError,
+  getNextAllowedGenerationDate,
+} from './programGenerationLimits';
+
+// Re-export for consumers
+export { WeeklyLimitReachedError } from './programGenerationLimits';
 
 /**
  * Legacy function - generates entire program at once
@@ -88,6 +96,17 @@ export const submitQuestionnaireIncremental = async (
   callbacks?: IncrementalGenerationCallbacks,
   _assistantId?: string
 ): Promise<string> => {
+  const programType = diagnosis.programType;
+
+  // Check weekly generation limit
+  const canGenerate = await canGenerateProgram(userId, programType);
+  if (!canGenerate) {
+    const nextAllowedDate = await getNextAllowedGenerationDate(userId, programType);
+    const error = new WeeklyLimitReachedError(programType, nextAllowedDate || new Date());
+    callbacks?.onError?.(error);
+    throw error;
+  }
+
   // Create sanitized copy of questionnaire
   const sanitizedQuestionnaire = { ...questionnaire };
   Object.keys(sanitizedQuestionnaire).forEach((key) => {
@@ -97,7 +116,6 @@ export const submitQuestionnaireIncremental = async (
   });
 
   const programsRef = collection(db, `users/${userId}/programs`);
-  const programType = diagnosis.programType;
 
   // Deactivate existing active programs of the same type
   const existingActiveQuery = query(
@@ -132,6 +150,9 @@ export const submitQuestionnaireIncremental = async (
   });
 
   console.log(`[incremental] Program document created: ${docRef.id}`);
+
+  // Note: Weekly generation limit is recorded in generate-incremental/route.ts
+  // when the program is fully generated (day 7 saved), not here
 
   // Start incremental generation
   const incrementalCallbacks: IncrementalProgramCallbacks = {
@@ -168,6 +189,15 @@ export const submitQuestionnaire = async (
   onComplete?: () => void
 ): Promise<string> => {
   try {
+    const programType = diagnosis.programType;
+
+    // Check weekly generation limit
+    const canGenerate = await canGenerateProgram(userId, programType);
+    if (!canGenerate) {
+      const nextAllowedDate = await getNextAllowedGenerationDate(userId, programType);
+      throw new WeeklyLimitReachedError(programType, nextAllowedDate || new Date());
+    }
+
     // Create a sanitized copy of the questionnaire to ensure no undefined values
     const sanitizedQuestionnaire = { ...questionnaire };
 
@@ -184,7 +214,6 @@ export const submitQuestionnaire = async (
     });
 
     const programsRef = collection(db, `users/${userId}/programs`);
-    const programType = diagnosis.programType;
 
     // Deactivate existing active programs of the same type
     const existingActiveQuery = query(
@@ -219,6 +248,9 @@ export const submitQuestionnaire = async (
     });
 
     console.log(`📋 New ${programType} program created with active status: true`);
+
+    // Note: Weekly generation limit is recorded in the API when the program
+    // is fully generated, not here (to handle generation failures)
 
     // Start program generation
     try {

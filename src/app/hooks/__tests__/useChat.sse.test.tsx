@@ -1,5 +1,20 @@
 import React, { useEffect } from 'react';
 import { render, waitFor } from '@testing-library/react';
+
+// Mock Firebase config BEFORE importing useChat to prevent Firebase initialization
+jest.mock('../../firebase/config', () => ({
+  auth: {},
+  db: {},
+  storage: {},
+  functions: {},
+}));
+
+// Mock chatService to prevent Firebase calls
+jest.mock('../../services/chatService', () => ({
+  saveChatToFirestore: jest.fn(),
+  loadChatFromFirestore: jest.fn().mockResolvedValue(null),
+}));
+
 import { useChat } from '../useChat';
 
 // Mocks

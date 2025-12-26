@@ -10,6 +10,7 @@ import {
   LOWER_BODY_PARTS, 
   EXERCISE_ENVIRONMENTS,
   WORKOUT_DURATIONS,
+  RECOVERY_WORKOUT_DURATIONS,
   AGE_RANGES,
   EXERCISE_FREQUENCY_OPTIONS,
   PLANNED_EXERCISE_FREQUENCY_OPTIONS,
@@ -21,6 +22,8 @@ import {
 
 import { useTranslation } from '@/app/i18n';
 import { useUser } from '@/app/context/UserContext';
+import { useAuth } from '@/app/context/AuthContext';
+import { getAvailableProgramTypes, getNextAllowedGenerationDate } from '@/app/services/programGenerationLimits';
 import { 
   getTranslatedTargetBodyParts,
   getTranslatedExerciseEnvironments,
@@ -89,19 +92,7 @@ const expandPainAreas = (areas: string[], t: (key: string, options?: any) => str
   return Array.from(expandedAreas);
 };
 
-// Define recovery program duration options
-const RECOVERY_WORKOUT_DURATIONS = [
-  '15 minutes',
-  '30 minutes',
-  '45 minutes',
-] as const;
-
-// Function kept for reference when both pages share logic (currently unused)
-// const getWorkoutDurations = (programType: ProgramType) => {
-//   return programType === ProgramType.Recovery
-//     ? RECOVERY_WORKOUT_DURATIONS
-//     : WORKOUT_DURATIONS;
-// };
+// RECOVERY_WORKOUT_DURATIONS is now imported from @/app/types/program
 
 // Helper function to convert activity days string to number
 const getWeeklyActivityDays = (activityDays: string): number => {
@@ -186,8 +177,48 @@ export function ExerciseQuestionnaire({
   fullBody,
   diagnosisText,
 }: ExerciseQuestionnaireProps) {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const { answers: storedAnswers, activeProgram } = useUser();
+  const { user } = useAuth();
+  
+  // State for weekly generation limits
+  const [lockedProgramTypes, setLockedProgramTypes] = useState<ProgramType[]>([]);
+  const [nextAllowedDate, setNextAllowedDate] = useState<Date | null>(null);
+  const [isLoadingLimits, setIsLoadingLimits] = useState(true);
+  
+  // Fetch locked program types on mount
+  useEffect(() => {
+    const fetchLockedTypes = async () => {
+      if (!user?.uid) {
+        // Not logged in - no limits apply
+        setLockedProgramTypes([]);
+        setNextAllowedDate(null);
+        setIsLoadingLimits(false);
+        return;
+      }
+      
+      try {
+        const availableTypes = await getAvailableProgramTypes(user.uid);
+        const allTypes = [ProgramType.Exercise, ProgramType.ExerciseAndRecovery, ProgramType.Recovery];
+        const locked = allTypes.filter(type => !availableTypes.includes(type));
+        setLockedProgramTypes(locked);
+        
+        // If any types are locked, get the next allowed date
+        if (locked.length > 0) {
+          const nextDate = await getNextAllowedGenerationDate(user.uid, locked[0]);
+          setNextAllowedDate(nextDate);
+        }
+      } catch (error) {
+        console.error('Error fetching program generation limits:', error);
+        // On error, allow all types
+        setLockedProgramTypes([]);
+      } finally {
+        setIsLoadingLimits(false);
+      }
+    };
+    
+    fetchLockedTypes();
+  }, [user?.uid]);
   
   // Get translated options
   const translatedTargetBodyParts = getTranslatedTargetBodyParts(t);
@@ -212,6 +243,18 @@ export function ExerciseQuestionnaire({
   useEffect(() => {
     setSelectedProgramType(programType);
   }, [programType]);
+
+  // Auto-select first available type if current selection is locked
+  useEffect(() => {
+    if (lockedProgramTypes.length > 0 && lockedProgramTypes.includes(selectedProgramType)) {
+      const allTypes = [ProgramType.Exercise, ProgramType.ExerciseAndRecovery, ProgramType.Recovery];
+      const firstAvailable = allTypes.find(type => !lockedProgramTypes.includes(type));
+      if (firstAvailable) {
+        setSelectedProgramType(firstAvailable);
+        if (onProgramTypeChange) onProgramTypeChange(firstAvailable);
+      }
+    }
+  }, [lockedProgramTypes, selectedProgramType, onProgramTypeChange]);
 
   const handleProgramTypeChange = (type: ProgramType) => {
     setSelectedProgramType(type);
@@ -1409,8 +1452,9 @@ export function ExerciseQuestionnaire({
                   : t('questionnaire.recoveryDescription')}
               </p>
               
-              {/* Display diagnosis from chat assessment */}
-              {diagnosisText && (
+              {/* Display diagnosis from chat assessment - hide placeholder texts */}
+              {diagnosisText && 
+               !diagnosisText.toLowerCase().includes('no diagnosis') && (
                 <div className="mt-6 mx-auto max-w-2xl p-4 rounded-xl bg-indigo-500/10 ring-1 ring-indigo-500/30 text-left">
                   <div className="flex items-start gap-3">
                     <svg className="w-5 h-5 text-indigo-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1428,94 +1472,228 @@ export function ExerciseQuestionnaire({
 
           {/* Program Type Selection */}
           <RevealOnScroll>
-            <div
-              className={`bg-gray-800/50 backdrop-blur-sm rounded-2xl p-8 shadow-xl ring-1 ring-gray-700/50 ${
-                programTypeCollapsed ? 'cursor-pointer' : ''
-              }`}
-              onClick={() => {
-                if (programTypeCollapsed) setProgramTypeCollapsed(false);
-              }}
-            >
-              <h3 className="flex items-center text-lg font-semibold text-white mb-6">
-                <svg
-                  className="w-6 h-6 mr-3 text-indigo-400 flex-shrink-0"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                  />
-                </svg>
-                {t('questionnaire.programType.select')}
-              </h3>
-              {!programTypeCollapsed && (
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <label className="relative flex items-center">
-                  <input
-                    type="radio"
-                    name="programType"
-                    value="exercise"
-                    checked={selectedProgramType === ProgramType.Exercise}
-                    onChange={() => handleProgramTypeChange(ProgramType.Exercise)}
-                    className="peer sr-only"
-                  />
-                  <div className="w-full p-4 rounded-xl bg-gray-900/50 ring-1 ring-gray-700/30 text-gray-300 peer-checked:text-white peer-checked:bg-indigo-500/10 peer-checked:ring-indigo-500 cursor-pointer transition-all duration-200">
-                    <div className="font-medium text-white">{t('questionnaire.programType.exercise')}</div>
-                    <div className="text-xs mt-1 text-gray-400 leading-snug">
-                      {t('questionnaire.programType.info.exercise')}
-                    </div>
-                  </div>
-                </label>
-                <label className="relative flex items-center">
-                  <input
-                    type="radio"
-                    name="programType"
-                    value="exercise_and_recovery"
-                    checked={selectedProgramType === ProgramType.ExerciseAndRecovery}
-                    onChange={() => handleProgramTypeChange(ProgramType.ExerciseAndRecovery)}
-                    className="peer sr-only"
-                  />
-                  <div className="w-full p-4 rounded-xl bg-gray-900/50 ring-1 ring-gray-700/30 text-gray-300 peer-checked:text-white peer-checked:bg-indigo-500/10 peer-checked:ring-indigo-500 cursor-pointer transition-all duration-200">
-                    <div className="font-medium text-white">{t('questionnaire.programType.exerciseAndRecovery')}</div>
-                    <div className="text-xs mt-1 text-gray-400 leading-snug">
-                      {t('questionnaire.programType.info.exerciseAndRecovery')}
-                    </div>
-                  </div>
-                </label>
-                <label className="relative flex items-center">
-                  <input
-                    type="radio"
-                    name="programType"
-                    value="recovery"
-                    checked={selectedProgramType === ProgramType.Recovery}
-                    onChange={() => handleProgramTypeChange(ProgramType.Recovery)}
-                    className="peer sr-only"
-                  />
-                  <div className="w-full p-4 rounded-xl bg-gray-900/50 ring-1 ring-gray-700/30 text-gray-300 peer-checked:text-white peer-checked:bg-indigo-500/10 peer-checked:ring-indigo-500 cursor-pointer transition-all duration-200">
-                    <div className="font-medium text-white">{t('questionnaire.programType.recovery')}</div>
-                    <div className="text-xs mt-1 text-gray-400 leading-snug">
-                      {t('questionnaire.programType.info.recovery')}
-                    </div>
-                  </div>
-                </label>
+            {/* Loading state while fetching limits */}
+            {isLoadingLimits ? (
+              <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-8 shadow-xl ring-1 ring-gray-700/50">
+                <div className="flex items-center justify-center py-8">
+                  <svg className="animate-spin h-8 w-8 text-indigo-400" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                  </svg>
+                </div>
               </div>
-              )}
-              {programTypeCollapsed && (
-                (() => {
-                  const label =
-                    selectedProgramType === ProgramType.Exercise
-                      ? t('questionnaire.programType.exercise')
-                      : selectedProgramType === ProgramType.ExerciseAndRecovery
-                        ? t('questionnaire.programType.exerciseAndRecovery')
-                        : t('questionnaire.programType.recovery');
-                  return renderSelectedAnswers(label, () => setProgramTypeCollapsed(false));
-                })()
-              )}
-            </div>
+            ) : /* All types locked - show unavailable card */
+            lockedProgramTypes.length === 3 ? (
+              <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-8 shadow-xl ring-1 ring-amber-500/30">
+                <div className="flex flex-col items-center text-center">
+                  {/* Icon */}
+                  <div className="w-16 h-16 rounded-full bg-amber-500/20 flex items-center justify-center mb-4">
+                    <svg
+                      className="w-8 h-8 text-amber-500"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                  </div>
+                  
+                  {/* Title */}
+                  <h3 className="text-xl font-semibold text-white mb-2">
+                    {t('questionnaire.weeklyLimit.allTypesLocked')}
+                  </h3>
+                  
+                  {/* Message */}
+                  <p className="text-gray-300 mb-2">
+                    {t('questionnaire.weeklyLimit.allTypesMessage')}
+                  </p>
+                  
+                  {/* Next allowed date */}
+                  {nextAllowedDate && (
+                    <p className="text-gray-400 text-sm mb-6">
+                      {t('questionnaire.weeklyLimit.nextAllowed').replace(
+                        '{{date}}',
+                        nextAllowedDate.toLocaleDateString(
+                          locale === 'nb' ? 'nb-NO' : 'en-US',
+                          { weekday: 'long', month: 'long', day: 'numeric' }
+                        )
+                      )}
+                    </p>
+                  )}
+                  
+                  {/* Back button */}
+                  <button
+                    type="button"
+                    onClick={onClose}
+                    className="px-6 py-3 rounded-xl bg-gray-700 text-white hover:bg-gray-600 transition-colors duration-200"
+                  >
+                    {t('questionnaire.goBack')}
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div
+                className={`bg-gray-800/50 backdrop-blur-sm rounded-2xl p-8 shadow-xl ring-1 ring-gray-700/50 ${
+                  programTypeCollapsed ? 'cursor-pointer' : ''
+                }`}
+                onClick={() => {
+                  if (programTypeCollapsed) setProgramTypeCollapsed(false);
+                }}
+              >
+                <h3 className="flex items-center text-lg font-semibold text-white mb-6">
+                  <svg
+                    className="w-6 h-6 mr-3 text-indigo-400 flex-shrink-0"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                    />
+                  </svg>
+                  {t('questionnaire.programType.select')}
+                </h3>
+                {!programTypeCollapsed && (
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  {/* Exercise type */}
+                  {(() => {
+                    const isLocked = lockedProgramTypes.includes(ProgramType.Exercise);
+                    return (
+                      <label className={`relative flex items-center ${isLocked ? 'cursor-not-allowed' : ''}`}>
+                        <input
+                          type="radio"
+                          name="programType"
+                          value="exercise"
+                          checked={selectedProgramType === ProgramType.Exercise}
+                          onChange={() => !isLocked && handleProgramTypeChange(ProgramType.Exercise)}
+                          disabled={isLocked}
+                          className="peer sr-only"
+                        />
+                        <div className={`w-full p-4 rounded-xl transition-all duration-200 ${
+                          isLocked
+                            ? 'bg-gray-900/30 ring-1 ring-gray-700/20 opacity-50'
+                            : 'bg-gray-900/50 ring-1 ring-gray-700/30 text-gray-300 peer-checked:text-white peer-checked:bg-indigo-500/10 peer-checked:ring-indigo-500 cursor-pointer'
+                        }`}>
+                          <div className="flex items-center justify-between">
+                            <div className={`font-medium ${isLocked ? 'text-gray-500' : 'text-white'}`}>
+                              {t('questionnaire.programType.exercise')}
+                            </div>
+                            {isLocked && (
+                              <svg className="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                              </svg>
+                            )}
+                          </div>
+                          <div className={`text-xs mt-1 leading-snug ${isLocked ? 'text-gray-600' : 'text-gray-400'}`}>
+                            {isLocked 
+                              ? t('questionnaire.programType.generatedThisWeek')
+                              : t('questionnaire.programType.info.exercise')}
+                          </div>
+                        </div>
+                      </label>
+                    );
+                  })()}
+                  
+                  {/* Exercise and Recovery type */}
+                  {(() => {
+                    const isLocked = lockedProgramTypes.includes(ProgramType.ExerciseAndRecovery);
+                    return (
+                      <label className={`relative flex items-center ${isLocked ? 'cursor-not-allowed' : ''}`}>
+                        <input
+                          type="radio"
+                          name="programType"
+                          value="exercise_and_recovery"
+                          checked={selectedProgramType === ProgramType.ExerciseAndRecovery}
+                          onChange={() => !isLocked && handleProgramTypeChange(ProgramType.ExerciseAndRecovery)}
+                          disabled={isLocked}
+                          className="peer sr-only"
+                        />
+                        <div className={`w-full p-4 rounded-xl transition-all duration-200 ${
+                          isLocked
+                            ? 'bg-gray-900/30 ring-1 ring-gray-700/20 opacity-50'
+                            : 'bg-gray-900/50 ring-1 ring-gray-700/30 text-gray-300 peer-checked:text-white peer-checked:bg-indigo-500/10 peer-checked:ring-indigo-500 cursor-pointer'
+                        }`}>
+                          <div className="flex items-center justify-between">
+                            <div className={`font-medium ${isLocked ? 'text-gray-500' : 'text-white'}`}>
+                              {t('questionnaire.programType.exerciseAndRecovery')}
+                            </div>
+                            {isLocked && (
+                              <svg className="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                              </svg>
+                            )}
+                          </div>
+                          <div className={`text-xs mt-1 leading-snug ${isLocked ? 'text-gray-600' : 'text-gray-400'}`}>
+                            {isLocked 
+                              ? t('questionnaire.programType.generatedThisWeek')
+                              : t('questionnaire.programType.info.exerciseAndRecovery')}
+                          </div>
+                        </div>
+                      </label>
+                    );
+                  })()}
+                  
+                  {/* Recovery type */}
+                  {(() => {
+                    const isLocked = lockedProgramTypes.includes(ProgramType.Recovery);
+                    return (
+                      <label className={`relative flex items-center ${isLocked ? 'cursor-not-allowed' : ''}`}>
+                        <input
+                          type="radio"
+                          name="programType"
+                          value="recovery"
+                          checked={selectedProgramType === ProgramType.Recovery}
+                          onChange={() => !isLocked && handleProgramTypeChange(ProgramType.Recovery)}
+                          disabled={isLocked}
+                          className="peer sr-only"
+                        />
+                        <div className={`w-full p-4 rounded-xl transition-all duration-200 ${
+                          isLocked
+                            ? 'bg-gray-900/30 ring-1 ring-gray-700/20 opacity-50'
+                            : 'bg-gray-900/50 ring-1 ring-gray-700/30 text-gray-300 peer-checked:text-white peer-checked:bg-indigo-500/10 peer-checked:ring-indigo-500 cursor-pointer'
+                        }`}>
+                          <div className="flex items-center justify-between">
+                            <div className={`font-medium ${isLocked ? 'text-gray-500' : 'text-white'}`}>
+                              {t('questionnaire.programType.recovery')}
+                            </div>
+                            {isLocked && (
+                              <svg className="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                              </svg>
+                            )}
+                          </div>
+                          <div className={`text-xs mt-1 leading-snug ${isLocked ? 'text-gray-600' : 'text-gray-400'}`}>
+                            {isLocked 
+                              ? t('questionnaire.programType.generatedThisWeek')
+                              : t('questionnaire.programType.info.recovery')}
+                          </div>
+                        </div>
+                      </label>
+                    );
+                  })()}
+                </div>
+                )}
+                {programTypeCollapsed && (
+                  (() => {
+                    const label =
+                      selectedProgramType === ProgramType.Exercise
+                        ? t('questionnaire.programType.exercise')
+                        : selectedProgramType === ProgramType.ExerciseAndRecovery
+                          ? t('questionnaire.programType.exerciseAndRecovery')
+                          : t('questionnaire.programType.recovery');
+                    return renderSelectedAnswers(label, () => setProgramTypeCollapsed(false));
+                  })()
+                )}
+              </div>
+            )}
           </RevealOnScroll>
 
           {/* Age */}

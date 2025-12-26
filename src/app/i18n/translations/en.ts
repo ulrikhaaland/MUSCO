@@ -314,6 +314,7 @@ const translations = {
   // BottomSheet Components
   'bottomSheet.resetChat': 'Reset Chat',
   'bottomSheet.chatHistory': 'Chat history',
+  'bottomSheet.digitalPhysiotherapist': 'Digital physiotherapist',
 
   // Chat History
   'chatHistory.title': 'Chat History',
@@ -324,6 +325,10 @@ const translations = {
   'chatHistory.messages': 'messages',
   'chatHistory.deleteChat': 'Delete chat',
   'chatHistory.loadError': 'Failed to load chat history',
+  'chatHistory.deleteDialog.title': 'Delete Chat',
+  'chatHistory.deleteDialog.description': 'Are you sure you want to delete this chat? This action cannot be undone.',
+  'chatHistory.deleteDialog.confirm': 'Delete',
+  'chatHistory.deleteDialog.cancel': 'Cancel',
   'bottomSheet.selectRecoveryArea': 'Select Recovery Area',
   'bottomSheet.chooseBodyPart':
     'Choose the body part you want to focus on for recovery',
@@ -337,7 +342,7 @@ const translations = {
 
   // Chat - Body Part Selection
   'chat.noBodyPartSelected': 'No body part selected',
-  'chat.selectBodyPartToStart': 'Tap on a body part to get started',
+  'chat.selectBodyPartToStart': 'Tap on a body part or start a chat to get started',
   'chat.chatAboutOrSelectSpecific':
     'Start a chat or select a specific part of the {{group}}',
 
@@ -380,6 +385,7 @@ const translations = {
   'profile.sections.goalsPreferences': 'Goals & Preferences',
 
   // Profile - Fields
+  'profile.fields.email': 'Email',
   'profile.fields.name': 'Name',
   'profile.fields.phone': 'Phone',
   'profile.fields.dateOfBirth': 'Date of Birth',
@@ -613,6 +619,13 @@ const translations = {
   'questionnaire.programType.info.exercise': 'Focused strength/cardio plan for fitness and performance.',
   'questionnaire.programType.info.exerciseAndRecovery': 'Balanced plan combining training with targeted recovery work.',
   'questionnaire.programType.info.recovery': 'Gentle routines to reduce pain, restore mobility, and ease back in.',
+  'questionnaire.programType.generatedThisWeek': 'Already generated this week',
+
+  // Weekly generation limit messages
+  'questionnaire.weeklyLimit.allTypesLocked': 'Weekly limit reached',
+  'questionnaire.weeklyLimit.allTypesMessage': "You've generated all program types this week. Come back next week to create new programs!",
+  'questionnaire.weeklyLimit.nextAllowed': 'Next available: {{date}}',
+  'questionnaire.goBack': 'Go Back',
 
   // Program page translations
   'program.loading': 'Loading program',
@@ -959,10 +972,19 @@ const translations = {
   'profile.cancel': 'Cancel',
   'profile.profileUpdated': 'Profile updated successfully',
   'profile.updateError': 'Error updating profile',
+  'profile.logoutError': 'Failed to log out. Please try again.',
   'profile.noneSet': 'None',
   'profile.notSet': 'Not set',
   'profile.addPhoto': 'Add Photo',
+  'profile.changePhoto': 'Click to change photo',
   'profile.noPhoto': 'Add Photo',
+  'profile.profilePreview': 'Profile Preview',
+  'profile.profilePhoto': 'Profile Photo',
+  'profile.cropPhoto': 'Crop Photo',
+  'profile.cropPhotoDescription': 'Drag to reposition, scroll to zoom',
+  'profile.convertingImage': 'Converting image...',
+  'profile.heicConversionError': 'Failed to convert image. Please try a different format.',
+  'profile.phoneError.tooShort': 'Phone number is too short',
   // Profile - Subscription widget
   'profile.subscription.title': 'Subscription',
   'profile.subscription.active': 'Active',
@@ -1242,7 +1264,16 @@ const translations = {
   'subscribe.success.usuallySeconds': 'This usually takes a few seconds',
   'subscribe.success.active': 'Subscription active',
   'subscribe.success.openingFeedback': 'Opening feedback…',
-  'subscribe.success.recordedLoading': 'Subscription recorded, loading your account…'
+  'subscribe.success.recordedLoading': 'Subscription recorded, loading your account…',
+
+  // Weekly generation limit
+  'weeklyLimit.title': 'Weekly Limit Reached',
+  'weeklyLimit.message': 'You can only generate one {{programType}} program per week.',
+  'weeklyLimit.nextAllowed': 'You can generate a new program on {{date}}.',
+  'weeklyLimit.programType.exercise': 'exercise',
+  'weeklyLimit.programType.recovery': 'recovery',
+  'weeklyLimit.programType.exercise_and_recovery': 'exercise & recovery',
+  'weeklyLimit.dismiss': 'Got it',
 };
 
 export default translations;

@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, useRef, Fragment } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/app/context/AuthContext';
 import { useUser } from '@/app/context/UserContext';
@@ -7,7 +7,7 @@ import { getAuth, updateProfile } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { db, storage } from '@/app/firebase/config';
-import PhoneInput from 'react-phone-number-input';
+import PhoneInput, { formatPhoneNumberIntl } from 'react-phone-number-input';
 import 'react-phone-number-input/style.css';
 import {
   TARGET_BODY_PARTS,
@@ -28,193 +28,34 @@ import {
 } from '@/app/utils/programTranslation';
 import { SUBSCRIPTIONS_ENABLED } from '@/app/lib/featureFlags';
 
-// Add a constant for getFitnessLevels with descriptions
-const getFitnessLevels = (t: any) => [
-  {
-    name: t('profile.beginner.name'),
-    description: t('profile.beginner.desc'),
-  },
-  {
-    name: t('profile.intermediate.name'),
-    description: t('profile.intermediate.desc'),
-  },
-  {
-    name: t('profile.advanced.name'),
-    description: t('profile.advanced.desc'),
-  },
-  {
-    name: t('profile.elite.name'),
-    description: t('profile.elite.desc'),
-  },
-];
-
-// Add a constant for EXERCISE_MODALITIES with descriptions
-const EXERCISE_MODALITIES = [
-  {
-    name: 'strength',
-    description: (t) => t('profile.modality.strength.description'),
-  },
-  {
-    name: 'cardio',
-    description: (t) => t('profile.modality.cardio.description'),
-  },
-  {
-    name: 'recovery',
-    description: (t) => t('profile.modality.recovery.description'),
-  },
-];
-
-// Common health goals options
-const getHealthGoalsOptions = (t: any) => [
-  t('profile.goals.weightLoss'),
-  t('profile.goals.muscleGain'),
-  t('profile.goals.improvedFitness'),
-  t('profile.goals.strengthDevelopment'),
-  t('profile.goals.injuryRecovery'),
-  t('profile.goals.painReduction'),
-  t('profile.goals.betterMobility'),
-  t('profile.goals.sportsPerformance'),
-  t('profile.goals.generalWellness'),
-  t('profile.goals.stressReduction'),
-  t('profile.goals.betterSleep'),
-  t('profile.goals.improvedPosture'),
-];
-
-// Common dietary preference options
-const getDietaryPreferencesOptions = (t: any) => [
-  t('profile.diet.noSpecificDiet'),
-  t('profile.diet.vegetarian'),
-  t('profile.diet.vegan'),
-  t('profile.diet.pescatarian'),
-  t('profile.diet.paleo'),
-  t('profile.diet.keto'),
-  t('profile.diet.carnivore'),
-  t('profile.diet.lowCarb'),
-  t('profile.diet.lowFat'),
-  t('profile.diet.glutenFree'),
-  t('profile.diet.dairyFree'),
-  t('profile.diet.mediterranean'),
-  t('profile.diet.intermittentFasting'),
-];
-
-// Reusable icon components for section headers
-const ExpandedIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="24"
-    height="24"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <polyline points="18 15 12 9 6 15"></polyline>
-  </svg>
-);
-
-const CollapsedIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="24"
-    height="24"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <polyline points="6 9 12 15 18 9"></polyline>
-  </svg>
-);
+// Extracted constants and utilities
+import {
+  getFitnessLevels,
+  PROFILE_EXERCISE_MODALITIES,
+  getHealthGoalsOptions,
+  getDietaryPreferencesOptions,
+  sectionContentStyle,
+  fadeInAnimation,
+} from './constants';
+import { normalizeBodyPartName as normalizeBodyPartNameUtil } from './utils';
+import { ProfileValueDisplay, ExpandedIcon, CollapsedIcon, ProfileDesktopLayout, ProfilePhotoCropper } from './components';
+import { useResponsiveProfile, SectionId } from './hooks/useResponsiveProfile';
+import heic2any from 'heic2any';
 
 export default function ProfilePage() {
   const { t } = useTranslation();
 
-  // Helper function to normalize body part names between languages
-  const normalizeBodyPartName = (bodyPart: string, t: any): string => {
-    // Add function to check if a term is Norwegian
-    const isNorwegianBodyPart = (term: string): boolean => {
-      const norwegianTerms = [
-        'Øvre rygg',
-        'Korsrygg',
-        'Nakke',
-        'Bryst',
-        'Abdomen',
-        'Midtre rygg',
-        'Venstre skulder',
-        'Høyre skulder',
-        'Venstre overarm',
-        'Høyre overarm',
-        'Venstre albue',
-        'Høyre albue',
-        'Venstre underarm',
-        'Høyre underarm',
-        'Venstre hånd',
-        'Høyre hånd',
-        'Bekken- og hofteregion',
-        'Venstre lår',
-        'Høyre lår',
-        'Venstre kne',
-        'Høyre kne',
-        'Venstre legg',
-        'Høyre legg',
-        'Venstre fot',
-        'Høyre fot',
-        'Upper Back',
-        'Lower Back',
-        // Diet related Norwegian terms
-        'kjøtteter',
-        'lavkarbo',
-      ];
-      return (
-        norwegianTerms.includes(term) ||
-        norwegianTerms.some(
-          (norwegian) => term.toLowerCase() === norwegian.toLowerCase()
-        )
-      );
-    };
-
-    // If it's already a Norwegian term, don't try to find an English key or translate
-    if (isNorwegianBodyPart(bodyPart)) {
-      return bodyPart;
-    }
-
-    // Try to get the English key for a translated body part
-    const englishKey = Object.keys(PAIN_BODY_PARTS).find((key) => {
-      try {
-        const translatedValue = t(`bodyParts.${key}`);
-        return translatedValue === bodyPart;
-      } catch {
-        // If translation fails, it's not a match
-        return false;
-      }
-    });
-
-    if (englishKey) {
-      return englishKey; // Return English key if found
-    }
-
-    // If we have an English key, get its translation
-    if (PAIN_BODY_PARTS[bodyPart]) {
-      try {
-        const translated = t(`bodyParts.${bodyPart}`);
-        if (translated !== `bodyParts.${bodyPart}`) {
-          return translated;
-        }
-      } catch {
-        // Translation not found, continue with original
-      }
-    }
-
-    return bodyPart; // Return original if no match found
+  // Wrapper for imported normalizeBodyPartName utility
+  const normalizeBodyPartName = (bodyPart: string, tFn: (key: string) => string): string => {
+    return normalizeBodyPartNameUtil(bodyPart, tFn);
   };
 
   const { user, logOut, updateUserProfile } = useAuth();
   const { userPrograms, answers: questionnaireAnswers } = useUser();
   const router = useRouter();
+
+  // Responsive layout hook
+  const { isDesktop, activeSection, scrollToSection, setSectionRef } = useResponsiveProfile();
 
   // Get translated constants
   const _translatedTargetBodyParts = getTranslatedTargetBodyParts(t);
@@ -227,22 +68,6 @@ export default function ProfilePage() {
   // Use the translation functions to get localized options
   const _healthGoalsOptions = getHealthGoalsOptions(t);
   const dietaryPreferencesOptions = getDietaryPreferencesOptions(t);
-
-  // CSS styles for smooth section transitions
-  const sectionContentStyle = {
-    transition: 'max-height 0.3s ease, opacity 0.3s ease, padding 0.3s ease',
-    overflow: 'hidden',
-    opacity: 1,
-    animation: 'fadeIn 0.3s ease-in-out',
-  };
-
-  // Define a fade-in animation
-  const fadeInAnimation = `
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-  `;
 
   // UI states
   const [isEditing, setIsEditing] = useState(false);
@@ -262,6 +87,10 @@ export default function ProfilePage() {
   const [phone, setPhone] = useState('');
   const [photoURL, setPhotoURL] = useState<string | null>(null);
   const [previewURL, setPreviewURL] = useState('');
+  const [showCropper, setShowCropper] = useState(false);
+  const [cropperImageSrc, setCropperImageSrc] = useState<string>('');
+  const [isConvertingHeic, setIsConvertingHeic] = useState(false);
+  const justSavedPhotoRef = useRef(false); // Flag to prevent photo being overwritten after save
 
   // Validation states
   const [phoneValid, setPhoneValid] = useState(true);
@@ -308,6 +137,21 @@ export default function ProfilePage() {
   const [_goalsPreferencesExpanded, setGoalsPreferencesExpanded] =
     useState(false);
 
+  // Expand all sections on desktop
+  useEffect(() => {
+    if (isDesktop) {
+      setGeneralExpanded(true);
+      setHealthBasicsExpanded(true);
+      setMedicalBackgroundExpanded(true);
+      setFitnessProfileExpanded(true);
+    }
+  }, [isDesktop]);
+
+  // Handle sidebar section click
+  const handleSidebarSectionClick = useCallback((sectionId: SectionId) => {
+    scrollToSection(sectionId);
+  }, [scrollToSection]);
+
   useEffect(() => {
     // Log values for debugging translation issues
     console.log('Profile debug values:');
@@ -345,7 +189,9 @@ export default function ProfilePage() {
       setName(user.displayName);
     }
 
-    if (user.photoURL) {
+    // Only update photo if we didn't just save a new one
+    // (prevents the photo from being overwritten by stale user data)
+    if (user.photoURL && !justSavedPhotoRef.current) {
       setPhotoURL(user.photoURL);
       setPreviewURL(user.photoURL);
     }
@@ -555,23 +401,79 @@ export default function ProfilePage() {
       // No need to navigate, logout function redirects to home
     } catch (err) {
       console.error('Logout error:', err);
-      setError('Failed to log out. Please try again.');
+      setError(t('profile.logoutError'));
       setIsLoading(false);
     }
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Preview the selected image
+    // Reset the input value so the same file can be selected again
+    e.target.value = '';
+
+    let processedFile = file;
+
+    // Check if the file is HEIC/HEIF format
+    const isHeic = file.type === 'image/heic' || 
+                   file.type === 'image/heif' || 
+                   file.name.toLowerCase().endsWith('.heic') || 
+                   file.name.toLowerCase().endsWith('.heif');
+
+    if (isHeic) {
+      try {
+        setIsConvertingHeic(true);
+        // Convert HEIC to JPEG
+        const convertedBlob = await heic2any({
+          blob: file,
+          toType: 'image/jpeg',
+          quality: 0.9,
+        });
+        
+        // heic2any can return an array of blobs for multi-image HEIC files
+        const blob = Array.isArray(convertedBlob) ? convertedBlob[0] : convertedBlob;
+        processedFile = new File([blob], file.name.replace(/\.heic$/i, '.jpg').replace(/\.heif$/i, '.jpg'), {
+          type: 'image/jpeg',
+        });
+      } catch (error) {
+        console.error('Error converting HEIC:', error);
+        setMessage({ type: 'error', text: t('profile.heicConversionError') || 'Failed to convert image. Please try a different format.' });
+        setIsConvertingHeic(false);
+        return;
+      } finally {
+        setIsConvertingHeic(false);
+      }
+    }
+
+    // Read the file and show the cropper
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      if (e.target?.result) {
+        setCropperImageSrc(e.target.result as string);
+        setShowCropper(true);
+      }
+    };
+    reader.readAsDataURL(processedFile);
+  };
+
+  const handleCropComplete = (croppedBlob: Blob) => {
+    // Convert blob to data URL for preview
     const reader = new FileReader();
     reader.onload = (e) => {
       if (e.target?.result) {
         setPreviewURL(e.target.result as string);
       }
     };
-    reader.readAsDataURL(file);
+    reader.readAsDataURL(croppedBlob);
+    setShowCropper(false);
+    setCropperImageSrc('');
+    setIsEditing(true); // Make sure we're in edit mode
+  };
+
+  const handleCropCancel = () => {
+    setShowCropper(false);
+    setCropperImageSrc('');
   };
 
   const validatePhoneNumber = (phoneNumber: string | undefined) => {
@@ -584,7 +486,7 @@ export default function ProfilePage() {
     // Basic validation - should be at least 8 digits after country code
     if (phoneNumber.replace(/\D/g, '').length < 8) {
       setPhoneValid(false);
-      setPhoneError('Phone number is too short');
+      setPhoneError(t('profile.phoneError.tooShort'));
       return false;
     }
 
@@ -643,7 +545,7 @@ export default function ProfilePage() {
       const currentUser = auth.currentUser;
       if (!currentUser) throw new Error('User not logged in');
 
-      // Get all active programs
+      // Get all active programs (one per type: exercise, recovery, exercise_and_recovery)
       const activePrograms = userPrograms
         ? userPrograms.filter((program) => program.active)
         : [];
@@ -653,11 +555,14 @@ export default function ProfilePage() {
       const activeRecoveryProgram = activePrograms.find(
         (program) => program.type === 'recovery'
       );
+      const activeExerciseAndRecoveryProgram = activePrograms.find(
+        (program) => program.type === 'exercise_and_recovery'
+      );
 
-      // Ensure recovery is included in exerciseModalities if there's an active recovery program
+      // Ensure recovery is included in exerciseModalities if there's an active recovery or exercise_and_recovery program
       const updatedExerciseModalities = [...exerciseModalities];
       if (
-        activeRecoveryProgram &&
+        (activeRecoveryProgram || activeExerciseAndRecoveryProgram) &&
         !updatedExerciseModalities.includes('recovery')
       ) {
         updatedExerciseModalities.push('recovery');
@@ -688,6 +593,17 @@ export default function ProfilePage() {
         );
       }
 
+      // Add areas from active exercise_and_recovery program if available
+      if (activeExerciseAndRecoveryProgram?.questionnaire?.generallyPainfulAreas) {
+        activeExerciseAndRecoveryProgram.questionnaire.generallyPainfulAreas.forEach(
+          (area) => {
+            if (!updatedPainfulAreas.includes(area)) {
+              updatedPainfulAreas.push(area);
+            }
+          }
+        );
+      }
+
       // Prioritize exercise environments from active exercise program
       let updatedExerciseEnvironment = exerciseEnvironments;
 
@@ -704,7 +620,20 @@ export default function ProfilePage() {
           updatedExerciseEnvironment = exerciseEnvs;
         }
       }
-      // Then check active recovery program if no exercise program
+      // Then check active exercise_and_recovery program
+      else if (
+        activeExerciseAndRecoveryProgram?.questionnaire?.exerciseEnvironments &&
+        !updatedExerciseEnvironment
+      ) {
+        const exerciseAndRecoveryEnvs =
+          activeExerciseAndRecoveryProgram.questionnaire.exerciseEnvironments;
+        if (Array.isArray(exerciseAndRecoveryEnvs) && exerciseAndRecoveryEnvs.length > 0) {
+          updatedExerciseEnvironment = exerciseAndRecoveryEnvs[0];
+        } else if (typeof exerciseAndRecoveryEnvs === 'string') {
+          updatedExerciseEnvironment = exerciseAndRecoveryEnvs;
+        }
+      }
+      // Finally check active recovery program
       else if (
         activeRecoveryProgram?.questionnaire?.exerciseEnvironments &&
         !updatedExerciseEnvironment
@@ -720,7 +649,16 @@ export default function ProfilePage() {
 
       // Upload profile picture if there's a new one
       let profilePhotoURL = photoURL;
-      if (previewURL && previewURL !== photoURL) {
+      const hasNewPhoto = previewURL && previewURL !== photoURL;
+      
+      if (hasNewPhoto) {
+        // Set flag to prevent loadUserProfile from overwriting the photo
+        justSavedPhotoRef.current = true;
+        
+        // Immediately show the new photo (optimistic update)
+        // This ensures the photo doesn't disappear while uploading
+        setPhotoURL(previewURL);
+        
         // Convert data URL to file
         const response = await fetch(previewURL);
         const blob = await response.blob();
@@ -730,6 +668,14 @@ export default function ProfilePage() {
 
         // Upload the file
         profilePhotoURL = await uploadProfileImage(file);
+        
+        // Update with the actual Firebase Storage URL
+        setPhotoURL(profilePhotoURL);
+        
+        // Reset the flag after a delay to allow for any user object updates
+        setTimeout(() => {
+          justSavedPhotoRef.current = false;
+        }, 2000);
       }
 
       // Update profile in Firebase Auth
@@ -738,18 +684,15 @@ export default function ProfilePage() {
         photoURL: profilePhotoURL,
       });
 
-      // Update local state to show the new image
-      setPhotoURL(profilePhotoURL);
-
       // Function to get English key for a body part
       const getEnglishBodyPartKey = (bodyPart: string): string => {
-        // If already an English key, return it
-        if (PAIN_BODY_PARTS[bodyPart]) {
+        // If already an English key (in the array), return it
+        if (PAIN_BODY_PARTS.includes(bodyPart as any)) {
           return bodyPart;
         }
 
         // Try to find the English key for a translated body part
-        const englishKey = Object.keys(PAIN_BODY_PARTS).find((key) => {
+        const englishKey = PAIN_BODY_PARTS.find((key) => {
           try {
             const translatedValue = t(`bodyParts.${key}`);
             return (
@@ -939,21 +882,21 @@ export default function ProfilePage() {
         const targetBodyPartMap = new Map<string, string>();
 
         // Fill the map with translations
-        Object.keys(TARGET_BODY_PARTS).forEach((key) => {
+        TARGET_BODY_PARTS.forEach((bodyPart) => {
           try {
-            const translated = t(`targetBodyParts.${key.toLowerCase()}`);
-            targetBodyPartMap.set(translated, key);
+            const translated = t(`targetBodyParts.${bodyPart.toLowerCase()}`);
+            targetBodyPartMap.set(translated, bodyPart);
           } catch {
             // Skip if translation fails
           }
         });
 
         // For common body parts that might be in both lists
-        Object.keys(PAIN_BODY_PARTS).forEach((key) => {
+        PAIN_BODY_PARTS.forEach((bodyPart) => {
           try {
-            const translated = t(`bodyParts.${key}`);
+            const translated = t(`bodyParts.${bodyPart}`);
             if (!targetBodyPartMap.has(translated)) {
-              targetBodyPartMap.set(translated, key);
+              targetBodyPartMap.set(translated, bodyPart);
             }
           } catch {
             // Skip if translation fails
@@ -985,8 +928,8 @@ export default function ProfilePage() {
           }
 
           // Try to find in TARGET_BODY_PARTS directly
-          const targetMatch = Object.keys(TARGET_BODY_PARTS).find(
-            (key) => key.toLowerCase() === area.toLowerCase()
+          const targetMatch = TARGET_BODY_PARTS.find(
+            (bodyPart) => bodyPart.toLowerCase() === area.toLowerCase()
           );
           if (targetMatch) return targetMatch;
 
@@ -1062,9 +1005,9 @@ export default function ProfilePage() {
       setIsLoading(false);
       setEditingField(null);
       setIsEditing(false);
+      setPreviewURL(''); // Clear preview after successful save
 
-      // Reset view and collapse sections
-      resetViewAndCollapseSections();
+      // Keep sections in their current expanded/collapsed state after saving
 
       // Show success message
       setMessage({
@@ -1086,7 +1029,7 @@ export default function ProfilePage() {
 
   // Add an effect to pull questionnaire data
   useEffect(() => {
-    // Get all active programs (one exercise and one recovery)
+    // Get all active programs (one per type: exercise, recovery, exercise_and_recovery)
     const activePrograms = userPrograms
       ? userPrograms.filter((program) => program.active)
       : [];
@@ -1096,13 +1039,21 @@ export default function ProfilePage() {
     const activeRecoveryProgram = activePrograms.find(
       (program) => program.type === 'recovery'
     );
+    const activeExerciseAndRecoveryProgram = activePrograms.find(
+      (program) => program.type === 'exercise_and_recovery'
+    );
 
-    // Collect questionnaire data from both active programs
+    // Collect questionnaire data from all active programs
     const questionnaires = [];
 
     // Add exercise program questionnaire if available
     if (activeExerciseProgram?.questionnaire) {
       questionnaires.push(activeExerciseProgram.questionnaire);
+    }
+
+    // Add exercise_and_recovery program questionnaire if available
+    if (activeExerciseAndRecoveryProgram?.questionnaire) {
+      questionnaires.push(activeExerciseAndRecoveryProgram.questionnaire);
     }
 
     // Add recovery program questionnaire if available
@@ -1152,6 +1103,13 @@ export default function ProfilePage() {
         // First check active exercise program
         if (activeExerciseProgram?.questionnaire?.generallyPainfulAreas) {
           activeExerciseProgram.questionnaire.generallyPainfulAreas.forEach(
+            (area) => uniquePainfulAreas.add(normalizeBodyPartName(area, t))
+          );
+        }
+
+        // Then check active exercise_and_recovery program
+        if (activeExerciseAndRecoveryProgram?.questionnaire?.generallyPainfulAreas) {
+          activeExerciseAndRecoveryProgram.questionnaire.generallyPainfulAreas.forEach(
             (area) => uniquePainfulAreas.add(normalizeBodyPartName(area, t))
           );
         }
@@ -1345,7 +1303,7 @@ export default function ProfilePage() {
   ]);
 
   // Add a function to mark form as dirty when changes are made
-  const markAsDirty = () => {
+  const _markAsDirty = () => {
     setDirty(true);
   };
 
@@ -1359,9 +1317,16 @@ export default function ProfilePage() {
       console.log('Current exercise modalities:', exerciseModalities);
     }
 
-    // For profile photo, just enter edit mode without scrolling or expanding sections
+    // For profile photo, enter edit mode and auto-launch file picker
     if (field === 'profilePhoto') {
-      // Just enter edit mode, no scrolling needed
+      // Trigger file picker after a brief delay to allow state to update and render the input
+      setTimeout(() => {
+        // Try desktop input first, then mobile
+        const input = document.getElementById('profile-upload-desktop-general') as HTMLInputElement
+          || document.getElementById('profile-upload-mobile') as HTMLInputElement
+          || document.getElementById('profile-upload') as HTMLInputElement;
+        input?.click();
+      }, 150);
       return;
     }
 
@@ -1426,12 +1391,10 @@ export default function ProfilePage() {
           ?.scrollIntoView({ behavior: 'smooth' });
       }, 100);
     }
-
-    markAsDirty();
   };
 
   // Function to reset view and collapse all sections except General
-  const resetViewAndCollapseSections = () => {
+  const _resetViewAndCollapseSections = () => {
     // Collapse all sections except General
     setGeneralExpanded(true); // Keep general section expanded
     setHealthBasicsExpanded(false);
@@ -1454,25 +1417,25 @@ export default function ProfilePage() {
   const handleCancelEdit = () => {
     setEditingField(null);
     setIsEditing(false);
+    setPreviewURL(''); // Clear any unsaved photo preview
 
-    // Reset view and collapse sections
-    resetViewAndCollapseSections();
+    // Keep sections in their current expanded/collapsed state
 
     // Reset any unsaved changes by reloading user profile data
     loadUserProfile();
     setDirty(false);
   };
 
-  // Add function to get painful areas from recovery programs
+  // Add function to get painful areas from recovery and exercise_and_recovery programs
   const getPainfulAreasFromRecoveryPrograms = () => {
     if (!userPrograms) return [];
 
-    // Filter for recovery programs
+    // Filter for recovery and exercise_and_recovery programs (both have recovery components)
     const recoveryPrograms = userPrograms.filter(
-      (program) => program.type === 'recovery'
+      (program) => program.type === 'recovery' || program.type === 'exercise_and_recovery'
     );
 
-    // Collect all painful areas from recovery programs
+    // Collect all painful areas from these programs
     const allPainfulAreas = new Set<string>();
 
     recoveryPrograms.forEach((program) => {
@@ -1487,311 +1450,6 @@ export default function ProfilePage() {
     });
 
     return Array.from(allPainfulAreas);
-  };
-
-  // Utility component to format displayed values
-  const ProfileValueDisplay = ({
-    value,
-    translationPrefix,
-    fallback = 'profile.notSet',
-  }) => {
-    if (!value || (Array.isArray(value) && value.length === 0)) {
-      return <>{t(fallback)}</>;
-    }
-
-    // Manual Norwegian translations for body parts
-    const norwegianBodyParts: Record<string, string> = {
-      upper_back: 'Øvre rygg',
-      upperBack: 'Øvre rygg',
-      lower_back: 'Korsrygg',
-      lowerBack: 'Korsrygg',
-      middle_back: 'Midtre rygg',
-      middleBack: 'Midtre rygg',
-      neck: 'Nakke',
-      chest: 'Bryst',
-      abdomen: 'Abdomen',
-      left_shoulder: 'Venstre skulder',
-      leftShoulder: 'Venstre skulder',
-      right_shoulder: 'Høyre skulder',
-      rightShoulder: 'Høyre skulder',
-      left_upper_arm: 'Venstre overarm',
-      leftUpperArm: 'Venstre overarm',
-      right_upper_arm: 'Høyre overarm',
-      rightUpperArm: 'Høyre overarm',
-      left_elbow: 'Venstre albue',
-      leftElbow: 'Venstre albue',
-      right_elbow: 'Høyre albue',
-      rightElbow: 'Høyre albue',
-      left_forearm: 'Venstre underarm',
-      leftForearm: 'Venstre underarm',
-      right_forearm: 'Høyre underarm',
-      rightForearm: 'Høyre underarm',
-      left_hand: 'Venstre hånd',
-      leftHand: 'Venstre hånd',
-      right_hand: 'Høyre hånd',
-      rightHand: 'Høyre hånd',
-      pelvis_and_hip_region: 'Bekken- og hofteregion',
-      pelvisAndHipRegion: 'Bekken- og hofteregion',
-      left_thigh: 'Venstre lår',
-      leftThigh: 'Venstre lår',
-      right_thigh: 'Høyre lår',
-      rightThigh: 'Høyre lår',
-      left_knee: 'Venstre kne',
-      leftKnee: 'Venstre kne',
-      right_knee: 'Høyre kne',
-      rightKnee: 'Høyre kne',
-      left_lower_leg: 'Venstre legg',
-      leftLowerLeg: 'Venstre legg',
-      right_lower_leg: 'Høyre legg',
-      rightLowerLeg: 'Høyre legg',
-      left_foot: 'Venstre fot',
-      leftFoot: 'Venstre fot',
-      right_foot: 'Høyre fot',
-      rightFoot: 'Høyre fot',
-    };
-
-    // Map English stored values to translation keys for common dietary preferences
-    const dietaryTranslationMap: Record<string, string> = {
-      noSpecificDiet: 'profile.diet.noSpecificDiet',
-      vegetarian: 'profile.diet.vegetarian',
-      vegan: 'profile.diet.vegan',
-      pescatarian: 'profile.diet.pescatarian',
-      paleo: 'profile.diet.paleo',
-      keto: 'profile.diet.keto',
-      carnivore: 'profile.diet.carnivore',
-      lowCarb: 'profile.diet.lowCarb',
-      lowFat: 'profile.diet.lowFat',
-      glutenFree: 'profile.diet.glutenFree',
-      dairyFree: 'profile.diet.dairyFree',
-      mediterranean: 'profile.diet.mediterranean',
-      intermittentFasting: 'profile.diet.intermittentFasting',
-    };
-
-    // Map for body parts with underscores
-    const bodyPartMap: Record<string, string> = {
-      upper_back: 'bodyParts.upperBack',
-      lower_back: 'bodyParts.lowerBack',
-      middle_back: 'bodyParts.middleBack',
-      left_shoulder: 'bodyParts.leftShoulder',
-      right_shoulder: 'bodyParts.rightShoulder',
-      left_upper_arm: 'bodyParts.leftUpperArm',
-      right_upper_arm: 'bodyParts.rightUpperArm',
-      left_elbow: 'bodyParts.leftElbow',
-      right_elbow: 'bodyParts.rightElbow',
-      left_forearm: 'bodyParts.leftForearm',
-      right_forearm: 'bodyParts.rightForearm',
-      left_hand: 'bodyParts.leftHand',
-      right_hand: 'bodyParts.rightHand',
-      left_thigh: 'bodyParts.leftThigh',
-      right_thigh: 'bodyParts.rightThigh',
-      left_knee: 'bodyParts.leftKnee',
-      right_knee: 'bodyParts.rightKnee',
-      left_lower_leg: 'bodyParts.leftLowerLeg',
-      right_lower_leg: 'bodyParts.rightLowerLeg',
-      left_foot: 'bodyParts.leftFoot',
-      right_foot: 'bodyParts.rightFoot',
-      pelvis_and_hip_region: 'bodyParts.pelvisAndHipRegion',
-    };
-
-    // Skip translation attempt for Norwegian terms
-    const isNorwegianTerm = (term) => {
-      // List of Norwegian words/terms that shouldn't be translated
-      const norwegianTerms = [
-        'Øvre rygg',
-        'Korsrygg',
-        'Nakke',
-        'Bryst',
-        'Abdomen',
-        'Midtre rygg',
-        'Venstre skulder',
-        'Høyre skulder',
-        'Venstre overarm',
-        'Høyre overarm',
-        'Venstre albue',
-        'Høyre albue',
-        'Venstre underarm',
-        'Høyre underarm',
-        'Venstre hånd',
-        'Høyre hånd',
-        'Bekken- og hofteregion',
-        'Venstre lår',
-        'Høyre lår',
-        'Venstre kne',
-        'Høyre kne',
-        'Venstre legg',
-        'Høyre legg',
-        'Venstre fot',
-        'Høyre fot',
-        'Upper Back',
-        'Lower Back',
-        // Diet related Norwegian terms
-        'kjøtteter',
-        'lavkarbo',
-        'Ingen spesifikk diett',
-        'Vegetarianer',
-        'Veganer',
-        'Pescetarianer',
-        'Paleo',
-        'Keto',
-        'Lavkarbo',
-        'Lavfett',
-        'Glutenfri',
-        'Melkefri',
-        'Middelhavskost',
-        'Intermitterende fasting',
-      ];
-      return (
-        norwegianTerms.includes(term) ||
-        norwegianTerms.some(
-          (norwegian) => term.toLowerCase() === norwegian.toLowerCase()
-        )
-      );
-    };
-
-    // Translation helper that tries multiple approaches
-    const translateTerm = (term) => {
-      // Skip translation for Norwegian terms
-      if (isNorwegianTerm(term)) {
-        return term;
-      }
-
-      // Check current locale
-      const isNorwegian =
-        typeof window !== 'undefined' &&
-        window.localStorage &&
-        window.localStorage.getItem('i18nextLng') === 'nb';
-
-      // Special handling for body parts in Norwegian locale
-      if (translationPrefix === 'bodyParts' && isNorwegian) {
-        // First try the direct Norwegian mapping
-        const normalizedTerm = term.replace(/-/g, '_');
-        if (norwegianBodyParts[normalizedTerm]) {
-          return norwegianBodyParts[normalizedTerm];
-        }
-
-        // For camelCase, try converting to underscore format first
-        const underscored = term.replace(/([A-Z])/g, '_$1').toLowerCase();
-        if (norwegianBodyParts[underscored]) {
-          return norwegianBodyParts[underscored];
-        }
-      }
-
-      // Special handling for body parts with underscores
-      if (translationPrefix === 'bodyParts' && term.includes('_')) {
-        // Check if we have a direct mapping
-        if (bodyPartMap[term]) {
-          try {
-            const translated = t(bodyPartMap[term]);
-            if (translated !== bodyPartMap[term]) {
-              return translated;
-            }
-          } catch {
-            // If translation fails and we're in Norwegian, try direct mapping
-            if (isNorwegian && norwegianBodyParts[term]) {
-              return norwegianBodyParts[term];
-            }
-            // Continue to other methods if this fails
-          }
-        }
-
-        // Try converting underscores to camelCase
-        const camelCased = term.replace(/_([a-z])/g, (_match, letter) =>
-          letter.toUpperCase()
-        );
-        try {
-          const translatedCamel = t(`${translationPrefix}.${camelCased}`);
-          if (translatedCamel !== `${translationPrefix}.${camelCased}`) {
-            return translatedCamel;
-          }
-        } catch {
-          // If translation fails and we're in Norwegian, try direct mapping of camelCase
-          if (isNorwegian && norwegianBodyParts[camelCased]) {
-            return norwegianBodyParts[camelCased];
-          }
-          // Continue to other methods if this fails
-        }
-
-        // If we're in Norwegian, try to find any matching entry
-        if (isNorwegian) {
-          // Look for close matches by removing underscores
-          const simplified = term.replace(/_/g, '').toLowerCase();
-          for (const [key, value] of Object.entries(norwegianBodyParts)) {
-            if (key.replace(/_/g, '').toLowerCase() === simplified) {
-              return value;
-            }
-          }
-        }
-
-        // Format the underscored term to be more readable
-        return term
-          .split('_')
-          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-          .join(' ');
-      }
-
-      // For dietary preferences, try direct mapping
-      if (translationPrefix === 'profile.diet') {
-        // Try to find a match in our dietary mapping
-        const dietKey = Object.keys(dietaryTranslationMap).find(
-          (key) => key.toLowerCase() === term.toLowerCase()
-        );
-
-        if (dietKey) {
-          try {
-            const translated = t(dietaryTranslationMap[dietKey]);
-            if (translated !== dietaryTranslationMap[dietKey]) {
-              return translated;
-            }
-          } catch {
-            // Continue to other methods if this fails
-          }
-        }
-      }
-
-      // Try with original format
-      try {
-        const translatedDirect = t(`${translationPrefix}.${term}`);
-        if (translatedDirect !== `${translationPrefix}.${term}`) {
-          return translatedDirect;
-        }
-      } catch {
-        // Continue to other methods if this fails
-      }
-
-      // Try with lowercase and no spaces
-      try {
-        const formattedKey = `${translationPrefix}.${term.toLowerCase().replace(/\s+/g, '').replace(/-/g, '')}`;
-        const translated = t(formattedKey);
-        if (translated !== formattedKey) {
-          return translated;
-        }
-      } catch {
-        // Continue to other methods if this fails
-      }
-
-      // Return formatted original if all translation attempts fail
-      return term
-        .replace(/([A-Z])/g, ' $1')
-        .replace(/^./, (str) => str.toUpperCase())
-        .trim();
-    };
-
-    // Handle array values
-    if (Array.isArray(value)) {
-      return (
-        <>
-          {value.map((item, index) => (
-            <Fragment key={index}>
-              {index > 0 && ', '}
-              {translateTerm(item)}
-            </Fragment>
-          ))}
-        </>
-      );
-    }
-
-    // Handle single string value
-    return <>{translateTerm(value)}</>;
   };
 
   return (
@@ -1902,25 +1560,32 @@ export default function ProfilePage() {
             </button>
           </div>
         )}
-        <div className="flex-1">
-          {' '}
-          {/* Removed h-screen overflow-y-auto, added flex-1 */}
-          <div
-            ref={topRef}
-            className="max-w-md mx-auto px-4 pt-6 pb-24 md:pb-8" // Space for mobile nav bar
+        
+        {/* Desktop Layout */}
+        {isDesktop ? (
+          <ProfileDesktopLayout
+            photoURL={previewURL || photoURL}
+            email={user?.email}
+            activeSection={activeSection}
+            onSectionClick={handleSidebarSectionClick}
+            onPrivacyClick={() => router.push('/privacy')}
+            onLogoutClick={handleLogout}
+            onPhotoClick={() => handleEdit('profilePhoto')}
+            isEditing={isEditing}
           >
+            <div ref={topRef} className={`${isEditing ? 'pb-32' : 'pb-8'}`}>
             <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-xl ring-1 ring-gray-700/50 p-6 mb-8">
-              <div className="flex flex-col items-center mb-6 relative">
-                {/* Edit button - only visible when not in edit mode */}
+              {/* Desktop: Edit button at top of content card */}
+              <div className="flex justify-end mb-4">
                 {!isEditing && (
                   <button
                     onClick={() => setIsEditing(true)}
-                    className="absolute top-0 right-0 bg-indigo-600 text-white p-2 rounded-full hover:bg-indigo-500 transition-colors"
+                    className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-500 transition-colors flex items-center gap-2"
                     aria-label={t('profile.actions.editProfile')}
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      className="h-5 w-5"
+                      className="h-4 w-4"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -1932,10 +1597,14 @@ export default function ProfilePage() {
                         d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
                       />
                     </svg>
+                    {t('profile.actions.editProfile')}
                   </button>
                 )}
-
-                {/* Profile Image Section START */}
+              </div>
+              
+              {/* Profile photo section hidden on desktop - it's in the sidebar */}
+              <div className="hidden">
+                {/* Profile Image Section START - Hidden on desktop */}
                 <div className="relative mx-auto w-32 h-32 mb-4">
                   {isEditing ? (
                     <>
@@ -1953,7 +1622,7 @@ export default function ProfilePage() {
                         {previewURL ? (
                           <img
                             src={previewURL}
-                            alt="Profile Preview"
+                            alt={t('profile.profilePreview')}
                             className="w-full h-full object-cover"
                           />
                         ) : (
@@ -1989,7 +1658,7 @@ export default function ProfilePage() {
                       {photoURL ? (
                         <img
                           src={photoURL}
-                          alt="Profile"
+                          alt={t('profile.profilePhoto')}
                           className="w-full h-full object-cover"
                         />
                       ) : (
@@ -2020,14 +1689,15 @@ export default function ProfilePage() {
                 </div>
                 <p className="text-center text-gray-400">{user?.email}</p>
               </div>
+              {/* End of hidden profile photo section */}
 
               <div className="w-full text-left">
                 <div className="">
                   {/* General Section START */}
-                  <div>
+                  <div ref={(el) => setSectionRef('general', el)}>
                     <div
-                      className="flex justify-between items-center cursor-pointer hover:bg-gray-700/30 py-4 rounded-lg transition-colors"
-                      onClick={() => setGeneralExpanded(!generalExpanded)}
+                      className={`flex justify-between items-center py-4 rounded-lg transition-colors ${!isDesktop ? 'cursor-pointer hover:bg-gray-700/30' : ''}`}
+                      onClick={() => !isDesktop && setGeneralExpanded(!generalExpanded)}
                       data-section="general"
                     >
                       <div className="flex items-center">
@@ -2062,15 +1732,74 @@ export default function ProfilePage() {
                           )}
                         </h3>
                       </div>
-                      <div className="text-gray-400 hover:text-white">
-                        {generalExpanded ? <ExpandedIcon /> : <CollapsedIcon />}
-                      </div>
+                      {!isDesktop && (
+                        <div className="text-gray-400 hover:text-white">
+                          {generalExpanded ? <ExpandedIcon /> : <CollapsedIcon />}
+                        </div>
+                      )}
                     </div>
                   </div>
 
                   {/* General section content */}
                   {generalExpanded && (
                     <div className="space-y-4" style={sectionContentStyle}>
+                      {/* Profile Photo */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-400 mb-1 text-left">
+                          {t('profile.profilePhoto')}
+                        </label>
+                        <div className="relative w-20 h-20">
+                          {isEditing ? (
+                            <>
+                              <input type="file" id="profile-upload-desktop-general" onChange={handleFileChange} accept="image/*" className="hidden" />
+                              <label htmlFor="profile-upload-desktop-general" className="cursor-pointer block relative w-full h-full rounded-full overflow-hidden border-2 border-indigo-600">
+                                {previewURL ? (
+                                  <img src={previewURL} alt="Profile Preview" className="w-full h-full object-cover" />
+                                ) : photoURL ? (
+                                  <img src={photoURL} alt="Profile" className="w-full h-full object-cover" />
+                                ) : (
+                                  <div className="w-full h-full bg-gray-700 flex items-center justify-center text-white text-xs">
+                                    <span>{t('profile.addPhoto')}</span>
+                                  </div>
+                                )}
+                                <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center">
+                                  <div className="bg-indigo-600 rounded-full p-1.5">
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                                    </svg>
+                                  </div>
+                                </div>
+                              </label>
+                            </>
+                          ) : (
+                            <div onClick={() => handleEdit('profilePhoto')} className="cursor-pointer relative w-full h-full rounded-full overflow-hidden">
+                              {photoURL ? (
+                                <img src={photoURL} alt="Profile" className="w-full h-full object-cover" />
+                              ) : (
+                                <div className="w-full h-full bg-gray-700 flex items-center justify-center text-white text-xs">
+                                  <span>{t('profile.addPhoto')}</span>
+                                </div>
+                              )}
+                              <div className="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-30 flex items-center justify-center transition-all duration-200">
+                                <div className="bg-indigo-600 rounded-full p-1.5 opacity-0 hover:opacity-100 transition-opacity duration-200">
+                                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                                  </svg>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Email (read-only) */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-400 mb-1 text-left">
+                          {t('profile.fields.email')}
+                        </label>
+                        <p className="text-white text-left">{user?.email || t('profile.notSet')}</p>
+                      </div>
+
                       {/* Name */}
                       <div>
                         <label className="block text-sm font-medium text-gray-400 mb-1 text-left">
@@ -2123,7 +1852,7 @@ export default function ProfilePage() {
                             className="text-white cursor-pointer hover:text-indigo-400 transition-colors text-left"
                             onClick={() => setIsEditing(true)}
                           >
-                            {phone || t('profile.notSet')}
+                            {phone ? formatPhoneNumberIntl(phone) : t('profile.notSet')}
                           </p>
                         )}
                       </div>
@@ -2140,8 +1869,7 @@ export default function ProfilePage() {
                               value={dateOfBirth}
                               onChange={(e) => {
                                 setDateOfBirth(e.target.value);
-                                markAsDirty();
-                                // No auto-save, just mark as dirty and wait for Save button
+                                // No auto-save, just wait for Save button
                               }}
                               className="w-full bg-gray-700 border border-gray-600 rounded-lg py-2 px-3 text-white [color-scheme:dark]"
                               max={new Date().toISOString().split('T')[0]}
@@ -2165,12 +1893,10 @@ export default function ProfilePage() {
                   {/* General Section END */}
 
                   {/* Health Basics Section START */}
-                  <div className="border-t border-gray-700">
+                  <div className="border-t border-gray-700" ref={(el) => setSectionRef('healthBasics', el)}>
                     <div
-                      className="flex justify-between items-center cursor-pointer hover:bg-gray-700/30 py-4 rounded-lg transition-colors"
-                      onClick={() =>
-                        setHealthBasicsExpanded(!healthBasicsExpanded)
-                      }
+                      className={`flex justify-between items-center py-4 rounded-lg transition-colors ${!isDesktop ? 'cursor-pointer hover:bg-gray-700/30' : ''}`}
+                      onClick={() => !isDesktop && setHealthBasicsExpanded(!healthBasicsExpanded)}
                       data-section="healthBasics"
                     >
                       <div className="flex items-center">
@@ -2205,13 +1931,15 @@ export default function ProfilePage() {
                           )}
                         </h3>
                       </div>
-                      <div className="text-gray-400 hover:text-white">
-                        {healthBasicsExpanded ? (
-                          <ExpandedIcon />
-                        ) : (
-                          <CollapsedIcon />
-                        )}
-                      </div>
+                      {!isDesktop && (
+                        <div className="text-gray-400 hover:text-white">
+                          {healthBasicsExpanded ? (
+                            <ExpandedIcon />
+                          ) : (
+                            <CollapsedIcon />
+                          )}
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -2312,7 +2040,14 @@ export default function ProfilePage() {
                             onClick={() => handleEdit('gender')}
                           >
                             {gender
-                              ? t(`profile.gender.${gender.replace(/-/g, '')}`)
+                              ? t(`profile.gender.${
+                                  {
+                                    'male': 'male',
+                                    'female': 'female',
+                                    'non-binary': 'nonBinary',
+                                    'prefer-not-to-say': 'preferNotToSay',
+                                  }[gender] || gender
+                                }`)
                               : t('profile.notSet')}
                           </p>
                         )}
@@ -2322,12 +2057,10 @@ export default function ProfilePage() {
                   {/* Health Basics Section END */}
 
                   {/* Fitness Profile Section START */}
-                  <div className="border-t border-gray-700">
+                  <div className="border-t border-gray-700" ref={(el) => setSectionRef('fitnessProfile', el)}>
                     <div
-                      className="flex justify-between items-center cursor-pointer hover:bg-gray-700/30 py-4 rounded-lg transition-colors"
-                      onClick={() =>
-                        setFitnessProfileExpanded(!fitnessProfileExpanded)
-                      }
+                      className={`flex justify-between items-center py-4 rounded-lg transition-colors ${!isDesktop ? 'cursor-pointer hover:bg-gray-700/30' : ''}`}
+                      onClick={() => !isDesktop && setFitnessProfileExpanded(!fitnessProfileExpanded)}
                       data-section="fitnessProfile"
                     >
                       <div className="flex items-center">
@@ -2366,13 +2099,15 @@ export default function ProfilePage() {
                             )}
                         </h3>
                       </div>
-                      <div className="text-gray-400 hover:text-white">
-                        {fitnessProfileExpanded ? (
-                          <ExpandedIcon />
-                        ) : (
-                          <CollapsedIcon />
-                        )}
-                      </div>
+                      {!isDesktop && (
+                        <div className="text-gray-400 hover:text-white">
+                          {fitnessProfileExpanded ? (
+                            <ExpandedIcon />
+                          ) : (
+                            <CollapsedIcon />
+                          )}
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -2476,7 +2211,7 @@ export default function ProfilePage() {
                         {editingField === 'exerciseModalities' ? (
                           <div className="space-y-4">
                             <div className="grid grid-cols-1 gap-3">
-                              {EXERCISE_MODALITIES.map((modality) => (
+                              {PROFILE_EXERCISE_MODALITIES.map((modality) => (
                                 <label
                                   key={modality.name}
                                   className="relative flex items-center"
@@ -2744,16 +2479,53 @@ export default function ProfilePage() {
                                             )
                                           );
                                         }
-                                        markAsDirty();
                                       }}
                                       className="peer sr-only"
                                     />
-                                    <div className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 text-gray-400 peer-checked:text-white peer-checked:bg-indigo-500/20 peer-checked:border-indigo-500 cursor-pointer transition-all duration-200">
+                                    <div className="w-full min-h-[52px] p-3 rounded-lg bg-gray-800 border border-gray-700 text-gray-400 peer-checked:text-white peer-checked:bg-indigo-500/20 peer-checked:border-indigo-500 cursor-pointer transition-all duration-200 flex items-center justify-center text-center break-words text-sm">
                                       {diet}
                                     </div>
                                   </label>
                                 );
                               })}
+                              {/* Render custom diets that are not in predefined options */}
+                              {dietaryPreferences
+                                .filter((pref) => {
+                                  // Check if this preference is NOT a predefined option
+                                  const normalizedPref = pref.toLowerCase().replace(/\s+/g, '');
+                                  const predefinedKeys = [
+                                    'vegetarian', 'vegan', 'pescatarian', 'paleo', 'keto',
+                                    'carnivore', 'lowcarb', 'lowfat', 'glutenfree', 'dairyfree',
+                                    'mediterranean', 'intermittentfasting',
+                                    // Norwegian variants
+                                    'vegetarianer', 'veganer', 'pescetarianer', 'kjøtteter',
+                                    'lavkarbo', 'lavfett', 'glutenfri', 'melkefri',
+                                    'middelhavskost', 'intermitterendefasting'
+                                  ];
+                                  return !predefinedKeys.includes(normalizedPref);
+                                })
+                                .map((customDiet) => (
+                                  <label
+                                    key={`custom-${customDiet}`}
+                                    className="relative flex items-center"
+                                  >
+                                    <input
+                                      type="checkbox"
+                                      checked={true}
+                                      onChange={() => {
+                                        setDietaryPreferences(
+                                          dietaryPreferences.filter(
+                                            (item) => item !== customDiet
+                                          )
+                                        );
+                                      }}
+                                      className="peer sr-only"
+                                    />
+                                    <div className="w-full min-h-[52px] p-3 rounded-lg bg-gray-800 border border-gray-700 text-gray-400 peer-checked:text-white peer-checked:bg-indigo-500/20 peer-checked:border-indigo-500 cursor-pointer transition-all duration-200 flex items-center justify-center text-center break-words text-sm">
+                                      {customDiet}
+                                    </div>
+                                  </label>
+                                ))}
                             </div>
 
                             {/* Custom diet input */}
@@ -2783,7 +2555,6 @@ export default function ProfilePage() {
                                           ...dietaryPreferences,
                                           customDiet,
                                         ]);
-                                        markAsDirty();
                                       }
                                       e.currentTarget.value = '';
                                     }
@@ -2808,7 +2579,6 @@ export default function ProfilePage() {
                                           ...dietaryPreferences,
                                           customDiet,
                                         ]);
-                                        markAsDirty();
                                       }
                                       customDietInput.value = '';
                                     }
@@ -2819,137 +2589,8 @@ export default function ProfilePage() {
                                 </button>
                               </div>
                             </div>
-
-                            {/* Selected diets list with remove option */}
-                            {dietaryPreferences.length > 0 && (
-                              <div>
-                                <p className="text-gray-400 text-sm mb-2">
-                                  {t('profile.selectedDiets')}
-                                </p>
-                                <div className="flex flex-wrap gap-2">
-                                  {dietaryPreferences.map((diet, index) => {
-                                    // Enhanced function to translate diet names properly
-                                    const translateDietName = (
-                                      dietName: string
-                                    ): string => {
-                                      if (!dietName) return '';
-
-                                      // Handle capitalization and spacing variants
-                                      const lowerCased = dietName.toLowerCase();
-                                      const normalized = lowerCased.replace(
-                                        /\s+/g,
-                                        ''
-                                      );
-
-                                      // Special cases with spaces
-                                      const spacedValues: Record<
-                                        string,
-                                        string
-                                      > = {
-                                        'low carb': t('profile.diet.lowCarb'),
-                                        'low fat': t('profile.diet.lowFat'),
-                                        'gluten free': t(
-                                          'profile.diet.glutenFree'
-                                        ),
-                                        'dairy free': t(
-                                          'profile.diet.dairyFree'
-                                        ),
-                                        'no specific diet': t(
-                                          'profile.diet.noSpecificDiet'
-                                        ),
-                                        'intermittent fasting': t(
-                                          'profile.diet.intermittentFasting'
-                                        ),
-                                      };
-
-                                      // Check for direct matches with spaces
-                                      if (spacedValues[lowerCased]) {
-                                        return spacedValues[lowerCased];
-                                      }
-
-                                      // Direct mapping for common diet names
-                                      const dietMappings: Record<
-                                        string,
-                                        string
-                                      > = {
-                                        // English values
-                                        nospecificdiett: t(
-                                          'profile.diet.noSpecificDiet'
-                                        ),
-                                        'intermittent fasting': t(
-                                          'profile.diet.intermittentFasting'
-                                        ),
-
-                                        // Norwegian variants (just in case)
-                                        kjøtteter: t('profile.diet.carnivore'),
-                                        lavkarbo: t('profile.diet.lowCarb'),
-                                        lavfett: t('profile.diet.lowFat'),
-                                        glutenfri: t('profile.diet.glutenFree'),
-                                        melkefri: t('profile.diet.dairyFree'),
-                                        middelhavskost: t(
-                                          'profile.diet.mediterranean'
-                                        ),
-                                        'intermitterende fasting': t(
-                                          'profile.diet.intermittentFasting'
-                                        ),
-                                        'ingen spesifikk diett': t(
-                                          'profile.diet.noSpecificDiet'
-                                        ),
-                                      };
-
-                                      // First check the direct mapping with the lowercase original
-                                      if (dietMappings[lowerCased]) {
-                                        return dietMappings[lowerCased];
-                                      }
-
-                                      // Then check with the normalized version (no spaces)
-                                      if (dietMappings[normalized]) {
-                                        return dietMappings[normalized];
-                                      }
-
-                                      // If all else fails, just format the original value nicely
-                                      return dietName
-                                        .replace(/([A-Z])/g, ' $1')
-                                        .replace(/^./, (str) =>
-                                          str.toUpperCase()
-                                        )
-                                        .trim();
-                                    };
-
-                                    return (
-                                      <div
-                                        key={index}
-                                        className="flex items-center bg-indigo-500/20 border border-indigo-500 rounded-lg px-3 py-1"
-                                      >
-                                        <span className="text-white">
-                                          {translateDietName(diet)}
-                                        </span>
-                                        <button
-                                          onClick={() => {
-                                            setDietaryPreferences(
-                                              dietaryPreferences.filter(
-                                                (_, i) => i !== index
-                                              )
-                                            );
-                                            markAsDirty();
-                                          }}
-                                          className="ml-2 text-gray-300 hover:text-white"
-                                        >
-                                          ✕
-                                        </button>
-                                      </div>
-                                    );
-                                  })}
-                                </div>
-                              </div>
-                            )}
-
-                            {/* Done button */}
                             <div className="flex justify-end">
-                              <button
-                                onClick={() => setEditingField(null)}
-                                className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition-colors text-sm"
-                              >
+                              <button onClick={() => setEditingField(null)} className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition-colors text-sm">
                                 {t('common.done')}
                               </button>
                             </div>
@@ -2974,12 +2615,10 @@ export default function ProfilePage() {
                   )}
                   {/* Goals and Preferences Section END */}
                   {/* Medical Background Section START */}
-                  <div className="border-t border-gray-700">
+                  <div className="border-t border-gray-700" ref={(el) => setSectionRef('medicalBackground', el)}>
                     <div
-                      className="flex justify-between items-center cursor-pointer hover:bg-gray-700/30 py-4 rounded-lg transition-colors"
-                      onClick={() =>
-                        setMedicalBackgroundExpanded(!medicalBackgroundExpanded)
-                      }
+                      className={`flex justify-between items-center py-4 rounded-lg transition-colors ${!isDesktop ? 'cursor-pointer hover:bg-gray-700/30' : ''}`}
+                      onClick={() => !isDesktop && setMedicalBackgroundExpanded(!medicalBackgroundExpanded)}
                       data-section="medicalBackground"
                     >
                       <div className="flex items-center">
@@ -3018,10 +2657,12 @@ export default function ProfilePage() {
                         </h3>
                       </div>
                       <div className="text-gray-400 hover:text-white">
-                        {medicalBackgroundExpanded ? (
-                          <ExpandedIcon />
-                        ) : (
-                          <CollapsedIcon />
+                        {!isDesktop && (
+                          medicalBackgroundExpanded ? (
+                            <ExpandedIcon />
+                          ) : (
+                            <CollapsedIcon />
+                          )
                         )}
                       </div>
                     </div>
@@ -3136,26 +2777,6 @@ export default function ProfilePage() {
                         </label>
                         {editingField === 'painfulAreas' ? (
                           <div className="space-y-4">
-                            <div className="mb-4">
-                              <button
-                                type="button"
-                                onClick={() => setPainfulAreas([])}
-                                className={`w-full p-4 rounded-xl ${
-                                  painfulAreas.length === 0
-                                    ? 'bg-green-500/10 ring-green-500 text-white'
-                                    : 'bg-gray-800 ring-gray-700 text-gray-400 hover:bg-gray-700'
-                                } ring-1 transition-all duration-200 text-left`}
-                              >
-                                {t('profile.fields.noPainAreas')}
-                              </button>
-                            </div>
-
-                            {painfulAreas.length > 0 && (
-                              <p className="text-gray-400 font-medium text-base mb-4">
-                                {t('questionnaire.selectAll')}
-                              </p>
-                            )}
-
                             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                               {translatedPainBodyParts.map((part) => {
                                 // Function to convert body part display names to storage keys
@@ -3525,20 +3146,15 @@ export default function ProfilePage() {
                                       }}
                                       className="peer sr-only"
                                     />
-                                    <div className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 text-gray-400 peer-checked:text-white peer-checked:bg-indigo-500/20 peer-checked:border-indigo-500 cursor-pointer transition-all duration-200">
-                                      <div className="font-medium">{part}</div>
+                                    <div className="w-full min-h-[52px] p-3 rounded-lg bg-gray-800 border border-gray-700 text-gray-400 peer-checked:text-white peer-checked:bg-indigo-500/20 peer-checked:border-indigo-500 cursor-pointer transition-all duration-200 flex items-center justify-center text-center break-words text-sm">
+                                      {part}
                                     </div>
                                   </label>
                                 );
                               })}
                             </div>
-
-                            {/* Done button */}
-                            <div className="flex justify-end">
-                              <button
-                                onClick={() => setEditingField(null)}
-                                className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition-colors text-sm"
-                              >
+                            <div className="flex justify-end mt-3">
+                              <button onClick={() => setEditingField(null)} className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition-colors text-sm">
                                 {t('common.done')}
                               </button>
                             </div>
@@ -3601,8 +3217,8 @@ export default function ProfilePage() {
               </div>
             </div>
 
-            {/* Only show these sections when not in edit mode */}
-            {!isEditing && (
+            {/* Only show these sections when not in edit mode and on mobile (desktop has this in sidebar) */}
+            {!isEditing && !isDesktop && (
               <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-xl ring-1 ring-gray-700/50 p-6">
                 <h3 className="text-lg font-medium text-white mb-4">
                   {t('profile.account')}
@@ -3697,8 +3313,690 @@ export default function ProfilePage() {
                 {error}
               </div>
             )}
+            </div>
+          </ProfileDesktopLayout>
+        ) : (
+          /* Mobile Layout - simpler wrapper without sidebar */
+          <div className="flex-1">
+            <div
+              ref={topRef}
+              className={`max-w-md mx-auto px-4 pt-6 ${isEditing ? 'pb-32' : 'pb-24'}`}
+            >
+              <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-xl ring-1 ring-gray-700/50 p-6 mb-8">
+                <div className="flex flex-col items-center mb-6 relative">
+                  {/* Edit button - only visible when not in edit mode */}
+                  {!isEditing && (
+                    <button
+                      onClick={() => setIsEditing(true)}
+                      className="absolute top-0 right-0 bg-indigo-600 text-white p-2 rounded-full hover:bg-indigo-500 transition-colors"
+                      aria-label={t('profile.actions.editProfile')}
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                      </svg>
+                    </button>
+                  )}
+
+                  {/* Profile Image Section */}
+                  <div className="relative mx-auto w-32 h-32 mb-4">
+                    {isEditing ? (
+                      <>
+                        <input type="file" id="profile-upload-mobile" onChange={handleFileChange} accept="image/*" className="hidden" />
+                        <label htmlFor="profile-upload-mobile" className="cursor-pointer block relative w-full h-full rounded-full overflow-hidden border-2 border-indigo-600">
+                          {previewURL ? (
+                            <img src={previewURL} alt="Profile Preview" className="w-full h-full object-cover" />
+                          ) : photoURL ? (
+                            <img src={photoURL} alt="Profile" className="w-full h-full object-cover" />
+                          ) : (
+                            <div className="w-full h-full bg-gray-700 flex items-center justify-center text-white">
+                              <span>{t('profile.addPhoto')}</span>
+                            </div>
+                          )}
+                          <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center">
+                            <div className="bg-indigo-600 rounded-full p-2">
+                              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                              </svg>
+                            </div>
+                          </div>
+                        </label>
+                      </>
+                    ) : (
+                      <div onClick={() => handleEdit('profilePhoto')} className="cursor-pointer relative w-full h-full rounded-full overflow-hidden">
+                        {photoURL ? (
+                          <img src={photoURL} alt="Profile" className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="w-full h-full bg-gray-700 flex items-center justify-center text-white">
+                            <span>{t('profile.addPhoto')}</span>
+                          </div>
+                        )}
+                        <div className="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-30 flex items-center justify-center transition-all duration-200">
+                          <div className="bg-indigo-600 rounded-full p-2 opacity-0 hover:opacity-100 transition-opacity duration-200">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                            </svg>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  <p className="text-center text-gray-400">{user?.email}</p>
+                </div>
+
+                <div className="w-full text-left">
+                  <div className="">
+                    {/* General Section - Mobile */}
+                    <div ref={(el) => setSectionRef('general', el)}>
+                      <div
+                        className="flex justify-between items-center cursor-pointer hover:bg-gray-700/30 py-4 rounded-lg transition-colors"
+                        onClick={() => setGeneralExpanded(!generalExpanded)}
+                        data-section="general"
+                      >
+                        <div className="flex items-center">
+                          <div className="mr-3 text-indigo-400">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                              <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                            </svg>
+                          </div>
+                          <h3 className="text-white font-semibold flex items-center">
+                            {t('profile.sections.general')}
+                            {displayName && phone && dateOfBirth && (
+                              <svg className="ml-2 h-4 w-4 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                              </svg>
+                            )}
+                          </h3>
+                        </div>
+                        <div className="text-gray-400 hover:text-white">
+                          {generalExpanded ? <ExpandedIcon /> : <CollapsedIcon />}
+                        </div>
+                      </div>
+                    </div>
+                    {generalExpanded && (
+                      <div className="space-y-4" style={sectionContentStyle}>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-400 mb-1 text-left">{t('profile.fields.name')}</label>
+                          {isEditing ? (
+                            <input type="text" value={displayName} onChange={(e) => setDisplayName(e.target.value)} className="w-full bg-gray-700 border border-gray-600 rounded-lg py-2 px-3 text-white" />
+                          ) : (
+                            <p className="text-white cursor-pointer hover:text-indigo-400 transition-colors text-left" onClick={() => handleEdit('displayName')}>
+                              {displayName || t('profile.notSet')}
+                            </p>
+                          )}
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-400 mb-1 text-left">{t('profile.fields.phone')}</label>
+                          {isEditing ? (
+                            <div className="phone-input-container">
+                              <PhoneInput international defaultCountry="NO" value={phone} onChange={handlePhoneChange} countryCallingCodeEditable={false} withCountryCallingCode addInternationalOption={false} focusInputOnCountrySelection />
+                              {!phoneValid && <p className="text-red-400 text-sm mt-1">{phoneError}</p>}
+                            </div>
+                          ) : (
+                            <p className="text-white cursor-pointer hover:text-indigo-400 transition-colors text-left" onClick={() => setIsEditing(true)}>
+                              {phone ? formatPhoneNumberIntl(phone) : t('profile.notSet')}
+                            </p>
+                          )}
+                        </div>
+                        <div className="pb-4">
+                          <label className="block text-sm font-medium text-gray-400 mb-1 text-left">{t('profile.fields.dateOfBirth')}</label>
+                          {editingField === 'dateOfBirth' ? (
+                            <input type="date" value={dateOfBirth} onChange={(e) => { setDateOfBirth(e.target.value); }} className="w-full bg-gray-700 border border-gray-600 rounded-lg py-2 px-3 text-white [color-scheme:dark]" max={new Date().toISOString().split('T')[0]} onBlur={() => setEditingField(null)} />
+                          ) : (
+                            <p className="text-white cursor-pointer hover:text-indigo-400 transition-colors text-left" onClick={() => handleEdit('dateOfBirth')}>
+                              {dateOfBirth ? new Date(dateOfBirth).toLocaleDateString() : t('profile.notSet')}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Health Basics Section - Mobile */}
+                    <div className="border-t border-gray-700" ref={(el) => setSectionRef('healthBasics', el)}>
+                      <div
+                        className="flex justify-between items-center cursor-pointer hover:bg-gray-700/30 py-4 rounded-lg transition-colors"
+                        onClick={() => setHealthBasicsExpanded(!healthBasicsExpanded)}
+                        data-section="healthBasics"
+                      >
+                        <div className="flex items-center">
+                          <div className="mr-3 text-indigo-400">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                              <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
+                            </svg>
+                          </div>
+                          <h3 className="text-white font-semibold flex items-center">
+                            {t('profile.sections.healthBasics')}
+                            {userHeight && weight && gender && (
+                              <svg className="ml-2 h-4 w-4 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                              </svg>
+                            )}
+                          </h3>
+                        </div>
+                        <div className="text-gray-400 hover:text-white">
+                          {healthBasicsExpanded ? <ExpandedIcon /> : <CollapsedIcon />}
+                        </div>
+                      </div>
+                    </div>
+                    {healthBasicsExpanded && (
+                      <div className="space-y-4" style={sectionContentStyle}>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-400 mb-1 text-left">{t('profile.fields.height')}</label>
+                          {isEditing ? (
+                            <div className="relative">
+                              <input type="number" value={userHeight} onChange={(e) => setUserHeight(e.target.value)} className="w-full bg-gray-700 border border-gray-600 rounded-lg py-2 px-3 pr-10 text-white" min="50" max="250" />
+                              <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-400">cm</div>
+                            </div>
+                          ) : (
+                            <p className="text-white cursor-pointer hover:text-indigo-400 transition-colors text-left" onClick={() => handleEdit('userHeight')}>
+                              {userHeight ? `${userHeight} cm` : t('profile.notSet')}
+                            </p>
+                          )}
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-400 mb-1 text-left">{t('profile.fields.weight')}</label>
+                          {isEditing ? (
+                            <div className="relative">
+                              <input type="number" value={weight} onChange={(e) => setWeight(e.target.value)} className="w-full bg-gray-700 border border-gray-600 rounded-lg py-2 px-3 pr-10 text-white" min="20" max="300" step="0.1" />
+                              <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-400">kg</div>
+                            </div>
+                          ) : (
+                            <p className="text-white cursor-pointer hover:text-indigo-400 transition-colors text-left" onClick={() => handleEdit('weight')}>
+                              {weight ? `${weight} kg` : t('profile.notSet')}
+                            </p>
+                          )}
+                        </div>
+                        <div className="pb-4">
+                          <label className="block text-sm font-medium text-gray-400 mb-1 text-left">{t('profile.fields.gender')}</label>
+                          {isEditing ? (
+                            <select value={gender} onChange={(e) => setGender(e.target.value)} className="w-full bg-gray-700 border border-gray-600 rounded-lg py-2 px-3 text-white">
+                              <option value="">{t('profile.selectGender')}</option>
+                              <option value="male">{t('profile.gender.male')}</option>
+                              <option value="female">{t('profile.gender.female')}</option>
+                              <option value="non-binary">{t('profile.gender.nonBinary')}</option>
+                              <option value="prefer-not-to-say">{t('profile.gender.preferNotToSay')}</option>
+                            </select>
+                          ) : (
+                            <p className="text-white cursor-pointer hover:text-indigo-400 transition-colors text-left capitalize" onClick={() => handleEdit('gender')}>
+                              {gender ? t(`profile.gender.${{'male': 'male', 'female': 'female', 'non-binary': 'nonBinary', 'prefer-not-to-say': 'preferNotToSay'}[gender] || gender}`) : t('profile.notSet')}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Fitness Profile Section - Mobile (simplified for brevity) */}
+                    <div className="border-t border-gray-700" ref={(el) => setSectionRef('fitnessProfile', el)}>
+                      <div
+                        className="flex justify-between items-center cursor-pointer hover:bg-gray-700/30 py-4 rounded-lg transition-colors"
+                        onClick={() => setFitnessProfileExpanded(!fitnessProfileExpanded)}
+                        data-section="fitnessProfile"
+                      >
+                        <div className="flex items-center">
+                          <div className="mr-3 text-indigo-400">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                              <path fillRule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clipRule="evenodd" />
+                            </svg>
+                          </div>
+                          <h3 className="text-white font-semibold">{t('profile.sections.fitnessProfile')}</h3>
+                        </div>
+                        <div className="text-gray-400 hover:text-white">
+                          {fitnessProfileExpanded ? <ExpandedIcon /> : <CollapsedIcon />}
+                        </div>
+                      </div>
+                    </div>
+                    {fitnessProfileExpanded && (
+                      <div className="space-y-4 pb-4" style={sectionContentStyle}>
+                        {/* Fitness Level */}
+                        <div>
+                          <label className="block text-sm font-medium text-gray-400 mb-1 text-left">
+                            {t('profile.fields.fitnessLevel')}
+                          </label>
+                          {editingField === 'fitnessLevel' ? (
+                            <div className="space-y-4">
+                              <div className="grid grid-cols-1 gap-3">
+                                {getFitnessLevels(t).map((level) => (
+                                  <label key={level.name} className="relative flex items-center">
+                                    <input
+                                      type="radio"
+                                      name="fitnessLevel"
+                                      value={level.name}
+                                      checked={fitnessLevel === level.name}
+                                      onChange={(e) => setFitnessLevel(e.target.value)}
+                                      className="peer sr-only"
+                                    />
+                                    <div className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 text-gray-400 peer-checked:text-white peer-checked:bg-indigo-500/20 peer-checked:border-indigo-500 cursor-pointer transition-all duration-200">
+                                      <div className="font-medium capitalize">{level.name}</div>
+                                      <div className="text-sm mt-1 text-gray-500 peer-checked:text-gray-300">{level.description}</div>
+                                    </div>
+                                  </label>
+                                ))}
+                              </div>
+                              <div className="flex justify-end">
+                                <button onClick={() => setEditingField(null)} className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition-colors text-sm">
+                                  {t('common.done')}
+                                </button>
+                              </div>
+                            </div>
+                          ) : (
+                            <p className="text-white cursor-pointer hover:text-indigo-400 transition-colors text-left capitalize" onClick={() => handleEdit('fitnessLevel')}>
+                              {fitnessLevel || t('profile.notSet')}
+                            </p>
+                          )}
+                        </div>
+
+                        {/* Exercise Frequency */}
+                        <div>
+                          <label className="block text-sm font-medium text-gray-400 mb-1 text-left">
+                            {t('profile.fields.exerciseFrequency')}
+                          </label>
+                          {isEditing ? (
+                            <select
+                              value={exerciseFrequency}
+                              onChange={(e) => setExerciseFrequency(e.target.value)}
+                              className="w-full bg-gray-700 border border-gray-600 rounded-lg py-2 px-3 text-white"
+                            >
+                              <option value="">{t('profile.selectFrequency')}</option>
+                              {translatedPlannedFrequencyOptions.map((frequency) => (
+                                <option key={frequency} value={frequency}>{frequency}</option>
+                              ))}
+                            </select>
+                          ) : (
+                            <p className="text-white cursor-pointer hover:text-indigo-400 transition-colors text-left" onClick={() => handleEdit('exerciseFrequency')}>
+                              {exerciseFrequency || t('profile.notSet')}
+                            </p>
+                          )}
+                        </div>
+
+                        {/* Exercise Modalities */}
+                        <div>
+                          <label className="block text-sm font-medium text-gray-400 mb-1 text-left">
+                            {t('profile.fields.exerciseModalities')}
+                          </label>
+                          {editingField === 'exerciseModalities' ? (
+                            <div className="space-y-4">
+                              <div className="grid grid-cols-1 gap-3">
+                                {PROFILE_EXERCISE_MODALITIES.map((modality) => (
+                                  <label key={modality.name} className="relative flex items-center">
+                                    <input
+                                      type="checkbox"
+                                      name="exerciseModalities"
+                                      value={modality.name}
+                                      checked={exerciseModalities.some((m) => m.toLowerCase() === modality.name.toLowerCase())}
+                                      onChange={(e) => {
+                                        if (e.target.checked) {
+                                          setExerciseModalities([...exerciseModalities, modality.name]);
+                                        } else {
+                                          setExerciseModalities(exerciseModalities.filter((m) => m.toLowerCase() !== modality.name.toLowerCase()));
+                                        }
+                                      }}
+                                      className="peer sr-only"
+                                    />
+                                    <div className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 text-gray-400 peer-checked:text-white peer-checked:bg-indigo-500/20 peer-checked:border-indigo-500 cursor-pointer transition-all duration-200">
+                                      <div className="font-medium capitalize">{t(`profile.modality.${modality.name}`)}</div>
+                                      <div className="text-sm mt-1 text-gray-500 peer-checked:text-gray-300">{modality.description(t)}</div>
+                                    </div>
+                                  </label>
+                                ))}
+                              </div>
+                              <div className="flex justify-end">
+                                <button onClick={() => setEditingField(null)} className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition-colors text-sm">
+                                  {t('common.done')}
+                                </button>
+                              </div>
+                            </div>
+                          ) : (
+                            <p className="text-white cursor-pointer hover:text-indigo-400 transition-colors text-left capitalize" onClick={() => handleEdit('exerciseModalities')}>
+                              {exerciseModalities.length > 0 ? (
+                                <ProfileValueDisplay value={exerciseModalities} translationPrefix="profile.modality" />
+                              ) : (
+                                t('profile.notSet')
+                              )}
+                            </p>
+                          )}
+                        </div>
+
+                        {/* Workout Duration */}
+                        <div>
+                          <label className="block text-sm font-medium text-gray-400 mb-1 text-left">
+                            {t('profile.fields.workoutDuration')}
+                          </label>
+                          {editingField === 'workoutDuration' ? (
+                            <div className="space-y-4">
+                              <div className="grid grid-cols-1 gap-3">
+                                {translatedWorkoutDurations.map((duration) => (
+                                  <label key={duration} className="relative flex items-center">
+                                    <input
+                                      type="radio"
+                                      name="workoutDuration"
+                                      value={duration}
+                                      checked={workoutDuration === duration}
+                                      onChange={(e) => setWorkoutDuration(e.target.value)}
+                                      className="peer sr-only"
+                                    />
+                                    <div className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 text-gray-400 peer-checked:text-white peer-checked:bg-indigo-500/20 peer-checked:border-indigo-500 cursor-pointer transition-all duration-200">
+                                      {duration}
+                                    </div>
+                                  </label>
+                                ))}
+                              </div>
+                              <div className="flex justify-end">
+                                <button onClick={() => setEditingField(null)} className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition-colors text-sm">
+                                  {t('common.done')}
+                                </button>
+                              </div>
+                            </div>
+                          ) : (
+                            <p className="text-white cursor-pointer hover:text-indigo-400 transition-colors text-left" onClick={() => handleEdit('workoutDuration')}>
+                              {workoutDuration ? (
+                                <ProfileValueDisplay value={workoutDuration} translationPrefix="profile.duration" />
+                              ) : (
+                                t('profile.notSet')
+                              )}
+                            </p>
+                          )}
+                        </div>
+
+                        {/* Dietary Preferences */}
+                        <div>
+                          <label className="block text-sm font-medium text-gray-400 mb-1 text-left">
+                            {t('profile.fields.dietaryPreferences')}
+                          </label>
+                          {editingField === 'dietaryPreferences' ? (
+                            <div className="space-y-4">
+                              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                                {dietaryPreferencesOptions.map((diet) => (
+                                  <label key={diet} className="relative flex items-center">
+                                    <input
+                                      type="checkbox"
+                                      name="dietaryPreferences"
+                                      value={diet}
+                                      checked={dietaryPreferences.some((d) => d.toLowerCase().replace(/\s+/g, '') === diet.toLowerCase().replace(/\s+/g, ''))}
+                                      onChange={(e) => {
+                                        if (e.target.checked) {
+                                          setDietaryPreferences([...dietaryPreferences, diet]);
+                                        } else {
+                                          setDietaryPreferences(dietaryPreferences.filter((d) => d.toLowerCase().replace(/\s+/g, '') !== diet.toLowerCase().replace(/\s+/g, '')));
+                                        }
+                                      }}
+                                      className="peer sr-only"
+                                    />
+                                    <div className="w-full min-h-[52px] p-3 rounded-lg bg-gray-800 border border-gray-700 text-gray-400 peer-checked:text-white peer-checked:bg-indigo-500/20 peer-checked:border-indigo-500 cursor-pointer transition-all duration-200 flex items-center justify-center text-center break-words text-sm">
+                                      {diet}
+                                    </div>
+                                  </label>
+                                ))}
+                                {/* Custom diets as containers */}
+                                {dietaryPreferences
+                                  .filter((pref) => {
+                                    const normalizedPref = pref.toLowerCase().replace(/\s+/g, '');
+                                    const predefinedKeys = [
+                                      'vegetarian', 'vegan', 'pescatarian', 'paleo', 'keto',
+                                      'carnivore', 'lowcarb', 'lowfat', 'glutenfree', 'dairyfree',
+                                      'mediterranean', 'intermittentfasting',
+                                      'vegetarianer', 'veganer', 'pescetarianer', 'kjøtteter',
+                                      'lavkarbo', 'lavfett', 'glutenfri', 'melkefri',
+                                      'middelhavskost', 'intermitterendefasting'
+                                    ];
+                                    return !predefinedKeys.includes(normalizedPref);
+                                  })
+                                  .map((customDiet) => (
+                                    <label key={`custom-${customDiet}`} className="relative flex items-center">
+                                      <input
+                                        type="checkbox"
+                                        checked={true}
+                                        onChange={() => {
+                                          setDietaryPreferences(dietaryPreferences.filter((item) => item !== customDiet));
+                                        }}
+                                        className="peer sr-only"
+                                      />
+                                      <div className="w-full min-h-[52px] p-3 rounded-lg bg-gray-800 border border-gray-700 text-gray-400 peer-checked:text-white peer-checked:bg-indigo-500/20 peer-checked:border-indigo-500 cursor-pointer transition-all duration-200 flex items-center justify-center text-center break-words text-sm">
+                                        {customDiet}
+                                      </div>
+                                    </label>
+                                  ))}
+                              </div>
+                              {/* Custom diet input */}
+                              <div>
+                                <p className="text-gray-400 text-sm mb-2">{t('profile.fields.addCustomDiet')}</p>
+                                <div className="flex gap-2">
+                                  <input
+                                    type="text"
+                                    id="custom-diet-mobile"
+                                    placeholder={t('profile.fields.enterCustomDiet')}
+                                    className="flex-1 bg-gray-700 border border-gray-600 rounded-lg py-2 px-3 text-white"
+                                    onKeyDown={(e) => {
+                                      if (e.key === 'Enter' && e.currentTarget.value.trim()) {
+                                        const customDiet = e.currentTarget.value.trim();
+                                        if (!dietaryPreferences.includes(customDiet)) {
+                                          setDietaryPreferences([...dietaryPreferences, customDiet]);
+                                        }
+                                        e.currentTarget.value = '';
+                                      }
+                                    }}
+                                  />
+                                  <button
+                                    onClick={() => {
+                                      const input = document.getElementById('custom-diet-mobile') as HTMLInputElement;
+                                      if (input && input.value.trim()) {
+                                        const customDiet = input.value.trim();
+                                        if (!dietaryPreferences.includes(customDiet)) {
+                                          setDietaryPreferences([...dietaryPreferences, customDiet]);
+                                        }
+                                        input.value = '';
+                                      }
+                                    }}
+                                    className="px-3 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition-colors text-sm"
+                                  >
+                                    {t('common.add')}
+                                  </button>
+                                </div>
+                              </div>
+                              <div className="flex justify-end">
+                                <button onClick={() => setEditingField(null)} className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition-colors text-sm">
+                                  {t('common.done')}
+                                </button>
+                              </div>
+                            </div>
+                          ) : (
+                            <p className="text-white cursor-pointer hover:text-indigo-400 transition-colors text-left capitalize" onClick={() => handleEdit('dietaryPreferences')}>
+                              {dietaryPreferences.length > 0 ? (
+                                <ProfileValueDisplay value={dietaryPreferences} translationPrefix="profile.diet" />
+                              ) : (
+                                t('profile.notSet')
+                              )}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Medical Background Section - Mobile (simplified for brevity) */}
+                    <div className="border-t border-gray-700" ref={(el) => setSectionRef('medicalBackground', el)}>
+                      <div
+                        className="flex justify-between items-center cursor-pointer hover:bg-gray-700/30 py-4 rounded-lg transition-colors"
+                        onClick={() => setMedicalBackgroundExpanded(!medicalBackgroundExpanded)}
+                        data-section="medicalBackground"
+                      >
+                        <div className="flex items-center">
+                          <div className="mr-3 text-indigo-400">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                              <path fillRule="evenodd" d="M3 5a2 2 0 012-2h10a2 2 0 012 2v8a2 2 0 01-2 2h-2.22l.123.489.804.804A1 1 0 0113 18H7a1 1 0 01-.707-1.707l.804-.804L7.22 15H5a2 2 0 01-2-2V5zm5.771 7H5V5h10v7H8.771z" clipRule="evenodd" />
+                            </svg>
+                          </div>
+                          <h3 className="text-white font-semibold">{t('profile.sections.medical')}</h3>
+                        </div>
+                        <div className="text-gray-400 hover:text-white">
+                          {medicalBackgroundExpanded ? <ExpandedIcon /> : <CollapsedIcon />}
+                        </div>
+                      </div>
+                    </div>
+                    {medicalBackgroundExpanded && (
+                      <div className="space-y-4 pb-4" style={sectionContentStyle}>
+                        {/* Medical Conditions */}
+                        <div>
+                          <label className="block text-sm font-medium text-gray-400 mb-1 text-left">
+                            {t('profile.fields.medicalConditions')}
+                          </label>
+                          {isEditing ? (
+                            <textarea
+                              value={medicalConditions.join(', ')}
+                              onChange={(e) => setMedicalConditions(e.target.value.split(',').map((item) => item.trim()).filter(Boolean))}
+                              className="w-full bg-gray-700 border border-gray-600 rounded-lg py-2 px-3 text-white resize-none h-20"
+                              placeholder={t('profile.separateWithCommas.medicalConditions')}
+                            />
+                          ) : (
+                            <p className="text-white cursor-pointer hover:text-indigo-400 transition-colors text-left" onClick={() => handleEdit('medicalConditions')}>
+                              {medicalConditions.length > 0 ? medicalConditions.join(', ') : t('profile.noneSet')}
+                            </p>
+                          )}
+                        </div>
+
+                        {/* Medications */}
+                        <div>
+                          <label className="block text-sm font-medium text-gray-400 mb-1 text-left">
+                            {t('profile.fields.medications')}
+                          </label>
+                          {isEditing ? (
+                            <textarea
+                              value={medications.join(', ')}
+                              onChange={(e) => setMedications(e.target.value.split(',').map((item) => item.trim()).filter(Boolean))}
+                              className="w-full bg-gray-700 border border-gray-600 rounded-lg py-2 px-3 text-white resize-none h-20"
+                              placeholder={t('profile.separateWithCommas.medications')}
+                            />
+                          ) : (
+                            <p className="text-white cursor-pointer hover:text-indigo-400 transition-colors text-left" onClick={() => handleEdit('medications')}>
+                              {medications.length > 0 ? medications.join(', ') : t('profile.noneSet')}
+                            </p>
+                          )}
+                        </div>
+
+                        {/* Previous Injuries */}
+                        <div>
+                          <label className="block text-sm font-medium text-gray-400 mb-1 text-left">
+                            {t('profile.fields.injuries')}
+                          </label>
+                          {isEditing ? (
+                            <textarea
+                              value={injuries.join(', ')}
+                              onChange={(e) => setInjuries(e.target.value.split(',').map((item) => item.trim()).filter(Boolean))}
+                              className="w-full bg-gray-700 border border-gray-600 rounded-lg py-2 px-3 text-white resize-none h-20"
+                              placeholder={t('profile.separateWithCommas.injuries')}
+                            />
+                          ) : (
+                            <p className="text-white cursor-pointer hover:text-indigo-400 transition-colors text-left" onClick={() => handleEdit('injuries')}>
+                              {injuries.length > 0 ? injuries.join(', ') : t('profile.noneSet')}
+                            </p>
+                          )}
+                        </div>
+
+                        {/* Painful Areas */}
+                        <div>
+                          <label className="block text-sm font-medium text-gray-400 mb-1 text-left">
+                            {t('profile.fields.painfulAreas')}
+                          </label>
+                          {editingField === 'painfulAreas' ? (
+                            <div className="space-y-4">
+                              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                                {translatedPainBodyParts.map((part) => (
+                                  <label key={part} className="relative flex items-center">
+                                    <input
+                                      type="checkbox"
+                                      name="painfulAreas"
+                                      value={part}
+                                      checked={painfulAreas.some((area) => area.toLowerCase() === part.toLowerCase())}
+                                      onChange={(e) => {
+                                        if (e.target.checked) {
+                                          setPainfulAreas([...painfulAreas, part]);
+                                        } else {
+                                          setPainfulAreas(painfulAreas.filter((area) => area.toLowerCase() !== part.toLowerCase()));
+                                        }
+                                      }}
+                                      className="peer sr-only"
+                                    />
+                                    <div className="w-full min-h-[52px] p-3 rounded-lg bg-gray-800 border border-gray-700 text-gray-400 peer-checked:text-white peer-checked:bg-indigo-500/20 peer-checked:border-indigo-500 cursor-pointer transition-all duration-200 flex items-center justify-center text-center break-words text-sm">
+                                      {part}
+                                    </div>
+                                  </label>
+                                ))}
+                              </div>
+                              <div className="flex justify-end">
+                                <button onClick={() => setEditingField(null)} className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition-colors text-sm">
+                                  {t('common.done')}
+                                </button>
+                              </div>
+                            </div>
+                          ) : (
+                            <p className="text-white cursor-pointer hover:text-indigo-400 transition-colors text-left" onClick={() => handleEdit('painfulAreas')}>
+                              {painfulAreas.length > 0 ? painfulAreas.join(', ') : t('profile.noneSet')}
+                            </p>
+                          )}
+                        </div>
+
+                        {/* Family Medical History */}
+                        <div>
+                          <label className="block text-sm font-medium text-gray-400 mb-1 text-left">
+                            {t('profile.fields.familyHistory')}
+                          </label>
+                          {isEditing ? (
+                            <textarea
+                              value={familyHistory.join(', ')}
+                              onChange={(e) => setFamilyHistory(e.target.value.split(',').map((item) => item.trim()).filter(Boolean))}
+                              className="w-full bg-gray-700 border border-gray-600 rounded-lg py-2 px-3 text-white resize-none h-20"
+                              placeholder={t('profile.separateWithCommas.familyHistory')}
+                            />
+                          ) : (
+                            <p className="text-white cursor-pointer hover:text-indigo-400 transition-colors text-left" onClick={() => handleEdit('familyHistory')}>
+                              {familyHistory.length > 0 ? familyHistory.join(', ') : t('profile.noneSet')}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Account section - mobile */}
+              {!isEditing && (
+                <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-xl ring-1 ring-gray-700/50 p-6">
+                  <h3 className="text-lg font-medium text-white mb-4">{t('profile.account')}</h3>
+                  <div className="space-y-4">
+                    {SUBSCRIPTIONS_ENABLED && (
+                      <div className="rounded-xl ring-1 ring-gray-700/50 bg-gray-900/40 p-4">
+                        <div className="text-white font-medium">{t('profile.subscription.title')}</div>
+                        <div className="text-sm text-gray-300 mt-1">
+                          {(() => {
+                            const status = user?.profile?.subscriptionStatus;
+                            const isActive = user?.profile?.isSubscriber === true || status === 'active' || status === 'trialing';
+                            const until = user?.profile?.currentPeriodEnd ? new Date(user.profile.currentPeriodEnd).toLocaleDateString() : null;
+                            if (isActive) return until ? t('profile.subscription.activeWithRenewal', { date: until }) : t('profile.subscription.active');
+                            if (status) return `${t('profile.subscription.statusPrefix')} ${status}`;
+                            return t('profile.subscription.none');
+                          })()}
+                        </div>
+                      </div>
+                    )}
+                    <button onClick={() => router.push('/privacy')} className="px-4 py-3 bg-gray-700 text-white rounded-lg hover:bg-gray-600 w-full flex items-center justify-between">
+                      <span>{t('profile.privacyControls')}</span>
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </button>
+                    <button onClick={handleLogout} className="px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-500 w-full">
+                      {t('profile.signOut')}
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {error && (
+                <div className="mt-4 p-3 bg-red-900/50 text-red-200 rounded-lg">
+                  {error}
+                </div>
+              )}
+            </div>
           </div>
-        </div>
+        )}
         {/* Fixed save/cancel bar that shows in edit mode */}
         {isEditing && (
           <div className="fixed bottom-0 left-0 right-0 bg-gray-900/95 backdrop-blur-md p-4 border-t border-gray-800 flex justify-center z-50">
@@ -3723,6 +4021,25 @@ export default function ProfilePage() {
               </button>
             </div>
           </div>
+        )}
+
+        {/* HEIC Conversion Loading Indicator */}
+        {isConvertingHeic && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+            <div className="bg-gray-800 rounded-xl p-6 flex flex-col items-center gap-4">
+              <div className="w-10 h-10 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+              <p className="text-white">{t('profile.convertingImage') || 'Converting image...'}</p>
+            </div>
+          </div>
+        )}
+
+        {/* Image Cropper Modal */}
+        {showCropper && cropperImageSrc && (
+          <ProfilePhotoCropper
+            imageSrc={cropperImageSrc}
+            onCropComplete={handleCropComplete}
+            onCancel={handleCropCancel}
+          />
         )}
       </div>
     </>

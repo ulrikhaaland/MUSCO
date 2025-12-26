@@ -66,7 +66,7 @@ export function BodyPartFilter({
             key={bodyPart}
             onClick={() => toggleBodyPart(bodyPart)}
             size="md"
-              variant={isRemoved ? 'inactive' : isWarmup ? 'warmup' : 'filter'}
+              variant={isRemoved ? 'inactive' : isWarmup ? 'warmup' : 'default'}
               className={`whitespace-nowrap ${isRemoved ? 'line-through' : ''}`}
             icon={
                 isRemoved ? (

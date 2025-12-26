@@ -8,9 +8,10 @@ import {
   ProgramMetadataResponse,
   SingleDayResponse,
 } from '@/app/types/incremental-program';
-import { ProgramDay, ProgramStatus } from '@/app/types/program';
+import { ProgramDay, ProgramStatus, ProgramType } from '@/app/types/program';
 import { adminDb } from '@/app/firebase/admin';
 import { PROGRAM_MODEL } from '@/app/api/assistant/models';
+import { recordProgramGenerationAdmin } from '@/app/services/programGenerationLimitsAdmin';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -132,6 +133,11 @@ async function saveDayToFirebase(
 
     batch.set(weekRef, weeklyProgramData);
     console.log(`[incremental] Created weekly program document: ${weekRef.id}`);
+
+    // Record the weekly generation limit now that program is complete
+    if (diagnosisType) {
+      await recordProgramGenerationAdmin(userId, diagnosisType as ProgramType);
+    }
   }
 
   batch.update(programRef, updates);

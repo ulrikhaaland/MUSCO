@@ -28,9 +28,9 @@ const CHATS_COLLECTION = 'chats';
 const MAX_CHAT_HISTORY = 50; // Maximum number of chats to keep per user
 
 /**
- * Generate a title from the first user message or body part
+ * Generate a title from the first user message or body part (fallback)
  */
-function generateTitle(data: CreateChatSessionData): string {
+function generateFallbackTitle(data: CreateChatSessionData): string {
   // Try to use the first user message
   const firstUserMessage = data.messages.find((m) => m.role === 'user');
   if (firstUserMessage?.content) {
@@ -45,6 +45,34 @@ function generateTitle(data: CreateChatSessionData): string {
   }
 
   return 'New conversation';
+}
+
+/**
+ * Generate a unique chat title using LLM
+ */
+export async function generateChatTitle(
+  firstQuestion: string,
+  firstResponse: string,
+  language: 'en' | 'nb' = 'en'
+): Promise<string | null> {
+  try {
+    const response = await fetch('/api/chat-title', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ firstQuestion, firstResponse, language }),
+    });
+
+    if (!response.ok) {
+      console.error('[chatService] Failed to generate title:', response.status);
+      return null;
+    }
+
+    const data = await response.json();
+    return data.title || null;
+  } catch (error) {
+    console.error('[chatService] Error generating chat title:', error);
+    return null;
+  }
 }
 
 /**
@@ -74,7 +102,7 @@ export async function createChatSession(
   const chatDoc = doc(chatsRef);
   const chatId = chatDoc.id;
 
-  const title = data.title || generateTitle(data);
+  const title = data.title || generateFallbackTitle(data);
 
   const chatSession: Omit<ChatSession, 'id' | 'createdAt' | 'updatedAt'> & {
     createdAt: ReturnType<typeof serverTimestamp>;

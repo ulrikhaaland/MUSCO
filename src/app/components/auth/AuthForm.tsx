@@ -40,6 +40,7 @@ export function AuthForm({ onSkip, isSaveContext = false, isAdmin = false }: { o
       const ctx = window.sessionStorage.getItem('loginContext');
       if (ctx === 'rateLimit') setLoginContext('rateLimit');
       else if (ctx === 'subscribe') setLoginContext('subscribe');
+      else if (ctx === 'saveProgram') setLoginContext('saveProgram');
     } catch {}
   }, []);
 
