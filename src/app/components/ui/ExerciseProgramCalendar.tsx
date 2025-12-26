@@ -8,6 +8,8 @@ import { CalendarHeader, CalendarGrid, SelectedDayPanel } from './calendar';
 import {
   getStartOfWeek,
   getDayOfWeekMondayFirst,
+  getDayShortName,
+  getDayFullName,
 } from '@/app/utils/dateutils';
 
 interface ExerciseProgramCalendarProps {
@@ -93,17 +95,12 @@ export function ExerciseProgramCalendar({
     [getDayProgram, selectedDate]
   );
 
-  // Week day labels
+  // Week day labels (1 = Monday, 7 = Sunday)
   const weekDays = useMemo(
-    () => [
-      { short: t('calendar.weekdays.mon'), full: t('days.monday') },
-      { short: t('calendar.weekdays.tue'), full: t('days.tuesday') },
-      { short: t('calendar.weekdays.wed'), full: t('days.wednesday') },
-      { short: t('calendar.weekdays.thu'), full: t('days.thursday') },
-      { short: t('calendar.weekdays.fri'), full: t('days.friday') },
-      { short: t('calendar.weekdays.sat'), full: t('days.saturday') },
-      { short: t('calendar.weekdays.sun'), full: t('days.sunday') },
-    ],
+    () => Array.from({ length: 7 }, (_, i) => ({
+      short: getDayShortName(i + 1, t),
+      full: getDayFullName(i + 1, t),
+    })),
     [t]
   );
 

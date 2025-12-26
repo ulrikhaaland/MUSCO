@@ -13,6 +13,7 @@ import { storage } from '@/app/firebase/config';
 import { useTranslation } from '@/app/i18n/TranslationContext';
 import { logAnalyticsEvent } from '../../../utils/analytics';
 import { NavigationMenu } from '@/app/components/ui/NavigationMenu';
+import { getDayFullName } from '@/app/utils/dateutils';
 
 function ErrorDisplay({ error }: { error: Error }) {
   return (
@@ -160,16 +161,7 @@ export default function DayDetailPage() {
             
             // 4. Set day data and name at the same time
             setDayData(day);
-            const days = [
-              t('days.monday'),
-              t('days.tuesday'),
-              t('days.wednesday'),
-              t('days.thursday'),
-              t('days.friday'),
-              t('days.saturday'),
-              t('days.sunday'),
-            ];
-            setDayName(days[dayNumber - 1]);
+            setDayName(getDayFullName(dayNumber, t));
 
             // 5. Mark data as loaded
             setDataLoaded(true);

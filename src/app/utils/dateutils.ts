@@ -183,4 +183,79 @@ export function addDays(date: Date, days: number): Date {
   const result = new Date(date);
   result.setDate(date.getDate() + days);
   return result;
+}
+
+/**
+ * Get the short name for a day of the week (Mon, Tue, etc.)
+ * @param dayOfWeek Day number (1 = Monday, 7 = Sunday)
+ * @param t Translation function
+ * @returns Short day name
+ */
+export function getDayShortName(dayOfWeek: number, t: (key: string) => string): string {
+  const days = [
+    t('calendar.weekdays.mon'),
+    t('calendar.weekdays.tue'),
+    t('calendar.weekdays.wed'),
+    t('calendar.weekdays.thu'),
+    t('calendar.weekdays.fri'),
+    t('calendar.weekdays.sat'),
+    t('calendar.weekdays.sun'),
+  ];
+  return days[dayOfWeek - 1] || '';
+}
+
+/**
+ * Get the full name for a day of the week (Monday, Tuesday, etc.)
+ * @param dayOfWeek Day number (1 = Monday, 7 = Sunday)
+ * @param t Translation function
+ * @returns Full day name
+ */
+export function getDayFullName(dayOfWeek: number, t: (key: string) => string): string {
+  const days = [
+    t('days.monday'),
+    t('days.tuesday'),
+    t('days.wednesday'),
+    t('days.thursday'),
+    t('days.friday'),
+    t('days.saturday'),
+    t('days.sunday'),
+  ];
+  return days[dayOfWeek - 1] || '';
+}
+
+/**
+ * Get both short and full names for a day of the week
+ * @param dayOfWeek Day number (1 = Monday, 7 = Sunday)
+ * @param t Translation function
+ * @returns Object with short and full day names
+ */
+export function getDayNames(dayOfWeek: number, t: (key: string) => string): { short: string; full: string } {
+  return {
+    short: getDayShortName(dayOfWeek, t),
+    full: getDayFullName(dayOfWeek, t),
+  };
+}
+
+/**
+ * Get the abbreviated month name
+ * @param month Month number (0 = January, 11 = December)
+ * @param t Translation function
+ * @returns Month abbreviation
+ */
+export function getMonthAbbreviation(month: number, t: (key: string) => string): string {
+  const months = [
+    t('month.jan'),
+    t('month.feb'),
+    t('month.mar'),
+    t('month.apr'),
+    t('month.may'),
+    t('month.jun'),
+    t('month.jul'),
+    t('month.aug'),
+    t('month.sep'),
+    t('month.oct'),
+    t('month.nov'),
+    t('month.dec'),
+  ];
+  return months[month] || '';
 } 

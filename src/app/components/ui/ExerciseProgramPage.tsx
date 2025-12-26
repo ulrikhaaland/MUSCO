@@ -35,6 +35,9 @@ import {
   getWeekNumber,
   getDayOfWeekMondayFirst,
   addDays,
+  getDayShortName,
+  getDayFullName,
+  getMonthAbbreviation,
 } from '@/app/utils/dateutils';
 import {
   isViewingCustomRecoveryProgram,
@@ -87,6 +90,7 @@ interface SortableDayTabProps {
   id: string;
   day: ProgramDay;
   dayShortName: string;
+  dayFullName: string;
   isSelected: boolean;
   isDayGenerated: boolean;
   isDayGenerating: boolean;
@@ -100,6 +104,7 @@ function SortableDayTab({
   id,
   day,
   dayShortName,
+  dayFullName,
   isSelected,
   isDayGenerated,
   isDayGenerating,
@@ -161,7 +166,8 @@ function SortableDayTab({
         <span className="absolute top-1 right-1 w-2 h-2 bg-violet-400 rounded-full animate-pulse" />
       )}
       <span className={`text-sm mb-0.5 ${isDayGenerating ? 'opacity-100' : 'opacity-80'}`}>
-        {dayShortName}
+        <span className="sm:hidden">{dayShortName}</span>
+        <span className="hidden sm:inline">{dayFullName}</span>
       </span>
       {isDayGenerating ? (
         <span className="text-xs text-violet-300">
@@ -213,39 +219,6 @@ function DragOverlayContent({ day, t }: DragOverlayContentProps) {
       )}
     </div>
   );
-}
-
-// Helper function to get the day short name with translations (moved outside component)
-function getDayShortName(dayOfWeek: number, t: (key: string) => string): string {
-  const days = [
-    t('exerciseProgram.dayAbbr.mon'),
-    t('exerciseProgram.dayAbbr.tue'),
-    t('exerciseProgram.dayAbbr.wed'),
-    t('exerciseProgram.dayAbbr.thu'),
-    t('exerciseProgram.dayAbbr.fri'),
-    t('exerciseProgram.dayAbbr.sat'),
-    t('exerciseProgram.dayAbbr.sun'),
-  ];
-  return days[dayOfWeek - 1];
-}
-
-// Helper function to get the translated month abbreviation (moved outside component)
-function getMonthAbbreviation(month: number, t: (key: string) => string): string {
-  const months = [
-    t('month.jan'),
-    t('month.feb'),
-    t('month.mar'),
-    t('month.apr'),
-    t('month.may'),
-    t('month.jun'),
-    t('month.jul'),
-    t('month.aug'),
-    t('month.sep'),
-    t('month.oct'),
-    t('month.nov'),
-    t('month.dec'),
-  ];
-  return months[month];
 }
 
 // Props for the DayTabsWithDnd component
@@ -308,6 +281,7 @@ function DayTabsWithDnd({
                 id={`day-${day.day}`}
                 day={day}
                 dayShortName={getDayShortName(day.day, t)}
+                dayFullName={getDayFullName(day.day, t)}
                 isSelected={isSelected}
                 isDayGenerated={isDayGenerated}
                 isDayGenerating={isDayGenerating}

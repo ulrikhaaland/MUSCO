@@ -8,6 +8,7 @@ import { useAuth } from '@/app/context/AuthContext';
 // Global loader removed
 import AddToHomescreen from '@/app/components/ui/AddToHomescreen';
 import { logAnalyticsEvent } from '../utils/analytics';
+import { getDayFullName } from '@/app/utils/dateutils';
 import {
   Exercise,
   ProgramDay,
@@ -149,18 +150,7 @@ function ProgramPageContent({
     };
   }, [videoUrl]);
 
-  const getDayName = (dayOfWeek: number): string => {
-    const days = [
-      t('days.monday'),
-      t('days.tuesday'),
-      t('days.wednesday'),
-      t('days.thursday'),
-      t('days.friday'),
-      t('days.saturday'),
-      t('days.sunday'),
-    ];
-    return days[dayOfWeek - 1];
-  };
+  const getDayName = (dayOfWeek: number): string => getDayFullName(dayOfWeek, t);
 
   const handleToggleView = () => {
     logAnalyticsEvent('open_calendar');

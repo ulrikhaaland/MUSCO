@@ -8,6 +8,7 @@ import { useSelectedDay } from '@/app/context/SelectedDayContext';
 import { ProgramDay } from '@/app/types/program';
 import { useTranslation } from '@/app/i18n/TranslationContext';
 import { NavigationMenu } from '@/app/components/ui/NavigationMenu';
+import { getDayFullName } from '@/app/utils/dateutils';
 
 export default function CalendarPage() {
   const router = useRouter();
@@ -24,18 +25,7 @@ export default function CalendarPage() {
     }
   }, [activeProgram, t]);
 
-  const getDayName = (dayOfWeek: number): string => {
-    const days = [
-      t('days.monday'),
-      t('days.tuesday'),
-      t('days.wednesday'),
-      t('days.thursday'),
-      t('days.friday'),
-      t('days.saturday'),
-      t('days.sunday'),
-    ];
-    return days[dayOfWeek - 1];
-  };
+  const getDayName = (dayOfWeek: number): string => getDayFullName(dayOfWeek, t);
 
   const handleDaySelect = (
     day: ProgramDay,
