@@ -214,12 +214,16 @@ EXERCISE SELECTION PROTOCOL
     - Ignore modalitySplit parameter if it suggests "same day" - always keep cardio and strength on separate days
   
   - CRITICAL - Zone 2 / Steady-State Cardio Days:
-    - Include ONLY a single cardio exercise (no warmup exercise needed, as the cardio itself starts at lower intensity)
-    - The duration MUST match the UPPER BOUND of the user's preferred workout duration:
+    - IMPORTANT: Include EXACTLY ONE cardio exercise - not two, not three, just ONE single exercise
+    - Do NOT add separate warmup or cooldown exercises - Zone 2 cardio inherently starts at low intensity (as warmup) and ends at low intensity (as cooldown)
+    - The duration of this single exercise MUST match the UPPER BOUND of the user's preferred workout duration:
       - If Workout Duration is "15-30 minutes", set cardio duration to 30 minutes
       - If Workout Duration is "30-45 minutes", set cardio duration to 45 minutes
       - If Workout Duration is "45-60 minutes", set cardio duration to 60 minutes
       - If Workout Duration is "60+ minutes", set cardio duration to 60 minutes
+    - The day's total duration should equal the exercise duration (e.g., 60 minutes)
+    - WRONG: Adding multiple cardio exercises like 45 min + 10 min + 5 min
+    - CORRECT: One single cardio exercise at 60 minutes
     - Example of a Zone 2 cardio day (for 45-60 min preference):
       \`\`\`
       {

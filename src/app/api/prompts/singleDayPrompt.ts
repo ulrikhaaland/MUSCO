@@ -258,14 +258,33 @@ Based on user's preferred duration:
 6. Cardio Day Guidelines (when this is a cardio day)
 
 - Select cardio exercises based on user's cardioType and cardioEnvironment preferences
-- For Zone 2 cardio (moderate intensity), duration should MATCH the UPPER BOUND of user's preferred workout duration:
+- Match the cardio exercise type to the user's cardioType preference (Running, Cycling, Rowing)
+- Match the environment (indoor/outdoor) based on the user's cardioEnvironment preference:
+  - If cardioEnvironment is "Outside" and weather conditions permit, prioritize outdoor exercises
+  - If cardioEnvironment is "Inside", select indoor options like treadmill, stationary bike, or rowing machine
+  - If cardioEnvironment is "Both", you may choose either based on the weekly plan's focus
+- For beginners, prioritize Zone 2 (moderate intensity) cardio
+- For intermediate or advanced users, include a mix of Zone 2 and 4x4 interval training
+- NO strength exercises on cardio days
+- NO warmup exercises on cardio days (cardio activity begins at low intensity as its own warm-up)
+
+**CRITICAL - Zone 2 / Steady-State Cardio Days:**
+- Include EXACTLY ONE cardio exercise - not two, not three, just ONE single exercise
+- Do NOT add separate warmup or cooldown exercises - Zone 2 inherently starts/ends at low intensity
+- The duration MUST match the UPPER BOUND of user's preferred workout duration:
   - If "15-30 minutes" → set cardio duration to 30 minutes
   - If "30-45 minutes" → set cardio duration to 45 minutes  
   - If "45-60 minutes" → set cardio duration to 60 minutes
-  - If "60+ minutes" → set cardio duration to 60+ minutes
-- A cardio day typically has just 1-2 cardio exercises (e.g., main cardio + optional cooldown stretch)
-- NO strength exercises on cardio days
-- NO warmup exercises on cardio days
+  - If "60+ minutes" → set cardio duration to 60 minutes
+- WRONG: Multiple exercises like 45 min + 10 min
+- CORRECT: One exercise at 60 minutes
+
+**4x4 Interval Training Days:**
+- Include THREE exercises: warmup + interval + cooldown
+- Total duration must equal the upper bound of workout duration
+- Structure for 60 min: 10 min warmup + 40 min intervals + 10 min cooldown
+- Structure for 45 min: 8 min warmup + 30 min intervals + 7 min cooldown
+- Use the same cardio type for warmup, interval, and cooldown
 
 6b. Recovery Day Guidelines (when dayType is "recovery")
 
@@ -396,6 +415,18 @@ For each exercise, include ONLY:
 - duration (OPTIONAL, for cardio/stretching exercises in minutes)
 
 NO CITATIONS OR REFERENCES - all text should be plain.
+
+10. VALIDATION STEP
+
+Before finalizing your response, verify that the day contains the correct number of exercises for the specified duration:
+- For 45-60 minute workouts, confirm you have 8-10 exercises
+- For 30-45 minute workouts, confirm you have 6-8 exercises
+- For 15-30 minute workouts, confirm you have 4-6 exercises
+- For 60+ minute workouts, confirm you have 10+ exercises
+- For rest days, confirm you have 1-2 gentle exercises (5-10 min total)
+- For Zone 2 cardio days, confirm you have EXACTLY 1 exercise at full duration
+- For 4x4 interval days, confirm you have EXACTLY 3 exercises (warmup + interval + cooldown)
+- If the day doesn't meet these requirements, add or remove exercises before submitting your response
 
 FINAL REMINDER: Return ONLY a pure JSON object. No introductions, explanations, or code blocks.
 `;

@@ -439,6 +439,8 @@ export function ExerciseProgramPage({
   const [_isReordering, setIsReordering] = useState(false);
   const [activeDragId, setActiveDragId] = useState<string | null>(null);
   const [overDragId, setOverDragId] = useState<string | null>(null);
+  // Optimistic swap state: [fromDayNum, toDayNum] or null
+  const [optimisticSwap, setOptimisticSwap] = useState<[number, number] | null>(null);
 
   // DnD sensors for drag-and-drop
   const sensors = useSensors(
@@ -825,6 +827,8 @@ export function ExerciseProgramPage({
       return d.day;  // Other days stay in place
     });
 
+    // Optimistic update - swap immediately in UI
+    setOptimisticSwap([fromDayNum, toDayNum]);
     setIsReordering(true);
 
     try {
@@ -845,13 +849,48 @@ export function ExerciseProgramPage({
       }
 
       toast.success(t('exerciseProgram.daysReordered'));
-      // Firebase onSnapshot will update the UI with the new order
+      // Firebase onSnapshot will update the real data, then we clear optimistic state
     } catch (error) {
       console.error('Error reordering days:', error);
       toast.error(t('exerciseProgram.reorderFailed'));
+      // Revert optimistic update on error
+      setOptimisticSwap(null);
     } finally {
       setIsReordering(false);
     }
+  };
+
+  // Track the programs reference to detect when Firebase data updates
+  const prevProgramsRef = useRef(activeProgram?.programs);
+  
+  // Clear optimistic swap when real data updates from Firebase (not on initial set)
+  useEffect(() => {
+    const programsChanged = prevProgramsRef.current !== activeProgram?.programs;
+    
+    if (optimisticSwap && programsChanged && activeProgram?.programs) {
+      // Firebase data has updated, clear optimistic state
+      setOptimisticSwap(null);
+    }
+    
+    prevProgramsRef.current = activeProgram?.programs;
+  }, [activeProgram?.programs, optimisticSwap]);
+
+  // Helper to apply optimistic swap to days array
+  const applyOptimisticSwap = (days: ProgramDay[]): ProgramDay[] => {
+    if (!optimisticSwap) return days;
+    const [fromDay, toDay] = optimisticSwap;
+    
+    return days.map((day) => {
+      if (day.day === fromDay) {
+        // This day should appear in toDay's slot
+        return { ...day, day: toDay };
+      }
+      if (day.day === toDay) {
+        // This day should appear in fromDay's slot
+        return { ...day, day: fromDay };
+      }
+      return day;
+    });
   };
 
   // Helper function to get the day short name with translations
@@ -1174,6 +1213,14 @@ export function ExerciseProgramPage({
   } else {
     // For regular programs, use existing logic
     selectedWeekData = selectedWeek === 1 ? { days: program.days } : null;
+  }
+
+  // Apply optimistic swap if we have one pending
+  if (selectedWeekData && optimisticSwap) {
+    selectedWeekData = { 
+      ...selectedWeekData, 
+      days: applyOptimisticSwap(selectedWeekData.days) 
+    };
   }
 
   return (

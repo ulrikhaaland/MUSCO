@@ -212,15 +212,30 @@ EXERCISE SELECTION PROTOCOL
 
 - Cardio Specific Guidelines:
   - For dedicated cardio workouts, select cardio exercises based on the user's cardioType and cardioEnvironment preferences
-  - IMPORTANT: Unlike strength workouts, cardio days should NOT include warmup exercises, as the cardio activity itself should begin with a lower intensity that serves as the warm-up
+  - Match the cardio exercise type to the user's cardioType preference (Running, Cycling, Rowing)
   - IMPORTANT: NEVER include both cardio and strength exercises on the same day
   - For users with "both" as their exerciseModalities:
     - Always create dedicated strength days and dedicated cardio days
     - Use strengthDays and cardioDays parameters to determine how many of each type to include
     - Keep cardio and strength on separate days
-  - Always specify duration for cardio exercises (e.g., "duration": 20 for a 20-minute cardio session)
-  - For Zone 2 cardio (moderate intensity), the duration should ALWAYS match the upper bound of the user's preferred workout duration
-  - For 4x4 interval training (high intensity), recommend shorter durations (28-30 minutes including recovery periods)
+  
+  - CRITICAL - Zone 2 / Steady-State Cardio Days:
+    - Include EXACTLY ONE cardio exercise - not two, not three, just ONE single exercise
+    - Do NOT add separate warmup or cooldown exercises - Zone 2 inherently starts/ends at low intensity
+    - The duration MUST match the UPPER BOUND of user's preferred workout duration:
+      - If "15-30 minutes" → set cardio duration to 30 minutes
+      - If "30-45 minutes" → set cardio duration to 45 minutes
+      - If "45-60 minutes" → set cardio duration to 60 minutes
+      - If "60+ minutes" → set cardio duration to 60 minutes
+    - WRONG: Multiple exercises like 45 min + 10 min
+    - CORRECT: One exercise at 60 minutes
+  
+  - CRITICAL - 4x4 Interval Training Days:
+    - Include THREE exercises: warmup + interval + cooldown
+    - Total duration must equal the upper bound of workout duration
+    - Structure for 60 min: 10 min warmup + 40 min intervals + 10 min cooldown
+    - Structure for 45 min: 8 min warmup + 30 min intervals + 7 min cooldown
+    - Use the same cardio type for warmup, interval, and cooldown
 
 - Include enough exercises to satisfy the user's preferred workout duration
 
