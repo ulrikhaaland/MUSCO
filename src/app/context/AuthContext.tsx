@@ -3,7 +3,7 @@
 import { createContext, useContext, useEffect, useState, useRef } from 'react';
 import { signOut, onAuthStateChanged, deleteUser } from 'firebase/auth';
 import { auth, db, functions } from '../firebase/config';
-import { doc, setDoc, getDoc, deleteDoc, onSnapshot } from 'firebase/firestore';
+import { doc, setDoc, getDoc, deleteDoc, onSnapshot, collection, getDocs, writeBatch } from 'firebase/firestore';
 import { useClientUrl } from '../hooks/useClientUrl';
 import { useRouter } from 'next/navigation';
 // removed unused questionnaire imports
@@ -332,9 +332,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     try {
-      // Delete the program document directly from Firestore
       const programDocRef = doc(db, 'users', user.uid, 'programs', programId);
-      await deleteDoc(programDocRef);
+      
+      // Delete subcollections first (Firestore doesn't auto-delete them)
+      // Use batched writes for efficiency
+      const batch = writeBatch(db);
+      
+      // Delete 'weeks' subcollection (new structure)
+      const weeksRef = collection(db, 'users', user.uid, 'programs', programId, 'weeks');
+      const weeksSnapshot = await getDocs(weeksRef);
+      weeksSnapshot.docs.forEach((weekDoc) => {
+        batch.delete(weekDoc.ref);
+      });
+      
+      // Delete legacy 'programs' subcollection if it exists
+      const legacyProgramsRef = collection(db, 'users', user.uid, 'programs', programId, 'programs');
+      const legacySnapshot = await getDocs(legacyProgramsRef);
+      legacySnapshot.docs.forEach((legacyDoc) => {
+        batch.delete(legacyDoc.ref);
+      });
+      
+      // Delete the main program document
+      batch.delete(programDocRef);
+      
+      // Commit all deletes
+      await batch.commit();
 
       toast.success(t('authContext.programDeletedSuccessfully'));
       logAnalyticsEvent('delete_program', { programId });
