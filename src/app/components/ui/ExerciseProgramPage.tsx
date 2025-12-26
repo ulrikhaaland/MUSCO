@@ -428,6 +428,7 @@ export function ExerciseProgramPage({
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [editedTitle, setEditedTitle] = useState('');
   const [isSavingTitle, setIsSavingTitle] = useState(false);
+  const [optimisticTitle, setOptimisticTitle] = useState<string | null>(null);
   const titleInputRef = useRef<HTMLInputElement>(null);
 
   // State for week-specific overview card - auto-expand during generation
@@ -704,7 +705,7 @@ export function ExerciseProgramPage({
 
   // Start editing title
   const handleStartEditTitle = () => {
-    const currentTitle = title || program?.title || '';
+    const currentTitle = optimisticTitle || title || program?.title || '';
     setEditedTitle(currentTitle);
     setIsEditingTitle(true);
     // Focus input after state update
@@ -730,13 +731,18 @@ export function ExerciseProgramPage({
       return;
     }
 
-    if (trimmedTitle === (title || program?.title)) {
+    const originalTitle = title || program?.title;
+    if (trimmedTitle === originalTitle) {
       // No change, just close edit mode
       setIsEditingTitle(false);
       return;
     }
 
+    // Optimistic update - show the new title immediately
+    setOptimisticTitle(trimmedTitle);
+    setIsEditingTitle(false);
     setIsSavingTitle(true);
+    
     try {
       const response = await fetch('/api/programs/update-title', {
         method: 'POST',
@@ -754,13 +760,12 @@ export function ExerciseProgramPage({
       }
 
       toast.success(t('exerciseProgram.titleUpdated'));
-      setIsEditingTitle(false);
-      
-      // The onSnapshot listener in UserContext will pick up the change
-      // and update the UI automatically
+      // Firebase onSnapshot will update the real title, then we clear optimistic state
     } catch (error) {
       console.error('Error updating title:', error);
       toast.error(t('exerciseProgram.titleUpdateFailed'));
+      // Revert optimistic update on error
+      setOptimisticTitle(null);
     } finally {
       setIsSavingTitle(false);
     }
@@ -874,6 +879,21 @@ export function ExerciseProgramPage({
     
     prevProgramsRef.current = activeProgram?.programs;
   }, [activeProgram?.programs, optimisticSwap]);
+
+  // Track title to detect when Firebase data updates
+  const prevTitleRef = useRef(title);
+  
+  // Clear optimistic title when real title updates from Firebase
+  useEffect(() => {
+    const titleChanged = prevTitleRef.current !== title;
+    
+    if (optimisticTitle && titleChanged && title) {
+      // Firebase data has updated, clear optimistic state
+      setOptimisticTitle(null);
+    }
+    
+    prevTitleRef.current = title;
+  }, [title, optimisticTitle]);
 
   // Helper to apply optimistic swap to days array
   const applyOptimisticSwap = (days: ProgramDay[]): ProgramDay[] => {
@@ -1307,14 +1327,14 @@ export function ExerciseProgramPage({
                         className="text-app-title text-center hover:text-gray-300 transition-colors cursor-pointer"
                         title={t('exerciseProgram.editTitle')}
                       >
-                        {title || program?.title ||
+                        {optimisticTitle || title || program?.title ||
                           (type === ProgramType.Recovery
                             ? t('program.recoveryProgramTitle')
                             : t('program.exerciseProgramTitle'))}
                       </button>
                     ) : (
                       <h1 className="text-app-title text-center">
-                        {title || program?.title ||
+                        {optimisticTitle || title || program?.title ||
                           (type === ProgramType.Recovery
                             ? t('program.recoveryProgramTitle')
                             : t('program.exerciseProgramTitle'))}
