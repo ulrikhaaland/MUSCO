@@ -682,8 +682,6 @@ const translations = {
   'programs.targetAreas': 'Target Areas',
   'programs.targetAreas.more': '+{count} more',
   'programs.created': 'Created:',
-  'programs.status.active': 'Active',
-  'programs.status.inactive': 'Inactive',
   'programs.deleteProgram': 'Delete program',
   'programs.deleteDialog.title': 'Delete Program',
   'programs.deleteDialog.description':
@@ -853,8 +851,6 @@ const translations = {
   'userContext.log.selectingProgram': 'Selecting program at index',
 
   // Exercise Program Page
-  'exerciseProgram.badge.active': 'Active Program',
-  'exerciseProgram.badge.inactive': 'Inactive Program',
   'exerciseProgram.button.viewOverview': 'View Program Overview',
   'exerciseProgram.button.getStarted': 'Get Started',
   'exerciseProgram.loading': 'Loading program',
@@ -889,6 +885,10 @@ const translations = {
   'exerciseProgram.nextWeekCard.description':
     "Share your feedback on this week's exercises to get your personalized program for next week",
   'exerciseProgram.nextWeekCard.button': 'Start Feedback Process',
+  'exerciseProgram.nextWeekCard.weeklyLimitTitle': 'Weekly Limit Reached',
+  'exerciseProgram.nextWeekCard.weeklyLimitDescription':
+    "You've already generated a follow-up for this program type this week. Come back next week!",
+  'exerciseProgram.nextWeekCard.weeklyLimitNextDate': 'Next available: {{date}}',
   'exerciseProgram.feedback.error': 'User must be logged in to submit feedback',
   'exerciseProgram.feedback.success': 'New program generated with ID:',
   'exerciseProgram.feedback.error.generating': 'Error generating new program:',

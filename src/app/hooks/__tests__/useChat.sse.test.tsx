@@ -19,12 +19,8 @@ import { useChat } from '../useChat';
 
 // Mocks
 const sendMessageMock = jest.fn();
-const getOrCreateAssistantMock = jest.fn().mockResolvedValue({ assistantId: 'aid', threadId: 'tid-1' });
-const createThreadMock = jest.fn().mockResolvedValue({ threadId: 'tid-2' });
 
 jest.mock('../../api/assistant/assistant', () => ({
-  getOrCreateAssistant: (...args: any[]) => getOrCreateAssistantMock(...args),
-  createThread: (...args: any[]) => createThreadMock(...args),
   sendMessage: (...args: any[]) => sendMessageMock(...args),
 }));
 
@@ -62,8 +58,6 @@ describe.skip('useChat SSE and flow', () => {
   const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
   beforeEach(() => {
     sendMessageMock.mockReset();
-    getOrCreateAssistantMock.mockClear();
-    createThreadMock.mockClear();
     appSpies.saveSpy.mockReset();
     appSpies.restoreSpy.mockReset();
     appSpies.clearSpy.mockReset();
@@ -162,7 +156,6 @@ describe.skip('useChat SSE and flow', () => {
 
     const lastPayload = (sendMessageMock as any).lastPayload;
     expect(lastPayload.diagnosisAssistantResponse).toBeNull();
-    expect(createThreadMock).toHaveBeenCalled();
   });
 
   it('persists state via saveChatState and hydrates from restoreChatState', async () => {

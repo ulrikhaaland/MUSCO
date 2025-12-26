@@ -294,14 +294,6 @@ function ProgramPageContent({
         onVideoClick={handleExerciseVideoClick}
         loadingVideoExercise={loadingVideoExercise}
         onDaySelect={handleDaySelect}
-        isActive={
-          selectedProgram &&
-          userPrograms.some(
-            (up) =>
-              up.active &&
-              up.programs.some((p) => p.createdAt === selectedProgram.createdAt)
-          )
-        }
         isCustomProgram={isCustomProgram}
         generatingDay={generatingDay}
         generatedDays={generatedDays}

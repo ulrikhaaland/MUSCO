@@ -656,8 +656,6 @@ const translations = {
   'programs.targetAreas': 'Målområder',
   'programs.targetAreas.more': '+{count} flere',
   'programs.created': 'Opprettet:',
-  'programs.status.active': 'Aktiv',
-  'programs.status.inactive': 'Inaktiv',
   'programs.deleteProgram': 'Slett program',
   'programs.deleteDialog.title': 'Slett Program',
   'programs.deleteDialog.description': 'Er du sikker på at du vil slette dette programmet? Denne handlingen kan ikke angres.',
@@ -827,8 +825,6 @@ const translations = {
   'userContext.log.selectingProgram': 'Velger program med indeks',
 
   // Exercise Program Page
-  'exerciseProgram.badge.active': 'Aktivt program',
-  'exerciseProgram.badge.inactive': 'Inaktivt program',
   'exerciseProgram.button.viewOverview': 'Vis programoversikt',
   'exerciseProgram.button.getStarted': 'Kom i gang',
   'exerciseProgram.loading': 'Laster program',
@@ -863,6 +859,10 @@ const translations = {
   'exerciseProgram.nextWeekCard.description':
     'Del din tilbakemelding om denne ukens øvelser for å få ditt personlige program for neste uke',
   'exerciseProgram.nextWeekCard.button': 'Start tilbakemeldingsprosessen',
+  'exerciseProgram.nextWeekCard.weeklyLimitTitle': 'Ukentlig grense nådd',
+  'exerciseProgram.nextWeekCard.weeklyLimitDescription':
+    'Du har allerede generert en oppfølging for denne programtypen denne uken. Kom tilbake neste uke!',
+  'exerciseProgram.nextWeekCard.weeklyLimitNextDate': 'Neste tilgjengelig: {{date}}',
   'exerciseProgram.feedback.error':
     'Bruker må være logget inn for å sende tilbakemelding',
   'exerciseProgram.feedback.success': 'Nytt program generert med ID:',

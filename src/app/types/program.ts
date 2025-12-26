@@ -347,7 +347,6 @@ export interface UserProgram {
   programs: ExerciseProgram[];
   diagnosis: DiagnosisAssistantResponse;
   questionnaire: ExerciseQuestionnaireAnswers;
-  active: boolean;
   createdAt: string;
   updatedAt: Date;
   type: ProgramType;

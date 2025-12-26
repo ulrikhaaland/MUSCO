@@ -1,9 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import {
-  getOrCreateAssistant,
-  createThread,
-  sendMessage,
-} from '../api/assistant/assistant';
+import { sendMessage } from '../api/assistant/assistant';
 import {
   ChatMessage,
   ChatPayload,
@@ -50,8 +46,6 @@ export function useChat() {
   const chatSaveInProgressRef = useRef(false);
   const lastSavedMessagesCountRef = useRef(0);
   
-  const threadIdRef = useRef<string | null>(null);
-  const assistantIdRef = useRef<string | null>(null);
   const messageQueueRef = useRef<
     { message: string; payload: Omit<ChatPayload, 'message'> }[]
   >([]);
@@ -77,39 +71,6 @@ export function useChat() {
     if (typeof (window as any).__chatResetId === 'undefined') {
       (window as any).__chatResetId = 0;
     }
-  }, []);
-
-  useEffect(() => {
-    async function initializeAssistant() {
-      try {
-        // Try to reuse prewarmed IDs from sessionStorage to avoid creating new thread
-        let preAssistantId: string | null = null;
-        let preThreadId: string | null = null;
-        try {
-          preAssistantId = window.sessionStorage.getItem('assistant_id');
-          preThreadId = window.sessionStorage.getItem('assistant_thread_id');
-        } catch {}
-        if (preAssistantId && preThreadId) {
-          assistantIdRef.current = preAssistantId;
-          threadIdRef.current = preThreadId;
-          return;
-        }
-        const { assistantId, threadId } = await getOrCreateAssistant();
-        assistantIdRef.current = assistantId;
-        threadIdRef.current = threadId;
-        try {
-          window.sessionStorage.setItem('assistant_id', assistantId);
-          window.sessionStorage.setItem('assistant_thread_id', threadId);
-        } catch {}
-      } catch (error) {
-        console.error('Error initializing assistant:', error);
-      }
-    }
-
-    initializeAssistant();
-    // NOTE: initializeAssistant is stable, and we intentionally
-    // run this once on mount.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Hydrate rate-limit state from session so overlay persists across redirects
@@ -273,26 +234,6 @@ export function useChat() {
     streamPossiblyInterruptedRef.current = false; // Reset interruption flag
     isRefetchingRef.current = false; // Reset refetching flag
     setLastSendError(null); // Clear any send error on reset
-    // Immediately clear the thread reference so that no further messages are
-    // accidentally sent to the previous conversation while a new thread is
-    // being created.
-    threadIdRef.current = null;
-
-    // Request a brand-new thread from the backend and store its id once the
-    // request resolves. Any user message that is triggered before this promise
-    // settles will be queued because the threadIdRef is null, ensuring that
-    // no message can be appended to the old thread.
-    createThread()
-      .then(({ threadId }) => {
-        threadIdRef.current = threadId;
-
-        // Process any messages that may have been queued while the new thread
-        // was being created.
-        processNextMessage();
-      })
-      .catch((error) => {
-        console.error('Failed to create new chat thread:', error);
-      });
   };
 
   const processNextMessage = async () => {
@@ -439,7 +380,7 @@ export function useChat() {
       // Send the message and handle streaming response with structured events
       try {
         await sendMessage(
-          threadIdRef.current ?? '',
+          '', // threadId not used - backend uses stateless chat completions
           payload,
           (content, payloadObj) => {
             // Ignore events if chat was reset during this stream

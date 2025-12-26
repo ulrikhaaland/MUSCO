@@ -35,7 +35,6 @@ import {
 } from '@/app/services/questionnaire';
 import { PartialProgram } from '@/app/types/incremental-program';
 import { partialToDisplayProgram } from '@/app/services/incrementalProgramService';
-import { updateActiveProgramStatus } from '@/app/services/program';
 import { useRouter, usePathname } from 'next/navigation';
 import { enrichExercisesWithFullData } from '@/app/services/exerciseProgramService';
 import { useTranslation } from '@/app/i18n/TranslationContext';
@@ -82,7 +81,6 @@ interface UserContextType {
     } | null
   ) => void;
   selectProgram: (programIndex: number) => void;
-  toggleActiveProgram: (programIndex: number) => Promise<void>;
   generateFollowUpProgram: () => Promise<void>;
   loadUserPrograms: () => Promise<void>;
   // Incremental generation state
@@ -228,7 +226,6 @@ export function UserProvider({ children }: { children: ReactNode }) {
         programs: exercisePrograms,
         diagnosis: docData.diagnosis,
         questionnaire: docData.questionnaire,
-        active: docData.active ?? false,
         createdAt: createdAt.toISOString(),
         updatedAt,
         type: docData.type,
@@ -349,51 +346,15 @@ export function UserProvider({ children }: { children: ReactNode }) {
     if (isUserAuthenticated && userId) {
       const programsRef = collection(db, `users/${userId}/programs`);
 
-      // OPTIMIZATION: First, quickly fetch only the active program for immediate display
-      const loadActiveProgram = async () => {
+      // OPTIMIZATION: First, quickly fetch most recent program for immediate display
+      const loadMostRecentProgram = async () => {
         try {
           // Skip if a questionnaire submission is in progress
           if (submissionInProgressRef.current) {
             return;
           }
 
-          // Query for most recent active program (fast path)
-          const activeQuery = query(
-            programsRef,
-            where('active', '==', true),
-            where('status', '==', ProgramStatus.Done),
-            orderBy('updatedAt', 'desc'),
-            limit(1)
-          );
-          const activeSnapshot = await getDocs(activeQuery);
-
-          // Re-check after async operation
-          if (submissionInProgressRef.current) {
-            return;
-          }
-
-          if (!activeSnapshot.empty) {
-            const doc = activeSnapshot.docs[0];
-            const data = doc.data();
-            const userProgram = await fetchProgramWithWeeks(userId, doc.id, data);
-            
-            // Re-check after async operation
-            if (submissionInProgressRef.current) {
-              return;
-            }
-
-            if (userProgram) {
-              console.log('⚡ Fast-loaded active program:', userProgram.title);
-              prepareAndSetProgram(userProgram);
-              setUserPrograms([userProgram]); // Set initial array with just active program
-              setProgramStatus(ProgramStatus.Done);
-              setIsLoading(false);
-              initialLoadDone = true;
-              return;
-            }
-          }
-
-          // No active program found, try most recent
+          // Query for most recent program (fast path)
           const recentQuery = query(
             programsRef,
             where('status', '==', ProgramStatus.Done),
@@ -436,7 +397,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
       };
 
       // Start fast load
-      loadActiveProgram();
+      loadMostRecentProgram();
 
       // Set up real-time listener for generation status and updates
       const listenerQuery = query(programsRef, orderBy('createdAt', 'desc'));
@@ -569,8 +530,6 @@ export function UserProvider({ children }: { children: ReactNode }) {
         const programs: UserProgramWithId[] = [];
         let mostRecentProgram: UserProgramWithId | null = null;
         let mostRecentDate: Date | null = null;
-        let mostRecentActiveProgram: UserProgramWithId | null = null;
-        let mostRecentActiveDate: Date | null = null;
 
         for (const doc of snapshot.docs) {
           // Check periodically during async loop
@@ -590,14 +549,6 @@ export function UserProvider({ children }: { children: ReactNode }) {
                 mostRecentDate = updatedAt;
                 mostRecentProgram = userProgram;
               }
-
-              // Track most recent active program (not just any active program)
-              if (data.active === true) {
-                if (!mostRecentActiveDate || updatedAt.getTime() > mostRecentActiveDate.getTime()) {
-                  mostRecentActiveDate = updatedAt;
-                  mostRecentActiveProgram = userProgram;
-                }
-              }
             }
           }
         }
@@ -611,7 +562,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
           setUserPrograms(programs);
         }
 
-        const programToDisplay = mostRecentActiveProgram || mostRecentProgram;
+        const programToDisplay = mostRecentProgram;
 
         if (programToDisplay) {
           const previousActiveProgramId = activeProgramIdRef.current;
@@ -1008,54 +959,6 @@ export function UserProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // Toggle the active status of a program (optimistic UI, then Firestore)
-  const toggleActiveProgram = (programIndex: number): Promise<void> => {
-    if (!user) {
-      // removed logging
-      return Promise.reject(new Error(t('userContext.error.userLoggedIn')));
-    }
-
-    if (programIndex < 0 || programIndex >= userPrograms.length) {
-      return Promise.reject(
-        new Error(t('userContext.error.invalidProgramIndex'))
-      );
-    }
-
-    const selectedProgram = userPrograms[programIndex];
-    const newActiveStatus = !selectedProgram.active;
-    logAnalyticsEvent('toggle_program', {
-      programId: selectedProgram.docId,
-      active: newActiveStatus,
-    });
-
-    // Optimistically update local state
-    const updatedPrograms = userPrograms.map((p, idx) =>
-      idx === programIndex ? { ...p, active: newActiveStatus } : p
-    );
-    setUserPrograms(updatedPrograms);
-
-    // If activated, immediately reflect in UI
-    if (newActiveStatus) {
-      const updatedSelected = { ...selectedProgram, active: true };
-      prepareAndSetProgram(updatedSelected);
-      setProgramStatus(ProgramStatus.Done);
-    }
-
-    // Persist change
-    return updateActiveProgramStatus(
-      user.uid,
-      selectedProgram.docId,
-      selectedProgram.type,
-      newActiveStatus
-    )
-      .then(() => undefined)
-      .catch((error) => {
-        // Revert local change on failure
-        setUserPrograms(userPrograms);
-        throw error;
-      });
-  };
-
   const generateFollowUpProgram = async () => {
     setProgramStatus(ProgramStatus.Generating);
     // loader removed
@@ -1071,12 +974,11 @@ export function UserProvider({ children }: { children: ReactNode }) {
     
     try {
       const programsRef = collection(db, `users/${userId}/programs`);
-      const q = query(programsRef, orderBy('createdAt', 'desc'));
+      const q = query(programsRef, orderBy('updatedAt', 'desc'));
       const snapshot = await getDocs(q);
       
       const programs: UserProgramWithId[] = [];
-      let mostRecentActiveProgram: UserProgramWithId | null = null;
-      let mostRecentActiveDate: Date | null = null;
+      let mostRecentProgram: UserProgramWithId | null = null;
       
       for (const doc of snapshot.docs) {
         const data = doc.data();
@@ -1086,13 +988,9 @@ export function UserProvider({ children }: { children: ReactNode }) {
           if (userProgram) {
             programs.push(userProgram);
 
-            // Track most recent active program
-            if (data.active === true) {
-              const updatedAt = new Date(userProgram.updatedAt || userProgram.createdAt);
-              if (!mostRecentActiveDate || updatedAt.getTime() > mostRecentActiveDate.getTime()) {
-                mostRecentActiveDate = updatedAt;
-                mostRecentActiveProgram = userProgram;
-              }
+            // Track most recent program (first one since we ordered by updatedAt desc)
+            if (!mostRecentProgram) {
+              mostRecentProgram = userProgram;
             }
           }
         }
@@ -1101,9 +999,9 @@ export function UserProvider({ children }: { children: ReactNode }) {
       console.log(`📦 Loaded ${programs.length} programs`);
       setUserPrograms(programs);
       
-      // Set the most recent active program if not already set
-      if (mostRecentActiveProgram && !activeProgramIdRef.current) {
-        prepareAndSetProgram(mostRecentActiveProgram);
+      // Set the most recent program if not already set
+      if (mostRecentProgram && !activeProgramIdRef.current) {
+        prepareAndSetProgram(mostRecentProgram);
         setProgramStatus(ProgramStatus.Done);
       }
     } catch (error) {
@@ -1127,7 +1025,6 @@ export function UserProvider({ children }: { children: ReactNode }) {
         pendingQuestionnaire,
         setPendingQuestionnaire,
         selectProgram,
-        toggleActiveProgram,
         generateFollowUpProgram,
         loadUserPrograms,
         // Incremental generation state

@@ -39,8 +39,7 @@ async function generateProgram(
   userId: string,
   programId: string,
   diagnosis: DiagnosisAssistantResponse,
-  answers: ExerciseQuestionnaireAnswers,
-  assistantId?: string
+  answers: ExerciseQuestionnaireAnswers
 ) {
   try {
     // Get user's language preference
@@ -59,7 +58,6 @@ async function generateProgram(
           userInfo: answers,
           userId: userId,
           programId: programId,
-          assistantId: assistantId,
           language: userLanguage, // Pass the user's language preference
         },
       }),
@@ -93,8 +91,7 @@ export const submitQuestionnaireIncremental = async (
   userId: string,
   diagnosis: DiagnosisAssistantResponse,
   questionnaire: ExerciseQuestionnaireAnswers,
-  callbacks?: IncrementalGenerationCallbacks,
-  _assistantId?: string
+  callbacks?: IncrementalGenerationCallbacks
 ): Promise<string> => {
   const programType = diagnosis.programType;
 
@@ -117,28 +114,7 @@ export const submitQuestionnaireIncremental = async (
 
   const programsRef = collection(db, `users/${userId}/programs`);
 
-  // Deactivate existing active programs of the same type
-  const existingActiveQuery = query(
-    programsRef,
-    where('type', '==', programType),
-    where('active', '==', true)
-  );
-  const existingActiveSnapshot = await getDocs(existingActiveQuery);
-
-  const deactivationPromises = existingActiveSnapshot.docs.map((docSnapshot) =>
-    updateDoc(doc(db, `users/${userId}/programs`, docSnapshot.id), {
-      active: false,
-    })
-  );
-  await Promise.all(deactivationPromises);
-
-  if (deactivationPromises.length > 0) {
-    console.log(
-      `[incremental] Deactivated ${deactivationPromises.length} existing ${programType} program(s)`
-    );
-  }
-
-  // Create the program document - always active since we deactivated others of same type
+  // Create the program document
   const docRef = await addDoc(programsRef, {
     diagnosis,
     questionnaire: sanitizedQuestionnaire,
@@ -146,7 +122,6 @@ export const submitQuestionnaireIncremental = async (
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
     type: programType,
-    active: true,
   });
 
   console.log(`[incremental] Program document created: ${docRef.id}`);
@@ -185,7 +160,6 @@ export const submitQuestionnaire = async (
   userId: string,
   diagnosis: DiagnosisAssistantResponse,
   questionnaire: ExerciseQuestionnaireAnswers,
-  assistantId?: string,
   onComplete?: () => void
 ): Promise<string> => {
   try {
@@ -215,28 +189,7 @@ export const submitQuestionnaire = async (
 
     const programsRef = collection(db, `users/${userId}/programs`);
 
-    // Deactivate existing active programs of the same type
-    const existingActiveQuery = query(
-      programsRef,
-      where('type', '==', programType),
-      where('active', '==', true)
-    );
-    const existingActiveSnapshot = await getDocs(existingActiveQuery);
-
-    const deactivationPromises = existingActiveSnapshot.docs.map((docSnapshot) =>
-      updateDoc(doc(db, `users/${userId}/programs`, docSnapshot.id), {
-        active: false,
-      })
-    );
-    await Promise.all(deactivationPromises);
-
-    if (deactivationPromises.length > 0) {
-      console.log(
-        `📊 Deactivated ${deactivationPromises.length} existing ${programType} program(s)`
-      );
-    }
-
-    // Use sanitized questionnaire in the Firestore document - always active since we deactivated others of same type
+    // Create the program document
     const docRef = await addDoc(programsRef, {
       diagnosis,
       questionnaire: sanitizedQuestionnaire,
@@ -244,10 +197,9 @@ export const submitQuestionnaire = async (
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
       type: programType,
-      active: true,
     });
 
-    console.log(`📋 New ${programType} program created with active status: true`);
+    console.log(`📋 New ${programType} program created: ${docRef.id}`);
 
     // Note: Weekly generation limit is recorded in the API when the program
     // is fully generated, not here (to handle generation failures)
@@ -258,8 +210,7 @@ export const submitQuestionnaire = async (
         userId,
         docRef.id,
         diagnosis,
-        sanitizedQuestionnaire,
-        assistantId
+        sanitizedQuestionnaire
       );
     } catch (error) {
       console.error('Error starting program generation:', error);

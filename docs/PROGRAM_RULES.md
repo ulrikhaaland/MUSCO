@@ -19,86 +19,14 @@ enum ProgramType {
 }
 ```
 
-## Active Program Constraints
+## App Launch - Default Display Program
 
-### Rule 1: One Active Per Type
-**Only ONE program of each type can be active at any given time.**
-
-| Type | Max Active |
-|------|------------|
-| Exercise | 1 |
-| Recovery | 1 |
-| Exercise & Recovery | 1 |
-
-This means a user can have up to **3 active programs simultaneously** (one of each type), but never 2+ active programs of the same type.
-
-### Rule 2: Auto-Deactivation on New Program
-When a new program is created or activated:
-1. Query for existing active programs **of the same type**
-2. Deactivate all found programs (`active: false`)
-3. Set the new program as active (`active: true`)
+**Critical:** When the app launches and the user has programs, the app displays the **most recently updated program** (by `updatedAt` field).
 
 ```typescript
-// Pseudo-code for activation logic
-async function activateProgram(userId, programId, programType) {
-  // 1. Deactivate existing active programs of same type
-  const existingActive = query(
-    programsRef,
-    where('type', '==', programType),
-    where('active', '==', true)
-  );
-  
-  for (doc of existingActive) {
-    if (doc.id !== programId) {
-      update(doc, { active: false });
-    }
-  }
-  
-  // 2. Activate the target program
-  update(programId, { active: true });
-}
-```
-
-### Rule 3: Update `updatedAt` on Program Extension
-**Critical:** When a program is extended with a new week (follow-up program generation), the `updatedAt` field MUST be updated.
-
-This ensures the extended program surfaces as the most recent on app launch.
-
-```typescript
-// When generating follow-up week, always update updatedAt
-const userProgramUpdates = {
-  status: ProgramStatus.Done,
-  updatedAt: new Date().toISOString(),  // ← CRITICAL: Must update this!
-  active: true,
-};
-batch.update(programRef, userProgramUpdates);
-```
-
-**Implementation:** `src/app/api/assistant/openai-server.ts` line ~884
-
-**When `updatedAt` must be updated:**
-| Action | Update `updatedAt`? |
-|--------|---------------------|
-| New program created | ✅ Yes (automatic via `serverTimestamp()`) |
-| Follow-up week generated | ✅ Yes (explicit update required) |
-| Program activated/deactivated | ❌ No (only `active` changes) |
-| Program viewed | ❌ No |
-
-**Why this is critical:**
-The `updatedAt` field is the **sole determinant** of which program displays on app launch. If a follow-up generation doesn't update `updatedAt`, the user might see an older program instead of their freshly extended one.
-
-### Rule 4: App Launch - Default Display Program
-**Critical:** When the app launches and the user has programs, the app navigates to the program page and displays the **most recently updated active program** across all types.
-
-Priority order for selecting the display program:
-1. **Most recent active program** (by `updatedAt`, any type) → Primary choice
-2. **Most recent program** (by `updatedAt`, if no active programs exist) → Fallback
-
-```typescript
-// Query for display - gets most recent active across ALL types
+// Query for display - gets most recent program
 const displayQuery = query(
   programsRef,
-  where('active', '==', true),
   where('status', '==', 'done'),
   orderBy('updatedAt', 'desc'),
   limit(1)
@@ -131,20 +59,20 @@ const displayQuery = query(
                      │
                      ▼
           ┌──────────────────────────────┐
-          │ Has active programs?         │
+          │ Has programs with            │
+          │ status='done'?               │
           └──────────────────────────────┘
                 │              │
                Yes             No
                 │              │
                 ▼              ▼
     ┌─────────────────────┐   ┌─────────────────────┐
-    │ Select MOST RECENT  │   │ Select MOST RECENT  │
-    │ active program      │   │ program (any)       │
-    │ (by updatedAt)      │   │ (by updatedAt)      │
+    │ Select MOST RECENT  │   │ Show empty state    │
+    │ program (by         │   │ Prompt to create    │
+    │ updatedAt desc)     │   │ first program       │
     └─────────────────────┘   └─────────────────────┘
-                │              │
-                └──────┬───────┘
-                       ▼
+                │
+                ▼
             ┌─────────────────────┐
             │  Navigate to        │
             │  /program page      │
@@ -154,44 +82,8 @@ const displayQuery = query(
 
 **Key requirement:** The program displayed on launch MUST be the most recently updated/created program. This ensures users always see their latest work first, regardless of program type.
 
-## Implementation Locations
+## Weekly Generation Limit Per Type
 
-| Location | Responsibility |
-|----------|----------------|
-| `src/app/services/questionnaire.ts` | Deactivates same-type programs when creating new program |
-| `src/app/services/program.ts` | `updateActiveProgramStatus()` for manual toggling |
-| `src/app/services/recoveryProgramService.ts` | Handles recovery program activation |
-| `src/app/api/assistant/openai-server.ts` | Deactivates same-type programs after generation completes |
-| `src/app/api/programs/generate-incremental/route.ts` | Deactivates same-type programs in incremental generation |
-| `src/app/context/UserContext.tsx` | Selects most recent active for display |
-
-## Database Schema
-
-```typescript
-// Firestore: users/{userId}/programs/{programId}
-interface ProgramDocument {
-  type: ProgramType;           // 'exercise' | 'recovery' | 'exercise_and_recovery'
-  active: boolean;             // Only one true per type
-  status: ProgramStatus;       // 'generating' | 'done' | 'error'
-  createdAt: Timestamp;
-  updatedAt: Timestamp;
-  // ... other fields
-}
-```
-
-## Firestore Indexes Required
-
-For the active program queries to work efficiently:
-
-```
-Collection: users/{userId}/programs
-Fields:
-  - active (Ascending)
-  - status (Ascending)  
-  - updatedAt (Descending)
-```
-
-### Rule 5: Weekly Generation Limit Per Type
 **Only ONE program generation (new or follow-up) is allowed per week per program type.**
 
 This prevents abuse and ensures users engage with their programs before generating new ones.
@@ -261,11 +153,43 @@ When a user attempts to generate a program but has already generated one this we
 - Return a specific error: `WEEKLY_LIMIT_REACHED`
 - UI should display a user-friendly message indicating when they can generate again (next Monday)
 
+## Implementation Locations
+
+| Location | Responsibility |
+|----------|----------------|
+| `src/app/services/questionnaire.ts` | Creates new programs |
+| `src/app/services/recoveryProgramService.ts` | Handles recovery program creation |
+| `src/app/api/assistant/openai-server.ts` | Generates programs after submission |
+| `src/app/api/programs/generate-incremental/route.ts` | Incremental day-by-day generation |
+| `src/app/context/UserContext.tsx` | Selects most recent program for display |
+
+## Database Schema
+
+```typescript
+// Firestore: users/{userId}/programs/{programId}
+interface ProgramDocument {
+  type: ProgramType;           // 'exercise' | 'recovery' | 'exercise_and_recovery'
+  status: ProgramStatus;       // 'generating' | 'done' | 'error'
+  createdAt: Timestamp;
+  updatedAt: Timestamp;        // Used to determine most recent program
+  // ... other fields
+}
+```
+
+## Firestore Indexes Required
+
+For the program queries to work efficiently:
+
+```
+Collection: users/{userId}/programs
+Fields:
+  - status (Ascending)  
+  - updatedAt (Descending)
+```
+
 ## Edge Cases
 
 1. **User with no programs**: Display empty state, prompt to create first program
-2. **All programs inactive**: Display most recently updated program (regardless of active status)
-3. **Program generation in progress**: Show generating skeleton, block other loads from overriding
-4. **Multiple active of same type (data corruption)**: On next activation, all same-type programs are deactivated first, self-healing the state
-5. **Weekly limit reached**: User must wait until next Monday to generate another program of that type
-
+2. **Program generation in progress**: Show generating skeleton, block other loads from overriding
+3. **Weekly limit reached**: User must wait until next Monday to generate another program of that type
+4. **Multiple programs of same type**: Most recent by `updatedAt` is displayed on app launch

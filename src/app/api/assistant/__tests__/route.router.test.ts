@@ -63,12 +63,8 @@ jest.mock('@/app/api/assistant/openai-server', () => ({
   reserveFreeChatTokens: (...args: any[]) => helpers.reserveFreeChatTokens(...args),
   reserveFreeChatTokensForAnon: (...args: any[]) => helpers.reserveFreeChatTokensForAnon(...args),
   // The rest are not used in these tests
-  getOrCreateAssistant: jest.fn(),
-  createThread: jest.fn(),
-  getMessages: jest.fn(),
   generateExerciseProgramWithModel: jest.fn(),
   generateFollowUpExerciseProgram: jest.fn(),
-  // Legacy Assistants API functions removed (runAssistant, streamRunResponse)
 }));
 
 // explore-assistant.ts removed - functionality unified in send_message_chat

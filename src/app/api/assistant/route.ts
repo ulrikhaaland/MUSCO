@@ -1,9 +1,6 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import {
-  getOrCreateAssistant,
-  createThread,
-  getMessages,
   generateExerciseProgramWithModel,
   generateFollowUpExerciseProgram,
   reserveFreeChatTokens,
@@ -27,42 +24,10 @@ export async function POST(request: Request) {
   const handlerStartTime = performance.now();
   console.log(`[API Route] POST /api/assistant received.`);
   try {
-    const { action, threadId, payload, stream } = await request.json();
+    const { action, threadId: _threadId, payload, stream } = await request.json();
+    void _threadId; // threadId no longer used - chat completions are stateless
 
     switch (action) {
-      case 'initialize': {
-        const initStart = performance.now();
-        console.log(`[API Route] action=initialize status=starting`);
-        const cookieStore = await cookies();
-        const existingThread = cookieStore.get('musco_thread_id')?.value;
-        const assistant = await getOrCreateAssistant(
-          'asst_e1prLG3Ykh2ZCVspoAFMZPZC'
-        );
-        let threadId: string;
-        if (existingThread) {
-          threadId = existingThread;
-          console.log(`[API Route] action=initialize reuse_thread=${threadId}`);
-        } else {
-          const thread = await createThread();
-          threadId = thread.id;
-        }
-        const initEnd = performance.now();
-        console.log(
-          `[API Route] action=initialize status=ok assistantId=${assistant.id} threadId=${threadId} durMs=${(initEnd - initStart).toFixed(1)}`
-        );
-        const response = NextResponse.json({
-          assistantId: assistant.id,
-          threadId,
-        });
-        if (!existingThread && threadId) {
-          response.headers.set(
-            'Set-Cookie',
-            `musco_thread_id=${threadId}; Path=/; Max-Age=${30 * 24 * 60 * 60}; HttpOnly; SameSite=Lax`
-          );
-        }
-        return response;
-      }
-
       // UNIFIED CHAT PATH - handles both 'diagnosis' and 'explore' modes
       // Uses chat-completions API + StreamParser for structured output
       case 'send_message_chat': {
@@ -254,18 +219,6 @@ export async function POST(request: Request) {
           { messages: [{ role: 'assistant', content: text }] as OpenAIMessage[] },
           { headers: setCookie ? { 'Set-Cookie': setCookie } : undefined }
         );
-      }
-
-      case 'get_messages': {
-        if (!threadId) {
-          return NextResponse.json(
-            { error: 'Thread ID is required' },
-            { status: 400 }
-          );
-        }
-
-        const messages = await getMessages(threadId);
-        return NextResponse.json({ messages: messages as OpenAIMessage[] });
       }
 
       case 'generate_exercise_program': {

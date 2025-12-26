@@ -15,7 +15,6 @@ function ProgramsContent() {
   const {
     userPrograms,
     isLoading,
-    toggleActiveProgram,
     loadUserPrograms,
     programStatus,
   } = useUser();
@@ -25,10 +24,6 @@ function ProgramsContent() {
   const [sortBy, setSortBy] = useState<'newest' | 'oldest'>('newest');
   const [filterType, setFilterType] = useState<'all' | 'exercise' | 'recovery'>(
     'all'
-  );
-  // Track which program is being toggled to avoid flickering
-  const [pendingToggles, setPendingToggles] = useState<Record<string, boolean>>(
-    {}
   );
   // Track locally deleted programs for immediate UI updates
   const [deletedPrograms, setDeletedPrograms] = useState<Set<string>>(
@@ -127,46 +122,6 @@ function ProgramsContent() {
   };
 
   // Handle toggling active status with improved responsiveness
-  const handleToggleActive = (e: React.MouseEvent, programIndex: number) => {
-    // Stop propagation to prevent card click
-    e.stopPropagation();
-    // Prevent default browser behavior
-    e.preventDefault();
-
-    // Get the program details
-    const program = userPrograms[programIndex];
-    if (!program) return;
-
-    // Get the new toggle state
-    const newToggleState = !program.active;
-
-    // Set pending toggle state for immediate UI feedback
-    const newPendingToggles: Record<string, boolean> = {};
-
-    // If activating a program, mark all other programs of same type as inactive
-    if (newToggleState) {
-      userPrograms.forEach((p) => {
-        if (p.type === program.type) {
-          // Mark active the selected program, inactive all others of same type
-          newPendingToggles[p.docId] = p.docId === program.docId;
-        }
-      });
-    } else {
-      // Just toggling current program to inactive
-      newPendingToggles[program.docId] = false;
-    }
-
-    // Update pending toggles state for immediate UI feedback
-    setPendingToggles(newPendingToggles);
-
-    // Toggle the program active state in the background
-    toggleActiveProgram(programIndex).catch((error) => {
-      console.error('Error toggling program:', error);
-      // Revert all pending toggles on error
-      setPendingToggles({});
-    });
-  };
-
   // Navigate to home page to create a new program
   const handleCreateNewProgram = () => {
     router.push('/app/questionnaire');
@@ -646,61 +601,6 @@ function ProgramsContent() {
                           />
                         </svg>
                       </button>
-
-                      <div className="flex items-center">
-                        <span className="text-xs mr-2">
-                          {pendingToggles[program.docId] !== undefined
-                            ? pendingToggles[program.docId]
-                              ? t('programs.status.active')
-                              : t('programs.status.inactive')
-                            : program.active
-                              ? t('programs.status.active')
-                              : t('programs.status.inactive')}
-                        </span>
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation(); // Prevent card click
-                            e.preventDefault(); // Prevent any default behavior
-                            handleToggleActive(e, originalIndex);
-                          }}
-                          className="relative inline-flex items-center cursor-pointer"
-                          aria-pressed={
-                            pendingToggles[program.docId] !== undefined
-                              ? pendingToggles[program.docId]
-                              : program.active
-                          }
-                          aria-label={
-                            program.active
-                              ? 'Deactivate program'
-                              : 'Activate program'
-                          }
-                        >
-                          <div
-                            className={`w-10 h-5 rounded-full relative ${
-                              pendingToggles[program.docId] !== undefined
-                                ? pendingToggles[program.docId]
-                                  ? 'bg-green-600'
-                                  : 'bg-gray-600 dark:bg-gray-700'
-                                : program.active
-                                  ? 'bg-green-600'
-                                  : 'bg-gray-600 dark:bg-gray-700'
-                            }`}
-                          >
-                            <span
-                              className={`absolute top-[2px] left-[2px] bg-white border border-gray-300 rounded-full h-4 w-4 transition-all ${
-                                pendingToggles[program.docId] !== undefined
-                                  ? pendingToggles[program.docId]
-                                    ? 'translate-x-5 bg-white border-white'
-                                    : ''
-                                  : program.active
-                                    ? 'translate-x-5 bg-white border-white'
-                                    : ''
-                              }`}
-                            ></span>
-                          </div>
-                        </button>
-                      </div>
                     </div>
                   </div>
                 </div>

@@ -1,5 +1,5 @@
 import OpenAI from 'openai';
-import { ChatPayload, DiagnosisAssistantResponse } from '../../types';
+import { DiagnosisAssistantResponse } from '../../types';
 import {
   ENFORCE_CHAT_LIMITS,
   SUBSCRIPTIONS_ENABLED,
@@ -482,65 +482,7 @@ function formatMessagesForChatCompletion(messages: any[]) {
   });
 }
 
-// Create or load the assistant
-export async function getOrCreateAssistant(assistantId: string) {
-  try {
-    const assistant = await openai.beta.assistants.retrieve(assistantId);
-    // If the assistant exists but is not on the desired model, update it to a supported Assistants model
-    try {
-      const currentModel = (assistant as any)?.model as string | undefined;
-      // Assistants API currently may not support some 5-mini variants; prefer 4.1-mini if update is needed
-      if (currentModel && currentModel !== 'gpt-4.1-mini') {
-        const updated = await openai.beta.assistants.update(assistantId, {
-          model: 'gpt-4.1-mini',
-        });
-        return updated;
-      }
-    } catch {}
-    return assistant;
-  } catch (error) {
-    console.error('Error in getOrCreateAssistant:', error);
-    throw new Error('Failed to initialize assistant');
-  }
-}
-
-// Create a new thread
-export async function createThread() {
-  try {
-    return await openai.beta.threads.create();
-  } catch (error) {
-    console.error('Error creating thread:', error);
-    throw new Error('Failed to create conversation thread');
-  }
-}
-
-// Add a message to a thread
-export async function addMessage(threadId: string, payload: ChatPayload) {
-  try {
-    const content = JSON.stringify(payload);
-    return await openai.beta.threads.messages.create(threadId, {
-      role: 'user',
-      content,
-    });
-  } catch (error) {
-    console.error('Error adding message:', error);
-    throw new Error('Failed to add message to thread');
-  }
-}
-
-// Run the assistant on a thread with streaming
 // Legacy Assistants API functions removed - now using chat-completions with StreamParser
-
-// Get messages from a thread
-export async function getMessages(threadId: string) {
-  try {
-    const messages = await openai.beta.threads.messages.list(threadId);
-    return messages.data;
-  } catch (error) {
-    console.error('Error getting messages:', error);
-    throw new Error('Failed to get messages');
-  }
-}
 
 export async function generateFollowUpExerciseProgram(context: {
   diagnosisData: DiagnosisAssistantResponse;
@@ -834,31 +776,6 @@ FAILURE TO FOLLOW THE ABOVE INSTRUCTIONS EXACTLY WILL RESULT IN POOR USER EXPERI
         // Atomically add the new week document and mark the parent program as Done
         const batch = adminDb.batch();
 
-        // Deactivate other programs of the same type before setting this one as active
-        const programType = context.diagnosisData.programType;
-        if (programType) {
-          const otherActiveProgramsQuery = adminDb
-            .collection('users')
-            .doc(context.userId)
-            .collection('programs')
-            .where('active', '==', true)
-            .where('type', '==', programType);
-
-          const otherActiveProgramsSnapshot =
-            await otherActiveProgramsQuery.get();
-          otherActiveProgramsSnapshot.forEach((doc) => {
-            if (doc.id !== context.programId) {
-              batch.update(doc.ref, {
-                active: false,
-                updatedAt: new Date().toISOString(),
-              });
-              console.log(
-                `[follow-up] Deactivating program ${doc.id} of type ${programType}`
-              );
-            }
-          });
-        }
-
         // Extract fields that belong to UserProgram level vs weekly program level
         const { timeFrame, title, days, ...programMetadata } = program as any;
 
@@ -883,7 +800,6 @@ FAILURE TO FOLLOW THE ABOVE INSTRUCTIONS EXACTLY WILL RESULT IN POOR USER EXPERI
         const userProgramUpdates: any = {
           status: ProgramStatus.Done,
           updatedAt: new Date().toISOString(),
-          active: true, // Set the new program as active
         };
 
         // Add timeFrame and title if they exist in the LLM response
@@ -898,10 +814,10 @@ FAILURE TO FOLLOW THE ABOVE INSTRUCTIONS EXACTLY WILL RESULT IN POOR USER EXPERI
 
         await batch.commit();
 
-        console.log('Successfully updated program document and set as active');
+        console.log('Successfully updated program document');
 
         // Record the weekly generation limit now that follow-up is complete
-        // programType already declared above at line 838
+        const programType = context.diagnosisData.programType;
         if (programType) {
           await recordProgramGenerationAdmin(context.userId, programType as ProgramType);
         }
@@ -1074,36 +990,6 @@ export async function generateExerciseProgramWithModel(context: {
         // Atomically add the new week document and mark the parent program as Done
         const batch = adminDb.batch();
 
-        // Deactivate other programs of the same type
-        const programType = context.diagnosisData.programType;
-        if (programType) {
-          const otherActiveProgramsQuery = adminDb
-            .collection('users')
-            .doc(context.userId)
-            .collection('programs')
-            .where('active', '==', true)
-            .where('type', '==', programType);
-
-          const otherActiveProgramsSnapshot =
-            await otherActiveProgramsQuery.get();
-          otherActiveProgramsSnapshot.forEach((doc) => {
-            // Ensure we don't deactivate the program we are currently activating
-            if (doc.id !== context.programId) {
-              batch.update(doc.ref, {
-                active: false,
-                updatedAt: new Date().toISOString(),
-              });
-              console.log(
-                `Deactivating program ${doc.id} of type ${programType}`
-              );
-            }
-          });
-        } else {
-          console.warn(
-            'Program type not available, skipping deactivation of other programs.'
-          );
-        }
-
         // Extract fields that belong to UserProgram level vs weekly program level
         const { timeFrame, title, days, ...programMetadata } = program as any;
 
@@ -1127,7 +1013,6 @@ export async function generateExerciseProgramWithModel(context: {
         const userProgramUpdates: any = {
           status: ProgramStatus.Done,
           updatedAt: new Date().toISOString(),
-          active: true, // Set the new program as active
         };
 
         // Add timeFrame and title if they exist in the LLM response
@@ -1142,10 +1027,10 @@ export async function generateExerciseProgramWithModel(context: {
 
         await batch.commit();
 
-        console.log('Successfully updated program document and set as active');
+        console.log('Successfully updated program document');
 
         // Record the weekly generation limit now that program is complete
-        // programType already declared above at line 1078
+        const programType = context.diagnosisData.programType;
         if (programType) {
           await recordProgramGenerationAdmin(context.userId, programType as ProgramType);
         }

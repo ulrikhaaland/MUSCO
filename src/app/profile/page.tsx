@@ -545,19 +545,18 @@ export default function ProfilePage() {
       const currentUser = auth.currentUser;
       if (!currentUser) throw new Error('User not logged in');
 
-      // Get all active programs (one per type: exercise, recovery, exercise_and_recovery)
-      const activePrograms = userPrograms
-        ? userPrograms.filter((program) => program.active)
-        : [];
-      const activeExerciseProgram = activePrograms.find(
-        (program) => program.type === 'exercise'
-      );
-      const activeRecoveryProgram = activePrograms.find(
-        (program) => program.type === 'recovery'
-      );
-      const activeExerciseAndRecoveryProgram = activePrograms.find(
-        (program) => program.type === 'exercise_and_recovery'
-      );
+      // Get the most recent program of each type
+      const exercisePrograms = userPrograms?.filter((program) => program.type === 'exercise') ?? [];
+      const recoveryPrograms = userPrograms?.filter((program) => program.type === 'recovery') ?? [];
+      const exerciseAndRecoveryPrograms = userPrograms?.filter((program) => program.type === 'exercise_and_recovery') ?? [];
+      
+      // Sort by updatedAt descending and get the first (most recent)
+      const sortByDate = (a: { updatedAt: Date }, b: { updatedAt: Date }) => 
+        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
+      
+      const activeExerciseProgram = exercisePrograms.sort(sortByDate)[0];
+      const activeRecoveryProgram = recoveryPrograms.sort(sortByDate)[0];
+      const activeExerciseAndRecoveryProgram = exerciseAndRecoveryPrograms.sort(sortByDate)[0];
 
       // Ensure recovery is included in exerciseModalities if there's an active recovery or exercise_and_recovery program
       const updatedExerciseModalities = [...exerciseModalities];
@@ -1029,19 +1028,18 @@ export default function ProfilePage() {
 
   // Add an effect to pull questionnaire data
   useEffect(() => {
-    // Get all active programs (one per type: exercise, recovery, exercise_and_recovery)
-    const activePrograms = userPrograms
-      ? userPrograms.filter((program) => program.active)
-      : [];
-    const activeExerciseProgram = activePrograms.find(
-      (program) => program.type === 'exercise'
-    );
-    const activeRecoveryProgram = activePrograms.find(
-      (program) => program.type === 'recovery'
-    );
-    const activeExerciseAndRecoveryProgram = activePrograms.find(
-      (program) => program.type === 'exercise_and_recovery'
-    );
+    // Get the most recent program of each type
+    const exercisePrograms = userPrograms?.filter((program) => program.type === 'exercise') ?? [];
+    const recoveryPrograms = userPrograms?.filter((program) => program.type === 'recovery') ?? [];
+    const exerciseAndRecoveryPrograms = userPrograms?.filter((program) => program.type === 'exercise_and_recovery') ?? [];
+    
+    // Sort by updatedAt descending and get the first (most recent)
+    const sortByDate = (a: { updatedAt: Date }, b: { updatedAt: Date }) => 
+      new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
+    
+    const activeExerciseProgram = exercisePrograms.sort(sortByDate)[0];
+    const activeRecoveryProgram = recoveryPrograms.sort(sortByDate)[0];
+    const activeExerciseAndRecoveryProgram = exerciseAndRecoveryPrograms.sort(sortByDate)[0];
 
     // Collect questionnaire data from all active programs
     const questionnaires = [];

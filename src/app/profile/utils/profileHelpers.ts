@@ -54,21 +54,6 @@ export const normalizeBodyPartName = (
 };
 
 /**
- * Get active programs by type from user programs
- */
-export const getActiveProgramsByType = (
-  userPrograms: Array<{ active: boolean; type: string }> | undefined
-) => {
-  const activePrograms = userPrograms?.filter((program) => program.active) ?? [];
-  
-  return {
-    exercise: activePrograms.find((p) => p.type === 'exercise'),
-    recovery: activePrograms.find((p) => p.type === 'recovery'),
-    exerciseAndRecovery: activePrograms.find((p) => p.type === 'exercise_and_recovery'),
-  };
-};
-
-/**
  * Normalize array values - handles both array and comma-separated string inputs
  */
 export const normalizeArrayValue = (

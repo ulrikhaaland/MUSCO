@@ -19,7 +19,7 @@ interface ExerciseProgramCalendarProps {
 interface ProgramDayWithSource {
   day: ProgramDay;
   program: ExerciseProgram;
-  userProgram: { title?: string; active: boolean; programs: ExerciseProgram[] };
+  userProgram: { title?: string; programs: ExerciseProgram[] };
   dayOfWeek: number;
 }
 
@@ -32,9 +32,9 @@ export function ExerciseProgramCalendar({
   const { userPrograms } = useUser();
   const { t } = useTranslation();
 
-  // Get all active user programs
+  // Get all user programs (previously filtered by active status, now we use all programs)
   const activeUserPrograms = useMemo(
-    () => userPrograms.filter((up) => up.active),
+    () => userPrograms,
     [userPrograms]
   );
 

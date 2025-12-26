@@ -38,7 +38,6 @@ interface ProgramWithFeedbackData extends ExerciseProgram {
  * @param userId The user ID for whom to generate the next program
  * @param currentProgram The current program to build upon
  * @param feedback The user's feedback on the current program
- * @param assistantId Optional assistant ID for the follow-up program generation
  * @returns The ID of the program document
  */
 export const submitProgramFeedback = async (

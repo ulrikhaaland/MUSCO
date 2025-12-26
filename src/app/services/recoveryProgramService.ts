@@ -186,33 +186,12 @@ export const saveRecoveryProgramToAccount = async (
       throw new Error('User not authenticated');
     }
 
-    // Check for existing active recovery programs and deactivate them
     const programsRef = collection(db, `users/${user.uid}/programs`);
-    const existingRecoveryQuery = query(
-      programsRef,
-      where('type', '==', ProgramType.Recovery),
-      where('active', '==', true)
-    );
-    const existingRecoverySnapshot = await getDocs(existingRecoveryQuery);
 
-    console.log(
-      `📊 User has ${existingRecoverySnapshot.size} active recovery programs`
-    );
-
-    // Deactivate existing active recovery programs
-    const deactivationPromises = existingRecoverySnapshot.docs.map(async (docSnapshot) => {
-      const docRef = doc(db, `users/${user.uid}/programs`, docSnapshot.id);
-      await updateDoc(docRef, { active: false, updatedAt: new Date() });
-      console.log(`🔄 Deactivated recovery program: ${docSnapshot.id}`);
-    });
-
-    await Promise.all(deactivationPromises);
-
-    // Create main program document (always active for recovery programs)
+    // Create main program document
     const programDoc = {
       diagnosis: recoveryData.diagnosis,
       questionnaire: recoveryData.questionnaire,
-      active: true, // Recovery programs are always set to active when saved
       status: 'done',
       type: ProgramType.Recovery,
       title: recoveryData.title,
@@ -221,10 +200,7 @@ export const saveRecoveryProgramToAccount = async (
       updatedAt: new Date(),
     };
 
-    console.log('📄 Creating recovery program document:', {
-      ...programDoc,
-      reason: 'Recovery program - setting as active and deactivating other recovery programs',
-    });
+    console.log('📄 Creating recovery program document');
 
     const programDocRef = await addDoc(programsRef, programDoc);
     console.log(
@@ -446,7 +422,6 @@ export const createMinimalRecoveryProgram = (
       cardioType: 'running',
       cardioEnvironment: 'both',
     },
-    active: false,
     createdAt: new Date().toISOString(),
     updatedAt: new Date(),
     type: ProgramType.Recovery,

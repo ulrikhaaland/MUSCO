@@ -38,7 +38,6 @@ interface ExerciseProgramPageProps {
   onVideoClick: (exercise: Exercise) => void;
   loadingVideoExercise?: string | null;
   onDaySelect: (day: ProgramDay, dayName: string) => void;
-  isActive?: boolean;
   onOverviewVisibilityChange?: (visible: boolean) => void;
   isCustomProgram?: boolean;
   // Incremental generation props
@@ -236,7 +235,6 @@ export function ExerciseProgramPage({
   shimmer = false,
   dayName,
   onDaySelect,
-  isActive = false,
   isCustomProgram = false,
   generatingDay: propGeneratingDay,
   generatedDays: propGeneratedDays,
@@ -557,6 +555,47 @@ export function ExerciseProgramPage({
       return true;
     };
 
+    // Show "weekly limit reached" card if the user has already generated a follow-up this week
+    if (isWeeklyLimitReached) {
+      const formattedNextDate = weeklyLimitNextDate?.toLocaleDateString(
+        locale,
+        { weekday: 'long', month: 'long', day: 'numeric' }
+      );
+
+      return (
+        <div className="bg-gray-800/50 rounded-xl overflow-hidden ring-1 ring-amber-500/30 p-8">
+          <div className="flex flex-col items-center justify-center text-center space-y-4">
+            <div className="w-12 h-12 rounded-full bg-amber-500/20 flex items-center justify-center">
+              <svg
+                className="w-6 h-6 text-amber-500"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                />
+              </svg>
+            </div>
+            <h3 className="text-app-title text-white">
+              {t('exerciseProgram.nextWeekCard.weeklyLimitTitle')}
+            </h3>
+            <p className="text-gray-300">
+              {t('exerciseProgram.nextWeekCard.weeklyLimitDescription')}
+            </p>
+            {formattedNextDate && (
+              <p className="text-gray-400 text-sm">
+                {t('exerciseProgram.nextWeekCard.weeklyLimitNextDate', { date: formattedNextDate })}
+              </p>
+            )}
+          </div>
+        </div>
+      );
+    }
+
     // Show the "Coming Soon" card with a button to start feedback
     return (
       <div className="bg-gray-800/50 rounded-xl overflow-hidden ring-1 ring-gray-700/50 p-8">
@@ -821,19 +860,6 @@ export function ExerciseProgramPage({
                       ? t('program.recoveryProgramTitle')
                       : t('program.exerciseProgramTitle'))}
                 </h1>
-                {!isCustomProgram && generatingDay === null && (
-                  isActive ? (
-                    <div className="mt-1 px-2 py-0.5 bg-green-500/20 text-green-300 text-xs rounded-full flex items-center">
-                      <span className="w-2 h-2 rounded-full bg-green-400 mr-1"></span>
-                      {t('exerciseProgram.badge.active')}
-                    </div>
-                  ) : (
-                    <div className="mt-1 px-2 py-0.5 bg-gray-500/20 text-gray-300 text-xs rounded-full flex items-center">
-                      <span className="w-2 h-2 rounded-full bg-gray-400 mr-1"></span>
-                      {t('exerciseProgram.badge.inactive')}
-                    </div>
-                  )
-                )}
               </div>
             </div>
           )}

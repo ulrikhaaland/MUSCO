@@ -83,31 +83,9 @@ async function saveDayToFirebase(
     updatedAt: new Date().toISOString(),
   };
 
-  // If last day, mark as complete, save to subcollection, and deactivate other programs
+  // If last day, mark as complete and save to subcollection
   if (isLastDay) {
     updates.status = ProgramStatus.Done;
-    updates.active = true;
-
-    // Deactivate other programs of the same type
-    if (diagnosisType) {
-      const otherActiveProgramsQuery = adminDb
-        .collection('users')
-        .doc(userId)
-        .collection('programs')
-        .where('active', '==', true)
-        .where('type', '==', diagnosisType);
-
-      const otherActiveProgramsSnapshot = await otherActiveProgramsQuery.get();
-      otherActiveProgramsSnapshot.forEach((doc) => {
-        if (doc.id !== programId) {
-          batch.update(doc.ref, {
-            active: false,
-            updatedAt: new Date().toISOString(),
-          });
-          console.log(`[incremental] Deactivating program ${doc.id}`);
-        }
-      });
-    }
 
     // Save the weekly program to subcollection (like old generation did)
     const weekRef = adminDb
