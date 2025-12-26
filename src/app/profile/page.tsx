@@ -40,7 +40,6 @@ import {
 import { normalizeBodyPartName as normalizeBodyPartNameUtil } from './utils';
 import { ProfileValueDisplay, ExpandedIcon, CollapsedIcon, ProfileDesktopLayout, ProfilePhotoCropper } from './components';
 import { useResponsiveProfile, SectionId } from './hooks/useResponsiveProfile';
-import heic2any from 'heic2any';
 
 export default function ProfilePage() {
   const { t } = useTranslation();
@@ -424,6 +423,8 @@ export default function ProfilePage() {
     if (isHeic) {
       try {
         setIsConvertingHeic(true);
+        // Dynamically import heic2any to avoid SSR issues (it accesses window at module load)
+        const heic2any = (await import('heic2any')).default;
         // Convert HEIC to JPEG
         const convertedBlob = await heic2any({
           blob: file,
