@@ -250,12 +250,11 @@ async function generateSingleDay(
 function toProgramDay(response: SingleDayResponse): ProgramDay {
   return {
     day: response.day,
-    isRestDay: response.isRestDay,
-    isCardioDay: (response as any).isCardioDay || false,
+    dayType: response.dayType,
     description: response.description,
     exercises: response.exercises,
     duration: response.duration,
-  } as ProgramDay;
+  };
 }
 
 /**

@@ -2,9 +2,11 @@
 
 import { useState, useMemo, useCallback } from 'react';
 import type { ExerciseProgram, ProgramDay } from '@/app/types/program';
+import { getDayType } from '@/app/types/program';
 import { useUser } from '@/app/context/UserContext';
 import { useTranslation } from '@/app/i18n/TranslationContext';
 import { CalendarHeader, CalendarGrid, SelectedDayPanel } from './calendar';
+import type { DayType } from './calendar/DayCell';
 import {
   getStartOfWeek,
   getDayOfWeekMondayFirst,
@@ -80,11 +82,20 @@ export function ExerciseProgramCalendar({
 
   // Get day data for calendar grid (simplified for performance)
   const getDayData = useCallback(
-    (date: Date) => {
+    (date: Date): { date: Date; dayType: DayType } => {
       const programDays = getDayProgram(date);
-      const hasWorkout = programDays.some((p) => !p.day.isRestDay);
-      const isRestDay = !hasWorkout && programDays.some((p) => p.day.isRestDay);
-      return { date, hasWorkout, isRestDay };
+      if (programDays.length === 0) {
+        return { date, dayType: null };
+      }
+      
+      // Find the first non-rest day to determine type
+      const workoutDay = programDays.find((p) => getDayType(p.day) !== 'rest');
+      if (workoutDay) {
+        return { date, dayType: getDayType(workoutDay.day) };
+      }
+      
+      // All days are rest days
+      return { date, dayType: 'rest' };
     },
     [getDayProgram]
   );
@@ -141,8 +152,12 @@ export function ExerciseProgramCalendar({
                   onDateSelect={setSelectedDate}
                   getDayData={getDayData}
                   weekDays={weekDays}
-                  workoutLabel={t('calendar.workout')}
-                  restLabel={t('calendar.rest')}
+                  dayTypeLabels={{
+                    strength: t('calendar.strength'),
+                    cardio: t('calendar.cardio'),
+                    recovery: t('calendar.recovery'),
+                    rest: t('calendar.rest'),
+                  }}
                 />
         </div>
       </div>

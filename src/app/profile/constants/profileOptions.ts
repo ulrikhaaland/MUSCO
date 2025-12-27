@@ -3,7 +3,8 @@
  */
 
 export interface FitnessLevel {
-  name: string;
+  id: string; // English key for storage
+  name: string; // Translated display name
   description: string;
 }
 
@@ -20,18 +21,22 @@ export interface ProfileExerciseModality {
 // Fitness levels with descriptions
 export const getFitnessLevels = (t: (key: string) => string): FitnessLevel[] => [
   {
+    id: 'Beginner',
     name: t('profile.beginner.name'),
     description: t('profile.beginner.desc'),
   },
   {
+    id: 'Intermediate',
     name: t('profile.intermediate.name'),
     description: t('profile.intermediate.desc'),
   },
   {
+    id: 'Advanced',
     name: t('profile.advanced.name'),
     description: t('profile.advanced.desc'),
   },
   {
+    id: 'Elite',
     name: t('profile.elite.name'),
     description: t('profile.elite.desc'),
   },

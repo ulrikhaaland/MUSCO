@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
-import { Exercise, ProgramDay } from '@/app/types/program';
+import { Exercise, ProgramDay, getDayType } from '@/app/types/program';
 import ExerciseCard from './ExerciseCard';
 // import Chip from './Chip';
 import BodyPartFilter from './BodyPartFilter';
@@ -175,7 +175,7 @@ export function ProgramDayComponent({
       {/* Content section */}
       <div className="space-y-8 flex-1 pb-24 md:pb-8">
         {/* Optional exercises message for rest days */}
-        {day.isRestDay && filteredExercises && filteredExercises.length > 0 && (
+        {getDayType(day) === 'rest' && filteredExercises && filteredExercises.length > 0 && (
           <div className="mb-8">
             <h4 className="text-indigo-300 font-medium">
               {t('program.optionalRecoveryActivities').charAt(0).toUpperCase() + t('program.optionalRecoveryActivities').slice(1)}

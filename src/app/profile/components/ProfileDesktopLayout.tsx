@@ -1,7 +1,7 @@
 'use client';
 
 import { ReactNode } from 'react';
-import ProfileSidebar from './ProfileSidebar';
+import ProfileSidebar, { MainView } from './ProfileSidebar';
 import { SectionId } from '../hooks/useResponsiveProfile';
 
 interface ProfileDesktopLayoutProps {
@@ -9,47 +9,62 @@ interface ProfileDesktopLayoutProps {
   photoURL: string | null;
   email: string | undefined;
   activeSection: SectionId;
+  activeView: MainView;
   onSectionClick: (sectionId: SectionId) => void;
-  onPrivacyClick: () => void;
+  onDataControlsClick: () => void;
+  onPrivacyPolicyClick: () => void;
   onLogoutClick: () => void;
   onPhotoClick?: () => void;
-  isEditing?: boolean;
+  isInfoExpanded: boolean;
+  onInfoToggle: () => void;
 }
 
 /**
  * Desktop layout wrapper for the profile page.
- * Renders a sidebar on the left and content on the right.
+ * Renders a sidebar on the left and content on the right when Info is expanded.
  */
 export default function ProfileDesktopLayout({
   children,
   photoURL,
   email,
   activeSection,
+  activeView,
   onSectionClick,
-  onPrivacyClick,
+  onDataControlsClick,
+  onPrivacyPolicyClick,
   onLogoutClick,
   onPhotoClick,
-  isEditing,
+  isInfoExpanded,
+  onInfoToggle,
 }: ProfileDesktopLayoutProps) {
+  // Show second column if Info is expanded, or Privacy/PrivacyPolicy view is active
+  const showSecondColumn = isInfoExpanded || activeView === 'privacy' || activeView === 'privacyPolicy';
+  
   return (
-    <div className="flex gap-8 max-w-6xl mx-auto px-6 py-6">
+    <div className={`flex gap-8 w-full px-6 py-6 ${!showSecondColumn ? 'justify-center' : ''}`}>
       {/* Sidebar */}
-      <ProfileSidebar
-        photoURL={photoURL}
-        email={email}
-        activeSection={activeSection}
-        onSectionClick={onSectionClick}
-        onPrivacyClick={onPrivacyClick}
-        onLogoutClick={onLogoutClick}
-        onPhotoClick={onPhotoClick}
-        isEditing={isEditing}
-      />
-
-      {/* Main Content */}
-      <div className="flex-1 min-w-0">
-        {children}
+      <div className={showSecondColumn ? 'w-1/2' : 'w-1/2 max-w-md'}>
+        <ProfileSidebar
+          photoURL={photoURL}
+          email={email}
+          activeSection={activeSection}
+          activeView={activeView}
+          onSectionClick={onSectionClick}
+          onDataControlsClick={onDataControlsClick}
+          onPrivacyPolicyClick={onPrivacyPolicyClick}
+          onLogoutClick={onLogoutClick}
+          onPhotoClick={onPhotoClick}
+          isInfoExpanded={isInfoExpanded}
+          onInfoToggle={onInfoToggle}
+        />
       </div>
+
+      {/* Main Content - shown when Info or Privacy/PrivacyPolicy is expanded */}
+      {showSecondColumn && (
+        <div className="w-1/2">
+          {children}
+        </div>
+      )}
     </div>
   );
 }
-

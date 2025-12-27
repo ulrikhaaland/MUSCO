@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, Suspense } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { ProgramStatus, Exercise, ProgramDay, ExerciseProgram } from '@/app/types/program';
 import { ProgramDayComponent } from '@/app/components/ui/ProgramDayComponent';
@@ -61,7 +61,7 @@ function getVideoEmbedUrl(url: string): string {
   return url;
 }
 
-export default function DayDetailPage() {
+function DayDetailPageContent() {
   // Use a persistent ID to avoid duplicate render issues
   const _componentId = useRef(`day-page-${Date.now()}`);
   
@@ -570,5 +570,17 @@ export default function DayDetailPage() {
       </div>
       {renderVideoModal()}
     </div>
+  );
+}
+
+export default function DayDetailPage() {
+  return (
+    <Suspense fallback={
+      <div className="bg-gray-900 min-h-screen flex items-center justify-center">
+        <div className="text-gray-400 text-sm">Loading program day...</div>
+      </div>
+    }>
+      <DayDetailPageContent />
+    </Suspense>
   );
 } 

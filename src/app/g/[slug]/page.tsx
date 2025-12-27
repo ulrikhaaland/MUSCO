@@ -1,10 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { EXERCISE_MODALITIES, WORKOUT_DURATIONS } from '@/app/types/program';
 
-export default function GymFunnelPage() {
+function GymFunnelPageContent() {
   const params = useParams();
   const slug = params.slug as string;
   const router = useRouter();
@@ -60,6 +60,14 @@ export default function GymFunnelPage() {
         <button disabled={loading} onClick={submit} className="w-full py-3 rounded bg-indigo-600 disabled:opacity-50">{loading?'Loading...':'Generate session'}</button>
       </div>
     </div>
+  );
+}
+
+export default function GymFunnelPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-gray-900 text-white p-6 flex items-center justify-center">Loading...</div>}>
+      <GymFunnelPageContent />
+    </Suspense>
   );
 }
 

@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo } from 'react';
-import { DayCell } from './DayCell';
+import { DayCell, DayType } from './DayCell';
 import { getStartOfWeek, addDays } from '@/app/utils/dateutils';
 
 interface WeekDay {
@@ -9,10 +9,16 @@ interface WeekDay {
   full: string;
 }
 
-interface DayData {
+export interface DayData {
   date: Date;
-  hasWorkout: boolean;
-  isRestDay: boolean;
+  dayType: DayType;
+}
+
+interface DayTypeLabels {
+  strength: string;
+  cardio: string;
+  recovery: string;
+  rest: string;
 }
 
 interface CalendarGridProps {
@@ -20,8 +26,7 @@ interface CalendarGridProps {
   onDateSelect: (date: Date) => void;
   getDayData: (date: Date) => DayData;
   weekDays: WeekDay[];
-  workoutLabel: string;
-  restLabel: string;
+  dayTypeLabels: DayTypeLabels;
 }
 
 export function CalendarGrid({
@@ -29,8 +34,7 @@ export function CalendarGrid({
   onDateSelect,
   getDayData,
   weekDays,
-  workoutLabel,
-  restLabel,
+  dayTypeLabels,
 }: CalendarGridProps) {
   const today = new Date();
   const currentDateString = today.toDateString();
@@ -94,6 +98,8 @@ export function CalendarGrid({
               const dayData = getDayData(date);
               const dateString = date.toDateString();
 
+              const dayTypeLabel = dayData.dayType ? dayTypeLabels[dayData.dayType] : '';
+
               return (
                 <DayCell
                   key={dateString}
@@ -101,10 +107,8 @@ export function CalendarGrid({
                   isCurrentMonth={date.getMonth() === selectedDate.getMonth()}
                   isToday={dateString === currentDateString}
                   isSelected={dateString === selectedDateString}
-                  hasWorkout={dayData.hasWorkout}
-                  isRestDay={dayData.isRestDay}
-                  workoutLabel={workoutLabel}
-                  restLabel={restLabel}
+                  dayType={dayData.dayType}
+                  dayTypeLabel={dayTypeLabel}
                   onClick={() => onDateSelect(date)}
                 />
               );

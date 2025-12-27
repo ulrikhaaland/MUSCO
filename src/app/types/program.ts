@@ -60,8 +60,23 @@ export const SPECIFIC_BODY_PARTS: Record<BodyPartGroupName, readonly string[]> =
   } as const;
 
 // Body part groupings (for program generation - existing functionality)
+// Note: Neck is included for completeness but we don't have neck exercises yet
 export const TARGET_BODY_PARTS = [
   'Neck',
+  'Shoulders',
+  'Upper Arms',
+  'Forearms',
+  'Chest',
+  'Abdomen',
+  'Upper Back',
+  'Lower Back',
+  'Glutes',
+  'Upper Legs',
+  'Lower Legs',
+] as const;
+
+// Selectable body parts (parts we actually have exercises for - excludes Neck)
+export const SELECTABLE_BODY_PARTS = [
   'Shoulders',
   'Upper Arms',
   'Forearms',
@@ -85,7 +100,67 @@ export const UPPER_BODY_PARTS = [
   'Lower Back',
 ] as const;
 
+// Selectable upper body parts (excludes Neck)
+export const SELECTABLE_UPPER_BODY_PARTS = [
+  'Shoulders',
+  'Upper Arms',
+  'Forearms',
+  'Chest',
+  'Abdomen',
+  'Upper Back',
+  'Lower Back',
+] as const;
+
 export const LOWER_BODY_PARTS = ['Glutes', 'Upper Legs', 'Lower Legs'] as const;
+
+// Body region type for detection
+export type BodyRegionType = 'fullBody' | 'upperBody' | 'lowerBody' | 'custom';
+
+/**
+ * Detects body region from an array of target areas.
+ * Uses SELECTABLE_ constants (without Neck) for detection since we don't have neck exercises.
+ * This function is used by both ExerciseQuestionnaire and programs page for consistent detection.
+ */
+export function detectBodyRegion(targetAreas: string[]): BodyRegionType {
+  if (!targetAreas || targetAreas.length === 0) return 'custom';
+  
+  // Filter out 'Neck' from the target areas for comparison (in case it's included)
+  const areasWithoutNeck = targetAreas.filter(area => area !== 'Neck');
+  
+  // Check if it's Full Body (all selectable body parts)
+  const isFullBody = SELECTABLE_BODY_PARTS.length === areasWithoutNeck.length &&
+    SELECTABLE_BODY_PARTS.every(part => areasWithoutNeck.includes(part));
+  if (isFullBody) return 'fullBody';
+  
+  // Check if it's Upper Body (all selectable upper body parts)
+  const isUpperBody = SELECTABLE_UPPER_BODY_PARTS.length === areasWithoutNeck.length &&
+    SELECTABLE_UPPER_BODY_PARTS.every(part => areasWithoutNeck.includes(part));
+  if (isUpperBody) return 'upperBody';
+  
+  // Check if it's Lower Body (all lower body parts - no neck in this group anyway)
+  const isLowerBody = LOWER_BODY_PARTS.length === areasWithoutNeck.length &&
+    LOWER_BODY_PARTS.every(part => areasWithoutNeck.includes(part));
+  if (isLowerBody) return 'lowerBody';
+  
+  return 'custom';
+}
+
+/**
+ * Gets the body parts array for a given region.
+ * Returns SELECTABLE_ variants (without Neck) since we don't have neck exercises.
+ */
+export function getBodyPartsForRegion(region: BodyRegionType): readonly string[] {
+  switch (region) {
+    case 'fullBody':
+      return SELECTABLE_BODY_PARTS;
+    case 'upperBody':
+      return SELECTABLE_UPPER_BODY_PARTS;
+    case 'lowerBody':
+      return LOWER_BODY_PARTS;
+    default:
+      return [];
+  }
+}
 
 // Equipment access options
 export const EQUIPMENT_ACCESS = ['Large Gym', 'Custom'] as const;
@@ -314,14 +389,47 @@ export interface ExerciseGroup {
 
 export type ExercisesTemplate = ExerciseGroup[];
 
+/**
+ * Day type for workout programs
+ */
+export type DayType = 'strength' | 'cardio' | 'recovery' | 'rest';
+
 export interface ProgramDay {
   day: number;
   description: string;
   exercises: Exercise[];
-  isRestDay: boolean;
-  isCardioDay?: boolean;
-  isRecoveryDay?: boolean;
+  dayType: DayType;
   duration?: number;
+  // Legacy fields - kept for backward compatibility with existing data
+  /** @deprecated Use dayType instead */
+  isRestDay?: boolean;
+  /** @deprecated Use dayType instead */
+  isCardioDay?: boolean;
+  /** @deprecated Use dayType instead */
+  isRecoveryDay?: boolean;
+}
+
+/**
+ * Get the dayType from a ProgramDay, handling legacy boolean fields
+ * Use this when reading data that might be in the old format
+ */
+export function getDayType(day: ProgramDay): DayType {
+  // If dayType is already set, use it
+  if (day.dayType) {
+    return day.dayType;
+  }
+  // Convert legacy boolean flags to dayType
+  if (day.isRestDay) {
+    return 'rest';
+  }
+  if (day.isCardioDay) {
+    return 'cardio';
+  }
+  if (day.isRecoveryDay) {
+    return 'recovery';
+  }
+  // Default to strength (when all flags are false/undefined)
+  return 'strength';
 }
 
 export interface AfterTimeFrame {

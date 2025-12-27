@@ -2,15 +2,15 @@
 
 import { memo } from 'react';
 
+export type DayType = 'strength' | 'cardio' | 'recovery' | 'rest' | null;
+
 interface DayCellProps {
   date: Date;
   isCurrentMonth: boolean;
   isToday: boolean;
   isSelected: boolean;
-  hasWorkout: boolean;
-  isRestDay: boolean;
-  workoutLabel: string;
-  restLabel: string;
+  dayType: DayType;
+  dayTypeLabel: string;
   onClick: () => void;
 }
 
@@ -19,13 +19,11 @@ export const DayCell = memo(function DayCell({
   isCurrentMonth,
   isToday,
   isSelected,
-  hasWorkout,
-  isRestDay,
-  workoutLabel,
-  restLabel,
+  dayType,
+  dayTypeLabel,
   onClick,
 }: DayCellProps) {
-  const hasProgramDay = hasWorkout || isRestDay;
+  const hasProgramDay = dayType !== null;
 
   return (
     <button
@@ -73,15 +71,9 @@ export const DayCell = memo(function DayCell({
         </div>
         {hasProgramDay && isCurrentMonth && (
           <div className="mt-auto">
-            {hasWorkout ? (
-              <div className="text-xs text-white mt-1 flex items-center justify-center opacity-65">
-                {workoutLabel}
-              </div>
-            ) : isRestDay ? (
-              <div className="text-xs text-white mt-1 flex items-center justify-center opacity-65">
-                {restLabel}
-              </div>
-            ) : null}
+            <div className="text-xs text-white mt-1 flex items-center justify-center opacity-65">
+              {dayTypeLabel}
+            </div>
           </div>
         )}
       </div>

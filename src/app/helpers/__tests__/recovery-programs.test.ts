@@ -16,14 +16,14 @@ describe('Recovery Programs Duration Tests', () => {
       const workoutDay = {
         day: 1,
         description: 'Test Workout',
-        isRestDay: false,
+        dayType: 'strength' as const,
         exercises,
         duration: expectedDuration
       };
       
       expect(workoutDay.duration).toBe(expectedDuration);
       expect(workoutDay.exercises).toEqual(exercises);
-      expect(workoutDay.isRestDay).toBe(false);
+      expect(workoutDay.dayType).toBe('strength');
     });
   });
 
@@ -32,7 +32,7 @@ describe('Recovery Programs Duration Tests', () => {
       // Test that rest day functions return objects with computed durations
       const restDay = {
         day: 2,
-        isRestDay: true,
+        dayType: 'rest' as const,
         description: 'Rest day',
         exercises: [
           { exerciseId: 'warmup-9', duration: 300, warmup: true },
@@ -44,7 +44,7 @@ describe('Recovery Programs Duration Tests', () => {
         ])
       };
       
-      expect(restDay.isRestDay).toBe(true);
+      expect(restDay.dayType).toBe('rest');
       expect(restDay.duration).toBe(10); // 600 seconds = 10 minutes
     });
   });
@@ -113,7 +113,7 @@ describe('Recovery Programs Duration Tests', () => {
       const sampleWorkoutDay = {
         day: 1,
         description: 'Sample Workout',
-        isRestDay: false,
+        dayType: 'strength' as const,
         exercises: [
           { exerciseId: 'warmup-6', duration: 300, warmup: true },
           { exerciseId: 'abs-20', sets: 3, repetitions: 10, restBetweenSets: 60 },

@@ -504,7 +504,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
                 return existingDay || {
                   day: dayNum,
                   description: '',
-                  isRestDay: false,
+                  dayType: 'strength' as const,
                   exercises: [],
                   duration: 0,
                 };
@@ -529,7 +529,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
               days: [1, 2, 3, 4, 5, 6, 7].map((day) => ({
                 day,
                 description: '',
-                isRestDay: false,
+                dayType: 'strength' as const,
                 exercises: [],
                 duration: 0,
               })),
@@ -818,7 +818,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
         days: [1, 2, 3, 4, 5, 6, 7].map((day) => ({
           day,
           description: '',
-          isRestDay: false,
+          dayType: 'strength' as const,
           exercises: [],
           duration: 0,
         })),

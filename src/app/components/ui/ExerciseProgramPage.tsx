@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { ProgramDaySummaryComponent } from './ProgramDaySummaryComponent';
 import { WeekOverview } from './WeekOverview';
 import { ProgramType } from '../../../../shared/types';
-import { Exercise, ExerciseProgram, ProgramDay } from '@/app/types/program';
+import { Exercise, ExerciseProgram, ProgramDay, getDayType } from '@/app/types/program';
 import { useAuth } from '@/app/context/AuthContext';
 import { useUser } from '@/app/context/UserContext';
 import { useSelectedDay } from '@/app/context/SelectedDayContext';
@@ -39,6 +39,24 @@ import {
   getDayFullName,
   getMonthAbbreviation,
 } from '@/app/utils/dateutils';
+
+/**
+ * Get the translation key and icon for a day type
+ */
+function getDayTypeInfo(day: ProgramDay): { labelKey: string; icon: 'rest' | 'strength' | 'cardio' | 'recovery' } {
+  const dayType = getDayType(day);
+  switch (dayType) {
+    case 'rest':
+      return { labelKey: 'exerciseProgram.day.rest', icon: 'rest' };
+    case 'cardio':
+      return { labelKey: 'program.cardio', icon: 'cardio' };
+    case 'recovery':
+      return { labelKey: 'program.recovery', icon: 'recovery' };
+    case 'strength':
+    default:
+      return { labelKey: 'program.strength', icon: 'strength' };
+  }
+}
 import {
   isViewingCustomRecoveryProgram,
   getRecoveryProgramFromSession,
@@ -180,13 +198,9 @@ function SortableDayTab({
         <span className="text-xs opacity-60">
           —
         </span>
-      ) : day.isRestDay ? (
-        <span className="text-xs opacity-80">
-          {t('exerciseProgram.day.rest')}
-        </span>
       ) : (
         <span className="text-xs opacity-80">
-          {t('calendar.workout')}
+          {t(getDayTypeInfo(day).labelKey)}
         </span>
       )}
     </button>
@@ -200,23 +214,22 @@ interface DragOverlayContentProps {
 }
 
 function DragOverlayContent({ day, t }: DragOverlayContentProps) {
+  const dayTypeInfo = getDayTypeInfo(day);
+  
+  // Icon paths for each day type
+  const iconPaths: Record<string, string> = {
+    rest: "M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z",
+    strength: "M13 10V3L4 14h7v7l9-11h-7z",
+    cardio: "M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z",
+    recovery: "M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15",
+  };
+  
   return (
     <div className="py-3 px-5 rounded-lg bg-indigo-600 text-white shadow-xl ring-2 ring-indigo-400 flex items-center justify-center gap-2">
-      {day.isRestDay ? (
-        <>
-          <svg className="w-4 h-4 opacity-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-          </svg>
-          <span className="text-sm font-medium">{t('exerciseProgram.day.rest')}</span>
-        </>
-      ) : (
-        <>
-          <svg className="w-4 h-4 opacity-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-          </svg>
-          <span className="text-sm font-medium">{t('calendar.workout')}</span>
-        </>
-      )}
+      <svg className="w-4 h-4 opacity-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={iconPaths[dayTypeInfo.icon]} />
+      </svg>
+      <span className="text-sm font-medium">{t(dayTypeInfo.labelKey)}</span>
     </div>
   );
 }
@@ -464,7 +477,7 @@ function ProgramViewShimmer() {
           const placeholderDay: ProgramDay = {
             day: 1,
             description: '',
-            isRestDay: false,
+            dayType: 'strength',
             exercises: Array.from({ length: 6 }).map((_, idx) => ({
               name: `Exercise ${idx + 1}`,
               warmup: idx === 0,
@@ -1848,6 +1861,11 @@ export function ExerciseProgramPage({
                 </>
               }
 
+              {/* Generation Progress for Overview - shown between week tabs and overview card */}
+              {generatingDay === 0 && (
+                <GenerationProgress generatingDay={generatingDay} t={t} />
+              )}
+
               {/* Week Focus Overview - Only show for real weeks, not generate weeks */}
               {(() => {
                 // Determine if we're viewing a real week or a "generate next week" state
@@ -1934,8 +1952,8 @@ export function ExerciseProgramPage({
                   // Show the selected week's content
                   return (
                     <>
-                      {/* Generation Progress Indicator */}
-                      {generatingDay !== null && (
+                      {/* Generation Progress Indicator - for days (not overview) */}
+                      {generatingDay !== null && generatingDay !== 0 && (
                         <GenerationProgress generatingDay={generatingDay} t={t} />
                       )}
                       
@@ -1975,7 +1993,7 @@ export function ExerciseProgramPage({
                           day: dayNumber,
                           description: isDayGenerating ? 'Generating...' : 'Loading...',
                           exercises: [],
-                          isRestDay: false,
+                          dayType: 'strength',
                         } as any;
                         const safeDay = shouldShimmerDay ? placeholder : day;
                         if (!safeDay) return null;
@@ -2010,8 +2028,8 @@ export function ExerciseProgramPage({
                   }
                   return (
                     <>
-                      {/* Generation Progress Indicator */}
-                      {generatingDay !== null && (
+                      {/* Generation Progress Indicator - for days (not overview) */}
+                      {generatingDay !== null && generatingDay !== 0 && (
                         <GenerationProgress generatingDay={generatingDay} t={t} />
                       )}
                       
@@ -2051,7 +2069,7 @@ export function ExerciseProgramPage({
                           day: dayNumber,
                           description: isDayGenerating ? 'Generating...' : 'Loading...',
                           exercises: [],
-                          isRestDay: false,
+                          dayType: 'strength',
                         };
                         
                         const displayDay = shouldShimmerDay ? placeholder : day;

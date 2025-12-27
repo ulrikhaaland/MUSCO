@@ -1,4 +1,5 @@
-export { useResponsiveProfile, type SectionId, type SectionRefs, type UseResponsiveProfileReturn } from './useResponsiveProfile';
+export { useResponsiveProfile, type SectionId, type UseResponsiveProfileReturn } from './useResponsiveProfile';
+
 
 
 

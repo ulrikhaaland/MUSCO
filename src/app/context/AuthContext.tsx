@@ -139,6 +139,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               path !== '/app' &&
               path !== '/login' &&
               path !== '/g/demo' &&
+              path !== '/profile' &&
               !path.includes('/program/')
             ) {
               router.push('/');

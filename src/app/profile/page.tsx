@@ -38,7 +38,7 @@ import {
   fadeInAnimation,
 } from './constants';
 import { normalizeBodyPartName as normalizeBodyPartNameUtil } from './utils';
-import { ProfileValueDisplay, ExpandedIcon, CollapsedIcon, ProfileDesktopLayout, ProfilePhotoCropper } from './components';
+import { ProfileValueDisplay, ExpandedIcon, CollapsedIcon, ProfileDesktopLayout, ProfilePhotoCropper, PrivacyContent, PrivacyPolicyContent } from './components';
 import { useResponsiveProfile, SectionId } from './hooks/useResponsiveProfile';
 
 export default function ProfilePage() {
@@ -54,7 +54,7 @@ export default function ProfilePage() {
   const router = useRouter();
 
   // Responsive layout hook
-  const { isDesktop, activeSection, scrollToSection, setSectionRef } = useResponsiveProfile();
+  const { isDesktop, activeSection, setActiveSection } = useResponsiveProfile();
 
   // Get translated constants
   const _translatedTargetBodyParts = getTranslatedTargetBodyParts(t);
@@ -89,6 +89,12 @@ export default function ProfilePage() {
   const [showCropper, setShowCropper] = useState(false);
   const [cropperImageSrc, setCropperImageSrc] = useState<string>('');
   const [isConvertingHeic, setIsConvertingHeic] = useState(false);
+  
+  // Profile page state - persisted to localStorage
+  const [isInfoExpanded, setIsInfoExpanded] = useState(false);
+  const [activeView, setActiveView] = useState<'info' | 'privacy' | 'privacyPolicy'>('info');
+  const [hasRestoredState, setHasRestoredState] = useState(false);
+  
   const justSavedPhotoRef = useRef(false); // Flag to prevent photo being overwritten after save
 
   // Validation states
@@ -146,10 +152,70 @@ export default function ProfilePage() {
     }
   }, [isDesktop]);
 
-  // Handle sidebar section click
+  // Restore profile page state from localStorage on mount
+  useEffect(() => {
+    const savedInfoExpanded = localStorage.getItem('profile_isInfoExpanded');
+    const savedActiveView = localStorage.getItem('profile_activeView');
+    const savedActiveSection = localStorage.getItem('profile_activeSection');
+    
+    if (savedInfoExpanded === 'true') {
+      setIsInfoExpanded(true);
+    }
+    if (savedActiveView === 'info' || savedActiveView === 'privacy' || savedActiveView === 'privacyPolicy') {
+      setActiveView(savedActiveView);
+    }
+    if (savedActiveSection && ['general', 'healthBasics', 'fitnessProfile', 'medicalBackground'].includes(savedActiveSection)) {
+      setActiveSection(savedActiveSection as SectionId);
+    }
+    setHasRestoredState(true);
+  }, [setActiveSection]);
+
+  // Persist profile page state to localStorage (only after initial restore)
+  useEffect(() => {
+    if (!hasRestoredState) return;
+    localStorage.setItem('profile_isInfoExpanded', String(isInfoExpanded));
+  }, [isInfoExpanded, hasRestoredState]);
+
+  useEffect(() => {
+    if (!hasRestoredState) return;
+    localStorage.setItem('profile_activeView', activeView);
+  }, [activeView, hasRestoredState]);
+
+  useEffect(() => {
+    if (!hasRestoredState) return;
+    localStorage.setItem('profile_activeSection', activeSection);
+  }, [activeSection, hasRestoredState]);
+
+  // Handle sidebar section click - now just sets the active section
   const handleSidebarSectionClick = useCallback((sectionId: SectionId) => {
-    scrollToSection(sectionId);
-  }, [scrollToSection]);
+    setActiveSection(sectionId);
+  }, [setActiveSection]);
+
+  // Handle info menu toggle
+  const handleInfoToggle = useCallback(() => {
+    setIsInfoExpanded((prev) => !prev);
+    setActiveView('info');
+  }, []);
+
+  // Handle privacy click - on desktop show in second column, on mobile navigate
+  const handlePrivacyClick = useCallback(() => {
+    if (isDesktop) {
+      setActiveView('privacy');
+      setIsInfoExpanded(false); // Collapse info when showing privacy
+    } else {
+      router.push('/privacy');
+    }
+  }, [isDesktop, router]);
+
+  // Handle privacy policy click - on desktop show in second column, on mobile navigate
+  const handlePrivacyPolicyClick = useCallback(() => {
+    if (isDesktop) {
+      setActiveView('privacyPolicy');
+      setIsInfoExpanded(false); // Collapse info when showing privacy policy
+    } else {
+      router.push('/privacy-policy');
+    }
+  }, [isDesktop, router]);
 
   useEffect(() => {
     // Log values for debugging translation issues
@@ -684,61 +750,48 @@ export default function ProfilePage() {
         photoURL: profilePhotoURL,
       });
 
-      // Function to get English key for a body part
-      const getEnglishBodyPartKey = (bodyPart: string): string => {
-        // If already an English key (in the array), return it
+      // Function to normalize body part to PAIN_BODY_PARTS format (e.g., "Left Hand")
+      const normalizeBodyPartToKey = (bodyPart: string): string => {
+        // If already in PAIN_BODY_PARTS, return as-is
         if (PAIN_BODY_PARTS.includes(bodyPart as any)) {
           return bodyPart;
         }
 
-        // Try to find the English key for a translated body part
-        const englishKey = PAIN_BODY_PARTS.find((key) => {
-          try {
-            const translatedValue = t(`bodyParts.${key}`);
-            return (
-              translatedValue === bodyPart ||
-              translatedValue.toLowerCase() === bodyPart.toLowerCase() ||
-              key.toLowerCase() === bodyPart.toLowerCase()
-            );
-          } catch {
-            return false;
-          }
+        // Try to find by translation match (for Norwegian input)
+        const matchByTranslation = PAIN_BODY_PARTS.find((key) => {
+          const translated = t(`bodyParts.${key}`);
+          return translated.toLowerCase() === bodyPart.toLowerCase();
         });
+        if (matchByTranslation) return matchByTranslation;
 
-        // Map common Norwegian terms to English keys
-        const norwegianToEnglish: Record<string, string> = {
-          'Øvre rygg': 'upper_back',
-          Korsrygg: 'lower_back',
-          Nakke: 'neck',
-          Bryst: 'chest',
-          Abdomen: 'abdomen',
-          'Midtre rygg': 'middle_back',
-          'Venstre skulder': 'left_shoulder',
-          'Høyre skulder': 'right_shoulder',
-          'Venstre overarm': 'left_upper_arm',
-          'Høyre overarm': 'right_upper_arm',
-          'Venstre albue': 'left_elbow',
-          'Høyre albue': 'right_elbow',
-          'Venstre underarm': 'left_forearm',
-          'Høyre underarm': 'right_forearm',
-          'Venstre hånd': 'left_hand',
-          'Høyre hånd': 'right_hand',
-          'Bekken- og hofteregion': 'pelvis_and_hip_region',
-          'Venstre lår': 'left_thigh',
-          'Høyre lår': 'right_thigh',
-          'Venstre kne': 'left_knee',
-          'Høyre kne': 'right_knee',
-          'Venstre legg': 'left_lower_leg',
-          'Høyre legg': 'right_lower_leg',
-          'Venstre fot': 'left_foot',
-          'Høyre fot': 'right_foot',
-        };
+        // Try case-insensitive match
+        const matchByCase = PAIN_BODY_PARTS.find(
+          (key) => key.toLowerCase() === bodyPart.toLowerCase()
+        );
+        if (matchByCase) return matchByCase;
 
-        if (norwegianToEnglish[bodyPart]) {
-          return norwegianToEnglish[bodyPart];
+        // Convert snake_case to Title Case and try to match
+        if (bodyPart.includes('_')) {
+          const titleCase = bodyPart
+            .split('_')
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+            .join(' ');
+          if (PAIN_BODY_PARTS.includes(titleCase as any)) {
+            return titleCase;
+          }
         }
 
-        return englishKey || bodyPart; // Return the found key or the original as fallback
+        // Convert camelCase to Title Case and try to match
+        if (/[a-z][A-Z]/.test(bodyPart)) {
+          const titleCase = bodyPart
+            .replace(/([a-z])([A-Z])/g, '$1 $2')
+            .replace(/\b\w/g, c => c.toUpperCase());
+          if (PAIN_BODY_PARTS.includes(titleCase as any)) {
+            return titleCase;
+          }
+        }
+
+        return bodyPart; // Return original as fallback
       };
 
       // Function to normalize gender to English values
@@ -756,34 +809,8 @@ export default function ProfilePage() {
       };
 
       // Function to normalize fitness level to English values
-      const normalizeFitnessLevel = (levelValue: string): string => {
-        // Map translated fitness levels to English keys
-        const fitnessLevels = getFitnessLevels(t);
-        for (const level of fitnessLevels) {
-          if (level.name === levelValue) {
-            // Find the English key for this fitness level
-            const englishKey = Object.keys(level).find((_key) => {
-              try {
-                // Try to find the original English key
-                return level.name === fitnessLevel;
-              } catch {
-                return false;
-              }
-            });
-            if (englishKey) return englishKey;
-          }
-        }
-
-        // Fallback mapping for common translations
-        const fitnessMap: Record<string, string> = {
-          [t('profile.beginner.name')]: 'Beginner',
-          [t('profile.intermediate.name')]: 'Intermediate',
-          [t('profile.advanced.name')]: 'Advanced',
-          [t('profile.elite.name')]: 'Elite',
-        };
-
-        return fitnessMap[levelValue] || levelValue;
-      };
+      // Fitness level is now stored directly as English key (Beginner, Intermediate, Advanced, Elite)
+      const normalizeFitnessLevel = (levelValue: string): string => levelValue;
 
       // Function to normalize exercise frequency to English values
       const normalizeExerciseFrequency = (freqValue: string): string => {
@@ -960,9 +987,9 @@ export default function ProfilePage() {
           .join(','),
         timeAvailability,
         dietaryPreferences: normalizeDietaryPreferences(dietaryPreferences),
-        // For painfulAreas, convert all to English keys for consistent storage
+        // For painfulAreas, normalize to PAIN_BODY_PARTS format for consistent storage
         painfulAreas: updatedPainfulAreas.map((area) =>
-          getEnglishBodyPartKey(area)
+          normalizeBodyPartToKey(area)
         ),
         healthGoals: normalizeHealthGoals(healthGoals),
         targetAreas: normalizeTargetAreas(targetAreas),
@@ -1318,14 +1345,15 @@ export default function ProfilePage() {
 
     // For profile photo, enter edit mode and auto-launch file picker
     if (field === 'profilePhoto') {
-      // Trigger file picker after a brief delay to allow state to update and render the input
+      // Trigger file picker after a delay to allow state to update and render the input
+      // Increased delay to account for Info menu expansion rendering
       setTimeout(() => {
         // Try desktop input first, then mobile
         const input = document.getElementById('profile-upload-desktop-general') as HTMLInputElement
           || document.getElementById('profile-upload-mobile') as HTMLInputElement
           || document.getElementById('profile-upload') as HTMLInputElement;
         input?.click();
-      }, 150);
+      }, 300);
       return;
     }
 
@@ -1566,41 +1594,22 @@ export default function ProfilePage() {
             photoURL={previewURL || photoURL}
             email={user?.email}
             activeSection={activeSection}
+            activeView={activeView}
             onSectionClick={handleSidebarSectionClick}
-            onPrivacyClick={() => router.push('/privacy')}
+            onDataControlsClick={handlePrivacyClick}
+            onPrivacyPolicyClick={handlePrivacyPolicyClick}
             onLogoutClick={handleLogout}
-            onPhotoClick={() => handleEdit('profilePhoto')}
-            isEditing={isEditing}
+            onPhotoClick={() => {
+              setIsInfoExpanded(true);
+              setActiveView('info');
+              handleEdit('profilePhoto');
+            }}
+            isInfoExpanded={isInfoExpanded}
+            onInfoToggle={handleInfoToggle}
           >
+            {activeView === 'info' ? (
             <div ref={topRef} className={`${isEditing ? 'pb-32' : 'pb-8'}`}>
             <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-xl ring-1 ring-gray-700/50 p-6 mb-8">
-              {/* Desktop: Edit button at top of content card */}
-              <div className="flex justify-end mb-4">
-                {!isEditing && (
-                  <button
-                    onClick={() => setIsEditing(true)}
-                    className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-500 transition-colors flex items-center gap-2"
-                    aria-label={t('profile.actions.editProfile')}
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-4 w-4"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
-                      />
-                    </svg>
-                    {t('profile.actions.editProfile')}
-                  </button>
-                )}
-              </div>
-              
               {/* Profile photo section hidden on desktop - it's in the sidebar */}
               <div className="hidden">
                 {/* Profile Image Section START - Hidden on desktop */}
@@ -1693,7 +1702,8 @@ export default function ProfilePage() {
               <div className="w-full text-left">
                 <div className="">
                   {/* General Section START */}
-                  <div ref={(el) => setSectionRef('general', el)}>
+                  {activeSection === 'general' && (
+                  <div>
                     <div
                       className={`flex justify-between items-center py-4 rounded-lg transition-colors ${!isDesktop ? 'cursor-pointer hover:bg-gray-700/30' : ''}`}
                       onClick={() => !isDesktop && setGeneralExpanded(!generalExpanded)}
@@ -1714,11 +1724,23 @@ export default function ProfilePage() {
                             />
                           </svg>
                         </div>
-                        <h3 className="text-white font-semibold flex items-center">
+                        <h3 className="text-white font-medium flex items-center">
                           {t('profile.sections.general')}
-                          {displayName && phone && dateOfBirth && (
+                          {displayName && phone && dateOfBirth ? (
                             <svg
                               className="ml-2 h-4 w-4 text-green-400"
+                              fill="currentColor"
+                              viewBox="0 0 20 20"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                          ) : (
+                            <svg
+                              className="ml-2 h-4 w-4 text-gray-500"
                               fill="currentColor"
                               viewBox="0 0 20 20"
                             >
@@ -1731,13 +1753,40 @@ export default function ProfilePage() {
                           )}
                         </h3>
                       </div>
-                      {!isDesktop && (
-                        <div className="text-gray-400 hover:text-white">
-                          {generalExpanded ? <ExpandedIcon /> : <CollapsedIcon />}
-                        </div>
-                      )}
+                      <div className="flex items-center gap-2">
+                        {/* Edit icon - desktop only */}
+                        {isDesktop && !isEditing && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setIsEditing(true);
+                            }}
+                            className="p-3 rounded-full bg-indigo-600 text-white hover:bg-indigo-500 transition-colors"
+                            aria-label={t('profile.actions.editProfile')}
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="h-5 w-5"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                              />
+                            </svg>
+                          </button>
+                        )}
+                        {!isDesktop && (
+                          <div className="text-gray-400 hover:text-white">
+                            {generalExpanded ? <ExpandedIcon /> : <CollapsedIcon />}
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </div>
 
                   {/* General section content */}
                   {generalExpanded && (
@@ -1889,10 +1938,13 @@ export default function ProfilePage() {
                       </div>
                     </div>
                   )}
+                  </div>
+                  )}
                   {/* General Section END */}
 
                   {/* Health Basics Section START */}
-                  <div className="border-t border-gray-700" ref={(el) => setSectionRef('healthBasics', el)}>
+                  {activeSection === 'healthBasics' && (
+                  <div>
                     <div
                       className={`flex justify-between items-center py-4 rounded-lg transition-colors ${!isDesktop ? 'cursor-pointer hover:bg-gray-700/30' : ''}`}
                       onClick={() => !isDesktop && setHealthBasicsExpanded(!healthBasicsExpanded)}
@@ -1913,11 +1965,23 @@ export default function ProfilePage() {
                             />
                           </svg>
                         </div>
-                        <h3 className="text-white font-semibold flex items-center">
+                        <h3 className="text-white font-medium flex items-center">
                           {t('profile.sections.healthBasics')}
-                          {userHeight && weight && gender && (
+                          {userHeight && weight && gender ? (
                             <svg
                               className="ml-2 h-4 w-4 text-green-400"
+                              fill="currentColor"
+                              viewBox="0 0 20 20"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                          ) : (
+                            <svg
+                              className="ml-2 h-4 w-4 text-gray-500"
                               fill="currentColor"
                               viewBox="0 0 20 20"
                             >
@@ -1930,17 +1994,44 @@ export default function ProfilePage() {
                           )}
                         </h3>
                       </div>
-                      {!isDesktop && (
-                        <div className="text-gray-400 hover:text-white">
-                          {healthBasicsExpanded ? (
-                            <ExpandedIcon />
-                          ) : (
-                            <CollapsedIcon />
-                          )}
-                        </div>
-                      )}
+                      <div className="flex items-center gap-2">
+                        {/* Edit icon - desktop only */}
+                        {isDesktop && !isEditing && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setIsEditing(true);
+                            }}
+                            className="p-3 rounded-full bg-indigo-600 text-white hover:bg-indigo-500 transition-colors"
+                            aria-label={t('profile.actions.editProfile')}
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="h-5 w-5"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                              />
+                            </svg>
+                          </button>
+                        )}
+                        {!isDesktop && (
+                          <div className="text-gray-400 hover:text-white">
+                            {healthBasicsExpanded ? (
+                              <ExpandedIcon />
+                            ) : (
+                              <CollapsedIcon />
+                            )}
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </div>
 
                   {/* Health Basics content */}
                   {healthBasicsExpanded && (
@@ -2053,10 +2144,13 @@ export default function ProfilePage() {
                       </div>
                     </div>
                   )}
+                  </div>
+                  )}
                   {/* Health Basics Section END */}
 
                   {/* Fitness Profile Section START */}
-                  <div className="border-t border-gray-700" ref={(el) => setSectionRef('fitnessProfile', el)}>
+                  {activeSection === 'fitnessProfile' && (
+                  <div>
                     <div
                       className={`flex justify-between items-center py-4 rounded-lg transition-colors ${!isDesktop ? 'cursor-pointer hover:bg-gray-700/30' : ''}`}
                       onClick={() => !isDesktop && setFitnessProfileExpanded(!fitnessProfileExpanded)}
@@ -2077,13 +2171,13 @@ export default function ProfilePage() {
                             />
                           </svg>
                         </div>
-                        <h3 className="text-white font-semibold flex items-center">
+                        <h3 className="text-white font-medium flex items-center">
                           {t('profile.sections.fitnessProfile')}
                           {fitnessLevel &&
                             sleepPattern &&
                             exerciseFrequency &&
                             exerciseModalities.length > 0 &&
-                            targetAreas.length > 0 && (
+                            targetAreas.length > 0 ? (
                               <svg
                                 className="ml-2 h-4 w-4 text-green-400"
                                 fill="currentColor"
@@ -2095,20 +2189,56 @@ export default function ProfilePage() {
                                   clipRule="evenodd"
                                 />
                               </svg>
+                            ) : (
+                              <svg
+                                className="ml-2 h-4 w-4 text-gray-500"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 20 20"
+                              >
+                                <circle cx="10" cy="10" r="7" strokeWidth="2" />
+                              </svg>
                             )}
                         </h3>
                       </div>
-                      {!isDesktop && (
-                        <div className="text-gray-400 hover:text-white">
-                          {fitnessProfileExpanded ? (
-                            <ExpandedIcon />
-                          ) : (
-                            <CollapsedIcon />
-                          )}
-                        </div>
-                      )}
+                      <div className="flex items-center gap-2">
+                        {/* Edit icon - desktop only */}
+                        {isDesktop && !isEditing && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setIsEditing(true);
+                            }}
+                            className="p-3 rounded-full bg-indigo-600 text-white hover:bg-indigo-500 transition-colors"
+                            aria-label={t('profile.actions.editProfile')}
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="h-5 w-5"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                              />
+                            </svg>
+                          </button>
+                        )}
+                        {!isDesktop && (
+                          <div className="text-gray-400 hover:text-white">
+                            {fitnessProfileExpanded ? (
+                              <ExpandedIcon />
+                            ) : (
+                              <CollapsedIcon />
+                            )}
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </div>
 
                   {/* Fitness Profile content */}
                   {fitnessProfileExpanded && (
@@ -2123,14 +2253,14 @@ export default function ProfilePage() {
                             <div className="grid grid-cols-1 gap-3">
                               {getFitnessLevels(t).map((level) => (
                                 <label
-                                  key={level.name}
+                                  key={level.id}
                                   className="relative flex items-center"
                                 >
                                   <input
                                     type="radio"
                                     name="fitnessLevel"
-                                    value={level.name}
-                                    checked={fitnessLevel === level.name}
+                                    value={level.id}
+                                    checked={fitnessLevel === level.id}
                                     onChange={(e) => {
                                       setFitnessLevel(e.target.value);
                                     }}
@@ -2163,7 +2293,7 @@ export default function ProfilePage() {
                             className="text-white cursor-pointer hover:text-indigo-400 transition-colors text-left capitalize"
                             onClick={() => handleEdit('fitnessLevel')}
                           >
-                            {fitnessLevel || t('profile.notSet')}
+                            {fitnessLevel ? t(`profile.${fitnessLevel.toLowerCase()}.name`) : t('profile.notSet')}
                           </p>
                         )}
                       </div>
@@ -2612,9 +2742,12 @@ export default function ProfilePage() {
                       </div>
                     </div>
                   )}
+                  </div>
+                  )}
                   {/* Goals and Preferences Section END */}
                   {/* Medical Background Section START */}
-                  <div className="border-t border-gray-700" ref={(el) => setSectionRef('medicalBackground', el)}>
+                  {activeSection === 'medicalBackground' && (
+                  <div>
                     <div
                       className={`flex justify-between items-center py-4 rounded-lg transition-colors ${!isDesktop ? 'cursor-pointer hover:bg-gray-700/30' : ''}`}
                       onClick={() => !isDesktop && setMedicalBackgroundExpanded(!medicalBackgroundExpanded)}
@@ -2635,12 +2768,12 @@ export default function ProfilePage() {
                             />
                           </svg>
                         </div>
-                        <h3 className="text-white font-semibold flex items-center">
+                        <h3 className="text-white font-medium flex items-center">
                           {t('profile.sections.medical')}
                           {medicalConditions.length > 0 &&
                             medications.length > 0 &&
                             injuries.length > 0 &&
-                            familyHistory.length > 0 && (
+                            familyHistory.length > 0 ? (
                               <svg
                                 className="ml-2 h-4 w-4 text-green-400"
                                 fill="currentColor"
@@ -2652,20 +2785,56 @@ export default function ProfilePage() {
                                   clipRule="evenodd"
                                 />
                               </svg>
+                            ) : (
+                              <svg
+                                className="ml-2 h-4 w-4 text-gray-500"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 20 20"
+                              >
+                                <circle cx="10" cy="10" r="7" strokeWidth="2" />
+                              </svg>
                             )}
                         </h3>
                       </div>
-                      <div className="text-gray-400 hover:text-white">
+                      <div className="flex items-center gap-2">
+                        {/* Edit icon - desktop only */}
+                        {isDesktop && !isEditing && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setIsEditing(true);
+                            }}
+                            className="p-3 rounded-full bg-indigo-600 text-white hover:bg-indigo-500 transition-colors"
+                            aria-label={t('profile.actions.editProfile')}
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="h-5 w-5"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                              />
+                            </svg>
+                          </button>
+                        )}
                         {!isDesktop && (
-                          medicalBackgroundExpanded ? (
-                            <ExpandedIcon />
-                          ) : (
-                            <CollapsedIcon />
-                          )
+                          <div className="text-gray-400 hover:text-white">
+                            {medicalBackgroundExpanded ? (
+                              <ExpandedIcon />
+                            ) : (
+                              <CollapsedIcon />
+                            )}
+                          </div>
                         )}
                       </div>
                     </div>
-                  </div>
 
                   {/* Medical Background content */}
                   {medicalBackgroundExpanded && (
@@ -3210,6 +3379,8 @@ export default function ProfilePage() {
                       </div>
                     </div>
                   )}
+                  </div>
+                  )}
                   {/* Medical Background Section END */}
                 </div>
                 {/* Profile Info Section END */}
@@ -3313,6 +3484,11 @@ export default function ProfilePage() {
               </div>
             )}
             </div>
+            ) : activeView === 'privacy' ? (
+              <PrivacyContent isDesktop={true} />
+            ) : (
+              <PrivacyPolicyContent />
+            )}
           </ProfileDesktopLayout>
         ) : (
           /* Mobile Layout - simpler wrapper without sidebar */
@@ -3385,7 +3561,7 @@ export default function ProfilePage() {
                 <div className="w-full text-left">
                   <div className="">
                     {/* General Section - Mobile */}
-                    <div ref={(el) => setSectionRef('general', el)}>
+                    <div>
                       <div
                         className="flex justify-between items-center cursor-pointer hover:bg-gray-700/30 py-4 rounded-lg transition-colors"
                         onClick={() => setGeneralExpanded(!generalExpanded)}
@@ -3399,8 +3575,12 @@ export default function ProfilePage() {
                           </div>
                           <h3 className="text-white font-semibold flex items-center">
                             {t('profile.sections.general')}
-                            {displayName && phone && dateOfBirth && (
+                            {displayName && phone && dateOfBirth ? (
                               <svg className="ml-2 h-4 w-4 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                              </svg>
+                            ) : (
+                              <svg className="ml-2 h-4 w-4 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
                                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                               </svg>
                             )}
@@ -3450,7 +3630,7 @@ export default function ProfilePage() {
                     )}
 
                     {/* Health Basics Section - Mobile */}
-                    <div className="border-t border-gray-700" ref={(el) => setSectionRef('healthBasics', el)}>
+                    <div className="border-t border-gray-700">
                       <div
                         className="flex justify-between items-center cursor-pointer hover:bg-gray-700/30 py-4 rounded-lg transition-colors"
                         onClick={() => setHealthBasicsExpanded(!healthBasicsExpanded)}
@@ -3464,8 +3644,12 @@ export default function ProfilePage() {
                           </div>
                           <h3 className="text-white font-semibold flex items-center">
                             {t('profile.sections.healthBasics')}
-                            {userHeight && weight && gender && (
+                            {userHeight && weight && gender ? (
                               <svg className="ml-2 h-4 w-4 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                              </svg>
+                            ) : (
+                              <svg className="ml-2 h-4 w-4 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
                                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                               </svg>
                             )}
@@ -3524,7 +3708,7 @@ export default function ProfilePage() {
                     )}
 
                     {/* Fitness Profile Section - Mobile (simplified for brevity) */}
-                    <div className="border-t border-gray-700" ref={(el) => setSectionRef('fitnessProfile', el)}>
+                    <div className="border-t border-gray-700">
                       <div
                         className="flex justify-between items-center cursor-pointer hover:bg-gray-700/30 py-4 rounded-lg transition-colors"
                         onClick={() => setFitnessProfileExpanded(!fitnessProfileExpanded)}
@@ -3536,7 +3720,18 @@ export default function ProfilePage() {
                               <path fillRule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clipRule="evenodd" />
                             </svg>
                           </div>
-                          <h3 className="text-white font-semibold">{t('profile.sections.fitnessProfile')}</h3>
+                          <h3 className="text-white font-semibold flex items-center">
+                            {t('profile.sections.fitnessProfile')}
+                            {fitnessLevel && sleepPattern && exerciseFrequency && exerciseModalities.length > 0 && targetAreas.length > 0 ? (
+                              <svg className="ml-2 h-4 w-4 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                              </svg>
+                            ) : (
+                              <svg className="ml-2 h-4 w-4 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                              </svg>
+                            )}
+                          </h3>
                         </div>
                         <div className="text-gray-400 hover:text-white">
                           {fitnessProfileExpanded ? <ExpandedIcon /> : <CollapsedIcon />}
@@ -3554,12 +3749,12 @@ export default function ProfilePage() {
                             <div className="space-y-4">
                               <div className="grid grid-cols-1 gap-3">
                                 {getFitnessLevels(t).map((level) => (
-                                  <label key={level.name} className="relative flex items-center">
+                                  <label key={level.id} className="relative flex items-center">
                                     <input
                                       type="radio"
                                       name="fitnessLevel"
-                                      value={level.name}
-                                      checked={fitnessLevel === level.name}
+                                      value={level.id}
+                                      checked={fitnessLevel === level.id}
                                       onChange={(e) => setFitnessLevel(e.target.value)}
                                       className="peer sr-only"
                                     />
@@ -3578,7 +3773,7 @@ export default function ProfilePage() {
                             </div>
                           ) : (
                             <p className="text-white cursor-pointer hover:text-indigo-400 transition-colors text-left capitalize" onClick={() => handleEdit('fitnessLevel')}>
-                              {fitnessLevel || t('profile.notSet')}
+                              {fitnessLevel ? t(`profile.${fitnessLevel.toLowerCase()}.name`) : t('profile.notSet')}
                             </p>
                           )}
                         </div>
@@ -3810,7 +4005,7 @@ export default function ProfilePage() {
                     )}
 
                     {/* Medical Background Section - Mobile (simplified for brevity) */}
-                    <div className="border-t border-gray-700" ref={(el) => setSectionRef('medicalBackground', el)}>
+                    <div className="border-t border-gray-700">
                       <div
                         className="flex justify-between items-center cursor-pointer hover:bg-gray-700/30 py-4 rounded-lg transition-colors"
                         onClick={() => setMedicalBackgroundExpanded(!medicalBackgroundExpanded)}
@@ -3822,7 +4017,18 @@ export default function ProfilePage() {
                               <path fillRule="evenodd" d="M3 5a2 2 0 012-2h10a2 2 0 012 2v8a2 2 0 01-2 2h-2.22l.123.489.804.804A1 1 0 0113 18H7a1 1 0 01-.707-1.707l.804-.804L7.22 15H5a2 2 0 01-2-2V5zm5.771 7H5V5h10v7H8.771z" clipRule="evenodd" />
                             </svg>
                           </div>
-                          <h3 className="text-white font-semibold">{t('profile.sections.medical')}</h3>
+                          <h3 className="text-white font-semibold flex items-center">
+                            {t('profile.sections.medical')}
+                            {medicalConditions.length > 0 && medications.length > 0 && injuries.length > 0 && familyHistory.length > 0 ? (
+                              <svg className="ml-2 h-4 w-4 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                              </svg>
+                            ) : (
+                              <svg className="ml-2 h-4 w-4 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                              </svg>
+                            )}
+                          </h3>
                         </div>
                         <div className="text-gray-400 hover:text-white">
                           {medicalBackgroundExpanded ? <ExpandedIcon /> : <CollapsedIcon />}
@@ -3926,7 +4132,13 @@ export default function ProfilePage() {
                             </div>
                           ) : (
                             <p className="text-white cursor-pointer hover:text-indigo-400 transition-colors text-left" onClick={() => handleEdit('painfulAreas')}>
-                              {painfulAreas.length > 0 ? painfulAreas.join(', ') : t('profile.noneSet')}
+                              {painfulAreas.length > 0 ? (
+                              <ProfileValueDisplay
+                                value={painfulAreas}
+                                translationPrefix="bodyParts"
+                                fallback="profile.noneSet"
+                              />
+                            ) : t('profile.noneSet')}
                             </p>
                           )}
                         </div>

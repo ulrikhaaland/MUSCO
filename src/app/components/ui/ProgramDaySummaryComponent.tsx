@@ -1,4 +1,4 @@
-import { ProgramDay } from '@/app/types/program';
+import { ProgramDay, getDayType } from '@/app/types/program';
 import Chip from './Chip';
 import { useEffect, useState, useRef } from 'react';
 import { useTranslation } from '@/app/i18n/TranslationContext';
@@ -16,6 +16,27 @@ interface ProgramDaySummaryComponentProps {
   autoNavigateOnShimmer?: boolean;
 }
 
+/**
+ * Get the display label and variant for a day type
+ */
+function getDayTypeDisplay(
+  day: ProgramDay,
+  t: (key: string) => string
+): { label: string; variant: 'default' | 'subtle' | 'cardio' | 'recovery' } {
+  const dayType = getDayType(day);
+  switch (dayType) {
+    case 'rest':
+      return { label: t('calendar.rest'), variant: 'subtle' };
+    case 'cardio':
+      return { label: t('program.cardio'), variant: 'cardio' };
+    case 'recovery':
+      return { label: t('program.recovery'), variant: 'recovery' };
+    case 'strength':
+    default:
+      return { label: t('program.strength'), variant: 'default' };
+  }
+}
+
 export function ProgramDaySummaryComponent({
   day,
   dayName,
@@ -29,6 +50,7 @@ export function ProgramDaySummaryComponent({
   autoNavigateOnShimmer = false,
 }: ProgramDaySummaryComponentProps) {
   const { t } = useTranslation();
+  const dayTypeDisplay = getDayTypeDisplay(day, t);
   // Calculate exercise statistics
   const totalExercises = day.exercises?.length || 0;
   const warmupExercises = day.exercises?.filter((ex) => ex.warmup)?.length || 0;
@@ -119,13 +141,9 @@ export function ProgramDaySummaryComponent({
                 </h3>
                 {shimmer ? (
                   <span className="shimmer inline-block h-5 w-16 sm:w-20 bg-gray-700 rounded-full" />
-                ) : day.isRestDay ? (
-                  <Chip variant="subtle" size="sm">
-                    {t('calendar.rest')}
-                  </Chip>
                 ) : (
-                  <Chip variant="default" size="sm">
-                    {t('program.activity')}
+                  <Chip variant={dayTypeDisplay.variant} size="sm">
+                    {dayTypeDisplay.label}
                   </Chip>
                 )}
               </div>
@@ -286,13 +304,9 @@ export function ProgramDaySummaryComponent({
                 </h3>
                 {shimmer ? (
                   <span className="shimmer inline-block h-5 w-20 bg-gray-700 rounded-full" />
-                ) : day.isRestDay ? (
-                  <Chip variant="subtle" size="sm">
-                    {t('program.rest')}
-                  </Chip>
                 ) : (
-                  <Chip variant="default" size="sm">
-                    {t('program.activity')}
+                  <Chip variant={dayTypeDisplay.variant} size="sm">
+                    {dayTypeDisplay.label}
                   </Chip>
                 )}
               </div>

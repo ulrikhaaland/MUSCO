@@ -3,54 +3,49 @@
  */
 
 import { PAIN_BODY_PARTS } from '@/app/types/program';
-import { isNorwegianTerm } from '@/app/constants';
 
 /**
- * Check if a term is a Norwegian body part
- * @deprecated Use isNorwegianTerm from @/app/constants instead
- */
-export const isNorwegianBodyPart = isNorwegianTerm;
-
-/**
- * Normalize body part names between languages
- * Handles translation between English keys and localized display values
+ * Normalize body part names to match PAIN_BODY_PARTS format
+ * Converts various formats (snake_case, camelCase) to "Title Case" format
+ * that matches the values in PAIN_BODY_PARTS and translation keys
  */
 export const normalizeBodyPartName = (
   bodyPart: string,
   t: (key: string) => string
 ): string => {
-  // If it's already a Norwegian term, don't try to find an English key or translate
-  if (isNorwegianBodyPart(bodyPart)) {
+  // If already in PAIN_BODY_PARTS, return as-is
+  if (PAIN_BODY_PARTS.includes(bodyPart as any)) {
     return bodyPart;
   }
 
-  // Try to get the English key for a translated body part
-  const englishKey = PAIN_BODY_PARTS.find((key) => {
-    try {
-      const translatedValue = t(`bodyParts.${key}`);
-      return translatedValue === bodyPart;
-    } catch {
-      return false;
+  // Convert snake_case to Title Case: "left_hand" -> "Left Hand"
+  if (bodyPart.includes('_')) {
+    const titleCase = bodyPart
+      .split('_')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ');
+    if (PAIN_BODY_PARTS.includes(titleCase as any)) {
+      return titleCase;
     }
+  }
+
+  // Convert camelCase to Title Case: "leftHand" -> "Left Hand"
+  if (/[a-z][A-Z]/.test(bodyPart)) {
+    const titleCase = bodyPart
+      .replace(/([a-z])([A-Z])/g, '$1 $2')
+      .replace(/\b\w/g, c => c.toUpperCase());
+    if (PAIN_BODY_PARTS.includes(titleCase as any)) {
+      return titleCase;
+    }
+  }
+
+  // Try to find by translation match
+  const matchedPart = PAIN_BODY_PARTS.find((part) => {
+    const translated = t(`bodyParts.${part}`);
+    return translated.toLowerCase() === bodyPart.toLowerCase();
   });
 
-  if (englishKey) {
-    return englishKey;
-  }
-
-  // If we have an English key, get its translation
-  if (PAIN_BODY_PARTS.includes(bodyPart as any)) {
-    try {
-      const translated = t(`bodyParts.${bodyPart}`);
-      if (translated !== `bodyParts.${bodyPart}`) {
-        return translated;
-      }
-    } catch {
-      // Translation not found, continue with original
-    }
-  }
-
-  return bodyPart;
+  return matchedPart || bodyPart;
 };
 
 /**
@@ -104,4 +99,3 @@ export const uploadProfileImage = async (
     );
   });
 };
-

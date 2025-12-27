@@ -444,7 +444,7 @@ export const localizeProgramDayDescriptions = (
 const createWorkoutDay = (day: number, description: string, exercises: any[]) => ({
   day,
   description,
-  isRestDay: false,
+  dayType: 'strength' as const,
   exercises,
   duration: calculateDayDuration(exercises),
 });

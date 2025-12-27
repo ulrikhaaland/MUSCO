@@ -1,4 +1,4 @@
-import { ProgramDay, Exercise, AfterTimeFrame } from './program';
+import { ProgramDay, Exercise, AfterTimeFrame, DayType } from './program';
 import { DiagnosisAssistantResponse } from '../types';
 import { ExerciseQuestionnaireAnswers } from '../../../shared/types';
 
@@ -29,9 +29,7 @@ export interface ProgramMetadataResponse {
  */
 export interface SingleDayResponse {
   day: number;
-  isRestDay: boolean;
-  isCardioDay?: boolean;
-  isRecoveryDay?: boolean;
+  dayType: DayType;
   description: string;
   exercises: Exercise[];
   duration: number;
@@ -107,4 +105,46 @@ export interface IncrementalGenerationState {
   currentDay: number; // 0 = metadata, 1-7 = generating/completed that day
   partialProgram: PartialProgram | null;
   error: string | null;
+}
+
+// ----------------------
+// Follow-Up Program Types
+// ----------------------
+
+/**
+ * Cleaned program feedback with normalized exercise IDs
+ */
+export interface CleanedProgramFeedback {
+  preferredExercises: string[];
+  removedExercises: string[];
+  replacedExercises: string[];
+  addedExercises: { id: string; name: string }[];
+}
+
+/**
+ * Request payload for generating follow-up program metadata only
+ */
+export interface GenerateFollowUpMetadataRequest {
+  diagnosisData: DiagnosisAssistantResponse;
+  userInfo: ExerciseQuestionnaireAnswers;
+  feedback: CleanedProgramFeedback;
+  previousProgram?: {
+    title?: string;
+    days?: ProgramDay[];
+    createdAt?: Date | string;
+  };
+  language?: string;
+}
+
+/**
+ * Request payload for generating a single day in follow-up program
+ */
+export interface GenerateFollowUpSingleDayRequest {
+  dayNumber: number;
+  diagnosisData: DiagnosisAssistantResponse;
+  userInfo: ExerciseQuestionnaireAnswers;
+  feedback: CleanedProgramFeedback;
+  previousDays: SingleDayResponse[];
+  weeklyPlan: WeeklyPlanDay[];
+  language?: string;
 }

@@ -5,8 +5,8 @@ import { TopBar } from './TopBar';
 import { ExerciseQuestionnaireAnswers, ProgramType } from '../../../../shared/types';
 import { BodyPartGroup } from '@/app/config/bodyPartGroups';
 import { 
-  TARGET_BODY_PARTS, 
-  UPPER_BODY_PARTS, 
+  TARGET_BODY_PARTS,
+  SELECTABLE_BODY_PARTS,
   LOWER_BODY_PARTS, 
   EXERCISE_ENVIRONMENTS,
   WORKOUT_DURATIONS,
@@ -17,7 +17,10 @@ import {
   EXERCISE_MODALITIES,
   PAIN_BODY_PARTS,
   CARDIO_TYPES,
-  CARDIO_ENVIRONMENTS
+  CARDIO_ENVIRONMENTS,
+  detectBodyRegion,
+  getBodyPartsForRegion,
+  BodyRegionType
 } from '@/app/types/program';
 
 import { useTranslation } from '@/app/i18n';
@@ -282,9 +285,9 @@ export function ExerciseQuestionnaire({
     keyof ExerciseQuestionnaireAnswers | null
   >(null);
 
-  const computeInitialTargetAreas = (): (typeof TARGET_BODY_PARTS)[number][] => {
+  const computeInitialTargetAreas = (): (typeof SELECTABLE_BODY_PARTS)[number][] => {
     if (fullBody) {
-      return [...TARGET_BODY_PARTS];
+      return [...SELECTABLE_BODY_PARTS];
     }
     const preselectedAreas = targetAreas
       .map((group) => {
@@ -299,11 +302,11 @@ export function ExerciseQuestionnaire({
         if (groupId.includes('glutes')) return 'Glutes' as const;
         if (groupId.includes('thigh')) return 'Upper Legs' as const;
         if (groupId.includes('lower_leg')) return 'Lower Legs' as const;
-        if (groupId.includes('neck')) return 'Neck' as const;
+        // Note: Neck is excluded as we don't have neck exercises
         return null;
       })
       .filter(
-        (area): area is (typeof TARGET_BODY_PARTS)[number] => area !== null
+        (area): area is (typeof SELECTABLE_BODY_PARTS)[number] => area !== null
       );
     return [...new Set(preselectedAreas)];
   };
@@ -379,15 +382,8 @@ export function ExerciseQuestionnaire({
     // Special handling for targetAreas
     if (field === 'targetAreas') {
       // If a body region (Full/Upper/Lower) is selected, collapse immediately
-      const selected = answers.targetAreas || [];
-      const isFullBody = selected.length === TARGET_BODY_PARTS.length;
-      const isUpperBody =
-        UPPER_BODY_PARTS.every((p) => selected.includes(p)) &&
-        selected.length === UPPER_BODY_PARTS.length;
-      const isLowerBody =
-        LOWER_BODY_PARTS.every((p) => selected.includes(p)) &&
-        selected.length === LOWER_BODY_PARTS.length;
-      if (isFullBody || isUpperBody || isLowerBody) return true;
+      const region = detectBodyRegion(answers.targetAreas || []);
+      if (region !== 'custom') return true;
       return !targetAreasReopened && !!answers.exerciseEnvironments;
     }
 
@@ -898,15 +894,8 @@ export function ExerciseQuestionnaire({
 
       // Special case for target areas - only auto-scroll if selecting a body region
       if (field === 'targetAreas' && Array.isArray(normalizedValue)) {
-        const isFullBody = normalizedValue.length === TARGET_BODY_PARTS.length;
-        const isUpperBody =
-          UPPER_BODY_PARTS.every((part) => normalizedValue.includes(part)) &&
-          normalizedValue.length === UPPER_BODY_PARTS.length;
-        const isLowerBody =
-          LOWER_BODY_PARTS.every((part) => normalizedValue.includes(part)) &&
-          normalizedValue.length === LOWER_BODY_PARTS.length;
-
-        if (isFullBody || isUpperBody || isLowerBody) {
+        const region = detectBodyRegion(normalizedValue as string[]);
+        if (region !== 'custom') {
           scrollToNextUnansweredQuestion(ref, true);
         }
         return;
@@ -2415,19 +2404,13 @@ export function ExerciseQuestionnaire({
                 editingField !== 'targetAreas' &&
                 shouldCollapseField('targetAreas') ? (
                   renderSelectedAnswers(
-                    answers.targetAreas.length === TARGET_BODY_PARTS.length
-                      ? ['Full Body']
-                      : UPPER_BODY_PARTS.every((part) =>
-                          answers.targetAreas.includes(part)
-                        ) &&
-                        answers.targetAreas.length === UPPER_BODY_PARTS.length
-                      ? ['Upper Body']
-                      : LOWER_BODY_PARTS.every((part) =>
-                          answers.targetAreas.includes(part)
-                        ) &&
-                        answers.targetAreas.length === LOWER_BODY_PARTS.length
-                      ? ['Lower Body']
-                      : answers.targetAreas,
+                    (() => {
+                      const region = detectBodyRegion(answers.targetAreas);
+                      if (region === 'fullBody') return ['Full Body'];
+                      if (region === 'upperBody') return ['Upper Body'];
+                      if (region === 'lowerBody') return ['Lower Body'];
+                      return answers.targetAreas;
+                    })(),
                     () => handleEdit('targetAreas')
                   )
                 ) : (
@@ -2435,12 +2418,21 @@ export function ExerciseQuestionnaire({
                     {/* Body Regions */}
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                       {translatedBodyRegions.map((region, index) => {
-                        // Map to consistent English values for comparison
+                        // Map to BodyRegionType for comparison
+                        const regionType: BodyRegionType = index === 0 
+                          ? 'fullBody' 
+                          : index === 1 
+                            ? 'upperBody' 
+                            : 'lowerBody';
+                        // Display value for the radio
                         const regionValue = index === 0 
                           ? 'Full Body' 
                           : index === 1 
                             ? 'Upper Body' 
                             : 'Lower Body';
+                        
+                        // Use centralized detection for checked state
+                        const currentRegion = detectBodyRegion(answers.targetAreas);
                         
                         return (
                           <label
@@ -2451,34 +2443,11 @@ export function ExerciseQuestionnaire({
                               type="radio"
                               name="bodyRegion"
                               value={regionValue}
-                              checked={
-                                regionValue === 'Full Body'
-                                  ? answers.targetAreas.length ===
-                                    TARGET_BODY_PARTS.length
-                                  : regionValue === 'Upper Body'
-                                  ? UPPER_BODY_PARTS.every((part) =>
-                                      answers.targetAreas.includes(part)
-                                    ) &&
-                                    answers.targetAreas.length ===
-                                      UPPER_BODY_PARTS.length
-                                  : regionValue === 'Lower Body'
-                                  ? LOWER_BODY_PARTS.every((part) =>
-                                      answers.targetAreas.includes(part)
-                                    ) &&
-                                    answers.targetAreas.length ===
-                                      LOWER_BODY_PARTS.length
-                                  : false
-                              }
+                              checked={currentRegion === regionType}
                               onChange={(e) => {
                                 if (e.target.checked) {
-                                  let newTargetAreas: string[] = [];
-                                  if (regionValue === 'Full Body') {
-                                    newTargetAreas = [...TARGET_BODY_PARTS];
-                                  } else if (regionValue === 'Upper Body') {
-                                    newTargetAreas = [...UPPER_BODY_PARTS];
-                                  } else if (regionValue === 'Lower Body') {
-                                    newTargetAreas = [...LOWER_BODY_PARTS];
-                                  }
+                                  // Use centralized function to get body parts for region
+                                  const newTargetAreas = [...getBodyPartsForRegion(regionType)];
                                   
                                   // Set the answers first
                                   setAnswers(prev => ({
@@ -2523,7 +2492,7 @@ export function ExerciseQuestionnaire({
                         {t('questionnaire.selectSpecific')}
                       </p>
                       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-                        {TARGET_BODY_PARTS.map((part) => {
+                        {SELECTABLE_BODY_PARTS.map((part) => {
                           // Get translated body part name for display
                           const translatedPart = translateBodyPart(part, t);
                           

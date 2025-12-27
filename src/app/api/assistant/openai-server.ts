@@ -11,7 +11,7 @@ import {
 } from '@/app/lib/chatLimits';
 import { ExerciseQuestionnaireAnswers, ProgramType } from '../../../../shared/types';
 import { adminDb } from '@/app/firebase/admin';
-import { ProgramStatus, ExerciseProgram } from '@/app/types/program';
+import { ProgramStatus, ExerciseProgram, DayType, getDayType } from '@/app/types/program';
 // import { loadServerExercises } from '@/app/services/server-exercises';
 import { ProgramFeedback } from '@/app/components/ui/ProgramFeedbackQuestionnaire';
 import { prepareExercisesPrompt } from '@/app/helpers/exercise-prompt';
@@ -29,7 +29,7 @@ const openai = new OpenAI({
 });
 
 // Import centralized model configuration
-import { DIAGNOSIS_MODEL, EXPLORE_MODEL, PROGRAM_MODEL, FOLLOWUP_MODEL } from './models';
+import { DIAGNOSIS_MODEL, EXPLORE_MODEL, PROGRAM_MODEL } from './models';
 
 // ----------------------
 // Model and token controls
@@ -484,6 +484,309 @@ function formatMessagesForChatCompletion(messages: any[]) {
 
 // Legacy Assistants API functions removed - now using chat-completions with StreamParser
 
+// ----------------------
+// Follow-Up Program Types
+// ----------------------
+interface CleanedProgramFeedback {
+  preferredExercises: string[];
+  removedExercises: string[];
+  replacedExercises: string[];
+  addedExercises: { id: string; name: string }[];
+}
+
+interface FollowUpMetadataResponse {
+  title: string;
+  programOverview: string;
+  summary: string;
+  whatNotToDo: string;
+  afterTimeFrame: {
+    expectedOutcome: string;
+    nextSteps: string;
+  };
+  weeklyPlan: Array<{
+    day: number;
+    dayType: 'strength' | 'cardio' | 'recovery' | 'rest';
+    intensity: 'high' | 'moderate' | 'low';
+    focus: string;
+  }>;
+}
+
+interface FollowUpSingleDayResponse {
+  day: number;
+  dayType: DayType;
+  description: string;
+  exercises: Array<{
+    exerciseId: string;
+    warmup?: boolean;
+    modification?: string;
+    precaution?: string;
+    duration?: number;
+  }>;
+  duration: number;
+}
+
+// ----------------------
+// Helper: Clean program feedback from mixed types to clean IDs/names
+// ----------------------
+function cleanProgramFeedback(feedback: ProgramFeedback): CleanedProgramFeedback {
+  const extractId = (item: string | { id?: string; exerciseId?: string }): string | null => {
+    if (typeof item === 'string') return item;
+    return (item as any)?.id || (item as any)?.exerciseId || null;
+  };
+
+  return {
+    preferredExercises: (feedback.preferredExercises || [])
+      .map(extractId)
+      .filter(Boolean) as string[],
+    removedExercises: (feedback.removedExercises || [])
+      .map(extractId)
+      .filter(Boolean) as string[],
+    replacedExercises: (feedback.replacedExercises || [])
+      .map(extractId)
+      .filter(Boolean) as string[],
+    addedExercises: (feedback.addedExercises || []).map((ex) => ({
+      id: ex.id || (ex as any).exerciseId || '',
+      name: ex.name || '',
+    })),
+  };
+}
+
+// ----------------------
+// Helper: Generate follow-up metadata only (no exercises)
+// ----------------------
+async function generateFollowUpMetadata(request: {
+  diagnosisData: DiagnosisAssistantResponse;
+  userInfo: ExerciseQuestionnaireAnswers;
+  feedback: CleanedProgramFeedback;
+  previousProgram?: ExerciseProgram;
+  language: string;
+}): Promise<FollowUpMetadataResponse> {
+  const { followUpMetadataOnlyPrompt } = await import('../prompts/singleDayPrompt');
+
+  const userMessage = JSON.stringify({
+    diagnosisData: request.diagnosisData,
+    userInfo: {
+      ...request.userInfo,
+      equipment: undefined,
+      exerciseEnvironments: undefined,
+    },
+    previousProgram: request.previousProgram,
+    programFeedback: request.feedback,
+    language: request.language,
+  });
+
+  console.log(`[followup-incremental] Generating metadata...`);
+
+  const response = await openai.chat.completions.create({
+    model: PROGRAM_MODEL,
+    messages: [
+      { role: 'system', content: followUpMetadataOnlyPrompt },
+      { role: 'user', content: userMessage },
+    ],
+    response_format: { type: 'json_object' },
+  });
+
+  const rawContent = response.choices[0].message.content;
+  if (!rawContent) {
+    throw new Error('No response content from OpenAI for follow-up metadata');
+  }
+
+  console.log(`[followup-incremental] Metadata response length: ${rawContent.length}`);
+
+  return JSON.parse(rawContent) as FollowUpMetadataResponse;
+}
+
+// ----------------------
+// Helper: Generate a single day for follow-up program
+// ----------------------
+async function generateFollowUpSingleDay(request: {
+  dayNumber: number;
+  diagnosisData: DiagnosisAssistantResponse;
+  userInfo: ExerciseQuestionnaireAnswers;
+  feedback: CleanedProgramFeedback;
+  previousDays: FollowUpSingleDayResponse[];
+  weeklyPlan: FollowUpMetadataResponse['weeklyPlan'];
+  language: string;
+}): Promise<FollowUpSingleDayResponse> {
+  const { followUpSingleDaySystemPrompt } = await import('../prompts/singleDayPrompt');
+
+  // Get exercises prompt, excluding removed exercises
+  const removedExerciseIds = [
+    ...request.feedback.removedExercises,
+    ...request.feedback.replacedExercises,
+  ];
+
+  const { exercisesPrompt, exerciseCount } = await prepareExercisesPrompt(
+    request.userInfo,
+    removedExerciseIds,
+    false, // includeEquipment
+    request.language
+  );
+
+  console.log(`[followup-incremental] Day ${request.dayNumber}: using ${exerciseCount} exercises`);
+
+  const finalSystemPrompt = followUpSingleDaySystemPrompt + exercisesPrompt;
+
+  // Build context about previous days for variety
+  const previousDaysContext = request.previousDays.map((day) => ({
+    day: day.day,
+    exerciseIds: day.exercises.map((e) => e.exerciseId).filter(Boolean),
+  }));
+
+  const userMessage = JSON.stringify({
+    dayToGenerate: request.dayNumber,
+    weeklyPlan: request.weeklyPlan,
+    previousDays: previousDaysContext,
+    targetAreas: request.userInfo.targetAreas,
+    cardioType: request.userInfo.cardioType,
+    cardioEnvironment: request.userInfo.cardioEnvironment,
+    workoutDuration: request.userInfo.workoutDuration,
+    diagnosisData: request.diagnosisData,
+    programFeedback: request.feedback,
+    userInfo: {
+      ...request.userInfo,
+      equipment: undefined,
+      exerciseEnvironments: undefined,
+    },
+    language: request.language,
+  });
+
+  const response = await openai.chat.completions.create({
+    model: PROGRAM_MODEL,
+    messages: [
+      { role: 'system', content: finalSystemPrompt },
+      { role: 'user', content: userMessage },
+    ],
+    response_format: { type: 'json_object' },
+  });
+
+  const rawContent = response.choices[0].message.content;
+  if (!rawContent) {
+    throw new Error(`No response content from OpenAI for follow-up day ${request.dayNumber}`);
+  }
+
+  console.log(`[followup-incremental] Day ${request.dayNumber} response length: ${rawContent.length}`);
+
+  const parsed = JSON.parse(rawContent) as FollowUpSingleDayResponse;
+  parsed.day = request.dayNumber; // Ensure day number matches request
+
+  return parsed;
+}
+
+// ----------------------
+// Helper: Create week document with follow-up metadata
+// ----------------------
+async function createFollowUpWeekWithMetadata(
+  userId: string,
+  programId: string,
+  metadata: FollowUpMetadataResponse,
+  targetAreas: string[],
+  createdAtIso: string
+): Promise<string> {
+  const programRef = adminDb
+    .collection('users')
+    .doc(userId)
+    .collection('programs')
+    .doc(programId);
+
+  // Create new week document in weeks subcollection
+  const weekRef = programRef.collection('weeks').doc();
+
+  // Week-specific data
+  const weekData = {
+    programOverview: metadata.programOverview,
+    summary: metadata.summary,
+    whatNotToDo: metadata.whatNotToDo,
+    afterTimeFrame: metadata.afterTimeFrame,
+    targetAreas: targetAreas,
+    bodyParts: targetAreas,
+    days: [],
+    generatingDay: 1,
+    createdAt: createdAtIso,
+  };
+
+  // Update program document with title and tracking fields
+  const batch = adminDb.batch();
+  batch.set(weekRef, weekData);
+  batch.update(programRef, {
+    title: metadata.title,
+    currentWeekId: weekRef.id,
+    generatingDay: 1,
+    updatedAt: new Date().toISOString(),
+  });
+  await batch.commit();
+
+  console.log(`[followup-incremental] Created week ${weekRef.id} with metadata for program ${programId}`);
+  return weekRef.id;
+}
+
+// ----------------------
+// Helper: Save a day to follow-up week
+// ----------------------
+async function saveFollowUpDayToWeek(
+  userId: string,
+  programId: string,
+  weekId: string,
+  day: FollowUpSingleDayResponse,
+  isLastDay: boolean,
+  diagnosisType?: string
+): Promise<void> {
+  const programRef = adminDb
+    .collection('users')
+    .doc(userId)
+    .collection('programs')
+    .doc(programId);
+
+  const weekRef = programRef.collection('weeks').doc(weekId);
+
+  const batch = adminDb.batch();
+
+  // Get current week data
+  const weekSnap = await weekRef.get();
+  const weekData = weekSnap.data() || {};
+  const existingDays: FollowUpSingleDayResponse[] = weekData.days || [];
+
+  // Add or replace the day
+  const dayIndex = existingDays.findIndex((d) => d.day === day.day);
+  if (dayIndex >= 0) {
+    existingDays[dayIndex] = day;
+  } else {
+    existingDays.push(day);
+  }
+  // Sort by day number
+  existingDays.sort((a, b) => a.day - b.day);
+
+  // Update week document
+  batch.update(weekRef, {
+    days: existingDays,
+    generatingDay: isLastDay ? null : day.day + 1,
+  });
+
+  // Update program document
+  const programUpdates: Record<string, unknown> = {
+    generatingDay: isLastDay ? null : day.day + 1,
+    updatedAt: new Date().toISOString(),
+  };
+
+  if (isLastDay) {
+    programUpdates.status = ProgramStatus.Done;
+    programUpdates.currentWeekId = null;
+
+    // Record the weekly generation limit now that program is complete
+    if (diagnosisType) {
+      await recordProgramGenerationAdmin(userId, diagnosisType as ProgramType);
+    }
+  }
+
+  batch.update(programRef, programUpdates);
+  await batch.commit();
+
+  console.log(`[followup-incremental] Saved day ${day.day} to week ${weekId} (lastDay: ${isLastDay})`);
+}
+
+// ----------------------
+// Main: Generate follow-up exercise program (incremental)
+// ----------------------
 export async function generateFollowUpExerciseProgram(context: {
   diagnosisData: DiagnosisAssistantResponse;
   userInfo: ExerciseQuestionnaireAnswers;
@@ -494,6 +797,8 @@ export async function generateFollowUpExerciseProgram(context: {
   language?: string;
   desiredCreatedAt?: string;
 }) {
+  const language = context.language || 'en';
+
   try {
     // If we have a userId and programId, update the program status to Generating
     if (context.userId && context.programId) {
@@ -508,192 +813,29 @@ export async function generateFollowUpExerciseProgram(context: {
           status: ProgramStatus.Generating,
           updatedAt: new Date().toISOString(),
         });
-        console.log('Updated program status to Generating');
+        console.log('[followup-incremental] Updated program status to Generating');
       } catch (error) {
-        console.error('Error updating program status to Generating:', error);
+        console.error('[followup-incremental] Error updating program status to Generating:', error);
         // Continue even if status update fails
       }
     }
 
-    // Prepare a clean list of removed exercise IDs for the prompt generation
-    const removedExerciseIdsForPrompt = (
-      context.feedback.removedExercises || []
-    )
-      .map((id) =>
-        typeof id === 'string'
-          ? id
-          : (id as any)?.id || (id as any)?.exerciseId || null
-      )
-      .filter(Boolean) as string[];
+    // Clean the feedback data
+    const cleanedFeedback = cleanProgramFeedback(context.feedback);
 
-    // Get exercises prompt from shared utility function, excluding removed exercises, using locale-specific exercises
-    const { exercisesPrompt, exerciseCount } = await prepareExercisesPrompt(
-      context.userInfo,
-      removedExerciseIdsForPrompt,
-      false, // includeEquipment
-      context.language || 'en' // language
-    );
-    throttledLog('debug', 'followup_ex_prompt', `count=${exerciseCount} locale=${context.language || 'en'}`);
-
-    // Import the follow-up system prompt
-    const systemPrompt = await import('../prompts/exerciseFollowUpPrompt');
-
-    // Debug-only: input sizes
+    // Log feedback for debugging
     throttledLog(
       'debug',
       'followup_feedback_sizes',
-      `pref=${context.feedback.preferredExercises?.length || 0} rem=${context.feedback.removedExercises?.length || 0} repl=${context.feedback.replacedExercises?.length || 0} add=${context.feedback.addedExercises?.length || 0}`
+      `pref=${cleanedFeedback.preferredExercises.length} rem=${cleanedFeedback.removedExercises.length} repl=${cleanedFeedback.replacedExercises.length} add=${cleanedFeedback.addedExercises.length}`
     );
 
-    // Only include necessary exercise information (id and name) for the main feedback object
-    const programFeedback = {
-      preferredExercises: (context.feedback.preferredExercises || [])
-        .map((id) =>
-          typeof id === 'string'
-            ? id
-            : (id as any)?.id || (id as any)?.exerciseId || null
-        )
-        .filter(Boolean),
-      removedExercises: (context.feedback.removedExercises || [])
-        .map((id) =>
-          typeof id === 'string'
-            ? id
-            : (id as any)?.id || (id as any)?.exerciseId || null
-        )
-        .filter(Boolean),
-      replacedExercises: (context.feedback.replacedExercises || [])
-        .map((id) =>
-          typeof id === 'string'
-            ? id
-            : (id as any)?.id || (id as any)?.exerciseId || null
-        )
-        .filter(Boolean),
-      addedExercises: (context.feedback.addedExercises || []).map((ex) => ({
-        id: ex.id || ex.exerciseId,
-        name: ex.name,
-      })),
-    };
+    console.log('[followup-incremental] Program feedback details:');
+    console.log(`  Preferred exercises (${cleanedFeedback.preferredExercises.length}):`, cleanedFeedback.preferredExercises);
+    console.log(`  Removed exercises (${cleanedFeedback.removedExercises.length}):`, cleanedFeedback.removedExercises);
+    console.log(`  Replaced exercises (${cleanedFeedback.replacedExercises.length}):`, cleanedFeedback.replacedExercises);
+    console.log(`  Added exercises (${cleanedFeedback.addedExercises.length}):`, cleanedFeedback.addedExercises);
 
-    // Log feedback for debugging
-    console.log('Program feedback details:');
-    console.log(
-      `Preferred exercises (${programFeedback.preferredExercises.length}):`
-    );
-    programFeedback.preferredExercises.forEach((id) =>
-      console.log(`  - ${id}`)
-    );
-
-    console.log(
-      `Removed exercises (${programFeedback.removedExercises.length}):`
-    );
-    programFeedback.removedExercises.forEach((id) => console.log(`  - ${id}`));
-
-    console.log(
-      `Replaced exercises (${programFeedback.replacedExercises.length}):`
-    );
-    programFeedback.replacedExercises.forEach((id) => console.log(`  - ${id}`));
-
-    console.log(`Added exercises (${programFeedback.addedExercises.length}):`);
-    programFeedback.addedExercises.forEach((ex) =>
-      console.log(`  - ${ex.id}: ${ex.name}`)
-    );
-
-    // Format the feedback for inclusion in the prompt
-    const formattedFeedback = `
-
-===================================================
-USER PROGRAM FEEDBACK (CRITICAL INSTRUCTIONS)
-===================================================
-
-** CRITICAL - YOU MUST FOLLOW THESE INSTRUCTIONS: **
-
-PREFERRED EXERCISES (YOU MUST INCLUDE THESE):
-${
-  programFeedback.preferredExercises.length > 0
-    ? programFeedback.preferredExercises.map((id) => `- ${id}`).join('\n')
-    : '- None'
-}
-
-REMOVED EXERCISES (YOU MUST NOT INCLUDE THESE):
-${
-  programFeedback.removedExercises.length > 0
-    ? programFeedback.removedExercises.map((id) => `- ${id}`).join('\n')
-    : '- None'
-}
-
-REPLACED EXERCISES (YOU MUST NOT INCLUDE THESE):
-${
-  programFeedback.replacedExercises.length > 0
-    ? programFeedback.replacedExercises.map((id) => `- ${id}`).join('\n')
-    : '- None'
-}
-
-ADDED EXERCISES (YOU MUST INCLUDE THESE):
-${
-  programFeedback.addedExercises.length > 0
-    ? programFeedback.addedExercises
-        .map((ex) => `- ${ex.id}: ${ex.name}`)
-        .join('\n')
-    : '- None'
-}
-
-===================================================
-FAILURE TO FOLLOW THE ABOVE INSTRUCTIONS EXACTLY WILL RESULT IN POOR USER EXPERIENCE
-===================================================
-
-`;
-
-    // Get final system prompt with feedback and exercises appended
-    const finalSystemPrompt =
-      systemPrompt.programFollowUpSystemPrompt +
-      formattedFeedback +
-      exercisesPrompt;
-
-    // Debug-only: prompt sizes
-    throttledLog('debug', 'followup_prompt_lengths', `sys=${systemPrompt.programFollowUpSystemPrompt.length} fb=${formattedFeedback.length} ex=${exercisesPrompt.length}`);
-    throttledLog('debug', 'followup_prompt_total', `chars=${finalSystemPrompt.length}`);
-
-    // Transform context into a valid user message payload
-    const userMessage = JSON.stringify({
-      diagnosisData: context.diagnosisData,
-      userInfo: {
-        ...context.userInfo,
-        // Remove equipment and exerciseEnvironments from userInfo
-        equipment: undefined,
-        exerciseEnvironments: undefined,
-      },
-      currentDay: new Date().getDay(),
-      previousProgram: context.previousProgram,
-      language: context.language || 'en', // Default to English if not specified
-      programFeedback: programFeedback, // Use the explicitly provided feedback
-    });
-
-    // Call the OpenAI chat completion API
-    const response = await openai.chat.completions.create({
-      model: FOLLOWUP_MODEL,
-      messages: [
-        {
-          role: 'system',
-          content: finalSystemPrompt,
-        },
-        {
-          role: 'user',
-          content: userMessage,
-        },
-      ],
-      response_format: { type: 'json_object' },
-    });
-
-    // Extract the content from the response
-    const rawContent = response.choices[0].message.content;
-    if (!rawContent) {
-      throw new Error('No response content from chat completion');
-    }
-
-    throttledLog('debug', 'followup_resp', `len=${rawContent.length}`);
-
-    // Parse the response as JSON
-    let program: ExerciseProgram;
     // Determine the correct start date for the follow-up program (always non-past)
     const nextProgramDate = (() => {
       if (context.desiredCreatedAt) {
@@ -710,7 +852,7 @@ FAILURE TO FOLLOW THE ABOVE INSTRUCTIONS EXACTLY WILL RESULT IN POOR USER EXPERI
       return currentWeekStart;
     })();
 
-    // Convert to UTC Monday 00:00 immediately so it can be reused later in the function
+    // Convert to UTC Monday 00:00
     const nextProgramDateUTC = new Date(
       Date.UTC(
         nextProgramDate.getFullYear(),
@@ -718,135 +860,115 @@ FAILURE TO FOLLOW THE ABOVE INSTRUCTIONS EXACTLY WILL RESULT IN POOR USER EXPERI
         nextProgramDate.getDate()
       )
     );
+    const createdAtIso = nextProgramDateUTC.toISOString();
 
-    try {
-      program = JSON.parse(rawContent) as ExerciseProgram;
+    // ========================================
+    // STEP 1: Generate metadata + weeklyPlan
+    // ========================================
+    console.log('[followup-incremental] Step 1: Generating metadata...');
+    const metadata = await generateFollowUpMetadata({
+      diagnosisData: context.diagnosisData,
+      userInfo: context.userInfo,
+      feedback: cleanedFeedback,
+      previousProgram: context.previousProgram,
+      language,
+    });
 
-      // Add createdAt timestamp to the program
-      program.createdAt = nextProgramDateUTC;
-
-      // Log extracted exercises from the response for verification
-      console.log(
-        '\n----- EXERCISE VALIDATION (CHECKING FEEDBACK COMPLIANCE) -----'
-      );
-
-      // Collect all exercise IDs from the response
-      const includedExerciseIds = new Set<string>();
-      if (program.days && Array.isArray(program.days)) {
-        program.days.forEach((day) => {
-          if (!day.isRestDay && day.exercises && Array.isArray(day.exercises)) {
-            day.exercises.forEach((exercise) => {
-              if (exercise.exerciseId) {
-                includedExerciseIds.add(exercise.exerciseId);
-              }
-            });
-          }
-        });
-      }
-
-      // Check if preferred exercises are included
-      const preferredIncluded = programFeedback.preferredExercises.filter((id) => includedExerciseIds.has(id)).length;
-      const removedIncluded = programFeedback.removedExercises.filter((id) => includedExerciseIds.has(id)).length;
-      const replacedIncluded = programFeedback.replacedExercises.filter((id) => includedExerciseIds.has(id)).length;
-      const addedIncluded = programFeedback.addedExercises.filter((ex) => includedExerciseIds.has(ex.id)).length;
-      throttledLog('debug', 'followup_compliance', `prefIn=${preferredIncluded} remIn=${removedIncluded} replIn=${replacedIncluded} addIn=${addedIncluded}`);
-    } catch (parseError) {
-      console.error('JSON parse error:', parseError);
-      console.error(
-        'First 200 characters of raw response:',
-        rawContent.substring(0, 200)
-      );
-      throw new Error(
-        `Failed to parse response as JSON: ${parseError.message}`
-      );
-    }
-
-    // Add target areas to the response (type is now at UserProgram level)
-    program.targetAreas = context.userInfo.targetAreas;
-
-    // If we have a userId and programId, update the program document
+    // ========================================
+    // STEP 2: Create week document with metadata (if we have userId/programId)
+    // ========================================
+    let weekId: string | null = null;
     if (context.userId && context.programId) {
-      try {
-        const programRef = adminDb
-          .collection('users')
-          .doc(context.userId)
-          .collection('programs')
-          .doc(context.programId);
+      weekId = await createFollowUpWeekWithMetadata(
+        context.userId,
+        context.programId,
+        metadata,
+        context.userInfo.targetAreas || [],
+        createdAtIso
+      );
+    }
 
-        // Atomically add the new week document and mark the parent program as Done
-        const batch = adminDb.batch();
+    // ========================================
+    // STEP 3: Generate days 1-7, saving each immediately
+    // ========================================
+    console.log('[followup-incremental] Step 3: Generating days 1-7...');
+    const generatedDays: FollowUpSingleDayResponse[] = [];
 
-        // Extract fields that belong to UserProgram level vs weekly program level
-        const { timeFrame, title, days, ...programMetadata } = program as any;
+    for (let dayNum = 1; dayNum <= 7; dayNum++) {
+      console.log(`[followup-incremental] Generating day ${dayNum}...`);
 
-        // New week document reference (auto-ID)
-        const newWeekRef = adminDb
-          .collection('users')
-          .doc(context.userId)
-          .collection('programs')
-          .doc(context.programId)
-          .collection('programs')
-          .doc();
+      const dayResult = await generateFollowUpSingleDay({
+        dayNumber: dayNum,
+        diagnosisData: context.diagnosisData,
+        userInfo: context.userInfo,
+        feedback: cleanedFeedback,
+        previousDays: generatedDays,
+        weeklyPlan: metadata.weeklyPlan,
+        language,
+      });
 
-        // Save the weekly program data (days array and other program metadata)
-        // Use the same next Monday date for consistency
-        batch.set(newWeekRef, {
-          days: days || [],
-          ...programMetadata,
-          createdAt: nextProgramDateUTC.toISOString(),
-        });
+      generatedDays.push(dayResult);
 
-        // Update the parent document with UserProgram-level fields
-        const userProgramUpdates: any = {
-          status: ProgramStatus.Done,
-          updatedAt: new Date().toISOString(),
-        };
-
-        // Add timeFrame and title if they exist in the LLM response
-        if (timeFrame) {
-          userProgramUpdates.timeFrame = timeFrame;
-        }
-        if (title) {
-          userProgramUpdates.title = title;
-        }
-
-        batch.update(programRef, userProgramUpdates);
-
-        await batch.commit();
-
-        console.log('Successfully updated program document');
-
-        // Record the weekly generation limit now that follow-up is complete
-        const programType = context.diagnosisData.programType;
-        if (programType) {
-          await recordProgramGenerationAdmin(context.userId, programType as ProgramType);
-        }
-      } catch (error) {
-        console.error('Error updating program document:', error);
-        // Update status to error if save fails
-        try {
-          if (context.userId && context.programId) {
-            const programRef = adminDb
-              .collection('users')
-              .doc(context.userId)
-              .collection('programs')
-              .doc(context.programId);
-
-            await programRef.update({
-              status: ProgramStatus.Error,
-              updatedAt: new Date().toISOString(),
-            });
-          }
-        } catch (statusError) {
-          console.error('Error updating program status to error:', statusError);
-        }
-        throw error;
+      // Save immediately to Firebase if we have credentials
+      const isLastDay = dayNum === 7;
+      if (context.userId && context.programId && weekId) {
+        await saveFollowUpDayToWeek(
+          context.userId,
+          context.programId,
+          weekId,
+          dayResult,
+          isLastDay,
+          context.diagnosisData?.programType
+        );
       }
     }
 
+    // ========================================
+    // STEP 4: Build and return the complete program
+    // ========================================
+    console.log('[followup-incremental] Step 4: Building final program...');
+
+    // Validate feedback compliance
+    const includedExerciseIds = new Set<string>();
+    generatedDays.forEach((day) => {
+      if (day.dayType !== 'rest' && day.exercises) {
+        day.exercises.forEach((ex) => {
+          if (ex.exerciseId) includedExerciseIds.add(ex.exerciseId);
+        });
+      }
+    });
+
+    const preferredIncluded = cleanedFeedback.preferredExercises.filter((id) => includedExerciseIds.has(id)).length;
+    const removedIncluded = cleanedFeedback.removedExercises.filter((id) => includedExerciseIds.has(id)).length;
+    const addedIncluded = cleanedFeedback.addedExercises.filter((ex) => includedExerciseIds.has(ex.id)).length;
+    
+    console.log('[followup-incremental] Feedback compliance:', {
+      preferredIncluded: `${preferredIncluded}/${cleanedFeedback.preferredExercises.length}`,
+      removedIncluded: `${removedIncluded} (should be 0)`,
+      addedIncluded: `${addedIncluded}/${cleanedFeedback.addedExercises.length}`,
+    });
+
+    // Construct the final program object
+    // Note: The days contain LLM-generated exercise references (exerciseId only).
+    // Full exercise data (name, description, etc.) is populated on the client side.
+    const program: ExerciseProgram = {
+      title: metadata.title,
+      programOverview: metadata.programOverview,
+      summary: metadata.summary,
+      whatNotToDo: metadata.whatNotToDo,
+      afterTimeFrame: metadata.afterTimeFrame,
+      targetAreas: context.userInfo.targetAreas || [],
+      bodyParts: context.userInfo.targetAreas || [],
+      timeFrameExplanation: '', // Not used in follow-up programs
+      days: generatedDays as unknown as ExerciseProgram['days'],
+      createdAt: nextProgramDateUTC,
+    };
+
+    console.log('[followup-incremental] Successfully generated follow-up program');
     return program;
+
   } catch (error) {
-    console.error('Error generating follow-up exercise program:', error);
+    console.error('[followup-incremental] Error generating follow-up exercise program:', error);
     // If we have a userId and programId, update the status to error
     if (context.userId && context.programId) {
       try {
@@ -861,7 +983,7 @@ FAILURE TO FOLLOW THE ABOVE INSTRUCTIONS EXACTLY WILL RESULT IN POOR USER EXPERI
           updatedAt: new Date().toISOString(),
         });
       } catch (statusError) {
-        console.error('Error updating program status to error:', statusError);
+        console.error('[followup-incremental] Error updating program status to error:', statusError);
       }
     }
     throw new Error('Failed to generate follow-up exercise program');

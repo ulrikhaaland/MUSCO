@@ -376,35 +376,6 @@ export default function PrivacyPage() {
   return (
     <div className="bg-gray-900 flex flex-col min-h-screen">
       <NavigationMenu mobileTitle={t('privacy.title')} />
-      <div className="py-3 px-4 flex items-center justify-between">
-        {/* Back button */}
-        <button
-          onClick={() => router.back()}
-          className="flex items-center text-gray-400 hover:text-white transition-colors duration-200"
-        >
-          <svg
-            className="w-5 h-5"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M10 19l-7-7m0 0l7-7m-7 7h18"
-            />
-          </svg>
-          <span className="ml-2">{t('privacy.backButton')}</span>
-        </button>
-        
-        <div className="flex flex-col items-center">
-          <h1 className="text-app-title text-center">{t('privacy.title')}</h1>
-        </div>
-        
-        {/* Empty spacer to balance the title */}
-        <div className="w-10"></div>
-      </div>
 
       <div className="flex-1">
         <div className="max-w-md mx-auto px-4 pt-6">

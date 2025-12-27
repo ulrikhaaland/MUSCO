@@ -2,14 +2,116 @@
 
 import { useState, Suspense, useEffect, useRef } from 'react';
 import { useUser } from '@/app/context/UserContext';
-import { ProgramStatus } from '@/app/types/program';
+import { ProgramStatus, detectBodyRegion, ProgramDay, getDayType } from '@/app/types/program';
 import { useAuth } from '@/app/context/AuthContext';
 import ConfirmationDialog from '@/app/components/ui/ConfirmationDialog';
+import { Chip } from '@/app/components/ui/Chip';
 import { format } from 'date-fns';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from '@/app/i18n/TranslationContext';
 import { nb, enUS } from 'date-fns/locale';
 import { NavigationMenu } from '@/app/components/ui/NavigationMenu';
+import { ProgramType } from '@shared/types';
+
+// Helper to get border color class based on program type
+function getBorderColorClass(type: ProgramType | string): string {
+  switch (type) {
+    case ProgramType.Exercise:
+    case 'exercise':
+      return 'border-l-indigo-500';
+    case ProgramType.Recovery:
+    case 'recovery':
+      return 'border-l-amber-500';
+    case ProgramType.ExerciseAndRecovery:
+    case 'exercise_and_recovery':
+      return 'border-l-purple-500'; // Blend of indigo and amber
+    default:
+      return 'border-l-gray-500';
+  }
+}
+
+// Day types to display (excluding rest)
+type DisplayDayType = 'strength' | 'cardio' | 'recovery';
+
+// Extract day types from program days (excluding rest days)
+function extractDayTypes(days: ProgramDay[] | undefined): DisplayDayType[] {
+  if (!days || days.length === 0) return [];
+  
+  const types = new Set<DisplayDayType>();
+  
+  for (const day of days) {
+    const dayType = getDayType(day);
+    // Only include strength, cardio, and recovery (not rest)
+    if (dayType === 'strength' || dayType === 'cardio' || dayType === 'recovery') {
+      types.add(dayType);
+    }
+  }
+  
+  // Return in a consistent order: strength, cardio, recovery
+  const order: DisplayDayType[] = ['strength', 'cardio', 'recovery'];
+  return order.filter(type => types.has(type));
+}
+
+// Day type icons
+const dayTypeIcons: Record<DisplayDayType, React.ReactNode> = {
+  strength: (
+    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h4v12H4zM16 6h4v12h-4zM8 11h8v2H8z" />
+    </svg>
+  ),
+  cardio: (
+    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+    </svg>
+  ),
+  recovery: (
+    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+    </svg>
+  ),
+};
+
+// Map day type to Chip variant
+const dayTypeToVariant: Record<DisplayDayType, 'strength' | 'cardio' | 'recovery'> = {
+  strength: 'strength',
+  cardio: 'cardio',
+  recovery: 'recovery',
+};
+
+// Day type chips component - displays all day types found in the program using Chip
+function DayTypeChips({ days, t }: { days: ProgramDay[] | undefined; t: (key: string) => string }) {
+  const dayTypes = extractDayTypes(days);
+  
+  if (dayTypes.length === 0) return null;
+  
+  return (
+    <>
+      {dayTypes.map(type => (
+        <Chip key={type} variant={dayTypeToVariant[type]} size="sm" icon={dayTypeIcons[type]} iconPosition="left">
+          {t(`programs.dayType.${type}`)}
+        </Chip>
+      ))}
+    </>
+  );
+}
+
+// Duration chip component
+function DurationChip({ duration }: { duration: string | undefined }) {
+  if (!duration) return null;
+  
+  const clockIcon = (
+    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+  );
+  
+  return (
+    <Chip variant="subtle" size="sm" icon={clockIcon} iconPosition="left">
+      {duration}
+    </Chip>
+  );
+}
+
 
 function ProgramsContent() {
   const {
@@ -21,7 +123,6 @@ function ProgramsContent() {
   const { deleteProgram } = useAuth();
   const router = useRouter();
   const { t, locale } = useTranslation();
-  const [sortBy, setSortBy] = useState<'newest' | 'oldest'>('newest');
   const [filterType, setFilterType] = useState<'all' | 'exercise' | 'recovery'>(
     'all'
   );
@@ -100,18 +201,24 @@ function ProgramsContent() {
     (program) => !deletedPrograms.has(program.docId)
   );
 
-  // Sort programs by date
+  // Sort programs by updatedAt (newest first)
   const filteredAndSortedPrograms = [...remainingPrograms]
-    // Apply the type filter
+    // Apply the type filter (exercise_and_recovery shows under both exercise and recovery)
     .filter((program) => {
       if (filterType === 'all') return true;
+      if (filterType === 'exercise') {
+        return program.type === 'exercise' || program.type === 'exercise_and_recovery';
+      }
+      if (filterType === 'recovery') {
+        return program.type === 'recovery' || program.type === 'exercise_and_recovery';
+      }
       return program.type === filterType;
     })
-    // Then sort by createdAt (matches displayed date)
+    // Sort by updatedAt (newest first), fallback to createdAt
     .sort((a, b) => {
-      const aTime = new Date(a.createdAt).getTime();
-      const bTime = new Date(b.createdAt).getTime();
-      return sortBy === 'newest' ? bTime - aTime : aTime - bTime;
+      const aTime = new Date(a.updatedAt || a.createdAt).getTime();
+      const bTime = new Date(b.updatedAt || b.createdAt).getTime();
+      return bTime - aTime;
     });
 
   const handleProgramClick = (programIndex: number) => {
@@ -159,40 +266,48 @@ function ProgramsContent() {
       return t('programs.noPrograms.message');
     })();
     return (
-      <div className="h-full flex flex-col items-center justify-center p-8 text-white">
-        <h2 className="text-2xl font-semibold mb-4">
-          {t('programs.noPrograms')}
-        </h2>
-        <p className="text-gray-300 text-center max-w-md">{emptyText}</p>
-        <button
-          onClick={handleCreateNewProgram}
-          className="mt-8 px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition-colors duration-200"
-        >
-          {t('programs.createProgram')}
-        </button>
-
-        {/* Floating Action Button (visible even with no programs) */}
-        <button
-          onClick={handleCreateNewProgram}
-          className="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-indigo-600 text-white shadow-lg flex items-center justify-center hover:bg-indigo-500 transition-colors duration-200 z-50"
-          aria-label={t('programs.createProgram')}
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-8 w-8"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
+      <>
+        <div className="mx-auto max-w-6xl w-full h-full flex flex-col items-center justify-center p-8 text-white">
+          <h2 className="text-2xl font-semibold mb-4">
+            {t('programs.noPrograms')}
+          </h2>
+          <p className="text-gray-300 text-center max-w-md">{emptyText}</p>
+          <button
+            onClick={handleCreateNewProgram}
+            className="mt-8 px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition-colors duration-200"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 4v16m8-8H4"
-            />
-          </svg>
-        </button>
-      </div>
+            {t('programs.createProgram')}
+          </button>
+        </div>
+
+        {/* Floating Action Button (aligned with content bounds) */}
+        <div className="fixed bottom-6 left-0 right-0 pointer-events-none z-50">
+          <div className="mx-auto max-w-6xl px-4">
+            <div className="flex justify-end">
+              <button
+                onClick={handleCreateNewProgram}
+                className="w-14 h-14 rounded-full bg-indigo-600 text-white shadow-lg flex items-center justify-center hover:bg-indigo-500 transition-colors duration-200 pointer-events-auto"
+                aria-label={t('programs.createProgram')}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-8 w-8"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 4v16m8-8H4"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </>
     );
   }
 
@@ -215,11 +330,11 @@ function ProgramsContent() {
       return t('programs.noPrograms.message');
     })();
     return (
-      <div className="mx-auto max-w-6xl w-full h-full flex flex-col">
-        {/* Header containing title and buttons */}
-        <div className="bg-gray-900 px-4 pb-4 pt-6">
-          {/* Filter and Sorting buttons */}
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+      <>
+        <div className="mx-auto max-w-6xl w-full h-full flex flex-col">
+          {/* Header containing title and buttons */}
+          <div className="bg-gray-900 px-4 pb-4 pt-6">
+            {/* Filter buttons */}
             <div className="flex space-x-2">
               <button
                 onClick={() => setFilterType('all')}
@@ -252,67 +367,50 @@ function ProgramsContent() {
                 {t('programs.filter.recovery')}
               </button>
             </div>
+          </div>
 
-            <div className="flex space-x-2">
+          <div className="flex-1 flex items-center justify-center px-4 py-6">
+            <p className="text-gray-300 text-center">{emptyText}</p>
+          </div>
+        </div>
+
+        {/* Floating Action Button (aligned with content bounds) */}
+        <div className="fixed bottom-6 left-0 right-0 pointer-events-none z-50">
+          <div className="mx-auto max-w-6xl px-4">
+            <div className="flex justify-end">
               <button
-                onClick={() => setSortBy('newest')}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors duration-200 ${
-                  sortBy === 'newest'
-                    ? 'bg-indigo-600 text-white'
-                    : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white'
-                }`}
+                onClick={handleCreateNewProgram}
+                className="w-14 h-14 rounded-full bg-indigo-600 text-white shadow-lg flex items-center justify-center hover:bg-indigo-500 transition-colors duration-200 pointer-events-auto"
+                aria-label={t('programs.createProgram')}
               >
-                {t('programs.sort.newest')}
-              </button>
-              <button
-                onClick={() => setSortBy('oldest')}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors duration-200 ${
-                  sortBy === 'oldest'
-                    ? 'bg-indigo-600 text-white'
-                    : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white'
-                }`}
-              >
-                {t('programs.sort.oldest')}
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-8 w-8"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 4v16m8-8H4"
+                  />
+                </svg>
               </button>
             </div>
           </div>
         </div>
-
-        <div className="flex-1 flex items-center justify-center px-4 py-6">
-          <p className="text-gray-300 text-center">{emptyText}</p>
-        </div>
-
-        {/* Floating Action Button (also visible for filtered-empty state) */}
-        <button
-          onClick={handleCreateNewProgram}
-          className="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-indigo-600 text-white shadow-lg flex items-center justify-center hover:bg-indigo-500 transition-colors duration-200 z-50"
-          aria-label={t('programs.createProgram')}
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-8 w-8"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 4v16m8-8H4"
-            />
-          </svg>
-        </button>
-      </div>
+      </>
     );
   }
 
   return (
-    <div className="mx-auto max-w-6xl w-full h-full flex flex-col">
-      {/* Header containing title and buttons */}
-      <div className="bg-gray-900 px-4 pb-4 pt-6">
-        {/* Filter and Sorting buttons */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+    <>
+      <div className="mx-auto max-w-6xl w-full h-full flex flex-col">
+        {/* Header containing title and buttons */}
+        <div className="bg-gray-900 px-4 pb-4 pt-6">
+          {/* Filter buttons */}
           <div className="flex space-x-2">
             <button
               onClick={() => setFilterType('all')}
@@ -345,31 +443,7 @@ function ProgramsContent() {
               {t('programs.filter.recovery')}
             </button>
           </div>
-
-          <div className="flex space-x-2">
-            <button
-              onClick={() => setSortBy('newest')}
-              className={`px-4 py-2 rounded-lg font-medium transition-colors duration-200 ${
-                sortBy === 'newest'
-                  ? 'bg-indigo-600 text-white'
-                  : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white'
-              }`}
-            >
-              {t('programs.sort.newest')}
-            </button>
-            <button
-              onClick={() => setSortBy('oldest')}
-              className={`px-4 py-2 rounded-lg font-medium transition-colors duration-200 ${
-                sortBy === 'oldest'
-                  ? 'bg-indigo-600 text-white'
-                  : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white'
-              }`}
-            >
-              {t('programs.sort.oldest')}
-            </button>
-          </div>
         </div>
-      </div>
 
       {/* Program list */}
       <div className="flex-1 px-4 py-6">
@@ -382,45 +456,32 @@ function ProgramsContent() {
               onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') router.push('/program');
               }}
-              className="relative bg-gray-800/50 rounded-xl overflow-hidden ring-1 ring-gray-700/50 transition-colors duration-200 hover:bg-gray-700/50 cursor-pointer p-5 flex flex-col h-full"
+              className="relative bg-gray-800/50 rounded-xl overflow-hidden ring-1 ring-gray-700/50 transition-colors duration-200 hover:bg-gray-700/50 cursor-pointer border-l-4 border-l-indigo-500"
             >
-              {/* Title */}
-              <div className="flex justify-between items-start mb-3">
-                <div className="shimmer h-6 w-48 bg-gray-700 rounded" />
-                <div className="w-10" />
-              </div>
-
-              {/* Divider */}
-              <div className="border-t border-gray-700/50 my-3" />
-
-              {/* Key Program Statistics (match layout of real card) */}
-              <div className="flex justify-between items-center mb-4">
-                {Array.from({ length: 3 }).map((_, i) => (
-                  <div key={i} className="text-center w-1/3">
-                    <div className="shimmer h-6 w-6 mx-auto bg-gray-700 rounded mb-2" />
-                    <div className="shimmer h-3 w-16 mx-auto bg-gray-700 rounded" />
-                  </div>
-                ))}
-              </div>
-
-              {/* Target areas placeholder */}
-              <div className="mb-3">
-                <div className="shimmer h-3 w-20 bg-gray-700 rounded mb-1" />
-                <div className="flex flex-wrap gap-1">
-                  <div className="shimmer h-5 w-16 bg-gray-700 rounded-full" />
-                  <div className="shimmer h-5 w-20 bg-gray-700 rounded-full" />
-                  <div className="shimmer h-5 w-16 bg-gray-700 rounded-full" />
-                  <div className="shimmer h-5 w-12 bg-gray-700 rounded-full" />
-                </div>
-              </div>
-
-              {/* Footer (Created date and right actions) */}
-              <div className="pt-3 mt-auto flex justify-between items-center">
-                <div className="shimmer h-3 w-40 bg-gray-700 rounded" />
-                <div className="flex items-center space-x-3">
+              <div className="p-4">
+                {/* Title row with delete placeholder */}
+                <div className="flex justify-between items-center mb-3">
+                  <div className="shimmer h-5 w-40 bg-gray-700 rounded" />
                   <div className="shimmer h-4 w-4 bg-gray-700 rounded" />
-                  <div className="shimmer w-10 h-5 bg-gray-700 rounded-full" />
                 </div>
+
+                {/* Divider */}
+                <div className="border-t border-gray-700/50 my-3" />
+
+                {/* Modality and duration chips */}
+                <div className="flex flex-wrap items-center gap-2 mb-3">
+                  <div className="shimmer h-6 w-20 bg-gray-700 rounded-full" />
+                  <div className="shimmer h-6 w-24 bg-gray-700 rounded-full" />
+                </div>
+
+                {/* Divider */}
+                <div className="border-t border-gray-700/50 my-3" />
+
+                {/* Target areas text */}
+                <div className="shimmer h-3 w-48 bg-gray-700 rounded mb-3" />
+
+                {/* Created date */}
+                <div className="shimmer h-3 w-32 bg-gray-700 rounded" />
               </div>
 
               <style jsx>{`
@@ -456,185 +517,136 @@ function ProgramsContent() {
               (p) => p.docId === program.docId
             );
 
-            // Get the first exercise program from the list
-            const exerciseProgram = program.programs[0];
+            // Get the most recent week's program (last in the array)
+            const exerciseProgram = program.programs[program.programs.length - 1] || program.programs[0];
+            
+            // Get workout duration
+            const duration = program.questionnaire?.workoutDuration;
+            
+            // Get the days from the program for day type analysis
+            const programDays = exerciseProgram?.days;
+            
+            // Format target areas - detect body region or show individual parts
+            const targetAreas = exerciseProgram?.targetAreas || [];
+            const bodyRegion = detectBodyRegion(targetAreas);
+            
+            // Get display text based on body region
+            const getTargetAreasDisplay = (): { text: string; isRegion: boolean } => {
+              switch (bodyRegion) {
+                case 'fullBody':
+                  return { text: t('profile.bodyRegions.full_body'), isRegion: true };
+                case 'upperBody':
+                  return { text: t('profile.bodyRegions.upper_body'), isRegion: true };
+                case 'lowerBody':
+                  return { text: t('profile.bodyRegions.lower_body'), isRegion: true };
+                default:
+                  // Custom selection - show individual parts
+                  const displayedAreas = targetAreas.slice(0, 3).map(area => 
+                    t(`program.bodyPart.${area.toLowerCase().replace(/\s+/g, '_')}`)
+                  );
+                  const remainingCount = targetAreas.length - 3;
+                  const text = displayedAreas.join(' • ') + 
+                    (remainingCount > 0 ? ` +${remainingCount}` : '');
+                  return { text, isRegion: false };
+              }
+            };
+            
+            const targetAreasDisplay = getTargetAreasDisplay();
 
             return (
               <div
                 key={originalIndex}
                 onClick={() => handleProgramClick(originalIndex)}
-                className="relative bg-gray-800/50 rounded-xl overflow-hidden ring-1 ring-gray-700/50 transition-colors duration-200 hover:bg-gray-700/50 cursor-pointer group flex flex-col"
+                className={`relative rounded-xl overflow-hidden ring-1 ring-gray-700/50 transition-all duration-200 hover:ring-gray-600/50 hover:translate-y-[-1px] cursor-pointer border-l-4 bg-gray-800/50 ${getBorderColorClass(program.type)}`}
               >
-                <div className="p-5 flex flex-col h-full">
-                  {/* Program title and type */}
-                  <div className="flex justify-between items-start mb-3">
-                    <h2 className="text-xl font-medium text-white truncate pr-2">
+                <div className="p-4">
+                  {/* Title row with delete button */}
+                  <div className="flex justify-between items-center mb-3">
+                    <h2 className="text-lg font-medium text-white truncate pr-3 flex-1">
                       {program.title || t('programs.defaultTitle')}
                     </h2>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        handleDeleteProgram(program.docId);
+                      }}
+                      className="text-gray-500 hover:text-red-400 transition-colors duration-200 p-1 flex-shrink-0"
+                      aria-label={t('programs.deleteProgram')}
+                      title={t('programs.deleteProgram')}
+                    >
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                        />
+                      </svg>
+                    </button>
                   </div>
 
                   {/* Divider */}
-                  <div className="border-t border-gray-700/50 my-3"></div>
+                  <div className="border-t border-gray-700/30 my-3" />
 
-                  {/* Key Program Statistics */}
-                  <div className="flex justify-between items-center mb-4">
-                    <div className="text-center">
-                      <p className="text-xl font-semibold text-white">
-                        {program.programs.length}
-                      </p>
-                      <p className="text-xs text-gray-400">
-                        {t('programs.stats.weeks')}
-                      </p>
-                    </div>
-
-                    <div className="text-center">
-                      <p className="text-xl font-semibold text-white">
-                        {exerciseProgram.days?.reduce((total, day) => {
-                          return total + (day.isRestDay ? 0 : 1); // Count workout days
-                        }, 0) || 0}
-                      </p>
-                      <p className="text-xs text-gray-400">
-                        {t('programs.stats.exerciseDays')}
-                      </p>
-                    </div>
-
-                    <div className="text-center">
-                      <p className="text-xl font-semibold text-white">
-                        {exerciseProgram.days?.reduce((total, day) => {
-                          return total + (day.isRestDay ? 1 : 0); // Count rest days
-                        }, 0) || 0}
-                      </p>
-                      <p className="text-xs text-gray-400">
-                        {t('programs.stats.restDays')}
-                      </p>
-                    </div>
+                  {/* Day types and duration chips */}
+                  <div className="flex flex-wrap items-center gap-2 mb-3">
+                    <DayTypeChips days={programDays} t={t} />
+                    <DurationChip duration={duration} />
                   </div>
 
-                  {/* Target areas or cardio summary */}
-                  {exerciseProgram.targetAreas &&
-                  exerciseProgram.targetAreas.length > 0 ? (
-                    <div className="mb-3">
-                      <p className="text-xs text-gray-400 mb-1">
-                        {t('programs.targetAreas')}
-                      </p>
-                      <div className="flex flex-wrap gap-1">
-                        {exerciseProgram.targetAreas
-                          .slice(0, 3)
-                          .map((area, i) => (
-                            <span
-                              key={i}
-                              className="text-xs px-2 py-1 bg-gray-700/50 text-gray-300 rounded-full"
-                            >
-                              {t(
-                                `program.bodyPart.${area.toLowerCase().replace(/\s+/g, '_')}`
-                              )}
-                            </span>
-                          ))}
-                        {exerciseProgram.targetAreas.length > 3 && (
-                          <span className="text-xs px-2 py-1 bg-gray-700/50 text-gray-300 rounded-full">
-                            {t('programs.targetAreas.more').replace(
-                              '{count}',
-                              (
-                                exerciseProgram.targetAreas.length - 3
-                              ).toString()
-                            )}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="mb-3">
-                      <p className="text-xs text-gray-400 mb-1">Cardio</p>
-                      <div className="flex flex-wrap gap-1">
-                        {program.questionnaire?.cardioType && (
-                          <span className="text-xs px-2 py-1 bg-gray-700/50 text-gray-300 rounded-full">
-                            {t(
-                              `program.cardioType.${program.questionnaire.cardioType.toLowerCase()}`
-                            )}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  )}
+                  {/* Divider */}
+                  <div className="border-t border-gray-700/30 my-3" />
 
-                  {/* Creation date and toggle switch */}
-                  <div className="text-xs text-gray-400 pt-3 mt-auto flex justify-between items-center">
-                    <span>
-                      {t('programs.created')}{' '}
-                      {program.createdAt
-                        ? (() => {
-                            const formattedDate = format(
-                              new Date(program.createdAt),
-                              'MMM d, yyyy',
-                              { locale: dateLocale }
-                            );
-                            // Capitalize the first letter of the month
-                            return (
-                              formattedDate.charAt(0).toUpperCase() +
-                              formattedDate.slice(1)
-                            );
-                          })()
-                        : 'N/A'}
-                    </span>
+                  {/* Target areas as text */}
+                  {targetAreas.length > 0 ? (
+                    <p className="text-sm text-gray-400 mb-3 flex items-center gap-1.5">
+                      <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="9" strokeWidth={2} />
+                        <circle cx="12" cy="12" r="5" strokeWidth={2} />
+                        <circle cx="12" cy="12" r="1" fill="currentColor" />
+                        <path strokeLinecap="round" strokeWidth={2} d="M12 2v4M12 18v4M2 12h4M18 12h4" />
+                      </svg>
+                      {targetAreasDisplay.text}
+                    </p>
+                  ) : program.questionnaire?.cardioType ? (
+                    <p className="text-sm text-gray-400 mb-3 flex items-center gap-1.5">
+                      <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                      </svg>
+                      {t(`program.cardioType.${program.questionnaire.cardioType.toLowerCase()}`)}
+                    </p>
+                  ) : null}
 
-                    {/* Delete button and Toggle switch */}
-                    <div className="flex items-center space-x-3">
-                      {/* Delete button */}
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation(); // Prevent card click
-                          e.preventDefault();
-                          handleDeleteProgram(program.docId);
-                        }}
-                        className="text-red-400 hover:text-red-300 transition-colors duration-200 p-1"
-                        aria-label={t('programs.deleteProgram')}
-                        title={t('programs.deleteProgram')}
-                      >
-                        <svg
-                          className="w-4 h-4"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                          />
-                        </svg>
-                      </button>
-                    </div>
-                  </div>
+                  {/* Created date */}
+                  <p className="text-xs text-gray-500">
+                    {t('programs.created')}{' '}
+                    {program.createdAt
+                      ? (() => {
+                          const formattedDate = format(
+                            new Date(program.createdAt),
+                            'MMM d, yyyy',
+                            { locale: dateLocale }
+                          );
+                          return (
+                            formattedDate.charAt(0).toUpperCase() +
+                            formattedDate.slice(1)
+                          );
+                        })()
+                      : 'N/A'}
+                  </p>
                 </div>
               </div>
             );
           })}
         </div>
       </div>
-
-      {/* Floating Action Button */}
-      <button
-        onClick={handleCreateNewProgram}
-        className="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-indigo-600 text-white shadow-lg flex items-center justify-center hover:bg-indigo-500 transition-colors duration-200 z-50"
-        aria-label={t('programs.createProgram')}
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className="h-8 w-8"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M12 4v16m8-8H4"
-          />
-        </svg>
-      </button>
 
       {/* Delete Confirmation Dialog */}
       <ConfirmationDialog
@@ -648,6 +660,35 @@ function ProgramsContent() {
         confirmButtonStyle="danger"
       />
     </div>
+
+    {/* Floating Action Button (aligned with content bounds) */}
+    <div className="fixed bottom-6 left-0 right-0 pointer-events-none z-50">
+      <div className="mx-auto max-w-6xl px-4">
+        <div className="flex justify-end">
+          <button
+            onClick={handleCreateNewProgram}
+            className="w-14 h-14 rounded-full bg-indigo-600 text-white shadow-lg flex items-center justify-center hover:bg-indigo-500 transition-colors duration-200 pointer-events-auto"
+            aria-label={t('programs.createProgram')}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-8 w-8"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 4v16m8-8H4"
+              />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </>
   );
 }
 

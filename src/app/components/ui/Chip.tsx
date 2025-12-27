@@ -1,6 +1,6 @@
 import React, { ReactNode } from 'react';
 
-type ChipVariant = 'default' | 'active' | 'inactive' | 'warmup' | 'category' | 'subtle';
+type ChipVariant = 'default' | 'active' | 'inactive' | 'warmup' | 'category' | 'subtle' | 'cardio' | 'recovery' | 'strength';
 type ChipSize = 'sm' | 'md' | 'lg';
 
 interface ChipProps {
@@ -22,6 +22,9 @@ const baseVariantStyles: Record<ChipVariant, string> = {
   warmup: "bg-amber-500/15 text-amber-300 border border-amber-500/40",
   category: "bg-gray-700/60 text-gray-300 border border-gray-600/50",
   subtle: "bg-gray-800/40 text-gray-400 border border-gray-700/40",
+  cardio: "bg-emerald-500/15 text-emerald-300 border border-emerald-500/30",
+  recovery: "bg-cyan-500/15 text-cyan-300 border border-cyan-500/30",
+  strength: "bg-violet-500/15 text-violet-300 border border-violet-500/30",
 };
 
 // Hover styles (applied only when onClick is provided)
@@ -32,6 +35,9 @@ const hoverStyles: Record<ChipVariant, string> = {
   warmup: "hover:bg-amber-500/25 hover:border-amber-400/50",
   category: "hover:bg-gray-600/70 hover:border-gray-500/60",
   subtle: "hover:bg-gray-700/50 hover:border-gray-600/50",
+  cardio: "hover:bg-emerald-500/25 hover:border-emerald-400/50",
+  recovery: "hover:bg-cyan-500/25 hover:border-cyan-400/50",
+  strength: "hover:bg-violet-500/25 hover:border-violet-400/50",
 };
 
 const sizeStyles: Record<ChipSize, string> = {

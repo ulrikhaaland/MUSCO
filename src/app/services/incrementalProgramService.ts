@@ -170,7 +170,7 @@ export function partialToDisplayProgram(partial: PartialProgram): ExerciseProgra
       allDays.push({
         day: dayNum,
         description: '',
-        isRestDay: false,
+        dayType: 'strength',
         exercises: [], // Empty - will show shimmer
         duration: 0,
       });
