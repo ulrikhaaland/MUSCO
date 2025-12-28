@@ -38,7 +38,7 @@ import {
   fadeInAnimation,
 } from './constants';
 import { normalizeBodyPartName as normalizeBodyPartNameUtil } from './utils';
-import { ProfileValueDisplay, ExpandedIcon, CollapsedIcon, ProfileDesktopLayout, ProfilePhotoCropper, PrivacyContent, PrivacyPolicyContent } from './components';
+import { ProfileValueDisplay, ExpandedIcon, CollapsedIcon, ProfileDesktopLayout, ProfilePhotoCropper, PrivacyContent, PrivacyPolicyContent, InfoBanner } from './components';
 import { useResponsiveProfile, SectionId } from './hooks/useResponsiveProfile';
 
 export default function ProfilePage() {
@@ -115,6 +115,11 @@ export default function ProfilePage() {
   const [medications, setMedications] = useState<string[]>([]);
   const [injuries, setInjuries] = useState<string[]>([]);
   const [familyHistory, setFamilyHistory] = useState<string[]>([]);
+  
+  // Custom notes for AI context
+  const [customNotes, setCustomNotes] = useState<string[]>([]);
+  const [editingNoteIndex, setEditingNoteIndex] = useState<number | null>(null);
+  const [noteInputValue, setNoteInputValue] = useState('');
 
   // Fitness profile
   const [fitnessLevel, setFitnessLevel] = useState('');
@@ -139,6 +144,7 @@ export default function ProfilePage() {
   const [medicalBackgroundExpanded, setMedicalBackgroundExpanded] =
     useState(false);
   const [fitnessProfileExpanded, setFitnessProfileExpanded] = useState(false);
+  const [customNotesExpanded, setCustomNotesExpanded] = useState(false);
   const [_goalsPreferencesExpanded, setGoalsPreferencesExpanded] =
     useState(false);
 
@@ -164,7 +170,7 @@ export default function ProfilePage() {
     if (savedActiveView === 'info' || savedActiveView === 'privacy' || savedActiveView === 'privacyPolicy') {
       setActiveView(savedActiveView);
     }
-    if (savedActiveSection && ['general', 'healthBasics', 'fitnessProfile', 'medicalBackground'].includes(savedActiveSection)) {
+    if (savedActiveSection && ['general', 'healthBasics', 'fitnessProfile', 'medicalBackground', 'customNotes'].includes(savedActiveSection)) {
       setActiveSection(savedActiveSection as SectionId);
     }
     setHasRestoredState(true);
@@ -305,6 +311,18 @@ export default function ProfilePage() {
             : profile.familyHistory
         );
       }
+      
+      if (profile.customNotes) {
+        if (Array.isArray(profile.customNotes)) {
+          setCustomNotes(profile.customNotes);
+        } else if (typeof profile.customNotes === 'string') {
+          // Migrate old string format to array
+          const notes = profile.customNotes as unknown as string;
+          if (notes.trim()) {
+            setCustomNotes([notes]);
+          }
+        }
+      }
 
       if (profile.fitnessLevel) setFitnessLevel(profile.fitnessLevel);
       if (profile.sleepPattern) setSleepPattern(profile.sleepPattern);
@@ -367,6 +385,16 @@ export default function ProfilePage() {
           if (userData.medications) setMedications(userData.medications);
           if (userData.injuries) setInjuries(userData.injuries);
           if (userData.familyHistory) setFamilyHistory(userData.familyHistory);
+          if (userData.customNotes) {
+            if (Array.isArray(userData.customNotes)) {
+              setCustomNotes(userData.customNotes);
+            } else if (typeof userData.customNotes === 'string') {
+              const notes = userData.customNotes as string;
+              if (notes.trim()) {
+                setCustomNotes([notes]);
+              }
+            }
+          }
           if (userData.fitnessLevel) setFitnessLevel(userData.fitnessLevel);
           if (userData.sleepPattern) setSleepPattern(userData.sleepPattern);
           if (userData.exerciseFrequency)
@@ -594,6 +622,18 @@ export default function ProfilePage() {
         }
       );
     });
+  };
+
+  // Save custom notes immediately to Firestore
+  const saveCustomNotes = async (notes: string[]) => {
+    if (!user) return;
+    try {
+      await updateUserProfile({
+        customNotes: notes.filter(note => note.trim()),
+      });
+    } catch (err) {
+      console.error('Failed to save custom notes:', err);
+    }
   };
 
   const handleUpdateProfile = async () => {
@@ -978,6 +1018,7 @@ export default function ProfilePage() {
         medications: medications.join(','),
         injuries: injuries.join(','),
         familyHistory: familyHistory.join(','),
+        customNotes: customNotes.filter(note => note.trim()),
         fitnessLevel: normalizeFitnessLevel(fitnessLevel),
         sleepPattern,
         exerciseFrequency: normalizeExerciseFrequency(exerciseFrequency),
@@ -1606,9 +1647,28 @@ export default function ProfilePage() {
             }}
             isInfoExpanded={isInfoExpanded}
             onInfoToggle={handleInfoToggle}
+            sectionCompletion={{
+              general: !!(displayName && phone && dateOfBirth),
+              healthBasics: !!(userHeight && weight && gender),
+              fitnessProfile: !!(fitnessLevel && exerciseFrequency && exerciseModalities.length > 0),
+              medicalBackground: !!(medicalConditions.length > 0 && medications.length > 0 && injuries.length > 0 && familyHistory.length > 0),
+              customNotes: customNotes.length > 0,
+            }}
           >
             {activeView === 'info' ? (
             <div ref={topRef} className={`${isEditing ? 'pb-32' : 'pb-8'}`}>
+            {/* Info banner explaining data usage */}
+            <div className="mb-6">
+              <InfoBanner
+                title={t('profile.dataUsageInfo.title')}
+                subtitle={t('profile.dataUsageInfo.subtitle')}
+                icon={
+                  <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                }
+              />
+            </div>
             <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-xl ring-1 ring-gray-700/50 p-6 mb-8">
               {/* Profile photo section hidden on desktop - it's in the sidebar */}
               <div className="hidden">
@@ -1724,33 +1784,8 @@ export default function ProfilePage() {
                             />
                           </svg>
                         </div>
-                        <h3 className="text-white font-medium flex items-center">
+                        <h3 className="text-white font-medium">
                           {t('profile.sections.general')}
-                          {displayName && phone && dateOfBirth ? (
-                            <svg
-                              className="ml-2 h-4 w-4 text-green-400"
-                              fill="currentColor"
-                              viewBox="0 0 20 20"
-                            >
-                              <path
-                                fillRule="evenodd"
-                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                clipRule="evenodd"
-                              />
-                            </svg>
-                          ) : (
-                            <svg
-                              className="ml-2 h-4 w-4 text-gray-500"
-                              fill="currentColor"
-                              viewBox="0 0 20 20"
-                            >
-                              <path
-                                fillRule="evenodd"
-                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                clipRule="evenodd"
-                              />
-                            </svg>
-                          )}
                         </h3>
                       </div>
                       <div className="flex items-center gap-2">
@@ -1965,33 +2000,8 @@ export default function ProfilePage() {
                             />
                           </svg>
                         </div>
-                        <h3 className="text-white font-medium flex items-center">
+                        <h3 className="text-white font-medium">
                           {t('profile.sections.healthBasics')}
-                          {userHeight && weight && gender ? (
-                            <svg
-                              className="ml-2 h-4 w-4 text-green-400"
-                              fill="currentColor"
-                              viewBox="0 0 20 20"
-                            >
-                              <path
-                                fillRule="evenodd"
-                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                clipRule="evenodd"
-                              />
-                            </svg>
-                          ) : (
-                            <svg
-                              className="ml-2 h-4 w-4 text-gray-500"
-                              fill="currentColor"
-                              viewBox="0 0 20 20"
-                            >
-                              <path
-                                fillRule="evenodd"
-                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                clipRule="evenodd"
-                              />
-                            </svg>
-                          )}
                         </h3>
                       </div>
                       <div className="flex items-center gap-2">
@@ -2171,34 +2181,8 @@ export default function ProfilePage() {
                             />
                           </svg>
                         </div>
-                        <h3 className="text-white font-medium flex items-center">
+                        <h3 className="text-white font-medium">
                           {t('profile.sections.fitnessProfile')}
-                          {fitnessLevel &&
-                            sleepPattern &&
-                            exerciseFrequency &&
-                            exerciseModalities.length > 0 &&
-                            targetAreas.length > 0 ? (
-                              <svg
-                                className="ml-2 h-4 w-4 text-green-400"
-                                fill="currentColor"
-                                viewBox="0 0 20 20"
-                              >
-                                <path
-                                  fillRule="evenodd"
-                                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                  clipRule="evenodd"
-                                />
-                              </svg>
-                            ) : (
-                              <svg
-                                className="ml-2 h-4 w-4 text-gray-500"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 20 20"
-                              >
-                                <circle cx="10" cy="10" r="7" strokeWidth="2" />
-                              </svg>
-                            )}
                         </h3>
                       </div>
                       <div className="flex items-center gap-2">
@@ -2768,33 +2752,8 @@ export default function ProfilePage() {
                             />
                           </svg>
                         </div>
-                        <h3 className="text-white font-medium flex items-center">
+                        <h3 className="text-white font-medium">
                           {t('profile.sections.medical')}
-                          {medicalConditions.length > 0 &&
-                            medications.length > 0 &&
-                            injuries.length > 0 &&
-                            familyHistory.length > 0 ? (
-                              <svg
-                                className="ml-2 h-4 w-4 text-green-400"
-                                fill="currentColor"
-                                viewBox="0 0 20 20"
-                              >
-                                <path
-                                  fillRule="evenodd"
-                                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                  clipRule="evenodd"
-                                />
-                              </svg>
-                            ) : (
-                              <svg
-                                className="ml-2 h-4 w-4 text-gray-500"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 20 20"
-                              >
-                                <circle cx="10" cy="10" r="7" strokeWidth="2" />
-                              </svg>
-                            )}
                         </h3>
                       </div>
                       <div className="flex items-center gap-2">
@@ -3382,6 +3341,196 @@ export default function ProfilePage() {
                   </div>
                   )}
                   {/* Medical Background Section END */}
+                  
+                  {/* Custom Notes Section START */}
+                  {activeSection === 'customNotes' && (
+                  <div>
+                    <div
+                      className={`flex justify-between items-center py-4 rounded-lg transition-colors ${!isDesktop ? 'cursor-pointer hover:bg-gray-700/30' : ''}`}
+                      onClick={() => !isDesktop && setCustomNotesExpanded(!customNotesExpanded)}
+                      data-section="customNotes"
+                    >
+                      <div className="flex items-center">
+                        <div className="mr-3 text-indigo-400">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-5 w-5"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                          >
+                            <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                          </svg>
+                        </div>
+                        <h3 className="text-white font-medium">
+                          {t('profile.customNotes.title')}
+                        </h3>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {/* Add note button - desktop only */}
+                        {isDesktop && editingNoteIndex === null && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setEditingNoteIndex(-1);
+                              setNoteInputValue('');
+                            }}
+                            className="p-3 rounded-full bg-indigo-600 text-white hover:bg-indigo-500 transition-colors"
+                            aria-label={t('profile.customNotes.addNote')}
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="h-5 w-5"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M12 4v16m8-8H4"
+                              />
+                            </svg>
+                          </button>
+                        )}
+                        {!isDesktop && (
+                          <div className="text-gray-400 hover:text-white">
+                            {customNotesExpanded ? (
+                              <ExpandedIcon />
+                            ) : (
+                              <CollapsedIcon />
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                  {/* Custom Notes content - always show on desktop, use expansion on mobile */}
+                  {(isDesktop || customNotesExpanded) && (
+                    <div className="space-y-4" style={sectionContentStyle}>
+                      <p className="text-sm text-gray-400 mb-4">
+                        {t('profile.customNotes.description')}
+                      </p>
+                      
+                      {/* List of existing notes */}
+                      <div className="space-y-3">
+                        {customNotes.map((note, index) => (
+                          <div key={index}>
+                            {editingNoteIndex === index ? (
+                              <div className="space-y-2">
+                                <textarea
+                                  value={noteInputValue}
+                                  onChange={(e) => setNoteInputValue(e.target.value)}
+                                  className="w-full bg-gray-700 border border-gray-600 rounded-lg py-3 px-4 text-white resize-none min-h-[100px]"
+                                  placeholder={t('profile.customNotes.placeholder')}
+                                  autoFocus
+                                />
+                                <div className="flex gap-2 justify-end">
+                                  <button
+                                    onClick={async () => {
+                                      if (noteInputValue.trim()) {
+                                        const newNotes = [...customNotes];
+                                        newNotes[index] = noteInputValue.trim();
+                                        setCustomNotes(newNotes);
+                                        await saveCustomNotes(newNotes);
+                                      }
+                                      setEditingNoteIndex(null);
+                                      setNoteInputValue('');
+                                    }}
+                                    className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 text-sm"
+                                  >
+                                    {t('common.save')}
+                                  </button>
+                                  <button
+                                    onClick={() => {
+                                      setEditingNoteIndex(null);
+                                      setNoteInputValue('');
+                                    }}
+                                    className="px-3 py-1.5 bg-gray-600 text-white rounded-lg hover:bg-gray-500 text-sm"
+                                  >
+                                    {t('common.cancel')}
+                                  </button>
+                                  <button
+                                    onClick={async () => {
+                                      const newNotes = customNotes.filter((_, i) => i !== index);
+                                      setCustomNotes(newNotes);
+                                      await saveCustomNotes(newNotes);
+                                      setEditingNoteIndex(null);
+                                      setNoteInputValue('');
+                                    }}
+                                    className="px-3 py-1.5 bg-red-600 text-white rounded-lg hover:bg-red-500 text-sm"
+                                  >
+                                    {t('common.delete')}
+                                  </button>
+                                </div>
+                              </div>
+                            ) : (
+                              <div
+                                onClick={() => {
+                                  setEditingNoteIndex(index);
+                                  setNoteInputValue(note);
+                                }}
+                                className="bg-gray-700/50 rounded-lg p-4 cursor-pointer hover:bg-gray-700 transition-colors group"
+                              >
+                                <p className="text-white whitespace-pre-wrap">{note}</p>
+                                <p className="text-xs text-gray-500 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                  {t('profile.customNotes.clickToEdit')}
+                                </p>
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                      
+                      {/* Add new note */}
+                      {editingNoteIndex === -1 ? (
+                        <div className="space-y-2">
+                          <textarea
+                            value={noteInputValue}
+                            onChange={(e) => setNoteInputValue(e.target.value)}
+                            className="w-full bg-gray-700 border border-gray-600 rounded-lg py-3 px-4 text-white resize-none min-h-[100px]"
+                            placeholder={t('profile.customNotes.placeholder')}
+                            autoFocus
+                          />
+                          <div className="flex gap-2 justify-end">
+                            <button
+                              onClick={async () => {
+                                if (noteInputValue.trim()) {
+                                  const newNotes = [...customNotes, noteInputValue.trim()];
+                                  setCustomNotes(newNotes);
+                                  await saveCustomNotes(newNotes);
+                                }
+                                setEditingNoteIndex(null);
+                                setNoteInputValue('');
+                              }}
+                              className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 text-sm"
+                            >
+                              {t('common.save')}
+                            </button>
+                            <button
+                              onClick={() => {
+                                setEditingNoteIndex(null);
+                                setNoteInputValue('');
+                              }}
+                              className="px-3 py-1.5 bg-gray-600 text-white rounded-lg hover:bg-gray-500 text-sm"
+                            >
+                              {t('common.cancel')}
+                            </button>
+                          </div>
+                        </div>
+                      ) : null}
+                      
+                      {/* Empty state */}
+                      {customNotes.length === 0 && editingNoteIndex !== -1 && (
+                        <p className="text-gray-500 italic text-center py-4">
+                          {t('profile.customNotes.emptyState')}
+                        </p>
+                      )}
+                    </div>
+                  )}
+                  </div>
+                  )}
+                  {/* Custom Notes Section END */}
                 </div>
                 {/* Profile Info Section END */}
               </div>
@@ -3497,6 +3646,18 @@ export default function ProfilePage() {
               ref={topRef}
               className={`max-w-md mx-auto px-4 pt-6 ${isEditing ? 'pb-32' : 'pb-24'}`}
             >
+              {/* Info banner explaining data usage */}
+              <div className="mb-6">
+                <InfoBanner
+                  title={t('profile.dataUsageInfo.title')}
+                  subtitle={t('profile.dataUsageInfo.subtitle')}
+                  icon={
+                    <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  }
+                />
+              </div>
               <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-xl ring-1 ring-gray-700/50 p-6 mb-8">
                 <div className="flex flex-col items-center mb-6 relative">
                   {/* Edit button - only visible when not in edit mode */}
@@ -3722,7 +3883,7 @@ export default function ProfilePage() {
                           </div>
                           <h3 className="text-white font-semibold flex items-center">
                             {t('profile.sections.fitnessProfile')}
-                            {fitnessLevel && sleepPattern && exerciseFrequency && exerciseModalities.length > 0 && targetAreas.length > 0 ? (
+                            {fitnessLevel && exerciseFrequency && exerciseModalities.length > 0 ? (
                               <svg className="ml-2 h-4 w-4 text-green-400" fill="currentColor" viewBox="0 0 20 20">
                                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                               </svg>
@@ -4161,6 +4322,170 @@ export default function ProfilePage() {
                             </p>
                           )}
                         </div>
+                      </div>
+                    )}
+                    
+                    {/* Custom Notes Section - Mobile */}
+                    <div className="border-t border-gray-700">
+                      <div
+                        className="flex justify-between items-center cursor-pointer hover:bg-gray-700/30 py-4 rounded-lg transition-colors"
+                        onClick={() => setCustomNotesExpanded(!customNotesExpanded)}
+                        data-section="customNotes"
+                      >
+                        <div className="flex items-center">
+                          <div className="mr-3 text-indigo-400">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                              <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                            </svg>
+                          </div>
+                          <h3 className="text-white font-semibold flex items-center">
+                            {t('profile.customNotes.title')}
+                            {customNotes.length > 0 ? (
+                              <svg className="ml-2 h-4 w-4 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                              </svg>
+                            ) : (
+                              <svg className="ml-2 h-4 w-4 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                              </svg>
+                            )}
+                          </h3>
+                        </div>
+                        <div className="text-gray-400 hover:text-white">
+                          {customNotesExpanded ? <ExpandedIcon /> : <CollapsedIcon />}
+                        </div>
+                      </div>
+                    </div>
+                    {customNotesExpanded && (
+                      <div className="space-y-4 pb-4" style={sectionContentStyle}>
+                        <p className="text-sm text-gray-400">
+                          {t('profile.customNotes.description')}
+                        </p>
+                        
+                        {/* List of existing notes */}
+                        <div className="space-y-3">
+                          {customNotes.map((note, index) => (
+                            <div key={index}>
+                              {editingNoteIndex === index ? (
+                                <div className="space-y-2">
+                                  <textarea
+                                    value={noteInputValue}
+                                    onChange={(e) => setNoteInputValue(e.target.value)}
+                                    className="w-full bg-gray-700 border border-gray-600 rounded-lg py-3 px-4 text-white resize-none min-h-[100px]"
+                                    placeholder={t('profile.customNotes.placeholder')}
+                                    autoFocus
+                                  />
+                                  <div className="flex gap-2 justify-end">
+                                    <button
+                                      onClick={async () => {
+                                        if (noteInputValue.trim()) {
+                                          const newNotes = [...customNotes];
+                                          newNotes[index] = noteInputValue.trim();
+                                          setCustomNotes(newNotes);
+                                          await saveCustomNotes(newNotes);
+                                        }
+                                        setEditingNoteIndex(null);
+                                        setNoteInputValue('');
+                                      }}
+                                      className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 text-sm"
+                                    >
+                                      {t('common.save')}
+                                    </button>
+                                    <button
+                                      onClick={() => {
+                                        setEditingNoteIndex(null);
+                                        setNoteInputValue('');
+                                      }}
+                                      className="px-3 py-1.5 bg-gray-600 text-white rounded-lg hover:bg-gray-500 text-sm"
+                                    >
+                                      {t('common.cancel')}
+                                    </button>
+                                    <button
+                                      onClick={async () => {
+                                        const newNotes = customNotes.filter((_, i) => i !== index);
+                                        setCustomNotes(newNotes);
+                                        await saveCustomNotes(newNotes);
+                                        setEditingNoteIndex(null);
+                                        setNoteInputValue('');
+                                      }}
+                                      className="px-3 py-1.5 bg-red-600 text-white rounded-lg hover:bg-red-500 text-sm"
+                                    >
+                                      {t('common.delete')}
+                                    </button>
+                                  </div>
+                                </div>
+                              ) : (
+                                <div
+                                  onClick={() => {
+                                    setEditingNoteIndex(index);
+                                    setNoteInputValue(note);
+                                  }}
+                                  className="bg-gray-700/50 rounded-lg p-4 cursor-pointer hover:bg-gray-700 transition-colors"
+                                >
+                                  <p className="text-white whitespace-pre-wrap">{note}</p>
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                        
+                        {/* Add new note */}
+                        {editingNoteIndex === -1 ? (
+                          <div className="space-y-2">
+                            <textarea
+                              value={noteInputValue}
+                              onChange={(e) => setNoteInputValue(e.target.value)}
+                              className="w-full bg-gray-700 border border-gray-600 rounded-lg py-3 px-4 text-white resize-none min-h-[100px]"
+                              placeholder={t('profile.customNotes.placeholder')}
+                              autoFocus
+                            />
+                            <div className="flex gap-2 justify-end">
+                              <button
+                                onClick={async () => {
+                                  if (noteInputValue.trim()) {
+                                    const newNotes = [...customNotes, noteInputValue.trim()];
+                                    setCustomNotes(newNotes);
+                                    await saveCustomNotes(newNotes);
+                                  }
+                                  setEditingNoteIndex(null);
+                                  setNoteInputValue('');
+                                }}
+                                className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 text-sm"
+                              >
+                                {t('common.save')}
+                              </button>
+                              <button
+                                onClick={() => {
+                                  setEditingNoteIndex(null);
+                                  setNoteInputValue('');
+                                }}
+                                className="px-3 py-1.5 bg-gray-600 text-white rounded-lg hover:bg-gray-500 text-sm"
+                              >
+                                {t('common.cancel')}
+                              </button>
+                            </div>
+                          </div>
+                        ) : editingNoteIndex === null && (
+                          <button
+                            onClick={() => {
+                              setEditingNoteIndex(-1);
+                              setNoteInputValue('');
+                            }}
+                            className="flex items-center gap-2 text-indigo-400 hover:text-indigo-300 transition-colors"
+                          >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                            </svg>
+                            <span>{t('profile.customNotes.addNote')}</span>
+                          </button>
+                        )}
+                        
+                        {/* Empty state */}
+                        {customNotes.length === 0 && editingNoteIndex !== -1 && (
+                          <p className="text-gray-500 italic text-center py-4">
+                            {t('profile.customNotes.emptyState')}
+                          </p>
+                        )}
                       </div>
                     )}
                   </div>

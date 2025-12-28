@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 // Tailwind md breakpoint
 const MD_BREAKPOINT = 768;
 
-export type SectionId = 'general' | 'healthBasics' | 'fitnessProfile' | 'medicalBackground';
+export type SectionId = 'general' | 'healthBasics' | 'fitnessProfile' | 'medicalBackground' | 'customNotes';
 
 export interface UseResponsiveProfileReturn {
   isDesktop: boolean;

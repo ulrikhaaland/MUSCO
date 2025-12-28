@@ -7,3 +7,4 @@ export { default as ProfileDesktopLayout } from './ProfileDesktopLayout';
 export { default as ProfilePhotoCropper } from './ProfilePhotoCropper';
 export { default as PrivacyContent } from './PrivacyContent';
 export { default as PrivacyPolicyContent } from './PrivacyPolicyContent';
+export { default as InfoBanner } from './InfoBanner';

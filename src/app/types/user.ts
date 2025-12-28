@@ -31,6 +31,9 @@ export interface UserProfile {
   dietaryPreferences?: string[];
   painfulAreas?: string[];
   
+  // Custom notes for AI context
+  customNotes?: string[];
+  
   // Metadata
   createdAt?: string;
   updatedAt?: string;

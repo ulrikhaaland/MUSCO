@@ -4,6 +4,14 @@ import { ReactNode } from 'react';
 import ProfileSidebar, { MainView } from './ProfileSidebar';
 import { SectionId } from '../hooks/useResponsiveProfile';
 
+interface SectionCompletion {
+  general: boolean;
+  healthBasics: boolean;
+  fitnessProfile: boolean;
+  medicalBackground: boolean;
+  customNotes: boolean;
+}
+
 interface ProfileDesktopLayoutProps {
   children: ReactNode;
   photoURL: string | null;
@@ -17,6 +25,7 @@ interface ProfileDesktopLayoutProps {
   onPhotoClick?: () => void;
   isInfoExpanded: boolean;
   onInfoToggle: () => void;
+  sectionCompletion: SectionCompletion;
 }
 
 /**
@@ -36,6 +45,7 @@ export default function ProfileDesktopLayout({
   onPhotoClick,
   isInfoExpanded,
   onInfoToggle,
+  sectionCompletion,
 }: ProfileDesktopLayoutProps) {
   // Show second column if Info is expanded, or Privacy/PrivacyPolicy view is active
   const showSecondColumn = isInfoExpanded || activeView === 'privacy' || activeView === 'privacyPolicy';
@@ -56,6 +66,7 @@ export default function ProfileDesktopLayout({
           onPhotoClick={onPhotoClick}
           isInfoExpanded={isInfoExpanded}
           onInfoToggle={onInfoToggle}
+          sectionCompletion={sectionCompletion}
         />
       </div>
 

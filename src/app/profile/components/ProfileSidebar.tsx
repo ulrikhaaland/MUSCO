@@ -5,6 +5,14 @@ import { SectionId } from '../hooks/useResponsiveProfile';
 
 export type MainView = 'info' | 'privacy' | 'privacyPolicy';
 
+interface SectionCompletion {
+  general: boolean;
+  healthBasics: boolean;
+  fitnessProfile: boolean;
+  medicalBackground: boolean;
+  customNotes: boolean;
+}
+
 interface ProfileSidebarProps {
   photoURL: string | null;
   email: string | undefined;
@@ -17,6 +25,7 @@ interface ProfileSidebarProps {
   onPhotoClick?: () => void;
   isInfoExpanded: boolean;
   onInfoToggle: () => void;
+  sectionCompletion: SectionCompletion;
 }
 
 const infoSubsections: { id: SectionId; labelKey: string; icon: React.ReactNode }[] = [
@@ -68,6 +77,15 @@ const infoSubsections: { id: SectionId; labelKey: string; icon: React.ReactNode 
       </svg>
     ),
   },
+  {
+    id: 'customNotes',
+    labelKey: 'profile.sections.customNotes',
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+      </svg>
+    ),
+  },
 ];
 
 export default function ProfileSidebar({
@@ -82,6 +100,7 @@ export default function ProfileSidebar({
   onPhotoClick,
   isInfoExpanded,
   onInfoToggle,
+  sectionCompletion,
 }: ProfileSidebarProps) {
   const { t } = useTranslation();
 
@@ -138,22 +157,38 @@ export default function ProfileSidebar({
           {/* Submenu */}
           {isInfoExpanded && (
             <div className="mt-1 ml-4 pl-4 border-l border-gray-700 space-y-1">
-              {infoSubsections.map((section) => (
-                <button
-                  key={section.id}
-                  onClick={() => onSectionClick(section.id)}
-                  className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-colors text-left text-sm ${
-                    activeSection === section.id
-                      ? 'bg-indigo-600/20 text-indigo-400'
-                      : 'text-gray-400 hover:bg-gray-700/50 hover:text-white'
-                  }`}
-                >
-                  <span className={activeSection === section.id ? 'text-indigo-400' : 'text-gray-500'}>
-                    {section.icon}
-                  </span>
-                  <span>{t(section.labelKey)}</span>
-                </button>
-              ))}
+              {infoSubsections.map((section) => {
+                const isComplete = sectionCompletion[section.id];
+                return (
+                  <button
+                    key={section.id}
+                    onClick={() => onSectionClick(section.id)}
+                    className={`w-full flex items-center justify-between px-3 py-2 rounded-lg transition-colors text-left text-sm ${
+                      activeSection === section.id
+                        ? 'bg-indigo-600/20 text-indigo-400'
+                        : 'text-gray-400 hover:bg-gray-700/50 hover:text-white'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className={activeSection === section.id ? 'text-indigo-400' : 'text-gray-500'}>
+                        {section.icon}
+                      </span>
+                      <span>{t(section.labelKey)}</span>
+                    </div>
+                    <svg
+                      className={`h-4 w-4 ${isComplete ? 'text-green-400' : 'text-gray-500'}`}
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </button>
+                );
+              })}
             </div>
           )}
         </div>

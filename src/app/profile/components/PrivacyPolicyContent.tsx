@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useTranslation } from '@/app/i18n/TranslationContext';
+import InfoBanner from './InfoBanner';
 
 interface SectionProps {
   id: string;
@@ -38,7 +39,7 @@ function Section({ id, title, icon, children, defaultOpen = false }: SectionProp
           isOpen ? 'max-h-[5000px] opacity-100 pb-4' : 'max-h-0 opacity-0'
         }`}
       >
-        <div className="prose prose-invert prose-sm max-w-none pl-9 pr-3">{children}</div>
+        <div className="max-w-none pl-9 pr-3 text-gray-300 text-sm space-y-3 [&_p]:text-gray-300 [&_h4]:text-white [&_h4]:font-medium [&_h4]:mt-4 [&_h4]:mb-2 [&_ul]:space-y-1 [&_ul]:my-2 [&_li]:flex [&_li]:items-start [&_li]:gap-2 [&_li]:before:content-['•'] [&_li]:before:text-indigo-400 [&_li]:before:font-bold [&_strong]:text-gray-200">{children}</div>
       </div>
     </div>
   );
@@ -165,24 +166,25 @@ export default function PrivacyPolicyContent() {
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      const headerOffset = 100; // Account for fixed navigation header
+      const elementPosition = element.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.scrollY - headerOffset;
+      
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth'
+      });
     }
   };
 
   return (
     <div className="space-y-6">
       {/* Header Card */}
-      <div className="bg-gradient-to-br from-indigo-900/40 to-gray-800/40 backdrop-blur-sm rounded-2xl shadow-xl ring-1 ring-indigo-500/20 p-6">
-        <div className="flex items-center justify-between flex-wrap gap-4">
-          <div>
-            <h2 className="text-2xl font-bold text-white mb-1">{t('privacyPolicy.header.title')}</h2>
-            <p className="text-gray-400">{t('privacyPolicy.header.subtitle')}</p>
-          </div>
-          <div className="bg-indigo-500/20 text-indigo-300 px-4 py-2 rounded-full text-sm font-medium ring-1 ring-indigo-500/30">
-            {t('privacyPolicy.header.lastUpdated')}
-          </div>
-        </div>
-      </div>
+      <InfoBanner
+        title={t('privacyPolicy.header.title')}
+        subtitle={t('privacyPolicy.header.subtitle')}
+        badge={t('privacyPolicy.header.lastUpdated')}
+      />
 
       {/* Table of Contents */}
       <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-xl ring-1 ring-gray-700/50 p-6">
