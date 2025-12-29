@@ -1013,7 +1013,7 @@ export async function generateFollowUpExerciseProgram(context: {
       context.previousProgram.days.forEach(d => {
         d.exercises?.forEach(e => {
           if (e.sets) allSets.push(e.sets);
-          if (e.reps) allReps.push(e.reps);
+          if (e.repetitions) allReps.push(e.repetitions);
           if (e.restBetweenSets) allRest.push(e.restBetweenSets);
         });
       });

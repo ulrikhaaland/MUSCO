@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { render, waitFor } from '@testing-library/react';
+import { render, waitFor, act } from '@testing-library/react';
 
 // Mock Firebase config BEFORE importing useChat to prevent Firebase initialization
 jest.mock('../../firebase/config', () => ({

@@ -28,8 +28,8 @@ if (typeof window === 'undefined') {
 
 describe('Explore Assistant - Exercise Integration', () => {
   // Skip in CI environments to avoid API costs
-  // CI can be 'true', true, '1', or '1' depending on the environment
-  const isCI = process.env.CI === 'true' || process.env.CI === true || process.env.CI === '1' || process.env.VERCEL === '1';
+  // CI can be 'true', '1', or truthy depending on the environment
+  const isCI = process.env.CI === 'true' || process.env.CI === '1' || process.env.VERCEL === '1';
   const shouldSkip = isCI || !process.env.OPENAI_API_KEY;
   
   if (!shouldSkip) {

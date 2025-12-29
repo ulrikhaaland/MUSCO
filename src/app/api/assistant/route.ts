@@ -402,7 +402,7 @@ export async function POST(request: Request) {
                   parser.processChunk(content);
                 },
                 model: PRE_FOLLOWUP_CHAT_MODEL,
-                reasoningEffort: 'low',
+                reasoningEffort: 'low', // Minimal reasoning for faster responses
               });
 
               await parser.complete();

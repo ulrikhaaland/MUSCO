@@ -181,7 +181,7 @@ describe('questionAugmentation', () => {
       const result = augmentQuestion(question);
       
       expect(result).not.toBe(question); // Different object reference
-      expect(question.generate).toBeUndefined(); // Original unchanged
+      expect((question as Record<string, unknown>).generate).toBeUndefined(); // Original unchanged
     });
   });
 

@@ -8,6 +8,7 @@ import { PreFollowupChat } from '@/app/components/ui/PreFollowupChat';
 import { useUser } from '@/app/context/UserContext';
 import { useAuth } from '@/app/context/AuthContext';
 import { submitProgramFeedback, WeeklyLimitReachedError } from '@/app/services/programFeedbackService';
+import { canGenerateProgram, getNextAllowedGenerationDate } from '@/app/services/programGenerationLimits';
 import { useTranslation } from '@/app/i18n';
 import { NavigationMenu } from '@/app/components/ui/NavigationMenu';
 import { WeeklyLimitModal } from '@/app/components/ui/WeeklyLimitModal';
@@ -72,30 +73,33 @@ function FeedbackPageContent() {
       return;
     }
 
-    try {
-      // Submit feedback and generate new program
-      const newProgramId = await submitProgramFeedback(
-        user.uid,
-        program,
-        diagnosisData,
-        answers,
-        feedback
-      );
-
-      console.log(t('exerciseProgram.feedback.success'), newProgramId);
-
-      // Redirect to refresh program view
-      generateFollowUpProgram();
-    } catch (error) {
-      if (error instanceof WeeklyLimitReachedError) {
-        setWeeklyLimitError({
-          programType: error.programType,
-          nextAllowedDate: error.nextAllowedDate,
-        });
-        return;
-      }
-      console.error(t('exerciseProgram.feedback.error.generating'), error);
+    // Check weekly limit FIRST (quick check before redirect)
+    const programType = diagnosisData?.programType || ProgramType.Exercise;
+    const allowed = await canGenerateProgram(user.uid, programType);
+    if (!allowed) {
+      const nextAllowedDate = await getNextAllowedGenerationDate(user.uid, programType);
+      setWeeklyLimitError({
+        programType,
+        nextAllowedDate: nextAllowedDate || new Date(),
+      });
+      return;
     }
+
+    // Redirect immediately to show loading state
+    generateFollowUpProgram();
+
+    // Submit feedback in background - Firestore snapshot listener will handle updates
+    submitProgramFeedback(
+      user.uid,
+      program,
+      diagnosisData,
+      answers,
+      feedback
+    ).then((newProgramId) => {
+      console.log(t('exerciseProgram.feedback.success'), newProgramId);
+    }).catch((error) => {
+      console.error(t('exerciseProgram.feedback.error.generating'), error);
+    });
   };
 
   // Update page title

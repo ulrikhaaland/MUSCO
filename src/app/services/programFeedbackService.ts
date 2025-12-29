@@ -7,6 +7,7 @@ import { DiagnosisAssistantResponse } from '@/app/types';
 import { ExerciseQuestionnaireAnswers, ProgramType } from '../../../shared/types';
 import { ProgramStatus, ExerciseProgram } from '@/app/types/program';
 import { ProgramFeedback } from '../components/ui/ProgramFeedbackQuestionnaire';
+import { PreFollowupFeedback } from '@/app/types/incremental-program';
 import { Locale } from '../i18n/translations';
 import { getSavedLocalePreference } from '../i18n/utils';
 import { getStartOfWeek, addDays } from '@/app/utils/dateutils';
@@ -45,7 +46,7 @@ export const submitProgramFeedback = async (
   currentProgram: ProgramWithFeedbackData,
   diagnosisData: DiagnosisAssistantResponse,
   exerciseQuestionnaireData: ExerciseQuestionnaireAnswers,
-  feedback: ProgramFeedback
+  feedback: ProgramFeedback | PreFollowupFeedback
 ): Promise<string> => {
   try {
     // Get program type for limit checking

@@ -5,7 +5,7 @@ import { ChatMessage, Question } from '@/app/types';
 import { Exercise } from '@/app/types/program';
 import { ExerciseProgram } from '@/app/types/program';
 import { DiagnosisAssistantResponse } from '@/app/types';
-import { ExerciseQuestionnaireAnswers } from '../../../shared/types';
+import { ExerciseQuestionnaireAnswers } from '../../../../shared/types';
 import { PreFollowupFeedback, PreFollowupStructuredUpdates, ExerciseIntensityFeedback } from '@/app/types/incremental-program';
 import { MessageWithExercises } from './MessageWithExercises';
 import { FollowUpQuestions } from './FollowUpQuestions';
@@ -155,6 +155,7 @@ export function PreFollowupChat({
         id: `user-${Date.now()}`,
         role: 'user',
         content: userMessage,
+        timestamp: new Date(),
       };
       updatedMessages = [...messages, userMsg];
       setMessages(updatedMessages);
@@ -166,6 +167,7 @@ export function PreFollowupChat({
       id: assistantMsgId,
       role: 'assistant',
       content: '',
+      timestamp: new Date(),
     };
     setMessages([...updatedMessages, placeholderMsg]);
 
