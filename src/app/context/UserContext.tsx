@@ -543,7 +543,8 @@ export function UserProvider({ children }: { children: ReactNode }) {
           // Preserve existing weeks and add the new generating week
           if (activeProgram && activeProgram.docId === generatingDoc.id && activeProgram.programs?.length > 0) {
             // This is a follow-up generation - keep existing weeks, update/add the new one
-            const existingWeeks = activeProgram.programs.filter(p => p.docId !== currentWeekId);
+            // Filter out: 1) shimmer weeks (no weekId), 2) the current generating week (to replace it)
+            const existingWeeks = activeProgram.programs.filter(p => p.weekId && p.weekId !== currentWeekId);
             const updatedPrograms = [...existingWeeks, generatingWeekProgram];
             
             setActiveProgram({
