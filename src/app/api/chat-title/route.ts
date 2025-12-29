@@ -38,9 +38,9 @@ export async function POST(req: NextRequest) {
     const question = input.firstQuestion.slice(0, 200);
     const response = input.firstResponse.slice(0, 500);
 
-    const completion = await client.chat.completions.create({
+    const completion = await (client.responses as any).create({
       model: TITLE_MODEL,
-      messages: [
+      input: [
         { role: 'system', content: SYSTEM_PROMPT },
         {
           role: 'user',
@@ -53,11 +53,10 @@ First response: ${response}
 Generate a unique, specific title:`,
         },
       ],
-      max_tokens: 30,
-      temperature: 0.7,
+      max_output_tokens: 30,
     });
 
-    const title = completion.choices[0]?.message?.content?.trim() || '';
+    const title = completion.output_text?.trim() || '';
     
     // Validate and clean up the title
     const cleanTitle = title

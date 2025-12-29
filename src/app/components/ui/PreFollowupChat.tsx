@@ -74,6 +74,7 @@ export function PreFollowupChat({
   const [isInitialized, setIsInitialized] = useState(false);
   const [inputMessage, setInputMessage] = useState('');
   const [conversationComplete, setConversationComplete] = useState(false);
+  const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
   
   // Accumulated feedback from conversation
   const [accumulatedFeedback, setAccumulatedFeedback] = useState<PreFollowupChatState['accumulatedFeedback']>({
@@ -476,6 +477,8 @@ export function PreFollowupChat({
                   onVideoClick={onVideoClick}
                   loadingVideoExercise={loadingVideoExercise}
                   className="text-base leading-relaxed"
+                  selectedExercise={selectedExercise}
+                  onExerciseSelect={setSelectedExercise}
                 />
               </div>
             ) : (

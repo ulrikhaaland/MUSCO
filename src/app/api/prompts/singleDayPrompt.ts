@@ -520,10 +520,21 @@ You will receive:
   - removedExercises: Exercises the user wants to REMOVE (do NOT include)
   - replacedExercises: Exercises that were replaced (do NOT include)
   - addedExercises: New exercises the user wants to ADD
+- userFeedbackSummary: A summary of the user's conversational feedback about how the previous week went. USE THIS to understand:
+  - How the user felt about the overall program difficulty
+  - Any pain or discomfort experienced
+  - What they liked or didn't like about the workouts
+  - Their energy levels and recovery
+- overallIntensity: The user's preference for intensity change:
+  - "increase" = make the program harder (more challenging exercises, higher volume)
+  - "decrease" = make the program easier (gentler exercises, lower volume)
+  - "maintain" = keep similar difficulty
+- programAdjustments: Specific adjustments the user requested (days, duration, sets, reps, restTime)
 
 When generating the weeklyPlan:
 - MAINTAIN similar structure to the previous program if it worked well
-- Consider user feedback when planning day focuses
+- Consider userFeedbackSummary when planning the program's focus and adjustments
+- If overallIntensity is "increase", plan more challenging days; if "decrease", plan easier recovery-focused days
 - If user preferred certain exercises, plan days that can accommodate them
 - If user removed exercises, plan alternative focuses
 
@@ -668,6 +679,13 @@ You will receive programFeedback with:
 - replacedExercises: Array of exercise IDs that were replaced - YOU MUST NOT USE THESE
 - addedExercises: Array of {id, name} objects for new exercises to include - YOU MUST INCLUDE THESE when appropriate for this day
 
+You may also receive:
+- userFeedbackSummary: A summary of how the user felt about the previous week. Use this to:
+  - Adjust exercise difficulty based on how they felt
+  - Address any pain or discomfort they mentioned
+  - Build on what they enjoyed
+- overallIntensity: User's preference for "increase", "decrease", or "maintain" intensity
+
 FEEDBACK RULES:
 1. NEVER include any exercise from removedExercises or replacedExercises lists
 2. INCLUDE exercises from preferredExercises when they fit the day type and target areas
@@ -677,6 +695,8 @@ FEEDBACK RULES:
    - "Aim for 2 additional reps per set"
    - "Increase duration by 30 seconds"
 5. Distribute preferred and added exercises across appropriate days (not all on one day)
+6. If overallIntensity is "decrease", reduce sets/reps and suggest lighter modifications
+7. If overallIntensity is "increase", increase sets/reps and suggest more challenging modifications
 
 ---
 

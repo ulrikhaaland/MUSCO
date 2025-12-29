@@ -154,17 +154,16 @@ async function generateMetadata(
 
   console.log(`[incremental] Generating metadata...`);
 
-  const response = await openai.chat.completions.create({
+  const response = await (openai.responses as any).create({
     model: PROGRAM_MODEL,
-    messages: [
+    input: [
       { role: 'system', content: programMetadataOnlyPrompt },
       { role: 'user', content: userMessage },
     ],
-    response_format: { type: 'json_object' },
-    reasoning_effort: 'minimal',
-  } as any);
+    text: { format: { type: 'json_object' } },
+  });
 
-  const rawContent = response.choices[0].message.content;
+  const rawContent = response.output_text;
   if (!rawContent) {
     throw new Error('No response content from OpenAI');
   }
@@ -219,17 +218,16 @@ async function generateSingleDay(
     language: request.language || 'en',
   });
 
-  const response = await openai.chat.completions.create({
+  const response = await (openai.responses as any).create({
     model: PROGRAM_MODEL,
-    messages: [
+    input: [
       { role: 'system', content: finalSystemPrompt },
       { role: 'user', content: userMessage },
     ],
-    response_format: { type: 'json_object' },
-    reasoning_effort: 'minimal',
-  } as any);
+    text: { format: { type: 'json_object' } },
+  });
 
-  const rawContent = response.choices[0].message.content;
+  const rawContent = response.output_text;
   if (!rawContent) {
     throw new Error('No response content from OpenAI');
   }

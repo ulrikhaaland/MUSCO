@@ -5,10 +5,24 @@ import { Question } from '@/app/types';
 import { useTranslation } from '@/app/i18n';
 
 /**
- * Strip {{Name}} markers from text for display (used in follow-up buttons)
+ * Strip {{Name}} body part markers from text for display
  */
 export function stripBodyPartMarkers(text: string): string {
   return text.replace(/\{\{([^}]+)\}\}/g, '$1');
+}
+
+/**
+ * Strip [[Name]] exercise markers from text for display
+ */
+export function stripExerciseMarkers(text: string): string {
+  return text.replace(/\[\[([^\]]+)\]\]/g, '$1');
+}
+
+/**
+ * Strip all markers (body parts and exercises) from text for display
+ */
+export function stripAllMarkers(text: string): string {
+  return stripExerciseMarkers(stripBodyPartMarkers(text));
 }
 
 /**
@@ -159,19 +173,19 @@ export function FollowUpQuestions({
               className={`${!question.title ? 'text-[#c8cbff]' : 'font-medium text-[#c8cbff]'}`}
             >
               {question.title
-                ? capitalizeFirst(stripBodyPartMarkers(question.title.toLowerCase()))
-                : stripBodyPartMarkers(question.question)}
+                ? capitalizeFirst(stripAllMarkers(question.title.toLowerCase()))
+                : stripAllMarkers(question.question)}
             </div>
             {question.meta && (
               <div className="text-sm text-[#c8cbff] opacity-75 mt-1">
-                {stripBodyPartMarkers(question.meta)}
+                {stripAllMarkers(question.meta)}
               </div>
             )}
             {/* Only show subtitle if it's meaningfully different from the title */}
             {question.title && !question.meta && !question.multiSelect && 
              (() => {
-               const titleLower = question.title.toLowerCase().replace(/[^a-zæøå0-9]/g, '');
-               const questionLower = question.question.toLowerCase().replace(/[^a-zæøå0-9]/g, '');
+               const titleLower = stripAllMarkers(question.title.toLowerCase()).replace(/[^a-zæøå0-9]/g, '');
+               const questionLower = stripAllMarkers(question.question.toLowerCase()).replace(/[^a-zæøå0-9]/g, '');
                // Hide if: same text, one contains the other, or >60% overlap
                const isSimilar = titleLower === questionLower ||
                  questionLower.includes(titleLower) ||
@@ -180,7 +194,7 @@ export function FollowUpQuestions({
                return !isSimilar;
              })() && (
               <div className="text-sm text-gray-400">
-                {stripBodyPartMarkers(question.question)}
+                {stripAllMarkers(question.question)}
               </div>
             )}
           </div>

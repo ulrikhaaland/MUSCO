@@ -270,7 +270,6 @@ export async function streamChatCompletion({
   onContent,
   options,
   model: modelOverride,
-  reasoningEffort,
 }: {
   threadId: string;
   messages: any[];
@@ -284,7 +283,6 @@ export async function streamChatCompletion({
     anonId?: string;
   };
   model?: string;
-  reasoningEffort?: 'low' | 'medium' | 'high';
 }) {
   try {
     void _threadId;
@@ -406,15 +404,8 @@ export async function streamChatCompletion({
     console.log('Last user message:', formattedMessages[formattedMessages.length - 1]?.content.substring(0, 200));
     console.log('═══════════════════════════════════════');
 
-    // Call OpenAI Responses API (streaming) with reasoning effort
-    // Use provided reasoningEffort, or default to 'minimal' for explore mode
-    const reasoning = reasoningEffort 
-      ? { effort: reasoningEffort } 
-      : (isExploreMode ? { effort: 'minimal' } : undefined);
-    
     const stream = await openai.responses.stream({
       model: selectedModel,
-      reasoning: reasoning as any,
       input: formattedMessages,
       max_output_tokens: CHAT_MAX_OUTPUT_TOKENS,
     } as any);
@@ -570,6 +561,11 @@ async function generateFollowUpMetadata(request: {
   feedback: CleanedProgramFeedback;
   previousProgram?: ExerciseProgram;
   language: string;
+  // Additional feedback from pre-followup chat
+  conversationalFeedback?: string;
+  feedbackSummary?: string;
+  overallIntensity?: 'increase' | 'maintain' | 'decrease';
+  programAdjustments?: ProgramAdjustments;
 }): Promise<FollowUpMetadataResponse> {
   const { followUpMetadataOnlyPrompt } = await import('../prompts/singleDayPrompt');
 
@@ -582,21 +578,25 @@ async function generateFollowUpMetadata(request: {
     },
     previousProgram: request.previousProgram,
     programFeedback: request.feedback,
+    // Include conversational feedback from pre-followup chat
+    userFeedbackSummary: request.feedbackSummary || request.conversationalFeedback,
+    overallIntensity: request.overallIntensity,
+    programAdjustments: request.programAdjustments,
     language: request.language,
   });
 
   console.log(`[followup-incremental] Generating metadata...`);
 
-  const response = await openai.chat.completions.create({
+  const response = await (openai.responses as any).create({
     model: PROGRAM_MODEL,
-    messages: [
+    input: [
       { role: 'system', content: followUpMetadataOnlyPrompt },
       { role: 'user', content: userMessage },
     ],
-    response_format: { type: 'json_object' },
+    text: { format: { type: 'json_object' } },
   });
 
-  const rawContent = response.choices[0].message.content;
+  const rawContent = response.output_text;
   if (!rawContent) {
     throw new Error('No response content from OpenAI for follow-up metadata');
   }
@@ -670,6 +670,9 @@ async function generateFollowUpSingleDay(request: {
     avgRest?: number;
     workoutDays?: number;
   };
+  // Additional feedback from pre-followup chat
+  feedbackSummary?: string;
+  overallIntensity?: 'increase' | 'maintain' | 'decrease';
 }): Promise<FollowUpSingleDayResponse> {
   const { followUpSingleDaySystemPrompt } = await import('../prompts/singleDayPrompt');
 
@@ -714,6 +717,9 @@ async function generateFollowUpSingleDay(request: {
     diagnosisData: request.diagnosisData,
     programFeedback: request.feedback,
     programAdjustments: adjustmentInstructions,
+    // Include conversational feedback from pre-followup chat
+    userFeedbackSummary: request.feedbackSummary,
+    overallIntensity: request.overallIntensity,
     userInfo: {
       ...request.userInfo,
       equipment: undefined,
@@ -722,16 +728,16 @@ async function generateFollowUpSingleDay(request: {
     language: request.language,
   });
 
-  const response = await openai.chat.completions.create({
+  const response = await (openai.responses as any).create({
     model: PROGRAM_MODEL,
-    messages: [
+    input: [
       { role: 'system', content: finalSystemPrompt },
       { role: 'user', content: userMessage },
     ],
-    response_format: { type: 'json_object' },
+    text: { format: { type: 'json_object' } },
   });
 
-  const rawContent = response.choices[0].message.content;
+  const rawContent = response.output_text;
   if (!rawContent) {
     throw new Error(`No response content from OpenAI for follow-up day ${request.dayNumber}`);
   }
@@ -982,6 +988,11 @@ export async function generateFollowUpExerciseProgram(context: {
       feedback: cleanedFeedback,
       previousProgram: context.previousProgram,
       language,
+      // Pass additional feedback from pre-followup chat
+      conversationalFeedback,
+      feedbackSummary: structuredUpdates?.feedbackSummary,
+      overallIntensity,
+      programAdjustments,
     });
 
     // ========================================
@@ -1044,6 +1055,9 @@ export async function generateFollowUpExerciseProgram(context: {
         language,
         programAdjustments,
         previousProgramStats,
+        // Pass additional feedback from pre-followup chat
+        feedbackSummary: structuredUpdates?.feedbackSummary,
+        overallIntensity,
       });
 
       generatedDays.push(dayResult);
@@ -1200,10 +1214,8 @@ export async function getChatCompletion({
       }
     }
 
-    // Call OpenAI Responses API with minimal reasoning effort
     const response = await openai.responses.create({
       model,
-      // reasoning: { effort: 'minimal' } as any,
       input: formattedMessages,
       max_output_tokens: CHAT_MAX_OUTPUT_TOKENS,
     } as any);

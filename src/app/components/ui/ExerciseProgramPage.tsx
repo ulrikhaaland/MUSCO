@@ -667,9 +667,16 @@ export function ExerciseProgramPage({
     // If user has manually selected a day, never reset it
     if (userHasManuallySelectedDay.current) return;
     
-    // During incremental generation, auto-select Monday (day 1) if not yet initialized
+    // During incremental generation, auto-select the generating week and Monday (day 1)
     if (generatingDay !== null) {
-      if (!hasInitializedDaySelection.current) {
+      // For follow-up generation with multiple weeks, select the last (generating) week
+      const hasMultipleWeeks = activeProgram?.programs && activeProgram.programs.length > 1;
+      if (hasMultipleWeeks && activeProgram?.programs) {
+        const generatingWeekNum = activeProgram.programs.length;
+        setSelectedWeek(generatingWeekNum);
+        setExpandedDays([1]); // Monday
+        hasInitializedDaySelection.current = true;
+      } else if (!hasInitializedDaySelection.current) {
         setExpandedDays([1]); // Monday
         hasInitializedDaySelection.current = true;
       }

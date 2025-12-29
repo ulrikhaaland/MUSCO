@@ -999,8 +999,46 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
   const generateFollowUpProgram = async () => {
     setProgramStatus(ProgramStatus.Generating);
-    // loader removed
+    setGeneratingDay(0); // Indicate generation starting
+    setGeneratedDays([]);
     logAnalyticsEvent('generate_follow_up');
+    
+    // Add a shimmer placeholder week to activeProgram immediately
+    if (activeProgram) {
+      const lastWeek = activeProgram.programs[activeProgram.programs.length - 1];
+      const nextWeekDate = lastWeek?.createdAt 
+        ? new Date(new Date(lastWeek.createdAt).getTime() + 7 * 24 * 60 * 60 * 1000)
+        : new Date();
+      
+      const shimmerWeek: ExerciseProgram = {
+        title: '',
+        programOverview: '',
+        summary: '',
+        timeFrameExplanation: '',
+        whatNotToDo: '',
+        afterTimeFrame: { expectedOutcome: '', nextSteps: '' },
+        targetAreas: lastWeek?.targetAreas || [],
+        bodyParts: lastWeek?.bodyParts || [],
+        createdAt: nextWeekDate,
+        days: [1, 2, 3, 4, 5, 6, 7].map((day) => ({
+          day,
+          description: '',
+          dayType: 'strength' as const,
+          exercises: [],
+          duration: 0,
+        })),
+      };
+      
+      // Update activeProgram with the shimmer week appended
+      // Do NOT set main program to shimmer - that would cause existing weeks to shimmer too
+      setActiveProgram({
+        ...activeProgram,
+        programs: [...activeProgram.programs, shimmerWeek],
+      });
+    }
+    
+    // Small delay to ensure React flushes the state update before navigation
+    await new Promise(resolve => setTimeout(resolve, 10));
     router.push('/program');
   };
 

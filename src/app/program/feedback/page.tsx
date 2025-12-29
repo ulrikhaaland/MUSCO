@@ -14,6 +14,8 @@ import { NavigationMenu } from '@/app/components/ui/NavigationMenu';
 import { WeeklyLimitModal } from '@/app/components/ui/WeeklyLimitModal';
 import { ProgramType, Exercise } from '@/app/types/program';
 import { PreFollowupFeedback } from '@/app/types/incremental-program';
+import { fetchExerciseVideoUrl } from '@/app/utils/videoUtils';
+import { VideoModal } from '@/app/components/ui/VideoModal';
 
 function FeedbackPageContent() {
   const router = useRouter();
@@ -27,6 +29,11 @@ function FeedbackPageContent() {
     programType: ProgramType;
     nextAllowedDate: Date;
   } | null>(null);
+  
+  // Video modal state
+  const [videoUrl, setVideoUrl] = useState<string | null>(null);
+  const [loadingVideoExercise, setLoadingVideoExercise] = useState<string | null>(null);
+  const [currentExercise, setCurrentExercise] = useState<Exercise | null>(null);
 
   // Check if user is authenticated and has a program
   useEffect(() => {
@@ -47,6 +54,7 @@ function FeedbackPageContent() {
   }, [authLoading, userLoading, user, program, router]);
 
   // Build inline exercises map for PreFollowupChat
+  // Map by BOTH name and ID so MessageWithExercises can find them by [[name]] markers
   const inlineExercises = useMemo(() => {
     const exerciseMap = new Map<string, Exercise>();
     
@@ -54,7 +62,12 @@ function FeedbackPageContent() {
       program.days.forEach((day) => {
         if (day.exercises) {
           day.exercises.forEach((exercise) => {
-            const exerciseId = exercise.id || exercise.exerciseId || exercise.name;
+            // Add by name (for [[Exercise Name]] lookups in MessageWithExercises)
+            if (exercise.name && !exerciseMap.has(exercise.name)) {
+              exerciseMap.set(exercise.name, exercise);
+            }
+            // Also add by ID for backwards compatibility
+            const exerciseId = exercise.id || exercise.exerciseId;
             if (exerciseId && !exerciseMap.has(exerciseId)) {
               exerciseMap.set(exerciseId, exercise);
             }
@@ -65,6 +78,31 @@ function FeedbackPageContent() {
     
     return exerciseMap;
   }, [program]);
+
+  // Handle exercise video click
+  const handleVideoClick = async (exercise: Exercise) => {
+    const exerciseId = exercise.name || exercise.id;
+    if (loadingVideoExercise === exerciseId) return;
+
+    setLoadingVideoExercise(exerciseId);
+    setCurrentExercise(exercise);
+
+    try {
+      const url = await fetchExerciseVideoUrl(exercise);
+      if (url) {
+        setVideoUrl(url);
+      }
+    } catch (error) {
+      console.error('Error loading video:', error);
+    } finally {
+      setLoadingVideoExercise(null);
+    }
+  };
+
+  const handleCloseVideo = () => {
+    setVideoUrl(null);
+    setCurrentExercise(null);
+  };
 
   // Handle program generation from PreFollowupChat
   const handleGenerateProgram = async (feedback: PreFollowupFeedback) => {
@@ -147,8 +185,19 @@ function FeedbackPageContent() {
           weekId={program.weekId}
           inlineExercises={inlineExercises}
           onGenerateProgram={handleGenerateProgram}
+          onVideoClick={handleVideoClick}
+          loadingVideoExercise={loadingVideoExercise}
         />
       </div>
+      
+      {/* Exercise video modal */}
+      {videoUrl && (
+        <VideoModal
+          videoUrl={videoUrl}
+          onClose={handleCloseVideo}
+          exerciseName={currentExercise?.name}
+        />
+      )}
 
       {/* Weekly limit modal */}
       {weeklyLimitError && (
