@@ -224,10 +224,13 @@ export function PreFollowupChat({
               } else if (data.type === 'followup') {
                 // Each followup event contains a single question
                 const question = data.question as Question;
+                console.log('[PreFollowupChat] Received followup:', question?.title || question?.question);
                 if (question && !newFollowUpQuestions.some(q => q.question === question.question)) {
                   newFollowUpQuestions.push(question);
+                  const filtered = filterBannedFollowUps([...newFollowUpQuestions]);
+                  console.log(`[PreFollowupChat] After filter: ${filtered.length}/${newFollowUpQuestions.length} follow-ups`);
                   // Update state incrementally for better UX (filter out banned options)
-                  setFollowUpQuestions(filterBannedFollowUps([...newFollowUpQuestions]));
+                  setFollowUpQuestions(filtered);
                 }
               } else if (data.type === 'assistant_response') {
                 if (data.response?.structuredUpdates) {
@@ -248,7 +251,10 @@ export function PreFollowupChat({
       }
 
       // Final update of follow-up questions (filter out any banned options)
-      setFollowUpQuestions(filterBannedFollowUps(newFollowUpQuestions));
+      const finalFiltered = filterBannedFollowUps(newFollowUpQuestions);
+      console.log(`[PreFollowupChat] Final follow-ups: ${finalFiltered.length} (before filter: ${newFollowUpQuestions.length})`, 
+        finalFiltered.map(q => q.title || q.question));
+      setFollowUpQuestions(finalFiltered);
 
       // Always accumulate user messages and any structured feedback
       // This ensures all conversation context is captured for the program generator

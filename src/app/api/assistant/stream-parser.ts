@@ -61,8 +61,13 @@ export class StreamParser {
       try {
         const response = JSON.parse(jsonContent) as DiagnosisAssistantResponse;
         
+        // Log raw follow-ups from LLM
+        console.log(`[StreamParser] LLM returned ${response.followUpQuestions?.length || 0} followUpQuestions:`, 
+          response.followUpQuestions?.map(q => q.title || q.question) || []);
+        
       // Auto-generate follow-ups if LLM failed to provide them
       if (!response.followUpQuestions || response.followUpQuestions.length === 0) {
+        console.log('[StreamParser] No followUpQuestions from LLM, generating defaults');
         const generated = this.generateDefaultFollowUps();
         if (generated.length > 0) {
           response.followUpQuestions = generated;
@@ -74,10 +79,12 @@ export class StreamParser {
 
         // Process follow-ups: separate program generation from regular questions
         if (response.followUpQuestions && Array.isArray(response.followUpQuestions)) {
-          response.followUpQuestions.forEach((question) => {
+          console.log(`[StreamParser] Processing ${response.followUpQuestions.length} follow-ups for emission`);
+          response.followUpQuestions.forEach((question, idx) => {
             const key = question.question;
             if (!this.emittedFollowUps.has(key)) {
               this.emittedFollowUps.add(key);
+              console.log(`[StreamParser] Emitting followUp[${idx}]: "${question.title || question.question}"`);
               
               // Augment question with program detection
               const augmentedQuestion = augmentQuestion(question);
