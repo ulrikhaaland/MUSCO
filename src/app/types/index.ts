@@ -86,6 +86,8 @@ export interface Question {
   meta?: string;
   selectBodyGroup?: string; // When set, clicking this follow-up selects the body group on the 3D model
   selectBodyPart?: string;  // When set, clicking this follow-up selects a specific body part on the 3D model
+  multiSelect?: boolean;    // When true, allow selecting multiple options before sending
+  value?: string;           // Internal value (e.g., day number) separate from display title
 }
 
 export interface DiagnosisAssistantResponse {

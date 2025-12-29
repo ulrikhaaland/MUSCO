@@ -359,8 +359,8 @@ function GenerationProgress({ generatingDay, t }: GenerationProgressProps) {
       </svg>
       <span>
         {generatingDay === 0 
-          ? t('exerciseProgram.generatingOverview')
-          : t('exerciseProgram.generatingDay', { current: String(generatingDay), total: '7' })}
+          ? t('exerciseProgram.buildingOverview')
+          : t('exerciseProgram.buildingDay', { current: String(generatingDay), total: '7' })}
       </span>
     </div>
   );

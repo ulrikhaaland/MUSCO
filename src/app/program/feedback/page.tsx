@@ -1,26 +1,18 @@
 'use client';
 
-import { useEffect, useState, Suspense } from 'react';
+import { useEffect, useState, Suspense, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { ProgramFeedbackQuestionnaire } from '@/app/components/ui/ProgramFeedbackQuestionnaire';
+// ProgramFeedbackQuestionnaire is preserved but not rendered - using PreFollowupChat instead
+// import { ProgramFeedbackQuestionnaire } from '@/app/components/ui/ProgramFeedbackQuestionnaire';
+import { PreFollowupChat } from '@/app/components/ui/PreFollowupChat';
 import { useUser } from '@/app/context/UserContext';
 import { useAuth } from '@/app/context/AuthContext';
 import { submitProgramFeedback, WeeklyLimitReachedError } from '@/app/services/programFeedbackService';
-import { ProgramFeedback } from '@/app/components/ui/ProgramFeedbackQuestionnaire';
 import { useTranslation } from '@/app/i18n';
-import { Exercise } from '@/app/types/program';
 import { NavigationMenu } from '@/app/components/ui/NavigationMenu';
 import { WeeklyLimitModal } from '@/app/components/ui/WeeklyLimitModal';
-import { ProgramType } from '@/app/types/program';
-
-// Helper function to get next Monday's date
-function getNextMonday(d: Date): Date {
-  const result = new Date(d);
-  const day = result.getDay();
-  const diff = day === 0 ? 1 : 8 - day; // if Sunday (0), add 1 day, otherwise add days until next Monday
-  result.setDate(result.getDate() + diff);
-  return result;
-}
+import { ProgramType, Exercise } from '@/app/types/program';
+import { PreFollowupFeedback } from '@/app/types/incremental-program';
 
 function FeedbackPageContent() {
   const router = useRouter();
@@ -53,46 +45,38 @@ function FeedbackPageContent() {
     setIsLoading(false);
   }, [authLoading, userLoading, user, program, router]);
 
-  // Extract all unique exercises from the program
-  const getAllProgramExercises = (): Exercise[] => {
-    if (!program) return [];
-
-    const uniqueExercises = new Map<string, Exercise>();
-
-    // Process exercises from the current program
+  // Build inline exercises map for PreFollowupChat
+  const inlineExercises = useMemo(() => {
+    const exerciseMap = new Map<string, Exercise>();
+    
     if (program?.days) {
       program.days.forEach((day) => {
         if (day.exercises) {
           day.exercises.forEach((exercise) => {
-            const exerciseId =
-              exercise.id || exercise.exerciseId || exercise.name;
-            if (exerciseId && !uniqueExercises.has(exerciseId)) {
-              uniqueExercises.set(exerciseId, exercise);
+            const exerciseId = exercise.id || exercise.exerciseId || exercise.name;
+            if (exerciseId && !exerciseMap.has(exerciseId)) {
+              exerciseMap.set(exerciseId, exercise);
             }
           });
         }
       });
     }
+    
+    return exerciseMap;
+  }, [program]);
 
-    return Array.from(uniqueExercises.values());
-  };
-
-  // Function to handle feedback submission and program generation
-  const handleFeedbackSubmit = async (feedback: ProgramFeedback) => {
+  // Handle program generation from PreFollowupChat
+  const handleGenerateProgram = async (feedback: PreFollowupFeedback) => {
     if (!user || !user.uid) {
       console.error(t('exerciseProgram.feedback.error'));
-      return Promise.reject(new Error(t('exerciseProgram.feedback.error')));
+      return;
     }
 
     try {
-      // For custom 4-week programs, use the entire program since it's already structured correctly
-      // For regular programs, use the program as-is
-      const programForFeedback = program;
-
       // Submit feedback and generate new program
       const newProgramId = await submitProgramFeedback(
         user.uid,
-        programForFeedback,
+        program,
         diagnosisData,
         answers,
         feedback
@@ -102,23 +86,16 @@ function FeedbackPageContent() {
 
       // Redirect to refresh program view
       generateFollowUpProgram();
-
-      return Promise.resolve();
     } catch (error) {
       if (error instanceof WeeklyLimitReachedError) {
         setWeeklyLimitError({
           programType: error.programType,
           nextAllowedDate: error.nextAllowedDate,
         });
-        return Promise.resolve(); // Don't reject, we'll show the modal
+        return;
       }
       console.error(t('exerciseProgram.feedback.error.generating'), error);
-      return Promise.reject(error);
     }
-  };
-
-  const handleFeedbackCancel = () => {
-    router.push('/program');
   };
 
   // Update page title
@@ -153,17 +130,21 @@ function FeedbackPageContent() {
   }
 
   return (
-    <div className="bg-gray-900 min-h-screen flex flex-col">
+    <div className="bg-gray-900 h-screen flex flex-col overflow-hidden">
       <NavigationMenu mobileTitle={t('programFeedback.pageTitle')} />
-      <ProgramFeedbackQuestionnaire
-        onSubmit={handleFeedbackSubmit}
-        onCancel={handleFeedbackCancel}
-        nextWeekDate={getNextMonday(new Date())}
-        isFeedbackDay={true}
-        previousExercises={getAllProgramExercises()}
-        isFutureWeek={true} // We only allow access to this page when eligible
-        nextProgramDate={null}
-      />
+      
+      <div className="flex-1 overflow-hidden">
+        <PreFollowupChat
+          previousProgram={program}
+          diagnosisData={diagnosisData}
+          questionnaireData={answers}
+          userId={user.uid}
+          programId={program.docId || `program-${Date.now()}`}
+          weekId={program.weekId}
+          inlineExercises={inlineExercises}
+          onGenerateProgram={handleGenerateProgram}
+        />
+      </div>
 
       {/* Weekly limit modal */}
       {weeklyLimitError && (

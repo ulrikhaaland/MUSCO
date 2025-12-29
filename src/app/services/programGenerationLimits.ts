@@ -4,6 +4,11 @@ import { ProgramType } from '../../../shared/types';
 import { getStartOfWeek } from '../utils/dateutils';
 
 /**
+ * Set to true to disable weekly generation limits (for testing/development)
+ */
+const DISABLE_WEEKLY_LIMITS = true;
+
+/**
  * Weekly program generation limits service
  * 
  * Rule: Only ONE program generation (new or follow-up) is allowed per week per program type.
@@ -35,6 +40,10 @@ export async function canGenerateProgram(
   userId: string,
   programType: ProgramType
 ): Promise<boolean> {
+  if (DISABLE_WEEKLY_LIMITS) {
+    return true;
+  }
+
   if (!userId) {
     console.warn('[programGenerationLimits] No userId provided');
     return false;
@@ -120,6 +129,10 @@ export async function getNextAllowedGenerationDate(
   userId: string,
   programType: ProgramType
 ): Promise<Date | null> {
+  if (DISABLE_WEEKLY_LIMITS) {
+    return null; // Generation always allowed
+  }
+
   const canGenerate = await canGenerateProgram(userId, programType);
   
   if (canGenerate) {
@@ -146,6 +159,10 @@ export async function getAvailableProgramTypes(
     ProgramType.Recovery,
     ProgramType.ExerciseAndRecovery,
   ];
+
+  if (DISABLE_WEEKLY_LIMITS) {
+    return allTypes; // All types available
+  }
 
   const results = await Promise.all(
     allTypes.map(async (type) => ({

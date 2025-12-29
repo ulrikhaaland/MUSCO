@@ -776,11 +776,11 @@ const translations = {
   'programFeedback.selector.description':
     'Filtrer etter kroppsdel for å finne spesifikke øvelser. Klikk på knappene for å merke øvelser for erstatning eller fjerning.',
   'programFeedback.button.back': 'Tilbake',
-  'programFeedback.button.generating': 'Genererer program',
-  'programFeedback.button.generateNextWeek': 'Generer neste ukes program',
-  'programFeedback.button.disabledTooltip': 'Du må vente til neste uke for å generere et nytt program',
-  'programFeedback.button.waitUntilNextWeek': 'Du må fullføre denne ukens program før du kan generere neste ukes program.',
-  'programFeedback.button.waitUntilSpecificDate': 'Du kan generere neste ukes program på {{date}}.',
+  'programFeedback.button.building': 'Bygger program',
+  'programFeedback.button.buildNextWeek': 'Bygg neste ukes program',
+  'programFeedback.button.disabledTooltip': 'Du må vente til neste uke for å bygge et nytt program',
+  'programFeedback.button.waitUntilNextWeek': 'Du må fullføre denne ukens program før du kan bygge neste ukes program.',
+  'programFeedback.button.waitUntilSpecificDate': 'Du kan bygge neste ukes program på {{date}}.',
 
   // Exercise Feedback Selector
   'exerciseFeedbackSelector.chip.new': 'Ny',
@@ -848,8 +848,8 @@ const translations = {
   'exerciseProgram.nextWeek': 'Neste uke',
   'exerciseProgram.day.rest': 'Hvile',
   'exerciseProgram.day.activity': 'Trening',
-  'exerciseProgram.generatingDay': 'Genererer dag {{current}} av {{total}}...',
-  'exerciseProgram.generatingOverview': 'Genererer programoversikt...',
+  'exerciseProgram.buildingDay': 'Bygger dag {{current}} av {{total}}...',
+  'exerciseProgram.buildingOverview': 'Bygger programoversikt...',
   'exerciseProgram.overview.title.exercise':
     'Personlig tilpasset for dine treningsmål',
   'exerciseProgram.overview.title.recovery':
@@ -869,7 +869,7 @@ const translations = {
   'exerciseProgram.nextWeekCard.button': 'Start tilbakemeldingsprosessen',
   'exerciseProgram.nextWeekCard.weeklyLimitTitle': 'Ukentlig grense nådd',
   'exerciseProgram.nextWeekCard.weeklyLimitDescription':
-    'Du har allerede generert en oppfølging for denne programtypen denne uken. Kom tilbake neste uke!',
+    'Du har allerede generert et program for denne programtypen denne uken. Kom tilbake neste uke!',
   'exerciseProgram.nextWeekCard.weeklyLimitNextDate': 'Neste tilgjengelig: {{date}}',
   'exerciseProgram.feedback.error':
     'Bruker må være logget inn for å sende tilbakemelding',
@@ -877,6 +877,21 @@ const translations = {
   'exerciseProgram.feedback.error.generating':
     'Feil ved generering av nytt program:',
   'programFeedback.pageTitle': 'Programtilbakemelding',
+
+  // Pre-Follow-up Chat
+  'feedback.buildProgram': 'Bygg program',
+  'feedback.continueChat': 'Fortsett chat',
+  'feedback.buildEarlyTitle': 'Bygge program nå?',
+  'feedback.buildEarlyMessage':
+    'Du har ikke svart på alle spørsmålene ennå. Å bygge nå betyr at programmet ditt kan bli mindre tilpasset. Fortsett chatten for bedre resultater.',
+  'feedback.buildAnyway': 'Bygg likevel',
+  'feedback.typeMessage': 'Skriv din melding...',
+  'feedback.sendSelected': 'Send ({{count}} valgt)',
+  'feedback.iCompleted': 'Jeg fullførte',
+  'feedback.daysSelected': '{{count}} dager valgt',
+  'feedback.startOver': 'Start på nytt',
+  'feedback.answerInChat': 'Svar i chat',
+  'chat.error': 'Noe gikk galt. Vennligst prøv igjen.',
 
   // Sign Up Prompts for Custom Programs (should match keys in en.ts)
   'exerciseProgram.signUp.unlockWeek': 'Logg inn for å se',
@@ -1376,8 +1391,8 @@ const translations = {
 
   // Weekly generation limit
   'weeklyLimit.title': 'Ukentlig grense nådd',
-  'weeklyLimit.message': 'Du kan bare generere ett {{programType}} program per uke.',
-  'weeklyLimit.nextAllowed': 'Du kan generere et nytt program på {{date}}.',
+  'weeklyLimit.message': 'Du kan bare bygge ett {{programType}} program per uke.',
+  'weeklyLimit.nextAllowed': 'Du kan bygge et nytt program på {{date}}.',
   'weeklyLimit.programType.exercise': 'trenings',
   'weeklyLimit.programType.recovery': 'rehabiliterings',
   'weeklyLimit.programType.exercise_and_recovery': 'trening og rehabiliterings',

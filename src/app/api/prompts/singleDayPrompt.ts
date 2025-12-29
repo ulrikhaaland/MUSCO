@@ -334,24 +334,47 @@ The order of exercises is CRITICAL for safety and effectiveness. ALWAYS follow t
 
 **STRICT ORDER:**
 1. Warmup exercises FIRST (if strength day)
-2. Compound exercises (multi-joint movements)
-3. Isolation exercises (single-joint movements)
-4. Core exercises (abs/obliques) LAST
+2. GROUPED exercises by body part, with compound exercises before isolation within each group
+3. Core exercises (abs/obliques) LAST
 
-**COMPOUND EXERCISES** (do these BEFORE isolation):
-- Squats, Deadlifts, Romanian Deadlifts, Lunges, Step-ups (legs)
-- Bench Press, Incline Press, Push-ups, Dips (chest)
-- Rows, Pull-ups, Lat Pulldowns, Cable Rows (back)
-- Military Press, Overhead Press, Arnold Press (shoulders)
-- Hip Thrusts (glutes - when loaded/barbell)
+**BODY PART GROUPING RULES:**
+- ALWAYS group all exercises for the same body part together
+- Complete ALL exercises for one muscle group before moving to the next
+- NEVER interleave exercises from different muscle groups (e.g., chest → back → chest is WRONG)
 
-**ISOLATION EXERCISES** (do these AFTER compound):
-- Leg Curls, Leg Extensions, Calf Raises (legs)
-- Lateral Raises, Front Raises, Rear Delt Flyes (shoulders)
-- Bicep Curls, Tricep Extensions, Hammer Curls (arms)
-- Chest Flyes, Cable Crossovers (chest)
-- Glute Bridges (bodyweight), Hip Abductions, Hip Adductions (glutes/hips)
-- Face Pulls, Shrugs (upper back/traps)
+**WITHIN EACH BODY PART GROUP - ORDER BY INTENSITY:**
+1. Heavy compound movements FIRST (most demanding, freshest energy)
+2. Lighter compound movements SECOND
+3. Isolation exercises LAST within the group
+
+**BODY PART ORDER (for upper body days):**
+1. Chest (all chest exercises together)
+2. Back (all back exercises together)
+3. Shoulders (all shoulder exercises together)
+4. Arms - Biceps then Triceps (if included)
+5. Core (ALWAYS last)
+
+**BODY PART ORDER (for lower body days):**
+1. Quads/Compound leg movements (squats, leg press, lunges)
+2. Hamstrings (deadlifts, leg curls)
+3. Glutes (hip thrusts, glute bridges)
+4. Calves
+5. Core (ALWAYS last)
+
+**COMPOUND EXERCISES** (heavier = earlier within body part group):
+- Chest: Barbell Bench Press → Dumbbell Bench Press → Incline Press → Push-ups → Dips
+- Back: Barbell Rows → Pull-ups/Lat Pulldowns → Cable Rows → Dumbbell Rows
+- Shoulders: Military Press → Overhead Press → Arnold Press
+- Legs: Barbell Squat → Leg Press → Romanian Deadlift → Lunges → Step-ups
+- Glutes: Barbell Hip Thrusts → Weighted Glute Bridges
+
+**ISOLATION EXERCISES** (after compounds within same body part):
+- Chest: Dumbbell Flyes, Cable Crossovers
+- Back: Face Pulls, Shrugs, Straight-arm Pulldowns
+- Shoulders: Lateral Raises, Front Raises, Rear Delt Flyes
+- Arms: Bicep Curls, Hammer Curls, Tricep Extensions, Tricep Pushdowns
+- Legs: Leg Curls, Leg Extensions, Calf Raises
+- Glutes: Bodyweight Glute Bridges, Hip Abductions, Hip Adductions
 
 **CORE EXERCISES** (ALWAYS LAST):
 - Planks, Sit-ups, Crunches, Russian Twists, Leg Raises, Dead Bugs
@@ -360,30 +383,39 @@ The order of exercises is CRITICAL for safety and effectiveness. ALWAYS follow t
 1. Rowing Machine (warmup)
 2. Bench Press (compound - chest)
 3. Incline Dumbbell Press (compound - chest)
-4. Seated Cable Row (compound - back)
-5. Military Press (compound - shoulders)
-6. Lateral Raises (isolation - shoulders)
-7. Dumbbell Flyes (isolation - chest)
-8. Plank (core - LAST)
+4. Dumbbell Flyes (isolation - chest) ← finish chest before moving on
+5. Seated Cable Row (compound - back)
+6. Face Pulls (isolation - back) ← finish back before moving on
+7. Military Press (compound - shoulders)
+8. Lateral Raises (isolation - shoulders)
+9. Plank (core - LAST)
 
 **WRONG ORDER EXAMPLE (DO NOT DO THIS):**
-1. Lateral Raises ❌ (isolation before compound)
-2. Military Press (compound after isolation)
-3. Sit-up ❌ (core before other exercises)
-4. Bench Press (should be earlier)
+1. Bench Press (chest)
+2. Seated Cable Row ❌ (back - should finish all chest first!)
+3. Incline Press (chest - back to chest is WRONG)
+4. Military Press (shoulders)
+5. Lateral Raises (isolation before finishing compounds)
+6. Dumbbell Flyes ❌ (chest isolation after shoulders - too late!)
 
 **CORRECT ORDER EXAMPLE (Lower Body):**
 1. Jump Rope (warmup)
-2. Barbell Squat (compound)
-3. Romanian Deadlift (compound)
-4. Lunges (compound)
-5. Leg Press (compound)
-6. Leg Curls (isolation)
-7. Glute Bridge (isolation)
-8. Calf Raises (isolation)
-9. Plank (core - LAST)
+2. Barbell Squat (compound - quads)
+3. Leg Press (compound - quads)
+4. Lunges (compound - quads)
+5. Leg Extensions (isolation - quads) ← finish quads
+6. Romanian Deadlift (compound - hamstrings)
+7. Leg Curls (isolation - hamstrings) ← finish hamstrings
+8. Hip Thrust (compound - glutes)
+9. Glute Bridge (isolation - glutes) ← finish glutes
+10. Calf Raises (calves)
+11. Plank (core - LAST)
 
-**FINAL CHECK:** Before outputting, verify: Are warmups first? Are ALL compound exercises before ALL isolation exercises? Is core last?
+**FINAL CHECK:** Before outputting, verify:
+1. Is warmup first?
+2. Are exercises GROUPED by body part (all chest together, all back together, etc.)?
+3. Within each group: are heavier compounds before lighter compounds before isolation?
+4. Is core last?
 
 8. Rest Day Structure
 
@@ -410,7 +442,16 @@ Return ONLY:
   "dayType": "strength" | "cardio" | "recovery" | "rest",
   "description": "Natural description of this day's focus - muscle groups, intensity, goals",
   "exercises": [
-    { "exerciseId": "exact-id", "warmup": true, "modification": "optional", "precaution": "optional", "duration": optional_minutes }
+    { 
+      "exerciseId": "exact-id",
+      "sets": 3,
+      "reps": 10,
+      "restBetweenSets": 60,
+      "warmup": true,
+      "modification": "optional",
+      "precaution": "optional",
+      "duration": optional_minutes
+    }
   ],
   "duration": total_minutes
 }
@@ -421,12 +462,23 @@ dayType values:
 - "recovery": Active recovery sessions (mobility/stretching focus)
 - "strength": Strength training workout days (default for non-rest workout days)
 
-For each exercise, include ONLY:
+For each exercise, include:
 - exerciseId (REQUIRED)
-- warmup (OPTIONAL, only for warmup exercises)
+- sets (REQUIRED for strength exercises, 2-5 based on fitness level and exercise type)
+- reps (REQUIRED for strength exercises, 6-15 based on exercise type)
+- restBetweenSets (REQUIRED for strength exercises, 30-120 seconds)
+- duration (REQUIRED for cardio/warmup/stretching exercises, in minutes)
+- warmup (OPTIONAL, set to true only for warmup exercises)
 - modification (OPTIONAL)
 - precaution (OPTIONAL)
-- duration (OPTIONAL, for cardio/stretching exercises in minutes)
+
+SETS/REPS GUIDELINES based on user experience and exercise type:
+- Beginners (exercises 0-2x/week): 2-3 sets, 10-12 reps, 60-90s rest
+- Intermediate (exercises 3-4x/week): 3-4 sets, 8-12 reps, 60-90s rest
+- Advanced (exercises 5+x/week): 3-5 sets, 6-12 reps, 60-120s rest
+- Compound exercises (squats, deadlifts, bench press, rows): 3-4 sets, 6-10 reps, 90-120s rest
+- Isolation exercises (curls, raises, extensions): 2-3 sets, 10-15 reps, 45-60s rest
+- Recovery/mobility exercises: 2 sets, 10-15 reps (or 30-60 second holds), 30s rest
 
 NO CITATIONS OR REFERENCES - all text should be plain.
 
@@ -704,13 +756,45 @@ EXERCISE SELECTION PROTOCOL
 
 4. Progressive Overload for Kept Exercises
 
-For exercises from preferredExercises that you include:
-- Add "modification" field suggesting progression from last week
+You will receive previousExerciseData containing sets/reps/restBetweenSets from the previous week's exercises.
+
+For exercises from preferredExercises that you include, apply progressive overload:
+- If the previous week had sets: X, reps: Y → consider increasing:
+  - Add 1-2 reps per set (Y → Y+1 or Y+2)
+  - OR add 1 set if reps are already at upper range (sets: X → X+1)
+  - Keep restBetweenSets the same or reduce by 5-10 seconds for conditioning
+- Use "modification" field to suggest weight increases or technique improvements
 - Examples:
+  - Previous: 3 sets x 10 reps → New: 3 sets x 12 reps OR 4 sets x 10 reps
   - "modification": "Increase weight by 2.5-5kg from last week"
-  - "modification": "Aim for 2 additional reps per set compared to last week"
-  - "modification": "Increase hold duration by 10-15 seconds"
+  - "modification": "Focus on slower eccentric (3 seconds down)"
   - "modification": "Progress to more challenging variation if comfortable"
+
+If no previousExerciseData is available, use the standard SETS/REPS GUIDELINES.
+
+4b. User-Requested Program Adjustments
+
+You may receive a "programAdjustments" object containing the user's explicit requests to change their program based on their completion and feedback from the previous week.
+
+ADJUSTMENT RULES:
+- If programAdjustments.adjustments.sets is "increase" → Add 1 set per exercise vs previous week
+- If programAdjustments.adjustments.sets is "decrease" → Remove 1 set per exercise (min 2 sets)
+- If programAdjustments.adjustments.reps is "increase" → Add 2-3 reps per set vs previous week
+- If programAdjustments.adjustments.reps is "decrease" → Remove 2-3 reps per set (min 6 reps)
+- If programAdjustments.adjustments.restTime is "increase" → Add 15-30 seconds rest (easier recovery)
+- If programAdjustments.adjustments.restTime is "decrease" → Remove 15-30 seconds rest (more challenging)
+- If programAdjustments.adjustments.duration is "increase" → Include MORE exercises to extend workout
+- If programAdjustments.adjustments.duration is "decrease" → Include FEWER exercises to shorten workout
+- If programAdjustments.adjustments.days is "decrease" → This is handled at weekly plan level, not day level
+
+The "previousStats" field shows the actual averages from the user's previous week:
+- avgSets: Average sets per exercise last week
+- avgReps: Average reps per set last week  
+- avgRest: Average rest between sets last week (seconds)
+
+Use these as your baseline when applying adjustments. The "instructions" field provides human-readable guidance.
+
+PRIORITY: User-requested adjustments take precedence over standard progressive overload. If user asks to decrease, do NOT apply progressive overload.
 
 5. Workout Duration and Exercise Count
 
@@ -778,27 +862,75 @@ The order of exercises is CRITICAL for safety and effectiveness. ALWAYS follow t
 
 **STRICT ORDER:**
 1. Warmup exercises FIRST (if strength day)
-2. Compound exercises (multi-joint movements)
-3. Isolation exercises (single-joint movements)
-4. Core exercises (abs/obliques) LAST
+2. GROUPED exercises by body part, with compound exercises before isolation within each group
+3. Core exercises (abs/obliques) LAST
 
-**COMPOUND EXERCISES** (do these BEFORE isolation):
-- Squats, Deadlifts, Romanian Deadlifts, Lunges, Step-ups (legs)
-- Bench Press, Incline Press, Push-ups, Dips (chest)
-- Rows, Pull-ups, Lat Pulldowns, Cable Rows (back)
-- Military Press, Overhead Press, Arnold Press (shoulders)
-- Hip Thrusts (glutes - when loaded/barbell)
+**BODY PART GROUPING RULES:**
+- ALWAYS group all exercises for the same body part together
+- Complete ALL exercises for one muscle group before moving to the next
+- NEVER interleave exercises from different muscle groups (e.g., chest → back → chest is WRONG)
 
-**ISOLATION EXERCISES** (do these AFTER compound):
-- Leg Curls, Leg Extensions, Calf Raises (legs)
-- Lateral Raises, Front Raises, Rear Delt Flyes (shoulders)
-- Bicep Curls, Tricep Extensions, Hammer Curls (arms)
-- Chest Flyes, Cable Crossovers (chest)
-- Glute Bridges (bodyweight), Hip Abductions, Hip Adductions (glutes/hips)
-- Face Pulls, Shrugs (upper back/traps)
+**WITHIN EACH BODY PART GROUP - ORDER BY INTENSITY:**
+1. Heavy compound movements FIRST (most demanding, freshest energy)
+2. Lighter compound movements SECOND
+3. Isolation exercises LAST within the group
+
+**BODY PART ORDER (for upper body days):**
+1. Chest (all chest exercises together)
+2. Back (all back exercises together)
+3. Shoulders (all shoulder exercises together)
+4. Arms - Biceps then Triceps (if included)
+5. Core (ALWAYS last)
+
+**BODY PART ORDER (for lower body days):**
+1. Quads/Compound leg movements (squats, leg press, lunges)
+2. Hamstrings (deadlifts, leg curls)
+3. Glutes (hip thrusts, glute bridges)
+4. Calves
+5. Core (ALWAYS last)
+
+**COMPOUND EXERCISES** (heavier = earlier within body part group):
+- Chest: Barbell Bench Press → Dumbbell Bench Press → Incline Press → Push-ups → Dips
+- Back: Barbell Rows → Pull-ups/Lat Pulldowns → Cable Rows → Dumbbell Rows
+- Shoulders: Military Press → Overhead Press → Arnold Press
+- Legs: Barbell Squat → Leg Press → Romanian Deadlift → Lunges → Step-ups
+- Glutes: Barbell Hip Thrusts → Weighted Glute Bridges
+
+**ISOLATION EXERCISES** (after compounds within same body part):
+- Chest: Dumbbell Flyes, Cable Crossovers
+- Back: Face Pulls, Shrugs, Straight-arm Pulldowns
+- Shoulders: Lateral Raises, Front Raises, Rear Delt Flyes
+- Arms: Bicep Curls, Hammer Curls, Tricep Extensions, Tricep Pushdowns
+- Legs: Leg Curls, Leg Extensions, Calf Raises
+- Glutes: Bodyweight Glute Bridges, Hip Abductions, Hip Adductions
 
 **CORE EXERCISES** (ALWAYS LAST):
 - Planks, Sit-ups, Crunches, Russian Twists, Leg Raises, Dead Bugs
+
+**CORRECT ORDER EXAMPLE (Upper Body):**
+1. Rowing Machine (warmup)
+2. Bench Press (compound - chest)
+3. Incline Dumbbell Press (compound - chest)
+4. Dumbbell Flyes (isolation - chest) ← finish chest before moving on
+5. Seated Cable Row (compound - back)
+6. Face Pulls (isolation - back) ← finish back before moving on
+7. Military Press (compound - shoulders)
+8. Lateral Raises (isolation - shoulders)
+9. Plank (core - LAST)
+
+**WRONG ORDER EXAMPLE (DO NOT DO THIS):**
+1. Bench Press (chest)
+2. Seated Cable Row ❌ (back - should finish all chest first!)
+3. Incline Press (chest - back to chest is WRONG)
+4. Military Press (shoulders)
+5. Lateral Raises (isolation before finishing compounds)
+6. Dumbbell Flyes ❌ (chest isolation after shoulders - too late!)
+
+**FINAL CHECK:** Before outputting, verify:
+1. Is warmup first?
+2. Are exercises GROUPED by body part (all chest together, all back together, etc.)?
+3. Within each group: are heavier compounds before lighter compounds before isolation?
+4. Is core last?
 
 10. Rest Day Structure
 
@@ -824,7 +956,16 @@ Return ONLY:
   "dayType": "strength" | "cardio" | "recovery" | "rest",
   "description": "Natural description of this day's focus - muscle groups, intensity, goals",
   "exercises": [
-    { "exerciseId": "exact-id", "warmup": true, "modification": "optional", "precaution": "optional", "duration": optional_minutes }
+    { 
+      "exerciseId": "exact-id",
+      "sets": 3,
+      "reps": 10,
+      "restBetweenSets": 60,
+      "warmup": true,
+      "modification": "optional",
+      "precaution": "optional",
+      "duration": optional_minutes
+    }
   ],
   "duration": total_minutes
 }
@@ -835,12 +976,23 @@ dayType values:
 - "recovery": Active recovery sessions (mobility/stretching focus)
 - "strength": Strength training workout days (default for non-rest workout days)
 
-For each exercise, include ONLY:
+For each exercise, include:
 - exerciseId (REQUIRED)
-- warmup (OPTIONAL, only for warmup exercises)
+- sets (REQUIRED for strength exercises, 2-5 based on fitness level and exercise type)
+- reps (REQUIRED for strength exercises, 6-15 based on exercise type)
+- restBetweenSets (REQUIRED for strength exercises, 30-120 seconds)
+- duration (REQUIRED for cardio/warmup/stretching exercises, in minutes)
+- warmup (OPTIONAL, set to true only for warmup exercises)
 - modification (OPTIONAL - use for progressive overload suggestions)
 - precaution (OPTIONAL)
-- duration (OPTIONAL, for cardio/stretching exercises in minutes)
+
+SETS/REPS GUIDELINES based on user experience and exercise type:
+- Beginners (exercises 0-2x/week): 2-3 sets, 10-12 reps, 60-90s rest
+- Intermediate (exercises 3-4x/week): 3-4 sets, 8-12 reps, 60-90s rest
+- Advanced (exercises 5+x/week): 3-5 sets, 6-12 reps, 60-120s rest
+- Compound exercises (squats, deadlifts, bench press, rows): 3-4 sets, 6-10 reps, 90-120s rest
+- Isolation exercises (curls, raises, extensions): 2-3 sets, 10-15 reps, 45-60s rest
+- Recovery/mobility exercises: 2 sets, 10-15 reps (or 30-60 second holds), 30s rest
 
 NO CITATIONS OR REFERENCES - all text should be plain.
 

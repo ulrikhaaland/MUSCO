@@ -400,6 +400,10 @@ export interface ProgramDay {
   exercises: Exercise[];
   dayType: DayType;
   duration?: number;
+  /** Whether this day's workout was completed by the user */
+  completed?: boolean;
+  /** When this day's workout was marked as completed */
+  completedAt?: Date;
   // Legacy fields - kept for backward compatibility with existing data
   /** @deprecated Use dayType instead */
   isRestDay?: boolean;
@@ -448,6 +452,7 @@ export interface ExerciseProgram {
   targetAreas: string[];
   bodyParts: string[];
   docId?: string;
+  weekId?: string; // Week document ID (for feedback storage)
   title?: string;
 }
 

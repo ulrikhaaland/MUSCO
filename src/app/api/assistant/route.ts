@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import {
-  generateExerciseProgramWithModel,
   generateFollowUpExerciseProgram,
   reserveFreeChatTokens,
   reserveFreeChatTokensForAnon,
@@ -13,7 +12,8 @@ import { ProgramStatus, SPECIFIC_BODY_PARTS } from '@/app/types/program';
 import { diagnosisSystemPrompt } from '@/app/api/prompts/diagnosisPrompt';
 import { getExploreSystemPrompt } from '@/app/api/prompts/explorePrompt';
 import { chatModeRouterPrompt } from '@/app/api/prompts/routePrompt';
-import { ROUTER_MODEL } from '@/app/api/assistant/models';
+import { preFollowupSystemPrompt, buildPreFollowupUserContext } from '@/app/api/prompts/preFollowupPrompt';
+import { ROUTER_MODEL, PRE_FOLLOWUP_CHAT_MODEL } from '@/app/api/assistant/models';
 import { StreamParser } from '@/app/api/assistant/stream-parser';
 import { bodyPartGroups } from '@/app/config/bodyPartGroups';
 
@@ -221,39 +221,6 @@ export async function POST(request: Request) {
         );
       }
 
-      case 'generate_exercise_program': {
-        if (!payload) {
-          return NextResponse.json(
-            { error: 'Payload is required' },
-            { status: 400 }
-          );
-        }
-
-        try {
-          const program = await generateExerciseProgramWithModel({
-            diagnosisData: payload.diagnosisData,
-            userInfo: payload.userInfo,
-            userId: payload.userId,
-            programId: payload.programId,
-            language: payload.language || 'en',
-          });
-
-          return NextResponse.json({
-            program,
-            status: ProgramStatus.Done,
-          });
-        } catch (error) {
-          console.error('Error generating program:', error);
-          return NextResponse.json(
-            {
-              error: 'Failed to generate program',
-              status: ProgramStatus.Error,
-            },
-            { status: 500 }
-          );
-        }
-      }
-
       case 'generate_follow_up_program': {
         if (!payload) {
           return NextResponse.json(
@@ -320,6 +287,145 @@ export async function POST(request: Request) {
         }
 
         return NextResponse.json({ chatMode: mode });
+      }
+
+      case 'send_pre_followup_message': {
+        // Pre-followup chat for gathering feedback before generating follow-up program
+        if (!payload) {
+          return NextResponse.json({ error: 'Payload is required' }, { status: 400 });
+        }
+
+        const { messages: chatMessages, previousProgram, diagnosisData, questionnaireData, language, accumulatedFeedback } = payload;
+        const locale = language || 'en';
+
+        // Build exercise name map from previous program
+        const exerciseNames = new Map<string, string>();
+        if (previousProgram?.days) {
+          for (const day of previousProgram.days) {
+            if (day.exercises) {
+              for (const ex of day.exercises) {
+                if (ex.exerciseId && ex.name) {
+                  exerciseNames.set(ex.exerciseId, ex.name);
+                }
+              }
+            }
+          }
+        }
+
+        // Build user context for the prompt
+        const userContext = buildPreFollowupUserContext({
+          previousProgram: {
+            title: previousProgram?.title || 'Previous Program',
+            days: previousProgram?.days || [],
+          },
+          diagnosisData: diagnosisData || {},
+          questionnaireData: questionnaireData || {},
+          exerciseNames,
+          language: locale,
+        });
+
+        // Build accumulated feedback context so LLM knows what's already been answered
+        let feedbackContext = '';
+        if (accumulatedFeedback) {
+          const parts: string[] = [];
+          
+          // Include existing feedbackSummary for the LLM to UPDATE (not replace)
+          if (accumulatedFeedback.structuredUpdates?.feedbackSummary) {
+            parts.push(`- CURRENT SUMMARY (update this, correct if contradicted): "${accumulatedFeedback.structuredUpdates.feedbackSummary}"`);
+          }
+          if (accumulatedFeedback.structuredUpdates?.overallFeeling) {
+            parts.push(`- Overall feeling: ${accumulatedFeedback.structuredUpdates.overallFeeling}`);
+          }
+          if (accumulatedFeedback.structuredUpdates?.overallIntensity) {
+            parts.push(`- Overall intensity preference: ${accumulatedFeedback.structuredUpdates.overallIntensity}`);
+          }
+          if (accumulatedFeedback.structuredUpdates?.allWorkoutsCompleted !== undefined) {
+            parts.push(`- Workout completion: ${accumulatedFeedback.structuredUpdates.allWorkoutsCompleted ? 'ALL completed' : 'Some missed'}`);
+          }
+          if (accumulatedFeedback.structuredUpdates?.dayCompletionStatus?.length > 0) {
+            const completed = accumulatedFeedback.structuredUpdates.dayCompletionStatus.filter((d: { completed: boolean }) => d.completed).map((d: { day: number }) => d.day);
+            const missed = accumulatedFeedback.structuredUpdates.dayCompletionStatus.filter((d: { completed: boolean }) => !d.completed).map((d: { day: number }) => d.day);
+            if (completed.length > 0) parts.push(`- Days completed: ${completed.join(', ')}`);
+            if (missed.length > 0) parts.push(`- Days missed: ${missed.join(', ')}`);
+          }
+          if (accumulatedFeedback.structuredUpdates?.preferredWorkoutDays?.length > 0) {
+            parts.push(`- Preferred workout days: ${accumulatedFeedback.structuredUpdates.preferredWorkoutDays.join(', ')}`);
+          }
+          if (accumulatedFeedback.structuredUpdates?.programAdjustments) {
+            parts.push(`- Program adjustments requested: ${JSON.stringify(accumulatedFeedback.structuredUpdates.programAdjustments)}`);
+          }
+          if (accumulatedFeedback.exerciseIntensity?.length > 0) {
+            parts.push(`- Exercise intensity feedback: ${accumulatedFeedback.exerciseIntensity.map((e: { exerciseId: string; feedback: string }) => `${e.exerciseId}=${e.feedback}`).join(', ')}`);
+          }
+          if (accumulatedFeedback.overallIntensity) {
+            parts.push(`- Overall intensity preference: ${accumulatedFeedback.overallIntensity}`);
+          }
+          if (parts.length > 0) {
+            feedbackContext = `\n\n<<ALREADY_COLLECTED_FEEDBACK>>\nThis is what we know so far. Do NOT ask again about these topics. UPDATE the feedbackSummary to include new information:\n${parts.join('\n')}\n<<END_ALREADY_COLLECTED_FEEDBACK>>`;
+          }
+        }
+
+        // Build system message with context
+        const languageLock = `\n<<LANGUAGE_LOCK>>\nSESSION_LANGUAGE=${locale.toLowerCase()}\n<<LANGUAGE_LOCK_END>>\n`;
+        const systemMessage = `${languageLock}\n${preFollowupSystemPrompt}\n\n${userContext}${feedbackContext}`;
+
+        // Stream the response
+        const encoder = new TextEncoder();
+        const customReadable = new ReadableStream({
+          async start(controller) {
+            try {
+              // Create parser for structured output
+              const parser = new StreamParser({
+                onText: (text) => {
+                  controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'text', content: text })}\n\n`));
+                },
+                onFollowUp: (question) => {
+                  controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'followup', question })}\n\n`));
+                },
+                onAssistantResponse: (response) => {
+                  controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'assistant_response', response })}\n\n`));
+                },
+                onExercises: () => {
+                  // Pre-followup chat doesn't need exercise loading - exercises come from previous program
+                },
+                onComplete: () => {
+                  controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'complete' })}\n\n`));
+                },
+              }, { locale });
+
+              await streamChatCompletion({
+                threadId: 'virtual',
+                messages: chatMessages || [],
+                systemMessage,
+                userMessage: { message: '' }, // Empty for auto-start or user message is in chatMessages
+                onContent: (content) => {
+                  parser.processChunk(content);
+                },
+                model: PRE_FOLLOWUP_CHAT_MODEL,
+                reasoningEffort: 'low',
+              });
+
+              await parser.complete();
+              controller.enqueue(encoder.encode('data: [DONE]\n\n'));
+              controller.close();
+            } catch (error) {
+              console.error('[API Route] Error in pre-followup chat:', error);
+              try {
+                controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'error', error: 'stream_error' })}\n\n`));
+                controller.enqueue(encoder.encode('data: [DONE]\n\n'));
+                controller.close();
+              } catch {}
+            }
+          }
+        });
+
+        return new Response(customReadable, {
+          headers: {
+            'Content-Type': 'text/event-stream',
+            'Cache-Control': 'no-cache',
+            Connection: 'keep-alive',
+          },
+        });
       }
 
       default:

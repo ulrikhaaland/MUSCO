@@ -5,6 +5,7 @@ import Chip from './Chip';
 import { useTranslation } from '@/app/i18n/TranslationContext';
 import { ChevronDown, PlayIcon, ArrowUp, ArrowDown, SpinnerIcon } from '../icons';
 import { PLACEHOLDER_VALUES } from '@/app/constants';
+import { formatRestTime, formatMinutes } from '@/app/utils/timeUtils';
 
 // Filter out placeholder values that shouldn't be displayed
 const isPlaceholderValue = (value: string | undefined): boolean => {
@@ -141,7 +142,7 @@ export default function ExerciseCard({
       if (ex.restBetweenSets && ex.restBetweenSets !== 0) {
         chips.push(
           <Chip key="restBetweenSets" size="lg" variant="subtle">
-            {t('program.rest', { seconds: ex.restBetweenSets.toString() })}
+            {formatRestTime(ex.restBetweenSets)} {t('calendar.rest').toLowerCase()}
           </Chip>
         );
       }
@@ -150,9 +151,7 @@ export default function ExerciseCard({
     else if (ex.duration && isDurationExercise) {
       chips.push(
         <Chip key="duration" size="sm" variant="subtle">
-          {ex.duration >= 60
-            ? `${Math.floor(ex.duration / 60)} min${ex.duration % 60 > 0 ? ` ${ex.duration % 60} sec` : ''}`
-            : `${ex.duration} min`}
+          {formatMinutes(ex.duration)}
         </Chip>
       );
     }

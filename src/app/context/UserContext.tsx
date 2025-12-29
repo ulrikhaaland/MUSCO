@@ -146,9 +146,10 @@ export function UserProvider({ children }: { children: ReactNode }) {
     // but keep the full programs array in userProgram for multi-week support
     const primaryProgram: ExerciseProgram = {
       ...userProgram.programs[0], // Week 1 metadata and date
-      docId: userProgram.docId,
+      docId: userProgram.docId, // Program document ID
+      weekId: userProgram.programs[0]?.docId, // Week document ID (for feedback storage)
       createdAt: userProgram.programs[0]?.createdAt || new Date(),
-    } as ExerciseProgram & { docId: string };
+    } as ExerciseProgram & { docId: string; weekId?: string };
 
     setProgram(primaryProgram);
     setAnswers(userProgram.questionnaire);
@@ -481,16 +482,16 @@ export function UserProvider({ children }: { children: ReactNode }) {
             }
           }
           
-          // If we have week data with days, build the program for display
+          // Build the generating week program (skeleton or partial)
+          let generatingWeekProgram: ExerciseProgram;
+          
           if (weekData && weekData.days && Array.isArray(weekData.days)) {
             const days = weekData.days as ProgramDay[];
             const generatedDayNumbers = days.map((d: ProgramDay) => d.day);
             setGeneratedDays(generatedDayNumbers);
             
-            // Build display program from program + week data
-            // Title comes from program document (generated once), week-specific data from week document
-            const displayProgram: ExerciseProgram = {
-              title: programData.title || '', // Title from program document
+            generatingWeekProgram = {
+              title: programData.title || '',
               programOverview: (weekData.programOverview as string) || '',
               summary: (weekData.summary as string) || '',
               timeFrameExplanation: '',
@@ -498,7 +499,9 @@ export function UserProvider({ children }: { children: ReactNode }) {
               afterTimeFrame: (weekData.afterTimeFrame as { expectedOutcome: string; nextSteps: string }) || { expectedOutcome: '', nextSteps: '' },
               targetAreas: (weekData.targetAreas as string[]) || programData.questionnaire?.targetAreas || [],
               bodyParts: (weekData.bodyParts as string[]) || programData.questionnaire?.targetAreas || [],
-              createdAt: programData.createdAt?.toDate?.() || new Date(),
+              createdAt: new Date(), // New week's creation time
+              docId: generatingDoc.id,
+              weekId: currentWeekId,
               days: [1, 2, 3, 4, 5, 6, 7].map((dayNum) => {
                 const existingDay = days.find((d: ProgramDay) => d.day === dayNum);
                 return existingDay || {
@@ -511,13 +514,11 @@ export function UserProvider({ children }: { children: ReactNode }) {
               }),
             };
             
-            // Enrich exercises with full data
-            await enrichExercisesWithFullData(displayProgram, isNorwegian);
-            setProgram(displayProgram);
+            await enrichExercisesWithFullData(generatingWeekProgram, isNorwegian);
           } else {
-            // No week data yet, show skeleton with title from program if available
-            const skeletonProgram: ExerciseProgram = {
-              title: programData.title || '', // Title from program document
+            // No week data yet, show skeleton
+            generatingWeekProgram = {
+              title: programData.title || '',
               programOverview: '',
               summary: '',
               timeFrameExplanation: '',
@@ -526,6 +527,8 @@ export function UserProvider({ children }: { children: ReactNode }) {
               targetAreas: programData.questionnaire?.targetAreas || [],
               bodyParts: programData.questionnaire?.targetAreas || [],
               createdAt: new Date(),
+              docId: generatingDoc.id,
+              weekId: currentWeekId,
               days: [1, 2, 3, 4, 5, 6, 7].map((day) => ({
                 day,
                 description: '',
@@ -534,7 +537,25 @@ export function UserProvider({ children }: { children: ReactNode }) {
                 duration: 0,
               })),
             };
-            setProgram(skeletonProgram);
+          }
+          
+          // Check if we already have this program with previous weeks (follow-up generation)
+          // Preserve existing weeks and add the new generating week
+          if (activeProgram && activeProgram.docId === generatingDoc.id && activeProgram.programs?.length > 0) {
+            // This is a follow-up generation - keep existing weeks, update/add the new one
+            const existingWeeks = activeProgram.programs.filter(p => p.docId !== currentWeekId);
+            const updatedPrograms = [...existingWeeks, generatingWeekProgram];
+            
+            setActiveProgram({
+              ...activeProgram,
+              programs: updatedPrograms,
+            });
+            
+            // Set display program to the generating week
+            setProgram(generatingWeekProgram);
+          } else {
+            // First-time generation or different program - just set the generating week
+            setProgram(generatingWeekProgram);
           }
           
           // Navigate to program page if not already there

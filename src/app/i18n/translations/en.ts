@@ -801,12 +801,12 @@ const translations = {
   'programFeedback.selector.description':
     'Filter by body part to find specific exercises. Click the buttons to mark exercises for replacement or removal.',
   'programFeedback.button.back': 'Back',
-  'programFeedback.button.generating': 'Generating Program',
-  'programFeedback.button.generateNextWeek': "Generate Next Week's Program",
+  'programFeedback.button.building': 'Building Program',
+  'programFeedback.button.buildNextWeek': "Build Next Week's Program",
   'programFeedback.button.waitUntilNextWeek':
-    "You must complete this week's program before you can generate the next week's program.",
+    "You must complete this week's program before you can build the next week's program.",
   'programFeedback.button.waitUntilSpecificDate':
-    "You can generate the next week's program on {{date}}.",
+    "You can build the next week's program on {{date}}.",
   'programFeedback.pageTitle': 'Program Feedback',
 
   // Exercise Feedback Selector
@@ -874,8 +874,8 @@ const translations = {
   'exerciseProgram.nextWeek': 'Next Week',
   'exerciseProgram.day.rest': 'Rest',
   'exerciseProgram.day.activity': 'Exercise',
-  'exerciseProgram.generatingDay': 'Generating day {{current}} of {{total}}...',
-  'exerciseProgram.generatingOverview': 'Generating program overview...',
+  'exerciseProgram.buildingDay': 'Building day {{current}} of {{total}}...',
+  'exerciseProgram.buildingOverview': 'Building program overview...',
   'exerciseProgram.overview.title.exercise':
     'Personalized for your fitness goals',
   'exerciseProgram.overview.title.recovery':
@@ -895,11 +895,26 @@ const translations = {
   'exerciseProgram.nextWeekCard.button': 'Start Feedback Process',
   'exerciseProgram.nextWeekCard.weeklyLimitTitle': 'Weekly Limit Reached',
   'exerciseProgram.nextWeekCard.weeklyLimitDescription':
-    "You've already generated a follow-up for this program type this week. Come back next week!",
+    "You've already generated a program for this program type this week. Come back next week!",
   'exerciseProgram.nextWeekCard.weeklyLimitNextDate': 'Next available: {{date}}',
   'exerciseProgram.feedback.error': 'User must be logged in to submit feedback',
   'exerciseProgram.feedback.success': 'New program generated with ID:',
   'exerciseProgram.feedback.error.generating': 'Error generating new program:',
+
+  // Pre-Follow-up Chat
+  'feedback.buildProgram': 'Build Program',
+  'feedback.continueChat': 'Continue Chat',
+  'feedback.buildEarlyTitle': 'Build Program Now?',
+  'feedback.buildEarlyMessage':
+    'You haven\'t finished answering the questions. Building now means your program may be less personalized. Continue chatting for better results.',
+  'feedback.buildAnyway': 'Build Anyway',
+  'feedback.typeMessage': 'Type your message...',
+  'feedback.sendSelected': 'Send ({{count}} selected)',
+  'feedback.iCompleted': 'I completed',
+  'feedback.daysSelected': '{{count}} days selected',
+  'feedback.startOver': 'Start over',
+  'feedback.answerInChat': 'Answer in chat',
+  'chat.error': 'Something went wrong. Please try again.',
 
   // Sign Up Prompts for Custom Programs
   'exerciseProgram.signUp.unlockWeek': 'Sign up to unlock',
@@ -1298,8 +1313,8 @@ const translations = {
 
   // Weekly generation limit
   'weeklyLimit.title': 'Weekly Limit Reached',
-  'weeklyLimit.message': 'You can only generate one {{programType}} program per week.',
-  'weeklyLimit.nextAllowed': 'You can generate a new program on {{date}}.',
+  'weeklyLimit.message': 'You can only build one {{programType}} program per week.',
+  'weeklyLimit.nextAllowed': 'You can build a new program on {{date}}.',
   'weeklyLimit.programType.exercise': 'exercise',
   'weeklyLimit.programType.recovery': 'recovery',
   'weeklyLimit.programType.exercise_and_recovery': 'exercise & recovery',

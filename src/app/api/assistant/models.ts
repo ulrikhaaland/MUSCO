@@ -15,6 +15,9 @@ export const PROGRAM_MODEL = process.env.PROGRAM_MODEL || 'gpt-5-mini';
 // Follow-up program generation model
 export const FOLLOWUP_MODEL = process.env.FOLLOWUP_MODEL || 'gpt-5-mini';
 
+// Pre-followup chat model (feedback collection before generating follow-up)
+export const PRE_FOLLOWUP_CHAT_MODEL = process.env.PRE_FOLLOWUP_CHAT_MODEL || 'gpt-5-mini';
+
 // Router model for determining chat mode
 export const ROUTER_MODEL = process.env.ROUTER_MODEL || 'gpt-5-mini';
 

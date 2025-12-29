@@ -121,6 +121,94 @@ export interface CleanedProgramFeedback {
   addedExercises: { id: string; name: string }[];
 }
 
+// ----------------------
+// Pre-Followup Chat Types
+// ----------------------
+
+/**
+ * Intensity feedback for a specific exercise from the previous program
+ */
+export interface ExerciseIntensityFeedback {
+  exerciseId: string;
+  feedback: 'too_easy' | 'just_right' | 'too_hard' | 'skipped';
+}
+
+/**
+ * Workout completion status for a specific day
+ */
+export interface DayCompletionStatus {
+  day: number;
+  completed: boolean;
+}
+
+/**
+ * Adjustment preference for next week's program based on completion feedback
+ */
+export type AdjustmentDirection = 'increase' | 'decrease' | 'maintain';
+
+/**
+ * What aspects of the program to adjust
+ */
+export interface ProgramAdjustments {
+  /** Adjust number of workout days */
+  days?: AdjustmentDirection;
+  /** Adjust workout duration */
+  duration?: AdjustmentDirection;
+  /** Adjust number of sets per exercise */
+  sets?: AdjustmentDirection;
+  /** Adjust number of reps per set */
+  reps?: AdjustmentDirection;
+  /** Adjust rest time between sets */
+  restTime?: AdjustmentDirection;
+}
+
+/**
+ * Structured updates collected during the pre-followup chat conversation
+ */
+export interface PreFollowupStructuredUpdates {
+  /** Overall feeling about the program (captured from initial response) */
+  overallFeeling?: 'great' | 'good' | 'okay' | 'difficult' | 'too_hard';
+  /** Overall intensity preference for next program */
+  overallIntensity?: 'increase' | 'maintain' | 'decrease';
+  /** Change in number of activity days per week */
+  numberOfActivityDays?: number;
+  /** Specific days user wants to work out (e.g., [1, 3, 5] for Mon/Wed/Fri) */
+  preferredWorkoutDays?: number[];
+  /** New workout duration preference */
+  workoutDuration?: string;
+  /** New injuries or pain areas reported */
+  newInjuries?: string[];
+  /** Previously painful areas that have improved */
+  resolvedInjuries?: string[];
+  /** Overall pain level change from previous week */
+  painLevelChange?: 'better' | 'same' | 'worse';
+  /** Whether all workouts were completed */
+  allWorkoutsCompleted?: boolean;
+  /** Per-day completion status (only set if user didn't complete all) */
+  dayCompletionStatus?: DayCompletionStatus[];
+  /** Adjustments to apply to next week's program based on completion feedback */
+  programAdjustments?: ProgramAdjustments;
+  /** LLM-generated summary of what was learned (semantic, not raw text) */
+  feedbackSummary?: string;
+}
+
+/**
+ * Complete feedback from the pre-followup conversational chat.
+ * This is passed to generateFollowUpExerciseProgram to inform program generation.
+ */
+export interface PreFollowupFeedback {
+  /** Structured updates for diagnosis and questionnaire data */
+  structuredUpdates?: PreFollowupStructuredUpdates;
+  /** Per-exercise intensity feedback */
+  exerciseIntensity?: ExerciseIntensityFeedback[];
+  /** Overall intensity preference for next program */
+  overallIntensity?: 'increase' | 'maintain' | 'decrease';
+  /** Free-form conversational feedback (summarized) */
+  conversationalFeedback: string;
+  /** Legacy exercise feedback from ProgramFeedbackQuestionnaire (optional, for compatibility) */
+  exerciseFeedback?: CleanedProgramFeedback;
+}
+
 /**
  * Request payload for generating follow-up program metadata only
  */

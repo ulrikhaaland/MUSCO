@@ -17,6 +17,7 @@ import { ProgramFeedback } from '@/app/components/ui/ProgramFeedbackQuestionnair
 import { prepareExercisesPrompt } from '@/app/helpers/exercise-prompt';
 import { getStartOfWeek, addDays } from '@/app/utils/dateutils';
 import { recordProgramGenerationAdmin } from '@/app/services/programGenerationLimitsAdmin';
+import { PreFollowupFeedback, ExerciseIntensityFeedback, PreFollowupStructuredUpdates, ProgramAdjustments } from '@/app/types/incremental-program';
 
 // Initialize OpenAI client
 const isTestOrCI = process.env.NODE_ENV === 'test' || 
@@ -268,6 +269,8 @@ export async function streamChatCompletion({
   userMessage,
   onContent,
   options,
+  model: modelOverride,
+  reasoningEffort,
 }: {
   threadId: string;
   messages: any[];
@@ -280,6 +283,8 @@ export async function streamChatCompletion({
     estimatedResponseTokens?: number;
     anonId?: string;
   };
+  model?: string;
+  reasoningEffort?: 'low' | 'medium' | 'high';
 }) {
   try {
     void _threadId;
@@ -288,7 +293,7 @@ export async function streamChatCompletion({
     // For explore mode: send last 6 turns to keep token usage reasonable
     const isDiagnosisMode = userMessage && typeof userMessage === 'object' && userMessage.mode === 'diagnosis';
     const isExploreMode = userMessage && typeof userMessage === 'object' && userMessage.mode === 'explore';
-    const selectedModel = isExploreMode ? EXPLORE_MODEL : DIAGNOSIS_MODEL; // Default to diagnosis if mode unknown
+    const selectedModel = modelOverride || (isExploreMode ? EXPLORE_MODEL : DIAGNOSIS_MODEL);
     
     throttledLog('info', 'chat_stream_start', `ctx=stream model=${selectedModel}`);
     
@@ -401,10 +406,15 @@ export async function streamChatCompletion({
     console.log('Last user message:', formattedMessages[formattedMessages.length - 1]?.content.substring(0, 200));
     console.log('═══════════════════════════════════════');
 
-    // Call OpenAI Responses API (streaming) with minimal reasoning effort
+    // Call OpenAI Responses API (streaming) with reasoning effort
+    // Use provided reasoningEffort, or default to 'minimal' for explore mode
+    const reasoning = reasoningEffort 
+      ? { effort: reasoningEffort } 
+      : (isExploreMode ? { effort: 'minimal' } : undefined);
+    
     const stream = await openai.responses.stream({
       model: selectedModel,
-      reasoning: isExploreMode ? { effort: 'minimal' } as any : undefined,
+      reasoning: reasoning as any,
       input: formattedMessages,
       max_output_tokens: CHAT_MAX_OUTPUT_TOKENS,
     } as any);
@@ -597,6 +607,52 @@ async function generateFollowUpMetadata(request: {
 }
 
 // ----------------------
+// Helper: Build adjustment instructions from user feedback
+// ----------------------
+function buildAdjustmentInstructions(
+  adjustments: ProgramAdjustments,
+  previousStats?: {
+    avgSets?: number;
+    avgReps?: number;
+    avgRest?: number;
+    workoutDays?: number;
+  }
+): string {
+  const instructions: string[] = [];
+  const prev = previousStats || {};
+
+  if (adjustments.sets === 'increase') {
+    instructions.push(`Increase sets per exercise (previous avg: ${prev.avgSets || 3} → target: ${(prev.avgSets || 3) + 1})`);
+  } else if (adjustments.sets === 'decrease') {
+    instructions.push(`Decrease sets per exercise (previous avg: ${prev.avgSets || 3} → target: ${Math.max(2, (prev.avgSets || 3) - 1)})`);
+  }
+
+  if (adjustments.reps === 'increase') {
+    instructions.push(`Increase reps per set (previous avg: ${prev.avgReps || 10} → target: ${(prev.avgReps || 10) + 2})`);
+  } else if (adjustments.reps === 'decrease') {
+    instructions.push(`Decrease reps per set (previous avg: ${prev.avgReps || 10} → target: ${Math.max(6, (prev.avgReps || 10) - 2)})`);
+  }
+
+  if (adjustments.restTime === 'increase') {
+    instructions.push(`Increase rest between sets (previous avg: ${prev.avgRest || 60}s → target: ${(prev.avgRest || 60) + 15}s)`);
+  } else if (adjustments.restTime === 'decrease') {
+    instructions.push(`Decrease rest between sets (previous avg: ${prev.avgRest || 60}s → target: ${Math.max(30, (prev.avgRest || 60) - 15)}s)`);
+  }
+
+  if (adjustments.duration === 'increase') {
+    instructions.push('Increase workout duration - add more exercises or sets');
+  } else if (adjustments.duration === 'decrease') {
+    instructions.push('Decrease workout duration - fewer exercises or sets');
+  }
+
+  if (instructions.length === 0) {
+    return 'Maintain similar intensity to previous week';
+  }
+
+  return 'USER REQUESTED ADJUSTMENTS:\n- ' + instructions.join('\n- ');
+}
+
+// ----------------------
 // Helper: Generate a single day for follow-up program
 // ----------------------
 async function generateFollowUpSingleDay(request: {
@@ -607,6 +663,13 @@ async function generateFollowUpSingleDay(request: {
   previousDays: FollowUpSingleDayResponse[];
   weeklyPlan: FollowUpMetadataResponse['weeklyPlan'];
   language: string;
+  programAdjustments?: ProgramAdjustments;
+  previousProgramStats?: {
+    avgSets?: number;
+    avgReps?: number;
+    avgRest?: number;
+    workoutDays?: number;
+  };
 }): Promise<FollowUpSingleDayResponse> {
   const { followUpSingleDaySystemPrompt } = await import('../prompts/singleDayPrompt');
 
@@ -633,6 +696,13 @@ async function generateFollowUpSingleDay(request: {
     exerciseIds: day.exercises.map((e) => e.exerciseId).filter(Boolean),
   }));
 
+  // Build adjustment instructions based on user feedback
+  const adjustmentInstructions = request.programAdjustments ? {
+    adjustments: request.programAdjustments,
+    previousStats: request.previousProgramStats,
+    instructions: buildAdjustmentInstructions(request.programAdjustments, request.previousProgramStats),
+  } : undefined;
+
   const userMessage = JSON.stringify({
     dayToGenerate: request.dayNumber,
     weeklyPlan: request.weeklyPlan,
@@ -643,6 +713,7 @@ async function generateFollowUpSingleDay(request: {
     workoutDuration: request.userInfo.workoutDuration,
     diagnosisData: request.diagnosisData,
     programFeedback: request.feedback,
+    programAdjustments: adjustmentInstructions,
     userInfo: {
       ...request.userInfo,
       equipment: undefined,
@@ -790,7 +861,7 @@ async function saveFollowUpDayToWeek(
 export async function generateFollowUpExerciseProgram(context: {
   diagnosisData: DiagnosisAssistantResponse;
   userInfo: ExerciseQuestionnaireAnswers;
-  feedback: ProgramFeedback;
+  feedback: ProgramFeedback | PreFollowupFeedback;
   userId?: string;
   programId?: string;
   previousProgram?: ExerciseProgram;
@@ -820,8 +891,47 @@ export async function generateFollowUpExerciseProgram(context: {
       }
     }
 
+    // Determine if this is a PreFollowupFeedback or legacy ProgramFeedback
+    const isPreFollowupFeedback = 'conversationalFeedback' in context.feedback;
+    
+    // Extract exercise intensity feedback for later use
+    let exerciseIntensity: ExerciseIntensityFeedback[] | undefined;
+    let conversationalFeedback: string | undefined;
+    let overallIntensity: 'increase' | 'maintain' | 'decrease' | undefined;
+    let structuredUpdates: PreFollowupStructuredUpdates | undefined;
+    let programAdjustments: ProgramAdjustments | undefined;
+    
     // Clean the feedback data
-    const cleanedFeedback = cleanProgramFeedback(context.feedback);
+    let cleanedFeedback;
+    if (isPreFollowupFeedback) {
+      const prefFeedback = context.feedback as PreFollowupFeedback;
+      exerciseIntensity = prefFeedback.exerciseIntensity;
+      conversationalFeedback = prefFeedback.conversationalFeedback;
+      overallIntensity = prefFeedback.overallIntensity;
+      structuredUpdates = prefFeedback.structuredUpdates;
+      programAdjustments = prefFeedback.structuredUpdates?.programAdjustments;
+      
+      // Use the exercise feedback if provided, otherwise create empty feedback
+      if (prefFeedback.exerciseFeedback) {
+        cleanedFeedback = prefFeedback.exerciseFeedback;
+      } else {
+        cleanedFeedback = {
+          preferredExercises: [],
+          removedExercises: [],
+          replacedExercises: [],
+          addedExercises: [],
+        };
+      }
+      
+      console.log('[followup-incremental] Using PreFollowupFeedback:');
+      console.log(`  Exercise intensity feedback: ${exerciseIntensity?.length || 0} items`);
+      console.log(`  Overall intensity: ${overallIntensity || 'not specified'}`);
+      console.log(`  Conversational feedback length: ${conversationalFeedback?.length || 0} chars`);
+      console.log(`  Program adjustments:`, programAdjustments || 'none');
+      console.log(`  Structured updates:`, structuredUpdates ? JSON.stringify(structuredUpdates) : 'none');
+    } else {
+      cleanedFeedback = cleanProgramFeedback(context.feedback as ProgramFeedback);
+    }
 
     // Log feedback for debugging
     throttledLog(
@@ -894,6 +1004,33 @@ export async function generateFollowUpExerciseProgram(context: {
     console.log('[followup-incremental] Step 3: Generating days 1-7...');
     const generatedDays: FollowUpSingleDayResponse[] = [];
 
+    // Calculate previous program stats for adjustment instructions
+    const previousProgramStats = context.previousProgram?.days ? (() => {
+      const allSets: number[] = [];
+      const allReps: number[] = [];
+      const allRest: number[] = [];
+      
+      context.previousProgram.days.forEach(d => {
+        d.exercises?.forEach(e => {
+          if (e.sets) allSets.push(e.sets);
+          if (e.reps) allReps.push(e.reps);
+          if (e.restBetweenSets) allRest.push(e.restBetweenSets);
+        });
+      });
+
+      return {
+        avgSets: allSets.length > 0 ? Math.round(allSets.reduce((a, b) => a + b, 0) / allSets.length) : undefined,
+        avgReps: allReps.length > 0 ? Math.round(allReps.reduce((a, b) => a + b, 0) / allReps.length) : undefined,
+        avgRest: allRest.length > 0 ? Math.round(allRest.reduce((a, b) => a + b, 0) / allRest.length) : undefined,
+        workoutDays: context.previousProgram.days.filter(d => d.dayType !== 'rest').length,
+      };
+    })() : undefined;
+
+    if (programAdjustments) {
+      console.log('[followup-incremental] Applying program adjustments:', programAdjustments);
+      console.log('[followup-incremental] Previous program stats:', previousProgramStats);
+    }
+
     for (let dayNum = 1; dayNum <= 7; dayNum++) {
       console.log(`[followup-incremental] Generating day ${dayNum}...`);
 
@@ -905,6 +1042,8 @@ export async function generateFollowUpExerciseProgram(context: {
         previousDays: generatedDays,
         weeklyPlan: metadata.weeklyPlan,
         language,
+        programAdjustments,
+        previousProgramStats,
       });
 
       generatedDays.push(dayResult);
@@ -987,219 +1126,6 @@ export async function generateFollowUpExerciseProgram(context: {
       }
     }
     throw new Error('Failed to generate follow-up exercise program');
-  }
-}
-
-export async function generateExerciseProgramWithModel(context: {
-  diagnosisData: DiagnosisAssistantResponse;
-  userInfo: ExerciseQuestionnaireAnswers;
-  userId?: string;
-  programId?: string;
-  previousProgram?: ExerciseProgram;
-  language?: string;
-}) {
-  try {
-    // If we have a userId and programId, update the program status to Generating
-    if (context.userId && context.programId) {
-      try {
-        const programRef = adminDb
-          .collection('users')
-          .doc(context.userId)
-          .collection('programs')
-          .doc(context.programId);
-
-        await programRef.update({
-          status: ProgramStatus.Generating,
-          updatedAt: new Date().toISOString(),
-        });
-        console.log('Updated program status to Generating');
-      } catch (error) {
-        console.error('Error updating program status to Generating:', error);
-        // Continue even if status update fails
-      }
-    }
-
-    // Get exercises prompt from shared utility function, using locale-specific exercises
-    const { exercisesPrompt, exerciseCount } = await prepareExercisesPrompt(
-      context.userInfo,
-      undefined, // removedExerciseIds
-      false, // includeEquipment
-      context.language || 'en' // language
-    );
-    console.log(
-      `Prepared exercise prompt with ${exerciseCount} total exercises (locale: ${context.language || 'en'})`
-    );
-    console.log(exercisesPrompt);
-
-    // Import the program system prompt
-    const { programSystemPrompt } = await import('../prompts/exercisePrompt');
-
-    // Get final system prompt with exercises appended to the end
-    const finalSystemPrompt = programSystemPrompt + exercisesPrompt;
-
-    // Transform context into a valid user message payload
-    const userMessage = JSON.stringify({
-      diagnosisData: context.diagnosisData,
-      userInfo: {
-        ...context.userInfo,
-        // Remove equipment and exerciseEnvironments from userInfo
-        equipment: undefined,
-        exerciseEnvironments: undefined,
-      },
-      currentDay: new Date().getDay(),
-      previousProgram: context.previousProgram,
-      language: context.language || 'en', // Default to English if not specified
-    });
-
-    // Call the OpenAI chat completion API
-    const response = await openai.chat.completions.create({
-      model: PROGRAM_MODEL, // Use dedicated program generation m odel
-      messages: [
-        {
-          role: 'system',
-          content: finalSystemPrompt,
-        },
-        {
-          role: 'user',
-          content: userMessage,
-        },
-      ],
-      response_format: { type: 'json_object' },
-    });
-
-    // Extract the content from the response
-    const rawContent = response.choices[0].message.content;
-    if (!rawContent) {
-      throw new Error('No response content from chat completion');
-    }
-
-    console.log(
-      `Response first 100 chars: "${rawContent.substring(0, 100)}..."`
-    );
-    console.log(`Response length: ${rawContent.length} characters`);
-
-    // Parse the response as JSON
-    let program: ExerciseProgram;
-    try {
-      program = JSON.parse(rawContent) as ExerciseProgram;
-
-      // Add createdAt timestamp to the program
-      const currentDate = new Date().toISOString();
-      program.createdAt = new Date(currentDate);
-    } catch (parseError) {
-      console.error('JSON parse error:', parseError);
-      console.error(
-        'First 200 characters of raw response:',
-        rawContent.substring(0, 200)
-      );
-      throw new Error(
-        `Failed to parse response as JSON: ${parseError.message}`
-      );
-    }
-
-    // Add target areas to the response (type is now at UserProgram level)
-    program.targetAreas = context.userInfo.targetAreas;
-
-    // If we have a userId and programId, update the program document
-    if (context.userId && context.programId) {
-      try {
-        const programRef = adminDb
-          .collection('users')
-          .doc(context.userId)
-          .collection('programs')
-          .doc(context.programId);
-
-        // Atomically add the new week document and mark the parent program as Done
-        const batch = adminDb.batch();
-
-        // Extract fields that belong to UserProgram level vs weekly program level
-        const { timeFrame, title, days, ...programMetadata } = program as any;
-
-        // New week document reference (auto-ID)
-        const newWeekRef = adminDb
-          .collection('users')
-          .doc(context.userId)
-          .collection('programs')
-          .doc(context.programId)
-          .collection('programs')
-          .doc();
-
-        // Save the weekly program data (days array and other program metadata)
-        batch.set(newWeekRef, {
-          days: days || [],
-          ...programMetadata,
-          createdAt: new Date().toISOString(),
-        });
-
-        // Update the parent document with UserProgram-level fields
-        const userProgramUpdates: any = {
-          status: ProgramStatus.Done,
-          updatedAt: new Date().toISOString(),
-        };
-
-        // Add timeFrame and title if they exist in the LLM response
-        if (timeFrame) {
-          userProgramUpdates.timeFrame = timeFrame;
-        }
-        if (title) {
-          userProgramUpdates.title = title;
-        }
-
-        batch.update(programRef, userProgramUpdates);
-
-        await batch.commit();
-
-        console.log('Successfully updated program document');
-
-        // Record the weekly generation limit now that program is complete
-        const programType = context.diagnosisData.programType;
-        if (programType) {
-          await recordProgramGenerationAdmin(context.userId, programType as ProgramType);
-        }
-      } catch (error) {
-        console.error('Error updating program document:', error);
-        // Update status to error if save fails
-        try {
-          if (context.userId && context.programId) {
-            const programRef = adminDb
-              .collection('users')
-              .doc(context.userId)
-              .collection('programs')
-              .doc(context.programId);
-
-            await programRef.update({
-              status: ProgramStatus.Error,
-              updatedAt: new Date().toISOString(),
-            });
-          }
-        } catch (statusError) {
-          console.error('Error updating program status to error:', statusError);
-        }
-        throw error;
-      }
-    }
-
-    return program;
-  } catch (error) {
-    console.error('Error generating exercise program with model:', error);
-    // If we have a userId and programId, update the status to error
-    if (context.userId && context.programId) {
-      try {
-        const programRef = adminDb
-          .collection('users')
-          .doc(context.userId)
-          .collection('programs')
-          .doc(context.programId);
-
-        await programRef.update({
-          status: ProgramStatus.Error,
-          updatedAt: new Date().toISOString(),
-        });
-      } catch (statusError) {
-        console.error('Error updating program status to error:', statusError);
-      }
-    }
-    throw new Error('Failed to generate exercise program with model');
   }
 }
 
