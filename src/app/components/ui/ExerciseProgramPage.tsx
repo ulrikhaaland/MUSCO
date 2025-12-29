@@ -63,7 +63,7 @@ import {
   saveRecoveryProgramToAccount,
   clearRecoveryProgramFromSession,
 } from '../../services/recoveryProgramService';
-import { SUBSCRIPTIONS_ENABLED } from '@/app/lib/featureFlags';
+import { SUBSCRIPTIONS_ENABLED, DISABLE_FOLLOWUP_RESTRICTIONS } from '@/app/lib/featureFlags';
 import { canGenerateProgram, getNextAllowedGenerationDate } from '@/app/services/programGenerationLimits';
 
 interface ExerciseProgramPageProps {
@@ -1180,10 +1180,9 @@ export function ExerciseProgramPage({
                 router.push('/subscribe');
                 return;
               }
-              // Check if user is eligible to create a follow-up program
-              const isDebugMode = process.env.NODE_ENV === 'development';
-
-              if (!isInFutureWeek && !isDebugMode) {
+                              // Check if user is eligible to create a follow-up program
+                              // Skip restriction if DISABLE_FOLLOWUP_RESTRICTIONS is true
+                              if (!isInFutureWeek && !DISABLE_FOLLOWUP_RESTRICTIONS) {
                 // Show toast message instead of navigating to feedback page
                 let message = t('programFeedback.button.waitUntilNextWeek');
 
