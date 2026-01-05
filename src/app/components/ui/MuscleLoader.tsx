@@ -1,11 +1,12 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-  
+
 interface MuscleLoaderProps {
   fullScreen?: boolean;
   baseColor?: string; // static outline colour
   pulseColor?: string; // animated overlay colour
+  glowColor?: string; // neon glow colour
   onRetry?: () => void;
   message?: string; // Added message prop
   submessage?: string; // Added optional submessage
@@ -13,8 +14,9 @@ interface MuscleLoaderProps {
 
 export default function MuscleLoader({
   fullScreen = false,
-  baseColor = '#94a3b8', // slate-400 (was #4b5563/slate-600)
-  pulseColor = '#6366f1', // indigo-500
+  baseColor = '#1e293b', // slate-800 - darker for more contrast
+  pulseColor = '#22d3ee', // cyan-400 - vibrant neon cyan
+  glowColor = '#06b6d4', // cyan-500 - glow color
   onRetry,
   message = null, // Default message will be set using useTranslation
   submessage,
@@ -51,8 +53,9 @@ export default function MuscleLoader({
         (pulseGroup as SVGGElement).style.opacity = '1';
 
         pulsePaths.forEach((p, i) => {
+          // Smoother easing, longer duration for fluid motion
           (p as SVGPathElement).style.animation =
-            `pulseDraw 1s steps(2) infinite alternate-reverse ${i * 25}ms`; // Changed to alternate-reverse
+            `pulseDraw 2.5s ease-in-out infinite alternate ${i * 50}ms`;
         });
       }
     }, 0);
@@ -60,7 +63,6 @@ export default function MuscleLoader({
     // Clean up animation on unmount
     return () => {
       clearTimeout(initTimer);
-      console.log('Cleaning up MuscleLoader animation');
       if (svgElement) {
         const pulseGroup = svgElement.querySelector('g.pulse');
         if (pulseGroup) {
@@ -77,10 +79,8 @@ export default function MuscleLoader({
 
   /* ─── animated ellipsis ─────────────────────────────────────────────── */
   useEffect(() => {
-    console.log('Setting up dots animation');
-    const t = setInterval(() => setDotFrame((f) => (f + 1) % 3), 300);
+    const t = setInterval(() => setDotFrame((f) => (f + 1) % 3), 400);
     return () => {
-      console.log('Cleaning up dots animation');
       clearInterval(t);
     };
   }, []);
@@ -91,49 +91,196 @@ export default function MuscleLoader({
     return () => clearTimeout(t);
   }, []);
 
-  const defaultMessage = message || null; // Use translated default message
-
-  // Log message changes to help debugging
-  useEffect(() => {
-    console.log('MuscleLoader message updated:', defaultMessage);
-  }, [defaultMessage]);
+  const defaultMessage = message || null;
 
   const wrapCls = fullScreen
-    ? 'fixed inset-0 z-50 flex items-center justify-center bg-gray-900'
-    : 'flex items-center justify-center h-full w-full bg-gray-900';
+    ? 'fixed inset-0 z-50 flex items-center justify-center'
+    : 'flex items-center justify-center h-full w-full';
 
   // Added spaces around dots to prevent kerning shifts
   const dots = ['·  ', '··  ', '···'][dotFrame];
 
   return (
-    <div className={wrapCls} role="status" aria-label="loading anatomy model">
+    <div
+      className={wrapCls}
+      role="status"
+      aria-label="loading anatomy model"
+      style={{
+        background: `
+          radial-gradient(ellipse 80% 50% at 50% 50%, rgba(6, 182, 212, 0.08) 0%, transparent 60%),
+          radial-gradient(ellipse 60% 80% at 50% 100%, rgba(139, 92, 246, 0.06) 0%, transparent 50%),
+          linear-gradient(180deg, #0f172a 0%, #020617 100%)
+        `,
+      }}
+    >
       {/* keyframes */}
       <style jsx>{`
         @keyframes pulseDraw {
-          to {
-            stroke-dashoffset: 0;
+          0% {
+            stroke-dashoffset: var(--path-length);
+            opacity: 0.4;
           }
+          50% {
+            opacity: 1;
+          }
+          100% {
+            stroke-dashoffset: 0;
+            opacity: 0.8;
+          }
+        }
+
+        @keyframes breathe {
+          0%,
+          100% {
+            transform: scale(1);
+            filter: drop-shadow(0 0 8px ${glowColor}40);
+          }
+          50% {
+            transform: scale(1.015);
+            filter: drop-shadow(0 0 20px ${glowColor}80)
+              drop-shadow(0 0 40px ${glowColor}40);
+          }
+        }
+
+        @keyframes glowPulse {
+          0%,
+          100% {
+            opacity: 0.6;
+            filter: blur(2px);
+          }
+          50% {
+            opacity: 1;
+            filter: blur(4px);
+          }
+        }
+
+        @keyframes gridMove {
+          0% {
+            transform: translateY(0);
+          }
+          100% {
+            transform: translateY(20px);
+          }
+        }
+
+        @keyframes floatParticle {
+          0%,
+          100% {
+            transform: translateY(0) translateX(0);
+            opacity: 0;
+          }
+          10% {
+            opacity: 0.8;
+          }
+          90% {
+            opacity: 0.8;
+          }
+          100% {
+            transform: translateY(-100px) translateX(20px);
+            opacity: 0;
+          }
+        }
+
+        .muscle-svg {
+          animation: breathe 4s ease-in-out infinite;
+        }
+
+        .glow-layer {
+          animation: glowPulse 3s ease-in-out infinite;
+        }
+
+        .grid-overlay {
+          animation: gridMove 8s linear infinite;
+        }
+
+        .particle {
+          position: absolute;
+          width: 3px;
+          height: 3px;
+          background: ${pulseColor};
+          border-radius: 50%;
+          animation: floatParticle 6s ease-in-out infinite;
+          box-shadow: 0 0 6px ${pulseColor};
         }
       `}</style>
 
-      <div className="flex flex-col items-center text-white select-none">
+      {/* Animated grid background */}
+      <div className="absolute inset-0 overflow-hidden opacity-20 pointer-events-none">
+        <div
+          className="grid-overlay absolute inset-0"
+          style={{
+            backgroundImage: `
+              linear-gradient(rgba(34, 211, 238, 0.1) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(34, 211, 238, 0.1) 1px, transparent 1px)
+            `,
+            backgroundSize: '40px 40px',
+          }}
+        />
+      </div>
+
+      {/* Floating particles */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {[...Array(6)].map((_, i) => (
+          <div
+            key={i}
+            className="particle"
+            style={{
+              left: `${15 + i * 14}%`,
+              bottom: '20%',
+              animationDelay: `${i * 1}s`,
+            }}
+          />
+        ))}
+      </div>
+
+      <div className="relative flex flex-col items-center text-white select-none">
         {/* ==== svg outline ==== */}
         <svg
           ref={svgRef}
-          className="w-[220px] h-auto"
+          className="muscle-svg w-[240px] h-auto"
           viewBox="0 0 300 450"
           preserveAspectRatio="xMidYMid meet"
           xmlns="http://www.w3.org/2000/svg"
         >
-          {/* static outline */}
+          {/* SVG Filters for glow effects */}
+          <defs>
+            <filter id="neonGlow" x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur stdDeviation="3" result="coloredBlur" />
+              <feMerge>
+                <feMergeNode in="coloredBlur" />
+                <feMergeNode in="coloredBlur" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+            <filter id="softGlow" x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur stdDeviation="6" result="blur" />
+              <feMerge>
+                <feMergeNode in="blur" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+            <linearGradient
+              id="strokeGradient"
+              x1="0%"
+              y1="0%"
+              x2="0%"
+              y2="100%"
+            >
+              <stop offset="0%" stopColor="#22d3ee" />
+              <stop offset="50%" stopColor="#a855f7" />
+              <stop offset="100%" stopColor="#22d3ee" />
+            </linearGradient>
+          </defs>
+
+          {/* static outline - subtle base layer */}
           <g
             className="base"
             stroke={baseColor}
-            strokeWidth="1" // Changed from 2 to 1
+            strokeWidth="1"
             fill="none"
             vectorEffect="non-scaling-stroke"
             transform="translate(0,450) scale(0.1,-0.1)"
-            opacity="0.4" // Added opacity for better contrast with pulse
+            opacity="0.3"
           >
             <path
               d="M1419 4384 c-84 -25 -149 -111 -149 -197 0 -15 -7 -42 -16 -59 -22
@@ -697,15 +844,59 @@ l-8 40 -1 -45z"
             />
           </g>
 
-          {/* animated overlay */}
+          {/* Glow layer - creates the neon halo effect */}
           <g
-            className="pulse"
+            className="glow-layer"
             stroke={pulseColor}
-            strokeWidth="2"
+            strokeWidth="4"
             fill="none"
             vectorEffect="non-scaling-stroke"
             transform="translate(0,450) scale(0.1,-0.1)"
-            style={{ opacity: 0 }} // Initially hide the pulse lines
+            opacity="0.4"
+            filter="url(#softGlow)"
+          >
+            <path
+              d="M1419 4384 c-84 -25 -149 -111 -149 -197 0 -15 -7 -42 -16 -59 -22
+-42 -14 -112 19 -175 35 -68 49 -126 38 -155 -11 -28 -185 -123 -246 -134
+-114 -20 -180 -65 -227 -154 -20 -40 -23 -59 -24 -171 0 -69 -4 -132 -9 -139
+-5 -8 -12 -62 -16 -120 -4 -58 -15 -125 -24 -150 -60 -158 -57 -145 -66 -380
+-8 -234 -21 -391 -40 -474 -27 -113 30 -276 116 -332 19 -13 28 -13 47 -3 35
+19 47 40 48 82 0 34 2 38 21 32 13 -4 28 0 41 12 19 17 20 25 13 117 -4 60
+-15 120 -28 155 -15 39 -21 79 -21 131 0 66 6 89 47 191 56 141 65 177 73 305
+6 101 28 194 45 194 18 0 41 -74 42 -130 1 -127 -26 -351 -67 -553 -22 -106
+-22 -371 0 -498 9 -52 26 -125 39 -164 19 -59 22 -87 20 -180 -2 -60 -10 -148
+-19 -194 -20 -105 -20 -180 0 -256 8 -33 31 -143 49 -245 26 -143 33 -206 31
+-275 -4 -104 -19 -147 -69 -193 -20 -18 -41 -48 -47 -68 -11 -32 -10 -40 7
+-63 31 -42 98 -71 166 -71 32 0 67 5 78 10 23 13 69 100 69 132 0 13 7 32 15
+42 21 27 20 186 -1 266 -14 57 -14 74 1 204 9 77 23 161 31 185 18 59 18 193
+-2 287 -13 67 -13 81 0 127 17 63 24 113 35 282 5 72 17 161 27 199 15 59 19
+66 29 52 17 -22 33 -143 41 -300 3 -73 14 -159 24 -199 18 -68 18 -72 -1 -156
+-23 -105 -25 -242 -4 -301 8 -23 15 -63 15 -88 0 -24 5 -83 11 -131 10 -76 10
+-95 -7 -161 -16 -60 -18 -93 -13 -170 10 -147 26 -198 77 -252 22 -24 34 -28
+82 -28 107 0 190 47 190 107 0 33 -22 72 -60 108 -47 44 -60 83 -60 177 1 78
+47 333 94 513 19 74 20 166 1 270 -8 44 -15 130 -15 191 0 91 4 123 24 182 46
+135 59 224 60 417 1 118 -4 200 -12 238 -22 93 -43 243 -52 367 -5 63 -12 127
+-15 141 -12 49 41 209 65 194 12 -8 43 -132 37 -149 -10 -25 13 -203 33 -264
+10 -31 32 -94 49 -139 46 -126 48 -164 13 -253 -38 -96 -52 -248 -27 -287 13
+-20 22 -23 45 -18 30 6 30 6 28 -39 -3 -52 18 -81 64 -91 26 -6 36 -1 74 36
+76 74 108 204 79 314 -25 93 -36 220 -44 475 -6 175 -12 245 -23 275 -51 131
+-58 157 -58 228 0 41 -7 96 -15 123 -11 35 -13 71 -9 129 10 135 -32 245 -114
+300 -20 13 -75 34 -122 46 -111 27 -258 102 -266 135 -9 36 4 91 36 151 38 71
+48 136 27 177 -9 17 -19 51 -22 76 -10 62 -27 100 -61 133 -56 56 -158 77
+-245 51z"
+            />
+          </g>
+
+          {/* animated overlay - main neon stroke */}
+          <g
+            className="pulse"
+            stroke="url(#strokeGradient)"
+            strokeWidth="2.5"
+            fill="none"
+            vectorEffect="non-scaling-stroke"
+            transform="translate(0,450) scale(0.1,-0.1)"
+            style={{ opacity: 0 }}
+            filter="url(#neonGlow)"
           >
             <path
               d="M1419 4384 c-84 -25 -149 -111 -149 -197 0 -15 -7 -42 -16 -59 -22
@@ -1271,20 +1462,39 @@ l-8 40 -1 -45z"
         </svg>
 
         {/* loading caption */}
-        <p className="mt-6 text-sm text-center" aria-live="polite">
-          {defaultMessage} {dots}
+        <p
+          className="mt-8 text-sm text-center font-medium tracking-wide"
+          aria-live="polite"
+          style={{
+            color: pulseColor,
+            textShadow: `0 0 10px ${pulseColor}60, 0 0 20px ${pulseColor}30`,
+          }}
+        >
+          {defaultMessage}{' '}
+          <span className="inline-block w-6 text-left">{dots}</span>
         </p>
 
         {submessage && (
-          <p className="mt-2 text-xs text-gray-400 text-center">{submessage}</p>
+          <p
+            className="mt-3 text-xs text-center max-w-[200px] leading-relaxed"
+            style={{ color: 'rgba(148, 163, 184, 0.8)' }}
+          >
+            {submessage}
+          </p>
         )}
 
         {showRetry && onRetry && (
           <button
             onClick={onRetry}
-            className="mt-2 text-xs text-indigo-500 underline text-center mx-auto block"
+            className="mt-4 px-4 py-2 text-xs font-medium rounded-full transition-all duration-300 hover:scale-105"
+            style={{
+              color: pulseColor,
+              border: `1px solid ${pulseColor}40`,
+              background: `${pulseColor}10`,
+              boxShadow: `0 0 15px ${pulseColor}20`,
+            }}
           >
-            taking longer than usual – tap to retry
+            Taking longer than usual – tap to retry
           </button>
         )}
       </div>

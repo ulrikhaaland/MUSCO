@@ -4,9 +4,10 @@ import { ProgramType } from '../../../shared/types';
 import { getStartOfWeek } from '../utils/dateutils';
 
 /**
- * Set to true to disable weekly generation limits (for testing/development)
+ * Disable weekly generation limits on localhost (for testing/development)
  */
-const DISABLE_WEEKLY_LIMITS = true;
+const DISABLE_WEEKLY_LIMITS =
+  typeof window !== 'undefined' && window.location.hostname === 'localhost';
 
 /**
  * Weekly program generation limits service

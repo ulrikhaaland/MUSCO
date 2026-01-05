@@ -129,51 +129,47 @@ export function ProgramDaySummaryComponent({
           })}
           style={{ display: 'block', textDecoration: 'none' }}
         >
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center justify-between w-full">
-              <div className="flex items-center gap-3">
-                <h3 className="text-app-title text-white">
-                  {shimmer ? (
-                    <span className="shimmer bg-gray-700 h-5 w-20 sm:w-24 inline-block rounded" />
-                  ) : (
-                    dayName
-                  )}
-                </h3>
+          <div className="flex items-start justify-between gap-2 mb-3">
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 min-w-0 flex-1">
+              <h3 className="text-app-title text-white shrink-0">
                 {shimmer ? (
-                  <span className="shimmer inline-block h-5 w-16 sm:w-20 bg-gray-700 rounded-full" />
+                  <span className="shimmer bg-gray-700 h-5 w-20 sm:w-24 inline-block rounded" />
                 ) : (
-                  <Chip variant={dayTypeDisplay.variant} size="sm">
-                    {dayTypeDisplay.label}
-                  </Chip>
+                  dayName
                 )}
-              </div>
-              <div className="flex items-center gap-6">
-                {shimmer ? (
-                  <div className="shimmer w-24 h-4 bg-gray-700 rounded" />
-                ) : (
-                  day.duration !== undefined && day.duration > 0 && (
-                  <div className="flex items-center text-gray-400">
-                    <svg
-                      className="w-4 h-4 mr-1.5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                      />
-                    </svg>
-                    {day.duration === 0
-                      ? t('program.noDuration')
-                      : `${day.duration} ${t('program.minutes')}`}
-                  </div>
-                ))}
-                <span className={`text-2xl text-indigo-400/60 hover:text-indigo-400/90 transition-opacity w-5 h-5 flex items-center cursor-pointer`}>›</span>
-              </div>
+              </h3>
+              {shimmer ? (
+                <span className="shimmer inline-block h-5 w-16 sm:w-20 bg-gray-700 rounded-full shrink-0" />
+              ) : (
+                <Chip variant={dayTypeDisplay.variant} size="sm">
+                  {dayTypeDisplay.label}
+                </Chip>
+              )}
+              {shimmer ? (
+                <div className="shimmer w-24 h-4 bg-gray-700 rounded shrink-0" />
+              ) : (
+                day.duration !== undefined && day.duration > 0 && (
+                <div className="flex items-center text-gray-400 shrink-0">
+                  <svg
+                    className="w-4 h-4 mr-1.5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                  {day.duration === 0
+                    ? t('program.noDuration')
+                    : `${day.duration} ${t('program.minutes')}`}
+                </div>
+              ))}
             </div>
+            <span className="text-2xl text-indigo-400/60 hover:text-indigo-400/90 transition-opacity w-5 h-5 flex items-center justify-center cursor-pointer shrink-0 mt-0.5">›</span>
           </div>
 
           {isCalendarView && programTitle && (
@@ -296,45 +292,41 @@ export function ProgramDaySummaryComponent({
         </a>
       ) : (
         <div className={cardStyles}>
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center justify-between w-full">
-              <div className="flex items-center gap-3">
-                <h3 className="text-app-title text-white">
-                  {shimmer ? <span className="shimmer bg-gray-700 h-5 w-24 inline-block rounded" /> : dayName}
-                </h3>
-                {shimmer ? (
-                  <span className="shimmer inline-block h-5 w-20 bg-gray-700 rounded-full" />
-                ) : (
-                  <Chip variant={dayTypeDisplay.variant} size="sm">
-                    {dayTypeDisplay.label}
-                  </Chip>
-                )}
-              </div>
-              <div className="flex items-center gap-6">
-                {shimmer ? (
-                  <div className="shimmer w-24 h-4 bg-gray-700 rounded" />
-                ) : (
-                  day.duration !== undefined && day.duration > 0 && (
-                  <div className="flex items-center text-gray-400">
-                    <svg
-                      className="w-4 h-4 mr-1.5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                      />
-                    </svg>
-                    {day.duration === 0
-                      ? t('program.noDuration')
-                      : `${day.duration} ${t('program.minutes')}`}
-                  </div>
-                ))}
-              </div>
+          <div className="flex items-start justify-between gap-2 mb-3">
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 min-w-0 flex-1">
+              <h3 className="text-app-title text-white shrink-0">
+                {shimmer ? <span className="shimmer bg-gray-700 h-5 w-24 inline-block rounded" /> : dayName}
+              </h3>
+              {shimmer ? (
+                <span className="shimmer inline-block h-5 w-20 bg-gray-700 rounded-full shrink-0" />
+              ) : (
+                <Chip variant={dayTypeDisplay.variant} size="sm">
+                  {dayTypeDisplay.label}
+                </Chip>
+              )}
+              {shimmer ? (
+                <div className="shimmer w-24 h-4 bg-gray-700 rounded shrink-0" />
+              ) : (
+                day.duration !== undefined && day.duration > 0 && (
+                <div className="flex items-center text-gray-400 shrink-0">
+                  <svg
+                    className="w-4 h-4 mr-1.5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                  {day.duration === 0
+                    ? t('program.noDuration')
+                    : `${day.duration} ${t('program.minutes')}`}
+                </div>
+              ))}
             </div>
           </div>
 

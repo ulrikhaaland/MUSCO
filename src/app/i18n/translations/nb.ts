@@ -325,7 +325,7 @@ const translations = {
   'chat.question.exercise.text':
     'Kan du hjelpe meg med å lage et treningsprogram?',
   'chat.question.exercise.meta': '2 min oppsett',
-  'chat.question.recovery.title': 'Planlegg Rehabilitering',
+  'chat.question.recovery.title': 'Planlegg Rehab',
   'chat.question.recovery.text':
     'Hva er det beste rehabiliteringsprogrammet for $part?',
   'chat.question.recovery.meta': '2 min oppsett',
@@ -408,7 +408,7 @@ const translations = {
   'profile.modality.cardio': 'Kondisjon',
   'profile.modality.cardio.description':
     'Løping, sykling, svømming, HIIT, aerobic',
-  'profile.modality.recovery': 'Rehabilitering',
+  'profile.modality.recovery': 'Rehab',
   'profile.modality.recovery.description':
     'Tøying, yoga, mobilitetsarbeid, aktiv rehabilitering',
 
@@ -465,7 +465,7 @@ const translations = {
   'program.activity': 'Trening',
   'program.strength': 'Styrke',
   'program.cardio': 'Kondisjon',
-  'program.recovery': 'Rehabilitering',
+  'program.recovery': 'Rehab',
   'program.minutes': 'minutter',
   'program.targetBodyParts': 'Målrettede kroppsdeler:',
   'program.moreBodyParts': '+{{count}} flere',
@@ -506,7 +506,7 @@ const translations = {
   'intentionQuestion.title': 'Hvordan kan vi hjelpe deg i dag?',
   'intentionQuestion.subtitle': 'Velg hva du leter etter:',
   'intentionQuestion.exerciseProgram': 'Treningsprogram',
-  'intentionQuestion.recoveryProgram': 'Rehabiliteringsprogram',
+  'intentionQuestion.recoveryProgram': 'Rehabsprogram',
 
   // Program Titles
   'program.recoveryProgramTitle': 'Rehab‑program',
@@ -631,7 +631,7 @@ const translations = {
   'calendar.workout': 'Trening',
   'calendar.strength': 'Styrke',
   'calendar.cardio': 'Kondisjon',
-  'calendar.recovery': 'Rehabilitering',
+  'calendar.recovery': 'Rehab',
   'calendar.rest': 'Hvile',
   'calendar.today': 'I dag',
   'calendar.weekdays.mon': 'Man',
@@ -650,7 +650,7 @@ const translations = {
   'programs.createProgram': 'Opprett Program',
   'programs.filter.all': 'Alle',
   'programs.filter.exercise': 'Trening',
-  'programs.filter.recovery': 'Rehabilitering',
+  'programs.filter.recovery': 'Rehab',
   'programs.sort.newest': 'Nyeste',
   'programs.sort.oldest': 'Eldste',
   'programs.noFilteredPrograms':
@@ -671,10 +671,10 @@ const translations = {
   'programs.modality.cardio': 'Kondisjon',
   'programs.modality.strength': 'Styrke',
   'programs.modality.both': 'Kondisjon & Styrke',
-  'programs.modality.recovery': 'Rehabilitering',
+  'programs.modality.recovery': 'Rehab',
   'programs.dayType.strength': 'Styrke',
   'programs.dayType.cardio': 'Kondisjon',
-  'programs.dayType.recovery': 'Rehabilitering',
+  'programs.dayType.recovery': 'Rehab',
   'programs.dayType.rest': 'Hvile',
 
   // PWA Installation
@@ -1180,6 +1180,16 @@ const translations = {
   'privacy.goBack': 'Gå tilbake',
   'privacy.policy.title': 'Personvernerklæring',
   'privacy.policy.lastUpdated': 'Sist oppdatert:',
+  'privacy.deleteAccount.verificationTitle': 'Skriv inn verifiseringskode',
+  'privacy.deleteAccount.verificationDescription': 'Skriv inn den 6-sifrede koden fra e-posten vi sendte for å fullføre sletting av kontoen.',
+  'privacy.deleteAccount.deleteButton': 'Slett konto',
+  'privacy.deleteAccount.deletingButton': 'Sletter konto...',
+  'privacy.deleteAccount.resendEmail': 'Mottok du ikke e-posten? Klikk her for å prøve igjen',
+  'privacy.deleteAccount.resendSuccess': 'Bekreftelses-e-post sendt på nytt',
+  'privacy.deleteAccount.resendFailed': 'Kunne ikke sende e-post på nytt',
+  'privacy.additionalRequests': 'Ytterligere forespørsler',
+  'privacy.additionalRequests.description': 'For andre datarelaterte forespørsler eller spørsmål om personvernet ditt, vennligst kontakt vårt personvernteam.',
+  'privacy.additionalRequests.contact': 'Kontakt personvernteamet',
 
   // Partners
   'partners.headline': 'Våre samarbeidspartnere',

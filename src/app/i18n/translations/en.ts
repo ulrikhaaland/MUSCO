@@ -1090,6 +1090,16 @@ const translations = {
   'privacy.goBack': 'Go back',
   'privacy.policy.title': 'Privacy Policy',
   'privacy.policy.lastUpdated': 'Last updated:',
+  'privacy.deleteAccount.verificationTitle': 'Enter Verification Code',
+  'privacy.deleteAccount.verificationDescription': 'Enter the 6-digit code from the email we sent to complete account deletion.',
+  'privacy.deleteAccount.deleteButton': 'Delete Account',
+  'privacy.deleteAccount.deletingButton': 'Deleting Account...',
+  'privacy.deleteAccount.resendEmail': "Didn't receive email? Click here to try again",
+  'privacy.deleteAccount.resendSuccess': 'Verification email resent',
+  'privacy.deleteAccount.resendFailed': 'Failed to resend email',
+  'privacy.additionalRequests': 'Additional Requests',
+  'privacy.additionalRequests.description': 'For any other data-related requests or questions about your privacy, please contact our data protection team.',
+  'privacy.additionalRequests.contact': 'Contact Privacy Team',
 
   // Partners
   'partners.headline': 'Our partners',

@@ -157,7 +157,7 @@ function SortableDayTab({
         }
       }}
       disabled={!isDayGenerated}
-      className={`py-2.5 rounded-lg font-medium transition-all duration-200 flex flex-col items-center justify-center relative group ${
+      className={`py-2.5 px-2 min-w-[4.5rem] flex-1 rounded-lg font-medium transition-all duration-200 flex flex-col items-center justify-center relative group ${
         isDragging
           ? 'bg-gray-700/50 text-gray-500 ring-2 ring-dashed ring-indigo-400'
           : isDropTarget
@@ -281,7 +281,7 @@ function DayTabsWithDnd({
         items={sortedDays.map((d) => `day-${d.day}`)}
         strategy={horizontalListSortingStrategy}
       >
-        <div className="grid grid-cols-7 gap-1.5">
+        <div className="flex gap-1.5 overflow-x-auto scrollbar-hide pb-1">
           {sortedDays.map((day) => {
             const isDayGenerated = generatedDays.includes(day.day);
             const isDayGenerating = generatingDay === day.day;
@@ -336,9 +336,9 @@ function DayTabsWithDnd({
 // Day tabs shimmer placeholder
 function DayTabsShimmer() {
   return (
-    <div className="grid grid-cols-7 gap-1.5">
+    <div className="flex gap-1.5 overflow-x-auto scrollbar-hide pb-1">
       {Array.from({ length: 7 }).map((_, i) => (
-        <div key={i} className="shimmer h-16 bg-gray-800/60 rounded-lg" />
+        <div key={i} className="shimmer h-16 min-w-[4.5rem] flex-1 bg-gray-800/60 rounded-lg" />
       ))}
     </div>
   );

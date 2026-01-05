@@ -1,22 +1,25 @@
 import { BodyPartGroup } from '../config/bodyPartGroups';
 import { AnatomyPart } from '../types/human';
+import { hasTranslation, Locale } from '../i18n/translations';
 
 /**
  * Translate a body part group name
  * @param group The body part group to translate
  * @param t Translation function
+ * @param locale Current locale (optional, for silent key check)
  * @returns Translated group name
  */
-export function translateBodyPartGroupName(group: BodyPartGroup, t: (key: string, options?: any) => string): string {
+export function translateBodyPartGroupName(
+  group: BodyPartGroup, 
+  t: (key: string, options?: any) => string,
+  locale: Locale = 'en'
+): string {
   // Try to find a translation key based on the group id
   const translationKey = `bodyPart.group.${group.id}`;
   
-  // Check if translation exists, otherwise return the original name
-  const translation = t(translationKey);
-  
-  // If translation exists and is not the same as the key, return it
-  if (translation !== translationKey) {
-    return translation;
+  // Check if translation exists silently before calling t()
+  if (hasTranslation(translationKey, locale) || hasTranslation(translationKey, 'en')) {
+    return t(translationKey);
   }
   
   return group.name;
@@ -53,9 +56,14 @@ export function translatePartDirectionPrefix(part: AnatomyPart | null, t: (key: 
  * Tries multiple translation key formats for the body part name.
  * @param part The anatomy part to translate
  * @param t Translation function
+ * @param locale Current locale (optional, for silent key check)
  * @returns Fully translated part name, or original with direction prefix translated
  */
-export function translateAnatomyPart(part: AnatomyPart | null, t: (key: string, options?: any) => string): string {
+export function translateAnatomyPart(
+  part: AnatomyPart | null, 
+  t: (key: string, options?: any) => string,
+  locale: Locale = 'en'
+): string {
   if (!part) return '';
   
   const name = part.name;
@@ -68,11 +76,10 @@ export function translateAnatomyPart(part: AnatomyPart | null, t: (key: string, 
     `bodyParts.${name.toLowerCase().replace(/\s+/g, '')}`, // "bodyParts.leftshoulder"
   ];
   
+  // Check silently for existing translations to avoid console spam
   for (const key of keyFormats) {
-    const translation = t(key);
-    // If translation exists (not same as key), return it
-    if (translation !== key) {
-      return translation;
+    if (hasTranslation(key, locale) || hasTranslation(key, 'en')) {
+      return t(key);
     }
   }
   

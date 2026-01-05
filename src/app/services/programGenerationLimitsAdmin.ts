@@ -3,9 +3,9 @@ import { ProgramType } from '../../../shared/types';
 import { getStartOfWeek } from '../utils/dateutils';
 
 /**
- * Set to true to disable weekly generation limits (for testing/development)
+ * Disable weekly generation limits in development (localhost)
  */
-const DISABLE_WEEKLY_LIMITS = true;
+const DISABLE_WEEKLY_LIMITS = process.env.NODE_ENV === 'development';
 
 /**
  * Weekly program generation limits service (Admin/Server-side version)

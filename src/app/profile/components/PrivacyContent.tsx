@@ -298,15 +298,15 @@ export default function PrivacyContent({ isDesktop = false }: PrivacyContentProp
         
         {/* Contact section */}
         <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-xl ring-1 ring-gray-700/50 p-6">
-          <h2 className="text-xl font-bold text-white mb-4">Additional Requests</h2>
+          <h2 className="text-xl font-bold text-white mb-4">{t('privacy.additionalRequests')}</h2>
           <p className="text-gray-300 mb-4">
-            For any other data-related requests or questions about your privacy, please contact our data protection team.
+            {t('privacy.additionalRequests.description')}
           </p>
           <a
             href="mailto:privacy@musco-app.com"
             className="px-4 py-3 bg-gray-700 text-white rounded-lg hover:bg-gray-600 w-full flex items-center justify-center"
           >
-            Contact Privacy Team
+            {t('privacy.additionalRequests.contact')}
           </a>
         </div>
       </div>
@@ -378,9 +378,9 @@ export default function PrivacyContent({ isDesktop = false }: PrivacyContentProp
               </svg>
             </div>
             
-            <h3 className="text-xl font-bold text-white mb-4 text-center">Enter Verification Code</h3>
+            <h3 className="text-xl font-bold text-white mb-4 text-center">{t('privacy.deleteAccount.verificationTitle')}</h3>
             <p className="text-gray-300 mb-6 text-center">
-              Enter the 6-digit code from the email we sent to complete account deletion.
+              {t('privacy.deleteAccount.verificationDescription')}
             </p>
             
             {codeError && (
@@ -395,9 +395,9 @@ export default function PrivacyContent({ isDesktop = false }: PrivacyContentProp
               onSubmit={handleCodeValidation}
               error={codeError}
               isLoading={isLoading}
-              placeholder="Enter 6-digit code"
-              submitButtonText="Delete Account"
-              submitButtonLoadingText="Deleting Account..."
+              placeholder={t('login.enterCode')}
+              submitButtonText={t('privacy.deleteAccount.deleteButton')}
+              submitButtonLoadingText={t('privacy.deleteAccount.deletingButton')}
               submitButtonVariant="danger"
             />
             
@@ -407,7 +407,7 @@ export default function PrivacyContent({ isDesktop = false }: PrivacyContentProp
                 onClick={closeDeleteAccountDialog}
                 className="px-4 py-2 bg-gray-700 text-white rounded-xl flex-1 hover:bg-gray-600 transition-colors duration-200"
               >
-                Cancel
+                {t('privacy.deleteAccount.cancel')}
               </button>
             </div>
             
@@ -422,16 +422,16 @@ export default function PrivacyContent({ isDesktop = false }: PrivacyContentProp
                     await sendAccountDeletionEmail(user.email, redirectUrl);
                     localStorage.setItem('emailForSignIn', user.email);
                     localStorage.setItem('isDeleteAccountFlow', 'true');
-                    toast.success('Verification email resent');
+                    toast.success(t('privacy.deleteAccount.resendSuccess'));
                   } catch {
-                    toast.error('Failed to resend email');
+                    toast.error(t('privacy.deleteAccount.resendFailed'));
                   } finally {
                     setIsLoading(false);
                   }
                 }}
                 className="text-indigo-400 hover:text-indigo-300 text-sm underline"
               >
-                Didn&apos;t receive email? Click here to try again
+                {t('privacy.deleteAccount.resendEmail')}
               </button>
             </div>
           </div>
