@@ -553,6 +553,11 @@ export function useHumanAPI({
 
   // Extract the main processing logic to a separate function
   function processObjectSelected(event: any) {
+    // Clear any pending selection (e.g., from latissimus_dorsi/gluteus delay)
+    // This prevents old pending events from overriding the current selection
+    pendingObjectSelectedEventRef.current = null;
+    isPendingObjectSelectedRef.current = false;
+    
     // Check if handler is temporarily disabled - only relevant for None intention
     if (
       disableSelectionHandlerRef.current &&
