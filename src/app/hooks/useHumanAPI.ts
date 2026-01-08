@@ -271,6 +271,8 @@ export function useHumanAPI({
   const prevSelectedGroupsLengthRef = useRef(0);
   const prevSelectedGroupIdRef = useRef<string | null>(null);
   const prevSelectedPartIdRef = useRef<string | null>(null);
+  // Track if the 3D model triggered the last selection (vs external source like chat)
+  const modelTriggeredSelectionRef = useRef<boolean>(false);
   
   useEffect(() => {
     if (!isReady || !humanRef.current) return;
@@ -278,6 +280,13 @@ export function useHumanAPI({
     // Skip hydration if we're currently resetting (prevents restoration during reset)
     if (isResettingRef.current) {
       console.log('[useHumanAPI] Skipping hydration - currently resetting');
+      return;
+    }
+    
+    // Skip hydration if the 3D model itself triggered this selection change
+    // (user clicked on the model, not an external source like chat)
+    if (modelTriggeredSelectionRef.current) {
+      modelTriggeredSelectionRef.current = false;
       return;
     }
     
@@ -599,6 +608,11 @@ export function useHumanAPI({
       }
       return;
     }
+    
+    // Mark that this selection came from the 3D model (not external like chat)
+    // This prevents the hydration effect from blocking subsequent clicks
+    modelTriggeredSelectionRef.current = true;
+    
     const objects = Object.keys(event);
 
     const selectedId = objects[0];
@@ -861,6 +875,11 @@ export function useHumanAPI({
       }
       return;
     }
+    
+    // Mark that this selection came from the 3D model (not external like chat)
+    // This prevents the hydration effect from blocking subsequent clicks
+    modelTriggeredSelectionRef.current = true;
+    
     selectedPartIdRef.current = null;
     const objects = Object.keys(event);
 
