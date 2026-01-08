@@ -13,7 +13,11 @@ import { diagnosisSystemPrompt } from '@/app/api/prompts/diagnosisPrompt';
 import { getExploreSystemPrompt } from '@/app/api/prompts/explorePrompt';
 import { chatModeRouterPrompt } from '@/app/api/prompts/routePrompt';
 import { preFollowupSystemPrompt, buildPreFollowupUserContext } from '@/app/api/prompts/preFollowupPrompt';
-import { ROUTER_MODEL, PRE_FOLLOWUP_CHAT_MODEL } from '@/app/api/assistant/models';
+import { 
+  ROUTER_MODEL, ROUTER_REASONING,
+  PRE_FOLLOWUP_CHAT_MODEL, PRE_FOLLOWUP_CHAT_REASONING,
+  getReasoningParam,
+} from '@/app/api/assistant/models';
 import { StreamParser } from '@/app/api/assistant/stream-parser';
 import { bodyPartGroups } from '@/app/config/bodyPartGroups';
 

@@ -101,28 +101,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
     selectedPartRef.current = selectedPart;
   }, [selectedPart]);
 
-  // Auto-save viewer state to sessionStorage for NON-logged-in users only
-  // (so anonymous users can persist selection through login/signup)
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    // Only save for non-logged-in users
-    if (user) return;
-    // Don't save if nothing is selected (avoid saving empty state on initial mount)
-    if (selectedGroups.length === 0 && !selectedPart) return;
-    
-    try {
-      const snapshot = {
-        intention,
-        selectedGroupIds: selectedGroups.map((g) => g.id),
-        selectedPart,
-      };
-      // Save to sessionStorage for anonymous user persistence through auth flow
-      window.sessionStorage.setItem('viewerState', JSON.stringify(snapshot));
-    } catch (e) {
-      console.warn('Failed to auto-save viewer state', e);
-    }
-  }, [selectedGroups, selectedPart, intention, user]);
-
   // Handle intention changes
   const handleSetIntention = useCallback((newIntention: ProgramIntention) => {
     resetSelectionState();

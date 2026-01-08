@@ -10,7 +10,7 @@ import {
 } from '@/app/types/incremental-program';
 import { ProgramDay, ProgramStatus, ProgramType } from '@/app/types/program';
 import { adminDb } from '@/app/firebase/admin';
-import { PROGRAM_MODEL } from '@/app/api/assistant/models';
+import { PROGRAM_MODEL, PROGRAM_REASONING, getReasoningParam } from '@/app/api/assistant/models';
 import { recordProgramGenerationAdmin } from '@/app/services/programGenerationLimitsAdmin';
 
 const openai = new OpenAI({
@@ -161,6 +161,7 @@ async function generateMetadata(
       { role: 'user', content: userMessage },
     ],
     text: { format: { type: 'json_object' } },
+    ...getReasoningParam(PROGRAM_REASONING),
   });
 
   const rawContent = response.output_text;
@@ -225,6 +226,7 @@ async function generateSingleDay(
       { role: 'user', content: userMessage },
     ],
     text: { format: { type: 'json_object' } },
+    ...getReasoningParam(PROGRAM_REASONING),
   });
 
   const rawContent = response.output_text;

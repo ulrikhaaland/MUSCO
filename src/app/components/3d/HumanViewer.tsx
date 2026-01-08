@@ -17,10 +17,11 @@ import { useAuth } from '@/app/context/AuthContext';
 import { logAnalyticsEvent } from '@/app/utils/analytics';
 import { useExplainSelection } from '@/app/hooks/useExplainSelection';
 import { bodyPartGroups } from '@/app/config/bodyPartGroups';
-import { getGenderedId } from '@/app/utils/anatomyHelpers';
 import { findGroupByName, findBodyPartByName } from '@/app/utils/bodyPartMarkerParser';
 import { WeeklyLimitReachedError } from '@/app/services/questionnaire';
 import { WeeklyLimitModal } from '../ui/WeeklyLimitModal';
+import { translatePartDirectionPrefix } from '@/app/utils/bodyPartTranslation';
+import { ExplainerTooltip } from '../ui/ExplainerTooltip';
 
 const MODEL_IDS: Record<Gender, string> = {
   male: '5tOV',
@@ -55,7 +56,7 @@ export default function HumanViewer({
   hideNav,
 }: HumanViewerProps) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
-  const { locale } = useTranslation();
+  const { locale, t } = useTranslation();
   const {
     intention,
     selectedGroups,
@@ -66,8 +67,16 @@ export default function HumanViewer({
     restoreViewerState,
   } = useApp();
   const lastSelectedIdRef = useRef<string | null>(null);
-  const minChatWidth = 300;
-  const maxChatWidth = 800;
+  const minChatWidthAbsolute = 250; // absolute minimum in pixels for edge cases
+  // Dynamic bounds: 25% min, 75% max of screen width for both chat and model
+  const getMinChatWidth = useCallback(() => {
+    if (typeof window === 'undefined') return minChatWidthAbsolute;
+    return Math.max(minChatWidthAbsolute, Math.floor(window.innerWidth * 0.25));
+  }, []);
+  const getMaxChatWidth = useCallback(() => {
+    if (typeof window === 'undefined') return 600;
+    return Math.floor(window.innerWidth * 0.75);
+  }, []);
   const [chatWidth, setChatWidth] = useState(384);
   const [isDragging, setIsDragging] = useState(false);
   const [isAtMinWidth, setIsAtMinWidth] = useState(false);
@@ -95,6 +104,11 @@ export default function HumanViewer({
   const isExplainerActive = explainerEnabled && !isMobile;
   const [isChatOverlayOpen, setIsChatOverlayOpen] = useState(false);
   const [isChatHistoryOpen, setIsChatHistoryOpen] = useState(false);
+  
+  // Custom explainer tooltip position (captured from click)
+  const [explainerPosition, setExplainerPosition] = useState<{ x: number; y: number } | null>(null);
+  const [isCameraMoving, setIsCameraMoving] = useState(false);
+  const cameraMovingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Explore explainer state
   // Using BioDigital labels for anchoring; no manual screen position needed
@@ -184,56 +198,82 @@ export default function HumanViewer({
     onZoom: (objectId?: string) => handleZoom(objectId),
   });
 
-  // Create a loading label immediately upon selection (runs after HumanAPI init)
+  // Track mouse position globally (iframe clicks don't bubble, so we track last known position)
+  const lastMousePosRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
+  
   useEffect(() => {
-    if (!humanRef?.current) return;
-    const human = humanRef.current;
-    const labelId = 'explainer_label';
+    const handleMouseMove = (e: MouseEvent) => {
+      lastMousePosRef.current = { x: e.clientX, y: e.clientY };
+    };
+    
+    document.addEventListener('mousemove', handleMouseMove);
+    return () => document.removeEventListener('mousemove', handleMouseMove);
+  }, []);
 
-    // If disabled (or on mobile) or rate-limited, do not show a loading bubble
-    if (!exploreOn || !selectedPart || explainer?.rateLimited || !isExplainerActive) {
-      try { human.send('labels.destroy', labelId); } catch {}
+  // Set explainer position when a part is selected (using last known mouse position)
+  const prevSelectedPartRef = useRef<string | null>(null);
+  
+  useEffect(() => {
+    if (!selectedPart) {
+      setExplainerPosition(null);
+      prevSelectedPartRef.current = null;
       return;
     }
+    
+    // Only update position when selection changes (not on every render)
+    if (selectedPart.objectId !== prevSelectedPartRef.current) {
+      prevSelectedPartRef.current = selectedPart.objectId;
+      
+      // Use last mouse position for tooltip placement
+      if (isExplainerActive) {
+        // Use mouse position if available, otherwise center of viewer
+        const pos = lastMousePosRef.current;
+        const hasValidPos = pos.x > 0 || pos.y > 0;
+        
+        if (hasValidPos) {
+          setExplainerPosition({ x: pos.x, y: pos.y });
+        } else {
+          // Fallback: position near center-left of the viewer
+          const viewerRect = viewerWrapperRef.current?.getBoundingClientRect();
+          if (viewerRect) {
+            setExplainerPosition({
+              x: viewerRect.left + viewerRect.width * 0.4,
+              y: viewerRect.top + viewerRect.height * 0.4,
+            });
+          }
+        }
+      }
+    }
+  }, [selectedPart, isExplainerActive]);
 
-    try { human.send('labels.destroy', labelId); } catch {}
-
-    try {
-      human.send('labels.create', {
-        objectId: getGenderedId(selectedPart.objectId, currentGender),
-        labelId,
-        title: selectedPart.name,
-        description: 'Loading…',
-        labelOffset: [24, -8],
-        pinGlow: true,
-        flyTo: false,
-        collapseDescription: false,
-      });
-    } catch {}
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [exploreOn, selectedPart, explainer, isExplainerActive, humanRef]);
-
-  // Update the label when explainer text arrives
+  // Track camera movement to hide tooltip during rotation/zoom
   useEffect(() => {
-    if (!humanRef?.current) return;
+    if (!humanRef?.current || !isExplainerActive) return;
+    
     const human = humanRef.current;
-    const labelId = 'explainer_label';
-    if (!exploreOn || !selectedPart) return;
-    if (!explainer || explainer.rateLimited || !isExplainerActive) return;
-    if (!explainer.text) return;
-
-    try {
-      human.send('labels.update', {
-        labelId,
-        title: selectedPart.name,
-        description: explainer.text,
-        pinGlow: false,
-        labelOffset: [24, -8],
-        flyTo: false,
-        collapseDescription: false,
-      });
-    } catch {}
-  }, [exploreOn, selectedPart, explainer, isExplainerActive, humanRef]);
+    
+    const onCameraUpdate = () => {
+      setIsCameraMoving(true);
+      
+      // Clear existing timeout
+      if (cameraMovingTimeoutRef.current) {
+        clearTimeout(cameraMovingTimeoutRef.current);
+      }
+      
+      // Set timeout to mark camera as stopped
+      cameraMovingTimeoutRef.current = setTimeout(() => {
+        setIsCameraMoving(false);
+      }, 150);
+    };
+    
+    human.on('camera.updated', onCameraUpdate);
+    
+    return () => {
+      if (cameraMovingTimeoutRef.current) {
+        clearTimeout(cameraMovingTimeoutRef.current);
+      }
+    };
+  }, [humanRef, isExplainerActive]);
 
   const handleZoom = (objectId?: string) => {
     // First get current camera info
@@ -342,68 +382,48 @@ export default function HumanViewer({
       setIsResetting(true);
       logAnalyticsEvent('reset_model');
 
-      // Reset the context state
-      if (shouldResetSelectionState == true) {
-        resetSelectionState();
-        
-        // Close mobile chat overlay if open
-        setIsChatOverlayOpen(false);
-
-        // Use scene.reset to reset everything to initial state
-        if (humanRef.current) {
-          humanRef.current.send('scene.disableXray', () => {});
-
-          setTimeout(() => {
-            humanRef.current?.send('scene.reset', () => {
-              // Reset all our state after the scene has been reset
-
-              resetValues();
-
-              // Clear reset state after a short delay to allow for animation
-              setTimeout(() => {
-                isResettingRef.current = false;
-                setIsResetting(false);
-              }, 500);
-            });
-          }, 100);
-        } else {
+      const clearResettingState = () => {
+        setTimeout(() => {
           isResettingRef.current = false;
           setIsResetting(false);
+        }, 500);
+      };
+
+      const performSceneReset = () => {
+        if (!humanRef.current) {
+          isResettingRef.current = false;
+          setIsResetting(false);
+          return;
         }
-      } else if (shouldResetSelectionState == false) {
+
+        humanRef.current.send('scene.disableXray', () => {});
+        setTimeout(() => {
+          humanRef.current?.send('scene.reset', () => {
+            resetValues();
+            clearResettingState();
+          });
+        }, 100);
+      };
+
+      // Camera-only reset (no selection state change)
+      if (shouldResetSelectionState === false) {
         humanRef.current.send('camera.set', {
           position: initialCameraRef.current?.position,
           target: initialCameraRef.current?.target,
           up: initialCameraRef.current?.up,
           animate: true,
         });
-        setTimeout(() => {
-          isResettingRef.current = false;
-          setIsResetting(false);
-        }, 500);
-      } else {
-        // Use scene.reset to reset everything to initial state
-        if (humanRef.current) {
-          humanRef.current.send('scene.disableXray', () => {});
-
-          setTimeout(() => {
-            humanRef.current?.send('scene.reset', () => {
-              // Reset all our state after the scene has been reset
-
-              resetValues();
-
-              // Clear reset state after a short delay to allow for animation
-              setTimeout(() => {
-                isResettingRef.current = false;
-                setIsResetting(false);
-              }, 500);
-            });
-          }, 100);
-        } else {
-          isResettingRef.current = false;
-          setIsResetting(false);
-        }
+        clearResettingState();
+        return;
       }
+
+      // Full reset with selection state
+      if (shouldResetSelectionState === true) {
+        resetSelectionState();
+        setIsChatOverlayOpen(false);
+      }
+
+      performSceneReset();
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [isResettingRef, setNeedsReset, isReady, humanRef, resetSelectionState]
@@ -414,36 +434,22 @@ export default function HumanViewer({
     setNeedsReset(selectedGroups.length > 0 || needsReset);
   }, [selectedGroups, needsReset, setNeedsReset]);
 
-  // Reset split to optimal sizes based on screen width (prioritize chat)
+  // Reset split to optimal sizes based on screen width (50/50 default)
   const resetSplitSizes = useCallback(() => {
     const screenWidth = window.innerWidth;
-    let optimalChatWidth: number;
+    const minChat = getMinChatWidth();
+    const maxChat = getMaxChatWidth();
+    
+    // Default to 50% split
+    const optimalChatWidth = Math.floor(screenWidth * 0.5);
 
-    // Calculate optimal chat width based on screen size
-    // Prioritize chat, especially on smaller desktop screens
-    if (screenWidth >= 1600) {
-      // Large screens: chat gets ~55% but cap at max
-      optimalChatWidth = Math.min(maxChatWidth, Math.floor(screenWidth * 0.55));
-    } else if (screenWidth >= 1200) {
-      // Medium-large screens: chat gets ~60%
-      optimalChatWidth = Math.min(maxChatWidth, Math.floor(screenWidth * 0.60));
-    } else if (screenWidth >= 1024) {
-      // Medium screens: chat gets ~65%
-      optimalChatWidth = Math.min(maxChatWidth, Math.floor(screenWidth * 0.65));
-    } else {
-      // Smaller desktop screens: chat gets ~70%, ensuring viewer still has minimum space
-      const maxPossible = screenWidth - minChatWidth;
-      optimalChatWidth = Math.min(maxChatWidth, Math.floor(screenWidth * 0.70), maxPossible);
-    }
-
-    // Ensure within bounds
-    const maxAllowed = Math.min(maxChatWidth, screenWidth - minChatWidth);
-    const finalWidth = Math.min(Math.max(minChatWidth, optimalChatWidth), maxAllowed);
+    // Ensure within bounds (25%-75% of screen)
+    const finalWidth = Math.min(Math.max(minChat, optimalChatWidth), maxChat);
 
     setChatWidth(finalWidth);
     lastWidthRef.current = finalWidth;
-    setIsAtMinWidth(finalWidth <= minChatWidth);
-    setIsAtMaxWidth(finalWidth >= maxAllowed);
+    setIsAtMinWidth(finalWidth <= minChat);
+    setIsAtMaxWidth(finalWidth >= maxChat);
 
     // Persist to localStorage
     try {
@@ -451,7 +457,7 @@ export default function HumanViewer({
     } catch {}
 
     logAnalyticsEvent('reset_split_sizes', { width: finalWidth, screenWidth });
-  }, [minChatWidth, maxChatWidth]);
+  }, [getMinChatWidth, getMaxChatWidth]);
 
   const startDragging = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
@@ -466,12 +472,13 @@ export default function HumanViewer({
 
       rafRef.current = requestAnimationFrame(() => {
         const newWidth = window.innerWidth - e.clientX;
-        const maxAllowed = Math.min(maxChatWidth, window.innerWidth - minChatWidth);
-        const clampedWidth = Math.min(Math.max(minChatWidth, newWidth), maxAllowed);
+        const minChat = getMinChatWidth();
+        const maxChat = getMaxChatWidth();
+        const clampedWidth = Math.min(Math.max(minChat, newWidth), maxChat);
         lastWidthRef.current = clampedWidth;
         setChatWidth(clampedWidth);
-        setIsAtMinWidth(clampedWidth <= minChatWidth);
-        setIsAtMaxWidth(clampedWidth >= maxAllowed);
+        setIsAtMinWidth(clampedWidth <= minChat);
+        setIsAtMaxWidth(clampedWidth >= maxChat);
       });
     };
 
@@ -494,7 +501,7 @@ export default function HumanViewer({
 
     document.addEventListener('mousemove', handleMouseMove);
     document.addEventListener('mouseup', stopDragging);
-  }, []);
+  }, [getMinChatWidth, getMaxChatWidth]);
 
   const handleRotate = useCallback(() => {
     const human = humanRef.current;
@@ -552,7 +559,8 @@ export default function HumanViewer({
     const isDesktop = window.innerWidth >= 768;
     if (!isDesktop) return;
 
-    const maxAllowed = Math.min(maxChatWidth, window.innerWidth - minChatWidth);
+    const minChat = getMinChatWidth();
+    const maxChat = getMaxChatWidth();
     let desired: number;
 
     // Check if user has a saved preference
@@ -563,44 +571,24 @@ export default function HumanViewer({
         if (!Number.isNaN(parsed)) {
           desired = parsed;
         } else {
-          // No valid saved preference, use optimal size for current screen
-          const screenWidth = window.innerWidth;
-          if (screenWidth >= 1600) {
-            desired = Math.min(maxChatWidth, Math.floor(screenWidth * 0.55));
-          } else if (screenWidth >= 1200) {
-            desired = Math.min(maxChatWidth, Math.floor(screenWidth * 0.60));
-          } else if (screenWidth >= 1024) {
-            desired = Math.min(maxChatWidth, Math.floor(screenWidth * 0.65));
-          } else {
-            const maxPossible = screenWidth - minChatWidth;
-            desired = Math.min(maxChatWidth, Math.floor(screenWidth * 0.70), maxPossible);
-          }
+          // No valid saved preference, default to 50% split
+          desired = Math.floor(window.innerWidth * 0.5);
         }
       } else {
-        // No saved preference, use optimal size for current screen
-        const screenWidth = window.innerWidth;
-        if (screenWidth >= 1600) {
-          desired = Math.min(maxChatWidth, Math.floor(screenWidth * 0.55));
-        } else if (screenWidth >= 1200) {
-          desired = Math.min(maxChatWidth, Math.floor(screenWidth * 0.60));
-        } else if (screenWidth >= 1024) {
-          desired = Math.min(maxChatWidth, Math.floor(screenWidth * 0.65));
-        } else {
-          const maxPossible = screenWidth - minChatWidth;
-          desired = Math.min(maxChatWidth, Math.floor(screenWidth * 0.70), maxPossible);
-        }
+        // No saved preference, default to 50% split
+        desired = Math.floor(window.innerWidth * 0.5);
       }
     } catch {
       // Fallback to 50/50 if something goes wrong
-      desired = Math.floor(window.innerWidth / 2);
+      desired = Math.floor(window.innerWidth * 0.5);
     }
 
-    const clamped = Math.min(Math.max(minChatWidth, desired), maxAllowed);
+    const clamped = Math.min(Math.max(minChat, desired), maxChat);
     setChatWidth(clamped);
     lastWidthRef.current = clamped;
-    setIsAtMinWidth(clamped <= minChatWidth);
-    setIsAtMaxWidth(clamped >= maxAllowed);
-  }, []);
+    setIsAtMinWidth(clamped <= minChat);
+    setIsAtMaxWidth(clamped >= maxChat);
+  }, [getMinChatWidth, getMaxChatWidth]);
 
   // Keep lastWidthRef synced
   useEffect(() => {
@@ -612,21 +600,25 @@ export default function HumanViewer({
     if (typeof window === 'undefined') return;
     const onResize = () => {
       if (window.innerWidth < 768) return; // only relevant on desktop
-      const maxAllowed = Math.min(maxChatWidth, window.innerWidth - minChatWidth);
-      const clamped = Math.min(Math.max(minChatWidth, lastWidthRef.current), maxAllowed);
+      const minChat = getMinChatWidth();
+      const maxChat = getMaxChatWidth();
+      const clamped = Math.min(Math.max(minChat, lastWidthRef.current), maxChat);
       if (clamped !== lastWidthRef.current) {
         lastWidthRef.current = clamped;
         setChatWidth(clamped);
-        setIsAtMinWidth(clamped <= minChatWidth);
-        setIsAtMaxWidth(clamped >= maxAllowed);
+        setIsAtMinWidth(clamped <= minChat);
+        setIsAtMaxWidth(clamped >= maxChat);
         try {
           window.localStorage.setItem(DESKTOP_SPLIT_KEY, String(clamped));
         } catch {}
       }
+      // Also update boundary states even if width didn't change
+      setIsAtMinWidth(clamped <= minChat);
+      setIsAtMaxWidth(clamped >= maxChat);
     };
     window.addEventListener('resize', onResize);
     return () => window.removeEventListener('resize', onResize);
-  }, []);
+  }, [getMinChatWidth, getMaxChatWidth]);
 
   // Handler for body group selection from follow-up questions or assistant response
   // Uses the same findGroupByName utility as chat message badges for consistency
@@ -815,36 +807,6 @@ export default function HumanViewer({
     }
   };
 
-  const fadeInKeyframes = `
-  @keyframes slideIn {
-    from {
-      opacity: 0;
-      transform: translateX(-20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateX(0);
-    }
-  }
-  @keyframes slideOut {
-    from {
-      opacity: 1;
-      transform: translateX(0);
-    }
-    to {
-      opacity: 0;
-      transform: translateX(-20px);
-    }
-  }
-  `;
-
-  // Add the keyframes to the document
-  if (typeof document !== 'undefined') {
-    const style = document.createElement('style');
-    style.innerHTML = fadeInKeyframes;
-    document.head.appendChild(style);
-  }
-
   // Use effect to reset the model when shouldResetModel prop changes
   useEffect(() => {
     if (shouldResetModel && isReady && resetModel) {
@@ -941,7 +903,7 @@ export default function HumanViewer({
         {/* Model Viewer Container */}
         <div
           className="flex-1 relative bg-black flex flex-col"
-          style={{ minWidth: `${minChatWidth}px` }}
+          style={{ minWidth: `${minChatWidthAbsolute}px` }}
         >
         {isChangingModel && (
           <div className="absolute inset-0 z-50 bg-black flex items-center justify-center">
@@ -1069,8 +1031,8 @@ export default function HumanViewer({
         } ${'translate-x-0 opacity-100'} overflow-y-auto`}
         style={{
           width: `${chatWidth}px`,
-          minWidth: `${minChatWidth}px`,
-          maxWidth: `${maxChatWidth}px`,
+          minWidth: `${minChatWidthAbsolute}px`,
+          maxWidth: '75%',
         }}
       >
         <div className="h-full border-l border-gray-800 overflow-y-auto">
@@ -1145,6 +1107,18 @@ export default function HumanViewer({
         />
       )}
       </div>
+
+      {/* Custom Explainer Tooltip - Desktop Only (rendered at root to avoid clipping) */}
+      {isExplainerActive && selectedPart && explainerPosition && !isCameraMoving && (
+        <ExplainerTooltip
+          title={translatePartDirectionPrefix(selectedPart, t)}
+          text={exploreOn ? (explainer?.text ?? null) : null}
+          isLoading={exploreOn && !explainer?.text && !explainer?.rateLimited}
+          screenPosition={explainerPosition}
+          maxX={viewerWrapperRef.current?.getBoundingClientRect().right ?? (typeof window !== 'undefined' ? window.innerWidth - chatWidth - 16 : undefined)}
+          onClose={() => setSelectedPart(null)}
+        />
+      )}
     </div>
   );
 }

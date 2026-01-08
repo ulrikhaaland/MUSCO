@@ -4,7 +4,7 @@ import OpenAI from 'openai';
 import { z } from 'zod';
 import { reserveFreeChatTokens, reserveFreeChatTokensForAnon } from '@/app/api/assistant/openai-server';
 import { estimateJsonTokens, ESTIMATED_RESPONSE_TOKENS, ANON_COOKIE_NAME, logFreeLimit } from '@/app/lib/chatLimits';
-import { EXPLORE_MODEL } from '@/app/api/assistant/models';
+import { EXPLAINER_MODEL, EXPLAINER_REASONING, getReasoningParam } from '@/app/api/assistant/models';
 
 const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY! });
 
@@ -122,7 +122,7 @@ export async function POST(req: NextRequest) {
 
     if (wantsStream) {
       const stream = await client.responses.stream({
-        model: EXPLORE_MODEL,
+        model: EXPLAINER_MODEL,
         input: [
           { role: 'system', content: SYSTEM_PROMPT_TEXT },
           { role: 'user', content: JSON.stringify({
@@ -135,6 +135,7 @@ export async function POST(req: NextRequest) {
             viewerHints: input.viewerHints,
           }) },
         ],
+        ...getReasoningParam(EXPLAINER_REASONING),
       });
 
       // Prevent unhandled promise rejection when stream is aborted
@@ -164,7 +165,8 @@ export async function POST(req: NextRequest) {
               controller.close();
             })
             .on('response.completed', () => {
-              const text = capWords(String(fullContent || ''), 80);
+              // Don't truncate - let the model respect the prompt's word limit
+              const text = String(fullContent || '').trim();
               controller.enqueue(enc.encode(`data: ${JSON.stringify({ type: 'final', payload: { text } })}\n\n`));
               controller.close();
             });
@@ -197,13 +199,5 @@ export async function POST(req: NextRequest) {
 }
 
 // Removed JSON coercion helpers; streaming is text-only
-
-function capWords(s: string, maxWords: number) {
-  const words = s.trim().split(/\s+/);
-  if (words.length <= maxWords) return s.trim();
-  return words.slice(0, maxWords).join(' ');
-}
-
-// oneOf removed
 
 

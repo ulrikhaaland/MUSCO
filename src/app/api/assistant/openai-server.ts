@@ -30,7 +30,12 @@ const openai = new OpenAI({
 });
 
 // Import centralized model configuration
-import { DIAGNOSIS_MODEL, EXPLORE_MODEL, PROGRAM_MODEL } from './models';
+import { 
+  DIAGNOSIS_MODEL, DIAGNOSIS_REASONING,
+  EXPLORE_MODEL, EXPLORE_REASONING,
+  PROGRAM_MODEL, PROGRAM_REASONING,
+  getReasoningParam,
+} from './models';
 
 // ----------------------
 // Model and token controls
@@ -404,10 +409,12 @@ export async function streamChatCompletion({
     console.log('Last user message:', formattedMessages[formattedMessages.length - 1]?.content.substring(0, 200));
     console.log('═══════════════════════════════════════');
 
+    const reasoningConfig = isExploreMode ? EXPLORE_REASONING : DIAGNOSIS_REASONING;
     const stream = await openai.responses.stream({
       model: selectedModel,
       input: formattedMessages,
       max_output_tokens: CHAT_MAX_OUTPUT_TOKENS,
+      ...getReasoningParam(reasoningConfig),
     } as any);
 
     throttledLog('debug', 'chat_stream_created', 'status=ok');
@@ -594,6 +601,7 @@ async function generateFollowUpMetadata(request: {
       { role: 'user', content: userMessage },
     ],
     text: { format: { type: 'json_object' } },
+    ...getReasoningParam(PROGRAM_REASONING),
   });
 
   const rawContent = response.output_text;
@@ -735,6 +743,7 @@ async function generateFollowUpSingleDay(request: {
       { role: 'user', content: userMessage },
     ],
     text: { format: { type: 'json_object' } },
+    ...getReasoningParam(PROGRAM_REASONING),
   });
 
   const rawContent = response.output_text;
@@ -1218,6 +1227,7 @@ export async function getChatCompletion({
       model,
       input: formattedMessages,
       max_output_tokens: CHAT_MAX_OUTPUT_TOKENS,
+      ...getReasoningParam(DIAGNOSIS_REASONING), // Default reasoning for non-streaming
     } as any);
 
     // Prefer SDK convenience if available

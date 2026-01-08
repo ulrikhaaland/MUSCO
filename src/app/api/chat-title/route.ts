@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
 import { z } from 'zod';
-import { TITLE_MODEL } from '@/app/api/assistant/models';
+import { TITLE_MODEL, TITLE_REASONING, getReasoningParam } from '@/app/api/assistant/models';
 
 const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY! });
 
@@ -54,6 +54,7 @@ Generate a unique, specific title:`,
         },
       ],
       max_output_tokens: 30,
+      ...getReasoningParam(TITLE_REASONING),
     });
 
     const title = completion.output_text?.trim() || '';

@@ -28,7 +28,7 @@ type FailedMessageInfo = {
 export function useChat() {
   const { locale } = useTranslation();
   const { user } = useAuth();
-  const { saveChatState, restoreChatState, clearChatState } = useApp();
+  const { restoreChatState, clearChatState } = useApp();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [rateLimited, setRateLimited] = useState(false);
@@ -590,29 +590,6 @@ export function useChat() {
       true
     );
   };
-
-  // Persist chat state to sessionStorage for anonymous users only
-  // (Logged-in users have chat saved to Firestore instead)
-  useEffect(() => {
-    // Skip if user is logged in - Firestore is the source of truth
-    if (user?.uid) return;
-    
-    try {
-      // Avoid saving empty snapshots
-      if (
-        messages.length === 0 &&
-        followUpQuestions.length === 0 &&
-        !assistantResponse
-      ) {
-        return;
-      }
-      saveChatState?.({
-        messages,
-        followUpQuestions,
-        assistantResponse,
-      });
-    } catch {}
-  }, [user?.uid, messages, followUpQuestions, assistantResponse, saveChatState]);
 
   // Track previous user ID to detect login transitions
   const prevUserIdRef = useRef<string | null>(null);
