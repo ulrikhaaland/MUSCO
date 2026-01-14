@@ -70,6 +70,14 @@ export const PRE_FOLLOWUP_CHAT_CONFIG: ModelConfig = {
 export const PRE_FOLLOWUP_CHAT_MODEL = PRE_FOLLOWUP_CHAT_CONFIG.model;
 export const PRE_FOLLOWUP_CHAT_REASONING = PRE_FOLLOWUP_CHAT_CONFIG.reasoning;
 
+// Feedback processor model (processes chat feedback before program generation)
+export const FEEDBACK_PROCESSOR_CONFIG: ModelConfig = {
+  model: process.env.FEEDBACK_PROCESSOR_MODEL || 'gpt-5.2',
+  reasoning: undefined, // No reasoning - structured data extraction
+};
+export const FEEDBACK_PROCESSOR_MODEL = FEEDBACK_PROCESSOR_CONFIG.model;
+export const FEEDBACK_PROCESSOR_REASONING = FEEDBACK_PROCESSOR_CONFIG.reasoning;
+
 // Router model for determining chat mode (lightweight)
 export const ROUTER_CONFIG: ModelConfig = {
   model: process.env.ROUTER_MODEL || 'gpt-5.2',

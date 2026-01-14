@@ -18,6 +18,7 @@ export default function QuestionnaireClient({
   const router = useRouter();
   const { onQuestionnaireSubmit } = useUser();
   const [selectedProgramType, setSelectedProgramType] = useState<ProgramType>(programType);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [weeklyLimitError, setWeeklyLimitError] = useState<{
     programType: ProgramType;
     nextAllowedDate: Date;
@@ -32,6 +33,11 @@ export default function QuestionnaireClient({
   }, [programType]);
 
   const handleSubmit = async (answers: ExerciseQuestionnaireAnswers) => {
+    // Prevent double-clicks
+    if (isSubmitting) return;
+    
+    setIsSubmitting(true);
+    
     const diagnosis: DiagnosisAssistantResponse = {
       summary: '',
       selectedBodyGroup: null,
@@ -64,8 +70,15 @@ export default function QuestionnaireClient({
       // Navigation is handled by UserContext.onQuestionnaireSubmit:
       // - Authenticated users: navigates to /program during generation
       // - Unauthenticated users: returns requiresAuth flag (auth overlay shown)
-      await onQuestionnaireSubmit(diagnosis, answers);
+      const result = await onQuestionnaireSubmit(diagnosis, answers);
+      
+      if (result.requiresAuth) {
+        // Keep form submitting state if auth is required (user stays on page)
+        setIsSubmitting(false);
+      }
+      // Note: Don't reset isSubmitting for success case since we navigate away
     } catch (err) {
+      setIsSubmitting(false);
       if (err instanceof WeeklyLimitReachedError) {
         setWeeklyLimitError({
           programType: err.programType,
@@ -88,6 +101,7 @@ export default function QuestionnaireClient({
         onProgramTypeChange={setSelectedProgramType}
         targetAreas={[]}
         fullBody={false}
+        isSubmitting={isSubmitting}
       />
 
       {/* Auth overlay handled globally */}

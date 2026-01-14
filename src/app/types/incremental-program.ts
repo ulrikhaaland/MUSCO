@@ -207,6 +207,8 @@ export interface PreFollowupFeedback {
   conversationalFeedback: string;
   /** Legacy exercise feedback from ProgramFeedbackQuestionnaire (optional, for compatibility) */
   exerciseFeedback?: CleanedProgramFeedback;
+  /** Full chat messages from the pre-followup conversation for LLM processing */
+  chatMessages?: Array<{ role: string; content: string }>;
 }
 
 /**

@@ -213,8 +213,8 @@ export function FollowUpQuestions({
         <button
           onClick={handleSubmitSelected}
           className="w-full min-h-[48px] px-4 py-3 rounded-lg cursor-pointer
-            bg-[#635bff] text-white font-medium
-            hover:bg-[#5249e0] active:bg-[#4338ca]
+            bg-secondary text-white font-medium
+            hover:bg-secondary-hover active:bg-[#7c3aed]
             transition-all duration-200"
         >
           {t('feedback.sendSelected', { count: String(selectedItems.size) })}

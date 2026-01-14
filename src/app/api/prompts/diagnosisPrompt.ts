@@ -357,8 +357,8 @@ When did your chest discomfort begin?
 **Example 9 - Body Part Selection (No Body Part Pre-Selected):**
 Which body area is bothering you?
 
-NOTE: The followUpQuestions below is ABBREVIATED. You MUST include ALL body groups from {{BODY_PART_GROUPS}}.
-The full list includes: Neck, Left Shoulder, Right Shoulder, Left Upper Arm, Right Upper Arm, Left Elbow, Right Elbow, Left Forearm, Right Forearm, Left Hand, Right Hand, Chest, Abdomen, Upper & Middle Back, Lower Back Pelvis & Hip Region, Glutes, Right Thigh, Left Thigh, Left Knee, Right Knee, Left Lower Leg, Right Lower Leg, Left Foot, Right Foot
+NOTE: You MUST include ALL body parts from {{BODY_PART_GROUPS}} as followUpQuestions.
+Each option uses: {"question": "[name or translated]", "selectBodyGroup": "[EXACT English name from list]", "chatMode": "diagnosis"}
 
 <<JSON_DATA>>
 {
@@ -377,31 +377,12 @@ The full list includes: Neck, Left Shoulder, Right Shoulder, Left Upper Arm, Rig
   "followUpQuestions": [
     {"question": "Neck", "selectBodyGroup": "Neck", "chatMode": "diagnosis"},
     {"question": "Left Shoulder", "selectBodyGroup": "Left Shoulder", "chatMode": "diagnosis"},
-    {"question": "Right Shoulder", "selectBodyGroup": "Right Shoulder", "chatMode": "diagnosis"},
-    {"question": "Left Upper Arm", "selectBodyGroup": "Left Upper Arm", "chatMode": "diagnosis"},
-    {"question": "Right Upper Arm", "selectBodyGroup": "Right Upper Arm", "chatMode": "diagnosis"},
-    {"question": "Left Elbow", "selectBodyGroup": "Left Elbow", "chatMode": "diagnosis"},
-    {"question": "Right Elbow", "selectBodyGroup": "Right Elbow", "chatMode": "diagnosis"},
-    {"question": "Left Forearm", "selectBodyGroup": "Left Forearm", "chatMode": "diagnosis"},
-    {"question": "Right Forearm", "selectBodyGroup": "Right Forearm", "chatMode": "diagnosis"},
-    {"question": "Left Hand", "selectBodyGroup": "Left Hand", "chatMode": "diagnosis"},
-    {"question": "Right Hand", "selectBodyGroup": "Right Hand", "chatMode": "diagnosis"},
-    {"question": "Chest", "selectBodyGroup": "Chest", "chatMode": "diagnosis"},
-    {"question": "Abdomen", "selectBodyGroup": "Abdomen", "chatMode": "diagnosis"},
-    {"question": "Upper & Middle Back", "selectBodyGroup": "Upper & Middle Back", "chatMode": "diagnosis"},
-    {"question": "Lower Back", "selectBodyGroup": "Lower Back, Pelvis & Hip Region", "chatMode": "diagnosis"},
-    {"question": "Glutes", "selectBodyGroup": "Glutes", "chatMode": "diagnosis"},
-    {"question": "Left Thigh", "selectBodyGroup": "Left Thigh", "chatMode": "diagnosis"},
-    {"question": "Right Thigh", "selectBodyGroup": "Right Thigh", "chatMode": "diagnosis"},
-    {"question": "Left Knee", "selectBodyGroup": "Left Knee", "chatMode": "diagnosis"},
-    {"question": "Right Knee", "selectBodyGroup": "Right Knee", "chatMode": "diagnosis"},
-    {"question": "Left Lower Leg", "selectBodyGroup": "Left Lower Leg", "chatMode": "diagnosis"},
-    {"question": "Right Lower Leg", "selectBodyGroup": "Right Lower Leg", "chatMode": "diagnosis"},
-    {"question": "Left Foot", "selectBodyGroup": "Left Foot", "chatMode": "diagnosis"},
-    {"question": "Right Foot", "selectBodyGroup": "Right Foot", "chatMode": "diagnosis"}
+    {"question": "Chest", "selectBodyGroup": "Chest", "chatMode": "diagnosis"}
   ]
 }
 <<JSON_END>>
+
+(Above shows format only - include ALL parts from {{BODY_PART_GROUPS}})
 
 **Example 10 - Body Part Selection (Norwegian - translate question field, keep selectBodyGroup in English):**
 Hvilket område plager deg?
@@ -423,31 +404,12 @@ Hvilket område plager deg?
   "followUpQuestions": [
     {"question": "Nakke", "selectBodyGroup": "Neck", "chatMode": "diagnosis"},
     {"question": "Venstre skulder", "selectBodyGroup": "Left Shoulder", "chatMode": "diagnosis"},
-    {"question": "Høyre skulder", "selectBodyGroup": "Right Shoulder", "chatMode": "diagnosis"},
-    {"question": "Venstre overarm", "selectBodyGroup": "Left Upper Arm", "chatMode": "diagnosis"},
-    {"question": "Høyre overarm", "selectBodyGroup": "Right Upper Arm", "chatMode": "diagnosis"},
-    {"question": "Venstre albue", "selectBodyGroup": "Left Elbow", "chatMode": "diagnosis"},
-    {"question": "Høyre albue", "selectBodyGroup": "Right Elbow", "chatMode": "diagnosis"},
-    {"question": "Venstre underarm", "selectBodyGroup": "Left Forearm", "chatMode": "diagnosis"},
-    {"question": "Høyre underarm", "selectBodyGroup": "Right Forearm", "chatMode": "diagnosis"},
-    {"question": "Venstre hånd", "selectBodyGroup": "Left Hand", "chatMode": "diagnosis"},
-    {"question": "Høyre hånd", "selectBodyGroup": "Right Hand", "chatMode": "diagnosis"},
-    {"question": "Bryst", "selectBodyGroup": "Chest", "chatMode": "diagnosis"},
-    {"question": "Mage", "selectBodyGroup": "Abdomen", "chatMode": "diagnosis"},
-    {"question": "Øvre og midtre rygg", "selectBodyGroup": "Upper & Middle Back", "chatMode": "diagnosis"},
-    {"question": "Nedre rygg", "selectBodyGroup": "Lower Back, Pelvis & Hip Region", "chatMode": "diagnosis"},
-    {"question": "Setemuskel", "selectBodyGroup": "Glutes", "chatMode": "diagnosis"},
-    {"question": "Venstre lår", "selectBodyGroup": "Left Thigh", "chatMode": "diagnosis"},
-    {"question": "Høyre lår", "selectBodyGroup": "Right Thigh", "chatMode": "diagnosis"},
-    {"question": "Venstre kne", "selectBodyGroup": "Left Knee", "chatMode": "diagnosis"},
-    {"question": "Høyre kne", "selectBodyGroup": "Right Knee", "chatMode": "diagnosis"},
-    {"question": "Venstre legg", "selectBodyGroup": "Left Lower Leg", "chatMode": "diagnosis"},
-    {"question": "Høyre legg", "selectBodyGroup": "Right Lower Leg", "chatMode": "diagnosis"},
-    {"question": "Venstre fot", "selectBodyGroup": "Left Foot", "chatMode": "diagnosis"},
-    {"question": "Høyre fot", "selectBodyGroup": "Right Foot", "chatMode": "diagnosis"}
+    {"question": "Bryst", "selectBodyGroup": "Chest", "chatMode": "diagnosis"}
   ]
 }
 <<JSON_END>>
+
+(Above shows format only - include ALL parts from {{BODY_PART_GROUPS}}, translate "question" to SESSION_LANGUAGE)
 
 **Example 11 - After Body Part Selected (Continue to Onset):**
 When did your lower back discomfort begin?

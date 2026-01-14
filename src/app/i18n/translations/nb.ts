@@ -891,6 +891,7 @@ const translations = {
   'feedback.daysSelected': '{{count}} dager valgt',
   'feedback.startOver': 'Start på nytt',
   'feedback.answerInChat': 'Svar i chat',
+  'feedback.typeYourAnswer': 'Klikk for å svare i chat',
   'chat.error': 'Noe gikk galt. Vennligst prøv igjen.',
 
   // Sign Up Prompts for Custom Programs (should match keys in en.ts)
@@ -1132,6 +1133,13 @@ const translations = {
   'bodyParts.left foot': 'Venstre fot',
   'bodyParts.Right Foot': 'Høyre fot',
   'bodyParts.right foot': 'Høyre fot',
+  // Combined body group names (matching bodyPartGroups.ts)
+  'bodyParts.Upper & Middle Back': 'Øvre og midtre rygg',
+  'bodyParts.upper & middle back': 'Øvre og midtre rygg',
+  'bodyParts.Lower Back, Pelvis & Hip Region': 'Korsrygg, bekken og hofteregion',
+  'bodyParts.lower back, pelvis & hip region': 'Korsrygg, bekken og hofteregion',
+  'bodyParts.Glutes': 'Setemuskulatur',
+  'bodyParts.glutes': 'Setemuskulatur',
   // Add direct key for visual selection
   'Ingen smerteområder': 'Ingen smerteområder',
   'bodyParts.lowerBack': 'Korsrygg',

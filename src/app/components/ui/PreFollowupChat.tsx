@@ -10,6 +10,8 @@ import { PreFollowupFeedback, PreFollowupStructuredUpdates, ExerciseIntensityFee
 import { MessageWithExercises } from './MessageWithExercises';
 import { FollowUpQuestions } from './FollowUpQuestions';
 import { LoadingMessage } from './LoadingMessage';
+import { ChatInput, ChatInputHandle } from './ChatInput';
+import { AnswerInChatButton } from './AnswerInChatButton';
 import { useScrollManagement } from '@/app/hooks/useScrollManagement';
 import { useTouchInteraction } from '@/app/hooks/useTouchInteraction';
 import { useQuestionVisibility } from '@/app/hooks/useQuestionVisibility';
@@ -45,6 +47,8 @@ interface PreFollowupChatProps {
   onVideoClick?: (exercise: Exercise) => void;
   /** Optional: Loading state for video */
   loadingVideoExercise?: string | null;
+  /** When true, generate button is disabled to prevent double-clicks */
+  isGenerating?: boolean;
 }
 
 /**
@@ -62,6 +66,7 @@ export function PreFollowupChat({
   onGenerateProgram,
   onVideoClick,
   loadingVideoExercise,
+  isGenerating = false,
 }: PreFollowupChatProps) {
   const { t, locale } = useTranslation();
   
@@ -81,10 +86,19 @@ export function PreFollowupChat({
     conversationalSummary: '',
   });
 
+  // Spacer state for pop-to-top behavior
+  // Start with reasonable defaults to avoid 0-height spacer on first render
+  const [availableHeight, setAvailableHeight] = useState(400);
+  const [chatContainerHeight, setChatContainerHeight] = useState(500);
+  // activeTurn: true from moment user sends message until they send another
+  const [activeTurn, setActiveTurn] = useState(false);
+
   // Refs
   const messagesRef = useRef<HTMLDivElement>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const chatInputRef = useRef<ChatInputHandle>(null);
+  const spacerRef = useRef<HTMLDivElement>(null);
+  const stackContentRef = useRef<HTMLDivElement>(null);
 
   // Use extracted hooks
   const { userTouched, setUserTouched, handleTouchStart } = useTouchInteraction();
@@ -112,8 +126,160 @@ export function PreFollowupChat({
     return () => mediaQuery.removeEventListener('change', handleChange);
   }, []);
 
+  // Measure container height for spacer calculation
+  // Subtract bottom padding (pb-40 = 160px) since that's behind the fixed input area
+  useEffect(() => {
+    const measureChatContainer = () => {
+      if (messagesRef?.current) {
+        const fullHeight = messagesRef.current.clientHeight;
+        // pb-40 = 10rem = 160px - this is padding for the fixed input, not visible space
+        const bottomPadding = 160;
+        const visibleHeight = fullHeight - bottomPadding;
+        setChatContainerHeight(Math.max(visibleHeight, 200)); // Minimum 200px
+      }
+    };
+
+    measureChatContainer();
+
+    const resizeObserver = new ResizeObserver(() => {
+      measureChatContainer();
+    });
+
+    if (messagesRef?.current) {
+      resizeObserver.observe(messagesRef.current);
+    }
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, [messages, followUpQuestions]);
+
+  // Calculate available height for spacer (positions user message at top of viewport)
+  useEffect(() => {
+    const calculateAvailableHeight = () => {
+      // Spacer height = full container minus minimal space for user message
+      const estimatedUserMessageHeight = 12;
+      const spacerHeight = chatContainerHeight - estimatedUserMessageHeight;
+
+      // Ensure minimum spacer height
+      const minHeight = Math.max(50, chatContainerHeight * 0.1);
+      let calculatedHeight = Math.max(spacerHeight, minHeight);
+
+      // When activeTurn is true, check if content needs the full spacer
+      if (activeTurn && messagesRef.current) {
+        let actualContentHeight = 0;
+        Array.from(messagesRef.current.children).forEach((child) => {
+          const element = child as HTMLElement;
+          if (element !== spacerRef.current) {
+            actualContentHeight += element.offsetHeight;
+          }
+        });
+
+        // Fit spacer to content with margin buffer
+        const marginBuffer = 100;
+        const contentBasedHeight = actualContentHeight + marginBuffer;
+        if (contentBasedHeight < calculatedHeight) {
+          calculatedHeight = contentBasedHeight;
+        }
+      }
+
+      setAvailableHeight(calculatedHeight);
+    };
+
+    calculateAvailableHeight();
+
+    const resizeObserver = new ResizeObserver(() => {
+      calculateAvailableHeight();
+    });
+
+    if (messagesRef.current) {
+      resizeObserver.observe(messagesRef.current);
+    }
+    if (stackContentRef.current) {
+      resizeObserver.observe(stackContentRef.current);
+    }
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, [chatContainerHeight, activeTurn, isLoading, messages, followUpQuestions.length]);
+
+  // Effect to measure actual content height and grow spacer if needed (matches ChatMessages.tsx)
+  useEffect(() => {
+    const measureContentHeight = () => {
+      if (!stackContentRef.current) return;
+
+      const contentElement = stackContentRef.current;
+
+      // Measure the actual visible content by summing up child elements
+      let totalContentHeight = 0;
+      Array.from(contentElement.children).forEach((child) => {
+        const element = child as HTMLElement;
+        totalContentHeight += element.offsetHeight;
+      });
+
+      // Grow spacer if content exceeds current height (no reduction - show all items)
+      if (totalContentHeight > availableHeight) {
+        setAvailableHeight(totalContentHeight);
+      }
+    };
+
+    measureContentHeight();
+
+    const resizeObserver = new ResizeObserver(() => {
+      measureContentHeight();
+    });
+
+    if (stackContentRef.current) {
+      resizeObserver.observe(stackContentRef.current);
+    }
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, [availableHeight, activeTurn, messages, followUpQuestions.length, chatContainerHeight]);
+
   // Ref to prevent multiple auto-starts
   const hasAutoStarted = useRef(false);
+
+  // Check if we're waiting for a response (empty assistant placeholder)
+  const isWaitingForResponse = isLoading && messages.length > 0 && 
+    messages[messages.length - 1].role === 'assistant' &&
+    messages[messages.length - 1].content.trim() === '';
+
+  // Check if a message is part of the current turn (should be in stack layout)
+  const isCurrentTurn = useCallback((index: number): boolean => {
+    if (!activeTurn || messages.length === 0) return false;
+
+    // Last message is user (just sent, waiting for placeholder)
+    if (messages[messages.length - 1].role === 'user') {
+      return index === messages.length - 1;
+    }
+
+    // Last message is assistant (placeholder or streaming) - include user + assistant
+    if (messages[messages.length - 1].role === 'assistant') {
+      return index === messages.length - 1 || index === messages.length - 2;
+    }
+
+    return false;
+  }, [messages, activeTurn]);
+
+  // Check if this is the last user message (renders at top of stack)
+  const isLastUserMessage = useCallback((index: number): boolean => {
+    if (!activeTurn || messages.length === 0) return false;
+
+    // Last message is user
+    if (messages[messages.length - 1].role === 'user') {
+      return index === messages.length - 1;
+    }
+
+    // Last message is assistant - user is second to last
+    if (messages[messages.length - 1].role === 'assistant' && messages.length >= 2) {
+      return index === messages.length - 2 && messages[index].role === 'user';
+    }
+
+    return false;
+  }, [messages, activeTurn]);
 
   // Filter out banned follow-up questions that the LLM shouldn't generate
   const filterBannedFollowUps = (questions: Question[]): Question[] => {
@@ -152,6 +318,24 @@ export function PreFollowupChat({
     // Add user message to chat (if not empty - empty means auto-start)
     let updatedMessages = [...messages];
     if (userMessage) {
+      // Activate spacer immediately when user sends message
+      setActiveTurn(true);
+      
+      // Clear follow-up questions immediately on click
+      setFollowUpQuestions([]);
+      
+      // Scroll to bottom to show spacer (user message is at top of spacer)
+      const forceScroll = () => {
+        if (messagesRef.current) {
+          messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
+        }
+      };
+      // Immediate + delayed attempts
+      forceScroll();
+      requestAnimationFrame(forceScroll);
+      setTimeout(forceScroll, 100);
+      setTimeout(forceScroll, 300);
+      
       const userMsg: ChatMessage = {
         id: `user-${Date.now()}`,
         role: 'user',
@@ -372,8 +556,15 @@ export function PreFollowupChat({
 
   // Actually proceed with program generation
   const proceedWithGenerate = () => {
-    // Convert accumulated feedback and call onGenerateProgram FIRST (triggers redirect)
-    const feedback = convertToPreFollowupFeedback(accumulatedFeedback);
+    // Convert accumulated feedback with chat messages for LLM processing
+    // Map ChatMessage[] to the simpler format expected by the processor
+    const chatMessagesForProcessor = messages.map(m => ({
+      role: m.role,
+      content: m.content,
+    }));
+    const feedback = convertToPreFollowupFeedback(accumulatedFeedback, chatMessagesForProcessor);
+    
+    // Call onGenerateProgram FIRST (triggers redirect)
     onGenerateProgram(feedback);
     
     // Clean up Firestore state in the background (don't block navigation)
@@ -393,40 +584,17 @@ export function PreFollowupChat({
     updateScrollButtonVisibility(e.currentTarget);
   };
 
-  // Handle textarea change with auto-resize
-  const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setInputMessage(e.target.value);
-    
-    const textarea = textareaRef.current;
-    if (textarea) {
-      textarea.style.height = 'auto';
-      const newHeight = Math.min(textarea.scrollHeight, 120);
-      textarea.style.height = `${newHeight}px`;
-    }
-  };
-
-  // Handle textarea keydown (Enter to send)
-  const handleTextareaKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSendInputMessage();
-    }
-  };
-
   // Handle send from input
   const handleSendInputMessage = () => {
     if (!inputMessage.trim() || isLoading) return;
     const msg = inputMessage.trim();
     setInputMessage('');
-    if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto';
-    }
     sendMessage(msg);
   };
 
   // Handle "Answer in chat" click - focus the input
   const handleAnswerInChatClick = () => {
-    textareaRef.current?.focus();
+    chatInputRef.current?.focus();
   };
 
   // Handle reset chat
@@ -458,44 +626,50 @@ export function PreFollowupChat({
         onTouchStart={handleTouchStart}
         className="flex-1 overflow-y-auto p-4 pb-40 space-y-4"
       >
-        {messages
-          .filter((msg) => msg.content.trim() !== '') // Hide empty messages
-          .map((msg) => (
-          <div
-            key={msg.id}
-            className={`px-4 py-3 rounded-lg ${
-              msg.role === 'user'
-                ? 'bg-indigo-600 ml-8'
-                : 'bg-gray-800 mr-4'
-            }`}
-          >
-            {msg.role === 'assistant' ? (
-              <div className="prose prose-invert max-w-none">
-                <MessageWithExercises
-                  content={msg.content}
-                  exercises={inlineExercises}
-                  onVideoClick={onVideoClick}
-                  loadingVideoExercise={loadingVideoExercise}
-                  className="text-base leading-relaxed"
-                  selectedExercise={selectedExercise}
-                  onExerciseSelect={setSelectedExercise}
-                />
-              </div>
-            ) : (
-              <div className="text-base break-words whitespace-pre-wrap">
-                {msg.content}
-              </div>
-            )}
-          </div>
-        ))}
+        {/* Prior messages (not part of current turn) */}
+        {messages.map((msg, index) => {
+          // Skip empty messages and current turn messages (rendered in stack layout)
+          if (msg.content.trim() === '' || isCurrentTurn(index)) return null;
 
-        {/* Loading indicator */}
-        {isLoading && messages.length > 0 && messages[messages.length - 1].content === '' && (
+          return (
+            <div
+              key={msg.id}
+              className={`px-4 py-3 rounded-lg ${
+                msg.role === 'user'
+                  ? 'bg-indigo-600 ml-8'
+                  : 'bg-gray-800 mr-4'
+              }`}
+            >
+              {msg.role === 'assistant' ? (
+                <div className="prose prose-invert max-w-none">
+                  <MessageWithExercises
+                    content={msg.content}
+                    exercises={inlineExercises}
+                    onVideoClick={onVideoClick}
+                    loadingVideoExercise={loadingVideoExercise}
+                    className="text-base leading-relaxed"
+                    selectedExercise={selectedExercise}
+                    onExerciseSelect={setSelectedExercise}
+                  />
+                </div>
+              ) : (
+                <div className="text-base break-words whitespace-pre-wrap">
+                  {msg.content}
+                </div>
+              )}
+            </div>
+          );
+        })}
+
+        {/* Loading indicator for auto-start (when activeTurn is false) */}
+        {isLoading && !activeTurn && messages.length > 0 && 
+          messages[messages.length - 1].role === 'assistant' &&
+          messages[messages.length - 1].content.trim() === '' && (
           <LoadingMessage visible={true} />
         )}
 
-        {/* Follow-up questions */}
-        {followUpQuestions.length > 0 && !isLoading && (
+        {/* Initial follow-up questions (before any conversation / not in stack) */}
+        {followUpQuestions.length > 0 && !isLoading && !activeTurn && (
           <div className="mt-4">
             <FollowUpQuestions
               questions={followUpQuestions}
@@ -506,34 +680,105 @@ export function PreFollowupChat({
           </div>
         )}
 
-        {/* Answer in chat fallback (when no follow-ups and not loading) */}
-        {followUpQuestions.length === 0 && !isLoading && messages.length > 0 && (
-          <div className="mt-4">
-            <button
-              onClick={handleAnswerInChatClick}
-              className="w-full min-h-[48px] text-left px-4 py-3 rounded-lg cursor-pointer
-                bg-[rgba(99,91,255,0.12)] border border-[rgba(99,91,255,0.35)] text-[#c8cbff] font-medium
-                hover:border-[rgba(99,91,255,0.5)] hover:bg-gradient-to-r hover:from-indigo-900/80 hover:to-indigo-800/80
-                transition-all duration-300"
+        {/* 
+          Spacer + stack layout for current turn messages
+          - Fixed spacer pushes user message to top of viewport
+          - Content grows above spacer without affecting spacer height
+          - Shows when activeTurn is true (set immediately when user sends message)
+        */}
+        {activeTurn && messages.length > 0 && (
+          <div className="relative">
+            {/* Fixed spacer at bottom */}
+            <div
+              ref={spacerRef}
+              className="block w-full transition-all duration-300 ease-out"
+              style={{
+                height: `${availableHeight}px`,
+                borderRadius: '8px',
+              }}
+            />
+
+            {/* Message content positioned at top of stack */}
+            <div
+              ref={stackContentRef}
+              className="absolute top-0 left-0 right-0 flex flex-col"
+              style={{
+                minHeight: `${availableHeight}px`,
+              }}
             >
-              <div className="flex items-center">
-                <svg
-                  className="w-5 h-5 mr-2 text-[#635bff]"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+              {/* User message at top of stack */}
+              {messages.map((msg, index) => {
+                if (!isLastUserMessage(index)) return null;
+
+                return (
+                  <div key={`current-user-${msg.id}`} className="flex-none mb-4">
+                    <div className="px-4 py-3 rounded-lg bg-indigo-600 ml-8">
+                      <div className="text-base break-words whitespace-pre-wrap">
+                        {msg.content}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+
+              {/* Assistant streaming/completed message in stack */}
+              {activeTurn &&
+                messages.length > 0 &&
+                messages[messages.length - 1].role === 'assistant' &&
+                messages[messages.length - 1].content.trim() !== '' && (
+                  <div key={`streaming-${messages[messages.length - 1].id}`} className="flex-none">
+                    <div className="px-4 py-3 rounded-lg bg-gray-800 mr-4">
+                      <div className="prose prose-invert max-w-none">
+                        <MessageWithExercises
+                          content={messages[messages.length - 1].content}
+                          exercises={inlineExercises}
+                          onVideoClick={onVideoClick}
+                          loadingVideoExercise={loadingVideoExercise}
+                          className="text-base leading-relaxed"
+                          selectedExercise={selectedExercise}
+                          onExerciseSelect={setSelectedExercise}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+              {/* Loading indicator when waiting for response (shows under user message) */}
+              {isWaitingForResponse && (
+                <LoadingMessage visible={true} />
+              )}
+
+              {/* Follow-up questions in stack (during active conversation) */}
+              {followUpQuestions.length > 0 && activeTurn && (
+                <div className="mt-4">
+                  <FollowUpQuestions
+                    questions={followUpQuestions}
+                    visibleQuestions={visibleQuestions}
+                    prefersReducedMotion={prefersReducedMotion}
+                    onQuestionClick={handleQuestionClick}
                   />
-                </svg>
-                {t('feedback.answerInChat')}
-              </div>
-            </button>
+                </div>
+              )}
+
+              {/* Answer in chat fallback in stack (when no follow-ups, response complete, and not conversation complete) */}
+              {followUpQuestions.length === 0 && 
+               !isLoading && 
+               !conversationComplete &&
+               messages[messages.length - 1]?.role === 'assistant' &&
+               messages[messages.length - 1]?.content?.trim() !== '' && (
+                <AnswerInChatButton 
+                  onClick={handleAnswerInChatClick} 
+                />
+              )}
+            </div>
           </div>
+        )}
+
+        {/* Answer in chat fallback (when no follow-ups, not loading, not complete, not in stack mode) */}
+        {followUpQuestions.length === 0 && !isLoading && !activeTurn && !conversationComplete && messages.length > 0 && (
+          <AnswerInChatButton 
+            onClick={handleAnswerInChatClick} 
+          />
         )}
 
         {/* Error message */}
@@ -561,43 +806,15 @@ export function PreFollowupChat({
       <div className="absolute bottom-0 left-0 right-0 border-t border-gray-700 bg-gray-800/95 backdrop-blur-sm">
         {/* Text input */}
         <div className="p-3 pb-2">
-          <div className="relative">
-            <textarea
-              ref={textareaRef}
-              value={inputMessage}
-              onChange={handleTextareaChange}
-              onKeyDown={handleTextareaKeyDown}
-              rows={1}
-              placeholder={t('feedback.typeMessage')}
-              className="w-full bg-gray-700 rounded-lg px-4 py-3 pr-12 focus:outline-none focus:ring-2 focus:ring-indigo-600 resize-none text-white placeholder-gray-400"
-              disabled={isLoading}
-            />
-            <button
-              type="button"
-              onClick={handleSendInputMessage}
-              disabled={isLoading || !inputMessage.trim()}
-              className={`absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-lg transition-colors ${
-                isLoading || !inputMessage.trim()
-                  ? 'text-gray-500 cursor-not-allowed'
-                  : 'text-indigo-500 hover:text-indigo-400 hover:bg-gray-600/50'
-              }`}
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
-                />
-              </svg>
-            </button>
-          </div>
+          <ChatInput
+            ref={chatInputRef}
+            value={inputMessage}
+            onChange={setInputMessage}
+            onSend={handleSendInputMessage}
+            isLoading={isLoading}
+            placeholder={t('feedback.typeMessage')}
+            maxHeight={120}
+          />
         </div>
         
         {/* Action buttons */}
@@ -625,28 +842,56 @@ export function PreFollowupChat({
           </button>
           <button
             onClick={handleGenerate}
-            disabled={isLoading}
-            className="flex-1 px-4 py-3 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-medium transition-colors disabled:opacity-50"
+            disabled={isLoading || isGenerating}
+            className="flex-1 px-4 py-3 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {t('feedback.buildProgram')}
+            {isGenerating ? (
+              <span className="flex items-center justify-center">
+                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                </svg>
+                {t('common.loading')}
+              </span>
+            ) : t('feedback.buildProgram')}
           </button>
           {/* Debug button - only show on localhost */}
           {typeof window !== 'undefined' && window.location.hostname === 'localhost' && (
             <button
               onClick={() => {
-                const feedback = convertToPreFollowupFeedback(accumulatedFeedback);
+                const chatMessagesForProcessor = messages.map(m => ({
+                  role: m.role,
+                  content: m.content,
+                }));
+                const feedback = convertToPreFollowupFeedback(accumulatedFeedback, chatMessagesForProcessor);
                 console.log('═══════════════════════════════════════════');
-                console.log('📊 PRE-FOLLOWUP CHAT - ACCUMULATED FEEDBACK');
+                console.log('📊 PRE-FOLLOWUP CHAT - DEBUG DATA');
                 console.log('═══════════════════════════════════════════');
-                console.log('\n🔹 Raw Accumulated State:');
+                console.log('\n🔹 Chat Messages (' + messages.length + '):');
+                messages.forEach((m, i) => {
+                  console.log(`  [${i}] ${m.role}: ${m.content.substring(0, 100)}${m.content.length > 100 ? '...' : ''}`);
+                });
+                console.log('\n🔹 Raw Accumulated Feedback:');
                 console.log(JSON.stringify(accumulatedFeedback, null, 2));
+                console.log('\n🔹 Structured Updates:');
+                console.log(JSON.stringify(accumulatedFeedback.structuredUpdates || {}, null, 2));
+                console.log('\n🔹 Exercise Intensity Feedback:');
+                console.log(JSON.stringify(accumulatedFeedback.exerciseIntensity || [], null, 2));
                 console.log('\n🔹 Converted Feedback (sent to generator):');
                 console.log(JSON.stringify(feedback, null, 2));
-                console.log('\n🔹 Conversation Complete:', conversationComplete);
+                console.log('\n🔹 Input Context:');
+                console.log('  Diagnosis painfulAreas:', diagnosisData?.painfulAreas);
+                console.log('  Diagnosis targetAreas:', diagnosisData?.targetAreas);
+                console.log('  Questionnaire days:', questionnaireData?.numberOfActivityDays);
+                console.log('  Questionnaire duration:', questionnaireData?.workoutDuration);
+                console.log('\n🔹 State:');
+                console.log('  Conversation Complete:', conversationComplete);
+                console.log('  Is Loading:', isLoading);
+                console.log('  Is Generating:', isGenerating);
                 console.log('═══════════════════════════════════════════');
               }}
               className="p-3 rounded-lg bg-yellow-600 hover:bg-yellow-500 text-white transition-colors"
-              title="Debug: Log accumulated feedback"
+              title="Debug: Log all gathered data"
             >
               🐛
             </button>
@@ -667,15 +912,25 @@ export function PreFollowupChat({
             <div className="flex gap-3">
               <button
                 onClick={() => setShowBuildConfirm(false)}
-                className="flex-1 px-4 py-3 rounded-lg bg-gray-700 hover:bg-gray-600 text-gray-200 font-medium transition-colors"
+                disabled={isGenerating}
+                className="flex-1 px-4 py-3 rounded-lg bg-gray-700 hover:bg-gray-600 text-gray-200 font-medium transition-colors disabled:opacity-50"
               >
                 {t('feedback.continueChat')}
               </button>
               <button
                 onClick={handleBuildConfirm}
-                className="flex-1 px-4 py-3 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-medium transition-colors"
+                disabled={isGenerating}
+                className="flex-1 px-4 py-3 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {t('feedback.buildAnyway')}
+                {isGenerating ? (
+                  <span className="flex items-center justify-center">
+                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                    </svg>
+                    {t('common.loading')}
+                  </span>
+                ) : t('feedback.buildAnyway')}
               </button>
             </div>
           </div>

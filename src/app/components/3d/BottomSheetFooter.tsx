@@ -3,11 +3,12 @@ import { Question } from '@/app/types';
 import { useTranslation } from '@/app/i18n';
 import { CloseButton } from '../ui/CloseButton';
 import { useAuth } from '@/app/context/AuthContext';
+import { ChatInput } from '../ui/ChatInput';
 
 interface BottomSheetFooterProps {
   message: string;
   isLoading: boolean;
-  textareaRef: RefObject<HTMLTextAreaElement>;
+  textareaRef?: RefObject<HTMLTextAreaElement>; // Deprecated - kept for backwards compat
   setMessage: (message: string) => void;
   handleOptionClick: (question: Question) => void;
   messagesCount?: number;
@@ -23,7 +24,7 @@ interface BottomSheetFooterProps {
 export function BottomSheetFooter({
   message,
   isLoading,
-  textareaRef,
+  textareaRef: _textareaRef, // Deprecated
   setMessage,
   handleOptionClick,
   messagesCount = 0,
@@ -46,11 +47,6 @@ export function BottomSheetFooter({
         asked: true,
       });
       setMessage('');
-      
-      // Reset textarea height
-      if (textareaRef.current) {
-        textareaRef.current.style.height = 'auto';
-      }
     }
   };
 
@@ -158,80 +154,16 @@ export function BottomSheetFooter({
       <div className={`px-3 pb-safe ${showHeaderContent ? 'pt-0 pb-2' : 'border-t border-gray-700 py-2'}`}
            style={showHeaderContent ? { paddingBottom: 'max(0.5rem, env(safe-area-inset-bottom, 0px))' } : { paddingBottom: 'max(0.5rem, env(safe-area-inset-bottom, 0px))' }}>
         <div className="flex items-end gap-2">
-          <form
-            className="flex-1 flex items-end gap-1.5 bg-gray-800 rounded-xl px-3 py-1.5 focus-within:ring-2 focus-within:ring-violet-500/50"
-            onSubmit={(e) => {
-              e.preventDefault();
-              handleSendMessage();
-            }}
-          >
-            <textarea
-              ref={textareaRef}
-              value={message}
-              onChange={(e) => {
-                setMessage(e.target.value);
-                const textarea = textareaRef.current;
-                if (textarea) {
-                  textarea.style.height = 'auto';
-                  const newHeight = Math.min(textarea.scrollHeight, 480);
-                  textarea.style.height = `${newHeight}px`;
-                }
-              }}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                  e.preventDefault();
-                  handleSendMessage();
-                }
-              }}
-              rows={1}
-              placeholder={placeholderText}
-              className="flex-1 bg-transparent py-1.5 focus:outline-none resize-none text-sm text-white placeholder-gray-500"
-            />
-            <button
-              type="submit"
-              disabled={isLoading || !message.trim()}
-              className={`flex-shrink-0 flex justify-center items-center w-7 h-7 mb-0.5 rounded-lg transition-colors ${
-                isLoading || !message.trim()
-                  ? 'text-gray-600 cursor-not-allowed'
-                  : 'text-violet-400 hover:text-violet-300'
-              }`}
-            >
-              {isLoading ? (
-                <svg
-                  className="animate-spin h-5 w-5"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  />
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  />
-                </svg>
-              ) : (
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6"
-                  viewBox="0 0 24 24"
-                >
-                  <circle cx="12" cy="12" r="11" fill="currentColor" />
-                  <path 
-                    d="M12 6.5l-5 5h3v5h4v-5h3l-5-5z"
-                    fill="#1f2937"
-                  />
-                </svg>
-              )}
-            </button>
-          </form>
+          <ChatInput
+            value={message}
+            onChange={setMessage}
+            onSend={handleSendMessage}
+            isLoading={isLoading}
+            placeholder={placeholderText}
+            maxHeight={480}
+            variant="mobile"
+            className="flex-1"
+          />
           {/* Close button moved to header when showHeaderContent is true */}
           {hasClose && !showHeaderContent && (
             <CloseButton onClick={onClose} label={t('mobile.controls.close')} />

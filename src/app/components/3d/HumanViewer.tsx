@@ -67,16 +67,27 @@ export default function HumanViewer({
     restoreViewerState,
   } = useApp();
   const lastSelectedIdRef = useRef<string | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
   const minChatWidthAbsolute = 250; // absolute minimum in pixels for edge cases
-  // Dynamic bounds: 25% min, 75% max of screen width for both chat and model
+  
+  // Get the available width (container width in embedded mode, window width in fullscreen)
+  const getAvailableWidth = useCallback(() => {
+    if (typeof window === 'undefined') return 800;
+    if (hideNav && containerRef.current) {
+      return containerRef.current.getBoundingClientRect().width;
+    }
+    return window.innerWidth;
+  }, [hideNav]);
+  
+  // Dynamic bounds: 25% min, 75% max of available width for both chat and model
   const getMinChatWidth = useCallback(() => {
-    if (typeof window === 'undefined') return minChatWidthAbsolute;
-    return Math.max(minChatWidthAbsolute, Math.floor(window.innerWidth * 0.25));
-  }, []);
+    const availableWidth = getAvailableWidth();
+    return Math.max(minChatWidthAbsolute, Math.floor(availableWidth * 0.25));
+  }, [getAvailableWidth]);
   const getMaxChatWidth = useCallback(() => {
-    if (typeof window === 'undefined') return 600;
-    return Math.floor(window.innerWidth * 0.75);
-  }, []);
+    const availableWidth = getAvailableWidth();
+    return Math.floor(availableWidth * 0.75);
+  }, [getAvailableWidth]);
   const [chatWidth, setChatWidth] = useState(384);
   const [isDragging, setIsDragging] = useState(false);
   const [isAtMinWidth, setIsAtMinWidth] = useState(false);
@@ -101,6 +112,7 @@ export default function HumanViewer({
     programType: ProgramType;
     nextAllowedDate: Date;
   } | null>(null);
+  const [isQuestionnaireSubmitting, setIsQuestionnaireSubmitting] = useState(false);
   const isExplainerActive = explainerEnabled && !isMobile;
   const [isChatOverlayOpen, setIsChatOverlayOpen] = useState(false);
   const [isChatHistoryOpen, setIsChatHistoryOpen] = useState(false);
@@ -436,14 +448,14 @@ export default function HumanViewer({
 
   // Reset split to optimal sizes based on screen width (50/50 default)
   const resetSplitSizes = useCallback(() => {
-    const screenWidth = window.innerWidth;
+    const availableWidth = getAvailableWidth();
     const minChat = getMinChatWidth();
     const maxChat = getMaxChatWidth();
     
     // Default to 50% split
-    const optimalChatWidth = Math.floor(screenWidth * 0.5);
+    const optimalChatWidth = Math.floor(availableWidth * 0.5);
 
-    // Ensure within bounds (25%-75% of screen)
+    // Ensure within bounds (25%-75% of available width)
     const finalWidth = Math.min(Math.max(minChat, optimalChatWidth), maxChat);
 
     setChatWidth(finalWidth);
@@ -456,8 +468,8 @@ export default function HumanViewer({
       window.localStorage.setItem(DESKTOP_SPLIT_KEY, String(finalWidth));
     } catch {}
 
-    logAnalyticsEvent('reset_split_sizes', { width: finalWidth, screenWidth });
-  }, [getMinChatWidth, getMaxChatWidth]);
+    logAnalyticsEvent('reset_split_sizes', { width: finalWidth, availableWidth });
+  }, [getMinChatWidth, getMaxChatWidth, getAvailableWidth]);
 
   const startDragging = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
@@ -471,7 +483,11 @@ export default function HumanViewer({
       }
 
       rafRef.current = requestAnimationFrame(() => {
-        const newWidth = window.innerWidth - e.clientX;
+        // In embedded mode, use container's right edge; otherwise use window width
+        const rightEdge = hideNav && containerRef.current
+          ? containerRef.current.getBoundingClientRect().right
+          : window.innerWidth;
+        const newWidth = rightEdge - e.clientX;
         const minChat = getMinChatWidth();
         const maxChat = getMaxChatWidth();
         const clampedWidth = Math.min(Math.max(minChat, newWidth), maxChat);
@@ -501,7 +517,7 @@ export default function HumanViewer({
 
     document.addEventListener('mousemove', handleMouseMove);
     document.addEventListener('mouseup', stopDragging);
-  }, [getMinChatWidth, getMaxChatWidth]);
+  }, [getMinChatWidth, getMaxChatWidth, hideNav]);
 
   const handleRotate = useCallback(() => {
     const human = humanRef.current;
@@ -559,6 +575,7 @@ export default function HumanViewer({
     const isDesktop = window.innerWidth >= 768;
     if (!isDesktop) return;
 
+    const availableWidth = getAvailableWidth();
     const minChat = getMinChatWidth();
     const maxChat = getMaxChatWidth();
     let desired: number;
@@ -572,15 +589,15 @@ export default function HumanViewer({
           desired = parsed;
         } else {
           // No valid saved preference, default to 50% split
-          desired = Math.floor(window.innerWidth * 0.5);
+          desired = Math.floor(availableWidth * 0.5);
         }
       } else {
         // No saved preference, default to 50% split
-        desired = Math.floor(window.innerWidth * 0.5);
+        desired = Math.floor(availableWidth * 0.5);
       }
     } catch {
       // Fallback to 50/50 if something goes wrong
-      desired = Math.floor(window.innerWidth * 0.5);
+      desired = Math.floor(availableWidth * 0.5);
     }
 
     const clamped = Math.min(Math.max(minChat, desired), maxChat);
@@ -588,7 +605,7 @@ export default function HumanViewer({
     lastWidthRef.current = clamped;
     setIsAtMinWidth(clamped <= minChat);
     setIsAtMaxWidth(clamped >= maxChat);
-  }, [getMinChatWidth, getMaxChatWidth]);
+  }, [getMinChatWidth, getMaxChatWidth, getAvailableWidth]);
 
   // Keep lastWidthRef synced
   useEffect(() => {
@@ -719,15 +736,28 @@ export default function HumanViewer({
   }, [setSelectedGroup, setSelectedPart, humanRef, selectedGroups, selectedPart]);
 
   // Handler for program generation triggered from chat
-  const handleGenerateProgram = useCallback((programType: ProgramType, diagnosisData?: DiagnosisAssistantResponse | null) => {
+  const handleGenerateProgram = useCallback((
+    programType: ProgramType, 
+    diagnosisData?: DiagnosisAssistantResponse | null,
+    chatMode?: 'diagnosis' | 'explore'
+  ) => {
     logAnalyticsEvent('open_questionnaire', { from: 'chat_button' });
     
     // Use passed diagnosis data (from chat) or fall back to state
     const currentDiagnosis = diagnosisData || diagnosis;
     
+    // In diagnosis mode, use selected body group as painful area
+    // In explore mode, no painful areas (user is just browsing)
+    // Only one body group can be selected at a time
+    const selectedBodyGroupName = selectedGroups[0]?.name || null;
+    const painfulAreasFromSelection = chatMode === 'diagnosis' ? selectedBodyGroupName : null;
+    
     if (currentDiagnosis) {
+      // Use existing painfulAreas from diagnosis, or fall back to selected body parts in diagnosis mode
+      const painfulAreas = currentDiagnosis.painfulAreas || painfulAreasFromSelection;
       setDiagnosis({
         ...currentDiagnosis,
+        painfulAreas,
         followUpQuestions: [],
         programType: programType,
       });
@@ -741,7 +771,7 @@ export default function HumanViewer({
               ? 'No diagnosis, just an exercise program'
               : 'No diagnosis, just a recovery program',
           programType: programType,
-        painfulAreas: [selectedGroups[0]?.name, selectedPart?.name].filter(Boolean).join(', ') || null,
+        painfulAreas: painfulAreasFromSelection,
         avoidActivities: null,
           onset: null,
           timeFrame: '1 week',
@@ -762,7 +792,7 @@ export default function HumanViewer({
         setDiagnosis(newDiagnosis);
       }
       setShowQuestionnaire(true);
-  }, [diagnosis, selectedGroups, selectedPart]);
+  }, [diagnosis, selectedGroups]);
 
   const handleQuestionClick = (question: Question) => {
     if (question.generate) {
@@ -782,6 +812,10 @@ export default function HumanViewer({
   const handleQuestionnaireSubmit = async (
     answers: ExerciseQuestionnaireAnswers
   ) => {
+    // Prevent double-clicks
+    if (isQuestionnaireSubmitting) return;
+    
+    setIsQuestionnaireSubmitting(true);
     diagnosis.timeFrame = '1 week';
     logAnalyticsEvent('submit_questionnaire');
 
@@ -790,12 +824,15 @@ export default function HumanViewer({
 
       if (result.requiresAuth) {
         // Keep the questionnaire open, the auth form will be shown by the parent component
+        setIsQuestionnaireSubmitting(false);
         return;
       }
       logAnalyticsEvent('program_generation_started', {
         programId: result.programId,
       });
+      // Note: Don't reset isQuestionnaireSubmitting here since we navigate away
     } catch (error) {
+      setIsQuestionnaireSubmitting(false);
       if (error instanceof WeeklyLimitReachedError) {
         setWeeklyLimitError({
           programType: error.programType,
@@ -894,7 +931,7 @@ export default function HumanViewer({
   return (
     <div className={`flex flex-col ${hideNav ? 'w-full h-[500px]' : 'w-screen h-[100dvh]'} overflow-hidden`}>
       {!hideNav && <NavigationMenu mobileFloatingButton />}
-      <div className="flex-1 flex flex-col md:flex-row relative min-h-0">
+      <div ref={containerRef} className="flex-1 flex flex-col md:flex-row relative min-h-0">
         {/* Fullscreen overlay when dragging */}
         {isDragging && (
           <div className={`fixed inset-0 ${hideNav ? 'z-30' : 'z-50'}`} style={{ cursor: 'ew-resize' }} />
@@ -1082,17 +1119,16 @@ export default function HumanViewer({
             onClose={handleBack}
             onSubmit={handleQuestionnaireSubmit}
             generallyPainfulAreas={
-              // Use actual selected body parts from 3D viewer, not LLM output
-              selectedGroups.length > 0
-                ? selectedGroups.map(g => g.name)
-                : selectedPart
-                  ? [selectedPart.name]
-                  : []
+              // Use painful areas from diagnosis (set based on chat mode)
+              // Only diagnosis mode sets painful areas from selected body parts
+              // Don't split - body group names can contain commas (e.g., "Lower Back, Pelvis & Hip Region")
+              diagnosis?.painfulAreas ? [diagnosis.painfulAreas] : []
             }
             programType={diagnosis?.programType ?? ProgramType.Exercise}
             targetAreas={selectedGroups}
             fullBody={false}
             diagnosisText={diagnosis?.diagnosis}
+            isSubmitting={isQuestionnaireSubmitting}
           />
         </div>
       )}

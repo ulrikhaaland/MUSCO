@@ -19,6 +19,215 @@ import { getStartOfWeek, addDays } from '@/app/utils/dateutils';
 import { recordProgramGenerationAdmin } from '@/app/services/programGenerationLimitsAdmin';
 import { PreFollowupFeedback, ExerciseIntensityFeedback, PreFollowupStructuredUpdates, ProgramAdjustments } from '@/app/types/incremental-program';
 
+// ----------------------
+// Helper: Apply injury updates from pre-followup chat to diagnosis
+// ----------------------
+/**
+ * Merges injury updates from the pre-followup chat into the diagnosis.
+ * - Adds newInjuries to painfulAreas
+ * - Removes resolvedInjuries from painfulAreas
+ * - Updates painLevelChange if provided
+ * Returns a new diagnosis object with the updates applied.
+ */
+function applyInjuryUpdates(
+  diagnosis: DiagnosisAssistantResponse,
+  structuredUpdates?: PreFollowupStructuredUpdates
+): { updatedDiagnosis: DiagnosisAssistantResponse; hasChanges: boolean } {
+  if (!structuredUpdates) {
+    return { updatedDiagnosis: diagnosis, hasChanges: false };
+  }
+
+  const { newInjuries, resolvedInjuries, painLevelChange } = structuredUpdates;
+  
+  // No injury updates to apply
+  if (!newInjuries?.length && !resolvedInjuries?.length && !painLevelChange) {
+    return { updatedDiagnosis: diagnosis, hasChanges: false };
+  }
+
+  // Parse existing painful areas (comma-separated string or null)
+  let painfulAreasArray: string[] = [];
+  if (diagnosis.painfulAreas) {
+    painfulAreasArray = diagnosis.painfulAreas
+      .split(',')
+      .map(area => area.trim().toLowerCase())
+      .filter(Boolean);
+  }
+
+  let hasChanges = false;
+
+  // Add new injuries (normalize to lowercase for comparison)
+  if (newInjuries?.length) {
+    for (const injury of newInjuries) {
+      const normalizedInjury = injury.trim().toLowerCase();
+      if (!painfulAreasArray.includes(normalizedInjury)) {
+        painfulAreasArray.push(normalizedInjury);
+        hasChanges = true;
+        console.log(`[applyInjuryUpdates] Added new injury: ${normalizedInjury}`);
+      }
+    }
+  }
+
+  // Remove resolved injuries
+  if (resolvedInjuries?.length) {
+    const resolvedSet = new Set(resolvedInjuries.map(i => i.trim().toLowerCase()));
+    const originalLength = painfulAreasArray.length;
+    painfulAreasArray = painfulAreasArray.filter(area => !resolvedSet.has(area));
+    if (painfulAreasArray.length !== originalLength) {
+      hasChanges = true;
+      console.log(`[applyInjuryUpdates] Removed resolved injuries: ${resolvedInjuries.join(', ')}`);
+    }
+  }
+
+  // Build updated painful areas string
+  const updatedPainfulAreas = painfulAreasArray.length > 0
+    ? painfulAreasArray.map(area => 
+        // Capitalize first letter of each word
+        area.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')
+      ).join(', ')
+    : null;
+
+  // Create updated diagnosis
+  const updatedDiagnosis: DiagnosisAssistantResponse = {
+    ...diagnosis,
+    painfulAreas: updatedPainfulAreas,
+  };
+
+  // Log pain level change if present (for analytics/debugging)
+  if (painLevelChange) {
+    console.log(`[applyInjuryUpdates] Pain level change reported: ${painLevelChange}`);
+    hasChanges = true;
+  }
+
+  if (hasChanges) {
+    console.log(`[applyInjuryUpdates] Updated painfulAreas: "${diagnosis.painfulAreas}" -> "${updatedPainfulAreas}"`);
+  }
+
+  return { updatedDiagnosis, hasChanges };
+}
+
+// ----------------------
+// Helper: Process pre-followup feedback with LLM
+// ----------------------
+/**
+ * Uses an LLM to intelligently process all accumulated feedback from the pre-followup chat.
+ * Returns updated diagnosis and questionnaire data, plus a context summary for program generation.
+ */
+async function processPreFollowupFeedback(params: {
+  originalDiagnosis: DiagnosisAssistantResponse;
+  originalQuestionnaire: ExerciseQuestionnaireAnswers;
+  accumulatedFeedback: PreFollowupFeedback;
+  chatMessages: SimpleChatMessage[];
+  language: string;
+}): Promise<{
+  updatedDiagnosis: DiagnosisAssistantResponse;
+  updatedQuestionnaire: ExerciseQuestionnaireAnswers;
+  programGenerationContext: string;
+}> {
+  const { originalDiagnosis, originalQuestionnaire, accumulatedFeedback, chatMessages, language } = params;
+
+  console.log('[processPreFollowupFeedback] Starting LLM feedback processing...');
+
+  // Build the user message with all context
+  const userMessage = buildFeedbackProcessorUserMessage({
+    originalDiagnosis: {
+      painfulAreas: originalDiagnosis.painfulAreas,
+      painScale: originalDiagnosis.painScale,
+      painLocation: originalDiagnosis.painLocation,
+      painCharacter: originalDiagnosis.painCharacter,
+      targetAreas: originalDiagnosis.targetAreas,
+      priorInjury: originalDiagnosis.priorInjury,
+      diagnosis: originalDiagnosis.diagnosis,
+    },
+    originalQuestionnaire: {
+      numberOfActivityDays: originalQuestionnaire.numberOfActivityDays,
+      workoutDuration: originalQuestionnaire.workoutDuration,
+      exerciseModalities: originalQuestionnaire.exerciseModalities,
+      targetAreas: originalQuestionnaire.targetAreas,
+      equipment: originalQuestionnaire.equipment,
+      cardioType: originalQuestionnaire.cardioType,
+      cardioEnvironment: originalQuestionnaire.cardioEnvironment,
+      weeklyFrequency: originalQuestionnaire.weeklyFrequency,
+    },
+    structuredUpdates: accumulatedFeedback.structuredUpdates,
+    exerciseIntensity: accumulatedFeedback.exerciseIntensity,
+    conversationalFeedback: accumulatedFeedback.conversationalFeedback,
+    chatMessages,
+    language,
+  });
+
+  try {
+    // Call the LLM to process the feedback
+    const response = await (openai.responses as any).create({
+      model: FEEDBACK_PROCESSOR_MODEL,
+      input: [
+        { role: 'system', content: feedbackProcessorSystemPrompt },
+        { role: 'user', content: userMessage },
+      ],
+      text: { format: { type: 'json_object' } },
+      ...getReasoningParam(FEEDBACK_PROCESSOR_REASONING),
+    });
+
+    const rawContent = response.output_text;
+    if (!rawContent) {
+      console.error('[processPreFollowupFeedback] No response from LLM');
+      // Return originals unchanged
+      return {
+        updatedDiagnosis: originalDiagnosis,
+        updatedQuestionnaire: originalQuestionnaire,
+        programGenerationContext: accumulatedFeedback.conversationalFeedback || '',
+      };
+    }
+
+    console.log(`[processPreFollowupFeedback] LLM response length: ${rawContent.length}`);
+
+    // Parse the JSON response
+    const parsed = JSON.parse(rawContent) as {
+      diagnosisUpdates?: Record<string, unknown>;
+      questionnaireUpdates?: Record<string, unknown>;
+      programGenerationContext?: string;
+    };
+
+    // Apply diagnosis updates
+    const updatedDiagnosis: DiagnosisAssistantResponse = {
+      ...originalDiagnosis,
+      ...(parsed.diagnosisUpdates || {}),
+    };
+
+    // Apply questionnaire updates
+    const updatedQuestionnaire: ExerciseQuestionnaireAnswers = {
+      ...originalQuestionnaire,
+      ...(parsed.questionnaireUpdates || {}),
+    };
+
+    const programGenerationContext = parsed.programGenerationContext || 
+      accumulatedFeedback.conversationalFeedback || '';
+
+    console.log('[processPreFollowupFeedback] Processing complete');
+    if (parsed.diagnosisUpdates) {
+      console.log('  Diagnosis updates:', JSON.stringify(parsed.diagnosisUpdates));
+    }
+    if (parsed.questionnaireUpdates) {
+      console.log('  Questionnaire updates:', JSON.stringify(parsed.questionnaireUpdates));
+    }
+    console.log(`  Context: ${programGenerationContext.substring(0, 100)}...`);
+
+    return {
+      updatedDiagnosis,
+      updatedQuestionnaire,
+      programGenerationContext,
+    };
+  } catch (error) {
+    console.error('[processPreFollowupFeedback] Error processing feedback:', error);
+    // Fall back to simple injury updates if LLM fails
+    const { updatedDiagnosis } = applyInjuryUpdates(originalDiagnosis, accumulatedFeedback.structuredUpdates);
+    return {
+      updatedDiagnosis,
+      updatedQuestionnaire: originalQuestionnaire,
+      programGenerationContext: accumulatedFeedback.conversationalFeedback || '',
+    };
+  }
+}
+
 // Initialize OpenAI client
 const isTestOrCI = process.env.NODE_ENV === 'test' || 
                    process.env.CI === 'true' || 
@@ -34,8 +243,18 @@ import {
   DIAGNOSIS_MODEL, DIAGNOSIS_REASONING,
   EXPLORE_MODEL, EXPLORE_REASONING,
   PROGRAM_MODEL, PROGRAM_REASONING,
+  FEEDBACK_PROCESSOR_MODEL, FEEDBACK_PROCESSOR_REASONING,
   getReasoningParam,
 } from './models';
+
+// Import feedback processor prompt
+import {
+  feedbackProcessorSystemPrompt,
+  buildFeedbackProcessorUserMessage,
+} from '../prompts/feedbackProcessorPrompt';
+
+// Simple chat message type for feedback processing (doesn't need full ChatMessage type)
+type SimpleChatMessage = { role: string; content: string };
 
 // ----------------------
 // Model and token controls
@@ -882,6 +1101,7 @@ export async function generateFollowUpExerciseProgram(context: {
   previousProgram?: ExerciseProgram;
   language?: string;
   desiredCreatedAt?: string;
+  chatMessages?: SimpleChatMessage[]; // Chat messages from pre-followup chat for LLM processing
 }) {
   const language = context.language || 'en';
 
@@ -948,6 +1168,74 @@ export async function generateFollowUpExerciseProgram(context: {
       cleanedFeedback = cleanProgramFeedback(context.feedback as ProgramFeedback);
     }
 
+    // ========================================
+    // Process feedback with LLM (for PreFollowupFeedback) or apply simple updates (legacy)
+    // ========================================
+    let effectiveDiagnosis: DiagnosisAssistantResponse;
+    let effectiveQuestionnaire: ExerciseQuestionnaireAnswers;
+    let programGenerationContext: string = '';
+
+    if (isPreFollowupFeedback) {
+      // Use LLM to intelligently process all accumulated feedback
+      const prefFeedback = context.feedback as PreFollowupFeedback;
+      const chatMessages = prefFeedback.chatMessages || context.chatMessages || [];
+      
+      console.log('[followup-incremental] Processing feedback with LLM...');
+      const processingResult = await processPreFollowupFeedback({
+        originalDiagnosis: context.diagnosisData,
+        originalQuestionnaire: context.userInfo,
+        accumulatedFeedback: prefFeedback,
+        chatMessages,
+        language,
+      });
+
+      effectiveDiagnosis = processingResult.updatedDiagnosis;
+      effectiveQuestionnaire = processingResult.updatedQuestionnaire;
+      programGenerationContext = processingResult.programGenerationContext;
+
+      // Check if diagnosis or questionnaire changed
+      const diagnosisChanged = JSON.stringify(effectiveDiagnosis) !== JSON.stringify(context.diagnosisData);
+      const questionnaireChanged = JSON.stringify(effectiveQuestionnaire) !== JSON.stringify(context.userInfo);
+
+      // Persist updated diagnosis and questionnaire to Firestore
+      if ((diagnosisChanged || questionnaireChanged) && context.userId && context.programId) {
+        try {
+          const programRef = adminDb
+            .collection('users')
+            .doc(context.userId)
+            .collection('programs')
+            .doc(context.programId);
+
+          const updates: Record<string, unknown> = {
+            updatedAt: new Date().toISOString(),
+          };
+
+          if (diagnosisChanged) {
+            updates.diagnosis = effectiveDiagnosis;
+            updates.diagnosisUpdatedAt = new Date().toISOString();
+            console.log('[followup-incremental] Diagnosis updated by LLM processor');
+          }
+
+          if (questionnaireChanged) {
+            updates.questionnaire = effectiveQuestionnaire;
+            updates.questionnaireUpdatedAt = new Date().toISOString();
+            console.log('[followup-incremental] Questionnaire updated by LLM processor');
+          }
+
+          await programRef.update(updates);
+          console.log('[followup-incremental] Persisted LLM-processed updates to Firestore');
+        } catch (error) {
+          console.error('[followup-incremental] Error persisting LLM updates to Firestore:', error);
+          // Continue even if update fails
+        }
+      }
+    } else {
+      // Legacy path: Simple injury updates for ProgramFeedback
+      const { updatedDiagnosis } = applyInjuryUpdates(context.diagnosisData, structuredUpdates);
+      effectiveDiagnosis = updatedDiagnosis;
+      effectiveQuestionnaire = context.userInfo;
+    }
+
     // Log feedback for debugging
     throttledLog(
       'debug',
@@ -991,15 +1279,19 @@ export async function generateFollowUpExerciseProgram(context: {
     // STEP 1: Generate metadata + weeklyPlan
     // ========================================
     console.log('[followup-incremental] Step 1: Generating metadata...');
+    
+    // Use the LLM-processed context if available, otherwise fall back to structured updates
+    const effectiveFeedbackSummary = programGenerationContext || structuredUpdates?.feedbackSummary;
+    
     const metadata = await generateFollowUpMetadata({
-      diagnosisData: context.diagnosisData,
-      userInfo: context.userInfo,
+      diagnosisData: effectiveDiagnosis,
+      userInfo: effectiveQuestionnaire, // Use LLM-updated questionnaire
       feedback: cleanedFeedback,
       previousProgram: context.previousProgram,
       language,
       // Pass additional feedback from pre-followup chat
       conversationalFeedback,
-      feedbackSummary: structuredUpdates?.feedbackSummary,
+      feedbackSummary: effectiveFeedbackSummary,
       overallIntensity,
       programAdjustments,
     });
@@ -1013,7 +1305,7 @@ export async function generateFollowUpExerciseProgram(context: {
         context.userId,
         context.programId,
         metadata,
-        context.userInfo.targetAreas || [],
+        effectiveQuestionnaire.targetAreas || [],
         createdAtIso
       );
     }
@@ -1056,8 +1348,8 @@ export async function generateFollowUpExerciseProgram(context: {
 
       const dayResult = await generateFollowUpSingleDay({
         dayNumber: dayNum,
-        diagnosisData: context.diagnosisData,
-        userInfo: context.userInfo,
+        diagnosisData: effectiveDiagnosis,
+        userInfo: effectiveQuestionnaire, // Use LLM-updated questionnaire
         feedback: cleanedFeedback,
         previousDays: generatedDays,
         weeklyPlan: metadata.weeklyPlan,
@@ -1065,7 +1357,7 @@ export async function generateFollowUpExerciseProgram(context: {
         programAdjustments,
         previousProgramStats,
         // Pass additional feedback from pre-followup chat
-        feedbackSummary: structuredUpdates?.feedbackSummary,
+        feedbackSummary: effectiveFeedbackSummary,
         overallIntensity,
       });
 
@@ -1080,7 +1372,7 @@ export async function generateFollowUpExerciseProgram(context: {
           weekId,
           dayResult,
           isLastDay,
-          context.diagnosisData?.programType
+          effectiveDiagnosis?.programType
         );
       }
     }
@@ -1119,8 +1411,8 @@ export async function generateFollowUpExerciseProgram(context: {
       summary: metadata.summary,
       whatNotToDo: metadata.whatNotToDo,
       afterTimeFrame: metadata.afterTimeFrame,
-      targetAreas: context.userInfo.targetAreas || [],
-      bodyParts: context.userInfo.targetAreas || [],
+      targetAreas: effectiveQuestionnaire.targetAreas || [],
+      bodyParts: effectiveQuestionnaire.targetAreas || [],
       timeFrameExplanation: '', // Not used in follow-up programs
       days: generatedDays as unknown as ExerciseProgram['days'],
       createdAt: nextProgramDateUTC,

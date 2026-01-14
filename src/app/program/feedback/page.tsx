@@ -25,6 +25,7 @@ function FeedbackPageContent() {
 
   const [isLoading, setIsLoading] = useState(true);
   const [error] = useState<string | null>(null);
+  const [isGenerating, setIsGenerating] = useState(false);
   const [weeklyLimitError, setWeeklyLimitError] = useState<{
     programType: ProgramType;
     nextAllowedDate: Date;
@@ -106,10 +107,16 @@ function FeedbackPageContent() {
 
   // Handle program generation from PreFollowupChat
   const handleGenerateProgram = async (feedback: PreFollowupFeedback) => {
+    // Prevent double-clicks
+    if (isGenerating) return;
+    
     if (!user || !user.uid) {
       console.error(t('exerciseProgram.feedback.error'));
       return;
     }
+
+    // Set generating state immediately to disable button
+    setIsGenerating(true);
 
     // Check weekly limit FIRST (quick check before redirect)
     const programType = diagnosisData?.programType || ProgramType.Exercise;
@@ -120,10 +127,11 @@ function FeedbackPageContent() {
         programType,
         nextAllowedDate: nextAllowedDate || new Date(),
       });
+      setIsGenerating(false);
       return;
     }
 
-    // Redirect immediately to show loading state
+    // Trigger generation state in UserContext FIRST (sets loading state + navigates to /program)
     generateFollowUpProgram();
 
     // Submit feedback in background - Firestore snapshot listener will handle updates
@@ -187,6 +195,7 @@ function FeedbackPageContent() {
           onGenerateProgram={handleGenerateProgram}
           onVideoClick={handleVideoClick}
           loadingVideoExercise={loadingVideoExercise}
+          isGenerating={isGenerating}
         />
       </div>
       

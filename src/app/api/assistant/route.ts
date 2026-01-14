@@ -106,8 +106,8 @@ export async function POST(request: Request) {
         // Available body parts for clickable markers (from selected group)
         const availableBodyParts = payload?.bodyPartsInSelectedGroup?.join(', ') || '(none selected)';
         
-        // All actual group names for clickable group markers
-        const allGroupNames = ALL_GROUP_NAMES.join(', ');
+        // All actual group names for clickable group markers (quoted to avoid comma ambiguity)
+        const allGroupNames = ALL_GROUP_NAMES.map((name, i) => `${i + 1}. "${name}"`).join('\n');
         
         const promptWithContext = basePrompt
           .replace(/\{\{BODY_PART\}\}/g, bodyPart)
@@ -234,6 +234,9 @@ export async function POST(request: Request) {
         }
 
         try {
+          // Extract chat messages from feedback if available (for LLM processing)
+          const chatMessages = payload.feedback?.chatMessages;
+          
           const program = await generateFollowUpExerciseProgram({
             diagnosisData: payload.diagnosisData,
             userInfo: payload.userInfo,
@@ -242,6 +245,7 @@ export async function POST(request: Request) {
             programId: payload.programId,
             previousProgram: payload.previousProgram, // Pass the previous program data
             language: payload.language || 'en', // Add language parameter with default fallback
+            chatMessages, // Pass chat messages for LLM feedback processing
           });
 
           return NextResponse.json({
@@ -320,6 +324,7 @@ export async function POST(request: Request) {
         const userContext = buildPreFollowupUserContext({
           previousProgram: {
             title: previousProgram?.title || 'Previous Program',
+            createdAt: previousProgram?.createdAt,
             days: previousProgram?.days || [],
           },
           diagnosisData: diagnosisData || {},

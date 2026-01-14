@@ -914,6 +914,7 @@ const translations = {
   'feedback.daysSelected': '{{count}} days selected',
   'feedback.startOver': 'Start over',
   'feedback.answerInChat': 'Answer in chat',
+  'feedback.typeYourAnswer': 'Click to answer in chat',
   'chat.error': 'Something went wrong. Please try again.',
 
   // Sign Up Prompts for Custom Programs

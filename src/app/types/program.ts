@@ -280,8 +280,9 @@ export const EXERCISE_MODALITIES = ['Cardio', 'Strength', 'Both'] as const;
 
 export type ExerciseModality = (typeof EXERCISE_MODALITIES)[number];
 
-// Pain body parts options (for detailed assessment)
-export const PAIN_BODY_PARTS = [
+// Body group names - exact match with bodyPartGroups.ts config (source of truth)
+// These are the 3D model selectable regions and canonical body part identifiers
+export const BODY_GROUP_NAMES = [
   'Neck',
   'Left Shoulder',
   'Right Shoulder',
@@ -295,10 +296,9 @@ export const PAIN_BODY_PARTS = [
   'Right Hand',
   'Chest',
   'Abdomen',
-  'Upper Back',
-  'Middle Back',
-  'Lower Back',
-  'Pelvis & Hip Region',
+  'Upper & Middle Back',
+  'Lower Back, Pelvis & Hip Region',
+  'Glutes',
   'Right Thigh',
   'Left Thigh',
   'Left Knee',
@@ -309,7 +309,39 @@ export const PAIN_BODY_PARTS = [
   'Right Foot',
 ] as const;
 
-export type PainBodyPart = (typeof PAIN_BODY_PARTS)[number];
+export type BodyGroupName = (typeof BODY_GROUP_NAMES)[number];
+
+// Norwegian translations for body groups (matches bodyPart.group.* keys in nb.ts)
+export const BODY_GROUP_NAMES_NB: Record<BodyGroupName, string> = {
+  'Neck': 'Nakke',
+  'Left Shoulder': 'Venstre skulder',
+  'Right Shoulder': 'Høyre skulder',
+  'Left Upper Arm': 'Venstre overarm',
+  'Right Upper Arm': 'Høyre overarm',
+  'Left Elbow': 'Venstre albue',
+  'Right Elbow': 'Høyre albue',
+  'Left Forearm': 'Venstre underarm',
+  'Right Forearm': 'Høyre underarm',
+  'Left Hand': 'Venstre hånd',
+  'Right Hand': 'Høyre hånd',
+  'Chest': 'Bryst',
+  'Abdomen': 'Mage',
+  'Upper & Middle Back': 'Øvre og midtre rygg',
+  'Lower Back, Pelvis & Hip Region': 'Korsrygg, bekken og hofteregion',
+  'Glutes': 'Setemuskulatur',
+  'Right Thigh': 'Høyre lår',
+  'Left Thigh': 'Venstre lår',
+  'Left Knee': 'Venstre kne',
+  'Right Knee': 'Høyre kne',
+  'Left Lower Leg': 'Venstre legg',
+  'Right Lower Leg': 'Høyre legg',
+  'Left Foot': 'Venstre fot',
+  'Right Foot': 'Høyre fot',
+};
+
+// Alias for backward compatibility - prefer BODY_GROUP_NAMES for new code
+export const PAIN_BODY_PARTS = BODY_GROUP_NAMES;
+export type PainBodyPart = BodyGroupName;
 
 export type BodyRegion = 'Full Body' | 'Upper Body' | 'Lower Body' | 'Custom';
 

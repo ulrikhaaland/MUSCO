@@ -54,45 +54,29 @@ interface ExerciseQuestionnaireProps {
   fullBody: boolean;
   /** Diagnosis text from the chat assessment (displayed below subtitle) */
   diagnosisText?: string | null;
+  /** When true, submit button is disabled to prevent double-clicks */
+  isSubmitting?: boolean;
 }
 
-// Map composite pain areas to their individual parts
-const compositeAreaMapping: { [key: string]: string[] } = {
-  'Upper & Middle Back': ['Upper Back', 'Middle Back'],
-  'Lower Back, Pelvis & Hip Region': ['Lower Back', 'Pelvis & Hip Region'],
-};
-
-// Function to expand composite areas into individual parts
-const expandPainAreas = (areas: string[], t: (key: string, options?: any) => string, translatedPainBodyParts: string[]): string[] => {
-  const expandedAreas = new Set<string>();
+// Function to normalize pain areas - matches against PAIN_BODY_PARTS for proper capitalization
+// No longer splits composite areas - they should match 3D model groups exactly
+const normalizePainAreas = (areas: string[], translatedPainBodyParts: string[]): string[] => {
+  const normalizedAreas = new Set<string>();
 
   areas.forEach((area) => {
     if (!area) return;
-    // Convert to lowercase for comparison
     const lowerArea = area.toLowerCase();
-    const lowerCompositeMapping: { [key: string]: string[] } = {};
-
-    // Create lowercase mapping for comparison
-    Object.entries(compositeAreaMapping).forEach(([key, value]) => {
-      lowerCompositeMapping[key.toLowerCase()] = value;
-    });
-
-    if (lowerArea in lowerCompositeMapping) {
-      lowerCompositeMapping[lowerArea].forEach((part) =>
-        expandedAreas.add(part)
-      );
-    } else {
-      // Find the matching pain body part with correct capitalization
-      const matchingPart = translatedPainBodyParts.find(
-        (part) => part.toLowerCase() === lowerArea
-      ) || PAIN_BODY_PARTS.find(
-        (part) => part.toLowerCase() === lowerArea
-      );
-      expandedAreas.add(matchingPart || area);
-    }
+    
+    // Find the matching pain body part with correct capitalization
+    const matchingPart = translatedPainBodyParts.find(
+      (part) => part.toLowerCase() === lowerArea
+    ) || PAIN_BODY_PARTS.find(
+      (part) => part.toLowerCase() === lowerArea
+    );
+    normalizedAreas.add(matchingPart || area);
   });
 
-  return Array.from(expandedAreas);
+  return Array.from(normalizedAreas);
 };
 
 // RECOVERY_WORKOUT_DURATIONS is now imported from @/app/types/program
@@ -179,6 +163,7 @@ export function ExerciseQuestionnaire({
   targetAreas,
   fullBody,
   diagnosisText,
+  isSubmitting = false,
 }: ExerciseQuestionnaireProps) {
   const { t, locale } = useTranslation();
   const { answers: storedAnswers, activeProgram } = useUser();
@@ -275,8 +260,8 @@ export function ExerciseQuestionnaire({
     ? TRANSLATED_RECOVERY_WORKOUT_DURATIONS
     : getTranslatedWorkoutDurations(t);
   
-  // Normalize and expand the incoming pain areas while preserving proper capitalization
-  const normalizedPainAreas = expandPainAreas(generallyPainfulAreas || [], t, translatedPainBodyParts);
+  // Normalize the incoming pain areas while preserving proper capitalization
+  const normalizedPainAreas = normalizePainAreas(generallyPainfulAreas || [], translatedPainBodyParts);
 
   const [targetAreasReopened, setTargetAreasReopened] = useState(false);
   const [cardioTypeReopened, setCardioTypeReopened] = useState(false);
@@ -286,29 +271,10 @@ export function ExerciseQuestionnaire({
   >(null);
 
   const computeInitialTargetAreas = (): (typeof SELECTABLE_BODY_PARTS)[number][] => {
-    if (fullBody) {
-      return [...SELECTABLE_BODY_PARTS];
-    }
-    const preselectedAreas = targetAreas
-      .map((group) => {
-        const groupId = group.id.toLowerCase();
-        if (groupId.includes('shoulder')) return 'Shoulders' as const;
-        if (groupId.includes('upper_arm')) return 'Upper Arms' as const;
-        if (groupId.includes('forearm')) return 'Forearms' as const;
-        if (groupId.includes('chest')) return 'Chest' as const;
-        if (groupId.includes('abdomen')) return 'Abdomen' as const;
-        if (groupId.includes('back')) return 'Upper Back' as const;
-        if (groupId.includes('pelvis')) return 'Lower Back' as const;
-        if (groupId.includes('glutes')) return 'Glutes' as const;
-        if (groupId.includes('thigh')) return 'Upper Legs' as const;
-        if (groupId.includes('lower_leg')) return 'Lower Legs' as const;
-        // Note: Neck is excluded as we don't have neck exercises
-        return null;
-      })
-      .filter(
-        (area): area is (typeof SELECTABLE_BODY_PARTS)[number] => area !== null
-      );
-    return [...new Set(preselectedAreas)];
+    // Always default to Full Body - don't limit based on painful areas
+    // The LLM will use painful areas info to customize the program appropriately
+    // Users can still manually select Upper/Lower Body if they want
+    return [...SELECTABLE_BODY_PARTS];
   };
 
   const prefillAge = (() => {
@@ -2736,9 +2702,18 @@ export function ExerciseQuestionnaire({
               </button>
               <button
                 type="submit"
-                className="px-6 py-3 rounded-xl bg-indigo-600 text-white hover:bg-indigo-500 transition-colors duration-200"
+                disabled={isSubmitting}
+                className="px-6 py-3 rounded-xl bg-indigo-600 text-white hover:bg-indigo-500 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {t('questionnaire.createProgram')}
+                {isSubmitting ? (
+                  <span className="flex items-center">
+                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                    </svg>
+                    {t('common.loading')}
+                  </span>
+                ) : t('questionnaire.createProgram')}
               </button>
             </div>
           </RevealOnScroll>

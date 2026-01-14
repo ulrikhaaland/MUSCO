@@ -236,7 +236,8 @@ export async function deletePreFollowupChat(
  * Convert accumulated feedback to PreFollowupFeedback for program generation
  */
 export function convertToPreFollowupFeedback(
-  accumulatedFeedback: PreFollowupChatState['accumulatedFeedback']
+  accumulatedFeedback: PreFollowupChatState['accumulatedFeedback'],
+  chatMessages?: Array<{ role: string; content: string }>
 ): PreFollowupFeedback {
   // Prefer the LLM-generated feedbackSummary over raw conversational text
   const feedbackSummary = accumulatedFeedback.structuredUpdates?.feedbackSummary;
@@ -250,6 +251,7 @@ export function convertToPreFollowupFeedback(
     exerciseIntensity: accumulatedFeedback.exerciseIntensity,
     overallIntensity,
     conversationalFeedback,
+    chatMessages, // Include full chat messages for LLM processing
   };
 }
 

@@ -34,7 +34,8 @@ export interface UsePartChatProps {
   forceMode?: 'diagnosis' | 'explore';
   onGenerateProgram?: (
     programType: ProgramType,
-    diagnosisData?: DiagnosisAssistantResponse | null
+    diagnosisData?: DiagnosisAssistantResponse | null,
+    chatMode?: 'diagnosis' | 'explore'
   ) => void;
   onBodyGroupSelected?: (groupName: string, keepChatOpen?: boolean) => void;
   onBodyPartSelected?: (partName: string, keepChatOpen?: boolean) => void;
@@ -167,7 +168,7 @@ export function usePartChat({
       // Primary check: backend-augmented fields
       if ((question as any).generate && (question as any).programType) {
         const programType = (question as any).programType as ProgramType;
-        onGenerateProgram?.(programType, assistantResponse);
+        onGenerateProgram?.(programType, assistantResponse, chatMode);
         setLocalFollowUpQuestions([]);
         return;
       }
@@ -176,7 +177,7 @@ export function usePartChat({
       const detection = detectProgramType(question.question);
 
       if (detection.isProgram && detection.programType) {
-        onGenerateProgram?.(detection.programType, assistantResponse);
+        onGenerateProgram?.(detection.programType, assistantResponse, chatMode);
         setLocalFollowUpQuestions([]);
         return;
       }

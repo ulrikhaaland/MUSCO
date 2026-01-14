@@ -270,8 +270,13 @@ export class StreamParser {
 
   private generateDefaultFollowUps(): any[] {
     // Simple fallback: provide "Answer in chat" button that focuses input
+    const isNorwegian = this.locale === 'nb';
     return [
-      { question: 'Answer in chat', chatMode: 'diagnosis', title: 'Type your answer' },
+      { 
+        question: isNorwegian ? 'Klikk for å svare i chat' : 'Click to answer in chat', 
+        chatMode: 'diagnosis', 
+        title: isNorwegian ? 'Svar i chat' : 'Answer in chat' 
+      },
     ];
   }
 
