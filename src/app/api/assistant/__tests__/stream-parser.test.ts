@@ -143,7 +143,7 @@ describe('StreamParser', () => {
       expect(followUps).toHaveLength(1); // Should only emit once
     });
 
-    it('auto-generates "Answer in chat" fallback when no follow-ups provided', () => {
+    it('auto-generates "Click to answer in chat" fallback when no follow-ups provided', () => {
       const followUps: Question[] = [];
       const parser = new StreamParser({
         onText: jest.fn(),
@@ -157,7 +157,7 @@ describe('StreamParser', () => {
       parser.processChunk(chunk);
 
       expect(followUps).toHaveLength(1);
-      expect(followUps[0].question).toBe('Answer in chat');
+      expect(followUps[0].question).toBe('Click to answer in chat');
     });
   });
 
@@ -271,7 +271,7 @@ describe('StreamParser', () => {
   });
 
   describe('complete() method', () => {
-    it('emits "Answer in chat" if no follow-ups were emitted during stream', async () => {
+    it('emits "Click to answer in chat" if no follow-ups were emitted during stream', async () => {
       const followUps: Question[] = [];
       const onComplete = jest.fn();
       const parser = new StreamParser({
@@ -287,7 +287,7 @@ describe('StreamParser', () => {
       await parser.complete();
 
       expect(followUps).toHaveLength(1);
-      expect(followUps[0].question).toBe('Answer in chat');
+      expect(followUps[0].question).toBe('Click to answer in chat');
       expect(onComplete).toHaveBeenCalled();
     });
 
