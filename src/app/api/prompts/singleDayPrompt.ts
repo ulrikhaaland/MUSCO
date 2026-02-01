@@ -37,6 +37,7 @@ You are generating ONLY the metadata for a personalized exercise program. The in
   - Exercise modalities (strength/cardio/both)
   - Workout duration preference
   - For "both" modality: cardioDays and strengthDays specify the split
+  - additionalInfo: Free-text notes from the user about injuries, limitations, goals, or preferences. If provided, incorporate these insights thoughtfully into the program.
 
 2. Language Requirements
 

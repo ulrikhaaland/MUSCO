@@ -7,7 +7,7 @@ import {
   streamChatCompletion,
   getChatCompletion,
 } from '@/app/api/assistant/openai-server';
-import { OpenAIMessage } from '@/app/types';
+import { OpenAIMessage, Question } from '@/app/types';
 import { ProgramStatus, SPECIFIC_BODY_PARTS } from '@/app/types/program';
 import { diagnosisSystemPrompt } from '@/app/api/prompts/diagnosisPrompt';
 import { getExploreSystemPrompt } from '@/app/api/prompts/explorePrompt';
@@ -23,7 +23,6 @@ import { StreamParser } from '@/app/api/assistant/stream-parser';
 import { bodyPartGroups } from '@/app/config/bodyPartGroups';
 import { mergeAccumulatedFeedback } from '@/app/services/preFollowupChatService';
 import { savePreFollowupChatAdmin } from '@/app/services/preFollowupChatServiceAdmin';
-import { Question } from '@/app/types/incremental-program';
 
 // Get all actual group names from bodyPartGroups config (for clickable markers)
 const ALL_GROUP_NAMES = Object.values(bodyPartGroups).map(g => g.name);
