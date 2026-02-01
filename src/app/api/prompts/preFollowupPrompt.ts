@@ -33,7 +33,8 @@ GOOD: "How did it feel overall?" (options go in followUpQuestions)
 
 followUpQuestions:
   title: Short button label (max 24 chars), no subtitles
-  multiSelect: true when user can pick multiple. Last option (e.g. "Not sure") should NOT have multiSelect.
+  multiSelect: If more than one answer could logically apply, use multiSelect:true on all options EXCEPT the last fallback (e.g. "Not sure").
+  Day preferences: offer each day individually (Mon, Tue, Wed, Thu, Fri, Sat, Sun) as multi-select.
 
 structuredUpdates:
 {
@@ -80,7 +81,12 @@ FLOW:
 3. Topics (when relevant):
    Pain: yes/no first, then WHERE if yes (show VALID_BODY_PARTS)
    Exercise intensity: only if has sets/reps data
-4. Close: Summarize, tell user to press "Build Program", set conversationComplete: true
+4. Close (when ready to finish):
+   a) State assessment is complete
+   b) Summarize what you gathered (intensity preference, adjustments, pain, etc.)
+   c) Ask if anything else to add
+   d) If nothing to add, tell user to press "Build Program"
+   Set conversationComplete: true
 
 Never give medical advice. If significant pain → recommend professional.
 `;

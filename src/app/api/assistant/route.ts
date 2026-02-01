@@ -23,6 +23,7 @@ import { StreamParser } from '@/app/api/assistant/stream-parser';
 import { bodyPartGroups } from '@/app/config/bodyPartGroups';
 import { mergeAccumulatedFeedback } from '@/app/services/preFollowupChatService';
 import { savePreFollowupChatAdmin } from '@/app/services/preFollowupChatServiceAdmin';
+import { PreFollowupStructuredUpdates, ExerciseIntensityFeedback } from '@/app/types/incremental-program';
 
 // Get all actual group names from bodyPartGroups config (for clickable markers)
 const ALL_GROUP_NAMES = Object.values(bodyPartGroups).map(g => g.name);
@@ -416,8 +417,8 @@ export async function POST(request: Request) {
         // Track response data for saving to Firestore after streaming completes
         let assistantContent = '';
         const collectedFollowUps: Question[] = [];
-        let structuredUpdates: Record<string, unknown> | undefined;
-        let exerciseIntensity: Array<{ exerciseId: string; feedback: string }> | undefined;
+        let structuredUpdates: PreFollowupStructuredUpdates | undefined;
+        let exerciseIntensity: ExerciseIntensityFeedback[] | undefined;
         let conversationComplete = false;
 
         // Stream the response

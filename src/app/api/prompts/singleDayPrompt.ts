@@ -219,6 +219,7 @@ SPECIAL RULE FOR "exercise_and_recovery" programType:
   - Exercise modalities (strength/cardio/both)
   - Workout duration preference
   - Cardio-specific preferences (cardioType, cardioEnvironment, cardioDays, strengthDays)
+  - additionalInfo: Free-text notes from the user about injuries, limitations, goals, or preferences. If provided, incorporate these insights thoughtfully into exercise selection.
 
 2. Language Requirements
 
@@ -555,6 +556,7 @@ When generating the weeklyPlan:
   - Exercise modalities (strength/cardio/both)
   - Workout duration preference
   - For "both" modality: cardioDays and strengthDays specify the split
+  - additionalInfo: Free-text notes from the user about injuries, limitations, goals, or preferences. If provided, incorporate these insights thoughtfully into the program.
 
 3. Language Requirements
 
@@ -741,6 +743,7 @@ SPECIAL RULE FOR "exercise_and_recovery" programType:
   - Exercise modalities (strength/cardio/both)
   - Workout duration preference
   - Cardio-specific preferences (cardioType, cardioEnvironment, cardioDays, strengthDays)
+  - additionalInfo: Free-text notes from the user about injuries, limitations, goals, or preferences. If provided, incorporate these insights thoughtfully into exercise selection.
 
 2. Language Requirements
 

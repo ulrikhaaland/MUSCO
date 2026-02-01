@@ -128,4 +128,9 @@ export interface DiagnosisAssistantResponse {
   // The type of program the user is getting, e.g. 'exercise' or 'recovery'
   programType: ProgramType;
   switchToDiagnosis?: boolean;
+  
+  /* Pre-followup chat fields (optional, only used in pre-followup context) */
+  structuredUpdates?: import('./incremental-program').PreFollowupStructuredUpdates;
+  exerciseIntensity?: import('./incremental-program').ExerciseIntensityFeedback[];
+  conversationComplete?: boolean;
 }
