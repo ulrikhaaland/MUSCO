@@ -553,6 +553,11 @@ const translations = {
     'Hvor mye tid vil du bruke på hver treningsøkt?',
   'questionnaire.recoveryDuration':
     'Hvor mye tid vil du bruke på hver rehab‑økt?',
+  'questionnaire.additionalInfo': 'Noe annet vi bør vite?',
+  'questionnaire.additionalInfoHint':
+    'Del relevante detaljer som kan hjelpe oss å tilpasse programmet ditt — skader, begrensninger, spesifikke mål eller preferanser.',
+  'questionnaire.additionalInfoPlaceholder':
+    'f.eks. "Jeg har en svak venstre ankel etter en gammel forstuing" eller "Jeg vil fokusere på å forbedre holdningen min"...',
   'questionnaire.noPain': 'Nei, jeg har ingen smerter',
   'questionnaire.selectAll': 'Velg alle som gjelder',
   'questionnaire.selectSpecific': 'Eller velg spesifikke områder:',

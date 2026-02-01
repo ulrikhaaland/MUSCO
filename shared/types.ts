@@ -32,6 +32,8 @@ export interface ExerciseQuestionnaireAnswers {
   cardioEnvironment?: string;
   // Whether to include weekend days for exercise, defaults to true
   includeWeekends?: boolean;
+  // Any additional information the user wants to provide for program generation
+  additionalInfo?: string;
 }
 
 export enum ProgramType {

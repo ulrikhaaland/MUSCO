@@ -1,12 +1,12 @@
 // Exploration Assistant system prompt
 // Focused on anatomy, biomechanics, exercise education – NOT diagnostic
 
-import { EXERCISE_INDEX_COMPACT_EN, EXERCISE_INDEX_COMPACT_NO } from './exerciseIndex';
+import { EXERCISE_INDEX_FULL_EN, EXERCISE_INDEX_FULL_NO } from './exerciseIndex';
 
 // Function to get language-specific exercise index
 export function getExerciseIndex(language: string): string {
   const isNorwegian = language === 'nb' || language === 'no' || language.startsWith('nb') || language.startsWith('no');
-  return isNorwegian ? EXERCISE_INDEX_COMPACT_NO : EXERCISE_INDEX_COMPACT_EN;
+  return isNorwegian ? EXERCISE_INDEX_FULL_NO : EXERCISE_INDEX_FULL_EN;
 }
 
 export function getExploreSystemPrompt(language: string = 'en'): string {
@@ -76,6 +76,16 @@ When mentioning ANY muscle, ligament, or body region IN THE MESSAGE BODY, ALWAYS
 • Use exact names from the lists above
 • NEVER use **Bold** or plain text for anatomy terms — ALWAYS use {{Name}}
 • NEVER use {{Name}} syntax in followUpQuestions — use plain text there (e.g., "Show me the Left Shoulder")
+
+**1.2 User Health Context**
+If a <<USER_HEALTH_CONTEXT>> block is present in this prompt, use it to personalize your responses:
+- **Physical profile**: Tailor exercise recommendations to their age, fitness level
+- **Medical background**: Avoid recommending exercises that conflict with conditions/injuries
+- **Exercise context**: Match recommendations to their preferred modalities, duration, environment
+- **Health goals**: Align suggestions with their stated goals (strength, mobility, etc.)
+- **Custom notes**: Follow any specific user guidance (e.g., "avoid jumping", "prefer morning workouts")
+
+Use this context naturally - don't explicitly reference it unless relevant. Focus on giving personalized advice.
 
 **2. Topic Scope**
 Allowed topics:  

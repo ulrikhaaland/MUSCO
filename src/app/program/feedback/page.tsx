@@ -21,7 +21,22 @@ function FeedbackPageContent() {
   const router = useRouter();
   const { t } = useTranslation();
   const { user, loading: authLoading } = useAuth();
-  const { program, answers, diagnosisData, generateFollowUpProgram, isLoading: userLoading } = useUser();
+  const { program, activeProgram, answers, diagnosisData, generateFollowUpProgram, isLoading: userLoading } = useUser();
+  
+  // Get the latest week from the program - this is what we're generating a follow-up for
+  // program is always Week 1, but we need the most recent week for proper follow-up context
+  const latestWeekProgram = useMemo(() => {
+    if (!activeProgram?.programs || activeProgram.programs.length === 0) {
+      return program; // Fallback to program (Week 1) if no programs array
+    }
+    const latestWeek = activeProgram.programs[activeProgram.programs.length - 1];
+    // Add docId and weekId for consistency with the program object structure
+    return {
+      ...latestWeek,
+      docId: activeProgram.docId,
+      weekId: latestWeek.docId, // The week's own docId becomes weekId
+    };
+  }, [activeProgram, program]);
 
   const [isLoading, setIsLoading] = useState(true);
   const [error] = useState<string | null>(null);
@@ -56,11 +71,12 @@ function FeedbackPageContent() {
 
   // Build inline exercises map for PreFollowupChat
   // Map by BOTH name and ID so MessageWithExercises can find them by [[name]] markers
+  // Uses latestWeekProgram to show exercises from the most recent week
   const inlineExercises = useMemo(() => {
     const exerciseMap = new Map<string, Exercise>();
     
-    if (program?.days) {
-      program.days.forEach((day) => {
+    if (latestWeekProgram?.days) {
+      latestWeekProgram.days.forEach((day) => {
         if (day.exercises) {
           day.exercises.forEach((exercise) => {
             // Add by name (for [[Exercise Name]] lookups in MessageWithExercises)
@@ -78,7 +94,7 @@ function FeedbackPageContent() {
     }
     
     return exerciseMap;
-  }, [program]);
+  }, [latestWeekProgram]);
 
   // Handle exercise video click
   const handleVideoClick = async (exercise: Exercise) => {
@@ -135,9 +151,10 @@ function FeedbackPageContent() {
     generateFollowUpProgram();
 
     // Submit feedback in background - Firestore snapshot listener will handle updates
+    // Pass latestWeekProgram so the follow-up is based on the most recent week's exercises
     submitProgramFeedback(
       user.uid,
-      program,
+      latestWeekProgram,
       diagnosisData,
       answers,
       feedback
@@ -185,12 +202,12 @@ function FeedbackPageContent() {
       
       <div className="flex-1 overflow-hidden">
         <PreFollowupChat
-          previousProgram={program}
+          previousProgram={latestWeekProgram}
           diagnosisData={diagnosisData}
           questionnaireData={answers}
           userId={user.uid}
-          programId={program.docId || `program-${Date.now()}`}
-          weekId={program.weekId}
+          programId={latestWeekProgram?.docId || program?.docId || `program-${Date.now()}`}
+          weekId={latestWeekProgram?.weekId}
           inlineExercises={inlineExercises}
           onGenerateProgram={handleGenerateProgram}
           onVideoClick={handleVideoClick}

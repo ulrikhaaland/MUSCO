@@ -13,6 +13,7 @@ import { diagnosisSystemPrompt } from '@/app/api/prompts/diagnosisPrompt';
 import { getExploreSystemPrompt } from '@/app/api/prompts/explorePrompt';
 import { chatModeRouterPrompt } from '@/app/api/prompts/routePrompt';
 import { preFollowupSystemPrompt, buildPreFollowupUserContext } from '@/app/api/prompts/preFollowupPrompt';
+import { buildHealthContextForPrompt } from '@/app/api/prompts/healthContext';
 import { 
   ROUTER_MODEL, ROUTER_REASONING,
   PRE_FOLLOWUP_CHAT_MODEL, PRE_FOLLOWUP_CHAT_REASONING,
@@ -20,6 +21,9 @@ import {
 } from '@/app/api/assistant/models';
 import { StreamParser } from '@/app/api/assistant/stream-parser';
 import { bodyPartGroups } from '@/app/config/bodyPartGroups';
+import { mergeAccumulatedFeedback } from '@/app/services/preFollowupChatService';
+import { savePreFollowupChatAdmin } from '@/app/services/preFollowupChatServiceAdmin';
+import { Question } from '@/app/types/incremental-program';
 
 // Get all actual group names from bodyPartGroups config (for clickable markers)
 const ALL_GROUP_NAMES = Object.values(bodyPartGroups).map(g => g.name);
@@ -115,7 +119,13 @@ export async function POST(request: Request) {
           .replace(/\{\{SPECIFIC_BODY_PARTS\}\}/g, specificBodyParts)
           .replace(/\{\{AVAILABLE_BODY_PARTS\}\}/g, availableBodyParts);
         
-        const systemMessage = `${languageLock}\n${promptWithContext}`;
+        // Build health context from user profile and diagnosis data
+        const healthContext = buildHealthContextForPrompt({
+          userProfile: payload?.userProfile,
+          diagnosisResponse: payload?.diagnosisAssistantResponse,
+        }, { language: sessionLanguage });
+        
+        const systemMessage = `${languageLock}\n${healthContext ? `${healthContext}\n\n` : ''}${promptWithContext}`;
 
         const anonCookieName = 'musco_anon_id';
         const cookieStore = await cookies();
@@ -303,7 +313,19 @@ export async function POST(request: Request) {
           return NextResponse.json({ error: 'Payload is required' }, { status: 400 });
         }
 
-        const { messages: chatMessages, previousProgram, diagnosisData, questionnaireData, language, accumulatedFeedback } = payload;
+        const { 
+          messages: chatMessages, 
+          previousProgram, 
+          diagnosisData, 
+          questionnaireData, 
+          language, 
+          accumulatedFeedback, 
+          userProfile,
+          // IDs for saving chat state to Firestore
+          userId,
+          programId,
+          weekId,
+        } = payload;
         const locale = language || 'en';
 
         // Build exercise name map from previous program
@@ -332,6 +354,13 @@ export async function POST(request: Request) {
           exerciseNames,
           language: locale,
         });
+
+        // Log the context being sent to the model
+        console.log('\n┌─────────────────────────────────────────────────────');
+        console.log('│ PRE-FOLLOWUP CHAT - Context sent to model');
+        console.log('├─────────────────────────────────────────────────────');
+        console.log(userContext);
+        console.log('└─────────────────────────────────────────────────────\n');
 
         // Build accumulated feedback context so LLM knows what's already been answered
         let feedbackContext = '';
@@ -374,9 +403,23 @@ export async function POST(request: Request) {
           }
         }
 
+        // Build health context from user profile and diagnosis data
+        const healthContext = buildHealthContextForPrompt({
+          userProfile,
+          questionnaireAnswers: questionnaireData,
+          diagnosisResponse: diagnosisData,
+        }, { language: locale });
+
         // Build system message with context
         const languageLock = `\n<<LANGUAGE_LOCK>>\nSESSION_LANGUAGE=${locale.toLowerCase()}\n<<LANGUAGE_LOCK_END>>\n`;
-        const systemMessage = `${languageLock}\n${preFollowupSystemPrompt}\n\n${userContext}${feedbackContext}`;
+        const systemMessage = `${languageLock}\n${healthContext ? `${healthContext}\n\n` : ''}${preFollowupSystemPrompt}\n\n${userContext}${feedbackContext}`;
+
+        // Track response data for saving to Firestore after streaming completes
+        let assistantContent = '';
+        const collectedFollowUps: Question[] = [];
+        let structuredUpdates: Record<string, unknown> | undefined;
+        let exerciseIntensity: Array<{ exerciseId: string; feedback: string }> | undefined;
+        let conversationComplete = false;
 
         // Stream the response
         const encoder = new TextEncoder();
@@ -386,18 +429,63 @@ export async function POST(request: Request) {
               // Create parser for structured output
               const parser = new StreamParser({
                 onText: (text) => {
+                  assistantContent += text;
                   controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'text', content: text })}\n\n`));
                 },
                 onFollowUp: (question) => {
+                  collectedFollowUps.push(question as Question);
                   controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'followup', question })}\n\n`));
                 },
                 onAssistantResponse: (response) => {
+                  if (response.structuredUpdates) {
+                    structuredUpdates = response.structuredUpdates;
+                  }
+                  if (response.exerciseIntensity) {
+                    exerciseIntensity = response.exerciseIntensity;
+                  }
+                  if (response.conversationComplete !== undefined) {
+                    conversationComplete = response.conversationComplete;
+                  }
                   controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'assistant_response', response })}\n\n`));
                 },
                 onExercises: () => {
                   // Pre-followup chat doesn't need exercise loading - exercises come from previous program
                 },
-                onComplete: () => {
+                onComplete: async () => {
+                  // Save chat state to Firestore after streaming completes
+                  if (userId && programId) {
+                    try {
+                      // Build the new assistant message
+                      const assistantMessage = {
+                        id: `assistant-${Date.now()}`,
+                        role: 'assistant' as const,
+                        content: assistantContent,
+                      };
+                      
+                      // Merge new structured updates with existing accumulated feedback
+                      const mergedFeedback = mergeAccumulatedFeedback(
+                        accumulatedFeedback || {},
+                        {
+                          structuredUpdates,
+                          exerciseIntensity,
+                          conversationalSummary: '',
+                        }
+                      );
+
+                      // Build complete messages array (existing + new assistant message)
+                      const updatedMessages = [...(chatMessages || []), assistantMessage];
+
+                      await savePreFollowupChatAdmin(userId, programId, weekId, {
+                        messages: updatedMessages,
+                        followUpQuestions: collectedFollowUps,
+                        accumulatedFeedback: mergedFeedback,
+                        conversationComplete,
+                      });
+                    } catch (saveError) {
+                      console.error('[API Route] Error saving pre-followup chat state:', saveError);
+                      // Don't fail the request if save fails - client can retry
+                    }
+                  }
                   controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'complete' })}\n\n`));
                 },
               }, { locale });
@@ -411,6 +499,7 @@ export async function POST(request: Request) {
                   parser.processChunk(content);
                 },
                 model: PRE_FOLLOWUP_CHAT_MODEL,
+                reasoning: PRE_FOLLOWUP_CHAT_REASONING,
               });
 
               await parser.complete();

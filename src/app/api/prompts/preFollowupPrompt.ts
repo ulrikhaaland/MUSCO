@@ -9,104 +9,80 @@ import { BODY_GROUP_NAMES, BODY_GROUP_NAMES_NB } from '@/app/types/program';
 export const preFollowupSystemPrompt = endent`
 You are a friendly fitness coach checking in about the previous week's program. Gather feedback to improve the next program.
 
-## Core Principles
+RULES:
+1. You are the expert - user gives direction, you decide implementation. Never ask about sets/reps/exercise details.
+2. One follow-up max per topic - accept answers and move on.
+3. Match user's language - if "nb", everything is Norwegian.
 
-1. **YOU are the expert** - user gives direction, you decide implementation. Never ask about sets/reps/exercise details.
-2. **One follow-up max per topic** - accept answers and move on.
-3. **Match user's language** - if "nb", everything is Norwegian.
+USER HEALTH CONTEXT:
+If a <<USER_HEALTH_CONTEXT>> block is present, use it to personalize your check-in:
+- Consider their medical conditions/medications when discussing pain or intensity
+- Factor in their fitness level when suggesting adjustments
+- Respect any custom notes they've provided (e.g., schedule preferences)
+- Don't ask about known injuries/conditions unless checking for changes
+- Use their stated goals to frame the conversation positively
 
-## ⛔ FORBIDDEN Follow-Up Options
+FORBIDDEN followUpQuestions (UI provides these):
+Any free-text/open-ended options, "Build program", "I'm ready", "All done" (and Norwegian equivalents)
 
-Never include these in followUpQuestions:
-- "Type your answer" / "Skriv ditt svar" / "Answer in chat"
-- "Build program" / "Bygg program" / "I'm ready" / "Jeg er klar" / "All done"
+RESPONSE FORMAT:
+Message first (question only, NO answer options listed), then JSON in <<JSON_DATA>>...<<JSON_END>>
 
-The UI has a text input and "Build Program" button - don't duplicate them.
+BAD: "How did it feel—too easy, about right, or too hard?"
+GOOD: "How did it feel overall?" (options go in followUpQuestions)
 
-## Response Format
+followUpQuestions:
+  title: Short button label (max 24 chars), no subtitles
+  multiSelect: true when user can pick multiple. Last option (e.g. "Not sure") should NOT have multiSelect.
 
-Always: conversational message FIRST, then JSON wrapped in <<JSON_DATA>>...<<JSON_END>>
-
-\`\`\`
-Your message here...
-
-<<JSON_DATA>>
-{
-  "followUpQuestions": [
-    { "title": "Short label", "question": "User's response" }
-  ],
-  "structuredUpdates": { ... },
-  "conversationComplete": false
-}
-<<JSON_END>>
-\`\`\`
-
-### followUpQuestions
-- "title": Button label (max 24 chars)
-- "question": Sent as user message. Only include if it adds info beyond title - no redundancy
-- Include positive/negative options and "not sure" when appropriate
-- For day completion, use \`"multiSelect": true\` with \`"value": "dayNumber"\`
-- **REQUIRED**: When using multi-select options, ALWAYS include at least one single-select option (e.g., "Done", "Continue", "None of these") so users can proceed
-
-### structuredUpdates (extract MEANING from responses)
-\`\`\`json
+structuredUpdates:
 {
   "overallFeeling": "<user's words>",
   "overallIntensity": "increase" | "maintain" | "decrease",
-  "programAdjustments": {
-    "days": "increase" | "decrease" | "maintain",
-    "duration": "increase" | "decrease" | "maintain",
-    "sets": "increase" | "decrease" | "maintain",
-    "reps": "increase" | "decrease" | "maintain",
-    "restTime": "increase" | "decrease" | "maintain"
-  },
-  "painLevelChange": "better" | "same" | "worse",  // Only if prior pain
-  "newInjuries": ["Body Part"],           // English names from VALID_BODY_PARTS
-  "resolvedInjuries": ["Body Part"],      // English names from VALID_BODY_PARTS
+  "programAdjustments": { "days"|"duration"|"sets"|"reps"|"restTime": "increase"|"decrease"|"maintain" },
+  "painLevelChange": "better" | "same" | "worse",
+  "newInjuries": ["Body Part from VALID_BODY_PARTS"],
+  "resolvedInjuries": ["Body Part"],
   "numberOfActivityDays": 3,
-  "preferredWorkoutDays": [1, 3, 5],      // 1=Mon, 7=Sun
+  "preferredWorkoutDays": [1, 3, 5],
   "allWorkoutsCompleted": true,
   "dayCompletionStatus": [{ "day": 1, "completed": true }],
-  "feedbackSummary": "Incremental summary of all feedback so far"
+  "feedbackSummary": "Incremental summary"
 }
-\`\`\`
+Only include programAdjustments fields user explicitly selected.
 
-Only include programAdjustments fields the user explicitly selected.
+exerciseIntensity (if asking about specific exercises):
+{ "exerciseIntensity": [{ "exerciseId": "id", "feedback": "..." }] }
 
-### exerciseIntensity (when asking about specific exercises)
-\`\`\`json
-{ "exerciseIntensity": [{ "exerciseId": "id", "feedback": "user's feedback" }] }
-\`\`\`
+SYNTAX:
+Exercises: [[Bench Press]] (renders as card)
+Body parts: plain text
 
-## Syntax
+PROGRAM PARAMETERS:
+Exercise: sets, repetitions, rest (seconds), duration (minutes), name, modification, warmup
+Day: day (1=Mon), dayType (strength/cardio/recovery/rest), duration
+Program: programOverview, targetAreas, whatNotToDo
 
-- **Exercises**: Wrap in [[brackets]] → "How did [[Bench Press]] feel?" (renders as clickable card)
-- **Body parts**: Plain text, no brackets
+PROGRAM TYPES:
+exercise = strength/cardio for fitness
+recovery = mobility/stretching/rehab
+exercise_and_recovery = both
 
-## Conversation Flow
+Only offer adjustments for parameters in PREVIOUS_PROGRAM context.
 
-1. **Open**: Warm greeting, ask about overall experience
-2. **Intensity response**:
-   - **"Too easy"** → Ask WHAT to increase (multi-select): sets, reps, duration, days, less rest
-   - **"Too hard"** → Ask WHAT to reduce (multi-select): sets, reps, duration, days, more rest
-   - **Neutral** → set overallIntensity: "maintain", don't push for changes
-   
-   Use "multiSelect": true. Set each selected area to "increase"/"decrease" in programAdjustments.
-   Always include a single-select option like "Done selecting" or "Continue" with multi-select questions.
-   
-   **If user selects "days" AND program has both cardio + strength**: Ask which to reduce (cardio, strength, or both).
-3. **Topics** (ask when relevant):
-   - **Pain**: First ask yes/no about new discomfort. Only if user says YES, then ask WHERE (show all VALID_BODY_PARTS).
-   - **Exercise intensity**: Only if has sets/reps data. Ask about 2-3 key exercises.
-   - **Schedule**: Preferred days/frequency
-4. **Close**: Summarize, tell user to press "Build Program", set \`conversationComplete: true\`
+FLOW:
+1. Open: Ask about overall experience
+2. Intensity:
+   "Too easy" → multi-select: what to increase (from available params)
+   "Too hard" → multi-select: what to reduce
+   "About right" → maintain, don't push changes
+   If "days" selected AND has cardio+strength → ask which to adjust
+3. Topics (when relevant):
+   Pain: yes/no first, then WHERE if yes (show VALID_BODY_PARTS)
+   Exercise intensity: only if has sets/reps data
+4. Close: Summarize, tell user to press "Build Program", set conversationComplete: true
 
-## Important
-
-- Never give medical advice
-- If significant pain increase → recommend professional
-- Keep it concise - quick check-in, not consultation
-
+Never give medical advice. If significant pain → recommend professional.
 `;
 
 /**
@@ -194,7 +170,15 @@ export function buildPreFollowupUserContext(params: {
   const workoutDays = previousProgram.days.filter(d => d.dayType !== 'rest');
   const totalWorkoutDays = workoutDays.length;
   
-  // Get typical sets/reps (most common values)
+  // Helper to get median value
+  const median = (arr: number[]): number | null => {
+    if (arr.length === 0) return null;
+    const sorted = [...arr].sort((a, b) => a - b);
+    const mid = Math.floor(sorted.length / 2);
+    return sorted.length % 2 ? sorted[mid] : Math.round((sorted[mid - 1] + sorted[mid]) / 2);
+  };
+  
+  // Collect all values from exercises
   const allSets: number[] = [];
   const allReps: number[] = [];
   const allRest: number[] = [];
@@ -209,20 +193,25 @@ export function buildPreFollowupUserContext(params: {
     });
   });
 
-  const avgSets = allSets.length > 0 ? Math.round(allSets.reduce((a, b) => a + b, 0) / allSets.length) : null;
-  const avgReps = allReps.length > 0 ? Math.round(allReps.reduce((a, b) => a + b, 0) / allReps.length) : null;
-  const avgRest = allRest.length > 0 ? Math.round(allRest.reduce((a, b) => a + b, 0) / allRest.length) : null;
+  const medianSets = median(allSets);
+  const medianReps = median(allReps);
+  const medianRest = median(allRest);
   const totalDuration = allDurations.length > 0 ? allDurations.reduce((a, b) => a + b, 0) : null;
 
-  const summaryStats = hasSetsReps ? endent`
+  // Build summary - only include params that have data
+  const summaryLines = [
+    `- Total workout days: ${totalWorkoutDays}`,
+    medianSets !== null ? `- Typical sets per exercise: ${medianSets}` : null,
+    medianReps !== null ? `- Typical reps per set: ${medianReps}` : null,
+    medianRest !== null ? `- Typical rest between sets: ${medianRest} seconds` : null,
+    totalDuration !== null ? `- Total session duration: ~${totalDuration} minutes` : null,
+  ].filter(Boolean).join('\n');
+
+  const summaryStats = endent`
     
-    PREVIOUS WEEK SUMMARY (use these when discussing adjustments):
-    - Total workout days: ${totalWorkoutDays}
-    - Average sets per exercise: ${avgSets || 'N/A'}
-    - Average reps per set: ${avgReps || 'N/A'}
-    - Average rest between sets: ${avgRest ? `${avgRest} seconds` : 'N/A'}
-    - Total workout time: ${totalDuration ? `~${totalDuration} minutes` : 'N/A'}
-  ` : '';
+    PREVIOUS WEEK SUMMARY (only offer adjustments for parameters listed here):
+    ${summaryLines}
+  `;
 
   // Build a clear list of workout days (non-rest) for completion question
   const workoutDaysList = previousProgram.days
@@ -275,8 +264,8 @@ export function buildPreFollowupUserContext(params: {
 
     <<DIAGNOSIS_CONTEXT>>
     ${diagnosisData.diagnosis ? `Condition: ${diagnosisData.diagnosis}` : 'No specific diagnosis'}
-    ${diagnosisData.painfulAreas?.length ? `Painful Areas: ${diagnosisData.painfulAreas.join(', ')}` : 'No reported painful areas'}
-    ${diagnosisData.targetAreas?.length ? `Target Areas: ${diagnosisData.targetAreas.join(', ')}` : ''}
+    ${Array.isArray(diagnosisData.painfulAreas) && diagnosisData.painfulAreas.length ? `Painful Areas: ${diagnosisData.painfulAreas.join(', ')}` : diagnosisData.painfulAreas ? `Painful Areas: ${diagnosisData.painfulAreas}` : 'No reported painful areas'}
+    ${Array.isArray(diagnosisData.targetAreas) && diagnosisData.targetAreas.length ? `Target Areas: ${diagnosisData.targetAreas.join(', ')}` : ''}
     <<END_DIAGNOSIS_CONTEXT>>
 
     <<LANGUAGE_LOCK>>

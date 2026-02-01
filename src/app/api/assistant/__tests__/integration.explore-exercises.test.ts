@@ -256,7 +256,7 @@ describe('Explore Assistant - Exercise Integration', () => {
       
       expect(exploreSystemPrompt).toBeDefined();
       expect(exploreSystemPrompt.length).toBeGreaterThan(5000);
-      expect(exploreSystemPrompt).toContain('Shoulders:');
+      expect(exploreSystemPrompt).toContain('**Shoulders**');
       expect(exploreSystemPrompt).toContain('[[Exercise Name]]');
       expect(exploreSystemPrompt).toContain('generate:true');
       expect(exploreSystemPrompt).toContain('programType');

@@ -88,6 +88,7 @@ interface UserContextType {
   // Incremental generation state
   generatingDay: number | null; // Which day is currently being generated (1-7), null if not generating
   generatedDays: number[]; // Array of day numbers that have been generated
+  generatingWeekId: string | null; // ID of the week currently being generated
 }
 
 const UserContext = createContext<UserContextType>({} as UserContextType);
@@ -133,6 +134,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   // Incremental generation state
   const [generatingDay, setGeneratingDay] = useState<number | null>(null);
   const [generatedDays, setGeneratedDays] = useState<number[]>([]);
+  const [generatingWeekId, setGeneratingWeekId] = useState<string | null>(null);
   const [_partialProgram, setPartialProgram] = useState<PartialProgram | null>(null);
 
   // Helper that wires all related state when a program becomes the current one
@@ -158,6 +160,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
     // Mark all days as generated for existing programs (not incrementally generating)
     setGeneratedDays([1, 2, 3, 4, 5, 6, 7]);
     setGeneratingDay(null);
+    setGeneratingWeekId(null);
   };
 
   // Helper to set a recovery program as the current program
@@ -203,8 +206,9 @@ export function UserProvider({ children }: { children: ReactNode }) {
           const programData = programDoc.data();
           const prog = programData as ExerciseProgram;
 
-          // Store the week document ID for later use (e.g., reordering days)
+          // Store the week document ID for later use (e.g., reordering days, tracking generation)
           prog.docId = programDoc.id;
+          prog.weekId = programDoc.id;
 
           // Convert Firestore Timestamp to JavaScript Date
           if (programData.createdAt && typeof (programData.createdAt as any).toDate === 'function') {
@@ -421,16 +425,17 @@ export function UserProvider({ children }: { children: ReactNode }) {
         // Handle transition from Generating to Done
         if (wasGenerating && !generatingDoc) {
           console.log('[UserContext] Generation completed (detected via onSnapshot)');
-          // Find the recently completed program (most recent with status Done)
-          const completedDoc = snapshot.docs.find(
-            (doc) => doc.data().status === ProgramStatus.Done
-          );
+          // Find the program that was being generated (use activeProgramIdRef to get the correct one)
+          const completedDoc = activeProgramIdRef.current
+            ? snapshot.docs.find((doc) => doc.id === activeProgramIdRef.current && doc.data().status === ProgramStatus.Done)
+            : snapshot.docs.find((doc) => doc.data().status === ProgramStatus.Done);
           
           if (completedDoc) {
             const data = completedDoc.data();
             // Update state to reflect completion
             setGeneratingDay(null);
             setGeneratedDays([1, 2, 3, 4, 5, 6, 7]);
+            setGeneratingWeekId(null);
             setProgramStatus(ProgramStatus.Done);
             submissionInProgressRef.current = false;
             
@@ -468,6 +473,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
           
           // Fetch the current week data from the weeks subcollection
           const currentWeekId = programData.currentWeekId;
+          setGeneratingWeekId(currentWeekId || null);
           let weekData: Record<string, unknown> | null = null;
           
           if (currentWeekId) {
@@ -1002,7 +1008,13 @@ export function UserProvider({ children }: { children: ReactNode }) {
     setProgramStatus(ProgramStatus.Generating);
     setGeneratingDay(0); // Indicate generation starting
     setGeneratedDays([]);
+    setGeneratingWeekId(null); // Reset until Firebase provides the actual ID
     logAnalyticsEvent('generate_follow_up');
+    
+    // Ensure activeProgramIdRef is set (should already be, but safeguard)
+    if (activeProgram?.docId) {
+      activeProgramIdRef.current = activeProgram.docId;
+    }
     
     // Add a shimmer placeholder week to activeProgram immediately
     if (activeProgram) {
@@ -1107,6 +1119,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
         // Incremental generation state
         generatingDay,
         generatedDays,
+        generatingWeekId,
       }}
     >
       {children}

@@ -83,6 +83,7 @@ interface ExerciseProgramPageProps {
   // Incremental generation props
   generatingDay?: number | null;
   generatedDays?: number[];
+  generatingWeekId?: string | null;
 }
 
 // Add styles to hide scrollbars while maintaining scroll functionality
@@ -562,6 +563,7 @@ export function ExerciseProgramPage({
   isCustomProgram = false,
   generatingDay: propGeneratingDay,
   generatedDays: propGeneratedDays,
+  generatingWeekId: propGeneratingWeekId,
 }: ExerciseProgramPageProps) {
   // Get current date info
   const currentDate = new Date();
@@ -580,11 +582,12 @@ export function ExerciseProgramPage({
   // Add state for weekly generation limit
   const [isWeeklyLimitReached, setIsWeeklyLimitReached] = useState(false);
   const [weeklyLimitNextDate, setWeeklyLimitNextDate] = useState<Date | null>(null);
-  const { activeProgram, generatingDay: contextGeneratingDay, generatedDays: contextGeneratedDays } = useUser();
+  const { activeProgram, generatingDay: contextGeneratingDay, generatedDays: contextGeneratedDays, generatingWeekId: contextGeneratingWeekId } = useUser();
   
   // Use props if provided, otherwise fall back to context
   const generatingDay = propGeneratingDay ?? contextGeneratingDay;
   const generatedDays = propGeneratedDays ?? contextGeneratedDays ?? [];
+  const generatingWeekId = propGeneratingWeekId ?? contextGeneratingWeekId;
   const { t, locale } = useTranslation();
   const router = useRouter();
   const pathname = usePathname();
@@ -748,8 +751,9 @@ export function ExerciseProgramPage({
             weekToSelect = 1;
             dayToSelect = currentDayOfWeek;
           } else if (lastWeek.createdAt) {
-            // We're after the program ends - use last week, current day
-            weekToSelect = activeProgram.programs.length;
+            // We're after the last week ends - show the placeholder/next week
+            // This displays the "Start Feedback Process" card to prompt follow-up generation
+            weekToSelect = activeProgram.programs.length + 1;
             dayToSelect = currentDayOfWeek;
           }
         }
@@ -1382,6 +1386,54 @@ export function ExerciseProgramPage({
     };
   }
 
+  // Get the weekId of the currently viewed week
+  const selectedWeekProgram = hasMultipleWeeks && activeProgram?.programs 
+    ? activeProgram.programs[selectedWeek - 1] 
+    : null;
+  const selectedWeekId = selectedWeekProgram?.weekId;
+
+  // Determine if viewing the generating week by comparing weekIds
+  // This handles both:
+  // 1. Active generation (generatingWeekId matches selectedWeekId)
+  // 2. New week exists but generation hasn't started streaming yet (incomplete data)
+  const isViewingGeneratingWeek = (() => {
+    // If we have a generatingWeekId, use precise comparison
+    if (generatingWeekId && selectedWeekId) {
+      return selectedWeekId === generatingWeekId;
+    }
+    
+    // Fallback for initial generation (no weekId yet) or single-week programs
+    if (!hasMultipleWeeks || !activeProgram?.programs) {
+      return generatingDay !== null && selectedWeek === 1;
+    }
+    
+    // If generatingWeekId is set but we're not on that week, don't show loading
+    if (generatingWeekId && selectedWeekId !== generatingWeekId) {
+      return false;
+    }
+    
+    // Fallback: check if latest week has incomplete data
+    const totalWeeks = activeProgram.programs.length;
+    const isViewingLatestWeek = selectedWeek === totalWeeks;
+    if (isViewingLatestWeek && selectedWeekData) {
+      const daysWithContent = selectedWeekData.days.filter(
+        (d) => d && d.exercises && d.exercises.length > 0
+      ).length;
+      return daysWithContent < 7;
+    }
+    
+    return false;
+  })();
+
+  // For previous weeks (not currently generating), treat all days as generated
+  const effectiveGeneratedDays = isViewingGeneratingWeek 
+    ? generatedDays 
+    : [1, 2, 3, 4, 5, 6, 7];
+
+  const effectiveGeneratingDay = isViewingGeneratingWeek 
+    ? generatingDay 
+    : null;
+
   return (
     <div
       className={`bg-gray-900 flex flex-col flex-1 text-white overflow-x-hidden ${
@@ -1868,8 +1920,8 @@ export function ExerciseProgramPage({
               }
 
               {/* Generation Progress for Overview - shown between week tabs and overview card */}
-              {generatingDay === 0 && (
-                <GenerationProgress generatingDay={generatingDay} t={t} />
+              {effectiveGeneratingDay === 0 && (
+                <GenerationProgress generatingDay={effectiveGeneratingDay} t={t} />
               )}
 
               {/* Week Focus Overview - Only show for real weeks, not generate weeks */}
@@ -1930,7 +1982,7 @@ export function ExerciseProgramPage({
                     timeFrame={timeFrame}
                     isExpanded={showWeekOverview}
                     onToggle={handleOverviewToggle}
-                    isGenerating={generatingDay !== null}
+                    isGenerating={effectiveGeneratingDay !== null}
                   />
                 );
               })()}
@@ -1956,11 +2008,21 @@ export function ExerciseProgramPage({
                      return <SummaryCardShimmer />;
                    }
                   // Show the selected week's content
+                  // Create placeholder days if actual days are missing (new week with no data yet)
+                  const daysForTabs = selectedWeekData.days.length > 0 
+                    ? selectedWeekData.days 
+                    : Array.from({ length: 7 }, (_, i) => ({
+                        day: i + 1,
+                        description: '',
+                        exercises: [],
+                        dayType: 'strength' as const,
+                      }));
+                  
                   return (
                     <>
                       {/* Generation Progress Indicator - for days (not overview) */}
-                      {generatingDay !== null && generatingDay !== 0 && (
-                        <GenerationProgress generatingDay={generatingDay} t={t} />
+                      {effectiveGeneratingDay !== null && effectiveGeneratingDay !== 0 && (
+                        <GenerationProgress generatingDay={effectiveGeneratingDay} t={t} />
                       )}
                       
                       {/* Day Tabs with Drag-and-Drop */}
@@ -1969,9 +2031,9 @@ export function ExerciseProgramPage({
                           <DayTabsShimmer />
                         ) : (
                           <DayTabsWithDnd
-                            days={selectedWeekData.days}
-                            generatedDays={generatedDays}
-                            generatingDay={generatingDay}
+                            days={daysForTabs}
+                            generatedDays={effectiveGeneratedDays}
+                            generatingDay={effectiveGeneratingDay}
                             expandedDays={expandedDays}
                             activeDragId={activeDragId}
                             overDragId={overDragId}
@@ -1991,8 +2053,12 @@ export function ExerciseProgramPage({
                         const day = selectedWeekData.days.find(
                           (d) => d.day === dayNumber
                         );
-                        const isDayGenerated = generatedDays.includes(dayNumber);
-                        const isDayGenerating = generatingDay === dayNumber;
+                        const isDayInGeneratedList = effectiveGeneratedDays.includes(dayNumber);
+                        // Also verify the actual day data exists with content
+                        // This handles race condition where generatedDays updates before Firebase data arrives
+                        const hasDayData = !!day && Array.isArray(day.exercises);
+                        const isDayGenerated = isDayInGeneratedList && hasDayData;
+                        const isDayGenerating = effectiveGeneratingDay === dayNumber;
                         const shouldShimmerDay = shimmer || !isDayGenerated;
                         
                         const placeholder: ProgramDay = {
@@ -2032,11 +2098,21 @@ export function ExerciseProgramPage({
                   if (shimmer) {
                     return <SummaryCardShimmer />;
                   }
+                  // Create placeholder days if actual days are missing (new program with no data yet)
+                  const singleWeekDaysForTabs = selectedWeekData.days.length > 0 
+                    ? selectedWeekData.days 
+                    : Array.from({ length: 7 }, (_, i) => ({
+                        day: i + 1,
+                        description: '',
+                        exercises: [],
+                        dayType: 'strength' as const,
+                      }));
+                  
                   return (
                     <>
                       {/* Generation Progress Indicator - for days (not overview) */}
-                      {generatingDay !== null && generatingDay !== 0 && (
-                        <GenerationProgress generatingDay={generatingDay} t={t} />
+                      {effectiveGeneratingDay !== null && effectiveGeneratingDay !== 0 && (
+                        <GenerationProgress generatingDay={effectiveGeneratingDay} t={t} />
                       )}
                       
                       {/* Day Tabs with Drag-and-Drop */}
@@ -2045,9 +2121,9 @@ export function ExerciseProgramPage({
                           <DayTabsShimmer />
                         ) : (
                           <DayTabsWithDnd
-                            days={selectedWeekData.days}
-                            generatedDays={generatedDays}
-                            generatingDay={generatingDay}
+                            days={singleWeekDaysForTabs}
+                            generatedDays={effectiveGeneratedDays}
+                            generatingDay={effectiveGeneratingDay}
                             expandedDays={expandedDays}
                             activeDragId={activeDragId}
                             overDragId={overDragId}
@@ -2067,8 +2143,12 @@ export function ExerciseProgramPage({
                         const day = selectedWeekData.days.find(
                           (d) => d.day === dayNumber
                         );
-                        const isDayGenerated = generatedDays.includes(dayNumber);
-                        const isDayGenerating = generatingDay === dayNumber;
+                        const isDayInGeneratedList = effectiveGeneratedDays.includes(dayNumber);
+                        // Also verify the actual day data exists with content
+                        // This handles race condition where generatedDays updates before Firebase data arrives
+                        const hasDayData = !!day && Array.isArray(day.exercises);
+                        const isDayGenerated = isDayInGeneratedList && hasDayData;
+                        const isDayGenerating = effectiveGeneratingDay === dayNumber;
                         const shouldShimmerDay = !isDayGenerated;
                         
                         const placeholder: ProgramDay = {

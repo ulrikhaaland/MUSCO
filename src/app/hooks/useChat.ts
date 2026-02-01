@@ -363,6 +363,7 @@ export function useChat() {
         diagnosisAssistantResponse: previousTurnAssistantResponseFromState, // MODIFIED: Use the potentially overridden value
         userId: user?.uid,
         isSubscriber: user?.profile?.isSubscriber,
+        userProfile: user?.profile, // Include user profile for health context injection
         messages: priorHistory,
       };
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useEffect, useState } from 'react';
+import { Suspense, useEffect, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ExerciseProgramPage } from '@/app/components/ui/ExerciseProgramPage';
 import { useUser } from '@/app/context/UserContext';
@@ -38,6 +38,7 @@ function ProgramPageContent({
     selectProgram,
     generatingDay,
     generatedDays,
+    generatingWeekId,
   } = useUser();
   const [error] = useState<Error | null>(null);
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
@@ -56,9 +57,17 @@ function ProgramPageContent({
     process.env.NEXT_PUBLIC_FORCE_SHIMMER === '1' ||
     process.env.NEXT_PUBLIC_FORCE_SHIMMER === 'true';
 
-  // Handle program selection based on URL params (only once)
+  // Track the last processed programId to detect URL changes
+  const lastProcessedProgramId = useRef<string | null>(null);
+
+  // Handle program selection based on URL params (only once per unique programId)
   useEffect(() => {
     const programId = searchParams.get('id');
+
+    // Reset flag only when URL programId actually changes
+    if (programId !== lastProcessedProgramId.current) {
+      setHasProcessedUrlParam(false);
+    }
 
     if (programId && userPrograms.length > 0 && !hasProcessedUrlParam) {
       // Look up program by ID from URL parameter
@@ -71,18 +80,12 @@ function ProgramPageContent({
         );
         selectProgram(programIndex);
         setHasProcessedUrlParam(true);
+        lastProcessedProgramId.current = programId;
         return;
       } else {
         console.warn('📱 Program not found for ID:', programId);
         setHasProcessedUrlParam(true);
-      }
-    }
-
-    // Reset flag when URL changes to a different program ID
-    if (programId && hasProcessedUrlParam) {
-      const currentActiveId = activeProgram?.docId;
-      if (currentActiveId !== programId) {
-        setHasProcessedUrlParam(false);
+        lastProcessedProgramId.current = programId;
       }
     }
   }, [
@@ -90,7 +93,6 @@ function ProgramPageContent({
     userPrograms,
     hasProcessedUrlParam,
     selectProgram,
-    activeProgram?.docId,
   ]);
 
   // Separate effect for setting the selected program from UserContext
@@ -287,6 +289,7 @@ function ProgramPageContent({
         isCustomProgram={isCustomProgram}
         generatingDay={generatingDay}
         generatedDays={generatedDays}
+        generatingWeekId={generatingWeekId}
         onOverviewVisibilityChange={(visible) => setIsOverviewVisible(visible)}
       />
       {renderVideoModal()}

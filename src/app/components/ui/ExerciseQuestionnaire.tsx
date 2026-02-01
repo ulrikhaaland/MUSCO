@@ -301,6 +301,7 @@ export function ExerciseQuestionnaire({
     cardioType: '',
     cardioEnvironment: '',
     includeWeekends: true,
+    additionalInfo: '',
   }));
 
   // No-op: target areas are updated directly in answers state
@@ -406,6 +407,7 @@ export function ExerciseQuestionnaire({
   const modalitySplitRef = useRef<HTMLDivElement>(null);
   const exerciseEnvironmentRef = useRef<HTMLDivElement>(null);
   const workoutDurationRef = useRef<HTMLDivElement>(null);
+  const additionalInfoRef = useRef<HTMLDivElement>(null);
   const targetAreasRef = useRef<HTMLDivElement>(null);
   const cardioTypeRef = useRef<HTMLDivElement>(null);
   const cardioEnvironmentRef = useRef<HTMLDivElement>(null);
@@ -2687,6 +2689,52 @@ export function ExerciseQuestionnaire({
                     })}
                   </div>
                 )}
+              </div>
+            </RevealOnScroll>
+          )}
+
+          {/* Additional Information */}
+          {answers.workoutDuration && (
+            <RevealOnScroll>
+              <div
+                ref={additionalInfoRef}
+                className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-8 shadow-xl ring-1 ring-gray-700/50"
+              >
+                <h3 className="flex items-center text-lg font-semibold text-white mb-4">
+                  <svg
+                    className="w-6 h-6 mr-3 text-indigo-400 flex-shrink-0"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                    />
+                  </svg>
+                  {t('questionnaire.additionalInfo')}
+                </h3>
+                <p className="text-gray-400 text-sm mb-4">
+                  {t('questionnaire.additionalInfoHint')}
+                </p>
+                <textarea
+                  value={answers.additionalInfo || ''}
+                  onChange={(e) =>
+                    setAnswers((prev) => ({
+                      ...prev,
+                      additionalInfo: e.target.value,
+                    }))
+                  }
+                  placeholder={t('questionnaire.additionalInfoPlaceholder')}
+                  className="w-full p-4 rounded-xl bg-gray-900/50 ring-1 ring-gray-700/30 text-white placeholder-gray-500 focus:ring-indigo-500 focus:outline-none transition-all duration-200 resize-none"
+                  rows={4}
+                  maxLength={1000}
+                />
+                <div className="mt-2 text-right text-gray-500 text-xs">
+                  {(answers.additionalInfo || '').length}/1000
+                </div>
               </div>
             </RevealOnScroll>
           )}

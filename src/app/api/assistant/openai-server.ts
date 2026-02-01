@@ -245,6 +245,7 @@ import {
   PROGRAM_MODEL, PROGRAM_REASONING,
   FEEDBACK_PROCESSOR_MODEL, FEEDBACK_PROCESSOR_REASONING,
   getReasoningParam,
+  ReasoningConfig,
 } from './models';
 
 // Import feedback processor prompt
@@ -494,6 +495,7 @@ export async function streamChatCompletion({
   onContent,
   options,
   model: modelOverride,
+  reasoning: reasoningOverride,
 }: {
   threadId: string;
   messages: any[];
@@ -507,6 +509,7 @@ export async function streamChatCompletion({
     anonId?: string;
   };
   model?: string;
+  reasoning?: ReasoningConfig;
 }) {
   try {
     void _threadId;
@@ -628,7 +631,7 @@ export async function streamChatCompletion({
     console.log('Last user message:', formattedMessages[formattedMessages.length - 1]?.content.substring(0, 200));
     console.log('═══════════════════════════════════════');
 
-    const reasoningConfig = isExploreMode ? EXPLORE_REASONING : DIAGNOSIS_REASONING;
+    const reasoningConfig = reasoningOverride ?? (isExploreMode ? EXPLORE_REASONING : DIAGNOSIS_REASONING);
     const stream = await openai.responses.stream({
       model: selectedModel,
       input: formattedMessages,
@@ -722,7 +725,7 @@ interface CleanedProgramFeedback {
 }
 
 interface FollowUpMetadataResponse {
-  title: string;
+  title?: string; // Optional - follow-up programs preserve original title
   programOverview: string;
   summary: string;
   whatNotToDo: string;
@@ -1010,11 +1013,10 @@ async function createFollowUpWeekWithMetadata(
     createdAt: createdAtIso,
   };
 
-  // Update program document with title and tracking fields
+  // Update program document with tracking fields (keep existing title - follow-up should not change it)
   const batch = adminDb.batch();
   batch.set(weekRef, weekData);
   batch.update(programRef, {
-    title: metadata.title,
     currentWeekId: weekRef.id,
     generatingDay: 1,
     updatedAt: new Date().toISOString(),
@@ -1405,8 +1407,9 @@ export async function generateFollowUpExerciseProgram(context: {
     // Construct the final program object
     // Note: The days contain LLM-generated exercise references (exerciseId only).
     // Full exercise data (name, description, etc.) is populated on the client side.
+    // IMPORTANT: Keep the original program title - follow-up programs should not alter the title
     const program: ExerciseProgram = {
-      title: metadata.title,
+      title: context.previousProgram?.title || metadata.title,
       programOverview: metadata.programOverview,
       summary: metadata.summary,
       whatNotToDo: metadata.whatNotToDo,

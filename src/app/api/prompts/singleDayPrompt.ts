@@ -572,7 +572,6 @@ Create a balanced program description that acknowledges this is a follow-up:
 5. DETAILED DESCRIPTIONS REQUIRED
 
 All text fields must be substantial and helpful:
-- title: SHORT and MEMORABLE (2-4 words max). Can be similar to previous if it worked well. Examples: "Progressive Strength", "Week 2 Power", "Continued Progress"
 - programOverview: Description acknowledging this is a follow-up, how feedback was incorporated, and what the user will achieve
 - summary: A concise description of the program's main focus for quick reference
 - whatNotToDo: Specific activities to avoid to prevent injury, based on user's condition (not generic advice)
@@ -635,7 +634,6 @@ INTENSITY AND REST RULES (for exercise/exercise_and_recovery):
 
 Return ONLY this structure:
 {
-  "title": "Program Title",
   "programOverview": "Description acknowledging follow-up, incorporating feedback, and goals",
   "summary": "Summary of program focus",
   "whatNotToDo": "Specific activities to avoid based on user's condition",

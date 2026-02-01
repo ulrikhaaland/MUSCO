@@ -21,6 +21,10 @@ export function detectProgramType(questionText: string): {
   isProgram: boolean;
   programType?: ProgramType;
 } {
+  // Safety check for undefined/null questionText
+  if (!questionText) {
+    return { isProgram: false };
+  }
   const qLower = questionText.toLowerCase().trim();
   
   // Check in priority order: combined > recovery-only > exercise-only
@@ -73,7 +77,9 @@ export function augmentQuestion(question: Question): AugmentedQuestion {
     return question;
   }
   
-  const detection = detectProgramType(question.question);
+  // Use question.question if available, fallback to title (prompt allows omitting question when redundant)
+  const questionText = question.question || (question as any).title || '';
+  const detection = detectProgramType(questionText);
   
   if (detection.isProgram && detection.programType) {
     return {

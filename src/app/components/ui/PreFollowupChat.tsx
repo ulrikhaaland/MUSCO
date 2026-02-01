@@ -16,7 +16,6 @@ import { useScrollManagement } from '@/app/hooks/useScrollManagement';
 import { useTouchInteraction } from '@/app/hooks/useTouchInteraction';
 import { useQuestionVisibility } from '@/app/hooks/useQuestionVisibility';
 import {
-  savePreFollowupChat,
   loadPreFollowupChat,
   deletePreFollowupChat,
   mergeAccumulatedFeedback,
@@ -369,6 +368,10 @@ export function PreFollowupChat({
             questionnaireData,
             language: locale,
             accumulatedFeedback, // Pass what we've already collected
+            // IDs for backend to save chat state to Firestore
+            userId,
+            programId,
+            weekId,
           },
         }),
         signal: abortControllerRef.current.signal,
@@ -483,7 +486,7 @@ export function PreFollowupChat({
     } finally {
       setIsLoading(false);
     }
-  }, [messages, previousProgram, diagnosisData, questionnaireData, locale, scrollToBottom, setUserTouched]);
+  }, [messages, previousProgram, diagnosisData, questionnaireData, locale, scrollToBottom, setUserTouched, accumulatedFeedback, userId, programId, weekId]);
 
   // Load existing chat state on mount
   useEffect(() => {
@@ -518,25 +521,8 @@ export function PreFollowupChat({
     }
   }, [isInitialized, messages.length, isLoading, sendMessage]);
 
-  // Save state to Firestore whenever it changes
-  useEffect(() => {
-    if (!isInitialized || messages.length === 0) return;
-    
-    const saveState = async () => {
-      try {
-        await savePreFollowupChat(userId, programId, weekId, {
-          messages,
-          followUpQuestions,
-          accumulatedFeedback,
-          conversationComplete,
-        });
-      } catch (err) {
-        console.error('[PreFollowupChat] Error saving state:', err);
-      }
-    };
-    
-    saveState();
-  }, [messages, followUpQuestions, accumulatedFeedback, conversationComplete, userId, programId, weekId, isInitialized]);
+  // Note: Chat state is now saved by the backend after each message completes streaming
+  // This eliminates redundant writes and ensures data consistency
 
   // Handle follow-up question click
   const handleQuestionClick = (question: Question) => {

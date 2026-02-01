@@ -27,6 +27,10 @@ export function WeekOverview({
 }: WeekOverviewProps) {
   const { t } = useTranslation();
   const currentDate = new Date();
+  
+  // Determine if we should show shimmer (either generating or week has no content)
+  const hasContent = !!(program.summary || program.programOverview);
+  const shouldShimmer = isGenerating || !hasContent;
 
   const getDisplayWeekNumber = () => {
     // Calculate the actual ISO week number for the selected week
@@ -65,7 +69,7 @@ export function WeekOverview({
             </div>
             {/* Row 2: Summary */}
             <div className="text-gray-300 text-sm">
-              {isGenerating && !program.summary ? (
+              {shouldShimmer && !program.summary ? (
                 <div className="space-y-2">
                   <div className="shimmer h-3 w-3/4 bg-gray-700 rounded" />
                   <div className="shimmer h-3 w-1/2 bg-gray-700 rounded" />
@@ -99,7 +103,7 @@ export function WeekOverview({
             </div>
             
             {/* 🎯 Objective */}
-            {(program.programOverview || isGenerating) && (
+            {(program.programOverview || shouldShimmer) && (
               <div>
                 <h4 className="flex items-center text-md font-semibold text-white mb-3">
                   <svg className="w-5 h-5 mr-2 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -107,7 +111,7 @@ export function WeekOverview({
                   </svg>
                   {t('exerciseProgram.overview.objective')}
                 </h4>
-                {isGenerating && !program.programOverview ? (
+                {shouldShimmer && !program.programOverview ? (
                   <div className="space-y-2">
                     <div className="shimmer h-4 w-full bg-gray-700 rounded" />
                     <div className="shimmer h-4 w-5/6 bg-gray-700 rounded" />

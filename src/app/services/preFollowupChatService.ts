@@ -313,14 +313,18 @@ export function mergeAccumulatedFeedback(
     conversationalSummary?: string;
   }
 ): PreFollowupChatState['accumulatedFeedback'] {
+  // Ensure exerciseIntensity values are arrays
+  const existingIntensity = Array.isArray(existing.exerciseIntensity) ? existing.exerciseIntensity : [];
+  const newIntensity = Array.isArray(newFeedback.exerciseIntensity) ? newFeedback.exerciseIntensity : [];
+  
   return {
     structuredUpdates: {
       ...existing.structuredUpdates,
       ...newFeedback.structuredUpdates,
     },
     exerciseIntensity: [
-      ...(existing.exerciseIntensity || []),
-      ...(newFeedback.exerciseIntensity || []),
+      ...existingIntensity,
+      ...newIntensity,
     ].filter((item, index, self) => 
       // Deduplicate by exerciseId, keeping the latest
       self.findIndex(i => i.exerciseId === item.exerciseId) === index

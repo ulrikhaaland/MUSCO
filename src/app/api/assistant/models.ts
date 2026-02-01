@@ -65,7 +65,7 @@ export const FOLLOWUP_REASONING = FOLLOWUP_CONFIG.reasoning;
 // Pre-followup chat model (feedback collection)
 export const PRE_FOLLOWUP_CHAT_CONFIG: ModelConfig = {
   model: process.env.PRE_FOLLOWUP_CHAT_MODEL || 'gpt-5.2',
-  reasoning: undefined, // No reasoning - conversational feedback
+  reasoning: { effort: 'low' }, // Light reasoning - helps with multiSelect decisions
 };
 export const PRE_FOLLOWUP_CHAT_MODEL = PRE_FOLLOWUP_CHAT_CONFIG.model;
 export const PRE_FOLLOWUP_CHAT_REASONING = PRE_FOLLOWUP_CHAT_CONFIG.reasoning;

@@ -12,7 +12,7 @@ export interface StreamParserCallbacks {
   onFollowUp: (question: Question) => void;
   onAssistantResponse: (response: DiagnosisAssistantResponse) => void;
   onExercises: (exercises: Exercise[], query?: string) => void;
-  onComplete: () => void;
+  onComplete: () => void | Promise<void>;
 }
 
 export class StreamParser {
@@ -81,14 +81,22 @@ export class StreamParser {
         if (response.followUpQuestions && Array.isArray(response.followUpQuestions)) {
           console.log(`[StreamParser] Processing ${response.followUpQuestions.length} follow-ups for emission`);
           response.followUpQuestions.forEach((question, idx) => {
-            const key = question.question;
+            // Use question.question if available, fallback to title (prompt allows omitting question when redundant)
+            const questionText = question.question || question.title || '';
+            const key = questionText;
             if (!this.emittedFollowUps.has(key)) {
               this.emittedFollowUps.add(key);
-              console.log(`[StreamParser] Emitting followUp[${idx}]: "${question.title || question.question}"`);
+              console.log(`[StreamParser] Emitting followUp[${idx}]: "${question.title || questionText}"`);
+              
+              // Ensure question field is populated for downstream consumers
+              const normalizedQuestion = {
+                ...question,
+                question: questionText,
+              };
               
               // Augment question with program detection
-              const augmentedQuestion = augmentQuestion(question);
-              const detection = detectProgramType(question.question);
+              const augmentedQuestion = augmentQuestion(normalizedQuestion);
+              const detection = detectProgramType(questionText);
               
               // Always emit as regular follow-up (with augmented fields if program gen)
               this.callbacks.onFollowUp(augmentedQuestion);
@@ -169,13 +177,21 @@ export class StreamParser {
 
           if (response.followUpQuestions && Array.isArray(response.followUpQuestions)) {
             response.followUpQuestions.forEach((question) => {
-              const key = question.question;
+              // Use question.question if available, fallback to title (prompt allows omitting question when redundant)
+              const questionText = question.question || question.title || '';
+              const key = questionText;
               if (!this.emittedFollowUps.has(key)) {
                 this.emittedFollowUps.add(key);
                 
+                // Ensure question field is populated for downstream consumers
+                const normalizedQuestion = {
+                  ...question,
+                  question: questionText,
+                };
+                
                 // Augment question with program detection
-                const augmentedQuestion = augmentQuestion(question);
-                const detection = detectProgramType(question.question);
+                const augmentedQuestion = augmentQuestion(normalizedQuestion);
+                const detection = detectProgramType(questionText);
                 
                 // Always emit as regular follow-up (with augmented fields if program gen)
                 this.callbacks.onFollowUp(augmentedQuestion);
@@ -232,7 +248,7 @@ export class StreamParser {
         }
         // Always emit follow-up buttons
         generated.forEach((question) => {
-          const key = question.question;
+          const key = question.question || question.title || '';
           if (!this.emittedFollowUps.has(key)) {
             this.emittedFollowUps.add(key);
             this.callbacks.onFollowUp(question);
@@ -241,7 +257,7 @@ export class StreamParser {
       }
     }
     
-    this.callbacks.onComplete();
+    await this.callbacks.onComplete();
   }
 
   private tryExtractFollowUps(partialJson: string): void {

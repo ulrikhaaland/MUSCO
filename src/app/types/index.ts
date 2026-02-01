@@ -1,5 +1,6 @@
 import { ProgramType } from '../../../shared/types';
 import { AnatomyPart } from './human';
+import { UserProfile } from './user';
 
 // Re-export ProgramType for convenience
 export type { ProgramType };
@@ -73,6 +74,8 @@ export interface ChatPayload {
   maxFollowUpOptions?: number; // prefer N follow-ups (mobile e.g. 3, desktop e.g. 6)
   // Optional: prior message history for chat-completions fast path
   messages?: Array<{ role: 'user' | 'assistant' | 'system'; content: string }>;
+  // User profile for health context injection
+  userProfile?: UserProfile;
 }
 
 export interface Question {

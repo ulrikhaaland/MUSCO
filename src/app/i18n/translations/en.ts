@@ -586,6 +586,11 @@ const translations = {
     'How much time do you want to spend on each workout?',
   'questionnaire.recoveryDuration':
     'How much time do you want to spend on each recovery session?',
+  'questionnaire.additionalInfo': 'Anything else we should know?',
+  'questionnaire.additionalInfoHint':
+    'Share any relevant details that might help us personalize your program — injuries, limitations, specific goals, or preferences.',
+  'questionnaire.additionalInfoPlaceholder':
+    'e.g., "I have a weak left ankle from an old sprain" or "I want to focus on improving my posture"...',
   'questionnaire.noPain': "No, I don't have any pain",
   'questionnaire.selectAll': 'Select all that apply',
   'questionnaire.selectSpecific': 'Or select specific areas:',

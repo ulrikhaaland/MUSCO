@@ -27,10 +27,15 @@ export function ExerciseDetailModal({
   const [portalContainer, setPortalContainer] = useState<HTMLElement | null>(null);
   const [isMobile, setIsMobile] = useState(false);
 
-  // Find the PartPopup container and detect screen size on mount
+  const [isBodyPortal, setIsBodyPortal] = useState(false);
+
+  // Find the PartPopup container (or fall back to body) and detect screen size on mount
   useEffect(() => {
-    const container = document.getElementById('part-popup-container');
+    // Try to find part-popup-container first, fall back to body for standalone usage
+    const partPopup = document.getElementById('part-popup-container');
+    const container = partPopup || document.body;
     setPortalContainer(container);
+    setIsBodyPortal(!partPopup);
 
     // Check if mobile (< 768px, matches Tailwind's md breakpoint)
     const checkMobile = () => {
@@ -42,10 +47,10 @@ export function ExerciseDetailModal({
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Desktop modal content - rendered within PartPopup container
+  // Desktop modal content - rendered within PartPopup container or body
   const desktopContent = (
     <div 
-      className="flex absolute inset-0 z-[80] bg-black/80 items-center justify-center p-4 rounded-lg"
+      className={`flex inset-0 z-[80] bg-black/80 items-center justify-center p-4 ${isBodyPortal ? 'fixed' : 'absolute rounded-lg'}`}
       onClick={onClose}
     >
       <div 
