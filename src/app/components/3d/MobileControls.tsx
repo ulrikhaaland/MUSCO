@@ -159,7 +159,6 @@ export default function MobileControls({
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const overlayFooterRef = useRef<HTMLDivElement | null>(null);
   const overlayRef = useRef<HTMLDivElement | null>(null);
-  const dragStateRef = useRef<{ startY: number; lastY: number; dragging: boolean }>({ startY: 0, lastY: 0, dragging: false });
 
   // Use the largest, stable viewport height captured at mount to avoid keyboard-induced jumps
   const initialViewportHeightRef = useRef<number>(0);
@@ -197,19 +196,7 @@ export default function MobileControls({
 
   // No model height coupling needed in overlay mode
 
-  // (removed)
-
-  // Track height changes only during drag or animation
-  // (removed)
-
-  // (removed)
-
   // Removed all keyboard detection logic - keeping things simple
-
-  // Track height changes only during drag or animation
-  // (removed)
-
-  // Remove the old controls position effect since we're handling it in the RAF loop
   // Keep default controlsBottom
 
   const handleQuestionSelect = (question: Question) => {
@@ -228,8 +215,6 @@ export default function MobileControls({
       onDiagnosis(assistantResponse);
     }
   }, [assistantResponse, onDiagnosis]);
-
-  // nothing to reset related to sheet drag state
 
   // Handle resending a message when it was interrupted
   const handleResendMessage = (message: ChatMessage) => {
@@ -346,41 +331,6 @@ export default function MobileControls({
         <div
           ref={overlayRef}
           className="fixed inset-0 z-[80] flex flex-col bg-gray-900 md:hidden"
-          onTouchStart={(e) => {
-            const container = e.currentTarget.querySelector('[data-rsbs-scroll]') as HTMLElement | null;
-            const atTop = container ? container.scrollTop <= 0 : true;
-            if (!atTop) return; // only start drag when content is scrolled to top
-            const y = e.touches[0]?.clientY ?? 0;
-            dragStateRef.current = { startY: y, lastY: y, dragging: true };
-          }}
-          onTouchMove={(e) => {
-            const state = dragStateRef.current;
-            if (!state.dragging) return;
-            const y = e.touches[0]?.clientY ?? 0;
-            const dy = Math.max(0, y - state.startY);
-            state.lastY = y;
-            // translate overlay down up to 120px for feedback
-            const translate = Math.min(120, dy);
-            (overlayRef.current as HTMLElement).style.transform = `translateY(${translate}px)`;
-          }}
-          onTouchEnd={() => {
-            const state = dragStateRef.current;
-            if (!state.dragging) return;
-            state.dragging = false;
-            const totalDy = Math.max(0, state.lastY - state.startY);
-            // threshold to close
-            if (totalDy > 80) {
-              onCloseOverlay?.();
-            } else {
-              if (overlayRef.current) {
-                (overlayRef.current as HTMLElement).style.transition = 'transform 150ms ease-out';
-                (overlayRef.current as HTMLElement).style.transform = 'translateY(0)';
-                setTimeout(() => {
-                  if (overlayRef.current) (overlayRef.current as HTMLElement).style.transition = '';
-                }, 160);
-              }
-            }
-          }}
         >
           {/* Content */}
           <div

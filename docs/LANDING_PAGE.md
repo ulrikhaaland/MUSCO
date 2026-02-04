@@ -68,7 +68,7 @@ Client-rendered landing page (~675 lines) with sticky nav, multiple sections, an
 
 ### 3. Demo Section (Hero)
 - Container fills viewport height minus header and safe-area-inset-bottom
-- Title: "Din AI helseassistent" (hardcoded Norwegian)
+- Title: `t('landing.demo.assistantTitle')` — "Your AI Health Assistant" / "Din AI helseassistent"
 - `<HumanViewer gender="male" hideNav enableMobileChat fillHeight />` — interactive 3D body model, fills available space
 - Partner logos anchored at bottom of hero section
 

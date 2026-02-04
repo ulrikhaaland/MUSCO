@@ -597,14 +597,18 @@ export function useHumanAPI({
   }
 
   function handleOnObjectSelectedNone(event: any) {
-    console.log('[handleOnObjectSelectedNone] Called with event:', event);
-    console.log('[handleOnObjectSelectedNone] expectingProgrammaticSelection:', expectingProgrammaticSelectionRef.current);
-    console.log('[handleOnObjectSelectedNone] programmaticSelectionId:', programmaticSelectionIdRef.current);
-    
-    // Skip if this is a programmatic selection (e.g., from hydration)
-    if (expectingProgrammaticSelectionRef.current) {
-      console.log('[handleOnObjectSelectedNone] Skipping - programmatic selection');
-      return;
+    // Skip only if this event IS the specific programmatic selection we triggered
+    // (e.g., from hydration). Other events during this window should still process.
+    if (expectingProgrammaticSelectionRef.current && programmaticSelectionIdRef.current) {
+      const selectedIds = Object.keys(event);
+      if (selectedIds.includes(programmaticSelectionIdRef.current)) {
+        // This is the programmatic selection event - clear flags and skip handler
+        // (it was already processed via onObjectSelected's programmatic path)
+        expectingProgrammaticSelectionRef.current = false;
+        programmaticSelectionIdRef.current = null;
+        return;
+      }
+      // Different selection during programmatic window - process normally
     }
     
     if (isResettingRef.current) {

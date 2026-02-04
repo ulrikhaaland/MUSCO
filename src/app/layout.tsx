@@ -167,7 +167,7 @@ export default function RootLayout({
 
         {/* Force Android Chrome navigation bar color - handled in useEffect to prevent hydration mismatch */}
       </head>
-      <body className="bg-surface-deepest">
+      <body className={`bg-surface-deepest ${pathname === '/' ? 'landing-scrollbar' : ''}`}>
         <I18nWrapper>
           <AuthProvider>
             <UserProvider>

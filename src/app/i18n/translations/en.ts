@@ -1230,6 +1230,7 @@ const translations = {
   'landing.demo.quick2': 'I have limited time',
   'landing.demo.quick3': 'Prefer home workouts',
   'landing.demo.cta': 'Get my plan',
+  'landing.demo.assistantTitle': 'Your AI Health Assistant',
 
   'landing.pricing.title': 'Pricing',
   'landing.pricing.toggle': 'Toggle annual billing',

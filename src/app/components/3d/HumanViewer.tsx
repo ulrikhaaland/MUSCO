@@ -111,7 +111,7 @@ export default function HumanViewer({
   const { onQuestionnaireSubmit } = useUser();
   const { loading: authLoading } = useAuth();
   const [showQuestionnaire, setShowQuestionnaire] = useState(false);
-  const [explainerEnabled, setExplainerEnabled] = useState(true);
+  const [explainerEnabled, setExplainerEnabled] = useState(false);
   const [weeklyLimitError, setWeeklyLimitError] = useState<{
     programType: ProgramType;
     nextAllowedDate: Date;
@@ -145,12 +145,12 @@ export default function HumanViewer({
     // When re-enabling explainer (desktop only), force a re-fetch for the active selection
     refreshKey: isExplainerActive ? (selectedPart ? 1 : 0) : -1,
   });
-  // Load and persist explainer toggle preference
+  // Load and persist explainer toggle preference (defaults OFF, remembers ON)
   useEffect(() => {
     if (typeof window === 'undefined') return;
     try {
       const raw = window.localStorage.getItem('explainer_enabled');
-      if (raw === '0') setExplainerEnabled(false);
+      if (raw === '1') setExplainerEnabled(true);
     } catch {}
   }, []);
 

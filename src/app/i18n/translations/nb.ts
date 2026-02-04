@@ -1314,6 +1314,7 @@ const translations = {
   'landing.demo.quick2': 'Jeg har lite tid',
   'landing.demo.quick3': 'Foretrekker hjemmetrening',
   'landing.demo.cta': 'Få min plan',
+  'landing.demo.assistantTitle': 'Din AI helseassistent',
 
   'landing.pricing.title': 'Pris',
   'landing.pricing.toggle': 'Bytt til årlig fakturering',

@@ -57,37 +57,56 @@ export function BottomSheetFooter({
   const hasClose = Boolean(onClose);
 
   return (
-    <div className="flex-shrink-0 bg-gray-900">
-      {/* Context bar - title/subtitle + actions */}
-      {showHeaderContent && (
-        <div className="border-t border-gray-700 px-4 py-3">
-          <div className="flex items-center justify-between gap-3">
-            {/* Left: Context info */}
-            <div className="flex-1 min-w-0">
-              {title && (
-                <h3 className="text-sm font-medium text-white truncate">
-                  {title}
-                </h3>
-              )}
-              {subtitle && (
-                <p className="text-xs text-gray-500 truncate mt-0.5">
-                  {subtitle}
-                </p>
-              )}
-            </div>
+    <div className="flex-shrink-0 bg-gradient-to-t from-gray-900 via-gray-900 to-gray-900/95">
+      {/* Unified footer container */}
+      <div 
+        className="px-3 pt-2"
+        style={{ paddingBottom: 'max(0.75rem, env(safe-area-inset-bottom, 0px))' }}
+      >
+        {/* Context chip + actions row */}
+        {showHeaderContent && (
+          <div className="flex items-center gap-2 mb-2">
+            {/* Context chip - compact pill showing group + selected part */}
+            {(title || subtitle) && (
+              <div className="flex-1 min-w-0 flex items-center gap-2">
+                <button
+                  onClick={onClose}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-violet-500/15 border border-violet-500/30 rounded-full max-w-full hover:bg-violet-500/25 hover:border-violet-500/50 transition-colors active:scale-95"
+                >
+                  <svg 
+                    xmlns="http://www.w3.org/2000/svg" 
+                    className="h-3.5 w-3.5 text-violet-400 flex-shrink-0" 
+                    viewBox="0 0 20 20" 
+                    fill="currentColor"
+                  >
+                    <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                  </svg>
+                  <span className="text-xs text-violet-200 truncate">
+                    {subtitle ? (
+                      <>
+                        <span className="font-medium">{subtitle}</span>
+                        {title && <span className="text-violet-400/70"> · {title}</span>}
+                      </>
+                    ) : (
+                      <span className="font-medium">{title}</span>
+                    )}
+                  </span>
+                </button>
+              </div>
+            )}
             
-            {/* Right: Action buttons in a unified group */}
-            <div className="flex items-center gap-0.5 bg-gray-800/60 rounded-lg p-0.5">
+            {/* Action buttons - minimal, icon-only */}
+            <div className="flex items-center gap-1">
               {user && onOpenHistory && (
                 <button
                   onClick={onOpenHistory}
-                  className="text-gray-400 hover:text-white p-2 rounded-md hover:bg-gray-700/80 transition-colors"
+                  className="p-2 text-gray-400 hover:text-violet-300 hover:bg-violet-500/10 rounded-full transition-all duration-150 active:scale-95"
                   aria-label={t('bottomSheet.chatHistory')}
                   title={t('bottomSheet.chatHistory')}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    className="h-4 w-4"
+                    className="h-5 w-5"
                     viewBox="0 0 20 20"
                     fill="currentColor"
                   >
@@ -102,13 +121,13 @@ export function BottomSheetFooter({
               {onNewChat && (
                 <button
                   onClick={onNewChat}
-                  className="text-gray-400 hover:text-white p-2 rounded-md hover:bg-gray-700/80 transition-colors"
+                  className="p-2 text-gray-400 hover:text-violet-300 hover:bg-violet-500/10 rounded-full transition-all duration-150 active:scale-95"
                   aria-label={t('chatHistory.newChat')}
                   title={t('chatHistory.newChat')}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    className="h-4 w-4"
+                    className="h-5 w-5"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -117,7 +136,7 @@ export function BottomSheetFooter({
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
-                      d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                      d="M12 4v16m8-8H4"
                     />
                   </svg>
                 </button>
@@ -125,13 +144,13 @@ export function BottomSheetFooter({
               {hasClose && (
                 <button
                   onClick={onClose}
-                  className="text-gray-400 hover:text-white p-2 rounded-md hover:bg-gray-700/80 transition-colors"
+                  className="p-2 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-full transition-all duration-150 active:scale-95"
                   aria-label={t('mobile.controls.close')}
                   title={t('mobile.controls.close')}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    className="h-4 w-4"
+                    className="h-5 w-5"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -147,12 +166,9 @@ export function BottomSheetFooter({
               )}
             </div>
           </div>
-        </div>
-      )}
-      
-      {/* Input bar */}
-      <div className={`px-3 pb-safe ${showHeaderContent ? 'pt-0 pb-2' : 'border-t border-gray-700 py-2'}`}
-           style={showHeaderContent ? { paddingBottom: 'max(0.5rem, env(safe-area-inset-bottom, 0px))' } : { paddingBottom: 'max(0.5rem, env(safe-area-inset-bottom, 0px))' }}>
+        )}
+        
+        {/* Input row */}
         <div className="flex items-end gap-2">
           <ChatInput
             value={message}
@@ -164,7 +180,7 @@ export function BottomSheetFooter({
             variant="mobile"
             className="flex-1"
           />
-          {/* Close button moved to header when showHeaderContent is true */}
+          {/* Close button when no header content */}
           {hasClose && !showHeaderContent && (
             <CloseButton onClick={onClose} label={t('mobile.controls.close')} />
           )}

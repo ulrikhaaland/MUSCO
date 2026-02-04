@@ -415,14 +415,14 @@ export default function LandingPage() {
         ref={demoRef}
         className="flex flex-col px-6"
         style={{
-          height: 'calc(100dvh - 3rem - env(safe-area-inset-bottom, 0px))',
+          height: 'calc(100svh - 3rem - env(safe-area-inset-bottom, 0px))',
           minHeight: '400px',
         }}
       >
         {/* Model viewer - fills available space */}
         <div className="flex-1 min-h-0 w-full max-w-6xl mx-auto flex flex-col">
           <h2 className="text-white text-1xl font-semibold mb-2 mt-2 flex-shrink-0">
-            {'Din AI helseassistent'}
+            {t('landing.demo.assistantTitle')}
           </h2>
           <div className="flex-1 min-h-0 w-full rounded-xl ring-1 ring-white/10 overflow-hidden">
             <HumanViewer gender={'male'} hideNav enableMobileChat fillHeight />
