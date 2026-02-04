@@ -136,7 +136,8 @@ export default function RootLayout({
           name="viewport"
           content="width=device-width, initial-scale=1, viewport-fit=cover"
         />
-        <link rel="icon" href="/img/logo_biceps.png" />
+        <link rel="icon" href="/img/app-logo.svg" type="image/svg+xml" />
+        <link rel="icon" href="/favicon.ico" sizes="any" />
         <link rel="manifest" href="/manifest.json" />
         {/* Primary theme color meta tags */}
         <meta name="theme-color" content="#111827" />
@@ -162,7 +163,7 @@ export default function RootLayout({
           content="black-translucent"
         />
         <meta name="apple-mobile-web-app-title" content="Musco" />
-        <link rel="apple-touch-icon" href="/img/logo_biceps.png" />
+        <link rel="apple-touch-icon" href="/apple-icon-180x180.png" />
         <script src="/sw-register.js" defer></script>
 
         {/* Force Android Chrome navigation bar color - handled in useEffect to prevent hydration mismatch */}

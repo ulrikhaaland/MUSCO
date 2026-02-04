@@ -22,6 +22,7 @@
     "test:watch": "jest --watch",
     "test:exercises": "jest exercise-prompt",
     "typecheck": "tsc --noEmit",
+    "generate:icons": "node scripts/generate-app-icons.mjs",
     "precommit": "npm run typecheck && npm run lint"
   },
   "dependencies": {
@@ -74,8 +75,10 @@
     "eslint-config-next": "15.0.4",
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",
+    "png-to-ico": "^3.0.1",
     "postcss": "^8",
     "react-test-renderer": "^18.3.1",
+    "sharp": "^0.34.5",
     "tailwindcss": "^3.4.1",
     "ts-jest": "^29.1.2",
     "ts-node": "^10.9.2",
