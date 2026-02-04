@@ -16,6 +16,7 @@ import {
   collection,
   doc,
   getDoc,
+  getDocFromServer,
   getDocs,
   query,
   orderBy,
@@ -41,6 +42,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { enrichExercisesWithFullData } from '@/app/services/exerciseProgramService';
 import { useTranslation } from '@/app/i18n/TranslationContext';
 import { logAnalyticsEvent } from '../utils/analytics';
+import { getStartOfWeek } from '../utils/dateutils';
 
 import { 
   loadRecoveryProgram, 
@@ -479,7 +481,8 @@ export function UserProvider({ children }: { children: ReactNode }) {
           if (currentWeekId) {
             try {
               const weekDocRef = doc(db, `users/${userId}/programs/${generatingDoc.id}/weeks/${currentWeekId}`);
-              const weekSnap = await getDoc(weekDocRef);
+              // Use getDocFromServer to bypass cache and get latest data during generation
+              const weekSnap = await getDocFromServer(weekDocRef);
               if (weekSnap.exists()) {
                 weekData = weekSnap.data();
               }
@@ -888,6 +891,12 @@ export function UserProvider({ children }: { children: ReactNode }) {
       ).then((programId) => {
         console.log(`[UserContext] Program document created: ${programId}`);
         console.log('[UserContext] Cloud Function will handle generation, listening via onSnapshot...');
+        
+        // Set activeProgramIdRef so onSnapshot can track completion for this specific program
+        if (programId) {
+          activeProgramIdRef.current = programId;
+        }
+        
         logAnalyticsEvent('questionnaire_submitted', {
           programType: diagnosis.programType,
           programId,
@@ -1019,9 +1028,24 @@ export function UserProvider({ children }: { children: ReactNode }) {
     // Add a shimmer placeholder week to activeProgram immediately
     if (activeProgram) {
       const lastWeek = activeProgram.programs[activeProgram.programs.length - 1];
-      const nextWeekDate = lastWeek?.createdAt 
-        ? new Date(new Date(lastWeek.createdAt).getTime() + 7 * 24 * 60 * 60 * 1000)
-        : new Date();
+      
+      // Calculate the next week date based on current calendar week
+      // This matches the logic used for placeholder tabs in ExerciseProgramPage
+      const now = new Date();
+      const currentWeekStart = getStartOfWeek(now);
+      let nextWeekDate: Date;
+      
+      if (lastWeek?.createdAt) {
+        const lastWeekStart = getStartOfWeek(new Date(lastWeek.createdAt));
+        // Advance from last week until we reach or pass current calendar week
+        let candidateDate = new Date(lastWeekStart);
+        do {
+          candidateDate = new Date(candidateDate.getTime() + 7 * 24 * 60 * 60 * 1000);
+        } while (candidateDate < currentWeekStart);
+        nextWeekDate = candidateDate;
+      } else {
+        nextWeekDate = currentWeekStart;
+      }
       
       const shimmerWeek: ExerciseProgram = {
         title: '',

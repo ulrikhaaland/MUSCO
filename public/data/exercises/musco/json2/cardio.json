@@ -510,6 +510,107 @@
       "heartRateZone": "Intervals: 85-95% max HR, Recovery: 60-70% max HR",
       "environment": "indoor",
       "intervalDuration": 240
+    },
+    {
+      "id": "cardio-11",
+      "name": "Zone 2 Incline Walking - Treadmill",
+      "description": "Zone 2 incline walking is a low-impact cardio workout performed on a treadmill at an incline of 10-15%, targeting 60-70% of maximum heart rate. This exercise builds cardiovascular endurance and burns calories efficiently while being gentle on joints. The incline engages the posterior chain muscles more intensely than flat walking, making it an excellent choice for those who want effective cardio without the impact stress of running.",
+      "targetBodyParts": ["Cardio"],
+      "exerciseType": ["cardio", "endurance"],
+      "difficulty": "beginner",
+      "equipment": ["Treadmill"],
+      "steps": [
+        "Step onto the treadmill and set the incline to 10-15% (start lower if new to incline walking).",
+        "Begin with a 5-minute warm-up at 0% incline and a comfortable walking pace.",
+        "Gradually increase the incline to your target level while maintaining a speed of 3.0-4.0 mph.",
+        "Monitor your heart rate to stay within Zone 2 (60-70% of maximum heart rate).",
+        "Maintain an upright posture - avoid holding the handrails or leaning forward excessively.",
+        "Keep this steady pace for the prescribed duration.",
+        "Finish with a 5-minute cool-down, gradually reducing incline and speed."
+      ],
+      "tips": [
+        "Calculate your Zone 2 heart rate: approximately (220 - your age) × 0.6 to 0.7.",
+        "Use the talk test: you should be able to hold a conversation while walking.",
+        "Avoid holding onto the handrails - this reduces the workout effectiveness.",
+        "If the incline feels too challenging, reduce it slightly rather than holding on.",
+        "Pump your arms naturally as you walk to increase calorie burn.",
+        "Start with a lower incline (8-10%) and progress to steeper inclines as fitness improves.",
+        "This is an excellent option for those recovering from running injuries or seeking low-impact cardio."
+      ],
+      "contraindications": [
+        "Balance issues",
+        "Severe knee or hip problems",
+        "Uncontrolled high blood pressure",
+        "Recent lower body surgery",
+        "Difficulty walking on inclines"
+      ],
+      "muscles": ["Glutes", "Hamstrings", "Calves", "Quadriceps", "Core"],
+      "alternatives": ["cardio-3", "cardio-7", "cardio-9", "cardio-12"],
+      "repetitions": 1,
+      "sets": 1,
+      "restBetweenSets": 0,
+      "forceType": "Endurance",
+      "mechanics": "Compound",
+      "videoUrl": "",
+      "imageUrl": "",
+      "viewCount": 0,
+      "popularity": "high",
+      "duration": 45,
+      "distance": 0,
+      "heartRateZone": "Zone 2 (60-70% max HR)",
+      "environment": "indoor",
+      "incline": "10-15%"
+    },
+    {
+      "id": "cardio-12",
+      "name": "Incline Walking Intervals - Treadmill",
+      "description": "Incline walking intervals alternate between high-incline walking (12-15%) and recovery periods at lower inclines. This time-efficient workout improves cardiovascular fitness and lower body strength while remaining low-impact. The interval format allows you to push harder during work periods while still protecting your joints from the repetitive stress of running.",
+      "targetBodyParts": ["Cardio"],
+      "exerciseType": ["cardio", "HIIT"],
+      "difficulty": "intermediate",
+      "equipment": ["Treadmill"],
+      "steps": [
+        "Step onto the treadmill and begin with a 5-minute warm-up at 0-5% incline.",
+        "For the high-intensity interval: increase incline to 12-15% and walk at 3.5-4.0 mph for 3 minutes.",
+        "For the recovery interval: reduce incline to 2-5% and walk at 3.0-3.5 mph for 2 minutes.",
+        "Repeat this cycle of 3-minute high incline and 2-minute recovery for 4-6 rounds.",
+        "During high-incline intervals, aim for 75-85% of maximum heart rate.",
+        "Maintain good posture throughout - no handrail holding.",
+        "Complete a 5-minute cool-down with gradually decreasing incline and speed."
+      ],
+      "tips": [
+        "Keep your core engaged and maintain an upright posture throughout.",
+        "Avoid the temptation to hold the handrails - this significantly reduces effectiveness.",
+        "If you need to hold on, reduce the incline until you can walk hands-free.",
+        "Focus on driving through your heels during the high-incline portions.",
+        "Start with 4 rounds and progress to 6 rounds as fitness improves.",
+        "You can increase intensity by raising the incline or speed, but prioritize incline first.",
+        "This workout is excellent for building glute and hamstring strength while improving cardio."
+      ],
+      "contraindications": [
+        "Balance issues",
+        "Severe knee or hip problems",
+        "Uncontrolled high blood pressure",
+        "Recent lower body injury",
+        "Significant calf tightness or Achilles issues"
+      ],
+      "muscles": ["Glutes", "Hamstrings", "Calves", "Quadriceps", "Core"],
+      "alternatives": ["cardio-4", "cardio-8", "cardio-10", "cardio-11"],
+      "repetitions": 5,
+      "sets": 1,
+      "restBetweenSets": 120,
+      "forceType": "Endurance",
+      "mechanics": "Compound",
+      "videoUrl": "",
+      "imageUrl": "",
+      "viewCount": 0,
+      "popularity": "high",
+      "duration": 30,
+      "distance": 0,
+      "heartRateZone": "Intervals: 75-85% max HR, Recovery: 60-70% max HR",
+      "environment": "indoor",
+      "intervalDuration": 180,
+      "incline": "12-15% work / 2-5% recovery"
     }
   ]
 }

@@ -288,7 +288,10 @@ export async function prepareExercisesPrompt(
              name.includes('sykling') || name.includes('sykkel'))) ||
           (cardioType.includes('rowing') && 
             (name.includes('rowing') || name.includes('row') ||
-             name.includes('roing')));
+             name.includes('roing'))) ||
+          (cardioType.includes('incline walking') && 
+            (name.includes('incline walking') || name.includes('incline walk') ||
+             name.includes('gange med stigning') || name.includes('intervallgange')));
         
         // If no specific type is selected, include all cardio types
         // Otherwise strictly enforce the cardio type match

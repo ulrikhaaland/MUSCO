@@ -95,9 +95,35 @@ function DayTypeChips({ days, t }: { days: ProgramDay[] | undefined; t: (key: st
   );
 }
 
+// Extract duration range from program days (in minutes)
+function extractDurationRange(days: ProgramDay[] | undefined): { min: number; max: number } | null {
+  if (!days || days.length === 0) return null;
+  
+  // Get durations from non-rest days that have a duration value
+  const durations = days
+    .filter(day => getDayType(day) !== 'rest' && day.duration != null && day.duration > 0)
+    .map(day => day.duration as number);
+  
+  if (durations.length === 0) return null;
+  
+  return {
+    min: Math.min(...durations),
+    max: Math.max(...durations),
+  };
+}
+
+// Format duration range for display
+function formatDurationRange(range: { min: number; max: number }): string {
+  if (range.min === range.max) {
+    return `${range.min} min`;
+  }
+  return `${range.min}-${range.max} min`;
+}
+
 // Duration chip component
-function DurationChip({ duration }: { duration: string | undefined }) {
-  if (!duration) return null;
+function DurationChip({ days }: { days: ProgramDay[] | undefined }) {
+  const durationRange = extractDurationRange(days);
+  if (!durationRange) return null;
   
   const clockIcon = (
     <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -107,7 +133,7 @@ function DurationChip({ duration }: { duration: string | undefined }) {
   
   return (
     <Chip variant="subtle" size="sm" icon={clockIcon} iconPosition="left">
-      {duration}
+      {formatDurationRange(durationRange)}
     </Chip>
   );
 }
@@ -520,10 +546,7 @@ function ProgramsContent() {
             // Get the most recent week's program (last in the array)
             const exerciseProgram = program.programs[program.programs.length - 1] || program.programs[0];
             
-            // Get workout duration
-            const duration = program.questionnaire?.workoutDuration;
-            
-            // Get the days from the program for day type analysis
+            // Get the days from the program for day type analysis and duration
             const programDays = exerciseProgram?.days;
             
             // Format target areas - detect body region or show individual parts
@@ -598,7 +621,7 @@ function ProgramsContent() {
                   {/* Day types and duration chips */}
                   <div className="flex flex-wrap items-center gap-2 mb-3">
                     <DayTypeChips days={programDays} t={t} />
-                    <DurationChip duration={duration} />
+                    <DurationChip days={programDays} />
                   </div>
 
                   {/* Divider */}
@@ -620,7 +643,7 @@ function ProgramsContent() {
                       <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                       </svg>
-                      {t(`program.cardioType.${program.questionnaire.cardioType.toLowerCase()}`)}
+                      {t(`program.cardioType.${program.questionnaire.cardioType.toLowerCase().replace(/\s+/g, '_')}`)}
                     </p>
                   ) : null}
 

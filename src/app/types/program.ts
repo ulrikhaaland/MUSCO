@@ -515,6 +515,6 @@ export type ExerciseType =
   | 'relaxation';
 
 // Add the cardio types and environments constants
-export const CARDIO_TYPES = ['Running', 'Cycling', 'Rowing'] as const;
+export const CARDIO_TYPES = ['Running', 'Cycling', 'Rowing', 'Incline Walking'] as const;
 
 export const CARDIO_ENVIRONMENTS = ['Outside', 'Inside', 'Both'] as const;

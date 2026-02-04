@@ -758,6 +758,7 @@ const translations = {
   'program.cardioType.running': 'Løping',
   'program.cardioType.cycling': 'Sykling',
   'program.cardioType.rowing': 'Roing',
+  'program.cardioType.incline_walking': 'Gange med stigning',
 
   // Program - Cardio Environments
   'program.cardioEnvironment.inside': 'Inne',
@@ -870,8 +871,12 @@ const translations = {
   'exerciseProgram.weekFocus.summaryFallback': 'Fokusdetaljer tilgjengelig',
   'exerciseProgram.nextWeekCard.title': 'Klar for ditt neste program?',
   'exerciseProgram.nextWeekCard.description':
-    'Del din tilbakemelding om denne ukens øvelser for å få ditt personlige program for neste uke',
+    'Del din tilbakemelding om denne ukens øvelser for å få ditt personlige program for neste uke, eller kopier forrige ukes program for å fortsette med de samme øvelsene',
   'exerciseProgram.nextWeekCard.button': 'Start tilbakemeldingsprosessen',
+  'exerciseProgram.nextWeekCard.copyButton': 'Kopier forrige uke',
+  'exerciseProgram.nextWeekCard.copying': 'Kopierer...',
+  'exerciseProgram.nextWeekCard.copySuccess': 'Forrige uke kopiert!',
+  'exerciseProgram.nextWeekCard.copyFailed': 'Kunne ikke kopiere forrige uke',
   'exerciseProgram.nextWeekCard.weeklyLimitTitle': 'Ukentlig grense nådd',
   'exerciseProgram.nextWeekCard.weeklyLimitDescription':
     'Du har allerede generert et program for denne programtypen denne uken. Kom tilbake neste uke!',

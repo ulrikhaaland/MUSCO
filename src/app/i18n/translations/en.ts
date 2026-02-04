@@ -783,6 +783,7 @@ const translations = {
   'program.cardioType.running': 'Running',
   'program.cardioType.cycling': 'Cycling',
   'program.cardioType.rowing': 'Rowing',
+  'program.cardioType.incline_walking': 'Incline Walking',
 
   // Program - Cardio Environments
   'program.cardioEnvironment.inside': 'Inside',
@@ -896,8 +897,12 @@ const translations = {
   'exerciseProgram.weekFocus.summaryFallback': 'Focus details available',
   'exerciseProgram.nextWeekCard.title': 'Ready for Your Next Program?',
   'exerciseProgram.nextWeekCard.description':
-    "Share your feedback on this week's exercises to get your personalized program for next week",
+    "Share your feedback on this week's exercises to get your personalized program for next week, or copy last week's program to continue with the same exercises",
   'exerciseProgram.nextWeekCard.button': 'Start Feedback Process',
+  'exerciseProgram.nextWeekCard.copyButton': 'Copy Previous Week',
+  'exerciseProgram.nextWeekCard.copying': 'Copying...',
+  'exerciseProgram.nextWeekCard.copySuccess': 'Previous week copied successfully!',
+  'exerciseProgram.nextWeekCard.copyFailed': 'Failed to copy previous week',
   'exerciseProgram.nextWeekCard.weeklyLimitTitle': 'Weekly Limit Reached',
   'exerciseProgram.nextWeekCard.weeklyLimitDescription':
     "You've already generated a program for this program type this week. Come back next week!",

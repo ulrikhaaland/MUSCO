@@ -271,10 +271,8 @@ export function ExerciseQuestionnaire({
   >(null);
 
   const computeInitialTargetAreas = (): (typeof SELECTABLE_BODY_PARTS)[number][] => {
-    // Always default to Full Body - don't limit based on painful areas
-    // The LLM will use painful areas info to customize the program appropriately
-    // Users can still manually select Upper/Lower Body if they want
-    return [...SELECTABLE_BODY_PARTS];
+    // No preselection - user must explicitly choose their target areas
+    return [];
   };
 
   const prefillAge = (() => {
@@ -537,6 +535,8 @@ export function ExerciseQuestionnaire({
       equipmentToPreSelect = ['Exercise Bike'];
     } else if (answers.cardioType === 'Rowing') {
       equipmentToPreSelect = ['Rowing Machine'];
+    } else if (answers.cardioType === 'Incline Walking') {
+      equipmentToPreSelect = ['Treadmill'];
     }
 
     if (equipmentToPreSelect.length === 0) return;

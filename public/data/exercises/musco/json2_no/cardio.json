@@ -510,6 +510,107 @@
       "heartRateZone": "Intervals: 85-95% max HR, Recovery: 60-70% max HR",
       "environment": "indoor",
       "intervalDuration": 240
+    },
+    {
+      "id": "cardio-11",
+      "name": "Sone 2 Gange med stigning – Tredemølle",
+      "description": "Sone 2-gange med stigning er en skånsom kondisjonsøkt utført på tredemølle med 10–15 % stigning, på 60–70 % av makspuls. Denne øvelsen bygger kardiovaskulær utholdenhet og forbrenner kalorier effektivt samtidig som den er skånsom mot leddene. Stigningen aktiverer bakre kjedemuskulatur mer intenst enn flat gange, noe som gjør den til et utmerket valg for deg som ønsker effektiv kondisjonstrening uten belastningen fra løping.",
+      "targetBodyParts": ["Cardio"],
+      "exerciseType": ["cardio", "endurance"],
+      "difficulty": "beginner",
+      "equipment": ["Treadmill"],
+      "steps": [
+        "Gå opp på tredemøllen og still stigningen til 10–15 % (start lavere hvis du er ny til gange med stigning).",
+        "Start med 5 minutter oppvarming på 0 % stigning og et behagelig gangetempo.",
+        "Øk gradvis stigningen til ønsket nivå mens du holder en hastighet på 4,5–6,5 km/t.",
+        "Overvåk pulsen for å holde deg i Sone 2 (60–70 % av makspuls).",
+        "Hold en oppreist holdning – unngå å holde i rekkverket eller lene deg for mye fremover.",
+        "Hold dette jevne tempoet i den angitte varigheten.",
+        "Avslutt med 5 minutter nedkjøling, gradvis reduser stigning og hastighet."
+      ],
+      "tips": [
+        "Beregn din Sone 2-puls: omtrent (220 – alder) × 0,6 til 0,7.",
+        "Bruk snakketesten: du skal kunne føre en samtale mens du går.",
+        "Unngå å holde i rekkverket – dette reduserer effekten av treningen.",
+        "Hvis stigningen føles for krevende, reduser den heller enn å holde deg fast.",
+        "Pump armene naturlig når du går for å øke kaloriforbruket.",
+        "Start med lavere stigning (8–10 %) og øk gradvis til brattere stigning etter hvert som kondisjonen bedres.",
+        "Dette er et utmerket alternativ for deg som kommer tilbake fra løpeskader eller søker skånsom kondisjonstrening."
+      ],
+      "contraindications": [
+        "Balance issues",
+        "Severe knee or hip problems",
+        "Uncontrolled high blood pressure",
+        "Recent lower body surgery",
+        "Difficulty walking on inclines"
+      ],
+      "muscles": ["Glutes", "Hamstrings", "Calves", "Quadriceps", "Core"],
+      "alternatives": ["cardio-3", "cardio-7", "cardio-9", "cardio-12"],
+      "repetitions": 1,
+      "sets": 1,
+      "restBetweenSets": 0,
+      "forceType": "Endurance",
+      "mechanics": "Compound",
+      "videoUrl": "",
+      "imageUrl": "",
+      "viewCount": 0,
+      "popularity": "high",
+      "duration": 45,
+      "distance": 0,
+      "heartRateZone": "Zone 2 (60-70% max HR)",
+      "environment": "indoor",
+      "incline": "10-15%"
+    },
+    {
+      "id": "cardio-12",
+      "name": "Intervallgange med stigning – Tredemølle",
+      "description": "Intervallgange med stigning veksler mellom høy stigning (12–15 %) og hvileperioder på lavere stigning. Denne tidseffektive økten forbedrer kardiovaskulær form og underekstremitetsstyrke samtidig som den forblir skånsom mot leddene. Intervallformatet lar deg presse deg hardere i arbeidsperiodene mens du fortsatt beskytter leddene mot den repeterende belastningen fra løping.",
+      "targetBodyParts": ["Cardio"],
+      "exerciseType": ["cardio", "HIIT"],
+      "difficulty": "intermediate",
+      "equipment": ["Treadmill"],
+      "steps": [
+        "Gå opp på tredemøllen og start med 5 minutter oppvarming på 0–5 % stigning.",
+        "For høyintensitetsintervallet: øk stigningen til 12–15 % og gå på 5,5–6,5 km/t i 3 minutter.",
+        "For hvileintervallet: reduser stigningen til 2–5 % og gå på 4,5–5,5 km/t i 2 minutter.",
+        "Gjenta denne syklusen med 3 minutter høy stigning og 2 minutter hvile i 4–6 runder.",
+        "Under høy-stigning-intervallene, sikt på 75–85 % av makspuls.",
+        "Hold god holdning gjennom hele økten – ikke hold i rekkverket.",
+        "Fullfør med 5 minutter nedkjøling med gradvis reduksjon av stigning og hastighet."
+      ],
+      "tips": [
+        "Hold kjernen aktiv og oppretthold en oppreist holdning gjennom hele økten.",
+        "Unngå fristelsen til å holde i rekkverket – dette reduserer effekten betydelig.",
+        "Hvis du må holde deg fast, reduser stigningen til du kan gå uten hender.",
+        "Fokuser på å presse fra hælene under høy-stigning-intervallene.",
+        "Start med 4 runder og øk til 6 runder etter hvert som kondisjonen bedres.",
+        "Du kan øke intensiteten ved å heve stigningen eller hastigheten, men prioriter stigning først.",
+        "Denne økten er utmerket for å bygge sete- og hamstringstyrke samtidig som du forbedrer kondisjonen."
+      ],
+      "contraindications": [
+        "Balance issues",
+        "Severe knee or hip problems",
+        "Uncontrolled high blood pressure",
+        "Recent lower body injury",
+        "Significant calf tightness or Achilles issues"
+      ],
+      "muscles": ["Glutes", "Hamstrings", "Calves", "Quadriceps", "Core"],
+      "alternatives": ["cardio-4", "cardio-8", "cardio-10", "cardio-11"],
+      "repetitions": 5,
+      "sets": 1,
+      "restBetweenSets": 120,
+      "forceType": "Endurance",
+      "mechanics": "Compound",
+      "videoUrl": "",
+      "imageUrl": "",
+      "viewCount": 0,
+      "popularity": "high",
+      "duration": 30,
+      "distance": 0,
+      "heartRateZone": "Intervals: 75-85% max HR, Recovery: 60-70% max HR",
+      "environment": "indoor",
+      "intervalDuration": 180,
+      "incline": "12-15% work / 2-5% recovery"
     }
   ]
 }

@@ -197,6 +197,53 @@ describe('prepareExercisesPrompt integration tests', () => {
     expect(cardioSection).not.toMatch(/Sykling|Sykkel/i); // No cycling
   });
   
+  // Test incline walking cardio type filter
+  test('Incline Walking cardio type filter should only include incline walking exercises', async () => {
+    const userInfo = createUserInfo({
+      exerciseModalities: 'Cardio',
+      cardioType: 'Incline Walking',
+      cardioEnvironment: 'Inside',
+      exerciseEnvironments: 'Large Gym',
+      targetAreas: [],
+    });
+    
+    const result = await prepareExercisesPrompt(userInfo);
+    
+    // Extract cardio section for specific checks
+    const cardioSection = extractCardioSection(result.exercisesPrompt);
+    
+    // Verify cardio section exists with incline walking content
+    expect(result.exercisesPrompt).toMatch(/"bodyPart": "Cardio"/);
+    expect(cardioSection).toMatch(/Incline Walking/i);
+    expect(cardioSection).not.toMatch(/Running|Outdoor/i);
+    expect(cardioSection).not.toMatch(/Cycling|Bike/i);
+    expect(cardioSection).not.toMatch(/Rowing/i);
+  });
+  
+  // Test Norwegian incline walking cardio type filter
+  test('Norwegian incline walking cardio type filter should only include incline walking exercises', async () => {
+    const userInfo = createUserInfo({
+      exerciseModalities: 'Cardio',
+      cardioType: 'Incline Walking',
+      cardioEnvironment: 'Inside',
+      exerciseEnvironments: 'Large Gym',
+      targetAreas: [],
+    });
+    
+    // Use Norwegian language
+    const result = await prepareExercisesPrompt(userInfo, undefined, false, 'nb');
+    
+    // Extract cardio section for specific checks
+    const cardioSection = extractCardioSection(result.exercisesPrompt);
+    
+    // Verify cardio section exists with Norwegian incline walking content (Gange med stigning)
+    expect(result.exercisesPrompt).toMatch(/"bodyPart": "Cardio"/);
+    expect(cardioSection).toMatch(/Gange med stigning|Intervallgange/i);
+    expect(cardioSection).not.toMatch(/Løping|Utendørs/i); // No running (Løping) or outdoor (Utendørs)
+    expect(cardioSection).not.toMatch(/Sykling|Sykkel/i); // No cycling
+    expect(cardioSection).not.toMatch(/Roing/i); // No rowing
+  });
+  
   // Test both environment
   test('Both environment should include both indoor and outdoor exercises', async () => {
     const userInfo = createUserInfo({

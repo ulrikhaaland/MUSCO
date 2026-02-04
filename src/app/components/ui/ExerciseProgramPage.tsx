@@ -3,6 +3,11 @@ import { ProgramDaySummaryComponent } from './ProgramDaySummaryComponent';
 import { WeekOverview } from './WeekOverview';
 import { ProgramType } from '../../../../shared/types';
 import { Exercise, ExerciseProgram, ProgramDay, getDayType } from '@/app/types/program';
+import {
+  isViewingGeneratingWeek as computeIsViewingGeneratingWeek,
+  hasDayData,
+  getEffectiveGenerationState,
+} from './ExerciseProgramPage.loadingUtils';
 import { useAuth } from '@/app/context/AuthContext';
 import { useUser } from '@/app/context/UserContext';
 import { useSelectedDay } from '@/app/context/SelectedDayContext';
@@ -195,14 +200,12 @@ function SortableDayTab({
             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
           </svg>
         </span>
-      ) : !isDayGenerated ? (
-        <span className="text-xs opacity-60">
-          —
-        </span>
-      ) : (
+      ) : isDayGenerated ? (
         <span className="text-xs opacity-80">
           {t(getDayTypeInfo(day).labelKey)}
         </span>
+      ) : (
+        <span className="text-xs opacity-40">—</span>
       )}
     </button>
   );
@@ -598,6 +601,9 @@ export function ExerciseProgramPage({
 
   // State for save button
   const [isSaving, setIsSaving] = useState(false);
+  
+  // State for copy previous week button
+  const [isCopyingWeek, setIsCopyingWeek] = useState(false);
 
   // State for title editing
   const [isEditingTitle, setIsEditingTitle] = useState(false);
@@ -705,9 +711,13 @@ export function ExerciseProgramPage({
     const isMultiWeekProgram = isCustomProgram && program.days.length === 28;
     const hasMultipleWeeks =
       activeProgram?.programs && activeProgram.programs.length > 1;
+    // Also consider programs with 1 week that have a placeholder for follow-up
+    const hasWeeksWithPlaceholder = 
+      activeProgram?.programs && activeProgram.programs.length >= 1 && !isCustomProgram;
     const is4WeekProgram = isMultiWeekProgram || hasMultipleWeeks;
 
-    if (is4WeekProgram && hasMultipleWeeks && activeProgram?.programs) {
+    if ((is4WeekProgram && hasMultipleWeeks && activeProgram?.programs) || 
+        (hasWeeksWithPlaceholder && activeProgram?.programs)) {
       // For user programs with multiple weeks, determine current week based on program dates
       let weekToSelect = 1;
       let dayToSelect = currentDayOfWeek; // Always default to current day of week
@@ -883,6 +893,44 @@ export function ExerciseProgramPage({
       toast.error('Failed to save program. Please try again.');
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  // Copy previous week's program to create a new week
+  const handleCopyPreviousWeek = async () => {
+    if (!user || !activeProgram?.docId) {
+      toast.error(t('common.loginRequired'));
+      return;
+    }
+
+    setIsCopyingWeek(true);
+    try {
+      const response = await fetch('/api/programs/copy-week', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: user.uid,
+          programId: activeProgram.docId,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Failed to copy week');
+      }
+
+      const result = await response.json();
+      toast.success(t('exerciseProgram.nextWeekCard.copySuccess'));
+      
+      // Select the newly created week
+      if (result.data?.weekNumber) {
+        setSelectedWeek(result.data.weekNumber);
+      }
+    } catch (error) {
+      console.error('Error copying previous week:', error);
+      toast.error(t('exerciseProgram.nextWeekCard.copyFailed'));
+    } finally {
+      setIsCopyingWeek(false);
     }
   };
 
@@ -1154,7 +1202,7 @@ export function ExerciseProgramPage({
       );
     }
 
-    // Show the "Coming Soon" card with a button to start feedback
+    // Show the "Coming Soon" card with buttons to start feedback or copy previous week
     return (
       <div className="bg-gray-800/50 rounded-xl overflow-hidden ring-1 ring-gray-700/50 p-8">
         <div className="flex flex-col items-center justify-center text-center space-y-4">
@@ -1177,67 +1225,146 @@ export function ExerciseProgramPage({
           <p className="text-gray-300">
             {t('exerciseProgram.nextWeekCard.description')}
           </p>
-          <button
-            onClick={() => {
-              // Subscription gate first
-              if (!isUserSubscribed()) {
-                router.push('/subscribe');
-                return;
-              }
-                              // Check if user is eligible to create a follow-up program
-                              // Skip restriction if DISABLE_FOLLOWUP_RESTRICTIONS is true
-                              if (!isInFutureWeek && !DISABLE_FOLLOWUP_RESTRICTIONS) {
-                // Show toast message instead of navigating to feedback page
-                let message = t('programFeedback.button.waitUntilNextWeek');
-
-                if (nextProgramDate) {
-                  const formattedDate = nextProgramDate.toLocaleDateString(
-                    locale,
-                    {
-                      weekday: 'long',
-                      month: 'long',
-                      day: 'numeric',
-                    }
-                  );
-
-                  message = t('programFeedback.button.waitUntilSpecificDate', {
-                    date: formattedDate,
-                  });
+          <div className="flex flex-col sm:flex-row gap-3 mt-4">
+            <button
+              onClick={() => {
+                // Subscription gate first
+                if (!isUserSubscribed()) {
+                  router.push('/subscribe');
+                  return;
                 }
+                // Check if user is eligible to create a follow-up program
+                // Skip restriction if DISABLE_FOLLOWUP_RESTRICTIONS is true
+                if (!isInFutureWeek && !DISABLE_FOLLOWUP_RESTRICTIONS) {
+                  // Show toast message instead of navigating to feedback page
+                  let message = t('programFeedback.button.waitUntilNextWeek');
 
-                toast.custom(
-                  (toastObj) => (
-                    <div
-                      className={`${
-                        toastObj.visible ? 'animate-enter' : 'animate-leave'
-                      } max-w-md w-full bg-amber-600 shadow-lg rounded-lg pointer-events-auto flex ring-1 ring-black ring-opacity-5`}
-                    >
-                      <div className="flex-1 w-0 p-4">
-                        <div className="flex items-start">
-                          <div className="flex-shrink-0 pt-0.5">⚠️</div>
-                          <div className="ml-3 flex-1">
-                            <p className="text-sm font-medium text-white">
-                              {message}
-                            </p>
+                  if (nextProgramDate) {
+                    const formattedDate = nextProgramDate.toLocaleDateString(
+                      locale,
+                      {
+                        weekday: 'long',
+                        month: 'long',
+                        day: 'numeric',
+                      }
+                    );
+
+                    message = t('programFeedback.button.waitUntilSpecificDate', {
+                      date: formattedDate,
+                    });
+                  }
+
+                  toast.custom(
+                    (toastObj) => (
+                      <div
+                        className={`${
+                          toastObj.visible ? 'animate-enter' : 'animate-leave'
+                        } max-w-md w-full bg-amber-600 shadow-lg rounded-lg pointer-events-auto flex ring-1 ring-black ring-opacity-5`}
+                      >
+                        <div className="flex-1 w-0 p-4">
+                          <div className="flex items-start">
+                            <div className="flex-shrink-0 pt-0.5">⚠️</div>
+                            <div className="ml-3 flex-1">
+                              <p className="text-sm font-medium text-white">
+                                {message}
+                              </p>
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  ),
-                  {
-                    duration: 4000,
-                  }
-                );
-                return;
-              }
+                    ),
+                    {
+                      duration: 4000,
+                    }
+                  );
+                  return;
+                }
 
-              // Navigate to feedback page
-              router.push('/program/feedback');
-            }}
-            className="mt-4 px-6 py-3 rounded-xl bg-indigo-600 text-white hover:bg-indigo-500 transition-colors duration-200"
-          >
-            {t('exerciseProgram.nextWeekCard.button')}
-          </button>
+                // Navigate to feedback page
+                router.push('/program/feedback');
+              }}
+              className="px-6 py-3 rounded-xl bg-indigo-600 text-white hover:bg-indigo-500 transition-colors duration-200"
+            >
+              {t('exerciseProgram.nextWeekCard.button')}
+            </button>
+            <button
+              onClick={() => {
+                // Subscription gate first
+                if (!isUserSubscribed()) {
+                  router.push('/subscribe');
+                  return;
+                }
+                // Check if user is eligible (same rules as feedback process)
+                // Skip restriction if DISABLE_FOLLOWUP_RESTRICTIONS is true
+                if (!isInFutureWeek && !DISABLE_FOLLOWUP_RESTRICTIONS) {
+                  // Show toast message instead of copying
+                  let message = t('programFeedback.button.waitUntilNextWeek');
+
+                  if (nextProgramDate) {
+                    const formattedDate = nextProgramDate.toLocaleDateString(
+                      locale,
+                      {
+                        weekday: 'long',
+                        month: 'long',
+                        day: 'numeric',
+                      }
+                    );
+
+                    message = t('programFeedback.button.waitUntilSpecificDate', {
+                      date: formattedDate,
+                    });
+                  }
+
+                  toast.custom(
+                    (toastObj) => (
+                      <div
+                        className={`${
+                          toastObj.visible ? 'animate-enter' : 'animate-leave'
+                        } max-w-md w-full bg-amber-600 shadow-lg rounded-lg pointer-events-auto flex ring-1 ring-black ring-opacity-5`}
+                      >
+                        <div className="flex-1 w-0 p-4">
+                          <div className="flex items-start">
+                            <div className="flex-shrink-0 pt-0.5">⚠️</div>
+                            <div className="ml-3 flex-1">
+                              <p className="text-sm font-medium text-white">
+                                {message}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ),
+                    {
+                      duration: 4000,
+                    }
+                  );
+                  return;
+                }
+
+                // Proceed with copying
+                handleCopyPreviousWeek();
+              }}
+              disabled={isCopyingWeek}
+              className="px-6 py-3 rounded-xl bg-gray-700 text-white hover:bg-gray-600 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            >
+              {isCopyingWeek ? (
+                <>
+                  <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                  </svg>
+                  {t('exerciseProgram.nextWeekCard.copying')}
+                </>
+              ) : (
+                <>
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                  </svg>
+                  {t('exerciseProgram.nextWeekCard.copyButton')}
+                </>
+              )}
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -1392,47 +1519,23 @@ export function ExerciseProgramPage({
     : null;
   const selectedWeekId = selectedWeekProgram?.weekId;
 
-  // Determine if viewing the generating week by comparing weekIds
-  // This handles both:
-  // 1. Active generation (generatingWeekId matches selectedWeekId)
-  // 2. New week exists but generation hasn't started streaming yet (incomplete data)
-  const isViewingGeneratingWeek = (() => {
-    // If we have a generatingWeekId, use precise comparison
-    if (generatingWeekId && selectedWeekId) {
-      return selectedWeekId === generatingWeekId;
-    }
-    
-    // Fallback for initial generation (no weekId yet) or single-week programs
-    if (!hasMultipleWeeks || !activeProgram?.programs) {
-      return generatingDay !== null && selectedWeek === 1;
-    }
-    
-    // If generatingWeekId is set but we're not on that week, don't show loading
-    if (generatingWeekId && selectedWeekId !== generatingWeekId) {
-      return false;
-    }
-    
-    // Fallback: check if latest week has incomplete data
-    const totalWeeks = activeProgram.programs.length;
-    const isViewingLatestWeek = selectedWeek === totalWeeks;
-    if (isViewingLatestWeek && selectedWeekData) {
-      const daysWithContent = selectedWeekData.days.filter(
-        (d) => d && d.exercises && d.exercises.length > 0
-      ).length;
-      return daysWithContent < 7;
-    }
-    
-    return false;
-  })();
+  // Determine if viewing the generating week using the tested utility function
+  const isViewingGeneratingWeek = computeIsViewingGeneratingWeek({
+    generatingWeekId,
+    selectedWeekId,
+    generatingDay,
+    hasMultipleWeeks: hasMultipleWeeks && !!activeProgram?.programs,
+    selectedWeek,
+    totalWeeks: activeProgram?.programs?.length ?? 1,
+    selectedWeekData,
+  });
 
-  // For previous weeks (not currently generating), treat all days as generated
-  const effectiveGeneratedDays = isViewingGeneratingWeek 
-    ? generatedDays 
-    : [1, 2, 3, 4, 5, 6, 7];
-
-  const effectiveGeneratingDay = isViewingGeneratingWeek 
-    ? generatingDay 
-    : null;
+  // Compute effective generation state using the tested utility function
+  const { effectiveGeneratedDays, effectiveGeneratingDay } = getEffectiveGenerationState({
+    isViewingGeneratingWeek,
+    generatedDays,
+    generatingDay,
+  });
 
   return (
     <div
@@ -2056,8 +2159,7 @@ export function ExerciseProgramPage({
                         const isDayInGeneratedList = effectiveGeneratedDays.includes(dayNumber);
                         // Also verify the actual day data exists with content
                         // This handles race condition where generatedDays updates before Firebase data arrives
-                        const hasDayData = !!day && Array.isArray(day.exercises);
-                        const isDayGenerated = isDayInGeneratedList && hasDayData;
+                        const isDayGenerated = isDayInGeneratedList && hasDayData(day);
                         const isDayGenerating = effectiveGeneratingDay === dayNumber;
                         const shouldShimmerDay = shimmer || !isDayGenerated;
                         
@@ -2146,8 +2248,7 @@ export function ExerciseProgramPage({
                         const isDayInGeneratedList = effectiveGeneratedDays.includes(dayNumber);
                         // Also verify the actual day data exists with content
                         // This handles race condition where generatedDays updates before Firebase data arrives
-                        const hasDayData = !!day && Array.isArray(day.exercises);
-                        const isDayGenerated = isDayInGeneratedList && hasDayData;
+                        const isDayGenerated = isDayInGeneratedList && hasDayData(day);
                         const isDayGenerating = effectiveGeneratingDay === dayNumber;
                         const shouldShimmerDay = !isDayGenerated;
                         
