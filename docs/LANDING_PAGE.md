@@ -40,9 +40,7 @@ Client-rendered landing page (~675 lines) with sticky nav, multiple sections, an
 - `howRef` — How it works (removed)
 - `demoRef` — 3D model demo
 - `programsRef` — Programs grid
-- `whyRef` — Why it works
 - `pricingRef` — Pricing section
-- `faqRef` — FAQ
 
 ---
 
@@ -60,7 +58,7 @@ Client-rendered landing page (~675 lines) with sticky nav, multiple sections, an
 
 ### 1. Header (sticky nav)
 - Logo: "bodAI" — scrolls to top on click
-- Desktop nav links: Demo, Programs, Why, FAQ
+- Desktop nav links: Demo, Programs
   - Pricing link exists but hidden (`{false && ...}`)
 - Sign In button (hidden when authenticated)
 
@@ -68,12 +66,14 @@ Client-rendered landing page (~675 lines) with sticky nav, multiple sections, an
 - `LandingHero` component was here; now removed
 - Would offer "diagnose" or "workout" CTAs
 
-### 3. Demo Section
+### 3. Demo Section (Hero)
+- Container fills viewport height minus header and safe-area-inset-bottom
 - Title: "Din AI helseassistent" (hardcoded Norwegian)
-- `<HumanViewer gender="male" hideNav />` — interactive 3D body model
+- `<HumanViewer gender="male" hideNav enableMobileChat fillHeight />` — interactive 3D body model, fills available space
+- Partner logos anchored at bottom of hero section
 
-### 4. Partner Logos
-- `<PartnerLogos />` — animated logo marquee
+### 4. Partner Logos (inside Hero)
+- `<PartnerLogos />` — animated logo marquee, fixed at bottom of hero section
 
 ### 5. Programs Grid
 - Title: `t('landing.programs.title')`
@@ -86,26 +86,11 @@ Client-rendered landing page (~675 lines) with sticky nav, multiple sections, an
 - lower-back, shoulder, runners-knee, ankle-sprain, plantar-fasciitis
 - techneck, hamstring, upper-back-core, core-stability, tennis-elbow, shin-splints
 
-### 6. Why It Works
-- Title: `t('landing.why.title')`
-- Bullet list: digitalTwin, dualAssistants, personalization, safety, speed
-- Disclaimer text
-- "Seek care" warning list (fever, trauma, nightPain, numbnessWeakness)
-
-### 7. Pricing (HIDDEN)
+### 6. Pricing (HIDDEN)
 - Wrapped in `{false && ...}` — never renders
 - Would show `<PricingCards />` with monthly/annual/try CTAs
 
-### 8. FAQ
-- 6 collapsible `<details>` items:
-  1. Free vs Premium
-  2. Safety
-  3. How (how it works)
-  4. Account
-  5. Billing
-  6. Privacy
-
-### 9. Program Preview Modal
+### 7. Program Preview Modal
 - `<ProgramPreviewModal />` — shows hardcoded sample week/exercises
 - Triggered by `modalOpen` state (currently unused in visible code)
 

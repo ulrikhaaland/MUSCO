@@ -47,6 +47,8 @@ interface HumanViewerProps {
   onGenderChange?: (gender: Gender) => void;
   shouldResetModel?: boolean;
   hideNav?: boolean;
+  enableMobileChat?: boolean;
+  fillHeight?: boolean;
 }
 
 export default function HumanViewer({
@@ -54,6 +56,8 @@ export default function HumanViewer({
   onGenderChange,
   shouldResetModel = false,
   hideNav,
+  enableMobileChat,
+  fillHeight,
 }: HumanViewerProps) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const { locale, t } = useTranslation();
@@ -929,7 +933,7 @@ export default function HumanViewer({
   }, [hideNav]);
 
   return (
-    <div className={`flex flex-col ${hideNav ? 'w-full h-[500px]' : 'w-screen h-[100dvh]'} overflow-hidden`}>
+    <div className={`flex flex-col ${hideNav ? (fillHeight ? 'w-full h-full' : 'w-full h-[500px]') : 'w-screen h-[100dvh]'} overflow-hidden relative`}>
       {!hideNav && <NavigationMenu mobileFloatingButton />}
       <div ref={containerRef} className="flex-1 flex flex-col md:flex-row relative min-h-0">
         {/* Fullscreen overlay when dragging */}
@@ -978,7 +982,7 @@ export default function HumanViewer({
           />
         </div>
 
-        {isMobile && hideNav && (
+        {isMobile && hideNav && !enableMobileChat && (
           <div className="absolute inset-x-0 bottom-0 z-40 pointer-events-none">
             <div className="w-full bg-gray-900/90 border-t border-gray-800 backdrop-blur-sm">
               <div className="max-w-6xl mx-auto px-4 py-4">
@@ -1087,7 +1091,7 @@ export default function HumanViewer({
       </div>
 
       {/* Mobile Controls */}
-      {isMobile && !hideNav && (
+      {isMobile && (!hideNav || enableMobileChat) && (
         <MobileControls
           isRotating={isRotating}
           isResetting={isResetting}
@@ -1109,6 +1113,7 @@ export default function HumanViewer({
           onCloseOverlay={() => setIsChatOverlayOpen(false)}
           onOpenOverlay={() => setIsChatOverlayOpen(true)}
           showQuestionnaire={showQuestionnaire}
+          useAbsolutePosition={hideNav}
         />
       )}
 

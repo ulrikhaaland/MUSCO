@@ -41,6 +41,7 @@ interface MobileControlsProps {
   onBodyGroupSelected?: (groupName: string, keepChatOpen?: boolean) => void;
   onBodyPartSelected?: (partName: string, keepChatOpen?: boolean) => void;
   showQuestionnaire?: boolean;
+  useAbsolutePosition?: boolean;
 }
 
 // Bottom sheet fully removed; overlay-only implementation
@@ -65,6 +66,7 @@ export default function MobileControls({
   onBodyGroupSelected,
   onBodyPartSelected,
   showQuestionnaire = false,
+  useAbsolutePosition = false,
 }: MobileControlsProps) {
   const [isMobile, setIsMobile] = useState(false);
   const [controlsBottom] = useState('5rem');
@@ -289,6 +291,16 @@ export default function MobileControls({
     }
   }, [overlayOpen]);
 
+  // Lock body scroll when overlay is open
+  useEffect(() => {
+    if (!overlayOpen) return;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [overlayOpen]);
+
   // Update scroll position ref when user scrolls
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const target = e.currentTarget;
@@ -323,6 +335,7 @@ export default function MobileControls({
             onRotate={onRotate}
             onReset={() => onReset(true)}
             onSwitchModel={onSwitchModel}
+            useAbsolutePosition={useAbsolutePosition}
           />
         )}
       {/* Removed bottom sheet UI; overlay replaces it */}
@@ -488,7 +501,7 @@ export default function MobileControls({
 
       {/* Mobile Footer - Always visible when not in overlay or questionnaire */}
       {isMobile && !overlayOpen && !showQuestionnaire && (
-        <div className="md:hidden fixed inset-x-0 bottom-0 z-[50] bg-gray-900/80 backdrop-blur-sm border-t border-gray-800">
+        <div className={`md:hidden ${useAbsolutePosition ? 'absolute' : 'fixed'} inset-x-0 bottom-0 z-[50] bg-gray-900/80 backdrop-blur-sm border-t border-gray-800`}>
             {(selectedGroups.length > 0 || selectedPart) ? (
               // Show selection info - entire area clickable
               <button

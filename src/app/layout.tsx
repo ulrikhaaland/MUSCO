@@ -167,14 +167,14 @@ export default function RootLayout({
 
         {/* Force Android Chrome navigation bar color - handled in useEffect to prevent hydration mismatch */}
       </head>
-      <body className="bg-gray-900">
+      <body className="bg-surface-deepest">
         <I18nWrapper>
           <AuthProvider>
             <UserProvider>
               <AppProvider>
                 <ToastProvider>
                   {!isMounted && (
-                    <div className="fixed inset-0 z-[60000] bg-gray-900" aria-hidden />
+                    <div className="fixed inset-0 z-[60000] bg-surface-deepest" aria-hidden />
                   )}
                   <BlockingLoader />
                   <SafeAreaPWA>
