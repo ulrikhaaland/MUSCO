@@ -48,6 +48,7 @@
       "duration": 60,
       "distance": 0,
       "heartRateZone": "Zone 2 (60-70% max HR)",
+      "perceivedEffort": "Easy to moderate effort (on a scale of 4-5 out of 10). You should be able to hold a full conversation without gasping for breath. Breathing is deeper than at rest but controlled and rhythmic. You feel like you could maintain this pace for a long time. If you're breathing too hard to talk comfortably, slow down.",
       "environment": "outdoor"
     },
     {
@@ -97,6 +98,7 @@
       "duration": 28,
       "distance": 0,
       "heartRateZone": "Intervals: 85-95% max HR, Recovery: 60-70% max HR",
+      "perceivedEffort": "Work intervals: Very hard effort (on a scale of 8-9 out of 10). You can only speak a few words at a time. Breathing is heavy and labored. Your legs should feel the burn by the end of each interval. Recovery: Easy effort (on a scale of 4-5 out of 10) where you can speak in full sentences again and catch your breath.",
       "environment": "outdoor",
       "intervalDuration": 240
     },
@@ -146,6 +148,7 @@
       "duration": 60,
       "distance": 0,
       "heartRateZone": "Zone 2 (60-70% max HR)",
+      "perceivedEffort": "Easy to moderate effort (on a scale of 4-5 out of 10). You should be able to hold a full conversation without gasping for breath. Breathing is deeper than at rest but controlled and rhythmic. You feel like you could maintain this pace for a long time. If you're breathing too hard to talk comfortably, slow down.",
       "environment": "indoor"
     },
     {
@@ -195,6 +198,7 @@
       "duration": 28,
       "distance": 0,
       "heartRateZone": "Intervals: 85-95% max HR, Recovery: 60-70% max HR",
+      "perceivedEffort": "Work intervals: Very hard effort (on a scale of 8-9 out of 10). You can only speak a few words at a time. Breathing is heavy and labored. Your legs should feel the burn by the end of each interval. Recovery: Easy effort (on a scale of 4-5 out of 10) where you can speak in full sentences again and catch your breath.",
       "environment": "indoor",
       "intervalDuration": 240
     },
@@ -245,6 +249,7 @@
       "duration": 45,
       "distance": 0,
       "heartRateZone": "Zone 2 (60-70% max HR)",
+      "perceivedEffort": "Easy to moderate effort (on a scale of 4-5 out of 10). You should be able to hold a full conversation without gasping for breath. Breathing is deeper than at rest but controlled and rhythmic. You feel like you could maintain this pace for a long time. If you're breathing too hard to talk comfortably, reduce your effort.",
       "environment": "outdoor"
     },
     {
@@ -294,6 +299,7 @@
       "duration": 28,
       "distance": 0,
       "heartRateZone": "Intervals: 85-95% max HR, Recovery: 60-70% max HR",
+      "perceivedEffort": "Work intervals: Very hard effort (on a scale of 8-9 out of 10). You can only speak a few words at a time. Breathing is heavy and labored. Your legs should feel the burn by the end of each interval. Recovery: Easy effort (on a scale of 4-5 out of 10) where you can speak in full sentences again and catch your breath.",
       "environment": "outdoor",
       "intervalDuration": 240
     },
@@ -344,6 +350,7 @@
       "duration": 60,
       "distance": 0,
       "heartRateZone": "Zone 2 (60-70% max HR)",
+      "perceivedEffort": "Easy to moderate effort (on a scale of 4-5 out of 10). You should be able to hold a full conversation without gasping for breath. Breathing is deeper than at rest but controlled and rhythmic. You feel like you could maintain this pace for a long time. If you're breathing too hard to talk comfortably, reduce resistance.",
       "environment": "indoor"
     },
     {
@@ -393,6 +400,7 @@
       "duration": 28,
       "distance": 0,
       "heartRateZone": "Intervals: 85-95% max HR, Recovery: 60-70% max HR",
+      "perceivedEffort": "Work intervals: Very hard effort (on a scale of 8-9 out of 10). You can only speak a few words at a time. Breathing is heavy and labored. Your legs should feel the burn by the end of each interval. Recovery: Easy effort (on a scale of 4-5 out of 10) where you can speak in full sentences again and catch your breath.",
       "environment": "indoor",
       "intervalDuration": 240
     },
@@ -451,6 +459,7 @@
       "duration": 60,
       "distance": 0,
       "heartRateZone": "Zone 2 (60-70% max HR)",
+      "perceivedEffort": "Easy to moderate effort (on a scale of 4-5 out of 10). You should be able to hold a full conversation without gasping for breath. Breathing is deeper than at rest but controlled and rhythmic. You feel like you could maintain this pace for a long time. If you're breathing too hard to talk comfortably, reduce your stroke rate or intensity.",
       "environment": "indoor"
     },
     {
@@ -508,6 +517,7 @@
       "duration": 28,
       "distance": 0,
       "heartRateZone": "Intervals: 85-95% max HR, Recovery: 60-70% max HR",
+      "perceivedEffort": "Work intervals: Very hard effort (on a scale of 8-9 out of 10). You can only speak a few words at a time. Breathing is heavy and labored. Your whole body should feel challenged by the end of each interval. Recovery: Easy effort (on a scale of 4-5 out of 10) where you can speak in full sentences again and catch your breath.",
       "environment": "indoor",
       "intervalDuration": 240
     },
@@ -558,6 +568,7 @@
       "duration": 45,
       "distance": 0,
       "heartRateZone": "Zone 2 (60-70% max HR)",
+      "perceivedEffort": "Easy to moderate effort (on a scale of 4-5 out of 10). You should be able to hold a full conversation without gasping for breath. The incline will make it more challenging than flat walking, but breathing should remain controlled. You feel like you could maintain this pace for a long time. If you're breathing too hard to talk comfortably, reduce the incline or speed.",
       "environment": "indoor",
       "incline": "10-15%"
     },
@@ -608,6 +619,7 @@
       "duration": 30,
       "distance": 0,
       "heartRateZone": "Intervals: 75-85% max HR, Recovery: 60-70% max HR",
+      "perceivedEffort": "Work intervals: Hard effort (on a scale of 6-7 out of 10). You can speak in short sentences but prefer not to. Breathing is noticeably harder and your legs feel the challenge from the steep incline. Recovery: Easy effort (on a scale of 4-5 out of 10) where you can speak comfortably again as the incline decreases.",
       "environment": "indoor",
       "intervalDuration": 180,
       "incline": "12-15% work / 2-5% recovery"

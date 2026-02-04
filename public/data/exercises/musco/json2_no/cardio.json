@@ -48,6 +48,7 @@
       "duration": 60,
       "distance": 0,
       "heartRateZone": "Zone 2 (60-70% max HR)",
+      "perceivedEffort": "Lett til moderat innsats (på en skala fra 4-5 av 10). Du skal kunne holde en full samtale uten å miste pusten. Pusten er dypere enn i hvile, men kontrollert og rytmisk. Du føler at du kan holde dette tempoet lenge. Hvis du puster for tungt til å snakke komfortabelt, senk farten.",
       "environment": "outdoor"
     },
     {
@@ -97,6 +98,7 @@
       "duration": 60,
       "distance": 0,
       "heartRateZone": "Intervals: 85-95% max HR, Recovery: 60-70% max HR",
+      "perceivedEffort": "Arbeidsintervaller: Svært hard innsats (på en skala fra 8-9 av 10). Du kan bare si noen få ord om gangen. Pusten er tung og anstrengt. Bena skal kjenne det mot slutten av hvert intervall. Hvile: Lett innsats (på en skala fra 4-5 av 10) hvor du kan snakke i hele setninger igjen og hente deg inn.",
       "environment": "outdoor",
       "intervalDuration": 240
     },
@@ -146,6 +148,7 @@
       "duration": 60,
       "distance": 0,
       "heartRateZone": "Zone 2 (60-70% max HR)",
+      "perceivedEffort": "Lett til moderat innsats (på en skala fra 4-5 av 10). Du skal kunne holde en full samtale uten å miste pusten. Pusten er dypere enn i hvile, men kontrollert og rytmisk. Du føler at du kan holde dette tempoet lenge. Hvis du puster for tungt til å snakke komfortabelt, senk farten.",
       "environment": "indoor"
     },
     {
@@ -195,6 +198,7 @@
       "duration": 60,
       "distance": 0,
       "heartRateZone": "Intervals: 85-95% max HR, Recovery: 60-70% max HR",
+      "perceivedEffort": "Arbeidsintervaller: Svært hard innsats (på en skala fra 8-9 av 10). Du kan bare si noen få ord om gangen. Pusten er tung og anstrengt. Bena skal kjenne det mot slutten av hvert intervall. Hvile: Lett innsats (på en skala fra 4-5 av 10) hvor du kan snakke i hele setninger igjen og hente deg inn.",
       "environment": "indoor",
       "intervalDuration": 240
     },
@@ -245,6 +249,7 @@
       "duration": 45,
       "distance": 0,
       "heartRateZone": "Zone 2 (60-70% max HR)",
+      "perceivedEffort": "Lett til moderat innsats (på en skala fra 4-5 av 10). Du skal kunne holde en full samtale uten å miste pusten. Pusten er dypere enn i hvile, men kontrollert og rytmisk. Du føler at du kan holde dette tempoet lenge. Hvis du puster for tungt til å snakke komfortabelt, reduser innsatsen.",
       "environment": "outdoor"
     },
     {
@@ -294,6 +299,7 @@
       "duration": 60,
       "distance": 0,
       "heartRateZone": "Intervals: 85-95% max HR, Recovery: 60-70% max HR",
+      "perceivedEffort": "Arbeidsintervaller: Svært hard innsats (på en skala fra 8-9 av 10). Du kan bare si noen få ord om gangen. Pusten er tung og anstrengt. Bena skal kjenne det mot slutten av hvert intervall. Hvile: Lett innsats (på en skala fra 4-5 av 10) hvor du kan snakke i hele setninger igjen og hente deg inn.",
       "environment": "outdoor",
       "intervalDuration": 240
     },
@@ -344,6 +350,7 @@
       "duration": 60,
       "distance": 0,
       "heartRateZone": "Zone 2 (60-70% max HR)",
+      "perceivedEffort": "Lett til moderat innsats (på en skala fra 4-5 av 10). Du skal kunne holde en full samtale uten å miste pusten. Pusten er dypere enn i hvile, men kontrollert og rytmisk. Du føler at du kan holde dette tempoet lenge. Hvis du puster for tungt til å snakke komfortabelt, reduser motstanden.",
       "environment": "indoor"
     },
     {
@@ -393,6 +400,7 @@
       "duration": 60,
       "distance": 0,
       "heartRateZone": "Intervals: 85-95% max HR, Recovery: 60-70% max HR",
+      "perceivedEffort": "Arbeidsintervaller: Svært hard innsats (på en skala fra 8-9 av 10). Du kan bare si noen få ord om gangen. Pusten er tung og anstrengt. Bena skal kjenne det mot slutten av hvert intervall. Hvile: Lett innsats (på en skala fra 4-5 av 10) hvor du kan snakke i hele setninger igjen og hente deg inn.",
       "environment": "indoor",
       "intervalDuration": 240
     },
@@ -451,6 +459,7 @@
       "duration": 60,
       "distance": 0,
       "heartRateZone": "Zone 2 (60-70% max HR)",
+      "perceivedEffort": "Lett til moderat innsats (på en skala fra 4-5 av 10). Du skal kunne holde en full samtale uten å miste pusten. Pusten er dypere enn i hvile, men kontrollert og rytmisk. Du føler at du kan holde dette tempoet lenge. Hvis du puster for tungt til å snakke komfortabelt, reduser taktraten eller intensiteten.",
       "environment": "indoor"
     },
     {
@@ -508,6 +517,7 @@
       "duration": 60,
       "distance": 0,
       "heartRateZone": "Intervals: 85-95% max HR, Recovery: 60-70% max HR",
+      "perceivedEffort": "Arbeidsintervaller: Svært hard innsats (på en skala fra 8-9 av 10). Du kan bare si noen få ord om gangen. Pusten er tung og anstrengt. Hele kroppen skal kjenne det mot slutten av hvert intervall. Hvile: Lett innsats (på en skala fra 4-5 av 10) hvor du kan snakke i hele setninger igjen og hente deg inn.",
       "environment": "indoor",
       "intervalDuration": 240
     },
@@ -558,6 +568,7 @@
       "duration": 45,
       "distance": 0,
       "heartRateZone": "Zone 2 (60-70% max HR)",
+      "perceivedEffort": "Lett til moderat innsats (på en skala fra 4-5 av 10). Du skal kunne holde en full samtale uten å miste pusten. Stigningen gjør det mer utfordrende enn flat gange, men pusten skal forbli kontrollert. Du føler at du kan holde dette tempoet lenge. Hvis du puster for tungt til å snakke komfortabelt, reduser stigningen eller farten.",
       "environment": "indoor",
       "incline": "10-15%"
     },
@@ -608,6 +619,7 @@
       "duration": 30,
       "distance": 0,
       "heartRateZone": "Intervals: 75-85% max HR, Recovery: 60-70% max HR",
+      "perceivedEffort": "Arbeidsintervaller: Hard innsats (på en skala fra 6-7 av 10). Du kan snakke i korte setninger, men foretrekker å la være. Pusten er merkbart tyngre og bena kjenner utfordringen fra den bratte stigningen. Hvile: Lett innsats (på en skala fra 4-5 av 10) hvor du kan snakke komfortabelt igjen når stigningen reduseres.",
       "environment": "indoor",
       "intervalDuration": 180,
       "incline": "12-15% work / 2-5% recovery"

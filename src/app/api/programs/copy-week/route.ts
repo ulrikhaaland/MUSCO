@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { adminDb } from '@/app/firebase/admin';
 import { getStartOfWeek } from '@/app/utils/dateutils';
+import { ProgramType } from '@/../shared/types';
+import {
+  canGenerateProgramAdmin,
+  recordProgramGenerationAdmin,
+  getNextAllowedGenerationDateAdmin,
+} from '@/app/services/programGenerationLimitsAdmin';
 
 /**
  * POST /api/programs/copy-week
@@ -30,6 +36,30 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         { error: 'Program not found' },
         { status: 404 }
+      );
+    }
+
+    const programData = programSnap.data();
+    const programType = programData?.type as ProgramType;
+
+    if (!programType) {
+      return NextResponse.json(
+        { error: 'Program type not found' },
+        { status: 400 }
+      );
+    }
+
+    // Check weekly generation limit
+    const canGenerate = await canGenerateProgramAdmin(userId, programType);
+    if (!canGenerate) {
+      const nextAllowedDate = await getNextAllowedGenerationDateAdmin(userId, programType);
+      return NextResponse.json(
+        {
+          error: 'Weekly generation limit reached',
+          code: 'WEEKLY_LIMIT_REACHED',
+          nextAllowedDate: nextAllowedDate?.toISOString(),
+        },
+        { status: 429 }
       );
     }
 
@@ -107,8 +137,11 @@ export async function POST(req: NextRequest) {
       updatedAt: new Date().toISOString(),
     });
 
+    // Record the generation to enforce weekly limits
+    await recordProgramGenerationAdmin(userId, programType);
+
     console.log(
-      `[copy-week] Copied week ${lastWeekDoc.id} to create new week ${newWeekRef.id} for program ${programId}`
+      `[copy-week] Copied week ${lastWeekDoc.id} to create new week ${newWeekRef.id} for program ${programId} (type: ${programType})`
     );
 
     return NextResponse.json({

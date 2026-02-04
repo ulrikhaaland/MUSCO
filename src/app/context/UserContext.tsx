@@ -35,7 +35,9 @@ import {
   storePendingQuestionnaire,
   getPendingQuestionnaire,
   deletePendingQuestionnaire,
+  WeeklyLimitReachedError,
 } from '@/app/services/questionnaire';
+import { toast } from '@/app/components/ui/ToastProvider';
 import { PartialProgram } from '@/app/types/incremental-program';
 import { partialToDisplayProgram } from '@/app/services/incrementalProgramService';
 import { useRouter, usePathname } from 'next/navigation';
@@ -882,6 +884,10 @@ export function UserProvider({ children }: { children: ReactNode }) {
         answers,
         {
           onError: (error) => {
+            // WeeklyLimitReachedError is handled in .catch() to avoid duplicate handling
+            if (error instanceof WeeklyLimitReachedError) {
+              return;
+            }
             console.error('[UserContext] Program submission error:', error);
             setProgramStatus(ProgramStatus.Error);
             setGeneratingDay(null);
@@ -905,6 +911,46 @@ export function UserProvider({ children }: { children: ReactNode }) {
         // detects the program status changing to Done
       }).catch((error) => {
         console.error('[UserContext] Program submission error:', error);
+        
+        // Handle weekly limit reached error with user-friendly message
+        if (error instanceof WeeklyLimitReachedError) {
+          const nextDate = error.nextAllowedDate.toLocaleDateString(locale, {
+            weekday: 'long',
+            month: 'long',
+            day: 'numeric',
+          });
+          toast.error(t('weeklyLimit.message', { programType: t(`weeklyLimit.programType.${error.programType}`) }));
+          toast.custom(
+            (toastObj) => (
+              <div
+                className={`${
+                  toastObj.visible ? 'animate-enter' : 'animate-leave'
+                } max-w-md w-full bg-amber-600 shadow-lg rounded-lg pointer-events-auto flex ring-1 ring-black ring-opacity-5`}
+              >
+                <div className="flex-1 w-0 p-4">
+                  <div className="flex items-start">
+                    <div className="flex-shrink-0 pt-0.5">⚠️</div>
+                    <div className="ml-3 flex-1">
+                      <p className="text-sm font-medium text-white">
+                        {t('weeklyLimit.nextAllowed', { date: nextDate })}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ),
+            { duration: 6000 }
+          );
+          // Clear pending questionnaire since we can't process it
+          setPendingQuestionnaire(null);
+          window.localStorage.removeItem('hasPendingQuestionnaire');
+          window.localStorage.removeItem('pendingQuestionnaireEmail');
+          window.sessionStorage.removeItem('pendingDiagnosis');
+          window.sessionStorage.removeItem('pendingAnswers');
+          // Redirect to programs page to show existing program
+          router.push('/programs');
+        }
+        
         setProgramStatus(ProgramStatus.Error);
         submissionInProgressRef.current = false;
       });

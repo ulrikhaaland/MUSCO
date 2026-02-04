@@ -916,6 +916,25 @@ export function ExerciseProgramPage({
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
+        
+        // Handle weekly limit reached error
+        if (errorData.code === 'WEEKLY_LIMIT_REACHED') {
+          const nextDate = errorData.nextAllowedDate 
+            ? new Date(errorData.nextAllowedDate).toLocaleDateString(locale, {
+                weekday: 'long',
+                month: 'long',
+                day: 'numeric',
+              })
+            : null;
+          
+          toast.error(
+            nextDate 
+              ? t('exerciseProgram.nextWeekCard.weeklyLimitNextDate', { date: nextDate })
+              : t('exerciseProgram.nextWeekCard.weeklyLimitTitle')
+          );
+          return;
+        }
+        
         throw new Error(errorData.error || 'Failed to copy week');
       }
 
