@@ -241,7 +241,14 @@ export function useHumanAPI({
   }, [elementId, initialGender]); // Add initialGender to dependencies
 
   // Update currentGender when initialGender changes
+  // Reset hydration flag and selection tracking so selections re-apply with new gendered IDs
+  const prevGenderRef = useRef<Gender>(initialGender);
   useEffect(() => {
+    if (prevGenderRef.current !== initialGender) {
+      didHydrateFromContextRef.current = false;
+      prevSelection.current = {};
+      prevGenderRef.current = initialGender;
+    }
     setCurrentGender(initialGender);
   }, [initialGender]);
 
