@@ -49,6 +49,16 @@ jest.mock('next/headers', () => ({
   }),
 }));
 
+// Mock Firebase to avoid needing real credentials in CI
+jest.mock('@/app/firebase/config', () => ({
+  app: {},
+  auth: {},
+  db: {},
+  storage: {},
+  functions: {},
+  analytics: null,
+}));
+
 // Mocks for server helpers used by send_message_chat
 const helpers = {
   getChatCompletion: jest.fn(),
