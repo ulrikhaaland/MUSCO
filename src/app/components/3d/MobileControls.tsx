@@ -454,8 +454,7 @@ export default function MobileControls({
       {/* Mobile Footer - Always visible when not in overlay or questionnaire */}
       {isMobile && !overlayOpen && !showQuestionnaire && (
         <div 
-          className={`md:hidden ${useAbsolutePosition ? 'absolute' : 'fixed'} inset-x-0 bottom-0 z-[50] bg-gray-900/80 backdrop-blur-sm border-t border-gray-800`}
-          style={isPwa ? { paddingBottom: 'env(safe-area-inset-bottom, 0px)' } : undefined}
+          className={`md:hidden ${useAbsolutePosition ? 'absolute' : 'fixed'} inset-x-0 bottom-0 z-[50] bg-gray-900/80 backdrop-blur-sm border-t border-gray-800 ${isPwa ? 'pb-8' : ''}`}
         >
             {(selectedGroups.length > 0 || selectedPart) ? (
               // Show selection info - entire area clickable
