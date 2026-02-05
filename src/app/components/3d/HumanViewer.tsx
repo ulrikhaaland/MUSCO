@@ -1097,7 +1097,7 @@ export default function HumanViewer({
       </div>
 
       {/* Mobile Controls */}
-      {isMobile && (!hideNav || enableMobileChat) && (
+      {isMobile && (!hideNav || enableMobileChat) && isReady && (
         <MobileControls
           isRotating={isRotating}
           isResetting={isResetting}
