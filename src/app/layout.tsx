@@ -169,14 +169,14 @@ export default function RootLayout({
 
         {/* Force Android Chrome navigation bar color - handled in useEffect to prevent hydration mismatch */}
       </head>
-      <body className={`bg-surface-deepest ${pathname === '/' ? 'landing-scrollbar' : ''}`}>
+      <body className={`bg-surface-base ${pathname === '/' ? 'landing-scrollbar' : ''}`}>
         <I18nWrapper>
           <AuthProvider>
             <UserProvider>
               <AppProvider>
                 <ToastProvider>
                   {!isMounted && (
-                    <div className="fixed inset-0 z-[60000] bg-surface-deepest" aria-hidden />
+                    <div className="fixed inset-0 z-[60000] bg-surface-base" aria-hidden />
                   )}
                   <BlockingLoader />
                   <SafeAreaPWA>
