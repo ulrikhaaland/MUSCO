@@ -9,7 +9,7 @@ import { getStartOfWeek } from '../utils/dateutils';
 const DISABLE_WEEKLY_LIMITS =
   typeof window !== 'undefined' &&
   window.location.hostname === 'localhost' &&
-  process.env.NODE_ENV !== 'test';
+  !process.env.JEST_WORKER_ID;
 
 /**
  * Weekly program generation limits service
