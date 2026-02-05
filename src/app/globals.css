@@ -428,6 +428,10 @@ iframe {
   body {
     overscroll-behavior-y: none;
   }
+  /* PWA-only safe area bottom padding for fixed bottom elements */
+  .pwa-safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
 }
 
 /* Fullscreen modal safe area utility class */
