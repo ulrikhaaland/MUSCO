@@ -125,6 +125,9 @@ export default function HumanViewer({
   const [explainerPosition, setExplainerPosition] = useState<{ x: number; y: number } | null>(null);
   const [isCameraMoving, setIsCameraMoving] = useState(false);
   const cameraMovingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  
+  // Track iframe load state for HumanAPI initialization
+  const [iframeReady, setIframeReady] = useState(true);
 
   // Explore explainer state
   // Using BioDigital labels for anchoring; no manual screen position needed
@@ -212,6 +215,7 @@ export default function HumanViewer({
     elementId: 'myViewer',
     initialGender: gender,
     onZoom: (objectId?: string) => handleZoom(objectId),
+    iframeReady,
   });
 
   // Track mouse position globally (iframe clicks don't bubble, so we track last known position)
@@ -366,6 +370,7 @@ export default function HumanViewer({
 
   const handleSwitchModel = useCallback(() => {
     setIsChangingModel(true);
+    setIframeReady(false); // Mark iframe as not ready until it reloads
     const newGender: Gender = currentGender === 'male' ? 'female' : 'male';
     setTargetGender(newGender);
     setViewerUrl(getViewerUrl(newGender));
@@ -978,6 +983,7 @@ export default function HumanViewer({
             allowFullScreen
             onLoad={() => {
               setIsChangingModel(false);
+              setIframeReady(true); // Signal to useHumanAPI that iframe is ready
             }}
           />
         </div>

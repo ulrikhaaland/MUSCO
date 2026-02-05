@@ -310,7 +310,7 @@ function NavigationMenuContent({ mobileTitle, mobileFloatingButton }: { mobileTi
     <>
       {/* Desktop header (landing style) */}
       <header className="hidden md:block sticky top-0 z-40 backdrop-blur supports-[backdrop-filter]:bg-gray-900/60 border-b border-white/10">
-        <div className="mx-auto max-w-6xl px-6 py-3 flex items-center justify-between">
+        <div className="mx-auto max-w-6xl py-3 flex items-center justify-between">
           <button
             onClick={() => {
               try { logAnalyticsEvent('nav_click', { target: 'app' }); } catch {}

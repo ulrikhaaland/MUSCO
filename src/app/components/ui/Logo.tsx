@@ -20,14 +20,14 @@ export default function Logo({ variant = 'horizontal' }: LogoProps) {
 
   if (isVertical) {
     return (
-      <div className="flex items-center justify-center relative" style={{ height: '200px' }}>
+      <div className="flex items-center justify-center relative" style={{ height: '30px' }}>
         {/* Absolute positioned container for vertical logo */}
         <div className="absolute inset-0 flex flex-col items-center justify-center">
           {!imgError ? (
             <>
               {/* Simple structure with image and text */}
               <div className="flex flex-col items-center">
-                <div 
+                {/* <div 
                   style={{
                     width: '170px',
                     height: '170px',
@@ -37,7 +37,7 @@ export default function Logo({ variant = 'horizontal' }: LogoProps) {
                   }}
                 >
                   <Image
-                    src="/img/logo_biceps.png"
+                    src="/img/logo_anatomy.svg"
                     alt="BodAI Logo"
                     fill
                     sizes="160px"
@@ -49,7 +49,7 @@ export default function Logo({ variant = 'horizontal' }: LogoProps) {
                       setImgError(true);
                     }}
                   />
-                </div>
+                </div> */}
                 <div className="text-center">
                   <span className={`${textSize} font-bold text-white`}>
                     bod<span className="text-indigo-500 font-extrabold">AI</span>
@@ -92,11 +92,11 @@ export default function Logo({ variant = 'horizontal' }: LogoProps) {
     <div className="flex items-center justify-center py-2">
       {!imgError ? (
         <div className="flex items-center">
-          <div
+          {/* <div
             className={`relative ${imageSize.height} ${imageSize.width} flex-shrink-0`}
           >
             <Image
-              src="/img/logo_biceps.png"
+              src="/img/logo_anatomy.svg"
               alt="BodAI Logo"
               fill
               sizes={imageSize.sizes}
@@ -107,7 +107,7 @@ export default function Logo({ variant = 'horizontal' }: LogoProps) {
                 setImgError(true);
               }}
             />
-          </div>
+          </div> */}
           <span className={`${textSize} font-bold text-white ml-2`}>
             bod<span className="text-indigo-500 font-extrabold">AI</span>
           </span>

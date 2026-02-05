@@ -19,6 +19,7 @@ import {
   closestCenter,
   KeyboardSensor,
   PointerSensor,
+  TouchSensor,
   useSensor,
   useSensors,
   DragEndEvent,
@@ -625,10 +626,17 @@ export function ExerciseProgramPage({
   const [optimisticSwap, setOptimisticSwap] = useState<[number, number] | null>(null);
 
   // DnD sensors for drag-and-drop
+  // PointerSensor for desktop (mouse), TouchSensor with delay for mobile (prevents scroll conflicts)
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 8, // 8px movement required before drag starts
+        distance: 8, // 8px movement required before drag starts (desktop)
+      },
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 250, // 250ms hold required before drag starts (mobile)
+        tolerance: 5, // Allow 5px movement during delay without canceling
       },
     }),
     useSensor(KeyboardSensor, {

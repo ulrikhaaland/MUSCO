@@ -43,6 +43,7 @@ interface UseHumanAPIProps {
   onReady?: () => void;
   initialGender: Gender;
   onZoom?: (objectId?: string) => void;
+  iframeReady?: boolean; // Signal that iframe has loaded and is ready for HumanAPI
 }
 
 export function useHumanAPI({
@@ -50,6 +51,7 @@ export function useHumanAPI({
   onReady,
   initialGender,
   onZoom,
+  iframeReady = true,
 }: UseHumanAPIProps): {
   humanRef: MutableRefObject<HumanAPI | null>;
   currentGender: Gender;
@@ -162,6 +164,12 @@ export function useHumanAPI({
   // Function to check if camera has moved
 
   useEffect(() => {
+    // Wait for iframe to be ready before initializing HumanAPI
+    // This prevents connecting to a loading/stale iframe after gender switch
+    if (!iframeReady) {
+      return;
+    }
+
     let isInitialized = false;
 
     const initializeViewer = async () => {
@@ -232,13 +240,17 @@ export function useHumanAPI({
     initializeViewer();
 
     return () => {
-      if (!isInitialized) {
-        setIsReady(false);
-        humanRef.current = null;
+      if (humanRef.current) {
+        // Detach event listeners before disposing
+        humanRef.current.send('scene.objectsSelected', null);
+        humanRef.current.send('scene.picked', null);
+        humanRef.current.send('camera.updated', null);
       }
+      setIsReady(false);
+      isInitialized = false;
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [elementId, initialGender]); // Add initialGender to dependencies
+  }, [elementId, initialGender, iframeReady]); // Re-init when iframe becomes ready
 
   // Update currentGender when initialGender changes
   // Reset hydration flag and selection tracking so selections re-apply with new gendered IDs
