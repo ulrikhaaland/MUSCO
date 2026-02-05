@@ -94,7 +94,7 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(
     const inputStyles = {
       default: 'px-4 py-3',
       compact: 'px-3 py-2',
-      mobile: 'px-3 py-2 text-sm',
+      mobile: 'px-4 py-3',
     };
 
     const ringStyles = {
