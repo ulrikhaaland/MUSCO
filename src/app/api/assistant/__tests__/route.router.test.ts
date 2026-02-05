@@ -59,6 +59,10 @@ jest.mock('@/app/firebase/config', () => ({
   analytics: null,
 }));
 
+jest.mock('@/app/firebase/admin', () => ({
+  adminDb: {},
+}));
+
 // Mocks for server helpers used by send_message_chat
 const helpers = {
   getChatCompletion: jest.fn(),
