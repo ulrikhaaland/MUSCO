@@ -27,8 +27,7 @@ import {
   WeeklyLimitReachedError,
 } from '../programGenerationLimitsAdmin';
 
-// Skipped: DISABLE_WEEKLY_LIMITS is set to true
-describe.skip('programGenerationLimitsAdmin', () => {
+describe('programGenerationLimitsAdmin', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     jest.useFakeTimers();
