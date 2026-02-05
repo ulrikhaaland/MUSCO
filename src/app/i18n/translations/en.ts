@@ -1231,13 +1231,6 @@ const translations = {
   'landing.demo.quick3': 'Prefer home workouts',
   'landing.demo.cta': 'Get my plan',
   'landing.demo.assistantTitle': 'Your AI Health Assistant',
-  'landing.demo.assistantSubtitle': 'Click any body part or chat to start',
-  'landing.demo.createCta': 'Create Your Program',
-
-  // Landing Hero CTA
-  'landing.hero.headline': 'Your Personal AI Physio',
-  'landing.hero.subheadline': 'Get a personalized recovery or exercise program in minutes',
-  'landing.hero.cta': 'Create Your Program',
 
   'landing.pricing.title': 'Pricing',
   'landing.pricing.toggle': 'Toggle annual billing',
