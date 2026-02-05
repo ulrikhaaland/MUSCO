@@ -56,13 +56,13 @@ export default function RootLayout({
     if (/Android/i.test(navigator.userAgent)) {
       document.documentElement.style.setProperty(
         '--navigation-bar-color',
-        '#0E1116'
+        '#111827'
       );
 
       // Try to use Android Chrome's theme-color API if available
       const metaThemeColor = document.querySelector('meta[name=theme-color]');
       if (metaThemeColor) {
-        metaThemeColor.setAttribute('content', '#0E1116');
+        metaThemeColor.setAttribute('content', '#111827');
       }
     }
   }, [isMounted]);
@@ -130,7 +130,7 @@ export default function RootLayout({
   }, [router, isMounted]);
 
   return (
-    <html lang="en" className="h-full bg-surface-deepest">
+    <html lang="en" className="h-full bg-gray-900">
       <head>
         <meta
           name="viewport"
@@ -141,21 +141,21 @@ export default function RootLayout({
         <link rel="icon" href="/favicon-16x16.png" type="image/png" sizes="16x16" />
         <link rel="manifest" href="/manifest.json" />
         {/* Primary theme color meta tags */}
-        <meta name="theme-color" content="#0E1116" />
+        <meta name="theme-color" content="#111827" />
         <meta
           name="theme-color"
           media="(prefers-color-scheme: dark)"
-          content="#0E1116"
+          content="#111827"
         />
         <meta
           name="theme-color"
           media="(prefers-color-scheme: light)"
-          content="#0E1116"
+          content="#111827"
         />
 
         {/* Android Chrome specific */}
         <meta name="mobile-web-app-capable" content="yes" />
-        <meta name="navigation-bar-color" content="#0E1116" />
+        <meta name="navigation-bar-color" content="#111827" />
 
         {/* iOS specific */}
         <meta name="apple-mobile-web-app-capable" content="yes" />
