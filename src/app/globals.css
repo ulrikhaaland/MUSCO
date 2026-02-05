@@ -48,9 +48,9 @@
 
   /* Legacy variables (kept for compatibility) */
   --foreground-rgb: 255, 255, 255;
-  --background-rgb: 0, 0, 0;
-  --navigation-bar-color: var(--surface-base);
-  --mobile-chrome-fix: var(--surface-base);
+  --background-rgb: 14, 17, 22;
+  --navigation-bar-color: var(--surface-deepest);
+  --mobile-chrome-fix: var(--surface-deepest);
 }
 
 html,
@@ -339,10 +339,10 @@ iframe {
 /* Target Chrome/Android */
 @media (display-mode: browser) {
   body {
-    background-color: var(--surface-base);
+    background-color: var(--surface-deepest);
   }
   html {
-    background-color: var(--surface-base);
+    background-color: var(--surface-deepest);
   }
 }
 
@@ -360,7 +360,7 @@ iframe {
     right: 0;
     bottom: 0;
     height: 100px;
-    background-color: var(--surface-base);
+    background-color: var(--surface-deepest);
     z-index: -10;
   }
 }
@@ -374,7 +374,7 @@ iframe {
     bottom: 0;
     right: 0;
     height: 50px;
-    background-color: var(--surface-base);
+    background-color: var(--surface-deepest);
     z-index: -10;
   }
 }
@@ -388,7 +388,7 @@ iframe {
     left: 0;
     right: 0;
     height: 100px;
-    background: var(--surface-base);
+    background: var(--surface-deepest);
     z-index: -1;
   }
 }
@@ -421,7 +421,7 @@ iframe {
 /* Add padding to main PWA container in standalone mode */
 @media (display-mode: standalone) {
   body {
-    background-color: var(--surface-base);
+    background-color: var(--surface-deepest);
   }
   /* In standalone PWA, keep overscroll disabled to avoid rubber-band/bounce */
   html,

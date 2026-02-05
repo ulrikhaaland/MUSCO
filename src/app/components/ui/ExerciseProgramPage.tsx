@@ -18,7 +18,7 @@ import {
   DndContext,
   closestCenter,
   KeyboardSensor,
-  PointerSensor,
+  MouseSensor,
   TouchSensor,
   useSensor,
   useSensors,
@@ -176,7 +176,7 @@ function SortableDayTab({
                 : isDayGenerated
                   ? 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white'
                   : 'bg-gray-800/30 text-gray-500 opacity-50 cursor-not-allowed'
-      } ${isDragEnabled && isDayGenerated ? 'cursor-grab active:cursor-grabbing' : ''}`}
+      } ${isDragEnabled && isDayGenerated ? 'cursor-grab active:cursor-grabbing select-none' : ''}`}
     >
       {/* Drag hint icon - shows on hover when draggable */}
       {isDragEnabled && isDayGenerated && !isDragging && !isDayGenerating && (
@@ -626,17 +626,17 @@ export function ExerciseProgramPage({
   const [optimisticSwap, setOptimisticSwap] = useState<[number, number] | null>(null);
 
   // DnD sensors for drag-and-drop
-  // PointerSensor for desktop (mouse), TouchSensor with delay for mobile (prevents scroll conflicts)
+  // MouseSensor for desktop only, TouchSensor with delay for mobile (prevents scroll conflicts)
   const sensors = useSensors(
-    useSensor(PointerSensor, {
+    useSensor(MouseSensor, {
       activationConstraint: {
-        distance: 8, // 8px movement required before drag starts (desktop)
+        distance: 8, // 8px movement required before drag starts (desktop mouse only)
       },
     }),
     useSensor(TouchSensor, {
       activationConstraint: {
-        delay: 250, // 250ms hold required before drag starts (mobile)
-        tolerance: 5, // Allow 5px movement during delay without canceling
+        delay: 300, // 300ms hold required before drag starts (mobile)
+        tolerance: 8, // Allow 8px movement during delay without canceling
       },
     }),
     useSensor(KeyboardSensor, {
