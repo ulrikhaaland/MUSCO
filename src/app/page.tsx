@@ -410,22 +410,56 @@ export default function LandingPage() {
         <PartnerLogos />
       </section> */}
 
+      {/* Hero CTA - above demo */}
+      <div className="max-w-6xl mx-auto px-6 pt-8 pb-4 text-center">
+        <h1 className="text-white text-3xl md:text-4xl font-bold mb-3">
+          {t('landing.hero.headline')}
+        </h1>
+        <p className="text-white/70 text-lg mb-6 max-w-2xl mx-auto">
+          {t('landing.hero.subheadline')}
+        </p>
+        <button
+          onClick={() => {
+            logAnalyticsEvent('hero_cta_click', { location: 'above_demo' });
+            router.push('/app/questionnaire?type=recovery');
+          }}
+          className="px-8 py-4 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl text-lg transition-colors w-full md:w-auto"
+        >
+          {t('landing.hero.cta')}
+        </button>
+      </div>
+
       {/* Hero section: Model + Partners filling viewport */}
       <section
         ref={demoRef}
-        className="flex flex-col px-6"
+        className="flex flex-col px-6 relative"
         style={{
-          height: 'calc(100svh - 3rem - env(safe-area-inset-bottom, 0px))',
+          height: 'calc(100svh - 12rem - env(safe-area-inset-bottom, 0px))',
           minHeight: '400px',
         }}
       >
         {/* Model viewer - fills available space */}
         <div className="flex-1 min-h-0 w-full max-w-6xl mx-auto flex flex-col">
-          <h2 className="text-white text-1xl font-semibold mb-2 mt-2 flex-shrink-0">
-            {t('landing.demo.assistantTitle')}
-          </h2>
-          <div className="flex-1 min-h-0 w-full rounded-xl ring-1 ring-white/10 overflow-hidden">
+          <div className="flex-shrink-0">
+            <h2 className="text-white text-1xl font-semibold mb-1 mt-2">
+              {t('landing.demo.assistantTitle')}
+            </h2>
+            <p className="text-white/60 text-sm mb-2">
+              {t('landing.demo.assistantSubtitle')}
+            </p>
+          </div>
+          <div className="flex-1 min-h-0 w-full rounded-xl ring-1 ring-white/10 overflow-hidden relative">
             <HumanViewer gender={'male'} hideNav enableMobileChat fillHeight />
+            {/* Floating CTA on demo */}
+            <button
+              onClick={() => {
+                logAnalyticsEvent('floating_cta_click', { location: 'demo_overlay' });
+                router.push('/app/questionnaire?type=recovery');
+              }}
+              className="absolute bottom-4 right-4 md:bottom-6 md:right-6 z-30 px-4 py-2.5 md:px-6 md:py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-lg shadow-lg transition-colors text-sm md:text-base"
+            >
+              {t('landing.demo.createCta')} →
+            </button>
           </div>
         </div>
 

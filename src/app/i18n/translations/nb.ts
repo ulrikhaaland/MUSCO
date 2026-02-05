@@ -1315,6 +1315,13 @@ const translations = {
   'landing.demo.quick3': 'Foretrekker hjemmetrening',
   'landing.demo.cta': 'Få min plan',
   'landing.demo.assistantTitle': 'Din AI helseassistent',
+  'landing.demo.assistantSubtitle': 'Klikk på en kroppsdel eller chat for å starte',
+  'landing.demo.createCta': 'Lag ditt program',
+
+  // Landing Hero CTA
+  'landing.hero.headline': 'Din personlige AI-fysioterapeut',
+  'landing.hero.subheadline': 'Få et tilpasset rehabiliterings- eller treningsprogram på minutter',
+  'landing.hero.cta': 'Lag ditt program',
 
   'landing.pricing.title': 'Pris',
   'landing.pricing.toggle': 'Bytt til årlig fakturering',
