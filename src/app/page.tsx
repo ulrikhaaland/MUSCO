@@ -334,7 +334,7 @@ export default function LandingPage() {
     <div className="min-h-screen bg-surface-deepest">
       {/* Top Nav (landing only) */}
       <header className="sticky top-0 z-40 backdrop-blur supports-[backdrop-filter]:bg-gray-900/60 border-b border-white/10">
-        <div className="mx-auto max-w-6xl py-[0.45rem] md:py-3 flex items-center justify-between">
+        <div className="mx-auto max-w-6xl px-6 md:px-0 py-[0.45rem] md:py-3 flex items-center justify-between">
           <button
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
             aria-label="Home"
