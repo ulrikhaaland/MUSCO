@@ -497,6 +497,7 @@ export interface UserProgram {
   type: ProgramType;
   timeFrame?: string;
   title: string;
+  isCustomProgram?: boolean; // True for predefined recovery programs (not AI-generated)
 }
 
 export type TargetBodyPart = (typeof TARGET_BODY_PARTS)[number];

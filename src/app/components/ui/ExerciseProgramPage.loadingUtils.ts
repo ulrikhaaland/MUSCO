@@ -68,7 +68,11 @@ export function isViewingGeneratingWeek(params: IsViewingGeneratingWeekParams): 
   const isViewingLatestWeek = selectedWeek === totalWeeks;
   if (isViewingLatestWeek && selectedWeekData) {
     const daysWithContent = selectedWeekData.days.filter(
-      (d) => d && d.exercises && d.exercises.length > 0
+      (d) => d && (
+        (d.exercises && d.exercises.length > 0) || 
+        d.dayType === 'rest' || 
+        d.isRestDay === true
+      )
     ).length;
     return daysWithContent < 7;
   }
@@ -77,13 +81,24 @@ export function isViewingGeneratingWeek(params: IsViewingGeneratingWeekParams): 
 }
 
 /**
- * Checks if a program day has actual exercise content.
+ * Checks if a program day has actual content (exercises or is a rest day).
  * 
  * This is used to determine if a day has been generated and populated,
  * not just if it exists as a placeholder.
+ * 
+ * A day is considered to have data if:
+ * 1. It has exercises, OR
+ * 2. It is a rest day (dayType === 'rest' or isRestDay === true)
  */
 export function hasDayData(day: ProgramDay | undefined | null): boolean {
-  return !!day && Array.isArray(day.exercises) && day.exercises.length > 0;
+  if (!day) return false;
+  
+  // Rest days are valid even without exercises
+  const isRestDay = day.dayType === 'rest' || day.isRestDay === true;
+  if (isRestDay) return true;
+  
+  // Non-rest days must have exercises
+  return Array.isArray(day.exercises) && day.exercises.length > 0;
 }
 
 /**

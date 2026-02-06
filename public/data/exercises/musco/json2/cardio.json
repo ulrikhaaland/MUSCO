@@ -623,6 +623,51 @@
       "environment": "indoor",
       "intervalDuration": 180,
       "incline": "12-15% work / 2-5% recovery"
+    },
+    {
+      "id": "cardio-13",
+      "name": "Zone 2 Marching in Place (No Equipment)",
+      "description": "Marching in place is a simple, low-impact way to raise your heart rate without equipment. In Zone 2, the effort should feel sustainable—breathing faster but still able to speak in full sentences. Keep steps light and quiet to reduce impact.",
+      "targetBodyParts": ["Cardio"],
+      "exerciseType": ["cardio", "endurance"],
+      "difficulty": "beginner",
+      "equipment": ["Bodyweight"],
+      "steps": [
+        "Stand tall with feet hip-width apart and ribs stacked over pelvis.",
+        "Begin marching by lifting one knee slightly, then switching sides in a smooth rhythm.",
+        "Swing your arms naturally to help maintain cadence and balance.",
+        "Keep foot strikes quiet and light; avoid bouncing.",
+        "Maintain a pace where you can still talk in full sentences (Zone 2)."
+      ],
+      "tips": [
+        "If you feel shin pain, shorten the step height and slow the cadence.",
+        "Stay tall—avoid leaning back as knees lift.",
+        "Use a wall or chair for balance if needed.",
+        "If marching still irritates symptoms, replace with gentle mobility instead."
+      ],
+      "contraindications": [
+        "Acute lower-limb injury",
+        "Sharp pain during movement",
+        "Severe balance issues"
+      ],
+      "muscles": ["Hip Flexors", "Glutes", "Calves", "Core"],
+      "alternatives": ["cardio-5", "cardio-7", "cardio-9"],
+      "repetitions": 1,
+      "sets": 1,
+      "restBetweenSets": 0,
+      "forceType": "Endurance",
+      "mechanics": "Compound",
+      "videoUrl": "",
+      "imageUrl": "",
+      "viewCount": 0,
+      "popularity": "medium",
+      "duration": 10,
+      "distance": 0,
+      "heartRateZone": "Zone 2 (60-70% max HR)",
+      "perceivedEffort": "Easy to moderate effort (4-5/10). You should be able to hold a full conversation. If breathing is too hard to talk comfortably, slow down.",
+      "environment": "indoor",
+      "intervalDuration": 0,
+      "incline": ""
     }
   ]
 }

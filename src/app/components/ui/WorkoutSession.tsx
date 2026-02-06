@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useCallback, useState, useRef, useEffect } from 'react';
+import Image from 'next/image';
 import { useTranslation } from '@/app/i18n/TranslationContext';
 import { Exercise } from '@/app/types/program';
 import { 
@@ -14,8 +15,16 @@ import {
   getTotalCompletedSets,
 } from '@/app/hooks/useWorkoutSession';
 import { formatRestTime } from '@/app/utils/timeUtils';
+import { PLACEHOLDER_VALUES } from '@/app/constants';
 import RestTimer from './RestTimer';
 import { Chip } from './Chip';
+import ConfirmationDialog from './ConfirmationDialog';
+
+const isPlaceholderValue = (value: string | undefined): boolean => {
+  if (!value) return true;
+  const normalized = value.trim().toLowerCase();
+  return PLACEHOLDER_VALUES.includes(normalized as typeof PLACEHOLDER_VALUES[number]) || normalized.length === 0;
+};
 
 interface WorkoutSessionProps {
   session: WorkoutSessionState;
@@ -35,6 +44,38 @@ function getChipVariant(bodyPart?: string): 'strength' | 'cardio' | 'recovery' |
   if (lower === 'warmup') return 'warmup';
   if (lower === 'recovery' || lower === 'stretching') return 'recovery';
   return 'strength';
+}
+
+/**
+ * Map exercise bodyPart string to a body part SVG illustration path.
+ * Returns null if no matching image exists.
+ */
+function getBodyPartImage(bodyPart?: string): string | null {
+  if (!bodyPart) return null;
+  const lower = bodyPart.toLowerCase();
+
+  const mapping: Record<string, string> = {
+    'abdomen': '/images/bodyparts/abs.svg',
+    'abs': '/images/bodyparts/abs.svg',
+    'shoulders': '/images/bodyparts/shoulders.svg',
+    'upper back': '/images/bodyparts/upper_back.svg',
+    'lower back': '/images/bodyparts/lower_back.svg',
+    'upper legs': '/images/bodyparts/quads.svg',
+    'glutes': '/images/bodyparts/glutes.svg',
+    'lower legs': '/images/bodyparts/calves.svg',
+    'calves': '/images/bodyparts/calves.svg',
+    'forearms': '/images/bodyparts/forearms.svg',
+    'upper arms': '/images/bodyparts/biceps.svg',
+    'chest': '/images/bodyparts/chest.svg',
+    'lats': '/images/bodyparts/lats.svg',
+    'hamstrings': '/images/bodyparts/hamstrings.svg',
+    'triceps': '/images/bodyparts/triceps.svg',
+    'obliques': '/images/bodyparts/obliques.svg',
+    'biceps': '/images/bodyparts/biceps.svg',
+    'quads': '/images/bodyparts/quads.svg',
+  };
+
+  return mapping[lower] ?? null;
 }
 
 /**
@@ -68,6 +109,11 @@ export function WorkoutSession({
   // Elapsed time
   const elapsedSeconds = useElapsedTime(session.startTime, session.isActive);
 
+  // Exit menu state
+  const [showExitMenu, setShowExitMenu] = useState(false);
+  // Exercise details panel
+  const [showDetails, setShowDetails] = useState(false);
+
   // Slide animation direction
   const [slideDir, setSlideDir] = useState<SlideDirection>(null);
   const slideKey = useRef(0);
@@ -79,6 +125,7 @@ export function WorkoutSession({
   const triggerSlide = useCallback((dir: SlideDirection) => {
     slideKey.current += 1;
     setSlideDir(dir);
+    setShowDetails(false);
   }, []);
 
   // --- Handlers ---
@@ -94,9 +141,17 @@ export function WorkoutSession({
     onClose();
   }, [actions, onClose, onComplete]);
 
-  const handleExitWorkout = useCallback(() => {
+  // X button = minimize (most common intent)
+  const handleMinimize = useCallback(() => {
     onClose();
   }, [onClose]);
+
+  // End workout = destructive cancel with confirmation
+  const handleCancelWorkout = useCallback(() => {
+    setShowExitMenu(false);
+    actions.endSession();
+    onClose();
+  }, [actions, onClose]);
 
   const handleNext = useCallback(() => {
     if (!canGoNext) return;
@@ -314,10 +369,10 @@ export function WorkoutSession({
 
   // --- Previous/next exercise names for footer ---
   const prevExName = canGoPrev
-    ? truncateName(session.exercises[session.currentExerciseIndex - 1]?.name ?? '')
+    ? session.exercises[session.currentExerciseIndex - 1]?.name ?? ''
     : '';
   const nextExName = canGoNext
-    ? truncateName(session.exercises[session.currentExerciseIndex + 1]?.name ?? '')
+    ? session.exercises[session.currentExerciseIndex + 1]?.name ?? ''
     : '';
 
   return (
@@ -326,20 +381,40 @@ export function WorkoutSession({
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
     >
+      {/* ── End workout confirmation dialog ── */}
+      <ConfirmationDialog
+        isOpen={showExitMenu}
+        onClose={() => setShowExitMenu(false)}
+        onConfirm={handleCancelWorkout}
+        title={t('workout.endWorkout')}
+        description={t('workout.endWorkoutConfirm')}
+        confirmText={t('workout.endWorkout')}
+        cancelText={t('workout.continueWorkout')}
+        confirmButtonStyle="danger"
+      />
+
       {/* ── Header ── */}
       <header className="flex items-center justify-between px-4 py-3 bg-gray-900 border-b border-gray-800/60">
-        {/* Close */}
-        <button
-          onClick={handleExitWorkout}
-          className="p-2 -ml-2 rounded-lg hover:bg-gray-800 active:bg-gray-700 transition-colors"
-          aria-label="Close"
-        >
-          <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
+        {/* Left: minimize + end */}
+        <div className="flex items-center gap-1">
+          <button
+            onClick={handleMinimize}
+            className="p-2 -ml-2 rounded-lg hover:bg-gray-800 active:bg-gray-700 transition-colors"
+            aria-label="Minimize"
+          >
+            <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+          <button
+            onClick={() => setShowExitMenu(true)}
+            className="px-2.5 py-1 rounded-lg text-sm font-semibold text-red-400/80 hover:text-red-400 hover:bg-red-500/10 transition-colors"
+          >
+            {t('workout.endWorkout')}
+          </button>
+        </div>
 
-        {/* Elapsed timer */}
+        {/* Center: elapsed timer */}
         <div className="flex items-center gap-1.5 text-gray-400">
           <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -347,121 +422,203 @@ export function WorkoutSession({
           <span className="text-sm font-medium tabular-nums">{formatElapsedTime(elapsedSeconds)}</span>
         </div>
 
-        {/* Exercise pills */}
+        {/* Right: exercise pills */}
         {renderExercisePills()}
       </header>
 
-      {/* ── Progress bar ── */}
-      <div className="h-0.5 bg-gray-800">
+      {/* ── Progress bar with percentage ── */}
+      <div className="relative h-5 bg-gray-800/60 flex items-center">
         <div 
-          className="h-full bg-gradient-to-r from-indigo-600 to-indigo-400 transition-all duration-500 ease-out"
+          className="absolute inset-y-0 left-0 bg-gradient-to-r from-indigo-600 to-indigo-400 transition-all duration-500 ease-out"
           style={{ width: `${progress}%` }}
         />
+        <span className="relative z-10 w-full text-center text-[10px] font-semibold text-white/70 tabular-nums">
+          {progress}%
+        </span>
       </div>
 
       {/* ── Main content ── */}
-      <main className="flex-1 flex flex-col px-4 pt-6 pb-4 overflow-y-auto">
-        {/* Exercise card */}
+      <main className="flex-1 flex flex-col px-4 pt-4 pb-4 overflow-y-auto">
+        {/* Exercise card -- fills available space with background illustration */}
         <div 
           key={`exercise-${session.currentExerciseIndex}-${slideKey.current}`}
           className={`
-            flex-1 flex flex-col
-            bg-gradient-to-b from-gray-800/70 to-gray-800/30
+            relative w-full max-w-lg mx-auto flex-1 flex flex-col
+            bg-gradient-to-b from-gray-800/60 to-gray-800/20
             ring-1 ring-gray-700/40
-            rounded-2xl p-5
+            rounded-2xl p-5 overflow-hidden
             ${slideClass}
           `}
         >
-          {/* Card header: name + body part + video */}
-          <div className="flex items-start justify-between mb-1">
-            <div className="flex-1 min-w-0 pr-3">
-              <h1 className="text-xl md:text-2xl font-bold text-white leading-tight">
-                {currentExercise.name}
-              </h1>
-            </div>
-            {onVideoClick && (
-              <button
-                onClick={() => onVideoClick(currentExercise)}
-                className="
-                  p-2.5 rounded-xl
-                  bg-gray-700/50 hover:bg-gray-700 active:bg-gray-600
-                  transition-colors duration-150
-                  flex-shrink-0
-                "
-                aria-label="Watch video"
-              >
-                <svg className="w-5 h-5 text-gray-300" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M8 5v14l11-7z" />
-                </svg>
-              </button>
-            )}
-          </div>
-
-          {/* Body part chip */}
-          {currentExercise.bodyPart && (
-            <div className="mb-5">
-              <Chip variant={getChipVariant(currentExercise.bodyPart)} size="sm">
-                {currentExercise.bodyPart}
-              </Chip>
-            </div>
-          )}
-
-          {/* Sets × Reps display */}
-          {!isResting && (
-            <div className="flex items-baseline justify-center gap-3 mb-1">
-              <span className="text-5xl font-bold text-white tabular-nums">{totalSets}</span>
-              <span className="text-2xl text-gray-500 font-light">×</span>
-              <span className="text-5xl font-bold text-white tabular-nums">
-                {currentExercise.repetitions ?? '—'}
-              </span>
-            </div>
-          )}
-
-          {/* Rest info */}
-          {!isResting && restTime > 0 && (
-            <p className="text-center text-gray-500 text-sm mb-2">
-              {formatRestTime(restTime)} {t('workout.restTime').toLowerCase()}
-            </p>
-          )}
-
-          {/* Set circles or rest timer */}
-          {isResting && session.restTimerEnd ? (
-            <RestTimer
-              endTime={session.restTimerEnd}
-              totalSeconds={restTime}
-              onSkip={actions.skipRest}
-              onExtend={(s) => actions.extendRest(s)}
-            />
-          ) : (
-            <>
-              {renderSetCircles()}
-
-              {/* ── CTA Button ── */}
-              <div className="mt-auto pt-4">
-                <button
-                  onClick={handleCompleteSet}
-                  className={`
-                    w-full py-4 rounded-2xl
-                    text-white text-lg font-semibold
-                    transition-all duration-150
-                    active:scale-[0.96]
-                    shadow-lg
-                    ${isLastSetOfCurrent && !canGoNext
-                      ? 'bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 shadow-emerald-600/20'
-                      : isLastSetOfCurrent
-                        ? 'bg-gradient-to-r from-indigo-500 to-violet-500 hover:from-indigo-400 hover:to-violet-400 shadow-indigo-600/20'
-                        : 'bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 shadow-indigo-600/20'
-                    }
-                  `}
-                >
-                  {isLastSetOfCurrent
-                    ? (canGoNext ? t('workout.nextExercise') : t('workout.completeWorkout'))
-                    : t('workout.completeSet')
-                  }
-                </button>
+          {/* Card content */}
+          <div className="relative z-10 flex-1 flex flex-col">
+            {/* Top: name + video + chip */}
+            <div className="flex items-start justify-between mb-1">
+              <div className="flex-1 min-w-0 pr-3">
+                <h1 className="text-xl md:text-2xl font-bold text-white leading-tight">
+                  {currentExercise.name}
+                </h1>
               </div>
-            </>
-          )}
+              {onVideoClick && (
+                <button
+                  onClick={() => onVideoClick(currentExercise)}
+                  className="
+                    flex items-center gap-1.5 px-3 py-2 rounded-xl
+                    bg-indigo-600/20 hover:bg-indigo-600/30 active:bg-indigo-600/40
+                    ring-1 ring-indigo-500/30
+                    transition-colors duration-150
+                    flex-shrink-0
+                  "
+                  aria-label="Watch video"
+                >
+                  <svg className="w-4 h-4 text-indigo-400" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M8 5v14l11-7z" />
+                  </svg>
+                  <span className="text-xs font-medium text-indigo-400">Video</span>
+                </button>
+              )}
+            </div>
+
+            {currentExercise.bodyPart && (
+              <div className="mb-2">
+                <Chip variant={getChipVariant(currentExercise.bodyPart)} size="sm">
+                  {currentExercise.bodyPart}
+                </Chip>
+              </div>
+            )}
+
+            {/* Exercise info -- collapsible, below chip */}
+            {(currentExercise.description || 
+              (!isPlaceholderValue(currentExercise.modification)) || 
+              (!isPlaceholderValue(currentExercise.precaution)) || 
+              (currentExercise.steps && currentExercise.steps.length > 0)) && (
+              <>
+                <button
+                  onClick={() => setShowDetails(prev => !prev)}
+                  className="flex items-center gap-1 text-xs font-medium text-indigo-400/70 hover:text-indigo-400 transition-colors mb-2"
+                >
+                  <svg className={`w-3.5 h-3.5 transition-transform duration-200 ${showDetails ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                  {showDetails ? t('program.seeLess') : t('workout.exerciseInfo')}
+                </button>
+
+                {showDetails && (
+                  <div className="w-full mb-3 max-h-[180px] overflow-y-auto space-y-3 text-sm rounded-xl bg-gray-800/40 p-4 ring-1 ring-gray-700/30">
+                    {currentExercise.description && (
+                      <p className="text-gray-300 leading-relaxed">
+                        {currentExercise.description}
+                      </p>
+                    )}
+                    {!isPlaceholderValue(currentExercise.modification) && (
+                      <p className="text-yellow-200/90 leading-relaxed">
+                        <span className="font-medium">{t('program.modification')}</span>{' '}
+                        {currentExercise.modification}
+                      </p>
+                    )}
+                    {!isPlaceholderValue(currentExercise.precaution) && (
+                      <p className="text-red-400/90 leading-relaxed">
+                        <span className="font-medium">{t('program.precaution')}</span>{' '}
+                        {currentExercise.precaution}
+                      </p>
+                    )}
+                    {currentExercise.steps && currentExercise.steps.length > 0 && (
+                      <div>
+                        <p className="font-medium text-gray-400 mb-1.5">{t('program.viewInstructions')}</p>
+                        <ol className="list-decimal pl-5 space-y-1 text-gray-300">
+                          {currentExercise.steps.map((step, i) => (
+                            <li key={i} className="leading-relaxed">{step}</li>
+                          ))}
+                        </ol>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </>
+            )}
+
+            {/* Body part illustration -- fills available space */}
+            {(() => {
+              const imgSrc = getBodyPartImage(currentExercise.bodyPart);
+              return (
+                <div className="relative flex-1 min-h-0">
+                  {imgSrc && (
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <Image
+                        src={imgSrc}
+                        alt=""
+                        width={400}
+                        height={400}
+                        className="opacity-[0.15] object-contain select-none w-full h-full"
+                        draggable={false}
+                        priority={false}
+                      />
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
+
+            {/* Bottom: sets/reps, circles, CTA */}
+            <div className="flex flex-col items-center">
+              {/* Sets × Reps + rest info */}
+              {!isResting && (
+                <div className="text-center mb-4">
+                  <div className="flex items-baseline justify-center gap-3">
+                    <span className="text-5xl font-bold text-white tabular-nums">{totalSets}</span>
+                    <span className="text-2xl text-gray-500 font-light">×</span>
+                    <span className="text-5xl font-bold text-white tabular-nums">
+                      {currentExercise.repetitions ?? '—'}
+                    </span>
+                  </div>
+                  {restTime > 0 && (
+                    <p className="text-gray-500 text-sm mt-1">
+                      {formatRestTime(restTime)} {t('workout.restTime').toLowerCase()}
+                    </p>
+                  )}
+                </div>
+              )}
+
+              {/* Set circles or rest timer */}
+              {isResting && session.restTimerEnd ? (
+                <RestTimer
+                  endTime={session.restTimerEnd}
+                  totalSeconds={restTime}
+                  onSkip={actions.skipRest}
+                  onExtend={(s) => actions.extendRest(s)}
+                />
+              ) : (
+                <>
+                  {renderSetCircles()}
+
+                  {/* CTA Button */}
+                  <div className="pt-4 w-full">
+                    <button
+                      onClick={handleCompleteSet}
+                      className={`
+                        w-full py-4 rounded-2xl
+                        text-white text-lg font-semibold
+                        transition-all duration-150
+                        active:scale-[0.96]
+                        shadow-lg
+                        ${isLastSetOfCurrent && !canGoNext
+                          ? 'bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 shadow-emerald-600/20'
+                          : isLastSetOfCurrent
+                            ? 'bg-gradient-to-r from-indigo-500 to-violet-500 hover:from-indigo-400 hover:to-violet-400 shadow-indigo-600/20'
+                            : 'bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 shadow-indigo-600/20'
+                        }
+                      `}
+                    >
+                      {isLastSetOfCurrent
+                        ? (canGoNext ? t('workout.nextExercise') : t('workout.completeWorkout'))
+                        : t('workout.completeSet')
+                      }
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
         </div>
       </main>
 
@@ -484,7 +641,7 @@ export function WorkoutSession({
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
           {prevExName && (
-            <span className="text-[10px] max-w-[64px] truncate">{prevExName}</span>
+            <span className="text-xs text-gray-500 max-w-[120px] truncate">{prevExName}</span>
           )}
         </button>
 
@@ -530,18 +687,12 @@ export function WorkoutSession({
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
           </svg>
           {nextExName && (
-            <span className="text-[10px] max-w-[64px] truncate">{nextExName}</span>
+            <span className="text-xs text-gray-500 max-w-[120px] truncate">{nextExName}</span>
           )}
         </button>
       </footer>
     </div>
   );
-}
-
-/** Truncate exercise name for footer labels */
-function truncateName(name: string, max = 12): string {
-  if (name.length <= max) return name;
-  return name.slice(0, max - 1) + '…';
 }
 
 export default WorkoutSession;

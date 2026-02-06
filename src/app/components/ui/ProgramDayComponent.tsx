@@ -3,6 +3,7 @@ import { Exercise, ProgramDay, getDayType } from '@/app/types/program';
 import ExerciseCard from './ExerciseCard';
 // import Chip from './Chip';
 import BodyPartFilter from './BodyPartFilter';
+import EquipmentFilter from './EquipmentFilter';
 import { useTranslation } from '@/app/i18n/TranslationContext';
 import InfoBadge from './InfoBadge';
 import { TextButton } from './TextButton';
@@ -44,8 +45,9 @@ export function ProgramDayComponent({
   hideWorkoutFAB = false,
 }: ProgramDayComponentProps) {
   const { t } = useTranslation();
-  // State to track removed body parts
+  // State to track removed body parts and equipment
   const [removedBodyParts, setRemovedBodyParts] = useState<string[]>([]);
+  const [removedEquipment, setRemovedEquipment] = useState<string[]>([]);
   // State to track if title is being hovered
   const [isTitleHovered, setIsTitleHovered] = useState(false);
   // State to track viewport width for responsive adjustments
@@ -63,16 +65,32 @@ export function ProgramDayComponent({
   ).sort();
   }, [day.exercises]);
 
-  // Filter exercises based on removed body parts
+  // Get all unique equipment from exercises
+  const allEquipment = useMemo(() => {
+    return Array.from(
+      new Set(
+        day.exercises?.flatMap((exercise) => exercise.equipment || []).filter(Boolean) || []
+      )
+    ).sort();
+  }, [day.exercises]);
+
+  // Filter exercises based on removed body parts and equipment
   const filteredExercises = useMemo(() => {
     return day.exercises?.filter((exercise) => {
-    // If exercise has no body part, show it
-    if (!exercise.bodyPart) return true;
+      // Body part filter: if exercise has no body part, show it
+      if (exercise.bodyPart && removedBodyParts.includes(exercise.bodyPart)) {
+        return false;
+      }
 
-    // Only filter out if the exercise's body part is in the removed list
-    return !removedBodyParts.includes(exercise.bodyPart);
-  });
-  }, [day.exercises, removedBodyParts]);
+      // Equipment filter: if exercise has equipment and ALL of its equipment is removed, hide it
+      if (removedEquipment.length > 0 && exercise.equipment && exercise.equipment.length > 0) {
+        const hasAllEquipmentRemoved = exercise.equipment.every((eq) => removedEquipment.includes(eq));
+        if (hasAllEquipmentRemoved) return false;
+      }
+
+      return true;
+    });
+  }, [day.exercises, removedBodyParts, removedEquipment]);
 
   // Auto-expand the single exercise when only one is available
   const hasAutoExpandedRef = useRef(false);
@@ -97,6 +115,11 @@ export function ProgramDayComponent({
     setRemovedBodyParts(newRemovedBodyParts);
   };
 
+  // Handle equipment filter changes
+  const handleEquipmentFilterChange = (newRemovedEquipment: string[]) => {
+    setRemovedEquipment(newRemovedEquipment);
+  };
+
   // Check if viewport is mobile sized
   useEffect(() => {
     const checkIsMobile = () => {
@@ -111,20 +134,23 @@ export function ProgramDayComponent({
     };
   }, []);
 
-  // Resume workout session if one exists for this day's exercises
+  // Resume workout session once when an active session is first detected.
+  // The flag prevents re-opening after the user minimizes.
+  const hasResumed = useRef(false);
   useEffect(() => {
-    if (session.isActive && session.exercises.length > 0) {
-      // Check if the active session matches this day's exercises
-      const sessionExerciseIds = session.exercises.map(e => e.id || e.exerciseId || e.name).join(',');
-      const dayExerciseIds = (filteredExercises || [])
-        .filter(e => !e.warmup)
-        .map(e => e.id || e.exerciseId || e.name)
-        .join(',');
-      
-      if (sessionExerciseIds === dayExerciseIds) {
-        setShowWorkoutSession(true);
-      }
+    if (hasResumed.current) return;
+    if (!session.isActive || session.exercises.length === 0) return; // not loaded yet
+
+    const sessionExerciseIds = session.exercises.map(e => e.id || e.exerciseId || e.name).join(',');
+    const dayExerciseIds = (filteredExercises || [])
+      .filter(e => !e.warmup)
+      .map(e => e.id || e.exerciseId || e.name)
+      .join(',');
+    
+    if (sessionExerciseIds === dayExerciseIds) {
+      setShowWorkoutSession(true);
     }
+    hasResumed.current = true;
   }, [session.isActive, session.exercises, filteredExercises]);
 
   // Handle starting workout
@@ -231,7 +257,16 @@ export function ProgramDayComponent({
           bodyParts={allBodyParts}
           onFilterChange={handleBodyPartFilterChange}
           initialRemovedBodyParts={removedBodyParts}
-              />
+        />
+      )}
+
+      {/* Equipment Filter Section */}
+      {allEquipment.length > 0 && (
+        <EquipmentFilter
+          equipmentList={allEquipment}
+          onFilterChange={handleEquipmentFilterChange}
+          initialRemovedEquipment={removedEquipment}
+        />
       )}
 
       {/* Content section */}
@@ -276,7 +311,7 @@ export function ProgramDayComponent({
               {t('program.noExercises')}
             </p>
             <TextButton
-              onClick={() => setRemovedBodyParts([])}
+              onClick={() => { setRemovedBodyParts([]); setRemovedEquipment([]); }}
               className="mt-2"
             >
               {t('program.resetFilters')}

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Exercise } from '@/app/types/program';
 import { useTranslation } from '@/app/i18n/TranslationContext';
 import { PlayIcon, SpinnerIcon, ChevronDown } from '../icons';
+import { formatMinutes } from '@/app/utils/timeUtils';
 
 interface ExerciseChatCardProps {
   exercise: Exercise;
@@ -41,11 +42,7 @@ export default function ExerciseChatCard({
               {/* Metrics chips */}
               {exercise.duration ? (
                 <span className="text-xs px-2 py-0.5 rounded bg-indigo-600/30 text-indigo-200">
-                  {exercise.bodyPart === 'Cardio' 
-                    ? `${exercise.duration} min`
-                    : exercise.duration >= 60
-                      ? `${Math.floor(exercise.duration / 60)} min${exercise.duration % 60 > 0 ? ` ${exercise.duration % 60}s` : ''}`
-                      : `${exercise.duration}s`}
+                  {formatMinutes(exercise.duration)}
                 </span>
               ) : (
                 exercise.sets && exercise.repetitions && (
@@ -102,11 +99,7 @@ export default function ExerciseChatCard({
           <div className="flex items-center gap-2 flex-wrap">
             {exercise.duration ? (
               <span className="text-xs px-2 py-0.5 rounded bg-indigo-600/30 text-indigo-200">
-                {exercise.bodyPart === 'Cardio' 
-                  ? `${exercise.duration} min`
-                  : exercise.duration >= 60
-                    ? `${Math.floor(exercise.duration / 60)} min${exercise.duration % 60 > 0 ? ` ${exercise.duration % 60}s` : ''}`
-                    : `${exercise.duration}s`}
+                {formatMinutes(exercise.duration)}
               </span>
             ) : (
               exercise.sets && exercise.repetitions && (
@@ -195,7 +188,6 @@ export default function ExerciseChatCard({
     </div>
   );
 }
-
 
 
 

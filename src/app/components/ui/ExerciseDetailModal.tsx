@@ -4,6 +4,7 @@ import { Exercise } from '@/app/types/program';
 import { PlayIcon, SpinnerIcon } from '../icons';
 import { useTranslation } from '@/app/i18n/TranslationContext';
 import { ExerciseSheet } from './ExerciseSheet';
+import { formatMinutes } from '@/app/utils/timeUtils';
 
 interface ExerciseDetailModalProps {
   exercise: Exercise;
@@ -88,9 +89,7 @@ export function ExerciseDetailModal({
             )}
             {exercise.duration && (
               <span className="px-3 py-1 rounded bg-indigo-600/20 text-indigo-200 text-sm">
-                {exercise.duration >= 60 
-                  ? `${Math.floor(exercise.duration / 60)} min` 
-                  : `${exercise.duration}s`}
+                {formatMinutes(exercise.duration)}
               </span>
             )}
             {exercise.difficulty && (
@@ -204,4 +203,3 @@ export function ExerciseDetailModal({
   
   return createPortal(desktopContent, portalContainer);
 }
-

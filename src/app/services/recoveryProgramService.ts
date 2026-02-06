@@ -189,6 +189,7 @@ export const saveRecoveryProgramToAccount = async (
     const programsRef = collection(db, `users/${user.uid}/programs`);
 
     // Create main program document
+    // Note: isCustomProgram is intentionally excluded - saved programs are regular user programs
     const programDoc = {
       diagnosis: recoveryData.diagnosis,
       questionnaire: recoveryData.questionnaire,
@@ -198,6 +199,7 @@ export const saveRecoveryProgramToAccount = async (
       timeFrame: recoveryData.timeFrame,
       createdAt: new Date(),
       updatedAt: new Date(),
+      isCustomProgram: false, // Explicitly set to false - no longer a custom/unsaved program
     };
 
     console.log('📄 Creating recovery program document');

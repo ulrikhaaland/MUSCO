@@ -564,7 +564,7 @@ export function ExerciseProgramPage({
   shimmer = false,
   dayName,
   onDaySelect,
-  isCustomProgram = false,
+  isCustomProgram: isCustomProgramProp = false,
   generatingDay: propGeneratingDay,
   generatedDays: propGeneratedDays,
   generatingWeekId: propGeneratingWeekId,
@@ -592,6 +592,9 @@ export function ExerciseProgramPage({
   const generatingDay = propGeneratingDay ?? contextGeneratingDay;
   const generatedDays = propGeneratedDays ?? contextGeneratedDays ?? [];
   const generatingWeekId = propGeneratingWeekId ?? contextGeneratingWeekId;
+  
+  // Derive isCustomProgram from prop or activeProgram data flag
+  const isCustomProgram = isCustomProgramProp || activeProgram?.isCustomProgram || false;
   const { t, locale } = useTranslation();
   const router = useRouter();
   const pathname = usePathname();
@@ -1966,9 +1969,8 @@ export function ExerciseProgramPage({
                             </div>
                           </button>
 
-                          {/* Next week button for non-custom programs */}
-                          {!isCustomProgram && (
-                            <button
+                          {/* Next week button - shown for all programs */}
+                          <button
                               data-week={2}
                               className={`px-6 py-3 rounded-lg font-medium transition-colors duration-200 relative ${
                                 selectedWeek === 2
@@ -2041,7 +2043,6 @@ export function ExerciseProgramPage({
                                 </span>
                               </div>
                             </button>
-                          )}
                         </>
                       )}
                     </div>
@@ -2119,7 +2120,9 @@ export function ExerciseProgramPage({
 
               {/* Selected Week Content or SignUp Card or NextWeekCard */}
                {(() => {
-                if (isCustomProgram && !user && selectedWeek > 1) {
+                // For custom programs, show sign-up card when viewing the placeholder "next week"
+                const customProgramMaxWeeks = isMultiWeekProgram ? 4 : 1;
+                if (isCustomProgram && !user && selectedWeek > customProgramMaxWeeks) {
                   return <SignUpToContinueCard t={t} router={router} />;
                 }
 

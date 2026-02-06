@@ -7,19 +7,19 @@ import {
   getUserProgramBySlug,
 } from '../../../../public/data/programs/recovery';
 
-// Source of truth: start indices for each 4-week condition block in rehabPrograms
+// Source of truth: program indices for each single-week program in rehabPrograms
 const expectedStartIndexByCanonicalSlug: Record<string, number> = {
   'shin-splints': 0,
-  'lower-back': 4,
-  'runners-knee': 8,
-  shoulder: 12,
-  'ankle-sprain': 16,
-  'tennis-elbow': 20,
-  techneck: 24,
-  'plantar-fasciitis': 28,
-  hamstring: 32,
-  'upper-back-core': 36,
-  'core-stability': 40,
+  'lower-back': 1,
+  'runners-knee': 2,
+  shoulder: 3,
+  'ankle-sprain': 4,
+  'tennis-elbow': 5,
+  techneck: 6,
+  'plantar-fasciitis': 7,
+  hamstring: 8,
+  'upper-back-core': 9,
+  'core-stability': 10,
 };
 
 // Synonyms that should map to the same start index as their canonical slug
@@ -36,22 +36,20 @@ const synonyms: Array<[string, string]> = [
 ];
 
 describe('Recovery program slug mapping', () => {
-  it('maps canonical slugs to correct 4-week start indices', () => {
+  it('maps canonical slugs to correct program indices', () => {
     for (const [slug, expectedIndex] of Object.entries(
       expectedStartIndexByCanonicalSlug
     )) {
       expect(programSlugs[slug]).toBe(expectedIndex);
 
-      // Ensure all 4 weeks exist for that index range
-      for (let i = 0; i < 4; i++) {
-        expect(rehabPrograms[expectedIndex + i]).toBeTruthy();
-        expect(Array.isArray(rehabPrograms[expectedIndex + i].days)).toBe(true);
-      }
+      // Ensure the program exists at the mapped index
+      expect(rehabPrograms[expectedIndex]).toBeTruthy();
+      expect(Array.isArray(rehabPrograms[expectedIndex].days)).toBe(true);
 
-      // Combined program should have 28 days
-      const combined = getProgramBySlug(slug);
-      expect(combined).toBeTruthy();
-      expect(combined!.days.length).toBe(28);
+      // Single-week program should have 7 days
+      const program = getProgramBySlug(slug);
+      expect(program).toBeTruthy();
+      expect(program!.days.length).toBe(7);
     }
   });
 
@@ -69,10 +67,9 @@ describe('Recovery program slug mapping', () => {
 
       const up = getUserProgramBySlug(slug);
       expect(up).toBeTruthy();
-      // 4 week programs for each recovery plan
-      expect(up!.programs.length).toBe(4);
+      // Single-week program for each recovery plan
+      expect(up!.programs.length).toBe(1);
     }
   });
 });
-
 

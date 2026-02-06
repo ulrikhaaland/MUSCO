@@ -1,5 +1,6 @@
 import endent from 'endent';
 import { BODY_GROUP_NAMES, BODY_GROUP_NAMES_NB } from '@/app/types/program';
+import { formatMinutes } from '@/app/utils/timeUtils';
 
 /**
  * System prompt for the pre-followup conversational chat.
@@ -164,7 +165,7 @@ export function buildPreFollowupUserContext(params: {
         const intensityInfo = e.sets && e.reps 
           ? ` (${e.sets}x${e.reps}${e.restBetweenSets ? `, ${e.restBetweenSets}s rest` : ''})` 
           : e.duration 
-            ? ` (${e.duration} min)` 
+            ? ` (${formatMinutes(e.duration)})` 
             : '';
         // Show as [[name]] so LLM knows the exact format to use when referencing
         return `  - [[${name}]]${intensityInfo}`;
@@ -288,4 +289,3 @@ ${BODY_GROUP_NAMES.map((name, i) => `    ${i + 1}. "${name}"${language === 'nb' 
     <<END_VALID_BODY_PARTS>>
   `;
 }
-

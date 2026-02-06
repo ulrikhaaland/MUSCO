@@ -11,7 +11,6 @@
 import { ExerciseProgram } from '../../../src/app/types/program';
 import { DiagnosisAssistantResponse } from '../../../src/app/types';
 import { ExerciseQuestionnaireAnswers, ProgramType } from '../../../shared/types';
-import { calculateDayDuration } from '../../../src/app/helpers/duration-calculation';
 
 // Locale-aware helpers (descriptions only)
 // We intentionally only localize ProgramDay.description strings per request.
@@ -26,8 +25,34 @@ export const localizeProgramDayDescriptions = (
   const dayTitleMap: Record<string, string> = {
     'Relief & Mobility': 'Lindring og mobilitet',
     'Core Reset (dead bug + plank)': 'Kjernereset (dead bug + planke)',
+    'Reset & Brace (dead bug + plank). Exhale to brace; stop if symptoms travel or spike >3/10.':
+      'Reset og buktrykk (dead bug + planke). Pust ut for å spenne; stopp hvis symptomer stråler eller øker >3/10.',
     'Glute Bridge + Anti-rotation': 'Seteløft + anti-rotasjon',
+    'Glutes + Spine Stability (bridge + bird dog). Quiet trunk; move from hips/shoulders, not the low back.':
+      'Sete + ryggstabilitet (seteløft + bird dog). Stabil overkropp; beveg fra hofter/skuldre, ikke korsryggen.',
     'Repeat & Extend (control + confidence)': 'Gjenta og utvid (kontroll + trygghet)',
+    // Low Back (Week 1)
+    'Reset & Brace (dead bug + plank). Exhale to brace; stop if symptoms travel or spike >3/10.':
+      'Reset og buktrykk (dead bug + planke). Pust ut for å spenne; stopp hvis symptomer stråler eller øker >3/10.',
+    'Glutes + Spine Stability (bridge + bird dog). Quiet trunk; move from hips/shoulders, not the low back.':
+      'Sete + ryggstabilitet (seteløft + bird dog). Rolig overkropp; beveg fra hofter/skuldre, ikke korsrygg.',
+    'Repeat & Build Confidence. Same-day should feel easier; next morning should be stable or better.':
+      'Gjenta og bygg trygghet. Det skal kjennes litt lettere samme dag; neste morgen stabilt eller bedre.',
+    'Repeat & Build Confidence. Same-day should feel easier; next morning should be stable or better.':
+      'Gjenta og bygg trygghet. Det skal føles lettere samme dag; neste morgen stabilt eller bedre.',
+    // Shin Splints (MTSS)
+    'Zone 2 + Calf Strength (easy). Slow reps; pain stays ≤3/10 during and the next morning.':
+      'Zone 2 + leggstyrke (lett). Rolige reps; smerte ≤3/10 underveis og neste morgen.',
+    'Calf Capacity + Zone 2 (easy). Keep cadence smooth; stop if pain climbs above 3/10.':
+      'Leggkapasitet + Zone 2 (lett). Jevn frekvens; stopp hvis smerte går over 3/10.',
+    'Eccentric Calf Lowers + Zone 2. 3–4s lowering; reduce volume if sore >24h.':
+      'Eksentriske leggsenk + Zone 2. 3–4s senk; reduser volum ved ømhet >24t.',
+    'Foot Control + Eccentric Calf. Controlled foot/ankle; avoid “pushing through” tenderness.':
+      'Fotkontroll + eksentrisk legg. Kontrollert fot/ankel; ikke press gjennom ømhet.',
+    'Walk–Jog (1:1) + Calf Strength. Soft surface; keep stride short and cadence high.':
+      'Gå–jogg (1:1) + leggstyrke. Mykt underlag; korte steg og høy frekvens.',
+    'Walk–Jog (2:1) + Calf Strength. Add time slowly; one variable at a time (surface OR volume).':
+      'Gå–jogg (2:1) + leggstyrke. Øk tid rolig; én variabel om gangen (underlag ELLER volum).',
     'Hinge + Glute Strength (progress eccentrics)': 'Hoftebøy + setestyrke (øk eksentrisk belastning)',
     'Functional Strength (squat + anti-rotation)': 'Funksjonell styrke (knebøy + anti-rotasjon)',
     'Return‑to‑Activity (loaded hinge)': 'Tilbake til aktivitet (belastet hoftebøy)',
@@ -66,6 +91,41 @@ export const localizeProgramDayDescriptions = (
     'Time Under Tension & Movement': 'Tid under spenning og bevegelse',
     'Stability & Balance Challenges': 'Stabilitet og balanseutfordringer',
     'Multi-Planar Core Integration': 'Multiplanar kjerneintegrasjon',
+    // Runner's Knee (Week 1)
+    'Symptom Calm + Hip Activation. Keep knee tracking over mid-foot and pain ≤3/10.':
+      'Ro ned symptomer + hofteaktivering. Hold kneet over midtfoten og smerte ≤3/10.',
+    'Hip Control + Quad Isometrics. Slow reps, no knee collapse inward.':
+      'Hoftekontroll + isometrisk lår. Rolige reps, unngå at kneet faller innover.',
+    'Build Tolerance (same pattern, slightly more work). Next morning should be stable or better.':
+      'Bygg toleranse (samme mønster, litt mer arbeid). Neste morgen skal være stabil eller bedre.',
+    // Shoulder (Week 1)
+    'Restore Motion + Scap Control. Smooth reps; stay below pinch range.':
+      'Gjenopprett bevegelse + skulderbladkontroll. Rolige reps; hold deg under klypegrensen.',
+    'Cuff Endurance + Flexion Control. Keep ribs down; avoid shrugging.':
+      'Cuff-utholdenhet + fleksjonskontroll. Hold ribbeina nede; unngå å trekke skuldrene opp.',
+    'Build Shoulder Tolerance (same pattern, slightly more volume). Next day should feel stable or better.':
+      'Bygg skuldertoleranse (samme mønster, litt mer volum). Neste dag skal være stabil eller bedre.',
+    // Ankle (Week 1)
+    'Calm Swelling + Restore Motion. Keep steps quiet and pain ≤3/10.':
+      'Demp hevelse + gjenopprett bevegelse. Hold stegene rolige og smerte ≤3/10.',
+    'Ankle Mobility + Calf Pump. Slow tempo, full-foot contact.':
+      'Ankelmobilitet + leggpumpe. Rolig tempo, full fotkontakt.',
+    'Build Confidence in Stance. Repeat pattern; next day should be stable or better.':
+      'Bygg trygghet i standfase. Gjenta mønster; neste dag skal være stabil eller bedre.',
+    // Tennis Elbow (Week 1)
+    'Settle Tendon Irritability + Isometric Relief. Keep grip light and pain ≤3/10.':
+      'Demp senesmerte + isometrisk lindring. Hold lett grep og smerte ≤3/10.',
+    'Forearm Control + Slow Rotation. Move smoothly; no sharp or radiating pain.':
+      'Underarmskontroll + rolig rotasjon. Beveg rolig; ingen skarp eller utstrålende smerte.',
+    'Build Daily-Use Tolerance. Repeat pattern with slightly longer holds if stable next day.':
+      'Bygg toleranse for hverdagsbruk. Gjenta mønsteret med litt lengre hold hvis neste dag er stabil.',
+    // Tech Neck (Week 1)
+    'Reset Posture + Mobility. Keep jaw relaxed and shoulders away from ears.':
+      'Nullstill holdning + mobilitet. Hold kjeven avslappet og skuldrene ned fra ørene.',
+    'Scapular Endurance + Neck Calm. Slow pulls; avoid neck tension compensation.':
+      'Skulderbladutholdenhet + ro i nakken. Rolige trekk; unngå kompensasjon med nakken.',
+    'Build Desk-Day Tolerance. Repeat pattern with slightly more control and hold quality.':
+      'Bygg toleranse for kontordag. Gjenta mønsteret med litt mer kontroll og kvalitet i holdene.',
   };
 
   // Rest day description mappings across all programs/weeks
@@ -101,6 +161,10 @@ export const localizeProgramDayDescriptions = (
     'Rest day. Light rotator cuff activation and posture control to reinforce recovery gains.': 'Hviledag. Lett rotatorcuff-aktivering og holdningskontroll for varig effekt.',
 
     'Rest day. Light foot mobility and calf stretches to support healing.': 'Hviledag. Lett fotmobilitet og leggstrekk for å støtte tilheling.',
+    'Rest day. Optional easy 5–10 min marching in place; gentle calf stretch if pain‑free.':
+      'Hviledag. Valgfritt: 5–10 min rolig marsj på stedet; lett leggstrekk hvis smertefritt.',
+    'Rest day. Avoid impact; optional easy 5–10 min marching in place if fully pain‑free.':
+      'Hviledag. Unngå støt; valgfritt: 5–10 min rolig marsj på stedet hvis helt smertefritt.',
     'Rest day. Reinforce calf control and introduce light arch stability.': 'Hviledag. Forsterk leggkontroll og innfør lett fotbue-stabilitet.',
     'Rest day. Challenge ankle control and foot arch through unilateral work.': 'Hviledag. Utfordre ankelkontroll og fotbue med ettbeinsarbeid.',
     'Rest day. Improve foot strength and maintain calf endurance with controlled loading.': 'Hviledag. Bedre fotstyrke og vedlikehold legg-utholdenhet med kontrollert belastning.',
@@ -113,6 +177,16 @@ export const localizeProgramDayDescriptions = (
 
   // Weekly summary mapping (short strings)
   const summaryMap: Record<string, string> = {
+    // Shin Splints (MTSS)
+    'Deload impact to calm shin pain. Maintain fitness with Zone 2 cardio + gentle calf work.':
+      'Avlast støt for å roe leggsmerten. Behold kondisjon med Zone 2 + lett leggarbeid.',
+    'Build capacity with eccentrics. Return to walking in short, cadence-focused doses.':
+      'Bygg kapasitet med eksentriker. Tilbake til gange i korte doser med kadensfokus.',
+    'Reintroduce jogging with 1:1 intervals. Keep calf strength and foot control consistent.':
+      'Gjeninnfør jogging med 1:1-intervaller. Hold leggstyrke og fotkontroll jevnt.',
+    'Longer jog blocks (2:1). Progress slowly and reintroduce firmer surfaces gradually.':
+      'Lengre joggbolker (2:1). Øk rolig og gjeninnfør fastere underlag gradvis.',
+
     'Calm pain; rebuild neutral spine and glute activation': 'Demp smerte; gjenoppbygg nøytral rygg og seteaktivering',
     'Hinge mechanics + glute strength; controlled hamstring eccentrics': 'Hoftebøyteknikk + setestyrke; kontrollerte hamstrings-eksentriker',
     'Functional lower‑body strength + anti‑rotation core': 'Funksjonell underkroppsstyrke + anti-rotasjonskjerne',
@@ -170,6 +244,12 @@ export const localizeProgramDayDescriptions = (
 
   // Per-week narrative fields (long blocks)
   const overviewMap: Record<string, string> = {
+    // Shin Splints (MTSS)
+    'Shin splints often flare when impact volume ramps faster than your lower leg can adapt. This week we dial down running/jumping to calm the tibia while keeping you active with low-impact cardio. You’ll build gentle calf/ankle capacity and blood flow so walking and stairs feel easier. Use pain (during + next morning) as your guide—steady or improving is the goal.': 'Leggskinnebetennelse (shin splints) blusser ofte opp når støtbelastningen øker raskere enn leggen rekker å tilpasse seg. Denne uken skrur vi ned løping/hopp for å roe ned tibia, men holder deg i aktivitet med lav‑impact kondisjon. Du bygger lett kapasitet i legg/ankel og øker blodsirkulasjon slik at gange og trapper føles lettere. Bruk smerte (underveis + neste morgen) som guide—stabilt eller bedre er målet.',
+    'With symptoms calmer, we start rebuilding capacity: slow eccentrics for the calves and more single-leg control so the tibia absorbs less braking force. Walking returns in short doses on soft surfaces with a cadence focus. You’ll still keep most cardio low-impact while we build tissue tolerance.': 'Når symptomene er roligere, starter vi å bygge kapasitet: langsomme eksentriker for leggene og mer ettbeinskontroll slik at tibia får mindre “bremsing” for hvert steg. Gange kommer tilbake i korte doser på mykt underlag med fokus på høyere frekvens. Du holder fortsatt mesteparten av kondisjonen lav‑impact mens vevet bygger toleranse.',
+    'Now we reintroduce impact in controlled doses: short walk–jog intervals on soft surfaces while keeping calf strength and foot control. The goal is to feel the same or better the next morning, not to “prove” fitness. You’ll keep cadence high and stride short to reduce braking.': 'Nå gjeninnfører vi støt i kontrollerte doser: korte gå–jogg‑intervaller på mykt underlag, samtidig som du beholder leggstyrke og fotkontroll. Målet er å være lik eller bedre neste morgen—ikke å “bevise” formen. Hold høy frekvens og kortere steg for å redusere bremsing.',
+    'We build running confidence by slightly increasing jog time while keeping strength work consistent. This week is about repeatability: same-day feels fine and next-day stays calm. If you meet the criteria, you can begin sprinkling in brief firm-surface exposure.': 'Du bygger løpe‑trygghet ved å øke joggetiden litt, samtidig som styrkearbeidet holdes jevnt. Denne uken handler om gjentakbarhet: det kjennes ok samme dag og er rolig neste morgen. Hvis kriteriene er oppfylt, kan du begynne med korte innslag på litt fastere underlag.',
+
     // Lower Back
     'Week 1 restores spinal neutrality and deep-core control with Dead Bug, Plank, and Glute Bridge to calm symptoms.': 'Uke 1 gjenoppretter nøytral rygg og dyp kjerne-kontroll med Dead Bug, Planke og Seteløft for å dempe symptomer.',
     "Week 2 grooves the hip hinge and progresses glute work; introduce hamstring eccentrics (e.g., single‑leg RDL pattern).": 'Uke 2 finpusser hoftebøy og øker setearbeid; introduserer eksentrisk hamstrings (f.eks. ettbeins RDL-mønster).',
@@ -227,6 +307,12 @@ export const localizeProgramDayDescriptions = (
   };
 
   const timeframeMap: Record<string, string> = {
+    // Shin Splints (MTSS)
+    'Do the strength sessions 3x/week and replace runs with Zone 2 bike/row/elliptical for 15–25 min. Keep impact exposure to short, flat, soft-surface walks only if symptoms stay ≤3/10 and don’t worsen the next day. Prioritize supportive shoes and a slightly higher cadence/shorter stride on any walks.': 'Gjør styrkeøktene 3x/uke og bytt ut løping med Zone 2 sykkel/roing/elliptisk i 15–25 min. Hold støtbelastning til korte, flate turer på mykt underlag kun hvis symptomer er ≤3/10 og ikke blir verre neste dag. Prioriter støttende sko og litt høyere frekvens/kortere steg på gåturene.',
+    'Use a slow eccentric (3–4 sec lowering) and stop sets at mild discomfort (≤3/10). Add 5–10 min soft-surface cadence walks 2–3x/week, and only increase time if next-day pain is stable. Keep cross-training Zone 2 on other days to maintain fitness.': 'Bruk langsom eksentrisk fase (3–4 sek senk) og stopp settene ved mildt ubehag (≤3/10). Legg til 5–10 min kadens‑fokusert gange på mykt underlag 2–3x/uke, og øk kun tiden hvis neste dags smerte er stabil. Hold Zone 2 kryss-trening på andre dager for å vedlikeholde kondisjon.',
+    'Start with 1:1 walk–jog (60s/60s) for 10–12 rounds on grass/track, 2–3x/week, with a rest day after. Keep calf eccentrics 2x/week and stop the jog portion if pain climbs above 3/10. If mornings are calm, add 1–2 rounds next session.': 'Start med 1:1 gå–jogg (60s/60s) i 10–12 runder på gress/bane, 2–3x/uke, med hviledag etter. Behold legg-eksentriker 2x/uke og stopp joggedelen hvis smerte går over 3/10. Hvis morgener er rolige, legg til 1–2 runder neste økt.',
+    'Move to 2:1 jog:walk (120s/60s) for 8–10 rounds on track/grass, 2–3 sessions/week, with at least 1 rest day between. Increase total run time by ~10% per week and keep cadence high/stride short. Optional: add 2–3% incline walking only if you’re pain-free the next morning.': 'Gå over til 2:1 jogg:gange (120s/60s) i 8–10 runder på bane/gress, 2–3 økter/uke, med minst 1 hviledag mellom. Øk total løpetid med ca. 10% per uke og hold høy frekvens/kortere steg. Valgfritt: legg til 2–3% stigning på gange kun hvis du er smertefri neste morgen.',
+
     // Lower Back
     'Anti‑extension core (Dead Bug, Plank) and glute bridging reduce lumbar load and re‑train positioning for daily moves.': 'Anti‑ekstensjon kjerne (Dead Bug, Planke) og seteløft reduserer belastning på korsrygg og gjenlærer posisjonering til hverdagsbevegelser.',
     'Single‑leg and hinge variations load hips—not spine—while building time‑under‑tension safely.': 'Ettbeins- og hoftebøyvarianter belaster hofter—ikke rygg—og bygger tid under spenning trygt.',
@@ -284,6 +370,12 @@ export const localizeProgramDayDescriptions = (
   };
 
   const expectedMap: Record<string, string> = {
+    // Shin Splints (MTSS)
+    'Lower shin tenderness to touch, and normal walking/stairs feel easier the next day. You should tolerate light calf work without a symptom spike.': 'Mindre ømhet i leggen ved berøring, og vanlig gange/trapper føles lettere neste dag. Du bør tåle lett leggarbeid uten symptomøkning.',
+    'Better walking tolerance with less next-day shin soreness, and improved calf fatigue resistance. Tenderness should trend down or stay stable week-to-week.': 'Bedre gangtoleranse med mindre ømhet i leggen neste dag, og bedre utholdenhet i leggen. Ømheten bør gå ned eller holde seg stabil fra uke til uke.',
+    'Comfortable short jog intervals with minimal next-day tenderness and no increase in baseline pain. Calf work feels strong and controlled.': 'Komfortable korte joggeintervaller med minimal ømhet neste dag og ingen økning i grunnsmerte. Leggarbeidet føles sterkt og kontrollert.',
+    'Able to jog 15–20 minutes total on soft surface with minimal soreness the next day. You feel ready to progress gradually rather than needing longer rest after runs.': 'I stand til å jogge 15–20 minutter totalt på mykt underlag med minimal ømhet neste dag. Du føler deg klar for gradvis progresjon uten å trenge lengre restitusjon etter løp.',
+
     // Lower Back
     'Less morning stiffness; easier sit‑to‑stand and bend within pain‑free range.': 'Mindre morgenstivhet; lettere å reise seg og bøye innen smertefri grense.',
     'More confident hip hinging and lifting light loads with stable trunk.': 'Mer trygg hoftebøy og løft av lette vekter med stabil kjerne.',
@@ -341,6 +433,12 @@ export const localizeProgramDayDescriptions = (
   };
 
   const nextStepsMap: Record<string, string> = {
+    // Shin Splints (MTSS)
+    'Week 2 adds slow eccentrics and short cadence-focused walks to start rebuilding impact tolerance. If mornings stay calm, we’ll gradually increase walk time before any jogging.': 'Uke 2 legger til langsomme eksentriker og korte kadens‑fokuserte gåturer for å bygge opp støt-toleranse. Hvis morgener holder seg rolige, øker vi gåtiden gradvis før vi begynner å jogge.',
+    'Week 3 introduces walk–jog intervals on grass/track while keeping eccentrics and single-leg control. If pain stays ≤2/10 the next morning, we progress the total interval time.': 'Uke 3 introduserer gå–jogg‑intervaller på gress/bane, samtidig som du beholder eksentriker og ettbeinskontroll. Hvis smerte er ≤2/10 neste morgen, øker vi total intervalltid.',
+    'Week 4 moves toward longer jog blocks (2:1) and a small increase in total time. We’ll start a gradual transition back toward firmer surfaces only when symptoms are stable.': 'Uke 4 går mot lengre joggebolker (2:1) og en liten økning i total tid. Vi starter gradvis overgang til fastere underlag først når symptomene er stabile.',
+    'Continue the ~10% rule for 2–3 more weeks, then reintroduce road surfaces gradually (short segments first). Once you’re symptom-free for 2 weeks, you can start gentle hills and strides.': 'Fortsett ~10%-regelen i 2–3 uker til, og gjeninnfør vei-underlag gradvis (korte segmenter først). Når du har vært symptomfri i 2 uker, kan du starte med forsiktige bakker og korte stigningsløp.',
+
     // Lower Back
     'Add hip‑hinge patterning and gentle hamstring loading in Week 2.': 'Legg til hoftebøy‑mønster og skånsom hamstrings‑belastning i uke 2.',
     'Advance volume and integrate squats/anti‑rotation work in Week 3.': 'Øk volum og integrer knebøy/anti‑rotasjon i uke 3.',
@@ -398,6 +496,12 @@ export const localizeProgramDayDescriptions = (
   };
 
   const notToDoMap: Record<string, string> = {
+    // Shin Splints (MTSS)
+    'Avoid running, jumping, hills, and hard surfaces this week—especially when sore or fatigued. Don’t push through sharp or increasing tibial pain; if symptoms worsen the next morning, reduce volume.': 'Unngå løping, hopping, bakker og hardt underlag denne uken—særlig når du er øm eller sliten. Ikke press gjennom skarp/økende smerte i tibia; hvis du er verre neste morgen, reduser volumet.',
+    'Skip hills, speed work, and hard-surface mileage; keep pain ≤3/10 and avoid “testing” the leg with a hard run. If soreness lingers >24 hours, cut the next session volume by 20–30%.': 'Dropp bakker, fart og kilometer på hardt underlag; hold smerte ≤3/10 og unngå å “teste” leggen med en hard økt. Hvis ømhet varer >24 timer, kutt volumet i neste økt med 20–30%.',
+    'Avoid volume spikes, hills, sprints, and hard surfaces; keep the “easy” in easy. Don’t change shoes and surface at the same time—change one variable per week.': 'Unngå volumtopper, bakker, spurter og hardt underlag; hold det rolig. Ikke bytt sko og underlag samtidig—endre én variabel per uke.',
+    'No speed work, downhill running, or rapid jumps in volume or surface firmness. If pain rises above 3/10 or worsens the next morning, back off and repeat the previous week.': 'Ingen fart, nedoverbakke eller raske hopp i volum eller fasthet på underlag. Hvis smerte går over 3/10 eller blir verre neste morgen, trapp ned og gjenta forrige uke.',
+
     // Lower Back
     'No breath‑holding, end‑range spine flexion/extension, or ballistic work; stop with sharp pain.': 'Ingen pusteholding, ytterposisjon i fleksjon/ekstensjon eller ballistisk arbeid; stopp ved skarp smerte.',
     'No loaded spinal flexion, jerky tempo, or pushing past a 3/10 pain; keep reps smooth.': 'Ingen belastet ryggfleksjon, rykkete tempo eller over 3/10 smerte; hold repene jevne.',
@@ -467,14 +571,214 @@ export const localizeProgramDayDescriptions = (
   };
 };
 
+// Duration helpers for recovery programs
+// NOTE: In recovery.ts we treat `exercise.duration` as MINUTES (not seconds).
+// `restBetweenSets` remains in seconds.
+const calculateRecoveryExerciseDurationSeconds = (exercise: any): number => {
+  if (!exercise) return 0;
+
+  if (exercise.sets && exercise.duration) {
+    const holdSecondsPerSet = Number(exercise.duration) * 60;
+    const totalHoldTime = exercise.sets * holdSecondsPerSet;
+    const restTime = exercise.restBetweenSets
+      ? (exercise.sets - 1) * exercise.restBetweenSets
+      : 0;
+    return totalHoldTime + restTime;
+  }
+
+  if (exercise.duration) {
+    return Number(exercise.duration) * 60;
+  }
+
+  if (exercise.sets && exercise.repetitions) {
+    const timePerRepSeconds = 5;
+    const exerciseTimePerSet = exercise.repetitions * timePerRepSeconds;
+    const totalExerciseTime = exercise.sets * exerciseTimePerSet;
+    const restTime = exercise.restBetweenSets
+      ? (exercise.sets - 1) * exercise.restBetweenSets
+      : 0;
+    return totalExerciseTime + restTime;
+  }
+
+  return 60;
+};
+
+const calculateRecoveryDayDuration = (exercises: any[]): number => {
+  if (!exercises || exercises.length === 0) return 0;
+  const totalSeconds = exercises.reduce((total, exercise) => {
+    return total + calculateRecoveryExerciseDurationSeconds(exercise);
+  }, 0);
+  return Math.ceil(totalSeconds / 60);
+};
+
+const getOptionalHomeRestExercises = (program: ExerciseProgram): any[] => {
+  const profile = `${(program.targetAreas || []).join(' ')} ${(program.bodyParts || []).join(' ')}`.toLowerCase();
+
+  const isLowerLeg =
+    profile.includes('shin') ||
+    profile.includes('calf') ||
+    profile.includes('ankle') ||
+    profile.includes('foot') ||
+    profile.includes('plantar');
+
+  const isForearm = profile.includes('forearm') || profile.includes('elbow');
+
+  const isUpperBody =
+    profile.includes('shoulder') ||
+    profile.includes('upper back') ||
+    profile.includes('neck') ||
+    profile.includes('trap');
+
+  if (isForearm) {
+    return [
+      {
+        exerciseId: 'warmup-6',
+        duration: 1.5,
+        warmup: true,
+        modification: 'Easy circulation. Keep shoulders relaxed.',
+      },
+      {
+        exerciseId: 'forearms-1',
+        sets: 1,
+        repetitions: 15,
+        restBetweenSets: 45,
+        modification: 'Light effort. Stop if sharp or radiating pain.',
+      },
+      {
+        exerciseId: 'forearms-2',
+        sets: 1,
+        repetitions: 15,
+        restBetweenSets: 30,
+        modification: 'Slow, controlled rotation in pain-free range.',
+      },
+    ];
+  }
+
+  if (isUpperBody) {
+    return [
+      {
+        exerciseId: 'warmup-8',
+        duration: 2,
+        warmup: true,
+        modification: 'Gentle range. No pinching or shrugging.',
+      },
+      {
+        exerciseId: 'shoulders-94',
+        sets: 1,
+        repetitions: 12,
+        restBetweenSets: 45,
+        modification: 'Light band. Keep pain ≤3/10.',
+      },
+      {
+        exerciseId: 'shoulders-30',
+        sets: 1,
+        repetitions: 15,
+        restBetweenSets: 45,
+        modification: 'Smooth reps. Keep ribs stacked over pelvis.',
+      },
+    ];
+  }
+
+  if (isLowerLeg) {
+    return [
+      {
+        exerciseId: 'calves-13',
+        sets: 2,
+        repetitions: 12,
+        restBetweenSets: 30,
+        warmup: true,
+        modification: 'Smooth rocks; keep heel down as tolerated. Stay pain-free or ≤2–3/10.',
+      },
+      {
+        exerciseId: 'calves-9',
+        sets: 2,
+        repetitions: 15,
+        restBetweenSets: 45,
+        modification:
+          'Light band tension. If you don’t have a band, skip this and focus on ankle mobility instead.',
+      },
+      {
+        exerciseId: 'calves-6',
+        sets: 1,
+        repetitions: 12,
+        restBetweenSets: 45,
+        modification: 'Slow tempo; full-foot contact; stop if pain increases the next morning.',
+      },
+    ];
+  }
+
+  // Default: gentle trunk + glute activation for general recovery
+  return [
+    {
+      exerciseId: 'warmup-9',
+      duration: 3,
+      warmup: true,
+      modification: 'Comfortable range. Breathe slowly.',
+    },
+    {
+      exerciseId: 'abs-20',
+      sets: 1,
+      repetitions: 6,
+      restBetweenSets: 45,
+      modification: 'Exhale as you brace; stop if back pain increases.',
+    },
+    {
+      exerciseId: 'glutes-7',
+      sets: 1,
+      repetitions: 12,
+      restBetweenSets: 45,
+      modification: 'Pause 1s at top; keep pelvis level.',
+    },
+  ];
+};
+
+const ensureRestDaysHaveOptionalHomeExercises = (
+  program: ExerciseProgram,
+): ExerciseProgram => {
+  const updatedDays = program.days.map((day) => {
+    const isRestDay = day.isRestDay === true || day.dayType === 'rest';
+    if (!isRestDay) return day;
+
+    const hasExercises = Array.isArray(day.exercises) && day.exercises.length > 0;
+    if (hasExercises) return day;
+
+    const exercises = getOptionalHomeRestExercises(program);
+    return {
+      ...day,
+      exercises,
+      duration: calculateRecoveryDayDuration(exercises),
+    };
+  });
+
+  return { ...program, days: updatedDays };
+};
+
+const isWarmupExerciseRef = (exercise: any): boolean => {
+  if (!exercise) return false;
+  if (exercise.warmup === true) return true;
+  const exerciseId =
+    typeof exercise.exerciseId === 'string' ? exercise.exerciseId : '';
+  return exerciseId.startsWith('warmup-');
+};
+
+const orderWarmupsFirst = (exercises: any[]): any[] => {
+  if (!Array.isArray(exercises) || exercises.length === 0) return exercises;
+  const warmups = exercises.filter(isWarmupExerciseRef);
+  const nonWarmups = exercises.filter((ex) => !isWarmupExerciseRef(ex));
+  return [...warmups, ...nonWarmups];
+};
+
 // Helper function to create workout days with computed durations
-const createWorkoutDay = (day: number, description: string, exercises: any[]) => ({
-  day,
-  description,
-  dayType: 'strength' as const,
-  exercises,
-  duration: calculateDayDuration(exercises),
-});
+const createWorkoutDay = (day: number, description: string, exercises: any[]) => {
+  const orderedExercises = orderWarmupsFirst(exercises);
+  return {
+    day,
+    description,
+    dayType: 'strength' as const,
+    exercises: orderedExercises,
+    duration: calculateRecoveryDayDuration(orderedExercises),
+  };
+};
 
 // ------------------------------------------------------------
 // Rest‑Day Templates for BodAI Rehab Programs
@@ -498,23 +802,24 @@ const createLowBackRestDay = (day: number): any => {
   if (day <= 7) {
     // WEEK 1: Foundational mobility and diaphragm control
     const exercises = [
-      { exerciseId: 'warmup-9', duration: 300, warmup: true, modification: 'Keep abdomen tall; rotate only to a comfortable range.' },
-      { exerciseId: 'warmup-5', duration: 300, warmup: true, modification: 'Engage core lightly; avoid lumbar pain.' },
-      { exerciseId: 'lower-back-1', sets: 1, repetitions: 8, restBetweenSets: 45, modification: 'Lift only to the point where tension is felt, not pain.' }
+      { exerciseId: 'warmup-9', duration: 5, warmup: true, modification: 'Keep abdomen tall; rotate only to a comfortable range.' },
+      { exerciseId: 'warmup-5', duration: 5, warmup: true, modification: 'Engage core lightly; avoid lumbar pain.' },
+      { exerciseId: 'lower-back-4', sets: 2, repetitions: 6, restBetweenSets: 30, modification: 'Slow, controlled crossover. Keep ribs down; stop before pinching.' },
+      { exerciseId: 'abs-102', sets: 1, repetitions: 6, restBetweenSets: 45, modification: 'Reach long; keep hips level. Move only as far as you can stay neutral.' }
     ];
     
     return {
       ...base,
       description: 'Rest day. Gentle spinal mobility and diaphragmatic breathing to reduce stiffness.',
       exercises,
-      duration: calculateDayDuration(exercises)
+      duration: calculateRecoveryDayDuration(exercises)
     };
   }
 
   if (day <= 14) {
     // WEEK 2: Add hip stability and core tension hold
     const exercises = [
-      { exerciseId: 'warmup-5', duration: 300, warmup: true, modification: 'Pelvic tilt with breath coordination.' },
+      { exerciseId: 'warmup-5', duration: 5, warmup: true, modification: 'Pelvic tilt with breath coordination.' },
       { exerciseId: 'glutes-7', sets: 1, repetitions: 15, restBetweenSets: 45, modification: 'Bodyweight bridge; pause 1s at top.' },
       { exerciseId: 'lower-back-1', sets: 1, repetitions: 10, restBetweenSets: 45, modification: 'Controlled extension, no pain.' }
     ];
@@ -523,7 +828,7 @@ const createLowBackRestDay = (day: number): any => {
       ...base,
       description: 'Rest day. Add light glute and core coordination to support spinal alignment.',
       exercises,
-      duration: calculateDayDuration(exercises)
+      duration: calculateRecoveryDayDuration(exercises)
     };
   }
 
@@ -539,7 +844,7 @@ const createLowBackRestDay = (day: number): any => {
       ...base,
       description: 'Rest day. Reinforce deep core and oblique control while maintaining spinal neutrality.',
       exercises,
-      duration: calculateDayDuration(exercises)
+      duration: calculateRecoveryDayDuration(exercises)
     };
   }
 
@@ -554,7 +859,7 @@ const createLowBackRestDay = (day: number): any => {
     ...base,
     description: 'Rest day. Integrate breathing with movement and reinforce core-endurance patterns.',
     exercises,
-    duration: calculateDayDuration(exercises)
+    duration: calculateRecoveryDayDuration(exercises)
   };
 };
 
@@ -568,23 +873,23 @@ const createRunnersKneeRestDay = (day: number): any => {
   if (day <= 7) {
     // WEEK 1: Circulation + basic isometric control
     const exercises = [
-      { exerciseId: 'warmup-3', duration: 300, warmup: true, modification: 'Walk at 5% incline, easy pace, no pain.' },
+      { exerciseId: 'cardio-13', duration: 5, warmup: true, modification: 'Easy marching pace; keep steps quiet and pain-free.' },
       { exerciseId: 'glutes-44', sets: 2, repetitions: 12, restBetweenSets: 45, modification: 'Pause 1s at the top; keep pelvis stable.' },
-      { exerciseId: 'quads-193', sets: 1, duration: 30, restBetweenSets: 60, modification: 'Hold shallow angle (≤ 60° knee flexion).' }
+      { exerciseId: 'quads-193', sets: 1, duration: 0.5, restBetweenSets: 60, modification: 'Hold shallow angle (≤ 60° knee flexion).' }
     ];
     
     return {
       ...base,
       description: 'Rest day. Light quad/hip mobility to maintain blood flow without stressing the knee joint.',
       exercises,
-      duration: calculateDayDuration(exercises)
+      duration: calculateRecoveryDayDuration(exercises)
     };
   }
 
   if (day <= 14) {
     // WEEK 2: Add reps and posterior chain balance
     const exercises = [
-      { exerciseId: 'warmup-3', duration: 300, warmup: true, modification: 'Walk at incline or light uphill if available.' },
+      { exerciseId: 'warmup-3', duration: 5, warmup: true, modification: 'Walk at incline or light uphill if available.' },
       { exerciseId: 'glutes-44', sets: 2, repetitions: 15, restBetweenSets: 45, modification: 'Controlled tempo, no pelvic tilt.' },
       { exerciseId: 'glutes-7', sets: 1, repetitions: 12, restBetweenSets: 45, modification: 'Bodyweight glute bridge, pause 1s at top.' }
     ];
@@ -593,14 +898,14 @@ const createRunnersKneeRestDay = (day: number): any => {
       ...base,
       description: 'Rest day. Add posterior chain support to improve knee control without loading the joint.',
       exercises,
-      duration: calculateDayDuration(exercises)
+      duration: calculateRecoveryDayDuration(exercises)
     };
   }
 
   if (day <= 21) {
     // WEEK 3: Add balance challenge + eccentric emphasis
     const exercises = [
-      { exerciseId: 'warmup-3', duration: 300, warmup: true, modification: 'Maintain steady breathing, easy pace.' },
+      { exerciseId: 'warmup-3', duration: 5, warmup: true, modification: 'Maintain steady breathing, easy pace.' },
       { exerciseId: 'glutes-45', sets: 2, repetitions: 10, restBetweenSets: 45, modification: 'Pause 1s at top; control descent.' },
       { exerciseId: 'glutes-7', sets: 1, repetitions: 15, restBetweenSets: 45, modification: 'Controlled tempo; focus on symmetry.' }
     ];
@@ -609,7 +914,7 @@ const createRunnersKneeRestDay = (day: number): any => {
       ...base,
       description: 'Rest day. Improve balance and hip control while continuing to offload the knee.',
       exercises,
-      duration: calculateDayDuration(exercises)
+      duration: calculateRecoveryDayDuration(exercises)
     };
   }
 
@@ -617,14 +922,14 @@ const createRunnersKneeRestDay = (day: number): any => {
   const exercises = [
     { exerciseId: 'glutes-44', sets: 2, repetitions: 15, restBetweenSets: 45, modification: 'Slow and stable reps.' },
     { exerciseId: 'glutes-7', sets: 1, repetitions: 15, restBetweenSets: 45, modification: 'Hold 1s at top, breathe out on lift.' },
-    { exerciseId: 'quads-193', sets: 1, duration: 40, restBetweenSets: 60, modification: 'Wall sit at 45–60°; stop if knee discomfort.' }
+    { exerciseId: 'quads-193', sets: 1, duration: 0.67, restBetweenSets: 60, modification: 'Wall sit at 45–60°; stop if knee discomfort.' }
   ];
   
   return {
     ...base,
     description: 'Rest day. Reinforce posterior support and tolerance for static quad activation.',
     exercises,
-    duration: calculateDayDuration(exercises)
+    duration: calculateRecoveryDayDuration(exercises)
   };
 };
 
@@ -647,7 +952,7 @@ const createShoulderRestDay = (day: number): any => {
       ...base,
       description: 'Rest day. Scapular mobility and low-load cuff activation for circulation.',
       exercises,
-      duration: calculateDayDuration(exercises)
+      duration: calculateRecoveryDayDuration(exercises)
     };
   }
 
@@ -663,7 +968,7 @@ const createShoulderRestDay = (day: number): any => {
       ...base,
       description: 'Rest day. Build shoulder control with higher rep scapular and cuff movements.',
       exercises,
-      duration: calculateDayDuration(exercises)
+      duration: calculateRecoveryDayDuration(exercises)
     };
   }
 
@@ -679,7 +984,7 @@ const createShoulderRestDay = (day: number): any => {
       ...base,
       description: 'Rest day. Introduce gentle shoulder flexion to promote functional mobility.',
       exercises,
-      duration: calculateDayDuration(exercises)
+      duration: calculateRecoveryDayDuration(exercises)
     };
   }
 
@@ -694,7 +999,7 @@ const createShoulderRestDay = (day: number): any => {
     ...base,
     description: 'Rest day. Strengthen shoulder stabilizers and reinforce safe movement patterns.',
     exercises,
-    duration: calculateDayDuration(exercises)
+    duration: calculateRecoveryDayDuration(exercises)
   };
 };
 
@@ -708,23 +1013,23 @@ const createAnkleRestDay = (day: number): any => {
   if (day <= 7) {
     // WEEK 1: Gentle mobility and circulation
     const exercises = [
-      { exerciseId: 'warmup-6', duration: 60, warmup: true, modification: 'Light jogging in place, focus on ankle mobility.' },
+      { exerciseId: 'calves-13', sets: 2, repetitions: 10, restBetweenSets: 30, warmup: true, modification: 'Rock gently into dorsiflexion; stay in pain-free range.' },
       { exerciseId: 'calves-6', sets: 2, repetitions: 12, restBetweenSets: 45, modification: 'Both legs; slow up-down, support as needed.' },
-      { exerciseId: 'calves-12', sets: 1, repetitions: 8, restBetweenSets: 60, modification: 'Add wall support if unstable.' }
+      { exerciseId: 'cardio-13', duration: 3, warmup: true, modification: 'Easy marching pace for circulation; no impact.' }
     ];
     
     return {
       ...base,
       description: 'Rest day. Gentle range of motion and calf pump to assist lymph drainage.',
       exercises,
-      duration: calculateDayDuration(exercises)
+      duration: calculateRecoveryDayDuration(exercises)
     };
   }
 
   if (day <= 14) {
     // WEEK 2: More volume and proprioceptive cueing
     const exercises = [
-      { exerciseId: 'warmup-6', duration: 90, warmup: true, modification: 'March in place; full-foot contact, quiet landings.' },
+      { exerciseId: 'warmup-6', duration: 1.5, warmup: true, modification: 'March in place; full-foot contact, quiet landings.' },
       { exerciseId: 'calves-12', sets: 2, repetitions: 10, restBetweenSets: 45, modification: 'Use wall support; pause 1s at top.' },
       { exerciseId: 'calves-6', sets: 1, repetitions: 15, restBetweenSets: 45, modification: 'Smooth tempo, both legs.' }
     ];
@@ -733,7 +1038,7 @@ const createAnkleRestDay = (day: number): any => {
       ...base,
       description: 'Rest day. Increase calf control and begin rebuilding joint awareness.',
       exercises,
-      duration: calculateDayDuration(exercises)
+      duration: calculateRecoveryDayDuration(exercises)
     };
   }
 
@@ -742,14 +1047,14 @@ const createAnkleRestDay = (day: number): any => {
     const exercises = [
       { exerciseId: 'calves-12', sets: 2, repetitions: 10, restBetweenSets: 60, modification: 'Balance focus; add finger support only if needed.' },
       { exerciseId: 'glutes-44', sets: 1, repetitions: 12, restBetweenSets: 45, modification: 'Isolate hip abduction; keep pelvis stable.' },
-      { exerciseId: 'warmup-6', duration: 60, warmup: true, modification: 'Jog or march in place to finish; no heel strike.' }
+      { exerciseId: 'warmup-6', duration: 1, warmup: true, modification: 'Jog or march in place to finish; no heel strike.' }
     ];
     
     return {
       ...base,
       description: 'Rest day. Reinforce ankle control with unilateral loading and balance prep.',
       exercises,
-      duration: calculateDayDuration(exercises)
+      duration: calculateRecoveryDayDuration(exercises)
     };
   }
 
@@ -764,7 +1069,7 @@ const createAnkleRestDay = (day: number): any => {
     ...base,
     description: 'Rest day. Improve single-leg stability and ankle control for walking and return to activity.',
     exercises,
-    duration: calculateDayDuration(exercises)
+    duration: calculateRecoveryDayDuration(exercises)
   };
 };
 
@@ -778,16 +1083,16 @@ const createTennisElbowRestDay = (day: number): any => {
   if (day <= 7) {
     // WEEK 1: Forearm mobility and low-load circulation
     const exercises = [
-      { exerciseId: 'forearms-2', sets: 2, repetitions: 15, restBetweenSets: 30, modification: 'Rotate through pain-free range only.' },
-      { exerciseId: 'warmup-8', sets: 1, repetitions: 20, restBetweenSets: 30, warmup: true },
-      { exerciseId: 'biceps-1', sets: 1, repetitions: 12, restBetweenSets: 45, modification: 'Use 0.5 kg or no weight; focus on controlled lowering.' }
+      { exerciseId: 'warmup-8', sets: 1, repetitions: 20, restBetweenSets: 30, warmup: true, modification: 'Relax shoulders and neck; easy circles only.' },
+      { exerciseId: 'forearms-2', sets: 2, repetitions: 12, restBetweenSets: 30, modification: 'Support forearm on thigh/table and rotate only in pain-free range.' },
+      { exerciseId: 'forearms-1', sets: 1, duration: 0.5, restBetweenSets: 45, modification: 'Very light load and gentle hold; support forearm on thigh if no bench available.' }
     ];
     
     return {
       ...base,
       description: 'Rest day. Low-load wrist mobility and gentle neural glide to reduce elbow tension.',
       exercises,
-      duration: calculateDayDuration(exercises)
+      duration: calculateRecoveryDayDuration(exercises)
     };
   }
 
@@ -803,7 +1108,7 @@ const createTennisElbowRestDay = (day: number): any => {
       ...base,
       description: 'Rest day. Increase control with slightly higher reps and slow eccentric emphasis.',
       exercises,
-      duration: calculateDayDuration(exercises)
+      duration: calculateRecoveryDayDuration(exercises)
     };
   }
 
@@ -811,7 +1116,7 @@ const createTennisElbowRestDay = (day: number): any => {
     // WEEK 3: Introduce low-volume isometric hold
     const exercises = [
       { exerciseId: 'forearms-2', sets: 2, repetitions: 15, restBetweenSets: 30, modification: 'Pause 1s at end range.' },
-      { exerciseId: 'forearms-1', sets: 1, duration: 30, restBetweenSets: 45, modification: 'Gentle static wrist extension; stop if painful.' },
+      { exerciseId: 'forearms-1', sets: 1, duration: 0.5, restBetweenSets: 45, modification: 'Gentle static wrist extension; stop if painful.' },
       { exerciseId: 'biceps-1', sets: 2, repetitions: 12, restBetweenSets: 45 }
     ];
     
@@ -819,7 +1124,7 @@ const createTennisElbowRestDay = (day: number): any => {
       ...base,
       description: 'Rest day. Reinforce tendon loading tolerance with a light isometric hold.',
       exercises,
-      duration: calculateDayDuration(exercises)
+      duration: calculateRecoveryDayDuration(exercises)
     };
   }
 
@@ -834,7 +1139,7 @@ const createTennisElbowRestDay = (day: number): any => {
     ...base,
     description: 'Rest day. Improve endurance with higher-rep grip work and rotation control.',
     exercises,
-    duration: calculateDayDuration(exercises)
+    duration: calculateRecoveryDayDuration(exercises)
   };
 };
 
@@ -843,7 +1148,7 @@ const createHamstringRestDay = (day: number): any => {
   const exercises = [
     {
       exerciseId: 'warmup-6',
-      duration: 90,
+      duration: 1.5,
       warmup: true,
       modification: 'March in place or jog lightly with relaxed form.',
     },
@@ -868,7 +1173,7 @@ const createHamstringRestDay = (day: number): any => {
     description:
       'Rest day. Gentle mobility and circulation work for healing and neural gliding.',
     isRestDay: true,
-    duration: calculateDayDuration(exercises),
+    duration: calculateRecoveryDayDuration(exercises),
     exercises,
   };
 };
@@ -903,7 +1208,7 @@ const createPostureRestDay = (day: number): any => {
   return {
     day,
     isRestDay: true,
-    duration: calculateDayDuration(exercises),
+    duration: calculateRecoveryDayDuration(exercises),
     description:
       'Rest day. Gentle thoracic mobility and postural activation to maintain upright awareness.',
     exercises,
@@ -929,7 +1234,7 @@ const createTechNeckRestDay = (day: number): any => {
       ...base,
       description: 'Rest day. Gentle neck and shoulder mobility to maintain progress without overworking.',
       exercises,
-      duration: calculateDayDuration(exercises)
+      duration: calculateRecoveryDayDuration(exercises)
     };
   }
 
@@ -945,7 +1250,7 @@ const createTechNeckRestDay = (day: number): any => {
       ...base,
       description: 'Rest day. Reinforce shoulder control and introduce spinal dissociation for postural support.',
       exercises,
-      duration: calculateDayDuration(exercises)
+      duration: calculateRecoveryDayDuration(exercises)
     };
   }
 
@@ -961,7 +1266,7 @@ const createTechNeckRestDay = (day: number): any => {
       ...base,
       description: 'Rest day. Build scapular control and add flexion patterning without neck strain.',
       exercises,
-      duration: calculateDayDuration(exercises)
+      duration: calculateRecoveryDayDuration(exercises)
     };
   }
 
@@ -976,7 +1281,7 @@ const createTechNeckRestDay = (day: number): any => {
     ...base,
     description: 'Rest day. Light rotator cuff activation and posture control to reinforce recovery gains.',
     exercises,
-    duration: calculateDayDuration(exercises)
+    duration: calculateRecoveryDayDuration(exercises)
   };
 };
 
@@ -990,7 +1295,7 @@ const createPlantarRestDay = (day: number): any => {
   if (day <= 7) {
     // WEEK 1: Basic mobility and light calf activation
     const exercises = [
-      { exerciseId: 'warmup-6', duration: 90, warmup: true, modification: 'March gently in place, focus on foot contact.' },
+      { exerciseId: 'warmup-6', duration: 1.5, warmup: true, modification: 'March gently in place, focus on foot contact.' },
       { exerciseId: 'calves-6', sets: 1, repetitions: 10, restBetweenSets: 30, modification: 'Light heel raises, control the descent.' },
       { exerciseId: 'glutes-44', sets: 1, repetitions: 10, restBetweenSets: 30, modification: 'Keep movements slow and controlled.' }
     ];
@@ -999,14 +1304,14 @@ const createPlantarRestDay = (day: number): any => {
       ...base,
       description: 'Rest day. Light foot mobility and calf stretches to support healing.',
       exercises,
-      duration: calculateDayDuration(exercises)
+      duration: calculateRecoveryDayDuration(exercises)
     };
   }
 
   if (day <= 14) {
     // WEEK 2: Add volume and reinforce eccentric control
     const exercises = [
-      { exerciseId: 'warmup-6', duration: 90, warmup: true, modification: 'March in place with full foot roll-through.' },
+      { exerciseId: 'warmup-6', duration: 1.5, warmup: true, modification: 'March in place with full foot roll-through.' },
       { exerciseId: 'calves-6', sets: 2, repetitions: 12, restBetweenSets: 45, modification: 'Use slow eccentric lowering.' },
       { exerciseId: 'glutes-44', sets: 1, repetitions: 12, restBetweenSets: 30, modification: 'Engage glutes fully; no rotation.' }
     ];
@@ -1015,14 +1320,14 @@ const createPlantarRestDay = (day: number): any => {
       ...base,
       description: 'Rest day. Reinforce calf control and introduce light arch stability.',
       exercises,
-      duration: calculateDayDuration(exercises)
+      duration: calculateRecoveryDayDuration(exercises)
     };
   }
 
   if (day <= 21) {
     // WEEK 3: Add unilateral balance
     const exercises = [
-      { exerciseId: 'warmup-6', duration: 90, warmup: true, modification: 'Light jog in place, no heel impact.' },
+      { exerciseId: 'warmup-6', duration: 1.5, warmup: true, modification: 'Light jog in place, no heel impact.' },
       { exerciseId: 'calves-12', sets: 1, repetitions: 8, restBetweenSets: 60, modification: 'Single-leg heel raise; use support if needed.' },
       { exerciseId: 'glutes-44', sets: 2, repetitions: 12, restBetweenSets: 30, modification: 'Pause at top, keep pelvis stable.' }
     ];
@@ -1031,7 +1336,7 @@ const createPlantarRestDay = (day: number): any => {
       ...base,
       description: 'Rest day. Challenge ankle control and foot arch through unilateral work.',
       exercises,
-      duration: calculateDayDuration(exercises)
+      duration: calculateRecoveryDayDuration(exercises)
     };
   }
 
@@ -1046,7 +1351,7 @@ const createPlantarRestDay = (day: number): any => {
     ...base,
     description: 'Rest day. Improve foot strength and maintain calf endurance with controlled loading.',
     exercises,
-    duration: calculateDayDuration(exercises)
+    duration: calculateRecoveryDayDuration(exercises)
   };
 };
 
@@ -1069,7 +1374,7 @@ const createCoreRestDay = (day: number): any => {
       ...base,
       description: 'Rest day. Gentle activation for the glutes and trunk to promote circulation and postural control.',
       exercises,
-      duration: calculateDayDuration(exercises)
+      duration: calculateRecoveryDayDuration(exercises)
     };
   }
 
@@ -1078,14 +1383,14 @@ const createCoreRestDay = (day: number): any => {
     const exercises = [
       { exerciseId: 'glutes-7', sets: 1, repetitions: 15, restBetweenSets: 45, modification: 'Hold each rep for 2s at top.' },
       { exerciseId: 'obliques-4', sets: 1, repetitions: 8, restBetweenSets: 45, modification: 'Maintain symmetry, slow tempo.' },
-      { exerciseId: 'abs-6', sets: 1, duration: 30, restBetweenSets: 30, modification: 'Brace core during each marching movement.', warmup: true }
+      { exerciseId: 'abs-6', sets: 1, duration: 0.5, restBetweenSets: 30, modification: 'Brace core during each marching movement.', warmup: true }
     ];
     
     return {
       ...base,
       description: 'Rest day. Light anti-rotation and core control to improve deep stabilizer endurance.',
       exercises,
-      duration: calculateDayDuration(exercises)
+      duration: calculateRecoveryDayDuration(exercises)
     };
   }
 
@@ -1101,7 +1406,7 @@ const createCoreRestDay = (day: number): any => {
       ...base,
       description: 'Rest day. Introduce lateral control and balance to challenge trunk stability.',
       exercises,
-      duration: calculateDayDuration(exercises)
+      duration: calculateRecoveryDayDuration(exercises)
     };
   }
 
@@ -1109,72 +1414,89 @@ const createCoreRestDay = (day: number): any => {
   const exercises = [
     { exerciseId: 'obliques-4', sets: 2, repetitions: 10, restBetweenSets: 45, modification: 'Resist rotation throughout full range.' },
     { exerciseId: 'abs-20', sets: 1, repetitions: 10, restBetweenSets: 45, modification: 'Focus on breath and bracing.' },
-    { exerciseId: 'abs-6', sets: 1, duration: 40, restBetweenSets: 30, warmup: true, modification: 'Controlled marching, avoid spine movement.' }
+    { exerciseId: 'abs-6', sets: 1, duration: 0.67, restBetweenSets: 30, warmup: true, modification: 'Controlled marching, avoid spine movement.' }
   ];
   
   return {
     ...base,
     description: 'Rest day. Reinforce anti-rotation control and increase endurance for deep core.',
     exercises,
-    duration: calculateDayDuration(exercises)
+    duration: calculateRecoveryDayDuration(exercises)
   };
 };
 
-export const rehabPrograms: ExerciseProgram[] = [
+const rehabProgramsAllWeeks: ExerciseProgram[] = [
   // -----------------------------------------------------------------
   // 0. Medial Tibial Stress Syndrome (Shin Splints)
   // -----------------------------------------------------------------
   {
     programOverview:
-      'Week 1 reduces tibial irritation by deloading impact while restoring ankle mobility and gentle calf capacity. Expect short, low‑intensity cardio plus controlled calf raises to improve circulation without flaring symptoms.',
-    summary: 'Impact deload + gentle calf loading',
+      'Shin splints often flare when impact volume ramps faster than your lower leg can adapt. This week we dial down running/jumping to calm the tibia while keeping you active with low-impact cardio. You’ll build gentle calf/ankle capacity and blood flow so walking and stairs feel easier. Use pain (during + next morning) as your guide—steady or improving is the goal.',
+    summary:
+      'Deload impact to calm shin pain. Maintain fitness with Zone 2 cardio + gentle calf work.',
     timeFrameExplanation:
-      'Swap running for Zone 2 cycling/rowing; pair light ankle mobility with slow calf raises to ease sensitivity and rebuild tolerance.',
+      'Do the strength sessions 3x/week and add 15–25 min of low-impact Zone 2 cardio that you can do at home (marching in place). Add gentle ankle mobility and light tibialis work to reduce stress on the shin with each step. Keep impact exposure to short, flat walks only if symptoms stay ≤3/10 and don’t worsen the next day. Prioritize supportive shoes and a slightly higher cadence/shorter stride on any walks.',
     afterTimeFrame: {
-      expectedOutcome: 'Less tibial tenderness; easier walking and stairs the next day.',
-      nextSteps: 'Add eccentric calf lowering and short cadence‑focused walks in Week 2.',
+      expectedOutcome:
+        'Lower shin tenderness to touch, and normal walking/stairs feel easier the next day. You should tolerate light calf work without a symptom spike.',
+      nextSteps:
+        'Week 2 adds slow eccentrics and short cadence-focused walks to start rebuilding impact tolerance. If mornings stay calm, we’ll gradually increase walk time before any jogging.',
     },
     whatNotToDo:
-      'No running, jumping, or hard‑surface mileage; keep pain ≤3/10 and stop with sharp tibial pain.',
+      'Avoid running, jumping, hills, and hard surfaces this week—especially when sore or fatigued. Don’t push through sharp or increasing tibial pain; if symptoms worsen the next morning, reduce volume.',
     createdAt: new Date('2025-06-02T00:00:00Z'),
     days: [
-      createWorkoutDay(1, 'Deload & Mobility (ankle/calf)', [
-        { exerciseId: 'cardio-7', duration: 1200, warmup: true },
+      createWorkoutDay(
+        1,
+        'Zone 2 + Calf Strength (easy). Slow reps; pain stays ≤3/10 during and the next morning.',
+        [
+        { exerciseId: 'calves-13', sets: 2, repetitions: 12, restBetweenSets: 30, warmup: true },
+        { exerciseId: 'cardio-13', duration: 20, warmup: true },
         { exerciseId: 'calves-6', sets: 3, repetitions: 15, restBetweenSets: 45 },
-        { exerciseId: 'calves-12', sets: 2, repetitions: 10, restBetweenSets: 60 },
-        { exerciseId: 'warmup-6', duration: 90, warmup: true },
-      ]),
+        { exerciseId: 'calves-9', sets: 2, repetitions: 15, restBetweenSets: 45 },
+        ],
+      ),
       {
         day: 2,
         isRestDay: true,
         description: 'Rest day. Gentle ankle mobility and light calf pumps to reduce tibial irritation.',
         exercises: [
-          { exerciseId: 'warmup-6', duration: 60, warmup: true },
+          { exerciseId: 'calves-13', sets: 2, repetitions: 12, restBetweenSets: 30, warmup: true },
+          { exerciseId: 'calves-9', sets: 1, repetitions: 15, restBetweenSets: 45 },
           { exerciseId: 'calves-6', sets: 1, repetitions: 12, restBetweenSets: 45 },
         ],
-        duration: calculateDayDuration([
-          { exerciseId: 'warmup-6', duration: 60, warmup: true },
+        duration: calculateRecoveryDayDuration([
+          { exerciseId: 'calves-13', sets: 2, repetitions: 12, restBetweenSets: 30, warmup: true },
+          { exerciseId: 'calves-9', sets: 1, repetitions: 15, restBetweenSets: 45 },
           { exerciseId: 'calves-6', sets: 1, repetitions: 12, restBetweenSets: 45 },
         ]),
       },
-      createWorkoutDay(3, 'Isometric Calf Capacity', [
+      createWorkoutDay(
+        3,
+        'Calf Capacity + Zone 2 (easy). Keep cadence smooth; stop if pain climbs above 3/10.',
+        [
+        { exerciseId: 'cardio-13', duration: 15, warmup: true },
         { exerciseId: 'calves-6', sets: 3, repetitions: 20, restBetweenSets: 45 },
-        { exerciseId: 'calves-12', sets: 2, repetitions: 10, restBetweenSets: 60 },
-        { exerciseId: 'cardio-9', duration: 900, warmup: true },
-      ]),
+        { exerciseId: 'calves-9', sets: 2, repetitions: 15, restBetweenSets: 45 },
+        ],
+      ),
       {
         day: 4,
         isRestDay: true,
-        description: 'Rest day. Short walk on soft surface; avoid hills. Gentle calf stretch if pain‑free.',
+        description: 'Rest day. Optional easy 5–10 min marching in place; gentle calf stretch if pain‑free.',
         exercises: [],
         duration: 10,
       },
-      createWorkoutDay(5, 'Deload & Mobility (ankle/calf)', [
-        { exerciseId: 'cardio-7', duration: 1200, warmup: true },
+      createWorkoutDay(
+        5,
+        'Zone 2 + Calf Strength (easy). Slow reps; pain stays ≤3/10 during and the next morning.',
+        [
+        { exerciseId: 'calves-13', sets: 2, repetitions: 12, restBetweenSets: 30, warmup: true },
+        { exerciseId: 'cardio-13', duration: 20, warmup: true },
         { exerciseId: 'calves-6', sets: 3, repetitions: 15, restBetweenSets: 45 },
-        { exerciseId: 'calves-12', sets: 2, repetitions: 10, restBetweenSets: 60 },
-        { exerciseId: 'warmup-6', duration: 90, warmup: true },
-      ]),
+        { exerciseId: 'calves-9', sets: 2, repetitions: 15, restBetweenSets: 45 },
+        ],
+      ),
       {
         day: 6,
         isRestDay: true,
@@ -1185,7 +1507,7 @@ export const rehabPrograms: ExerciseProgram[] = [
       {
         day: 7,
         isRestDay: true,
-        description: 'Rest day. Avoid impact; light cycling optional if fully pain‑free.',
+        description: 'Rest day. Avoid impact; optional easy 5–10 min marching in place if fully pain‑free.',
         exercises: [],
         duration: 10,
       },
@@ -1195,23 +1517,30 @@ export const rehabPrograms: ExerciseProgram[] = [
   },
   {
     programOverview:
-      'Week 2 builds calf tissue capacity with eccentrics and single‑leg control while introducing short, cadence‑focused walks on soft surfaces.',
-    summary: 'Eccentric calf strength + single‑leg control',
+      'With symptoms calmer, we start rebuilding capacity: slow eccentrics for the calves and more single-leg control so the tibia absorbs less braking force. Walking returns in short doses on soft surfaces with a cadence focus. You’ll still keep most cardio low-impact while we build tissue tolerance.',
+    summary:
+      'Build capacity with eccentrics. Return to walking in short, cadence-focused doses.',
     timeFrameExplanation:
-      'Use controlled eccentric calf lowers and brief soft‑surface walks with a higher cadence to reduce braking forces.',
+      'Use a slow eccentric (3–4 sec lowering) and stop sets at mild discomfort (≤3/10). Add 5–10 min soft-surface cadence walks 2–3x/week, and only increase time if next-day pain is stable. Keep cross-training Zone 2 on other days to maintain fitness.',
     afterTimeFrame: {
-      expectedOutcome: 'Improved walking tolerance and less soreness post‑activity.',
-      nextSteps: 'Begin walk‑jog intervals on soft surfaces in Week 3.',
+      expectedOutcome:
+        'Better walking tolerance with less next-day shin soreness, and improved calf fatigue resistance. Tenderness should trend down or stay stable week-to-week.',
+      nextSteps:
+        'Week 3 introduces walk–jog intervals on grass/track while keeping eccentrics and single-leg control. If pain stays ≤2/10 the next morning, we progress the total interval time.',
     },
     whatNotToDo:
-      'No hills, speed work, or hard‑surface mileage; keep pain ≤3/10.',
+      'Skip hills, speed work, and hard-surface mileage; keep pain ≤3/10 and avoid “testing” the leg with a hard run. If soreness lingers >24 hours, cut the next session volume by 20–30%.',
     createdAt: new Date('2025-05-26T00:00:00Z'),
     days: [
-      createWorkoutDay(1, 'Eccentric Calf & Toe Control', [
+      createWorkoutDay(
+        1,
+        'Eccentric Calf Lowers + Zone 2. 3–4s lowering; reduce volume if sore >24h.',
+        [
+        { exerciseId: 'cardio-5', duration: 20, warmup: true },
         { exerciseId: 'calves-63', sets: 3, repetitions: 10, restBetweenSets: 90 },
         { exerciseId: 'calves-6', sets: 2, repetitions: 12, restBetweenSets: 60 },
-        { exerciseId: 'cardio-5', duration: 1200, warmup: true },
-      ]),
+        ],
+      ),
       {
         day: 2,
         isRestDay: true,
@@ -1219,11 +1548,15 @@ export const rehabPrograms: ExerciseProgram[] = [
         exercises: [],
         duration: 10,
       },
-      createWorkoutDay(3, 'Foot Intrinsics + Eccentric Calf', [
+      createWorkoutDay(
+        3,
+        'Foot Control + Eccentric Calf. Controlled foot/ankle; avoid “pushing through” tenderness.',
+        [
+        { exerciseId: 'cardio-9', duration: 15, warmup: true },
         { exerciseId: 'calves-63', sets: 3, repetitions: 10, restBetweenSets: 90 },
         { exerciseId: 'calves-12', sets: 2, repetitions: 8, restBetweenSets: 60 },
-        { exerciseId: 'cardio-9', duration: 900, warmup: true },
-      ]),
+        ],
+      ),
       {
         day: 4,
         isRestDay: true,
@@ -1231,11 +1564,15 @@ export const rehabPrograms: ExerciseProgram[] = [
         exercises: [],
         duration: 15,
       },
-      createWorkoutDay(5, 'Eccentric Calf & Toe Control', [
+      createWorkoutDay(
+        5,
+        'Eccentric Calf Lowers + Zone 2. 3–4s lowering; reduce volume if sore >24h.',
+        [
+        { exerciseId: 'cardio-7', duration: 20, warmup: true },
         { exerciseId: 'calves-63', sets: 3, repetitions: 12, restBetweenSets: 90 },
         { exerciseId: 'calves-6', sets: 2, repetitions: 12, restBetweenSets: 60 },
-        { exerciseId: 'cardio-7', duration: 1200, warmup: true },
-      ]),
+        ],
+      ),
       {
         day: 6,
         isRestDay: true,
@@ -1256,23 +1593,30 @@ export const rehabPrograms: ExerciseProgram[] = [
   },
   {
     programOverview:
-      'Week 3 reintroduces short walk‑jog intervals while maintaining eccentric calf strength and single‑leg control.',
-    summary: 'Walk‑jog reintro + maintain strength',
+      'Now we reintroduce impact in controlled doses: short walk–jog intervals on soft surfaces while keeping calf strength and foot control. The goal is to feel the same or better the next morning, not to “prove” fitness. You’ll keep cadence high and stride short to reduce braking.',
+    summary:
+      'Reintroduce jogging with 1:1 intervals. Keep calf strength and foot control consistent.',
     timeFrameExplanation:
-      'Use 1:1 walk‑jog (60s/60s) x 10–12 on grass/track; keep cadence high and stride short.',
+      'Start with 1:1 walk–jog (60s/60s) for 10–12 rounds on grass/track, 2–3x/week, with a rest day after. Keep calf eccentrics 2x/week and stop the jog portion if pain climbs above 3/10. If mornings are calm, add 1–2 rounds next session.',
     afterTimeFrame: {
-      expectedOutcome: 'Comfortable short jog intervals with minimal next‑day tibial tenderness.',
-      nextSteps: 'Progress interval ratio and total time in Week 4.',
+      expectedOutcome:
+        'Comfortable short jog intervals with minimal next-day tenderness and no increase in baseline pain. Calf work feels strong and controlled.',
+      nextSteps:
+        'Week 4 moves toward longer jog blocks (2:1) and a small increase in total time. We’ll start a gradual transition back toward firmer surfaces only when symptoms are stable.',
     },
     whatNotToDo:
-      'No spikes in weekly volume; avoid hills, sprints, and hard surfaces.',
+      'Avoid volume spikes, hills, sprints, and hard surfaces; keep the “easy” in easy. Don’t change shoes and surface at the same time—change one variable per week.',
     createdAt: new Date('2025-05-19T00:00:00Z'),
     days: [
-      createWorkoutDay(1, 'Walk‑Jog Intervals (soft surface)', [
-        { exerciseId: 'cardio-1', duration: 1200, warmup: true },
+      createWorkoutDay(
+        1,
+        'Walk–Jog (1:1) + Calf Strength. Soft surface; keep stride short and cadence high.',
+        [
+        { exerciseId: 'cardio-1', duration: 20, warmup: true },
         { exerciseId: 'calves-63', sets: 2, repetitions: 10, restBetweenSets: 90 },
         { exerciseId: 'calves-12', sets: 2, repetitions: 8, restBetweenSets: 60 },
-      ]),
+        ],
+      ),
       {
         day: 2,
         isRestDay: true,
@@ -1280,11 +1624,15 @@ export const rehabPrograms: ExerciseProgram[] = [
         exercises: [],
         duration: 15,
       },
-      createWorkoutDay(3, 'Walk‑Jog Intervals (soft surface)', [
-        { exerciseId: 'cardio-1', duration: 1200, warmup: true },
+      createWorkoutDay(
+        3,
+        'Walk–Jog (1:1) + Calf Strength. Soft surface; keep stride short and cadence high.',
+        [
+        { exerciseId: 'cardio-1', duration: 20, warmup: true },
         { exerciseId: 'calves-63', sets: 2, repetitions: 10, restBetweenSets: 90 },
         { exerciseId: 'calves-6', sets: 2, repetitions: 12, restBetweenSets: 60 },
-      ]),
+        ],
+      ),
       {
         day: 4,
         isRestDay: true,
@@ -1292,11 +1640,15 @@ export const rehabPrograms: ExerciseProgram[] = [
         exercises: [],
         duration: 10,
       },
-      createWorkoutDay(5, 'Walk‑Jog Intervals (soft surface)', [
-        { exerciseId: 'cardio-1', duration: 1200, warmup: true },
+      createWorkoutDay(
+        5,
+        'Walk–Jog (1:1) + Calf Strength. Soft surface; keep stride short and cadence high.',
+        [
+        { exerciseId: 'cardio-1', duration: 20, warmup: true },
         { exerciseId: 'calves-63', sets: 2, repetitions: 12, restBetweenSets: 90 },
         { exerciseId: 'calves-12', sets: 2, repetitions: 8, restBetweenSets: 60 },
-      ]),
+        ],
+      ),
       {
         day: 6,
         isRestDay: true,
@@ -1317,23 +1669,30 @@ export const rehabPrograms: ExerciseProgram[] = [
   },
   {
     programOverview:
-      'Week 4 increases jog time conservatively and adds gentle incline walking only if pain‑free, while keeping calf strength work consistent.',
-    summary: 'Progress jogging; keep calf capacity',
+      'We build running confidence by slightly increasing jog time while keeping strength work consistent. This week is about repeatability: same-day feels fine and next-day stays calm. If you meet the criteria, you can begin sprinkling in brief firm-surface exposure.',
+    summary:
+      'Longer jog blocks (2:1). Progress slowly and reintroduce firmer surfaces gradually.',
     timeFrameExplanation:
-      'Move to 2:1 jog:walk (120s/60s) x 8–10 on track/grass; add brief 2–3% incline walks only if pain‑free.',
+      'Move to 2:1 jog:walk (120s/60s) for 8–10 rounds on track/grass, 2–3 sessions/week, with at least 1 rest day between. Increase total run time by ~10% per week and keep cadence high/stride short. Optional: add 2–3% incline walking only if you’re pain-free the next morning.',
     afterTimeFrame: {
-      expectedOutcome: 'Able to jog 15–20 min on soft surface with minimal soreness.',
-      nextSteps: 'Increase weekly run time by ~10% and reintroduce road surfaces gradually as tolerated.',
+      expectedOutcome:
+        'Able to jog 15–20 minutes total on soft surface with minimal soreness the next day. You feel ready to progress gradually rather than needing longer rest after runs.',
+      nextSteps:
+        'Continue the ~10% rule for 2–3 more weeks, then reintroduce road surfaces gradually (short segments first). Once you’re symptom-free for 2 weeks, you can start gentle hills and strides.',
     },
     whatNotToDo:
-      'No speed work, downhill running, or rapid surface changes; keep pain ≤3/10.',
+      'No speed work, downhill running, or rapid jumps in volume or surface firmness. If pain rises above 3/10 or worsens the next morning, back off and repeat the previous week.',
     createdAt: new Date('2025-05-12T00:00:00Z'),
     days: [
-      createWorkoutDay(1, 'Walk‑Jog Progression (2:1)', [
-        { exerciseId: 'cardio-1', duration: 1500, warmup: true },
+      createWorkoutDay(
+        1,
+        'Walk–Jog (2:1) + Calf Strength. Add time slowly; one variable at a time (surface OR volume).',
+        [
+        { exerciseId: 'cardio-1', duration: 25, warmup: true },
         { exerciseId: 'calves-63', sets: 2, repetitions: 12, restBetweenSets: 90 },
         { exerciseId: 'calves-6', sets: 2, repetitions: 15, restBetweenSets: 60 },
-      ]),
+        ],
+      ),
       {
         day: 2,
         isRestDay: true,
@@ -1341,11 +1700,15 @@ export const rehabPrograms: ExerciseProgram[] = [
         exercises: [],
         duration: 10,
       },
-      createWorkoutDay(3, 'Walk‑Jog Progression (2:1)', [
-        { exerciseId: 'cardio-1', duration: 1500, warmup: true },
+      createWorkoutDay(
+        3,
+        'Walk–Jog (2:1) + Calf Strength. Add time slowly; one variable at a time (surface OR volume).',
+        [
+        { exerciseId: 'cardio-1', duration: 25, warmup: true },
         { exerciseId: 'calves-63', sets: 2, repetitions: 12, restBetweenSets: 90 },
         { exerciseId: 'calves-12', sets: 2, repetitions: 8, restBetweenSets: 60 },
-      ]),
+        ],
+      ),
       {
         day: 4,
         isRestDay: true,
@@ -1353,11 +1716,15 @@ export const rehabPrograms: ExerciseProgram[] = [
         exercises: [],
         duration: 10,
       },
-      createWorkoutDay(5, 'Walk‑Jog Progression (2:1)', [
-        { exerciseId: 'cardio-1', duration: 1500, warmup: true },
+      createWorkoutDay(
+        5,
+        'Walk–Jog (2:1) + Calf Strength. Add time slowly; one variable at a time (surface OR volume).',
+        [
+        { exerciseId: 'cardio-1', duration: 25, warmup: true },
         { exerciseId: 'calves-63', sets: 2, repetitions: 12, restBetweenSets: 90 },
         { exerciseId: 'calves-6', sets: 2, repetitions: 15, restBetweenSets: 60 },
-      ]),
+        ],
+      ),
       {
         day: 6,
         isRestDay: true,
@@ -1381,73 +1748,43 @@ export const rehabPrograms: ExerciseProgram[] = [
   // -----------------------------------------------------------------
   {
     programOverview:
-      'This week is about calming flare-ups and finding a neutral spine you can keep during daily moves. You’ll practice breathing + bracing, then pair it with gentle glute work so your hips share the load. Aim to finish each session feeling looser, not “worked.”',
-    summary: 'Reduce flare-ups; re-find neutral spine and core control',
+      'This week is about calming flare-ups and making your back feel predictable again. You’ll practice “neutral spine” (a comfortable middle range), then layer in breathing + bracing so your trunk stays steady during sitting, standing up, and light bending. We pair that with gentle glute work so your hips share the load. The goal is to finish each session feeling looser and more confident—not exhausted.',
+    summary:
+      'Calm low-back symptoms with bracing practice, gentle glute loading, and simple spine-stability drills (3 short, at-home sessions).',
     timeFrameExplanation:
-      'Do 3 short sessions (Mon/Wed/Fri style). Keep pain ≤3/10 during and the next morning. Move slowly, breathe out as you brace, and stop the set if form slips. Optional: 10–20 min easy walking on non-training days.',
+      'Do 3 short sessions (Mon/Wed/Fri style). Keep pain ≤3/10 during training and the next morning. Use slow reps, breathe out as you brace, and stop the set if you can’t keep ribs stacked over pelvis. On rest days, optional 10–20 min easy walking is fine if it doesn’t flare symptoms.',
     afterTimeFrame: {
       expectedOutcome:
-        'Less morning stiffness; sit-to-stand and light bending feel easier and more controlled.',
+        'Less morning stiffness, and day-to-day movements (getting up from a chair, rolling in bed, light bending) feel easier and more controlled. You should feel more “steady” through your trunk during the exercises.',
       nextSteps:
-        'Week 2 adds hip-hinge patterning and slow hamstring loading so you can lift and bend with confidence.',
+        'If symptoms are stable or improving, the next week adds hip-hinge patterning and slow posterior-chain loading so you can lift and bend with confidence—without losing your brace.',
     },
     whatNotToDo:
-      'Avoid breath-holding, repeated end-range flexion/extension, and “testing” heavy lifts. If pain spikes or symptoms travel down the leg, pause and scale back.',
+      'Avoid breath-holding, repeated end-range flexion/extension, and “testing” heavy lifts. Don’t push through sharp pain or new numbness/tingling; if symptoms travel down the leg or worsen the next morning, scale volume down. Seek care promptly for red flags (progressive weakness, saddle numbness, bowel/bladder changes).',
     createdAt: new Date('2025-05-31T00:00:00Z'),
     days: [
-      {
-        day: 1,
-        description: 'Core Reset (dead bug + plank)',
-        isRestDay: false,
-        exercises: [
-          { exerciseId: 'abs-20', sets: 3, repetitions: 8, restBetweenSets: 60 },
-          { exerciseId: 'abs-6', sets: 3, duration: 30, restBetweenSets: 60 },
-          { exerciseId: 'glutes-7', sets: 2, repetitions: 12, restBetweenSets: 60 },
-          { exerciseId: 'obliques-4', sets: 2, repetitions: 10, restBetweenSets: 60 },
-        ],
-        duration: calculateDayDuration([
-          { exerciseId: 'abs-20', sets: 3, repetitions: 8, restBetweenSets: 60 },
-          { exerciseId: 'abs-6', sets: 3, duration: 30, restBetweenSets: 60 },
-          { exerciseId: 'glutes-7', sets: 2, repetitions: 12, restBetweenSets: 60 },
-          { exerciseId: 'obliques-4', sets: 2, repetitions: 10, restBetweenSets: 60 },
-        ]),
-      },
+      createWorkoutDay(1, 'Reset & Brace (dead bug + plank). Exhale to brace; stop if symptoms travel or spike >3/10.', [
+        { exerciseId: 'warmup-5', duration: 3, warmup: true, modification: 'Find neutral spine; slow breath in/out.' },
+        { exerciseId: 'abs-20', sets: 3, repetitions: 8, restBetweenSets: 60, modification: 'Low back stays heavy on the floor; move slow.' },
+        { exerciseId: 'abs-6', sets: 3, duration: 0.5, restBetweenSets: 60, modification: 'Shorten lever (knees down) if you feel the back.' },
+        { exerciseId: 'glutes-7', sets: 3, repetitions: 10, restBetweenSets: 60, modification: 'Pause 1s at top; ribs down; no back arch.' },
+      ]),
       createLowBackRestDay(2),
-      {
-        day: 3,
-        description: 'Glute Bridge + Anti-rotation',
-        isRestDay: false,
-        exercises: [
-          { exerciseId: 'abs-20', sets: 3, repetitions: 8, restBetweenSets: 60 },
-          { exerciseId: 'abs-6', sets: 3, duration: 30, restBetweenSets: 60 },
-          { exerciseId: 'glutes-7', sets: 2, repetitions: 12, restBetweenSets: 60 },
-          { exerciseId: 'obliques-4', sets: 2, repetitions: 10, restBetweenSets: 60 },
-        ],
-        duration: calculateDayDuration([
-          { exerciseId: 'abs-20', sets: 3, repetitions: 8, restBetweenSets: 60 },
-          { exerciseId: 'abs-6', sets: 3, duration: 30, restBetweenSets: 60 },
-          { exerciseId: 'glutes-7', sets: 2, repetitions: 12, restBetweenSets: 60 },
-          { exerciseId: 'obliques-4', sets: 2, repetitions: 10, restBetweenSets: 60 },
-        ]),
-      },
+      createWorkoutDay(3, 'Glutes + Spine Stability (bridge + bird dog). Quiet trunk; move from hips/shoulders, not the low back.', [
+        { exerciseId: 'warmup-5', duration: 3, warmup: true, modification: 'Reset pelvis position before you load.' },
+        { exerciseId: 'glutes-7', sets: 3, repetitions: 12, restBetweenSets: 60, modification: 'Keep shins vertical; squeeze glutes, not low back.' },
+        { exerciseId: 'abs-102', sets: 3, repetitions: 6, restBetweenSets: 45, modification: 'Slow reach; keep hips level and ribs down.' },
+        { exerciseId: 'abs-11', sets: 2, duration: 0.5, restBetweenSets: 60, modification: 'Hold steady; breathe slowly; keep hips stacked.' },
+      ]),
       createLowBackRestDay(4),
-      {
-        day: 5,
-        description: 'Repeat & Extend (control + confidence)',
-        isRestDay: false,
-        exercises: [
-          { exerciseId: 'abs-20', sets: 3, repetitions: 8, restBetweenSets: 60 },
-          { exerciseId: 'abs-6', sets: 3, duration: 30, restBetweenSets: 60 },
-          { exerciseId: 'glutes-7', sets: 2, repetitions: 12, restBetweenSets: 60 },
-          { exerciseId: 'obliques-4', sets: 2, repetitions: 10, restBetweenSets: 60 },
-        ],
-        duration: calculateDayDuration([
-          { exerciseId: 'abs-20', sets: 3, repetitions: 8, restBetweenSets: 60 },
-          { exerciseId: 'abs-6', sets: 3, duration: 30, restBetweenSets: 60 },
-          { exerciseId: 'glutes-7', sets: 2, repetitions: 12, restBetweenSets: 60 },
-          { exerciseId: 'obliques-4', sets: 2, repetitions: 10, restBetweenSets: 60 },
-        ]),
-      },
+      createWorkoutDay(5, 'Repeat & Build Confidence. Same-day should feel easier; next morning should be stable or better.', [
+        { exerciseId: 'warmup-5', duration: 2, warmup: true, modification: 'Find neutral; gentle brace on exhale.' },
+        { exerciseId: 'warmup-9', duration: 2, warmup: true, modification: 'Comfortable range only; breathe slow. Skip if rotation irritates symptoms.' },
+        { exerciseId: 'abs-20', sets: 2, repetitions: 10, restBetweenSets: 60, modification: 'Keep low back heavy; slow tempo.' },
+        { exerciseId: 'abs-6', sets: 2, duration: 0.5, restBetweenSets: 60, modification: 'Shorten lever (knees down) if you feel the back.' },
+        { exerciseId: 'abs-102', sets: 2, repetitions: 6, restBetweenSets: 45, modification: 'Stay level; stop if you feel back “pinch”.' },
+        { exerciseId: 'glutes-7', sets: 2, repetitions: 12, restBetweenSets: 60, modification: 'Pause at top; no back arch.' },
+      ]),
       createLowBackRestDay(6),
       createLowBackRestDay(7),
     ],
@@ -1482,7 +1819,7 @@ export const rehabPrograms: ExerciseProgram[] = [
           { exerciseId: 'glutes-1', sets: 3, repetitions: 15, restBetweenSets: 60 },
           { exerciseId: 'hamstrings-48', sets: 2, repetitions: 8, restBetweenSets: 90 },
         ],
-        duration: calculateDayDuration([
+        duration: calculateRecoveryDayDuration([
           { exerciseId: 'abs-20', sets: 3, repetitions: 10, restBetweenSets: 60 },
           { exerciseId: 'glutes-7', sets: 3, repetitions: 15, restBetweenSets: 60 },
           { exerciseId: 'glutes-1', sets: 3, repetitions: 15, restBetweenSets: 60 },
@@ -1609,42 +1946,42 @@ export const rehabPrograms: ExerciseProgram[] = [
   // -----------------------------------------------------------------
   {
     programOverview:
-      'Week 1 reduces patellofemoral irritation with hip abduction (glute med), wall sits, and incline walking.',
-    summary: 'De‑load knee; build hip control and quad tolerance',
+      'Week 1 calms patellofemoral irritation by reducing compressive knee stress while building hip and quad support. You will use glute-med activation, controlled bodyweight squats, and short wall-sit holds to improve tracking and tolerance without overload. The target outcome is smoother sit-to-stand and stair function with less front-of-knee pain.',
+    summary:
+      'Reduce knee irritation, improve hip control, and rebuild quad tolerance with low-load, at-home exercises.',
     timeFrameExplanation:
-      'Glute med activation (Side‑lying Abduction), quad isometrics (Wall Sit), and walking keep load knee‑friendly.',
+      'Complete 3 sessions this week with pain kept at or below 3/10 during exercise and the next morning. Use slow tempo and keep the knee aligned over the mid-foot on every squat/hold. Optional easy walking is fine if symptoms remain stable.',
     afterTimeFrame: {
       expectedOutcome:
-        'Less front‑of‑knee pain; easier stairs and sit‑to‑stand at low loads.',
+        'Less front-of-knee sensitivity and easier stairs, chair rises, and short walks at low load.',
       nextSteps:
-        'Add controlled squats/lunges in Week 2 if pain ≤3/10.',
+        'Next week adds controlled lunge and step patterns if pain remains stable (≤3/10) with no next-day flare.',
     },
     whatNotToDo:
-      'No downhill running, deep knee flexion under pain, or plyometrics; avoid kneecap compression positions.',
+      'Avoid downhill running, deep painful knee flexion, jumping/plyometrics, and high-volume stairs this week. Stop if pain becomes sharp, catching, or clearly worse the next morning.',
     createdAt: new Date('2025-05-31T00:00:00Z'),
     days: [
-      createWorkoutDay(1, 'De‑load & Control', [
-        { exerciseId: 'warmup-6', duration: 300, warmup: true },
-        { exerciseId: 'glutes-44', sets: 3, repetitions: 15, restBetweenSets: 60 },
-        { exerciseId: 'glutes-45', sets: 3, repetitions: 10, restBetweenSets: 60 },
-        { exerciseId: 'quads-193', sets: 3, duration: 30, restBetweenSets: 60 },
-        { exerciseId: 'quads-190', sets: 3, repetitions: 12, restBetweenSets: 60 },
+      createWorkoutDay(1, 'Symptom Calm + Hip Activation. Keep knee tracking over mid-foot and pain ≤3/10.', [
+        { exerciseId: 'cardio-13', duration: 5, warmup: true, modification: 'Easy march in place; no bouncing.' },
+        { exerciseId: 'glutes-44', sets: 3, repetitions: 12, restBetweenSets: 60, modification: 'Keep pelvis stacked; controlled lift and lower.' },
+        { exerciseId: 'quads-193', sets: 3, duration: 0.5, restBetweenSets: 60, modification: 'Use shallow knee angle and pain-free hold range.' },
+        { exerciseId: 'quads-190', sets: 2, repetitions: 10, restBetweenSets: 60, modification: 'Sit back slightly and keep knee in line with toes.' },
       ]),
       createRunnersKneeRestDay(2),
-      createWorkoutDay(3, 'De‑load & Control', [
-        { exerciseId: 'warmup-6', duration: 300, warmup: true },
-        { exerciseId: 'glutes-44', sets: 3, repetitions: 15, restBetweenSets: 60 },
-        { exerciseId: 'glutes-45', sets: 3, repetitions: 10, restBetweenSets: 60 },
-        { exerciseId: 'quads-193', sets: 3, duration: 30, restBetweenSets: 60 },
-        { exerciseId: 'quads-190', sets: 3, repetitions: 12, restBetweenSets: 60 },
+      createWorkoutDay(3, 'Hip Control + Quad Isometrics. Slow reps, no knee collapse inward.', [
+        { exerciseId: 'cardio-13', duration: 5, warmup: true, modification: 'Steady pace; keep steps quiet.' },
+        { exerciseId: 'glutes-44', sets: 3, repetitions: 12, restBetweenSets: 60, modification: 'Pause briefly at top; avoid trunk sway.' },
+        { exerciseId: 'glutes-45', sets: 2, repetitions: 8, restBetweenSets: 60, modification: 'Short ROM is fine; prioritize alignment and control.' },
+        { exerciseId: 'quads-193', sets: 3, duration: 0.5, restBetweenSets: 60, modification: 'Maintain even pressure through both feet.' },
+        { exerciseId: 'quads-190', sets: 2, repetitions: 10, restBetweenSets: 60, modification: 'Control descent; no pain spike on ascent.' },
       ]),
       createRunnersKneeRestDay(4),
-      createWorkoutDay(5, 'De‑load & Control', [
-        { exerciseId: 'warmup-6', duration: 300, warmup: true },
-        { exerciseId: 'glutes-44', sets: 3, repetitions: 15, restBetweenSets: 60 },
-        { exerciseId: 'glutes-45', sets: 3, repetitions: 10, restBetweenSets: 60 },
-        { exerciseId: 'quads-193', sets: 3, duration: 30, restBetweenSets: 60 },
-        { exerciseId: 'quads-190', sets: 3, repetitions: 12, restBetweenSets: 60 },
+      createWorkoutDay(5, 'Build Tolerance (same pattern, slightly more work). Next morning should be stable or better.', [
+        { exerciseId: 'cardio-13', duration: 5, warmup: true, modification: 'Easy march; stay relaxed through shoulders and hips.' },
+        { exerciseId: 'glutes-44', sets: 3, repetitions: 15, restBetweenSets: 60, modification: 'Smooth tempo; keep knee and foot pointing forward.' },
+        { exerciseId: 'glutes-45', sets: 2, repetitions: 10, restBetweenSets: 60, modification: 'Use support if needed; avoid knee cave.' },
+        { exerciseId: 'quads-193', sets: 3, duration: 0.67, restBetweenSets: 60, modification: 'Slightly longer hold only if pain remains ≤3/10.' },
+        { exerciseId: 'quads-190', sets: 3, repetitions: 12, restBetweenSets: 60, modification: 'Controlled reps; stop 1-2 reps before form loss.' },
       ]),
       createRunnersKneeRestDay(6),
       createRunnersKneeRestDay(7),
@@ -1669,7 +2006,7 @@ export const rehabPrograms: ExerciseProgram[] = [
     createdAt: new Date('2025-05-24T00:00:00Z'),
     days: [
       createWorkoutDay(1, 'Controlled Loading (add single‑leg)', [
-        { exerciseId: 'warmup-6', duration: 300, warmup: true },
+        { exerciseId: 'warmup-6', duration: 5, warmup: true },
         { exerciseId: 'glutes-44', sets: 3, repetitions: 15, restBetweenSets: 60 },
         { exerciseId: 'glutes-45', sets: 3, repetitions: 10, restBetweenSets: 60 },
         { exerciseId: 'quads-190', sets: 3, repetitions: 15, restBetweenSets: 60 },
@@ -1677,7 +2014,7 @@ export const rehabPrograms: ExerciseProgram[] = [
       ]),
       createRunnersKneeRestDay(2),
       createWorkoutDay(3, 'Controlled Loading (add single‑leg)', [
-        { exerciseId: 'warmup-6', duration: 300, warmup: true },
+        { exerciseId: 'warmup-6', duration: 5, warmup: true },
         { exerciseId: 'glutes-44', sets: 3, repetitions: 15, restBetweenSets: 60 },
         { exerciseId: 'glutes-45', sets: 3, repetitions: 10, restBetweenSets: 60 },
         { exerciseId: 'quads-190', sets: 3, repetitions: 15, restBetweenSets: 60 },
@@ -1685,7 +2022,7 @@ export const rehabPrograms: ExerciseProgram[] = [
       ]),
       createRunnersKneeRestDay(4),
       createWorkoutDay(5, 'Controlled Loading (add single‑leg)', [
-        { exerciseId: 'warmup-6', duration: 300, warmup: true },
+        { exerciseId: 'warmup-6', duration: 5, warmup: true },
         { exerciseId: 'glutes-44', sets: 3, repetitions: 15, restBetweenSets: 60 },
         { exerciseId: 'glutes-45', sets: 3, repetitions: 10, restBetweenSets: 60 },
         { exerciseId: 'quads-190', sets: 3, repetitions: 15, restBetweenSets: 60 },
@@ -1714,7 +2051,7 @@ export const rehabPrograms: ExerciseProgram[] = [
     createdAt: new Date('2025-05-17T00:00:00Z'),
     days: [
       createWorkoutDay(1, 'Return‑to‑Run Prep (add Bulgarians + step‑downs)', [
-        { exerciseId: 'warmup-6', duration: 300, warmup: true },
+        { exerciseId: 'warmup-6', duration: 5, warmup: true },
         { exerciseId: 'glutes-44', sets: 3, repetitions: 15, restBetweenSets: 60 },
         { exerciseId: 'glutes-45', sets: 3, repetitions: 10, restBetweenSets: 60 },
         { exerciseId: 'quads-28', sets: 3, repetitions: 10, restBetweenSets: 60 },
@@ -1722,7 +2059,7 @@ export const rehabPrograms: ExerciseProgram[] = [
       ]),
       createRunnersKneeRestDay(2),
       createWorkoutDay(3, 'Return‑to‑Run Prep (add Bulgarians + step‑downs)', [
-        { exerciseId: 'warmup-6', duration: 300, warmup: true },
+        { exerciseId: 'warmup-6', duration: 5, warmup: true },
         { exerciseId: 'glutes-44', sets: 3, repetitions: 15, restBetweenSets: 60 },
         { exerciseId: 'glutes-45', sets: 3, repetitions: 10, restBetweenSets: 60 },
         { exerciseId: 'quads-28', sets: 3, repetitions: 10, restBetweenSets: 60 },
@@ -1730,7 +2067,7 @@ export const rehabPrograms: ExerciseProgram[] = [
       ]),
       createRunnersKneeRestDay(4),
       createWorkoutDay(5, 'Return‑to‑Run Prep (add Bulgarians + step‑downs)', [
-        { exerciseId: 'warmup-6', duration: 300, warmup: true },
+        { exerciseId: 'warmup-6', duration: 5, warmup: true },
         { exerciseId: 'glutes-44', sets: 3, repetitions: 15, restBetweenSets: 60 },
         { exerciseId: 'glutes-45', sets: 3, repetitions: 10, restBetweenSets: 60 },
         { exerciseId: 'quads-28', sets: 3, repetitions: 10, restBetweenSets: 60 },
@@ -1759,7 +2096,7 @@ export const rehabPrograms: ExerciseProgram[] = [
     createdAt: new Date('2025-05-10T00:00:00Z'),
     days: [
       createWorkoutDay(1, 'Return‑to‑Run (progress mileage)', [
-        { exerciseId: 'warmup-6', duration: 300, warmup: true },
+        { exerciseId: 'warmup-6', duration: 5, warmup: true },
         { exerciseId: 'glutes-44', sets: 3, repetitions: 15, restBetweenSets: 60 },
         { exerciseId: 'glutes-45', sets: 3, repetitions: 10, restBetweenSets: 60 },
         { exerciseId: 'quads-28', sets: 3, repetitions: 10, restBetweenSets: 60 },
@@ -1767,7 +2104,7 @@ export const rehabPrograms: ExerciseProgram[] = [
       ]),
       createRunnersKneeRestDay(2),
       createWorkoutDay(3, 'Return‑to‑Run (progress mileage)', [
-        { exerciseId: 'warmup-6', duration: 300, warmup: true },
+        { exerciseId: 'warmup-6', duration: 5, warmup: true },
         { exerciseId: 'glutes-44', sets: 3, repetitions: 15, restBetweenSets: 60 },
         { exerciseId: 'glutes-45', sets: 3, repetitions: 10, restBetweenSets: 60 },
         { exerciseId: 'quads-28', sets: 3, repetitions: 10, restBetweenSets: 60 },
@@ -1775,7 +2112,7 @@ export const rehabPrograms: ExerciseProgram[] = [
       ]),
         createRunnersKneeRestDay(4),
       createWorkoutDay(5, 'Return‑to‑Run (progress mileage)', [
-        { exerciseId: 'warmup-6', duration: 300, warmup: true },
+        { exerciseId: 'warmup-6', duration: 5, warmup: true },
         { exerciseId: 'glutes-44', sets: 3, repetitions: 15, restBetweenSets: 60 },
         { exerciseId: 'glutes-45', sets: 3, repetitions: 10, restBetweenSets: 60 },
         { exerciseId: 'quads-28', sets: 3, repetitions: 10, restBetweenSets: 60 },
@@ -1793,49 +2130,44 @@ export const rehabPrograms: ExerciseProgram[] = [
   // -----------------------------------------------------------------
   {
     programOverview:
-      'Week 1 restores pain‑free shoulder motion via band pull‑aparts and external rotations with scapular control.',
-    summary: 'Scapular control + cuff activation, pain‑free range',
+      'Week 1 focuses on calming shoulder irritation and restoring predictable, pain-managed motion. You will train scapular control, rotator-cuff endurance, and light flexion patterning with bands so overhead movement feels smoother without forcing range. The goal is less pinching with daily reaching and better shoulder control under low load.',
+    summary:
+      'Reduce shoulder pinching with cuff/scapular control and low-load band work in pain-managed ranges.',
     timeFrameExplanation:
-      'Band Pull‑Apart (shoulders‑30) + External Rotation (shoulders‑94) build upward rotation and cuff endurance.',
+      'Perform 3 short sessions this week, staying at or below 3/10 pain during training and the next morning. Keep ribs stacked and avoid shrugging as you raise the arm. Use smooth tempo and stop each set if compensation starts (neck tension, lumbar arch, or shoulder hiking).',
     afterTimeFrame: {
       expectedOutcome:
-        'Less pinching; easier shoulder elevation within a comfortable range.',
+        'Less painful arc/pinching and easier shoulder elevation in a comfortable range with improved control.',
       nextSteps:
-        'Increase reps/holds and add light flexion work in Week 2.',
+        'If symptoms stay stable, next week increases cuff/scapular volume and progresses controlled shoulder flexion.',
     },
     whatNotToDo:
-      'No forced overhead range, shrugging into pain, or heavy press variations.',
+      'Do not force overhead range, shrug into pain, or do heavy pressing this week. Avoid sharp anterior shoulder pain, catching, or night-pain escalation after sessions; reduce range/volume if symptoms increase next day.',
     createdAt: new Date('2025-05-29T00:00:00Z'),
     days: [
-      createWorkoutDay(1, 'Pain‑Free Range & Control', [
-        { exerciseId: 'warmup-8', sets: 2, repetitions: 20, restBetweenSets: 30, warmup: true },
-        { exerciseId: 'shoulders-30', sets: 2, repetitions: 15, restBetweenSets: 45, warmup: true },
-        { exerciseId: 'shoulders-94', sets: 3, repetitions: 12, restBetweenSets: 60 },
-        { exerciseId: 'shoulders-179', sets: 3, repetitions: 12, restBetweenSets: 60 },
-        { exerciseId: 'shoulders-78', sets: 3, repetitions: 15, restBetweenSets: 60 },
+      createWorkoutDay(1, 'Restore Motion + Scap Control. Smooth reps; stay below pinch range.', [
+        { exerciseId: 'warmup-8', sets: 2, repetitions: 15, restBetweenSets: 30, warmup: true, modification: 'Small to medium circles; pain-free range only.' },
+        { exerciseId: 'shoulders-30', sets: 2, repetitions: 12, restBetweenSets: 45, warmup: true, modification: 'Light band and steady scapular squeeze.' },
+        { exerciseId: 'shoulders-94', sets: 3, repetitions: 10, restBetweenSets: 60, modification: 'Elbow tucked; rotate without trunk twist.' },
+        { exerciseId: 'shoulders-179', sets: 2, repetitions: 10, restBetweenSets: 60, modification: 'Raise only to comfortable range; ribs stay down.' },
+        { exerciseId: 'shoulders-78', sets: 2, repetitions: 12, restBetweenSets: 60, modification: 'Pull to eye level; avoid upper-trap shrug.' },
       ]),
       createShoulderRestDay(2),
-      createWorkoutDay(3, 'Pain‑Free Range & Control', [
-        { exerciseId: 'warmup-8', sets: 2, repetitions: 20, restBetweenSets: 30, warmup: true },
-        { exerciseId: 'shoulders-30', sets: 2, repetitions: 15, restBetweenSets: 45, warmup: true },
-        { exerciseId: 'shoulders-94', sets: 3, repetitions: 12, restBetweenSets: 60 },
-        { exerciseId: 'shoulders-179', sets: 3, repetitions: 12, restBetweenSets: 60 },
-        { exerciseId: 'shoulders-78', sets: 3, repetitions: 15, restBetweenSets: 60 },
+      createWorkoutDay(3, 'Cuff Endurance + Flexion Control. Keep ribs down; avoid shrugging.', [
+        { exerciseId: 'warmup-8', sets: 2, repetitions: 15, restBetweenSets: 30, warmup: true, modification: 'Smooth circles; no pinch zone.' },
+        { exerciseId: 'shoulders-30', sets: 2, repetitions: 15, restBetweenSets: 45, warmup: true, modification: 'Control scapular retraction; do not arch low back.' },
+        { exerciseId: 'shoulders-94', sets: 3, repetitions: 12, restBetweenSets: 60, modification: '2-second out / 2-second back tempo.' },
+        { exerciseId: 'shoulders-179', sets: 3, repetitions: 10, restBetweenSets: 60, modification: 'Pain-free arc only; slow lowering.' },
+        { exerciseId: 'shoulders-78', sets: 2, repetitions: 12, restBetweenSets: 60, modification: 'Elbows high enough for rear delt/cuff, not neck tension.' },
       ]),
       createShoulderRestDay(4),
-      {
-        day: 5,
-        description: 'Pain‑Free Range & Control',
-        isRestDay: false,
-        duration: 30,
-        exercises: [
-          { exerciseId: 'warmup-8', sets: 2, repetitions: 20, restBetweenSets: 30, warmup: true },
-          { exerciseId: 'shoulders-30', sets: 2, repetitions: 15, restBetweenSets: 45, warmup: true },
-          { exerciseId: 'shoulders-94', sets: 3, repetitions: 12, restBetweenSets: 60 },
-          { exerciseId: 'shoulders-179', sets: 3, repetitions: 12, restBetweenSets: 60 },
-          { exerciseId: 'shoulders-78', sets: 3, repetitions: 15, restBetweenSets: 60 },
-        ],
-      },
+      createWorkoutDay(5, 'Build Shoulder Tolerance (same pattern, slightly more volume). Next day should feel stable or better.', [
+        { exerciseId: 'warmup-8', sets: 2, repetitions: 20, restBetweenSets: 30, warmup: true, modification: 'Smooth circles; keep shoulders down away from ears.' },
+        { exerciseId: 'shoulders-30', sets: 2, repetitions: 15, restBetweenSets: 45, warmup: true, modification: 'Steady retraction; no trunk sway.' },
+        { exerciseId: 'shoulders-94', sets: 3, repetitions: 12, restBetweenSets: 60, modification: 'Controlled external rotation with consistent band tension.' },
+        { exerciseId: 'shoulders-179', sets: 3, repetitions: 12, restBetweenSets: 60, modification: 'Increase only if no next-day symptom spike.' },
+        { exerciseId: 'shoulders-78', sets: 3, repetitions: 12, restBetweenSets: 60, modification: 'Stop before compensating with neck or low back.' },
+      ]),
       createShoulderRestDay(6),
       createShoulderRestDay(7),
     ],
@@ -1999,43 +2331,41 @@ export const rehabPrograms: ExerciseProgram[] = [
 
   {
     programOverview:
-      'Week 1 restores pain‑free ankle motion with light jogging in place and double‑leg calf raises to manage swelling.',
-    summary: 'Circulation + gentle ROM; ankle feels safer',
+      'Week 1 focuses on calming swelling and restoring safe ankle motion after a lateral sprain. You will use gentle ankle mobility, low-impact circulation work, and controlled calf pumping to improve tolerance for walking and stairs without provoking symptoms. The goal is to feel more stable under bodyweight by the end of the week.',
+    summary:
+      'Reduce swelling and restore ankle confidence with low-impact mobility, calf pumps, and controlled stance work.',
     timeFrameExplanation:
-      'Jog in place (warmup‑6) and calf pumps (calves‑6) aid lymph flow and restore tolerance.',
+      'Complete 3 short sessions this week and keep pain at or below 3/10 during exercise and the next morning. Use slow, controlled reps and keep movements pain-managed. Optional easy walking is fine on rest days if swelling and pain remain stable.',
     afterTimeFrame: {
       expectedOutcome:
-        'Less swelling; calmer walking and easy stairs.',
+        'Less swelling and stiffness, with more comfortable walking and easier stair negotiation at low speed.',
       nextSteps:
-        'Begin strength return with double‑/eccentric raises in Week 2.',
+        'Next week progresses calf strength and introduces more single-leg control if symptoms stay stable.',
     },
     whatNotToDo:
-      'No cutting, unstable surfaces, or forced deep dorsiflexion; stop if swelling spikes.',
+      'Avoid cutting, jumping, unstable surfaces, and forced end-range dorsiflexion this week. Stop and reduce volume if swelling spikes, gait worsens, or pain increases the next morning.',
     createdAt: new Date('2025-05-31T00:00:00Z'),
     days: [
-      createWorkoutDay(1, 'Acute Recovery (mobility & swelling)', [
-        { exerciseId: 'warmup-6', duration: 300, warmup: true },
-        { exerciseId: 'calves-6', sets: 3, repetitions: 15, restBetweenSets: 60 },
-        { exerciseId: 'glutes-44', sets: 2, repetitions: 15, restBetweenSets: 60 },
+      createWorkoutDay(1, 'Calm Swelling + Restore Motion. Keep steps quiet and pain ≤3/10.', [
+        { exerciseId: 'calves-13', sets: 2, repetitions: 12, restBetweenSets: 30, warmup: true, modification: 'Rock slowly; stop before pinch at front of ankle.' },
+        { exerciseId: 'cardio-13', duration: 5, warmup: true, modification: 'Easy marching pace for circulation, no bounce.' },
+        { exerciseId: 'calves-6', sets: 3, repetitions: 12, restBetweenSets: 60, modification: 'Even loading through both feet; controlled rise/lower.' },
+        { exerciseId: 'glutes-44', sets: 2, repetitions: 12, restBetweenSets: 60, modification: 'Keep pelvis stable; help ankle control through hip support.' },
       ]),
       createAnkleRestDay(2),
-      createWorkoutDay(3, 'Acute Recovery (mobility & swelling)', [
-        { exerciseId: 'warmup-6', duration: 300, warmup: true },
-        { exerciseId: 'calves-6', sets: 3, repetitions: 15, restBetweenSets: 60 },
-        { exerciseId: 'glutes-44', sets: 2, repetitions: 15, restBetweenSets: 60 },
+      createWorkoutDay(3, 'Ankle Mobility + Calf Pump. Slow tempo, full-foot contact.', [
+        { exerciseId: 'calves-13', sets: 2, repetitions: 12, restBetweenSets: 30, warmup: true, modification: 'Increase range slightly only if pain stays low.' },
+        { exerciseId: 'cardio-13', duration: 5, warmup: true, modification: 'Quiet steps; symmetrical loading left/right.' },
+        { exerciseId: 'calves-6', sets: 3, repetitions: 15, restBetweenSets: 60, modification: 'Pause briefly at top; no sharp pain on lowering.' },
+        { exerciseId: 'glutes-44', sets: 2, repetitions: 12, restBetweenSets: 60, modification: 'Slow reps; avoid trunk sway.' },
       ]),
       createAnkleRestDay(4),
-      {
-        day: 5,
-        description: 'Acute Recovery (mobility & swelling)',
-        isRestDay: false,
-        duration: 25,
-        exercises: [
-          { exerciseId: 'warmup-6', duration: 300, warmup: true },
-          { exerciseId: 'calves-6', sets: 3, repetitions: 15, restBetweenSets: 60 },
-          { exerciseId: 'glutes-44', sets: 2, repetitions: 15, restBetweenSets: 60 },
-        ],
-      },
+      createWorkoutDay(5, 'Build Confidence in Stance. Repeat pattern; next day should be stable or better.', [
+        { exerciseId: 'calves-13', sets: 2, repetitions: 12, restBetweenSets: 30, warmup: true, modification: 'Controlled mobility; no forcing end range.' },
+        { exerciseId: 'cardio-13', duration: 5, warmup: true, modification: 'Easy march with full-foot roll through.' },
+        { exerciseId: 'calves-6', sets: 3, repetitions: 15, restBetweenSets: 60, modification: 'Smooth tempo; stop before form loss.' },
+        { exerciseId: 'glutes-44', sets: 2, repetitions: 15, restBetweenSets: 60, modification: 'Slightly higher volume if no next-day symptom spike.' },
+      ]),
       createAnkleRestDay(6),
       createAnkleRestDay(7),
     ],
@@ -2060,21 +2390,21 @@ export const rehabPrograms: ExerciseProgram[] = [
     createdAt: new Date('2025-05-24T00:00:00Z'),
     days: [
       createWorkoutDay(1, 'Strength Return (calf & glute)', [
-        { exerciseId: 'warmup-6', duration: 300, warmup: true },
+        { exerciseId: 'warmup-6', duration: 5, warmup: true },
         { exerciseId: 'calves-6', sets: 3, repetitions: 15, restBetweenSets: 60 },
         { exerciseId: 'calves-63', sets: 3, repetitions: 12, restBetweenSets: 60 },
         { exerciseId: 'glutes-44', sets: 2, repetitions: 15, restBetweenSets: 60 },
       ]),
       createAnkleRestDay(2),
       createWorkoutDay(3, 'Strength Return (calf & glute)', [
-        { exerciseId: 'warmup-6', duration: 300, warmup: true },
+        { exerciseId: 'warmup-6', duration: 5, warmup: true },
         { exerciseId: 'calves-6', sets: 3, repetitions: 15, restBetweenSets: 60 },
         { exerciseId: 'calves-63', sets: 3, repetitions: 12, restBetweenSets: 60 },
         { exerciseId: 'glutes-44', sets: 2, repetitions: 15, restBetweenSets: 60 },
       ]),
       createAnkleRestDay(4),
       createWorkoutDay(5, 'Strength Return (calf & glute)', [
-        { exerciseId: 'warmup-6', duration: 300, warmup: true },
+        { exerciseId: 'warmup-6', duration: 5, warmup: true },
         { exerciseId: 'calves-6', sets: 3, repetitions: 15, restBetweenSets: 60 },
         { exerciseId: 'calves-63', sets: 3, repetitions: 12, restBetweenSets: 60 },
         { exerciseId: 'glutes-44', sets: 2, repetitions: 15, restBetweenSets: 60 },
@@ -2103,14 +2433,14 @@ export const rehabPrograms: ExerciseProgram[] = [
     createdAt: new Date('2025-05-17T00:00:00Z'),
     days: [
       createWorkoutDay(1, 'Balance & Proprioception', [
-        { exerciseId: 'warmup-6', duration: 300, warmup: true },
+        { exerciseId: 'warmup-6', duration: 5, warmup: true },
         { exerciseId: 'calves-12', sets: 3, repetitions: 10, restBetweenSets: 60 },
         { exerciseId: 'calves-63', sets: 3, repetitions: 12, restBetweenSets: 60 },
         { exerciseId: 'glutes-44', sets: 2, repetitions: 15, restBetweenSets: 60 },
       ]),
       createAnkleRestDay(2),
       createWorkoutDay(3, 'Balance & Proprioception', [
-        { exerciseId: 'warmup-6', duration: 300, warmup: true },
+        { exerciseId: 'warmup-6', duration: 5, warmup: true },
         { exerciseId: 'calves-12', sets: 3, repetitions: 10, restBetweenSets: 60 },
         { exerciseId: 'calves-63', sets: 3, repetitions: 12, restBetweenSets: 60 },
         { exerciseId: 'glutes-44', sets: 2, repetitions: 15, restBetweenSets: 60 },
@@ -2122,7 +2452,7 @@ export const rehabPrograms: ExerciseProgram[] = [
         isRestDay: false,
         duration: 25,
         exercises: [
-          { exerciseId: 'warmup-6', duration: 300, warmup: true },
+          { exerciseId: 'warmup-6', duration: 5, warmup: true },
           { exerciseId: 'calves-12', sets: 3, repetitions: 10, restBetweenSets: 60 },
           { exerciseId: 'calves-63', sets: 3, repetitions: 12, restBetweenSets: 60 },
           { exerciseId: 'glutes-44', sets: 2, repetitions: 15, restBetweenSets: 60 },
@@ -2152,21 +2482,21 @@ export const rehabPrograms: ExerciseProgram[] = [
     createdAt: new Date('2025-05-10T00:00:00Z'),
     days: [
       createWorkoutDay(1, 'Return‑to‑Jog (dynamic loading)', [
-        { exerciseId: 'warmup-6', duration: 180, warmup: true },
+        { exerciseId: 'warmup-6', duration: 3, warmup: true },
         { exerciseId: 'calves-12', sets: 3, repetitions: 10, restBetweenSets: 60 },
         { exerciseId: 'calves-63', sets: 3, repetitions: 12, restBetweenSets: 60 },
         { exerciseId: 'glutes-44', sets: 2, repetitions: 15, restBetweenSets: 60 },
       ]),
         createAnkleRestDay(2),
       createWorkoutDay(3, 'Return‑to‑Jog (dynamic loading)', [
-        { exerciseId: 'warmup-6', duration: 180, warmup: true },
+        { exerciseId: 'warmup-6', duration: 3, warmup: true },
         { exerciseId: 'calves-12', sets: 3, repetitions: 10, restBetweenSets: 60 },
         { exerciseId: 'calves-63', sets: 3, repetitions: 12, restBetweenSets: 60 },
         { exerciseId: 'glutes-44', sets: 2, repetitions: 15, restBetweenSets: 60 },
       ]),
         createAnkleRestDay(4),
       createWorkoutDay(5, 'Return‑to‑Jog (dynamic loading)', [
-        { exerciseId: 'warmup-6', duration: 180, warmup: true },
+        { exerciseId: 'warmup-6', duration: 3, warmup: true },
         { exerciseId: 'calves-12', sets: 3, repetitions: 10, restBetweenSets: 60 },
         { exerciseId: 'calves-63', sets: 3, repetitions: 12, restBetweenSets: 60 },
         { exerciseId: 'glutes-44', sets: 2, repetitions: 15, restBetweenSets: 60 },
@@ -2183,33 +2513,37 @@ export const rehabPrograms: ExerciseProgram[] = [
   // -----------------------------------------------------------------
   {
     programOverview:
-      'Week 1 uses isometric wrist extension and light rotation to calm symptoms and load the tendon safely.',
-    summary: 'Isometric analgesia + gentle forearm rotation',
+      'Week 1 aims to calm tendon irritability at the outside of the elbow while restoring tolerance to light daily gripping and typing. You will use pain-managed isometric wrist loading and controlled forearm rotation to reduce sensitivity and begin rebuilding tendon capacity. Sessions should feel controlled and leave symptoms stable or improved the next morning.',
+    summary:
+      'Calm lateral elbow pain with low-load isometrics and controlled forearm rotation to rebuild daily-use tolerance.',
     timeFrameExplanation:
-      'Wrist isometrics (forearms‑1) and light rotations (forearms‑2) reduce pain sensitivity and start capacity.',
+      'Do 3 short sessions this week and keep pain at or below 3/10 during exercise and the next morning. Use very light load (or a household object) and support your forearm on a thigh/table if a bench is not available. Prioritize smooth tempo and stop before sharp or radiating pain.',
     afterTimeFrame: {
       expectedOutcome:
-        'Lower resting pain; easier light grip/typing and daily tasks.',
+        'Lower resting elbow pain and improved tolerance to light grip, mouse/keyboard use, and daily hand tasks.',
       nextSteps:
-        'Introduce slow eccentrics in Week 2 if pain ≤3/10.',
+        'If symptoms remain stable, next week introduces more slow eccentrics and modest volume progression.',
     },
     whatNotToDo:
-      'No fast grip work, heavy carries, or jerky wrist extension; stop if sharp/radiating pain.',
+      'Avoid high-force gripping, heavy carries, repetitive wrist extension under fatigue, and jerky movement. Reduce volume if morning pain clearly worsens, and stop if symptoms become sharp, radiating, or neurologic.',
     createdAt: new Date('2025-05-31T00:00:00Z'),
     days: [
-      createWorkoutDay(1, 'Isometric Pain Modulation', [
-        { exerciseId: 'forearms-2', sets: 2, repetitions: 15, restBetweenSets: 45, warmup: true },
-        { exerciseId: 'forearms-1', sets: 5, duration: 45, restBetweenSets: 60 },
+      createWorkoutDay(1, 'Settle Tendon Irritability + Isometric Relief. Keep grip light and pain ≤3/10.', [
+        { exerciseId: 'warmup-8', sets: 1, repetitions: 20, restBetweenSets: 30, warmup: true, modification: 'Relax shoulder/neck before forearm loading.' },
+        { exerciseId: 'forearms-2', sets: 2, repetitions: 12, restBetweenSets: 45, warmup: true, modification: 'Support forearm on thigh/table and move in pain-free arc.' },
+        { exerciseId: 'forearms-1', sets: 4, duration: 0.5, restBetweenSets: 60, modification: 'Very light load; hold steady without wrist collapse.' },
       ]),
       createTennisElbowRestDay(2),
-      createWorkoutDay(3, 'Isometric Pain Modulation', [
-        { exerciseId: 'forearms-2', sets: 2, repetitions: 15, restBetweenSets: 45, warmup: true },
-        { exerciseId: 'forearms-1', sets: 5, duration: 45, restBetweenSets: 60 },
+      createWorkoutDay(3, 'Forearm Control + Slow Rotation. Move smoothly; no sharp or radiating pain.', [
+        { exerciseId: 'warmup-8', sets: 1, repetitions: 20, restBetweenSets: 30, warmup: true, modification: 'Keep shoulder relaxed and posture tall.' },
+        { exerciseId: 'forearms-2', sets: 2, repetitions: 15, restBetweenSets: 45, warmup: true, modification: '2-second rotation each way; no end-range forcing.' },
+        { exerciseId: 'forearms-1', sets: 4, duration: 0.67, restBetweenSets: 60, modification: 'Slightly longer hold only if symptoms stay calm.' },
       ]),
       createTennisElbowRestDay(4),
-      createWorkoutDay(5, 'Isometric Pain Modulation', [
-        { exerciseId: 'forearms-2', sets: 2, repetitions: 15, restBetweenSets: 45, warmup: true },
-        { exerciseId: 'forearms-1', sets: 5, duration: 45, restBetweenSets: 60 },
+      createWorkoutDay(5, 'Build Daily-Use Tolerance. Repeat pattern with slightly longer holds if stable next day.', [
+        { exerciseId: 'warmup-8', sets: 1, repetitions: 20, restBetweenSets: 30, warmup: true, modification: 'Easy circles; no shoulder tension.' },
+        { exerciseId: 'forearms-2', sets: 2, repetitions: 15, restBetweenSets: 45, warmup: true, modification: 'Controlled rotation under light load.' },
+        { exerciseId: 'forearms-1', sets: 5, duration: 0.67, restBetweenSets: 60, modification: 'Maintain neutral wrist and light grip pressure.' },
       ]),
       createTennisElbowRestDay(6),
       createTennisElbowRestDay(7),
@@ -2351,39 +2685,40 @@ export const rehabPrograms: ExerciseProgram[] = [
   // -----------------------------------------------------------------
   {
     programOverview:
-      'Week 1 reduces neck/upper‑back tension with arm circles, band pull‑aparts, trunk rotation, and gentle cuff work.',
-    summary: 'Mobility + scapular activation to unload neck',
+      'Week 1 focuses on reducing neck and upper-back tension by improving scapular control and postural endurance. You will combine gentle mobility with low-load band work so the shoulders and mid-back share more of the workload during desk time. The goal is to feel less neck tightness and better sitting tolerance without forcing painful ranges.',
+    summary:
+      'Reduce neck tension and improve desk-posture tolerance with mobility plus low-load scapular/cuff activation.',
     timeFrameExplanation:
-      'Arm Circles (warmup‑8), Band Pull‑Apart, Trunk Rotation (warmup‑9), and ER build posture without strain.',
+      'Perform 3 short sessions this week and keep pain at or below 3/10 during and the next morning. Prioritize slow reps, relaxed jaw/breathing, and shoulders staying down away from ears. Stop or regress if you feel pinching, headaches worsening, or heavy neck compensation.',
     afterTimeFrame: {
       expectedOutcome:
-        'Less neck tightness; better ability to sit tall without fatigue.',
+        'Less neck tightness/stiffness and improved ability to sit upright with less fatigue during screen work.',
       nextSteps:
-        'Add upper‑back row volume and longer ER sets in Week 2.',
+        'If symptoms remain stable, next week increases upper-back row volume and cuff endurance.',
     },
     whatNotToDo:
-      'No shrug‑dominant lifts, forced end‑range neck stretches, or painful ranges.',
+      'Avoid shrug-dominant lifting, forced end-range neck stretching, and painful movement ranges. Reduce session volume if symptoms clearly worsen the next day or if headaches are aggravated.',
     createdAt: new Date('2025-06-02T00:00:00Z'),
     days: [
-      createWorkoutDay(1, 'Mobility & Awareness', [
-        { exerciseId: 'warmup-8', sets: 2, repetitions: 15, restBetweenSets: 30, warmup: true },
-        { exerciseId: 'shoulders-30', sets: 2, repetitions: 12, restBetweenSets: 45 },
-        { exerciseId: 'warmup-9', sets: 2, repetitions: 10, restBetweenSets: 30 },
-        { exerciseId: 'shoulders-94', sets: 2, repetitions: 10, restBetweenSets: 45 },
+      createWorkoutDay(1, 'Reset Posture + Mobility. Keep jaw relaxed and shoulders away from ears.', [
+        { exerciseId: 'warmup-8', sets: 2, repetitions: 12, restBetweenSets: 30, warmup: true, modification: 'Small circles first, then medium range if symptom-free.' },
+        { exerciseId: 'warmup-9', sets: 2, repetitions: 8, restBetweenSets: 30, warmup: true, modification: 'Gentle trunk rotation, chest tall, no neck cranking.' },
+        { exerciseId: 'shoulders-30', sets: 2, repetitions: 10, restBetweenSets: 45, modification: 'Light band tension; slow scapular squeeze.' },
+        { exerciseId: 'shoulders-94', sets: 2, repetitions: 8, restBetweenSets: 45, modification: 'Elbow tucked; rotate without neck or trunk compensation.' },
       ]),
       createTechNeckRestDay(2),
-      createWorkoutDay(3, 'Mobility & Awareness', [
-        { exerciseId: 'warmup-8', sets: 2, repetitions: 15, restBetweenSets: 30, warmup: true },
-        { exerciseId: 'shoulders-30', sets: 2, repetitions: 12, restBetweenSets: 45 },
-        { exerciseId: 'warmup-9', sets: 2, repetitions: 10, restBetweenSets: 30 },
-        { exerciseId: 'shoulders-94', sets: 2, repetitions: 10, restBetweenSets: 45 },
+      createWorkoutDay(3, 'Scapular Endurance + Neck Calm. Slow pulls; avoid neck tension compensation.', [
+        { exerciseId: 'warmup-8', sets: 2, repetitions: 15, restBetweenSets: 30, warmup: true, modification: 'Controlled circles; keep shoulders depressed.' },
+        { exerciseId: 'warmup-9', sets: 2, repetitions: 10, restBetweenSets: 30, warmup: true, modification: 'Move from trunk; keep chin neutral.' },
+        { exerciseId: 'shoulders-30', sets: 2, repetitions: 12, restBetweenSets: 45, modification: 'Pause at squeeze; avoid rib flare.' },
+        { exerciseId: 'shoulders-94', sets: 2, repetitions: 10, restBetweenSets: 45, modification: '2-second out / 2-second back tempo.' },
       ]),
       createTechNeckRestDay(4),
-      createWorkoutDay(5, 'Mobility & Awareness', [
-        { exerciseId: 'warmup-8', sets: 2, repetitions: 15, restBetweenSets: 30, warmup: true },
-        { exerciseId: 'shoulders-30', sets: 2, repetitions: 12, restBetweenSets: 45 },
-        { exerciseId: 'warmup-9', sets: 2, repetitions: 10, restBetweenSets: 30 },
-        { exerciseId: 'shoulders-94', sets: 2, repetitions: 10, restBetweenSets: 45 },
+      createWorkoutDay(5, 'Build Desk-Day Tolerance. Repeat pattern with slightly more control and hold quality.', [
+        { exerciseId: 'warmup-8', sets: 2, repetitions: 15, restBetweenSets: 30, warmup: true, modification: 'Smooth circles, no shrugging.' },
+        { exerciseId: 'warmup-9', sets: 2, repetitions: 10, restBetweenSets: 30, warmup: true, modification: 'Comfortable range only; breathe steadily.' },
+        { exerciseId: 'shoulders-30', sets: 2, repetitions: 15, restBetweenSets: 45, modification: 'Light to moderate band tension with strict form.' },
+        { exerciseId: 'shoulders-94', sets: 2, repetitions: 10, restBetweenSets: 45, modification: 'Hold end position briefly if no symptom increase.' },
       ]),
       createTechNeckRestDay(6),
       createTechNeckRestDay(7),
@@ -2595,19 +2930,19 @@ export const rehabPrograms: ExerciseProgram[] = [
     createdAt: new Date('2025-06-02T00:00:00Z'),
     days: [
       createWorkoutDay(1, 'Light Load & Arch Activation', [
-        { exerciseId: 'warmup-6', duration: 180, warmup: true },
+        { exerciseId: 'warmup-6', duration: 3, warmup: true },
         { exerciseId: 'calves-6', sets: 3, repetitions: 15, restBetweenSets: 60 },
         { exerciseId: 'glutes-44', sets: 2, repetitions: 15, restBetweenSets: 45 },
       ]),
       createPlantarRestDay(2),
       createWorkoutDay(3, 'Light Load & Arch Activation', [
-        { exerciseId: 'warmup-6', duration: 180, warmup: true },
+        { exerciseId: 'warmup-6', duration: 3, warmup: true },
         { exerciseId: 'calves-6', sets: 3, repetitions: 15, restBetweenSets: 60 },
         { exerciseId: 'glutes-44', sets: 2, repetitions: 15, restBetweenSets: 45 },
       ]),
       createPlantarRestDay(4),
       createWorkoutDay(5, 'Light Load & Arch Activation', [
-        { exerciseId: 'warmup-6', duration: 180, warmup: true },
+        { exerciseId: 'warmup-6', duration: 3, warmup: true },
         { exerciseId: 'calves-6', sets: 3, repetitions: 15, restBetweenSets: 60 },
         { exerciseId: 'glutes-44', sets: 2, repetitions: 15, restBetweenSets: 45 },
       ]),
@@ -2635,21 +2970,21 @@ export const rehabPrograms: ExerciseProgram[] = [
     createdAt: new Date('2025-05-26T00:00:00Z'),
     days: [
       createWorkoutDay(1, 'Eccentric Calf & Toe Control', [
-        { exerciseId: 'warmup-6', duration: 180, warmup: true },
+        { exerciseId: 'warmup-6', duration: 3, warmup: true },
         { exerciseId: 'calves-63', sets: 3, repetitions: 12, restBetweenSets: 60 },
         { exerciseId: 'calves-6', sets: 2, repetitions: 15, restBetweenSets: 45 },
         { exerciseId: 'glutes-44', sets: 2, repetitions: 15, restBetweenSets: 45 },
       ]),
       createPlantarRestDay(2),
       createWorkoutDay(3, 'Eccentric Calf & Toe Control', [
-        { exerciseId: 'warmup-6', duration: 180, warmup: true },
+        { exerciseId: 'warmup-6', duration: 3, warmup: true },
         { exerciseId: 'calves-63', sets: 3, repetitions: 12, restBetweenSets: 60 },
         { exerciseId: 'calves-6', sets: 2, repetitions: 15, restBetweenSets: 45 },
         { exerciseId: 'glutes-44', sets: 2, repetitions: 15, restBetweenSets: 45 },
       ]),
       createPlantarRestDay(4),
       createWorkoutDay(5, 'Eccentric Calf & Toe Control', [
-        { exerciseId: 'warmup-6', duration: 180, warmup: true },
+        { exerciseId: 'warmup-6', duration: 3, warmup: true },
         { exerciseId: 'calves-63', sets: 3, repetitions: 12, restBetweenSets: 60 },
         { exerciseId: 'calves-6', sets: 2, repetitions: 15, restBetweenSets: 45 },
         { exerciseId: 'glutes-44', sets: 2, repetitions: 15, restBetweenSets: 45 },
@@ -2678,21 +3013,21 @@ export const rehabPrograms: ExerciseProgram[] = [
     createdAt: new Date('2025-05-19T00:00:00Z'),
     days: [
       createWorkoutDay(1, 'Balance & Midfoot Strength', [
-        { exerciseId: 'warmup-6', duration: 180, warmup: true },
+        { exerciseId: 'warmup-6', duration: 3, warmup: true },
         { exerciseId: 'calves-12', sets: 3, repetitions: 10, restBetweenSets: 60 },
         { exerciseId: 'calves-63', sets: 3, repetitions: 12, restBetweenSets: 60 },
         { exerciseId: 'glutes-44', sets: 2, repetitions: 15, restBetweenSets: 45 },
       ]),
       createPlantarRestDay(2),
       createWorkoutDay(3, 'Balance & Midfoot Strength', [
-        { exerciseId: 'warmup-6', duration: 180, warmup: true },
+        { exerciseId: 'warmup-6', duration: 3, warmup: true },
         { exerciseId: 'calves-12', sets: 3, repetitions: 10, restBetweenSets: 60 },
         { exerciseId: 'calves-63', sets: 3, repetitions: 12, restBetweenSets: 60 },
         { exerciseId: 'glutes-44', sets: 2, repetitions: 15, restBetweenSets: 45 },
       ]),
       createPlantarRestDay(4),
       createWorkoutDay(5, 'Balance & Midfoot Strength', [
-        { exerciseId: 'warmup-6', duration: 180, warmup: true },
+        { exerciseId: 'warmup-6', duration: 3, warmup: true },
         { exerciseId: 'calves-12', sets: 3, repetitions: 10, restBetweenSets: 60 },
         { exerciseId: 'calves-63', sets: 3, repetitions: 12, restBetweenSets: 60 },
         { exerciseId: 'glutes-44', sets: 2, repetitions: 15, restBetweenSets: 45 },
@@ -2721,7 +3056,7 @@ export const rehabPrograms: ExerciseProgram[] = [
     createdAt: new Date('2025-05-12T00:00:00Z'),
     days: [
       createWorkoutDay(1, 'Function & Return‑to‑Impact', [
-        { exerciseId: 'warmup-6', duration: 180, warmup: true },
+        { exerciseId: 'warmup-6', duration: 3, warmup: true },
         { exerciseId: 'calves-12', sets: 3, repetitions: 12, restBetweenSets: 60 },
         { exerciseId: 'calves-63', sets: 3, repetitions: 12, restBetweenSets: 60 },
         { exerciseId: 'glutes-44', sets: 2, repetitions: 15, restBetweenSets: 45 },
@@ -2733,7 +3068,7 @@ export const rehabPrograms: ExerciseProgram[] = [
         isRestDay: false,
         duration: 25,
         exercises: [
-          { exerciseId: 'warmup-6', duration: 180, warmup: true },
+          { exerciseId: 'warmup-6', duration: 3, warmup: true },
           { exerciseId: 'calves-12', sets: 3, repetitions: 12, restBetweenSets: 60 },
           { exerciseId: 'calves-63', sets: 3, repetitions: 12, restBetweenSets: 60 },
           { exerciseId: 'glutes-44', sets: 2, repetitions: 15, restBetweenSets: 45 },
@@ -2741,7 +3076,7 @@ export const rehabPrograms: ExerciseProgram[] = [
       },
       createPlantarRestDay(4),
       createWorkoutDay(5, 'Function & Return‑to‑Impact', [
-        { exerciseId: 'warmup-6', duration: 180, warmup: true },
+        { exerciseId: 'warmup-6', duration: 3, warmup: true },
         { exerciseId: 'calves-12', sets: 3, repetitions: 12, restBetweenSets: 60 },
         { exerciseId: 'calves-63', sets: 3, repetitions: 12, restBetweenSets: 60 },
         { exerciseId: 'glutes-44', sets: 2, repetitions: 15, restBetweenSets: 45 },
@@ -2772,21 +3107,21 @@ export const rehabPrograms: ExerciseProgram[] = [
     createdAt: new Date('2025-06-02T00:00:00Z'),
     days: [
       createWorkoutDay(1, 'Isometric Activation & Mobility', [
-        { exerciseId: 'warmup-6', duration: 180, warmup: true },
+        { exerciseId: 'warmup-6', duration: 3, warmup: true },
         { exerciseId: 'glutes-7', sets: 3, repetitions: 15, restBetweenSets: 60 },
         { exerciseId: 'hamstrings-48', sets: 3, repetitions: 8, restBetweenSets: 60 },
         { exerciseId: 'glutes-1', sets: 2, repetitions: 12, restBetweenSets: 60 },
       ]),
       createHamstringRestDay(2),
       createWorkoutDay(3, 'Isometric Activation & Mobility', [
-        { exerciseId: 'warmup-6', duration: 180, warmup: true },
+        { exerciseId: 'warmup-6', duration: 3, warmup: true },
         { exerciseId: 'glutes-7', sets: 3, repetitions: 15, restBetweenSets: 60 },
         { exerciseId: 'hamstrings-48', sets: 3, repetitions: 8, restBetweenSets: 60 },
         { exerciseId: 'glutes-1', sets: 2, repetitions: 12, restBetweenSets: 60 },
       ]),
       createHamstringRestDay(4),
       createWorkoutDay(5, 'Isometric Activation & Mobility', [
-        { exerciseId: 'warmup-6', duration: 180, warmup: true },
+        { exerciseId: 'warmup-6', duration: 3, warmup: true },
         { exerciseId: 'glutes-7', sets: 3, repetitions: 15, restBetweenSets: 60 },
         { exerciseId: 'hamstrings-48', sets: 3, repetitions: 8, restBetweenSets: 60 },
         { exerciseId: 'glutes-1', sets: 2, repetitions: 12, restBetweenSets: 60 },
@@ -2815,21 +3150,21 @@ export const rehabPrograms: ExerciseProgram[] = [
     createdAt: new Date('2025-05-26T00:00:00Z'),
     days: [
       createWorkoutDay(1, 'Introduce Eccentric Loading', [
-        { exerciseId: 'warmup-6', duration: 180, warmup: true },
+        { exerciseId: 'warmup-6', duration: 3, warmup: true },
         { exerciseId: 'hamstrings-34', sets: 3, repetitions: 10, restBetweenSets: 60 },
         { exerciseId: 'glutes-7', sets: 3, repetitions: 15, restBetweenSets: 60 },
         { exerciseId: 'hamstrings-20', sets: 2, repetitions: 5, restBetweenSets: 90 },
       ]),
       createHamstringRestDay(2),
       createWorkoutDay(3, 'Introduce Eccentric Loading', [
-        { exerciseId: 'warmup-6', duration: 180, warmup: true },
+        { exerciseId: 'warmup-6', duration: 3, warmup: true },
         { exerciseId: 'hamstrings-34', sets: 3, repetitions: 10, restBetweenSets: 60 },
         { exerciseId: 'glutes-7', sets: 3, repetitions: 15, restBetweenSets: 60 },
         { exerciseId: 'hamstrings-20', sets: 2, repetitions: 5, restBetweenSets: 90 },
       ]),
       createHamstringRestDay(4),
       createWorkoutDay(5, 'Introduce Eccentric Loading', [
-        { exerciseId: 'warmup-6', duration: 180, warmup: true },
+        { exerciseId: 'warmup-6', duration: 3, warmup: true },
         { exerciseId: 'hamstrings-34', sets: 3, repetitions: 10, restBetweenSets: 60 },
         { exerciseId: 'glutes-7', sets: 3, repetitions: 15, restBetweenSets: 60 },
         { exerciseId: 'hamstrings-20', sets: 2, repetitions: 5, restBetweenSets: 90 },
@@ -2858,21 +3193,21 @@ export const rehabPrograms: ExerciseProgram[] = [
     createdAt: new Date('2025-05-19T00:00:00Z'),
     days: [
       createWorkoutDay(1, 'Single-Leg Control & Hinge Strength', [
-        { exerciseId: 'warmup-6', duration: 180, warmup: true },
+        { exerciseId: 'warmup-6', duration: 3, warmup: true },
         { exerciseId: 'hamstrings-48', sets: 3, repetitions: 10, restBetweenSets: 60 },
         { exerciseId: 'glutes-46', sets: 3, repetitions: 8, restBetweenSets: 60 },
         { exerciseId: 'hamstrings-20', sets: 2, repetitions: 6, restBetweenSets: 90 },
       ]),
       createHamstringRestDay(2),
       createWorkoutDay(3, 'Single-Leg Control & Hinge Strength', [
-        { exerciseId: 'warmup-6', duration: 180, warmup: true },
+        { exerciseId: 'warmup-6', duration: 3, warmup: true },
         { exerciseId: 'hamstrings-48', sets: 3, repetitions: 10, restBetweenSets: 60 },
         { exerciseId: 'glutes-46', sets: 3, repetitions: 8, restBetweenSets: 60 },
         { exerciseId: 'hamstrings-20', sets: 2, repetitions: 6, restBetweenSets: 90 },
       ]),
       createHamstringRestDay(4),
       createWorkoutDay(5, 'Single-Leg Control & Hinge Strength', [
-        { exerciseId: 'warmup-6', duration: 180, warmup: true },
+        { exerciseId: 'warmup-6', duration: 3, warmup: true },
         { exerciseId: 'hamstrings-48', sets: 3, repetitions: 10, restBetweenSets: 60 },
         { exerciseId: 'glutes-46', sets: 3, repetitions: 8, restBetweenSets: 60 },
         { exerciseId: 'hamstrings-20', sets: 2, repetitions: 6, restBetweenSets: 90 },
@@ -2901,21 +3236,21 @@ export const rehabPrograms: ExerciseProgram[] = [
     createdAt: new Date('2025-05-12T00:00:00Z'),
     days: [
       createWorkoutDay(1, 'Return‑to‑Jog (light dynamic work)', [
-        { exerciseId: 'cardio-1', duration: 600, warmup: true },
+        { exerciseId: 'cardio-1', duration: 10, warmup: true },
         { exerciseId: 'hamstrings-48', sets: 3, repetitions: 12, restBetweenSets: 60 },
         { exerciseId: 'glutes-46', sets: 3, repetitions: 10, restBetweenSets: 60 },
         { exerciseId: 'hamstrings-20', sets: 2, repetitions: 8, restBetweenSets: 90 },
       ]),
       createHamstringRestDay(2),
       createWorkoutDay(3, 'Return‑to‑Jog (light dynamic work)', [
-        { exerciseId: 'cardio-1', duration: 600, warmup: true },
+        { exerciseId: 'cardio-1', duration: 10, warmup: true },
         { exerciseId: 'hamstrings-48', sets: 3, repetitions: 12, restBetweenSets: 60 },
         { exerciseId: 'glutes-46', sets: 3, repetitions: 10, restBetweenSets: 60 },
         { exerciseId: 'hamstrings-20', sets: 2, repetitions: 8, restBetweenSets: 90 },
       ]),
       createHamstringRestDay(4),
       createWorkoutDay(5, 'Return‑to‑Jog (light dynamic work)', [
-        { exerciseId: 'cardio-1', duration: 600, warmup: true },
+        { exerciseId: 'cardio-1', duration: 10, warmup: true },
         { exerciseId: 'hamstrings-48', sets: 3, repetitions: 12, restBetweenSets: 60 },
         { exerciseId: 'glutes-46', sets: 3, repetitions: 10, restBetweenSets: 60 },
         { exerciseId: 'hamstrings-20', sets: 2, repetitions: 8, restBetweenSets: 90 },
@@ -3115,19 +3450,19 @@ export const rehabPrograms: ExerciseProgram[] = [
     days: [
       createWorkoutDay(1, 'Activation & Control', [
         { exerciseId: 'abs-20', sets: 3, repetitions: 8, restBetweenSets: 60 },
-        { exerciseId: 'abs-6', sets: 3, duration: 30, restBetweenSets: 60 },
+        { exerciseId: 'abs-6', sets: 3, duration: 0.5, restBetweenSets: 60 },
         { exerciseId: 'glutes-7', sets: 2, repetitions: 12, restBetweenSets: 60 },
       ]),
       createCoreRestDay(2),
       createWorkoutDay(3, 'Activation & Control', [
         { exerciseId: 'abs-20', sets: 3, repetitions: 8, restBetweenSets: 60 },
-        { exerciseId: 'abs-6', sets: 3, duration: 30, restBetweenSets: 60 },
+        { exerciseId: 'abs-6', sets: 3, duration: 0.5, restBetweenSets: 60 },
         { exerciseId: 'glutes-7', sets: 2, repetitions: 12, restBetweenSets: 60 },
       ]),
       createCoreRestDay(4),
       createWorkoutDay(5, 'Activation & Control', [
         { exerciseId: 'abs-20', sets: 3, repetitions: 8, restBetweenSets: 60 },
-        { exerciseId: 'abs-6', sets: 3, duration: 30, restBetweenSets: 60 },
+        { exerciseId: 'abs-6', sets: 3, duration: 0.5, restBetweenSets: 60 },
         { exerciseId: 'glutes-7', sets: 2, repetitions: 12, restBetweenSets: 60 },
       ]),
       createCoreRestDay(6),
@@ -3155,21 +3490,21 @@ export const rehabPrograms: ExerciseProgram[] = [
     days: [
       createWorkoutDay(1, 'Time Under Tension & Movement', [
         { exerciseId: 'abs-20', sets: 3, repetitions: 10, restBetweenSets: 60 },
-        { exerciseId: 'abs-6', sets: 3, duration: 40, restBetweenSets: 60 },
+        { exerciseId: 'abs-6', sets: 3, duration: 0.67, restBetweenSets: 60 },
         { exerciseId: 'glutes-7', sets: 3, repetitions: 15, restBetweenSets: 60 },
         { exerciseId: 'obliques-4', sets: 2, repetitions: 10, restBetweenSets: 60 },
       ]),
       createCoreRestDay(2),
       createWorkoutDay(3, 'Time Under Tension & Movement', [
         { exerciseId: 'abs-20', sets: 3, repetitions: 10, restBetweenSets: 60 },
-        { exerciseId: 'abs-6', sets: 3, duration: 40, restBetweenSets: 60 },
+        { exerciseId: 'abs-6', sets: 3, duration: 0.67, restBetweenSets: 60 },
         { exerciseId: 'glutes-7', sets: 3, repetitions: 15, restBetweenSets: 60 },
         { exerciseId: 'obliques-4', sets: 2, repetitions: 10, restBetweenSets: 60 },
       ]),
       createCoreRestDay(4),
       createWorkoutDay(5, 'Time Under Tension & Movement', [
         { exerciseId: 'abs-20', sets: 3, repetitions: 10, restBetweenSets: 60 },
-        { exerciseId: 'abs-6', sets: 3, duration: 40, restBetweenSets: 60 },
+        { exerciseId: 'abs-6', sets: 3, duration: 0.67, restBetweenSets: 60 },
         { exerciseId: 'glutes-7', sets: 3, repetitions: 15, restBetweenSets: 60 },
         { exerciseId: 'obliques-4', sets: 2, repetitions: 10, restBetweenSets: 60 },
       ]),
@@ -3259,88 +3594,65 @@ export const rehabPrograms: ExerciseProgram[] = [
     targetAreas: ['core', 'pelvis', 'low back'],
     bodyParts: ['Core', 'Lower Back', 'Hips'],
   },
-];
+].map(ensureRestDaysHaveOptionalHomeExercises);
 
-// URL slug mapping for direct program access - maps to the starting index of each 4-week sequence
+// Keep only the first week for each recovery program. Subsequent weeks are generated
+// dynamically based on user feedback.
+export const rehabPrograms: ExerciseProgram[] = rehabProgramsAllWeeks.filter(
+  (_, index) => index % 4 === 0
+);
+
+// URL slug mapping for direct program access - maps to the single-week program index
 export const programSlugs: Record<string, number> = {
   'shin-splints': 0,
-  // Low Back: indices 4-7 (4 weeks)
-  lowback: 4,
-  'low-back': 4,
-  'lower-back': 4,
+  // Low Back
+  lowback: 1,
+  'low-back': 1,
+  'lower-back': 1,
   
-  // Runner's Knee: indices 8-11 (4 weeks)
-  runnersknee: 8,
-  'runners-knee': 8,
+  // Runner's Knee
+  runnersknee: 2,
+  'runners-knee': 2,
   
-  // Shoulder: indices 12-15 (4 weeks)
-  shoulder: 12,
-  'shoulder-impingement': 12,
+  // Shoulder
+  shoulder: 3,
+  'shoulder-impingement': 3,
   
-  // Ankle: indices 16-19 (4 weeks)
-  ankle: 16,
-  'ankle-sprain': 16,
+  // Ankle
+  ankle: 4,
+  'ankle-sprain': 4,
   
-  // Tennis Elbow: indices 20-23 (4 weeks)
-  'tennis-elbow': 20,
-  elbow: 20,
+  // Tennis Elbow
+  'tennis-elbow': 5,
+  elbow: 5,
   
-  // Tech Neck: indices 24-27 (4 weeks)
-  techneck: 24,
+  // Tech Neck
+  techneck: 6,
   
-  // Plantar Fasciitis: indices 28-31 (4 weeks)
-  'plantar-fasciitis': 28,
-  plantarfasciitis: 28,
-  plantar: 28,
+  // Plantar Fasciitis
+  'plantar-fasciitis': 7,
+  plantarfasciitis: 7,
+  plantar: 7,
   
-  // Hamstring: indices 32-35 (4 weeks)
-  'hamstring-strain': 32,
-  hamstring: 32,
+  // Hamstring
+  'hamstring-strain': 8,
+  hamstring: 8,
   
-  // Upper Back & Core: indices 36-39 (4 weeks)
-  'upper-back-core': 36,
-  upperbackcore: 36,
+  // Upper Back & Core
+  'upper-back-core': 9,
+  upperbackcore: 9,
   
-  // Core Stability: indices 40-43 (4 weeks)
-  'core-stability': 40,
-  corestability: 40,
+  // Core Stability
+  'core-stability': 10,
+  corestability: 10,
 };
 
-// Function to get program by URL slug - combines all 4 weeks into a single 28-day program
+// Function to get program by URL slug - returns the single-week program
 export const getProgramBySlug = (slug: string): ExerciseProgram | null => {
   const baseIndex = programSlugs[slug.toLowerCase()];
   if (typeof baseIndex !== 'number') return null;
-  
-  // Get all 4 weeks for this condition
-  const week1 = rehabPrograms[baseIndex];
-  const week2 = rehabPrograms[baseIndex + 1];
-  const week3 = rehabPrograms[baseIndex + 2];
-  const week4 = rehabPrograms[baseIndex + 3];
-  
-  if (!week1 || !week2 || !week3 || !week4) return null;
-  
-  // Combine all days from all 4 weeks, renumbering them 1-28
-  const allDays = [
-    // Week 1: days 1-7
-    ...week1.days.map((day, index) => ({ ...day, day: index + 1 })),
-    // Week 2: days 8-14
-    ...week2.days.map((day, index) => ({ ...day, day: index + 8 })),
-    // Week 3: days 15-21
-    ...week3.days.map((day, index) => ({ ...day, day: index + 15 })),
-    // Week 4: days 22-28
-    ...week4.days.map((day, index) => ({ ...day, day: index + 22 }))
-  ];
-  
-  // Return the combined program using week1 as the base
-  return {
-    ...week1,
-    days: allDays,
-    // Use the most comprehensive overview from week1
-    programOverview: week1.programOverview,
-    timeFrameExplanation: week1.timeFrameExplanation,
-    afterTimeFrame: week1.afterTimeFrame,
-    whatNotToDo: week1.whatNotToDo
-  };
+
+  return rehabPrograms[baseIndex] ?? null;
 };
 
 // Function to get all available program slugs
@@ -3361,32 +3673,28 @@ export const getUserProgramBySlug = (slug: string): {
   title: string;
   docId: string;
 } | null => {
-  // Get the 4 separate week programs instead of the combined 28-day program
+  const normalizeUserProgram = (userProgram: any) => ({
+    ...userProgram,
+    timeFrame: '1 week',
+    diagnosis: { ...userProgram.diagnosis, timeFrame: '1 week' },
+    isCustomProgram: true, // Mark as predefined custom/recovery program
+  });
+
   const baseIndex = programSlugs[slug.toLowerCase()];
   if (typeof baseIndex !== 'number') return null;
   
-  // Get all 4 weeks for this condition as separate programs
   const week1 = rehabPrograms[baseIndex];
-  const week2 = rehabPrograms[baseIndex + 1];
-  const week3 = rehabPrograms[baseIndex + 2];
-  const week4 = rehabPrograms[baseIndex + 3];
-  
-  if (!week1 || !week2 || !week3 || !week4) return null;
+  if (!week1) return null;
 
   const today = new Date();
   const normalizedSlug = slug.toLowerCase();
 
-  // Update each week's createdAt to today so dates display correctly
-  const updatedWeekPrograms = [
-    { ...week1, createdAt: today },
-    { ...week2, createdAt: today },
-    { ...week3, createdAt: today },
-    { ...week4, createdAt: today }
-  ];
+  // Update the program's createdAt to today so dates display correctly
+  const updatedWeekPrograms = [{ ...week1, createdAt: today }];
 
   // Create specific diagnosis and questionnaire for each program type
   if (normalizedSlug.includes('lowback') || normalizedSlug.includes('low-back') || normalizedSlug.includes('lower-back')) {
-    return {
+    return normalizeUserProgram({
       programs: updatedWeekPrograms,
       diagnosis: {
         diagnosis: 'Lower Back Pain',
@@ -3427,7 +3735,7 @@ export const getUserProgramBySlug = (slug: string): {
       timeFrame: '4 weeks',
       title: 'Lower Back Pain Recovery',
       docId: `recovery-lowback-${Date.now()}`
-    };
+    });
   }
 
   if (
@@ -3435,7 +3743,7 @@ export const getUserProgramBySlug = (slug: string): {
     normalizedSlug.includes('shin-splints') ||
     normalizedSlug.includes('mtss')
   ) {
-    return {
+    return normalizeUserProgram({
       programs: updatedWeekPrograms,
       diagnosis: {
         diagnosis: 'Medial Tibial Stress Syndrome (Shin Splints)',
@@ -3477,11 +3785,11 @@ export const getUserProgramBySlug = (slug: string): {
       timeFrame: '4 weeks',
       title: 'Shin Splints (MTSS) Recovery',
       docId: `recovery-shin-splints-${Date.now()}`
-    };
+    });
   }
 
   if (normalizedSlug.includes('runners') || normalizedSlug.includes('knee')) {
-    return {
+    return normalizeUserProgram({
       programs: updatedWeekPrograms,
       diagnosis: {
         diagnosis: 'Patellofemoral Pain Syndrome (Runner\'s Knee)',
@@ -3522,11 +3830,11 @@ export const getUserProgramBySlug = (slug: string): {
       timeFrame: '4 weeks',
       title: 'Patellofemoral Pain Syndrome Recovery',
       docId: `recovery-runnersknee-${Date.now()}`
-    };
+    });
   }
 
   if (normalizedSlug.includes('shoulder')) {
-    return {
+    return normalizeUserProgram({
       programs: updatedWeekPrograms,
       diagnosis: {
         diagnosis: 'Shoulder Impingement Syndrome',
@@ -3567,11 +3875,11 @@ export const getUserProgramBySlug = (slug: string): {
       timeFrame: '4 weeks',
       title: 'Shoulder Impingement Recovery',
       docId: `recovery-shoulder-${Date.now()}`
-    };
+    });
   }
 
   if (normalizedSlug.includes('ankle')) {
-    return {
+    return normalizeUserProgram({
       programs: updatedWeekPrograms,
       diagnosis: {
         diagnosis: 'Ankle Sprain Recovery',
@@ -3612,11 +3920,11 @@ export const getUserProgramBySlug = (slug: string): {
       timeFrame: '4 weeks',
       title: 'Ankle Sprain Recovery',
       docId: `recovery-ankle-${Date.now()}`
-    };
+    });
   }
 
   if (normalizedSlug.includes('tennis') || normalizedSlug.includes('elbow')) {
-    return {
+    return normalizeUserProgram({
       programs: updatedWeekPrograms,
       diagnosis: {
         diagnosis: 'Lateral Epicondylitis (Tennis Elbow)',
@@ -3657,11 +3965,11 @@ export const getUserProgramBySlug = (slug: string): {
       timeFrame: '4 weeks',
       title: 'Lateral Epicondylitis Recovery',
       docId: `recovery-tennis-elbow-${Date.now()}`
-    };
+    });
   }
 
   if (normalizedSlug.includes('techneck') || normalizedSlug.includes('tech-neck')) {
-    return {
+    return normalizeUserProgram({
       programs: updatedWeekPrograms,
       diagnosis: {
         diagnosis: 'Tech Neck (Cervical Strain)',
@@ -3702,11 +4010,11 @@ export const getUserProgramBySlug = (slug: string): {
       timeFrame: '4 weeks',
       title: 'Tech Neck (Cervical Strain) Recovery',
       docId: `recovery-techneck-${Date.now()}`
-    };
+    });
   }
 
   if (normalizedSlug.includes('plantar')) {
-    return {
+    return normalizeUserProgram({
       programs: updatedWeekPrograms,
       diagnosis: {
         diagnosis: 'Plantar Fasciitis',
@@ -3747,11 +4055,11 @@ export const getUserProgramBySlug = (slug: string): {
       timeFrame: '4 weeks',
       title: 'Plantar Fasciitis Recovery',
       docId: `recovery-plantar-${Date.now()}`
-    };
+    });
   }
 
   if (normalizedSlug.includes('hamstring')) {
-    return {
+    return normalizeUserProgram({
       programs: updatedWeekPrograms,
       diagnosis: {
         diagnosis: 'Hamstring Strain',
@@ -3792,11 +4100,11 @@ export const getUserProgramBySlug = (slug: string): {
       timeFrame: '4 weeks',
       title: 'Hamstring Strain Recovery',
       docId: `recovery-hamstring-${Date.now()}`
-    };
+    });
   }
 
   if (normalizedSlug.includes('upper-back') || normalizedSlug.includes('upperback')) {
-    return {
+    return normalizeUserProgram({
       programs: updatedWeekPrograms,
       diagnosis: {
         diagnosis: 'Upper Back & Core Dysfunction',
@@ -3837,11 +4145,11 @@ export const getUserProgramBySlug = (slug: string): {
       timeFrame: '4 weeks',
       title: 'Upper Back & Core Dysfunction Recovery',
       docId: `recovery-upperback-${Date.now()}`
-    };
+    });
   }
 
   if (normalizedSlug.includes('core')) {
-    return {
+    return normalizeUserProgram({
       programs: updatedWeekPrograms,
       diagnosis: {
         diagnosis: 'Core Instability',
@@ -3882,7 +4190,7 @@ export const getUserProgramBySlug = (slug: string): {
       timeFrame: '4 weeks',
       title: 'Core Instability Recovery',
       docId: `recovery-core-${Date.now()}`
-    };
+    });
   }
 
   // Fallback for any unmatched slugs

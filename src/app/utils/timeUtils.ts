@@ -50,11 +50,14 @@ export function formatMinutes(minutes: number): string {
   const wholeMinutes = Math.floor(minutes);
   const remainingSeconds = Math.round((minutes - wholeMinutes) * 60);
   
+  if (wholeMinutes === 0) {
+    return `${remainingSeconds} sec`;
+  }
+
   if (remainingSeconds === 0) {
     return `${wholeMinutes} min`;
   }
   
   return `${wholeMinutes} min ${remainingSeconds} sec`;
 }
-
 
