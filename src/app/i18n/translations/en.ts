@@ -673,6 +673,28 @@ const translations = {
   'calendar.weekdays.sat': 'Sat',
   'calendar.weekdays.sun': 'Sun',
 
+  // Workout session translations
+  'workout.startWorkout': 'Start Workout',
+  'workout.resumeWorkout': 'Resume Workout',
+  'workout.exercise': 'Exercise',
+  'workout.currentSet': 'Current Set',
+  'workout.completeSet': 'Complete Set',
+  'workout.nextExercise': 'Next Exercise',
+  'workout.completeWorkout': 'Complete Workout',
+  'workout.finishWorkout': 'Finish Workout',
+  'workout.workoutComplete': 'Workout Complete!',
+  'workout.greatJob': 'Great job! You completed all exercises.',
+  'workout.restTime': 'Rest',
+  'workout.skipRest': 'Skip',
+  'workout.extendRest': '+15s',
+  'workout.nextSetReady': 'Get ready for your next set',
+  'workout.previous': 'Previous',
+  'workout.next': 'Next',
+  'workout.sets': 'sets',
+  'workout.exercisesCompleted': 'exercises',
+  'workout.setsCompleted': 'sets',
+  'workout.duration': 'Duration',
+
   // Programs page translations
   'programs.title': 'My Programs',
   'programs.noPrograms': 'No Programs Found',

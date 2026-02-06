@@ -647,6 +647,28 @@ const translations = {
   'calendar.weekdays.sat': 'Lør',
   'calendar.weekdays.sun': 'Søn',
 
+  // Workout session translations
+  'workout.startWorkout': 'Start trening',
+  'workout.resumeWorkout': 'Fortsett trening',
+  'workout.exercise': 'Øvelse',
+  'workout.currentSet': 'Nåværende sett',
+  'workout.completeSet': 'Fullfør sett',
+  'workout.nextExercise': 'Neste øvelse',
+  'workout.completeWorkout': 'Fullfør trening',
+  'workout.finishWorkout': 'Avslutt trening',
+  'workout.workoutComplete': 'Trening fullført!',
+  'workout.greatJob': 'Bra jobba! Du fullførte alle øvelsene.',
+  'workout.restTime': 'Hvile',
+  'workout.skipRest': 'Hopp over',
+  'workout.extendRest': '+15s',
+  'workout.nextSetReady': 'Gjør deg klar for neste sett',
+  'workout.previous': 'Forrige',
+  'workout.next': 'Neste',
+  'workout.sets': 'sett',
+  'workout.exercisesCompleted': 'øvelser',
+  'workout.setsCompleted': 'sett',
+  'workout.duration': 'Varighet',
+
   // Programs page translations
   'programs.title': 'Mine Programmer',
   'programs.noPrograms': 'Ingen Programmer Funnet',

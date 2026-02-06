@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef, Suspense } from 'react';
+import { useState, useEffect, useRef, Suspense, useCallback } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { ProgramStatus, Exercise, ProgramDay, ExerciseProgram } from '@/app/types/program';
 import { ProgramDayComponent } from '@/app/components/ui/ProgramDayComponent';
@@ -14,6 +14,7 @@ import { useTranslation } from '@/app/i18n/TranslationContext';
 import { logAnalyticsEvent } from '../../../utils/analytics';
 import { NavigationMenu } from '@/app/components/ui/NavigationMenu';
 import { getDayFullName } from '@/app/utils/dateutils';
+import { markDayAsCompleted } from '@/app/services/workoutSessionService';
 
 function ErrorDisplay({ error }: { error: Error }) {
   return (
@@ -72,7 +73,7 @@ function DayDetailPageContent() {
   const dayNumber = parseInt(dayParam);
   
   // Access context data
-  const { error: authError } = useAuth();
+  const { user, error: authError } = useAuth();
   const { program, programStatus, userPrograms, activeProgram } = useUser();
   const { selectedDayData } = useSelectedDay();
   const { t } = useTranslation();
@@ -348,6 +349,18 @@ function DayDetailPageContent() {
     router.push(`/program`);
   };
 
+  // Handle workout completion - mark day as done in Firebase
+  const handleWorkoutComplete = useCallback(async () => {
+    if (!user?.uid || !activeProgram?.docId || !dayData) return;
+    
+    try {
+      await markDayAsCompleted(user.uid, activeProgram.docId, dayData.day);
+      logAnalyticsEvent('workout_completed', { day: dayData.day });
+    } catch (err) {
+      console.error('Failed to mark day as completed:', err);
+    }
+  }, [user?.uid, activeProgram?.docId, dayData]);
+
   // Hide navigation menu when video is open
   useEffect(() => {
     if (videoUrl) {
@@ -565,6 +578,7 @@ function DayDetailPageContent() {
             onExerciseToggle={handleExerciseToggle}
             programTitle={selectedProgram?.title || 'Exercise Program'}
             onTitleClick={handleBackClick}
+            onWorkoutComplete={handleWorkoutComplete}
           />
         </div>
       </div>

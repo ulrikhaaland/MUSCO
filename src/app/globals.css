@@ -406,6 +406,117 @@ iframe {
   animation: pulse-subtle 2s ease-in-out infinite;
 }
 
+/* ============================================
+   Workout Session Animations
+   ============================================ */
+
+/* Set circle completion pop */
+@keyframes set-complete {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.3);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.animate-set-complete {
+  animation: set-complete 300ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* Exercise slide in from right */
+@keyframes slide-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Exercise slide in from left */
+@keyframes slide-in-left {
+  from {
+    opacity: 0;
+    transform: translateX(-40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-slide-in-right {
+  animation: slide-in-right 250ms cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+}
+
+.animate-slide-in-left {
+  animation: slide-in-left 250ms cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+}
+
+/* Completion ring draw animation */
+@keyframes ring-draw {
+  from {
+    stroke-dashoffset: var(--ring-circumference);
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.animate-ring-draw {
+  animation: ring-draw 1.2s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+}
+
+/* Rest timer breathing glow */
+@keyframes breathe {
+  0%, 100% {
+    filter: drop-shadow(0 0 6px rgba(99, 102, 241, 0.3));
+  }
+  50% {
+    filter: drop-shadow(0 0 16px rgba(99, 102, 241, 0.6));
+  }
+}
+
+.animate-breathe {
+  animation: breathe 3s ease-in-out infinite;
+}
+
+/* Celebration fade in */
+@keyframes celebration-in {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-celebration-in {
+  animation: celebration-in 500ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* FAB pulse glow */
+@keyframes fab-glow {
+  0%, 100% {
+    box-shadow: 0 0 8px rgba(99, 102, 241, 0.3), 0 4px 12px rgba(99, 102, 241, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(99, 102, 241, 0.5), 0 4px 20px rgba(99, 102, 241, 0.35);
+  }
+}
+
+.animate-fab-glow {
+  animation: fab-glow 2s ease-in-out infinite;
+}
+
 /* Safe area insets with fallbacks for older browsers */
 :root {
   --safe-area-inset-top: env(safe-area-inset-top, 0px);

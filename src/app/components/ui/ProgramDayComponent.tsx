@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useMemo } from 'react';
+import { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { Exercise, ProgramDay, getDayType } from '@/app/types/program';
 import ExerciseCard from './ExerciseCard';
 // import Chip from './Chip';
@@ -6,6 +6,9 @@ import BodyPartFilter from './BodyPartFilter';
 import { useTranslation } from '@/app/i18n/TranslationContext';
 import InfoBadge from './InfoBadge';
 import { TextButton } from './TextButton';
+import { useWorkoutSession, getWorkoutProgress } from '@/app/hooks/useWorkoutSession';
+import WorkoutFAB from './WorkoutFAB';
+import WorkoutSession from './WorkoutSession';
 
 interface ProgramDayComponentProps {
   day: ProgramDay;
@@ -19,6 +22,10 @@ interface ProgramDayComponentProps {
   onClick?: () => void;
   programTitle?: string;
   onTitleClick?: () => void;
+  /** Called when workout is completed */
+  onWorkoutComplete?: () => void;
+  /** Hide the workout FAB (e.g., for rest days or when viewing past days) */
+  hideWorkoutFAB?: boolean;
 }
 
 export function ProgramDayComponent({
@@ -33,6 +40,8 @@ export function ProgramDayComponent({
   onClick,
   programTitle,
   onTitleClick,
+  onWorkoutComplete,
+  hideWorkoutFAB = false,
 }: ProgramDayComponentProps) {
   const { t } = useTranslation();
   // State to track removed body parts
@@ -41,6 +50,9 @@ export function ProgramDayComponent({
   const [isTitleHovered, setIsTitleHovered] = useState(false);
   // State to track viewport width for responsive adjustments
   const [_isMobile, setIsMobile] = useState(false);
+  // Workout session state
+  const [session, sessionActions] = useWorkoutSession();
+  const [showWorkoutSession, setShowWorkoutSession] = useState(false);
 
   // Get all unique body parts from exercises
   const allBodyParts = useMemo(() => {
@@ -98,6 +110,56 @@ export function ProgramDayComponent({
       window.removeEventListener('resize', checkIsMobile);
     };
   }, []);
+
+  // Resume workout session if one exists for this day's exercises
+  useEffect(() => {
+    if (session.isActive && session.exercises.length > 0) {
+      // Check if the active session matches this day's exercises
+      const sessionExerciseIds = session.exercises.map(e => e.id || e.exerciseId || e.name).join(',');
+      const dayExerciseIds = (filteredExercises || [])
+        .filter(e => !e.warmup)
+        .map(e => e.id || e.exerciseId || e.name)
+        .join(',');
+      
+      if (sessionExerciseIds === dayExerciseIds) {
+        setShowWorkoutSession(true);
+      }
+    }
+  }, [session.isActive, session.exercises, filteredExercises]);
+
+  // Handle starting workout
+  const handleStartWorkout = useCallback(() => {
+    const exercises = filteredExercises || [];
+    if (exercises.length > 0) {
+      sessionActions.startSession(exercises);
+      setShowWorkoutSession(true);
+    }
+  }, [filteredExercises, sessionActions]);
+
+  // Handle closing workout session (minimize to FAB)
+  const handleCloseWorkoutSession = useCallback(() => {
+    setShowWorkoutSession(false);
+  }, []);
+
+  // Handle workout completion
+  const handleWorkoutComplete = useCallback(() => {
+    onWorkoutComplete?.();
+  }, [onWorkoutComplete]);
+
+  // Handle FAB click - start or resume workout
+  const handleFABClick = useCallback(() => {
+    if (session.isActive) {
+      setShowWorkoutSession(true);
+    } else {
+      handleStartWorkout();
+    }
+  }, [session.isActive, handleStartWorkout]);
+
+  // Determine if FAB should be shown
+  const dayType = getDayType(day);
+  const hasExercises = (filteredExercises?.length ?? 0) > 0;
+  const showFAB = !hideWorkoutFAB && hasExercises && dayType !== 'rest';
+  const workoutProgress = getWorkoutProgress(session);
 
   return (
     <div className="h-full flex flex-col" onClick={onClick}>
@@ -222,6 +284,26 @@ export function ProgramDayComponent({
           </div>
         )}
       </div>
+
+      {/* Workout FAB */}
+      {showFAB && (
+        <WorkoutFAB
+          onClick={handleFABClick}
+          isActive={session.isActive}
+          progress={workoutProgress}
+        />
+      )}
+
+      {/* Workout Session Modal */}
+      {showWorkoutSession && session.isActive && (
+        <WorkoutSession
+          session={session}
+          actions={sessionActions}
+          onClose={handleCloseWorkoutSession}
+          onVideoClick={onVideoClick}
+          onComplete={handleWorkoutComplete}
+        />
+      )}
     </div>
   );
 }
