@@ -11,6 +11,7 @@ interface DayCellProps {
   isSelected: boolean;
   dayType: DayType;
   dayTypeLabel: string;
+  isCompleted?: boolean;
   onClick: () => void;
 }
 
@@ -21,6 +22,7 @@ export const DayCell = memo(function DayCell({
   isSelected,
   dayType,
   dayTypeLabel,
+  isCompleted = false,
   onClick,
 }: DayCellProps) {
   const hasProgramDay = dayType !== null;
@@ -71,7 +73,12 @@ export const DayCell = memo(function DayCell({
         </div>
         {hasProgramDay && isCurrentMonth && (
           <div className="mt-auto">
-            <div className="text-xs text-white mt-1 flex items-center justify-center opacity-65">
+            <div className={`text-xs mt-1 flex items-center justify-center gap-1 ${isCompleted ? 'text-emerald-400 opacity-80' : 'text-white opacity-65'}`}>
+              {isCompleted && (
+                <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                </svg>
+              )}
               {dayTypeLabel}
             </div>
           </div>

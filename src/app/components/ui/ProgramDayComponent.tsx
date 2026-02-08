@@ -25,6 +25,8 @@ interface ProgramDayComponentProps {
   onTitleClick?: () => void;
   /** Called when workout is completed */
   onWorkoutComplete?: () => void;
+  /** Called when user restarts a completed workout (resets completion) */
+  onWorkoutRestart?: () => void;
   /** Hide the workout FAB (e.g., for rest days or when viewing past days) */
   hideWorkoutFAB?: boolean;
 }
@@ -42,6 +44,7 @@ export function ProgramDayComponent({
   programTitle,
   onTitleClick,
   onWorkoutComplete,
+  onWorkoutRestart,
   hideWorkoutFAB = false,
 }: ProgramDayComponentProps) {
   const { t } = useTranslation();
@@ -172,18 +175,40 @@ export function ProgramDayComponent({
     onWorkoutComplete?.();
   }, [onWorkoutComplete]);
 
-  // Handle FAB click - start or resume workout
+  // Check if the active session belongs to this day's exercises
+  const sessionMatchesDay = useMemo(() => {
+    if (!session.isActive || session.exercises.length === 0) return false;
+    const sessionIds = session.exercises.map(e => e.id || e.exerciseId || e.name).join(',');
+    const dayIds = (filteredExercises || [])
+      .map(e => e.id || e.exerciseId || e.name)
+      .join(',');
+    return sessionIds === dayIds;
+  }, [session.isActive, session.exercises, filteredExercises]);
+
+  // Handle FAB click - resume if this day's session, otherwise start new
   const handleFABClick = useCallback(() => {
-    if (session.isActive) {
+    if (session.isActive && sessionMatchesDay) {
       setShowWorkoutSession(true);
     } else {
+      // Start new session (replaces any existing one from another day)
       handleStartWorkout();
     }
-  }, [session.isActive, handleStartWorkout]);
+  }, [session.isActive, sessionMatchesDay, handleStartWorkout]);
+
+  // Completion state
+  const isCompleted = day.completed === true;
+
+  const completedDateStr = useMemo(() => {
+    if (!day.completedAt) return '';
+    const d = day.completedAt instanceof Date ? day.completedAt : new Date(day.completedAt as unknown as string);
+    if (isNaN(d.getTime())) return '';
+    return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+  }, [day.completedAt]);
 
   // Determine if FAB should be shown
   const dayType = getDayType(day);
   const hasExercises = (filteredExercises?.length ?? 0) > 0;
+
   const showFAB = !hideWorkoutFAB && hasExercises && dayType !== 'rest';
   const workoutProgress = getWorkoutProgress(session);
 
@@ -221,6 +246,27 @@ export function ProgramDayComponent({
                 </svg>
               )}
             </button>
+          </div>
+        )}
+
+        {/* Completion banner */}
+        {isCompleted && (
+          <div className="mb-4 rounded-xl bg-emerald-500/10 ring-1 ring-emerald-500/25 px-4 py-3">
+            <div className="flex items-center gap-3">
+              <span className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center shrink-0">
+                <svg className="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                </svg>
+              </span>
+              <div className="flex-1 min-w-0">
+                <p className="text-emerald-400 font-semibold text-sm">{t('workout.workoutComplete')}</p>
+                {completedDateStr && (
+                  <p className="text-emerald-400/60 text-xs mt-0.5">
+                    {t('workout.completedOn').replace('{date}', completedDateStr)}
+                  </p>
+                )}
+              </div>
+            </div>
           </div>
         )}
 
@@ -324,8 +370,9 @@ export function ProgramDayComponent({
       {showFAB && (
         <WorkoutFAB
           onClick={handleFABClick}
-          isActive={session.isActive}
-          progress={workoutProgress}
+          isActive={session.isActive && sessionMatchesDay}
+          progress={sessionMatchesDay ? workoutProgress : 0}
+          completed={isCompleted && !session.isActive}
         />
       )}
 
@@ -337,6 +384,8 @@ export function ProgramDayComponent({
           onClose={handleCloseWorkoutSession}
           onVideoClick={onVideoClick}
           onComplete={handleWorkoutComplete}
+          onRestart={onWorkoutRestart}
+          estimatedDurationMin={day.duration}
         />
       )}
     </div>

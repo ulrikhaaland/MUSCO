@@ -14,11 +14,9 @@ import {
   formatElapsedTime,
   getTotalCompletedSets,
 } from '@/app/hooks/useWorkoutSession';
-import { formatRestTime } from '@/app/utils/timeUtils';
+import { formatRestTime, formatMinutes } from '@/app/utils/timeUtils';
 import { PLACEHOLDER_VALUES } from '@/app/constants';
 import RestTimer from './RestTimer';
-import { Chip } from './Chip';
-import ConfirmationDialog from './ConfirmationDialog';
 
 const isPlaceholderValue = (value: string | undefined): boolean => {
   if (!value) return true;
@@ -32,19 +30,13 @@ interface WorkoutSessionProps {
   onClose: () => void;
   onVideoClick?: (exercise: Exercise) => void;
   onComplete?: () => void;
+  /** Called when user restarts a previously completed workout */
+  onRestart?: () => void;
+  /** Estimated workout duration in minutes (from ProgramDay.duration) */
+  estimatedDurationMin?: number;
 }
 
 type SlideDirection = 'right' | 'left' | null;
-
-// Map exercise body parts to Chip variants
-function getChipVariant(bodyPart?: string): 'strength' | 'cardio' | 'recovery' | 'warmup' | 'category' {
-  if (!bodyPart) return 'category';
-  const lower = bodyPart.toLowerCase();
-  if (lower === 'cardio') return 'cardio';
-  if (lower === 'warmup') return 'warmup';
-  if (lower === 'recovery' || lower === 'stretching') return 'recovery';
-  return 'strength';
-}
 
 /**
  * Map exercise bodyPart string to a body part SVG illustration path.
@@ -90,6 +82,8 @@ export function WorkoutSession({
   onClose,
   onVideoClick,
   onComplete,
+  onRestart,
+  estimatedDurationMin,
 }: WorkoutSessionProps) {
   const { t } = useTranslation();
 
@@ -106,13 +100,29 @@ export function WorkoutSession({
   const canGoNext = session.currentExerciseIndex < session.exercises.length - 1;
   const isLastSetOfCurrent = (session.currentSet >= totalSets);
 
-  // Elapsed time
-  const elapsedSeconds = useElapsedTime(session.startTime, session.isActive);
+  // Duration-based exercises (cardio, warmup, stretching) have no sets/reps
+  const isDurationExercise = currentExercise && (
+    currentExercise.bodyPart === 'Cardio' ||
+    currentExercise.bodyPart === 'Warmup' ||
+    currentExercise.warmup === true ||
+    currentExercise.exerciseType?.includes('cardio') ||
+    currentExercise.exerciseType?.includes('warmup') ||
+    currentExercise.exerciseType?.includes('stretching') ||
+    (!currentExercise.sets && !currentExercise.repetitions && !!currentExercise.duration)
+  );
 
   // Exit menu state
   const [showExitMenu, setShowExitMenu] = useState(false);
   // Exercise details panel
   const [showDetails, setShowDetails] = useState(false);
+  // Whether the user has tapped "Start Workout", and when
+  const [hasStarted, setHasStarted] = useState(false);
+  const [actualStartTime, setActualStartTime] = useState<Date | null>(null);
+  // Duration exercise countdown end time
+  const [durationTimerEnd, setDurationTimerEnd] = useState<Date | null>(null);
+
+  // Elapsed time -- ticks only between "Start Workout" and workout completion
+  const elapsedSeconds = useElapsedTime(actualStartTime, hasStarted && !workoutComplete);
 
   // Slide animation direction
   const [slideDir, setSlideDir] = useState<SlideDirection>(null);
@@ -126,14 +136,27 @@ export function WorkoutSession({
     slideKey.current += 1;
     setSlideDir(dir);
     setShowDetails(false);
+    setDurationTimerEnd(null);
   }, []);
 
   // --- Handlers ---
 
   const handleCompleteSet = useCallback(() => {
+    if (!hasStarted) {
+      setHasStarted(true);
+      setActualStartTime(new Date());
+      // Reset completion status when restarting a workout
+      onRestart?.();
+      // Start duration countdown for duration exercises
+      if (isDurationExercise && currentExercise?.duration) {
+        setDurationTimerEnd(new Date(Date.now() + currentExercise.duration * 60 * 1000));
+      }
+      return;
+    }
+    // Clear duration timer when advancing
+    setDurationTimerEnd(null);
     actions.completeSet();
-    // If not last set (and not completing workout), the set circle will animate via CSS
-  }, [actions]);
+  }, [actions, hasStarted, isDurationExercise, currentExercise, onRestart]);
 
   const handleFinishWorkout = useCallback(() => {
     onComplete?.();
@@ -196,43 +219,6 @@ export function WorkoutSession({
   }, []);
 
   if (!currentExercise && !workoutComplete) return null;
-
-  // --- Exercise pills for header ---
-  const renderExercisePills = () => (
-    <div className="flex items-center gap-1 overflow-hidden max-w-[50%]">
-      {session.exercises.map((ex, i) => {
-        const exSets = ex.sets ?? 1;
-        const exCompleted = session.completedSets[i] ?? 0;
-        const isDone = exCompleted >= exSets;
-        const isCurrent = i === session.currentExerciseIndex;
-
-        return (
-          <button
-            key={i}
-            onClick={() => {
-              if (i < session.currentExerciseIndex) {
-                triggerSlide('left');
-              } else if (i > session.currentExerciseIndex) {
-                triggerSlide('right');
-              }
-              actions.goToExercise(i);
-            }}
-            className={`
-              h-1.5 rounded-full transition-all duration-300 min-w-[6px]
-              ${isCurrent 
-                ? 'bg-indigo-500 flex-[2]' 
-                : isDone 
-                  ? 'bg-indigo-500/60 flex-1' 
-                  : 'bg-gray-700 flex-1'
-              }
-              ${isCurrent ? 'animate-pulse-subtle' : ''}
-            `}
-            aria-label={`${t('workout.exercise')} ${i + 1}`}
-          />
-        );
-      })}
-    </div>
-  );
 
   // --- Set circles ---
   const renderSetCircles = () => (
@@ -381,61 +367,93 @@ export function WorkoutSession({
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
     >
-      {/* ── End workout confirmation dialog ── */}
-      <ConfirmationDialog
-        isOpen={showExitMenu}
-        onClose={() => setShowExitMenu(false)}
-        onConfirm={handleCancelWorkout}
-        title={t('workout.endWorkout')}
-        description={t('workout.endWorkoutConfirm')}
-        confirmText={t('workout.endWorkout')}
-        cancelText={t('workout.continueWorkout')}
-        confirmButtonStyle="danger"
-      />
+      {/* ── End workout menu overlay ── */}
+      {showExitMenu && (
+        <div className="absolute inset-0 z-[110] bg-black/60 backdrop-blur-sm flex items-center justify-center px-6 animate-scale-in">
+          <div className="bg-gray-800 ring-1 ring-gray-700/60 rounded-2xl p-6 w-full max-w-xs space-y-3">
+            <p className="text-white font-semibold text-center mb-1">
+              {t('workout.endWorkout')}
+            </p>
+            <p className="text-gray-400 text-sm text-center mb-4">
+              {t('workout.endWorkoutConfirm')}
+            </p>
+            <button
+              onClick={() => {
+                setShowExitMenu(false);
+                onComplete?.();
+                actions.endSession();
+                onClose();
+              }}
+              className="
+                w-full py-3 rounded-xl text-sm font-medium
+                bg-emerald-500/15 hover:bg-emerald-500/25 active:bg-emerald-500/35
+                ring-1 ring-emerald-500/30
+                text-emerald-400 transition-colors
+              "
+            >
+              {t('workout.markCompleted')}
+            </button>
+            <button
+              onClick={handleCancelWorkout}
+              className="
+                w-full py-3 rounded-xl text-sm font-medium
+                bg-red-500/15 hover:bg-red-500/25 active:bg-red-500/35
+                ring-1 ring-red-500/30
+                text-red-400 transition-colors
+              "
+            >
+              {t('workout.discardWorkout')}
+            </button>
+            <button
+              onClick={() => setShowExitMenu(false)}
+              className="
+                w-full py-3 rounded-xl text-sm font-medium
+                text-gray-500 hover:text-gray-400 transition-colors
+              "
+            >
+              {t('workout.continueWorkout')}
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* ── Header ── */}
       <header className="flex items-center justify-between px-4 py-3 bg-gray-900 border-b border-gray-800/60">
-        {/* Left: minimize + end */}
-        <div className="flex items-center gap-1">
-          <button
-            onClick={handleMinimize}
-            className="p-2 -ml-2 rounded-lg hover:bg-gray-800 active:bg-gray-700 transition-colors"
-            aria-label="Minimize"
-          >
-            <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-          <button
-            onClick={() => setShowExitMenu(true)}
-            className="px-2.5 py-1 rounded-lg text-sm font-semibold text-red-400/80 hover:text-red-400 hover:bg-red-500/10 transition-colors"
-          >
-            {t('workout.endWorkout')}
-          </button>
-        </div>
+        {/* Left: end workout */}
+        <button
+          onClick={() => setShowExitMenu(true)}
+          className="px-2.5 py-1 -ml-1 rounded-lg text-sm font-semibold text-red-400/80 hover:text-red-400 hover:bg-red-500/10 transition-colors"
+        >
+          {t('workout.endWorkout')}
+        </button>
 
-        {/* Center: elapsed timer */}
+        {/* Center: elapsed / remaining timer */}
         <div className="flex items-center gap-1.5 text-gray-400">
           <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
           <span className="text-sm font-medium tabular-nums">{formatElapsedTime(elapsedSeconds)}</span>
+          {estimatedDurationMin && estimatedDurationMin > 0 && (() => {
+            const remainingSeconds = Math.max(0, estimatedDurationMin * 60 - elapsedSeconds);
+            return (
+              <span className={`text-sm tabular-nums ${remainingSeconds === 0 ? 'text-emerald-400' : 'text-gray-500'}`}>
+                / -{formatElapsedTime(remainingSeconds)}
+              </span>
+            );
+          })()}
         </div>
 
-        {/* Right: exercise pills */}
-        {renderExercisePills()}
+        {/* Right: minimize (X) */}
+        <button
+          onClick={handleMinimize}
+          className="p-2 -mr-2 rounded-lg hover:bg-gray-800 active:bg-gray-700 transition-colors"
+          aria-label="Minimize"
+        >
+          <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
       </header>
-
-      {/* ── Progress bar with percentage ── */}
-      <div className="relative h-5 bg-gray-800/60 flex items-center">
-        <div 
-          className="absolute inset-y-0 left-0 bg-gradient-to-r from-indigo-600 to-indigo-400 transition-all duration-500 ease-out"
-          style={{ width: `${progress}%` }}
-        />
-        <span className="relative z-10 w-full text-center text-[10px] font-semibold text-white/70 tabular-nums">
-          {progress}%
-        </span>
-      </div>
 
       {/* ── Main content ── */}
       <main className="flex-1 flex flex-col px-4 pt-4 pb-4 overflow-y-auto">
@@ -452,146 +470,126 @@ export function WorkoutSession({
         >
           {/* Card content */}
           <div className="relative z-10 flex-1 flex flex-col">
-            {/* Top: name + video + chip */}
-            <div className="flex items-start justify-between mb-1">
-              <div className="flex-1 min-w-0 pr-3">
-                <h1 className="text-xl md:text-2xl font-bold text-white leading-tight">
-                  {currentExercise.name}
-                </h1>
-              </div>
+            {/* Exercise name + video */}
+            <div className="flex items-start justify-between mb-2">
+              <h1 className="text-xl md:text-2xl font-bold text-white leading-tight flex-1 min-w-0 pr-3">
+                {currentExercise.name}
+              </h1>
               {onVideoClick && (
                 <button
                   onClick={() => onVideoClick(currentExercise)}
                   className="
-                    flex items-center gap-1.5 px-3 py-2 rounded-xl
-                    bg-indigo-600/20 hover:bg-indigo-600/30 active:bg-indigo-600/40
-                    ring-1 ring-indigo-500/30
+                    inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl
+                    bg-indigo-600/15 hover:bg-indigo-600/25 active:bg-indigo-600/35
+                    ring-1 ring-indigo-500/25
                     transition-colors duration-150
-                    flex-shrink-0
+                    text-xs font-medium text-indigo-400 flex-shrink-0
                   "
                   aria-label="Watch video"
                 >
-                  <svg className="w-4 h-4 text-indigo-400" fill="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M8 5v14l11-7z" />
                   </svg>
-                  <span className="text-xs font-medium text-indigo-400">Video</span>
+                  Video
                 </button>
               )}
             </div>
 
-            {currentExercise.bodyPart && (
-              <div className="mb-2">
-                <Chip variant={getChipVariant(currentExercise.bodyPart)} size="sm">
-                  {currentExercise.bodyPart}
-                </Chip>
+            {/* Description */}
+            {currentExercise.description && (
+              <p className="text-gray-400 text-sm leading-relaxed mb-2">
+                {currentExercise.description}
+              </p>
+            )}
+
+            {/* Precaution */}
+            {!isPlaceholderValue(currentExercise.precaution) && (
+              <div className="text-sm leading-relaxed mb-2 rounded-lg bg-red-500/10 ring-1 ring-red-500/20 px-3 py-2">
+                <span className="font-semibold text-red-400 text-xs uppercase tracking-wide">{t('program.precaution')}</span>
+                <p className="text-white mt-0.5">{currentExercise.precaution}</p>
               </div>
             )}
 
-            {/* Exercise info -- collapsible, below chip */}
-            {(currentExercise.description || 
-              (!isPlaceholderValue(currentExercise.modification)) || 
-              (!isPlaceholderValue(currentExercise.precaution)) || 
-              (currentExercise.steps && currentExercise.steps.length > 0)) && (
-              <>
-                <button
-                  onClick={() => setShowDetails(prev => !prev)}
-                  className="flex items-center gap-1 text-xs font-medium text-indigo-400/70 hover:text-indigo-400 transition-colors mb-2"
-                >
-                  <svg className={`w-3.5 h-3.5 transition-transform duration-200 ${showDetails ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                  {showDetails ? t('program.seeLess') : t('workout.exerciseInfo')}
-                </button>
-
-                {showDetails && (
-                  <div className="w-full mb-3 max-h-[180px] overflow-y-auto space-y-3 text-sm rounded-xl bg-gray-800/40 p-4 ring-1 ring-gray-700/30">
-                    {currentExercise.description && (
-                      <p className="text-gray-300 leading-relaxed">
-                        {currentExercise.description}
-                      </p>
-                    )}
-                    {!isPlaceholderValue(currentExercise.modification) && (
-                      <p className="text-yellow-200/90 leading-relaxed">
-                        <span className="font-medium">{t('program.modification')}</span>{' '}
-                        {currentExercise.modification}
-                      </p>
-                    )}
-                    {!isPlaceholderValue(currentExercise.precaution) && (
-                      <p className="text-red-400/90 leading-relaxed">
-                        <span className="font-medium">{t('program.precaution')}</span>{' '}
-                        {currentExercise.precaution}
-                      </p>
-                    )}
-                    {currentExercise.steps && currentExercise.steps.length > 0 && (
-                      <div>
-                        <p className="font-medium text-gray-400 mb-1.5">{t('program.viewInstructions')}</p>
-                        <ol className="list-decimal pl-5 space-y-1 text-gray-300">
-                          {currentExercise.steps.map((step, i) => (
-                            <li key={i} className="leading-relaxed">{step}</li>
-                          ))}
-                        </ol>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </>
+            {/* Modification */}
+            {!isPlaceholderValue(currentExercise.modification) && (
+              <div className="text-sm leading-relaxed mb-2 rounded-lg bg-yellow-500/10 ring-1 ring-yellow-500/20 px-3 py-2">
+                <span className="font-semibold text-yellow-400 text-xs uppercase tracking-wide">{t('program.modification')}</span>
+                <p className="text-white mt-0.5">{currentExercise.modification}</p>
+              </div>
             )}
 
-            {/* Body part illustration -- fills available space */}
-            {(() => {
+            {/* Expandable instructions */}
+            {currentExercise.steps && currentExercise.steps.length > 0 && (
+              <div className={`mb-2 ${showDetails ? 'flex-1 flex flex-col min-h-0' : ''}`}>
+                <button
+                  onClick={() => setShowDetails(prev => !prev)}
+                  className="inline-flex items-center gap-1 text-xs font-medium text-indigo-400/70 hover:text-indigo-400 transition-colors"
+                >
+                  <svg className={`w-3 h-3 transition-transform duration-200 ${showDetails ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
+                  </svg>
+                  {showDetails ? t('program.hideInstructions') : t('program.viewInstructions')}
+                </button>
+                {showDetails && (
+                  <div className="mt-2 flex-1 overflow-y-auto text-sm rounded-xl bg-gray-800/40 p-4 ring-1 ring-gray-700/30">
+                    <ol className="list-decimal pl-5 space-y-1.5 text-gray-300">
+                      {currentExercise.steps.map((step, i) => (
+                        <li key={i} className="leading-relaxed">{step}</li>
+                      ))}
+                    </ol>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Body part illustration + label -- hidden when instructions expanded */}
+            {!showDetails && (() => {
               const imgSrc = getBodyPartImage(currentExercise.bodyPart);
               return (
-                <div className="relative flex-1 min-h-0">
-                  {imgSrc && (
-                    <div className="absolute inset-0 flex items-center justify-center">
+                <div className="relative flex-1 min-h-0 my-4">
+                  <div className="absolute inset-0 flex flex-col items-center justify-center py-4">
+                    {currentExercise.bodyPart && (
+                      <span className="text-xs font-semibold uppercase tracking-[0.2em] text-gray-300 mb-1">
+                        {currentExercise.bodyPart}
+                      </span>
+                    )}
+                    {imgSrc && (
                       <Image
                         src={imgSrc}
                         alt=""
                         width={400}
                         height={400}
-                        className="opacity-[0.15] object-contain select-none w-full h-full"
+                        className="opacity-[0.35] object-contain select-none w-full h-full"
                         draggable={false}
                         priority={false}
                       />
-                    </div>
-                  )}
+                    )}
+                  </div>
                 </div>
               );
             })()}
 
-            {/* Bottom: sets/reps, circles, CTA */}
-            <div className="flex flex-col items-center">
-              {/* Sets × Reps + rest info */}
-              {!isResting && (
-                <div className="text-center mb-4">
-                  <div className="flex items-baseline justify-center gap-3">
-                    <span className="text-5xl font-bold text-white tabular-nums">{totalSets}</span>
-                    <span className="text-2xl text-gray-500 font-light">×</span>
-                    <span className="text-5xl font-bold text-white tabular-nums">
-                      {currentExercise.repetitions ?? '—'}
-                    </span>
-                  </div>
-                  {restTime > 0 && (
-                    <p className="text-gray-500 text-sm mt-1">
-                      {formatRestTime(restTime)} {t('workout.restTime').toLowerCase()}
-                    </p>
-                  )}
-                </div>
-              )}
-
-              {/* Set circles or rest timer */}
-              {isResting && session.restTimerEnd ? (
-                <RestTimer
-                  endTime={session.restTimerEnd}
-                  totalSeconds={restTime}
-                  onSkip={actions.skipRest}
-                  onExtend={(s) => actions.extendRest(s)}
-                />
-              ) : (
+            {/* Bottom: exercise metrics + CTA */}
+            <div className="flex flex-col items-center w-full">
+              {isDurationExercise ? (
                 <>
-                  {renderSetCircles()}
+                  {/* Duration countdown or static display */}
+                  {currentExercise.duration && (
+                    durationTimerEnd ? (
+                      <DurationCountdown 
+                        endTime={durationTimerEnd} 
+                        totalSeconds={currentExercise.duration * 60} 
+                      />
+                    ) : (
+                      <div className="text-center mb-4">
+                        <span className="text-4xl font-bold text-white">
+                          {formatMinutes(currentExercise.duration)}
+                        </span>
+                      </div>
+                    )
+                  )}
 
-                  {/* CTA Button */}
+                  {/* CTA */}
                   <div className="pt-4 w-full">
                     <button
                       onClick={handleCompleteSet}
@@ -601,20 +599,79 @@ export function WorkoutSession({
                         transition-all duration-150
                         active:scale-[0.96]
                         shadow-lg
-                        ${isLastSetOfCurrent && !canGoNext
+                        ${!canGoNext
                           ? 'bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 shadow-emerald-600/20'
-                          : isLastSetOfCurrent
-                            ? 'bg-gradient-to-r from-indigo-500 to-violet-500 hover:from-indigo-400 hover:to-violet-400 shadow-indigo-600/20'
-                            : 'bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 shadow-indigo-600/20'
+                          : 'bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 shadow-indigo-600/20'
                         }
                       `}
                     >
-                      {isLastSetOfCurrent
-                        ? (canGoNext ? t('workout.nextExercise') : t('workout.completeWorkout'))
-                        : t('workout.completeSet')
+                      {!hasStarted
+                        ? t('workout.startWorkout')
+                        : canGoNext ? t('workout.nextExercise') : t('workout.completeWorkout')
                       }
                     </button>
                   </div>
+                </>
+              ) : (
+                <>
+                  {/* Sets × Reps + rest info */}
+                  {!isResting && (
+                    <div className="text-center mb-4">
+                      <div className="flex items-baseline justify-center gap-3">
+                        <span className="text-5xl font-bold text-white tabular-nums">{totalSets}</span>
+                        <span className="text-2xl text-gray-500 font-light">×</span>
+                        <span className="text-5xl font-bold text-white tabular-nums">
+                          {currentExercise.repetitions ?? '—'}
+                        </span>
+                      </div>
+                      {restTime > 0 && (
+                        <p className="text-gray-500 text-sm mt-1">
+                          {formatRestTime(restTime)} {t('workout.restTime').toLowerCase()}
+                        </p>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Set circles or rest timer */}
+                  {isResting && session.restTimerEnd ? (
+                    <RestTimer
+                      endTime={session.restTimerEnd}
+                      totalSeconds={restTime}
+                      onSkip={actions.skipRest}
+                      onExtend={(s) => actions.extendRest(s)}
+                    />
+                  ) : (
+                    <>
+                      {renderSetCircles()}
+
+                      {/* CTA Button */}
+                      <div className="pt-4 w-full">
+                        <button
+                          onClick={handleCompleteSet}
+                          className={`
+                            w-full py-4 rounded-2xl
+                            text-white text-lg font-semibold
+                            transition-all duration-150
+                            active:scale-[0.96]
+                            shadow-lg
+                            ${isLastSetOfCurrent && !canGoNext
+                              ? 'bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 shadow-emerald-600/20'
+                              : isLastSetOfCurrent
+                                ? 'bg-gradient-to-r from-indigo-500 to-violet-500 hover:from-indigo-400 hover:to-violet-400 shadow-indigo-600/20'
+                                : 'bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 shadow-indigo-600/20'
+                            }
+                          `}
+                        >
+                          {!hasStarted
+                            ? t('workout.startWorkout')
+                            : isLastSetOfCurrent
+                              ? (canGoNext ? t('workout.nextExercise') : t('workout.completeWorkout'))
+                              : t('workout.completeSet')
+                          }
+                        </button>
+                      </div>
+                    </>
+                  )}
                 </>
               )}
             </div>
@@ -622,14 +679,25 @@ export function WorkoutSession({
         </div>
       </main>
 
+      {/* ── Progress bar ── */}
+      <div className="relative h-5 bg-gray-800/60 flex items-center">
+        <div 
+          className="absolute inset-y-0 left-0 bg-gradient-to-r from-indigo-600 to-indigo-400 transition-all duration-500 ease-out"
+          style={{ width: `${progress}%` }}
+        />
+        <span className="relative z-10 w-full text-center text-[10px] font-bold text-white tabular-nums drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
+          {progress}%
+        </span>
+      </div>
+
       {/* ── Navigation footer ── */}
-      <footer className="flex items-center justify-between px-4 py-3 bg-gray-900 border-t border-gray-800/60">
+      <footer className="flex items-center justify-between px-4 py-3 bg-gray-900">
         {/* Previous */}
         <button
           onClick={handlePrev}
           disabled={!canGoPrev}
           className={`
-            flex flex-col items-center gap-0.5 px-3 py-2 rounded-xl min-w-[72px]
+            flex flex-col items-center gap-0.5 px-3 py-2 rounded-xl w-[120px]
             transition-colors duration-200
             ${canGoPrev 
               ? 'text-gray-400 hover:bg-gray-800 active:bg-gray-700' 
@@ -645,37 +713,17 @@ export function WorkoutSession({
           )}
         </button>
 
-        {/* Exercise-level dots */}
-        <div className="flex items-center gap-1.5">
-          {session.exercises.map((ex, i) => {
-            const exSets = ex.sets ?? 1;
-            const exCompleted = session.completedSets[i] ?? 0;
-            const isDone = exCompleted >= exSets;
-            const isCurrent = i === session.currentExerciseIndex;
-
-            return (
-              <div
-                key={i}
-                className={`
-                  rounded-full transition-all duration-300
-                  ${isCurrent 
-                    ? 'w-2.5 h-2.5 bg-indigo-500' 
-                    : isDone 
-                      ? 'w-2 h-2 bg-indigo-500/50' 
-                      : 'w-2 h-2 bg-gray-700'
-                  }
-                `}
-              />
-            );
-          })}
-        </div>
+        {/* Exercise counter */}
+        <span className="text-sm text-gray-400 tabular-nums">
+          {session.currentExerciseIndex + 1} / {session.exercises.length}
+        </span>
 
         {/* Next */}
         <button
           onClick={handleNext}
           disabled={!canGoNext}
           className={`
-            flex flex-col items-center gap-0.5 px-3 py-2 rounded-xl min-w-[72px]
+            flex flex-col items-center gap-0.5 px-3 py-2 rounded-xl w-[120px]
             transition-colors duration-200
             ${canGoNext 
               ? 'text-gray-400 hover:bg-gray-800 active:bg-gray-700' 
@@ -691,6 +739,74 @@ export function WorkoutSession({
           )}
         </button>
       </footer>
+    </div>
+  );
+}
+
+/**
+ * Inline countdown timer for duration-based exercises.
+ * Shows a circular progress ring with time remaining.
+ */
+function DurationCountdown({ endTime, totalSeconds }: { endTime: Date; totalSeconds: number }) {
+  const [remaining, setRemaining] = useState(totalSeconds);
+
+  useEffect(() => {
+    const update = () => {
+      const ms = Math.max(0, endTime.getTime() - Date.now());
+      setRemaining(Math.ceil(ms / 1000));
+    };
+    update();
+    const interval = setInterval(update, 200);
+    return () => clearInterval(interval);
+  }, [endTime]);
+
+  const progress = totalSeconds > 0 ? (totalSeconds - remaining) / totalSeconds : 0;
+  const size = 120;
+  const strokeWidth = 5;
+  const radius = (size - strokeWidth) / 2;
+  const circumference = 2 * Math.PI * radius;
+  const offset = circumference - progress * circumference;
+
+  const mins = Math.floor(remaining / 60);
+  const secs = remaining % 60;
+  const display = mins > 0
+    ? `${mins}:${secs.toString().padStart(2, '0')}`
+    : `${secs}`;
+
+  const isDone = remaining <= 0;
+
+  return (
+    <div className="flex flex-col items-center mb-4">
+      <div className={`relative ${isDone ? '' : 'animate-breathe'}`}>
+        <svg width={size} height={size} className="-rotate-90">
+          <circle
+            cx={size / 2} cy={size / 2} r={radius}
+            fill="none" stroke="rgba(99, 102, 241, 0.12)" strokeWidth={strokeWidth}
+          />
+          <circle
+            cx={size / 2} cy={size / 2} r={radius}
+            fill="none"
+            stroke={isDone ? '#22c55e' : '#6366f1'}
+            strokeWidth={strokeWidth}
+            strokeLinecap="round"
+            strokeDasharray={circumference}
+            strokeDashoffset={offset}
+            className="transition-all duration-200"
+          />
+        </svg>
+        <div className="absolute inset-0 flex items-center justify-center">
+          {isDone ? (
+            <svg className="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+            </svg>
+          ) : (
+            <span className="text-3xl font-bold text-white tabular-nums">{display}</span>
+          )}
+        </div>
+      </div>
+      {isDone && (
+        <span className="text-sm text-green-400 font-medium mt-2">Done!</span>
+      )}
     </div>
   );
 }

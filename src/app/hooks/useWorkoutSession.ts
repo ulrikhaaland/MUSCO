@@ -139,15 +139,14 @@ export function useWorkoutSession(): [WorkoutSession, WorkoutSessionActions] {
   }, [session.restTimerEnd]);
 
   const startSession = useCallback((exercises: Exercise[]) => {
-    const filteredExercises = exercises.filter(ex => !ex.warmup);
     setSession({
       isActive: true,
       currentExerciseIndex: 0,
       currentSet: 1,
-      completedSets: new Array(filteredExercises.length).fill(0),
+      completedSets: new Array(exercises.length).fill(0),
       startTime: new Date(),
       restTimerEnd: null,
-      exercises: filteredExercises,
+      exercises,
     });
   }, []);
 

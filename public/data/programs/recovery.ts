@@ -126,6 +126,34 @@ export const localizeProgramDayDescriptions = (
       'Skulderbladutholdenhet + ro i nakken. Rolige trekk; unngå kompensasjon med nakken.',
     'Build Desk-Day Tolerance. Repeat pattern with slightly more control and hold quality.':
       'Bygg toleranse for kontordag. Gjenta mønsteret med litt mer kontroll og kvalitet i holdene.',
+    // Plantar Fasciitis (Week 1)
+    'Calm Heel Pain + Restore Foot Motion. Keep load sub-symptomatic and controlled.':
+      'Demp hælsmerte + gjenopprett fotbevegelse. Hold belastningen kontrollert og under symptomgrense.',
+    'Calf-Arch Control + Gentle Capacity. Slow tempo; no sharp heel pain.':
+      'Legg-/fotbuekontroll + skånsom kapasitet. Rolig tempo; ingen skarp hælsmerte.',
+    'Build First-Step Confidence. Repeat pattern with slightly more time under tension.':
+      'Bygg trygghet i de første stegene. Gjenta mønsteret med litt mer tid under spenning.',
+    // Hamstring (Week 1)
+    'Calm Hamstring Irritability + Gentle Activation. Keep stride short and pain ≤3/10.':
+      'Demp hamstring-irritasjon + skånsom aktivering. Hold stegene korte og smerte ≤3/10.',
+    'Posterior Chain Control. Slow hinge patterning without stretch pain.':
+      'Baksidekjede-kontroll. Rolig hoftebøy-mønster uten strekksmerte.',
+    'Build Walking Confidence. Repeat pattern with slightly more control and tolerance.':
+      'Bygg trygghet i gange. Gjenta mønsteret med litt mer kontroll og toleranse.',
+    // Upper Back & Core (Week 1)
+    'Posture Reset + Thoracic Mobility. Keep ribs stacked and shoulders down.':
+      'Holdningsreset + brystryggmobilitet. Hold ribbeina stable og skuldrene nede.',
+    'Scapular Endurance + Core Support. Slow pulls; avoid neck compensation.':
+      'Skulderbladutholdenhet + kjernestøtte. Rolige trekk; unngå nakkekompensasjon.',
+    'Build Upright Tolerance. Repeat pattern with slightly more time under tension.':
+      'Bygg toleranse i oppreist holdning. Gjenta mønsteret med litt mer tid under spenning.',
+    // Core Stability (Week 1)
+    'Deep Core Reset. Slow bracing with neutral spine and controlled breathing.':
+      'Dyp kjerne-reset. Rolig buktrykk med nøytral rygg og kontrollert pust.',
+    'Core Control + Limb Coordination. Keep pelvis stable and movement quiet.':
+      'Kjernekontroll + koordinasjon med armer/bein. Hold bekkenet stabilt og bevegelsen rolig.',
+    'Build Trunk Endurance. Repeat pattern with slightly longer quality holds.':
+      'Bygg kjerneutholdenhet. Gjenta mønsteret med litt lengre kvalitets-hold.',
   };
 
   // Rest day description mappings across all programs/weeks
@@ -1147,10 +1175,10 @@ const createTennisElbowRestDay = (day: number): any => {
 const createHamstringRestDay = (day: number): any => {
   const exercises = [
     {
-      exerciseId: 'warmup-6',
-      duration: 1.5,
+      exerciseId: 'cardio-13',
+      duration: 2,
       warmup: true,
-      modification: 'March in place or jog lightly with relaxed form.',
+      modification: 'Easy march for circulation; keep steps short and controlled.',
     },
     {
       exerciseId: 'glutes-7',
@@ -1295,9 +1323,9 @@ const createPlantarRestDay = (day: number): any => {
   if (day <= 7) {
     // WEEK 1: Basic mobility and light calf activation
     const exercises = [
-      { exerciseId: 'warmup-6', duration: 1.5, warmup: true, modification: 'March gently in place, focus on foot contact.' },
+      { exerciseId: 'calves-13', sets: 2, repetitions: 10, restBetweenSets: 30, warmup: true, modification: 'Rock gently into ankle mobility; stay below heel-pain threshold.' },
       { exerciseId: 'calves-6', sets: 1, repetitions: 10, restBetweenSets: 30, modification: 'Light heel raises, control the descent.' },
-      { exerciseId: 'glutes-44', sets: 1, repetitions: 10, restBetweenSets: 30, modification: 'Keep movements slow and controlled.' }
+      { exerciseId: 'cardio-13', duration: 2, warmup: true, modification: 'Easy marching for circulation; keep steps quiet and controlled.' }
     ];
     
     return {
@@ -2915,36 +2943,40 @@ const rehabProgramsAllWeeks: ExerciseProgram[] = [
   // -----------------------------------------------------------------
   {
     programOverview:
-      'Week 1 reduces heel pain with calf pumps and gentle walking tolerance; keep loads sub‑symptomatic.',
-    summary: 'Calm heel pain; start calf activation',
+      'Week 1 aims to reduce heel irritability and morning first-step pain by restoring gentle ankle-foot motion and controlled calf loading. You will use low-impact circulation work, calf pumps, and hip support work to improve tissue tolerance without flare-ups. The target is steadier walking comfort and less “sharp” heel sensitivity at the start of the day.',
+    summary:
+      'Reduce heel pain and rebuild early foot-calf tolerance with low-impact mobility and controlled loading.',
     timeFrameExplanation:
-      'Double‑leg calf raises and easy marching restore blood flow without irritating the fascia.',
+      'Complete 3 short sessions this week and keep pain at or below 3/10 during and the next morning. Use slow tempo and avoid sharp heel pain, especially in first-step movements. Supportive footwear and avoiding long barefoot time on hard floors are key this week.',
     afterTimeFrame: {
       expectedOutcome:
-        'Lower morning pain; easier first steps and short walks.',
+        'Lower morning heel pain with easier first steps, and better tolerance for short walks at comfortable pace.',
       nextSteps:
-        'Add calf eccentrics in Week 2 if pain ≤3/10.',
+        'If symptoms remain stable, next week introduces more eccentric calf emphasis and arch-control progressions.',
     },
     whatNotToDo:
-      'No barefoot walking on hard floors; do not push through sharp heel pain.',
+      'Avoid barefoot walking on hard floors, sudden volume spikes, and forcing through sharp plantar heel pain. If next-morning pain spikes, reduce session volume and total standing/walking exposure.',
     createdAt: new Date('2025-06-02T00:00:00Z'),
     days: [
-      createWorkoutDay(1, 'Light Load & Arch Activation', [
-        { exerciseId: 'warmup-6', duration: 3, warmup: true },
-        { exerciseId: 'calves-6', sets: 3, repetitions: 15, restBetweenSets: 60 },
-        { exerciseId: 'glutes-44', sets: 2, repetitions: 15, restBetweenSets: 45 },
+      createWorkoutDay(1, 'Calm Heel Pain + Restore Foot Motion. Keep load sub-symptomatic and controlled.', [
+        { exerciseId: 'calves-13', sets: 2, repetitions: 12, restBetweenSets: 30, warmup: true, modification: 'Gentle ankle-rock mobility, pain-managed range only.' },
+        { exerciseId: 'cardio-13', duration: 3, warmup: true, modification: 'Easy march in place; soft, quiet steps.' },
+        { exerciseId: 'calves-6', sets: 3, repetitions: 12, restBetweenSets: 60, modification: 'Slow lift and controlled lowering, no bounce.' },
+        { exerciseId: 'glutes-44', sets: 2, repetitions: 12, restBetweenSets: 45, modification: 'Stable pelvis to support foot loading mechanics.' },
       ]),
       createPlantarRestDay(2),
-      createWorkoutDay(3, 'Light Load & Arch Activation', [
-        { exerciseId: 'warmup-6', duration: 3, warmup: true },
-        { exerciseId: 'calves-6', sets: 3, repetitions: 15, restBetweenSets: 60 },
-        { exerciseId: 'glutes-44', sets: 2, repetitions: 15, restBetweenSets: 45 },
+      createWorkoutDay(3, 'Calf-Arch Control + Gentle Capacity. Slow tempo; no sharp heel pain.', [
+        { exerciseId: 'calves-13', sets: 2, repetitions: 12, restBetweenSets: 30, warmup: true, modification: 'Increase range slightly only if pain stays low.' },
+        { exerciseId: 'cardio-13', duration: 3, warmup: true, modification: 'Maintain relaxed cadence and even foot contact.' },
+        { exerciseId: 'calves-6', sets: 3, repetitions: 15, restBetweenSets: 60, modification: 'Pause briefly at top; control full descent.' },
+        { exerciseId: 'glutes-44', sets: 2, repetitions: 12, restBetweenSets: 45, modification: 'No trunk sway; smooth controlled reps.' },
       ]),
       createPlantarRestDay(4),
-      createWorkoutDay(5, 'Light Load & Arch Activation', [
-        { exerciseId: 'warmup-6', duration: 3, warmup: true },
-        { exerciseId: 'calves-6', sets: 3, repetitions: 15, restBetweenSets: 60 },
-        { exerciseId: 'glutes-44', sets: 2, repetitions: 15, restBetweenSets: 45 },
+      createWorkoutDay(5, 'Build First-Step Confidence. Repeat pattern with slightly more time under tension.', [
+        { exerciseId: 'calves-13', sets: 2, repetitions: 12, restBetweenSets: 30, warmup: true, modification: 'Smooth mobility; avoid forcing end range.' },
+        { exerciseId: 'cardio-13', duration: 3, warmup: true, modification: 'Easy march for circulation, avoid hard forefoot strike.' },
+        { exerciseId: 'calves-6', sets: 3, repetitions: 15, restBetweenSets: 60, modification: 'Keep tempo strict; stop before heel pain sharpens.' },
+        { exerciseId: 'glutes-44', sets: 2, repetitions: 15, restBetweenSets: 45, modification: 'Slightly higher volume if next-day pain remains stable.' },
       ]),
       createPlantarRestDay(6),
       createPlantarRestDay(7),
@@ -3092,39 +3124,40 @@ const rehabProgramsAllWeeks: ExerciseProgram[] = [
   // -----------------------------------------------------------------
   {
     programOverview:
-      'Week 1 restores mobility and introduces pain‑free hamstring isometrics and bridges.',
-    summary: 'Mobility + pain‑free isometric activation',
+      'Week 1 focuses on calming hamstring irritability and restoring confident movement in walking and light hinging. You will use low-impact circulation, glute bridge work, and controlled short-range hinge patterns to load the posterior chain without provoking stretch pain. The aim is smoother daily movement with less guarding and less next-day tightness.',
+    summary:
+      'Reduce hamstring irritability and rebuild posterior-chain control with low-load, pain-managed activation.',
     timeFrameExplanation:
-      'Glute bridges and single‑leg RDL patterning (short ROM) engage posterior chain without flare‑ups.',
+      'Complete 3 short sessions this week with pain at or below 3/10 during and the next morning. Keep stride length short and avoid aggressive stretching. Use slow hinge tempo and stop before sharp pulling pain, cramping, or loss of control.',
     afterTimeFrame: {
       expectedOutcome:
-        'Less tightness; comfortable walking and gentle hip hinge.',
+        'Less hamstring tightness/guarding with easier walking and more comfortable low-load hip hinge patterns.',
       nextSteps:
-        'Add controlled eccentrics in Week 2.',
+        'If symptoms stay stable, next week progresses controlled eccentric hamstring loading and single-leg tolerance.',
     },
     whatNotToDo:
-      'No overstretching or ballistic movements; stop if sharp pain occurs.',
+      'Avoid overstretching, sprinting, and ballistic movement this week. Do not push through sharp pain or cramping; reduce volume if next-day soreness clearly spikes.',
     createdAt: new Date('2025-06-02T00:00:00Z'),
     days: [
-      createWorkoutDay(1, 'Isometric Activation & Mobility', [
-        { exerciseId: 'warmup-6', duration: 3, warmup: true },
-        { exerciseId: 'glutes-7', sets: 3, repetitions: 15, restBetweenSets: 60 },
-        { exerciseId: 'hamstrings-48', sets: 3, repetitions: 8, restBetweenSets: 60 },
-        { exerciseId: 'glutes-1', sets: 2, repetitions: 12, restBetweenSets: 60 },
+      createWorkoutDay(1, 'Calm Hamstring Irritability + Gentle Activation. Keep stride short and pain ≤3/10.', [
+        { exerciseId: 'cardio-13', duration: 3, warmup: true, modification: 'Easy marching to warm tissue; no bounce or long stride.' },
+        { exerciseId: 'glutes-7', sets: 3, repetitions: 12, restBetweenSets: 60, modification: 'Pause 1 second at top without low-back arching.' },
+        { exerciseId: 'hamstrings-48', sets: 2, repetitions: 8, restBetweenSets: 60, modification: 'Bodyweight only; very short range and slow descent.' },
+        { exerciseId: 'glutes-1', sets: 2, repetitions: 10, restBetweenSets: 60, modification: 'Pain-free range only; prioritize control over depth.' },
       ]),
       createHamstringRestDay(2),
-      createWorkoutDay(3, 'Isometric Activation & Mobility', [
-        { exerciseId: 'warmup-6', duration: 3, warmup: true },
-        { exerciseId: 'glutes-7', sets: 3, repetitions: 15, restBetweenSets: 60 },
-        { exerciseId: 'hamstrings-48', sets: 3, repetitions: 8, restBetweenSets: 60 },
-        { exerciseId: 'glutes-1', sets: 2, repetitions: 12, restBetweenSets: 60 },
+      createWorkoutDay(3, 'Posterior Chain Control. Slow hinge patterning without stretch pain.', [
+        { exerciseId: 'cardio-13', duration: 3, warmup: true, modification: 'Steady march; keep pelvis level and relaxed.' },
+        { exerciseId: 'glutes-7', sets: 3, repetitions: 12, restBetweenSets: 60, modification: 'Smooth ascent/descent and full-foot contact.' },
+        { exerciseId: 'hamstrings-48', sets: 3, repetitions: 8, restBetweenSets: 60, modification: 'Increase range slightly only if pain remains low.' },
+        { exerciseId: 'glutes-1', sets: 2, repetitions: 10, restBetweenSets: 60, modification: 'Slow patterning; avoid pulling sensation at end range.' },
       ]),
       createHamstringRestDay(4),
-      createWorkoutDay(5, 'Isometric Activation & Mobility', [
-        { exerciseId: 'warmup-6', duration: 3, warmup: true },
-        { exerciseId: 'glutes-7', sets: 3, repetitions: 15, restBetweenSets: 60 },
-        { exerciseId: 'hamstrings-48', sets: 3, repetitions: 8, restBetweenSets: 60 },
-        { exerciseId: 'glutes-1', sets: 2, repetitions: 12, restBetweenSets: 60 },
+      createWorkoutDay(5, 'Build Walking Confidence. Repeat pattern with slightly more control and tolerance.', [
+        { exerciseId: 'cardio-13', duration: 3, warmup: true, modification: 'Short, quiet steps; stop if pain rises.' },
+        { exerciseId: 'glutes-7', sets: 3, repetitions: 15, restBetweenSets: 60, modification: 'Slightly more volume if next-day symptoms are stable.' },
+        { exerciseId: 'hamstrings-48', sets: 3, repetitions: 8, restBetweenSets: 60, modification: 'Strict bodyweight control; no sudden stretch at bottom.' },
+        { exerciseId: 'glutes-1', sets: 2, repetitions: 12, restBetweenSets: 60, modification: 'Keep tempo slow and pain-managed.' },
       ]),
       createHamstringRestDay(6),
       createHamstringRestDay(7),
@@ -3266,39 +3299,40 @@ const rehabProgramsAllWeeks: ExerciseProgram[] = [
   // -----------------------------------------------------------------
   {
     programOverview:
-      'Week 1 focuses on gentle spinal mobility and basic postural awareness to counteract forward positioning.',
-    summary: 'Comprehensive postural reset with mobility and strengthening',
+      'Week 1 focuses on reducing upper-back and shoulder fatigue by improving thoracic mobility, scapular positioning, and core-assisted posture control. You will combine gentle movement prep with low-load band pulling so your mid-back does more work and your neck does less. The target is better tolerance to upright sitting and standing without stiffness buildup.',
+    summary:
+      'Reset posture mechanics with mobility, scapular activation, and light pulling endurance.',
     timeFrameExplanation:
-      'Start with gentle extension exercises and breathing pattern correction for postural improvement.',
+      'Complete 3 short sessions this week with pain at or below 3/10 during and the next morning. Keep ribs stacked over pelvis, avoid shrugging, and use smooth controlled pulling tempo. Optional walking and short movement breaks during desk work will support progress.',
     afterTimeFrame: {
       expectedOutcome:
-        'Reduced upper back tension and improved postural awareness during daily activities.',
+        'Reduced upper-back/shoulder tension with better awareness and tolerance of upright posture in daily tasks.',
       nextSteps:
-        'Progress to Week 2 for targeted pulling movements and posterior chain strengthening.',
+        'If symptoms are stable, next week increases pulling volume and posterior-chain support work.',
     },
     whatNotToDo:
-      'No heavy pressing or prolonged slouching during the early stages.',
+      'Avoid heavy pressing, prolonged static slouching, and forcing end-range extension. Reduce volume if neck/shoulder symptoms spike the next day.',
     createdAt: new Date('2025-06-02T00:00:00Z'),
     days: [
-      createWorkoutDay(1, 'Posture Awareness & Mobility', [
-        { exerciseId: 'warmup-9', sets: 2, repetitions: 10, restBetweenSets: 30, warmup: true },
-        { exerciseId: 'warmup-8', sets: 2, repetitions: 15, restBetweenSets: 30, warmup: true },
-        { exerciseId: 'shoulders-30', sets: 2, repetitions: 12, restBetweenSets: 45 },
-        { exerciseId: 'upper-back-60', sets: 2, repetitions: 15, restBetweenSets: 60 },
+      createWorkoutDay(1, 'Posture Reset + Thoracic Mobility. Keep ribs stacked and shoulders down.', [
+        { exerciseId: 'warmup-9', sets: 2, repetitions: 8, restBetweenSets: 30, warmup: true, modification: 'Gentle trunk rotation; avoid lumbar over-twist.' },
+        { exerciseId: 'warmup-8', sets: 2, repetitions: 12, restBetweenSets: 30, warmup: true, modification: 'Small circles first, then medium range.' },
+        { exerciseId: 'shoulders-30', sets: 2, repetitions: 10, restBetweenSets: 45, modification: 'Light band; controlled scapular squeeze.' },
+        { exerciseId: 'upper-back-60', sets: 2, repetitions: 12, restBetweenSets: 60, modification: 'Tall posture, elbows track smoothly.' },
       ]),
       createPostureRestDay(2),
-      createWorkoutDay(3, 'Posture Awareness & Mobility', [
-        { exerciseId: 'warmup-9', sets: 2, repetitions: 10, restBetweenSets: 30, warmup: true },
-        { exerciseId: 'warmup-8', sets: 2, repetitions: 15, restBetweenSets: 30, warmup: true },
-        { exerciseId: 'shoulders-30', sets: 2, repetitions: 12, restBetweenSets: 45 },
-        { exerciseId: 'upper-back-60', sets: 2, repetitions: 15, restBetweenSets: 60 },
+      createWorkoutDay(3, 'Scapular Endurance + Core Support. Slow pulls; avoid neck compensation.', [
+        { exerciseId: 'warmup-9', sets: 2, repetitions: 10, restBetweenSets: 30, warmup: true, modification: 'Move from thoracic spine with relaxed neck.' },
+        { exerciseId: 'warmup-8', sets: 2, repetitions: 15, restBetweenSets: 30, warmup: true, modification: 'Smooth circles without shrugging.' },
+        { exerciseId: 'shoulders-30', sets: 2, repetitions: 12, restBetweenSets: 45, modification: 'Pause briefly at retraction; ribs down.' },
+        { exerciseId: 'upper-back-60', sets: 2, repetitions: 15, restBetweenSets: 60, modification: 'Steady row tempo; avoid low-back sway.' },
       ]),
       createPostureRestDay(4),
-      createWorkoutDay(5, 'Posture Awareness & Mobility', [
-        { exerciseId: 'warmup-9', sets: 2, repetitions: 10, restBetweenSets: 30, warmup: true },
-        { exerciseId: 'warmup-8', sets: 2, repetitions: 15, restBetweenSets: 30, warmup: true },
-        { exerciseId: 'shoulders-30', sets: 2, repetitions: 12, restBetweenSets: 45 },
-        { exerciseId: 'upper-back-60', sets: 2, repetitions: 15, restBetweenSets: 60 },
+      createWorkoutDay(5, 'Build Upright Tolerance. Repeat pattern with slightly more time under tension.', [
+        { exerciseId: 'warmup-9', sets: 2, repetitions: 10, restBetweenSets: 30, warmup: true, modification: 'Comfortable range only; breathe steadily.' },
+        { exerciseId: 'warmup-8', sets: 2, repetitions: 15, restBetweenSets: 30, warmup: true, modification: 'Keep shoulders away from ears.' },
+        { exerciseId: 'shoulders-30', sets: 2, repetitions: 12, restBetweenSets: 45, modification: 'Maintain consistent band tension and form.' },
+        { exerciseId: 'upper-back-60', sets: 3, repetitions: 12, restBetweenSets: 60, modification: 'Slight volume increase only if next-day symptoms are stable.' },
       ]),
       createPostureRestDay(6),
       createPostureRestDay(7),
@@ -3434,36 +3468,37 @@ const rehabProgramsAllWeeks: ExerciseProgram[] = [
   // -----------------------------------------------------------------
   {
     programOverview:
-      'Week 1 focuses on reactivating your deep core muscles and practicing control.',
-    summary: 'Deep core activation and control foundation',
+      'Week 1 rebuilds deep core control so your trunk stays stable during basic movement and daily tasks. You will combine low-load bracing, anti-extension work, and glute support to improve pelvic control without over-fatiguing the back or hip flexors. The goal is quality reps and predictable control, not high intensity.',
+    summary:
+      'Rebuild deep-core control and pelvic stability with low-load bracing and controlled tempo.',
     timeFrameExplanation:
-      'Begin with basic core stabilization exercises to build foundational strength.',
+      'Perform 3 short sessions this week with pain at or below 3/10 during and the next morning. Exhale to brace on each rep, keep neutral spine, and stop sets when form quality drops. Prioritize controlled breathing and posture over extra reps.',
     afterTimeFrame: {
       expectedOutcome:
-        'Improved core activation and better control in basic positions.',
+        'Improved core recruitment with better control in plank/brace positions and easier trunk stability in daily movement.',
       nextSteps:
-        'Progress to Week 2 for time under tension and movement coordination.',
+        'If control is consistent, next week adds more time under tension and limb coordination demands.',
     },
     whatNotToDo:
-      'No high‑rep sit‑ups or long planks with poor form.',
+      'Avoid high-rep sit-ups, long planks with poor form, and breath-holding under effort. If low-back symptoms increase the next morning, reduce hold time and total volume.',
     createdAt: new Date('2025-06-02T00:00:00Z'),
     days: [
-      createWorkoutDay(1, 'Activation & Control', [
-        { exerciseId: 'abs-20', sets: 3, repetitions: 8, restBetweenSets: 60 },
-        { exerciseId: 'abs-6', sets: 3, duration: 0.5, restBetweenSets: 60 },
-        { exerciseId: 'glutes-7', sets: 2, repetitions: 12, restBetweenSets: 60 },
+      createWorkoutDay(1, 'Deep Core Reset. Slow bracing with neutral spine and controlled breathing.', [
+        { exerciseId: 'abs-20', sets: 3, repetitions: 8, restBetweenSets: 60, modification: 'Low back stays in contact; exhale on limb movement.' },
+        { exerciseId: 'abs-6', sets: 2, duration: 0.5, restBetweenSets: 60, modification: 'Use knees-down version if you lose spinal control.' },
+        { exerciseId: 'glutes-7', sets: 2, repetitions: 12, restBetweenSets: 60, modification: 'Hold 1 second at top with ribs down.' },
       ]),
       createCoreRestDay(2),
-      createWorkoutDay(3, 'Activation & Control', [
-        { exerciseId: 'abs-20', sets: 3, repetitions: 8, restBetweenSets: 60 },
-        { exerciseId: 'abs-6', sets: 3, duration: 0.5, restBetweenSets: 60 },
-        { exerciseId: 'glutes-7', sets: 2, repetitions: 12, restBetweenSets: 60 },
+      createWorkoutDay(3, 'Core Control + Limb Coordination. Keep pelvis stable and movement quiet.', [
+        { exerciseId: 'abs-20', sets: 3, repetitions: 8, restBetweenSets: 60, modification: 'Slow alternating pattern; no trunk rocking.' },
+        { exerciseId: 'abs-6', sets: 3, duration: 0.5, restBetweenSets: 60, modification: 'Brace continuously and keep breathing steady.' },
+        { exerciseId: 'glutes-7', sets: 2, repetitions: 12, restBetweenSets: 60, modification: 'Maintain pelvis level through full rep.' },
       ]),
       createCoreRestDay(4),
-      createWorkoutDay(5, 'Activation & Control', [
-        { exerciseId: 'abs-20', sets: 3, repetitions: 8, restBetweenSets: 60 },
-        { exerciseId: 'abs-6', sets: 3, duration: 0.5, restBetweenSets: 60 },
-        { exerciseId: 'glutes-7', sets: 2, repetitions: 12, restBetweenSets: 60 },
+      createWorkoutDay(5, 'Build Trunk Endurance. Repeat pattern with slightly longer quality holds.', [
+        { exerciseId: 'abs-20', sets: 3, repetitions: 10, restBetweenSets: 60, modification: 'Increase reps only if form remains clean.' },
+        { exerciseId: 'abs-6', sets: 3, duration: 0.67, restBetweenSets: 60, modification: 'Slightly longer hold, stop before shaking or lumbar sag.' },
+        { exerciseId: 'glutes-7', sets: 2, repetitions: 15, restBetweenSets: 60, modification: 'Controlled tempo with steady breath pattern.' },
       ]),
       createCoreRestDay(6),
       createCoreRestDay(7),

@@ -275,17 +275,17 @@ export default function ExerciseCard({
               )}
 
               {exercise.modification && !isPlaceholderValue(exercise.modification) && (
-                <p className="text-yellow-200/90 text-sm leading-relaxed mb-4">
-                  <span className="font-medium">{t('program.modification')}</span>{' '}
-                  {exercise.modification}
-                </p>
+                <div className="text-sm leading-relaxed mb-4 rounded-lg bg-yellow-500/10 ring-1 ring-yellow-500/20 px-3 py-2">
+                  <span className="font-semibold text-yellow-400 text-xs uppercase tracking-wide">{t('program.modification')}</span>
+                  <p className="text-white mt-0.5">{exercise.modification}</p>
+                </div>
               )}
 
               {exercise.precaution && !isPlaceholderValue(exercise.precaution) && (
-                <p className="text-red-400/90 text-sm leading-relaxed mb-4">
-                  <span className="font-medium">{t('program.precaution')}</span>{' '}
-                  {exercise.precaution}
-                </p>
+                <div className="text-sm leading-relaxed mb-4 rounded-lg bg-red-500/10 ring-1 ring-red-500/20 px-3 py-2">
+                  <span className="font-semibold text-red-400 text-xs uppercase tracking-wide">{t('program.precaution')}</span>
+                  <p className="text-white mt-0.5">{exercise.precaution}</p>
+                </div>
               )}
 
               {exercise.steps && exercise.steps.length > 0 && (

@@ -82,7 +82,7 @@ export function ExerciseProgramCalendar({
 
   // Get day data for calendar grid (simplified for performance)
   const getDayData = useCallback(
-    (date: Date): { date: Date; dayType: DayType } => {
+    (date: Date): { date: Date; dayType: DayType; isCompleted?: boolean } => {
       const programDays = getDayProgram(date);
       if (programDays.length === 0) {
         return { date, dayType: null };
@@ -91,7 +91,7 @@ export function ExerciseProgramCalendar({
       // Find the first non-rest day to determine type
       const workoutDay = programDays.find((p) => getDayType(p.day) !== 'rest');
       if (workoutDay) {
-        return { date, dayType: getDayType(workoutDay.day) };
+        return { date, dayType: getDayType(workoutDay.day), isCompleted: workoutDay.day.completed === true };
       }
       
       // All days are rest days

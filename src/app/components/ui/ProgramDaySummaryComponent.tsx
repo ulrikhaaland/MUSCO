@@ -54,6 +54,15 @@ export function ProgramDaySummaryComponent({
   // Calculate exercise statistics
   const totalExercises = day.exercises?.length || 0;
   const warmupExercises = day.exercises?.filter((ex) => ex.warmup)?.length || 0;
+  const isCompleted = day.completed === true;
+
+  // Format completion date
+  const completedDateStr = (() => {
+    if (!day.completedAt) return '';
+    const d = day.completedAt instanceof Date ? day.completedAt : new Date(day.completedAt as unknown as string);
+    if (isNaN(d.getTime())) return '';
+    return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+  })();
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const [isTouching, setIsTouching] = useState(false);
 
@@ -89,6 +98,7 @@ export function ProgramDaySummaryComponent({
   const cardStyles = `
     bg-gray-800/50 rounded-xl overflow-hidden 
     transition-all duration-120 ease-out
+    ${isCompleted ? 'border-l-2 border-l-emerald-500/50' : ''}
     ${isHighlighted ? 'shadow-[inset_0_0_0_1px_rgba(255,255,255,0.04)]' : ''}
     ${onClick ? 'outline outline-1 outline-indigo-500/20' : ''}
     ${onClick && !prefersReducedMotion ? 'hover:-translate-y-[3px] hover:shadow-[0_4px_12px_rgba(0,0,0,0.25)] hover:outline-indigo-500/60' : ''}
@@ -145,6 +155,14 @@ export function ProgramDaySummaryComponent({
                   {dayTypeDisplay.label}
                 </Chip>
               )}
+              {!shimmer && isCompleted && (
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/15 ring-1 ring-emerald-500/30 text-emerald-400 text-xs font-medium shrink-0">
+                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                  </svg>
+                  {t('workout.completed')}
+                </span>
+              )}
               {shimmer ? (
                 <div className="shimmer w-24 h-4 bg-gray-700 rounded shrink-0" />
               ) : (
@@ -187,8 +205,15 @@ export function ProgramDaySummaryComponent({
             )}
           </p>
 
+          {/* Completed date */}
+          {!shimmer && isCompleted && completedDateStr && (
+            <p className="text-emerald-400/60 text-xs mb-3">
+              {t('workout.completedOn').replace('{date}', completedDateStr)}
+            </p>
+          )}
+
           {/* Exercise breakdown */}
-          <div className="space-y-2">
+          <div className={`space-y-2 ${isCompleted ? 'opacity-70' : ''}`}>
             {/* Exercise count and type breakdown */}
             <div className="flex flex-wrap gap-3">
               {shimmer ? (
@@ -304,6 +329,14 @@ export function ProgramDaySummaryComponent({
                   {dayTypeDisplay.label}
                 </Chip>
               )}
+              {!shimmer && isCompleted && (
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/15 ring-1 ring-emerald-500/30 text-emerald-400 text-xs font-medium shrink-0">
+                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                  </svg>
+                  {t('workout.completed')}
+                </span>
+              )}
               {shimmer ? (
                 <div className="shimmer w-24 h-4 bg-gray-700 rounded shrink-0" />
               ) : (
@@ -345,8 +378,15 @@ export function ProgramDaySummaryComponent({
             )}
           </p>
 
+          {/* Completed date */}
+          {!shimmer && isCompleted && completedDateStr && (
+            <p className="text-emerald-400/60 text-xs mb-3">
+              {t('workout.completedOn').replace('{date}', completedDateStr)}
+            </p>
+          )}
+
           {/* Exercise breakdown */}
-          <div className="space-y-2">
+          <div className={`space-y-2 ${isCompleted ? 'opacity-70' : ''}`}>
             {/* Exercise count and type breakdown */}
             <div className="flex flex-wrap gap-3">
               {shimmer ? (

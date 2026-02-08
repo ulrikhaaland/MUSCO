@@ -5,6 +5,7 @@ import {
   useContext,
   useState,
   useEffect,
+  useCallback,
   ReactNode,
   useRef,
 } from 'react';
@@ -89,6 +90,8 @@ interface UserContextType {
   selectProgram: (programIndex: number) => void;
   generateFollowUpProgram: () => Promise<void>;
   loadUserPrograms: () => Promise<void>;
+  /** Update a day's completion status in the in-memory program data */
+  markDayCompleteInMemory: (dayNumber: number, completed: boolean) => void;
   // Incremental generation state
   generatingDay: number | null; // Which day is currently being generated (1-7), null if not generating
   generatedDays: number[]; // Array of day numbers that have been generated
@@ -1168,6 +1171,37 @@ export function UserProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  // Update a day's completion status in the in-memory program data
+  const markDayCompleteInMemory = useCallback((dayNumber: number, completed: boolean) => {
+    const now = completed ? new Date() : undefined;
+
+    const updateDays = (days: ProgramDay[]) =>
+      days.map(d => d.day === dayNumber ? { ...d, completed, completedAt: now } : d);
+
+    // Update the display program
+    setProgram(prev => {
+      if (!prev) return prev;
+      return { ...prev, days: updateDays(prev.days) };
+    });
+
+    // Update activeProgram's programs array
+    setActiveProgram(prev => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        programs: prev.programs.map(p => ({ ...p, days: updateDays(p.days) })),
+      };
+    });
+
+    // Update userPrograms so calendar view also reflects completion
+    setUserPrograms(prev =>
+      prev.map(up => ({
+        ...up,
+        programs: up.programs.map(p => ({ ...p, days: updateDays(p.days) })),
+      }))
+    );
+  }, []);
+
   return (
     <UserContext.Provider
       value={{
@@ -1186,6 +1220,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
         selectProgram,
         generateFollowUpProgram,
         loadUserPrograms,
+        markDayCompleteInMemory,
         // Incremental generation state
         generatingDay,
         generatedDays,

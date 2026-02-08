@@ -12,6 +12,7 @@ interface WeekDay {
 export interface DayData {
   date: Date;
   dayType: DayType;
+  isCompleted?: boolean;
 }
 
 interface DayTypeLabels {
@@ -109,6 +110,7 @@ export function CalendarGrid({
                   isSelected={dateString === selectedDateString}
                   dayType={dayData.dayType}
                   dayTypeLabel={dayTypeLabel}
+                  isCompleted={dayData.isCompleted}
                   onClick={() => onDateSelect(date)}
                 />
               );

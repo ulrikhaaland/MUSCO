@@ -74,7 +74,7 @@ function DayDetailPageContent() {
   
   // Access context data
   const { user, error: authError } = useAuth();
-  const { program, programStatus, userPrograms, activeProgram } = useUser();
+  const { program, programStatus, userPrograms, activeProgram, markDayCompleteInMemory } = useUser();
   const { selectedDayData } = useSelectedDay();
   const { t } = useTranslation();
   
@@ -349,17 +349,28 @@ function DayDetailPageContent() {
     router.push(`/program`);
   };
 
-  // Handle workout completion - mark day as done in Firebase
+  // Handle workout completion - mark day as done in Firebase and update local + context state
   const handleWorkoutComplete = useCallback(async () => {
     if (!user?.uid || !activeProgram?.docId || !dayData) return;
     
     try {
-      await markDayAsCompleted(user.uid, activeProgram.docId, dayData.day);
+      await markDayAsCompleted(user.uid, activeProgram.docId, dayData.day, selectedProgram?.weekId);
       logAnalyticsEvent('workout_completed', { day: dayData.day });
+      // Update local state so the UI reflects completion immediately
+      setDayData(prev => prev ? { ...prev, completed: true, completedAt: new Date() } : prev);
+      // Update context so other pages (program overview, calendar) also reflect it
+      markDayCompleteInMemory(dayData.day, true);
     } catch (err) {
       console.error('Failed to mark day as completed:', err);
     }
-  }, [user?.uid, activeProgram?.docId, dayData]);
+  }, [user?.uid, activeProgram?.docId, dayData, markDayCompleteInMemory]);
+
+  // Handle workout restart - reset completion in local + context state
+  const handleWorkoutRestart = useCallback(() => {
+    if (!dayData) return;
+    setDayData(prev => prev ? { ...prev, completed: false, completedAt: undefined } : prev);
+    markDayCompleteInMemory(dayData.day, false);
+  }, [dayData, markDayCompleteInMemory]);
 
   // Hide navigation menu when video is open
   useEffect(() => {
@@ -579,6 +590,7 @@ function DayDetailPageContent() {
             programTitle={selectedProgram?.title || 'Exercise Program'}
             onTitleClick={handleBackClick}
             onWorkoutComplete={handleWorkoutComplete}
+            onWorkoutRestart={handleWorkoutRestart}
           />
         </div>
       </div>
