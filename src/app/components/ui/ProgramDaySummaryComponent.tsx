@@ -14,6 +14,8 @@ interface ProgramDaySummaryComponentProps {
   shimmer?: boolean;
   autoNavigateIfEmpty?: boolean;
   autoNavigateOnShimmer?: boolean;
+  /** Whether this day is in the past */
+  isPastDay?: boolean;
 }
 
 /**
@@ -48,6 +50,7 @@ export function ProgramDaySummaryComponent({
   shimmer = false,
   autoNavigateIfEmpty = false,
   autoNavigateOnShimmer = false,
+  isPastDay = false,
 }: ProgramDaySummaryComponentProps) {
   const { t } = useTranslation();
   const dayTypeDisplay = getDayTypeDisplay(day, t);
@@ -55,6 +58,8 @@ export function ProgramDaySummaryComponent({
   const totalExercises = day.exercises?.length || 0;
   const warmupExercises = day.exercises?.filter((ex) => ex.warmup)?.length || 0;
   const isCompleted = day.completed === true;
+  const dayType = getDayType(day);
+  const isMissed = isPastDay && !isCompleted && dayType !== 'rest' && totalExercises > 0;
 
   // Format completion date
   const completedDateStr = (() => {
@@ -161,6 +166,11 @@ export function ProgramDaySummaryComponent({
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                   </svg>
                   {t('workout.completed')}
+                </span>
+              )}
+              {!shimmer && isMissed && (
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-500/15 ring-1 ring-amber-500/30 text-amber-400 text-xs font-medium shrink-0">
+                  {t('workout.missed')}
                 </span>
               )}
               {shimmer ? (
@@ -335,6 +345,11 @@ export function ProgramDaySummaryComponent({
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                   </svg>
                   {t('workout.completed')}
+                </span>
+              )}
+              {!shimmer && isMissed && (
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-500/15 ring-1 ring-amber-500/30 text-amber-400 text-xs font-medium shrink-0">
+                  {t('workout.missed')}
                 </span>
               )}
               {shimmer ? (

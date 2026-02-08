@@ -7,6 +7,12 @@ import {
   programSlugs,
   localizeProgramDayDescriptions,
 } from '../../../public/data/programs/recovery';
+import {
+  getExerciseProgramBySlug,
+  getExerciseUserProgramBySlug,
+  getAvailableExerciseSlugs,
+  exerciseProgramSlugs,
+} from '../../../public/data/programs/exercise-custom';
 
 import { getCurrentWeekMonday, addWeeks } from '../utils/dateutils';
 import { enrichExercisesWithFullData } from './exerciseProgramService';
@@ -26,7 +32,7 @@ const RECOVERY_PROGRAM_SESSION_KEY = 'currentRecoveryProgram';
  * Get all available recovery program slugs
  */
 export const getRecoveryProgramSlugs = (): string[] => {
-  return getAvailableSlugs();
+  return [...getAvailableSlugs(), ...getAvailableExerciseSlugs()];
 };
 
 /**
@@ -40,14 +46,14 @@ export const isRecoveryProgramSlug = (slug: string): boolean => {
  * Get a recovery program by slug (combined 28-day format)
  */
 export const getRecoveryProgram = (slug: string): ExerciseProgram | null => {
-  return getProgramBySlug(slug);
+  return getProgramBySlug(slug) ?? getExerciseProgramBySlug(slug);
 };
 
 /**
  * Get a recovery program in user program format (4 separate weeks)
  */
 export const getRecoveryUserProgram = (slug: string): UserProgram | null => {
-  return getUserProgramBySlug(slug);
+  return getUserProgramBySlug(slug) ?? getExerciseUserProgramBySlug(slug);
 };
 
 /**
@@ -77,8 +83,9 @@ export const formatRecoveryProgram = async (
       // Enrich with exercise data
       await enrichExercisesWithFullData(weekProgram, isNorwegian);
 
-      // Localize only the day descriptions if Norwegian
-      if (isNorwegian) {
+      // Localize only recovery-program day descriptions if Norwegian.
+      // Custom exercise programs currently keep EN day descriptions.
+      if (isNorwegian && slug.toLowerCase() in programSlugs) {
         weekProgram = localizeProgramDayDescriptions(weekProgram, 'nb');
         userProgram.programs[i] = weekProgram;
       }
@@ -194,7 +201,7 @@ export const saveRecoveryProgramToAccount = async (
       diagnosis: recoveryData.diagnosis,
       questionnaire: recoveryData.questionnaire,
       status: 'done',
-      type: ProgramType.Recovery,
+      type: recoveryData.type || ProgramType.Recovery,
       title: recoveryData.title,
       timeFrame: recoveryData.timeFrame,
       createdAt: new Date(),
@@ -274,8 +281,7 @@ export const getRecoveryProgramMetadata = (
   baseIndex: number;
 } | null => {
   const normalizedSlug = slug.toLowerCase();
-  const baseIndex = programSlugs[normalizedSlug];
-
+  const baseIndex = programSlugs[normalizedSlug] ?? exerciseProgramSlugs[normalizedSlug];
   if (typeof baseIndex !== 'number') return null;
 
   // Map slugs to human-readable titles and target areas
@@ -361,6 +367,67 @@ export const getRecoveryProgramMetadata = (
       corestability: {
         title: 'Core Stability Recovery',
         targetAreas: ['Core', 'Lower Back'],
+      },
+      'wrist-pain': {
+        title: 'Wrist Relief Reset',
+        targetAreas: ['Wrist', 'Forearm'],
+      },
+      wrist: {
+        title: 'Wrist Relief Reset',
+        targetAreas: ['Wrist', 'Forearm'],
+      },
+      wristpain: {
+        title: 'Wrist Relief Reset',
+        targetAreas: ['Wrist', 'Forearm'],
+      },
+      // Custom Exercise Programs
+      'full-body-strength': {
+        title: 'Full Body Strength Starter',
+        targetAreas: ['Full Body', 'Strength'],
+      },
+      'upper-body-build': {
+        title: 'Upper Body Build',
+        targetAreas: ['Upper Body', 'Strength'],
+      },
+      'lower-body-strength': {
+        title: 'Lower Body Strength',
+        targetAreas: ['Lower Body', 'Strength'],
+      },
+      'bodyweight-conditioning': {
+        title: 'Bodyweight Conditioning',
+        targetAreas: ['Conditioning', 'Full Body'],
+      },
+      'core-endurance': {
+        title: 'Core Endurance Builder',
+        targetAreas: ['Core', 'Endurance'],
+      },
+      'glute-core-build': {
+        title: 'Glute and Core Build',
+        targetAreas: ['Glutes', 'Core'],
+      },
+      'push-pull-balance': {
+        title: 'Push Pull Balance',
+        targetAreas: ['Upper Body', 'Balance'],
+      },
+      'athletic-performance': {
+        title: 'Athletic Performance Base',
+        targetAreas: ['Athletic', 'Conditioning'],
+      },
+      'mobility-strength': {
+        title: 'Mobility and Strength Blend',
+        targetAreas: ['Mobility', 'Strength'],
+      },
+      'upper-lower-hybrid': {
+        title: 'Upper Lower Hybrid',
+        targetAreas: ['Upper Body', 'Lower Body'],
+      },
+      'strength-endurance-30-45': {
+        title: 'Strength Endurance 30-45',
+        targetAreas: ['Strength Endurance'],
+      },
+      'muscle-growth-foundation': {
+        title: 'Muscle Growth Launch',
+        targetAreas: ['Hypertrophy', 'Strength'],
       },
     };
 

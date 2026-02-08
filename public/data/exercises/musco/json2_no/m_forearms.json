@@ -92,6 +92,82 @@
       "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Forearms.jpg",
       "viewCount": 0,
       "popularity": "low"
+    },
+    {
+      "id": "forearms-3",
+      "name": "Isometrisk Håndleddsekstensjon Hold (Uten Utstyr)",
+      "description": "En skånsom isometrisk hold for håndleddsekstensorene som kan gjøres hjemme uten utstyr. Plasser underarmen på låret eller et bord, sett håndleddet i lett ekstensjon og hold jevnt spenn med avslappet skulder og nakke.",
+      "steps": [
+        "Sitt med underarmen støttet på lår eller bord og håndflaten vendt ned.",
+        "Løft håndryggen lett opp i ekstensjon, eventuelt med hjelp fra den andre hånden.",
+        "Hold posisjonen rolig med lett til moderat innsats og jevn pust.",
+        "Hold albue og skulder stabile gjennom holdet.",
+        "Senk rolig og gjenta."
+      ],
+      "tips": [
+        "Hold smerte mild og stabil under holdet.",
+        "Unngå hard klemming i fingrene.",
+        "Bruk kortere hold hvis symptomene øker neste morgen.",
+        "Fokuser på jevn spenning fremfor maksimal innsats."
+      ],
+      "targetBodyParts": ["Forearms"],
+      "exerciseType": ["rehabilitation", "isometric"],
+      "difficulty": "beginner",
+      "equipment": ["Bodyweight"],
+      "contraindications": [
+        "Acute wrist injury",
+        "Sharp radiating pain",
+        "Recent forearm surgery"
+      ],
+      "muscles": ["Forearms", "Wrist Extensors"],
+      "alternatives": ["forearms-1"],
+      "repetitions": 1,
+      "sets": 4,
+      "restBetweenSets": 60,
+      "forceType": "Isometric",
+      "mechanics": "Isolation",
+      "videoUrl": "",
+      "imageUrl": "",
+      "viewCount": 0,
+      "popularity": "medium"
+    },
+    {
+      "id": "forearms-4",
+      "name": "Selvresistert Underarmsrotasjon (Uten Utstyr)",
+      "description": "Kontrollert pronasjon/supinasjon med lett motstand fra motsatt hånd. Øvelsen bygger rotasjonstoleranse i håndledd og albue uten manual eller benk.",
+      "steps": [
+        "Bøy albuen omtrent 90 grader og hold den inntil kroppen.",
+        "Bruk motsatt hånd til å gi lett motstand mens du roterer underarmen håndflate opp.",
+        "Snu rolig tilbake med samme lette motstand til håndflate ned.",
+        "Beveg deg sakte i smertefri bane med rolig skulder og overkropp.",
+        "Gjenta kontrollerte repetisjoner på hver side."
+      ],
+      "tips": [
+        "Start med svært lett motstand.",
+        "Hold jevn, kontrollert bevegelse uten rykk.",
+        "Hold deg i smertekontrollert bevegelsesutslag.",
+        "Stopp ved skarp eller utstrålende smerte."
+      ],
+      "targetBodyParts": ["Forearms"],
+      "exerciseType": ["rehabilitation", "mobility"],
+      "difficulty": "beginner",
+      "equipment": ["Bodyweight"],
+      "contraindications": [
+        "Acute wrist or elbow injury",
+        "Recent fracture",
+        "Sharp neurologic pain"
+      ],
+      "muscles": ["Forearms", "Wrist Pronators", "Wrist Supinators"],
+      "alternatives": ["forearms-2"],
+      "repetitions": 12,
+      "sets": 2,
+      "restBetweenSets": 45,
+      "forceType": "Rehabilitation",
+      "mechanics": "Isolation",
+      "videoUrl": "",
+      "imageUrl": "",
+      "viewCount": 0,
+      "popularity": "medium"
     }
   ]
 }

@@ -71,5 +71,52 @@ describe('Recovery program slug mapping', () => {
       expect(up!.programs.length).toBe(1);
     }
   });
-});
 
+  it('keeps week-1 programs free of machine-dependent warmup/cardio IDs', () => {
+    const disallowedExerciseIds = new Set([
+      'warmup-1',
+      'warmup-2',
+      'warmup-3',
+      'warmup-10',
+      'warmup-11',
+      'cardio-3',
+      'cardio-4',
+      'cardio-5',
+      'cardio-6',
+      'cardio-7',
+      'cardio-8',
+      'cardio-9',
+      'cardio-10',
+      'cardio-11',
+      'cardio-12',
+    ]);
+
+    for (const slug of Object.keys(programSlugs)) {
+      const up = getUserProgramBySlug(slug);
+      expect(up).toBeTruthy();
+      const week1 = up!.programs[0];
+      expect(week1).toBeTruthy();
+
+      for (const day of week1.days) {
+        const exercises = day.exercises || [];
+        for (const exercise of exercises) {
+          expect(disallowedExerciseIds.has(exercise.exerciseId)).toBe(false);
+        }
+      }
+    }
+  });
+
+  it('uses no-equipment forearm IDs in tennis-elbow week 1', () => {
+    const up = getUserProgramBySlug('tennis-elbow');
+    expect(up).toBeTruthy();
+    const week1 = up!.programs[0];
+    const exerciseIds = new Set(
+      week1.days.flatMap((day) => (day.exercises || []).map((exercise) => exercise.exerciseId))
+    );
+
+    expect(exerciseIds.has('forearms-3')).toBe(true);
+    expect(exerciseIds.has('forearms-4')).toBe(true);
+    expect(exerciseIds.has('forearms-1')).toBe(false);
+    expect(exerciseIds.has('forearms-2')).toBe(false);
+  });
+});

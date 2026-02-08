@@ -216,6 +216,8 @@ const translations = {
   'auth.rateLimit.subtitle': 'You hit today\'s free limit. Enter your email to log in or create an account to save and continue without losing your progress.',
   'auth.subscribeContext.title': 'Subscribe to unlock Premium',
   'auth.subscribeContext.subtitle': 'Enter your email to log in or create an account, then continue to checkout to unlock higher limits and weekly follow‑ups.',
+  'auth.generateProgramContext.title': 'Generate Next Week\'s Program',
+  'auth.generateProgramContext.subtitle': 'Sign in to generate your personalized program for next week so it\'s ready when you need it.',
   'auth.emailAddress': 'Email address',
   'auth.sendCode': 'Send code',
   'auth.continueWithoutLogin': 'Continue without login',
@@ -732,6 +734,8 @@ const translations = {
   'workout.completed': 'Completed',
   'workout.completedOn': 'Completed {date}',
   'workout.redoWorkout': 'Redo Workout',
+  'workout.missed': 'Not completed',
+  'workout.missedDescription': 'This workout day has passed.',
   'workout.sets': 'sets',
   'workout.exercisesCompleted': 'exercises',
   'workout.setsCompleted': 'sets',
@@ -874,9 +878,9 @@ const translations = {
   'programFeedback.button.building': 'Building Program',
   'programFeedback.button.buildNextWeek': "Build Next Week's Program",
   'programFeedback.button.waitUntilNextWeek':
-    "You must complete this week's program before you can build the next week's program.",
+    "You can generate next week's program starting Sunday.",
   'programFeedback.button.waitUntilSpecificDate':
-    "You can build the next week's program on {{date}}.",
+    "You can generate next week's program from {{date}}.",
   'programFeedback.pageTitle': 'Program Feedback',
 
   // Exercise Feedback Selector
@@ -1081,6 +1085,8 @@ const translations = {
   'profile.customNotes.clickToEdit': 'Click to edit',
   'profile.customNotes.emptyState': 'No notes yet. Add your first note to help personalize your AI experience.',
   'profile.account': 'Account',
+  'profile.emailNotifications': 'Email Notifications',
+  'profile.emailNotificationsDescription': 'Receive weekly reminders when a new program is ready to generate',
   'profile.privacyControls': 'Privacy & Data Controls',
   'profile.privacyPolicy': 'Privacy Policy',
   'profile.dataControls': 'Data Controls',

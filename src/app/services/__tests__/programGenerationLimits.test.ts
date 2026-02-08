@@ -48,14 +48,14 @@ describe('programGenerationLimits', () => {
       expect(result).toBe('2024-12-23T00:00:00.000Z');
     });
 
-    it('handles Sunday correctly (goes back to Monday)', () => {
+    it('handles Sunday correctly (rolls forward to next Monday)', () => {
       // Sunday, Dec 29, 2024
       jest.setSystemTime(new Date('2024-12-29T10:00:00Z'));
       
       const result = getCurrentWeekStartISO();
       
-      // Should be Monday Dec 23, 2024 at 00:00:00 UTC
-      expect(result).toBe('2024-12-23T00:00:00.000Z');
+      // Sunday is treated as next generation week → Monday Dec 30, 2024
+      expect(result).toBe('2024-12-30T00:00:00.000Z');
     });
 
     it('handles Monday correctly (stays on Monday)', () => {
@@ -227,7 +227,7 @@ describe('programGenerationLimits', () => {
       expect(result).toBeNull();
     });
 
-    it('returns next Monday when limit is reached', async () => {
+    it('returns Sunday of current week when limit is reached', async () => {
       // Wednesday, Dec 25, 2024
       jest.setSystemTime(new Date('2024-12-25T14:30:00Z'));
       const currentWeekStart = '2024-12-23T00:00:00.000Z';
@@ -245,10 +245,11 @@ describe('programGenerationLimits', () => {
       const result = await getNextAllowedGenerationDate('user123', ProgramType.Exercise);
 
       expect(result).not.toBeNull();
-      // Next Monday is Dec 30, 2024
-      expect(result!.getDate()).toBe(30);
+      // Sunday of current week is Dec 29, 2024 at 00:00
+      expect(result!.getDate()).toBe(29);
       expect(result!.getMonth()).toBe(11); // December
       expect(result!.getFullYear()).toBe(2024);
+      expect(result!.getHours()).toBe(0);
     });
   });
 
@@ -310,13 +311,13 @@ describe('programGenerationLimits', () => {
   });
 
   describe('Week boundary tests', () => {
-    it('handles week transition correctly', async () => {
-      // Sunday afternoon - should be week of Dec 23
+    it('Sunday rolls forward to next Monday for generation week', async () => {
+      // Sunday afternoon → generation week is next Monday
       jest.setSystemTime(new Date('2024-12-29T12:00:00Z'));
       const sundayWeekStart = getCurrentWeekStartISO();
-      expect(sundayWeekStart).toBe('2024-12-23T00:00:00.000Z');
+      expect(sundayWeekStart).toBe('2024-12-30T00:00:00.000Z');
 
-      // Monday afternoon - should be new week Dec 30
+      // Monday afternoon → stays on that Monday
       jest.setSystemTime(new Date('2024-12-30T12:00:00Z'));
       const mondayWeekStart = getCurrentWeekStartISO();
       expect(mondayWeekStart).toBe('2024-12-30T00:00:00.000Z');
@@ -342,6 +343,51 @@ describe('programGenerationLimits', () => {
       const result = await canGenerateProgram('user123', ProgramType.Exercise);
 
       expect(result).toBe(true);
+    });
+
+    it('allows generation on Sunday even if generated earlier the same Mon-Sun week', async () => {
+      // Generated on Wednesday Dec 25 → stored as week of Dec 23
+      const generatedWeek = '2024-12-23T00:00:00.000Z';
+
+      // Now it's Sunday Dec 29 → generation week rolls to Dec 30
+      jest.setSystemTime(new Date('2024-12-29T08:00:00Z'));
+
+      mockDoc.mockReturnValue('userRef');
+      mockGetDoc.mockResolvedValue({
+        exists: () => true,
+        data: () => ({
+          weeklyProgramGenerations: {
+            [ProgramType.Exercise]: generatedWeek,
+          },
+        }),
+      });
+
+      const result = await canGenerateProgram('user123', ProgramType.Exercise);
+
+      // Should be allowed because Sunday counts as next generation week
+      expect(result).toBe(true);
+    });
+
+    it('still blocks on Saturday if generated earlier the same week', async () => {
+      // Generated on Wednesday Dec 25 → stored as week of Dec 23
+      const generatedWeek = '2024-12-23T00:00:00.000Z';
+
+      // Now it's Saturday Dec 28 → still same generation week
+      jest.setSystemTime(new Date('2024-12-28T20:00:00Z'));
+
+      mockDoc.mockReturnValue('userRef');
+      mockGetDoc.mockResolvedValue({
+        exists: () => true,
+        data: () => ({
+          weeklyProgramGenerations: {
+            [ProgramType.Exercise]: generatedWeek,
+          },
+        }),
+      });
+
+      const result = await canGenerateProgram('user123', ProgramType.Exercise);
+
+      expect(result).toBe(false);
     });
   });
 

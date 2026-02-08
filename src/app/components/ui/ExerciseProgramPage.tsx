@@ -121,6 +121,7 @@ interface SortableDayTabProps {
   isDayGenerating: boolean;
   isDragEnabled: boolean;
   isDropTarget?: boolean;
+  isPastDay?: boolean;
   onClick: () => void;
   t: (key: string) => string;
 }
@@ -135,9 +136,13 @@ function SortableDayTab({
   isDayGenerating,
   isDragEnabled,
   isDropTarget = false,
+  isPastDay = false,
   onClick,
   t,
 }: SortableDayTabProps) {
+  const isCompleted = day.completed === true;
+  const dayType = getDayType(day);
+  const isMissed = isPastDay && !isCompleted && dayType !== 'rest';
   const {
     attributes,
     listeners,
@@ -173,9 +178,13 @@ function SortableDayTab({
               ? 'bg-indigo-600 text-white'
               : isDayGenerating
                 ? 'bg-violet-500/15 text-violet-300 ring-1 ring-violet-500/40'
-                : isDayGenerated
-                  ? 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white'
-                  : 'bg-gray-800/30 text-gray-500 opacity-50 cursor-not-allowed'
+                : isDayGenerated && isCompleted
+                  ? 'bg-emerald-500/10 text-emerald-400 ring-1 ring-emerald-500/25 hover:bg-emerald-500/20'
+                  : isDayGenerated && isMissed
+                    ? 'bg-amber-500/10 text-amber-400 ring-1 ring-amber-500/25 hover:bg-amber-500/20'
+                    : isDayGenerated
+                      ? 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white'
+                      : 'bg-gray-800/30 text-gray-500 opacity-50 cursor-not-allowed'
       } ${isDragEnabled && isDayGenerated ? 'cursor-grab active:cursor-grabbing select-none' : ''}`}
     >
       {/* Drag hint icon - shows on hover when draggable */}
@@ -254,6 +263,8 @@ interface DayTabsWithDndProps {
   onDragEnd: (event: DragEndEvent) => void;
   onDayClick: (dayNumber: number) => void;
   t: (key: string) => string;
+  weekCreatedAt?: Date | string;
+  isSignedIn?: boolean;
 }
 
 // Extracted component for Day Tabs with Drag-and-Drop (used in both multi-week and single-week views)
@@ -271,6 +282,8 @@ function DayTabsWithDnd({
   onDragEnd,
   onDayClick,
   t,
+  weekCreatedAt,
+  isSignedIn = false,
 }: DayTabsWithDndProps) {
   const sortedDays = [...days].sort((a, b) => a.day - b.day);
   
@@ -292,6 +305,14 @@ function DayTabsWithDnd({
             const isDayGenerating = generatingDay === day.day;
             const isSelected = expandedDays.includes(day.day);
             const isDropTarget = overDragId === `day-${day.day}` && activeDragId !== `day-${day.day}`;
+            const isPastDay = (() => {
+              if (!isSignedIn || !weekCreatedAt) return false;
+              const ws = getStartOfWeek(new Date(weekCreatedAt));
+              const dayDate = new Date(ws);
+              dayDate.setDate(dayDate.getDate() + (day.day - 1));
+              dayDate.setHours(23, 59, 59, 999);
+              return new Date() > dayDate;
+            })();
             
             return (
               <SortableDayTab
@@ -305,6 +326,7 @@ function DayTabsWithDnd({
                 isDayGenerating={isDayGenerating}
                 isDragEnabled={isDragEnabled}
                 isDropTarget={isDropTarget}
+                isPastDay={isPastDay}
                 onClick={() => onDayClick(day.day)}
                 t={t}
               />
@@ -1433,16 +1455,17 @@ export function ExerciseProgramPage({
       return;
     }
 
-    // Get the end date of this week
+    // Get the Sunday of the program's week (start of day)
     const programCreatedAt = new Date(program.createdAt);
     const programWeekEnd = getEndOfWeek(programCreatedAt);
+    const programSunday = new Date(programWeekEnd);
+    programSunday.setHours(0, 0, 0, 0);
 
-    // Current date is in a future week if it's after the end of this week
-    const inFutureWeek = currentDate.getTime() > programWeekEnd.getTime();
+    // Allow follow-up starting from Sunday 00:00 of the program week
+    const inFutureWeek = currentDate.getTime() >= programSunday.getTime();
 
-    // Store the next program date (end of this week + 1 day)
-    const dayAfterProgramEnd = addDays(programWeekEnd, 1);
-    setNextProgramDate(dayAfterProgramEnd);
+    // Store the next program date as Sunday of the program week
+    setNextProgramDate(programSunday);
 
     setIsInFutureWeek(inFutureWeek);
   }, [program]);
@@ -2177,6 +2200,8 @@ export function ExerciseProgramPage({
                             onDragEnd={handleDragEnd}
                             onDayClick={handleDayClick}
                             t={t}
+                            weekCreatedAt={activeProgram?.programs?.[selectedWeek - 1]?.createdAt}
+                            isSignedIn={!!user}
                           />
                         )}
                       </div>
@@ -2204,6 +2229,17 @@ export function ExerciseProgramPage({
 
                         const dayIndex = (safeDay.day || 1) - 1;
 
+                        const weekCreatedAt =
+                          activeProgram?.programs?.[selectedWeek - 1]?.createdAt;
+                        const isPastDay = (() => {
+                          if (!user || !weekCreatedAt) return false;
+                          const ws = getStartOfWeek(new Date(weekCreatedAt));
+                          const dayDate = new Date(ws);
+                          dayDate.setDate(dayDate.getDate() + dayIndex);
+                          dayDate.setHours(23, 59, 59, 999);
+                          return new Date() > dayDate;
+                        })();
+
                         return (
                           <ProgramDaySummaryComponent
                             key={safeDay.day}
@@ -2213,6 +2249,7 @@ export function ExerciseProgramPage({
                             shimmer={shouldShimmerDay}
                             autoNavigateIfEmpty={false}
                             autoNavigateOnShimmer={false}
+                            isPastDay={isPastDay}
                             onClick={() =>
                               !shouldShimmerDay && handleDayDetailClick(safeDay, dayName(dayIndex + 1))
                             }
@@ -2266,6 +2303,8 @@ export function ExerciseProgramPage({
                             onDragEnd={handleDragEnd}
                             onDayClick={handleDayClick}
                             t={t}
+                            weekCreatedAt={program?.createdAt}
+                            isSignedIn={!!user}
                           />
                         )}
                       </div>
@@ -2294,6 +2333,15 @@ export function ExerciseProgramPage({
 
                         const dayIndex = displayDay.day - 1;
 
+                        const isPastDay2 = (() => {
+                          if (!user || !program?.createdAt) return false;
+                          const ws = getStartOfWeek(new Date(program.createdAt));
+                          const dayDate = new Date(ws);
+                          dayDate.setDate(dayDate.getDate() + dayIndex);
+                          dayDate.setHours(23, 59, 59, 999);
+                          return new Date() > dayDate;
+                        })();
+
                         return (
                           <ProgramDaySummaryComponent
                             key={displayDay.day}
@@ -2303,6 +2351,7 @@ export function ExerciseProgramPage({
                             shimmer={shouldShimmerDay}
                             autoNavigateIfEmpty={false}
                             autoNavigateOnShimmer={false}
+                            isPastDay={isPastDay2}
                             onClick={() =>
                               !shouldShimmerDay && handleDayDetailClick(displayDay, dayName(dayIndex + 1))
                             }

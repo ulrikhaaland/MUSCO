@@ -183,7 +183,7 @@ describe('programGenerationLimitsAdmin', () => {
       expect(result).toBeNull();
     });
 
-    it('returns next Monday when limit is reached', async () => {
+    it('returns Sunday of current week when limit is reached', async () => {
       jest.setSystemTime(new Date('2024-12-25T14:30:00Z'));
       const currentWeekStart = '2024-12-23T00:00:00.000Z';
       
@@ -199,9 +199,11 @@ describe('programGenerationLimitsAdmin', () => {
       const result = await getNextAllowedGenerationDateAdmin('user123', ProgramType.Exercise);
 
       expect(result).not.toBeNull();
-      expect(result!.getDate()).toBe(30);
+      // Sunday of current week is Dec 29, 2024 at 00:00
+      expect(result!.getDate()).toBe(29);
       expect(result!.getMonth()).toBe(11);
       expect(result!.getFullYear()).toBe(2024);
+      expect(result!.getHours()).toBe(0);
     });
   });
 

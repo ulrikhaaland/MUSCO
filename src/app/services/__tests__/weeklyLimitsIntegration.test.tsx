@@ -95,10 +95,10 @@ describe.skip('Weekly Limits Integration Tests', () => {
       expect(getCurrentWeekStartISO()).toBe('2024-12-23T00:00:00.000Z');
     });
 
-    it('returns previous Monday for Sunday dates', () => {
+    it('returns next Monday for Sunday dates (Sunday rolls forward)', () => {
       // Sunday Dec 29, 2024
       jest.setSystemTime(new Date('2024-12-29T20:00:00Z'));
-      expect(getCurrentWeekStartISO()).toBe('2024-12-23T00:00:00.000Z');
+      expect(getCurrentWeekStartISO()).toBe('2024-12-30T00:00:00.000Z');
     });
 
     it('handles year transitions correctly', () => {
@@ -217,20 +217,21 @@ describe.skip('Weekly Limits Integration Tests', () => {
       expect(nextDate).toBeNull();
     });
 
-    it('returns next Monday when limit is reached', async () => {
+    it('returns Sunday of current week when limit is reached', async () => {
       // Current: Wednesday Dec 25, 2024
       setupMockForWeeklyLimits([ProgramType.Exercise]);
 
       const nextDate = await getNextAllowedGenerationDate('user123', ProgramType.Exercise);
 
       expect(nextDate).not.toBeNull();
-      // Next Monday is Dec 30, 2024
+      // Sunday of current week is Dec 29, 2024 at 00:00
       expect(nextDate!.getFullYear()).toBe(2024);
       expect(nextDate!.getMonth()).toBe(11); // December
-      expect(nextDate!.getDate()).toBe(30);
+      expect(nextDate!.getDate()).toBe(29);
+      expect(nextDate!.getHours()).toBe(0);
     });
 
-    it('returns correct Monday across year boundary', async () => {
+    it('returns correct Sunday across year boundary', async () => {
       // Current: Wednesday Jan 1, 2025
       jest.setSystemTime(new Date('2025-01-01T12:00:00Z'));
       // Week started Dec 30, 2024
@@ -239,10 +240,11 @@ describe.skip('Weekly Limits Integration Tests', () => {
       const nextDate = await getNextAllowedGenerationDate('user123', ProgramType.Exercise);
 
       expect(nextDate).not.toBeNull();
-      // Next Monday is Jan 6, 2025
+      // Sunday of current week is Jan 5, 2025 at 00:00
       expect(nextDate!.getFullYear()).toBe(2025);
       expect(nextDate!.getMonth()).toBe(0); // January
-      expect(nextDate!.getDate()).toBe(6);
+      expect(nextDate!.getDate()).toBe(5);
+      expect(nextDate!.getHours()).toBe(0);
     });
   });
 
@@ -273,18 +275,19 @@ describe.skip('Weekly Limits Integration Tests', () => {
       expect(canBoth).toBe(true);
     });
 
-    it('transitions correctly at week boundary - Sunday afternoon', async () => {
-      // Sunday Dec 29, 2024 at 14:00 UTC - still week of Dec 23
+    it('transitions correctly at week boundary - Sunday afternoon (rolls to next week)', async () => {
+      // Sunday Dec 29, 2024 at 14:00 UTC - generation week rolls to Dec 30
       jest.setSystemTime(new Date('2024-12-29T14:00:00Z'));
       
-      // Verify we're in the right week
-      expect(getCurrentWeekStartISO()).toBe('2024-12-23T00:00:00.000Z');
+      // Verify Sunday is treated as next generation week
+      expect(getCurrentWeekStartISO()).toBe('2024-12-30T00:00:00.000Z');
       
-      // Generated this week (Dec 23)
+      // Generated earlier this calendar week (Dec 23)
       setupMockForWeeklyLimits([ProgramType.Exercise], '2024-12-23T00:00:00.000Z');
 
+      // Should be allowed because Sunday counts as next generation week
       const canExercise = await canGenerateProgram('user123', ProgramType.Exercise);
-      expect(canExercise).toBe(false);
+      expect(canExercise).toBe(true);
     });
 
     it('transitions correctly at week boundary - Monday morning', async () => {
@@ -396,9 +399,9 @@ describe.skip('Weekly Limits Integration Tests', () => {
       available = await getAvailableProgramTypes('user123');
       expect(available).toHaveLength(0);
 
-      // Verify next allowed date is Monday Dec 30
+      // Verify next allowed date is Sunday Dec 29
       const nextDate = await getNextAllowedGenerationDate('user123', ProgramType.Exercise);
-      expect(nextDate?.getDate()).toBe(30);
+      expect(nextDate?.getDate()).toBe(29);
 
       // Day 8 (Next Monday): All types available again
       jest.setSystemTime(new Date('2024-12-30T09:00:00Z'));

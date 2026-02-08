@@ -7,4 +7,4 @@ admin.initializeApp();
 
 // Import and re-export your functions from their new handler files
 export {sendLoginEmail, validateAuthCode} from './handlers/auth';
-// export {sendWeeklyProgramReminder} from './handlers/notifications';
+export {sendWeeklyProgramReminder} from './handlers/notifications';

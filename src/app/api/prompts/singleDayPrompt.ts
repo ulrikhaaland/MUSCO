@@ -56,9 +56,9 @@ Create a balanced program description that fits the programType:
 4. DETAILED DESCRIPTIONS REQUIRED
 
 All text fields must be substantial and helpful:
-- title: SHORT and MEMORABLE (2-4 words max). NO parentheses, NO listing body parts. Examples: "Upper Body Power", "Push-Pull Styrke", "Overkropp Fokus", "Styrke & Stabilitet"
+- title: SHORT, MEMORABLE, and CLICK-WORTHY (2-4 words max). Must sound like something users want to open immediately. Use clear benefit/outcome language. NO parentheses, NO listing body parts directly, NO generic names like "Program Plan" or "Workout Routine". Examples: "Move Pain-Free", "Strong Again", "Power & Posture", "Core Control"
 - programOverview: Description of the program's purpose and goals, explaining how it addresses user's needs and what they'll achieve
-- summary: A concise description of the program's main focus for quick reference
+- summary: A concise, benefit-first one-liner for quick scanning in cards/lists. Make it specific and outcome-focused, not generic.
 - whatNotToDo: Specific activities to avoid to prevent injury, based on user's condition (not generic advice)
 - afterTimeFrame.expectedOutcome: What specific improvements the user can expect after completing the program (e.g., reduced pain, improved mobility, strength gains)
 - afterTimeFrame.nextSteps: A persuasive message encouraging the user to follow the program consistently and return for feedback. Highlight how their input will improve future routines.
@@ -69,6 +69,7 @@ IMPORTANT - Natural Language Guidelines:
 - DO NOT include duration ranges like "(15-20 min)" or "(45-60 minutes)" in descriptions - durations are shown separately
 - DO NOT mention questionnaire data or user preference names directly
 - Write as if speaking to the user naturally, focusing on benefits and outcomes
+- Keep copy motivating and specific so the user wants to start now, but avoid hype/clickbait claims
 
 5. Weekly Plan Generation
 
@@ -576,7 +577,7 @@ Create a balanced program description that acknowledges this is a follow-up:
 
 All text fields must be substantial and helpful:
 - programOverview: Description acknowledging this is a follow-up, how feedback was incorporated, and what the user will achieve
-- summary: A concise description of the program's main focus for quick reference
+- summary: A concise, benefit-first one-liner for quick scanning in cards/lists. Make it specific and outcome-focused, not generic.
 - whatNotToDo: Specific activities to avoid to prevent injury, based on user's condition (not generic advice)
 - afterTimeFrame.expectedOutcome: What specific improvements the user can expect after completing this follow-up program
 - afterTimeFrame.nextSteps: A message encouraging continued feedback for further program refinement
@@ -587,6 +588,7 @@ IMPORTANT - Natural Language Guidelines:
 - DO NOT include duration ranges like "(15-20 min)" or "(45-60 minutes)" in descriptions - durations are shown separately
 - DO NOT mention questionnaire data or user preference names directly
 - Write as if speaking to the user naturally, focusing on benefits and outcomes
+- Keep copy motivating and specific so the user wants to continue, but avoid hype/clickbait claims
 
 6. Weekly Plan Generation
 

@@ -187,6 +187,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // User document doesn't exist, create it automatically
       const newUserDoc = {
         email: auth.currentUser?.email || '',
+        emailNotifications: true,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };
@@ -207,6 +208,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const userRef = doc(db, `users/${user.uid}`);
       await setDoc(userRef, {
         email: user.email,
+        emailNotifications: true,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       });

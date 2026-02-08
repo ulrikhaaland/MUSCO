@@ -92,6 +92,82 @@
       "imageUrl": "https://cdn.muscleandstrength.com/sites/all/themes/mnsnew/images/taxonomy/exercises/muscle-groups/full/Forearms.jpg",
       "viewCount": 0,
       "popularity": "low"
+    },
+    {
+      "id": "forearms-3",
+      "name": "Isometric Wrist Extension Hold (No Equipment)",
+      "description": "A low-load isometric hold for wrist extensor tolerance that can be done at home without equipment. Place your affected forearm on a thigh or table, set the wrist in slight extension, and hold a steady position while keeping the shoulder and neck relaxed. This is useful in early-stage elbow tendon rehab when dynamic loading is not yet well tolerated.",
+      "targetBodyParts": ["Forearms"],
+      "exerciseType": ["rehabilitation", "isometric"],
+      "difficulty": "beginner",
+      "equipment": ["Bodyweight"],
+      "steps": [
+        "Sit with your forearm supported on your thigh or a table and your palm facing down.",
+        "Lift the back of your hand slightly into wrist extension using your other hand to assist if needed.",
+        "Hold the position steadily with light to moderate effort and relaxed breathing.",
+        "Keep your elbow and shoulder quiet while maintaining the hold.",
+        "Lower slowly and repeat."
+      ],
+      "tips": [
+        "Keep pain mild and stable during the hold.",
+        "Do not grip hard with the fingers while holding.",
+        "Use shorter holds if symptoms increase the next morning.",
+        "Focus on steady tension rather than maximal effort."
+      ],
+      "contraindications": [
+        "Acute wrist injury",
+        "Sharp radiating pain",
+        "Recent forearm surgery"
+      ],
+      "muscles": ["Forearms", "Wrist Extensors"],
+      "alternatives": ["forearms-1"],
+      "repetitions": 1,
+      "sets": 4,
+      "restBetweenSets": 60,
+      "forceType": "Isometric",
+      "mechanics": "Isolation",
+      "videoUrl": "",
+      "imageUrl": "",
+      "viewCount": 0,
+      "popularity": "medium"
+    },
+    {
+      "id": "forearms-4",
+      "name": "Self-Resisted Forearm Rotation (No Equipment)",
+      "description": "A controlled pronation/supination drill using your opposite hand for light resistance. This movement builds rotational tolerance around the wrist and elbow without requiring dumbbells or a bench.",
+      "targetBodyParts": ["Forearms"],
+      "exerciseType": ["rehabilitation", "mobility"],
+      "difficulty": "beginner",
+      "equipment": ["Bodyweight"],
+      "steps": [
+        "Bend your elbow to about 90 degrees and keep it close to your side.",
+        "Use your opposite hand to provide gentle resistance as you rotate the forearm palm-up.",
+        "Reverse direction with the same gentle resistance and rotate palm-down.",
+        "Move slowly through pain-free range and keep shoulder and trunk still.",
+        "Repeat for controlled reps on each side."
+      ],
+      "tips": [
+        "Use very light resistance at first.",
+        "Keep the movement smooth with no jerking.",
+        "Stay in a pain-managed range.",
+        "Stop if symptoms become sharp or radiating."
+      ],
+      "contraindications": [
+        "Acute wrist or elbow injury",
+        "Recent fracture",
+        "Sharp neurologic pain"
+      ],
+      "muscles": ["Forearms", "Wrist Pronators", "Wrist Supinators"],
+      "alternatives": ["forearms-2"],
+      "repetitions": 12,
+      "sets": 2,
+      "restBetweenSets": 45,
+      "forceType": "Rehabilitation",
+      "mechanics": "Isolation",
+      "videoUrl": "",
+      "imageUrl": "",
+      "viewCount": 0,
+      "popularity": "medium"
     }
   ]
 }

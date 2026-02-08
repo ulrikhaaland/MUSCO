@@ -2,6 +2,7 @@
 
 import { ProgramDaySummaryComponent } from '../ProgramDaySummaryComponent';
 import type { ProgramDay, ExerciseProgram } from '@/app/types/program';
+import { getStartOfWeek } from '@/app/utils/dateutils';
 
 interface ProgramDayWithSource {
   day: ProgramDay;
@@ -33,25 +34,37 @@ export function SelectedDayPanel({
 
   return (
     <div className="space-y-4">
-      {programDays.map((programDay, index) => (
-        <ProgramDaySummaryComponent
-          key={index}
-          day={programDay.day}
-          dayName={dayName(programDay.dayOfWeek)}
-          onClick={
-            onDaySelect
-              ? () =>
-                  onDaySelect(
-                    programDay.day,
-                    dayName(programDay.dayOfWeek),
-                    programDay.program.createdAt.toString()
-                  )
-              : undefined
-          }
-          programTitle={programDay.userProgram.title || 'Program'}
-          isCalendarView={true}
-        />
-      ))}
+      {programDays.map((programDay, index) => {
+        const isPastDay = (() => {
+          if (!programDay.program.createdAt) return false;
+          const ws = getStartOfWeek(new Date(programDay.program.createdAt));
+          const dayDate = new Date(ws);
+          dayDate.setDate(dayDate.getDate() + (programDay.day.day - 1));
+          dayDate.setHours(23, 59, 59, 999);
+          return new Date() > dayDate;
+        })();
+
+        return (
+          <ProgramDaySummaryComponent
+            key={index}
+            day={programDay.day}
+            dayName={dayName(programDay.dayOfWeek)}
+            onClick={
+              onDaySelect
+                ? () =>
+                    onDaySelect(
+                      programDay.day,
+                      dayName(programDay.dayOfWeek),
+                      programDay.program.createdAt.toString()
+                    )
+                : undefined
+            }
+            programTitle={programDay.userProgram.title || 'Program'}
+            isCalendarView={true}
+            isPastDay={isPastDay}
+          />
+        );
+      })}
     </div>
   );
 }

@@ -3597,6 +3597,36 @@ export default function ProfilePage() {
                       </div>
                     </div>
                   )}
+                  {/* Email notifications toggle */}
+                  <div className="flex items-center justify-between px-4 py-3 bg-gray-700 rounded-lg">
+                    <div>
+                      <span className="text-white">{t('profile.emailNotifications')}</span>
+                      <p className="text-xs text-gray-400 mt-0.5">{t('profile.emailNotificationsDescription')}</p>
+                    </div>
+                    <button
+                      type="button"
+                      role="switch"
+                      aria-checked={user?.profile?.emailNotifications !== false}
+                      onClick={async () => {
+                        const current = user?.profile?.emailNotifications !== false;
+                        try {
+                          await updateUserProfile({ emailNotifications: !current });
+                        } catch (e) {
+                          console.error('Failed to update email notifications:', e);
+                        }
+                      }}
+                      className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-900 ${
+                        user?.profile?.emailNotifications !== false ? 'bg-indigo-600' : 'bg-gray-600'
+                      }`}
+                    >
+                      <span
+                        className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                          user?.profile?.emailNotifications !== false ? 'translate-x-5' : 'translate-x-0'
+                        }`}
+                      />
+                    </button>
+                  </div>
+
                   <button
                     onClick={() => router.push('/privacy')}
                     className="px-4 py-3 bg-gray-700 text-white rounded-lg hover:bg-gray-600 w-full flex items-center justify-between"
@@ -4512,6 +4542,36 @@ export default function ProfilePage() {
                         </div>
                       </div>
                     )}
+                    {/* Email notifications toggle */}
+                    <div className="flex items-center justify-between px-4 py-3 bg-gray-700 rounded-lg">
+                      <div>
+                        <span className="text-white">{t('profile.emailNotifications')}</span>
+                        <p className="text-xs text-gray-400 mt-0.5">{t('profile.emailNotificationsDescription')}</p>
+                      </div>
+                      <button
+                        type="button"
+                        role="switch"
+                        aria-checked={user?.profile?.emailNotifications !== false}
+                        onClick={async () => {
+                          const current = user?.profile?.emailNotifications !== false;
+                          try {
+                            await updateUserProfile({ emailNotifications: !current });
+                          } catch (e) {
+                            console.error('Failed to update email notifications:', e);
+                          }
+                        }}
+                        className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-900 ${
+                          user?.profile?.emailNotifications !== false ? 'bg-indigo-600' : 'bg-gray-600'
+                        }`}
+                      >
+                        <span
+                          className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                            user?.profile?.emailNotifications !== false ? 'translate-x-5' : 'translate-x-0'
+                          }`}
+                        />
+                      </button>
+                    </div>
+
                     <button onClick={() => router.push('/privacy')} className="px-4 py-3 bg-gray-700 text-white rounded-lg hover:bg-gray-600 w-full flex items-center justify-between">
                       <span>{t('profile.privacyControls')}</span>
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

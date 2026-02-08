@@ -34,6 +34,9 @@ export interface UserProfile {
   // Custom notes for AI context
   customNotes?: string[];
   
+  // Notifications
+  emailNotifications?: boolean; // defaults to true on account creation
+
   // Metadata
   createdAt?: string;
   updatedAt?: string;

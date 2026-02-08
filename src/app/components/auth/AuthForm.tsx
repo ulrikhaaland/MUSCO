@@ -19,7 +19,7 @@ export function AuthForm({ onSkip, isSaveContext = false, isAdmin = false }: { o
   const [step, setStep] = useState<'email' | 'code'>('email');
   const { sendSignInLink } = useAuth();
   const { program } = useUser();
-  const [loginContext, setLoginContext] = useState<'default' | 'rateLimit' | 'subscribe' | 'saveProgram'>(
+  const [loginContext, setLoginContext] = useState<'default' | 'rateLimit' | 'subscribe' | 'saveProgram' | 'generateProgram'>(
     isSaveContext ? 'saveProgram' : 'default'
   );
 
@@ -41,6 +41,7 @@ export function AuthForm({ onSkip, isSaveContext = false, isAdmin = false }: { o
       if (ctx === 'rateLimit') setLoginContext('rateLimit');
       else if (ctx === 'subscribe') setLoginContext('subscribe');
       else if (ctx === 'saveProgram') setLoginContext('saveProgram');
+      else if (ctx === 'generateProgram') setLoginContext('generateProgram');
     } catch {}
   }, []);
 
@@ -101,6 +102,8 @@ export function AuthForm({ onSkip, isSaveContext = false, isAdmin = false }: { o
             ? t('auth.rateLimit.title')
             : loginContext === 'subscribe'
             ? t('auth.subscribeContext.title')
+            : loginContext === 'generateProgram'
+            ? t('auth.generateProgramContext.title')
             : t('auth.welcome')}
         </h2>
         <p className="mt-1 text-sm text-gray-400">
@@ -112,6 +115,8 @@ export function AuthForm({ onSkip, isSaveContext = false, isAdmin = false }: { o
             ? t('auth.rateLimit.subtitle')
             : loginContext === 'subscribe'
             ? t('auth.subscribeContext.subtitle')
+            : loginContext === 'generateProgram'
+            ? t('auth.generateProgramContext.subtitle')
             : t('auth.enterEmailForCode')}
         </p>
       </div>

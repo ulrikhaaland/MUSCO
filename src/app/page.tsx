@@ -9,6 +9,7 @@ import {
   getProgramBySlug,
   localizeProgramDayDescriptions,
 } from '../../public/data/programs/recovery';
+import { getExerciseProgramBySlug } from '../../public/data/programs/exercise-custom';
 import PartnerLogos from '@/components/PartnerLogos';
 // import LanguageSwitcher from './components/ui/LanguageSwitcher';
 import { logAnalyticsEvent } from './utils/analytics';
@@ -101,6 +102,9 @@ export default function LandingPage() {
   const [modalOpen, setModalOpen] = useState<null | string>(null);
   const [_pricingAnnual, _setPricingAnnual] = useState(true);
   const [showAllPrograms, setShowAllPrograms] = useState(false);
+  const [programFilter, setProgramFilter] = useState<'recovery' | 'exercise'>(
+    'recovery'
+  );
   const [isMobile, setIsMobile] = useState(false);
   const [_exploreInput, _setExploreInput] = useState('');
   const programSummaries: Record<string, string> = {
@@ -260,8 +264,8 @@ export default function LandingPage() {
     window.scrollTo({ top: y, behavior: 'smooth' });
   };
 
-  // Program cards data and ordering by approximate commonality
-  const programCardsBase = [
+  // Recovery cards (localized)
+  const recoveryProgramCardsBase = [
     { key: 'lower_back', slug: 'lower-back', img: '/bodyparts/lower_back.png' },
     { key: 'shoulder_pain', slug: 'shoulder', img: '/bodyparts/shoulders.png' },
     { key: 'runners_knee', slug: 'runners-knee', img: '/bodyparts/knees.png' },
@@ -287,25 +291,63 @@ export default function LandingPage() {
       slug: 'core-stability',
       img: '/bodyparts/abdomen.png',
     },
+    { key: 'wrist_pain', slug: 'wrist-pain', img: '/bodyparts/elbows.png', title: 'Wrist Relief Reset' },
     { key: 'tennis_elbow', slug: 'tennis-elbow', img: '/bodyparts/elbows.png' },
     { key: 'shin_splints', slug: 'shin-splints', img: '/bodyparts/shin.png' },
   ];
   // Pull short summaries from source programs for sync; fallback to local mapping
-  const programCards = programCardsBase.map(({ key, slug, img }) => {
+  const recoveryProgramCards = recoveryProgramCardsBase.map(({ key, slug, img, title: fallbackTitle }) => {
     let summary = programSummaries[slug as keyof typeof programSummaries];
     const base = getProgramBySlug(slug);
+    let title = fallbackTitle || t(`landing.programs.${key}`);
     if (base) {
       const localized =
         locale === 'nb' ? localizeProgramDayDescriptions(base, 'nb') : base;
       if (localized?.summary) summary = localized.summary as string;
+      if (localized?.title) title = localized.title as string;
     }
-    return { key, slug, img, summary } as {
+    return { key, slug, img, summary, title } as {
       key: string;
       slug: string;
       img: string;
       summary: string;
+      title: string;
     };
   });
+  const exerciseProgramCardsBase = [
+    { slug: 'full-body-strength', img: '/bodyparts/upper_back_and_core.png' },
+    { slug: 'upper-body-build', img: '/bodyparts/shoulders.png' },
+    { slug: 'lower-body-strength', img: '/bodyparts/upper_legs_behind.png' },
+    { slug: 'bodyweight-conditioning', img: '/bodyparts/knees.png' },
+    { slug: 'core-endurance', img: '/bodyparts/abdomen.png' },
+    { slug: 'glute-core-build', img: '/bodyparts/lower_back.png' },
+    { slug: 'push-pull-balance', img: '/bodyparts/shoulders.png' },
+    { slug: 'athletic-performance', img: '/bodyparts/upper_back_and_core.png' },
+    { slug: 'mobility-strength', img: '/bodyparts/neck.png' },
+    { slug: 'upper-lower-hybrid', img: '/bodyparts/upper_legs_behind.png' },
+    { slug: 'muscle-growth-foundation', img: '/bodyparts/shoulders.png' },
+    { slug: 'strength-endurance-30-45', img: '/bodyparts/abdomen.png' },
+  ];
+  const exerciseProgramCards = exerciseProgramCardsBase
+    .map(({ slug, img }) => {
+      const program = getExerciseProgramBySlug(slug);
+      if (!program) return null;
+      return {
+        key: slug,
+        slug,
+        img,
+        title: program.title || slug.replace(/-/g, ' '),
+        summary:
+          program.summary || '30-45 minute custom training plan built for home workouts.',
+      };
+    })
+    .filter(Boolean) as Array<{
+    key: string;
+    slug: string;
+    img: string;
+    title: string;
+    summary: string;
+  }>;
   const commonalityRank: Record<string, number> = {
     'lower-back': 1,
     shoulder: 2,
@@ -319,10 +361,12 @@ export default function LandingPage() {
     'tennis-elbow': 10,
     'shin-splints': 11,
   };
-  const sortedPrograms = [...programCards].sort(
-    (a, b) =>
-      (commonalityRank[a.slug] ?? 999) - (commonalityRank[b.slug] ?? 999)
+  const sortedRecoveryPrograms = [...recoveryProgramCards].sort(
+    (a, b) => (commonalityRank[a.slug] ?? 999) - (commonalityRank[b.slug] ?? 999)
   );
+  const sortedExercisePrograms = [...exerciseProgramCards];
+  const sortedPrograms =
+    programFilter === 'recovery' ? sortedRecoveryPrograms : sortedExercisePrograms;
   const defaultVisible = isMobile ? 3 : 6;
   const visiblePrograms = showAllPrograms
     ? sortedPrograms
@@ -443,8 +487,36 @@ export default function LandingPage() {
         <h2 className="text-white text-1xl font-semibold mb-4">
           {t('landing.programs.title')}
         </h2>
+        <div className="flex space-x-2 mb-4">
+          <button
+            onClick={() => {
+              setProgramFilter('recovery');
+              setShowAllPrograms(false);
+            }}
+            className={`px-4 py-2 rounded-lg font-medium transition-colors duration-200 ${
+              programFilter === 'recovery'
+                ? 'bg-indigo-600 text-white'
+                : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white'
+            }`}
+          >
+            {t('programs.filter.recovery')}
+          </button>
+          <button
+            onClick={() => {
+              setProgramFilter('exercise');
+              setShowAllPrograms(false);
+            }}
+            className={`px-4 py-2 rounded-lg font-medium transition-colors duration-200 ${
+              programFilter === 'exercise'
+                ? 'bg-indigo-600 text-white'
+                : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white'
+            }`}
+          >
+            {t('programs.filter.exercise')}
+          </button>
+        </div>
         <div className="grid gap-6 md:gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 items-stretch">
-          {visiblePrograms.map(({ key, slug, img }) => (
+          {visiblePrograms.map(({ key, slug, img, title, summary }) => (
             <button
               key={key}
               className="group h-full text-left rounded-xl overflow-hidden bg-surface-elevated ring-1 ring-white/12 shadow-lg hover:shadow-xl hover:translate-y-[-1px] transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
@@ -464,7 +536,7 @@ export default function LandingPage() {
                 <div className="p-4 flex-1 flex flex-col justify-start">
                   <div className="flex items-start justify-between gap-3">
                     <div className="text-white font-medium tracking-tight">
-                      {t(`landing.programs.${key}`)}
+                      {title}
                     </div>
                     <svg
                       className="mt-1 h-4 w-4 text-white/40 group-hover:text-white/70 transition-colors flex-shrink-0"
@@ -479,9 +551,7 @@ export default function LandingPage() {
                     </svg>
                   </div>
                   <div className="text-[12px] text-white/75 mt-1">
-                    {programSummaries[slug] ||
-                      programCards.find((p) => p.slug === slug)?.summary ||
-                      'Personalized plan with progressive weekly focus.'}
+                    {summary || 'Personalized plan with progressive weekly focus.'}
                   </div>
                 </div>
               </div>

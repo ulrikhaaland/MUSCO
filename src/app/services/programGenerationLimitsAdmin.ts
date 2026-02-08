@@ -1,6 +1,6 @@
 import { adminDb } from '../firebase/admin';
 import { ProgramType } from '../../../shared/types';
-import { getStartOfWeek } from '../utils/dateutils';
+import { getStartOfWeek, getEndOfWeek } from '../utils/dateutils';
 
 /**
  * Disable weekly generation limits in development (localhost)
@@ -11,7 +11,9 @@ const DISABLE_WEEKLY_LIMITS = process.env.NODE_ENV === 'development';
  * Weekly program generation limits service (Admin/Server-side version)
  * 
  * Rule: Only ONE program generation (new or follow-up) is allowed per week per program type.
- * A week starts on Monday 00:00:00 and ends Sunday 23:59:59.
+ * A generation week runs Monday 00:00:00 through Saturday 23:59:59.
+ * Sunday is treated as the start of the next generation week so users can
+ * initiate follow-up programs on Sunday.
  */
 
 export interface WeeklyProgramGenerations {
@@ -21,10 +23,21 @@ export interface WeeklyProgramGenerations {
 }
 
 /**
- * Get the current week's start date as an ISO string (Monday 00:00:00 UTC)
+ * Get the current generation-week's start date as an ISO string (Monday 00:00:00 UTC).
+ *
+ * On Sundays the generation week rolls forward to the next Monday so that
+ * follow-up programs initiated on Sunday are counted toward (and allowed in)
+ * the upcoming week rather than blocked by the just-ended week.
  */
 export function getCurrentWeekStartISO(): string {
-  const weekStart = getStartOfWeek(new Date());
+  const now = new Date();
+  const isSunday = now.getDay() === 0;
+
+  // On Sunday, shift to next Monday so the limit window is Mon–Sat
+  const weekStart = isSunday
+    ? getStartOfWeek(new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1))
+    : getStartOfWeek(now);
+
   // Convert to UTC for consistent storage
   return new Date(
     Date.UTC(weekStart.getFullYear(), weekStart.getMonth(), weekStart.getDate())
@@ -122,7 +135,7 @@ export async function recordProgramGenerationAdmin(
 
 /**
  * Get the date when the user can next generate a program of the given type (Admin version)
- * @returns Date of next Monday, or null if generation is allowed now
+ * @returns Next Sunday (00:00), or null if generation is allowed now
  */
 export async function getNextAllowedGenerationDateAdmin(
   userId: string,
@@ -138,13 +151,13 @@ export async function getNextAllowedGenerationDateAdmin(
     return null; // Generation allowed now
   }
 
-  // Return next Monday
+  // Return Sunday 00:00 of the current week (the earliest follow-up day)
   const today = new Date();
-  const currentWeekStart = getStartOfWeek(today);
-  const nextMonday = new Date(currentWeekStart);
-  nextMonday.setDate(nextMonday.getDate() + 7);
-  
-  return nextMonday;
+  const weekEnd = getEndOfWeek(today);
+  const sunday = new Date(weekEnd);
+  sunday.setHours(0, 0, 0, 0);
+
+  return sunday;
 }
 
 /**

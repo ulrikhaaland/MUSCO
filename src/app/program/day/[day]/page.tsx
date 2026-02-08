@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef, Suspense, useCallback } from 'react';
+import { useState, useEffect, useRef, useMemo, Suspense, useCallback } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { ProgramStatus, Exercise, ProgramDay, ExerciseProgram } from '@/app/types/program';
 import { ProgramDayComponent } from '@/app/components/ui/ProgramDayComponent';
@@ -13,7 +13,7 @@ import { storage } from '@/app/firebase/config';
 import { useTranslation } from '@/app/i18n/TranslationContext';
 import { logAnalyticsEvent } from '../../../utils/analytics';
 import { NavigationMenu } from '@/app/components/ui/NavigationMenu';
-import { getDayFullName } from '@/app/utils/dateutils';
+import { getDayFullName, getStartOfWeek } from '@/app/utils/dateutils';
 import { markDayAsCompleted } from '@/app/services/workoutSessionService';
 
 function ErrorDisplay({ error }: { error: Error }) {
@@ -372,6 +372,33 @@ function DayDetailPageContent() {
     markDayCompleteInMemory(dayData.day, false);
   }, [dayData, markDayCompleteInMemory]);
 
+  // Handle marking a missed past day as completed (without doing the workout)
+  const handleMarkComplete = useCallback(async () => {
+    if (!user?.uid || !activeProgram?.docId || !dayData) return;
+    try {
+      await markDayAsCompleted(user.uid, activeProgram.docId, dayData.day, selectedProgram?.weekId);
+      setDayData(prev => prev ? { ...prev, completed: true, completedAt: new Date() } : prev);
+      markDayCompleteInMemory(dayData.day, true);
+    } catch (err) {
+      console.error('Failed to mark day as completed:', err);
+    }
+  }, [user?.uid, activeProgram?.docId, dayData, selectedProgram?.weekId, markDayCompleteInMemory]);
+
+  // Determine if this day is in the past
+  // Only show completion status for signed-in users
+  const isPastDay = useMemo(() => {
+    if (!user?.uid || !selectedProgram?.createdAt || !dayData) return false;
+    const programStart = selectedProgram.createdAt instanceof Date 
+      ? selectedProgram.createdAt 
+      : new Date(selectedProgram.createdAt);
+    const weekStart = getStartOfWeek(programStart);
+    const dayDate = new Date(weekStart);
+    dayDate.setDate(dayDate.getDate() + (dayData.day - 1));
+    dayDate.setHours(23, 59, 59, 999);
+
+    return new Date() > dayDate;
+  }, [user?.uid, selectedProgram?.createdAt, dayData]);
+
   // Hide navigation menu when video is open
   useEffect(() => {
     if (videoUrl) {
@@ -591,6 +618,9 @@ function DayDetailPageContent() {
             onTitleClick={handleBackClick}
             onWorkoutComplete={handleWorkoutComplete}
             onWorkoutRestart={handleWorkoutRestart}
+            onMarkComplete={handleMarkComplete}
+            isPastDay={isPastDay}
+            hideWorkoutFAB={!user}
           />
         </div>
       </div>

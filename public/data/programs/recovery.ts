@@ -660,23 +660,25 @@ const getOptionalHomeRestExercises = (program: ExerciseProgram): any[] => {
   if (isForearm) {
     return [
       {
-        exerciseId: 'warmup-6',
-        duration: 1.5,
-        warmup: true,
-        modification: 'Easy circulation. Keep shoulders relaxed.',
-      },
-      {
-        exerciseId: 'forearms-1',
+        exerciseId: 'warmup-8',
         sets: 1,
-        repetitions: 15,
-        restBetweenSets: 45,
-        modification: 'Light effort. Stop if sharp or radiating pain.',
-      },
-      {
-        exerciseId: 'forearms-2',
-        sets: 1,
-        repetitions: 15,
+        repetitions: 20,
         restBetweenSets: 30,
+        warmup: true,
+        modification: 'Easy shoulder/arm circulation. Keep shoulders relaxed.',
+      },
+      {
+        exerciseId: 'forearms-3',
+        sets: 1,
+        duration: 0.5,
+        restBetweenSets: 45,
+        modification: 'Light isometric hold. Stop if sharp or radiating pain.',
+      },
+      {
+        exerciseId: 'forearms-4',
+        sets: 1,
+        repetitions: 12,
+        restBetweenSets: 45,
         modification: 'Slow, controlled rotation in pain-free range.',
       },
     ];
@@ -1112,8 +1114,8 @@ const createTennisElbowRestDay = (day: number): any => {
     // WEEK 1: Forearm mobility and low-load circulation
     const exercises = [
       { exerciseId: 'warmup-8', sets: 1, repetitions: 20, restBetweenSets: 30, warmup: true, modification: 'Relax shoulders and neck; easy circles only.' },
-      { exerciseId: 'forearms-2', sets: 2, repetitions: 12, restBetweenSets: 30, modification: 'Support forearm on thigh/table and rotate only in pain-free range.' },
-      { exerciseId: 'forearms-1', sets: 1, duration: 0.5, restBetweenSets: 45, modification: 'Very light load and gentle hold; support forearm on thigh if no bench available.' }
+      { exerciseId: 'forearms-4', sets: 2, repetitions: 12, restBetweenSets: 30, modification: 'Support forearm on thigh/table and rotate only in pain-free range.' },
+      { exerciseId: 'forearms-3', sets: 1, duration: 0.5, restBetweenSets: 45, modification: 'Gentle isometric hold with forearm supported on thigh/table.' }
     ];
     
     return {
@@ -1461,7 +1463,7 @@ const rehabProgramsAllWeeks: ExerciseProgram[] = [
     programOverview:
       'Shin splints often flare when impact volume ramps faster than your lower leg can adapt. This week we dial down running/jumping to calm the tibia while keeping you active with low-impact cardio. You’ll build gentle calf/ankle capacity and blood flow so walking and stairs feel easier. Use pain (during + next morning) as your guide—steady or improving is the goal.',
     summary:
-      'Deload impact to calm shin pain. Maintain fitness with Zone 2 cardio + gentle calf work.',
+      'Get back to pain-free running foundations by calming shin pain while keeping your fitness up.',
     timeFrameExplanation:
       'Do the strength sessions 3x/week and add 15–25 min of low-impact Zone 2 cardio that you can do at home (marching in place). Add gentle ankle mobility and light tibialis work to reduce stress on the shin with each step. Keep impact exposure to short, flat walks only if symptoms stay ≤3/10 and don’t worsen the next day. Prioritize supportive shoes and a slightly higher cadence/shorter stride on any walks.',
     afterTimeFrame: {
@@ -1778,7 +1780,7 @@ const rehabProgramsAllWeeks: ExerciseProgram[] = [
     programOverview:
       'This week is about calming flare-ups and making your back feel predictable again. You’ll practice “neutral spine” (a comfortable middle range), then layer in breathing + bracing so your trunk stays steady during sitting, standing up, and light bending. We pair that with gentle glute work so your hips share the load. The goal is to finish each session feeling looser and more confident—not exhausted.',
     summary:
-      'Calm low-back symptoms with bracing practice, gentle glute loading, and simple spine-stability drills (3 short, at-home sessions).',
+      'Feel your back calm down and move with confidence using simple, high-impact core and glute resets.',
     timeFrameExplanation:
       'Do 3 short sessions (Mon/Wed/Fri style). Keep pain ≤3/10 during training and the next morning. Use slow reps, breathe out as you brace, and stop the set if you can’t keep ribs stacked over pelvis. On rest days, optional 10–20 min easy walking is fine if it doesn’t flare symptoms.',
     afterTimeFrame: {
@@ -1976,7 +1978,7 @@ const rehabProgramsAllWeeks: ExerciseProgram[] = [
     programOverview:
       'Week 1 calms patellofemoral irritation by reducing compressive knee stress while building hip and quad support. You will use glute-med activation, controlled bodyweight squats, and short wall-sit holds to improve tracking and tolerance without overload. The target outcome is smoother sit-to-stand and stair function with less front-of-knee pain.',
     summary:
-      'Reduce knee irritation, improve hip control, and rebuild quad tolerance with low-load, at-home exercises.',
+      'Take pressure off the knee and rebuild control fast so stairs, squats, and daily movement feel smoother.',
     timeFrameExplanation:
       'Complete 3 sessions this week with pain kept at or below 3/10 during exercise and the next morning. Use slow tempo and keep the knee aligned over the mid-foot on every squat/hold. Optional easy walking is fine if symptoms remain stable.',
     afterTimeFrame: {
@@ -2160,7 +2162,7 @@ const rehabProgramsAllWeeks: ExerciseProgram[] = [
     programOverview:
       'Week 1 focuses on calming shoulder irritation and restoring predictable, pain-managed motion. You will train scapular control, rotator-cuff endurance, and light flexion patterning with bands so overhead movement feels smoother without forcing range. The goal is less pinching with daily reaching and better shoulder control under low load.',
     summary:
-      'Reduce shoulder pinching with cuff/scapular control and low-load band work in pain-managed ranges.',
+      'Stop the shoulder pinch cycle and restore smooth, confident overhead motion with smart low-load work.',
     timeFrameExplanation:
       'Perform 3 short sessions this week, staying at or below 3/10 pain during training and the next morning. Keep ribs stacked and avoid shrugging as you raise the arm. Use smooth tempo and stop each set if compensation starts (neck tension, lumbar arch, or shoulder hiking).',
     afterTimeFrame: {
@@ -2361,7 +2363,7 @@ const rehabProgramsAllWeeks: ExerciseProgram[] = [
     programOverview:
       'Week 1 focuses on calming swelling and restoring safe ankle motion after a lateral sprain. You will use gentle ankle mobility, low-impact circulation work, and controlled calf pumping to improve tolerance for walking and stairs without provoking symptoms. The goal is to feel more stable under bodyweight by the end of the week.',
     summary:
-      'Reduce swelling and restore ankle confidence with low-impact mobility, calf pumps, and controlled stance work.',
+      'Rebuild ankle confidence quickly with swelling-friendly mobility and stability work you can trust.',
     timeFrameExplanation:
       'Complete 3 short sessions this week and keep pain at or below 3/10 during exercise and the next morning. Use slow, controlled reps and keep movements pain-managed. Optional easy walking is fine on rest days if swelling and pain remain stable.',
     afterTimeFrame: {
@@ -2543,7 +2545,7 @@ const rehabProgramsAllWeeks: ExerciseProgram[] = [
     programOverview:
       'Week 1 aims to calm tendon irritability at the outside of the elbow while restoring tolerance to light daily gripping and typing. You will use pain-managed isometric wrist loading and controlled forearm rotation to reduce sensitivity and begin rebuilding tendon capacity. Sessions should feel controlled and leave symptoms stable or improved the next morning.',
     summary:
-      'Calm lateral elbow pain with low-load isometrics and controlled forearm rotation to rebuild daily-use tolerance.',
+      'Settle elbow pain and restore grip confidence for typing, lifting, and everyday hand use.',
     timeFrameExplanation:
       'Do 3 short sessions this week and keep pain at or below 3/10 during exercise and the next morning. Use very light load (or a household object) and support your forearm on a thigh/table if a bench is not available. Prioritize smooth tempo and stop before sharp or radiating pain.',
     afterTimeFrame: {
@@ -2558,20 +2560,20 @@ const rehabProgramsAllWeeks: ExerciseProgram[] = [
     days: [
       createWorkoutDay(1, 'Settle Tendon Irritability + Isometric Relief. Keep grip light and pain ≤3/10.', [
         { exerciseId: 'warmup-8', sets: 1, repetitions: 20, restBetweenSets: 30, warmup: true, modification: 'Relax shoulder/neck before forearm loading.' },
-        { exerciseId: 'forearms-2', sets: 2, repetitions: 12, restBetweenSets: 45, warmup: true, modification: 'Support forearm on thigh/table and move in pain-free arc.' },
-        { exerciseId: 'forearms-1', sets: 4, duration: 0.5, restBetweenSets: 60, modification: 'Very light load; hold steady without wrist collapse.' },
+        { exerciseId: 'forearms-4', sets: 2, repetitions: 12, restBetweenSets: 45, warmup: true, modification: 'Support forearm on thigh/table and move in pain-free arc.' },
+        { exerciseId: 'forearms-3', sets: 4, duration: 0.5, restBetweenSets: 60, modification: 'Light isometric hold; keep wrist neutral and steady.' },
       ]),
       createTennisElbowRestDay(2),
       createWorkoutDay(3, 'Forearm Control + Slow Rotation. Move smoothly; no sharp or radiating pain.', [
         { exerciseId: 'warmup-8', sets: 1, repetitions: 20, restBetweenSets: 30, warmup: true, modification: 'Keep shoulder relaxed and posture tall.' },
-        { exerciseId: 'forearms-2', sets: 2, repetitions: 15, restBetweenSets: 45, warmup: true, modification: '2-second rotation each way; no end-range forcing.' },
-        { exerciseId: 'forearms-1', sets: 4, duration: 0.67, restBetweenSets: 60, modification: 'Slightly longer hold only if symptoms stay calm.' },
+        { exerciseId: 'forearms-4', sets: 2, repetitions: 15, restBetweenSets: 45, warmup: true, modification: '2-second rotation each way; no end-range forcing.' },
+        { exerciseId: 'forearms-3', sets: 4, duration: 0.67, restBetweenSets: 60, modification: 'Slightly longer hold only if symptoms stay calm.' },
       ]),
       createTennisElbowRestDay(4),
       createWorkoutDay(5, 'Build Daily-Use Tolerance. Repeat pattern with slightly longer holds if stable next day.', [
         { exerciseId: 'warmup-8', sets: 1, repetitions: 20, restBetweenSets: 30, warmup: true, modification: 'Easy circles; no shoulder tension.' },
-        { exerciseId: 'forearms-2', sets: 2, repetitions: 15, restBetweenSets: 45, warmup: true, modification: 'Controlled rotation under light load.' },
-        { exerciseId: 'forearms-1', sets: 5, duration: 0.67, restBetweenSets: 60, modification: 'Maintain neutral wrist and light grip pressure.' },
+        { exerciseId: 'forearms-4', sets: 2, repetitions: 15, restBetweenSets: 45, warmup: true, modification: 'Controlled rotation under light load.' },
+        { exerciseId: 'forearms-3', sets: 5, duration: 0.67, restBetweenSets: 60, modification: 'Maintain neutral wrist and light grip pressure.' },
       ]),
       createTennisElbowRestDay(6),
       createTennisElbowRestDay(7),
@@ -2715,7 +2717,7 @@ const rehabProgramsAllWeeks: ExerciseProgram[] = [
     programOverview:
       'Week 1 focuses on reducing neck and upper-back tension by improving scapular control and postural endurance. You will combine gentle mobility with low-load band work so the shoulders and mid-back share more of the workload during desk time. The goal is to feel less neck tightness and better sitting tolerance without forcing painful ranges.',
     summary:
-      'Reduce neck tension and improve desk-posture tolerance with mobility plus low-load scapular/cuff activation.',
+      'Ease neck tension from desk work and build posture endurance that actually lasts through the day.',
     timeFrameExplanation:
       'Perform 3 short sessions this week and keep pain at or below 3/10 during and the next morning. Prioritize slow reps, relaxed jaw/breathing, and shoulders staying down away from ears. Stop or regress if you feel pinching, headaches worsening, or heavy neck compensation.',
     afterTimeFrame: {
@@ -2945,7 +2947,7 @@ const rehabProgramsAllWeeks: ExerciseProgram[] = [
     programOverview:
       'Week 1 aims to reduce heel irritability and morning first-step pain by restoring gentle ankle-foot motion and controlled calf loading. You will use low-impact circulation work, calf pumps, and hip support work to improve tissue tolerance without flare-ups. The target is steadier walking comfort and less “sharp” heel sensitivity at the start of the day.',
     summary:
-      'Reduce heel pain and rebuild early foot-calf tolerance with low-impact mobility and controlled loading.',
+      'Make first steps pain-free again by rebuilding heel and calf tolerance with controlled daily progress.',
     timeFrameExplanation:
       'Complete 3 short sessions this week and keep pain at or below 3/10 during and the next morning. Use slow tempo and avoid sharp heel pain, especially in first-step movements. Supportive footwear and avoiding long barefoot time on hard floors are key this week.',
     afterTimeFrame: {
@@ -3126,7 +3128,7 @@ const rehabProgramsAllWeeks: ExerciseProgram[] = [
     programOverview:
       'Week 1 focuses on calming hamstring irritability and restoring confident movement in walking and light hinging. You will use low-impact circulation, glute bridge work, and controlled short-range hinge patterns to load the posterior chain without provoking stretch pain. The aim is smoother daily movement with less guarding and less next-day tightness.',
     summary:
-      'Reduce hamstring irritability and rebuild posterior-chain control with low-load, pain-managed activation.',
+      'Calm hamstring flare-ups and rebuild confident movement without re-triggering painful stretch tension.',
     timeFrameExplanation:
       'Complete 3 short sessions this week with pain at or below 3/10 during and the next morning. Keep stride length short and avoid aggressive stretching. Use slow hinge tempo and stop before sharp pulling pain, cramping, or loss of control.',
     afterTimeFrame: {
@@ -3301,7 +3303,7 @@ const rehabProgramsAllWeeks: ExerciseProgram[] = [
     programOverview:
       'Week 1 focuses on reducing upper-back and shoulder fatigue by improving thoracic mobility, scapular positioning, and core-assisted posture control. You will combine gentle movement prep with low-load band pulling so your mid-back does more work and your neck does less. The target is better tolerance to upright sitting and standing without stiffness buildup.',
     summary:
-      'Reset posture mechanics with mobility, scapular activation, and light pulling endurance.',
+      'Reset posture fast with upper-back strength and mobility so sitting tall feels natural, not forced.',
     timeFrameExplanation:
       'Complete 3 short sessions this week with pain at or below 3/10 during and the next morning. Keep ribs stacked over pelvis, avoid shrugging, and use smooth controlled pulling tempo. Optional walking and short movement breaks during desk work will support progress.',
     afterTimeFrame: {
@@ -3470,7 +3472,7 @@ const rehabProgramsAllWeeks: ExerciseProgram[] = [
     programOverview:
       'Week 1 rebuilds deep core control so your trunk stays stable during basic movement and daily tasks. You will combine low-load bracing, anti-extension work, and glute support to improve pelvic control without over-fatiguing the back or hip flexors. The goal is quality reps and predictable control, not high intensity.',
     summary:
-      'Rebuild deep-core control and pelvic stability with low-load bracing and controlled tempo.',
+      'Build a stronger, steadier core foundation that makes everyday movement feel controlled and pain-safe.',
     timeFrameExplanation:
       'Perform 3 short sessions this week with pain at or below 3/10 during and the next morning. Exhale to brace on each rep, keep neutral spine, and stop sets when form quality drops. Prioritize controlled breathing and posture over extra reps.',
     afterTimeFrame: {
@@ -3629,6 +3631,73 @@ const rehabProgramsAllWeeks: ExerciseProgram[] = [
     targetAreas: ['core', 'pelvis', 'low back'],
     bodyParts: ['Core', 'Lower Back', 'Hips'],
   },
+  // -----------------------------------------------------------------
+  // 11. Wrist Pain (overuse / desk-related)
+  // -----------------------------------------------------------------
+  {
+    programOverview:
+      'Week 1 focuses on calming wrist irritation from repetitive daily loading while restoring forearm control and grip tolerance. You will use gentle mobility, low-load isometrics, and controlled rotation so typing, lifting light objects, and household tasks feel easier without flare-ups.',
+    summary:
+      'Calm wrist pain and rebuild daily grip confidence with low-load forearm and wrist control work.',
+    timeFrameExplanation:
+      'Perform 3 short sessions this week and keep pain at or below 3/10 during exercise and the next morning. Use light resistance and controlled tempo. Keep the wrist in neutral when possible and stop if pain becomes sharp or radiates.',
+    afterTimeFrame: {
+      expectedOutcome:
+        'Lower wrist sensitivity at rest and better tolerance to typing, carrying light items, and daily hand use.',
+      nextSteps:
+        'If symptoms remain stable, week 2 can introduce slightly longer isometric holds and gradual load progression for grip and extension tolerance.',
+    },
+    whatNotToDo:
+      'Avoid high-force gripping, fast loaded wrist extension, and repetitive end-range wrist positions under fatigue. Reduce volume if symptoms are clearly worse the next morning.',
+    createdAt: new Date('2025-06-02T00:00:00Z'),
+    days: [
+      createWorkoutDay(1, 'Wrist Calm + Forearm Activation. Light load, neutral wrist, pain ≤3/10.', [
+        { exerciseId: 'warmup-8', sets: 1, repetitions: 20, restBetweenSets: 30, warmup: true },
+        { exerciseId: 'forearms-4', sets: 2, repetitions: 12, restBetweenSets: 45, warmup: true },
+        { exerciseId: 'forearms-3', sets: 4, duration: 0.5, restBetweenSets: 60 },
+      ]),
+      {
+        day: 2,
+        isRestDay: true,
+        description: 'Rest day. Optional gentle wrist circles and easy grip open/close drills.',
+        exercises: [],
+        duration: 10,
+      },
+      createWorkoutDay(3, 'Forearm Rotation + Isometric Capacity. Smooth tempo; avoid sharp pain.', [
+        { exerciseId: 'warmup-8', sets: 1, repetitions: 20, restBetweenSets: 30, warmup: true },
+        { exerciseId: 'forearms-4', sets: 2, repetitions: 15, restBetweenSets: 45, warmup: true },
+        { exerciseId: 'forearms-3', sets: 4, duration: 0.67, restBetweenSets: 60 },
+      ]),
+      {
+        day: 4,
+        isRestDay: true,
+        description: 'Rest day. Keep wrist neutral during desk work; add short movement breaks.',
+        exercises: [],
+        duration: 10,
+      },
+      createWorkoutDay(5, 'Build Daily-Use Tolerance. Repeat pattern with slightly longer quality holds.', [
+        { exerciseId: 'warmup-8', sets: 1, repetitions: 20, restBetweenSets: 30, warmup: true },
+        { exerciseId: 'forearms-4', sets: 2, repetitions: 15, restBetweenSets: 45, warmup: true },
+        { exerciseId: 'forearms-3', sets: 5, duration: 0.67, restBetweenSets: 60 },
+      ]),
+      {
+        day: 6,
+        isRestDay: true,
+        description: 'Rest day. Optional 5–10 min light forearm mobility if symptoms stay calm.',
+        exercises: [],
+        duration: 10,
+      },
+      {
+        day: 7,
+        isRestDay: true,
+        description: 'Rest day. Avoid long static wrist positions; keep load light.',
+        exercises: [],
+        duration: 10,
+      },
+    ],
+    targetAreas: ['wrist', 'forearm'],
+    bodyParts: ['Wrist', 'Forearm'],
+  },
 ].map(ensureRestDaysHaveOptionalHomeExercises);
 
 // Keep only the first week for each recovery program. Subsequent weeks are generated
@@ -3680,6 +3749,11 @@ export const programSlugs: Record<string, number> = {
   // Core Stability
   'core-stability': 10,
   corestability: 10,
+
+  // Wrist Pain
+  'wrist-pain': 11,
+  wrist: 11,
+  wristpain: 11,
 };
 
 // Function to get program by URL slug - returns the single-week program
@@ -3768,7 +3842,7 @@ export const getUserProgramBySlug = (slug: string): {
       updatedAt: today,
       type: ProgramType.Recovery,
       timeFrame: '4 weeks',
-      title: 'Lower Back Pain Recovery',
+      title: 'Back Relief Blueprint',
       docId: `recovery-lowback-${Date.now()}`
     });
   }
@@ -3818,7 +3892,7 @@ export const getUserProgramBySlug = (slug: string): {
       updatedAt: today,
       type: ProgramType.Recovery,
       timeFrame: '4 weeks',
-      title: 'Shin Splints (MTSS) Recovery',
+      title: 'Run Without Shin Pain',
       docId: `recovery-shin-splints-${Date.now()}`
     });
   }
@@ -3863,7 +3937,7 @@ export const getUserProgramBySlug = (slug: string): {
       updatedAt: today,
       type: ProgramType.Recovery,
       timeFrame: '4 weeks',
-      title: 'Patellofemoral Pain Syndrome Recovery',
+      title: 'Knee Comeback Plan',
       docId: `recovery-runnersknee-${Date.now()}`
     });
   }
@@ -3908,7 +3982,7 @@ export const getUserProgramBySlug = (slug: string): {
       updatedAt: today,
       type: ProgramType.Recovery,
       timeFrame: '4 weeks',
-      title: 'Shoulder Impingement Recovery',
+      title: 'Shoulder Freedom Plan',
       docId: `recovery-shoulder-${Date.now()}`
     });
   }
@@ -3953,7 +4027,7 @@ export const getUserProgramBySlug = (slug: string): {
       updatedAt: today,
       type: ProgramType.Recovery,
       timeFrame: '4 weeks',
-      title: 'Ankle Sprain Recovery',
+      title: 'Ankle Stability Reset',
       docId: `recovery-ankle-${Date.now()}`
     });
   }
@@ -3998,7 +4072,7 @@ export const getUserProgramBySlug = (slug: string): {
       updatedAt: today,
       type: ProgramType.Recovery,
       timeFrame: '4 weeks',
-      title: 'Lateral Epicondylitis Recovery',
+      title: 'Elbow Strength Reset',
       docId: `recovery-tennis-elbow-${Date.now()}`
     });
   }
@@ -4043,7 +4117,7 @@ export const getUserProgramBySlug = (slug: string): {
       updatedAt: today,
       type: ProgramType.Recovery,
       timeFrame: '4 weeks',
-      title: 'Tech Neck (Cervical Strain) Recovery',
+      title: 'Neck Reset Routine',
       docId: `recovery-techneck-${Date.now()}`
     });
   }
@@ -4088,7 +4162,7 @@ export const getUserProgramBySlug = (slug: string): {
       updatedAt: today,
       type: ProgramType.Recovery,
       timeFrame: '4 weeks',
-      title: 'Plantar Fasciitis Recovery',
+      title: 'Heel Pain Reset',
       docId: `recovery-plantar-${Date.now()}`
     });
   }
@@ -4133,8 +4207,54 @@ export const getUserProgramBySlug = (slug: string): {
       updatedAt: today,
       type: ProgramType.Recovery,
       timeFrame: '4 weeks',
-      title: 'Hamstring Strain Recovery',
+      title: 'Hamstring Rebuild Plan',
       docId: `recovery-hamstring-${Date.now()}`
+    });
+  }
+
+  if (normalizedSlug.includes('wrist')) {
+    return normalizeUserProgram({
+      programs: updatedWeekPrograms,
+      diagnosis: {
+        diagnosis: 'Wrist Overuse Pain',
+        painfulAreas: ['Wrist', 'Forearm'],
+        informationalInsights:
+          'Wrist overuse pain often responds well to load management and gradual forearm strength progression. This plan calms irritation while restoring grip and wrist tolerance.',
+        onset: 'gradual',
+        painScale: 4,
+        mechanismOfInjury: 'overuse',
+        aggravatingFactors: ['Typing', 'Mouse use', 'Gripping', 'Wrist extension under load'],
+        relievingFactors: ['Relative rest', 'Load reduction', 'Gentle mobility'],
+        priorInjury: 'no',
+        painPattern: 'activity-dependent',
+        painLocation: 'Wrist and forearm',
+        painCharacter: 'aching',
+        assessmentComplete: true,
+        redFlagsPresent: false,
+        avoidActivities: ['Heavy gripping', 'Fast loaded wrist extension', 'Repetitive painful wrist positions'],
+        timeFrame: '4 weeks',
+        followUpQuestions: [],
+        programType: ProgramType.Recovery,
+        targetAreas: ['Wrist', 'Forearm']
+      },
+      questionnaire: {
+        age: '25-45',
+        lastYearsExerciseFrequency: '1-2 times per week',
+        numberOfActivityDays: '3',
+        generallyPainfulAreas: ['Wrist', 'Forearm'],
+        exerciseEnvironments: 'at_home',
+        workoutDuration: '15-25 minutes',
+        targetAreas: ['Wrist', 'Forearm'],
+        experienceLevel: 'beginner',
+        equipment: ['bodyweight', 'light_weights', 'resistance_bands']
+      },
+      active: true,
+      createdAt: today.toISOString(),
+      updatedAt: today,
+      type: ProgramType.Recovery,
+      timeFrame: '4 weeks',
+      title: 'Wrist Relief Reset',
+      docId: `recovery-wrist-${Date.now()}`
     });
   }
 
@@ -4178,7 +4298,7 @@ export const getUserProgramBySlug = (slug: string): {
       updatedAt: today,
       type: ProgramType.Recovery,
       timeFrame: '4 weeks',
-      title: 'Upper Back & Core Dysfunction Recovery',
+      title: 'Posture Power Reset',
       docId: `recovery-upperback-${Date.now()}`
     });
   }
@@ -4223,7 +4343,7 @@ export const getUserProgramBySlug = (slug: string): {
       updatedAt: today,
       type: ProgramType.Recovery,
       timeFrame: '4 weeks',
-      title: 'Core Instability Recovery',
+      title: 'Core Control Reset',
       docId: `recovery-core-${Date.now()}`
     });
   }

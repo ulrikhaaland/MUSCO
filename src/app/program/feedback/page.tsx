@@ -57,6 +57,10 @@ function FeedbackPageContent() {
     if (authLoading || userLoading) return;
 
     if (!user) {
+      // Store current path and context so the login page shows relevant copy
+      // and AuthCodeInput redirects back here after login
+      window.sessionStorage.setItem('previousPath', '/program/feedback');
+      window.sessionStorage.setItem('loginContext', 'generateProgram');
       router.push('/login');
       return;
     }

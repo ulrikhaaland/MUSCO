@@ -27,8 +27,12 @@ interface ProgramDayComponentProps {
   onWorkoutComplete?: () => void;
   /** Called when user restarts a completed workout (resets completion) */
   onWorkoutRestart?: () => void;
+  /** Called when user marks a missed past day as completed */
+  onMarkComplete?: () => void;
   /** Hide the workout FAB (e.g., for rest days or when viewing past days) */
   hideWorkoutFAB?: boolean;
+  /** Whether this day is in the past (already passed on the calendar) */
+  isPastDay?: boolean;
 }
 
 export function ProgramDayComponent({
@@ -45,7 +49,9 @@ export function ProgramDayComponent({
   onTitleClick,
   onWorkoutComplete,
   onWorkoutRestart,
+  onMarkComplete,
   hideWorkoutFAB = false,
+  isPastDay = false,
 }: ProgramDayComponentProps) {
   const { t } = useTranslation();
   // State to track removed body parts and equipment
@@ -249,8 +255,8 @@ export function ProgramDayComponent({
           </div>
         )}
 
-        {/* Completion banner */}
-        {isCompleted && (
+        {/* Completion / missed banner (only for signed-in users) */}
+        {!hideWorkoutFAB && isCompleted ? (
           <div className="mb-4 rounded-xl bg-emerald-500/10 ring-1 ring-emerald-500/25 px-4 py-3">
             <div className="flex items-center gap-3">
               <span className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center shrink-0">
@@ -268,7 +274,30 @@ export function ProgramDayComponent({
               </div>
             </div>
           </div>
-        )}
+        ) : isPastDay && hasExercises && dayType !== 'rest' ? (
+          <div className="mb-4 rounded-xl bg-amber-500/10 ring-1 ring-amber-500/25 px-4 py-3">
+            <div className="flex items-center gap-3">
+              <span className="w-8 h-8 rounded-full bg-amber-500/20 flex items-center justify-center shrink-0">
+                <svg className="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                </svg>
+              </span>
+              <div className="flex-1 min-w-0">
+                <p className="text-amber-400 font-semibold text-sm">{t('workout.missed')}</p>
+                <p className="text-amber-400/60 text-xs mt-0.5">{t('workout.missedDescription')}</p>
+              </div>
+            </div>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onMarkComplete?.();
+              }}
+              className="mt-2 text-xs font-medium text-emerald-400 hover:text-emerald-300 transition-colors"
+            >
+              {t('workout.markCompleted')}
+            </button>
+          </div>
+        ) : null}
 
         {/* Workout duration badge */}
         <div className="mb-4">
