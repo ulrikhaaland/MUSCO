@@ -10,9 +10,9 @@ import { LoadingDots } from '@/app/components/ui/LoadingDots';
 import { useIsPwa } from '@/app/hooks/useIsPwa';
 import { TextField } from '@/app/components/ui/TextField';
 
-export function AuthForm({ onSkip, isSaveContext = false, isAdmin = false }: { onSkip?: () => void; isSaveContext?: boolean; isAdmin?: boolean }) {
+export function AuthForm({ onSkip, isSaveContext = false, isAdmin = false, initialEmail = '' }: { onSkip?: () => void; isSaveContext?: boolean; isAdmin?: boolean; initialEmail?: string }) {
   const { t } = useTranslation();
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState(initialEmail);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const isPwa = useIsPwa();

@@ -13,6 +13,7 @@ const PROGRAM_STATUS_DONE = 'done';
 
 // --- Types ---
 interface EligibleProgram {
+  docId: string;
   type: string;
   title: string;
   language: string;
@@ -24,19 +25,26 @@ interface EligibleProgram {
  * Returns next Monday 00:00:00 UTC as an ISO string.
  * On Sundays this is tomorrow; used to check whether a user has already
  * generated a follow-up for the upcoming week.
+ * @return {string} ISO date string of next Monday
  */
 function getNextMondayISO(): string {
   const now = new Date();
   const day = now.getDay(); // 0=Sun
   const daysUntilMonday = day === 0 ? 1 : 8 - day;
   const nextMonday = new Date(
-    Date.UTC(now.getFullYear(), now.getMonth(), now.getDate() + daysUntilMonday)
+    Date.UTC(now.getFullYear(), now.getMonth(), now.getDate() + daysUntilMonday),
   );
   return nextMonday.toISOString();
 }
 
 // --- Display helpers ---
 
+/**
+ * Format a program type into a human-readable name.
+ * @param {string} type Program type key
+ * @param {string} lang Language code
+ * @return {string} Formatted program type name
+ */
 function formatProgramType(type: string, lang: string): string {
   const names: Record<string, Record<string, string>> = {
     exercise: {en: 'Exercise Program', nb: 'Treningsprogram'},
@@ -46,6 +54,12 @@ function formatProgramType(type: string, lang: string): string {
   return names[type]?.[lang] || names[type]?.en || type;
 }
 
+/**
+ * Build an HTML snippet listing program names (text only, no buttons).
+ * @param {EligibleProgram[]} programs Programs to list
+ * @param {string} lang Language code
+ * @return {string} HTML string
+ */
 function programListHtml(programs: EligibleProgram[], lang: string): string {
   if (programs.length === 1) {
     const name = programs[0].title || formatProgramType(programs[0].type, lang);
@@ -58,6 +72,54 @@ function programListHtml(programs: EligibleProgram[], lang: string): string {
     })
     .join('');
   return `<ul style="text-align:left;padding-left:20px;margin:12px 0;">${items}</ul>`;
+}
+
+/**
+ * Build CTA button(s) that deep-link to the specific program(s).
+ * Single program → one button. Multiple → one button per program.
+ * @param {EligibleProgram[]} programs Programs to build buttons for
+ * @param {string} lang Language code
+ * @param {string} baseUrl App base URL
+ * @param {string} email User email for login prefill
+ * @param {string} buttonLabel Default button label
+ * @return {string} HTML for CTA button(s)
+ */
+function buildCtaButtons(
+  programs: EligibleProgram[],
+  lang: string,
+  baseUrl: string,
+  email: string,
+  buttonLabel: string,
+): string {
+  if (programs.length === 1) {
+    const link = `${baseUrl}/program?id=${encodeURIComponent(programs[0].docId)}&email=${encodeURIComponent(email)}`;
+    return `<table border="0" cellpadding="0" cellspacing="0" role="presentation" style="margin:0 auto 28px;border-collapse:separate;width:auto;">
+  <tr>
+    <td align="center" bgcolor="#4f46e5" style="background-color:#4f46e5;border-radius:8px;padding:14px 28px;">
+      <a href="${link}" target="_blank" style="color:#ffffff;font-size:16px;font-weight:600;text-decoration:none;display:inline-block;">
+        ${buttonLabel}
+      </a>
+    </td>
+  </tr>
+</table>`;
+  }
+
+  // Multiple programs: one button per program
+  const buttons = programs.map((p) => {
+    const name = p.title || formatProgramType(p.type, lang);
+    const link = `${baseUrl}/program?id=${encodeURIComponent(p.docId)}&email=${encodeURIComponent(email)}`;
+    return `<table border="0" cellpadding="0" cellspacing="0" role="presentation" style="margin:0 auto 10px;border-collapse:separate;width:auto;">
+  <tr>
+    <td align="center" bgcolor="#4f46e5" style="background-color:#4f46e5;border-radius:8px;padding:12px 24px;">
+      <a href="${link}" target="_blank" style="color:#ffffff;font-size:15px;font-weight:600;text-decoration:none;display:inline-block;">
+        ${name}
+      </a>
+    </td>
+  </tr>
+</table>`;
+  }).join('\n');
+
+  return `<div style="margin-bottom:18px;">${buttons}</div>`;
 }
 
 // --- Email templates ---
@@ -73,6 +135,11 @@ interface EmailStrings {
   footer: string;
 }
 
+/**
+ * Get translated email strings for the given language.
+ * @param {string} lang Language code ('en' or 'nb')
+ * @return {EmailStrings} Translated strings
+ */
 function getStrings(lang: string): EmailStrings {
   if (lang === 'nb') {
     return {
@@ -98,14 +165,23 @@ function getStrings(lang: string): EmailStrings {
   };
 }
 
+/**
+ * Build the full HTML email body.
+ * @param {EligibleProgram[]} programs Eligible programs to include
+ * @param {string} lang Language code
+ * @param {string} baseUrl App base URL for CTA link
+ * @param {string} email User email for login prefill
+ * @return {string} Complete HTML email
+ */
 function buildEmailHtml(
   programs: EligibleProgram[],
   lang: string,
-  baseUrl: string
+  baseUrl: string,
+  email: string,
 ): string {
   const s = getStrings(lang);
   const listHtml = programListHtml(programs, lang);
-  const link = `${baseUrl}/program/feedback`;
+  const ctaHtml = buildCtaButtons(programs, lang, baseUrl, email, s.button);
 
   return `<!DOCTYPE html>
 <html lang="${lang}" xmlns="http://www.w3.org/1999/xhtml">
@@ -140,15 +216,7 @@ function buildEmailHtml(
                 <p style="margin:0 0 28px;font-size:16px;color:#cbd5e1;line-height:1.6;">
                   ${s.bodyAfter}
                 </p>
-                <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="margin:0 auto 28px;border-collapse:separate;width:auto;">
-                  <tr>
-                    <td align="center" bgcolor="#4f46e5" style="background-color:#4f46e5;border-radius:8px;padding:14px 28px;">
-                      <a href="${link}" target="_blank" style="color:#ffffff;font-size:16px;font-weight:600;text-decoration:none;display:inline-block;">
-                        ${s.button}
-                      </a>
-                    </td>
-                  </tr>
-                </table>
+                ${ctaHtml}
                 <p style="margin:0;font-size:11px;color:#8a8d9c;line-height:1.5;">
                   ${s.footer}
                 </p>
@@ -163,7 +231,15 @@ function buildEmailHtml(
 }
 
 // =============================================================================
-// Scheduled Function
+// Test emails — receive daily reminders (Mon–Sat) for development purposes
+// =============================================================================
+const TEST_EMAILS = new Set([
+  'ulrikhaland@gmail.com',
+  'ulrikhaaland2@gmail.com',
+]);
+
+// =============================================================================
+// Scheduled Functions
 // =============================================================================
 
 /**
@@ -222,6 +298,7 @@ export const sendWeeklyProgramReminder = onSchedule(
       if (segments.length !== 4) continue;
 
       const userId = segments[1];
+      const programDocId = segments[3];
       const data = doc.data();
       if (!data.type) continue;
 
@@ -229,6 +306,7 @@ export const sendWeeklyProgramReminder = onSchedule(
         userProgramMap.set(userId, []);
       }
       userProgramMap.get(userId)!.push({
+        docId: programDocId,
         type: data.type as string,
         title: (data.title as string) || '',
         language: (data.language as string) || 'en',
@@ -236,7 +314,7 @@ export const sendWeeklyProgramReminder = onSchedule(
     }
 
     console.log(
-      `[sunday-reminder] Found ${userProgramMap.size} users with done programs`
+      `[sunday-reminder] Found ${userProgramMap.size} users with done programs`,
     );
 
     // ------------------------------------------------------------------
@@ -308,7 +386,7 @@ export const sendWeeklyProgramReminder = onSchedule(
           from: currentEmailFromAddress,
           to: email,
           subject: strings.subject,
-          html: buildEmailHtml(eligible, lang, currentAppBaseUrl),
+          html: buildEmailHtml(eligible, lang, currentAppBaseUrl, email),
         });
 
         emailsSent++;
@@ -319,7 +397,118 @@ export const sendWeeklyProgramReminder = onSchedule(
     }
 
     console.log(
-      `[sunday-reminder] Done. sent=${emailsSent} skipped=${emailsSkipped} failed=${emailsFailed}`
+      `[sunday-reminder] Done. sent=${emailsSent} skipped=${emailsSkipped} failed=${emailsFailed}`,
     );
-  }
+  },
+);
+
+/**
+ * Daily test reminder (Mon–Sat at 10:00 Europe/Oslo).
+ * Only sends to TEST_EMAILS so we can verify the email flow without
+ * waiting for Sunday. Remove this function once testing is complete.
+ */
+export const sendDailyTestReminder = onSchedule(
+  {
+    schedule: '0 10 * * 1-6', // Mon–Sat at 10:00
+    timeZone: 'Europe/Oslo',
+    timeoutSeconds: 120,
+    memory: '256MiB',
+  },
+  async (_event: ScheduledEvent) => {
+    const currentResendApiKey = resendApiKey.value();
+    const currentEmailFromAddress = emailFromAddress.value();
+    const currentAppBaseUrl = appBaseUrl.value();
+
+    if (!currentResendApiKey) {
+      console.error('[daily-test] Resend API key not configured');
+      throw new Error('Resend API key not configured.');
+    }
+
+    const resend = new Resend(currentResendApiKey);
+    const db = admin.firestore();
+    const auth = admin.auth();
+
+    // Look up test users by email
+    const testUsers: {uid: string; email: string}[] = [];
+    for (const testEmail of TEST_EMAILS) {
+      try {
+        const userRecord = await auth.getUserByEmail(testEmail);
+        testUsers.push({uid: userRecord.uid, email: userRecord.email!});
+      } catch {
+        // User doesn't exist — skip silently
+      }
+    }
+
+    if (testUsers.length === 0) {
+      console.log('[daily-test] No test users found, skipping.');
+      return;
+    }
+
+    let sent = 0;
+    let skipped = 0;
+
+    for (const {uid, email} of testUsers) {
+      try {
+        // Check Firestore profile exists and notifications enabled
+        const userDoc = await db.collection('users').doc(uid).get();
+        if (!userDoc.exists) {
+          skipped++;
+          continue;
+        }
+
+        const userData = userDoc.data() || {};
+        if (userData.emailNotifications === false) {
+          skipped++;
+          continue;
+        }
+
+        // Fetch user's done programs
+        const programsSnap = await db
+          .collection('users').doc(uid).collection('programs')
+          .where('status', '==', PROGRAM_STATUS_DONE)
+          .get();
+
+        if (programsSnap.empty) {
+          skipped++;
+          continue;
+        }
+
+        // Deduplicate by type
+        const seenTypes = new Set<string>();
+        const eligible: EligibleProgram[] = [];
+        for (const doc of programsSnap.docs) {
+          const data = doc.data();
+          if (!data.type || seenTypes.has(data.type)) continue;
+          seenTypes.add(data.type);
+          eligible.push({
+            docId: doc.id,
+            type: data.type,
+            title: data.title || '',
+            language: data.language || 'en',
+          });
+        }
+
+        if (eligible.length === 0) {
+          skipped++;
+          continue;
+        }
+
+        const lang = eligible[0].language;
+        const strings = getStrings(lang);
+
+        await resend.emails.send({
+          from: currentEmailFromAddress,
+          to: email,
+          subject: `[TEST] ${strings.subject}`,
+          html: buildEmailHtml(eligible, lang, currentAppBaseUrl, email),
+        });
+
+        sent++;
+      } catch (err) {
+        console.error(`[daily-test] Failed for ${email}:`, err);
+      }
+    }
+
+    console.log(`[daily-test] Done. sent=${sent} skipped=${skipped}`);
+  },
 );

@@ -28,7 +28,7 @@ function ProgramPageContent({
   const router = useRouter();
   const searchParams = useSearchParams();
   const { t } = useTranslation();
-  const { loading: authLoading, error: authError } = useAuth();
+  const { loading: authLoading, error: authError, user: authUser } = useAuth();
   const {
     program,
     activeProgram,
@@ -49,6 +49,22 @@ function ProgramPageContent({
     useState<ExerciseProgram | null>(null);
   const [isOverviewVisible, setIsOverviewVisible] = useState(false);
   const [hasProcessedUrlParam, setHasProcessedUrlParam] = useState(false);
+
+  // If arriving from an email notification with ?email=, redirect to login
+  // so the user can authenticate with prefilled email, then return here.
+  // Preserve the ?id= param so the correct program is selected after login.
+  useEffect(() => {
+    if (authLoading) return;
+    const emailParam = searchParams?.get('email');
+    if (emailParam && !authUser) {
+      const programId = searchParams?.get('id');
+      const returnPath = programId
+        ? `/program?id=${encodeURIComponent(programId)}`
+        : '/program';
+      window.sessionStorage.setItem('previousPath', returnPath);
+      router.push(`/login?email=${encodeURIComponent(emailParam)}`);
+    }
+  }, [authLoading, authUser, searchParams, router]);
 
   const isLoading = (authLoading || userLoading) && !program;
   const forceShimmer =

@@ -136,8 +136,8 @@ export function AuthCodeInput() {
       const previousPath = window.sessionStorage.getItem('previousPath');
       const loginContext = window.sessionStorage.getItem('loginContext');
       
-      // If user signed up to save a program, go to /program, else prefer previous path, otherwise /app
-      if (loginContext === 'saveProgram') {
+      // Determine post-login destination
+      if (loginContext === 'saveProgram' || loginContext === 'generateProgram') {
         router.push('/program');
       } else if (previousPath) {
         router.push(previousPath);

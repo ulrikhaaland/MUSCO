@@ -8,6 +8,7 @@ function LoginPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isSaveContext, setIsSaveContext] = useState(false);
+  const initialEmail = searchParams?.get('email') || '';
 
   useEffect(() => {
     // Check URL parameter for save context
@@ -63,7 +64,7 @@ function LoginPageContent() {
   return (
     <div className="min-h-screen bg-gray-900 text-white flex flex-col">
       <div className="flex-1 flex items-center justify-center">
-        <AuthForm onSkip={handleSkip} isSaveContext={isSaveContext} />
+        <AuthForm onSkip={handleSkip} isSaveContext={isSaveContext} initialEmail={initialEmail} />
       </div>
     </div>
   );

@@ -70,6 +70,12 @@ IMPORTANT - Natural Language Guidelines:
 - DO NOT mention questionnaire data or user preference names directly
 - Write as if speaking to the user naturally, focusing on benefits and outcomes
 - Keep copy motivating and specific so the user wants to start now, but avoid hype/clickbait claims
+- Maintain consistent tone and structure across fields:
+  - title: 2-4 words
+  - summary: exactly 1 sentence
+  - programOverview: 2-4 sentences
+  - whatNotToDo: start with "Avoid ..."
+  - afterTimeFrame.nextSteps: start with "Next week, ..."
 
 5. Weekly Plan Generation
 
@@ -436,6 +442,10 @@ DESCRIPTION GUIDELINES:
 - DO NOT reference internal program types like "exercise_and_recovery", "recovery program", etc.
 - DO NOT mention questionnaire data or user preferences directly
 - Focus on: muscle groups targeted, movement quality, intensity level, and benefits
+- Keep description format consistent:
+  - Start with a clear focus phrase
+  - Follow with one coaching cue
+  - End with one safety/quality cue
 - GOOD: "Upper body strength session targeting chest and shoulders with compound movements"
 - BAD: "Active recovery session (15-20 min) for exercise_and_recovery program focusing on mobility"
 
@@ -589,6 +599,11 @@ IMPORTANT - Natural Language Guidelines:
 - DO NOT mention questionnaire data or user preference names directly
 - Write as if speaking to the user naturally, focusing on benefits and outcomes
 - Keep copy motivating and specific so the user wants to continue, but avoid hype/clickbait claims
+- Maintain consistent tone and structure across fields:
+  - summary: exactly 1 sentence
+  - programOverview: 2-4 sentences
+  - whatNotToDo: start with "Avoid ..."
+  - afterTimeFrame.nextSteps: start with "Next week, ..."
 
 6. Weekly Plan Generation
 
@@ -973,6 +988,10 @@ DESCRIPTION GUIDELINES:
 - DO NOT reference internal program types like "exercise_and_recovery", "recovery program", etc.
 - DO NOT mention questionnaire data or user preferences directly
 - Focus on: muscle groups targeted, movement quality, intensity level, and benefits
+- Keep description format consistent:
+  - Start with a clear focus phrase
+  - Follow with one coaching cue
+  - End with one safety/quality cue
 
 Return ONLY:
 {

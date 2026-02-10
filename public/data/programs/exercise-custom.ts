@@ -1,6 +1,22 @@
 // @ts-nocheck
 import { ProgramType } from '../../../shared/types';
 
+const formatWorkoutDescription = (description: string): string => {
+  const cleaned = (description || '').replace(/\s+/g, ' ').trim().replace(/[.!?]+$/, '');
+  if (!cleaned) return 'Focus: Full-body training. Keep tempo controlled and leave 1-2 reps in reserve.';
+  if (cleaned.toLowerCase().startsWith('focus:')) {
+    return `${cleaned}. Keep tempo controlled and leave 1-2 reps in reserve.`;
+  }
+  return `Focus: ${cleaned}. Keep tempo controlled and leave 1-2 reps in reserve.`;
+};
+
+const formatRestDescription = (description: string): string => {
+  const cleaned = (description || '').replace(/\s+/g, ' ').trim().replace(/[.!?]+$/, '');
+  if (!cleaned) return 'Rest day. Optional light mobility and easy walking.';
+  if (cleaned.toLowerCase().startsWith('rest day')) return `${cleaned}.`;
+  return `Rest day. ${cleaned}.`;
+};
+
 const createWorkoutDay = (
   day: number,
   description: string,
@@ -8,7 +24,7 @@ const createWorkoutDay = (
   duration: number = 35
 ) => ({
   day,
-  description,
+  description: formatWorkoutDescription(description),
   dayType: 'strength',
   exercises,
   duration,
@@ -19,76 +35,28 @@ const createRestDay = (
   description: string = 'Rest day. Optional light mobility and easy walking.',
 ) => ({
   day,
-  description,
+  description: formatRestDescription(description),
   dayType: 'rest',
   exercises: [
-    { exerciseId: 'warmup-8', sets: 1, repetitions: 15, restBetweenSets: 30, warmup: true },
-    { exerciseId: 'warmup-9', sets: 1, repetitions: 10, restBetweenSets: 30, warmup: true },
+    { exerciseId: 'warmup-8', sets: 1, repetitions: 15, restBetweenSets: 30, warmup: true , modification: 'Prep shoulders with smooth circles and relaxed breathing before main work' },
+    { exerciseId: 'warmup-9', sets: 1, repetitions: 10, restBetweenSets: 30, warmup: true , modification: 'Use controlled trunk rotation to prepare core and spine without forcing range' },
   ],
   duration: 15,
   isRestDay: true,
 });
 
-const GYM_FILLER_EXERCISES = [
-  { exerciseId: 'abs-20', sets: 3, repetitions: 10, restBetweenSets: 60 },
-  { exerciseId: 'calves-1', sets: 3, repetitions: 15, restBetweenSets: 60 },
-  { exerciseId: 'shoulders-1', sets: 3, repetitions: 12, restBetweenSets: 60 },
-  { exerciseId: 'upper-back-4', sets: 3, repetitions: 10, restBetweenSets: 75 },
-  { exerciseId: 'biceps-10', sets: 3, repetitions: 12, restBetweenSets: 60 },
-  { exerciseId: 'triceps-4', sets: 3, repetitions: 12, restBetweenSets: 60 },
-];
-
-const HOME_FILLER_EXERCISES = [
-  { exerciseId: 'abs-20', sets: 3, repetitions: 10, restBetweenSets: 60 },
-  { exerciseId: 'glutes-7', sets: 3, repetitions: 12, restBetweenSets: 60 },
-  { exerciseId: 'calves-6', sets: 3, repetitions: 15, restBetweenSets: 60 },
-  { exerciseId: 'obliques-4', sets: 2, repetitions: 10, restBetweenSets: 60 },
-  { exerciseId: 'upper-back-60', sets: 3, repetitions: 12, restBetweenSets: 60 },
-];
-
-const MIN_EXERCISES_30_45 = 6;
-
-const ensureWorkoutDensity = (program: any) => {
-  const isHomeProgram = program.exerciseEnvironment === 'Custom';
-  const fillers = isHomeProgram ? HOME_FILLER_EXERCISES : GYM_FILLER_EXERCISES;
-
-  return {
-    ...program,
-    days: (program.days || []).map((day: any) => {
-      if (day?.isRestDay || !Array.isArray(day?.exercises)) return day;
-      if (day.exercises.length >= MIN_EXERCISES_30_45) return day;
-
-      const existingIds = new Set(day.exercises.map((exercise: any) => exercise.exerciseId));
-      const extras: any[] = [];
-
-      for (const filler of fillers) {
-        if (!existingIds.has(filler.exerciseId)) {
-          extras.push(filler);
-          existingIds.add(filler.exerciseId);
-        }
-        if (day.exercises.length + extras.length >= MIN_EXERCISES_30_45) break;
-      }
-
-      return {
-        ...day,
-        exercises: [...day.exercises, ...extras],
-      };
-    }),
-  };
-};
-
 const exerciseProgramTemplates = [
   {
     slug: 'full-body-strength',
-    title: 'Total Strength Reset',
+    title: 'Full-Body Strength Accelerator',
     exerciseEnvironment: 'Large Gym',
     targetAreas: ['full body', 'strength'],
     bodyParts: ['Upper Body', 'Lower Body', 'Core'],
     programOverview:
-      'A balanced full-body starter plan focused on core lifts and movement quality. It builds baseline strength and consistency across push, pull, squat, and hinge patterns.',
-    summary: 'Build full-body strength fast with a clean, high-impact weekly structure.',
+      'A high-return full-body week built around foundational push, pull, squat, and hinge patterns. You get enough volume to drive visible progress while keeping recovery manageable and execution quality high.',
+    summary: 'Build noticeable full-body strength in one week with a structure that is simple, hard, and repeatable.',
     timeFrameExplanation:
-      'Train three non-consecutive days this week. Keep 1-3 reps in reserve on most sets and focus on clean tempo and stable positions.',
+      'Train 3 non-consecutive sessions this week. Keep 1-3 reps in reserve, use controlled tempo, and track loads for next-week progression.',
     afterTimeFrame: {
       expectedOutcome: 'Improved movement confidence and consistent week-to-week training rhythm.',
       nextSteps: 'Progress load slightly next week or add one set to your primary movements.',
@@ -97,24 +65,24 @@ const exerciseProgramTemplates = [
       'Do not rush reps, skip warm-up sets, or push to technical failure on every set.',
     days: [
       createWorkoutDay(1, 'Full Body A', [
-        { exerciseId: 'warmup-8', sets: 1, repetitions: 20, restBetweenSets: 30, warmup: true },
-        { exerciseId: 'quads-5', sets: 4, repetitions: 10, restBetweenSets: 75 },
-        { exerciseId: 'upper-back-4', sets: 4, repetitions: 12, restBetweenSets: 75 },
-        { exerciseId: 'abs-20', sets: 3, repetitions: 10, restBetweenSets: 60 },
+        { exerciseId: 'warmup-8', sets: 1, repetitions: 20, restBetweenSets: 30, warmup: true , modification: 'Prep shoulders with smooth circles and relaxed breathing before main work' },
+        { exerciseId: 'quads-5', sets: 4, repetitions: 10, restBetweenSets: 75 , modification: 'Use controlled depth and strong bracing through each squat rep' },
+        { exerciseId: 'upper-back-4', sets: 4, repetitions: 12, restBetweenSets: 75 , modification: 'Row with controlled elbow path and no torso swinging' },
+        { exerciseId: 'abs-20', sets: 3, repetitions: 10, restBetweenSets: 60 , modification: 'Brace on each rep and keep pelvis stable throughout' },
       ], 40),
       createRestDay(2),
       createWorkoutDay(3, 'Full Body B', [
-        { exerciseId: 'warmup-9', sets: 1, repetitions: 10, restBetweenSets: 30, warmup: true },
-        { exerciseId: 'glutes-8', sets: 4, repetitions: 12, restBetweenSets: 75 },
-        { exerciseId: 'shoulders-5', sets: 4, repetitions: 12, restBetweenSets: 75 },
-        { exerciseId: 'abs-6', sets: 3, duration: 0.67, restBetweenSets: 60 },
+        { exerciseId: 'warmup-9', sets: 1, repetitions: 10, restBetweenSets: 30, warmup: true , modification: 'Use controlled trunk rotation to prepare core and spine without forcing range' },
+        { exerciseId: 'glutes-8', sets: 4, repetitions: 12, restBetweenSets: 75 , modification: 'Hinge from hips with controlled tempo and no lumbar overextension' },
+        { exerciseId: 'shoulders-5', sets: 4, repetitions: 12, restBetweenSets: 75 , modification: 'Control pressing path and keep shoulder blades set' },
+        { exerciseId: 'abs-6', sets: 3, duration: 0.67, restBetweenSets: 60 , modification: 'Hold strong midline tension and keep breathing steady during the set' },
       ], 38),
       createRestDay(4),
       createWorkoutDay(5, 'Full Body C', [
-        { exerciseId: 'cardio-13', duration: 8, warmup: true },
-        { exerciseId: 'hamstrings-5', sets: 3, repetitions: 8, restBetweenSets: 75 },
-        { exerciseId: 'shoulders-16', sets: 3, repetitions: 12, restBetweenSets: 60 },
-        { exerciseId: 'calves-1', sets: 3, repetitions: 15, restBetweenSets: 60 },
+        { exerciseId: 'cardio-13', duration: 8, warmup: true , modification: 'Keep pace easy and rhythmic to raise temperature without early fatigue' },
+        { exerciseId: 'hamstrings-5', sets: 3, repetitions: 8, restBetweenSets: 75 , modification: 'Control the eccentric phase and avoid jerky hinge motion' },
+        { exerciseId: 'shoulders-16', sets: 3, repetitions: 12, restBetweenSets: 60 , modification: 'Pull with upper-back control and keep neck relaxed' },
+        { exerciseId: 'calves-1', sets: 3, repetitions: 15, restBetweenSets: 60 , modification: 'Use full-foot pressure and pause briefly at the top of each rep' },
       ], 36),
       createRestDay(6),
       createRestDay(7),
@@ -122,15 +90,15 @@ const exerciseProgramTemplates = [
   },
   {
     slug: 'upper-body-build',
-    title: 'Upper Body Armor',
+    title: 'Upper Body Blueprint',
     exerciseEnvironment: 'Large Gym',
     targetAreas: ['upper body', 'strength'],
     bodyParts: ['Shoulders', 'Upper Back', 'Arms'],
     programOverview:
-      'An upper-body focused week to build pulling and pressing capacity while maintaining shoulder health.',
-    summary: 'Add visible upper-body strength while keeping shoulders stable and pain-free.',
+      'An upper-body focused week designed to add size and pressing-pulling strength without sacrificing shoulder mechanics. Volume is high enough to drive adaptation, but balanced to keep joints happy.',
+    summary: 'Build broader shoulders, stronger pulls, and cleaner presses with a high-appeal upper-body split.',
     timeFrameExplanation:
-      'Use moderate loads and controlled reps. Keep shoulder positioning clean and avoid shrug-dominant patterns.',
+      'Train 3 non-consecutive sessions this week. Use moderate-to-challenging loads, keep shoulder blades controlled, and avoid shrug-dominant effort.',
     afterTimeFrame: {
       expectedOutcome: 'Better upper-body endurance and more stable shoulder mechanics.',
       nextSteps: 'Progress reps or load slightly while preserving form quality.',
@@ -138,24 +106,24 @@ const exerciseProgramTemplates = [
     whatNotToDo: 'Avoid ego loading and painful overhead ranges.',
     days: [
       createWorkoutDay(1, 'Upper Push + Pull', [
-        { exerciseId: 'warmup-8', sets: 1, repetitions: 20, restBetweenSets: 30, warmup: true },
-        { exerciseId: 'shoulders-5', sets: 4, repetitions: 15, restBetweenSets: 60 },
-        { exerciseId: 'upper-back-4', sets: 4, repetitions: 12, restBetweenSets: 75 },
-        { exerciseId: 'shoulders-16', sets: 3, repetitions: 12, restBetweenSets: 60 },
+        { exerciseId: 'warmup-8', sets: 1, repetitions: 20, restBetweenSets: 30, warmup: true , modification: 'Prep shoulders with smooth circles and relaxed breathing before main work' },
+        { exerciseId: 'shoulders-5', sets: 4, repetitions: 15, restBetweenSets: 60 , modification: 'Control pressing path and keep shoulder blades set' },
+        { exerciseId: 'upper-back-4', sets: 4, repetitions: 12, restBetweenSets: 75 , modification: 'Row with controlled elbow path and no torso swinging' },
+        { exerciseId: 'shoulders-16', sets: 3, repetitions: 12, restBetweenSets: 60 , modification: 'Pull with upper-back control and keep neck relaxed' },
       ], 40),
       createRestDay(2),
       createWorkoutDay(3, 'Upper Volume', [
-        { exerciseId: 'warmup-9', sets: 1, repetitions: 10, restBetweenSets: 30, warmup: true },
-        { exerciseId: 'upper-back-3', sets: 4, repetitions: 10, restBetweenSets: 75 },
-        { exerciseId: 'shoulders-1', sets: 4, repetitions: 12, restBetweenSets: 60 },
-        { exerciseId: 'biceps-10', sets: 3, repetitions: 12, restBetweenSets: 60 },
+        { exerciseId: 'warmup-9', sets: 1, repetitions: 10, restBetweenSets: 30, warmup: true , modification: 'Use controlled trunk rotation to prepare core and spine without forcing range' },
+        { exerciseId: 'upper-back-3', sets: 4, repetitions: 10, restBetweenSets: 75 , modification: 'Keep chest tall and squeeze shoulder blades through each rep' },
+        { exerciseId: 'shoulders-1', sets: 4, repetitions: 12, restBetweenSets: 60 , modification: 'Press with stable ribs and avoid shrugging into the neck' },
+        { exerciseId: 'biceps-10', sets: 3, repetitions: 12, restBetweenSets: 60 , modification: 'Control curl tempo and keep elbows fixed at your sides' },
       ], 42),
       createRestDay(4),
       createWorkoutDay(5, 'Upper Mixed', [
-        { exerciseId: 'cardio-13', duration: 6, warmup: true },
-        { exerciseId: 'shoulders-10', sets: 3, repetitions: 12, restBetweenSets: 60 },
-        { exerciseId: 'upper-back-8', sets: 3, repetitions: 15, restBetweenSets: 60 },
-        { exerciseId: 'triceps-4', sets: 3, repetitions: 12, restBetweenSets: 60 },
+        { exerciseId: 'cardio-13', duration: 6, warmup: true , modification: 'Keep pace easy and rhythmic to raise temperature without early fatigue' },
+        { exerciseId: 'shoulders-10', sets: 3, repetitions: 12, restBetweenSets: 60 , modification: 'Use smooth tempo and avoid compensating with low back extension' },
+        { exerciseId: 'upper-back-8', sets: 3, repetitions: 15, restBetweenSets: 60 , modification: 'Maintain scapular control and pause briefly at peak contraction' },
+        { exerciseId: 'triceps-4', sets: 3, repetitions: 12, restBetweenSets: 60 , modification: 'Lock in upper-arm position and extend with full control' },
       ], 36),
       createRestDay(6),
       createRestDay(7),
@@ -163,15 +131,15 @@ const exerciseProgramTemplates = [
   },
   {
     slug: 'lower-body-strength',
-    title: 'Leg Power Builder',
+    title: 'Leg Power Protocol',
     exerciseEnvironment: 'Large Gym',
     targetAreas: ['lower body', 'strength'],
     bodyParts: ['Glutes', 'Upper Legs', 'Lower Legs'],
     programOverview:
-      'A lower-body focused week centered on squat, hinge, glute, and calf strength development.',
-    summary: 'Drive stronger legs and glutes with progressive lower-body sessions.',
+      'A lower-body dominant week built to grow stronger legs, more powerful glutes, and better squat-hinge mechanics. Sessions combine heavy-enough work with clean execution for fast carryover.',
+    summary: 'Build stronger legs and glutes fast with a lower-body block that feels athletic and effective.',
     timeFrameExplanation:
-      'Use controlled tempo and full-foot pressure. Prioritize knee and hip alignment through every rep.',
+      'Train 3 non-consecutive sessions this week. Use controlled tempo, full-foot pressure, and clean knee-hip alignment before increasing load.',
     afterTimeFrame: {
       expectedOutcome: 'Improved lower-body strength endurance and movement control.',
       nextSteps: 'Progress by adding load or one additional set to the main lift.',
@@ -179,24 +147,24 @@ const exerciseProgramTemplates = [
     whatNotToDo: 'Avoid uncontrolled depth and poor trunk stability under fatigue.',
     days: [
       createWorkoutDay(1, 'Lower A', [
-        { exerciseId: 'cardio-13', duration: 6, warmup: true },
-        { exerciseId: 'quads-1', sets: 4, repetitions: 12, restBetweenSets: 75 },
-        { exerciseId: 'glutes-8', sets: 4, repetitions: 12, restBetweenSets: 75 },
-        { exerciseId: 'calves-1', sets: 3, repetitions: 15, restBetweenSets: 60 },
+        { exerciseId: 'cardio-13', duration: 6, warmup: true , modification: 'Keep pace easy and rhythmic to raise temperature without early fatigue' },
+        { exerciseId: 'quads-1', sets: 4, repetitions: 12, restBetweenSets: 75 , modification: 'Drive knees in line with toes and keep torso position stable' },
+        { exerciseId: 'glutes-8', sets: 4, repetitions: 12, restBetweenSets: 75 , modification: 'Hinge from hips with controlled tempo and no lumbar overextension' },
+        { exerciseId: 'calves-1', sets: 3, repetitions: 15, restBetweenSets: 60 , modification: 'Use full-foot pressure and pause briefly at the top of each rep' },
       ], 42),
       createRestDay(2),
       createWorkoutDay(3, 'Lower B', [
-        { exerciseId: 'warmup-9', sets: 1, repetitions: 10, restBetweenSets: 30, warmup: true },
-        { exerciseId: 'hamstrings-5', sets: 4, repetitions: 8, restBetweenSets: 75 },
-        { exerciseId: 'glutes-8', sets: 3, repetitions: 15, restBetweenSets: 60 },
-        { exerciseId: 'calves-10', sets: 3, repetitions: 10, restBetweenSets: 60 },
+        { exerciseId: 'warmup-9', sets: 1, repetitions: 10, restBetweenSets: 30, warmup: true , modification: 'Use controlled trunk rotation to prepare core and spine without forcing range' },
+        { exerciseId: 'hamstrings-5', sets: 4, repetitions: 8, restBetweenSets: 75 , modification: 'Control the eccentric phase and avoid jerky hinge motion' },
+        { exerciseId: 'glutes-8', sets: 3, repetitions: 15, restBetweenSets: 60 , modification: 'Hinge from hips with controlled tempo and no lumbar overextension' },
+        { exerciseId: 'calves-10', sets: 3, repetitions: 10, restBetweenSets: 60 , modification: 'Use strict single-leg control and stop before balance breaks down' },
       ], 38),
       createRestDay(4),
       createWorkoutDay(5, 'Lower C', [
-        { exerciseId: 'calves-13', sets: 2, repetitions: 12, restBetweenSets: 30, warmup: true },
-        { exerciseId: 'quads-5', sets: 3, repetitions: 15, restBetweenSets: 60 },
-        { exerciseId: 'glutes-8', sets: 3, repetitions: 15, restBetweenSets: 60 },
-        { exerciseId: 'hamstrings-5', sets: 3, repetitions: 8, restBetweenSets: 75 },
+        { exerciseId: 'calves-13', sets: 2, repetitions: 12, restBetweenSets: 30, warmup: true , modification: 'Open ankle range gently and keep movement pain-free and smooth' },
+        { exerciseId: 'quads-5', sets: 3, repetitions: 15, restBetweenSets: 60 , modification: 'Use controlled depth and strong bracing through each squat rep' },
+        { exerciseId: 'glutes-8', sets: 3, repetitions: 15, restBetweenSets: 60 , modification: 'Hinge from hips with controlled tempo and no lumbar overextension' },
+        { exerciseId: 'hamstrings-5', sets: 3, repetitions: 8, restBetweenSets: 75 , modification: 'Control the eccentric phase and avoid jerky hinge motion' },
       ], 40),
       createRestDay(6),
       createRestDay(7),
@@ -204,15 +172,15 @@ const exerciseProgramTemplates = [
   },
   {
     slug: 'bodyweight-conditioning',
-    title: 'Home Burn Circuit',
+    title: 'Home Shred Circuit',
     exerciseEnvironment: 'Custom',
     equipment: ['bodyweight', 'resistance_bands'],
     targetAreas: ['conditioning', 'full body'],
     bodyParts: ['Upper Body', 'Lower Body', 'Core'],
-    programOverview: 'A bodyweight-only week blending strength endurance and light conditioning.',
-    summary: 'High-value at-home conditioning that boosts fitness with zero gym setup.',
+    programOverview: 'A bodyweight-and-band week that blends conditioning and strength endurance in short, efficient sessions.',
+    summary: 'Get sweaty, strong, and consistent at home with fast-paced sessions that still keep form quality high.',
     timeFrameExplanation:
-      'Keep transitions smooth and maintain clean movement quality under light fatigue.',
+      'Train 3 non-consecutive sessions this week. Keep transitions tight, move with intent, and maintain form quality as fatigue climbs.',
     afterTimeFrame: {
       expectedOutcome: 'Better conditioning base and work capacity.',
       nextSteps: 'Increase rounds or reduce rest intervals next week.',
@@ -220,24 +188,24 @@ const exerciseProgramTemplates = [
     whatNotToDo: 'Avoid sloppy reps and breath-holding during circuits.',
     days: [
       createWorkoutDay(1, 'Circuit A', [
-        { exerciseId: 'cardio-13', duration: 8, warmup: true },
-        { exerciseId: 'quads-190', sets: 4, repetitions: 15, restBetweenSets: 45 },
-        { exerciseId: 'abs-20', sets: 4, repetitions: 10, restBetweenSets: 45 },
-        { exerciseId: 'glutes-7', sets: 4, repetitions: 15, restBetweenSets: 45 },
+        { exerciseId: 'cardio-13', duration: 8, warmup: true , modification: 'Keep pace easy and rhythmic to raise temperature without early fatigue' },
+        { exerciseId: 'quads-190', sets: 4, repetitions: 15, restBetweenSets: 45 , modification: 'Keep knee tracking clean and maintain even pressure through both feet' },
+        { exerciseId: 'abs-20', sets: 4, repetitions: 10, restBetweenSets: 45 , modification: 'Brace on each rep and keep pelvis stable throughout' },
+        { exerciseId: 'glutes-7', sets: 4, repetitions: 15, restBetweenSets: 45 , modification: 'Pause at top and finish each rep with full hip extension control' },
       ], 35),
       createRestDay(2),
       createWorkoutDay(3, 'Circuit B', [
-        { exerciseId: 'warmup-8', sets: 1, repetitions: 20, restBetweenSets: 30, warmup: true },
-        { exerciseId: 'upper-back-60', sets: 4, repetitions: 12, restBetweenSets: 45 },
-        { exerciseId: 'abs-6', sets: 4, duration: 0.5, restBetweenSets: 45 },
-        { exerciseId: 'calves-6', sets: 4, repetitions: 15, restBetweenSets: 45 },
+        { exerciseId: 'warmup-8', sets: 1, repetitions: 20, restBetweenSets: 30, warmup: true , modification: 'Prep shoulders with smooth circles and relaxed breathing before main work' },
+        { exerciseId: 'upper-back-60', sets: 4, repetitions: 12, restBetweenSets: 45 , modification: 'Use strict band tension and keep posture stacked' },
+        { exerciseId: 'abs-6', sets: 4, duration: 0.5, restBetweenSets: 45 , modification: 'Hold strong midline tension and keep breathing steady during the set' },
+        { exerciseId: 'calves-6', sets: 4, repetitions: 15, restBetweenSets: 45 , modification: 'Control both upward and downward phases with no bouncing' },
       ], 36),
       createRestDay(4),
       createWorkoutDay(5, 'Circuit C', [
-        { exerciseId: 'warmup-9', sets: 1, repetitions: 12, restBetweenSets: 30, warmup: true },
-        { exerciseId: 'glutes-44', sets: 4, repetitions: 15, restBetweenSets: 45 },
-        { exerciseId: 'quads-190', sets: 4, repetitions: 12, restBetweenSets: 45 },
-        { exerciseId: 'abs-20', sets: 4, repetitions: 10, restBetweenSets: 45 },
+        { exerciseId: 'warmup-9', sets: 1, repetitions: 12, restBetweenSets: 30, warmup: true , modification: 'Use controlled trunk rotation to prepare core and spine without forcing range' },
+        { exerciseId: 'glutes-44', sets: 4, repetitions: 15, restBetweenSets: 45 , modification: 'Maintain pelvis level and avoid trunk compensation' },
+        { exerciseId: 'quads-190', sets: 4, repetitions: 12, restBetweenSets: 45 , modification: 'Keep knee tracking clean and maintain even pressure through both feet' },
+        { exerciseId: 'abs-20', sets: 4, repetitions: 10, restBetweenSets: 45 , modification: 'Brace on each rep and keep pelvis stable throughout' },
       ], 35),
       createRestDay(6),
       createRestDay(7),
@@ -245,14 +213,14 @@ const exerciseProgramTemplates = [
   },
   {
     slug: 'core-endurance',
-    title: 'Core Engine Home',
+    title: 'Core Command Home',
     exerciseEnvironment: 'Custom',
     equipment: ['bodyweight', 'resistance_bands'],
     targetAreas: ['core', 'endurance'],
     bodyParts: ['Core', 'Lower Back', 'Hips'],
-    programOverview: 'A core-focused week emphasizing anti-extension, anti-rotation, and trunk endurance.',
-    summary: 'Build core endurance at home for better stability, posture, and control.',
-    timeFrameExplanation: 'Use strict form and breathing mechanics across every hold and rep.',
+    programOverview: 'A core-first week focused on anti-extension, anti-rotation, and trunk endurance to build a stronger midline.',
+    summary: 'Build a visibly stronger, more stable core with structured home sessions that actually progress.',
+    timeFrameExplanation: 'Train 3 non-consecutive sessions this week. Use strict breathing and form control, and stop each set before technique drops.',
     afterTimeFrame: {
       expectedOutcome: 'Improved trunk stability and reduced early core fatigue.',
       nextSteps: 'Add longer holds or more unilateral challenges next week.',
@@ -260,24 +228,24 @@ const exerciseProgramTemplates = [
     whatNotToDo: 'Avoid compensatory lumbar extension and rushed reps.',
     days: [
       createWorkoutDay(1, 'Core A', [
-        { exerciseId: 'warmup-9', sets: 1, repetitions: 10, restBetweenSets: 30, warmup: true },
-        { exerciseId: 'abs-20', sets: 4, repetitions: 10, restBetweenSets: 60 },
-        { exerciseId: 'abs-6', sets: 4, duration: 0.67, restBetweenSets: 60 },
-        { exerciseId: 'obliques-4', sets: 3, repetitions: 10, restBetweenSets: 60 },
+        { exerciseId: 'warmup-9', sets: 1, repetitions: 10, restBetweenSets: 30, warmup: true , modification: 'Use controlled trunk rotation to prepare core and spine without forcing range' },
+        { exerciseId: 'abs-20', sets: 4, repetitions: 10, restBetweenSets: 60 , modification: 'Brace on each rep and keep pelvis stable throughout' },
+        { exerciseId: 'abs-6', sets: 4, duration: 0.67, restBetweenSets: 60 , modification: 'Hold strong midline tension and keep breathing steady during the set' },
+        { exerciseId: 'obliques-4', sets: 3, repetitions: 10, restBetweenSets: 60 , modification: 'Keep anti-rotation tension while moving slowly and cleanly' },
       ], 38),
       createRestDay(2),
       createWorkoutDay(3, 'Core B', [
-        { exerciseId: 'cardio-13', duration: 6, warmup: true },
-        { exerciseId: 'abs-121', sets: 4, repetitions: 10, restBetweenSets: 60 },
-        { exerciseId: 'obliques-14', sets: 3, repetitions: 12, restBetweenSets: 60 },
-        { exerciseId: 'glutes-7', sets: 3, repetitions: 15, restBetweenSets: 60 },
+        { exerciseId: 'cardio-13', duration: 6, warmup: true , modification: 'Keep pace easy and rhythmic to raise temperature without early fatigue' },
+        { exerciseId: 'abs-121', sets: 4, repetitions: 10, restBetweenSets: 60 , modification: 'Drive through controlled anti-rotation and avoid trunk sway' },
+        { exerciseId: 'obliques-14', sets: 3, repetitions: 12, restBetweenSets: 60 , modification: 'Use controlled side-chain engagement with stable breathing' },
+        { exerciseId: 'glutes-7', sets: 3, repetitions: 15, restBetweenSets: 60 , modification: 'Pause at top and finish each rep with full hip extension control' },
       ], 40),
       createRestDay(4),
       createWorkoutDay(5, 'Core C', [
-        { exerciseId: 'warmup-8', sets: 1, repetitions: 20, restBetweenSets: 30, warmup: true },
-        { exerciseId: 'abs-120', sets: 4, repetitions: 10, restBetweenSets: 60 },
-        { exerciseId: 'abs-20', sets: 3, repetitions: 10, restBetweenSets: 60 },
-        { exerciseId: 'abs-6', sets: 3, duration: 0.67, restBetweenSets: 60 },
+        { exerciseId: 'warmup-8', sets: 1, repetitions: 20, restBetweenSets: 30, warmup: true , modification: 'Prep shoulders with smooth circles and relaxed breathing before main work' },
+        { exerciseId: 'abs-120', sets: 4, repetitions: 10, restBetweenSets: 60 , modification: 'Control the lowering phase and keep low back position stable' },
+        { exerciseId: 'abs-20', sets: 3, repetitions: 10, restBetweenSets: 60 , modification: 'Brace on each rep and keep pelvis stable throughout' },
+        { exerciseId: 'abs-6', sets: 3, duration: 0.67, restBetweenSets: 60 , modification: 'Hold strong midline tension and keep breathing steady during the set' },
       ], 37),
       createRestDay(6),
       createRestDay(7),
@@ -285,13 +253,13 @@ const exerciseProgramTemplates = [
   },
   {
     slug: 'glute-core-build',
-    title: 'Glute Core Sculpt',
+    title: 'Glute & Core Forge',
     exerciseEnvironment: 'Large Gym',
     targetAreas: ['glutes', 'core'],
     bodyParts: ['Glutes', 'Core', 'Lower Back'],
-    programOverview: 'A focused week to improve glute strength and core control for better movement efficiency.',
-    summary: 'Shape stronger glutes and a tighter core with focused strength progressions.',
-    timeFrameExplanation: 'Prioritize hip extension quality and trunk control over load speed.',
+    programOverview: 'A focused week to build stronger glutes and tighter core control for better power transfer and posture.',
+    summary: 'Grow your glutes and lock in core strength with a high-value posterior-chain biased split.',
+    timeFrameExplanation: 'Train 3 non-consecutive sessions this week. Prioritize hip extension quality and trunk control before increasing range or load.',
     afterTimeFrame: {
       expectedOutcome: 'Stronger glute engagement and improved pelvic stability.',
       nextSteps: 'Add unilateral progression or additional posterior-chain volume.',
@@ -299,24 +267,24 @@ const exerciseProgramTemplates = [
     whatNotToDo: 'Avoid lumbar-driven extension and uncontrolled hinging.',
     days: [
       createWorkoutDay(1, 'Glute Core A', [
-        { exerciseId: 'cardio-13', duration: 5, warmup: true },
-        { exerciseId: 'glutes-8', sets: 4, repetitions: 15, restBetweenSets: 60 },
-        { exerciseId: 'hamstrings-5', sets: 4, repetitions: 10, restBetweenSets: 60 },
-        { exerciseId: 'abs-107', sets: 3, repetitions: 10, restBetweenSets: 60 },
+        { exerciseId: 'cardio-13', duration: 5, warmup: true , modification: 'Keep pace easy and rhythmic to raise temperature without early fatigue' },
+        { exerciseId: 'glutes-8', sets: 4, repetitions: 15, restBetweenSets: 60 , modification: 'Hinge from hips with controlled tempo and no lumbar overextension' },
+        { exerciseId: 'hamstrings-5', sets: 4, repetitions: 10, restBetweenSets: 60 , modification: 'Control the eccentric phase and avoid jerky hinge motion' },
+        { exerciseId: 'abs-107', sets: 3, repetitions: 10, restBetweenSets: 60 , modification: 'Keep ribs stacked over pelvis and maintain clean tempo' },
       ], 36),
       createRestDay(2),
       createWorkoutDay(3, 'Glute Core B', [
-        { exerciseId: 'warmup-9', sets: 1, repetitions: 10, restBetweenSets: 30, warmup: true },
-        { exerciseId: 'hamstrings-5', sets: 4, repetitions: 8, restBetweenSets: 75 },
-        { exerciseId: 'glutes-8', sets: 3, repetitions: 10, restBetweenSets: 60 },
-        { exerciseId: 'abs-6', sets: 3, duration: 0.67, restBetweenSets: 60 },
+        { exerciseId: 'warmup-9', sets: 1, repetitions: 10, restBetweenSets: 30, warmup: true , modification: 'Use controlled trunk rotation to prepare core and spine without forcing range' },
+        { exerciseId: 'hamstrings-5', sets: 4, repetitions: 8, restBetweenSets: 75 , modification: 'Control the eccentric phase and avoid jerky hinge motion' },
+        { exerciseId: 'glutes-8', sets: 3, repetitions: 10, restBetweenSets: 60 , modification: 'Hinge from hips with controlled tempo and no lumbar overextension' },
+        { exerciseId: 'abs-6', sets: 3, duration: 0.67, restBetweenSets: 60 , modification: 'Hold strong midline tension and keep breathing steady during the set' },
       ], 40),
       createRestDay(4),
       createWorkoutDay(5, 'Glute Core C', [
-        { exerciseId: 'calves-13', sets: 2, repetitions: 12, restBetweenSets: 30, warmup: true },
-        { exerciseId: 'glutes-8', sets: 4, repetitions: 12, restBetweenSets: 60 },
-        { exerciseId: 'glutes-46', sets: 3, repetitions: 15, restBetweenSets: 60 },
-        { exerciseId: 'abs-107', sets: 3, repetitions: 10, restBetweenSets: 60 },
+        { exerciseId: 'calves-13', sets: 2, repetitions: 12, restBetweenSets: 30, warmup: true , modification: 'Open ankle range gently and keep movement pain-free and smooth' },
+        { exerciseId: 'glutes-8', sets: 4, repetitions: 12, restBetweenSets: 60 , modification: 'Hinge from hips with controlled tempo and no lumbar overextension' },
+        { exerciseId: 'glutes-46', sets: 3, repetitions: 15, restBetweenSets: 60 , modification: 'Use strict lateral control and keep tension through glutes' },
+        { exerciseId: 'abs-107', sets: 3, repetitions: 10, restBetweenSets: 60 , modification: 'Keep ribs stacked over pelvis and maintain clean tempo' },
       ], 38),
       createRestDay(6),
       createRestDay(7),
@@ -324,13 +292,13 @@ const exerciseProgramTemplates = [
   },
   {
     slug: 'push-pull-balance',
-    title: 'Push Pull Precision',
+    title: 'Push-Pull Mastery',
     exerciseEnvironment: 'Large Gym',
     targetAreas: ['upper body', 'balance'],
     bodyParts: ['Shoulders', 'Upper Back', 'Core'],
-    programOverview: 'A balanced push/pull week for shoulder function and upper-body symmetry.',
-    summary: 'Train push and pull balance to look stronger and move cleaner.',
-    timeFrameExplanation: 'Keep shoulder blades controlled and avoid neck-dominant effort.',
+    programOverview: 'A balanced push-pull week designed to improve upper-body symmetry, shoulder function, and visual development.',
+    summary: 'Build a more complete upper body by pairing strong pressing with equally strong pulling volume.',
+    timeFrameExplanation: 'Train 3 non-consecutive sessions this week. Match push and pull quality each day and keep effort out of the neck.',
     afterTimeFrame: {
       expectedOutcome: 'Improved upper-body balance and cleaner pressing/pulling mechanics.',
       nextSteps: 'Increase load progression while maintaining push-pull parity.',
@@ -338,24 +306,24 @@ const exerciseProgramTemplates = [
     whatNotToDo: 'Avoid overloaded pressing without matching pull volume.',
     days: [
       createWorkoutDay(1, 'Push Pull A', [
-        { exerciseId: 'warmup-8', sets: 1, repetitions: 20, restBetweenSets: 30, warmup: true },
-        { exerciseId: 'shoulders-5', sets: 4, repetitions: 12, restBetweenSets: 60 },
-        { exerciseId: 'upper-back-4', sets: 4, repetitions: 12, restBetweenSets: 60 },
-        { exerciseId: 'shoulders-16', sets: 3, repetitions: 12, restBetweenSets: 60 },
+        { exerciseId: 'warmup-8', sets: 1, repetitions: 20, restBetweenSets: 30, warmup: true , modification: 'Prep shoulders with smooth circles and relaxed breathing before main work' },
+        { exerciseId: 'shoulders-5', sets: 4, repetitions: 12, restBetweenSets: 60 , modification: 'Control pressing path and keep shoulder blades set' },
+        { exerciseId: 'upper-back-4', sets: 4, repetitions: 12, restBetweenSets: 60 , modification: 'Row with controlled elbow path and no torso swinging' },
+        { exerciseId: 'shoulders-16', sets: 3, repetitions: 12, restBetweenSets: 60 , modification: 'Pull with upper-back control and keep neck relaxed' },
       ], 38),
       createRestDay(2),
       createWorkoutDay(3, 'Push Pull B', [
-        { exerciseId: 'warmup-9', sets: 1, repetitions: 10, restBetweenSets: 30, warmup: true },
-        { exerciseId: 'upper-back-3', sets: 4, repetitions: 10, restBetweenSets: 75 },
-        { exerciseId: 'shoulders-10', sets: 3, repetitions: 12, restBetweenSets: 60 },
-        { exerciseId: 'abs-6', sets: 3, duration: 0.5, restBetweenSets: 60 },
+        { exerciseId: 'warmup-9', sets: 1, repetitions: 10, restBetweenSets: 30, warmup: true , modification: 'Use controlled trunk rotation to prepare core and spine without forcing range' },
+        { exerciseId: 'upper-back-3', sets: 4, repetitions: 10, restBetweenSets: 75 , modification: 'Keep chest tall and squeeze shoulder blades through each rep' },
+        { exerciseId: 'shoulders-10', sets: 3, repetitions: 12, restBetweenSets: 60 , modification: 'Use smooth tempo and avoid compensating with low back extension' },
+        { exerciseId: 'abs-6', sets: 3, duration: 0.5, restBetweenSets: 60 , modification: 'Hold strong midline tension and keep breathing steady during the set' },
       ], 40),
       createRestDay(4),
       createWorkoutDay(5, 'Push Pull C', [
-        { exerciseId: 'cardio-13', duration: 6, warmup: true },
-        { exerciseId: 'shoulders-10', sets: 4, repetitions: 12, restBetweenSets: 60 },
-        { exerciseId: 'upper-back-4', sets: 3, repetitions: 15, restBetweenSets: 60 },
-        { exerciseId: 'shoulders-1', sets: 3, repetitions: 12, restBetweenSets: 60 },
+        { exerciseId: 'cardio-13', duration: 6, warmup: true , modification: 'Keep pace easy and rhythmic to raise temperature without early fatigue' },
+        { exerciseId: 'shoulders-10', sets: 4, repetitions: 12, restBetweenSets: 60 , modification: 'Use smooth tempo and avoid compensating with low back extension' },
+        { exerciseId: 'upper-back-4', sets: 3, repetitions: 15, restBetweenSets: 60 , modification: 'Row with controlled elbow path and no torso swinging' },
+        { exerciseId: 'shoulders-1', sets: 3, repetitions: 12, restBetweenSets: 60 , modification: 'Press with stable ribs and avoid shrugging into the neck' },
       ], 36),
       createRestDay(6),
       createRestDay(7),
@@ -363,13 +331,13 @@ const exerciseProgramTemplates = [
   },
   {
     slug: 'athletic-performance',
-    title: 'Athlete Base Camp',
+    title: 'Athletic Base Builder',
     exerciseEnvironment: 'Large Gym',
     targetAreas: ['athletic', 'conditioning'],
     bodyParts: ['Full Body', 'Core'],
-    programOverview: 'An athletic base week combining strength-endurance, core control, and movement quality.',
-    summary: 'Build an athletic base with smarter intensity and repeatable performance.',
-    timeFrameExplanation: 'Use crisp technique and steady pacing. Keep quality high as fatigue rises.',
+    programOverview: 'An athletic base week combining strength-endurance, trunk control, and repeatable movement quality under fatigue.',
+    summary: 'Build athletic capacity you can feel in real movement with sessions that reward power plus control.',
+    timeFrameExplanation: 'Train 3 non-consecutive sessions this week. Use crisp technique and steady pacing while keeping movement quality high under fatigue.',
     afterTimeFrame: {
       expectedOutcome: 'Better work capacity and improved movement repeatability.',
       nextSteps: 'Increase density gradually or add progression to unilateral work.',
@@ -377,24 +345,24 @@ const exerciseProgramTemplates = [
     whatNotToDo: 'Avoid maximal-intensity efforts that degrade movement quality.',
     days: [
       createWorkoutDay(1, 'Athletic A', [
-        { exerciseId: 'cardio-13', duration: 8, warmup: true },
-        { exerciseId: 'quads-1', sets: 4, repetitions: 12, restBetweenSets: 60 },
-        { exerciseId: 'upper-back-4', sets: 4, repetitions: 12, restBetweenSets: 60 },
-        { exerciseId: 'abs-107', sets: 3, repetitions: 10, restBetweenSets: 60 },
+        { exerciseId: 'cardio-13', duration: 8, warmup: true , modification: 'Keep pace easy and rhythmic to raise temperature without early fatigue' },
+        { exerciseId: 'quads-1', sets: 4, repetitions: 12, restBetweenSets: 60 , modification: 'Drive knees in line with toes and keep torso position stable' },
+        { exerciseId: 'upper-back-4', sets: 4, repetitions: 12, restBetweenSets: 60 , modification: 'Row with controlled elbow path and no torso swinging' },
+        { exerciseId: 'abs-107', sets: 3, repetitions: 10, restBetweenSets: 60 , modification: 'Keep ribs stacked over pelvis and maintain clean tempo' },
       ], 40),
       createRestDay(2),
       createWorkoutDay(3, 'Athletic B', [
-        { exerciseId: 'warmup-8', sets: 1, repetitions: 20, restBetweenSets: 30, warmup: true },
-        { exerciseId: 'hamstrings-5', sets: 4, repetitions: 8, restBetweenSets: 75 },
-        { exerciseId: 'shoulders-5', sets: 3, repetitions: 12, restBetweenSets: 60 },
-        { exerciseId: 'obliques-2', sets: 3, repetitions: 12, restBetweenSets: 60 },
+        { exerciseId: 'warmup-8', sets: 1, repetitions: 20, restBetweenSets: 30, warmup: true , modification: 'Prep shoulders with smooth circles and relaxed breathing before main work' },
+        { exerciseId: 'hamstrings-5', sets: 4, repetitions: 8, restBetweenSets: 75 , modification: 'Control the eccentric phase and avoid jerky hinge motion' },
+        { exerciseId: 'shoulders-5', sets: 3, repetitions: 12, restBetweenSets: 60 , modification: 'Control pressing path and keep shoulder blades set' },
+        { exerciseId: 'obliques-2', sets: 3, repetitions: 12, restBetweenSets: 60 , modification: 'Rotate with control from trunk and keep hips stable' },
       ], 42),
       createRestDay(4),
       createWorkoutDay(5, 'Athletic C', [
-        { exerciseId: 'warmup-9', sets: 1, repetitions: 10, restBetweenSets: 30, warmup: true },
-        { exerciseId: 'glutes-8', sets: 4, repetitions: 12, restBetweenSets: 60 },
-        { exerciseId: 'calves-1', sets: 4, repetitions: 15, restBetweenSets: 60 },
-        { exerciseId: 'abs-103', sets: 3, repetitions: 10, restBetweenSets: 60 },
+        { exerciseId: 'warmup-9', sets: 1, repetitions: 10, restBetweenSets: 30, warmup: true , modification: 'Use controlled trunk rotation to prepare core and spine without forcing range' },
+        { exerciseId: 'glutes-8', sets: 4, repetitions: 12, restBetweenSets: 60 , modification: 'Hinge from hips with controlled tempo and no lumbar overextension' },
+        { exerciseId: 'calves-1', sets: 4, repetitions: 15, restBetweenSets: 60 , modification: 'Use full-foot pressure and pause briefly at the top of each rep' },
+        { exerciseId: 'abs-103', sets: 3, repetitions: 10, restBetweenSets: 60 , modification: 'Move slowly with full trunk control and avoid momentum' },
       ], 38),
       createRestDay(6),
       createRestDay(7),
@@ -402,13 +370,13 @@ const exerciseProgramTemplates = [
   },
   {
     slug: 'mobility-strength',
-    title: 'Move Stronger',
+    title: 'Mobility x Strength Flow',
     exerciseEnvironment: 'Large Gym',
     targetAreas: ['mobility', 'strength'],
     bodyParts: ['Upper Body', 'Lower Body', 'Core'],
-    programOverview: 'A blend of strength work and mobility-focused prep to improve movement efficiency.',
-    summary: 'Unlock better positions, then turn them into real-world strength.',
-    timeFrameExplanation: 'Use mobility prep to improve positions, then reinforce with strict-strength reps.',
+    programOverview: 'A hybrid week blending mobility prep with strict strength sets so better positions become stronger positions.',
+    summary: 'Open up stiff patterns, then convert that new range into stronger and cleaner reps.',
+    timeFrameExplanation: 'Train 3 non-consecutive sessions this week. Use mobility prep first, then reinforce positions with strict reps and controlled tempo.',
     afterTimeFrame: {
       expectedOutcome: 'Improved movement quality with stronger end-range control.',
       nextSteps: 'Increase working sets while keeping mobility prep consistent.',
@@ -416,24 +384,24 @@ const exerciseProgramTemplates = [
     whatNotToDo: 'Avoid skipping warmup mobility and forcing painful ranges.',
     days: [
       createWorkoutDay(1, 'Mobility Strength A', [
-        { exerciseId: 'warmup-9', sets: 2, repetitions: 10, restBetweenSets: 30, warmup: true },
-        { exerciseId: 'calves-13', sets: 2, repetitions: 12, restBetweenSets: 30, warmup: true },
-        { exerciseId: 'quads-5', sets: 4, repetitions: 10, restBetweenSets: 75 },
-        { exerciseId: 'upper-back-4', sets: 3, repetitions: 12, restBetweenSets: 60 },
+        { exerciseId: 'warmup-9', sets: 2, repetitions: 10, restBetweenSets: 30, warmup: true , modification: 'Use controlled trunk rotation to prepare core and spine without forcing range' },
+        { exerciseId: 'calves-13', sets: 2, repetitions: 12, restBetweenSets: 30, warmup: true , modification: 'Open ankle range gently and keep movement pain-free and smooth' },
+        { exerciseId: 'quads-5', sets: 4, repetitions: 10, restBetweenSets: 75 , modification: 'Use controlled depth and strong bracing through each squat rep' },
+        { exerciseId: 'upper-back-4', sets: 3, repetitions: 12, restBetweenSets: 60 , modification: 'Row with controlled elbow path and no torso swinging' },
       ], 38),
       createRestDay(2),
       createWorkoutDay(3, 'Mobility Strength B', [
-        { exerciseId: 'warmup-8', sets: 2, repetitions: 15, restBetweenSets: 30, warmup: true },
-        { exerciseId: 'glutes-8', sets: 4, repetitions: 12, restBetweenSets: 75 },
-        { exerciseId: 'shoulders-5', sets: 3, repetitions: 12, restBetweenSets: 60 },
-        { exerciseId: 'abs-20', sets: 3, repetitions: 10, restBetweenSets: 60 },
+        { exerciseId: 'warmup-8', sets: 2, repetitions: 15, restBetweenSets: 30, warmup: true , modification: 'Prep shoulders with smooth circles and relaxed breathing before main work' },
+        { exerciseId: 'glutes-8', sets: 4, repetitions: 12, restBetweenSets: 75 , modification: 'Hinge from hips with controlled tempo and no lumbar overextension' },
+        { exerciseId: 'shoulders-5', sets: 3, repetitions: 12, restBetweenSets: 60 , modification: 'Control pressing path and keep shoulder blades set' },
+        { exerciseId: 'abs-20', sets: 3, repetitions: 10, restBetweenSets: 60 , modification: 'Brace on each rep and keep pelvis stable throughout' },
       ], 40),
       createRestDay(4),
       createWorkoutDay(5, 'Mobility Strength C', [
-        { exerciseId: 'cardio-13', duration: 6, warmup: true },
-        { exerciseId: 'hamstrings-5', sets: 3, repetitions: 8, restBetweenSets: 75 },
-        { exerciseId: 'shoulders-10', sets: 3, repetitions: 12, restBetweenSets: 60 },
-        { exerciseId: 'abs-107', sets: 3, repetitions: 10, restBetweenSets: 60 },
+        { exerciseId: 'cardio-13', duration: 6, warmup: true , modification: 'Keep pace easy and rhythmic to raise temperature without early fatigue' },
+        { exerciseId: 'hamstrings-5', sets: 3, repetitions: 8, restBetweenSets: 75 , modification: 'Control the eccentric phase and avoid jerky hinge motion' },
+        { exerciseId: 'shoulders-10', sets: 3, repetitions: 12, restBetweenSets: 60 , modification: 'Use smooth tempo and avoid compensating with low back extension' },
+        { exerciseId: 'abs-107', sets: 3, repetitions: 10, restBetweenSets: 60 , modification: 'Keep ribs stacked over pelvis and maintain clean tempo' },
       ], 36),
       createRestDay(6),
       createRestDay(7),
@@ -441,13 +409,13 @@ const exerciseProgramTemplates = [
   },
   {
     slug: 'upper-lower-hybrid',
-    title: 'Hybrid Strength Flow',
+    title: 'Upper-Lower Fusion',
     exerciseEnvironment: 'Large Gym',
     targetAreas: ['hybrid', 'strength'],
     bodyParts: ['Upper Body', 'Lower Body'],
-    programOverview: 'A hybrid week alternating upper and lower emphasis while keeping full-body balance.',
-    summary: 'Alternate upper and lower focus for balanced strength without burnout.',
-    timeFrameExplanation: 'Alternate emphasis days and keep movement quality high across all patterns.',
+    programOverview: 'A hybrid week that alternates upper and lower emphasis while maintaining full-body balance and recovery flow.',
+    summary: 'Train hard across upper and lower body without burnout using a clean alternating structure.',
+    timeFrameExplanation: 'Train 3 non-consecutive sessions this week. Alternate upper-lower emphasis and keep quality high across all movement patterns.',
     afterTimeFrame: {
       expectedOutcome: 'Improved training balance and manageable weekly fatigue.',
       nextSteps: 'Progress intensity by day while preserving recovery spacing.',
@@ -455,24 +423,24 @@ const exerciseProgramTemplates = [
     whatNotToDo: 'Avoid turning every day into maximal effort.',
     days: [
       createWorkoutDay(1, 'Upper Emphasis', [
-        { exerciseId: 'warmup-8', sets: 1, repetitions: 20, restBetweenSets: 30, warmup: true },
-        { exerciseId: 'shoulders-5', sets: 4, repetitions: 12, restBetweenSets: 60 },
-        { exerciseId: 'upper-back-4', sets: 4, repetitions: 12, restBetweenSets: 60 },
-        { exerciseId: 'biceps-10', sets: 3, repetitions: 12, restBetweenSets: 60 },
+        { exerciseId: 'warmup-8', sets: 1, repetitions: 20, restBetweenSets: 30, warmup: true , modification: 'Prep shoulders with smooth circles and relaxed breathing before main work' },
+        { exerciseId: 'shoulders-5', sets: 4, repetitions: 12, restBetweenSets: 60 , modification: 'Control pressing path and keep shoulder blades set' },
+        { exerciseId: 'upper-back-4', sets: 4, repetitions: 12, restBetweenSets: 60 , modification: 'Row with controlled elbow path and no torso swinging' },
+        { exerciseId: 'biceps-10', sets: 3, repetitions: 12, restBetweenSets: 60 , modification: 'Control curl tempo and keep elbows fixed at your sides' },
       ], 40),
       createRestDay(2),
       createWorkoutDay(3, 'Lower Emphasis', [
-        { exerciseId: 'cardio-13', duration: 6, warmup: true },
-        { exerciseId: 'quads-1', sets: 4, repetitions: 12, restBetweenSets: 75 },
-        { exerciseId: 'glutes-8', sets: 4, repetitions: 12, restBetweenSets: 75 },
-        { exerciseId: 'calves-1', sets: 3, repetitions: 15, restBetweenSets: 60 },
+        { exerciseId: 'cardio-13', duration: 6, warmup: true , modification: 'Keep pace easy and rhythmic to raise temperature without early fatigue' },
+        { exerciseId: 'quads-1', sets: 4, repetitions: 12, restBetweenSets: 75 , modification: 'Drive knees in line with toes and keep torso position stable' },
+        { exerciseId: 'glutes-8', sets: 4, repetitions: 12, restBetweenSets: 75 , modification: 'Hinge from hips with controlled tempo and no lumbar overextension' },
+        { exerciseId: 'calves-1', sets: 3, repetitions: 15, restBetweenSets: 60 , modification: 'Use full-foot pressure and pause briefly at the top of each rep' },
       ], 42),
       createRestDay(4),
       createWorkoutDay(5, 'Hybrid Full Body', [
-        { exerciseId: 'warmup-9', sets: 1, repetitions: 10, restBetweenSets: 30, warmup: true },
-        { exerciseId: 'hamstrings-5', sets: 3, repetitions: 8, restBetweenSets: 75 },
-        { exerciseId: 'shoulders-16', sets: 3, repetitions: 12, restBetweenSets: 60 },
-        { exerciseId: 'abs-107', sets: 3, repetitions: 10, restBetweenSets: 60 },
+        { exerciseId: 'warmup-9', sets: 1, repetitions: 10, restBetweenSets: 30, warmup: true , modification: 'Use controlled trunk rotation to prepare core and spine without forcing range' },
+        { exerciseId: 'hamstrings-5', sets: 3, repetitions: 8, restBetweenSets: 75 , modification: 'Control the eccentric phase and avoid jerky hinge motion' },
+        { exerciseId: 'shoulders-16', sets: 3, repetitions: 12, restBetweenSets: 60 , modification: 'Pull with upper-back control and keep neck relaxed' },
+        { exerciseId: 'abs-107', sets: 3, repetitions: 10, restBetweenSets: 60 , modification: 'Keep ribs stacked over pelvis and maintain clean tempo' },
       ], 38),
       createRestDay(6),
       createRestDay(7),
@@ -480,15 +448,15 @@ const exerciseProgramTemplates = [
   },
   {
     slug: 'muscle-growth-foundation',
-    title: 'Muscle Growth Launch',
+    title: 'Muscle Growth Accelerator',
     exerciseEnvironment: 'Large Gym',
     targetAreas: ['hypertrophy', 'strength'],
     bodyParts: ['Chest', 'Back', 'Legs', 'Shoulders'],
     programOverview:
-      'A gym-based hypertrophy foundation built to grow muscle with repeatable weekly structure and controlled progression.',
-    summary: 'Build visible muscle with smart volume, clean technique, and consistent 30-45 minute sessions.',
+      'A gym-based hypertrophy foundation built to maximize muscle gain with repeatable structure and progressive overload.',
+    summary: 'Build visible muscle fast with targeted volume, high-quality reps, and efficient 30-45 minute sessions.',
     timeFrameExplanation:
-      'Train three non-consecutive days with controlled tempo and moderate effort. Stay 1-2 reps from failure on most sets to keep quality high and recovery smooth.',
+      'Train 3 non-consecutive sessions this week. Keep controlled tempo, stay 1-2 reps from failure on most sets, and track progression each workout.',
     afterTimeFrame: {
       expectedOutcome: 'Improved muscle pump, better lifting confidence, and stronger week-to-week performance.',
       nextSteps: 'Progress one variable next week: load, reps, or one extra set on your first two exercises.',
@@ -496,27 +464,27 @@ const exerciseProgramTemplates = [
     whatNotToDo: 'Avoid sloppy tempo, ego loading, and pushing every set to failure.',
     days: [
       createWorkoutDay(1, 'Hypertrophy A', [
-        { exerciseId: 'warmup-8', sets: 1, repetitions: 20, restBetweenSets: 30, warmup: true },
-        { exerciseId: 'chest-7', sets: 4, repetitions: 8, restBetweenSets: 90 },
-        { exerciseId: 'upper-back-4', sets: 4, repetitions: 10, restBetweenSets: 75 },
-        { exerciseId: 'shoulders-1', sets: 3, repetitions: 12, restBetweenSets: 60 },
-        { exerciseId: 'biceps-10', sets: 3, repetitions: 12, restBetweenSets: 60 },
+        { exerciseId: 'warmup-8', sets: 1, repetitions: 20, restBetweenSets: 30, warmup: true , modification: 'Prep shoulders with smooth circles and relaxed breathing before main work' },
+        { exerciseId: 'chest-7', sets: 4, repetitions: 8, restBetweenSets: 90 , modification: 'Press with stable shoulder position and controlled lowering' },
+        { exerciseId: 'upper-back-4', sets: 4, repetitions: 10, restBetweenSets: 75 , modification: 'Row with controlled elbow path and no torso swinging' },
+        { exerciseId: 'shoulders-1', sets: 3, repetitions: 12, restBetweenSets: 60 , modification: 'Press with stable ribs and avoid shrugging into the neck' },
+        { exerciseId: 'biceps-10', sets: 3, repetitions: 12, restBetweenSets: 60 , modification: 'Control curl tempo and keep elbows fixed at your sides' },
       ], 42),
       createRestDay(2),
       createWorkoutDay(3, 'Hypertrophy B', [
-        { exerciseId: 'warmup-9', sets: 1, repetitions: 10, restBetweenSets: 30, warmup: true },
-        { exerciseId: 'quads-5', sets: 4, repetitions: 12, restBetweenSets: 90 },
-        { exerciseId: 'hamstrings-5', sets: 3, repetitions: 8, restBetweenSets: 90 },
-        { exerciseId: 'glutes-8', sets: 3, repetitions: 10, restBetweenSets: 75 },
-        { exerciseId: 'calves-1', sets: 3, repetitions: 15, restBetweenSets: 60 },
+        { exerciseId: 'warmup-9', sets: 1, repetitions: 10, restBetweenSets: 30, warmup: true , modification: 'Use controlled trunk rotation to prepare core and spine without forcing range' },
+        { exerciseId: 'quads-5', sets: 4, repetitions: 12, restBetweenSets: 90 , modification: 'Use controlled depth and strong bracing through each squat rep' },
+        { exerciseId: 'hamstrings-5', sets: 3, repetitions: 8, restBetweenSets: 90 , modification: 'Control the eccentric phase and avoid jerky hinge motion' },
+        { exerciseId: 'glutes-8', sets: 3, repetitions: 10, restBetweenSets: 75 , modification: 'Hinge from hips with controlled tempo and no lumbar overextension' },
+        { exerciseId: 'calves-1', sets: 3, repetitions: 15, restBetweenSets: 60 , modification: 'Use full-foot pressure and pause briefly at the top of each rep' },
       ], 44),
       createRestDay(4),
       createWorkoutDay(5, 'Hypertrophy C', [
-        { exerciseId: 'cardio-13', duration: 6, warmup: true },
-        { exerciseId: 'shoulders-5', sets: 4, repetitions: 10, restBetweenSets: 75 },
-        { exerciseId: 'upper-back-3', sets: 4, repetitions: 8, restBetweenSets: 90 },
-        { exerciseId: 'triceps-4', sets: 3, repetitions: 12, restBetweenSets: 60 },
-        { exerciseId: 'abs-107', sets: 3, repetitions: 10, restBetweenSets: 60 },
+        { exerciseId: 'cardio-13', duration: 6, warmup: true , modification: 'Keep pace easy and rhythmic to raise temperature without early fatigue' },
+        { exerciseId: 'shoulders-5', sets: 4, repetitions: 10, restBetweenSets: 75 , modification: 'Control pressing path and keep shoulder blades set' },
+        { exerciseId: 'upper-back-3', sets: 4, repetitions: 8, restBetweenSets: 90 , modification: 'Keep chest tall and squeeze shoulder blades through each rep' },
+        { exerciseId: 'triceps-4', sets: 3, repetitions: 12, restBetweenSets: 60 , modification: 'Lock in upper-arm position and extend with full control' },
+        { exerciseId: 'abs-107', sets: 3, repetitions: 10, restBetweenSets: 60 , modification: 'Keep ribs stacked over pelvis and maintain clean tempo' },
       ], 40),
       createRestDay(6),
       createRestDay(7),
@@ -524,13 +492,13 @@ const exerciseProgramTemplates = [
   },
   {
     slug: 'strength-endurance-30-45',
-    title: 'Power in 45',
+    title: 'Power Density 45',
     exerciseEnvironment: 'Large Gym',
     targetAreas: ['strength endurance'],
     bodyParts: ['Upper Body', 'Lower Body', 'Core'],
-    programOverview: 'A 30-45 minute program targeting strength-endurance across major movement patterns.',
-    summary: 'Maximize strength-endurance in a focused 30-45 minute training window.',
-    timeFrameExplanation: 'Keep rest times honest and use moderate reps with clean movement quality.',
+    programOverview: 'A dense 30-45 minute plan targeting strength-endurance across core movement patterns.',
+    summary: 'Get stronger and fitter in under 45 minutes with high-density sessions that still prioritize form.',
+    timeFrameExplanation: 'Train 3 non-consecutive sessions this week. Keep rest times honest, use moderate reps, and treat each day as a form-first benchmark.',
     afterTimeFrame: {
       expectedOutcome: 'Higher training density and improved repeatable output.',
       nextSteps: 'Either increase load modestly or reduce rest slightly next week.',
@@ -538,24 +506,24 @@ const exerciseProgramTemplates = [
     whatNotToDo: 'Avoid sacrificing mechanics just to move faster.',
     days: [
       createWorkoutDay(1, 'Density A', [
-        { exerciseId: 'cardio-13', duration: 6, warmup: true },
-        { exerciseId: 'quads-5', sets: 4, repetitions: 12, restBetweenSets: 60 },
-        { exerciseId: 'upper-back-4', sets: 4, repetitions: 12, restBetweenSets: 60 },
-        { exerciseId: 'abs-107', sets: 3, repetitions: 10, restBetweenSets: 60 },
+        { exerciseId: 'cardio-13', duration: 6, warmup: true , modification: 'Keep pace easy and rhythmic to raise temperature without early fatigue' },
+        { exerciseId: 'quads-5', sets: 4, repetitions: 12, restBetweenSets: 60 , modification: 'Use controlled depth and strong bracing through each squat rep' },
+        { exerciseId: 'upper-back-4', sets: 4, repetitions: 12, restBetweenSets: 60 , modification: 'Row with controlled elbow path and no torso swinging' },
+        { exerciseId: 'abs-107', sets: 3, repetitions: 10, restBetweenSets: 60 , modification: 'Keep ribs stacked over pelvis and maintain clean tempo' },
       ], 35),
       createRestDay(2),
       createWorkoutDay(3, 'Density B', [
-        { exerciseId: 'warmup-8', sets: 1, repetitions: 20, restBetweenSets: 30, warmup: true },
-        { exerciseId: 'glutes-8', sets: 4, repetitions: 15, restBetweenSets: 60 },
-        { exerciseId: 'shoulders-5', sets: 4, repetitions: 12, restBetweenSets: 60 },
-        { exerciseId: 'abs-103', sets: 3, repetitions: 10, restBetweenSets: 60 },
+        { exerciseId: 'warmup-8', sets: 1, repetitions: 20, restBetweenSets: 30, warmup: true , modification: 'Prep shoulders with smooth circles and relaxed breathing before main work' },
+        { exerciseId: 'glutes-8', sets: 4, repetitions: 15, restBetweenSets: 60 , modification: 'Hinge from hips with controlled tempo and no lumbar overextension' },
+        { exerciseId: 'shoulders-5', sets: 4, repetitions: 12, restBetweenSets: 60 , modification: 'Control pressing path and keep shoulder blades set' },
+        { exerciseId: 'abs-103', sets: 3, repetitions: 10, restBetweenSets: 60 , modification: 'Move slowly with full trunk control and avoid momentum' },
       ], 37),
       createRestDay(4),
       createWorkoutDay(5, 'Density C', [
-        { exerciseId: 'warmup-9', sets: 1, repetitions: 10, restBetweenSets: 30, warmup: true },
-        { exerciseId: 'hamstrings-5', sets: 3, repetitions: 8, restBetweenSets: 75 },
-        { exerciseId: 'shoulders-10', sets: 3, repetitions: 12, restBetweenSets: 60 },
-        { exerciseId: 'calves-1', sets: 3, repetitions: 15, restBetweenSets: 60 },
+        { exerciseId: 'warmup-9', sets: 1, repetitions: 10, restBetweenSets: 30, warmup: true , modification: 'Use controlled trunk rotation to prepare core and spine without forcing range' },
+        { exerciseId: 'hamstrings-5', sets: 3, repetitions: 8, restBetweenSets: 75 , modification: 'Control the eccentric phase and avoid jerky hinge motion' },
+        { exerciseId: 'shoulders-10', sets: 3, repetitions: 12, restBetweenSets: 60 , modification: 'Use smooth tempo and avoid compensating with low back extension' },
+        { exerciseId: 'calves-1', sets: 3, repetitions: 15, restBetweenSets: 60 , modification: 'Use full-foot pressure and pause briefly at the top of each rep' },
       ], 40),
       createRestDay(6),
       createRestDay(7),
@@ -563,12 +531,10 @@ const exerciseProgramTemplates = [
   },
 ];
 
-export const exercisePrograms: any[] = exerciseProgramTemplates.map((template) =>
-  ensureWorkoutDensity({
-    ...template,
-    createdAt: new Date('2025-06-02T00:00:00Z'),
-  })
-);
+export const exercisePrograms: any[] = exerciseProgramTemplates.map((template) => ({
+  ...template,
+  createdAt: new Date('2025-06-02T00:00:00Z'),
+}));
 
 export const exerciseProgramSlugs: Record<string, number> = exerciseProgramTemplates.reduce(
   (acc, template, index) => {
