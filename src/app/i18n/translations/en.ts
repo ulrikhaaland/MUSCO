@@ -681,6 +681,12 @@ const translations = {
   'program.pageTitle': 'Exercise Program | MUSCO',
   'program.defaultPageTitle': 'Program | MUSCO',
 
+  // Account mismatch (email notification deep link)
+  'program.accountMismatch.title': 'Different account',
+  'program.accountMismatch.body': 'This link is for {{linkEmail}}, but you\'re signed in as {{currentEmail}}. Switch to the correct account?',
+  'program.accountMismatch.switch': 'Switch Account',
+  'program.accountMismatch.stay': 'Stay on current account',
+
   // Days of the week
   'days.monday': 'Monday',
   'days.tuesday': 'Tuesday',

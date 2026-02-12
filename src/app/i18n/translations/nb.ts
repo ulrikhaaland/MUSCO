@@ -647,6 +647,13 @@ const translations = {
   'program.exerciseVideoTitle': 'Treningsvideo',
   'program.pageTitle': 'Treningsprogram | MUSCO',
   'program.defaultPageTitle': 'Program | MUSCO',
+
+  // Kontomismatch (e-postvarsel-dyplenke)
+  'program.accountMismatch.title': 'Annen konto',
+  'program.accountMismatch.body': 'Denne lenken er for {{linkEmail}}, men du er logget inn som {{currentEmail}}. Bytte til riktig konto?',
+  'program.accountMismatch.switch': 'Bytt konto',
+  'program.accountMismatch.stay': 'Forbli på nåværende konto',
+
   'program.optionalRecoveryActivity': 'valgfri rehabiliteringsøvelse',
   'program.optionalRecoveryActivities': 'valgfrie rehabiliteringsøvelser',
   'program.workout': 'Trening',

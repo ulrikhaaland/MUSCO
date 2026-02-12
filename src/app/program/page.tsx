@@ -28,7 +28,7 @@ function ProgramPageContent({
   const router = useRouter();
   const searchParams = useSearchParams();
   const { t } = useTranslation();
-  const { loading: authLoading, error: authError, user: authUser } = useAuth();
+  const { loading: authLoading, error: authError, user: authUser, logOut } = useAuth();
   const {
     program,
     activeProgram,
@@ -49,20 +49,29 @@ function ProgramPageContent({
     useState<ExerciseProgram | null>(null);
   const [isOverviewVisible, setIsOverviewVisible] = useState(false);
   const [hasProcessedUrlParam, setHasProcessedUrlParam] = useState(false);
+  const [accountMismatch, setAccountMismatch] = useState<{ linkEmail: string; currentEmail: string } | null>(null);
 
-  // If arriving from an email notification with ?email=, redirect to login
-  // so the user can authenticate with prefilled email, then return here.
-  // Preserve the ?id= param so the correct program is selected after login.
+  // If arriving from an email notification with ?email=, either redirect to
+  // login (not signed in) or detect account mismatch (signed in as someone else).
   useEffect(() => {
     if (authLoading) return;
     const emailParam = searchParams?.get('email');
-    if (emailParam && !authUser) {
+    if (!emailParam) return;
+
+    if (!authUser) {
       const programId = searchParams?.get('id');
       const returnPath = programId
         ? `/program?id=${encodeURIComponent(programId)}`
         : '/program';
       window.sessionStorage.setItem('previousPath', returnPath);
       router.push(`/login?email=${encodeURIComponent(emailParam)}`);
+      return;
+    }
+
+    // Signed in but as a different user than the email link target
+    const currentEmail = authUser.email || '';
+    if (currentEmail && emailParam.toLowerCase() !== currentEmail.toLowerCase()) {
+      setAccountMismatch({ linkEmail: emailParam, currentEmail });
     }
   }, [authLoading, authUser, searchParams, router]);
 
@@ -310,6 +319,47 @@ function ProgramPageContent({
       />
       {renderVideoModal()}
       {!isOverviewVisible && <AddToHomescreen />}
+
+      {/* Account mismatch modal — email link was for a different user */}
+      {accountMismatch && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4">
+          <div className="bg-gray-800 rounded-2xl p-6 max-w-sm w-full shadow-xl space-y-4">
+            <h3 className="text-lg font-semibold text-white text-center">
+              {t('program.accountMismatch.title')}
+            </h3>
+            <p className="text-sm text-gray-300 text-center leading-relaxed">
+              {t('program.accountMismatch.body', {
+                linkEmail: accountMismatch.linkEmail,
+                currentEmail: accountMismatch.currentEmail,
+              })}
+            </p>
+            <div className="flex flex-col gap-2 pt-2">
+              <button
+                onClick={async () => {
+                  const emailParam = searchParams?.get('email') || '';
+                  const programId = searchParams?.get('id');
+                  const returnPath = programId
+                    ? `/program?id=${encodeURIComponent(programId)}`
+                    : '/program';
+                  window.sessionStorage.setItem('previousPath', returnPath);
+                  setAccountMismatch(null);
+                  await logOut();
+                  router.push(`/login?email=${encodeURIComponent(emailParam)}`);
+                }}
+                className="w-full py-3 rounded-xl bg-indigo-600 text-white font-medium hover:bg-indigo-500 transition-colors"
+              >
+                {t('program.accountMismatch.switch')}
+              </button>
+              <button
+                onClick={() => setAccountMismatch(null)}
+                className="w-full py-3 rounded-xl bg-gray-700 text-gray-300 font-medium hover:bg-gray-600 transition-colors"
+              >
+                {t('program.accountMismatch.stay')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
