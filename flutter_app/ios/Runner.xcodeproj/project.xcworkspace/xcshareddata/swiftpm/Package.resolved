@@ -1,0 +1,15 @@
+{
+  "originHash" : "4f689105d6b72f78f7d4127958eb05ce0de1017787dbd9a1a4e64a752751f136",
+  "pins" : [
+    {
+      "identity" : "humankit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/biodigital-inc/HumanKit.git",
+      "state" : {
+        "revision" : "ce447d99b54b74f6e0a3c8c345df73fc8c34b2d7",
+        "version" : "147.0.11"
+      }
+    }
+  ],
+  "version" : 3
+}

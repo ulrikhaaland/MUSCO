@@ -469,7 +469,7 @@ export default function LandingPage() {
             {t('landing.demo.assistantTitle')}
           </h2>
           <div className="flex-1 min-h-0 w-full rounded-xl ring-1 ring-white/10 overflow-hidden">
-            <HumanViewer gender={'male'} hideNav enableMobileChat fillHeight />
+            {!user && <HumanViewer gender={'male'} hideNav enableMobileChat fillHeight />}
           </div>
         </div>
 

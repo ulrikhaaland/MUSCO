@@ -45,5 +45,14 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>BioDigitalSDKKey</key>
+	<string>8deb061c7a790f4839312ea52e327e91468d5941</string>
+	<key>BioDigitalSDKSecret</key>
+	<string>c3f4827a720e3f304111ac15266e90249c8c2e29</string>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsLocalNetworking</key>
+		<true/>
+	</dict>
 </dict>
 </plist>
