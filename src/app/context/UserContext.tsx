@@ -91,7 +91,7 @@ interface UserContextType {
   generateFollowUpProgram: () => Promise<void>;
   loadUserPrograms: () => Promise<void>;
   /** Update a day's completion status in the in-memory program data */
-  markDayCompleteInMemory: (dayNumber: number, completed: boolean) => void;
+  markDayCompleteInMemory: (dayNumber: number, completed: boolean, weekId?: string) => void;
   // Incremental generation state
   generatingDay: number | null; // Which day is currently being generated (1-7), null if not generating
   generatedDays: number[]; // Array of day numbers that have been generated
@@ -1172,32 +1172,39 @@ export function UserProvider({ children }: { children: ReactNode }) {
   };
 
   // Update a day's completion status in the in-memory program data
-  const markDayCompleteInMemory = useCallback((dayNumber: number, completed: boolean) => {
+  // When weekId is provided, only update the matching week; otherwise update the display program
+  const markDayCompleteInMemory = useCallback((dayNumber: number, completed: boolean, weekId?: string) => {
     const now = completed ? new Date() : undefined;
 
     const updateDays = (days: ProgramDay[]) =>
       days.map(d => d.day === dayNumber ? { ...d, completed, completedAt: now } : d);
 
-    // Update the display program
+    const matchesWeek = (p: ExerciseProgram) => !weekId || p.weekId === weekId || p.docId === weekId;
+
+    // Update the display program (only if it matches the week)
     setProgram(prev => {
-      if (!prev) return prev;
+      if (!prev || !matchesWeek(prev)) return prev;
       return { ...prev, days: updateDays(prev.days) };
     });
 
-    // Update activeProgram's programs array
+    // Update only the matching week in activeProgram
     setActiveProgram(prev => {
       if (!prev) return prev;
       return {
         ...prev,
-        programs: prev.programs.map(p => ({ ...p, days: updateDays(p.days) })),
+        programs: prev.programs.map(p => 
+          matchesWeek(p) ? { ...p, days: updateDays(p.days) } : p
+        ),
       };
     });
 
-    // Update userPrograms so calendar view also reflects completion
+    // Update only the matching week in userPrograms
     setUserPrograms(prev =>
       prev.map(up => ({
         ...up,
-        programs: up.programs.map(p => ({ ...p, days: updateDays(p.days) })),
+        programs: up.programs.map(p => 
+          matchesWeek(p) ? { ...p, days: updateDays(p.days) } : p
+        ),
       }))
     );
   }, []);

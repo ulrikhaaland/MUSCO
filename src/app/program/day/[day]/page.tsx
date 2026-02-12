@@ -359,18 +359,18 @@ function DayDetailPageContent() {
       // Update local state so the UI reflects completion immediately
       setDayData(prev => prev ? { ...prev, completed: true, completedAt: new Date() } : prev);
       // Update context so other pages (program overview, calendar) also reflect it
-      markDayCompleteInMemory(dayData.day, true);
+      markDayCompleteInMemory(dayData.day, true, selectedProgram?.weekId);
     } catch (err) {
       console.error('Failed to mark day as completed:', err);
     }
-  }, [user?.uid, activeProgram?.docId, dayData, markDayCompleteInMemory]);
+  }, [user?.uid, activeProgram?.docId, dayData, selectedProgram?.weekId, markDayCompleteInMemory]);
 
   // Handle workout restart - reset completion in local + context state
   const handleWorkoutRestart = useCallback(() => {
     if (!dayData) return;
     setDayData(prev => prev ? { ...prev, completed: false, completedAt: undefined } : prev);
-    markDayCompleteInMemory(dayData.day, false);
-  }, [dayData, markDayCompleteInMemory]);
+    markDayCompleteInMemory(dayData.day, false, selectedProgram?.weekId);
+  }, [dayData, selectedProgram?.weekId, markDayCompleteInMemory]);
 
   // Handle marking a missed past day as completed (without doing the workout)
   const handleMarkComplete = useCallback(async () => {
@@ -378,7 +378,7 @@ function DayDetailPageContent() {
     try {
       await markDayAsCompleted(user.uid, activeProgram.docId, dayData.day, selectedProgram?.weekId);
       setDayData(prev => prev ? { ...prev, completed: true, completedAt: new Date() } : prev);
-      markDayCompleteInMemory(dayData.day, true);
+      markDayCompleteInMemory(dayData.day, true, selectedProgram?.weekId);
     } catch (err) {
       console.error('Failed to mark day as completed:', err);
     }

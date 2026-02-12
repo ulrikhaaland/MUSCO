@@ -115,6 +115,7 @@ export function WorkoutSession({
   const [showExitMenu, setShowExitMenu] = useState(false);
   // Exercise details panel
   const [showDetails, setShowDetails] = useState(false);
+  const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
   // Whether the user has tapped "Start Workout", and when
   const [hasStarted, setHasStarted] = useState(false);
   const [actualStartTime, setActualStartTime] = useState<Date | null>(null);
@@ -136,6 +137,7 @@ export function WorkoutSession({
     slideKey.current += 1;
     setSlideDir(dir);
     setShowDetails(false);
+    setIsDescriptionExpanded(false);
     setDurationTimerEnd(null);
   }, []);
 
@@ -479,15 +481,15 @@ export function WorkoutSession({
                 <button
                   onClick={() => onVideoClick(currentExercise)}
                   className="
-                    inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl
-                    bg-indigo-600/15 hover:bg-indigo-600/25 active:bg-indigo-600/35
-                    ring-1 ring-indigo-500/25
+                    inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl
+                    bg-indigo-600/20 hover:bg-indigo-600/30 active:bg-indigo-600/40
+                    ring-1 ring-indigo-500/30
                     transition-colors duration-150
-                    text-xs font-medium text-indigo-400 flex-shrink-0
+                    text-sm font-medium text-white flex-shrink-0
                   "
                   aria-label="Watch video"
                 >
-                  <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M8 5v14l11-7z" />
                   </svg>
                   Video
@@ -497,9 +499,23 @@ export function WorkoutSession({
 
             {/* Description */}
             {currentExercise.description && (
-              <p className="text-gray-400 text-sm leading-relaxed mb-2">
-                {currentExercise.description}
-              </p>
+              <div className="text-gray-400 text-sm leading-relaxed mb-2">
+                {isDescriptionExpanded || currentExercise.description.length <= 120
+                  ? currentExercise.description
+                  : currentExercise.description.substring(0, currentExercise.description.lastIndexOf(' ', 120) || 120) + '...'
+                }
+                {currentExercise.description.length > 120 && (
+                  <button
+                    className="ml-1 text-indigo-400 hover:text-indigo-300 font-medium"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsDescriptionExpanded(prev => !prev);
+                    }}
+                  >
+                    {isDescriptionExpanded ? t('program.seeLess') : t('program.seeMore')}
+                  </button>
+                )}
+              </div>
             )}
 
             {/* Precaution */}
@@ -523,7 +539,7 @@ export function WorkoutSession({
               <div className={`mb-2 ${showDetails ? 'flex-1 flex flex-col min-h-0' : ''}`}>
                 <button
                   onClick={() => setShowDetails(prev => !prev)}
-                  className="inline-flex items-center gap-1 text-xs font-medium text-indigo-400/70 hover:text-indigo-400 transition-colors"
+                  className="inline-flex items-center gap-1 text-sm font-medium text-indigo-400 hover:text-indigo-300 transition-colors"
                 >
                   <svg className={`w-3 h-3 transition-transform duration-200 ${showDetails ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />

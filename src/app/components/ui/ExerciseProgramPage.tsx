@@ -886,11 +886,13 @@ export function ExerciseProgramPage({
 
   const handleDayDetailClick = (day: ProgramDay, dayNameStr: string) => {
     // Pre-cache the day data so the target page can render instantly
-    if (program) {
+    // Use the actual week's program (not the display program which is always week 1)
+    const weekProgram = activeProgram?.programs?.[selectedWeek - 1] || program;
+    if (weekProgram) {
       setSelectedDayData({
         day,
         dayName: dayNameStr,
-        program,
+        program: weekProgram,
         programTitle: title || activeProgram?.title || 'Exercise Program',
       });
     }
