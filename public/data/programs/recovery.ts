@@ -73,6 +73,7 @@ export const localizeProgramDayDescriptions = (
     if (!value) return '';
     return value
       .split(' Guidance:')[0]
+      .split(' Progression rule:')[0]
       .split(' Optional recovery:')[0]
       .trim();
   };
@@ -107,8 +108,17 @@ export const localizeProgramDayDescriptions = (
 // Duration helpers for recovery programs
 // NOTE: In recovery.ts we treat `exercise.duration` as MINUTES (not seconds).
 // `restBetweenSets` remains in seconds.
+const isRecoveryWarmupExercise = (exercise: any): boolean => {
+  if (!exercise) return false;
+  if (exercise.warmup === true) return true;
+  const exerciseId =
+    typeof exercise.exerciseId === 'string' ? exercise.exerciseId : '';
+  return exerciseId.startsWith('warmup-');
+};
+
 const calculateRecoveryExerciseDurationSeconds = (exercise: any): number => {
   if (!exercise) return 0;
+  const setupBufferSeconds = isRecoveryWarmupExercise(exercise) ? 45 : 75;
 
   if (exercise.sets && exercise.duration) {
     const holdSecondsPerSet = Number(exercise.duration) * 60;
@@ -116,31 +126,32 @@ const calculateRecoveryExerciseDurationSeconds = (exercise: any): number => {
     const restTime = exercise.restBetweenSets
       ? (exercise.sets - 1) * exercise.restBetweenSets
       : 0;
-    return totalHoldTime + restTime;
+    return totalHoldTime + restTime + setupBufferSeconds;
   }
 
   if (exercise.duration) {
-    return Number(exercise.duration) * 60;
+    return Number(exercise.duration) * 60 + setupBufferSeconds;
   }
 
   if (exercise.sets && exercise.repetitions) {
-    const timePerRepSeconds = 5;
+    const timePerRepSeconds = 8;
     const exerciseTimePerSet = exercise.repetitions * timePerRepSeconds;
     const totalExerciseTime = exercise.sets * exerciseTimePerSet;
     const restTime = exercise.restBetweenSets
       ? (exercise.sets - 1) * exercise.restBetweenSets
       : 0;
-    return totalExerciseTime + restTime;
+    return totalExerciseTime + restTime + setupBufferSeconds;
   }
 
-  return 60;
+  return 60 + setupBufferSeconds;
 };
 
 const calculateRecoveryDayDuration = (exercises: any[]): number => {
   if (!exercises || exercises.length === 0) return 0;
+  const baselineSessionOverheadSeconds = 120;
   const totalSeconds = exercises.reduce((total, exercise) => {
     return total + calculateRecoveryExerciseDurationSeconds(exercise);
-  }, 0);
+  }, baselineSessionOverheadSeconds);
   return Math.ceil(totalSeconds / 60);
 };
 
@@ -152,23 +163,51 @@ const isWarmupExerciseRef = (exercise: any): boolean => {
   return exerciseId.startsWith('warmup-');
 };
 
-const orderWarmupsFirst = (exercises: any[]): any[] => {
+const isFinisherExerciseRef = (exercise: any): boolean => {
+  if (!exercise) return false;
+  if (exercise.warmup === true) return false;
+  const exerciseId =
+    typeof exercise.exerciseId === 'string' ? exercise.exerciseId : '';
+  return exerciseId.startsWith('cardio-');
+};
+
+const orderWorkoutExercisesCanonical = (exercises: any[]): any[] => {
   if (!Array.isArray(exercises) || exercises.length === 0) return exercises;
   const warmups = exercises.filter(isWarmupExerciseRef);
-  const nonWarmups = exercises.filter((ex) => !isWarmupExerciseRef(ex));
-  return [...warmups, ...nonWarmups];
+  const finishers = exercises.filter(isFinisherExerciseRef);
+  const primaryAndAccessory = exercises.filter(
+    (ex) => !isWarmupExerciseRef(ex) && !isFinisherExerciseRef(ex)
+  );
+  return [...warmups, ...primaryAndAccessory, ...finishers];
 };
 
 // Helper function to create workout days with computed durations
 const createWorkoutDay = (day: number, description: string, exercises: any[]) => {
-  const orderedExercises = orderWarmupsFirst(exercises);
+  const orderedExercises = orderWorkoutExercisesCanonical(exercises);
+  const progressionRule =
+    'Progression rule: increase load or volume only after stable pain response (≤3/10 during this session and the next morning) with clean form throughout.';
+  const detailedDescription = description.includes('Progression rule:')
+    ? description
+    : `${description} ${progressionRule}`;
   return {
     day,
-    description,
+    description: detailedDescription,
     dayType: 'strength' as const,
     exercises: orderedExercises,
     duration: calculateRecoveryDayDuration(orderedExercises),
   };
+};
+
+const normalizeProgramExerciseOrder = (
+  program: ExerciseProgram
+): ExerciseProgram => {
+  const updatedDays = (program.days || []).map((day: any) => {
+    const exercises = Array.isArray(day.exercises)
+      ? orderWorkoutExercisesCanonical(day.exercises)
+      : day.exercises;
+    return { ...day, exercises };
+  });
+  return { ...program, days: updatedDays };
 };
 
 // ------------------------------------------------------------
@@ -354,6 +393,81 @@ const createCoreRestDay = (day: number): any => {
   };
 };
 
+const MAX_COPY_SENTENCE_WORDS = 36;
+const BANNED_VAGUE_PHRASES = ['etc', 'and so on', 'things', 'stuff'];
+const SUMMARY_OUTCOME_REGEX =
+  /\b(calm|reduce|rebuild|restore|improve|build|increase|ease|settle)\b/i;
+
+const splitSentences = (value: string): string[] =>
+  value
+    .split(/[.!?]+/g)
+    .map((sentence) => sentence.trim())
+    .filter(Boolean);
+
+const countWords = (value: string): number =>
+  value
+    .trim()
+    .split(/\s+/g)
+    .filter(Boolean).length;
+
+const validateCopyBlock = (
+  value: string,
+  label: string,
+  context: string,
+  errors: string[]
+) => {
+  const normalized = (value || '').trim();
+  if (!normalized) {
+    errors.push(`${context}: ${label} is empty`);
+    return;
+  }
+
+  const lower = normalized.toLowerCase();
+  for (const phrase of BANNED_VAGUE_PHRASES) {
+    const escaped = phrase.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const phraseRegex = new RegExp(`\\b${escaped}\\b`, 'i');
+    if (phraseRegex.test(lower)) {
+      errors.push(`${context}: ${label} contains vague phrase "${phrase}"`);
+    }
+  }
+
+  for (const sentence of splitSentences(normalized)) {
+    const words = countWords(sentence);
+    if (words > MAX_COPY_SENTENCE_WORDS) {
+      errors.push(
+        `${context}: ${label} has long sentence (${words} words, max ${MAX_COPY_SENTENCE_WORDS})`
+      );
+      break;
+    }
+  }
+};
+
+const validateRecoveryCopyQuality = (programs: ExerciseProgram[]): void => {
+  const errors: string[] = [];
+
+  for (const program of programs) {
+    const context = `recovery program "${(program.targetAreas || []).join('/') || 'unknown'}"`;
+
+    validateCopyBlock(program.summary, 'summary', context, errors);
+    validateCopyBlock(program.programOverview, 'programOverview', context, errors);
+    validateCopyBlock(program.timeFrameExplanation, 'timeFrameExplanation', context, errors);
+
+    if (!SUMMARY_OUTCOME_REGEX.test(program.summary || '')) {
+      errors.push(`${context}: summary must be outcome-oriented (missing key outcome verb)`);
+    }
+
+    if (!(program.timeFrameExplanation || '').includes('Train 3 non-consecutive sessions this week')) {
+      errors.push(
+        `${context}: timeFrameExplanation must include "Train 3 non-consecutive sessions this week"`
+      );
+    }
+  }
+
+  if (errors.length > 0) {
+    throw new Error(`Recovery copy QA failed:\n${errors.join('\n')}`);
+  }
+};
+
 const rehabProgramsAllWeeks: ExerciseProgram[] = [
   {
     programOverview:
@@ -366,7 +480,7 @@ const rehabProgramsAllWeeks: ExerciseProgram[] = [
       expectedOutcome:
         'Lower shin tenderness to touch, and normal walking/stairs feel easier the next day. You should tolerate light calf work without a symptom spike.',
       nextSteps:
-        'Next week adds slow eccentrics and short cadence-focused walks to start rebuilding impact tolerance. If mornings stay calm, we’ll gradually increase walk time before any jogging.',
+        'Progress by adding slow eccentrics and short cadence-focused walks to rebuild impact tolerance. If mornings stay calm, gradually increase walk time before any jogging.',
     },
     whatNotToDo:
       'Avoid running, jumping, hills, and hard surfaces this week—especially when sore or fatigued. Don’t push through sharp or increasing tibial pain; if symptoms worsen the next morning, reduce volume.',
@@ -477,7 +591,7 @@ const rehabProgramsAllWeeks: ExerciseProgram[] = [
       expectedOutcome:
         'Less morning stiffness, and day-to-day movements (getting up from a chair, rolling in bed, light bending) feel easier and more controlled. You should feel more “steady” through your trunk during the exercises.',
       nextSteps:
-        'If symptoms are stable or improving, the next week adds hip-hinge patterning and slow posterior-chain loading so you can lift and bend with confidence—without losing your brace.',
+        'If symptoms are stable or improving, add hip-hinge patterning and slow posterior-chain loading so you can lift and bend with confidence without losing your brace.',
     },
     whatNotToDo:
       'Avoid breath-holding, repeated end-range flexion/extension, and “testing” heavy lifts. Don’t push through sharp pain or new numbness/tingling; if symptoms travel down the leg or worsen the next morning, scale volume down. Seek care promptly for red flags (progressive weakness, saddle numbness, bowel/bladder changes).',
@@ -523,7 +637,7 @@ const rehabProgramsAllWeeks: ExerciseProgram[] = [
       expectedOutcome:
         'Less front-of-knee sensitivity and easier stairs, chair rises, and short walks at low load.',
       nextSteps:
-        'Next week adds controlled lunge and step patterns if pain remains stable (≤3/10) with no next-day flare.',
+        'Add controlled lunge and step patterns when pain remains stable (≤3/10) with no next-day flare.',
     },
     whatNotToDo:
       'Avoid downhill running, deep painful knee flexion, jumping/plyometrics, and high-volume stairs this week. Stop if pain becomes sharp, catching, or clearly worse the next morning.',
@@ -569,7 +683,7 @@ const rehabProgramsAllWeeks: ExerciseProgram[] = [
       expectedOutcome:
         'Less painful arc/pinching and easier shoulder elevation in a comfortable range with improved control.',
       nextSteps:
-        'If symptoms stay stable, next week increases cuff/scapular volume and progresses controlled shoulder flexion.',
+        'If symptoms stay stable, increase cuff/scapular volume and progress controlled shoulder flexion.',
     },
     whatNotToDo:
       'Do not force overhead range, shrug into pain, or do heavy pressing this week. Avoid sharp anterior shoulder pain, catching, or night-pain escalation after sessions; reduce range/volume if symptoms increase next day.',
@@ -616,7 +730,7 @@ const rehabProgramsAllWeeks: ExerciseProgram[] = [
       expectedOutcome:
         'Less swelling and stiffness, with more comfortable walking and easier stair negotiation at low speed.',
       nextSteps:
-        'Next week progresses calf strength and introduces more single-leg control if symptoms stay stable.',
+        'Progress calf strength and introduce more single-leg control when symptoms stay stable.',
     },
     whatNotToDo:
       'Avoid cutting, jumping, unstable surfaces, and forced end-range dorsiflexion this week. Stop and reduce volume if swelling spikes, gait worsens, or pain increases the next morning.',
@@ -660,7 +774,7 @@ const rehabProgramsAllWeeks: ExerciseProgram[] = [
       expectedOutcome:
         'Lower resting elbow pain and improved tolerance to light grip, mouse/keyboard use, and daily hand tasks.',
       nextSteps:
-        'If symptoms remain stable, next week introduces more slow eccentrics and modest volume progression.',
+        'If symptoms remain stable, introduce more slow eccentrics and modest volume progression.',
     },
     whatNotToDo:
       'Avoid high-force gripping, heavy carries, repetitive wrist extension under fatigue, and jerky movement. Reduce volume if morning pain clearly worsens, and stop if symptoms become sharp, radiating, or neurologic.',
@@ -701,7 +815,7 @@ const rehabProgramsAllWeeks: ExerciseProgram[] = [
       expectedOutcome:
         'Less neck tightness/stiffness and improved ability to sit upright with less fatigue during screen work.',
       nextSteps:
-        'If symptoms remain stable, next week increases upper-back row volume and cuff endurance.',
+        'If symptoms remain stable, increase upper-back row volume and cuff endurance.',
     },
     whatNotToDo:
       'Avoid shrug-dominant lifting, forced end-range neck stretching, and painful movement ranges. Reduce session volume if symptoms clearly worsen the next day or if headaches are aggravated.',
@@ -745,7 +859,7 @@ const rehabProgramsAllWeeks: ExerciseProgram[] = [
       expectedOutcome:
         'Lower morning heel pain with easier first steps, and better tolerance for short walks at comfortable pace.',
       nextSteps:
-        'If symptoms remain stable, next week introduces more eccentric calf emphasis and arch-control progressions.',
+        'If symptoms remain stable, introduce more eccentric calf emphasis and arch-control progressions.',
     },
     whatNotToDo:
       'Avoid barefoot walking on hard floors, sudden volume spikes, and forcing through sharp plantar heel pain. If next-morning pain spikes, reduce session volume and total standing/walking exposure.',
@@ -789,7 +903,7 @@ const rehabProgramsAllWeeks: ExerciseProgram[] = [
       expectedOutcome:
         'Less hamstring tightness/guarding with easier walking and more comfortable low-load hip hinge patterns.',
       nextSteps:
-        'If symptoms stay stable, next week progresses controlled eccentric hamstring loading and single-leg tolerance.',
+        'If symptoms stay stable, progress controlled eccentric hamstring loading and single-leg tolerance.',
     },
     whatNotToDo:
       'Avoid overstretching, sprinting, and ballistic movement this week. Do not push through sharp pain or cramping; reduce volume if next-day soreness clearly spikes.',
@@ -833,7 +947,7 @@ const rehabProgramsAllWeeks: ExerciseProgram[] = [
       expectedOutcome:
         'Reduced upper-back/shoulder tension with better awareness and tolerance of upright posture in daily tasks.',
       nextSteps:
-        'If symptoms are stable, next week increases pulling volume and posterior-chain support work.',
+        'If symptoms are stable, increase pulling volume and posterior-chain support work.',
     },
     whatNotToDo:
       'Avoid heavy pressing, prolonged static slouching, and forcing end-range extension. Reduce volume if neck/shoulder symptoms spike the next day.',
@@ -877,7 +991,7 @@ const rehabProgramsAllWeeks: ExerciseProgram[] = [
       expectedOutcome:
         'Improved core recruitment with better control in plank/brace positions and easier trunk stability in daily movement.',
       nextSteps:
-        'If control is consistent, next week adds more time under tension and limb coordination demands.',
+        'If control is consistent, add more time under tension and limb coordination demands.',
     },
     whatNotToDo:
       'Avoid high-rep sit-ups, long planks with poor form, and breath-holding under effort. If low-back symptoms increase the next morning, reduce hold time and total volume.',
@@ -918,7 +1032,7 @@ const rehabProgramsAllWeeks: ExerciseProgram[] = [
       expectedOutcome:
         'Lower wrist sensitivity at rest and better tolerance to typing, carrying light items, and daily hand use.',
       nextSteps:
-        'If symptoms remain stable, next week can introduce slightly longer isometric holds and gradual load progression for grip and extension tolerance.',
+        'If symptoms remain stable, introduce slightly longer isometric holds and gradual load progression for grip and extension tolerance.',
     },
     whatNotToDo:
       'Avoid high-force gripping, fast loaded wrist extension, and repetitive end-range wrist positions under fatigue. Reduce volume if symptoms are clearly worse the next morning.',
@@ -1005,9 +1119,12 @@ const rehabProgramsAllWeeks: ExerciseProgram[] = [
   }
 ];
 
+const normalizedRehabPrograms = rehabProgramsAllWeeks.map(normalizeProgramExerciseOrder);
+validateRecoveryCopyQuality(normalizedRehabPrograms);
+
 // Recovery custom programs are single-week templates. Next weeks are generated
 // dynamically based on user feedback.
-export const rehabPrograms: ExerciseProgram[] = rehabProgramsAllWeeks;
+export const rehabPrograms: ExerciseProgram[] = normalizedRehabPrograms;
 
 // URL slug mapping for direct program access - maps to the single-week program index
 export const programSlugs: Record<string, number> = {

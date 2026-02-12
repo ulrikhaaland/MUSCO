@@ -17,16 +17,47 @@ const formatRestDescription = (description: string): string => {
   return `Rest day. ${cleaned}.`;
 };
 
+const isWarmupExerciseRef = (exercise: any): boolean => {
+  if (!exercise) return false;
+  if (exercise.warmup === true) return true;
+  const exerciseId =
+    typeof exercise.exerciseId === 'string' ? exercise.exerciseId : '';
+  return exerciseId.startsWith('warmup-');
+};
+
+const isFinisherExerciseRef = (exercise: any): boolean => {
+  if (!exercise) return false;
+  if (exercise.warmup === true) return false;
+  const exerciseId =
+    typeof exercise.exerciseId === 'string' ? exercise.exerciseId : '';
+  return exerciseId.startsWith('cardio-');
+};
+
+const orderWorkoutExercisesCanonical = (exercises: any[]): any[] => {
+  if (!Array.isArray(exercises) || exercises.length === 0) return exercises;
+  const warmups = exercises.filter(isWarmupExerciseRef);
+  const finishers = exercises.filter(isFinisherExerciseRef);
+  const primaryAndAccessory = exercises.filter(
+    (exercise) => !isWarmupExerciseRef(exercise) && !isFinisherExerciseRef(exercise)
+  );
+  return [...warmups, ...primaryAndAccessory, ...finishers];
+};
+
 const createWorkoutDay = (
   day: number,
   description: string,
   exercises: any[],
   duration: number = 35
 ) => ({
+  description:
+    description.includes('Progression rule:')
+      ? formatWorkoutDescription(description)
+      : formatWorkoutDescription(
+          `${description}. Progression rule: progress load 2-5% in a later session only if all sets hit target reps with clean form and about 1-2 reps in reserve.`
+        ),
   day,
-  description: formatWorkoutDescription(description),
   dayType: 'strength',
-  exercises,
+  exercises: orderWorkoutExercisesCanonical(exercises),
   duration,
 });
 
@@ -45,6 +76,153 @@ const createRestDay = (
   isRestDay: true,
 });
 
+const estimateExerciseDurationSeconds = (exercise: any): number => {
+  if (!exercise) return 0;
+
+  const setupBufferSeconds = isWarmupExercise(exercise) ? 45 : 90;
+
+  if (exercise.sets && exercise.duration) {
+    const holdSecondsPerSet = Number(exercise.duration) * 60;
+    const totalHoldTime = Number(exercise.sets) * holdSecondsPerSet;
+    const restTime = exercise.restBetweenSets
+      ? (Number(exercise.sets) - 1) * Number(exercise.restBetweenSets)
+      : 0;
+    return totalHoldTime + restTime + setupBufferSeconds;
+  }
+
+  if (exercise.duration) {
+    return Number(exercise.duration) * 60 + setupBufferSeconds;
+  }
+
+  if (exercise.sets && exercise.repetitions) {
+    const timePerRepSeconds = 8;
+    const perSetTime = Number(exercise.repetitions) * timePerRepSeconds;
+    const totalWorkTime = Number(exercise.sets) * perSetTime;
+    const restTime = exercise.restBetweenSets
+      ? (Number(exercise.sets) - 1) * Number(exercise.restBetweenSets)
+      : 0;
+    return totalWorkTime + restTime + setupBufferSeconds;
+  }
+
+  return 60 + setupBufferSeconds;
+};
+
+const estimateWorkoutDayMinutes = (day: any): number => {
+  const exercises = Array.isArray(day?.exercises) ? day.exercises : [];
+  const baselineSessionOverheadSeconds = 180;
+  const totalSeconds = exercises.reduce((sum: number, exercise: any) => {
+    return sum + estimateExerciseDurationSeconds(exercise);
+  }, baselineSessionOverheadSeconds);
+  return Math.ceil(totalSeconds / 60);
+};
+
+const isWarmupExercise = (exercise: any): boolean => {
+  if (!exercise) return false;
+  if (exercise.warmup === true) return true;
+  const id = typeof exercise.exerciseId === 'string' ? exercise.exerciseId : '';
+  return id.startsWith('warmup-');
+};
+
+const validateExerciseProgramDurations = (programs: any[]): void => {
+  const MIN_MINUTES = 30;
+  const MAX_MINUTES = 45;
+  const violations: string[] = [];
+
+  for (const program of programs) {
+    const slug = program?.slug || program?.title || 'unknown-program';
+    for (const day of program?.days || []) {
+      if (day?.isRestDay || day?.dayType === 'rest') continue;
+      const estimatedMinutes = estimateWorkoutDayMinutes(day);
+      if (estimatedMinutes < MIN_MINUTES || estimatedMinutes > MAX_MINUTES) {
+        violations.push(
+          `${slug} day ${day?.day}: estimated ${estimatedMinutes} min (target ${MIN_MINUTES}-${MAX_MINUTES})`
+        );
+      }
+    }
+  }
+
+  if (violations.length > 0) {
+    throw new Error(
+      `Custom exercise duration validation failed:\\n${violations.join('\\n')}`
+    );
+  }
+};
+
+const MAX_COPY_SENTENCE_WORDS = 34;
+const BANNED_VAGUE_PHRASES = ['etc', 'and so on', 'things', 'stuff'];
+const SUMMARY_OUTCOME_REGEX =
+  /\b(build|improve|increase|maximize|grow|boost|unlock|train|get)\b/i;
+
+const splitSentences = (value: string): string[] =>
+  value
+    .split(/[.!?]+/g)
+    .map((sentence) => sentence.trim())
+    .filter(Boolean);
+
+const countWords = (value: string): number =>
+  value
+    .trim()
+    .split(/\s+/g)
+    .filter(Boolean).length;
+
+const validateCopyBlock = (
+  value: string,
+  label: string,
+  context: string,
+  errors: string[]
+) => {
+  const normalized = (value || '').trim();
+  if (!normalized) {
+    errors.push(`${context}: ${label} is empty`);
+    return;
+  }
+
+  const lower = normalized.toLowerCase();
+  for (const phrase of BANNED_VAGUE_PHRASES) {
+    const escaped = phrase.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const phraseRegex = new RegExp(`\\b${escaped}\\b`, 'i');
+    if (phraseRegex.test(lower)) {
+      errors.push(`${context}: ${label} contains vague phrase "${phrase}"`);
+    }
+  }
+
+  for (const sentence of splitSentences(normalized)) {
+    const words = countWords(sentence);
+    if (words > MAX_COPY_SENTENCE_WORDS) {
+      errors.push(
+        `${context}: ${label} has long sentence (${words} words, max ${MAX_COPY_SENTENCE_WORDS})`
+      );
+      break;
+    }
+  }
+};
+
+const validateExerciseCopyQuality = (programs: any[]): void => {
+  const errors: string[] = [];
+
+  for (const program of programs) {
+    const context = `exercise program "${program.slug || 'unknown'}"`;
+
+    validateCopyBlock(program.summary, 'summary', context, errors);
+    validateCopyBlock(program.programOverview, 'programOverview', context, errors);
+    validateCopyBlock(program.timeFrameExplanation, 'timeFrameExplanation', context, errors);
+
+    if (!SUMMARY_OUTCOME_REGEX.test(program.summary || '')) {
+      errors.push(`${context}: summary must be outcome-oriented (missing key outcome verb)`);
+    }
+
+    if (!(program.timeFrameExplanation || '').includes('Train 3 non-consecutive sessions this week')) {
+      errors.push(
+        `${context}: timeFrameExplanation must include "Train 3 non-consecutive sessions this week"`
+      );
+    }
+  }
+
+  if (errors.length > 0) {
+    throw new Error(`Custom exercise copy QA failed:\\n${errors.join('\\n')}`);
+  }
+};
+
 const exerciseProgramTemplates = [
   {
     slug: 'full-body-strength',
@@ -56,10 +234,10 @@ const exerciseProgramTemplates = [
       'A high-return full-body week built around foundational push, pull, squat, and hinge patterns. You get enough volume to drive visible progress while keeping recovery manageable and execution quality high.',
     summary: 'Build noticeable full-body strength in one week with a structure that is simple, hard, and repeatable.',
     timeFrameExplanation:
-      'Train 3 non-consecutive sessions this week. Keep 1-3 reps in reserve, use controlled tempo, and track loads for next-week progression.',
+      'Train 3 non-consecutive sessions this week. Keep 1-3 reps in reserve, use controlled tempo, and track loads for progression decisions.',
     afterTimeFrame: {
       expectedOutcome: 'Improved movement confidence and consistent week-to-week training rhythm.',
-      nextSteps: 'Progress load slightly next week or add one set to your primary movements.',
+      nextSteps: 'Progress load slightly or add one set to your primary movements when performance is stable.',
     },
     whatNotToDo:
       'Do not rush reps, skip warm-up sets, or push to technical failure on every set.',
@@ -183,7 +361,7 @@ const exerciseProgramTemplates = [
       'Train 3 non-consecutive sessions this week. Keep transitions tight, move with intent, and maintain form quality as fatigue climbs.',
     afterTimeFrame: {
       expectedOutcome: 'Better conditioning base and work capacity.',
-      nextSteps: 'Increase rounds or reduce rest intervals next week.',
+      nextSteps: 'Increase rounds or reduce rest intervals when session quality remains high.',
     },
     whatNotToDo: 'Avoid sloppy reps and breath-holding during circuits.',
     days: [
@@ -223,7 +401,7 @@ const exerciseProgramTemplates = [
     timeFrameExplanation: 'Train 3 non-consecutive sessions this week. Use strict breathing and form control, and stop each set before technique drops.',
     afterTimeFrame: {
       expectedOutcome: 'Improved trunk stability and reduced early core fatigue.',
-      nextSteps: 'Add longer holds or more unilateral challenges next week.',
+      nextSteps: 'Add longer holds or more unilateral challenges when control remains consistent.',
     },
     whatNotToDo: 'Avoid compensatory lumbar extension and rushed reps.',
     days: [
@@ -278,6 +456,7 @@ const exerciseProgramTemplates = [
         { exerciseId: 'hamstrings-5', sets: 4, repetitions: 8, restBetweenSets: 75 , modification: 'Control the eccentric phase and avoid jerky hinge motion' },
         { exerciseId: 'glutes-8', sets: 3, repetitions: 10, restBetweenSets: 60 , modification: 'Hinge from hips with controlled tempo and no lumbar overextension' },
         { exerciseId: 'abs-6', sets: 3, duration: 0.67, restBetweenSets: 60 , modification: 'Hold strong midline tension and keep breathing steady during the set' },
+        { exerciseId: 'calves-1', sets: 2, repetitions: 12, restBetweenSets: 45 , modification: 'Use full-foot pressure and pause briefly at the top of each rep' },
       ], 40),
       createRestDay(4),
       createWorkoutDay(5, 'Glute Core C', [
@@ -317,6 +496,7 @@ const exerciseProgramTemplates = [
         { exerciseId: 'upper-back-3', sets: 4, repetitions: 10, restBetweenSets: 75 , modification: 'Keep chest tall and squeeze shoulder blades through each rep' },
         { exerciseId: 'shoulders-10', sets: 3, repetitions: 12, restBetweenSets: 60 , modification: 'Use smooth tempo and avoid compensating with low back extension' },
         { exerciseId: 'abs-6', sets: 3, duration: 0.5, restBetweenSets: 60 , modification: 'Hold strong midline tension and keep breathing steady during the set' },
+        { exerciseId: 'biceps-10', sets: 2, repetitions: 12, restBetweenSets: 45 , modification: 'Control curl tempo and keep elbows fixed at your sides' },
       ], 40),
       createRestDay(4),
       createWorkoutDay(5, 'Push Pull C', [
@@ -375,7 +555,7 @@ const exerciseProgramTemplates = [
     targetAreas: ['mobility', 'strength'],
     bodyParts: ['Upper Body', 'Lower Body', 'Core'],
     programOverview: 'A hybrid week blending mobility prep with strict strength sets so better positions become stronger positions.',
-    summary: 'Open up stiff patterns, then convert that new range into stronger and cleaner reps.',
+    summary: 'Improve mobility and build stronger reps by turning better positions into better strength output.',
     timeFrameExplanation: 'Train 3 non-consecutive sessions this week. Use mobility prep first, then reinforce positions with strict reps and controlled tempo.',
     afterTimeFrame: {
       expectedOutcome: 'Improved movement quality with stronger end-range control.',
@@ -441,6 +621,7 @@ const exerciseProgramTemplates = [
         { exerciseId: 'hamstrings-5', sets: 3, repetitions: 8, restBetweenSets: 75 , modification: 'Control the eccentric phase and avoid jerky hinge motion' },
         { exerciseId: 'shoulders-16', sets: 3, repetitions: 12, restBetweenSets: 60 , modification: 'Pull with upper-back control and keep neck relaxed' },
         { exerciseId: 'abs-107', sets: 3, repetitions: 10, restBetweenSets: 60 , modification: 'Keep ribs stacked over pelvis and maintain clean tempo' },
+        { exerciseId: 'calves-1', sets: 2, repetitions: 12, restBetweenSets: 45 , modification: 'Use full-foot pressure and pause briefly at the top of each rep' },
       ], 38),
       createRestDay(6),
       createRestDay(7),
@@ -459,7 +640,7 @@ const exerciseProgramTemplates = [
       'Train 3 non-consecutive sessions this week. Keep controlled tempo, stay 1-2 reps from failure on most sets, and track progression each workout.',
     afterTimeFrame: {
       expectedOutcome: 'Improved muscle pump, better lifting confidence, and stronger week-to-week performance.',
-      nextSteps: 'Progress one variable next week: load, reps, or one extra set on your first two exercises.',
+      nextSteps: 'Progress one variable at a time: load, reps, or one extra set on your first two exercises.',
     },
     whatNotToDo: 'Avoid sloppy tempo, ego loading, and pushing every set to failure.',
     days: [
@@ -482,7 +663,7 @@ const exerciseProgramTemplates = [
       createWorkoutDay(5, 'Hypertrophy C', [
         { exerciseId: 'cardio-13', duration: 6, warmup: true , modification: 'Keep pace easy and rhythmic to raise temperature without early fatigue' },
         { exerciseId: 'shoulders-5', sets: 4, repetitions: 10, restBetweenSets: 75 , modification: 'Control pressing path and keep shoulder blades set' },
-        { exerciseId: 'upper-back-3', sets: 4, repetitions: 8, restBetweenSets: 90 , modification: 'Keep chest tall and squeeze shoulder blades through each rep' },
+        { exerciseId: 'upper-back-3', sets: 3, repetitions: 8, restBetweenSets: 90 , modification: 'Keep chest tall and squeeze shoulder blades through each rep' },
         { exerciseId: 'triceps-4', sets: 3, repetitions: 12, restBetweenSets: 60 , modification: 'Lock in upper-arm position and extend with full control' },
         { exerciseId: 'abs-107', sets: 3, repetitions: 10, restBetweenSets: 60 , modification: 'Keep ribs stacked over pelvis and maintain clean tempo' },
       ], 40),
@@ -501,7 +682,7 @@ const exerciseProgramTemplates = [
     timeFrameExplanation: 'Train 3 non-consecutive sessions this week. Keep rest times honest, use moderate reps, and treat each day as a form-first benchmark.',
     afterTimeFrame: {
       expectedOutcome: 'Higher training density and improved repeatable output.',
-      nextSteps: 'Either increase load modestly or reduce rest slightly next week.',
+      nextSteps: 'Either increase load modestly or reduce rest slightly when execution remains clean.',
     },
     whatNotToDo: 'Avoid sacrificing mechanics just to move faster.',
     days: [
@@ -531,10 +712,16 @@ const exerciseProgramTemplates = [
   },
 ];
 
-export const exercisePrograms: any[] = exerciseProgramTemplates.map((template) => ({
+validateExerciseCopyQuality(exerciseProgramTemplates);
+
+const builtExercisePrograms: any[] = exerciseProgramTemplates.map((template) => ({
   ...template,
   createdAt: new Date('2025-06-02T00:00:00Z'),
 }));
+
+validateExerciseProgramDurations(builtExercisePrograms);
+
+export const exercisePrograms: any[] = builtExercisePrograms;
 
 export const exerciseProgramSlugs: Record<string, number> = exerciseProgramTemplates.reduce(
   (acc, template, index) => {
