@@ -10,7 +10,6 @@ import { useAuth } from '@/app/context/AuthContext';
 import { submitProgramFeedback, WeeklyLimitReachedError } from '@/app/services/programFeedbackService';
 import { canGenerateProgram, getNextAllowedGenerationDate } from '@/app/services/programGenerationLimits';
 import { useTranslation } from '@/app/i18n';
-import { NavigationMenu } from '@/app/components/ui/NavigationMenu';
 import { WeeklyLimitModal } from '@/app/components/ui/WeeklyLimitModal';
 import { ProgramType, Exercise } from '@/app/types/program';
 import { PreFollowupFeedback } from '@/app/types/incremental-program';
@@ -201,9 +200,7 @@ function FeedbackPageContent() {
   }
 
   return (
-    <div className="bg-gray-900 h-screen flex flex-col overflow-hidden">
-      <NavigationMenu mobileTitle={t('programFeedback.pageTitle')} />
-      
+    <div className="bg-gray-900 h-screen max-h-screen flex flex-col overflow-hidden">
       <div className="flex-1 overflow-hidden">
         <PreFollowupChat
           previousProgram={latestWeekProgram}

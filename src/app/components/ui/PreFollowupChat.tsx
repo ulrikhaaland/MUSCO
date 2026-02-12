@@ -24,6 +24,7 @@ import {
   PreFollowupChatState,
 } from '@/app/services/preFollowupChatService';
 import { useTranslation } from '@/app/i18n';
+import ConfirmationDialog from './ConfirmationDialog';
 
 interface PreFollowupChatProps {
   /** The previous week's program */
@@ -75,6 +76,7 @@ export function PreFollowupChat({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showBuildConfirm, setShowBuildConfirm] = useState(false);
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
   const [inputMessage, setInputMessage] = useState('');
   const [conversationComplete, setConversationComplete] = useState(false);
@@ -583,8 +585,15 @@ export function PreFollowupChat({
     chatInputRef.current?.focus();
   };
 
-  // Handle reset chat
-  const handleResetChat = async () => {
+  // Show reset confirmation dialog
+  const handleResetChat = () => {
+    setShowResetConfirm(true);
+  };
+
+  // Actually reset the chat after confirmation
+  const confirmResetChat = async () => {
+    setShowResetConfirm(false);
+    
     // Clear local state
     setMessages([]);
     setFollowUpQuestions([]);
@@ -922,6 +931,18 @@ export function PreFollowupChat({
           </div>
         </div>
       )}
+
+      {/* Reset confirmation dialog */}
+      <ConfirmationDialog
+        isOpen={showResetConfirm}
+        onClose={() => setShowResetConfirm(false)}
+        onConfirm={confirmResetChat}
+        title={t('feedback.resetConfirmTitle')}
+        description={t('feedback.resetConfirmDescription')}
+        confirmText={t('feedback.startOver')}
+        cancelText={t('common.cancel')}
+        confirmButtonStyle="danger"
+      />
     </div>
   );
 }

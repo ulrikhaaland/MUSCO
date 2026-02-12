@@ -970,6 +970,8 @@ const translations = {
   'feedback.startOver': 'Start på nytt',
   'feedback.answerInChat': 'Svar i chat',
   'feedback.typeYourAnswer': 'Klikk for å svare i chat',
+  'feedback.resetConfirmTitle': 'Start på nytt?',
+  'feedback.resetConfirmDescription': 'Dette vil slette alle svarene dine og starte samtalen fra begynnelsen. Er du sikker?',
   'chat.error': 'Noe gikk galt. Vennligst prøv igjen.',
 
   // Sign Up Prompts for Custom Programs (should match keys in en.ts)

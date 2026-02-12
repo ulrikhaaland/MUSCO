@@ -993,6 +993,8 @@ const translations = {
   'feedback.startOver': 'Start over',
   'feedback.answerInChat': 'Answer in chat',
   'feedback.typeYourAnswer': 'Click to answer in chat',
+  'feedback.resetConfirmTitle': 'Start Over?',
+  'feedback.resetConfirmDescription': 'This will clear all your answers and start the conversation from the beginning. Are you sure?',
   'chat.error': 'Something went wrong. Please try again.',
 
   // Sign Up Prompts for Custom Programs
