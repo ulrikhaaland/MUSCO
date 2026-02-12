@@ -200,7 +200,7 @@ function FeedbackPageContent() {
   }
 
   return (
-    <div className="bg-gray-900 h-screen max-h-screen flex flex-col overflow-hidden">
+    <div className="bg-gray-900 h-[100dvh] flex flex-col overflow-hidden">
       <div className="flex-1 overflow-hidden">
         <PreFollowupChat
           previousProgram={latestWeekProgram}
