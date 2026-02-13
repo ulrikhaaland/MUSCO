@@ -123,17 +123,13 @@ export default function ExerciseCard({
   const renderExerciseChips = (ex: Exercise): ReactNode[] => {
     const chips: ReactNode[] = [];
 
-    // Determine if this is a duration-based exercise (cardio, warmup, stretching)
-    const isDurationExercise = 
+    // Cardio exercises use duration as their primary metric (sets/reps are placeholders)
+    const isCardioExercise = 
       ex.bodyPart === "Cardio" || 
-      ex.bodyPart === "Warmup" ||
-      ex.warmup === true ||
-      ex.exerciseType?.includes('cardio') ||
-      ex.exerciseType?.includes('warmup') ||
-      ex.exerciseType?.includes('stretching');
+      ex.exerciseType?.includes('cardio');
 
-    // Show sets × reps for strength exercises
-    if (ex.sets && ex.repetitions && !isDurationExercise) {
+    // Show sets × reps for non-cardio exercises that have them
+    if (ex.sets && ex.repetitions && !isCardioExercise) {
       chips.push(
         <Chip key="sets-reps" size="lg" variant="subtle">
           {ex.sets} × {ex.repetitions}
@@ -147,15 +143,15 @@ export default function ExerciseCard({
         );
       }
     } 
-    // Show duration for cardio/warmup/stretching exercises
-    else if (ex.duration && isDurationExercise) {
+    // Show duration for cardio or exercises without sets/reps
+    else if (ex.duration) {
       chips.push(
         <Chip key="duration" size="sm" variant="subtle">
           {formatMinutes(ex.duration)}
         </Chip>
       );
     }
-    // Fallback: show sets × reps if available
+    // Fallback: show sets × reps if available (e.g. cardio without duration)
     else if (ex.sets && ex.repetitions) {
       chips.push(
         <Chip key="sets-reps" size="lg" variant="subtle">

@@ -480,10 +480,15 @@ For each exercise, include:
 - sets (REQUIRED for strength exercises, 2-5 based on fitness level and exercise type)
 - reps (REQUIRED for strength exercises, 6-15 based on exercise type)
 - restBetweenSets (REQUIRED for strength exercises, 30-120 seconds)
-- duration (REQUIRED for cardio/warmup/stretching exercises, in minutes)
+- duration (in minutes — ONLY for pure time-based exercises like cardio running/cycling/rowing. Do NOT include duration for exercises that use sets and reps)
 - warmup (OPTIONAL, set to true only for warmup exercises)
 - modification (OPTIONAL)
 - precaution (OPTIONAL)
+
+CRITICAL — duration vs sets/reps:
+- An exercise should have EITHER sets+reps OR duration, NEVER both.
+- Warmup exercises from the exercise database (e.g. calves warmups, mobility drills) typically use sets and reps — do NOT add a duration to them.
+- Only use duration for exercises that are purely time-based with no set/rep structure (e.g. 30 min Zone 2 run, 10 min rowing warmup for cardio days).
 
 SETS/REPS GUIDELINES based on user experience and exercise type:
 - Beginners (exercises 0-2x/week): 2-3 sets, 10-12 reps, 60-90s rest
@@ -1024,10 +1029,15 @@ For each exercise, include:
 - sets (REQUIRED for strength exercises, 2-5 based on fitness level and exercise type)
 - reps (REQUIRED for strength exercises, 6-15 based on exercise type)
 - restBetweenSets (REQUIRED for strength exercises, 30-120 seconds)
-- duration (REQUIRED for cardio/warmup/stretching exercises, in minutes)
+- duration (in minutes — ONLY for pure time-based exercises like cardio running/cycling/rowing. Do NOT include duration for exercises that use sets and reps)
 - warmup (OPTIONAL, set to true only for warmup exercises)
 - modification (OPTIONAL - use for progressive overload suggestions)
 - precaution (OPTIONAL)
+
+CRITICAL — duration vs sets/reps:
+- An exercise should have EITHER sets+reps OR duration, NEVER both.
+- Warmup exercises from the exercise database (e.g. calves warmups, mobility drills) typically use sets and reps — do NOT add a duration to them.
+- Only use duration for exercises that are purely time-based with no set/rep structure (e.g. 30 min Zone 2 run, 10 min rowing warmup for cardio days).
 
 SETS/REPS GUIDELINES based on user experience and exercise type:
 - Beginners (exercises 0-2x/week): 2-3 sets, 10-12 reps, 60-90s rest
