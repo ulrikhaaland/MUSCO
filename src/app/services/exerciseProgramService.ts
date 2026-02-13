@@ -609,10 +609,11 @@ export const enrichExercisesWithFullData = async (
               return {
                 ...fullData,
                 ...exercise,
-                // Ensure we preserve the program's sets, reps, and duration rather than using template defaults
+                // Ensure we preserve the program's sets, reps, rest, and duration rather than using template defaults
                 // For cardio exercises, we ALWAYS want to keep the duration from the LLM response
                 sets: exercise.sets || fullData.sets,
                 repetitions: exercise.repetitions || fullData.repetitions,
+                restBetweenSets: exercise.restBetweenSets || fullData.restBetweenSets,
                 // For cardio exercises, prioritize the duration from the LLM response
                 duration: isCardioExercise
                   ? exercise.duration
@@ -638,9 +639,10 @@ export const enrichExercisesWithFullData = async (
                 return {
                   ...matchByName,
                   ...exercise,
-                  // Ensure we preserve the program's sets, reps, and duration rather than using template defaults
+                  // Ensure we preserve the program's sets, reps, rest, and duration rather than using template defaults
                   sets: exercise.sets || matchByName.sets,
                   repetitions: exercise.repetitions || matchByName.repetitions,
+                  restBetweenSets: exercise.restBetweenSets || matchByName.restBetweenSets,
                   // For cardio exercises, prioritize the duration from the LLM response
                   duration: isCardioExercise
                     ? exercise.duration

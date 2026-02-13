@@ -110,7 +110,6 @@
     {
       "id": "calves-11",
       "name": "Donkey Calf Raise",
-      "description": "No description available",
       "targetBodyParts": [
         "Calves"
       ],
@@ -164,7 +163,6 @@
     {
       "id": "calves-12",
       "name": "One-Leg Standing Bodyweight Calf Raise",
-      "description": "No description available",
       "targetBodyParts": [
         "Calves"
       ],
@@ -277,7 +275,6 @@
     {
       "id": "calves-14",
       "name": "Smith Machine Seated Calf Raise",
-      "description": "No description available",
       "targetBodyParts": [
         "Calves"
       ],
@@ -333,7 +330,6 @@
     {
       "id": "calves-15",
       "name": "Hack Squat Calf Raise",
-      "description": "No description available",
       "targetBodyParts": [
         "Calves"
       ],
@@ -387,7 +383,6 @@
     {
       "id": "calves-16",
       "name": "Cable Calf Raise",
-      "description": "No description available",
       "targetBodyParts": [
         "Calves"
       ],
@@ -440,7 +435,6 @@
     {
       "id": "calves-17",
       "name": "Standing Barbell Calf Raise (On Floor)",
-      "description": "No description available",
       "targetBodyParts": [
         "Calves"
       ],
@@ -605,7 +599,6 @@
     {
       "id": "calves-2",
       "name": "Seated Dumbbell Calf Raise",
-      "description": "No description available",
       "targetBodyParts": [
         "Calves"
       ],
@@ -658,7 +651,6 @@
     {
       "id": "calves-20",
       "name": "One-Leg Smith Machine Calf Raise",
-      "description": "No description available",
       "targetBodyParts": [
         "Calves"
       ],
@@ -769,7 +761,6 @@
     {
       "id": "calves-22",
       "name": "One-Leg Smith Machine Seated Calf Raise",
-      "description": "No description available",
       "targetBodyParts": [
         "Calves"
       ],
@@ -935,7 +926,6 @@
     {
       "id": "calves-25",
       "name": "45 Degree Calf Raise (Toes In)",
-      "description": "No description available",
       "targetBodyParts": [
         "Calves"
       ],
@@ -1108,7 +1098,6 @@
     {
       "id": "calves-28",
       "name": "Rocking Standing Calf Raise",
-      "description": "No description available",
       "targetBodyParts": [
         "Calves"
       ],
@@ -1162,7 +1151,6 @@
     {
       "id": "calves-29",
       "name": "One-Leg Smith Machine Toe Raise",
-      "description": "No description available",
       "targetBodyParts": [
         "Calves"
       ],
@@ -1443,7 +1431,6 @@
     {
       "id": "calves-33",
       "name": "One-Leg Donkey Calf Raise",
-      "description": "No description available",
       "targetBodyParts": [
         "Calves"
       ],
@@ -1609,7 +1596,6 @@
     {
       "id": "calves-36",
       "name": "Smith Machine Toe Raise",
-      "description": "No description available",
       "targetBodyParts": [
         "Calves"
       ],
@@ -1656,7 +1642,6 @@
     {
       "id": "calves-37",
       "name": "Exercise Ball On-The-Wall Calf Raise",
-      "description": "No description available",
       "targetBodyParts": [
         "Calves"
       ],
@@ -1762,7 +1747,6 @@
     {
       "id": "calves-39",
       "name": "Smith Machine Seated Toe Raise",
-      "description": "No description available",
       "targetBodyParts": [
         "Calves"
       ],
@@ -1813,7 +1797,6 @@
     {
       "id": "calves-4",
       "name": "Standing Barbell Calf Raise",
-      "description": "No description available",
       "targetBodyParts": [
         "Calves"
       ],
@@ -1866,7 +1849,6 @@
     {
       "id": "calves-40",
       "name": "One-Leg Floor Calf Raise",
-      "description": "No description available",
       "targetBodyParts": [
         "Calves"
       ],
@@ -1973,7 +1955,6 @@
     {
       "id": "calves-42",
       "name": "One-Leg Seated Calf Raise",
-      "description": "No description available",
       "targetBodyParts": [
         "Calves"
       ],
@@ -2089,7 +2070,6 @@
     {
       "id": "calves-44",
       "name": "Bodyweight Floor Calf Raise",
-      "description": "No description available",
       "targetBodyParts": [
         "Calves"
       ],
@@ -2258,7 +2238,6 @@
     {
       "id": "calves-47",
       "name": "45 Degree Calf Raise (Toes Out)",
-      "description": "No description available",
       "targetBodyParts": [
         "Calves"
       ],
@@ -2480,7 +2459,6 @@
     {
       "id": "calves-50",
       "name": "Seated Barbell Calf Raise",
-      "description": "No description available",
       "targetBodyParts": [
         "Calves"
       ],
@@ -2533,7 +2511,6 @@
     {
       "id": "calves-51",
       "name": "One-Leg Cable Calf Raise",
-      "description": "No description available",
       "targetBodyParts": [
         "Calves"
       ],
@@ -2702,7 +2679,6 @@
     {
       "id": "calves-54",
       "name": "One-Leg Hack Squat Calf Raise",
-      "description": "No description available",
       "targetBodyParts": [
         "Calves"
       ],
@@ -2817,7 +2793,6 @@
     {
       "id": "calves-56",
       "name": "Smith Machine Calf Raise (Toes In)",
-      "description": "No description available",
       "targetBodyParts": [
         "Calves"
       ],
@@ -2924,7 +2899,6 @@
     {
       "id": "calves-58",
       "name": "One-Leg 45 Degree Calf Raise",
-      "description": "No description available",
       "targetBodyParts": [
         "Calves"
       ],
@@ -3037,7 +3011,6 @@
     {
       "id": "calves-6",
       "name": "Bodyweight Standing Calf Raise",
-      "description": "No description available",
       "targetBodyParts": [
         "Calves"
       ],
@@ -3090,7 +3063,6 @@
     {
       "id": "calves-60",
       "name": "Smith Machine Calf Raise (Toes Out)",
-      "description": "No description available",
       "targetBodyParts": [
         "Calves"
       ],
@@ -3198,7 +3170,6 @@
     {
       "id": "calves-7",
       "name": "Standing One-Leg Calf Raise With Dumbbell",
-      "description": "No description available",
       "targetBodyParts": [
         "Calves"
       ],
@@ -3251,7 +3222,6 @@
     {
       "id": "calves-8",
       "name": "One-Leg Seated Dumbbell Calf Raise",
-      "description": "No description available",
       "targetBodyParts": [
         "Calves"
       ],

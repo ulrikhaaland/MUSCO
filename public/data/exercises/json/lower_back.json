@@ -4,7 +4,6 @@
     {
       "id": "lower-back-1",
       "name": "Dumbbell Deadlift",
-      "description": "No description available",
       "targetBodyParts": [
         "Lower Back"
       ],
@@ -118,7 +117,6 @@
     {
       "id": "lower-back-3",
       "name": "Smith Machine Deadlift",
-      "description": "No description available",
       "targetBodyParts": [
         "Lower Back"
       ],

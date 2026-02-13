@@ -54,7 +54,6 @@
     {
       "id": "abs-10",
       "name": "Russian Twist",
-      "description": "No description available",
       "targetBodyParts": [
         "Abs"
       ],
@@ -108,7 +107,6 @@
     {
       "id": "abs-100",
       "name": "Seated Barbell Twist (On Floor)",
-      "description": "No description available",
       "targetBodyParts": [
         "Abs"
       ],
@@ -287,7 +285,6 @@
     {
       "id": "abs-103",
       "name": "Decline Bench Cable Crunch",
-      "description": "No description available",
       "targetBodyParts": [
         "Abs"
       ],
@@ -339,7 +336,6 @@
     {
       "id": "abs-104",
       "name": "Exercise Ball Weighted Sit up",
-      "description": "No description available",
       "targetBodyParts": [
         "Abs"
       ],
@@ -448,7 +444,6 @@
     {
       "id": "abs-106",
       "name": "Decline Leg Raise With Hip Thrust",
-      "description": "No description available",
       "targetBodyParts": [
         "Abs"
       ],
@@ -505,7 +500,6 @@
     {
       "id": "abs-107",
       "name": "Lying Cable Knee Raise",
-      "description": "No description available",
       "targetBodyParts": [
         "Abs"
       ],
@@ -682,7 +676,6 @@
     {
       "id": "abs-11",
       "name": "Side Plank",
-      "description": "No description available",
       "targetBodyParts": [
         "Abs"
       ],
@@ -792,7 +785,6 @@
     {
       "id": "abs-111",
       "name": "Decline Bench Cable Knee Raise",
-      "description": "No description available",
       "targetBodyParts": [
         "Abs"
       ],
@@ -846,7 +838,6 @@
     {
       "id": "abs-112",
       "name": "Alternating Reach And Catch",
-      "description": "No description available",
       "targetBodyParts": [
         "Abs"
       ],
@@ -1069,7 +1060,6 @@
     {
       "id": "abs-116",
       "name": "One-Leg Lying Cable Knee Raise",
-      "description": "No description available",
       "targetBodyParts": [
         "Abs"
       ],
@@ -1123,7 +1113,6 @@
     {
       "id": "abs-117",
       "name": "Abdominal Pendulum",
-      "description": "No description available",
       "targetBodyParts": [
         "Abs"
       ],
@@ -1174,7 +1163,6 @@
     {
       "id": "abs-12",
       "name": "Barbell Abdominal Rollouts",
-      "description": "No description available",
       "targetBodyParts": [
         "Abs"
       ],
@@ -1333,7 +1321,6 @@
     {
       "id": "abs-15",
       "name": "Exercise Ball Crunch",
-      "description": "No description available",
       "targetBodyParts": [
         "Abs"
       ],
@@ -1386,7 +1373,6 @@
     {
       "id": "abs-16",
       "name": "Hanging Knee Raise",
-      "description": "No description available",
       "targetBodyParts": [
         "Abs"
       ],
@@ -1442,7 +1428,6 @@
     {
       "id": "abs-17",
       "name": "Floor Crunch (legs on bench)",
-      "description": "No description available",
       "targetBodyParts": [
         "Abs"
       ],
@@ -1493,7 +1478,6 @@
     {
       "id": "abs-18",
       "name": "Hanging Knee Raise With Twist",
-      "description": "No description available",
       "targetBodyParts": [
         "Abs"
       ],
@@ -1761,7 +1745,6 @@
     {
       "id": "abs-22",
       "name": "Lying Leg Raise With Hip Thrust",
-      "description": "No description available",
       "targetBodyParts": [
         "Abs"
       ],
@@ -1864,7 +1847,6 @@
     {
       "id": "abs-24",
       "name": "Seated Barbell Twist",
-      "description": "No description available",
       "targetBodyParts": [
         "Abs"
       ],
@@ -1917,7 +1899,6 @@
     {
       "id": "abs-25",
       "name": "Decline Bench Abdominal Reach",
-      "description": "No description available",
       "targetBodyParts": [
         "Abs"
       ],
@@ -1969,7 +1950,6 @@
     {
       "id": "abs-26",
       "name": "Abominal Hip Thrust",
-      "description": "No description available",
       "targetBodyParts": [
         "Abs"
       ],
@@ -2075,7 +2055,6 @@
     {
       "id": "abs-28",
       "name": "Lying Leg Raise (On Bench)",
-      "description": "No description available",
       "targetBodyParts": [
         "Abs"
       ],
@@ -2289,7 +2268,6 @@
     {
       "id": "abs-31",
       "name": "Feet Elevated Plank",
-      "description": "No description available",
       "targetBodyParts": [
         "Abs"
       ],
@@ -2394,7 +2372,6 @@
     {
       "id": "abs-33",
       "name": "Seated Knee Tucks",
-      "description": "No description available",
       "targetBodyParts": [
         "Abs"
       ],
@@ -2447,7 +2424,6 @@
     {
       "id": "abs-34",
       "name": "Twisting Decline Dumbbell Situps",
-      "description": "No description available",
       "targetBodyParts": [
         "Abs"
       ],
@@ -2505,7 +2481,6 @@
     {
       "id": "abs-35",
       "name": "Decline Weighted Twist",
-      "description": "No description available",
       "targetBodyParts": [
         "Abs"
       ],
@@ -2558,7 +2533,6 @@
     {
       "id": "abs-36",
       "name": "Rotating Crunch (Legs On Bench)",
-      "description": "No description available",
       "targetBodyParts": [
         "Abs"
       ],
@@ -2773,7 +2747,6 @@
     {
       "id": "abs-4",
       "name": "Dumbbell Side Bends",
-      "description": "No description available",
       "targetBodyParts": [
         "Abs"
       ],
@@ -2829,7 +2802,6 @@
     {
       "id": "abs-40",
       "name": "Standing Barbell Twist",
-      "description": "No description available",
       "targetBodyParts": [
         "Abs"
       ],
@@ -2884,7 +2856,6 @@
     {
       "id": "abs-41",
       "name": "Standing Cable Crunch",
-      "description": "No description available",
       "targetBodyParts": [
         "Abs"
       ],
@@ -2938,7 +2909,6 @@
     {
       "id": "abs-42",
       "name": "Weighted Russian Twist",
-      "description": "No description available",
       "targetBodyParts": [
         "Abs"
       ],
@@ -2990,7 +2960,6 @@
     {
       "id": "abs-43",
       "name": "Roman Chair Weighted Knee Raise",
-      "description": "No description available",
       "targetBodyParts": [
         "Abs"
       ],
@@ -3100,7 +3069,6 @@
     {
       "id": "abs-45",
       "name": "Twisting Floor Crunch",
-      "description": "No description available",
       "targetBodyParts": [
         "Abs"
       ],
@@ -3207,7 +3175,6 @@
     {
       "id": "abs-47",
       "name": "Decline Bench Knee Raise",
-      "description": "No description available",
       "targetBodyParts": [
         "Abs"
       ],
@@ -3261,7 +3228,6 @@
     {
       "id": "abs-48",
       "name": "Decline Bench Leg Raise",
-      "description": "No description available",
       "targetBodyParts": [
         "Abs"
       ],
@@ -3367,7 +3333,6 @@
     {
       "id": "abs-5",
       "name": "Hanging Leg Raise",
-      "description": "No description available",
       "targetBodyParts": [
         "Abs"
       ],
@@ -3524,7 +3489,6 @@
     {
       "id": "abs-52",
       "name": "Barbell Side Bends",
-      "description": "No description available",
       "targetBodyParts": [
         "Abs"
       ],
@@ -3579,7 +3543,6 @@
     {
       "id": "abs-53",
       "name": "Lying Alternate Floor Leg Raise",
-      "description": "No description available",
       "targetBodyParts": [
         "Abs"
       ],
@@ -3783,7 +3746,6 @@
     {
       "id": "abs-57",
       "name": "Roman Chair Twisting Knee Raise",
-      "description": "No description available",
       "targetBodyParts": [
         "Abs"
       ],
@@ -3839,7 +3801,6 @@
     {
       "id": "abs-58",
       "name": "Weighted Hanging Knee Raise",
-      "description": "No description available",
       "targetBodyParts": [
         "Abs"
       ],
@@ -4011,7 +3972,6 @@
     {
       "id": "abs-60",
       "name": "Side Crunch With Leg Lift",
-      "description": "No description available",
       "targetBodyParts": [
         "Abs"
       ],
@@ -4113,7 +4073,6 @@
     {
       "id": "abs-62",
       "name": "Decline Bench Alternating Knee Raise",
-      "description": "No description available",
       "targetBodyParts": [
         "Abs"
       ],
@@ -4217,7 +4176,6 @@
     {
       "id": "abs-64",
       "name": "Jackknife (On Bench)",
-      "description": "No description available",
       "targetBodyParts": [
         "Abs"
       ],
@@ -4322,7 +4280,6 @@
     {
       "id": "abs-66",
       "name": "Oblique Cable Crunch",
-      "description": "No description available",
       "targetBodyParts": [
         "Abs"
       ],
@@ -4426,7 +4383,6 @@
     {
       "id": "abs-68",
       "name": "Lying Alternating Knee Raise",
-      "description": "No description available",
       "targetBodyParts": [
         "Abs"
       ],
@@ -4478,7 +4434,6 @@
     {
       "id": "abs-69",
       "name": "Twisting Cable Crunch",
-      "description": "No description available",
       "targetBodyParts": [
         "Abs"
       ],
@@ -4746,7 +4701,6 @@
     {
       "id": "abs-73",
       "name": "Exercise Ball Plank",
-      "description": "No description available",
       "targetBodyParts": [
         "Abs"
       ],
@@ -4853,7 +4807,6 @@
     {
       "id": "abs-75",
       "name": "Lower Abdominal Hip Roll",
-      "description": "No description available",
       "targetBodyParts": [
         "Abs"
       ],
@@ -5026,7 +4979,6 @@
     {
       "id": "abs-78",
       "name": "Roman Chair Knee Raise",
-      "description": "No description available",
       "targetBodyParts": [
         "Abs"
       ],
@@ -5501,7 +5453,6 @@
     {
       "id": "abs-86",
       "name": "Exercise Ball Hip Roll",
-      "description": "No description available",
       "targetBodyParts": [
         "Abs"
       ],
@@ -5601,7 +5552,6 @@
     {
       "id": "abs-88",
       "name": "Lying Cable Crunch",
-      "description": "No description available",
       "targetBodyParts": [
         "Abs"
       ],
@@ -5814,7 +5764,6 @@
     {
       "id": "abs-91",
       "name": "Decline Bench Alternating Leg Raise",
-      "description": "No description available",
       "targetBodyParts": [
         "Abs"
       ],
@@ -5918,7 +5867,6 @@
     {
       "id": "abs-93",
       "name": "Twisting Lying Cable Crunch",
-      "description": "No description available",
       "targetBodyParts": [
         "Abs"
       ],
@@ -5972,7 +5920,6 @@
     {
       "id": "abs-94",
       "name": "Exercise Ball Knee Tuck",
-      "description": "No description available",
       "targetBodyParts": [
         "Abs"
       ],
@@ -6133,7 +6080,6 @@
     {
       "id": "abs-97",
       "name": "Reach And Catch",
-      "description": "No description available",
       "targetBodyParts": [
         "Abs"
       ],
@@ -6184,7 +6130,6 @@
     {
       "id": "abs-98",
       "name": "Decline Bench Sit Up With Twist",
-      "description": "No description available",
       "targetBodyParts": [
         "Abs"
       ],

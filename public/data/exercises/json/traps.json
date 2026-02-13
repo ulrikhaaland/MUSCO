@@ -59,7 +59,6 @@
     {
       "id": "traps-10",
       "name": "Tate Press",
-      "description": "No description available",
       "targetBodyParts": [
         "Traps"
       ],
@@ -278,7 +277,6 @@
     {
       "id": "traps-14",
       "name": "Cable Row to Neck",
-      "description": "No description available",
       "targetBodyParts": [
         "Traps"
       ],
@@ -464,7 +462,6 @@
     {
       "id": "traps-17",
       "name": "Behind-The-Back Barbell Shrug",
-      "description": "No description available",
       "targetBodyParts": [
         "Traps"
       ],
@@ -572,7 +569,6 @@
     {
       "id": "traps-19",
       "name": "Lying Cable Shrug",
-      "description": "No description available",
       "targetBodyParts": [
         "Traps"
       ],
@@ -682,7 +678,6 @@
     {
       "id": "traps-20",
       "name": "Seated Cable Shrug",
-      "description": "No description available",
       "targetBodyParts": [
         "Traps"
       ],
@@ -1357,7 +1352,6 @@
     {
       "id": "traps-30",
       "name": "Lying Cable Upright Row",
-      "description": "No description available",
       "targetBodyParts": [
         "Traps"
       ],
@@ -1412,7 +1406,6 @@
     {
       "id": "traps-4",
       "name": "Seated Dumbbell Shrug",
-      "description": "No description available",
       "targetBodyParts": [
         "Traps"
       ],
@@ -1464,7 +1457,6 @@
     {
       "id": "traps-5",
       "name": "One-Arm Dumbbell Upright Row",
-      "description": "No description available",
       "targetBodyParts": [
         "Traps"
       ],
@@ -1519,7 +1511,6 @@
     {
       "id": "traps-6",
       "name": "Wide Grip Upright Row",
-      "description": "No description available",
       "targetBodyParts": [
         "Traps"
       ],
@@ -1575,7 +1566,6 @@
     {
       "id": "traps-7",
       "name": "Smith Machine Shrug",
-      "description": "No description available",
       "targetBodyParts": [
         "Traps"
       ],

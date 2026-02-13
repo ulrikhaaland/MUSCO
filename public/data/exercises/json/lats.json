@@ -350,7 +350,6 @@
     {
       "id": "lats-15",
       "name": "V-Bar Pull Up",
-      "description": "No description available",
       "targetBodyParts": [
         "Lats"
       ],
@@ -838,7 +837,6 @@
     {
       "id": "lats-22",
       "name": "Underhand Close Grip Lateral Pulldown",
-      "description": "No description available",
       "targetBodyParts": [
         "Lats"
       ],
@@ -1566,7 +1564,6 @@
     {
       "id": "lats-33",
       "name": "Wide Grip Chin Up",
-      "description": "No description available",
       "targetBodyParts": [
         "Lats"
       ],
@@ -1623,7 +1620,6 @@
     {
       "id": "lats-34",
       "name": "Rope Pull Up",
-      "description": "No description available",
       "targetBodyParts": [
         "Lats"
       ],
@@ -1799,7 +1795,6 @@
     {
       "id": "lats-37",
       "name": "Lateral Pulldown (Rope Extension)",
-      "description": "No description available",
       "targetBodyParts": [
         "Lats"
       ],
@@ -2965,7 +2960,6 @@
     {
       "id": "lats-54",
       "name": "Overhand Close Grip Lateral Pulldown",
-      "description": "No description available",
       "targetBodyParts": [
         "Lats"
       ],

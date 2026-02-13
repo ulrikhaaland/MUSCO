@@ -993,7 +993,6 @@
     {
       "id": "chest-113",
       "name": "Barbell Pullover And Press",
-      "description": "No description available",
       "targetBodyParts": [
         "Chest"
       ],
@@ -1819,7 +1818,6 @@
     {
       "id": "chest-125",
       "name": "Alternating Dumbbell Bench Press (Low Start)",
-      "description": "No description available",
       "targetBodyParts": [
         "Chest"
       ],
@@ -2059,7 +2057,6 @@
     {
       "id": "chest-129",
       "name": "Reverse Grip Bench Press",
-      "description": "No description available",
       "targetBodyParts": [
         "Chest"
       ],
@@ -2301,7 +2298,6 @@
     {
       "id": "chest-15",
       "name": "Cable Crossovers (Upper Chest)",
-      "description": "No description available",
       "targetBodyParts": [
         "Chest"
       ],
@@ -2899,7 +2895,6 @@
     {
       "id": "chest-24",
       "name": "Smith Machine Incline Bench Press",
-      "description": "No description available",
       "targetBodyParts": [
         "Chest"
       ],
@@ -3080,7 +3075,6 @@
     {
       "id": "chest-27",
       "name": "Wide Reverse Grip Bench Press",
-      "description": "No description available",
       "targetBodyParts": [
         "Chest"
       ],
@@ -3136,7 +3130,6 @@
     {
       "id": "chest-28",
       "name": "Weighted Chest Dip",
-      "description": "No description available",
       "targetBodyParts": [
         "Chest"
       ],
@@ -3381,7 +3374,6 @@
     {
       "id": "chest-31",
       "name": "Smith Machine Bench Press",
-      "description": "No description available",
       "targetBodyParts": [
         "Chest"
       ],
@@ -3633,7 +3625,6 @@
     {
       "id": "chest-35",
       "name": "Barbell Pullover",
-      "description": "No description available",
       "targetBodyParts": [
         "Chest"
       ],
@@ -3690,7 +3681,6 @@
     {
       "id": "chest-36",
       "name": "Cable Inner Chest Press",
-      "description": "No description available",
       "targetBodyParts": [
         "Chest"
       ],
@@ -4041,7 +4031,6 @@
     {
       "id": "chest-41",
       "name": "Guillotine Press",
-      "description": "No description available",
       "targetBodyParts": [
         "Chest"
       ],
@@ -4535,7 +4524,6 @@
     {
       "id": "chest-49",
       "name": "One-Arm Dumbbell Bench Press",
-      "description": "No description available",
       "targetBodyParts": [
         "Chest"
       ],
@@ -5059,7 +5047,6 @@
     {
       "id": "chest-56",
       "name": "Alternating Incline Dumbbell Fly",
-      "description": "No description available",
       "targetBodyParts": [
         "Chest"
       ],
@@ -5223,7 +5210,6 @@
     {
       "id": "chest-59",
       "name": "Knee Push-Up",
-      "description": "No description available",
       "targetBodyParts": [
         "Chest"
       ],
@@ -5387,7 +5373,6 @@
     {
       "id": "chest-61",
       "name": "Push-Up (On Bench)",
-      "description": "No description available",
       "targetBodyParts": [
         "Chest"
       ],
@@ -5509,7 +5494,6 @@
     {
       "id": "chest-63",
       "name": "Lying Cable Pullover",
-      "description": "No description available",
       "targetBodyParts": [
         "Chest"
       ],
@@ -6035,7 +6019,6 @@
     {
       "id": "chest-70",
       "name": "Alternating Dumbbell Fly",
-      "description": "No description available",
       "targetBodyParts": [
         "Chest"
       ],
@@ -6583,7 +6566,6 @@
     {
       "id": "chest-79",
       "name": "Exercise Ball Dumbbell Fly",
-      "description": "No description available",
       "targetBodyParts": [
         "Chest"
       ],
@@ -6766,7 +6748,6 @@
     {
       "id": "chest-81",
       "name": "Smith Machine Wide Grip Bench Press",
-      "description": "No description available",
       "targetBodyParts": [
         "Chest"
       ],
@@ -7010,7 +6991,6 @@
     {
       "id": "chest-85",
       "name": "Alternating Decline Dumbbell Fly",
-      "description": "No description available",
       "targetBodyParts": [
         "Chest"
       ],
@@ -7195,7 +7175,6 @@
     {
       "id": "chest-88",
       "name": "Floor Press",
-      "description": "No description available",
       "targetBodyParts": [
         "Chest"
       ],
@@ -7314,7 +7293,6 @@
     {
       "id": "chest-9",
       "name": "Reverse Grip Dumbbell Bench Press",
-      "description": "No description available",
       "targetBodyParts": [
         "Chest"
       ],
@@ -7573,7 +7551,6 @@
     {
       "id": "chest-93",
       "name": "Reverse Grip Incline Bench Press",
-      "description": "No description available",
       "targetBodyParts": [
         "Chest"
       ],
@@ -7910,7 +7887,6 @@
     {
       "id": "chest-99",
       "name": "Lying Cable Pullover (Rope Extension)",
-      "description": "No description available",
       "targetBodyParts": [
         "Chest"
       ],

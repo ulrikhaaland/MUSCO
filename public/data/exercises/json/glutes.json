@@ -1472,7 +1472,6 @@
     {
       "id": "glutes-33",
       "name": "Hip Extensions",
-      "description": "No description available",
       "targetBodyParts": [
         "Glutes"
       ],
@@ -1859,7 +1858,6 @@
     {
       "id": "glutes-4",
       "name": "Standing Glute Kickback",
-      "description": "No description available",
       "targetBodyParts": [
         "Glutes"
       ],
@@ -2128,7 +2126,6 @@
     {
       "id": "glutes-6",
       "name": "Wide Stance Smith Machine Squat",
-      "description": "No description available",
       "targetBodyParts": [
         "Glutes"
       ],

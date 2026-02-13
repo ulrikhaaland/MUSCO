@@ -114,7 +114,6 @@ export function WorkoutSession({
   // Exit menu state
   const [showExitMenu, setShowExitMenu] = useState(false);
   // Exercise details panel
-  const [showDetails, setShowDetails] = useState(false);
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
   // Whether the user has tapped "Start Workout", and when
   const [hasStarted, setHasStarted] = useState(false);
@@ -136,7 +135,6 @@ export function WorkoutSession({
   const triggerSlide = useCallback((dir: SlideDirection) => {
     slideKey.current += 1;
     setSlideDir(dir);
-    setShowDetails(false);
     setIsDescriptionExpanded(false);
     setDurationTimerEnd(null);
   }, []);
@@ -497,69 +495,62 @@ export function WorkoutSession({
               )}
             </div>
 
-            {/* Description */}
-            {currentExercise.description && (
-              <div className="text-gray-400 text-sm leading-relaxed mb-2">
-                {isDescriptionExpanded || currentExercise.description.length <= 120
-                  ? currentExercise.description
-                  : currentExercise.description.substring(0, currentExercise.description.lastIndexOf(' ', 120) || 120) + '...'
-                }
-                {currentExercise.description.length > 120 && (
+            {/* Collapsible exercise details */}
+            {(() => {
+              const hasDesc = currentExercise.description && !isPlaceholderValue(currentExercise.description) && !currentExercise.description.toLowerCase().includes('no description');
+              const hasPrecaution = !isPlaceholderValue(currentExercise.precaution);
+              const hasModification = !isPlaceholderValue(currentExercise.modification);
+              const hasSteps = currentExercise.steps && currentExercise.steps.length > 0;
+              const hasAnyInfo = hasDesc || hasPrecaution || hasModification || hasSteps;
+
+              if (!hasAnyInfo) return null;
+
+              return (
+                <div className={`mb-2 ${isDescriptionExpanded ? 'flex-1 flex flex-col min-h-0' : ''}`}>
                   <button
-                    className="ml-1 text-indigo-400 hover:text-indigo-300 font-medium"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setIsDescriptionExpanded(prev => !prev);
-                    }}
+                    onClick={() => setIsDescriptionExpanded(prev => !prev)}
+                    className="inline-flex items-center gap-1 text-sm font-medium text-indigo-400 hover:text-indigo-300 transition-colors"
                   >
-                    {isDescriptionExpanded ? t('program.seeLess') : t('program.seeMore')}
+                    <svg className={`w-3.5 h-3.5 transition-transform duration-200 ${isDescriptionExpanded ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
+                    </svg>
+                    {isDescriptionExpanded ? t('program.seeLess') : t('workout.exerciseInfo')}
                   </button>
-                )}
-              </div>
-            )}
 
-            {/* Precaution */}
-            {!isPlaceholderValue(currentExercise.precaution) && (
-              <div className="text-sm leading-relaxed mb-2 rounded-lg bg-red-500/10 ring-1 ring-red-500/20 px-3 py-2">
-                <span className="font-semibold text-red-400 text-xs uppercase tracking-wide">{t('program.precaution')}</span>
-                <p className="text-white mt-0.5">{currentExercise.precaution}</p>
-              </div>
-            )}
+                  {isDescriptionExpanded && (
+                    <div className="mt-2 flex-1 overflow-y-auto space-y-2 text-sm">
+                      {hasDesc && (
+                        <p className="text-gray-400 leading-relaxed">{currentExercise.description}</p>
+                      )}
+                      {hasPrecaution && (
+                        <div className="rounded-lg bg-red-500/10 ring-1 ring-red-500/20 px-3 py-2">
+                          <span className="font-semibold text-red-400 text-xs uppercase tracking-wide">{t('program.precaution')}</span>
+                          <p className="text-white mt-0.5">{currentExercise.precaution}</p>
+                        </div>
+                      )}
+                      {hasModification && (
+                        <div className="rounded-lg bg-yellow-500/10 ring-1 ring-yellow-500/20 px-3 py-2">
+                          <span className="font-semibold text-yellow-400 text-xs uppercase tracking-wide">{t('program.modification')}</span>
+                          <p className="text-white mt-0.5">{currentExercise.modification}</p>
+                        </div>
+                      )}
+                      {hasSteps && (
+                        <div className="rounded-xl bg-gray-800/40 p-4 ring-1 ring-gray-700/30">
+                          <ol className="list-decimal pl-5 space-y-1.5 text-gray-300">
+                            {currentExercise.steps!.map((step, i) => (
+                              <li key={i} className="leading-relaxed">{step}</li>
+                            ))}
+                          </ol>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
 
-            {/* Modification */}
-            {!isPlaceholderValue(currentExercise.modification) && (
-              <div className="text-sm leading-relaxed mb-2 rounded-lg bg-yellow-500/10 ring-1 ring-yellow-500/20 px-3 py-2">
-                <span className="font-semibold text-yellow-400 text-xs uppercase tracking-wide">{t('program.modification')}</span>
-                <p className="text-white mt-0.5">{currentExercise.modification}</p>
-              </div>
-            )}
-
-            {/* Expandable instructions */}
-            {currentExercise.steps && currentExercise.steps.length > 0 && (
-              <div className={`mb-2 ${showDetails ? 'flex-1 flex flex-col min-h-0' : ''}`}>
-                <button
-                  onClick={() => setShowDetails(prev => !prev)}
-                  className="inline-flex items-center gap-1 text-sm font-medium text-indigo-400 hover:text-indigo-300 transition-colors"
-                >
-                  <svg className={`w-3 h-3 transition-transform duration-200 ${showDetails ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
-                  </svg>
-                  {showDetails ? t('program.hideInstructions') : t('program.viewInstructions')}
-                </button>
-                {showDetails && (
-                  <div className="mt-2 flex-1 overflow-y-auto text-sm rounded-xl bg-gray-800/40 p-4 ring-1 ring-gray-700/30">
-                    <ol className="list-decimal pl-5 space-y-1.5 text-gray-300">
-                      {currentExercise.steps.map((step, i) => (
-                        <li key={i} className="leading-relaxed">{step}</li>
-                      ))}
-                    </ol>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Body part illustration + label -- hidden when instructions expanded */}
-            {!showDetails && (() => {
+            {/* Body part illustration + label -- hidden when details expanded */}
+            {!isDescriptionExpanded && (() => {
               const imgSrc = getBodyPartImage(currentExercise.bodyPart);
               return (
                 <div className="relative flex-1 min-h-0 my-4">

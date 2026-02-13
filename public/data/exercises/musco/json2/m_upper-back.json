@@ -55,7 +55,6 @@
     {
       "id": "upper-back-4",
       "name": "Seated Cable Row",
-      "description": "No description available",
       "targetBodyParts": ["Upper Back"],
       "exerciseType": ["strength"],
       "difficulty": "beginner",
@@ -153,7 +152,6 @@
     {
       "id": "upper-back-14",
       "name": "Reverse Grip Bent Over Row",
-      "description": "No description available",
       "targetBodyParts": ["Upper Back"],
       "exerciseType": ["strength"],
       "difficulty": "intermediate",

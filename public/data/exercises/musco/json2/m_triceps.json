@@ -56,7 +56,6 @@
     {
       "id": "triceps-11",
       "name": "French Press",
-      "description": "No description available",
       "targetBodyParts": [
         "Triceps"
       ],
@@ -110,7 +109,6 @@
     {
       "id": "triceps-17",
       "name": "Bench Dip",
-      "description": "No description available",
       "targetBodyParts": [
         "Triceps"
       ],
@@ -166,7 +164,6 @@
     {
       "id": "triceps-21",
       "name": "One-Arm Cable Tricep Extension",
-      "description": "No description available",
       "targetBodyParts": [
         "Triceps"
       ],
@@ -217,7 +214,6 @@
     {
       "id": "triceps-23",
       "name": "Standing Low Pulley Overhead Tricep Extension",
-      "description": "No description available",
       "targetBodyParts": [
         "Triceps"
       ],

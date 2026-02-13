@@ -52,7 +52,6 @@
     {
       "id": "upper-back-10",
       "name": "Feet Elevated Inverted Row",
-      "description": "No description available",
       "targetBodyParts": ["Upper Back"],
       "exerciseType": ["strength"],
       "difficulty": "beginner",
@@ -148,7 +147,6 @@
     {
       "id": "upper-back-12",
       "name": "Smith Machine Bent-Over Row",
-      "description": "No description available",
       "targetBodyParts": ["Upper Back"],
       "exerciseType": ["strength"],
       "difficulty": "beginner",
@@ -243,7 +241,6 @@
     {
       "id": "upper-back-14",
       "name": "Reverse Grip Bent Over Row",
-      "description": "No description available",
       "targetBodyParts": ["Upper Back"],
       "exerciseType": ["strength"],
       "difficulty": "intermediate",
@@ -351,7 +348,6 @@
     {
       "id": "upper-back-16",
       "name": "Inverted Row",
-      "description": "No description available",
       "targetBodyParts": ["Upper Back"],
       "exerciseType": ["strength"],
       "difficulty": "beginner",
@@ -505,7 +501,6 @@
     {
       "id": "upper-back-19",
       "name": "Seated Row (Rope Extension)",
-      "description": "No description available",
       "targetBodyParts": ["Upper Back"],
       "exerciseType": ["strength"],
       "difficulty": "beginner",
@@ -661,7 +656,6 @@
     {
       "id": "upper-back-21",
       "name": "One-Arm Bent-Over Row",
-      "description": "No description available",
       "targetBodyParts": ["Upper Back"],
       "exerciseType": ["strength"],
       "difficulty": "intermediate",
@@ -814,7 +808,6 @@
     {
       "id": "upper-back-24",
       "name": "One-Arm Seated Cable Row",
-      "description": "No description available",
       "targetBodyParts": ["Upper Back"],
       "exerciseType": ["strength"],
       "difficulty": "beginner",
@@ -903,7 +896,6 @@
     {
       "id": "upper-back-26",
       "name": "Reverse Grip Incline Bench Two-Arm Dumbbell Row",
-      "description": "No description available",
       "targetBodyParts": ["Upper Back"],
       "exerciseType": ["strength"],
       "difficulty": "intermediate",
@@ -950,7 +942,6 @@
     {
       "id": "upper-back-27",
       "name": "Reverse Grip Bent-Over Row (EZ Bar)",
-      "description": "No description available",
       "targetBodyParts": ["Upper Back"],
       "exerciseType": ["strength"],
       "difficulty": "beginner",
@@ -999,7 +990,6 @@
     {
       "id": "upper-back-28",
       "name": "Incline Bench Cable Row (Rope Extension)",
-      "description": "No description available",
       "targetBodyParts": ["Upper Back"],
       "exerciseType": ["strength"],
       "difficulty": "intermediate",
@@ -1044,7 +1034,6 @@
     {
       "id": "upper-back-29",
       "name": "One-Arm Machine Row",
-      "description": "No description available",
       "targetBodyParts": ["Upper Back"],
       "exerciseType": ["strength"],
       "difficulty": "beginner",
@@ -1186,7 +1175,6 @@
     {
       "id": "upper-back-31",
       "name": "Smith Machine One-Arm Row",
-      "description": "No description available",
       "targetBodyParts": ["Upper Back"],
       "exerciseType": ["strength"],
       "difficulty": "beginner",
@@ -1280,7 +1268,6 @@
     {
       "id": "upper-back-33",
       "name": "Palm Rotational Row",
-      "description": "No description available",
       "targetBodyParts": ["Upper Back"],
       "exerciseType": ["strength"],
       "difficulty": "intermediate",
@@ -1325,7 +1312,6 @@
     {
       "id": "upper-back-34",
       "name": "Palms In Bent-Over Dumbbell Row",
-      "description": "No description available",
       "targetBodyParts": ["Upper Back"],
       "exerciseType": ["strength"],
       "difficulty": "beginner",
@@ -1424,7 +1410,6 @@
     {
       "id": "upper-back-36",
       "name": "Incline Bench Barbell Row",
-      "description": "No description available",
       "targetBodyParts": ["Upper Back"],
       "exerciseType": ["strength"],
       "difficulty": "intermediate",
@@ -1571,7 +1556,6 @@
     {
       "id": "upper-back-39",
       "name": "Reverse Grip Incline Bench Barbell Row",
-      "description": "No description available",
       "targetBodyParts": ["Upper Back"],
       "exerciseType": ["strength"],
       "difficulty": "beginner",
@@ -1618,7 +1602,6 @@
     {
       "id": "upper-back-4",
       "name": "Seated Cable Row",
-      "description": "No description available",
       "targetBodyParts": ["Upper Back"],
       "exerciseType": ["strength"],
       "difficulty": "beginner",
@@ -1665,7 +1648,6 @@
     {
       "id": "upper-back-40",
       "name": "Incline Bench Cable Row",
-      "description": "No description available",
       "targetBodyParts": ["Upper Back"],
       "exerciseType": ["strength"],
       "difficulty": "intermediate",
@@ -1765,7 +1747,6 @@
     {
       "id": "upper-back-42",
       "name": "Rope Crossover Seated Row",
-      "description": "No description available",
       "targetBodyParts": ["Upper Back"],
       "exerciseType": ["strength"],
       "difficulty": "intermediate",
@@ -1812,7 +1793,6 @@
     {
       "id": "upper-back-43",
       "name": "Seated High Cable Row",
-      "description": "No description available",
       "targetBodyParts": ["Upper Back"],
       "exerciseType": ["strength"],
       "difficulty": "beginner",
@@ -1923,7 +1903,6 @@
     {
       "id": "upper-back-45",
       "name": "Cable Palm Rotational Row",
-      "description": "No description available",
       "targetBodyParts": ["Upper Back"],
       "exerciseType": ["strength"],
       "difficulty": "intermediate",
@@ -2310,7 +2289,6 @@
     {
       "id": "upper-back-51",
       "name": "Reverse Grip Incline Bench Cable Row",
-      "description": "No description available",
       "targetBodyParts": ["Upper Back"],
       "exerciseType": ["strength"],
       "difficulty": "intermediate",
@@ -2545,7 +2523,6 @@
     {
       "id": "upper-back-56",
       "name": "Reverse Grip Smith Machine Bent-Over Row",
-      "description": "No description available",
       "targetBodyParts": ["Upper Back"],
       "exerciseType": ["strength"],
       "difficulty": "beginner",
@@ -2634,7 +2611,6 @@
     {
       "id": "upper-back-58",
       "name": "Reverse Grip Machine T-Bar Row",
-      "description": "No description available",
       "targetBodyParts": ["Upper Back"],
       "exerciseType": ["strength"],
       "difficulty": "intermediate",
@@ -2835,7 +2811,6 @@
     {
       "id": "upper-back-9",
       "name": "Reverse Grip Bent-Over Dumbbell Row",
-      "description": "No description available",
       "targetBodyParts": ["Upper Back"],
       "exerciseType": ["strength"],
       "difficulty": "intermediate",

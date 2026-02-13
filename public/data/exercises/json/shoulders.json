@@ -1247,7 +1247,6 @@
     {
       "id": "shoulders-119",
       "name": "Standing Dublin Press",
-      "description": "No description available",
       "targetBodyParts": [
         "Shoulders"
       ],
@@ -1355,7 +1354,6 @@
     {
       "id": "shoulders-120",
       "name": "Seated Barbell Overhead Front Raise",
-      "description": "No description available",
       "targetBodyParts": [
         "Shoulders"
       ],
@@ -1622,7 +1620,6 @@
     {
       "id": "shoulders-125",
       "name": "Lying Cable Front Raise",
-      "description": "No description available",
       "targetBodyParts": [
         "Shoulders"
       ],
@@ -3813,7 +3810,6 @@
     {
       "id": "shoulders-16",
       "name": "Cable Lateral Raise",
-      "description": "No description available",
       "targetBodyParts": [
         "Shoulders"
       ],
@@ -4279,7 +4275,6 @@
     {
       "id": "shoulders-167",
       "name": "Barbell Rear Delt Row To Neck",
-      "description": "No description available",
       "targetBodyParts": [
         "Shoulders"
       ],
@@ -4563,7 +4558,6 @@
     {
       "id": "shoulders-171",
       "name": "Lying Rear Delt Barbell Raise",
-      "description": "No description available",
       "targetBodyParts": [
         "Shoulders"
       ],
@@ -4965,7 +4959,6 @@
     {
       "id": "shoulders-20",
       "name": "Machine Lateral Raise",
-      "description": "No description available",
       "targetBodyParts": [
         "Shoulders"
       ],
@@ -5187,7 +5180,6 @@
     {
       "id": "shoulders-24",
       "name": "Weight Plate Front Raise",
-      "description": "No description available",
       "targetBodyParts": [
         "Shoulders"
       ],
@@ -5794,7 +5786,6 @@
     {
       "id": "shoulders-34",
       "name": "Barbell Clean and Press",
-      "description": "No description available",
       "targetBodyParts": [
         "Shoulders"
       ],
@@ -6590,7 +6581,6 @@
     {
       "id": "shoulders-47",
       "name": "One-Arm Bent-Over Cable Reverse Fly",
-      "description": "No description available",
       "targetBodyParts": [
         "Shoulders"
       ],
@@ -6880,7 +6870,6 @@
     {
       "id": "shoulders-51",
       "name": "Smith Machine Behind the Neck Shoulder Press",
-      "description": "No description available",
       "targetBodyParts": [
         "Shoulders"
       ],
@@ -7052,7 +7041,6 @@
     {
       "id": "shoulders-54",
       "name": "Overhead Front Raise (with Weight Plate)",
-      "description": "No description available",
       "targetBodyParts": [
         "Shoulders"
       ],
@@ -7217,7 +7205,6 @@
     {
       "id": "shoulders-57",
       "name": "Dublin Press",
-      "description": "No description available",
       "targetBodyParts": [
         "Shoulders"
       ],
@@ -8866,7 +8853,6 @@
     {
       "id": "shoulders-83",
       "name": "One-Arm Cable Front Raise",
-      "description": "No description available",
       "targetBodyParts": [
         "Shoulders"
       ],

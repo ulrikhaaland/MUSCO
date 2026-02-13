@@ -4,7 +4,6 @@
     {
       "id": "calves-6",
       "name": "Bodyweight Standing Calf Raise",
-      "description": "No description available",
       "targetBodyParts": ["Calves"],
       "exerciseType": ["strength"],
       "difficulty": "beginner",
@@ -46,7 +45,6 @@
     {
       "id": "calves-12",
       "name": "One-Leg Standing Bodyweight Calf Raise",
-      "description": "No description available",
       "targetBodyParts": ["Calves"],
       "exerciseType": ["strength"],
       "difficulty": "beginner",

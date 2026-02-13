@@ -385,7 +385,6 @@
     {
       "id": "quads-105",
       "name": "Exercise Ball Dumbbell Wall Squat",
-      "description": "No description available",
       "targetBodyParts": ["Quads"],
       "exerciseType": ["strength"],
       "difficulty": "advanced",
@@ -1038,7 +1037,6 @@
     {
       "id": "quads-115",
       "name": "Smith Machine Squat (Feet Forward)",
-      "description": "No description available",
       "targetBodyParts": ["Quads"],
       "exerciseType": ["strength"],
       "difficulty": "intermediate",
@@ -1083,7 +1081,6 @@
     {
       "id": "quads-116",
       "name": "Dumbbell Split Squat With Jump",
-      "description": "No description available",
       "targetBodyParts": ["Quads"],
       "exerciseType": ["strength"],
       "difficulty": "intermediate",
@@ -1560,7 +1557,6 @@
     {
       "id": "quads-123",
       "name": "Single Leg Wall Squat",
-      "description": "No description available",
       "targetBodyParts": ["Quads"],
       "exerciseType": ["strength"],
       "difficulty": "intermediate",
@@ -2318,7 +2314,6 @@
     {
       "id": "quads-135",
       "name": "Smith Machine Zercher Squat",
-      "description": "No description available",
       "targetBodyParts": ["Quads"],
       "exerciseType": ["strength"],
       "difficulty": "intermediate",
@@ -2422,7 +2417,6 @@
     {
       "id": "quads-137",
       "name": "Barbell Speed Squats",
-      "description": "No description available",
       "targetBodyParts": ["Quads"],
       "exerciseType": ["strength"],
       "difficulty": "advanced",
@@ -2777,7 +2771,6 @@
     {
       "id": "quads-142",
       "name": "Decline Bench Barbell Lunge",
-      "description": "No description available",
       "targetBodyParts": ["Quads"],
       "exerciseType": ["strength"],
       "difficulty": "intermediate",
@@ -2883,7 +2876,6 @@
     {
       "id": "quads-144",
       "name": "Barbell Half Squat",
-      "description": "No description available",
       "targetBodyParts": ["Quads"],
       "exerciseType": ["strength"],
       "difficulty": "beginner",
@@ -2998,7 +2990,6 @@
     {
       "id": "quads-146",
       "name": "Dumbbell Pistol Squat (On Bench)",
-      "description": "No description available",
       "targetBodyParts": ["Quads"],
       "exerciseType": ["strength"],
       "difficulty": "intermediate",
@@ -3215,7 +3206,6 @@
     {
       "id": "quads-15",
       "name": "Frog Squat",
-      "description": "No description available",
       "targetBodyParts": ["Quads"],
       "exerciseType": ["strength"],
       "difficulty": "beginner",
@@ -3317,7 +3307,6 @@
     {
       "id": "quads-151",
       "name": "Barbell Quarter Squat",
-      "description": "No description available",
       "targetBodyParts": ["Quads"],
       "exerciseType": ["strength"],
       "difficulty": "beginner",
@@ -3871,7 +3860,6 @@
     {
       "id": "quads-16",
       "name": "Barbell Lunge",
-      "description": "No description available",
       "targetBodyParts": ["Quads"],
       "exerciseType": ["strength"],
       "difficulty": "intermediate",
@@ -4291,7 +4279,6 @@
     {
       "id": "quads-166",
       "name": "Barbell Lateral Split Squat",
-      "description": "No description available",
       "targetBodyParts": ["Quads"],
       "exerciseType": ["strength"],
       "difficulty": "intermediate",
@@ -4499,7 +4486,6 @@
     {
       "id": "quads-17",
       "name": "Bodyweight Walking Lunge",
-      "description": "No description available",
       "targetBodyParts": ["Quads"],
       "exerciseType": ["strength"],
       "difficulty": "beginner",
@@ -4603,7 +4589,6 @@
     {
       "id": "quads-171",
       "name": "Weighted Sissy Squat",
-      "description": "No description available",
       "targetBodyParts": ["Quads"],
       "exerciseType": ["strength"],
       "difficulty": "advanced",
@@ -4708,7 +4693,6 @@
     {
       "id": "quads-173",
       "name": "Narrow Stance Smith Machine Squat",
-      "description": "No description available",
       "targetBodyParts": ["Quads"],
       "exerciseType": ["strength"],
       "difficulty": "intermediate",
@@ -4814,7 +4798,6 @@
     {
       "id": "quads-175",
       "name": "Decline Bench Dumbbell Lunge",
-      "description": "No description available",
       "targetBodyParts": ["Quads"],
       "exerciseType": ["strength"],
       "difficulty": "beginner",
@@ -5050,7 +5033,6 @@
     {
       "id": "quads-179",
       "name": "Exercise Ball Wall Squat",
-      "description": "No description available",
       "targetBodyParts": ["Quads"],
       "exerciseType": ["strength"],
       "difficulty": "beginner",
@@ -5268,7 +5250,6 @@
     {
       "id": "quads-182",
       "name": "Smith Machine Box Squat",
-      "description": "No description available",
       "targetBodyParts": ["Quads"],
       "exerciseType": ["strength"],
       "difficulty": "intermediate",
@@ -5498,7 +5479,6 @@
     {
       "id": "quads-186",
       "name": "Bodyweight Bulgarian Split Squat",
-      "description": "No description available",
       "targetBodyParts": ["Quads"],
       "exerciseType": ["strength"],
       "difficulty": "beginner",
@@ -5602,7 +5582,6 @@
     {
       "id": "quads-188",
       "name": "Barbell Bulgarian Split Squat",
-      "description": "No description available",
       "targetBodyParts": ["Quads"],
       "exerciseType": ["strength"],
       "difficulty": "advanced",
@@ -5717,7 +5696,6 @@
     {
       "id": "quads-2",
       "name": "Dumbbell Squat",
-      "description": "No description available",
       "targetBodyParts": ["Quads"],
       "exerciseType": ["strength"],
       "difficulty": "beginner",
@@ -5825,7 +5803,6 @@
     {
       "id": "quads-21",
       "name": "Bodyweight Lateral Lunge",
-      "description": "No description available",
       "targetBodyParts": ["Quads"],
       "exerciseType": ["strength"],
       "difficulty": "beginner",
@@ -5872,7 +5849,6 @@
     {
       "id": "quads-22",
       "name": "Bodyweight Squat Jump",
-      "description": "No description available",
       "targetBodyParts": ["Quads"],
       "exerciseType": ["plyometrics"],
       "difficulty": "beginner",
@@ -5979,7 +5955,6 @@
     {
       "id": "quads-24",
       "name": "Barbell Sumo Squat",
-      "description": "No description available",
       "targetBodyParts": ["Quads"],
       "exerciseType": ["strength"],
       "difficulty": "intermediate",
@@ -6038,7 +6013,6 @@
     {
       "id": "quads-25",
       "name": "Dumbbell Lateral Lunge",
-      "description": "No description available",
       "targetBodyParts": ["Quads"],
       "exerciseType": ["strength"],
       "difficulty": "beginner",
@@ -6855,7 +6829,6 @@
     {
       "id": "quads-38",
       "name": "Sissy Squat",
-      "description": "No description available",
       "targetBodyParts": ["Quads"],
       "exerciseType": ["strength"],
       "difficulty": "intermediate",
@@ -7408,7 +7381,6 @@
     {
       "id": "quads-47",
       "name": "Barbell Narrow Stance Squat",
-      "description": "No description available",
       "targetBodyParts": ["Quads"],
       "exerciseType": ["strength"],
       "difficulty": "intermediate",
@@ -7463,7 +7435,6 @@
     {
       "id": "quads-48",
       "name": "Barbell Wide Stance Squat",
-      "description": "No description available",
       "targetBodyParts": ["Quads"],
       "exerciseType": ["strength"],
       "difficulty": "intermediate",
@@ -8064,7 +8035,6 @@
     {
       "id": "quads-57",
       "name": "Barbell Deep Squat",
-      "description": "No description available",
       "targetBodyParts": ["Quads"],
       "exerciseType": ["strength"],
       "difficulty": "intermediate",
@@ -8126,7 +8096,6 @@
     {
       "id": "quads-58",
       "name": "Barbell Jumping Squats",
-      "description": "No description available",
       "targetBodyParts": ["Quads"],
       "exerciseType": ["strength"],
       "difficulty": "intermediate",
@@ -8481,7 +8450,6 @@
     {
       "id": "quads-63",
       "name": "Smith Machine One Leg Squat",
-      "description": "No description available",
       "targetBodyParts": ["Quads"],
       "exerciseType": ["strength"],
       "difficulty": "beginner",
@@ -8703,7 +8671,6 @@
     {
       "id": "quads-67",
       "name": "Barbell Box Squat",
-      "description": "No description available",
       "targetBodyParts": ["Quads"],
       "exerciseType": ["strength"],
       "difficulty": "intermediate",
@@ -9001,7 +8968,6 @@
     {
       "id": "quads-71",
       "name": "Barbell Front Box Squat",
-      "description": "No description available",
       "targetBodyParts": ["Quads"],
       "exerciseType": ["strength"],
       "difficulty": "advanced",
@@ -9778,7 +9744,6 @@
     {
       "id": "quads-83",
       "name": "Dumbbell Squat Jump",
-      "description": "No description available",
       "targetBodyParts": ["Quads"],
       "exerciseType": ["strength"],
       "difficulty": "intermediate",
@@ -10234,7 +10199,6 @@
     {
       "id": "quads-90",
       "name": "Dumbbell Wall Squat",
-      "description": "No description available",
       "targetBodyParts": ["Quads"],
       "exerciseType": ["strength"],
       "difficulty": "intermediate",
@@ -10520,7 +10484,6 @@
     {
       "id": "quads-95",
       "name": "Dumbbell Box Squat",
-      "description": "No description available",
       "targetBodyParts": ["Quads"],
       "exerciseType": ["strength"],
       "difficulty": "intermediate",

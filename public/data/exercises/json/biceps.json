@@ -4,7 +4,6 @@
     {
       "id": "biceps-1",
       "name": "Standing Hammer Curl",
-      "description": "No description available",
       "targetBodyParts": [
         "Biceps"
       ],
@@ -54,7 +53,6 @@
     {
       "id": "biceps-10",
       "name": "EZ Bar Curl",
-      "description": "No description available",
       "targetBodyParts": [
         "Biceps"
       ],
@@ -105,7 +103,6 @@
     {
       "id": "biceps-11",
       "name": "Cable Curl (Rope Extension)",
-      "description": "No description available",
       "targetBodyParts": [
         "Biceps"
       ],
@@ -157,7 +154,6 @@
     {
       "id": "biceps-12",
       "name": "Alternating Seated Dumbbell Curl",
-      "description": "No description available",
       "targetBodyParts": [
         "Biceps"
       ],
@@ -261,7 +257,6 @@
     {
       "id": "biceps-14",
       "name": "Spider Curl",
-      "description": "No description available",
       "targetBodyParts": [
         "Biceps"
       ],
@@ -313,7 +308,6 @@
     {
       "id": "biceps-15",
       "name": "Alternating Standing Dumbbell Curl",
-      "description": "No description available",
       "targetBodyParts": [
         "Biceps"
       ],
@@ -418,7 +412,6 @@
     {
       "id": "biceps-17",
       "name": "Machine Bicep Curl",
-      "description": "No description available",
       "targetBodyParts": [
         "Biceps"
       ],
@@ -471,7 +464,6 @@
     {
       "id": "biceps-18",
       "name": "Seated Dumbbell Curl",
-      "description": "No description available",
       "targetBodyParts": [
         "Biceps"
       ],
@@ -524,7 +516,6 @@
     {
       "id": "biceps-19",
       "name": "Standing High Pulley Cable Curl",
-      "description": "No description available",
       "targetBodyParts": [
         "Biceps"
       ],
@@ -574,7 +565,6 @@
     {
       "id": "biceps-2",
       "name": "Standing Dumbbell Curl",
-      "description": "No description available",
       "targetBodyParts": [
         "Biceps"
       ],
@@ -678,7 +668,6 @@
     {
       "id": "biceps-21",
       "name": "Seated Hammer Curl",
-      "description": "No description available",
       "targetBodyParts": [
         "Biceps"
       ],
@@ -731,7 +720,6 @@
     {
       "id": "biceps-22",
       "name": "Alternating Standing Hammer Curl",
-      "description": "No description available",
       "targetBodyParts": [
         "Biceps"
       ],
@@ -781,7 +769,6 @@
     {
       "id": "biceps-23",
       "name": "Lateral Pulldown Bicep Curl",
-      "description": "No description available",
       "targetBodyParts": [
         "Biceps"
       ],
@@ -884,7 +871,6 @@
     {
       "id": "biceps-25",
       "name": "One-Arm Cable Curl",
-      "description": "No description available",
       "targetBodyParts": [
         "Biceps"
       ],
@@ -935,7 +921,6 @@
     {
       "id": "biceps-26",
       "name": "Lying Cable Curl (On Floor)",
-      "description": "No description available",
       "targetBodyParts": [
         "Biceps"
       ],
@@ -986,7 +971,6 @@
     {
       "id": "biceps-27",
       "name": "One-Arm Dumbbell Preacher Curl",
-      "description": "No description available",
       "targetBodyParts": [
         "Biceps"
       ],
@@ -1194,7 +1178,6 @@
     {
       "id": "biceps-30",
       "name": "One-Arm Seated Dumbbell Curl",
-      "description": "No description available",
       "targetBodyParts": [
         "Biceps"
       ],
@@ -1245,7 +1228,6 @@
     {
       "id": "biceps-31",
       "name": "Wide Grip EZ Bar Curl",
-      "description": "No description available",
       "targetBodyParts": [
         "Biceps"
       ],
@@ -1297,7 +1279,6 @@
     {
       "id": "biceps-32",
       "name": "Close Grip EZ Bar Curl",
-      "description": "No description available",
       "targetBodyParts": [
         "Biceps"
       ],
@@ -1347,7 +1328,6 @@
     {
       "id": "biceps-33",
       "name": "One-Arm Standing Hammer Curl",
-      "description": "No description available",
       "targetBodyParts": [
         "Biceps"
       ],
@@ -1400,7 +1380,6 @@
     {
       "id": "biceps-34",
       "name": "Lying Dumbbell Curl",
-      "description": "No description available",
       "targetBodyParts": [
         "Biceps"
       ],
@@ -1500,7 +1479,6 @@
     {
       "id": "biceps-36",
       "name": "Wide Grip Standing Barbell Curl",
-      "description": "No description available",
       "targetBodyParts": [
         "Biceps"
       ],
@@ -1550,7 +1528,6 @@
     {
       "id": "biceps-37",
       "name": "Smith Machine Bicep Curl",
-      "description": "No description available",
       "targetBodyParts": [
         "Biceps"
       ],
@@ -1761,7 +1738,6 @@
     {
       "id": "biceps-40",
       "name": "Two-Arm Low Pulley Cable Curl",
-      "description": "No description available",
       "targetBodyParts": [
         "Biceps"
       ],
@@ -1813,7 +1789,6 @@
     {
       "id": "biceps-41",
       "name": "Lying Incline Bench Barbell Curl",
-      "description": "No description available",
       "targetBodyParts": [
         "Biceps"
       ],
@@ -1866,7 +1841,6 @@
     {
       "id": "biceps-42",
       "name": "Alternating Seated Hammer Curl",
-      "description": "No description available",
       "targetBodyParts": [
         "Biceps"
       ],
@@ -1918,7 +1892,6 @@
     {
       "id": "biceps-43",
       "name": "Cable Preacher Curl",
-      "description": "No description available",
       "targetBodyParts": [
         "Biceps"
       ],
@@ -1973,7 +1946,6 @@
     {
       "id": "biceps-44",
       "name": "Hammer Bar Curl",
-      "description": "No description available",
       "targetBodyParts": [
         "Biceps"
       ],
@@ -2025,7 +1997,6 @@
     {
       "id": "biceps-45",
       "name": "One-Arm Standing Dumbbell Curl",
-      "description": "No description available",
       "targetBodyParts": [
         "Biceps"
       ],
@@ -2078,7 +2049,6 @@
     {
       "id": "biceps-46",
       "name": "Lying High Pulley Cable Curl",
-      "description": "No description available",
       "targetBodyParts": [
         "Biceps"
       ],
@@ -2183,7 +2153,6 @@
     {
       "id": "biceps-48",
       "name": "Alternating Incline Dumbbell Curl",
-      "description": "No description available",
       "targetBodyParts": [
         "Biceps"
       ],
@@ -2236,7 +2205,6 @@
     {
       "id": "biceps-49",
       "name": "Squatting Cable Curl",
-      "description": "No description available",
       "targetBodyParts": [
         "Biceps"
       ],
@@ -2338,7 +2306,6 @@
     {
       "id": "biceps-50",
       "name": "Prone Incline Dumbbell Curl",
-      "description": "No description available",
       "targetBodyParts": [
         "Biceps"
       ],
@@ -2391,7 +2358,6 @@
     {
       "id": "biceps-51",
       "name": "Alternating Dumbbell Preacher Curl",
-      "description": "No description available",
       "targetBodyParts": [
         "Biceps"
       ],
@@ -2444,7 +2410,6 @@
     {
       "id": "biceps-52",
       "name": "Cable Drag Curl",
-      "description": "No description available",
       "targetBodyParts": [
         "Biceps"
       ],
@@ -2493,7 +2458,6 @@
     {
       "id": "biceps-53",
       "name": "One-Arm Prone Incline Dumbbell Curl",
-      "description": "No description available",
       "targetBodyParts": [
         "Biceps"
       ],
@@ -2547,7 +2511,6 @@
     {
       "id": "biceps-54",
       "name": "One-Arm Dumbbell Hammer Preacher Curl",
-      "description": "No description available",
       "targetBodyParts": [
         "Biceps"
       ],
@@ -2600,7 +2563,6 @@
     {
       "id": "biceps-55",
       "name": "Prone Incline Hammer Curl",
-      "description": "No description available",
       "targetBodyParts": [
         "Biceps"
       ],
@@ -2652,7 +2614,6 @@
     {
       "id": "biceps-56",
       "name": "Alternating Dumbbell Hammer Preacher Curl",
-      "description": "No description available",
       "targetBodyParts": [
         "Biceps"
       ],
@@ -2704,7 +2665,6 @@
     {
       "id": "biceps-57",
       "name": "One-Arm Prone Hammer Curl",
-      "description": "No description available",
       "targetBodyParts": [
         "Biceps"
       ],
@@ -2757,7 +2717,6 @@
     {
       "id": "biceps-58",
       "name": "Barbell Concentration Curl",
-      "description": "No description available",
       "targetBodyParts": [
         "Biceps"
       ],
@@ -2812,7 +2771,6 @@
     {
       "id": "biceps-59",
       "name": "Lying Wide Dumbbell Curl",
-      "description": "No description available",
       "targetBodyParts": [
         "Biceps"
       ],
@@ -2865,7 +2823,6 @@
     {
       "id": "biceps-6",
       "name": "Cross Body Hammer Curl (Pinwheel Curls)",
-      "description": "No description available",
       "targetBodyParts": [
         "Biceps"
       ],
@@ -2918,7 +2875,6 @@
     {
       "id": "biceps-60",
       "name": "Seated Cable Curl",
-      "description": "No description available",
       "targetBodyParts": [
         "Biceps"
       ],
@@ -2972,7 +2928,6 @@
     {
       "id": "biceps-61",
       "name": "Alternating Standing Dumbbell Twisting Curls",
-      "description": "No description available",
       "targetBodyParts": [
         "Biceps"
       ],
@@ -3027,7 +2982,6 @@
     {
       "id": "biceps-62",
       "name": "Incline Cable Bicep Curl",
-      "description": "No description available",
       "targetBodyParts": [
         "Biceps"
       ],
@@ -3078,7 +3032,6 @@
     {
       "id": "biceps-63",
       "name": "Incline Bench Dumbbell Curl",
-      "description": "No description available",
       "targetBodyParts": [
         "Biceps"
       ],
@@ -3131,7 +3084,6 @@
     {
       "id": "biceps-64",
       "name": "Cable Concentration Curl",
-      "description": "No description available",
       "targetBodyParts": [
         "Biceps"
       ],
@@ -3186,7 +3138,6 @@
     {
       "id": "biceps-65",
       "name": "One-Arm Seated Hammer Curl",
-      "description": "No description available",
       "targetBodyParts": [
         "Biceps"
       ],
@@ -3239,7 +3190,6 @@
     {
       "id": "biceps-66",
       "name": "Exercise Ball Preacher Curl",
-      "description": "No description available",
       "targetBodyParts": [
         "Biceps"
       ],
@@ -3290,7 +3240,6 @@
     {
       "id": "biceps-67",
       "name": "Incline Bench Hammer Curl",
-      "description": "No description available",
       "targetBodyParts": [
         "Biceps"
       ],
@@ -3343,7 +3292,6 @@
     {
       "id": "biceps-68",
       "name": "Cable Preacher Curl (Rope Extension)",
-      "description": "No description available",
       "targetBodyParts": [
         "Biceps"
       ],
@@ -3395,7 +3343,6 @@
     {
       "id": "biceps-69",
       "name": "Hammer Bar Preacher Curl",
-      "description": "No description available",
       "targetBodyParts": [
         "Biceps"
       ],
@@ -3447,7 +3394,6 @@
     {
       "id": "biceps-7",
       "name": "Cable Curl",
-      "description": "No description available",
       "targetBodyParts": [
         "Biceps"
       ],
@@ -3498,7 +3444,6 @@
     {
       "id": "biceps-70",
       "name": "Wide Grip Cable Curl",
-      "description": "No description available",
       "targetBodyParts": [
         "Biceps"
       ],
@@ -3550,7 +3495,6 @@
     {
       "id": "biceps-71",
       "name": "Incline Hammer Curl",
-      "description": "No description available",
       "targetBodyParts": [
         "Biceps"
       ],
@@ -3603,7 +3547,6 @@
     {
       "id": "biceps-72",
       "name": "Lying High Pulley Close Grip Cable Curl",
-      "description": "No description available",
       "targetBodyParts": [
         "Biceps"
       ],
@@ -3656,7 +3599,6 @@
     {
       "id": "biceps-73",
       "name": "Close Grip Cable Curl",
-      "description": "No description available",
       "targetBodyParts": [
         "Biceps"
       ],
@@ -3708,7 +3650,6 @@
     {
       "id": "biceps-74",
       "name": "Alternating Incline Hammer Curl",
-      "description": "No description available",
       "targetBodyParts": [
         "Biceps"
       ],
@@ -3761,7 +3702,6 @@
     {
       "id": "biceps-75",
       "name": "Seated Barbell Curl",
-      "description": "No description available",
       "targetBodyParts": [
         "Biceps"
       ],
@@ -3867,7 +3807,6 @@
     {
       "id": "biceps-8",
       "name": "EZ Bar Preacher Curl",
-      "description": "No description available",
       "targetBodyParts": [
         "Biceps"
       ],

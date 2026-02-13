@@ -205,7 +205,6 @@
     {
       "id": "hamstrings-12",
       "name": "Reverse Hack Squat",
-      "description": "No description available",
       "targetBodyParts": [
         "Hamstrings"
       ],
@@ -317,7 +316,6 @@
     {
       "id": "hamstrings-14",
       "name": "Standing Cable Hamstring Curl",
-      "description": "No description available",
       "targetBodyParts": [
         "Hamstrings"
       ],
@@ -1018,7 +1016,6 @@
     {
       "id": "hamstrings-24",
       "name": "Single Leg Curl",
-      "description": "No description available",
       "targetBodyParts": [
         "Hamstrings"
       ],
@@ -1070,7 +1067,6 @@
     {
       "id": "hamstrings-25",
       "name": "Smith Machine Stiff Leg Deadlift",
-      "description": "No description available",
       "targetBodyParts": [
         "Hamstrings"
       ],
@@ -1137,7 +1133,6 @@
     {
       "id": "hamstrings-26",
       "name": "Dumbbell Stiff Leg Deadlift (On Bench)",
-      "description": "No description available",
       "targetBodyParts": [
         "Hamstrings"
       ],
@@ -2200,7 +2195,6 @@
     {
       "id": "hamstrings-40",
       "name": "One-Leg Lying Cable Hamstring Curl",
-      "description": "No description available",
       "targetBodyParts": [
         "Hamstrings"
       ],
@@ -2319,7 +2313,6 @@
     {
       "id": "hamstrings-42",
       "name": "Lying Cable Leg Curl",
-      "description": "No description available",
       "targetBodyParts": [
         "Hamstrings"
       ],
@@ -2374,7 +2367,6 @@
     {
       "id": "hamstrings-43",
       "name": "Stiff Leg Deadlift (On Bench)",
-      "description": "No description available",
       "targetBodyParts": [
         "Hamstrings"
       ],
@@ -3661,7 +3653,6 @@
     {
       "id": "hamstrings-6",
       "name": "Dumbbell Hamstring Curl",
-      "description": "No description available",
       "targetBodyParts": [
         "Hamstrings"
       ],
@@ -4180,7 +4171,6 @@
     {
       "id": "hamstrings-66",
       "name": "Barbell Split Squat With Jump",
-      "description": "No description available",
       "targetBodyParts": [
         "Hamstrings"
       ],

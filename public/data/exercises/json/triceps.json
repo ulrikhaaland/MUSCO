@@ -57,7 +57,6 @@
     {
       "id": "triceps-10",
       "name": "Lying Barbell Tricep Extension (Skull Crusher)",
-      "description": "No description available",
       "targetBodyParts": [
         "Triceps"
       ],
@@ -110,7 +109,6 @@
     {
       "id": "triceps-100",
       "name": "One-Arm Lying Dumbbell Extension",
-      "description": "No description available",
       "targetBodyParts": [
         "Triceps"
       ],
@@ -161,7 +159,6 @@
     {
       "id": "triceps-101",
       "name": "Reverse Grip Cable Tricep Kickback",
-      "description": "No description available",
       "targetBodyParts": [
         "Triceps"
       ],
@@ -215,7 +212,6 @@
     {
       "id": "triceps-102",
       "name": "Exercise Ball French Press",
-      "description": "No description available",
       "targetBodyParts": [
         "Triceps"
       ],
@@ -385,7 +381,6 @@
     {
       "id": "triceps-105",
       "name": "Exercise Ball Two-Arm Dumbbell Extension",
-      "description": "No description available",
       "targetBodyParts": [
         "Triceps"
       ],
@@ -438,7 +433,6 @@
     {
       "id": "triceps-11",
       "name": "French Press",
-      "description": "No description available",
       "targetBodyParts": [
         "Triceps"
       ],
@@ -592,7 +586,6 @@
     {
       "id": "triceps-14",
       "name": "Dumbbell Tricep Kickback",
-      "description": "No description available",
       "targetBodyParts": [
         "Triceps"
       ],
@@ -646,7 +639,6 @@
     {
       "id": "triceps-15",
       "name": "45 Degree Lying Tricep Extension",
-      "description": "No description available",
       "targetBodyParts": [
         "Triceps"
       ],
@@ -762,7 +754,6 @@
     {
       "id": "triceps-17",
       "name": "Bench Dip",
-      "description": "No description available",
       "targetBodyParts": [
         "Triceps"
       ],
@@ -926,7 +917,6 @@
     {
       "id": "triceps-2",
       "name": "Lying Dumbbell Extension",
-      "description": "No description available",
       "targetBodyParts": [
         "Triceps"
       ],
@@ -979,7 +969,6 @@
     {
       "id": "triceps-20",
       "name": "One-Arm Seated Dumbbell Extension",
-      "description": "No description available",
       "targetBodyParts": [
         "Triceps"
       ],
@@ -1032,7 +1021,6 @@
     {
       "id": "triceps-21",
       "name": "One-Arm Cable Tricep Extension",
-      "description": "No description available",
       "targetBodyParts": [
         "Triceps"
       ],
@@ -1084,7 +1072,6 @@
     {
       "id": "triceps-22",
       "name": "Seated French Press",
-      "description": "No description available",
       "targetBodyParts": [
         "Triceps"
       ],
@@ -1138,7 +1125,6 @@
     {
       "id": "triceps-23",
       "name": "Standing Low Pulley Overhead Tricep Extension (Rope Extension)",
-      "description": "No description available",
       "targetBodyParts": [
         "Triceps"
       ],
@@ -1192,7 +1178,6 @@
     {
       "id": "triceps-24",
       "name": "Incline Skull Crusher",
-      "description": "No description available",
       "targetBodyParts": [
         "Triceps"
       ],
@@ -1246,7 +1231,6 @@
     {
       "id": "triceps-25",
       "name": "Close Grip Push Up",
-      "description": "No description available",
       "targetBodyParts": [
         "Triceps"
       ],
@@ -1355,7 +1339,6 @@
     {
       "id": "triceps-27",
       "name": "Reverse One-Arm Cable Tricep Extension",
-      "description": "No description available",
       "targetBodyParts": [
         "Triceps"
       ],
@@ -1460,7 +1443,6 @@
     {
       "id": "triceps-29",
       "name": "High Pulley Overhead Tricep Extension",
-      "description": "No description available",
       "targetBodyParts": [
         "Triceps"
       ],
@@ -1738,7 +1720,6 @@
     {
       "id": "triceps-33",
       "name": "Smith Machine Incline Tricep Extension",
-      "description": "No description available",
       "targetBodyParts": [
         "Triceps"
       ],
@@ -1855,7 +1836,6 @@
     {
       "id": "triceps-35",
       "name": "One-Arm Seated Overhead Tricep Extension",
-      "description": "No description available",
       "targetBodyParts": [
         "Triceps"
       ],
@@ -1960,7 +1940,6 @@
     {
       "id": "triceps-37",
       "name": "Single Bench Dip",
-      "description": "No description available",
       "targetBodyParts": [
         "Triceps"
       ],
@@ -2357,7 +2336,6 @@
     {
       "id": "triceps-43",
       "name": "Close Grip Press Behind-The-Neck",
-      "description": "No description available",
       "targetBodyParts": [
         "Triceps"
       ],
@@ -2410,7 +2388,6 @@
     {
       "id": "triceps-44",
       "name": "One-Arm Cable Overhead Tricep Extension",
-      "description": "No description available",
       "targetBodyParts": [
         "Triceps"
       ],
@@ -2788,7 +2765,6 @@
     {
       "id": "triceps-50",
       "name": "Smith Machine Close Grip Bench Press",
-      "description": "No description available",
       "targetBodyParts": [
         "Triceps"
       ],
@@ -2845,7 +2821,6 @@
     {
       "id": "triceps-51",
       "name": "Cable Tricep Kickback",
-      "description": "No description available",
       "targetBodyParts": [
         "Triceps"
       ],
@@ -2956,7 +2931,6 @@
     {
       "id": "triceps-53",
       "name": "Cable Concentration Tricep Extension",
-      "description": "No description available",
       "targetBodyParts": [
         "Triceps"
       ],
@@ -3062,7 +3036,6 @@
     {
       "id": "triceps-55",
       "name": "Lying Cable Tricep Extension",
-      "description": "No description available",
       "targetBodyParts": [
         "Triceps"
       ],
@@ -3116,7 +3089,6 @@
     {
       "id": "triceps-56",
       "name": "Seated Low Pulley Overhead Tricep Extension (Rope Extension)",
-      "description": "No description available",
       "targetBodyParts": [
         "Triceps"
       ],
@@ -3170,7 +3142,6 @@
     {
       "id": "triceps-57",
       "name": "Alternating Bent-Over Dumbbell Kickback",
-      "description": "No description available",
       "targetBodyParts": [
         "Triceps"
       ],
@@ -3224,7 +3195,6 @@
     {
       "id": "triceps-58",
       "name": "Weighted Bench Dip",
-      "description": "No description available",
       "targetBodyParts": [
         "Triceps"
       ],
@@ -3280,7 +3250,6 @@
     {
       "id": "triceps-59",
       "name": "Incline Cable Tricep Extension",
-      "description": "No description available",
       "targetBodyParts": [
         "Triceps"
       ],
@@ -3384,7 +3353,6 @@
     {
       "id": "triceps-60",
       "name": "Three Bench Dip",
-      "description": "No description available",
       "targetBodyParts": [
         "Triceps"
       ],
@@ -3442,7 +3410,6 @@
     {
       "id": "triceps-61",
       "name": "Seated Low Pulley Overhead Tricep Extension",
-      "description": "No description available",
       "targetBodyParts": [
         "Triceps"
       ],
@@ -3570,7 +3537,6 @@
     {
       "id": "triceps-63",
       "name": "Inline Bench French Press",
-      "description": "No description available",
       "targetBodyParts": [
         "Triceps"
       ],
@@ -3737,7 +3703,6 @@
     {
       "id": "triceps-66",
       "name": "Two-Arm Cable Tricep Kickback",
-      "description": "No description available",
       "targetBodyParts": [
         "Triceps"
       ],
@@ -3864,7 +3829,6 @@
     {
       "id": "triceps-68",
       "name": "Kneeling Overhead Tricep Extension (Over Flat Bench)",
-      "description": "No description available",
       "targetBodyParts": [
         "Triceps"
       ],
@@ -3917,7 +3881,6 @@
     {
       "id": "triceps-69",
       "name": "Exercise Ball One-Arm Dumbbell Extension",
-      "description": "No description available",
       "targetBodyParts": [
         "Triceps"
       ],
@@ -3971,7 +3934,6 @@
     {
       "id": "triceps-7",
       "name": "Tricep Dip",
-      "description": "No description available",
       "targetBodyParts": [
         "Triceps"
       ],
@@ -4082,7 +4044,6 @@
     {
       "id": "triceps-71",
       "name": "Lying Cable Tricep Extension (Rope Extension)",
-      "description": "No description available",
       "targetBodyParts": [
         "Triceps"
       ],
@@ -4137,7 +4098,6 @@
     {
       "id": "triceps-72",
       "name": "Standing Low Pulley Overhead Tricep Extension",
-      "description": "No description available",
       "targetBodyParts": [
         "Triceps"
       ],
@@ -4253,7 +4213,6 @@
     {
       "id": "triceps-74",
       "name": "Lying Dumbbell Extension (Single Dumbbell)",
-      "description": "No description available",
       "targetBodyParts": [
         "Triceps"
       ],
@@ -4308,7 +4267,6 @@
     {
       "id": "triceps-75",
       "name": "Close Grip Chest Press",
-      "description": "No description available",
       "targetBodyParts": [
         "Triceps"
       ],
@@ -4366,7 +4324,6 @@
     {
       "id": "triceps-76",
       "name": "Lying Barbell Reverse Extension",
-      "description": "No description available",
       "targetBodyParts": [
         "Triceps"
       ],
@@ -4482,7 +4439,6 @@
     {
       "id": "triceps-78",
       "name": "Reverse Grip French Press",
-      "description": "No description available",
       "targetBodyParts": [
         "Triceps"
       ],
@@ -4536,7 +4492,6 @@
     {
       "id": "triceps-79",
       "name": "Incline Cable Tricep Extension (Rope Extension)",
-      "description": "No description available",
       "targetBodyParts": [
         "Triceps"
       ],
@@ -4641,7 +4596,6 @@
     {
       "id": "triceps-80",
       "name": "One-Arm Seated Dumbbell Kickback",
-      "description": "No description available",
       "targetBodyParts": [
         "Triceps"
       ],
@@ -4748,7 +4702,6 @@
     {
       "id": "triceps-82",
       "name": "Seated Reverse Grip One-Arm Overhead Tricep Extension",
-      "description": "No description available",
       "targetBodyParts": [
         "Triceps"
       ],
@@ -4860,7 +4813,6 @@
     {
       "id": "triceps-84",
       "name": "One-Arm Seated Bent Over Dumbbell Kickback",
-      "description": "No description available",
       "targetBodyParts": [
         "Triceps"
       ],
@@ -4914,7 +4866,6 @@
     {
       "id": "triceps-85",
       "name": "Weighted Three Bench Dip",
-      "description": "No description available",
       "targetBodyParts": [
         "Triceps"
       ],
@@ -4972,7 +4923,6 @@
     {
       "id": "triceps-86",
       "name": "Reverse Grip Skull Crusher",
-      "description": "No description available",
       "targetBodyParts": [
         "Triceps"
       ],
@@ -5026,7 +4976,6 @@
     {
       "id": "triceps-87",
       "name": "Reverse Grip Seated French Press",
-      "description": "No description available",
       "targetBodyParts": [
         "Triceps"
       ],
@@ -5080,7 +5029,6 @@
     {
       "id": "triceps-88",
       "name": "Two-Arm Tricep Cable Extension",
-      "description": "No description available",
       "targetBodyParts": [
         "Triceps"
       ],
@@ -5133,7 +5081,6 @@
     {
       "id": "triceps-89",
       "name": "Twisting Dumbbell Bench Press",
-      "description": "No description available",
       "targetBodyParts": [
         "Triceps"
       ],
@@ -5320,7 +5267,6 @@
     {
       "id": "triceps-91",
       "name": "Seated Alternating Bent Over Dumbbell Kickback",
-      "description": "No description available",
       "targetBodyParts": [
         "Triceps"
       ],
@@ -5374,7 +5320,6 @@
     {
       "id": "triceps-92",
       "name": "Exercise Ball Dumbbell Kickbacks",
-      "description": "No description available",
       "targetBodyParts": [
         "Triceps"
       ],
@@ -5429,7 +5374,6 @@
     {
       "id": "triceps-93",
       "name": "45 Degree Lying Tricep Extension (EZ Bar)",
-      "description": "No description available",
       "targetBodyParts": [
         "Triceps"
       ],
@@ -5483,7 +5427,6 @@
     {
       "id": "triceps-94",
       "name": "Alternating Lying Dumbbell Extension",
-      "description": "No description available",
       "targetBodyParts": [
         "Triceps"
       ],
@@ -5537,7 +5480,6 @@
     {
       "id": "triceps-95",
       "name": "Reverse Grip One-Arm Overhead Cable Tricep Extension",
-      "description": "No description available",
       "targetBodyParts": [
         "Triceps"
       ],
@@ -5645,7 +5587,6 @@
     {
       "id": "triceps-97",
       "name": "Exercise Ball Dip",
-      "description": "No description available",
       "targetBodyParts": [
         "Triceps"
       ],
@@ -5701,7 +5642,6 @@
     {
       "id": "triceps-98",
       "name": "Reverse Grip Close Grip Bench Press",
-      "description": "No description available",
       "targetBodyParts": [
         "Triceps"
       ],
