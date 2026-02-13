@@ -100,14 +100,15 @@ export function WorkoutSession({
   const canGoNext = session.currentExerciseIndex < session.exercises.length - 1;
   const isLastSetOfCurrent = (session.currentSet >= totalSets);
 
-  // Duration-based exercises (cardio, warmup, stretching) have no sets/reps
-  const isDurationExercise = currentExercise && (
+  // Duration-based exercises: cardio exercises (which use duration as primary metric),
+  // or exercises with duration but no sets/reps.
+  // Warmup/stretching exercises that have sets and reps should use the sets/reps UI.
+  const isCardioExercise = currentExercise && (
     currentExercise.bodyPart === 'Cardio' ||
-    currentExercise.bodyPart === 'Warmup' ||
-    currentExercise.warmup === true ||
-    currentExercise.exerciseType?.includes('cardio') ||
-    currentExercise.exerciseType?.includes('warmup') ||
-    currentExercise.exerciseType?.includes('stretching') ||
+    currentExercise.exerciseType?.includes('cardio')
+  );
+  const isDurationExercise = currentExercise && (
+    (isCardioExercise && !!currentExercise.duration) ||
     (!currentExercise.sets && !currentExercise.repetitions && !!currentExercise.duration)
   );
 
@@ -222,7 +223,7 @@ export function WorkoutSession({
 
   // --- Set circles ---
   const renderSetCircles = () => (
-    <div className="flex items-center justify-center gap-3 my-6">
+    <div className="flex items-center justify-center gap-2.5 md:gap-3 my-3 md:my-6">
       {Array.from({ length: totalSets }, (_, i) => {
         const isDone = i < completedSetsForCurrent;
         const isCurrent = i === completedSetsForCurrent && !isResting;
@@ -231,7 +232,7 @@ export function WorkoutSession({
           <div
             key={i}
             className={`
-              w-10 h-10 rounded-full flex items-center justify-center
+              w-9 h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center
               transition-all duration-200
               ${isDone 
                 ? 'bg-indigo-500 animate-set-complete' 
@@ -246,7 +247,7 @@ export function WorkoutSession({
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
               </svg>
             ) : (
-              <span className={`text-sm font-semibold ${isCurrent ? 'text-indigo-300' : 'text-gray-600'}`}>
+              <span className={`text-xs md:text-sm font-semibold ${isCurrent ? 'text-indigo-300' : 'text-gray-600'}`}>
                 {i + 1}
               </span>
             )}
@@ -553,8 +554,8 @@ export function WorkoutSession({
             {!isDescriptionExpanded && (() => {
               const imgSrc = getBodyPartImage(currentExercise.bodyPart);
               return (
-                <div className="relative flex-1 min-h-0 my-4">
-                  <div className="absolute inset-0 flex flex-col items-center justify-center py-4">
+                <div className="relative flex-1 min-h-0 my-2 md:my-4">
+                  <div className="absolute inset-0 flex flex-col items-center justify-center py-2 md:py-4">
                     {currentExercise.bodyPart && (
                       <span className="text-xs font-semibold uppercase tracking-[0.2em] text-gray-300 mb-1">
                         {currentExercise.bodyPart}
@@ -588,8 +589,8 @@ export function WorkoutSession({
                         totalSeconds={currentExercise.duration * 60} 
                       />
                     ) : (
-                      <div className="text-center mb-4">
-                        <span className="text-4xl font-bold text-white">
+                      <div className="text-center mb-2 md:mb-4">
+                        <span className="text-3xl md:text-4xl font-bold text-white">
                           {formatMinutes(currentExercise.duration)}
                         </span>
                       </div>
@@ -597,12 +598,12 @@ export function WorkoutSession({
                   )}
 
                   {/* CTA */}
-                  <div className="pt-4 w-full">
+                  <div className="pt-2 md:pt-4 w-full">
                     <button
                       onClick={handleCompleteSet}
                       className={`
-                        w-full py-4 rounded-2xl
-                        text-white text-lg font-semibold
+                        w-full py-3 md:py-4 rounded-xl md:rounded-2xl
+                        text-white text-base md:text-lg font-semibold
                         transition-all duration-150
                         active:scale-[0.96]
                         shadow-lg
@@ -623,16 +624,16 @@ export function WorkoutSession({
                 <>
                   {/* Sets × Reps + rest info */}
                   {!isResting && (
-                    <div className="text-center mb-4">
-                      <div className="flex items-baseline justify-center gap-3">
-                        <span className="text-5xl font-bold text-white tabular-nums">{totalSets}</span>
-                        <span className="text-2xl text-gray-500 font-light">×</span>
-                        <span className="text-5xl font-bold text-white tabular-nums">
+                    <div className="text-center mb-2 md:mb-4">
+                      <div className="flex items-baseline justify-center gap-2 md:gap-3">
+                        <span className="text-4xl md:text-5xl font-bold text-white tabular-nums">{totalSets}</span>
+                        <span className="text-xl md:text-2xl text-gray-500 font-light">×</span>
+                        <span className="text-4xl md:text-5xl font-bold text-white tabular-nums">
                           {currentExercise.repetitions ?? '—'}
                         </span>
                       </div>
                       {restTime > 0 && (
-                        <p className="text-gray-500 text-sm mt-1">
+                        <p className="text-gray-500 text-xs md:text-sm mt-0.5 md:mt-1">
                           {formatRestTime(restTime)} {t('workout.restTime').toLowerCase()}
                         </p>
                       )}
@@ -652,12 +653,12 @@ export function WorkoutSession({
                       {renderSetCircles()}
 
                       {/* CTA Button */}
-                      <div className="pt-4 w-full">
+                      <div className="pt-2 md:pt-4 w-full">
                         <button
                           onClick={handleCompleteSet}
                           className={`
-                            w-full py-4 rounded-2xl
-                            text-white text-lg font-semibold
+                            w-full py-3 md:py-4 rounded-xl md:rounded-2xl
+                            text-white text-base md:text-lg font-semibold
                             transition-all duration-150
                             active:scale-[0.96]
                             shadow-lg
