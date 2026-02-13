@@ -235,10 +235,10 @@ export function WorkoutSession({
               w-9 h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center
               transition-all duration-200
               ${isDone 
-                ? 'bg-indigo-500 animate-set-complete' 
+                ? 'bg-indigo-500 shadow-md shadow-indigo-500/35 animate-set-complete' 
                 : isCurrent 
-                  ? 'ring-2 ring-indigo-500 bg-indigo-500/10 animate-pulse-subtle' 
-                  : 'ring-1 ring-gray-600 bg-transparent'
+                  ? 'ring-2 ring-indigo-400 bg-indigo-500/20 shadow-md shadow-indigo-500/30 animate-pulse-subtle' 
+                  : 'ring-1 ring-gray-500/80 bg-transparent'
               }
             `}
           >
@@ -247,7 +247,7 @@ export function WorkoutSession({
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
               </svg>
             ) : (
-              <span className={`text-xs md:text-sm font-semibold ${isCurrent ? 'text-indigo-300' : 'text-gray-600'}`}>
+              <span className={`text-xs md:text-sm font-semibold ${isCurrent ? 'text-indigo-100' : 'text-gray-500'}`}>
                 {i + 1}
               </span>
             )}
@@ -361,10 +361,13 @@ export function WorkoutSession({
   const nextExName = canGoNext
     ? session.exercises[session.currentExerciseIndex + 1]?.name ?? ''
     : '';
+  const hasEstimate = !!(estimatedDurationMin && estimatedDurationMin > 0);
+  const remainingSeconds = hasEstimate ? estimatedDurationMin! * 60 - elapsedSeconds : 0;
+  const isOvertime = hasEstimate && remainingSeconds < 0;
 
   return (
     <div 
-      className="fixed inset-0 z-[100] bg-gray-900 flex flex-col"
+      className="fixed inset-0 z-[100] bg-gray-900 flex flex-col overflow-x-hidden"
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
     >
@@ -419,35 +422,49 @@ export function WorkoutSession({
       )}
 
       {/* ── Header ── */}
-      <header className="flex items-center justify-between px-4 py-3 bg-gray-900 border-b border-gray-800/60">
+      <header className="grid grid-cols-[1fr_auto_1fr] items-center px-3 md:px-4 py-3 bg-gray-900 border-b border-gray-800/60">
         {/* Left: end workout */}
         <button
           onClick={() => setShowExitMenu(true)}
-          className="px-2.5 py-1 -ml-1 rounded-lg text-sm font-semibold text-red-400/80 hover:text-red-400 hover:bg-red-500/10 transition-colors"
+          className="
+            justify-self-start inline-flex items-center
+            px-2.5 py-1 rounded-full
+            text-sm font-semibold text-red-300
+            bg-red-500/10 hover:bg-red-500/15 active:bg-red-500/20
+            ring-1 ring-red-500/25
+            transition-colors
+          "
         >
           {t('workout.endWorkout')}
         </button>
 
         {/* Center: elapsed / remaining timer */}
-        <div className="flex items-center gap-1.5 text-gray-400">
+        <div className="justify-self-center inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gray-800/70 ring-2 ring-indigo-400/40 text-gray-300">
           <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
+          <span className="text-[10px] uppercase tracking-wide text-gray-500">Elapsed</span>
           <span className="text-sm font-medium tabular-nums">{formatElapsedTime(elapsedSeconds)}</span>
-          {estimatedDurationMin && estimatedDurationMin > 0 && (() => {
-            const remainingSeconds = Math.max(0, estimatedDurationMin * 60 - elapsedSeconds);
-            return (
-              <span className={`text-sm tabular-nums ${remainingSeconds === 0 ? 'text-emerald-400' : 'text-gray-500'}`}>
-                / -{formatElapsedTime(remainingSeconds)}
+          {hasEstimate && (
+            <>
+              <span className="text-gray-500">/</span>
+              <span className={`text-[10px] uppercase tracking-wide ${isOvertime ? 'text-amber-400' : 'text-gray-500'}`}>
+                {isOvertime ? 'Over' : 'Left'}
               </span>
-            );
-          })()}
+              <span className={`text-sm tabular-nums ${isOvertime ? 'text-amber-400' : 'text-gray-400'}`}>
+                {isOvertime
+                  ? `+${formatElapsedTime(Math.abs(remainingSeconds))}`
+                  : `-${formatElapsedTime(remainingSeconds)}`
+                }
+              </span>
+            </>
+          )}
         </div>
 
         {/* Right: minimize (X) */}
         <button
           onClick={handleMinimize}
-          className="p-2 -mr-2 rounded-lg hover:bg-gray-800 active:bg-gray-700 transition-colors"
+          className="justify-self-end p-2 rounded-lg hover:bg-gray-800 active:bg-gray-700 transition-colors"
           aria-label="Minimize"
         >
           <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -519,9 +536,9 @@ export function WorkoutSession({
                   </button>
 
                   {isDescriptionExpanded && (
-                    <div className="mt-2 space-y-2 text-sm overflow-y-auto pr-1">
+                    <div className="mt-2 space-y-2 text-sm leading-7 overflow-y-auto pr-1">
                       {hasDesc && (
-                        <p className="text-gray-400 leading-relaxed">{currentExercise.description}</p>
+                        <p className="text-gray-300">{currentExercise.description}</p>
                       )}
                       {hasPrecaution && (
                         <div className="rounded-lg bg-red-500/10 ring-1 ring-red-500/20 px-3 py-2">
@@ -539,7 +556,7 @@ export function WorkoutSession({
                         <div className="rounded-xl bg-gray-800/40 p-4 ring-1 ring-gray-700/30">
                           <ol className="list-decimal pl-5 space-y-1.5 text-gray-300">
                             {currentExercise.steps!.map((step, i) => (
-                              <li key={i} className="leading-relaxed">{step}</li>
+                              <li key={i} className="leading-8">{step}</li>
                             ))}
                           </ol>
                         </div>
@@ -578,7 +595,7 @@ export function WorkoutSession({
             })()}
 
             {/* Bottom: exercise metrics + CTA */}
-            <div className="flex flex-col items-center w-full shrink-0">
+            <div className="flex flex-col items-center w-full shrink-0 mt-2 pt-3 md:pt-4 border-t border-white/10 bg-gradient-to-t from-gray-900/35 to-transparent">
               {isDurationExercise ? (
                 <>
                   {/* Duration countdown or static display */}
@@ -699,7 +716,10 @@ export function WorkoutSession({
       </div>
 
       {/* ── Navigation footer ── */}
-      <footer className="flex items-center justify-between px-4 py-3 bg-gray-900">
+      <footer
+        className="flex items-center justify-between px-4 py-3 bg-gray-900"
+        style={{ paddingBottom: 'max(0.75rem, env(safe-area-inset-bottom))' }}
+      >
         {/* Previous */}
         <button
           onClick={handlePrev}
@@ -708,7 +728,7 @@ export function WorkoutSession({
             flex flex-col items-center gap-0.5 px-3 py-2 rounded-xl w-[120px]
             transition-colors duration-200
             ${canGoPrev 
-              ? 'text-gray-400 hover:bg-gray-800 active:bg-gray-700' 
+              ? 'text-gray-300 hover:bg-gray-800 active:bg-gray-700' 
               : 'text-gray-700 cursor-not-allowed'
             }
           `}
@@ -717,12 +737,12 @@ export function WorkoutSession({
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
           {prevExName && (
-            <span className="text-xs text-gray-500 max-w-[120px] truncate">{prevExName}</span>
+            <span className="text-[13px] text-gray-400 max-w-[120px] truncate">{prevExName}</span>
           )}
         </button>
 
         {/* Exercise counter */}
-        <span className="text-sm text-gray-400 tabular-nums">
+        <span className="text-sm text-gray-300 tabular-nums">
           {session.currentExerciseIndex + 1} / {session.exercises.length}
         </span>
 
@@ -734,7 +754,7 @@ export function WorkoutSession({
             flex flex-col items-center gap-0.5 px-3 py-2 rounded-xl w-[120px]
             transition-colors duration-200
             ${canGoNext 
-              ? 'text-gray-400 hover:bg-gray-800 active:bg-gray-700' 
+              ? 'text-gray-300 hover:bg-gray-800 active:bg-gray-700' 
               : 'text-gray-700 cursor-not-allowed'
             }
           `}
@@ -743,7 +763,7 @@ export function WorkoutSession({
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
           </svg>
           {nextExName && (
-            <span className="text-xs text-gray-500 max-w-[120px] truncate">{nextExName}</span>
+            <span className="text-[13px] text-gray-400 max-w-[120px] truncate">{nextExName}</span>
           )}
         </button>
       </footer>
