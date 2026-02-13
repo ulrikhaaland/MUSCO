@@ -470,7 +470,7 @@ export function WorkoutSession({
           `}
         >
           {/* Card content */}
-          <div className="relative z-10 flex-1 flex flex-col">
+          <div className="relative z-10 flex-1 flex flex-col min-h-0">
             {/* Exercise name + video */}
             <div className="flex items-start justify-between mb-2">
               <h1 className="text-xl md:text-2xl font-bold text-white leading-tight flex-1 min-w-0 pr-3">
@@ -507,7 +507,7 @@ export function WorkoutSession({
               if (!hasAnyInfo) return null;
 
               return (
-                <div className={`mb-2 ${isDescriptionExpanded ? 'flex-1 flex flex-col min-h-0' : ''}`}>
+                <div className={`mb-2 ${isDescriptionExpanded ? 'flex-1 min-h-0 flex flex-col' : ''}`}>
                   <button
                     onClick={() => setIsDescriptionExpanded(prev => !prev)}
                     className="inline-flex items-center gap-1 text-sm font-medium text-indigo-400 hover:text-indigo-300 transition-colors"
@@ -519,7 +519,7 @@ export function WorkoutSession({
                   </button>
 
                   {isDescriptionExpanded && (
-                    <div className="mt-2 flex-1 overflow-y-auto space-y-2 text-sm">
+                    <div className="mt-2 space-y-2 text-sm overflow-y-auto pr-1">
                       {hasDesc && (
                         <p className="text-gray-400 leading-relaxed">{currentExercise.description}</p>
                       )}
@@ -578,7 +578,7 @@ export function WorkoutSession({
             })()}
 
             {/* Bottom: exercise metrics + CTA */}
-            <div className="flex flex-col items-center w-full">
+            <div className="flex flex-col items-center w-full shrink-0">
               {isDurationExercise ? (
                 <>
                   {/* Duration countdown or static display */}
