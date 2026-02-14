@@ -25,6 +25,7 @@ export const localizeProgramDayDescriptions = (
     "Glutes + Spine Stability (bridge + bird dog). Quiet trunk; move from hips/shoulders, not the low back.": "Sete + ryggstabilitet (seteløft + bird dog). Rolig overkropp; beveg fra hofter/skuldre, ikke korsrygg.",
     "Repeat & Build Confidence. Same-day should feel easier; next morning should be stable or better.": "Gjenta og bygg trygghet. Det skal føles lettere samme dag; neste morgen stabilt eller bedre.",
     "Zone 2 + Calf Strength (easy). Slow reps; pain stays ≤3/10 during and the next morning.": "Zone 2 + leggstyrke (lett). Rolige reps; smerte ≤3/10 underveis og neste morgen.",
+    "Repeat Zone 2 + Calf Strength (easy). Keep pain ≤3/10 and prioritize controlled tempo.": "Gjenta Zone 2 + leggstyrke (lett). Hold smerte ≤3/10 og prioriter kontrollert tempo.",
     "Calf Capacity + Zone 2 (easy). Keep cadence smooth; stop if pain climbs above 3/10.": "Leggkapasitet + Zone 2 (lett). Jevn frekvens; stopp hvis smerte går over 3/10.",
     "Symptom Calm + Hip Activation. Keep knee tracking over mid-foot and pain ≤3/10.": "Ro ned symptomer + hofteaktivering. Hold kneet over midtfoten og smerte ≤3/10.",
     "Hip Control + Quad Isometrics. Slow reps, no knee collapse inward.": "Hoftekontroll + isometrisk lår. Rolige reps, unngå at kneet faller innover.",
@@ -184,18 +185,29 @@ const orderWorkoutExercisesCanonical = (exercises: any[]): any[] => {
 // Helper function to create workout days with computed durations
 const createWorkoutDay = (day: number, description: string, exercises: any[]) => {
   const orderedExercises = orderWorkoutExercisesCanonical(exercises);
-  const progressionRule =
-    'Progression rule: increase load or volume only after stable pain response (≤3/10 during this session and the next morning) with clean form throughout.';
-  const detailedDescription = description.includes('Progression rule:')
-    ? description
-    : `${description} ${progressionRule}`;
   return {
     day,
-    description: detailedDescription,
-    dayType: 'strength' as const,
+    description: description.trim(),
+    dayType: 'recovery' as const,
     exercises: orderedExercises,
     duration: calculateRecoveryDayDuration(orderedExercises),
   };
+};
+
+const buildRestDescription = (
+  base: string,
+  day: number,
+  daySpecific: { day2: string; day4: string; day6: string; day7: string }
+): string => {
+  const cue =
+    day === 2
+      ? daySpecific.day2
+      : day === 4
+        ? daySpecific.day4
+        : day === 6
+          ? daySpecific.day6
+          : daySpecific.day7;
+  return `${base} Optional recovery: ${cue}`;
 };
 
 const normalizeProgramExerciseOrder = (
@@ -230,7 +242,22 @@ const createLowBackRestDay = (day: number): any => {
     { exerciseId: 'lower-back-4', sets: 2, repetitions: 6, restBetweenSets: 30, modification: 'Slow, controlled crossover. Keep ribs down; stop before pinching.' },
     { exerciseId: 'abs-102', sets: 1, repetitions: 6, restBetweenSets: 45, modification: 'Reach long; keep hips level. Move only as far as you can stay neutral.' },
   ];
-  return { day, isRestDay: true, description: 'Rest day. Gentle spinal mobility and diaphragmatic breathing to reduce stiffness.', exercises, duration: calculateRecoveryDayDuration(exercises) };
+  return {
+    day,
+    isRestDay: true,
+    description: buildRestDescription(
+      'Rest day. Gentle spinal mobility and diaphragmatic breathing to reduce stiffness.',
+      day,
+      {
+        day2: 'Keep movement easy and focus on slow exhale with each trunk rotation.',
+        day4: 'Use shorter ranges if morning stiffness is higher than baseline.',
+        day6: 'Prioritize gentle blood flow and avoid end-range spinal loading.',
+        day7: 'Use this session only as light maintenance if symptoms are calm.',
+      }
+    ),
+    exercises,
+    duration: calculateRecoveryDayDuration(exercises),
+  };
 };
 
 /* ---------------- Runner's Knee ---------------- */
@@ -240,7 +267,22 @@ const createRunnersKneeRestDay = (day: number): any => {
     { exerciseId: 'glutes-44', sets: 2, repetitions: 12, restBetweenSets: 45, modification: 'Pause 1s at the top; keep pelvis stable.' },
     { exerciseId: 'quads-193', sets: 1, duration: 0.5, restBetweenSets: 60, modification: 'Hold shallow angle (≤ 60° knee flexion).' },
   ];
-  return { day, isRestDay: true, description: 'Rest day. Light quad/hip mobility to maintain blood flow without stressing the knee joint.', exercises, duration: calculateRecoveryDayDuration(exercises) };
+  return {
+    day,
+    isRestDay: true,
+    description: buildRestDescription(
+      'Rest day. Light quad/hip mobility to maintain blood flow without stressing the knee joint.',
+      day,
+      {
+        day2: 'Keep the knee tracking over mid-foot and avoid deep bend angles.',
+        day4: 'Use a shallow wall-sit only if pain remains at or below 3/10.',
+        day6: 'Limit total standing load if the knee feels irritated after walking.',
+        day7: 'Treat this as a reset day focused on calm range and low tension.',
+      }
+    ),
+    exercises,
+    duration: calculateRecoveryDayDuration(exercises),
+  };
 };
 
 /* ---------------- Shoulder Impingement ---------------- */
@@ -250,7 +292,22 @@ const createShoulderRestDay = (day: number): any => {
     { exerciseId: 'shoulders-30', sets: 2, repetitions: 12, restBetweenSets: 45, modification: 'Use light band; focus on scapular squeeze.' },
     { exerciseId: 'shoulders-94', sets: 2, repetitions: 10, restBetweenSets: 45, modification: 'Elbow tucked to side; slow tempo.' },
   ];
-  return { day, isRestDay: true, description: 'Rest day. Scapular mobility and low-load cuff activation for circulation.', exercises, duration: calculateRecoveryDayDuration(exercises) };
+  return {
+    day,
+    isRestDay: true,
+    description: buildRestDescription(
+      'Rest day. Scapular mobility and low-load cuff activation for circulation.',
+      day,
+      {
+        day2: 'Keep shoulder motion below pinching range and avoid shrugging.',
+        day4: 'Focus on slow external rotation with ribs stacked and neck relaxed.',
+        day6: 'Use very light tension and stop before any front-shoulder discomfort.',
+        day7: 'Prioritize recovery and preserve comfortable overhead tolerance.',
+      }
+    ),
+    exercises,
+    duration: calculateRecoveryDayDuration(exercises),
+  };
 };
 
 /* ---------------- Lateral Ankle Sprain ---------------- */
@@ -260,7 +317,22 @@ const createAnkleRestDay = (day: number): any => {
     { exerciseId: 'calves-6', sets: 2, repetitions: 12, restBetweenSets: 45, modification: 'Both legs; slow up-down, support as needed.' },
     { exerciseId: 'cardio-13', duration: 3, warmup: true, modification: 'Easy marching pace for circulation; no impact.' },
   ];
-  return { day, isRestDay: true, description: 'Rest day. Gentle range of motion and calf pump to assist lymph drainage.', exercises, duration: calculateRecoveryDayDuration(exercises) };
+  return {
+    day,
+    isRestDay: true,
+    description: buildRestDescription(
+      'Rest day. Gentle range of motion and calf pump to assist lymph drainage.',
+      day,
+      {
+        day2: 'Keep movements pain-managed and monitor swelling through the day.',
+        day4: 'Prioritize ankle mobility before calf work to reduce stiffness.',
+        day6: 'Use support for balance and avoid rapid directional changes.',
+        day7: 'Treat this as low-load circulation work to keep the ankle calm.',
+      }
+    ),
+    exercises,
+    duration: calculateRecoveryDayDuration(exercises),
+  };
 };
 
 /* ---------------- Tennis Elbow ---------------- */
@@ -270,7 +342,22 @@ const createTennisElbowRestDay = (day: number): any => {
     { exerciseId: 'forearms-4', sets: 2, repetitions: 12, restBetweenSets: 30, modification: 'Support forearm on thigh/table and rotate only in pain-free range.' },
     { exerciseId: 'forearms-3', sets: 1, duration: 0.5, restBetweenSets: 45, modification: 'Gentle isometric hold with forearm supported on thigh/table.' },
   ];
-  return { day, isRestDay: true, description: 'Rest day. Low-load wrist mobility and gentle neural glide to reduce elbow tension.', exercises, duration: calculateRecoveryDayDuration(exercises) };
+  return {
+    day,
+    isRestDay: true,
+    description: buildRestDescription(
+      'Rest day. Low-load wrist mobility and gentle neural glide to reduce elbow tension.',
+      day,
+      {
+        day2: 'Keep grip pressure light and avoid repetitive loaded extension.',
+        day4: 'Use supported forearm position and smooth rotation only.',
+        day6: 'Prioritize symptom calm over extra volume if elbow feels reactive.',
+        day7: 'Use short mobility work only if next-morning tenderness is stable.',
+      }
+    ),
+    exercises,
+    duration: calculateRecoveryDayDuration(exercises),
+  };
 };
 
 /* ---------------- Hamstring Strain ---------------- */
@@ -300,8 +387,16 @@ const createHamstringRestDay = (day: number): any => {
   
   return {
     day,
-    description:
+    description: buildRestDescription(
       'Rest day. Gentle mobility and circulation work for healing and neural gliding.',
+      day,
+      {
+        day2: 'Keep stride short and avoid any stretch-pain sensation.',
+        day4: 'Use slow bridge tempo and stop before hamstring guarding appears.',
+        day6: 'Focus on low-load activation with controlled hinge range.',
+        day7: 'Treat this as a symptom-check day with minimal posterior-chain stress.',
+      }
+    ),
     isRestDay: true,
     duration: calculateRecoveryDayDuration(exercises),
     exercises,
@@ -339,8 +434,16 @@ const createPostureRestDay = (day: number): any => {
     day,
     isRestDay: true,
     duration: calculateRecoveryDayDuration(exercises),
-    description:
+    description: buildRestDescription(
       'Rest day. Gentle thoracic mobility and postural activation to maintain upright awareness.',
+      day,
+      {
+        day2: 'Use short movement breaks and keep shoulders down away from ears.',
+        day4: 'Emphasize rib position and smooth band tension through each pull.',
+        day6: 'Prioritize upright tolerance without forcing thoracic extension.',
+        day7: 'Use this day to reset posture with low effort and clean breathing.',
+      }
+    ),
     exercises,
   };
 };
@@ -355,7 +458,16 @@ const createTechNeckRestDay = (day: number): any => {
   return {
     day,
     isRestDay: true,
-    description: 'Rest day. Light rotator cuff activation and posture control to reinforce recovery gains.',
+    description: buildRestDescription(
+      'Rest day. Light rotator cuff activation and posture control to reinforce recovery gains.',
+      day,
+      {
+        day2: 'Keep jaw relaxed and avoid neck-dominant compensation.',
+        day4: 'Use slow tempo and prioritize scapular control over range.',
+        day6: 'Reduce band tension if neck tightness builds during reps.',
+        day7: 'Treat this as low-load maintenance before the next training block.',
+      }
+    ),
     exercises,
     duration: calculateRecoveryDayDuration(exercises),
   };
@@ -371,7 +483,16 @@ const createPlantarRestDay = (day: number): any => {
   return {
     day,
     isRestDay: true,
-    description: 'Rest day. Light foot mobility and calf stretches to support healing.',
+    description: buildRestDescription(
+      'Rest day. Light foot mobility and calf stretches to support healing.',
+      day,
+      {
+        day2: 'Use supportive footwear and keep barefoot time low on hard floors.',
+        day4: 'Keep heel pain below 3/10 and avoid forced dorsiflexion.',
+        day6: 'Prioritize smooth calf loading and controlled arch mechanics.',
+        day7: 'Use only gentle mobility if first-step pain remains calm.',
+      }
+    ),
     exercises,
     duration: calculateRecoveryDayDuration(exercises),
   };
@@ -387,7 +508,16 @@ const createCoreRestDay = (day: number): any => {
   return {
     day,
     isRestDay: true,
-    description: 'Rest day. Gentle activation for the glutes and trunk to promote circulation and postural control.',
+    description: buildRestDescription(
+      'Rest day. Gentle activation for the glutes and trunk to promote circulation and postural control.',
+      day,
+      {
+        day2: 'Prioritize breathing control and neutral spine in each drill.',
+        day4: 'Keep brace quality high and stop before trunk shake increases.',
+        day6: 'Use lower volume if low-back fatigue lingers from prior sessions.',
+        day7: 'Treat this as a light control check, not a hard core session.',
+      }
+    ),
     exercises,
     duration: calculateRecoveryDayDuration(exercises),
   };
@@ -480,7 +610,7 @@ const rehabProgramsAllWeeks: ExerciseProgram[] = [
       expectedOutcome:
         'Lower shin tenderness to touch, and normal walking/stairs feel easier the next day. You should tolerate light calf work without a symptom spike.',
       nextSteps:
-        'Progress by adding slow eccentrics and short cadence-focused walks to rebuild impact tolerance. If mornings stay calm, gradually increase walk time before any jogging.',
+        'Next week will be tailored from your symptom trend, impact tolerance, and recovery response from this week. The follow-up plan may progress, maintain, or reduce loading based on how your shin responds.',
     },
     whatNotToDo:
       'Avoid running, jumping, hills, and hard surfaces this week—especially when sore or fatigued. Don’t push through sharp or increasing tibial pain; if symptoms worsen the next morning, reduce volume.',
@@ -537,7 +667,7 @@ const rehabProgramsAllWeeks: ExerciseProgram[] = [
       },
       createWorkoutDay(
         5,
-        'Zone 2 + Calf Strength (easy). Slow reps; pain stays ≤3/10 during and the next morning.',
+        'Repeat Zone 2 + Calf Strength (easy). Keep pain ≤3/10 and prioritize controlled tempo.',
         [
         { exerciseId: 'calves-13', sets: 2, repetitions: 12, restBetweenSets: 30, warmup: true, modification: 'Open ankle range first, then transition into calf loading.' },
         { exerciseId: 'cardio-13', duration: 20, warmup: true, modification: 'Use a consistent easy pace; no jogging or impact.' },
@@ -591,7 +721,7 @@ const rehabProgramsAllWeeks: ExerciseProgram[] = [
       expectedOutcome:
         'Less morning stiffness, and day-to-day movements (getting up from a chair, rolling in bed, light bending) feel easier and more controlled. You should feel more “steady” through your trunk during the exercises.',
       nextSteps:
-        'If symptoms are stable or improving, add hip-hinge patterning and slow posterior-chain loading so you can lift and bend with confidence without losing your brace.',
+        'Next week will be tailored from your pain pattern, brace quality, and day-to-day movement confidence. The follow-up plan may progress, maintain, or simplify loading based on your back response.',
     },
     whatNotToDo:
       'Avoid breath-holding, repeated end-range flexion/extension, and “testing” heavy lifts. Don’t push through sharp pain or new numbness/tingling; if symptoms travel down the leg or worsen the next morning, scale volume down. Seek care promptly for red flags (progressive weakness, saddle numbness, bowel/bladder changes).',
@@ -637,7 +767,7 @@ const rehabProgramsAllWeeks: ExerciseProgram[] = [
       expectedOutcome:
         'Less front-of-knee sensitivity and easier stairs, chair rises, and short walks at low load.',
       nextSteps:
-        'Add controlled lunge and step patterns when pain remains stable (≤3/10) with no next-day flare.',
+        'Next week will be tailored from your pain response on stairs, squats, and daily movement this week. The follow-up plan may progress, maintain, or reduce knee loading depending on symptom stability.',
     },
     whatNotToDo:
       'Avoid downhill running, deep painful knee flexion, jumping/plyometrics, and high-volume stairs this week. Stop if pain becomes sharp, catching, or clearly worse the next morning.',
@@ -683,7 +813,7 @@ const rehabProgramsAllWeeks: ExerciseProgram[] = [
       expectedOutcome:
         'Less painful arc/pinching and easier shoulder elevation in a comfortable range with improved control.',
       nextSteps:
-        'If symptoms stay stable, increase cuff/scapular volume and progress controlled shoulder flexion.',
+        'Next week will be tailored from your shoulder pain pattern, range tolerance, and compensation control this week. The follow-up plan may adjust volume, range demand, and exercise selection based on your response.',
     },
     whatNotToDo:
       'Do not force overhead range, shrug into pain, or do heavy pressing this week. Avoid sharp anterior shoulder pain, catching, or night-pain escalation after sessions; reduce range/volume if symptoms increase next day.',
@@ -730,7 +860,7 @@ const rehabProgramsAllWeeks: ExerciseProgram[] = [
       expectedOutcome:
         'Less swelling and stiffness, with more comfortable walking and easier stair negotiation at low speed.',
       nextSteps:
-        'Progress calf strength and introduce more single-leg control when symptoms stay stable.',
+        'Next week will be tailored from swelling trend, walking tolerance, and stability response from this week. The follow-up plan may progress, maintain, or reduce ankle demand based on symptom behavior.',
     },
     whatNotToDo:
       'Avoid cutting, jumping, unstable surfaces, and forced end-range dorsiflexion this week. Stop and reduce volume if swelling spikes, gait worsens, or pain increases the next morning.',
@@ -774,7 +904,7 @@ const rehabProgramsAllWeeks: ExerciseProgram[] = [
       expectedOutcome:
         'Lower resting elbow pain and improved tolerance to light grip, mouse/keyboard use, and daily hand tasks.',
       nextSteps:
-        'If symptoms remain stable, introduce more slow eccentrics and modest volume progression.',
+        'Next week will be tailored from your grip tolerance, symptom irritability, and next-day elbow response. The follow-up plan may adjust loading pace and volume according to tendon tolerance.',
     },
     whatNotToDo:
       'Avoid high-force gripping, heavy carries, repetitive wrist extension under fatigue, and jerky movement. Reduce volume if morning pain clearly worsens, and stop if symptoms become sharp, radiating, or neurologic.',
@@ -815,7 +945,7 @@ const rehabProgramsAllWeeks: ExerciseProgram[] = [
       expectedOutcome:
         'Less neck tightness/stiffness and improved ability to sit upright with less fatigue during screen work.',
       nextSteps:
-        'If symptoms remain stable, increase upper-back row volume and cuff endurance.',
+        'Next week will be tailored from neck tension, desk-time tolerance, and movement quality this week. The follow-up plan may rebalance volume and recovery demand based on your symptom trend.',
     },
     whatNotToDo:
       'Avoid shrug-dominant lifting, forced end-range neck stretching, and painful movement ranges. Reduce session volume if symptoms clearly worsen the next day or if headaches are aggravated.',
@@ -859,7 +989,7 @@ const rehabProgramsAllWeeks: ExerciseProgram[] = [
       expectedOutcome:
         'Lower morning heel pain with easier first steps, and better tolerance for short walks at comfortable pace.',
       nextSteps:
-        'If symptoms remain stable, introduce more eccentric calf emphasis and arch-control progressions.',
+        'Next week will be tailored from first-step pain, walking comfort, and heel irritability across this week. The follow-up plan may progress, maintain, or scale tissue loading based on symptom response.',
     },
     whatNotToDo:
       'Avoid barefoot walking on hard floors, sudden volume spikes, and forcing through sharp plantar heel pain. If next-morning pain spikes, reduce session volume and total standing/walking exposure.',
@@ -903,7 +1033,7 @@ const rehabProgramsAllWeeks: ExerciseProgram[] = [
       expectedOutcome:
         'Less hamstring tightness/guarding with easier walking and more comfortable low-load hip hinge patterns.',
       nextSteps:
-        'If symptoms stay stable, progress controlled eccentric hamstring loading and single-leg tolerance.',
+        'Next week will be tailored from your hamstring pain behavior, hinge control, and walking tolerance this week. The follow-up plan may adjust range, tempo, and loading according to how symptoms recover.',
     },
     whatNotToDo:
       'Avoid overstretching, sprinting, and ballistic movement this week. Do not push through sharp pain or cramping; reduce volume if next-day soreness clearly spikes.',
@@ -947,7 +1077,7 @@ const rehabProgramsAllWeeks: ExerciseProgram[] = [
       expectedOutcome:
         'Reduced upper-back/shoulder tension with better awareness and tolerance of upright posture in daily tasks.',
       nextSteps:
-        'If symptoms are stable, increase pulling volume and posterior-chain support work.',
+        'Next week will be tailored from posture endurance, upper-back tension, and tolerance to daily sitting and standing. The follow-up plan may change pulling volume and support work based on your response.',
     },
     whatNotToDo:
       'Avoid heavy pressing, prolonged static slouching, and forcing end-range extension. Reduce volume if neck/shoulder symptoms spike the next day.',
@@ -991,7 +1121,7 @@ const rehabProgramsAllWeeks: ExerciseProgram[] = [
       expectedOutcome:
         'Improved core recruitment with better control in plank/brace positions and easier trunk stability in daily movement.',
       nextSteps:
-        'If control is consistent, add more time under tension and limb coordination demands.',
+        'Next week will be tailored from your bracing consistency, control under fatigue, and next-day symptom pattern. The follow-up plan may progress, maintain, or simplify trunk demands based on execution quality.',
     },
     whatNotToDo:
       'Avoid high-rep sit-ups, long planks with poor form, and breath-holding under effort. If low-back symptoms increase the next morning, reduce hold time and total volume.',
@@ -1032,7 +1162,7 @@ const rehabProgramsAllWeeks: ExerciseProgram[] = [
       expectedOutcome:
         'Lower wrist sensitivity at rest and better tolerance to typing, carrying light items, and daily hand use.',
       nextSteps:
-        'If symptoms remain stable, introduce slightly longer isometric holds and gradual load progression for grip and extension tolerance.',
+        'Next week will be tailored from wrist irritability, typing tolerance, and grip response from this week. The follow-up plan may adjust hold time, loading, and exercise selection based on symptom stability.',
     },
     whatNotToDo:
       'Avoid high-force gripping, fast loaded wrist extension, and repetitive end-range wrist positions under fatigue. Reduce volume if symptoms are clearly worse the next morning.',

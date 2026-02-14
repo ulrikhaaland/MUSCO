@@ -2,9 +2,7 @@ export type Locale = 'en' | 'nb';
 
 export type TranslationKey = string;
 
-// Import language files
-import enTranslations from './translations/en';
-import nbTranslations from './translations/nb';
+import { generatedTranslations } from './generated/translations';
 
 // Type for the translations map
 interface TranslationsMap {
@@ -14,8 +12,8 @@ interface TranslationsMap {
 // Map of all translations by locale
 // Using type assertion to handle nested objects in the actual translation files
 const translations: Record<Locale, TranslationsMap> = {
-  en: enTranslations as unknown as TranslationsMap,
-  nb: nbTranslations as unknown as TranslationsMap,
+  en: { ...generatedTranslations.en } as unknown as TranslationsMap,
+  nb: { ...generatedTranslations.nb } as unknown as TranslationsMap,
 };
 
 /**

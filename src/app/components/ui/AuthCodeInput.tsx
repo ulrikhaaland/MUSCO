@@ -9,7 +9,12 @@ import { toast } from './ToastProvider';
 import { useTranslation } from '@/app/i18n';
 import Logo from './Logo';
 import { LoadingDots } from './LoadingDots';
-import { saveRecoveryProgramToAccount, clearRecoveryProgramFromSession } from '@/app/services/recoveryProgramService';
+import { UserProgram } from '@/app/types/program';
+import {
+  saveRecoveryProgramToAccount,
+  clearRecoveryProgramFromSession,
+  getRecoveryProgramFromSession,
+} from '@/app/services/recoveryProgramService';
 
 
 
@@ -113,17 +118,38 @@ export function AuthCodeInput() {
       // Use the link to sign in
       const userCredential = await signInWithEmailLink(auth, email, data.link);
       const user = userCredential.user;
+      const previousPath = window.sessionStorage.getItem('previousPath');
+      const loginContext = window.sessionStorage.getItem('loginContext');
 
-      // If program data was provided, save it to the user's account
-      if (data.program && user) {
-        try {
-          await saveRecoveryProgramToAccount(user, data.program);
-          toast.success('Program saved to your account!');
-        } catch (error) {
-          console.error('❌ Error saving program:', error);
-          console.error('📋 Program data that failed to save:', data.program);
-          // Don't throw here - the login was successful, we just couldn't save the program
-          toast.error('Login successful, but there was an issue saving the program.');
+      const isUserProgramLike = (programData: unknown): programData is UserProgram =>
+        !!programData &&
+        typeof programData === 'object' &&
+        Array.isArray((programData as { programs?: unknown[] }).programs);
+
+      let didSaveProgram = false;
+
+      if (user && loginContext === 'saveProgram') {
+        const sessionProgram = getRecoveryProgramFromSession()?.userProgram;
+        const programToSave = isUserProgramLike(data.program)
+          ? data.program
+          : isUserProgramLike(sessionProgram)
+            ? sessionProgram
+            : null;
+
+        if (!programToSave) {
+          toast.error(
+            'Login successful, but no program data was found. Please try saving again from the custom program page.'
+          );
+        } else {
+          try {
+            await saveRecoveryProgramToAccount(user, programToSave);
+            didSaveProgram = true;
+            toast.success('Program saved to your account!');
+          } catch (error) {
+            console.error('❌ Error saving program:', error);
+            console.error('📋 Program data that failed to save:', programToSave);
+            toast.error('Login successful, but there was an issue saving the program.');
+          }
         }
       }
 
@@ -132,23 +158,24 @@ export function AuthCodeInput() {
 
       // Successfully signed in, redirect to appropriate page
       toast.success(t('login.success'));
-      
-      const previousPath = window.sessionStorage.getItem('previousPath');
-      const loginContext = window.sessionStorage.getItem('loginContext');
-      
+
       // Determine post-login destination
-      if (loginContext === 'saveProgram' || loginContext === 'generateProgram') {
+      if (loginContext === 'saveProgram' && !didSaveProgram) {
+        router.push(previousPath || '/program');
+      } else if (loginContext === 'saveProgram' || loginContext === 'generateProgram') {
         router.push('/program');
       } else if (previousPath) {
         router.push(previousPath);
       } else {
         router.push('/app');
       }
-      
-      // Clean up session storage
-      window.sessionStorage.removeItem('previousPath');
-      window.sessionStorage.removeItem('loginContext');
-      clearRecoveryProgramFromSession();
+
+      // For failed saveProgram flows, keep session context/program so the user can retry save.
+      if (loginContext !== 'saveProgram' || didSaveProgram) {
+        window.sessionStorage.removeItem('previousPath');
+        window.sessionStorage.removeItem('loginContext');
+        clearRecoveryProgramFromSession();
+      }
     } catch (error: any) {
       console.error('❌ Error validating code:', error);
 

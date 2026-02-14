@@ -33,6 +33,10 @@ interface ProgramDayComponentProps {
   hideWorkoutFAB?: boolean;
   /** Whether this day is in the past (already passed on the calendar) */
   isPastDay?: boolean;
+  /** Week document id for completion updates */
+  weekId?: string;
+  /** Program document id for completion updates */
+  programId?: string;
 }
 
 export function ProgramDayComponent({
@@ -52,6 +56,8 @@ export function ProgramDayComponent({
   onMarkComplete,
   hideWorkoutFAB = false,
   isPastDay = false,
+  weekId,
+  programId,
 }: ProgramDayComponentProps) {
   const { t } = useTranslation();
   // State to track removed body parts and equipment
@@ -166,10 +172,14 @@ export function ProgramDayComponent({
   const handleStartWorkout = useCallback(() => {
     const exercises = filteredExercises || [];
     if (exercises.length > 0) {
-      sessionActions.startSession(exercises);
+      sessionActions.startSession(exercises, {
+        dayNumber: day.day,
+        weekId,
+        programId,
+      });
       setShowWorkoutSession(true);
     }
-  }, [filteredExercises, sessionActions]);
+  }, [filteredExercises, sessionActions, day.day, weekId, programId]);
 
   // Handle closing workout session (minimize to FAB)
   const handleCloseWorkoutSession = useCallback(() => {

@@ -561,7 +561,8 @@ const SignUpToContinueCard = ({
         </p>
         <button
           onClick={() => {
-            window.sessionStorage.setItem('previousPath', '/');
+            const currentPath = `${window.location.pathname}${window.location.search}`;
+            window.sessionStorage.setItem('previousPath', currentPath);
             window.sessionStorage.setItem('loginContext', 'saveProgram');
             router.push('/login?context=save');
           }}
@@ -1437,7 +1438,9 @@ export function ExerciseProgramPage({
     });
   }, [program, router]);
 
-  // Determine if the current date is in a future week compared to the program
+  // Determine if follow-up generation is allowed based on the currently relevant week.
+  // For placeholder "next week" tabs, this must be anchored to the last real week,
+  // not week 1, otherwise follow-up can unlock too early.
   useEffect(() => {
     if (
       !program?.days ||
@@ -1450,16 +1453,37 @@ export function ExerciseProgramPage({
     // Get current date
     const currentDate = new Date();
 
-    // Since each program now represents one week, use the program's createdAt
-    if (!program.createdAt) {
-      // If no createdAt, can't determine week
+    const resolveReferenceWeekCreatedAt = (): Date | null => {
+      const weeks = activeProgram?.programs;
+      if (weeks && weeks.length > 0) {
+        const maxWeekIndex = weeks.length - 1;
+        const selectedIndex = Math.min(
+          Math.max(selectedWeek - 1, 0),
+          maxWeekIndex
+        );
+        const referenceWeek = weeks[selectedIndex] || weeks[maxWeekIndex];
+        if (referenceWeek?.createdAt) {
+          return new Date(referenceWeek.createdAt);
+        }
+      }
+
+      if (program.createdAt) {
+        return new Date(program.createdAt);
+      }
+
+      return null;
+    };
+
+    const referenceWeekCreatedAt = resolveReferenceWeekCreatedAt();
+    if (!referenceWeekCreatedAt) {
+      // If no reference week date exists, keep follow-up locked.
       setIsInFutureWeek(false);
+      setNextProgramDate(null);
       return;
     }
 
     // Get the Sunday of the program's week (start of day)
-    const programCreatedAt = new Date(program.createdAt);
-    const programWeekEnd = getEndOfWeek(programCreatedAt);
+    const programWeekEnd = getEndOfWeek(referenceWeekCreatedAt);
     const programSunday = new Date(programWeekEnd);
     programSunday.setHours(0, 0, 0, 0);
 
@@ -1470,7 +1494,7 @@ export function ExerciseProgramPage({
     setNextProgramDate(programSunday);
 
     setIsInFutureWeek(inFutureWeek);
-  }, [program]);
+  }, [program, activeProgram?.programs, selectedWeek]);
 
   // Check weekly generation limit for this program type
   useEffect(() => {
@@ -1758,7 +1782,8 @@ export function ExerciseProgramPage({
                       {!user && isViewingCustomProgram && (
                         <button
                           onClick={() => {
-                            window.sessionStorage.setItem('previousPath', '/');
+                            const currentPath = `${window.location.pathname}${window.location.search}`;
+                            window.sessionStorage.setItem('previousPath', currentPath);
                             window.sessionStorage.setItem('loginContext', 'saveProgram');
                             router.push('/login?context=save');
                           }}

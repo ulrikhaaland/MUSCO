@@ -83,7 +83,6 @@ export function WorkoutSession({
   onVideoClick,
   onComplete,
   onRestart,
-  estimatedDurationMin,
 }: WorkoutSessionProps) {
   const { t } = useTranslation();
 
@@ -116,14 +115,14 @@ export function WorkoutSession({
   const [showExitMenu, setShowExitMenu] = useState(false);
   // Exercise details panel
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
-  // Whether the user has tapped "Start Workout", and when
-  const [hasStarted, setHasStarted] = useState(false);
-  const [actualStartTime, setActualStartTime] = useState<Date | null>(null);
+  // One-shot visual attention animation for the elapsed chip
+  const [showElapsedAttention, setShowElapsedAttention] = useState(false);
   // Duration exercise countdown end time
   const [durationTimerEnd, setDurationTimerEnd] = useState<Date | null>(null);
 
+  const hasStarted = session.startTime !== null;
   // Elapsed time -- ticks only between "Start Workout" and workout completion
-  const elapsedSeconds = useElapsedTime(actualStartTime, hasStarted && !workoutComplete);
+  const elapsedSeconds = useElapsedTime(session.startTime, hasStarted && !workoutComplete);
 
   // Slide animation direction
   const [slideDir, setSlideDir] = useState<SlideDirection>(null);
@@ -144,8 +143,8 @@ export function WorkoutSession({
 
   const handleCompleteSet = useCallback(() => {
     if (!hasStarted) {
-      setHasStarted(true);
-      setActualStartTime(new Date());
+      actions.markStarted();
+      setShowElapsedAttention(true);
       // Reset completion status when restarting a workout
       onRestart?.();
       // Start duration countdown for duration exercises
@@ -361,10 +360,6 @@ export function WorkoutSession({
   const nextExName = canGoNext
     ? session.exercises[session.currentExerciseIndex + 1]?.name ?? ''
     : '';
-  const hasEstimate = !!(estimatedDurationMin && estimatedDurationMin > 0);
-  const remainingSeconds = hasEstimate ? estimatedDurationMin! * 60 - elapsedSeconds : 0;
-  const isOvertime = hasEstimate && remainingSeconds < 0;
-
   return (
     <div 
       className="fixed inset-0 z-[100] bg-gray-900 flex flex-col overflow-x-hidden"
@@ -438,27 +433,22 @@ export function WorkoutSession({
           {t('workout.endWorkout')}
         </button>
 
-        {/* Center: elapsed / remaining timer */}
-        <div className="justify-self-center inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gray-800/70 ring-2 ring-indigo-400/40 text-gray-300">
+        {/* Center: elapsed timer */}
+        <div
+          className={`
+            justify-self-center inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full
+            bg-gray-800/70 ring-2 ring-indigo-400/40 text-gray-300
+            ${showElapsedAttention ? 'animate-elapsed-attention' : ''}
+          `}
+          onAnimationEnd={() => {
+            if (showElapsedAttention) setShowElapsedAttention(false);
+          }}
+        >
           <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
           <span className="text-[10px] uppercase tracking-wide text-gray-500">Elapsed</span>
           <span className="text-sm font-medium tabular-nums">{formatElapsedTime(elapsedSeconds)}</span>
-          {hasEstimate && (
-            <>
-              <span className="text-gray-500">/</span>
-              <span className={`text-[10px] uppercase tracking-wide ${isOvertime ? 'text-amber-400' : 'text-gray-500'}`}>
-                {isOvertime ? 'Over' : 'Left'}
-              </span>
-              <span className={`text-sm tabular-nums ${isOvertime ? 'text-amber-400' : 'text-gray-400'}`}>
-                {isOvertime
-                  ? `+${formatElapsedTime(Math.abs(remainingSeconds))}`
-                  : `-${formatElapsedTime(remainingSeconds)}`
-                }
-              </span>
-            </>
-          )}
         </div>
 
         {/* Right: minimize (X) */}
@@ -538,28 +528,40 @@ export function WorkoutSession({
                   {isDescriptionExpanded && (
                     <div className="mt-2 space-y-2 text-sm leading-7 overflow-y-auto pr-1">
                       {hasDesc && (
-                        <p className="text-gray-300">{currentExercise.description}</p>
+                        <section className="space-y-1.5">
+                          <h3 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-gray-500">
+                            Description
+                          </h3>
+                          <p className="text-gray-300">{currentExercise.description}</p>
+                        </section>
                       )}
                       {hasPrecaution && (
-                        <div className="rounded-lg bg-red-500/10 ring-1 ring-red-500/20 px-3 py-2">
-                          <span className="font-semibold text-red-400 text-xs uppercase tracking-wide">{t('program.precaution')}</span>
-                          <p className="text-white mt-0.5">{currentExercise.precaution}</p>
-                        </div>
+                        <section className="space-y-1">
+                          <h3 className="font-semibold text-red-400 text-[11px] uppercase tracking-[0.14em]">
+                            {t('program.precaution')}
+                          </h3>
+                          <p className="text-gray-200">{currentExercise.precaution}</p>
+                        </section>
                       )}
                       {hasModification && (
-                        <div className="rounded-lg bg-yellow-500/10 ring-1 ring-yellow-500/20 px-3 py-2">
-                          <span className="font-semibold text-yellow-400 text-xs uppercase tracking-wide">{t('program.modification')}</span>
-                          <p className="text-white mt-0.5">{currentExercise.modification}</p>
-                        </div>
+                        <section className="space-y-1">
+                          <h3 className="font-semibold text-yellow-400 text-[11px] uppercase tracking-[0.14em]">
+                            {t('program.modification')}
+                          </h3>
+                          <p className="text-gray-200">{currentExercise.modification}</p>
+                        </section>
                       )}
                       {hasSteps && (
-                        <div className="rounded-xl bg-gray-800/40 p-4 ring-1 ring-gray-700/30">
+                        <section className="space-y-1.5">
+                          <h3 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-gray-500">
+                            Instructions
+                          </h3>
                           <ol className="list-decimal pl-5 space-y-1.5 text-gray-300">
                             {currentExercise.steps!.map((step, i) => (
                               <li key={i} className="leading-8">{step}</li>
                             ))}
                           </ol>
-                        </div>
+                        </section>
                       )}
                     </div>
                   )}

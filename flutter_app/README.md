@@ -1,16 +1,47 @@
-# musco_app
+# Flutter App
 
-A new Flutter project.
+## Chat Backend Setup
 
-## Getting Started
+The mobile app calls the same backend as web: `POST /api/assistant`.
 
-This project is a starting point for a Flutter application.
+Set backend URL with Dart define:
 
-A few resources to get you started if this is your first Flutter project:
+```bash
+flutter run --dart-define=API_BASE_URL=https://your-vercel-domain.vercel.app
+```
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+### Local Development
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- Android emulator: `http://10.0.2.2:3000`
+- iOS simulator: `http://localhost:3000`
+
+Example:
+
+```bash
+flutter run --dart-define=API_BASE_URL=http://10.0.2.2:3000
+```
+
+## VS Code Launch Targets
+
+`/.vscode/launch.json` includes:
+
+- `Flutter App (Local API Auto)`
+- `Flutter App (Local API Android Emulator)`
+- `Flutter App (Local API iOS Simulator)`
+- `Flutter App (Prod API)`
+
+Update the prod placeholder domain before use.
+
+## Runtime routing (no define set)
+
+If `API_BASE_URL` is not set:
+
+- physical device -> `https://musco-one.vercel.app`
+- Android emulator -> `http://10.0.2.2:3000`
+- iOS simulator -> `http://localhost:3000`
+
+You can override physical default with:
+
+```bash
+flutter run --dart-define=API_PHYSICAL_BASE_URL=https://your-vercel-domain.vercel.app
+```

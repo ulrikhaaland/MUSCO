@@ -1,36 +1,42 @@
+// AUTO-GENERATED helper logic shared across web and Flutter.
+// Run: node scripts/convert_body_parts.js
+
 import '../config/body_part_groups.dart';
 import '../models/body_part_group.dart';
 
-/// Strip gender prefix from a BioDigital object ID.
 String getNeutralId(String id) =>
     id.replaceAll(RegExp(r'human_19_(male|female)_'), '');
 
-/// Add gender prefix to a BioDigital object ID.
 String getGenderedId(String id, String gender) {
   final neutralId = getNeutralId(id);
   return 'human_19_${gender}_$neutralId';
 }
 
-/// Check if two object IDs match, ignoring gender prefix.
 bool idsMatch(String id1, String id2) => getNeutralId(id1) == getNeutralId(id2);
 
-/// Find the [BodyPartGroup] that contains the given object ID.
-BodyPartGroup? getPartGroup(String id) {
+String? getPartGroupKey(String id) {
   final neutralId = getNeutralId(id);
 
-  for (final group in bodyPartGroups.values) {
+  for (final entry in bodyPartGroups.entries) {
+    final group = entry.value;
     final allGroupIds = [
       ...group.parts.map((p) => p.objectId),
       ...group.selectIds,
     ];
     if (allGroupIds.any((gid) => getNeutralId(gid) == neutralId)) {
-      return group;
+      return entry.key;
     }
   }
+
   return null;
 }
 
-/// Build a selection map from a list of neutral IDs + gender.
+BodyPartGroup? getPartGroup(String id) {
+  final groupKey = getPartGroupKey(id);
+  if (groupKey == null) return null;
+  return bodyPartGroups[groupKey];
+}
+
 Map<String, bool> createSelectionMap(
   List<String> ids,
   String gender, {

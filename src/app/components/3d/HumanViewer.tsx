@@ -22,25 +22,9 @@ import { WeeklyLimitReachedError } from '@/app/services/questionnaire';
 import { WeeklyLimitModal } from '../ui/WeeklyLimitModal';
 import { translatePartDirectionPrefix } from '@/app/utils/bodyPartTranslation';
 import { ExplainerTooltip } from '../ui/ExplainerTooltip';
-
-const MODEL_IDS: Record<Gender, string> = {
-  male: '5tOV',
-  female: '5tOR',
-};
+import { modelIds, bodyGroupNameToConfig } from '@shared/anatomy/viewer_shared';
 
 const DESKTOP_SPLIT_KEY = 'hv:desktop_split_px';
-
-// Map assistant's body group names to bodyPartGroups config keys
-const BODY_GROUP_NAME_TO_CONFIG: Record<string, keyof typeof bodyPartGroups> = {
-  'Neck': 'neck',
-  'Shoulders': 'chest', // chest config includes shoulder area
-  'Arms': 'chest', // arms are part of upper body, use chest for now
-  'Chest': 'chest',
-  'Abdomen': 'abdomen',
-  'Back': 'back',
-  'Hips & Glutes': 'glutes',
-  'Legs': 'glutes', // legs are connected to glutes in the model
-};
 
 interface HumanViewerProps {
   gender: Gender;
@@ -319,7 +303,7 @@ export default function HumanViewer({
   const getViewerUrl = useCallback(
     (modelGender: Gender) => {
       const viewerUrl = new URL('https://human.biodigital.com/viewer/');
-      viewerUrl.searchParams.set('id', MODEL_IDS[modelGender]);
+      viewerUrl.searchParams.set('id', modelIds[modelGender]);
       viewerUrl.searchParams.set('ui-anatomy-descriptions', 'false');
       viewerUrl.searchParams.set('ui-anatomy-pronunciations', 'false');
       viewerUrl.searchParams.set('ui-anatomy-labels', 'false');
@@ -653,7 +637,7 @@ export default function HumanViewer({
     
     // Find the group first to check if already selected
     const group = findGroupByName(groupName);
-    const legacyConfigKey = !group ? BODY_GROUP_NAME_TO_CONFIG[groupName] : null;
+    const legacyConfigKey = !group ? bodyGroupNameToConfig[groupName as keyof typeof bodyGroupNameToConfig] : null;
     const targetGroup = group || (legacyConfigKey ? bodyPartGroups[legacyConfigKey] : null);
     
     if (!targetGroup) {

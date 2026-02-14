@@ -26,11 +26,20 @@ function LoginPageContent() {
 
     // Only try to go back if user was in a save context (trying to save a program)
     if (isSaveContext) {
+      // First preference: explicit return path captured before navigating to login
+      const previousPath = window.sessionStorage.getItem('previousPath');
+      if (previousPath) {
+        window.sessionStorage.removeItem('loginContext');
+        router.push(previousPath);
+        return;
+      }
+
       // Prefer same-origin referrer
       if (document.referrer) {
         try {
           const ref = new URL(document.referrer);
           if (ref.origin === window.location.origin && !ref.pathname.startsWith('/login')) {
+            window.sessionStorage.removeItem('loginContext');
             router.push(`${ref.pathname}${ref.search}${ref.hash}`);
             return;
           }
@@ -40,6 +49,7 @@ function LoginPageContent() {
       }
       // Fall back to browser history
       if (window.history.length > 1) {
+        window.sessionStorage.removeItem('loginContext');
         router.back();
         return;
       }

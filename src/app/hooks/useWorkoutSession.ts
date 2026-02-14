@@ -12,13 +12,24 @@ export interface WorkoutSession {
   startTime: Date | null;
   restTimerEnd: Date | null;
   exercises: Exercise[];
+  sourceDayNumber: number | null;
+  sourceWeekId: string | null;
+  sourceProgramId: string | null;
 }
 
 /**
  * Actions for controlling workout session
  */
 export interface WorkoutSessionActions {
-  startSession: (exercises: Exercise[]) => void;
+  startSession: (
+    exercises: Exercise[],
+    source?: {
+      dayNumber?: number;
+      weekId?: string;
+      programId?: string;
+    }
+  ) => void;
+  markStarted: () => void;
   endSession: () => void;
   completeSet: () => void;
   skipRest: () => void;
@@ -29,6 +40,7 @@ export interface WorkoutSessionActions {
 }
 
 const STORAGE_KEY = 'musco_workout_session';
+const WORKOUT_SESSION_EVENT = 'musco:workout-session-updated';
 
 const initialSession: WorkoutSession = {
   isActive: false,
@@ -38,7 +50,14 @@ const initialSession: WorkoutSession = {
   startTime: null,
   restTimerEnd: null,
   exercises: [],
+  sourceDayNumber: null,
+  sourceWeekId: null,
+  sourceProgramId: null,
 };
+
+function areSessionsEqual(a: WorkoutSession, b: WorkoutSession): boolean {
+  return serializeSession(a) === serializeSession(b);
+}
 
 /**
  * Serialize session for localStorage (handles Date objects)
@@ -61,6 +80,9 @@ function deserializeSession(json: string): WorkoutSession | null {
       ...data,
       startTime: data.startTime ? new Date(data.startTime) : null,
       restTimerEnd: data.restTimerEnd ? new Date(data.restTimerEnd) : null,
+      sourceDayNumber: data.sourceDayNumber ?? null,
+      sourceWeekId: data.sourceWeekId ?? null,
+      sourceProgramId: data.sourceProgramId ?? null,
     };
   } catch {
     return null;
@@ -99,11 +121,46 @@ export function useWorkoutSession(): [WorkoutSession, WorkoutSessionActions] {
     if (typeof window === 'undefined') return;
     
     if (session.isActive) {
-      localStorage.setItem(STORAGE_KEY, serializeSession(session));
+      const serialized = serializeSession(session);
+      localStorage.setItem(STORAGE_KEY, serialized);
+      window.dispatchEvent(
+        new CustomEvent(WORKOUT_SESSION_EVENT, { detail: serialized })
+      );
     } else {
       localStorage.removeItem(STORAGE_KEY);
+      window.dispatchEvent(
+        new CustomEvent(WORKOUT_SESSION_EVENT, { detail: null })
+      );
     }
   }, [session]);
+
+  // Keep all hook instances in sync (same tab + cross-tab) so only one session is active globally.
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const syncFromSerialized = (serialized: string | null) => {
+      const next = serialized ? deserializeSession(serialized) : null;
+      const normalizedNext = next ?? initialSession;
+      setSession(prev => (areSessionsEqual(prev, normalizedNext) ? prev : normalizedNext));
+    };
+
+    const onInternalSync = (event: Event) => {
+      const customEvent = event as CustomEvent<string | null>;
+      syncFromSerialized(customEvent.detail ?? null);
+    };
+
+    const onStorage = (event: StorageEvent) => {
+      if (event.key !== STORAGE_KEY) return;
+      syncFromSerialized(event.newValue);
+    };
+
+    window.addEventListener(WORKOUT_SESSION_EVENT, onInternalSync as EventListener);
+    window.addEventListener('storage', onStorage);
+    return () => {
+      window.removeEventListener(WORKOUT_SESSION_EVENT, onInternalSync as EventListener);
+      window.removeEventListener('storage', onStorage);
+    };
+  }, []);
 
   // Clear timer on unmount
   useEffect(() => {
@@ -138,15 +195,35 @@ export function useWorkoutSession(): [WorkoutSession, WorkoutSessionActions] {
     };
   }, [session.restTimerEnd]);
 
-  const startSession = useCallback((exercises: Exercise[]) => {
+  const startSession = useCallback((
+    exercises: Exercise[],
+    source?: {
+      dayNumber?: number;
+      weekId?: string;
+      programId?: string;
+    }
+  ) => {
     setSession({
       isActive: true,
       currentExerciseIndex: 0,
       currentSet: 1,
       completedSets: new Array(exercises.length).fill(0),
-      startTime: new Date(),
+      startTime: null,
       restTimerEnd: null,
       exercises,
+      sourceDayNumber: source?.dayNumber ?? null,
+      sourceWeekId: source?.weekId ?? null,
+      sourceProgramId: source?.programId ?? null,
+    });
+  }, []);
+
+  const markStarted = useCallback(() => {
+    setSession(prev => {
+      if (!prev.isActive || prev.startTime) return prev;
+      return {
+        ...prev,
+        startTime: new Date(),
+      };
     });
   }, []);
 
@@ -291,6 +368,7 @@ export function useWorkoutSession(): [WorkoutSession, WorkoutSessionActions] {
 
   const actions: WorkoutSessionActions = {
     startSession,
+    markStarted,
     endSession,
     completeSet,
     skipRest,

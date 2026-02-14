@@ -18,6 +18,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { SafeAreaPWA } from './components/ui/SafeAreaPWA';
 import RegulatoryFooter from './components/ui/RegulatoryFooter';
 import { AuthOverlay } from './components/auth/AuthOverlay';
+import GlobalWorkoutSessionFAB from './components/ui/GlobalWorkoutSessionFAB';
 
 // const geistSans = localFont({
 //   src: "./fonts/GeistVF.woff",
@@ -185,6 +186,7 @@ export default function RootLayout({
                       {pathname === '/' && <RegulatoryFooter />}
                     </SafeArea>
                   </SafeAreaPWA>
+                  <GlobalWorkoutSessionFAB />
                   <AuthOverlay />
                 </ToastProvider>
               </AppProvider>

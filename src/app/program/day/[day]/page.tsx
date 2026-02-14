@@ -620,6 +620,8 @@ function DayDetailPageContent() {
             onWorkoutRestart={handleWorkoutRestart}
             onMarkComplete={handleMarkComplete}
             isPastDay={isPastDay}
+            weekId={selectedProgram?.weekId}
+            programId={activeProgram?.docId}
             hideWorkoutFAB={!user}
           />
         </div>

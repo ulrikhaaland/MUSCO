@@ -191,6 +191,7 @@ const translations = {
   'auth.generateProgramContext.subtitle': 'Logg inn for å generere ditt personlige program for neste uke, så det er klart når du trenger det.',
   'auth.saveAndContinue': 'Lagre & fortsett',
   'auth.continueWithoutSaving': 'Fortsett uten å lagre',
+  'auth.goBack': 'Gå tilbake',
   'auth.signIn': 'Logg inn',
   'auth.signOut': 'Logg ut',
   'auth.signing': 'Logger inn',

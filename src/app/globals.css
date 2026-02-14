@@ -1,40 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-/* ============================================
-   Theme Color Tokens
-   ============================================ */
-:root {
-  /* Background surfaces (darkest to lightest) */
-  --surface-deepest: #0E1116;
-  --surface-base: #111827;
-  --surface-elevated: #141922;
-  --surface-muted: #1f2937;
-
-  /* Primary brand (purple) */
-  --brand: #635bff;
-  --brand-hover: #7c75ff;
-  --brand-soft: rgba(99, 91, 255, 0.12);
-  --brand-border: rgba(99, 91, 255, 0.35);
-  --brand-text: #c8cbff;
-  --brand-text-light: #f2f6ff;
-
-  /* Secondary/action (bright purple) */
-  --secondary: #8b5cf6;
-  --secondary-hover: #a78bfa;
-  --secondary-soft: rgba(139, 92, 246, 0.12);
-  --secondary-border: rgba(139, 92, 246, 0.35);
-
-  /* Borders */
-  --border-default: #374151;
-  --border-muted: rgba(255, 255, 255, 0.1);
-  --border-subtle: rgba(255, 255, 255, 0.15);
-
-  /* Miscellaneous */
-  --drag-handle: #566074;
-  --tooltip-bg: #1f2937e0;
-}
+@import './generated-theme-tokens.css';
 
 /* ============================================
    Safe area & legacy variables
@@ -404,6 +371,25 @@ iframe {
 
 .animate-pulse-subtle {
   animation: pulse-subtle 2s ease-in-out infinite;
+}
+
+@keyframes elapsed-attention {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 rgba(99, 102, 241, 0);
+  }
+  35% {
+    transform: scale(1.12);
+    box-shadow: 0 0 0.9rem rgba(99, 102, 241, 0.38);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 rgba(99, 102, 241, 0);
+  }
+}
+
+.animate-elapsed-attention {
+  animation: elapsed-attention 700ms cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 /* ============================================

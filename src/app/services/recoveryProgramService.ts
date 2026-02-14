@@ -1,4 +1,4 @@
-import { collection, addDoc } from 'firebase/firestore';
+import { collection, doc, writeBatch } from 'firebase/firestore';
 import { db } from '../firebase/config';
 import { 
   getProgramBySlug,
@@ -194,6 +194,7 @@ export const saveRecoveryProgramToAccount = async (
     }
 
     const programsRef = collection(db, `users/${user.uid}/programs`);
+    const programDocRef = doc(programsRef);
 
     // Create main program document
     // Note: isCustomProgram is intentionally excluded - saved programs are regular user programs
@@ -211,11 +212,8 @@ export const saveRecoveryProgramToAccount = async (
 
     console.log('📄 Creating recovery program document');
 
-    const programDocRef = await addDoc(programsRef, programDoc);
-    console.log(
-      '✅ Recovery program document created with ID:',
-      programDocRef.id
-    );
+    const batch = writeBatch(db);
+    batch.set(programDocRef, programDoc);
 
     // Save weekly program data in subcollection
     const innerProgramsRef = collection(
@@ -233,9 +231,15 @@ export const saveRecoveryProgramToAccount = async (
         createdAt: weekDate.toISOString(),
       };
 
-      await addDoc(innerProgramsRef, programDataDoc);
+      const weekDocRef = doc(innerProgramsRef);
+      batch.set(weekDocRef, programDataDoc);
     }
 
+    await batch.commit();
+    console.log(
+      '✅ Recovery program document created with ID:',
+      programDocRef.id
+    );
     console.log('🎉 Recovery program successfully saved to user account!');
     return programDocRef.id;
   } catch (error) {

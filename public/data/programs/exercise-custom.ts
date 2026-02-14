@@ -231,16 +231,16 @@ const exerciseProgramTemplates = [
     targetAreas: ['full body', 'strength'],
     bodyParts: ['Upper Body', 'Lower Body', 'Core'],
     programOverview:
-      'A high-return full-body week built around foundational push, pull, squat, and hinge patterns. You get enough volume to drive visible progress while keeping recovery manageable and execution quality high.',
-    summary: 'Build noticeable full-body strength in one week with a structure that is simple, hard, and repeatable.',
+      'This full-body block builds strength across squat, hinge, push, and pull patterns with a practical gym split. Volume is high enough for visible progress while still protecting recovery quality between sessions. You should feel stronger on core lifts, steadier under fatigue, and more confident repeating hard training weeks.',
+    summary: 'Build noticeable full-body strength with a structure that is simple, hard, and repeatable. Each session trains major movement patterns so progress is visible and trackable.',
     timeFrameExplanation:
-      'Train 3 non-consecutive sessions this week. Keep 1-3 reps in reserve, use controlled tempo, and track loads for progression decisions.',
+      'Train 3 non-consecutive sessions this week. Keep 1-3 reps in reserve, control each eccentric, and log loads for objective progression. Keep rest periods consistent so performance comparisons are valid across sessions.',
     afterTimeFrame: {
-      expectedOutcome: 'Improved movement confidence and consistent week-to-week training rhythm.',
-      nextSteps: 'Progress load slightly or add one set to your primary movements when performance is stable.',
+      expectedOutcome: 'Improved movement confidence, stronger main-lift execution, and steadier weekly training rhythm. Most lifters also notice cleaner setup and bracing under fatigue.',
+      nextSteps: 'Next week will be tailored from your feedback on this week, including effort, form quality, and recovery response. The follow-up plan may increase, maintain, or reduce load and volume based on how you actually performed.',
     },
     whatNotToDo:
-      'Do not rush reps, skip warm-up sets, or push to technical failure on every set.',
+      'Do not rush reps, skip warm-up sets, or push to technical failure on every set. Avoid adding load when setup, bracing, or bar path is inconsistent.',
     days: [
       createWorkoutDay(1, 'Full Body A', [
         { exerciseId: 'warmup-8', sets: 1, repetitions: 20, restBetweenSets: 30, warmup: true , modification: 'Prep shoulders with smooth circles and relaxed breathing before main work' },
@@ -273,15 +273,15 @@ const exerciseProgramTemplates = [
     targetAreas: ['upper body', 'strength'],
     bodyParts: ['Shoulders', 'Upper Back', 'Arms'],
     programOverview:
-      'An upper-body focused week designed to add size and pressing-pulling strength without sacrificing shoulder mechanics. Volume is high enough to drive adaptation, but balanced to keep joints happy.',
-    summary: 'Build broader shoulders, stronger pulls, and cleaner presses with a high-appeal upper-body split.',
+      'This upper-body plan targets shoulders, back, and arms with balanced push-pull stress across the week. It builds visible size while reinforcing shoulder mechanics that hold up under higher training volume. Expect stronger pressing confidence, cleaner pulls, and better upper-body posture under load.',
+    summary: 'Build broader shoulders, stronger pulls, and cleaner presses with a balanced upper-body split. The week prioritizes symmetry so size gains do not compromise joint control.',
     timeFrameExplanation:
-      'Train 3 non-consecutive sessions this week. Use moderate-to-challenging loads, keep shoulder blades controlled, and avoid shrug-dominant effort.',
+      'Train 3 non-consecutive sessions this week. Use moderate-to-challenging loads and keep scapular control on every rep. Match push quality with pull quality and keep neck tension low.',
     afterTimeFrame: {
-      expectedOutcome: 'Better upper-body endurance and more stable shoulder mechanics.',
-      nextSteps: 'Progress reps or load slightly while preserving form quality.',
+      expectedOutcome: 'Better upper-body endurance, stronger pull mechanics, and more stable shoulders during pressing. You should also feel less front-shoulder strain in repeated sets.',
+      nextSteps: 'Next week will be tailored from your feedback on this week, especially shoulder comfort, pulling balance, and execution quality. The follow-up plan may increase, maintain, or reduce intensity based on your real session response.',
     },
-    whatNotToDo: 'Avoid ego loading and painful overhead ranges.',
+    whatNotToDo: 'Avoid ego loading, painful overhead ranges, and shrug-dominant pressing. Reduce intensity if neck tension or front-shoulder pinching increases across sessions.',
     days: [
       createWorkoutDay(1, 'Upper Push + Pull', [
         { exerciseId: 'warmup-8', sets: 1, repetitions: 20, restBetweenSets: 30, warmup: true , modification: 'Prep shoulders with smooth circles and relaxed breathing before main work' },
@@ -314,15 +314,15 @@ const exerciseProgramTemplates = [
     targetAreas: ['lower body', 'strength'],
     bodyParts: ['Glutes', 'Upper Legs', 'Lower Legs'],
     programOverview:
-      'A lower-body dominant week built to grow stronger legs, more powerful glutes, and better squat-hinge mechanics. Sessions combine heavy-enough work with clean execution for fast carryover.',
-    summary: 'Build stronger legs and glutes fast with a lower-body block that feels athletic and effective.',
+      'This lower-body block emphasizes quad strength, hip power, and posterior-chain control in one focused week. Sessions prioritize clean mechanics first, then layer enough overload to drive measurable adaptation. Expect stronger leg output, cleaner depth control, and better lower-body stability under fatigue.',
+    summary: 'Build stronger legs and glutes fast with a lower-body block that feels athletic and effective. Sessions are heavy enough to challenge strength while protecting technique quality.',
     timeFrameExplanation:
-      'Train 3 non-consecutive sessions this week. Use controlled tempo, full-foot pressure, and clean knee-hip alignment before increasing load.',
+      'Train 3 non-consecutive sessions this week. Use controlled tempo, full-foot pressure, and strict knee-hip alignment before increasing load. Treat each set as a quality rep audit, not just a volume target.',
     afterTimeFrame: {
-      expectedOutcome: 'Improved lower-body strength endurance and movement control.',
-      nextSteps: 'Progress by adding load or one additional set to the main lift.',
+      expectedOutcome: 'Improved lower-body strength endurance, cleaner squat and hinge mechanics, and better force output. Fatigue should feel more local to working muscles with less form collapse.',
+      nextSteps: 'Next week will be tailored from your feedback on this week, including movement quality, knee-hip control, and recovery. The follow-up plan may progress, hold, or scale volume depending on how consistently you maintained form.',
     },
-    whatNotToDo: 'Avoid uncontrolled depth and poor trunk stability under fatigue.',
+    whatNotToDo: 'Avoid uncontrolled depth, collapsed arches, and trunk instability under fatigue. Stop sets early when knee tracking or pelvic control clearly degrades.',
     days: [
       createWorkoutDay(1, 'Lower A', [
         { exerciseId: 'cardio-13', duration: 6, warmup: true , modification: 'Keep pace easy and rhythmic to raise temperature without early fatigue' },
@@ -355,15 +355,15 @@ const exerciseProgramTemplates = [
     equipment: ['bodyweight', 'resistance_bands'],
     targetAreas: ['conditioning', 'full body'],
     bodyParts: ['Upper Body', 'Lower Body', 'Core'],
-    programOverview: 'A bodyweight-and-band week that blends conditioning and strength endurance in short, efficient sessions.',
-    summary: 'Get sweaty, strong, and consistent at home with fast-paced sessions that still keep form quality high.',
+    programOverview: 'This home plan blends conditioning and strength endurance using bodyweight and band work in dense sessions. The structure minimizes setup friction while still delivering enough training stress for visible progress. Expect better work capacity, cleaner movement control, and easier routine adherence.',
+    summary: 'Get sweaty, strong, and consistent at home with fast-paced sessions that keep form quality high. This week improves capacity without requiring complex setup or machines.',
     timeFrameExplanation:
-      'Train 3 non-consecutive sessions this week. Keep transitions tight, move with intent, and maintain form quality as fatigue climbs.',
+      'Train 3 non-consecutive sessions this week. Keep transitions tight, move with intent, and maintain technical quality as breathing rises. Record round completion quality so progression stays performance-based.',
     afterTimeFrame: {
-      expectedOutcome: 'Better conditioning base and work capacity.',
-      nextSteps: 'Increase rounds or reduce rest intervals when session quality remains high.',
+      expectedOutcome: 'Better conditioning base, stronger bodyweight endurance, and more repeatable session output. You should recover faster between rounds by the third session.',
+      nextSteps: 'Next week will be tailored from your feedback on this week, including conditioning response, fatigue pattern, and technique consistency. The follow-up plan may adjust density, rest, or exercise selection to match your current capacity.',
     },
-    whatNotToDo: 'Avoid sloppy reps and breath-holding during circuits.',
+    whatNotToDo: 'Avoid sloppy reps, breath-holding, and racing through transitions without control. Pause briefly when technique drops, then resume at a sustainable pace.',
     days: [
       createWorkoutDay(1, 'Circuit A', [
         { exerciseId: 'cardio-13', duration: 8, warmup: true , modification: 'Keep pace easy and rhythmic to raise temperature without early fatigue' },
@@ -396,14 +396,14 @@ const exerciseProgramTemplates = [
     equipment: ['bodyweight', 'resistance_bands'],
     targetAreas: ['core', 'endurance'],
     bodyParts: ['Core', 'Lower Back', 'Hips'],
-    programOverview: 'A core-first week focused on anti-extension, anti-rotation, and trunk endurance to build a stronger midline.',
-    summary: 'Build a visibly stronger, more stable core with structured home sessions that actually progress.',
-    timeFrameExplanation: 'Train 3 non-consecutive sessions this week. Use strict breathing and form control, and stop each set before technique drops.',
+    programOverview: 'This core-focused week develops anti-extension control, anti-rotation strength, and trunk endurance with progressive volume. The structure improves force transfer through your torso during lifting, running, and daily movement patterns. Expect a stronger midline, less early fatigue, and more confident bracing under effort.',
+    summary: 'Build a stronger and more stable core with structured home sessions that clearly progress. The week improves bracing endurance you can feel during lifting and daily movement.',
+    timeFrameExplanation: 'Train 3 non-consecutive sessions this week. Use strict breathing, neutral spine control, and stop each set before position quality declines. Prioritize stable rib-pelvis alignment over longer set duration.',
     afterTimeFrame: {
-      expectedOutcome: 'Improved trunk stability and reduced early core fatigue.',
-      nextSteps: 'Add longer holds or more unilateral challenges when control remains consistent.',
+      expectedOutcome: 'Improved trunk stability, stronger anti-rotation control, and reduced early core fatigue. You should notice better posture control during compound lifts.',
+      nextSteps: 'Next week will be tailored from your feedback on this week, focusing on bracing quality, trunk control, and fatigue. The follow-up plan may progress, maintain, or simplify core demands based on execution stability.',
     },
-    whatNotToDo: 'Avoid compensatory lumbar extension and rushed reps.',
+    whatNotToDo: 'Avoid compensatory lumbar extension, rushed reps, and excessive neck tension during bracing work. Regress immediately if you cannot keep ribs stacked over pelvis.',
     days: [
       createWorkoutDay(1, 'Core A', [
         { exerciseId: 'warmup-9', sets: 1, repetitions: 10, restBetweenSets: 30, warmup: true , modification: 'Use controlled trunk rotation to prepare core and spine without forcing range' },
@@ -435,14 +435,14 @@ const exerciseProgramTemplates = [
     exerciseEnvironment: 'Large Gym',
     targetAreas: ['glutes', 'core'],
     bodyParts: ['Glutes', 'Core', 'Lower Back'],
-    programOverview: 'A focused week to build stronger glutes and tighter core control for better power transfer and posture.',
-    summary: 'Grow your glutes and lock in core strength with a high-value posterior-chain biased split.',
-    timeFrameExplanation: 'Train 3 non-consecutive sessions this week. Prioritize hip extension quality and trunk control before increasing range or load.',
+    programOverview: 'This glute-and-core split targets posterior-chain strength and pelvic control with focused loading and repeatable structure. It improves hip drive, trunk stiffness, and force transfer for squatting, hinging, and daily movement. Expect stronger hip extension, cleaner posture control, and more stable compound-lift mechanics.',
+    summary: 'Grow your glutes and lock in core strength with a posterior-chain biased split. Sessions build hip drive and pelvic control that carry into squats and hinges.',
+    timeFrameExplanation: 'Train 3 non-consecutive sessions this week. Prioritize hip extension quality, pelvic control, and full lockout before increasing range or load. Keep trunk tension consistent during every hinge and bridge pattern.',
     afterTimeFrame: {
-      expectedOutcome: 'Stronger glute engagement and improved pelvic stability.',
-      nextSteps: 'Add unilateral progression or additional posterior-chain volume.',
+      expectedOutcome: 'Stronger glute engagement, improved pelvic stability, and cleaner posterior-chain coordination. Most users report less low-back takeover during hip extension work.',
+      nextSteps: 'Next week will be tailored from your feedback on this week, especially glute engagement, pelvic control, and lumbar compensation. The follow-up plan may adjust hinge volume, loading, and exercise complexity based on control quality.',
     },
-    whatNotToDo: 'Avoid lumbar-driven extension and uncontrolled hinging.',
+    whatNotToDo: 'Avoid lumbar-driven extension, uncontrolled hinging, and rushed lockouts at the top. Lower load if you cannot feel glutes driving the final phase of each rep.',
     days: [
       createWorkoutDay(1, 'Glute Core A', [
         { exerciseId: 'cardio-13', duration: 5, warmup: true , modification: 'Keep pace easy and rhythmic to raise temperature without early fatigue' },
@@ -475,14 +475,14 @@ const exerciseProgramTemplates = [
     exerciseEnvironment: 'Large Gym',
     targetAreas: ['upper body', 'balance'],
     bodyParts: ['Shoulders', 'Upper Back', 'Core'],
-    programOverview: 'A balanced push-pull week designed to improve upper-body symmetry, shoulder function, and visual development.',
-    summary: 'Build a more complete upper body by pairing strong pressing with equally strong pulling volume.',
-    timeFrameExplanation: 'Train 3 non-consecutive sessions this week. Match push and pull quality each day and keep effort out of the neck.',
+    programOverview: 'This push-pull plan balances pressing and rowing volume to improve upper-body symmetry and shoulder health. It builds muscle while reinforcing mechanics that stay stable under repeated effort and moderate fatigue. Expect cleaner posture, stronger upper-back engagement, and better pressing stability week to week.',
+    summary: 'Build a more complete upper body by pairing strong pressing with equal pulling volume. This structure improves aesthetics and shoulder resilience at the same time.',
+    timeFrameExplanation: 'Train 3 non-consecutive sessions this week. Match push and pull quality each day, and keep shoulder blades controlled through full ranges. Keep one technical reserve rep before form drift in every major set.',
     afterTimeFrame: {
-      expectedOutcome: 'Improved upper-body balance and cleaner pressing/pulling mechanics.',
-      nextSteps: 'Increase load progression while maintaining push-pull parity.',
+      expectedOutcome: 'Improved upper-body balance, cleaner pressing and pulling mechanics, and lower neck-dominant compensation. Session quality should feel more even between chest and back work.',
+      nextSteps: 'Next week will be tailored from your feedback on this week, including shoulder response and push-pull balance quality. The follow-up plan may rebalance volume, keep intensity steady, or progress loading based on your session outcomes.',
     },
-    whatNotToDo: 'Avoid overloaded pressing without matching pull volume.',
+    whatNotToDo: 'Avoid overloaded pressing without matched pull volume or scapular control. Scale sets if pressing mechanics drift or rows lose full-range control.',
     days: [
       createWorkoutDay(1, 'Push Pull A', [
         { exerciseId: 'warmup-8', sets: 1, repetitions: 20, restBetweenSets: 30, warmup: true , modification: 'Prep shoulders with smooth circles and relaxed breathing before main work' },
@@ -515,14 +515,14 @@ const exerciseProgramTemplates = [
     exerciseEnvironment: 'Large Gym',
     targetAreas: ['athletic', 'conditioning'],
     bodyParts: ['Full Body', 'Core'],
-    programOverview: 'An athletic base week combining strength-endurance, trunk control, and repeatable movement quality under fatigue.',
-    summary: 'Build athletic capacity you can feel in real movement with sessions that reward power plus control.',
-    timeFrameExplanation: 'Train 3 non-consecutive sessions this week. Use crisp technique and steady pacing while keeping movement quality high under fatigue.',
+    programOverview: 'This athletic base week combines strength-endurance, trunk control, and quality movement under manageable fatigue. It is designed for repeatable performance improvements instead of random intensity spikes that limit consistency. Expect better pacing, sharper mechanics, and stronger whole-body output across the week.',
+    summary: 'Build athletic capacity you can feel in real movement with sessions that reward power plus control. This week improves repeatable output rather than one-off hard efforts.',
+    timeFrameExplanation: 'Train 3 non-consecutive sessions this week. Use crisp technique, steady pacing, and controlled breathing while keeping movement quality high under fatigue. Track how well form holds in the final third of each workout.',
     afterTimeFrame: {
-      expectedOutcome: 'Better work capacity and improved movement repeatability.',
-      nextSteps: 'Increase density gradually or add progression to unilateral work.',
+      expectedOutcome: 'Better work capacity, improved movement repeatability, and stronger fatigue-resistant execution. Expect fewer technique drops when sessions become metabolically demanding.',
+      nextSteps: 'Next week will be tailored from your feedback on this week, with emphasis on pacing, coordination, and fatigue resistance. The follow-up plan may change density, rest structure, or exercise complexity according to your performance trend.',
     },
-    whatNotToDo: 'Avoid maximal-intensity efforts that degrade movement quality.',
+    whatNotToDo: 'Avoid maximal-intensity efforts that degrade movement quality and pacing discipline. Back off when coordination drops, then rebuild density with cleaner reps.',
     days: [
       createWorkoutDay(1, 'Athletic A', [
         { exerciseId: 'cardio-13', duration: 8, warmup: true , modification: 'Keep pace easy and rhythmic to raise temperature without early fatigue' },
@@ -554,14 +554,14 @@ const exerciseProgramTemplates = [
     exerciseEnvironment: 'Large Gym',
     targetAreas: ['mobility', 'strength'],
     bodyParts: ['Upper Body', 'Lower Body', 'Core'],
-    programOverview: 'A hybrid week blending mobility prep with strict strength sets so better positions become stronger positions.',
-    summary: 'Improve mobility and build stronger reps by turning better positions into better strength output.',
-    timeFrameExplanation: 'Train 3 non-consecutive sessions this week. Use mobility prep first, then reinforce positions with strict reps and controlled tempo.',
+    programOverview: 'This mobility-strength hybrid uses focused prep work to unlock cleaner ranges before loading them with strict strength sets. It converts short-term mobility gains into usable force production and stable movement control. Expect smoother positions, stronger reps, and better end-range confidence under load.',
+    summary: 'Improve mobility and build stronger reps by turning better positions into strength output. This week helps you keep new range when load and fatigue increase.',
+    timeFrameExplanation: 'Train 3 non-consecutive sessions this week. Use mobility prep first, then reinforce improved positions with strict reps and controlled tempo. Treat prep quality as part of performance, not optional filler.',
     afterTimeFrame: {
-      expectedOutcome: 'Improved movement quality with stronger end-range control.',
-      nextSteps: 'Increase working sets while keeping mobility prep consistent.',
+      expectedOutcome: 'Improved movement quality, stronger end-range control, and better position retention under fatigue. You should feel less compensation when training through deeper ranges.',
+      nextSteps: 'Next week will be tailored from your feedback on this week, especially end-range control and movement quality under load. The follow-up plan may progress, maintain, or regress volume depending on whether control stayed consistent.',
     },
-    whatNotToDo: 'Avoid skipping warmup mobility and forcing painful ranges.',
+    whatNotToDo: 'Avoid skipping prep mobility, forcing painful ranges, or rushing end-range loading. Regress range immediately if compensations appear in the trunk or shoulders.',
     days: [
       createWorkoutDay(1, 'Mobility Strength A', [
         { exerciseId: 'warmup-9', sets: 2, repetitions: 10, restBetweenSets: 30, warmup: true , modification: 'Use controlled trunk rotation to prepare core and spine without forcing range' },
@@ -593,14 +593,14 @@ const exerciseProgramTemplates = [
     exerciseEnvironment: 'Large Gym',
     targetAreas: ['hybrid', 'strength'],
     bodyParts: ['Upper Body', 'Lower Body'],
-    programOverview: 'A hybrid week that alternates upper and lower emphasis while maintaining full-body balance and recovery flow.',
-    summary: 'Train hard across upper and lower body without burnout using a clean alternating structure.',
-    timeFrameExplanation: 'Train 3 non-consecutive sessions this week. Alternate upper-lower emphasis and keep quality high across all movement patterns.',
+    programOverview: 'This upper-lower hybrid alternates emphasis days to spread fatigue and preserve high-quality performance. It keeps full-body progress moving without repeatedly overloading one region or movement pattern. Expect balanced strength gains, better session quality, and a sustainable weekly rhythm you can repeat.',
+    summary: 'Train hard across upper and lower body without burnout using a clean alternating structure. The split protects performance while keeping total weekly stimulus high.',
+    timeFrameExplanation: 'Train 3 non-consecutive sessions this week. Alternate upper-lower emphasis and hold the same quality standard across all primary patterns. Use non-consecutive spacing to keep execution quality high each day.',
     afterTimeFrame: {
-      expectedOutcome: 'Improved training balance and manageable weekly fatigue.',
-      nextSteps: 'Progress intensity by day while preserving recovery spacing.',
+      expectedOutcome: 'Improved training balance, manageable weekly fatigue, and more consistent session readiness. Most users feel less overlap soreness between major movement days.',
+      nextSteps: 'Next week will be tailored from your feedback on this week, including readiness trends across upper and lower sessions. The follow-up plan may redistribute intensity, volume, and recovery spacing to improve consistency.',
     },
-    whatNotToDo: 'Avoid turning every day into maximal effort.',
+    whatNotToDo: 'Avoid turning every day into maximal effort or stacking hard sets without recovery control. Keep one rep-quality reserve on accessory work when fatigue accumulates.',
     days: [
       createWorkoutDay(1, 'Upper Emphasis', [
         { exerciseId: 'warmup-8', sets: 1, repetitions: 20, restBetweenSets: 30, warmup: true , modification: 'Prep shoulders with smooth circles and relaxed breathing before main work' },
@@ -634,15 +634,15 @@ const exerciseProgramTemplates = [
     targetAreas: ['hypertrophy', 'strength'],
     bodyParts: ['Chest', 'Back', 'Legs', 'Shoulders'],
     programOverview:
-      'A gym-based hypertrophy foundation built to maximize muscle gain with repeatable structure and progressive overload.',
-    summary: 'Build visible muscle fast with targeted volume, high-quality reps, and efficient 30-45 minute sessions.',
+      'This hypertrophy foundation is built for measurable muscle gain with repeatable weekly structure and progression logic. It combines compound tension, accessory volume, and controlled effort to maximize adaptation in 30-45 minute sessions. Expect stronger pumps, clearer progress markers, and visible physique changes over consistent cycles.',
+    summary: 'Build visible muscle fast with targeted volume and high-quality reps in efficient 30-45 minute sessions. The week blends compounds and accessories for clear hypertrophy signals.',
     timeFrameExplanation:
-      'Train 3 non-consecutive sessions this week. Keep controlled tempo, stay 1-2 reps from failure on most sets, and track progression each workout.',
+      'Train 3 non-consecutive sessions this week. Keep controlled tempo, stay 1-2 reps from failure on most sets, and log progression each workout. Keep setup and range quality identical before adding load.',
     afterTimeFrame: {
-      expectedOutcome: 'Improved muscle pump, better lifting confidence, and stronger week-to-week performance.',
-      nextSteps: 'Progress one variable at a time: load, reps, or one extra set on your first two exercises.',
+      expectedOutcome: 'Improved muscle pump, stronger technique under fatigue, and better week-to-week lifting confidence. You should see clearer progress markers in both load and rep quality.',
+      nextSteps: 'Next week will be tailored from your feedback on this week, including pump quality, rep control, and recovery response. The follow-up plan may progress, maintain, or reduce hypertrophy stress to keep quality high.',
     },
-    whatNotToDo: 'Avoid sloppy tempo, ego loading, and pushing every set to failure.',
+    whatNotToDo: 'Avoid sloppy tempo, ego loading, and taking every set to failure. Stop sets when rep speed collapses or bracing quality clearly drops.',
     days: [
       createWorkoutDay(1, 'Hypertrophy A', [
         { exerciseId: 'warmup-8', sets: 1, repetitions: 20, restBetweenSets: 30, warmup: true , modification: 'Prep shoulders with smooth circles and relaxed breathing before main work' },
@@ -677,14 +677,14 @@ const exerciseProgramTemplates = [
     exerciseEnvironment: 'Large Gym',
     targetAreas: ['strength endurance'],
     bodyParts: ['Upper Body', 'Lower Body', 'Core'],
-    programOverview: 'A dense 30-45 minute plan targeting strength-endurance across core movement patterns.',
-    summary: 'Get stronger and fitter in under 45 minutes with high-density sessions that still prioritize form.',
-    timeFrameExplanation: 'Train 3 non-consecutive sessions this week. Keep rest times honest, use moderate reps, and treat each day as a form-first benchmark.',
+    programOverview: 'This density-focused plan targets strength-endurance across major movement patterns in efficient 30-45 minute sessions. It increases total output per workout without sacrificing movement quality or position control. Expect stronger conditioning under load and more repeatable performance across sets.',
+    summary: 'Get stronger and fitter in under 45 minutes with high-density sessions that still prioritize form. The structure builds conditioning without sacrificing lifting mechanics.',
+    timeFrameExplanation: 'Train 3 non-consecutive sessions this week. Keep rest intervals honest, use moderate reps, and treat each day as a form-first density benchmark. Track whether final sets still match opening-set mechanics.',
     afterTimeFrame: {
-      expectedOutcome: 'Higher training density and improved repeatable output.',
-      nextSteps: 'Either increase load modestly or reduce rest slightly when execution remains clean.',
+      expectedOutcome: 'Higher training density, better repeatable output, and improved conditioning without form breakdown. You should complete similar work with less perceived effort by week end.',
+      nextSteps: 'Next week will be tailored from your feedback on this week, especially form retention under density work. The follow-up plan may adjust load, rest, and session structure according to execution quality and recovery.',
     },
-    whatNotToDo: 'Avoid sacrificing mechanics just to move faster.',
+    whatNotToDo: 'Avoid sacrificing mechanics or range quality just to move faster between sets. Slow the pace if breathing spikes enough to compromise setup and control.',
     days: [
       createWorkoutDay(1, 'Density A', [
         { exerciseId: 'cardio-13', duration: 6, warmup: true , modification: 'Keep pace easy and rhythmic to raise temperature without early fatigue' },

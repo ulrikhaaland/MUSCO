@@ -37,7 +37,7 @@ export function WorkoutFAB({
       onClick={onClick}
       disabled={disabled}
       className={`
-        fixed bottom-24 right-4 md:bottom-8 md:right-8 z-50
+        fixed bottom-6 right-4 md:bottom-8 md:right-8 z-50
         w-14 h-14 rounded-full
         flex items-center justify-center
         animate-scale-in

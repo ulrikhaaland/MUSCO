@@ -120,6 +120,14 @@ function formatDurationRange(range: { min: number; max: number }): string {
   return `${range.min}-${range.max} min`;
 }
 
+function toTitleCase(input: string): string {
+  return input
+    .split(' ')
+    .filter(Boolean)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(' ');
+}
+
 // Duration chip component
 function DurationChip({ days }: { days: ProgramDay[] | undefined }) {
   const durationRange = extractDurationRange(days);
@@ -261,6 +269,30 @@ function ProgramsContent() {
   // Navigate to home page to create a new program
   const handleCreateNewProgram = () => {
     router.push('/app/questionnaire');
+  };
+
+  const translateTargetArea = (area: string): string => {
+    const normalized = area.toLowerCase().replace(/\s+/g, '_');
+    const bodyPartKey = `program.bodyPart.${normalized}`;
+    const bodyPartTranslation = t(bodyPartKey);
+    if (bodyPartTranslation !== bodyPartKey) {
+      return bodyPartTranslation;
+    }
+
+    const specialMap: Record<string, string> = {
+      full_body: t('profile.bodyRegions.full_body'),
+      upper_body: t('profile.bodyRegions.upper_body'),
+      lower_body: t('profile.bodyRegions.lower_body'),
+      strength: t('programs.dayType.strength'),
+      cardio: t('programs.dayType.cardio'),
+      recovery: t('programs.dayType.recovery'),
+      rest: t('programs.dayType.rest'),
+    };
+    if (specialMap[normalized]) {
+      return specialMap[normalized];
+    }
+
+    return toTitleCase(area.replace(/_/g, ' '));
   };
 
   // Render a loading placeholder only if we have no programs yet AND are loading
@@ -564,9 +596,9 @@ function ProgramsContent() {
                   return { text: t('profile.bodyRegions.lower_body'), isRegion: true };
                 default:
                   // Custom selection - show individual parts
-                  const displayedAreas = targetAreas.slice(0, 3).map(area => 
-                    t(`program.bodyPart.${area.toLowerCase().replace(/\s+/g, '_')}`)
-                  );
+                  const displayedAreas = targetAreas
+                    .slice(0, 3)
+                    .map((area) => translateTargetArea(area));
                   const remainingCount = targetAreas.length - 3;
                   const text = displayedAreas.join(' • ') + 
                     (remainingCount > 0 ? ` +${remainingCount}` : '');

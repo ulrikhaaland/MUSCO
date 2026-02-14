@@ -24,9 +24,56 @@ import { bodyPartGroups } from '@/app/config/bodyPartGroups';
 import { mergeAccumulatedFeedback } from '@/app/services/preFollowupChatService';
 import { savePreFollowupChatAdmin } from '@/app/services/preFollowupChatServiceAdmin';
 import { PreFollowupStructuredUpdates, ExerciseIntensityFeedback } from '@/app/types/incremental-program';
+import { adminAuth, adminDb } from '@/app/firebase/admin';
 
 // Get all actual group names from bodyPartGroups config (for clickable markers)
 const ALL_GROUP_NAMES = Object.values(bodyPartGroups).map(g => g.name);
+
+type ChatAuthContext = {
+  userId?: string;
+  isSubscriber?: boolean;
+};
+
+function extractBearerToken(request: Request): string | undefined {
+  const raw = request.headers?.get('authorization') || request.headers?.get('Authorization');
+  if (!raw) return undefined;
+  const match = raw.match(/^Bearer\s+(.+)$/i);
+  return match?.[1]?.trim() || undefined;
+}
+
+async function resolveChatAuthContext(request: Request, payload: any): Promise<ChatAuthContext> {
+  const token = extractBearerToken(request);
+  if (token) {
+    try {
+      const decoded = await adminAuth.verifyIdToken(token);
+      const uid = decoded.uid;
+      let isSubscriber = false;
+      try {
+        const userDoc = await adminDb.collection('users').doc(uid).get();
+        if (userDoc.exists) {
+          const data = userDoc.data() as Record<string, unknown> | undefined;
+          isSubscriber = data?.isSubscriber === true;
+        }
+      } catch (profileErr) {
+        console.warn('[API Route] Could not resolve subscription status for token user', profileErr);
+      }
+
+      if (payload?.userId && payload.userId !== uid) {
+        console.warn('[API Route] Ignoring payload.userId because bearer token user differs');
+      }
+
+      return { userId: uid, isSubscriber };
+    } catch (err) {
+      console.warn('[API Route] Invalid bearer token on /api/assistant', err);
+      throw new Error('invalid_auth_token');
+    }
+  }
+
+  return {
+    userId: payload?.userId,
+    isSubscriber: payload?.isSubscriber,
+  };
+}
 
 export async function POST(request: Request) {
   const handlerStartTime = performance.now();
@@ -41,6 +88,7 @@ export async function POST(request: Request) {
       case 'send_message_chat': {
         // log: api entry
         try { console.info('level=info event=api_entry action=send_message_chat'); } catch {}
+        const authContext = await resolveChatAuthContext(request, payload);
 
         // Determine effective mode on the server for the first user message if not provided
         let effectiveMode: 'diagnosis' | 'explore' | undefined = payload?.mode;
@@ -143,8 +191,8 @@ export async function POST(request: Request) {
               try {
                 // Rate-limit reservation (best effort)
                 try {
-                  if (payload?.userId) {
-                    await reserveFreeChatTokens(payload?.userId, undefined, payload?.isSubscriber);
+                  if (authContext.userId) {
+                    await reserveFreeChatTokens(authContext.userId, undefined, authContext.isSubscriber);
                   } else if (anonId) {
                     await reserveFreeChatTokensForAnon(anonId, undefined);
                   }
@@ -183,9 +231,9 @@ export async function POST(request: Request) {
                     parser.processChunk(content);
                   },
                   options: {
-                    userId: payload?.userId,
-                    isSubscriber: payload?.isSubscriber,
-                    anonId: !payload?.userId ? anonId : undefined,
+                    userId: authContext.userId,
+                    isSubscriber: authContext.isSubscriber,
+                    anonId: !authContext.userId ? anonId : undefined,
                   },
                 });
 
@@ -224,9 +272,9 @@ export async function POST(request: Request) {
           userMessage: { ...(payload || {}), mode: resolvedMode },
           modelName: undefined,
           options: {
-            userId: payload?.userId,
-            isSubscriber: payload?.isSubscriber,
-            anonId: !payload?.userId ? anonId : undefined,
+            userId: authContext.userId,
+            isSubscriber: authContext.isSubscriber,
+            anonId: !authContext.userId ? anonId : undefined,
           },
         });
         return NextResponse.json(
@@ -530,6 +578,10 @@ export async function POST(request: Request) {
     }
   } catch (error) {
     const errorTime = performance.now();
+    const message = String((error as any)?.message || '');
+    if (message.includes('invalid_auth_token')) {
+      return NextResponse.json({ error: 'invalid_auth_token' }, { status: 401 });
+    }
     console.error(
       `[API Route] Error in assistant API: ${error}. Time since handler start: ${errorTime - handlerStartTime} ms`
     );

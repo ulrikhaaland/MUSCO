@@ -11,12 +11,31 @@ class HumanViewerController {
   // ---------------------------------------------------------------------------
   void Function()? onSDKValid;
   void Function()? onSDKInvalid;
+  void Function()? onViewReady;
   void Function(String modelId)? onModelLoaded;
   void Function(String objectId)? onObjectSelected;
   void Function(String objectId)? onObjectDeselected;
+  void Function(String error)? onModelLoadError;
 
   HumanViewerController() {
     _channel.setMethodCallHandler(_handleNativeCall);
+    // On hot restart the native SDK is already validated but the callback
+    // won't fire again. Poll until the platform view is ready to answer.
+    _pollSDKStatus();
+  }
+
+  Future<void> _pollSDKStatus() async {
+    // Small delay so the platform view has time to register its handler.
+    await Future.delayed(const Duration(milliseconds: 500));
+    try {
+      await _channel.invokeMethod('querySDKStatus');
+    } catch (_) {
+      // Platform view might not exist yet — retry once more.
+      await Future.delayed(const Duration(seconds: 2));
+      try {
+        await _channel.invokeMethod('querySDKStatus');
+      } catch (_) {}
+    }
   }
 
   Future<void> _handleNativeCall(MethodCall call) async {
@@ -25,6 +44,8 @@ class HumanViewerController {
         onSDKValid?.call();
       case 'onSDKInvalid':
         onSDKInvalid?.call();
+      case 'onViewReady':
+        onViewReady?.call();
       case 'onModelLoaded':
         final modelId = call.arguments as String? ?? '';
         onModelLoaded?.call(modelId);
@@ -34,6 +55,9 @@ class HumanViewerController {
       case 'onObjectDeselected':
         final objectId = call.arguments as String? ?? '';
         onObjectDeselected?.call(objectId);
+      case 'onModelLoadError':
+        final error = call.arguments as String? ?? 'unknown';
+        onModelLoadError?.call(error);
     }
   }
 

@@ -5,6 +5,9 @@ import HumanKit
 @main
 @objc class AppDelegate: FlutterAppDelegate, HKServicesDelegate {
 
+    /// Tracks whether the BioDigital SDK has been validated (survives hot restart).
+    static var sdkValidated = false
+
     override func application(
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
@@ -31,6 +34,9 @@ import HumanKit
 
     func onValidSDK() {
         print("[BioDigital] SDK validated successfully")
+        AppDelegate.sdkValidated = true
+        // Fetch organization's model library
+        HKServices.shared.getModels()
         // Notify Flutter via the method channel
         guard let controller = window?.rootViewController as? FlutterViewController else { return }
         let channel = FlutterMethodChannel(
@@ -48,5 +54,13 @@ import HumanKit
             binaryMessenger: controller.binaryMessenger
         )
         channel.invokeMethod("onSDKInvalid", arguments: nil)
+    }
+
+    func modelsLoaded() {
+        let models = HKServices.shared.models
+        print("[BioDigital] Library models loaded: \(models.count) models")
+        for model in models {
+            print("[BioDigital]   modelId=\(model.modelId)  title=\(model.title)")
+        }
     }
 }

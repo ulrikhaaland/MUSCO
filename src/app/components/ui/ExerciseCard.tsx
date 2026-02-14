@@ -252,41 +252,53 @@ export default function ExerciseCard({
             <Card.Section className="pt-4">
               {/* Exercise description */}
               {exercise.description && (
-                <div className="text-gray-50 leading-relaxed mb-4">
-                  {isDescriptionExpanded
-                    ? exercise.description
-                    : getTruncatedDescription(exercise.description)}
-                  {exercise.description.length > 100 && (
-                    <button
-                      className="ml-1 text-indigo-300 hover:text-indigo-200 text-sm font-medium"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setIsDescriptionExpanded((prev) => !prev);
-                      }}
-                    >
-                      {isDescriptionExpanded ? t('program.seeLess') : t('program.seeMore')}
-                    </button>
-                  )}
-                </div>
+                <section className="mb-4 space-y-1.5">
+                  <h3 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-gray-500">
+                    Description
+                  </h3>
+                  <div className="text-gray-300 leading-relaxed">
+                    {isDescriptionExpanded
+                      ? exercise.description
+                      : getTruncatedDescription(exercise.description)}
+                    {exercise.description.length > 100 && (
+                      <button
+                        className="ml-1 text-indigo-300 hover:text-indigo-200 text-sm font-medium"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setIsDescriptionExpanded((prev) => !prev);
+                        }}
+                      >
+                        {isDescriptionExpanded ? t('program.seeLess') : t('program.seeMore')}
+                      </button>
+                    )}
+                  </div>
+                </section>
               )}
 
               {exercise.modification && !isPlaceholderValue(exercise.modification) && (
-                <div className="text-sm leading-relaxed mb-4 rounded-lg bg-yellow-500/10 ring-1 ring-yellow-500/20 px-3 py-2">
-                  <span className="font-semibold text-yellow-400 text-xs uppercase tracking-wide">{t('program.modification')}</span>
-                  <p className="text-white mt-0.5">{exercise.modification}</p>
-                </div>
+                <section className="text-sm leading-relaxed mb-4 space-y-1">
+                  <h3 className="font-semibold text-yellow-400 text-xs uppercase tracking-wide">
+                    {t('program.modification')}
+                  </h3>
+                  <p className="text-gray-100">{exercise.modification}</p>
+                </section>
               )}
 
               {exercise.precaution && !isPlaceholderValue(exercise.precaution) && (
-                <div className="text-sm leading-relaxed mb-4 rounded-lg bg-red-500/10 ring-1 ring-red-500/20 px-3 py-2">
-                  <span className="font-semibold text-red-400 text-xs uppercase tracking-wide">{t('program.precaution')}</span>
-                  <p className="text-white mt-0.5">{exercise.precaution}</p>
-                </div>
+                <section className="text-sm leading-relaxed mb-4 space-y-1">
+                  <h3 className="font-semibold text-red-400 text-xs uppercase tracking-wide">
+                    {t('program.precaution')}
+                  </h3>
+                  <p className="text-gray-100">{exercise.precaution}</p>
+                </section>
               )}
 
               {exercise.steps && exercise.steps.length > 0 && (
-                <div className="text-gray-300 text-sm leading-relaxed">
-                  <div className="flex items-center">
+                <section className="text-gray-300 text-sm leading-relaxed space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-gray-500">
+                      Instructions
+                    </h3>
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
@@ -308,9 +320,8 @@ export default function ExerciseCard({
                     </button>
                   </div>
                   {showInstructions && (
-                    <div className="mt-3 pl-6 relative bg-gray-800/40 p-4 mx-2 rounded-r-xl">
-                      <div className="absolute left-0 top-0 bottom-0 w-[4px] bg-gradient-to-b from-indigo-700/80 via-indigo-700/50 to-indigo-700/20 rounded-full" />
-                      <ol className="list-decimal pl-5 space-y-2">
+                    <div className="mt-2">
+                      <ol className="list-decimal pl-5 space-y-2 text-gray-300">
                         {exercise.steps.map((step, index) => (
                           <li key={index} className="leading-[1.4]">
                             {step}
@@ -319,7 +330,7 @@ export default function ExerciseCard({
                       </ol>
                     </div>
                   )}
-                </div>
+                </section>
               )}
             </Card.Section>
           )}

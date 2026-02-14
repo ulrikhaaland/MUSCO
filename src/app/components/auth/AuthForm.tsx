@@ -164,7 +164,7 @@ export function AuthForm({ onSkip, isSaveContext = false, isAdmin = false, initi
               onClick={onSkip}
               className="w-full px-6 py-3 rounded-xl bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition-colors duration-200"
             >
-              {isSaveContext ? t('auth.continueWithoutSaving') : t('auth.continueWithoutLogin')}
+              {isSaveContext ? t('auth.goBack') : t('auth.continueWithoutLogin')}
             </button>
           )}
         </div>

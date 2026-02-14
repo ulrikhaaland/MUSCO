@@ -36,6 +36,7 @@ class HumanViewerNativeView: NSObject, FlutterPlatformView, HKHumanDelegate {
     private let containerView: UIView
     private var human: HKHuman?
     private let channel: FlutterMethodChannel
+    private var hasNotifiedViewReady = false
 
     init(
         frame: CGRect,
@@ -54,16 +55,61 @@ class HumanViewerNativeView: NSObject, FlutterPlatformView, HKHumanDelegate {
 
         super.init()
 
-        // Create the BioDigital 3D view
-        human = HKHuman(view: containerView)
+        print("[HumanViewer] Creating HKHuman with frame: \(frame)")
+
+        // Create the BioDigital 3D view with all UI hidden (matches web config)
+        let uiOptions: [HumanUIOptions: Bool] = [
+            .all: false,
+            .nolink: true,       // prevent click-to-info popup
+            .info: false,
+            .tools: false,
+            .nav: false,
+            .labels: false,
+            .anatomyLabels: false,
+            .help: false,
+            .reset: false,
+            .logo: false,
+            .layers: false,
+            .labelList: false,
+            .draw: false,
+            .audio: false,
+            .animation: false,
+            .objectTree: false,
+            .tour: false,
+            .tutorial: false,
+        ]
+        human = HKHuman(view: containerView, options: uiOptions)
         human?.delegate = self
+
+        print("[HumanViewer] HKHuman created: \(human != nil ? "OK" : "NIL")")
 
         // Listen for commands from Dart
         channel.setMethodCallHandler(handleMethodCall)
+
+        // If SDK was already validated (e.g. hot restart), notify Dart immediately.
+        if AppDelegate.sdkValidated {
+            DispatchQueue.main.async { [weak self] in
+                self?.channel.invokeMethod("onSDKValid", arguments: nil)
+            }
+        }
+
+        // Fallback: notify Dart after a delay to give the internal WebView time
+        // to finish loading. initScene will fire earlier if available.
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) { [weak self] in
+            self?.notifyViewReady()
+        }
     }
 
     func view() -> UIView {
         return containerView
+    }
+
+    /// Send onViewReady exactly once.
+    private func notifyViewReady() {
+        guard !hasNotifiedViewReady else { return }
+        hasNotifiedViewReady = true
+        print("[HumanViewer] Notifying Dart: onViewReady")
+        channel.invokeMethod("onViewReady", arguments: nil)
     }
 
     // MARK: - MethodChannel handler (Dart → Native)
@@ -71,11 +117,20 @@ class HumanViewerNativeView: NSObject, FlutterPlatformView, HKHumanDelegate {
     private func handleMethodCall(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         switch call.method {
 
+        case "querySDKStatus":
+            let valid = AppDelegate.sdkValidated
+            print("[HumanViewer] querySDKStatus → \(valid)")
+            if valid {
+                channel.invokeMethod("onSDKValid", arguments: nil)
+            }
+            result(valid)
+
         case "loadModel":
             guard let moduleId = call.arguments as? String else {
                 result(FlutterError(code: "INVALID_ARG", message: "moduleId must be a String", details: nil))
                 return
             }
+            print("[HumanViewer] loadModel called with: \(moduleId), human is \(human != nil ? "OK" : "NIL")")
             human?.load(model: moduleId)
             result(nil)
 
@@ -143,6 +198,10 @@ class HumanViewerNativeView: NSObject, FlutterPlatformView, HKHumanDelegate {
     // MARK: - HKHumanDelegate (Native → Dart)
 
     func human(_ view: HKHuman, objectSelected: String) {
+        // Re-suppress info popup on every selection
+        human?.setupUI(option: .info, value: false)
+        human?.setupUI(option: .nolink, value: true)
+        human?.labels.hide()
         DispatchQueue.main.async { [weak self] in
             self?.channel.invokeMethod("onObjectSelected", arguments: objectSelected)
         }
@@ -155,16 +214,50 @@ class HumanViewerNativeView: NSObject, FlutterPlatformView, HKHumanDelegate {
     }
 
     func human(_ view: HKHuman, modelLoaded: String) {
+        // Re-apply UI suppression after model load
+        disableAllUI()
         DispatchQueue.main.async { [weak self] in
             self?.channel.invokeMethod("onModelLoaded", arguments: modelLoaded)
         }
     }
 
     func human(_ view: HKHuman, initScene: String) {
-        // Scene initialized — can be used for post-load setup
+        print("[HumanViewer] initScene fired: \(initScene)")
+        // Suppress UI once scene is ready
+        disableAllUI()
+        DispatchQueue.main.async { [weak self] in
+            self?.notifyViewReady()
+        }
+    }
+
+    /// Force-disable every BioDigital UI element, info popup, and 3D labels.
+    private func disableAllUI() {
+        human?.setupUI(option: .all, value: false)
+        human?.setupUI(option: .nolink, value: true)  // prevent click-to-info
+        human?.setupUI(option: .info, value: false)
+        human?.setupUI(option: .tools, value: false)
+        human?.setupUI(option: .nav, value: false)
+        human?.setupUI(option: .labels, value: false)
+        human?.setupUI(option: .anatomyLabels, value: false)
+        human?.setupUI(option: .help, value: false)
+        human?.setupUI(option: .reset, value: false)
+        human?.setupUI(option: .logo, value: false)
+        human?.setupUI(option: .layers, value: false)
+        human?.setupUI(option: .labelList, value: false)
+        human?.setupUI(option: .draw, value: false)
+        human?.setupUI(option: .audio, value: false)
+        human?.setupUI(option: .animation, value: false)
+        human?.setupUI(option: .objectTree, value: false)
+        human?.setupUI(option: .tour, value: false)
+        human?.setupUI(option: .tutorial, value: false)
+        // Hide the actual 3D labels/annotations overlay
+        human?.labels.hide()
     }
 
     func human(_ view: HKHuman, modelLoadError: String) {
         print("[HumanViewer] Model load error: \(modelLoadError)")
+        DispatchQueue.main.async { [weak self] in
+            self?.channel.invokeMethod("onModelLoadError", arguments: modelLoadError)
+        }
     }
 }

@@ -5,6 +5,50 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "type": "dart",
+      "request": "launch",
+      "name": "Flutter App (Local API Auto)",
+      "program": "lib/main.dart",
+      "cwd": "${workspaceFolder}/flutter_app",
+      "flutterMode": "debug"
+    },
+    {
+      "type": "dart",
+      "request": "launch",
+      "name": "Flutter App (Local API Android Emulator)",
+      "program": "lib/main.dart",
+      "cwd": "${workspaceFolder}/flutter_app",
+      "flutterMode": "debug",
+      "toolArgs": [
+        "--dart-define",
+        "API_BASE_URL=http://10.0.2.2:3000"
+      ]
+    },
+    {
+      "type": "dart",
+      "request": "launch",
+      "name": "Flutter App (Local API iOS Simulator)",
+      "program": "lib/main.dart",
+      "cwd": "${workspaceFolder}/flutter_app",
+      "flutterMode": "debug",
+      "toolArgs": [
+        "--dart-define",
+        "API_BASE_URL=http://localhost:3000"
+      ]
+    },
+    {
+      "type": "dart",
+      "request": "launch",
+      "name": "Flutter App (Prod API)",
+      "program": "lib/main.dart",
+      "cwd": "${workspaceFolder}/flutter_app",
+      "flutterMode": "debug",
+      "toolArgs": [
+        "--dart-define",
+        "API_BASE_URL=https://your-vercel-domain.vercel.app"
+      ]
+    },
+    {
       "type": "chrome",
       "request": "launch",
       "name": "Launch Chrome against localhost",

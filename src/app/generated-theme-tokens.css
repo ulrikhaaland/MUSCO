@@ -1,0 +1,27 @@
+/* AUTO-GENERATED from shared/theme/tokens.json - do not edit by hand. */
+/* Run: node scripts/generate-theme-artifacts.js */
+:root {
+  --surface-deepest: #0E1116;
+  --surface-base: #111827;
+  --surface-elevated: #141922;
+  --surface-muted: #1F2937;
+
+  --brand: #635BFF;
+  --brand-hover: #7C75FF;
+  --brand-soft: rgba(99, 91, 255, 0.12);
+  --brand-border: rgba(99, 91, 255, 0.35);
+  --brand-text: #C8CBFF;
+  --brand-text-light: #F2F6FF;
+
+  --secondary: #8B5CF6;
+  --secondary-hover: #A78BFA;
+  --secondary-soft: rgba(139, 92, 246, 0.12);
+  --secondary-border: rgba(139, 92, 246, 0.35);
+
+  --border-default: #374151;
+  --border-muted: rgba(255, 255, 255, 0.1);
+  --border-subtle: rgba(255, 255, 255, 0.15);
+
+  --drag-handle: #566074;
+  --tooltip-bg: #1f2937e0;
+}

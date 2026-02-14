@@ -10,6 +10,11 @@ class MainActivity : FlutterActivity(), HKServicesInterface {
 
     private val channelName = "com.musco.muscoapp/human_viewer"
 
+    companion object {
+        /// Tracks whether the BioDigital SDK has been validated (survives hot restart).
+        var sdkValidated = false
+    }
+
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
 
@@ -29,6 +34,9 @@ class MainActivity : FlutterActivity(), HKServicesInterface {
     // -------------------------------------------------------------------------
     override fun onValidSDK() {
         println("[BioDigital] SDK validated successfully")
+        sdkValidated = true
+        // Fetch organization's model library for debugging
+        HKServices.getInstance().getModels()
         flutterEngine?.dartExecutor?.binaryMessenger?.let { messenger ->
             val channel = MethodChannel(messenger, channelName)
             runOnUiThread {
@@ -48,6 +56,10 @@ class MainActivity : FlutterActivity(), HKServicesInterface {
     }
 
     override fun onModelsLoaded() {
-        // Dashboard models loaded — unused
+        val models = HKServices.getInstance().models
+        println("[BioDigital] Organization library: ${models.size} models")
+        for (model in models) {
+            println("[BioDigital] Model: id=${model.id}, title=${model.title}")
+        }
     }
 }

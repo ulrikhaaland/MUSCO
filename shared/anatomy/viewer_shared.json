@@ -1,0 +1,16 @@
+{
+  "modelIds": {
+    "male": "5tOV",
+    "female": "5tOR"
+  },
+  "bodyGroupNameToConfig": {
+    "Neck": "neck",
+    "Shoulders": "chest",
+    "Arms": "chest",
+    "Chest": "chest",
+    "Abdomen": "abdomen",
+    "Back": "back",
+    "Hips & Glutes": "glutes",
+    "Legs": "glutes"
+  }
+}

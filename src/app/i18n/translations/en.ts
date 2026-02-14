@@ -226,6 +226,7 @@ const translations = {
     'Enter your email to save this program to your account',
   'auth.saveAndContinue': 'Save & Continue',
   'auth.continueWithoutSaving': 'Continue without saving',
+  'auth.goBack': 'Go back',
   'auth.signIn': 'Sign In',
   'auth.signOut': 'Sign Out',
   'auth.signing': 'Signing in',

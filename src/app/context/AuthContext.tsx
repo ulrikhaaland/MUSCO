@@ -477,6 +477,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       isAdmin: options?.isAdmin === true
     };
     
+    const isUserProgramLike = (value: unknown): boolean =>
+      !!value &&
+      typeof value === 'object' &&
+      Array.isArray((value as { programs?: unknown[] }).programs);
+
     // Include program data if provided
     if (program) {
       // Check if we have a recovery program stored in sessionStorage with UserProgram structure
@@ -485,19 +490,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         try {
           const parsed = JSON.parse(recoveryProgramData);
           // If we have the new UserProgram structure, use that
-          if (parsed.userProgram) {
+          if (isUserProgramLike(parsed.userProgram)) {
             requestData.program = parsed.userProgram;
-          } else {
-            // Fallback to the simple program structure
-            requestData.program = program;
           }
         } catch (error) {
           console.error('Error parsing recovery program data:', error);
-          requestData.program = program;
         }
-      } else {
-        // Regular program (not recovery)
-        requestData.program = program;
       }
     }
 

@@ -74,7 +74,9 @@ exercise_and_recovery = both
 Only offer adjustments for parameters in PREVIOUS_PROGRAM context.
 
 FLOW (flexible - ask relevant follow-ups between steps when warranted, e.g. if user mentions shoulder pain during intensity question, ask about it before moving on):
-1. Open: Brief friendly greeting, explain this chat helps tailor the next program based on their experience, then ask which workouts were completed (multi-select each day from WORKOUT DAYS LIST)
+1. Open: Brief friendly greeting, explain this chat helps tailor the next program based on their experience.
+   - If KNOWN_COMPLETION_STATUS is provided, acknowledge it and SKIP asking which workouts were completed.
+   - If KNOWN_COMPLETION_STATUS is not provided, ask which workouts were completed (multi-select each day from WORKOUT DAYS LIST)
 2. Based on completion:
    All completed → ask how it felt overall (too easy/about right/too hard)
    Some missed → briefly ask why, then ask how completed ones felt
@@ -118,6 +120,7 @@ export function buildPreFollowupUserContext(params: {
     days: Array<{
       day: number;
       dayType: string;
+      completed?: boolean;
       exercises: Array<{
         exerciseId: string;
         name?: string;
@@ -230,6 +233,17 @@ export function buildPreFollowupUserContext(params: {
     .map(d => `${getDayName(d.day, language)} (${d.dayType})`)
     .join(', ');
 
+  // Known completion status, if present in program days
+  const workoutDaysWithKnownStatus = previousProgram.days.filter(
+    d => d.dayType !== 'rest' && d.completed !== undefined
+  );
+  const knownCompletionStatus =
+    workoutDaysWithKnownStatus.length > 0
+      ? workoutDaysWithKnownStatus
+          .map(d => `${getDayName(d.day, language)}: ${d.completed ? 'completed' : 'missed'}`)
+          .join('\n')
+      : '';
+
   // Format dates for context
   const formatDate = (d: Date) => d.toLocaleDateString(language === 'nb' ? 'nb-NO' : 'en-US', { 
     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
@@ -264,6 +278,9 @@ export function buildPreFollowupUserContext(params: {
     
     WORKOUT DAYS LIST (use this when asking about completion):
     ${workoutDaysList || 'No workout days found'}
+
+    KNOWN_COMPLETION_STATUS (if present, do not ask completion again):
+    ${knownCompletionStatus || 'unknown'}
     
     When asking about workout completion, provide each workout day as a MULTI-SELECT option.
     Use "multiSelect": true on each day option so user can select which days they COMPLETED.
