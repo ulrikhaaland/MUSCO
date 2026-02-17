@@ -24,8 +24,8 @@ class AssistantApiClient {
   AssistantApiClient({
     String? baseUrl,
     Future<String?> Function()? authTokenProvider,
-  })  : _baseUrlOverride = baseUrl,
-        _authTokenProvider = authTokenProvider {
+  }) : _baseUrlOverride = baseUrl,
+       _authTokenProvider = authTokenProvider {
     _httpClient.connectionTimeout = const Duration(seconds: 12);
     _httpClient.idleTimeout = const Duration(seconds: 20);
   }
@@ -97,6 +97,55 @@ class AssistantApiClient {
     }
   }
 
+  Future<Map<String, Map<String, dynamic>>> searchExercisesByNames({
+    required List<String> names,
+    required String locale,
+  }) async {
+    final unique = names
+        .map((n) => n.trim())
+        .where((n) => n.isNotEmpty)
+        .toSet()
+        .toList();
+    if (unique.isEmpty) return const {};
+
+    final baseUrl = await _resolveBaseUrl();
+    final searchUri = Uri.parse('$baseUrl/api/exercises/search');
+    final result = <String, Map<String, dynamic>>{};
+
+    for (final name in unique) {
+      try {
+        final request = await _httpClient.postUrl(searchUri);
+        request.headers.contentType = ContentType.json;
+        request.write(
+          jsonEncode({
+            'bodyParts': const <String>[],
+            'query': name,
+            'limit': 1,
+            'locale': locale,
+          }),
+        );
+
+        final response = await request.close().timeout(
+          const Duration(seconds: 20),
+        );
+        if (response.statusCode < 200 || response.statusCode >= 300) continue;
+
+        final raw = await utf8.decoder.bind(response).join();
+        final decoded = jsonDecode(raw);
+        if (decoded is! Map<String, dynamic>) continue;
+        final exercises = decoded['exercises'];
+        if (exercises is! List || exercises.isEmpty) continue;
+        final first = exercises.first;
+        if (first is! Map) continue;
+        result[name] = first.map((k, v) => MapEntry(k.toString(), v));
+      } catch (_) {
+        // Best-effort lookup only.
+      }
+    }
+
+    return result;
+  }
+
   Stream<AssistantStreamEvent> streamMessage({
     required String message,
     required String language,
@@ -104,6 +153,10 @@ class AssistantApiClient {
     required String? selectedBodyPart,
     required List<String> bodyPartsInSelectedGroup,
     required List<Map<String, String>> messages,
+    List<Map<String, dynamic>>? previousQuestions,
+    int? maxFollowUpOptions,
+    Map<String, dynamic>? diagnosisAssistantResponse,
+    String? mode,
   }) async* {
     final assistantUri = await _resolveAssistantUri();
 
@@ -128,19 +181,33 @@ class AssistantApiClient {
       request.headers.set(HttpHeaders.authorizationHeader, 'Bearer $authToken');
     }
 
+    final payload = <String, dynamic>{
+      'message': message,
+      'selectedBodyGroupName': selectedBodyGroupName,
+      'selectedBodyPart':
+          selectedBodyPart ?? 'no body part of body group selected',
+      'bodyPartsInSelectedGroup': bodyPartsInSelectedGroup,
+      'language': language,
+      'messages': messages,
+    };
+    if (previousQuestions != null) {
+      payload['previousQuestions'] = previousQuestions;
+    }
+    if (maxFollowUpOptions != null) {
+      payload['maxFollowUpOptions'] = maxFollowUpOptions;
+    }
+    if (diagnosisAssistantResponse != null) {
+      payload['diagnosisAssistantResponse'] = diagnosisAssistantResponse;
+    }
+    if (mode != null) {
+      payload['mode'] = mode;
+    }
+
     final body = {
       'action': 'send_message_chat',
       'threadId': 'flutter-mobile',
       'stream': true,
-      'payload': {
-        'message': message,
-        'selectedBodyGroupName': selectedBodyGroupName,
-        'selectedBodyPart':
-            selectedBodyPart ?? 'no body part of body group selected',
-        'bodyPartsInSelectedGroup': bodyPartsInSelectedGroup,
-        'language': language,
-        'messages': messages,
-      },
+      'payload': payload,
     };
 
     request.write(jsonEncode(body));

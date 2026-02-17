@@ -1285,7 +1285,7 @@ export function ChatMessages({
                   </div>
                 )}
 
-                {/* Loading message for when waiting for response */}
+                {/* Thinking message for when waiting for response */}
                 <LoadingMessage
                   visible={needsResponsePlaceholder && !isStreaming}
                 />

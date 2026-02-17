@@ -345,12 +345,10 @@ export const sendWeeklyProgramReminder = onSchedule(
         const generations: Record<string, string> =
           userData.weeklyProgramGenerations || {};
 
-        // Deduplicate by type and keep only types that haven't been generated
-        // for the upcoming week yet.
-        const seenTypes = new Set<string>();
+        // Keep all programs whose type hasn't been generated for the
+        // upcoming week yet. No dedup — user may have multiple programs
+        // of the same type and should choose which one to generate for.
         const eligible = programs.filter((p) => {
-          if (seenTypes.has(p.type)) return false;
-          seenTypes.add(p.type);
           return generations[p.type] !== nextMondayISO;
         });
 
@@ -473,13 +471,12 @@ export const sendDailyTestReminder = onSchedule(
           continue;
         }
 
-        // Deduplicate by type
-        const seenTypes = new Set<string>();
+        // Include all done programs — no type dedup so the user can
+        // choose which program to generate a follow-up for.
         const eligible: EligibleProgram[] = [];
         for (const doc of programsSnap.docs) {
           const data = doc.data();
-          if (!data.type || seenTypes.has(data.type)) continue;
-          seenTypes.add(data.type);
+          if (!data.type) continue;
           eligible.push({
             docId: doc.id,
             type: data.type,

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1084458794272",
+    "project_id": "musco-dc111",
+    "storage_bucket": "musco-dc111.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1084458794272:android:43098522ddaea919daeb45",
+        "android_client_info": {
+          "package_name": "com.musco.musco_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD0dJcH6qpdi73IDvOC7Ly1PaHffTIFbPY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
