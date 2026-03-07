@@ -12,7 +12,7 @@ import Logo from './Logo';
 import { logAnalyticsEvent } from '@/app/utils/analytics';
 
 // Create a separate component that uses the search params
-function NavigationMenuContent({ mobileTitle, mobileFloatingButton }: { mobileTitle?: string; mobileFloatingButton?: boolean }) {
+function NavigationMenuContent({ mobileTitle, mobileSubtitle, mobileFloatingButton }: { mobileTitle?: string; mobileSubtitle?: string; mobileFloatingButton?: boolean }) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -406,10 +406,17 @@ function NavigationMenuContent({ mobileTitle, mobileFloatingButton }: { mobileTi
         </div>
       ) : (
         <div className="md:hidden z-40 bg-gray-900/95 backdrop-blur">
-          <div className="px-4 py-3 flex items-center justify-between gap-2 flex-nowrap">
+          <div className="px-4 py-3 flex items-center justify-between gap-2 flex-nowrap relative">
             <div className="w-9" aria-hidden />
-            <div className="flex-1 min-w-0 text-white text-lg font-semibold text-center whitespace-normal break-words leading-tight">
-              {mobileTitle}
+            <div className="absolute inset-x-14 top-0 bottom-0 flex items-center justify-center pointer-events-none">
+              <div className="text-center">
+                <div className="text-white text-lg font-semibold whitespace-normal break-words leading-tight">
+                  {mobileTitle}
+                </div>
+                {mobileSubtitle && (
+                  <div className="text-gray-400 text-xs">{mobileSubtitle}</div>
+                )}
+              </div>
             </div>
             {user ? (
               <button
@@ -595,10 +602,10 @@ function MenuLoadingFallback() {
   );
 }
 
-export function NavigationMenu({ mobileTitle, mobileFloatingButton }: { mobileTitle?: string; mobileFloatingButton?: boolean }) {
+export function NavigationMenu({ mobileTitle, mobileSubtitle, mobileFloatingButton }: { mobileTitle?: string; mobileSubtitle?: string; mobileFloatingButton?: boolean }) {
   return (
     <Suspense fallback={<MenuLoadingFallback />}>
-      <NavigationMenuContent mobileTitle={mobileTitle} mobileFloatingButton={mobileFloatingButton} />
+      <NavigationMenuContent mobileTitle={mobileTitle} mobileSubtitle={mobileSubtitle} mobileFloatingButton={mobileFloatingButton} />
     </Suspense>
   );
 }

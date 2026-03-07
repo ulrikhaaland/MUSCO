@@ -164,11 +164,6 @@ export function WorkoutSession({
     onClose();
   }, [actions, onClose, onComplete]);
 
-  // X button = minimize (most common intent)
-  const handleMinimize = useCallback(() => {
-    onClose();
-  }, [onClose]);
-
   // End workout = destructive cancel with confirmation
   const handleCancelWorkout = useCallback(() => {
     setShowExitMenu(false);
@@ -367,76 +362,91 @@ export function WorkoutSession({
       onTouchEnd={onTouchEnd}
     >
       {/* ── End workout menu overlay ── */}
+      {/* ── Exit dialog ── */}
       {showExitMenu && (
-        <div className="absolute inset-0 z-[110] bg-black/60 backdrop-blur-sm flex items-center justify-center px-6 animate-scale-in">
-          <div className="bg-gray-800 ring-1 ring-gray-700/60 rounded-2xl p-6 w-full max-w-xs space-y-3">
-            <p className="text-white font-semibold text-center mb-1">
-              {t('workout.endWorkout')}
-            </p>
-            <p className="text-gray-400 text-sm text-center mb-4">
-              {t('workout.endWorkoutConfirm')}
-            </p>
-            <button
-              onClick={() => {
-                setShowExitMenu(false);
-                onComplete?.();
-                actions.endSession();
-                onClose();
-              }}
-              className="
-                w-full py-3 rounded-xl text-sm font-medium
-                bg-emerald-500/15 hover:bg-emerald-500/25 active:bg-emerald-500/35
-                ring-1 ring-emerald-500/30
-                text-emerald-400 transition-colors
-              "
-            >
-              {t('workout.markCompleted')}
-            </button>
-            <button
-              onClick={handleCancelWorkout}
-              className="
-                w-full py-3 rounded-xl text-sm font-medium
-                bg-red-500/15 hover:bg-red-500/25 active:bg-red-500/35
-                ring-1 ring-red-500/30
-                text-red-400 transition-colors
-              "
-            >
-              {t('workout.discardWorkout')}
-            </button>
+        <div
+          className="absolute inset-0 z-[110] bg-black/60 backdrop-blur-sm flex items-center justify-center px-6 animate-scale-in"
+          onClick={() => setShowExitMenu(false)}
+        >
+          <div
+            className="bg-gray-800 ring-1 ring-gray-700/60 rounded-2xl p-6 w-full max-w-xs relative"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close button */}
             <button
               onClick={() => setShowExitMenu(false)}
-              className="
-                w-full py-3 rounded-xl text-sm font-medium
-                text-gray-500 hover:text-gray-400 transition-colors
-              "
+              className="absolute top-3 right-3 p-1.5 rounded-lg hover:bg-gray-700 transition-colors"
             >
-              {t('workout.continueWorkout')}
+              <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
             </button>
+
+            <p className="text-white font-semibold text-center mb-1 pr-6">
+              {t('workout.endWorkoutConfirm')}
+            </p>
+
+            <div className="space-y-3 mt-5">
+              {/* Mark as completed */}
+              <button
+                onClick={() => {
+                  setShowExitMenu(false);
+                  onComplete?.();
+                  actions.endSession();
+                  onClose();
+                }}
+                className="
+                  w-full py-3 rounded-xl text-sm font-medium
+                  bg-emerald-500/15 hover:bg-emerald-500/25 active:bg-emerald-500/35
+                  ring-1 ring-emerald-500/30
+                  text-emerald-400 transition-colors
+                "
+              >
+                {t('workout.markCompleted')}
+              </button>
+
+              {/* Minimize (keep running) */}
+              <button
+                onClick={() => {
+                  setShowExitMenu(false);
+                  onClose();
+                }}
+                className="
+                  w-full py-3 rounded-xl text-sm font-medium
+                  bg-gray-700/40 hover:bg-gray-700/60 active:bg-gray-700/80
+                  ring-1 ring-gray-600/30
+                  text-gray-300 transition-colors
+                "
+              >
+                {t('workout.minimize')}
+              </button>
+
+              {/* Discard */}
+              <button
+                onClick={handleCancelWorkout}
+                className="
+                  w-full py-3 rounded-xl text-sm font-medium
+                  bg-red-500/10 hover:bg-red-500/20 active:bg-red-500/30
+                  ring-1 ring-red-500/25
+                  text-red-400 transition-colors
+                "
+              >
+                {t('workout.discardWorkout')}
+              </button>
+            </div>
           </div>
         </div>
       )}
 
       {/* ── Header ── */}
-      <header className="grid grid-cols-[1fr_auto_1fr] items-center px-3 md:px-4 py-3 bg-gray-900 border-b border-gray-800/60">
-        {/* Left: end workout */}
-        <button
-          onClick={() => setShowExitMenu(true)}
-          className="
-            justify-self-start inline-flex items-center
-            px-2.5 py-1 rounded-full
-            text-sm font-semibold text-red-300
-            bg-red-500/10 hover:bg-red-500/15 active:bg-red-500/20
-            ring-1 ring-red-500/25
-            transition-colors
-          "
-        >
-          {t('workout.endWorkout')}
-        </button>
+      <header className="flex items-center justify-between px-3 md:px-4 py-3 bg-gray-900 border-b border-gray-800/60">
+        {/* Left spacer for centering */}
+        <div className="w-10" />
 
         {/* Center: elapsed timer */}
         <div
           className={`
-            justify-self-center inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full
+            inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full
             bg-gray-800/70 ring-2 ring-indigo-400/40 text-gray-300
             ${showElapsedAttention ? 'animate-elapsed-attention' : ''}
           `}
@@ -447,15 +457,15 @@ export function WorkoutSession({
           <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
-          <span className="text-[10px] uppercase tracking-wide text-gray-500">Elapsed</span>
+          <span className="text-[10px] uppercase tracking-wide text-gray-500">{t('workout.elapsed')}</span>
           <span className="text-sm font-medium tabular-nums">{formatElapsedTime(elapsedSeconds)}</span>
         </div>
 
-        {/* Right: minimize (X) */}
+        {/* Right: close (X) -- opens dialog */}
         <button
-          onClick={handleMinimize}
-          className="justify-self-end p-2 rounded-lg hover:bg-gray-800 active:bg-gray-700 transition-colors"
-          aria-label="Minimize"
+          onClick={() => setShowExitMenu(true)}
+          className="p-2 rounded-lg hover:bg-gray-800 active:bg-gray-700 transition-colors"
+          aria-label="Close"
         >
           <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -530,7 +540,7 @@ export function WorkoutSession({
                       {hasDesc && (
                         <section className="space-y-1.5">
                           <h3 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-gray-500">
-                            Description
+                            {t('workout.description')}
                           </h3>
                           <p className="text-gray-300">{currentExercise.description}</p>
                         </section>
@@ -554,7 +564,7 @@ export function WorkoutSession({
                       {hasSteps && (
                         <section className="space-y-1.5">
                           <h3 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-gray-500">
-                            Instructions
+                            {t('workout.instructions')}
                           </h3>
                           <ol className="list-decimal pl-5 space-y-1.5 text-gray-300">
                             {currentExercise.steps!.map((step, i) => (

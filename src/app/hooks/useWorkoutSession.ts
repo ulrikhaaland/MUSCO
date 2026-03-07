@@ -240,7 +240,27 @@ export function useWorkoutSession(): [WorkoutSession, WorkoutSessionActions] {
       const restTime = currentExercise?.restBetweenSets ?? currentExercise?.rest ?? 60;
 
       const newCompletedSets = [...prev.completedSets];
-      newCompletedSets[prev.currentExerciseIndex] = (newCompletedSets[prev.currentExerciseIndex] ?? 0) + 1;
+      const currentCompleted = newCompletedSets[prev.currentExerciseIndex] ?? 0;
+      // Guard: don't increment past target sets
+      if (currentCompleted >= totalSets) {
+        // Already fully completed — treat as advancing to next exercise or finishing
+        const isLastExercise = prev.currentExerciseIndex >= prev.exercises.length - 1;
+        if (isLastExercise) {
+          const filledSets = prev.exercises.map((ex, i) => {
+            const target = ex.sets ?? 1;
+            return Math.max(newCompletedSets[i] ?? 0, target);
+          });
+          return { ...prev, completedSets: filledSets, restTimerEnd: null };
+        }
+        return {
+          ...prev,
+          currentExerciseIndex: prev.currentExerciseIndex + 1,
+          currentSet: 1,
+          completedSets: newCompletedSets,
+          restTimerEnd: null,
+        };
+      }
+      newCompletedSets[prev.currentExerciseIndex] = currentCompleted + 1;
 
       const isLastSet = prev.currentSet >= totalSets;
       const isLastExercise = prev.currentExerciseIndex >= prev.exercises.length - 1;
@@ -389,8 +409,14 @@ export function useElapsedTime(startTime: Date | null, isActive: boolean): numbe
   const [elapsed, setElapsed] = useState(0);
 
   useEffect(() => {
-    if (!startTime || !isActive) {
+    if (!startTime) {
       setElapsed(0);
+      return;
+    }
+
+    if (!isActive) {
+      // Freeze at final value instead of resetting to 0
+      setElapsed(Math.floor((Date.now() - startTime.getTime()) / 1000));
       return;
     }
 
@@ -468,7 +494,10 @@ export function getWorkoutProgress(session: WorkoutSession): number {
  */
 export function getTotalCompletedSets(session: WorkoutSession): number {
   if (!session.isActive) return 0;
-  return session.completedSets.reduce((sum, count) => sum + (count ?? 0), 0);
+  return session.exercises.reduce((sum, ex, i) => {
+    const target = ex.sets ?? 1;
+    return sum + Math.min(session.completedSets[i] ?? 0, target);
+  }, 0);
 }
 
 /**

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../config/body_part_groups.dart';
@@ -43,6 +44,9 @@ class _FollowUpQuestion {
   const _FollowUpQuestion({
     required this.question,
     this.title,
+    this.meta,
+    this.value,
+    this.multiSelect = false,
     this.chatMode,
     this.selectBodyGroup,
     this.selectBodyPart,
@@ -54,6 +58,9 @@ class _FollowUpQuestion {
     return _FollowUpQuestion(
       question: (map['question'] ?? '').toString(),
       title: map['title']?.toString(),
+      meta: map['meta']?.toString(),
+      value: map['value']?.toString(),
+      multiSelect: map['multiSelect'] == true,
       chatMode: map['chatMode']?.toString(),
       selectBodyGroup: map['selectBodyGroup']?.toString(),
       selectBodyPart: map['selectBodyPart']?.toString(),
@@ -64,6 +71,9 @@ class _FollowUpQuestion {
 
   final String question;
   final String? title;
+  final String? meta;
+  final String? value;
+  final bool multiSelect;
   final String? chatMode;
   final String? selectBodyGroup;
   final String? selectBodyPart;
@@ -74,6 +84,9 @@ class _FollowUpQuestion {
     return {
       'question': question,
       if (title != null) 'title': title,
+      if (meta != null) 'meta': meta,
+      if (value != null) 'value': value,
+      'multiSelect': multiSelect,
       if (chatMode != null) 'chatMode': chatMode,
       if (selectBodyGroup != null) 'selectBodyGroup': selectBodyGroup,
       if (selectBodyPart != null) 'selectBodyPart': selectBodyPart,
@@ -188,13 +201,20 @@ class _ModelViewerScreenState extends State<ModelViewerScreen> {
 
   final List<_ChatMessage> _messages = [];
   final List<_FollowUpQuestion> _followUps = [];
+  final Set<String> _selectedMultiFollowUpIds = <String>{};
   final List<Map<String, dynamic>> _previousQuestions = [];
   Map<String, dynamic>? _assistantResponse;
   final Map<String, Map<String, dynamic>> _inlineExercises = {};
   List<_ChatSession> _chatSessions = const [];
   String? _activeChatSessionId;
+  DateTime? _suppressPartSelectUntil;
+  String? _suppressPartGroupId;
 
   static const String _chatSessionsStorageKey = 'model_viewer_chat_sessions_v1';
+
+  /// Groups where tapping a part selects ONLY that individual part (not the
+  /// entire muscle group). Matches the web app's special-case handling.
+  static const _specialGroupIds = {'left_shoulder', 'right_shoulder', 'back'};
 
   static const List<_QuickPrompt> _quickPrompts = [
     _QuickPrompt(
@@ -232,7 +252,8 @@ class _ModelViewerScreenState extends State<ModelViewerScreen> {
       ..onViewReady = _onViewReady
       ..onModelLoaded = _onModelLoaded
       ..onModelLoadError = _onModelLoadError
-      ..onObjectSelected = _onObjectSelected;
+      ..onObjectSelected = _onObjectSelected
+      ..onObjectDeselected = _onObjectDeselected;
     _loadChatSessions();
   }
 
@@ -324,17 +345,108 @@ class _ModelViewerScreenState extends State<ModelViewerScreen> {
     final group = getPartGroup(objectId);
     if (group == null) return;
 
-    final selectionMap = createSelectionMap(group.selectIds, _gender);
-    _controller.selectObjects(selectionMap, replace: true);
-    _controller.enableXray();
+    // Special handling for shoulders and back: always select only the
+    // individual tapped part instead of highlighting the entire group.
+    if (_specialGroupIds.contains(group.id)) {
+      final neutralId = getNeutralId(objectId);
+      final isPart = group.parts.any((p) => p.objectId == neutralId);
+      if (isPart) {
+        _controller.enableXray();
+        _controller.setCamera(objectId: getGenderedId(objectId, _gender));
+        setState(() {
+          _selectedGroup = group;
+          _selectedObjectId = objectId;
+        });
+        return;
+      }
+    }
 
+    final currentGroup = _selectedGroup;
+    final isSameGroup = currentGroup?.id == group.id;
+
+    // First tap (or tap outside current group): select only the group.
+    if (!isSameGroup) {
+      final selectionMap = createSelectionMap(group.selectIds, _gender);
+      _controller.enableXray();
+      _controller.selectObjects(selectionMap, replace: true);
+      _controller.setCamera(objectId: getGenderedId(group.zoomId, _gender));
+      _suppressPartSelectUntil = DateTime.now().add(
+        const Duration(milliseconds: 480),
+      );
+      _suppressPartGroupId = group.id;
+      setState(() {
+        _selectedGroup = group;
+        _selectedObjectId = null;
+      });
+      return;
+    }
+
+    // Some SDK builds emit a second select event for the same tapped part
+    // immediately after group selection. Ignore that duplicate so first tap
+    // remains group-only.
+    final suppressUntil = _suppressPartSelectUntil;
+    if (_selectedObjectId == null &&
+        suppressUntil != null &&
+        DateTime.now().isBefore(suppressUntil) &&
+        _suppressPartGroupId == group.id) {
+      return;
+    }
+
+    // Second tap within the selected group: select the specific part.
+    if (_selectedObjectId != null && idsMatch(_selectedObjectId!, objectId)) {
+      final selectionMap = createSelectionMap(group.selectIds, _gender);
+      _controller.enableXray();
+      _controller.selectObjects(selectionMap, replace: true);
+      _controller.setCamera(objectId: getGenderedId(group.zoomId, _gender));
+      setState(() {
+        _selectedObjectId = null;
+      });
+      return;
+    }
+
+    // Otherwise, set/replace specific part selection within current group.
+    _controller.enableXray();
+    _controller.setCamera(objectId: getGenderedId(objectId, _gender));
     setState(() {
-      _selectedGroup = group;
       _selectedObjectId = objectId;
     });
   }
 
+  void _onObjectDeselected(String objectId) {
+    // Only handle deselection of the currently selected part.
+    if (_selectedObjectId == null) return;
+    if (!idsMatch(_selectedObjectId!, objectId)) return;
+
+    // Delay processing: if an objectSelected event follows quickly (user
+    // tapped a different part), _onObjectSelected will update state first
+    // and this callback becomes a no-op. If no select follows (genuine
+    // toggle-off), we return to group-only per spec section 3.2.
+    final capturedPartId = _selectedObjectId;
+    Future<void>.delayed(const Duration(milliseconds: 150), () {
+      if (!mounted) return;
+      // Another selection already happened → skip.
+      if (_selectedObjectId != capturedPartId) return;
+
+      final group = _selectedGroup;
+      if (group == null) return;
+
+      final selectionMap = createSelectionMap(group.selectIds, _gender);
+      _controller.selectObjects(selectionMap, replace: true);
+      _controller.enableXray();
+      _controller.setCamera(objectId: getGenderedId(group.zoomId, _gender));
+      _suppressPartSelectUntil = DateTime.now().add(
+        const Duration(milliseconds: 480),
+      );
+      _suppressPartGroupId = group.id;
+      setState(() {
+        _selectedObjectId = null;
+      });
+    });
+  }
+
   void _resetScene() {
+    _suppressPartSelectUntil = null;
+    _suppressPartGroupId = null;
     _controller
       ..resetScene()
       ..disableXray();
@@ -362,15 +474,27 @@ class _ModelViewerScreenState extends State<ModelViewerScreen> {
 
   void _rotateModel() {
     if (!_modelLoaded) return;
-
+    if (_isRotating) return;
     setState(() => _isRotating = true);
 
-    final targetId = _selectedObjectId ?? _selectedGroup?.zoomId;
-    if (targetId != null) {
-      _controller.setCamera(objectId: getGenderedId(targetId, _gender));
-    }
+    Future<void>(() async {
+      final targetId = _selectedObjectId ?? _selectedGroup?.zoomId;
+      if (targetId != null) {
+        await _controller.setCamera(objectId: getGenderedId(targetId, _gender));
+      }
 
-    Future<void>.delayed(const Duration(milliseconds: 600), () {
+      var didOrbit = false;
+      for (var i = 0; i < 18; i++) {
+        final moved = await _controller.orbitCamera(yaw: 10, pitch: 0);
+        if (!mounted) return;
+        didOrbit = didOrbit || moved;
+        await Future<void>.delayed(const Duration(milliseconds: 16));
+      }
+
+      if (!didOrbit && targetId != null) {
+        await _controller.setCamera(objectId: getGenderedId(targetId, _gender));
+      }
+
       if (!mounted) return;
       setState(() => _isRotating = false);
     });
@@ -415,26 +539,61 @@ class _ModelViewerScreenState extends State<ModelViewerScreen> {
     return null;
   }
 
-  void _applyGroupSelection(BodyPartGroup group) {
-    final selectionMap = createSelectionMap(group.selectIds, _gender);
-    _controller.selectObjects(selectionMap, replace: true);
-    _controller.enableXray();
-    _controller.setCamera(objectId: getGenderedId(group.zoomId, _gender));
-    setState(() {
-      _selectedGroup = group;
-      _selectedObjectId = null;
-    });
+  void _applyGroupSelectionWithBehavior(
+    BodyPartGroup group, {
+    required bool keepChatOpen,
+  }) {
+    void applySelection() {
+      final selectionMap = createSelectionMap(group.selectIds, _gender);
+      _controller.selectObjects(selectionMap, replace: true);
+      _controller.enableXray();
+      _controller.setCamera(objectId: getGenderedId(group.zoomId, _gender));
+      if (!mounted) return;
+      setState(() {
+        _selectedGroup = group;
+        _selectedObjectId = null;
+      });
+    }
+
+    if (!keepChatOpen && _isChatOverlayOpen) {
+      setState(() => _isChatOverlayOpen = false);
+      Future<void>.delayed(const Duration(milliseconds: 200), () {
+        if (!mounted) return;
+        applySelection();
+      });
+      return;
+    }
+
+    applySelection();
   }
 
-  void _applyPartSelection(BodyPartGroup group, String partObjectId) {
-    final selectionMap = createSelectionMap(group.selectIds, _gender);
-    _controller.selectObjects(selectionMap, replace: true);
-    _controller.enableXray();
-    _controller.setCamera(objectId: getGenderedId(partObjectId, _gender));
-    setState(() {
-      _selectedGroup = group;
-      _selectedObjectId = partObjectId;
-    });
+  void _applyPartSelectionWithBehavior(
+    BodyPartGroup group,
+    String partObjectId, {
+    required bool keepChatOpen,
+  }) {
+    void applySelection() {
+      final selectionMap = createSelectionMap(group.selectIds, _gender);
+      _controller.selectObjects(selectionMap, replace: true);
+      _controller.enableXray();
+      _controller.setCamera(objectId: getGenderedId(partObjectId, _gender));
+      if (!mounted) return;
+      setState(() {
+        _selectedGroup = group;
+        _selectedObjectId = partObjectId;
+      });
+    }
+
+    if (!keepChatOpen && _isChatOverlayOpen) {
+      setState(() => _isChatOverlayOpen = false);
+      Future<void>.delayed(const Duration(milliseconds: 200), () {
+        if (!mounted) return;
+        applySelection();
+      });
+      return;
+    }
+
+    applySelection();
   }
 
   List<Map<String, String>> _buildChatHistoryPayload() {
@@ -463,13 +622,6 @@ class _ModelViewerScreenState extends State<ModelViewerScreen> {
       if (name.isNotEmpty) names.add(name);
     }
     return names.toList();
-  }
-
-  String _stripExerciseMarkers(String text) {
-    return text.replaceAllMapped(
-      RegExp(r'\[\[([^\]]+)\]\]'),
-      (m) => (m.group(1) ?? '').trim(),
-    );
   }
 
   Future<void> _prefetchInlineExercisesFromMessage(String content) async {
@@ -565,6 +717,7 @@ class _ModelViewerScreenState extends State<ModelViewerScreen> {
       _activeChatSessionId ??= DateTime.now().millisecondsSinceEpoch.toString();
       _isChatLoading = true;
       _chatError = null;
+      _selectedMultiFollowUpIds.clear();
       _followUps.clear();
       _messages.add(_ChatMessage(role: 'user', content: trimmed));
       _messages.add(const _ChatMessage(role: 'assistant', content: ''));
@@ -612,6 +765,13 @@ class _ModelViewerScreenState extends State<ModelViewerScreen> {
                     ),
                   ),
                 );
+              final validIds = _followUps
+                  .where((q) => q.multiSelect)
+                  .map(_followUpId)
+                  .toSet();
+              _selectedMultiFollowUpIds.removeWhere(
+                (id) => !validIds.contains(id),
+              );
             }
 
             final selectedBodyPart =
@@ -619,7 +779,11 @@ class _ModelViewerScreenState extends State<ModelViewerScreen> {
             if (_selectedObjectId == null && selectedBodyPart is String) {
               final match = _findPartByName(selectedBodyPart);
               if (match != null) {
-                _applyPartSelection(match.group, match.objectId);
+                _applyPartSelectionWithBehavior(
+                  match.group,
+                  match.objectId,
+                  keepChatOpen: false,
+                );
               }
             }
 
@@ -628,7 +792,7 @@ class _ModelViewerScreenState extends State<ModelViewerScreen> {
             if (_selectedGroup == null && selectedBodyGroup is String) {
               final group = _findGroupByName(selectedBodyGroup);
               if (group != null) {
-                _applyGroupSelection(group);
+                _applyGroupSelectionWithBehavior(group, keepChatOpen: false);
               }
             }
           } else if (event.type == 'error' && event.error != null) {
@@ -657,16 +821,61 @@ class _ModelViewerScreenState extends State<ModelViewerScreen> {
 
   void _handleFollowUpTap(_FollowUpQuestion q) {
     if (q.question.trim().toLowerCase() == 'answer in chat') return;
+    if (q.multiSelect) {
+      final id = _followUpId(q);
+      setState(() {
+        if (_selectedMultiFollowUpIds.contains(id)) {
+          _selectedMultiFollowUpIds.remove(id);
+        } else {
+          _selectedMultiFollowUpIds.add(id);
+        }
+      });
+      return;
+    }
+
+    var effectiveQuestion = q.question;
+    if (_selectedMultiFollowUpIds.isNotEmpty) {
+      final selectedMulti = _followUps
+          .where((item) => item.multiSelect)
+          .where(
+            (item) => _selectedMultiFollowUpIds.contains(_followUpId(item)),
+          )
+          .toList();
+      if (selectedMulti.isNotEmpty) {
+        effectiveQuestion = selectedMulti
+            .map(
+              (item) => item.title?.trim().isNotEmpty == true
+                  ? item.title!.trim()
+                  : item.question.trim(),
+            )
+            .where((text) => text.isNotEmpty)
+            .join(', ');
+      }
+      setState(() => _selectedMultiFollowUpIds.clear());
+    }
+
+    final shouldKeepChatOpen =
+        q.chatMode == 'diagnosis' ||
+        (_assistantResponse?['chatMode']?.toString() == 'diagnosis');
 
     if (q.selectBodyPart != null && q.selectBodyPart!.trim().isNotEmpty) {
       final match = _findPartByName(q.selectBodyPart!);
       if (match != null) {
-        _applyPartSelection(match.group, match.objectId);
+        _applyPartSelectionWithBehavior(
+          match.group,
+          match.objectId,
+          keepChatOpen: shouldKeepChatOpen,
+        );
       }
     } else if (q.selectBodyGroup != null &&
         q.selectBodyGroup!.trim().isNotEmpty) {
       final group = _findGroupByName(q.selectBodyGroup!);
-      if (group != null) _applyGroupSelection(group);
+      if (group != null) {
+        _applyGroupSelectionWithBehavior(
+          group,
+          keepChatOpen: shouldKeepChatOpen,
+        );
+      }
     }
 
     if (q.generate) {
@@ -697,7 +906,35 @@ class _ModelViewerScreenState extends State<ModelViewerScreen> {
         }),
       );
 
-    _sendChatMessage(q.question);
+    _sendChatMessage(effectiveQuestion);
+  }
+
+  String _followUpId(_FollowUpQuestion q) {
+    final raw = (q.value?.trim().isNotEmpty ?? false)
+        ? q.value!
+        : (q.title?.trim().isNotEmpty ?? false)
+        ? q.title!
+        : q.question;
+    return raw.trim().toLowerCase();
+  }
+
+  void _submitSelectedMultiFollowUps() {
+    if (_selectedMultiFollowUpIds.isEmpty) return;
+    final selectedMulti = _followUps
+        .where((item) => item.multiSelect)
+        .where((item) => _selectedMultiFollowUpIds.contains(_followUpId(item)))
+        .toList();
+    final combined = selectedMulti
+        .map(
+          (item) => item.title?.trim().isNotEmpty == true
+              ? item.title!.trim()
+              : item.question.trim(),
+        )
+        .where((text) => text.isNotEmpty)
+        .join(', ');
+    if (combined.isEmpty) return;
+    setState(() => _selectedMultiFollowUpIds.clear());
+    _sendChatMessage(combined);
   }
 
   Future<void> _loadChatSessions() async {
@@ -752,6 +989,7 @@ class _ModelViewerScreenState extends State<ModelViewerScreen> {
 
   void _applySession(_ChatSession session) {
     _activeChatSessionId = session.id;
+    _selectedMultiFollowUpIds.clear();
     _messages
       ..clear()
       ..addAll(session.messages);
@@ -795,6 +1033,7 @@ class _ModelViewerScreenState extends State<ModelViewerScreen> {
       _activeChatSessionId = null;
       _messages.clear();
       _followUps.clear();
+      _selectedMultiFollowUpIds.clear();
       _previousQuestions.clear();
       _assistantResponse = null;
       _chatError = null;
@@ -840,16 +1079,20 @@ class _ModelViewerScreenState extends State<ModelViewerScreen> {
               Positioned(
                 top: 8,
                 left: 8,
-                child: _circleButton(
-                  Icons.arrow_back,
-                  () => Navigator.pop(context),
+                child: PointerInterceptor(
+                  child: _circleButton(
+                    Icons.arrow_back,
+                    () => Navigator.pop(context),
+                  ),
                 ),
               ),
             if (_modelLoaded)
               Positioned(
                 top: 8,
                 right: 8,
-                child: _buildLocaleSwitcher(context),
+                child: PointerInterceptor(
+                  child: _buildLocaleSwitcher(context),
+                ),
               ),
           ],
         ),
@@ -863,36 +1106,38 @@ class _ModelViewerScreenState extends State<ModelViewerScreen> {
     return Positioned(
       right: 16,
       bottom: 92,
-      child: Container(
-        padding: const EdgeInsets.all(6),
-        decoration: BoxDecoration(
-          color: Colors.black.withValues(alpha: 0.72),
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: const [
-            BoxShadow(
-              color: Colors.black54,
-              blurRadius: 14,
-              offset: Offset(0, 6),
-            ),
-          ],
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _controlButton(
-              icon: Icons.crop_rotate,
-              onTap: _modelLoaded ? _rotateModel : null,
-              spinning: _isRotating,
-            ),
-            _controlButton(
-              icon: Icons.my_location,
-              onTap: hasSelection && _modelLoaded ? _resetScene : null,
-            ),
-            _controlButton(
-              icon: _gender == 'male' ? Icons.female : Icons.male,
-              onTap: _modelLoaded ? _switchGender : null,
-            ),
-          ],
+      child: PointerInterceptor(
+        child: Container(
+          padding: const EdgeInsets.all(6),
+          decoration: BoxDecoration(
+            color: Colors.black.withValues(alpha: 0.72),
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: const [
+              BoxShadow(
+                color: Colors.black54,
+                blurRadius: 14,
+                offset: Offset(0, 6),
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _controlButton(
+                icon: Icons.crop_rotate,
+                onTap: _modelLoaded ? _rotateModel : null,
+                spinning: _isRotating,
+              ),
+              _controlButton(
+                icon: Icons.my_location,
+                onTap: hasSelection && _modelLoaded ? _resetScene : null,
+              ),
+              _controlButton(
+                icon: _gender == 'male' ? Icons.female : Icons.male,
+                onTap: _modelLoaded ? _switchGender : null,
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -907,12 +1152,13 @@ class _ModelViewerScreenState extends State<ModelViewerScreen> {
       left: 0,
       right: 0,
       bottom: 0,
-      child: Material(
-        color: Colors.black.withValues(alpha: 0.78),
-        child: InkWell(
-          onTap: _openChatOverlay,
+      child: PointerInterceptor(
+        child: Material(
+          color: const Color(0xCC111827),
+          child: InkWell(
+            onTap: _openChatOverlay,
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(14, 12, 14, 16),
+            padding: const EdgeInsets.fromLTRB(14, 10, 14, 14),
             child: Row(
               children: [
                 Expanded(
@@ -938,8 +1184,8 @@ class _ModelViewerScreenState extends State<ModelViewerScreen> {
                                     'flutter.modelViewer.chat.tapToOpenChat',
                                   ))
                             : context.t('mobile.chat.askAnything'),
-                        style: TextStyle(
-                          color: Colors.white.withValues(alpha: 0.65),
+                        style: const TextStyle(
+                          color: Color(0xFF9CA3AF),
                           fontSize: 12,
                         ),
                       ),
@@ -948,7 +1194,7 @@ class _ModelViewerScreenState extends State<ModelViewerScreen> {
                 ),
                 Container(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
+                    horizontal: 12,
                     vertical: 6,
                   ),
                   decoration: BoxDecoration(
@@ -964,10 +1210,11 @@ class _ModelViewerScreenState extends State<ModelViewerScreen> {
                   ),
                 ),
                 const SizedBox(width: 8),
-                const Icon(Icons.chevron_right, color: Colors.white70),
+                const Icon(Icons.chevron_right, color: Color(0xFF9CA3AF)),
               ],
             ),
           ),
+        ),
         ),
       ),
     );
@@ -1013,15 +1260,8 @@ class _ModelViewerScreenState extends State<ModelViewerScreen> {
                       runSpacing: 8,
                       children: _quickPrompts
                           .map(
-                            (p) => ActionChip(
-                              backgroundColor: const Color(0x1F6366F1),
-                              side: const BorderSide(color: Color(0x596366F1)),
-                              label: Text(
-                                context.t(p.labelKey),
-                                style: const TextStyle(
-                                  color: Color(0xFFC7D2FE),
-                                ),
-                              ),
+                            (p) => _buildPromptChip(
+                              context.t(p.labelKey),
                               onPressed: () =>
                                   _sendChatMessage(context.t(p.messageKey)),
                             ),
@@ -1043,27 +1283,45 @@ class _ModelViewerScreenState extends State<ModelViewerScreen> {
                   ],
                   if (_followUps.isNotEmpty) ...[
                     const SizedBox(height: 8),
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: _followUps
-                          .map(
-                            (q) => ActionChip(
-                              backgroundColor: const Color(0x1438BDF8),
-                              side: const BorderSide(color: Color(0x33475569)),
-                              onPressed: _isChatLoading
-                                  ? null
-                                  : () => _handleFollowUpTap(q),
-                              label: Text(
-                                q.title?.trim().isNotEmpty == true
-                                    ? q.title!
-                                    : q.question,
-                                style: const TextStyle(color: Colors.white),
+                    ..._followUps
+                        .where((q) => q.multiSelect)
+                        .map(
+                          (q) => Padding(
+                            padding: const EdgeInsets.only(bottom: 10),
+                            child: _buildFollowUpButton(q),
+                          ),
+                        ),
+                    if (_selectedMultiFollowUpIds.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 10),
+                        child: SizedBox(
+                          width: double.infinity,
+                          child: FilledButton(
+                            onPressed: _isChatLoading
+                                ? null
+                                : _submitSelectedMultiFollowUps,
+                            child: Text(
+                              _t(
+                                'feedback.sendSelected',
+                                replacements: {
+                                  'count': _selectedMultiFollowUpIds.length
+                                      .toString(),
+                                },
+                                fallback:
+                                    'Send selected (${_selectedMultiFollowUpIds.length})',
                               ),
                             ),
-                          )
-                          .toList(),
-                    ),
+                          ),
+                        ),
+                      ),
+                    ..._followUps
+                        .where((q) => !q.multiSelect)
+                        .map(
+                          (q) => Padding(
+                            padding: const EdgeInsets.only(bottom: 10),
+                            child: _buildFollowUpButton(q),
+                          ),
+                        ),
                   ],
                   if (_isChatLoading) ...[
                     const SizedBox(height: 12),
@@ -1090,63 +1348,369 @@ class _ModelViewerScreenState extends State<ModelViewerScreen> {
     );
   }
 
+  Widget _buildPromptChip(String label, {required VoidCallback onPressed}) {
+    return Material(
+      color: const Color(0x1F635BFF),
+      borderRadius: BorderRadius.circular(999),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(999),
+        onTap: onPressed,
+        child: Container(
+          height: 36,
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(999),
+            border: Border.all(color: const Color(0x59635BFF)),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(
+                Icons.arrow_outward_rounded,
+                color: Color(0xFFC8CBFF),
+                size: 14,
+              ),
+              const SizedBox(width: 4),
+              Text(
+                label,
+                style: const TextStyle(
+                  color: Color(0xFFC8CBFF),
+                  fontWeight: FontWeight.w500,
+                  fontSize: 13,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFollowUpButton(_FollowUpQuestion q) {
+    final label = (q.title?.trim().isNotEmpty ?? false) ? q.title! : q.question;
+    final id = _followUpId(q);
+    final isSelected = _selectedMultiFollowUpIds.contains(id);
+    final markerStrippedLabel = _stripMarkers(label);
+    final markerStrippedQuestion = _stripMarkers(q.question);
+    final showSubtitle =
+        (q.title?.trim().isNotEmpty ?? false) &&
+        q.meta == null &&
+        markerStrippedQuestion.toLowerCase() !=
+            markerStrippedLabel.toLowerCase();
+    return Material(
+      color: isSelected ? const Color(0x59635BFF) : const Color(0x1F635BFF),
+      borderRadius: BorderRadius.circular(12),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: _isChatLoading ? null : () => _handleFollowUpTap(q),
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: isSelected
+                  ? const Color(0xB3635BFF)
+                  : const Color(0x59635BFF),
+            ),
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (q.multiSelect)
+                Container(
+                  width: 20,
+                  height: 20,
+                  margin: const EdgeInsets.only(top: 1),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(4),
+                    border: Border.all(
+                      color: const Color(0xFF635BFF),
+                      width: 1.5,
+                    ),
+                    color: isSelected
+                        ? const Color(0xFF635BFF)
+                        : Colors.transparent,
+                  ),
+                  child: isSelected
+                      ? const Icon(Icons.check, size: 14, color: Colors.white)
+                      : null,
+                )
+              else
+                const Icon(
+                  Icons.arrow_outward_rounded,
+                  color: Color(0xFF635BFF),
+                  size: 18,
+                ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      markerStrippedLabel,
+                      style: const TextStyle(
+                        color: Color(0xFFC8CBFF),
+                        fontWeight: FontWeight.w600,
+                        fontSize: 15,
+                        height: 1.25,
+                      ),
+                    ),
+                    if ((q.meta?.trim().isNotEmpty ?? false))
+                      Padding(
+                        padding: const EdgeInsets.only(top: 4),
+                        child: Text(
+                          _stripMarkers(q.meta!),
+                          style: const TextStyle(
+                            color: Color(0xBFC8CBFF),
+                            fontSize: 12,
+                          ),
+                        ),
+                      )
+                    else if (showSubtitle)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 4),
+                        child: Text(
+                          markerStrippedQuestion,
+                          style: const TextStyle(
+                            color: Color(0xFF9CA3AF),
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  String _stripMarkers(String text) {
+    return text
+        .replaceAllMapped(RegExp(r'\{\{([^}]+)\}\}'), (m) => m.group(1) ?? '')
+        .replaceAllMapped(RegExp(r'\[\[([^\]]+)\]\]'), (m) => m.group(1) ?? '');
+  }
+
+  Widget _buildInlineMarkerChip({
+    required String text,
+    required Color background,
+    required Color border,
+    required Color textColor,
+    required VoidCallback onTap,
+  }) {
+    return Material(
+      color: background,
+      borderRadius: BorderRadius.circular(6),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(6),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(6),
+            border: Border.all(color: border),
+          ),
+          child: Text(
+            text,
+            style: TextStyle(
+              color: textColor,
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              height: 1.2,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAssistantMessageContent(String content) {
+    final tokenPattern = RegExp(r'(\[\[[^\]]+\]\]|\{\{[^}]+\}\})');
+    final matches = tokenPattern.allMatches(content);
+    if (matches.isEmpty) {
+      return Text(
+        content,
+        style: const TextStyle(color: Colors.white, fontSize: 15, height: 1.45),
+      );
+    }
+
+    final spans = <InlineSpan>[];
+    var cursor = 0;
+    for (final match in matches) {
+      if (match.start > cursor) {
+        spans.add(
+          TextSpan(
+            text: content.substring(cursor, match.start),
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 15,
+              height: 1.45,
+            ),
+          ),
+        );
+      }
+
+      final token = content.substring(match.start, match.end);
+      if (token.startsWith('[[') && token.endsWith(']]')) {
+        final name = token.substring(2, token.length - 2).trim();
+        if (_inlineExercises.containsKey(name)) {
+          spans.add(
+            WidgetSpan(
+              alignment: PlaceholderAlignment.middle,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 2),
+                child: _buildInlineMarkerChip(
+                  text: name,
+                  background: const Color(0x4D4F46E5),
+                  border: const Color(0x664F46E5),
+                  textColor: const Color(0xFFDBEAFE),
+                  onTap: () => _openExerciseVideo(name),
+                ),
+              ),
+            ),
+          );
+        } else {
+          spans.add(
+            TextSpan(
+              text: name,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 15,
+                height: 1.45,
+              ),
+            ),
+          );
+        }
+      } else if (token.startsWith('{{') && token.endsWith('}}')) {
+        final markerName = token.substring(2, token.length - 2).trim();
+        final group = _findGroupByName(markerName);
+        if (group != null) {
+          spans.add(
+            WidgetSpan(
+              alignment: PlaceholderAlignment.middle,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 2),
+                child: _buildInlineMarkerChip(
+                  text: group.name,
+                  background: const Color(0x4D0891B2),
+                  border: const Color(0x660891B2),
+                  textColor: Colors.white,
+                  onTap: () => _applyGroupSelectionWithBehavior(
+                    group,
+                    keepChatOpen: false,
+                  ),
+                ),
+              ),
+            ),
+          );
+        } else {
+          final part = _findPartByName(markerName);
+          if (part != null) {
+            final neutralId = getNeutralId(part.objectId);
+            final partName = part.group.parts
+                .firstWhere(
+                  (p) => getNeutralId(p.objectId) == neutralId,
+                  orElse: () => part.group.parts.first,
+                )
+                .name;
+            spans.add(
+              WidgetSpan(
+                alignment: PlaceholderAlignment.middle,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 2),
+                  child: _buildInlineMarkerChip(
+                    text: partName,
+                    background: const Color(0x4D059669),
+                    border: const Color(0x66059669),
+                    textColor: Colors.white,
+                    onTap: () => _applyPartSelectionWithBehavior(
+                      part.group,
+                      part.objectId,
+                      keepChatOpen: false,
+                    ),
+                  ),
+                ),
+              ),
+            );
+          } else {
+            spans.add(
+              TextSpan(
+                text: markerName,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 15,
+                  height: 1.45,
+                ),
+              ),
+            );
+          }
+        }
+      }
+
+      cursor = match.end;
+    }
+
+    if (cursor < content.length) {
+      spans.add(
+        TextSpan(
+          text: content.substring(cursor),
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 15,
+            height: 1.45,
+          ),
+        ),
+      );
+    }
+
+    return RichText(text: TextSpan(children: spans));
+  }
+
   Widget _chatBubble(_ChatMessage message) {
     final isUser = message.role == 'user';
-    final exerciseNames = isUser
-        ? const <String>[]
-        : _extractExerciseMarkers(message.content);
-    final cleanedContent = isUser
-        ? message.content
-        : _stripExerciseMarkers(message.content);
     return Align(
       alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
-        margin: const EdgeInsets.only(bottom: 10),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        margin: EdgeInsets.only(
+          bottom: 10,
+          left: isUser ? 32 : 0,
+          right: isUser ? 0 : 16,
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         constraints: const BoxConstraints(maxWidth: 310),
         decoration: BoxDecoration(
           color: isUser ? const Color(0xFF4F46E5) : const Color(0xFF1F2937),
           borderRadius: BorderRadius.circular(12),
-          border: isUser ? null : Border.all(color: const Color(0xFF374151)),
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              cleanedContent,
-              style: const TextStyle(color: Colors.white, fontSize: 14),
-            ),
-            if (exerciseNames.isNotEmpty) ...[
-              const SizedBox(height: 8),
-              Wrap(
-                spacing: 6,
-                runSpacing: 6,
-                children: exerciseNames.map((name) {
-                  return ActionChip(
-                    backgroundColor: const Color(0x1A3B82F6),
-                    side: const BorderSide(color: Color(0x553B82F6)),
-                    label: Text(
-                      name,
-                      style: const TextStyle(color: Color(0xFFDBEAFE)),
-                    ),
-                    onPressed: () => _openExerciseVideo(name),
-                  );
-                }).toList(),
-              ),
-            ],
-          ],
-        ),
+        child: isUser
+            ? Text(
+                message.content,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 15,
+                  height: 1.45,
+                ),
+              )
+            : _buildAssistantMessageContent(message.content),
       ),
     );
   }
 
   Widget _buildChatFooter(String title, String subtitle) {
     return Container(
-      decoration: const BoxDecoration(
-        color: Color(0xFF0F172A),
-        border: Border(top: BorderSide(color: Color(0xFF1F2937))),
+      decoration: BoxDecoration(
+        color: const Color(0xCC111827),
+        border: const Border(top: BorderSide(color: Color(0xFF1F2937))),
       ),
-      padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
+      padding: EdgeInsets.fromLTRB(
+        12,
+        10,
+        12,
+        12 + MediaQuery.of(context).padding.bottom * 0.6,
+      ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1171,7 +1735,7 @@ class _ModelViewerScreenState extends State<ModelViewerScreen> {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
-                        color: Colors.white70,
+                        color: Color(0xFF9CA3AF),
                         fontSize: 12,
                       ),
                     ),
@@ -1210,13 +1774,13 @@ class _ModelViewerScreenState extends State<ModelViewerScreen> {
                   onSubmitted: _sendChatMessage,
                   decoration: InputDecoration(
                     hintText: context.t('chat.askInChat'),
-                    hintStyle: const TextStyle(color: Colors.white54),
+                    hintStyle: const TextStyle(color: Color(0xFF94A3B8)),
                     filled: true,
                     fillColor: const Color(0xFF1F2937),
                     isDense: true,
                     contentPadding: const EdgeInsets.symmetric(
                       horizontal: 12,
-                      vertical: 10,
+                      vertical: 11,
                     ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
@@ -1273,7 +1837,7 @@ class _ModelViewerScreenState extends State<ModelViewerScreen> {
                     ),
                   ),
                   const SizedBox(height: 10),
-                  if (_messages.isEmpty)
+                  if (_chatSessions.isEmpty)
                     Text(
                       context.t('chatHistory.noChats'),
                       style: const TextStyle(color: Colors.white70),

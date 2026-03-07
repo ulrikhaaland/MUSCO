@@ -9,9 +9,12 @@ import {
   getProgramBySlug,
   localizeProgramDayDescriptions,
 } from '../../public/data/programs/recovery';
-import { getExerciseProgramBySlug } from '../../public/data/programs/exercise-custom';
+import {
+  getExerciseProgramBySlug,
+  localizeExerciseProgramContent,
+} from '../../public/data/programs/exercise-custom';
 import PartnerLogos from '@/components/PartnerLogos';
-// import LanguageSwitcher from './components/ui/LanguageSwitcher';
+import LandingHero from './components/ui/LandingHero';
 import { logAnalyticsEvent } from './utils/analytics';
 import PricingCards from './components/ui/PricingCards';
 import { useUser } from './context/UserContext';
@@ -210,6 +213,7 @@ export default function LandingPage() {
       const sections: Array<{ id: typeof currentSection; el: Element | null }> =
         [
           { id: 'how', el: heroRef.current || howRef.current },
+          { id: 'demo', el: demoRef.current },
           { id: 'programs', el: programsRef.current },
           { id: 'pricing', el: SHOW_PRICING ? pricingRef.current : null },
         ];
@@ -266,34 +270,18 @@ export default function LandingPage() {
 
   // Recovery cards (localized)
   const recoveryProgramCardsBase = [
-    { key: 'lower_back', slug: 'lower-back', img: '/bodyparts/lower_back.png' },
-    { key: 'shoulder_pain', slug: 'shoulder', img: '/bodyparts/shoulders.png' },
-    { key: 'runners_knee', slug: 'runners-knee', img: '/bodyparts/knees.png' },
-    { key: 'ankle_sprain', slug: 'ankle-sprain', img: '/bodyparts/feet.png' },
-    {
-      key: 'plantar_fasciitis',
-      slug: 'plantar-fasciitis',
-      img: '/bodyparts/feet.png',
-    },
-    { key: 'tech_neck', slug: 'techneck', img: '/bodyparts/neck.png' },
-    {
-      key: 'hamstring_strain',
-      slug: 'hamstring',
-      img: '/bodyparts/upper_legs_behind.png',
-    },
-    {
-      key: 'upper_back_core',
-      slug: 'upper-back-core',
-      img: '/bodyparts/upper_back_and_core.png',
-    },
-    {
-      key: 'core_stability',
-      slug: 'core-stability',
-      img: '/bodyparts/abdomen.png',
-    },
-    { key: 'wrist_pain', slug: 'wrist-pain', img: '/bodyparts/elbows.png', title: 'Wrist Relief Reset' },
-    { key: 'tennis_elbow', slug: 'tennis-elbow', img: '/bodyparts/elbows.png' },
-    { key: 'shin_splints', slug: 'shin-splints', img: '/bodyparts/shin.png' },
+    { key: 'lower_back', slug: 'lower-back', img: '/data/programs/images/lower-back.png' },
+    { key: 'shoulder_pain', slug: 'shoulder', img: '/data/programs/images/shoulder.png' },
+    { key: 'runners_knee', slug: 'runners-knee', img: '/data/programs/images/runners-knee.png' },
+    { key: 'ankle_sprain', slug: 'ankle-sprain', img: '/data/programs/images/ankle-sprain.png' },
+    { key: 'plantar_fasciitis', slug: 'plantar-fasciitis', img: '/data/programs/images/plantar-fasciitis.png' },
+    { key: 'tech_neck', slug: 'techneck', img: '/data/programs/images/techneck.png' },
+    { key: 'hamstring_strain', slug: 'hamstring', img: '/data/programs/images/hamstring.png' },
+    { key: 'upper_back_core', slug: 'upper-back-core', img: '/data/programs/images/upper-back-core.png' },
+    { key: 'core_stability', slug: 'core-stability', img: '/data/programs/images/core-stability.png' },
+    { key: 'wrist_pain', slug: 'wrist-pain', img: '/data/programs/images/wrist-pain.png', title: 'Wrist Relief Reset' },
+    { key: 'tennis_elbow', slug: 'tennis-elbow', img: '/data/programs/images/tennis-elbow.png' },
+    { key: 'shin_splints', slug: 'shin-splints', img: '/data/programs/images/shin-splints.png' },
   ];
   // Pull short summaries from source programs for sync; fallback to local mapping
   const recoveryProgramCards = recoveryProgramCardsBase.map(({ key, slug, img, title: fallbackTitle }) => {
@@ -315,22 +303,26 @@ export default function LandingPage() {
     };
   });
   const exerciseProgramCardsBase = [
-    { slug: 'full-body-strength', img: '/bodyparts/upper_back_and_core.png' },
-    { slug: 'upper-body-build', img: '/bodyparts/shoulders.png' },
-    { slug: 'lower-body-strength', img: '/bodyparts/upper_legs_behind.png' },
-    { slug: 'bodyweight-conditioning', img: '/bodyparts/knees.png' },
-    { slug: 'core-endurance', img: '/bodyparts/abdomen.png' },
-    { slug: 'glute-core-build', img: '/bodyparts/lower_back.png' },
-    { slug: 'push-pull-balance', img: '/bodyparts/shoulders.png' },
-    { slug: 'athletic-performance', img: '/bodyparts/upper_back_and_core.png' },
-    { slug: 'mobility-strength', img: '/bodyparts/neck.png' },
-    { slug: 'upper-lower-hybrid', img: '/bodyparts/upper_legs_behind.png' },
-    { slug: 'muscle-growth-foundation', img: '/bodyparts/shoulders.png' },
-    { slug: 'strength-endurance-30-45', img: '/bodyparts/abdomen.png' },
+    { slug: 'full-body-strength', img: '/data/programs/images/full-body-strength.png' },
+    { slug: 'upper-body-build', img: '/data/programs/images/upper-body-build.png' },
+    { slug: 'lower-body-strength', img: '/data/programs/images/lower-body-strength.png' },
+    { slug: 'bodyweight-conditioning', img: '/data/programs/images/bodyweight-conditioning.png' },
+    { slug: 'core-endurance', img: '/data/programs/images/core-endurance.png' },
+    { slug: 'glute-core-build', img: '/data/programs/images/glute-core-build.png' },
+    { slug: 'push-pull-balance', img: '/data/programs/images/push-pull-balance.png' },
+    { slug: 'athletic-performance', img: '/data/programs/images/athletic-performance.png' },
+    { slug: 'mobility-strength', img: '/data/programs/images/mobility-strength.png' },
+    { slug: 'upper-lower-hybrid', img: '/data/programs/images/upper-lower-hybrid.png' },
+    { slug: 'muscle-growth-foundation', img: '/data/programs/images/muscle-growth-foundation.png' },
+    { slug: 'strength-endurance-30-45', img: '/data/programs/images/strength-endurance-30-45.png' },
   ];
   const exerciseProgramCards = exerciseProgramCardsBase
     .map(({ slug, img }) => {
-      const program = getExerciseProgramBySlug(slug);
+      const baseProgram = getExerciseProgramBySlug(slug);
+      const program =
+        locale === 'nb' && baseProgram
+          ? localizeExerciseProgramContent(baseProgram, 'nb')
+          : baseProgram;
       if (!program) return null;
       return {
         key: slug,
@@ -387,16 +379,12 @@ export default function LandingPage() {
             bod<span className="text-indigo-500 font-extrabold">AI</span>
           </button>
           <nav className="hidden md:flex items-center gap-6 text-gray-300">
-            {/* <button
-              onClick={() => {
-                if (typeof window !== 'undefined') {
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                }
-              }}
+            <button
+              onClick={() => scrollTo(howRef)}
               className={`hover:text-white focus:outline-none focus:ring-2 focus:ring-white/30 ${currentSection === 'how' ? 'text-white' : ''}`}
             >
               {t('landing.nav.how')}
-            </button> */}
+            </button>
             <button
               onClick={() => scrollTo(demoRef)}
               className={`hover:text-white focus:outline-none focus:ring-2 focus:ring-white/30 ${currentSection === 'demo' ? 'text-white' : ''}`}
@@ -435,26 +423,67 @@ export default function LandingPage() {
       </header>
 
       {/* Hero */}
-      {/* <section ref={heroRef} className="mx-auto max-w-6xl px-6 py-12 md:py-16 md:min_h-[60vh] flex items-start">
+      <section ref={heroRef} className="relative mx-auto max-w-6xl px-6 pt-12 pb-10 md:pt-20 md:pb-14">
+        {/* Background glow */}
+        <div
+          className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[350px] md:w-[700px] md:h-[450px] rounded-full opacity-15 blur-[120px] pointer-events-none"
+          style={{ background: 'radial-gradient(circle, var(--brand) 0%, transparent 70%)' }}
+        />
         <LandingHero
           onSelect={(mode) => {
             if (mode === 'diagnose') {
               logAnalyticsEvent('hero_cta_click', { cta: 'diagnose' });
-              goAppWith();
+              scrollTo(demoRef);
             } else {
               logAnalyticsEvent('hero_cta_click', { cta: 'workout' });
               router.push('/app/questionnaire');
             }
           }}
         />
-      </section> */}  
+        <div className="mt-8">
+          <PartnerLogos size="sm" showHeading={false} />
+        </div>
+      </section>
 
-      {/* Partner logos below hero (animated marquee) */}
-      {/* <section className="mx-auto max-w-6xl px-6 mt-12 md:mt-16 lg:mt-24 mb-12 md:mb-16 lg:mb-24">
-        <PartnerLogos />
-      </section> */}
+      {/* How It Works */}
+      <section ref={howRef} className="mx-auto max-w-6xl px-6 py-10 md:py-14">
+        <h2 className="text-white text-xl md:text-2xl font-semibold mb-8 text-center">
+          {t('landing.how.title')}
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+          <div className="flex flex-col items-center text-center p-4">
+            <div className="w-12 h-12 rounded-full bg-brand-soft flex items-center justify-center mb-3">
+              <span className="text-brand font-bold text-lg">1</span>
+            </div>
+            <h3 className="text-white font-medium mb-1">{t('landing.how.step1')}</h3>
+            <p className="text-white/60 text-sm">{t('landing.how.label.findArea')}</p>
+          </div>
+          <div className="flex flex-col items-center text-center p-4">
+            <div className="w-12 h-12 rounded-full bg-brand-soft flex items-center justify-center mb-3">
+              <span className="text-brand font-bold text-lg">2</span>
+            </div>
+            <h3 className="text-white font-medium mb-1">{t('landing.how.step2')}</h3>
+            <p className="text-white/60 text-sm">{t('landing.how.label.discuss')}</p>
+          </div>
+          <div className="flex flex-col items-center text-center p-4">
+            <div className="w-12 h-12 rounded-full bg-brand-soft flex items-center justify-center mb-3">
+              <span className="text-brand font-bold text-lg">3</span>
+            </div>
+            <h3 className="text-white font-medium mb-1">{t('landing.how.step3')}</h3>
+            <p className="text-white/60 text-sm">{t('landing.how.label.execute')}</p>
+          </div>
+        </div>
+        <div className="mt-8 text-center">
+          <button
+            onClick={() => scrollTo(demoRef)}
+            className="px-5 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 text-sm font-medium transition-colors"
+          >
+            {t('landing.how.cta')}
+          </button>
+        </div>
+      </section>
 
-      {/* Hero section: Model + Partners filling viewport */}
+      {/* Interactive Demo — 3D Model */}
       <section
         ref={demoRef}
         className="flex flex-col px-6"
@@ -463,28 +492,22 @@ export default function LandingPage() {
           minHeight: '400px',
         }}
       >
-        {/* Model viewer - fills available space */}
         <div className="flex-1 min-h-0 w-full max-w-6xl mx-auto flex flex-col">
-          <h2 className="text-white text-1xl font-semibold mb-2 mt-2 flex-shrink-0">
+          <h2 className="text-white text-xl font-semibold mb-2 mt-2 flex-shrink-0">
             {t('landing.demo.assistantTitle')}
           </h2>
           <div className="flex-1 min-h-0 w-full rounded-xl ring-1 ring-white/10 overflow-hidden">
             {!user && <HumanViewer gender={'male'} hideNav enableMobileChat fillHeight />}
           </div>
         </div>
-
-        {/* Partner logos - fixed at bottom */}
-        <div className="flex-shrink-0 w-full max-w-6xl mx-auto mt-4">
-          <PartnerLogos />
-        </div>
       </section>
 
       {/* Programs we cover */}
       <section
         ref={programsRef}
-        className="mx-auto max-w-6xl px-6 pb-12 md:pb-16 lg:pb-24"
+        className="mx-auto max-w-6xl px-6 pt-10 md:pt-14 pb-12 md:pb-16 lg:pb-24"
       >
-        <h2 className="text-white text-1xl font-semibold mb-4">
+        <h2 className="text-white text-xl md:text-2xl font-semibold mb-4">
           {t('landing.programs.title')}
         </h2>
         <div className="flex space-x-2 mb-4">

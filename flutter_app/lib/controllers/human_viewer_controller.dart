@@ -71,12 +71,13 @@ class HumanViewerController {
 
   /// Select / deselect objects. Keys are gendered object IDs,
   /// values are `true` (select) or `false` (deselect).
-  Future<void> selectObjects(Map<String, bool> selectionMap,
-      {bool replace = false}) =>
-      _channel.invokeMethod('selectObjects', {
-        'selections': selectionMap,
-        'replace': replace,
-      });
+  Future<void> selectObjects(
+    Map<String, bool> selectionMap, {
+    bool replace = false,
+  }) => _channel.invokeMethod('selectObjects', {
+    'selections': selectionMap,
+    'replace': replace,
+  });
 
   /// Enable translucent X-ray mode.
   Future<void> enableXray() => _channel.invokeMethod('enableXray');
@@ -104,16 +105,28 @@ class HumanViewerController {
     return _channel.invokeMethod('setCamera', payload);
   }
 
+  /// Orbit camera around current target by yaw/pitch degrees.
+  /// Returns true when native viewer confirms orbit support.
+  Future<bool> orbitCamera({double yaw = 0, double pitch = 0}) async {
+    try {
+      final res = await _channel.invokeMethod('orbitCamera', {
+        'yaw': yaw,
+        'pitch': pitch,
+      });
+      return res == true;
+    } catch (_) {
+      return false;
+    }
+  }
+
   /// Reset scene to initial state.
   Future<void> resetScene() => _channel.invokeMethod('resetScene');
 
   /// Disable default highlight on hover.
-  Future<void> disableHighlight() =>
-      _channel.invokeMethod('disableHighlight');
+  Future<void> disableHighlight() => _channel.invokeMethod('disableHighlight');
 
   /// Enable highlight on hover.
-  Future<void> enableHighlight() =>
-      _channel.invokeMethod('enableHighlight');
+  Future<void> enableHighlight() => _channel.invokeMethod('enableHighlight');
 
   /// Dispose the controller; stop listening to the channel.
   void dispose() {

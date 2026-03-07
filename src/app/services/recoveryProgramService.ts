@@ -12,6 +12,7 @@ import {
   getExerciseUserProgramBySlug,
   getAvailableExerciseSlugs,
   exerciseProgramSlugs,
+  localizeExerciseProgramContent,
 } from '../../../public/data/programs/exercise-custom';
 
 import { getCurrentWeekMonday, addWeeks } from '../utils/dateutils';
@@ -19,6 +20,7 @@ import { enrichExercisesWithFullData } from './exerciseProgramService';
 import { ExerciseProgram, UserProgram } from '../types/program';
 import { ProgramType } from '../../../shared/types';
 import { User } from 'firebase/auth';
+import { recordProgramGeneration } from './programGenerationLimits';
 
 export interface RecoveryProgramSessionData {
   userProgram: UserProgram;
@@ -43,14 +45,14 @@ export const isRecoveryProgramSlug = (slug: string): boolean => {
 };
 
 /**
- * Get a recovery program by slug (combined 28-day format)
+ * Get a recovery or exercise custom template by slug (single-week format)
  */
 export const getRecoveryProgram = (slug: string): ExerciseProgram | null => {
   return getProgramBySlug(slug) ?? getExerciseProgramBySlug(slug);
 };
 
 /**
- * Get a recovery program in user program format (4 separate weeks)
+ * Get a recovery or exercise custom template in user program format (single-week seed)
  */
 export const getRecoveryUserProgram = (slug: string): UserProgram | null => {
   return getUserProgramBySlug(slug) ?? getExerciseUserProgramBySlug(slug);
@@ -83,10 +85,13 @@ export const formatRecoveryProgram = async (
       // Enrich with exercise data
       await enrichExercisesWithFullData(weekProgram, isNorwegian);
 
-      // Localize only recovery-program day descriptions if Norwegian.
-      // Custom exercise programs currently keep EN day descriptions.
       if (isNorwegian && slug.toLowerCase() in programSlugs) {
         weekProgram = localizeProgramDayDescriptions(weekProgram, 'nb');
+        userProgram.programs[i] = weekProgram;
+      }
+
+      if (isNorwegian && slug.toLowerCase() in exerciseProgramSlugs) {
+        weekProgram = localizeExerciseProgramContent(weekProgram, 'nb');
         userProgram.programs[i] = weekProgram;
       }
     }
@@ -215,10 +220,10 @@ export const saveRecoveryProgramToAccount = async (
     const batch = writeBatch(db);
     batch.set(programDocRef, programDoc);
 
-    // Save weekly program data in subcollection
+    // Save weekly program data in weeks subcollection
     const innerProgramsRef = collection(
       db,
-      `users/${user.uid}/programs/${programDocRef.id}/programs`
+      `users/${user.uid}/programs/${programDocRef.id}/weeks`
     );
     const baseDate = getCurrentWeekMonday();
 
@@ -236,6 +241,14 @@ export const saveRecoveryProgramToAccount = async (
     }
 
     await batch.commit();
+
+    // Count saving a custom program as this week's generation for the program type.
+    // This keeps weeklyProgramGenerations aligned with user-visible save behavior.
+    await recordProgramGeneration(
+      user.uid,
+      recoveryData.type || ProgramType.Recovery
+    );
+
     console.log(
       '✅ Recovery program document created with ID:',
       programDocRef.id
@@ -469,7 +482,7 @@ export const createMinimalRecoveryProgram = (
       assessmentComplete: true,
       redFlagsPresent: false,
       avoidActivities: [] as any,
-      timeFrame: '4 weeks',
+      timeFrame: '1 week',
       followUpQuestions: [],
       programType: ProgramType.Recovery,
       targetAreas: (program.targetAreas?.join(', ') || '') as any,
@@ -499,6 +512,6 @@ export const createMinimalRecoveryProgram = (
     updatedAt: new Date(),
     type: ProgramType.Recovery,
     title: title || 'Recovery Program',
-    timeFrame: '4 weeks',
+    timeFrame: '1 week',
   };
 };

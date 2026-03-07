@@ -159,6 +159,80 @@ class HumanViewerNativeView(
                 result.success(null)
             }
 
+            "orbitCamera" -> {
+                val args = call.arguments as? Map<*, *>
+                val yaw = (args?.get("yaw") as? Number)?.toDouble() ?: 0.0
+                val pitch = (args?.get("pitch") as? Number)?.toDouble() ?: 0.0
+                val camera = human?.camera
+                if (camera == null) {
+                    result.success(false)
+                    return
+                }
+
+                fun isNumeric(clazz: Class<*>): Boolean {
+                    return clazz == java.lang.Double.TYPE ||
+                        clazz == java.lang.Float.TYPE ||
+                        clazz == java.lang.Integer.TYPE ||
+                        clazz == java.lang.Long.TYPE ||
+                        clazz == java.lang.Short.TYPE ||
+                        clazz == java.lang.Double::class.java ||
+                        clazz == java.lang.Float::class.java ||
+                        clazz == java.lang.Integer::class.java ||
+                        clazz == java.lang.Long::class.java ||
+                        clazz == java.lang.Short::class.java
+                }
+
+                fun coerce(clazz: Class<*>, value: Double): Any {
+                    return when (clazz) {
+                        java.lang.Double.TYPE, java.lang.Double::class.java -> value
+                        java.lang.Float.TYPE, java.lang.Float::class.java -> value.toFloat()
+                        java.lang.Integer.TYPE, java.lang.Integer::class.java -> value.toInt()
+                        java.lang.Long.TYPE, java.lang.Long::class.java -> value.toLong()
+                        java.lang.Short.TYPE, java.lang.Short::class.java -> value.toInt().toShort()
+                        else -> value
+                    }
+                }
+
+                var invoked = false
+                val methods = camera.javaClass.methods.filter { it.name == "orbit" }
+                for (method in methods) {
+                    val params = method.parameterTypes
+                    try {
+                        when {
+                            params.size == 1 && isNumeric(params[0]) -> {
+                                method.invoke(camera, coerce(params[0], yaw))
+                                invoked = true
+                            }
+                            params.size == 2 && isNumeric(params[0]) && isNumeric(params[1]) -> {
+                                method.invoke(
+                                    camera,
+                                    coerce(params[0], yaw),
+                                    coerce(params[1], pitch)
+                                )
+                                invoked = true
+                            }
+                            params.size == 3 &&
+                                isNumeric(params[0]) &&
+                                isNumeric(params[1]) &&
+                                (params[2] == java.lang.Boolean.TYPE || params[2] == java.lang.Boolean::class.java) -> {
+                                method.invoke(
+                                    camera,
+                                    coerce(params[0], yaw),
+                                    coerce(params[1], pitch),
+                                    true
+                                )
+                                invoked = true
+                            }
+                        }
+                    } catch (_: Throwable) {
+                        // Try other overloads.
+                    }
+                    if (invoked) break
+                }
+
+                result.success(invoked)
+            }
+
             "resetScene" -> {
                 human?.scene?.reset()
                 human?.camera?.reset()

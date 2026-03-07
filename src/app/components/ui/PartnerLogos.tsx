@@ -62,7 +62,7 @@ function Marquee({ size }: { size: 'sm' | 'md' | 'lg' }) {
 
     let offset = 0;
     let animationId: number;
-    const speed = 0.5; // pixels per frame (~30px/sec at 60fps)
+    const speed = 0.3; // pixels per frame (~18px/sec at 60fps)
 
     const animate = () => {
       offset += speed;

@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -13,16 +14,27 @@ class HumanViewerWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // EagerGestureRecognizer ensures the platform view always reclaims touch
+    // focus after Flutter overlay buttons (reset, rotate, etc.) are tapped.
+    // Without this, tapping a Flutter button on top of the UiKitView causes
+    // the platform view to stop receiving subsequent touch events on real
+    // iOS devices (gesture arena bug).
+    final gestureRecognizers = <Factory<OneSequenceGestureRecognizer>>{
+      Factory<EagerGestureRecognizer>(() => EagerGestureRecognizer()),
+    };
+
     if (defaultTargetPlatform == TargetPlatform.iOS) {
       return UiKitView(
         viewType: _viewType,
         creationParamsCodec: const StandardMessageCodec(),
+        gestureRecognizers: gestureRecognizers,
       );
     }
     if (defaultTargetPlatform == TargetPlatform.android) {
       return AndroidView(
         viewType: _viewType,
         creationParamsCodec: const StandardMessageCodec(),
+        gestureRecognizers: gestureRecognizers,
       );
     }
     return const Center(

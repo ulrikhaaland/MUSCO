@@ -177,12 +177,55 @@ class HumanViewerNativeView: NSObject, FlutterPlatformView, HKHumanDelegate {
             }
             result(nil)
 
+        case "orbitCamera":
+            guard let args = call.arguments as? [String: Any] else {
+                result(false)
+                return
+            }
+            let yaw = (args["yaw"] as? NSNumber)?.doubleValue ?? 0
+            let pitch = (args["pitch"] as? NSNumber)?.doubleValue ?? 0
+
+            guard let cameraObj = human?.camera as AnyObject? else {
+                result(false)
+                return
+            }
+
+            let yawNum = NSNumber(value: yaw)
+            let pitchNum = NSNumber(value: pitch)
+            var invoked = false
+
+            let selectorPairs: [(Selector, Bool)] = [
+                (NSSelectorFromString("orbitYaw:pitch:"), true),
+                (NSSelectorFromString("orbitWithYaw:pitch:"), true),
+                (NSSelectorFromString("orbit:pitch:"), true),
+                (NSSelectorFromString("orbit:"), false),
+            ]
+
+            for (selector, takesPitch) in selectorPairs {
+                if cameraObj.responds(to: selector) {
+                    if takesPitch {
+                        _ = cameraObj.perform(selector, with: yawNum, with: pitchNum)
+                    } else {
+                        _ = cameraObj.perform(selector, with: yawNum)
+                    }
+                    invoked = true
+                    break
+                }
+            }
+
+            result(invoked)
+
         case "resetScene":
-            human?.scene.reset()
+            // Avoid scene.reset() — it triggers initScene which breaks picking
+            // on real iOS devices. Instead, manually undo xray + highlight and
+            // reset the camera.
+            human?.scene.xray(false)
+            human?.scene.disableHighlight()
             human?.camera.reset()
             result(nil)
 
         case "disableHighlight":
+            print("[HumanViewer] disableHighlight called")
             human?.scene.disableHighlight()
             result(nil)
 
@@ -198,6 +241,7 @@ class HumanViewerNativeView: NSObject, FlutterPlatformView, HKHumanDelegate {
     // MARK: - HKHumanDelegate (Native → Dart)
 
     func human(_ view: HKHuman, objectSelected: String) {
+        print("[HumanViewer] objectSelected: \(objectSelected)")
         // Re-suppress info popup on every selection
         human?.setupUI(option: .info, value: false)
         human?.setupUI(option: .nolink, value: true)
@@ -208,6 +252,7 @@ class HumanViewerNativeView: NSObject, FlutterPlatformView, HKHumanDelegate {
     }
 
     func human(_ view: HKHuman, objectDeselected: String) {
+        print("[HumanViewer] objectDeselected: \(objectDeselected)")
         DispatchQueue.main.async { [weak self] in
             self?.channel.invokeMethod("onObjectDeselected", arguments: objectDeselected)
         }
@@ -223,7 +268,6 @@ class HumanViewerNativeView: NSObject, FlutterPlatformView, HKHumanDelegate {
 
     func human(_ view: HKHuman, initScene: String) {
         print("[HumanViewer] initScene fired: \(initScene)")
-        // Suppress UI once scene is ready
         disableAllUI()
         DispatchQueue.main.async { [weak self] in
             self?.notifyViewReady()

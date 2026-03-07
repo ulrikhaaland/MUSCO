@@ -10,8 +10,8 @@ import { ExerciseProgram } from '../../../src/app/types/program';
 import { DiagnosisAssistantResponse } from '../../../src/app/types';
 import { ExerciseQuestionnaireAnswers, ProgramType } from '../../../shared/types';
 
-// Locale-aware helpers (descriptions only)
-// We intentionally only localize ProgramDay.description strings per request.
+// Locale-aware helpers for recovery templates.
+// We localize ProgramDay.description plus the program overview content fields.
 // Diagnosis, questionnaire and other metadata remain unchanged.
 export const localizeProgramDayDescriptions = (
   program: ExerciseProgram,
@@ -54,6 +54,12 @@ export const localizeProgramDayDescriptions = (
     "Deep Core Reset. Slow bracing with neutral spine and controlled breathing.": "Dyp kjerne-reset. Rolig buktrykk med nøytral rygg og kontrollert pust.",
     "Core Control + Limb Coordination. Keep pelvis stable and movement quiet.": "Kjernekontroll + koordinasjon med armer/bein. Hold bekkenet stabilt og bevegelsen rolig.",
     "Build Trunk Endurance. Repeat pattern with slightly longer quality holds.": "Bygg kjerneutholdenhet. Gjenta mønsteret med litt lengre kvalitets-hold.",
+    "Wrist Calm + Forearm Activation. Light load, neutral wrist, pain ≤3/10.": "Ro i håndledd + underarmsaktivering. Lett belastning, nøytralt håndledd, smerte ≤3/10.",
+    "Wrist Calm + Flexor Activation. Light load, neutral wrist, pain ≤3/10.": "Ro i håndledd + bøyeraktivering. Lett belastning, nøytralt håndledd, smerte ≤3/10.",
+    "Forearm Rotation + Isometric Capacity. Smooth tempo; avoid sharp pain.": "Underarmsrotasjon + isometrisk kapasitet. Jevnt tempo; unngå skarp smerte.",
+    "Forearm Rotation + Flexor Control. Smooth tempo; avoid sharp pain.": "Underarmsrotasjon + bøyerkontroll. Jevnt tempo; unngå skarp smerte.",
+    "Build Daily-Use Tolerance. Repeat pattern with slightly longer quality holds.": "Bygg toleranse for daglig bruk. Gjenta mønsteret med litt lengre kvalitets-hold.",
+    "Build Daily-Use Tolerance. Repeat pattern with slightly more flexor work.": "Bygg toleranse for daglig bruk. Gjenta mønsteret med litt mer bøyerarbeid.",
   };
 
   // Rest day description mappings across all programs/weeks
@@ -68,6 +74,183 @@ export const localizeProgramDayDescriptions = (
     "Rest day. Optional easy 5–10 min marching in place; gentle calf stretch if pain‑free.": "Hviledag. Valgfritt: 5–10 min rolig marsj på stedet; lett leggstrekk hvis smertefritt.",
     "Rest day. Avoid impact; optional easy 5–10 min marching in place if fully pain‑free.": "Hviledag. Unngå støt; valgfritt: 5–10 min rolig marsj på stedet hvis helt smertefritt.",
     "Rest day. Gentle activation for the glutes and trunk to promote circulation and postural control.": "Hviledag. Skånsom aktivering av sete og kjerne for sirkulasjon og holdningskontroll.",
+    "Rest day. Gentle ankle mobility and light calf pumps to reduce tibial irritation.": "Hviledag. Skånsom ankelmobilitet og lette leggpumper for å redusere irritasjon i skinnebeinet.",
+    "Rest day. Gentle foot intrinsic activation (toe spread) and ankle circles.": "Hviledag. Skånsom aktivering av fotmuskler (tåspredning) og ankelcirkler.",
+    "Rest day. Gentle mobility and circulation work for healing and neural gliding.": "Hviledag. Skånsom mobilitet og sirkulasjonsarbeid for tilheling og nerveglidning.",
+    "Rest day. Gentle thoracic mobility and postural activation to maintain upright awareness.": "Hviledag. Skånsom brystryggmobilitet og holdningsaktivering for å opprettholde oppreist kontroll.",
+    "Rest day. Optional gentle wrist circles and easy grip open/close drills.": "Hviledag. Valgfritt: skånsomme håndleddssirkler og lett grep-åpne/lukke-øvelser.",
+    "Rest day. Keep wrist neutral during desk work; add short movement breaks.": "Hviledag. Hold håndleddet nøytralt under skjermarbeid og legg inn korte bevegelsespauser.",
+    "Rest day. Optional 5–10 min light forearm mobility if symptoms stay calm.": "Hviledag. Valgfritt: 5–10 min lett underarmsmobilitet hvis symptomene holder seg rolige.",
+    "Rest day. Avoid long static wrist positions; keep load light.": "Hviledag. Unngå lange statiske håndleddsposisjoner; hold belastningen lett.",
+  };
+
+  const overviewMapByKey: Record<
+    string,
+    {
+      summary: string;
+      programOverview: string;
+      timeFrameExplanation: string;
+      whatNotToDo: string;
+      expectedOutcome: string;
+      nextSteps: string;
+    }
+  > = {
+    'shin-splints': {
+      summary: 'Demp skinnebeinsmerter og bygg opp et smertefritt løpegrunnlag samtidig som formen holdes ved like.',
+      programOverview:
+        'Skinnebeinsplager blusser ofte opp når belastningen øker raskere enn leggen tåler. Denne uken reduserer vi løping og hopping for å roe irritasjonen, men holder deg i aktivitet med lav-belastende kondisjon. Du bygger skånsom legg- og ankelkapasitet og bedre sirkulasjon, slik at gange og trapper føles lettere. Målet er stabile eller bedre symptomer under økt og neste morgen.',
+      timeFrameExplanation:
+        'Tren 3 økter med hviledager mellom denne uken, og legg til 15–25 minutter lav-belastende kondisjon hjemme (marsj på stedet). Kombiner med rolig ankelmobilitet og lett tibialisarbeid for å redusere belastning i skinnebeinet for hvert steg. Hold eventuelle gåturer korte og flate, og kun hvis smerte holder seg ≤3/10 uten forverring dagen etter. Prioriter støttende sko og litt høyere stegfrekvens med kortere steg.',
+      whatNotToDo:
+        'Unngå løping, hopping, bakker og harde underlag denne uken, spesielt når du er øm eller sliten. Ikke press gjennom skarp eller økende smerte i skinnebeinet; reduser volum hvis symptomene er verre neste morgen.',
+      expectedOutcome:
+        'Mindre ømhet i skinnebeinet ved berøring, og lettere gange/trapper dagen etter. Du bør tåle lett leggtrening uten tydelig symptomøkning.',
+      nextSteps:
+        'Neste uke tilpasses ut fra symptomutvikling, belastningstoleranse og restitusjonsrespons denne uken. Oppfølgingsplanen kan øke, holde eller redusere belastning avhengig av hvordan skinnebeinet reagerer.',
+    },
+    'low-back': {
+      summary: 'Demp korsryggoppbluss og bygg tryggere hverdagsbevegelse med kontrollert kjerne- og setearbeid.',
+      programOverview:
+        'Denne uken handler om å roe oppbluss og gjøre ryggen mer forutsigbar. Du trener nøytral ryggstilling, pust og buktrykk, slik at overkroppen holder seg stabil i hverdagsbevegelser som sitting, reising og lett bøying. Vi legger også inn skånsomt setearbeid slik at hoftene tar mer av belastningen. Målet er at øktene skal kjennes tryggere og mindre anstrengende over tid.',
+      timeFrameExplanation:
+        'Tren 3 økter med hviledager mellom denne uken. Hold smerte ≤3/10 under trening og neste morgen. Bruk rolig tempo, pust ut når du spenner kjernen, og stopp sett hvis du ikke klarer å holde ribbein stablet over bekken. På hviledager kan 10–20 minutter rolig gange være fint hvis symptomene holder seg stabile.',
+      whatNotToDo:
+        'Unngå å holde pusten, gjentatt ytterstilling i fleksjon/ekstensjon og å teste tunge løft. Ikke press gjennom skarp smerte eller nye nummenhets-/strålingssymptomer; skaler ned volum hvis symptomene forverres neste morgen. Søk helsehjelp raskt ved røde flagg som økende kraftsvikt, ridebukseanestesi eller blære-/tarmendring.',
+      expectedOutcome:
+        'Mindre morgenstivhet og lettere hverdagsbevegelser som å reise seg fra stol, snu seg i seng og lett bøying. Du bør kjenne bedre stabilitet i kjernen under øvelsene.',
+      nextSteps:
+        'Neste uke tilpasses ut fra smerteprofil, kvalitet på buktrykk og trygghet i hverdagsbevegelse. Oppfølgingsplanen kan øke, holde eller forenkle belastning avhengig av ryggresponsen.',
+    },
+    'runners-knee': {
+      summary: 'Reduser knesmerte og bygg stabile knebøy- og trappemønstre med kontrollert belastning.',
+      programOverview:
+        'Uke 1 roer irritasjon rundt kneskålen ved å redusere kompresjonsstress i kneet samtidig som vi bygger støtte i hofte og lår. Du bruker glute-med-aktivering, kontrollerte kroppsvektknebøy og korte veggsitt for bedre knesporing og toleranse uten overbelastning. Målet er jevnere funksjon i trapp og ved oppreisning fra stol med mindre smerte foran i kneet.',
+      timeFrameExplanation:
+        'Tren 3 økter med hviledager mellom denne uken, og hold smerte på eller under 3/10 under økten og neste morgen. Bruk rolig tempo og hold kneet over midtfoten i hver repetisjon og hold. Lett gange er fint så lenge symptomene holder seg stabile.',
+      whatNotToDo:
+        'Unngå nedoverløping, dyp smertefull knefleksjon, hopping/plyometrikk og høy trappebelastning denne uken. Stopp hvis smerten blir skarp, låsende eller tydelig verre neste morgen.',
+      expectedOutcome:
+        'Mindre følsomhet foran i kneet og lettere trapper, stolreisning og korte gåturer ved lav belastning.',
+      nextSteps:
+        'Neste uke tilpasses ut fra smerterespons i trapper, knebøy og daglig aktivitet denne uken. Oppfølgingsplanen kan øke, holde eller redusere knebelastning avhengig av symptomstabilitet.',
+    },
+    shoulder: {
+      summary: 'Gjenopprett smidigere skulderbevegelse og bygg trygghet over hodet med cuff-fokusert kontroll.',
+      programOverview:
+        'Uke 1 fokuserer på å roe skulderirritasjon og bygge forutsigbar, smertestyrt bevegelse. Du trener skulderbladkontroll, cuff-utholdenhet og lett fleksjonsmønster med strikk slik at bevegelser over hodet kjennes jevnere uten å tvinge utslag. Målet er mindre klemming i hverdagsløft og bedre skulderkontroll under lav belastning.',
+      timeFrameExplanation:
+        'Tren 3 økter med hviledager mellom denne uken, og hold smerte på eller under 3/10 under trening og neste morgen. Hold ribbein stablet, unngå å trekke skuldrene opp, og bruk rolig tempo. Stopp hvert sett ved tydelig kompensasjon som nakkespenn, sva i korsrygg eller skulderheving.',
+      whatNotToDo:
+        'Ikke tving overhead-utslag, ikke press inn i smerte med skulderheving, og unngå tung pressing denne uken. Reduser utslag/volum hvis skarp fremre skuldersmerte, hakking eller nattlig symptomøkning kommer etter øktene.',
+      expectedOutcome:
+        'Mindre smertebue/klemming og lettere skulderløft i et komfortabelt utslag med bedre kontroll.',
+      nextSteps:
+        'Neste uke tilpasses ut fra skuldersmerte, bevegelsestoleranse og kompensasjonskontroll denne uken. Oppfølgingsplanen kan justere volum, bevegelseskrav og øvelsesvalg etter respons.',
+    },
+    'ankle-sprain': {
+      summary: 'Reduser hevelse og bygg opp ankelstabilitet slik at gange føles jevn, kontrollert og trygg.',
+      programOverview:
+        'Uke 1 fokuserer på å redusere hevelse og gjenopprette trygg ankelbevegelse etter lateral overtråkk. Du bruker skånsom ankelmobilitet, lav-belastende sirkulasjonsarbeid og kontrollerte leggøvelser for bedre gang- og trappetoleranse uten symptomprovokasjon. Målet er mer stabil følelse under kroppsvekt innen ukeslutt.',
+      timeFrameExplanation:
+        'Tren 3 økter med hviledager mellom denne uken, og hold smerte på eller under 3/10 under øvelser og neste morgen. Bruk rolig, kontrollert tempo og hold bevegelse innen smertehåndterbart område. Lett gange på hviledager er fint hvis hevelse og smerte holder seg stabile.',
+      whatNotToDo:
+        'Unngå retningsendringer, hopping, ustabile underlag og tvunget ytterstilling i dorsalfleksjon denne uken. Reduser volum hvis hevelse øker, gange blir dårligere eller smerte er høyere neste morgen.',
+      expectedOutcome:
+        'Mindre hevelse og stivhet, med mer komfortabel gange og lettere trappegang i rolig tempo.',
+      nextSteps:
+        'Neste uke tilpasses ut fra hevelsestrend, gangtoleranse og stabilitetsrespons denne uken. Oppfølgingsplanen kan øke, holde eller redusere ankelkrav etter symptombilde.',
+    },
+    'tennis-elbow': {
+      summary: 'Demp albuesmerte og bygg opp smertehåndtert grepstyrke for tastatur, løft og hverdag.',
+      programOverview:
+        'Uke 1 har som mål å roe seneirritasjon på utsiden av albuen og gjenopprette toleranse for lett grep i hverdagen. Du bruker smertestyrte isometriske håndleddsøvelser og kontrollert underarmsrotasjon for å redusere sensitivitet og starte gradvis kapasitetsbygging. Øktene skal føles kontrollerte og gi stabile eller bedre symptomer neste morgen.',
+      timeFrameExplanation:
+        'Tren 3 økter med hviledager mellom denne uken, og hold smerte på eller under 3/10 under øvelser og neste morgen. Bruk svært lett belastning og støtt underarmen på lår eller bord ved behov. Prioriter jevn tempo og stopp før skarp eller utstrålende smerte.',
+      whatNotToDo:
+        'Unngå hard gripping, tunge bæreøvelser, repetert håndleddekstensjon i utmattelse og rykkvise bevegelser. Reduser volum hvis morgensmerte tydelig forverres, og stopp ved skarp, utstrålende eller nevrologisk symptomutvikling.',
+      expectedOutcome:
+        'Lavere hvilesmerte i albuen og bedre toleranse for lett grep, mus/tastatur og daglige håndoppgaver.',
+      nextSteps:
+        'Neste uke tilpasses ut fra greptoleranse, irritabilitet og neste-dags respons i albuen. Oppfølgingsplanen kan justere belastningstempo og volum etter senetoleranse.',
+    },
+    techneck: {
+      summary: 'Reduser nakkespenning og bygg holdningsutholdenhet for kontordagen med målrettet øvre ryggkontroll.',
+      programOverview:
+        'Uke 1 fokuserer på å redusere nakke- og øvre ryggspenning ved å forbedre skulderbladkontroll og postural utholdenhet. Du kombinerer skånsom mobilitet med lett strikkarbeid slik at skuldre og midtrygg tar mer av belastningen i skjermarbeid. Målet er mindre nakkestivhet og bedre sittetoleranse uten å tvinge smertefulle utslag.',
+      timeFrameExplanation:
+        'Tren 3 økter med hviledager mellom denne uken, og hold smerte på eller under 3/10 under økt og neste morgen. Prioriter rolige repetisjoner, avslappet kjeve/pust og skuldre ned fra ørene. Stopp eller regress ved klemming, forverret hodepine eller tydelig nakkekompensasjon.',
+      whatNotToDo:
+        'Unngå shrug-dominert trening, tvunget ytterstilling i nakkestrekk og smertefulle bevegelsesutslag. Reduser volum hvis symptomene er tydelig verre dagen etter eller hvis hodepine trigges.',
+      expectedOutcome:
+        'Mindre nakkestramhet/stivhet og bedre evne til å sitte oppreist med mindre fatigue ved skjermarbeid.',
+      nextSteps:
+        'Neste uke tilpasses ut fra nakkespenning, kontordag-toleranse og bevegelseskvalitet denne uken. Oppfølgingsplanen kan balansere volum og restitusjonskrav ut fra symptomtrenden.',
+    },
+    'plantar-fasciitis': {
+      summary: 'Reduser hælsmerte i første steg og bygg opp fot-/leggtoleranse for mer komfortabel daglig gange.',
+      programOverview:
+        'Uke 1 har mål om å redusere hælirritasjon og morgensmerte i de første stegene ved å gjenopprette skånsom ankel-fotbevegelse og kontrollert leggbelastning. Du bruker lav-belastende sirkulasjonsarbeid, leggpumper og hoftestøtteøvelser for bedre vevstoleranse uten oppbluss. Målet er jevnere gangkomfort og mindre skarp hælsensitivitet ved dagens start.',
+      timeFrameExplanation:
+        'Tren 3 økter med hviledager mellom denne uken, og hold smerte på eller under 3/10 under økt og neste morgen. Bruk rolig tempo og unngå skarp hælsmerte, spesielt i første-steg-bevegelser. Støttende fottøy og mindre barfotgang på harde gulv er viktig denne uken.',
+      whatNotToDo:
+        'Unngå barfotgang på harde gulv, brå volumøkning og å presse gjennom skarp plantarsmerte i hæl. Hvis smerten øker neste morgen, reduser øktvolum og total stå-/gåbelastning.',
+      expectedOutcome:
+        'Mindre morgensmerte i hælen med lettere første steg, og bedre toleranse for korte gåturer i komfortabelt tempo.',
+      nextSteps:
+        'Neste uke tilpasses ut fra første-steg-smerte, gangkomfort og hælirritabilitet gjennom denne uken. Oppfølgingsplanen kan øke, holde eller skalere vevsbelastning etter symptomrespons.',
+    },
+    'hamstring-strain': {
+      summary: 'Demp hamstringirritasjon og bygg trygg hoftebøy- og stegmekanikk uten symptomoppbluss.',
+      programOverview:
+        'Uke 1 fokuserer på å roe hamstringirritasjon og gjenopprette trygg bevegelse i gange og lett hoftebøy. Du bruker lav-belastende sirkulasjon, seteløft og kontrollerte kortutslags hinge-mønstre for å belaste baksidekjeden uten å provosere strekksmerte. Målet er jevnere hverdagsbevegelse med mindre guarding og mindre stivhet neste dag.',
+      timeFrameExplanation:
+        'Tren 3 økter med hviledager mellom denne uken, med smerte på eller under 3/10 under økt og neste morgen. Hold steglengden kort og unngå aggressiv tøyning. Bruk rolig hinge-tempo og stopp før skarp dragende smerte, krampe eller tap av kontroll.',
+      whatNotToDo:
+        'Unngå overstrekking, sprint og ballistisk bevegelse denne uken. Ikke press gjennom skarp smerte eller krampe; reduser volum hvis neste-dags ømhet tydelig øker.',
+      expectedOutcome:
+        'Mindre hamstringstramhet/guarding med lettere gange og mer komfortable hoftebøybevegelser ved lav belastning.',
+      nextSteps:
+        'Neste uke tilpasses ut fra smerteadferd i hamstring, hinge-kontroll og gangtoleranse denne uken. Oppfølgingsplanen kan justere utslag, tempo og belastning etter symptomrestitusjon.',
+    },
+    'upper-back-core': {
+      summary: 'Forbedre holdningsutholdenhet og styrke i øvre rygg slik at oppreiste stillinger føles lettere og mer naturlige.',
+      programOverview:
+        'Uke 1 fokuserer på å redusere tretthet i øvre rygg/skuldre ved å forbedre brystryggmobilitet, skulderbladstilling og kjerneassistert holdningskontroll. Du kombinerer skånsom bevegelsesforberedelse med lett strikkdrag for at midtryggen skal gjøre mer arbeid og nakken mindre. Målet er bedre toleranse for oppreist sitting/ståing uten gradvis stivhetsoppbygging.',
+      timeFrameExplanation:
+        'Tren 3 økter med hviledager mellom denne uken, med smerte på eller under 3/10 under økt og neste morgen. Hold ribbein stablet over bekken, unngå skulderheving, og bruk jevn kontrollert trekktempo. Lett gange og korte bevegelsespauser i kontordagen støtter fremgangen.',
+      whatNotToDo:
+        'Unngå tung pressing, langvarig statisk sammensunket holdning og tvunget ytterstilling i ekstensjon. Reduser volum hvis nakke-/skuldersymptomer øker neste dag.',
+      expectedOutcome:
+        'Redusert spenning i øvre rygg/skuldre med bedre kroppsbevissthet og toleranse for oppreist holdning i hverdagen.',
+      nextSteps:
+        'Neste uke tilpasses ut fra holdningsutholdenhet, spenning i øvre rygg og toleranse for daglig sitting/ståing. Oppfølgingsplanen kan justere trekkvolum og støttearbeid etter respons.',
+    },
+    'core-stability': {
+      summary: 'Bygg dyp kjerneutholdenhet slik at hverdagsbevegelse føles mer stabil, sterk og kontrollert.',
+      programOverview:
+        'Uke 1 bygger dyp kjernekontroll slik at overkroppen holder seg stabil i grunnleggende bevegelse og daglige aktiviteter. Du kombinerer lav-belastende buktrykk, anti-ekstensjonsarbeid og setestøtte for bedre bekkenkontroll uten å overbelaste rygg eller hoftebøyere. Målet er kvalitetsrepetisjoner og forutsigbar kontroll, ikke høy intensitet.',
+      timeFrameExplanation:
+        'Tren 3 økter med hviledager mellom denne uken, med smerte på eller under 3/10 under økt og neste morgen. Pust ut for å spenne kjernen i hver repetisjon, hold nøytral rygg, og stopp når formkvaliteten faller. Prioriter kontrollert pust og holdning fremfor ekstra repetisjoner.',
+      whatNotToDo:
+        'Unngå høye repetisjoner situps, lange planker med dårlig kvalitet og å holde pusten under belastning. Hvis korsryggsymptomer øker neste morgen, reduser holdetid og totalvolum.',
+      expectedOutcome:
+        'Bedre aktivering av kjernen med økt kontroll i planke/buktrykk-posisjoner og lettere trunkstabilitet i hverdagsbevegelse.',
+      nextSteps:
+        'Neste uke tilpasses ut fra jevnhet i buktrykk, kontroll under fatigue og neste-dags symptommønster. Oppfølgingsplanen kan øke, holde eller forenkle kravene til kjernearbeid etter utførelseskvalitet.',
+    },
+    'wrist-pain': {
+      summary: 'Demp håndleddsirritasjon og bygg robust underarmskontroll for tastatur, løft og daglig bruk.',
+      programOverview:
+        'Uke 1 fokuserer på å redusere håndleddsirritasjon fra repetitiv belastning i hverdagen samtidig som du gjenoppretter kontroll i underarm og grepstoleranse. Du bruker skånsom mobilitet, lav-belastende isometri og kontrollert rotasjon slik at tasting, lette løft og husholdningsoppgaver føles enklere uten oppbluss.',
+      timeFrameExplanation:
+        'Tren 3 økter med hviledager mellom denne uken, og hold smerte på eller under 3/10 under øvelser og neste morgen. Bruk lett motstand og kontrollert tempo. Hold håndleddet nøytralt når mulig, og stopp hvis smerten blir skarp eller stråler.',
+      whatNotToDo:
+        'Unngå hard gripping, rask belastet håndleddekstensjon og repetert ytterstilling i håndledd under fatigue. Reduser volum hvis symptomene er tydelig verre neste morgen.',
+      expectedOutcome:
+        'Mindre følsomhet i håndleddet i hvile og bedre toleranse for tasting, bæring av lette ting og daglig håndbruk.',
+      nextSteps:
+        'Neste uke tilpasses ut fra håndleddsirritabilitet, tastaturtoleranse og greprespons denne uken. Oppfølgingsplanen kan justere holdetid, belastning og øvelsesvalg ut fra symptomstabilitet.',
+    },
   };
 
   const getDescriptionBase = (value?: string): string => {
@@ -79,6 +262,94 @@ export const localizeProgramDayDescriptions = (
       .trim();
   };
 
+  const normalizedAreas = (program.targetAreas || [])
+    .map((area) => String(area).toLowerCase().trim())
+    .sort();
+  const areaKey = normalizedAreas.join('|');
+
+  const getRecoveryLocalizationKey = (): string => {
+    if (areaKey.includes('shin')) return 'shin-splints';
+    if (areaKey.includes('lower back')) return 'low-back';
+    if (areaKey.includes('knee')) return 'runners-knee';
+    if (areaKey.includes('shoulder') && !areaKey.includes('neck')) return 'shoulder';
+    if (areaKey.includes('ankle')) return 'ankle-sprain';
+    if (areaKey.includes('elbow')) return 'tennis-elbow';
+    if (areaKey.includes('neck')) return 'techneck';
+    if (areaKey.includes('hamstring')) return 'hamstring-strain';
+    if (areaKey.includes('posture') && areaKey.includes('upper back')) return 'upper-back-core';
+    if (areaKey.includes('core') && areaKey.includes('pelvis')) return 'core-stability';
+    if (areaKey.includes('wrist')) return 'wrist-pain';
+    if (areaKey.includes('heel') || (areaKey.includes('foot') && !areaKey.includes('ankle'))) {
+      return 'plantar-fasciitis';
+    }
+    return '';
+  };
+
+  const programKey = getRecoveryLocalizationKey();
+
+  const workoutDayMapByProgramKey: Record<string, Record<number, string>> = {
+    'shin-splints': {
+      1: 'Zone 2 + leggstyrke (lett). Rolige reps; smerte ≤3/10 underveis og neste morgen.',
+      3: 'Leggkapasitet + Zone 2 (lett). Jevn frekvens; stopp hvis smerte går over 3/10.',
+      5: 'Gjenta Zone 2 + leggstyrke (lett). Hold smerte ≤3/10 og prioriter kontrollert tempo.',
+    },
+    'low-back': {
+      1: 'Reset og buktrykk (dead bug + planke). Pust ut for å spenne; stopp hvis symptomer stråler eller øker >3/10.',
+      3: 'Sete + ryggstabilitet (seteløft + bird dog). Rolig overkropp; beveg fra hofter/skuldre, ikke korsrygg.',
+      5: 'Gjenta og bygg trygghet. Det skal føles lettere samme dag; neste morgen stabilt eller bedre.',
+    },
+    'runners-knee': {
+      1: 'Ro ned symptomer + hofteaktivering. Hold kneet over midtfoten og smerte ≤3/10.',
+      3: 'Hoftekontroll + isometrisk lår. Rolige reps, unngå at kneet faller innover.',
+      5: 'Bygg toleranse (samme mønster, litt mer arbeid). Neste morgen skal være stabil eller bedre.',
+    },
+    shoulder: {
+      1: 'Gjenopprett bevegelse + skulderbladkontroll. Rolige reps; hold deg under klypegrensen.',
+      3: 'Cuff-utholdenhet + fleksjonskontroll. Hold ribbeina nede; unngå å trekke skuldrene opp.',
+      5: 'Bygg skuldertoleranse (samme mønster, litt mer volum). Neste dag skal være stabil eller bedre.',
+    },
+    'ankle-sprain': {
+      1: 'Demp hevelse + gjenopprett bevegelse. Hold stegene rolige og smerte ≤3/10.',
+      3: 'Ankelmobilitet + leggpumpe. Rolig tempo, full fotkontakt.',
+      5: 'Bygg trygghet i standfase. Gjenta mønster; neste dag skal være stabil eller bedre.',
+    },
+    'tennis-elbow': {
+      1: 'Demp senesmerte + isometrisk lindring. Hold lett grep og smerte ≤3/10.',
+      3: 'Underarmskontroll + rolig rotasjon. Beveg rolig; ingen skarp eller utstrålende smerte.',
+      5: 'Bygg toleranse for hverdagsbruk. Gjenta mønsteret med litt lengre hold hvis neste dag er stabil.',
+    },
+    techneck: {
+      1: 'Nullstill holdning + mobilitet. Hold kjeven avslappet og skuldrene ned fra ørene.',
+      3: 'Skulderbladutholdenhet + ro i nakken. Rolige trekk; unngå kompensasjon med nakken.',
+      5: 'Bygg toleranse for kontordag. Gjenta mønsteret med litt mer kontroll og kvalitet i holdene.',
+    },
+    'plantar-fasciitis': {
+      1: 'Demp hælsmerte + gjenopprett fotbevegelse. Hold belastningen kontrollert og under symptomgrense.',
+      3: 'Legg-/fotbuekontroll + skånsom kapasitet. Rolig tempo; ingen skarp hælsmerte.',
+      5: 'Bygg trygghet i de første stegene. Gjenta mønsteret med litt mer tid under spenning.',
+    },
+    'hamstring-strain': {
+      1: 'Demp hamstring-irritasjon + skånsom aktivering. Hold stegene korte og smerte ≤3/10.',
+      3: 'Baksidekjede-kontroll. Rolig hoftebøy-mønster uten strekksmerte.',
+      5: 'Bygg trygghet i gange. Gjenta mønsteret med litt mer kontroll og toleranse.',
+    },
+    'upper-back-core': {
+      1: 'Holdningsreset + brystryggmobilitet. Hold ribbeina stable og skuldrene nede.',
+      3: 'Skulderbladutholdenhet + kjernestøtte. Rolige trekk; unngå nakkekompensasjon.',
+      5: 'Bygg toleranse i oppreist holdning. Gjenta mønsteret med litt mer tid under spenning.',
+    },
+    'core-stability': {
+      1: 'Dyp kjerne-reset. Rolig buktrykk med nøytral rygg og kontrollert pust.',
+      3: 'Kjernekontroll + koordinasjon med armer/bein. Hold bekkenet stabilt og bevegelsen rolig.',
+      5: 'Bygg kjerneutholdenhet. Gjenta mønsteret med litt lengre kvalitets-hold.',
+    },
+    'wrist-pain': {
+      1: 'Ro i håndledd + bøyeraktivering. Lett belastning, nøytralt håndledd, smerte ≤3/10.',
+      3: 'Underarmsrotasjon + bøyerkontroll. Jevnt tempo; unngå skarp smerte.',
+      5: 'Bygg toleranse for daglig bruk. Gjenta mønsteret med litt mer bøyerarbeid.',
+    },
+  };
+
   const updatedDays = program.days.map((d) => {
     const original = d.description?.trim();
     const baseDescription = getDescriptionBase(original);
@@ -87,22 +358,30 @@ export const localizeProgramDayDescriptions = (
         (baseDescription && restDayMap[baseDescription]) || 'Hviledag';
       return { ...d, description: mappedRest };
     }
+    const mappedByProgramKey = workoutDayMapByProgramKey[programKey]?.[d.day];
+    if (mappedByProgramKey) {
+      return { ...d, description: mappedByProgramKey };
+    }
     const mapped =
       (baseDescription && dayTitleMap[baseDescription]) || d.description;
     return { ...d, description: mapped };
   });
 
+  const localizedOverview = overviewMapByKey[programKey];
+
   return {
     ...program,
     days: updatedDays,
-    summary: program.summary,
-    programOverview: program.programOverview,
-    timeFrameExplanation: program.timeFrameExplanation,
+    summary: localizedOverview?.summary || program.summary,
+    programOverview: localizedOverview?.programOverview || program.programOverview,
+    timeFrameExplanation:
+      localizedOverview?.timeFrameExplanation || program.timeFrameExplanation,
     afterTimeFrame: {
-      expectedOutcome: program.afterTimeFrame.expectedOutcome,
-      nextSteps: program.afterTimeFrame.nextSteps,
+      expectedOutcome:
+        localizedOverview?.expectedOutcome || program.afterTimeFrame.expectedOutcome,
+      nextSteps: localizedOverview?.nextSteps || program.afterTimeFrame.nextSteps,
     },
-    whatNotToDo: program.whatNotToDo,
+    whatNotToDo: localizedOverview?.whatNotToDo || program.whatNotToDo,
   };
 };
 
@@ -239,12 +518,13 @@ const createLowBackRestDay = (day: number): any => {
   const exercises = [
     { exerciseId: 'warmup-9', duration: 5, warmup: true, modification: 'Keep abdomen tall; rotate only to a comfortable range.' },
     { exerciseId: 'warmup-5', duration: 5, warmup: true, modification: 'Engage core lightly; avoid lumbar pain.' },
-    { exerciseId: 'lower-back-4', sets: 2, repetitions: 6, restBetweenSets: 30, modification: 'Slow, controlled crossover. Keep ribs down; stop before pinching.' },
-    { exerciseId: 'abs-102', sets: 1, repetitions: 6, restBetweenSets: 45, modification: 'Reach long; keep hips level. Move only as far as you can stay neutral.' },
+    { exerciseId: 'lower-back-2', sets: 2, repetitions: 6, restBetweenSets: 30, modification: 'Slow, controlled crossover. Keep ribs down; stop before pinching.' },
+    { exerciseId: 'abs-20', sets: 1, repetitions: 6, restBetweenSets: 45, modification: 'Reach long; keep hips level. Move only as far as you can stay neutral.' },
   ];
   return {
     day,
     isRestDay: true,
+    dayType: 'rest',
     description: buildRestDescription(
       'Rest day. Gentle spinal mobility and diaphragmatic breathing to reduce stiffness.',
       day,
@@ -270,6 +550,7 @@ const createRunnersKneeRestDay = (day: number): any => {
   return {
     day,
     isRestDay: true,
+    dayType: 'rest',
     description: buildRestDescription(
       'Rest day. Light quad/hip mobility to maintain blood flow without stressing the knee joint.',
       day,
@@ -295,6 +576,7 @@ const createShoulderRestDay = (day: number): any => {
   return {
     day,
     isRestDay: true,
+    dayType: 'rest',
     description: buildRestDescription(
       'Rest day. Scapular mobility and low-load cuff activation for circulation.',
       day,
@@ -313,13 +595,14 @@ const createShoulderRestDay = (day: number): any => {
 /* ---------------- Lateral Ankle Sprain ---------------- */
 const createAnkleRestDay = (day: number): any => {
   const exercises = [
-    { exerciseId: 'calves-13', sets: 2, repetitions: 10, restBetweenSets: 30, warmup: true, modification: 'Rock gently into dorsiflexion; stay in pain-free range.' },
+    { exerciseId: 'calves-6', sets: 2, repetitions: 10, restBetweenSets: 30, warmup: true, modification: 'Rock gently into dorsiflexion; stay in pain-free range.' },
     { exerciseId: 'calves-6', sets: 2, repetitions: 12, restBetweenSets: 45, modification: 'Both legs; slow up-down, support as needed.' },
     { exerciseId: 'cardio-13', duration: 3, warmup: true, modification: 'Easy marching pace for circulation; no impact.' },
   ];
   return {
     day,
     isRestDay: true,
+    dayType: 'rest',
     description: buildRestDescription(
       'Rest day. Gentle range of motion and calf pump to assist lymph drainage.',
       day,
@@ -345,6 +628,7 @@ const createTennisElbowRestDay = (day: number): any => {
   return {
     day,
     isRestDay: true,
+    dayType: 'rest',
     description: buildRestDescription(
       'Rest day. Low-load wrist mobility and gentle neural glide to reduce elbow tension.',
       day,
@@ -398,6 +682,7 @@ const createHamstringRestDay = (day: number): any => {
       }
     ),
     isRestDay: true,
+    dayType: 'rest',
     duration: calculateRecoveryDayDuration(exercises),
     exercises,
   };
@@ -433,6 +718,7 @@ const createPostureRestDay = (day: number): any => {
   return {
     day,
     isRestDay: true,
+    dayType: 'rest',
     duration: calculateRecoveryDayDuration(exercises),
     description: buildRestDescription(
       'Rest day. Gentle thoracic mobility and postural activation to maintain upright awareness.',
@@ -458,6 +744,7 @@ const createTechNeckRestDay = (day: number): any => {
   return {
     day,
     isRestDay: true,
+    dayType: 'rest',
     description: buildRestDescription(
       'Rest day. Light rotator cuff activation and posture control to reinforce recovery gains.',
       day,
@@ -476,13 +763,14 @@ const createTechNeckRestDay = (day: number): any => {
 /* ---------------- Plantar Fasciitis ---------------- */
 const createPlantarRestDay = (day: number): any => {
   const exercises = [
-    { exerciseId: 'calves-13', sets: 2, repetitions: 10, restBetweenSets: 30, warmup: true, modification: 'Rock gently into ankle mobility; stay below heel-pain threshold.' },
+    { exerciseId: 'calves-6', sets: 2, repetitions: 10, restBetweenSets: 30, warmup: true, modification: 'Rock gently into ankle mobility; stay below heel-pain threshold.' },
     { exerciseId: 'calves-6', sets: 1, repetitions: 10, restBetweenSets: 30, modification: 'Light heel raises, control the descent.' },
     { exerciseId: 'cardio-13', duration: 2, warmup: true, modification: 'Easy marching for circulation; keep steps quiet and controlled.' },
   ];
   return {
     day,
     isRestDay: true,
+    dayType: 'rest',
     description: buildRestDescription(
       'Rest day. Light foot mobility and calf stretches to support healing.',
       day,
@@ -508,6 +796,7 @@ const createCoreRestDay = (day: number): any => {
   return {
     day,
     isRestDay: true,
+    dayType: 'rest',
     description: buildRestDescription(
       'Rest day. Gentle activation for the glutes and trunk to promote circulation and postural control.',
       day,
@@ -620,24 +909,25 @@ const rehabProgramsAllWeeks: ExerciseProgram[] = [
         1,
         'Zone 2 + Calf Strength (easy). Slow reps; pain stays ≤3/10 during and the next morning.',
         [
-        { exerciseId: 'calves-13', sets: 2, repetitions: 12, restBetweenSets: 30, warmup: true, modification: 'Start with controlled ankle rocks before loading calf reps.' },
-        { exerciseId: 'cardio-13', duration: 20, warmup: true, modification: 'Keep an easy marching pace and quiet steps throughout.' },
-        { exerciseId: 'calves-6', sets: 3, repetitions: 15, restBetweenSets: 45, modification: 'Use both legs, slow tempo, and full-foot pressure.' },
-        { exerciseId: 'calves-9', sets: 2, repetitions: 15, restBetweenSets: 45, modification: 'Use light band tension; stop if tibial tenderness rises.' },
+        { exerciseId: 'calves-6', sets: 2, repetitions: 12, restBetweenSets: 30, warmup: true, modification: 'Start with controlled ankle rocks before loading calf reps.' },
+        { exerciseId: 'cardio-13', duration: 12, warmup: true, modification: 'Keep an easy marching pace and quiet steps throughout.' },
+        { exerciseId: 'calves-6', sets: 2, repetitions: 15, restBetweenSets: 45, modification: 'Use both legs, slow tempo, and full-foot pressure.' },
+        { exerciseId: 'calves-12', sets: 1, repetitions: 15, restBetweenSets: 45, modification: 'Use light band tension; stop if tibial tenderness rises.' },
         ],
       ),
       {
         day: 2,
         isRestDay: true,
+        dayType: 'rest',
         description: 'Rest day. Gentle ankle mobility and light calf pumps to reduce tibial irritation.',
         exercises: [
-          { exerciseId: 'calves-13', sets: 2, repetitions: 12, restBetweenSets: 30, warmup: true, modification: 'Keep range gentle and pain-managed.' },
-          { exerciseId: 'calves-9', sets: 1, repetitions: 15, restBetweenSets: 45, modification: 'Light tibialis work with smooth control.' },
+          { exerciseId: 'calves-6', sets: 2, repetitions: 12, restBetweenSets: 30, warmup: true, modification: 'Keep range gentle and pain-managed.' },
+          { exerciseId: 'calves-12', sets: 1, repetitions: 15, restBetweenSets: 45, modification: 'Light tibialis work with smooth control.' },
           { exerciseId: 'calves-6', sets: 1, repetitions: 12, restBetweenSets: 45, modification: 'Easy calf pump, no bouncing.' },
         ],
         duration: calculateRecoveryDayDuration([
-          { exerciseId: 'calves-13', sets: 2, repetitions: 12, restBetweenSets: 30, warmup: true, modification: 'Keep range gentle and pain-managed.' },
-          { exerciseId: 'calves-9', sets: 1, repetitions: 15, restBetweenSets: 45, modification: 'Light tibialis work with smooth control.' },
+          { exerciseId: 'calves-6', sets: 2, repetitions: 12, restBetweenSets: 30, warmup: true, modification: 'Keep range gentle and pain-managed.' },
+          { exerciseId: 'calves-12', sets: 1, repetitions: 15, restBetweenSets: 45, modification: 'Light tibialis work with smooth control.' },
           { exerciseId: 'calves-6', sets: 1, repetitions: 12, restBetweenSets: 45, modification: 'Easy calf pump, no bouncing.' },
         ]),
       },
@@ -647,21 +937,23 @@ const rehabProgramsAllWeeks: ExerciseProgram[] = [
         [
         { exerciseId: 'cardio-13', duration: 15, warmup: true, modification: 'Steady low-impact march only; keep breathing relaxed.' },
         { exerciseId: 'calves-6', sets: 3, repetitions: 20, restBetweenSets: 45, modification: 'Higher reps with strict control and no pain spikes.' },
-        { exerciseId: 'calves-9', sets: 2, repetitions: 15, restBetweenSets: 45, modification: 'Maintain smooth dorsiflexion with light band resistance.' },
+        { exerciseId: 'calves-12', sets: 2, repetitions: 15, restBetweenSets: 45, modification: 'Maintain smooth dorsiflexion with light band resistance.' },
+        { exerciseId: 'glutes-44', sets: 2, repetitions: 12, restBetweenSets: 45, modification: 'Hip stability support for lateral chain; keep pelvis level.' },
         ],
       ),
       {
         day: 4,
         isRestDay: true,
+        dayType: 'rest',
         description: 'Rest day. Optional easy 5–10 min marching in place; gentle calf stretch if pain‑free.',
         exercises: [
           { exerciseId: 'cardio-13', duration: 6, warmup: true, modification: 'Easy marching only; keep steps quiet and pain-managed.' },
-          { exerciseId: 'calves-13', sets: 1, repetitions: 12, restBetweenSets: 30, modification: 'Gentle ankle mobility within comfortable range.' },
+          { exerciseId: 'calves-6', sets: 1, repetitions: 12, restBetweenSets: 30, modification: 'Gentle ankle mobility within comfortable range.' },
           { exerciseId: 'calves-6', sets: 1, repetitions: 10, restBetweenSets: 45, modification: 'Light calf raises with controlled tempo.' },
         ],
         duration: calculateRecoveryDayDuration([
           { exerciseId: 'cardio-13', duration: 6, warmup: true, modification: 'Easy marching only; keep steps quiet and pain-managed.' },
-          { exerciseId: 'calves-13', sets: 1, repetitions: 12, restBetweenSets: 30, modification: 'Gentle ankle mobility within comfortable range.' },
+          { exerciseId: 'calves-6', sets: 1, repetitions: 12, restBetweenSets: 30, modification: 'Gentle ankle mobility within comfortable range.' },
           { exerciseId: 'calves-6', sets: 1, repetitions: 10, restBetweenSets: 45, modification: 'Light calf raises with controlled tempo.' },
         ]),
       },
@@ -669,39 +961,42 @@ const rehabProgramsAllWeeks: ExerciseProgram[] = [
         5,
         'Repeat Zone 2 + Calf Strength (easy). Keep pain ≤3/10 and prioritize controlled tempo.',
         [
-        { exerciseId: 'calves-13', sets: 2, repetitions: 12, restBetweenSets: 30, warmup: true, modification: 'Open ankle range first, then transition into calf loading.' },
-        { exerciseId: 'cardio-13', duration: 20, warmup: true, modification: 'Use a consistent easy pace; no jogging or impact.' },
-        { exerciseId: 'calves-6', sets: 3, repetitions: 15, restBetweenSets: 45, modification: 'Control both the lift and lowering phase.' },
-        { exerciseId: 'calves-9', sets: 2, repetitions: 15, restBetweenSets: 45, modification: 'Keep tension light and movement smooth.' },
+        { exerciseId: 'calves-6', sets: 2, repetitions: 12, restBetweenSets: 30, warmup: true, modification: 'Open ankle range first, then transition into calf loading.' },
+        { exerciseId: 'cardio-13', duration: 10, warmup: true, modification: 'Shorter cardio to allow more hip work; consistent easy pace.' },
+        { exerciseId: 'calves-6', sets: 3, repetitions: 20, restBetweenSets: 45, modification: 'Match Day 3 calf volume; control both lift and lowering phase.' },
+        { exerciseId: 'calves-12', sets: 2, repetitions: 15, restBetweenSets: 45, modification: 'Keep tension light and movement smooth.' },
+        { exerciseId: 'glutes-44', sets: 2, repetitions: 15, restBetweenSets: 45, modification: 'More reps than Day 3 for hip progression if symptoms stable.' },
         ],
       ),
       {
         day: 6,
         isRestDay: true,
+        dayType: 'rest',
         description: 'Rest day. Gentle foot intrinsic activation (toe spread) and ankle circles.',
         exercises: [
-          { exerciseId: 'calves-13', sets: 2, repetitions: 10, restBetweenSets: 30, warmup: true, modification: 'Small controlled ankle rocks; no forcing end range.' },
-          { exerciseId: 'calves-9', sets: 1, repetitions: 12, restBetweenSets: 45, modification: 'Light band tension; smooth dorsiflexion reps.' },
+          { exerciseId: 'calves-6', sets: 2, repetitions: 10, restBetweenSets: 30, warmup: true, modification: 'Small controlled ankle rocks; no forcing end range.' },
+          { exerciseId: 'calves-12', sets: 1, repetitions: 12, restBetweenSets: 45, modification: 'Light band tension; smooth dorsiflexion reps.' },
           { exerciseId: 'cardio-13', duration: 4, warmup: true, modification: 'Easy in-place march for circulation.' },
         ],
         duration: calculateRecoveryDayDuration([
-          { exerciseId: 'calves-13', sets: 2, repetitions: 10, restBetweenSets: 30, warmup: true, modification: 'Small controlled ankle rocks; no forcing end range.' },
-          { exerciseId: 'calves-9', sets: 1, repetitions: 12, restBetweenSets: 45, modification: 'Light band tension; smooth dorsiflexion reps.' },
+          { exerciseId: 'calves-6', sets: 2, repetitions: 10, restBetweenSets: 30, warmup: true, modification: 'Small controlled ankle rocks; no forcing end range.' },
+          { exerciseId: 'calves-12', sets: 1, repetitions: 12, restBetweenSets: 45, modification: 'Light band tension; smooth dorsiflexion reps.' },
           { exerciseId: 'cardio-13', duration: 4, warmup: true, modification: 'Easy in-place march for circulation.' },
         ]),
       },
       {
         day: 7,
         isRestDay: true,
+        dayType: 'rest',
         description: 'Rest day. Avoid impact; optional easy 5–10 min marching in place if fully pain‑free.',
         exercises: [
           { exerciseId: 'cardio-13', duration: 5, warmup: true, modification: 'Optional light march only if symptoms are calm.' },
-          { exerciseId: 'calves-13', sets: 1, repetitions: 10, restBetweenSets: 30, modification: 'Gentle ankle mobility to stay loose.' },
+          { exerciseId: 'calves-6', sets: 1, repetitions: 10, restBetweenSets: 30, modification: 'Gentle ankle mobility to stay loose.' },
           { exerciseId: 'calves-6', sets: 1, repetitions: 10, restBetweenSets: 45, modification: 'Stop if tenderness increases.' },
         ],
         duration: calculateRecoveryDayDuration([
           { exerciseId: 'cardio-13', duration: 5, warmup: true, modification: 'Optional light march only if symptoms are calm.' },
-          { exerciseId: 'calves-13', sets: 1, repetitions: 10, restBetweenSets: 30, modification: 'Gentle ankle mobility to stay loose.' },
+          { exerciseId: 'calves-6', sets: 1, repetitions: 10, restBetweenSets: 30, modification: 'Gentle ankle mobility to stay loose.' },
           { exerciseId: 'calves-6', sets: 1, repetitions: 10, restBetweenSets: 45, modification: 'Stop if tenderness increases.' },
         ]),
       },
@@ -737,8 +1032,8 @@ const rehabProgramsAllWeeks: ExerciseProgram[] = [
       createWorkoutDay(3, 'Glutes + Spine Stability (bridge + bird dog). Quiet trunk; move from hips/shoulders, not the low back.', [
         { exerciseId: 'warmup-5', duration: 3, warmup: true, modification: 'Reset pelvis position before you load.' },
         { exerciseId: 'glutes-7', sets: 3, repetitions: 12, restBetweenSets: 60, modification: 'Keep shins vertical; squeeze glutes, not low back.' },
-        { exerciseId: 'abs-102', sets: 3, repetitions: 6, restBetweenSets: 45, modification: 'Slow reach; keep hips level and ribs down.' },
-        { exerciseId: 'abs-11', sets: 2, duration: 0.5, restBetweenSets: 60, modification: 'Hold steady; breathe slowly; keep hips stacked.' },
+        { exerciseId: 'abs-20', sets: 3, repetitions: 6, restBetweenSets: 45, modification: 'Slow reach; keep hips level and ribs down.' },
+        { exerciseId: 'abs-6', sets: 2, duration: 0.5, restBetweenSets: 60, modification: 'Hold steady; breathe slowly; keep hips stacked.' },
       ]),
       createLowBackRestDay(4),
       createWorkoutDay(5, 'Repeat & Build Confidence. Same-day should feel easier; next morning should be stable or better.', [
@@ -746,7 +1041,7 @@ const rehabProgramsAllWeeks: ExerciseProgram[] = [
         { exerciseId: 'warmup-9', duration: 2, warmup: true, modification: 'Comfortable range only; breathe slow. Skip if rotation irritates symptoms.' },
         { exerciseId: 'abs-20', sets: 2, repetitions: 10, restBetweenSets: 60, modification: 'Keep low back heavy; slow tempo.' },
         { exerciseId: 'abs-6', sets: 2, duration: 0.5, restBetweenSets: 60, modification: 'Shorten lever (knees down) if you feel the back.' },
-        { exerciseId: 'abs-102', sets: 2, repetitions: 6, restBetweenSets: 45, modification: 'Stay level; stop if you feel back “pinch”.' },
+        { exerciseId: 'lower-back-1', sets: 2, repetitions: 8, restBetweenSets: 45, modification: 'Slow superman; short hold at top for posterior chain balance.' },
         { exerciseId: 'glutes-7', sets: 2, repetitions: 12, restBetweenSets: 60, modification: 'Pause at top; no back arch.' },
       ]),
       createLowBackRestDay(6),
@@ -867,23 +1162,25 @@ const rehabProgramsAllWeeks: ExerciseProgram[] = [
     createdAt: new Date('2025-05-31T00:00:00Z'),
     days: [
       createWorkoutDay(1, 'Calm Swelling + Restore Motion. Keep steps quiet and pain ≤3/10.', [
-        { exerciseId: 'calves-13', sets: 2, repetitions: 12, restBetweenSets: 30, warmup: true, modification: 'Rock slowly; stop before pinch at front of ankle.' },
+        { exerciseId: 'calves-6', sets: 2, repetitions: 12, restBetweenSets: 30, warmup: true, modification: 'Rock slowly; stop before pinch at front of ankle.' },
         { exerciseId: 'cardio-13', duration: 5, warmup: true, modification: 'Easy marching pace for circulation, no bounce.' },
         { exerciseId: 'calves-6', sets: 3, repetitions: 12, restBetweenSets: 60, modification: 'Even loading through both feet; controlled rise/lower.' },
         { exerciseId: 'glutes-44', sets: 2, repetitions: 12, restBetweenSets: 60, modification: 'Keep pelvis stable; help ankle control through hip support.' },
       ]),
       createAnkleRestDay(2),
       createWorkoutDay(3, 'Ankle Mobility + Calf Pump. Slow tempo, full-foot contact.', [
-        { exerciseId: 'calves-13', sets: 2, repetitions: 12, restBetweenSets: 30, warmup: true, modification: 'Increase range slightly only if pain stays low.' },
+        { exerciseId: 'calves-6', sets: 2, repetitions: 12, restBetweenSets: 30, warmup: true, modification: 'Increase range slightly only if pain stays low.' },
         { exerciseId: 'cardio-13', duration: 5, warmup: true, modification: 'Quiet steps; symmetrical loading left/right.' },
         { exerciseId: 'calves-6', sets: 3, repetitions: 15, restBetweenSets: 60, modification: 'Pause briefly at top; no sharp pain on lowering.' },
+        { exerciseId: 'calves-12', sets: 1, repetitions: 12, restBetweenSets: 45, modification: 'Light tibialis activation for ankle stabilizer support.' },
         { exerciseId: 'glutes-44', sets: 2, repetitions: 12, restBetweenSets: 60, modification: 'Slow reps; avoid trunk sway.' },
       ]),
       createAnkleRestDay(4),
       createWorkoutDay(5, 'Build Confidence in Stance. Repeat pattern; next day should be stable or better.', [
-        { exerciseId: 'calves-13', sets: 2, repetitions: 12, restBetweenSets: 30, warmup: true, modification: 'Controlled mobility; no forcing end range.' },
+        { exerciseId: 'calves-6', sets: 2, repetitions: 12, restBetweenSets: 30, warmup: true, modification: 'Controlled mobility; no forcing end range.' },
         { exerciseId: 'cardio-13', duration: 5, warmup: true, modification: 'Easy march with full-foot roll through.' },
         { exerciseId: 'calves-6', sets: 3, repetitions: 15, restBetweenSets: 60, modification: 'Smooth tempo; stop before form loss.' },
+        { exerciseId: 'calves-12', sets: 2, repetitions: 12, restBetweenSets: 45, modification: 'More tibialis volume than Day 3 for ankle stabilizer progression.' },
         { exerciseId: 'glutes-44', sets: 2, repetitions: 15, restBetweenSets: 60, modification: 'Slightly higher volume if no next-day symptom spike.' },
       ]),
       createAnkleRestDay(6),
@@ -911,21 +1208,23 @@ const rehabProgramsAllWeeks: ExerciseProgram[] = [
     createdAt: new Date('2025-05-31T00:00:00Z'),
     days: [
       createWorkoutDay(1, 'Settle Tendon Irritability + Isometric Relief. Keep grip light and pain ≤3/10.', [
+        { exerciseId: 'cardio-13', duration: 4, warmup: true, modification: 'Easy in-place march to increase circulation before forearm loading.' },
         { exerciseId: 'warmup-8', sets: 1, repetitions: 20, restBetweenSets: 30, warmup: true, modification: 'Relax shoulder/neck before forearm loading.' },
-        { exerciseId: 'forearms-4', sets: 2, repetitions: 12, restBetweenSets: 45, warmup: true, modification: 'Support forearm on thigh/table and move in pain-free arc.' },
-        { exerciseId: 'forearms-3', sets: 4, duration: 0.5, restBetweenSets: 60, modification: 'Light isometric hold; keep wrist neutral and steady.' },
+        { exerciseId: 'forearms-4', sets: 3, repetitions: 12, restBetweenSets: 45, warmup: true, modification: 'Support forearm on thigh/table and move in pain-free arc.' },
+        { exerciseId: 'forearms-3', sets: 5, duration: 0.5, restBetweenSets: 60, modification: 'Light isometric hold; keep wrist neutral and steady.' },
       ]),
       createTennisElbowRestDay(2),
       createWorkoutDay(3, 'Forearm Control + Slow Rotation. Move smoothly; no sharp or radiating pain.', [
+        { exerciseId: 'cardio-13', duration: 4, warmup: true, modification: 'Easy march to keep tissue warm without gripping load.' },
         { exerciseId: 'warmup-8', sets: 1, repetitions: 20, restBetweenSets: 30, warmup: true, modification: 'Keep shoulder relaxed and posture tall.' },
-        { exerciseId: 'forearms-4', sets: 2, repetitions: 15, restBetweenSets: 45, warmup: true, modification: '2-second rotation each way; no end-range forcing.' },
-        { exerciseId: 'forearms-3', sets: 4, duration: 0.67, restBetweenSets: 60, modification: 'Slightly longer hold only if symptoms stay calm.' },
+        { exerciseId: 'forearms-4', sets: 3, repetitions: 15, restBetweenSets: 45, warmup: true, modification: '2-second rotation each way; no end-range forcing.' },
+        { exerciseId: 'forearms-3', sets: 5, duration: 0.67, restBetweenSets: 60, modification: 'Slightly longer hold only if symptoms stay calm.' },
       ]),
       createTennisElbowRestDay(4),
       createWorkoutDay(5, 'Build Daily-Use Tolerance. Repeat pattern with slightly longer holds if stable next day.', [
         { exerciseId: 'warmup-8', sets: 1, repetitions: 20, restBetweenSets: 30, warmup: true, modification: 'Easy circles; no shoulder tension.' },
         { exerciseId: 'forearms-4', sets: 2, repetitions: 15, restBetweenSets: 45, warmup: true, modification: 'Controlled rotation under light load.' },
-        { exerciseId: 'forearms-3', sets: 5, duration: 0.67, restBetweenSets: 60, modification: 'Maintain neutral wrist and light grip pressure.' },
+        { exerciseId: 'forearms-3', sets: 6, duration: 0.67, restBetweenSets: 60, modification: 'One extra set for capacity; maintain neutral wrist and light grip.' },
       ]),
       createTennisElbowRestDay(6),
       createTennisElbowRestDay(7),
@@ -952,6 +1251,7 @@ const rehabProgramsAllWeeks: ExerciseProgram[] = [
     createdAt: new Date('2025-06-02T00:00:00Z'),
     days: [
       createWorkoutDay(1, 'Reset Posture + Mobility. Keep jaw relaxed and shoulders away from ears.', [
+        { exerciseId: 'cardio-13', duration: 4, warmup: true, modification: 'Easy marching to improve circulation before upper-back control work.' },
         { exerciseId: 'warmup-8', sets: 2, repetitions: 12, restBetweenSets: 30, warmup: true, modification: 'Small circles first, then medium range if symptom-free.' },
         { exerciseId: 'warmup-9', sets: 2, repetitions: 8, restBetweenSets: 30, warmup: true, modification: 'Gentle trunk rotation, chest tall, no neck cranking.' },
         { exerciseId: 'shoulders-30', sets: 2, repetitions: 10, restBetweenSets: 45, modification: 'Light band tension; slow scapular squeeze.' },
@@ -963,6 +1263,7 @@ const rehabProgramsAllWeeks: ExerciseProgram[] = [
         { exerciseId: 'warmup-9', sets: 2, repetitions: 10, restBetweenSets: 30, warmup: true, modification: 'Move from trunk; keep chin neutral.' },
         { exerciseId: 'shoulders-30', sets: 2, repetitions: 12, restBetweenSets: 45, modification: 'Pause at squeeze; avoid rib flare.' },
         { exerciseId: 'shoulders-94', sets: 2, repetitions: 10, restBetweenSets: 45, modification: '2-second out / 2-second back tempo.' },
+        { exerciseId: 'upper-back-60', sets: 2, repetitions: 10, restBetweenSets: 45, modification: 'Light band row; chin tucked, focus on mid-back pulling away from screen posture.' },
       ]),
       createTechNeckRestDay(4),
       createWorkoutDay(5, 'Build Desk-Day Tolerance. Repeat pattern with slightly more control and hold quality.', [
@@ -996,23 +1297,26 @@ const rehabProgramsAllWeeks: ExerciseProgram[] = [
     createdAt: new Date('2025-06-02T00:00:00Z'),
     days: [
       createWorkoutDay(1, 'Calm Heel Pain + Restore Foot Motion. Keep load sub-symptomatic and controlled.', [
-        { exerciseId: 'calves-13', sets: 2, repetitions: 12, restBetweenSets: 30, warmup: true, modification: 'Gentle ankle-rock mobility, pain-managed range only.' },
+        { exerciseId: 'calves-6', sets: 2, repetitions: 12, restBetweenSets: 30, warmup: true, modification: 'Gentle ankle-rock mobility, pain-managed range only.' },
         { exerciseId: 'cardio-13', duration: 3, warmup: true, modification: 'Easy march in place; soft, quiet steps.' },
         { exerciseId: 'calves-6', sets: 3, repetitions: 12, restBetweenSets: 60, modification: 'Slow lift and controlled lowering, no bounce.' },
         { exerciseId: 'glutes-44', sets: 2, repetitions: 12, restBetweenSets: 45, modification: 'Stable pelvis to support foot loading mechanics.' },
       ]),
       createPlantarRestDay(2),
       createWorkoutDay(3, 'Calf-Arch Control + Gentle Capacity. Slow tempo; no sharp heel pain.', [
-        { exerciseId: 'calves-13', sets: 2, repetitions: 12, restBetweenSets: 30, warmup: true, modification: 'Increase range slightly only if pain stays low.' },
+        { exerciseId: 'calves-6', sets: 2, repetitions: 12, restBetweenSets: 30, warmup: true, modification: 'Increase range slightly only if pain stays low.' },
         { exerciseId: 'cardio-13', duration: 3, warmup: true, modification: 'Maintain relaxed cadence and even foot contact.' },
         { exerciseId: 'calves-6', sets: 3, repetitions: 15, restBetweenSets: 60, modification: 'Pause briefly at top; control full descent.' },
+        { exerciseId: 'calves-63', sets: 2, repetitions: 12, restBetweenSets: 45, modification: 'Slow 3-second lowering phase; eccentric calf loading for plantar support.' },
         { exerciseId: 'glutes-44', sets: 2, repetitions: 12, restBetweenSets: 45, modification: 'No trunk sway; smooth controlled reps.' },
       ]),
       createPlantarRestDay(4),
       createWorkoutDay(5, 'Build First-Step Confidence. Repeat pattern with slightly more time under tension.', [
-        { exerciseId: 'calves-13', sets: 2, repetitions: 12, restBetweenSets: 30, warmup: true, modification: 'Smooth mobility; avoid forcing end range.' },
+        { exerciseId: 'calves-6', sets: 2, repetitions: 12, restBetweenSets: 30, warmup: true, modification: 'Smooth mobility; avoid forcing end range.' },
         { exerciseId: 'cardio-13', duration: 3, warmup: true, modification: 'Easy march for circulation, avoid hard forefoot strike.' },
         { exerciseId: 'calves-6', sets: 3, repetitions: 15, restBetweenSets: 60, modification: 'Keep tempo strict; stop before heel pain sharpens.' },
+        { exerciseId: 'calves-63', sets: 2, repetitions: 15, restBetweenSets: 45, modification: 'Slow 3-second lowering; more volume than Day 3 if pain stays stable.' },
+        { exerciseId: 'calves-12', sets: 2, repetitions: 12, restBetweenSets: 45, modification: 'Light tibialis activation to support arch mechanics.' },
         { exerciseId: 'glutes-44', sets: 2, repetitions: 15, restBetweenSets: 45, modification: 'Slightly higher volume if next-day pain remains stable.' },
       ]),
       createPlantarRestDay(6),
@@ -1043,21 +1347,21 @@ const rehabProgramsAllWeeks: ExerciseProgram[] = [
         { exerciseId: 'cardio-13', duration: 3, warmup: true, modification: 'Easy marching to warm tissue; no bounce or long stride.' },
         { exerciseId: 'glutes-7', sets: 3, repetitions: 12, restBetweenSets: 60, modification: 'Pause 1 second at top without low-back arching.' },
         { exerciseId: 'hamstrings-48', sets: 2, repetitions: 8, restBetweenSets: 60, modification: 'Bodyweight only; very short range and slow descent.' },
-        { exerciseId: 'glutes-1', sets: 2, repetitions: 10, restBetweenSets: 60, modification: 'Pain-free range only; prioritize control over depth.' },
+        { exerciseId: 'lower-back-1', sets: 2, repetitions: 10, restBetweenSets: 60, modification: 'Slow lift/lower; keep hips on the floor and avoid arching into pain.' },
       ]),
       createHamstringRestDay(2),
       createWorkoutDay(3, 'Posterior Chain Control. Slow hinge patterning without stretch pain.', [
         { exerciseId: 'cardio-13', duration: 3, warmup: true, modification: 'Steady march; keep pelvis level and relaxed.' },
         { exerciseId: 'glutes-7', sets: 3, repetitions: 12, restBetweenSets: 60, modification: 'Smooth ascent/descent and full-foot contact.' },
         { exerciseId: 'hamstrings-48', sets: 3, repetitions: 8, restBetweenSets: 60, modification: 'Increase range slightly only if pain remains low.' },
-        { exerciseId: 'glutes-1', sets: 2, repetitions: 10, restBetweenSets: 60, modification: 'Slow patterning; avoid pulling sensation at end range.' },
+        { exerciseId: 'lower-back-1', sets: 2, repetitions: 10, restBetweenSets: 60, modification: 'Controlled superman; short holds at top without sharp pulling.' },
       ]),
       createHamstringRestDay(4),
       createWorkoutDay(5, 'Build Walking Confidence. Repeat pattern with slightly more control and tolerance.', [
         { exerciseId: 'cardio-13', duration: 3, warmup: true, modification: 'Short, quiet steps; stop if pain rises.' },
         { exerciseId: 'glutes-7', sets: 3, repetitions: 15, restBetweenSets: 60, modification: 'Slightly more volume if next-day symptoms are stable.' },
         { exerciseId: 'hamstrings-48', sets: 3, repetitions: 8, restBetweenSets: 60, modification: 'Strict bodyweight control; no sudden stretch at bottom.' },
-        { exerciseId: 'glutes-1', sets: 2, repetitions: 12, restBetweenSets: 60, modification: 'Keep tempo slow and pain-managed.' },
+        { exerciseId: 'lower-back-1', sets: 2, repetitions: 12, restBetweenSets: 60, modification: 'Slightly more reps; keep tempo slow and pain-managed.' },
       ]),
       createHamstringRestDay(6),
       createHamstringRestDay(7),
@@ -1095,6 +1399,7 @@ const rehabProgramsAllWeeks: ExerciseProgram[] = [
         { exerciseId: 'warmup-8', sets: 2, repetitions: 15, restBetweenSets: 30, warmup: true, modification: 'Smooth circles without shrugging.' },
         { exerciseId: 'shoulders-30', sets: 2, repetitions: 12, restBetweenSets: 45, modification: 'Pause briefly at retraction; ribs down.' },
         { exerciseId: 'upper-back-60', sets: 2, repetitions: 15, restBetweenSets: 60, modification: 'Steady row tempo; avoid low-back sway.' },
+        { exerciseId: 'abs-6', sets: 2, duration: 0.5, restBetweenSets: 60, modification: 'Dead bug for core-assisted posture; keep low back flat.' },
       ]),
       createPostureRestDay(4),
       createWorkoutDay(5, 'Build Upright Tolerance. Repeat pattern with slightly more time under tension.', [
@@ -1102,6 +1407,7 @@ const rehabProgramsAllWeeks: ExerciseProgram[] = [
         { exerciseId: 'warmup-8', sets: 2, repetitions: 15, restBetweenSets: 30, warmup: true, modification: 'Keep shoulders away from ears.' },
         { exerciseId: 'shoulders-30', sets: 2, repetitions: 12, restBetweenSets: 45, modification: 'Maintain consistent band tension and form.' },
         { exerciseId: 'upper-back-60', sets: 3, repetitions: 12, restBetweenSets: 60, modification: 'Slight volume increase only if next-day symptoms are stable.' },
+        { exerciseId: 'abs-20', sets: 2, duration: 0.5, restBetweenSets: 60, modification: 'Plank for core endurance; keep ribs over pelvis and breathe.' },
       ]),
       createPostureRestDay(6),
       createPostureRestDay(7),
@@ -1128,20 +1434,24 @@ const rehabProgramsAllWeeks: ExerciseProgram[] = [
     createdAt: new Date('2025-06-02T00:00:00Z'),
     days: [
       createWorkoutDay(1, 'Deep Core Reset. Slow bracing with neutral spine and controlled breathing.', [
+        { exerciseId: 'cardio-13', duration: 4, warmup: true, modification: 'Easy march to raise temperature before trunk bracing drills.' },
         { exerciseId: 'abs-20', sets: 3, repetitions: 8, restBetweenSets: 60, modification: 'Low back stays in contact; exhale on limb movement.' },
         { exerciseId: 'abs-6', sets: 2, duration: 0.5, restBetweenSets: 60, modification: 'Use knees-down version if you lose spinal control.' },
         { exerciseId: 'glutes-7', sets: 2, repetitions: 12, restBetweenSets: 60, modification: 'Hold 1 second at top with ribs down.' },
       ]),
       createCoreRestDay(2),
       createWorkoutDay(3, 'Core Control + Limb Coordination. Keep pelvis stable and movement quiet.', [
+        { exerciseId: 'cardio-13', duration: 4, warmup: true, modification: 'Easy march to keep effort low and movement quality high.' },
         { exerciseId: 'abs-20', sets: 3, repetitions: 8, restBetweenSets: 60, modification: 'Slow alternating pattern; no trunk rocking.' },
         { exerciseId: 'abs-6', sets: 3, duration: 0.5, restBetweenSets: 60, modification: 'Brace continuously and keep breathing steady.' },
         { exerciseId: 'glutes-7', sets: 2, repetitions: 12, restBetweenSets: 60, modification: 'Maintain pelvis level through full rep.' },
       ]),
       createCoreRestDay(4),
       createWorkoutDay(5, 'Build Trunk Endurance. Repeat pattern with slightly longer quality holds.', [
+        { exerciseId: 'cardio-13', duration: 4, warmup: true, modification: 'Easy march to warm up before trunk work.' },
         { exerciseId: 'abs-20', sets: 3, repetitions: 10, restBetweenSets: 60, modification: 'Increase reps only if form remains clean.' },
         { exerciseId: 'abs-6', sets: 3, duration: 0.67, restBetweenSets: 60, modification: 'Slightly longer hold, stop before shaking or lumbar sag.' },
+        { exerciseId: 'obliques-4', sets: 2, duration: 0.33, restBetweenSets: 45, modification: 'Side plank each side; keep hips stacked and breathing steady.' },
         { exerciseId: 'glutes-7', sets: 2, repetitions: 15, restBetweenSets: 60, modification: 'Controlled tempo with steady breath pattern.' },
       ]),
       createCoreRestDay(6),
@@ -1168,14 +1478,16 @@ const rehabProgramsAllWeeks: ExerciseProgram[] = [
       'Avoid high-force gripping, fast loaded wrist extension, and repetitive end-range wrist positions under fatigue. Reduce volume if symptoms are clearly worse the next morning.',
     createdAt: new Date('2025-06-02T00:00:00Z'),
     days: [
-      createWorkoutDay(1, 'Wrist Calm + Forearm Activation. Light load, neutral wrist, pain ≤3/10.', [
+      createWorkoutDay(1, 'Wrist Calm + Flexor Activation. Light load, neutral wrist, pain ≤3/10.', [
+        { exerciseId: 'cardio-13', duration: 4, warmup: true, modification: 'Easy march to increase circulation before wrist loading.' },
         { exerciseId: 'warmup-8', sets: 1, repetitions: 20, restBetweenSets: 30, warmup: true, modification: 'Gentle shoulder-arm prep before wrist loading.' },
-        { exerciseId: 'forearms-4', sets: 2, repetitions: 12, restBetweenSets: 45, warmup: true, modification: 'Rotate only through pain-free range with forearm supported.' },
-        { exerciseId: 'forearms-3', sets: 4, duration: 0.5, restBetweenSets: 60, modification: 'Neutral wrist isometric hold with light grip pressure.' },
+        { exerciseId: 'forearms-4', sets: 3, repetitions: 12, restBetweenSets: 45, warmup: true, modification: 'Rotate only through pain-free range with forearm supported.' },
+        { exerciseId: 'forearms-1', sets: 3, repetitions: 12, restBetweenSets: 60, modification: 'Use a water bottle or very light object. Rest forearm on thigh, curl wrist up slowly.' },
       ]),
       {
         day: 2,
         isRestDay: true,
+        dayType: 'rest',
         description: 'Rest day. Optional gentle wrist circles and easy grip open/close drills.',
         exercises: [
           { exerciseId: 'warmup-8', sets: 1, repetitions: 20, restBetweenSets: 30, warmup: true, modification: 'Easy shoulder and arm circles to reduce upper-limb tension.' },
@@ -1188,14 +1500,16 @@ const rehabProgramsAllWeeks: ExerciseProgram[] = [
           { exerciseId: 'forearms-3', sets: 1, duration: 0.5, restBetweenSets: 45, modification: 'Light isometric hold with neutral wrist.' },
         ]),
       },
-      createWorkoutDay(3, 'Forearm Rotation + Isometric Capacity. Smooth tempo; avoid sharp pain.', [
+      createWorkoutDay(3, 'Forearm Rotation + Flexor Control. Smooth tempo; avoid sharp pain.', [
+        { exerciseId: 'cardio-13', duration: 4, warmup: true, modification: 'Easy march for circulation without wrist stress.' },
         { exerciseId: 'warmup-8', sets: 1, repetitions: 20, restBetweenSets: 30, warmup: true, modification: 'Keep shoulders relaxed and elbow close to body.' },
-        { exerciseId: 'forearms-4', sets: 2, repetitions: 15, restBetweenSets: 45, warmup: true, modification: 'Slow tempo both directions; avoid end-range forcing.' },
-        { exerciseId: 'forearms-3', sets: 4, duration: 0.67, restBetweenSets: 60, modification: 'Slightly longer hold while keeping symptoms stable.' },
+        { exerciseId: 'forearms-4', sets: 3, repetitions: 15, restBetweenSets: 45, warmup: true, modification: 'Slow tempo both directions; avoid end-range forcing.' },
+        { exerciseId: 'forearms-1', sets: 3, repetitions: 15, restBetweenSets: 60, modification: 'Light household object on thigh; slow controlled flexion curl.' },
       ]),
       {
         day: 4,
         isRestDay: true,
+        dayType: 'rest',
         description: 'Rest day. Keep wrist neutral during desk work; add short movement breaks.',
         exercises: [
           { exerciseId: 'warmup-8', sets: 1, repetitions: 20, restBetweenSets: 30, warmup: true, modification: 'Relax shoulder and forearm before loading.' },
@@ -1208,14 +1522,15 @@ const rehabProgramsAllWeeks: ExerciseProgram[] = [
           { exerciseId: 'forearms-4', sets: 1, repetitions: 12, restBetweenSets: 45, modification: 'Slow and controlled pronation/supination.' },
         ]),
       },
-      createWorkoutDay(5, 'Build Daily-Use Tolerance. Repeat pattern with slightly longer quality holds.', [
+      createWorkoutDay(5, 'Build Daily-Use Tolerance. Repeat pattern with slightly more flexor work.', [
         { exerciseId: 'warmup-8', sets: 1, repetitions: 20, restBetweenSets: 30, warmup: true, modification: 'Use this as a reset before forearm work.' },
         { exerciseId: 'forearms-4', sets: 2, repetitions: 15, restBetweenSets: 45, warmup: true, modification: 'Controlled rotation with steady breathing.' },
-        { exerciseId: 'forearms-3', sets: 5, duration: 0.67, restBetweenSets: 60, modification: 'Build hold tolerance gradually, stop before fatigue compensation.' },
+        { exerciseId: 'forearms-1', sets: 4, repetitions: 15, restBetweenSets: 60, modification: 'Slightly more volume; keep wrist flexion smooth and pain-managed.' },
       ]),
       {
         day: 6,
         isRestDay: true,
+        dayType: 'rest',
         description: 'Rest day. Optional 5–10 min light forearm mobility if symptoms stay calm.',
         exercises: [
           { exerciseId: 'warmup-8', sets: 1, repetitions: 20, restBetweenSets: 30, warmup: true, modification: 'Easy circulation-focused arm movement.' },
@@ -1231,6 +1546,7 @@ const rehabProgramsAllWeeks: ExerciseProgram[] = [
       {
         day: 7,
         isRestDay: true,
+        dayType: 'rest',
         description: 'Rest day. Avoid long static wrist positions; keep load light.',
         exercises: [
           { exerciseId: 'warmup-8', sets: 1, repetitions: 15, restBetweenSets: 30, warmup: true, modification: 'Short gentle mobility break to reduce stiffness.' },
@@ -1371,7 +1687,7 @@ export const getUserProgramBySlug = (slug: string): {
         assessmentComplete: true,
         redFlagsPresent: false,
         avoidActivities: ['Heavy lifting', 'Prolonged sitting', 'High-impact activities'],
-        timeFrame: '4 weeks',
+        timeFrame: '1 week',
         followUpQuestions: [],
         programType: ProgramType.Recovery,
         targetAreas: ['Lower Back', 'Core']
@@ -1391,7 +1707,7 @@ export const getUserProgramBySlug = (slug: string): {
       createdAt: today.toISOString(),
       updatedAt: today,
       type: ProgramType.Recovery,
-      timeFrame: '4 weeks',
+      timeFrame: '1 week',
       title: 'Back Relief Blueprint',
       docId: `recovery-lowback-${Date.now()}`
     });
@@ -1421,7 +1737,7 @@ export const getUserProgramBySlug = (slug: string): {
         assessmentComplete: true,
         redFlagsPresent: false,
         avoidActivities: ['Downhill running', 'Sprints', 'Hard-surface mileage spikes'],
-        timeFrame: '4 weeks',
+        timeFrame: '1 week',
         followUpQuestions: [],
         programType: ProgramType.Recovery,
         targetAreas: ['Shin', 'Calves', 'Foot']
@@ -1441,7 +1757,7 @@ export const getUserProgramBySlug = (slug: string): {
       createdAt: today.toISOString(),
       updatedAt: today,
       type: ProgramType.Recovery,
-      timeFrame: '4 weeks',
+      timeFrame: '1 week',
       title: 'Run Without Shin Pain',
       docId: `recovery-shin-splints-${Date.now()}`
     });
@@ -1466,7 +1782,7 @@ export const getUserProgramBySlug = (slug: string): {
         assessmentComplete: true,
         redFlagsPresent: false,
         avoidActivities: ['Running', 'Jumping', 'Deep squats'],
-        timeFrame: '4 weeks',
+        timeFrame: '1 week',
         followUpQuestions: [],
         programType: ProgramType.Recovery,
         targetAreas: ['Knee', 'Quadriceps', 'Glutes']
@@ -1486,7 +1802,7 @@ export const getUserProgramBySlug = (slug: string): {
       createdAt: today.toISOString(),
       updatedAt: today,
       type: ProgramType.Recovery,
-      timeFrame: '4 weeks',
+      timeFrame: '1 week',
       title: 'Knee Comeback Plan',
       docId: `recovery-runnersknee-${Date.now()}`
     });
@@ -1511,7 +1827,7 @@ export const getUserProgramBySlug = (slug: string): {
         assessmentComplete: true,
         redFlagsPresent: false,
         avoidActivities: ['Overhead lifting', 'Throwing motions', 'Sleeping on affected side'],
-        timeFrame: '4 weeks',
+        timeFrame: '1 week',
         followUpQuestions: [],
         programType: ProgramType.Recovery,
         targetAreas: ['Shoulder', 'Rotator Cuff']
@@ -1531,7 +1847,7 @@ export const getUserProgramBySlug = (slug: string): {
       createdAt: today.toISOString(),
       updatedAt: today,
       type: ProgramType.Recovery,
-      timeFrame: '4 weeks',
+      timeFrame: '1 week',
       title: 'Shoulder Freedom Plan',
       docId: `recovery-shoulder-${Date.now()}`
     });
@@ -1556,7 +1872,7 @@ export const getUserProgramBySlug = (slug: string): {
         assessmentComplete: true,
         redFlagsPresent: false,
         avoidActivities: ['Running', 'Jumping', 'Sports with cutting movements'],
-        timeFrame: '4 weeks',
+        timeFrame: '1 week',
         followUpQuestions: [],
         programType: ProgramType.Recovery,
         targetAreas: ['Ankle', 'Calf']
@@ -1576,7 +1892,7 @@ export const getUserProgramBySlug = (slug: string): {
       createdAt: today.toISOString(),
       updatedAt: today,
       type: ProgramType.Recovery,
-      timeFrame: '4 weeks',
+      timeFrame: '1 week',
       title: 'Ankle Stability Reset',
       docId: `recovery-ankle-${Date.now()}`
     });
@@ -1601,7 +1917,7 @@ export const getUserProgramBySlug = (slug: string): {
         assessmentComplete: true,
         redFlagsPresent: false,
         avoidActivities: ['Heavy gripping', 'Racquet sports', 'Repetitive wrist extension'],
-        timeFrame: '4 weeks',
+        timeFrame: '1 week',
         followUpQuestions: [],
         programType: ProgramType.Recovery,
         targetAreas: ['Elbow', 'Forearm', 'Wrist']
@@ -1621,7 +1937,7 @@ export const getUserProgramBySlug = (slug: string): {
       createdAt: today.toISOString(),
       updatedAt: today,
       type: ProgramType.Recovery,
-      timeFrame: '4 weeks',
+      timeFrame: '1 week',
       title: 'Elbow Strength Reset',
       docId: `recovery-tennis-elbow-${Date.now()}`
     });
@@ -1646,7 +1962,7 @@ export const getUserProgramBySlug = (slug: string): {
         assessmentComplete: true,
         redFlagsPresent: false,
         avoidActivities: ['Prolonged computer use without breaks', 'Looking down at phone for extended periods'],
-        timeFrame: '4 weeks',
+        timeFrame: '1 week',
         followUpQuestions: [],
         programType: ProgramType.Recovery,
         targetAreas: ['Neck', 'Upper Back', 'Shoulders']
@@ -1666,7 +1982,7 @@ export const getUserProgramBySlug = (slug: string): {
       createdAt: today.toISOString(),
       updatedAt: today,
       type: ProgramType.Recovery,
-      timeFrame: '4 weeks',
+      timeFrame: '1 week',
       title: 'Neck Reset Routine',
       docId: `recovery-techneck-${Date.now()}`
     });
@@ -1691,7 +2007,7 @@ export const getUserProgramBySlug = (slug: string): {
         assessmentComplete: true,
         redFlagsPresent: false,
         avoidActivities: ['Running on hard surfaces', 'Walking barefoot', 'High-impact activities'],
-        timeFrame: '4 weeks',
+        timeFrame: '1 week',
         followUpQuestions: [],
         programType: ProgramType.Recovery,
         targetAreas: ['Foot', 'Calf', 'Ankle']
@@ -1711,7 +2027,7 @@ export const getUserProgramBySlug = (slug: string): {
       createdAt: today.toISOString(),
       updatedAt: today,
       type: ProgramType.Recovery,
-      timeFrame: '4 weeks',
+      timeFrame: '1 week',
       title: 'Heel Pain Reset',
       docId: `recovery-plantar-${Date.now()}`
     });
@@ -1736,7 +2052,7 @@ export const getUserProgramBySlug = (slug: string): {
         assessmentComplete: true,
         redFlagsPresent: false,
         avoidActivities: ['Sprinting', 'Aggressive stretching', 'High-intensity leg exercises'],
-        timeFrame: '4 weeks',
+        timeFrame: '1 week',
         followUpQuestions: [],
         programType: ProgramType.Recovery,
         targetAreas: ['Hamstring', 'Glutes']
@@ -1756,7 +2072,7 @@ export const getUserProgramBySlug = (slug: string): {
       createdAt: today.toISOString(),
       updatedAt: today,
       type: ProgramType.Recovery,
-      timeFrame: '4 weeks',
+      timeFrame: '1 week',
       title: 'Hamstring Rebuild Plan',
       docId: `recovery-hamstring-${Date.now()}`
     });
@@ -1782,7 +2098,7 @@ export const getUserProgramBySlug = (slug: string): {
         assessmentComplete: true,
         redFlagsPresent: false,
         avoidActivities: ['Heavy gripping', 'Fast loaded wrist extension', 'Repetitive painful wrist positions'],
-        timeFrame: '4 weeks',
+        timeFrame: '1 week',
         followUpQuestions: [],
         programType: ProgramType.Recovery,
         targetAreas: ['Wrist', 'Forearm']
@@ -1802,7 +2118,7 @@ export const getUserProgramBySlug = (slug: string): {
       createdAt: today.toISOString(),
       updatedAt: today,
       type: ProgramType.Recovery,
-      timeFrame: '4 weeks',
+      timeFrame: '1 week',
       title: 'Wrist Relief Reset',
       docId: `recovery-wrist-${Date.now()}`
     });
@@ -1827,7 +2143,7 @@ export const getUserProgramBySlug = (slug: string): {
         assessmentComplete: true,
         redFlagsPresent: false,
         avoidActivities: ['Prolonged slouching', 'Heavy overhead lifting', 'Poor lifting mechanics'],
-        timeFrame: '4 weeks',
+        timeFrame: '1 week',
         followUpQuestions: [],
         programType: ProgramType.Recovery,
         targetAreas: ['Upper Back', 'Core', 'Shoulders']
@@ -1847,7 +2163,7 @@ export const getUserProgramBySlug = (slug: string): {
       createdAt: today.toISOString(),
       updatedAt: today,
       type: ProgramType.Recovery,
-      timeFrame: '4 weeks',
+      timeFrame: '1 week',
       title: 'Posture Power Reset',
       docId: `recovery-upperback-${Date.now()}`
     });
@@ -1872,7 +2188,7 @@ export const getUserProgramBySlug = (slug: string): {
         assessmentComplete: true,
         redFlagsPresent: false,
         avoidActivities: ['Heavy lifting with poor form', 'Prolonged sitting', 'High-impact activities without proper preparation'],
-        timeFrame: '4 weeks',
+        timeFrame: '1 week',
         followUpQuestions: [],
         programType: ProgramType.Recovery,
         targetAreas: ['Core', 'Lower Back']
@@ -1892,7 +2208,7 @@ export const getUserProgramBySlug = (slug: string): {
       createdAt: today.toISOString(),
       updatedAt: today,
       type: ProgramType.Recovery,
-      timeFrame: '4 weeks',
+      timeFrame: '1 week',
       title: 'Core Control Reset',
       docId: `recovery-core-${Date.now()}`
     });

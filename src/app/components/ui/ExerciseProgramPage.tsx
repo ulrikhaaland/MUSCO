@@ -65,6 +65,7 @@ function getDayTypeInfo(day: ProgramDay): { labelKey: string; icon: 'rest' | 'st
 }
 import {
   isViewingCustomRecoveryProgram,
+  extractRecoveryProgramSlug,
   getRecoveryProgramFromSession,
   saveRecoveryProgramToAccount,
   clearRecoveryProgramFromSession,
@@ -103,9 +104,10 @@ const scrollbarHideStyles = `
   }
 `;
 
-// Add styles to head
-if (typeof document !== 'undefined') {
+// Add styles to head (with dedup check to prevent leaks on HMR)
+if (typeof document !== 'undefined' && !document.getElementById('scrollbar-hide-styles')) {
   const style = document.createElement('style');
+  style.id = 'scrollbar-hide-styles';
   style.textContent = scrollbarHideStyles;
   document.head.appendChild(style);
 }
@@ -591,6 +593,7 @@ export function ExerciseProgramPage({
   generatingDay: propGeneratingDay,
   generatedDays: propGeneratedDays,
   generatingWeekId: propGeneratingWeekId,
+  onOverviewVisibilityChange,
 }: ExerciseProgramPageProps) {
   // Get current date info
   const currentDate = new Date();
@@ -625,6 +628,24 @@ export function ExerciseProgramPage({
 
   // Determine if this is a custom recovery program being viewed (not saved to user account)
   const isViewingCustomProgram = isViewingCustomRecoveryProgram(pathname);
+
+  // Derive condition name subtitle for recovery programs (e.g. "Lower back pain" under "Back Relief Blueprint")
+  const recoverySlugToTranslationKey: Record<string, string> = {
+    'lower-back': 'landing.programs.lower_back',
+    'shoulder': 'landing.programs.shoulder_pain',
+    'runners-knee': 'landing.programs.runners_knee',
+    'ankle-sprain': 'landing.programs.ankle_sprain',
+    'plantar-fasciitis': 'landing.programs.plantar_fasciitis',
+    'techneck': 'landing.programs.tech_neck',
+    'hamstring': 'landing.programs.hamstring_strain',
+    'upper-back-core': 'landing.programs.upper_back_core',
+    'core-stability': 'landing.programs.core_stability',
+    'wrist-pain': 'landing.programs.wrist_pain',
+    'tennis-elbow': 'landing.programs.tennis_elbow',
+    'shin-splints': 'landing.programs.shin_splints',
+  };
+  const recoverySlug = type === ProgramType.Recovery ? extractRecoveryProgramSlug(pathname) : null;
+  const conditionSubtitle = recoverySlug ? t(recoverySlugToTranslationKey[recoverySlug] || '') : null;
 
   // State for save button
   const [isSaving, setIsSaving] = useState(false);
@@ -672,6 +693,14 @@ export function ExerciseProgramPage({
 
   // Check if drag is enabled (not generating and user owns the program)
   const isDragEnabled = generatingDay === null && user && activeProgram?.docId && !isViewingCustomProgram;
+
+  const getSessionStateKey = () => {
+    const userScope = user?.uid || 'anonymous';
+    const programScope =
+      activeProgram?.docId ||
+      `${program?.title || 'untitled'}:${program?.createdAt || 'no-date'}:${pathname || 'no-path'}`;
+    return `exerciseProgramPage:viewState:${userScope}:${programScope}`;
+  };
   
   // Auto-expand overview only when generation STARTS, collapse when done
   // Respect user's manual close during generation
@@ -700,7 +729,9 @@ export function ExerciseProgramPage({
       // User is closing during generation - remember this
       userClosedDuringGeneration.current = true;
     }
-    setShowWeekOverview(!showWeekOverview);
+    const nextVisible = !showWeekOverview;
+    setShowWeekOverview(nextVisible);
+    onOverviewVisibilityChange?.(nextVisible);
   };
 
   // Set initial week and day when program loads (only on first load or when program changes)
@@ -740,6 +771,27 @@ export function ExerciseProgramPage({
     
     // Skip if we've already initialized the day selection
     if (hasInitializedDaySelection.current) return;
+
+    // Restore session state for this user+program during the current app session
+    if (typeof window !== 'undefined') {
+      const rawState = window.sessionStorage.getItem(getSessionStateKey());
+      if (rawState) {
+        try {
+          const parsedState = JSON.parse(rawState) as { selectedWeek?: unknown; selectedDay?: unknown };
+          const week = Number(parsedState.selectedWeek);
+          const day = Number(parsedState.selectedDay);
+          if (Number.isFinite(week) && week >= 1 && Number.isFinite(day) && day >= 1 && day <= 7) {
+            setSelectedWeek(week);
+            setExpandedDays([day]);
+            userHasManuallySelectedDay.current = true;
+            hasInitializedDaySelection.current = true;
+            return;
+          }
+        } catch {
+          // Ignore invalid session state and continue with normal defaults
+        }
+      }
+    }
 
     // Check if this is a multi-week program (either custom 4-week or user program with multiple weeks)
     const isMultiWeekProgram = isCustomProgram && program.days.length === 28;
@@ -838,6 +890,28 @@ export function ExerciseProgramPage({
     }, 100);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [program, isCustomProgram, activeProgram, currentDayOfWeek, generatingDay]);
+
+  // Persist selected week/day per user+program for the current browser session
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (!program?.days || !Array.isArray(program.days)) return;
+    if (expandedDays.length === 0) return;
+
+    window.sessionStorage.setItem(
+      getSessionStateKey(),
+      JSON.stringify({
+        selectedWeek,
+        selectedDay: expandedDays[0],
+      })
+    );
+  }, [
+    selectedWeek,
+    expandedDays,
+    program,
+    activeProgram?.docId,
+    user?.uid,
+    pathname,
+  ]);
 
   const handleWeekChange = (weekNumber: number) => {
     setSelectedWeek(weekNumber);
@@ -1720,6 +1794,9 @@ export function ExerciseProgramPage({
                       </svg>
                     )}
                   </div>
+                )}
+                {conditionSubtitle && (
+                  <p className="text-sm text-gray-400 mt-1">{conditionSubtitle}</p>
                 )}
               </div>
             </div>

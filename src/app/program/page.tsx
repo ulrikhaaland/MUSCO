@@ -1,7 +1,7 @@
 'use client';
 
 import { Suspense, useEffect, useRef, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { ExerciseProgramPage } from '@/app/components/ui/ExerciseProgramPage';
 import { useUser } from '@/app/context/UserContext';
 import { useAuth } from '@/app/context/AuthContext';
@@ -19,6 +19,7 @@ import { searchYouTubeVideo } from '@/app/utils/youtube';
 import { ErrorDisplay } from '@/app/components/ui/ErrorDisplay';
 import { useTranslation } from '@/app/i18n';
 import { NavigationMenu } from '@/app/components/ui/NavigationMenu';
+import { extractRecoveryProgramSlug } from '@/app/services/recoveryProgramService';
 
 function ProgramPageContent({
   isCustomProgram,
@@ -27,6 +28,7 @@ function ProgramPageContent({
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const pathname = usePathname();
   const { t } = useTranslation();
   const { loading: authLoading, error: authError, user: authUser, logOut } = useAuth();
   const {
@@ -136,13 +138,14 @@ function ProgramPageContent({
   // Update page title when program data changes
   useEffect(() => {
     if (typeof document !== 'undefined') {
-      if (activeProgram?.title) {
-        document.title = `${activeProgram.title} | BodAI`;
+      const pageTitle = selectedProgram?.title || activeProgram?.title;
+      if (pageTitle) {
+        document.title = `${pageTitle} | BodAI`;
       } else {
         document.title = t('program.defaultPageTitle');
       }
     }
-  }, [activeProgram?.title, t]);
+  }, [selectedProgram?.title, activeProgram?.title, t]);
 
   // Effect to change theme color when video modal is open
   useEffect(() => {
@@ -296,12 +299,30 @@ function ProgramPageContent({
 
   const mobileTitle = selectedProgram?.title || activeProgram?.title || t('program.defaultPageTitle');
 
+  // Derive condition name subtitle for recovery programs
+  const recoverySlugToKey: Record<string, string> = {
+    'lower-back': 'landing.programs.lower_back',
+    'shoulder': 'landing.programs.shoulder_pain',
+    'runners-knee': 'landing.programs.runners_knee',
+    'ankle-sprain': 'landing.programs.ankle_sprain',
+    'plantar-fasciitis': 'landing.programs.plantar_fasciitis',
+    'techneck': 'landing.programs.tech_neck',
+    'hamstring': 'landing.programs.hamstring_strain',
+    'upper-back-core': 'landing.programs.upper_back_core',
+    'core-stability': 'landing.programs.core_stability',
+    'wrist-pain': 'landing.programs.wrist_pain',
+    'tennis-elbow': 'landing.programs.tennis_elbow',
+    'shin-splints': 'landing.programs.shin_splints',
+  };
+  const recoverySlug = extractRecoveryProgramSlug(pathname);
+  const conditionSubtitle = recoverySlug ? t(recoverySlugToKey[recoverySlug] || '') : undefined;
+
   return (
     <div className="flex flex-col flex-1 bg-gray-900 text-white">
-      <NavigationMenu mobileTitle={mobileTitle} />
+      <NavigationMenu mobileTitle={mobileTitle} mobileSubtitle={conditionSubtitle} />
       <ExerciseProgramPage
         program={selectedProgram}
-        title={activeProgram?.title}
+        title={selectedProgram?.title || activeProgram?.title}
         type={activeProgram?.type}
         timeFrame={activeProgram?.timeFrame}
         isLoading={!forceShimmer && isLoading && !shouldShimmer}

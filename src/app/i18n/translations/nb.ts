@@ -722,6 +722,9 @@ const translations = {
   'workout.exercisesCompleted': 'øvelser',
   'workout.setsCompleted': 'sett',
   'workout.duration': 'Varighet',
+  'workout.elapsed': 'Tid',
+  'workout.description': 'Beskrivelse',
+  'workout.instructions': 'Instruksjoner',
 
   // Programs page translations
   'programs.title': 'Mine Programmer',
@@ -939,7 +942,7 @@ const translations = {
   'exerciseProgram.overview.objective': 'Mål',
   'exerciseProgram.overview.keyMoves': 'Viktige øvelser',
   'exerciseProgram.overview.programDuration': 'Programvarighet:',
-  'exerciseProgram.overview.whatNotToDo': 'Hva man ikke bør gjøre',
+  'exerciseProgram.overview.whatNotToDo': 'Hva du ikke bør gjøre',
   'exerciseProgram.overview.expectedOutcome': 'Forventet resultat',
   'exerciseProgram.overview.nextSteps': 'Neste trinn',
   // Week Focus header and fallback
@@ -1370,6 +1373,7 @@ const translations = {
   'landing.programs.upper_back_core': 'Øvre rygg & kjerne',
   'landing.programs.core_stability': 'Kjernestabilitet',
   'landing.programs.shin_splints': 'Beinbetennelse (skinnebein)',
+  'landing.programs.wrist_pain': 'Håndleddssmerter',
   'landing.programs.meta.4weeks': '4 uker',
   'landing.programs.meta.3xweek': '3×/uke',
   'landing.programs.meta.20to30min': '20–30 min',

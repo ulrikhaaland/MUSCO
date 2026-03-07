@@ -16,6 +16,7 @@ import { getSavedLocalePreference } from '../i18n/utils';
 import { PartialProgram } from '../types/incremental-program';
 import {
   canGenerateProgram,
+  recordProgramGeneration,
   WeeklyLimitReachedError,
   getNextAllowedGenerationDate,
 } from './programGenerationLimits';
@@ -92,6 +93,9 @@ export const submitQuestionnaireIncremental = async (
   });
 
   console.log(`[incremental] Program document created: ${docRef.id}`);
+
+  // Record the generation immediately to prevent duplicate submissions (race condition)
+  await recordProgramGeneration(userId, programType);
 
   // Start full program generation in a single API call
   // The API saves each day to Firebase immediately, so the onSnapshot listener

@@ -13,6 +13,7 @@ import { storage } from '@/app/firebase/config';
 import { useTranslation } from '@/app/i18n/TranslationContext';
 import { logAnalyticsEvent } from '../../../utils/analytics';
 import { NavigationMenu } from '@/app/components/ui/NavigationMenu';
+import { VideoModal } from '@/app/components/ui/VideoModal';
 import { getDayFullName, getStartOfWeek } from '@/app/utils/dateutils';
 import { markDayAsCompleted } from '@/app/services/workoutSessionService';
 
@@ -447,137 +448,24 @@ function DayDetailPageContent() {
   const renderVideoModal = () => {
     if (!videoUrl) return null;
 
-    const hasMultipleVideos = dayData?.exercises && dayData.exercises.length > 1;
-    const showPreviousButton = hasMultipleVideos && currentExerciseIndex > 0;
-    const showNextButton = hasMultipleVideos && currentExerciseIndex < (dayData?.exercises.length ?? 0) - 1;
+    const totalCount = dayData?.exercises?.length ?? 0;
+    const exerciseName =
+      currentExerciseIndex !== -1 && dayData?.exercises?.[currentExerciseIndex]
+        ? dayData.exercises[currentExerciseIndex].name
+        : undefined;
 
     return (
-      <div
-        className="fixed inset-0 bg-black/95 backdrop-blur-sm flex items-center justify-center z-[10000]"
-        onClick={closeVideo}
-      >
-        <div
-          className="relative w-full h-full flex items-center justify-center"
-          onClick={(e) => e.stopPropagation()}
-        >
-          {/* Navigation buttons */}
-          <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-between px-4 sm:px-8 z-[10001] pointer-events-none">
-            {showPreviousButton && (
-              <button
-                onClick={() => navigateToVideo('prev')}
-                className="bg-black/70 rounded-full p-3 text-white/90 hover:text-white hover:bg-black/90 transition-colors duration-200 shadow-lg pointer-events-auto"
-                aria-label="Previous video"
-              >
-                <svg
-                  className="w-8 h-8"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M15 19l-7-7 7-7"
-                  />
-                </svg>
-              </button>
-            )}
-            
-            {!showPreviousButton && <div></div>} {/* Empty div to maintain flex justify-between */}
-            
-            {showNextButton && (
-              <button
-                onClick={() => navigateToVideo('next')}
-                className="bg-black/70 rounded-full p-3 text-white/90 hover:text-white hover:bg-black/90 transition-colors duration-200 shadow-lg pointer-events-auto"
-                aria-label="Next video"
-              >
-                <svg
-                  className="w-8 h-8"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 5l7 7-7 7"
-                  />
-                </svg>
-              </button>
-            )}
-          </div>
-          
-          <button
-            onClick={closeVideo}
-            className="absolute top-16 right-6 bg-black/70 rounded-full p-3 text-white/90 hover:text-white hover:bg-black/90 transition-colors duration-200 z-[10001] shadow-lg"
-            aria-label="Close video"
-          >
-            <svg
-              className="w-8 h-8"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          </button>
-          
-          {/* Exercise name display */}
-          {currentExerciseIndex !== -1 && dayData?.exercises && (
-            <div className="absolute top-4 left-0 right-0 text-center">
-              <h2 className="text-xl md:text-2xl font-bold text-white/90 px-4">
-                {dayData.exercises[currentExerciseIndex].name}
-                {dayData.exercises.length > 1 && (
-                  <span className="text-white/60 text-sm ml-2">
-                    {currentExerciseIndex + 1} / {dayData.exercises.length}
-                  </span>
-                )}
-              </h2>
-            </div>
-          )}
-          
-          {videoUrl && videoUrl.includes('firebasestorage.googleapis.com') ? (
-            <div className="w-full h-full flex items-center justify-center">
-              <video
-                className="max-h-full max-w-full h-full object-contain"
-                src={videoUrl}
-                controls
-                autoPlay
-                playsInline
-              ></video>
-            </div>
-          ) : videoUrl && isYouTubeUrl(videoUrl) ? (
-            <div className="w-full max-w-4xl mx-4 rounded-2xl overflow-hidden shadow-2xl">
-              <div className="relative pt-[56.25%]">
-                <iframe
-                  className="absolute inset-0 w-full h-full"
-                  src={videoUrl}
-                  title="Exercise Video"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                ></iframe>
-              </div>
-            </div>
-          ) : videoUrl ? (
-            <div className="w-full h-full flex items-center justify-center">
-              <video
-                className="max-h-full max-w-full h-full object-contain"
-                src={videoUrl}
-                controls
-                autoPlay
-                playsInline
-              ></video>
-            </div>
-          ) : null}
-        </div>
-      </div>
+      <VideoModal
+        videoUrl={videoUrl}
+        onClose={closeVideo}
+        exerciseName={exerciseName}
+        showNavigation={totalCount > 1}
+        onNavigate={(direction) => {
+          void navigateToVideo(direction);
+        }}
+        currentIndex={Math.max(currentExerciseIndex, 0)}
+        totalCount={totalCount}
+      />
     );
   };
 

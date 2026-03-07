@@ -254,7 +254,7 @@ export default function ExerciseCard({
               {exercise.description && (
                 <section className="mb-4 space-y-1.5">
                   <h3 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-gray-500">
-                    Description
+                    {t('workout.description')}
                   </h3>
                   <div className="text-gray-300 leading-relaxed">
                     {isDescriptionExpanded
@@ -297,7 +297,7 @@ export default function ExerciseCard({
                 <section className="text-gray-300 text-sm leading-relaxed space-y-1.5">
                   <div className="flex items-center justify-between">
                     <h3 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-gray-500">
-                      Instructions
+                      {t('workout.instructions')}
                     </h3>
                     <button
                       onClick={(e) => {

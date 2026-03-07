@@ -747,6 +747,9 @@ const translations = {
   'workout.exercisesCompleted': 'exercises',
   'workout.setsCompleted': 'sets',
   'workout.duration': 'Duration',
+  'workout.elapsed': 'Elapsed',
+  'workout.description': 'Description',
+  'workout.instructions': 'Instructions',
 
   // Programs page translations
   'programs.title': 'My Programs',
@@ -1285,6 +1288,7 @@ const translations = {
   'landing.programs.upper_back_core': 'Upper back & core',
   'landing.programs.core_stability': 'Core stability',
   'landing.programs.shin_splints': 'Shin splints',
+  'landing.programs.wrist_pain': 'Wrist pain',
   'landing.programs.meta.4weeks': '4 weeks',
   'landing.programs.meta.3xweek': '3×/week',
   'landing.programs.meta.20to30min': '20–30 min',

@@ -623,6 +623,51 @@
       "environment": "indoor",
       "intervalDuration": 180,
       "incline": "12-15% work / 2-5% recovery"
+    },
+    {
+      "id": "cardio-13",
+      "name": "Sone 2 Marsj på stedet (uten utstyr)",
+      "description": "Marsj på stedet er en enkel og skånsom måte å få opp pulsen uten utstyr. I sone 2 skal innsatsen være jevn og bærekraftig, med raskere pust men fortsatt mulig å snakke i hele setninger. Hold stegene lette og stille for å minimere støtbelastning.",
+      "targetBodyParts": ["Cardio"],
+      "exerciseType": ["cardio", "endurance"],
+      "difficulty": "beginner",
+      "equipment": ["Bodyweight"],
+      "steps": [
+        "Stå oppreist med føttene i hoftebreddes avstand og ribbein stablet over bekken.",
+        "Start å marsjere ved å løfte ett kne lett, og bytt side i jevn rytme.",
+        "Sving armene naturlig for å holde rytme og balanse.",
+        "Hold fotisettet lett og stille, og unngå hopping.",
+        "Hold et tempo der du fortsatt kan snakke i hele setninger (sone 2)."
+      ],
+      "tips": [
+        "Hvis du kjenner smerte i skinnebein, reduser steghøyde og tempo.",
+        "Hold kroppen høy og stabil uten å lene deg bakover.",
+        "Bruk vegg eller stol for støtte ved behov.",
+        "Hvis marsjering provoserer symptomer, bytt til rolig mobilitet."
+      ],
+      "contraindications": [
+        "Akutt skade i underekstremitet",
+        "Skarp smerte under bevegelse",
+        "Uttalte balansevansker"
+      ],
+      "muscles": ["Hip Flexors", "Glutes", "Calves", "Core"],
+      "alternatives": ["cardio-5", "cardio-7", "cardio-9"],
+      "repetitions": 1,
+      "sets": 1,
+      "restBetweenSets": 0,
+      "forceType": "Endurance",
+      "mechanics": "Compound",
+      "videoUrl": "",
+      "imageUrl": "",
+      "viewCount": 0,
+      "popularity": "medium",
+      "duration": 10,
+      "distance": 0,
+      "heartRateZone": "Zone 2 (60-70% max HR)",
+      "perceivedEffort": "Lett til moderat innsats (4-5/10). Du skal kunne føre en full samtale. Hvis pusten blir for tung til å snakke komfortabelt, reduser tempoet.",
+      "environment": "indoor",
+      "intervalDuration": 0,
+      "incline": ""
     }
   ]
 }

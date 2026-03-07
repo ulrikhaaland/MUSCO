@@ -244,8 +244,14 @@ const exerciseFiles = (useNorwegian: boolean = false): Record<
   },
 });
 
-// Cache for loaded exercises
-const exerciseCache: Record<string, Exercise> = {};
+// Cache for loaded exercises, keyed by language to prevent stale cross-language data
+const exerciseCacheByLang: Record<string, Record<string, Exercise>> = { en: {}, no: {} };
+const getExerciseCache = (useNorwegian: boolean): Record<string, Exercise> => {
+  const lang = useNorwegian ? 'no' : 'en';
+  return exerciseCacheByLang[lang];
+};
+// Backwards-compatible alias — defaults to English cache for non-language-aware callers
+const exerciseCache = exerciseCacheByLang.en;
 
 // Map to track file paths for original exercises
 const originalExerciseFiles: Record<string, string> = {
@@ -275,6 +281,7 @@ const originalExerciseFiles: Record<string, string> = {
  */
 async function loadFallbackExercises(missingIds: Set<string>, useNorwegian: boolean = false): Promise<void> {
   if (missingIds.size === 0) return;
+  const cache = getExerciseCache(useNorwegian);
 
   // Group missing IDs by their prefix to determine which files to load
   const idsByPrefix: Record<string, string[]> = {};
@@ -310,14 +317,14 @@ async function loadFallbackExercises(missingIds: Set<string>, useNorwegian: bool
       exercises.forEach((exercise: Exercise) => {
         if (exercise.id && missingIds.has(exercise.id)) {
           // Mark as original exercise
-          exerciseCache[exercise.id] = {
+          cache[exercise.id] = {
             ...exercise,
             isOriginal: true,
           };
 
           // Also cache by exerciseId if available
           if (exercise.exerciseId) {
-            exerciseCache[exercise.exerciseId] = {
+            cache[exercise.exerciseId] = {
               ...exercise,
               isOriginal: true,
             };
@@ -349,6 +356,7 @@ async function loadExercisesFromJson(
 ): Promise<Exercise[]> {
   const exercises: Exercise[] = [];
   const exerciseFilesMap = exerciseFiles(useNorwegian);
+  const cache = getExerciseCache(useNorwegian);
 
   // First pass: load all musco exercises
   for (const bodyPart of bodyParts) {
@@ -369,11 +377,11 @@ async function loadExercisesFromJson(
         // Cache exercises by ID - handle both id and exerciseId properties
         processedExercises.forEach((exercise) => {
           if (exercise.id) {
-            exerciseCache[exercise.id] = exercise;
+            cache[exercise.id] = exercise;
           }
           // Also cache using exerciseId if available
           if (exercise.exerciseId) {
-            exerciseCache[exercise.exerciseId] = exercise;
+            cache[exercise.exerciseId] = exercise;
           }
         });
       } catch (error) {
@@ -435,11 +443,11 @@ async function loadExercisesFromJson(
 
           // Cache these too
           processedExercises.forEach((exercise: Exercise) => {
-            if (exercise.id && !exerciseCache[exercise.id]) {
-              exerciseCache[exercise.id] = exercise;
+            if (exercise.id && !cache[exercise.id]) {
+              cache[exercise.id] = exercise;
             }
-            if (exercise.exerciseId && !exerciseCache[exercise.exerciseId]) {
-              exerciseCache[exercise.exerciseId] = exercise;
+            if (exercise.exerciseId && !cache[exercise.exerciseId]) {
+              cache[exercise.exerciseId] = exercise;
             }
           });
         } catch (error) {
@@ -468,6 +476,7 @@ export const enrichExercisesWithFullData = async (
   useNorwegian: boolean = false
 ): Promise<void> => {
   if (!program.days) return;
+  const cache = getExerciseCache(useNorwegian);
 
   // First, collect all unique target areas from the program
   const targetAreas = new Set<string>();
@@ -483,9 +492,15 @@ export const enrichExercisesWithFullData = async (
   const extractBodyPartFromId = (id: string): string | null => {
     if (!id) return null;
 
-    // Special case for upper-back which contains a hyphen in its prefix
+    // Special cases for multi-word prefixes containing hyphens
     if (id.startsWith('upper-back-')) {
       return 'Upper Back';
+    }
+    if (id.startsWith('lower-back-')) {
+      return 'Lower Back';
+    }
+    if (id.startsWith('hip-flexors-') || id.startsWith('hip_flexors-')) {
+      return 'Upper Legs';
     }
 
     const prefix = id.split('-')[0].toLowerCase();
@@ -581,7 +596,7 @@ export const enrichExercisesWithFullData = async (
     if (day.exercises) {
       day.exercises.forEach((exercise) => {
         const exerciseId = exercise.id || exercise.exerciseId;
-        if (exerciseId && !exerciseCache[exerciseId]) {
+        if (exerciseId && !cache[exerciseId]) {
           missingIds.add(exerciseId);
         }
       });
@@ -601,30 +616,32 @@ export const enrichExercisesWithFullData = async (
             // Check if exercise can be found by either id or exerciseId
             const exerciseId = exercise.id || exercise.exerciseId;
 
-            if (exerciseId && exerciseCache[exerciseId]) {
-              const fullData = exerciseCache[exerciseId];
+            if (exerciseId && cache[exerciseId]) {
+              const fullData = cache[exerciseId];
               // Check if this is a cardio exercise by ID prefix
               const isCardioExercise = exerciseId.startsWith('cardio-');
 
               return {
-                ...fullData,
                 ...exercise,
+                ...fullData,
                 // Ensure we preserve the program's sets, reps, rest, and duration rather than using template defaults
+                // Use ?? instead of || so that explicit 0 values are preserved
                 // For cardio exercises, we ALWAYS want to keep the duration from the LLM response
-                sets: exercise.sets || fullData.sets,
-                repetitions: exercise.repetitions || fullData.repetitions,
-                restBetweenSets: exercise.restBetweenSets || fullData.restBetweenSets,
+                sets: exercise.sets ?? fullData.sets,
+                repetitions: exercise.repetitions ?? fullData.repetitions,
+                restBetweenSets: exercise.restBetweenSets ?? fullData.restBetweenSets,
                 // For cardio exercises, prioritize the duration from the LLM response
                 duration: isCardioExercise
                   ? exercise.duration
-                  : exercise.duration || fullData.duration,
+                  : exercise.duration ?? fullData.duration,
+                modification: exercise.modification || fullData.modification,
                 bodyPart: exercise.bodyPart || fullData.targetBodyParts?.[0],
               };
             }
 
             // If we don't find the exercise by ID, try harder by looking at name (case-insensitive)
             if (exercise.name) {
-              const matchByName = Object.values(exerciseCache).find(
+              const matchByName = Object.values(cache).find(
                 (cached) =>
                   cached.name?.toLowerCase() === exercise.name?.toLowerCase()
               );
@@ -637,18 +654,20 @@ export const enrichExercisesWithFullData = async (
                   exercise.name.toLowerCase().includes('cardio');
 
                 return {
-                  ...matchByName,
                   ...exercise,
+                  ...matchByName,
                   // Ensure we preserve the program's sets, reps, rest, and duration rather than using template defaults
-                  sets: exercise.sets || matchByName.sets,
-                  repetitions: exercise.repetitions || matchByName.repetitions,
-                  restBetweenSets: exercise.restBetweenSets || matchByName.restBetweenSets,
+                  // Use ?? instead of || so that explicit 0 values are preserved
+                  sets: exercise.sets ?? matchByName.sets,
+                  repetitions: exercise.repetitions ?? matchByName.repetitions,
+                  restBetweenSets: exercise.restBetweenSets ?? matchByName.restBetweenSets,
                   // For cardio exercises, prioritize the duration from the LLM response
                   duration: isCardioExercise
                     ? exercise.duration
-                    : exercise.duration || matchByName.duration,
+                    : exercise.duration ?? matchByName.duration,
                   id: matchByName.id, // Ensure we keep the ID from the cache
-                  exerciseId: matchByName.exerciseId, // Also keep exerciseId if available
+                  exerciseId: exercise.exerciseId || matchByName.id, // Keep template reference unless missing
+                  modification: exercise.modification || matchByName.modification,
                   bodyPart:
                     exercise.bodyPart || matchByName.targetBodyParts?.[0],
                 };
